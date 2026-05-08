@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,71 +7,244 @@
 <title>UFC Fight Cards</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--red:#e8192c;--gold:#c9a84c;--bg:#0d0d0d;--card:#161616;--card2:#1e1e1e;--border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);--text:#f0f0f0;--muted:#777;--muted2:#aaa}
+:root{--red:#e8192c;--gold:#c9a84c;--bg:#0d0d0d;--card:#161616;--card2:#1e1e1e;--border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);--text:#f0f0f0;--muted:#777;--muted2:#aaa;--green:#2ecc71}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:48px;font-size:15px}
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;border-bottom:1px solid var(--border);background:rgba(13,13,13,.97);backdrop-filter:blur(8px);position:sticky;top:0;z-index:9}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:60px;font-size:15px}
+
+/* ── Header ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;border-bottom:1px solid var(–border);background:rgba(13,13,13,.97);backdrop-filter:blur(8px);position:sticky;top:0;z-index:99}
 .logo{display:flex;align-items:center;gap:8px}
-.logo-hex{width:28px;height:28px;background:var(--red);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:10px;color:#fff;flex-shrink:0}
-.logo-text{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em}
-.logo-text span{color:var(--red)}
-.hdr-right{display:flex;align-items:center;gap:10px}
-.updated-lbl{font-size:10px;color:var(--muted);letter-spacing:.04em}
-.btn-ufc{background:var(--red);border:none;color:#fff;padding:6px 12px;border-radius:6px;font:600 12px 'DM Sans',sans-serif;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:4px}
+.logo-hex{width:28px;height:28px;background:var(–red);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:‘Bebas Neue’,sans-serif;font-size:10px;color:#fff;flex-shrink:0}
+.logo-text{font-family:‘Bebas Neue’,sans-serif;font-size:22px;letter-spacing:.08em}
+.logo-text span{color:var(–red)}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.btn-icon{background:var(–card2);border:1px solid var(–border2);color:var(–muted2);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s;flex-shrink:0}
+.btn-icon:hover{color:var(–text);border-color:rgba(255,255,255,.3)}
+.btn-icon svg{width:16px;height:16px}
+.btn-ufc{background:var(–red);border:none;color:#fff;padding:6px 10px;border-radius:6px;font:600 11px ‘DM Sans’,sans-serif;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:3px}
 .btn-ufc:hover{background:#c9101f}
-.hero{padding:20px 16px 16px;border-bottom:1px solid var(--border)}
-.hero h1{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:.07em;line-height:1}
-.hero h1 span{color:var(--red)}
-.hero-sub{font-size:11px;color:var(--muted);margin-top:5px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-bottom:1px solid var(--border)}
-.stat{padding:11px 6px;text-align:center;border-right:1px solid var(--border)}
+.btn-ufc svg{width:9px;height:9px}
+
+/* ── Hero + Countdown ── */
+.hero{padding:18px 16px 14px;border-bottom:1px solid var(–border)}
+.hero h1{font-family:‘Bebas Neue’,sans-serif;font-size:32px;letter-spacing:.07em;line-height:1}
+.hero h1 span{color:var(–red)}
+.hero-sub{font-size:11px;color:var(–muted);margin-top:4px}
+.countdown-wrap{margin-top:12px;background:var(–card2);border:1px solid var(–border);border-radius:8px;padding:10px 14px}
+.countdown-label{font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.countdown-event{font-size:11px;font-weight:600;color:var(–text);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.countdown-timer{display:flex;gap:8px}
+.cd-unit{text-align:center;min-width:40px}
+.cd-num{font-family:‘Bebas Neue’,sans-serif;font-size:28px;letter-spacing:.05em;line-height:1;color:var(–red)}
+.cd-lbl{font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.08em;margin-top:1px}
+.cd-sep{font-family:‘Bebas Neue’,sans-serif;font-size:24px;color:rgba(255,255,255,.15);padding-top:2px}
+.tonight-badge{display:inline-block;background:rgba(232,25,44,.15);color:var(–red);border:1px solid rgba(232,25,44,.3);font-size:11px;font-weight:600;padding:4px 10px;border-radius:4px;letter-spacing:.04em}
+
+/* ── Stats strip ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(–card);border-bottom:1px solid var(–border)}
+.stat{padding:11px 6px;text-align:center;border-right:1px solid var(–border);cursor:default}
 .stat:last-child{border-right:none}
-.sv{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.05em;line-height:1}
-.sl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.stat.active{background:rgba(232,25,44,.06)}
+.sv{font-family:‘Bebas Neue’,sans-serif;font-size:24px;letter-spacing:.05em;line-height:1}
+.sl{font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+
+/* ── Tabs (filter) ── */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(–border);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:9px 14px;font-size:11px;font-weight:600;color:var(–muted);border:none;background:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;letter-spacing:.04em;transition:color .15s}
+.tab.active{color:var(–text);border-bottom-color:var(–red)}
+.tab:hover{color:var(–muted2)}
+
+/* ── Content ── */
 .content{padding:14px 12px}
-.sec-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
-.evcard{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:8px;animation:up .3s ease both}
-.evcard.featured{border-color:var(--red)}
+.sec-lbl{font-size:10px;color:var(–muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-lbl::after{content:’’;flex:1;height:1px;background:var(–border)}
+
+/* ── Event cards ── */
+.evcard{background:var(–card);border:1px solid var(–border);border-radius:10px;overflow:hidden;margin-bottom:8px;animation:up .3s ease both}
+.evcard.featured{border-color:var(–red)}
 @keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.evcard:nth-child(2){animation-delay:.06s}.evcard:nth-child(3){animation-delay:.12s}
-.ev-hdr{padding:11px 13px 10px;border-bottom:1px solid var(--border)}
-.ev-name{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.06em;line-height:1;margin-bottom:6px}
+.evcard:nth-child(2){animation-delay:.06s}.evcard:nth-child(3){animation-delay:.12s}.evcard:nth-child(4){animation-delay:.18s}
+.ev-hdr{padding:11px 13px 10px;border-bottom:1px solid var(–border)}
+.ev-name{font-family:‘Bebas Neue’,sans-serif;font-size:17px;letter-spacing:.06em;line-height:1;margin-bottom:6px}
 .ev-meta{display:flex;flex-wrap:wrap;gap:4px 14px}
-.ev-detail{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px}
+.ev-detail{font-size:11px;color:var(–muted);display:flex;align-items:center;gap:3px}
 .ev-detail svg{width:10px;height:10px;opacity:.45;flex-shrink:0}
 .badges{display:flex;gap:4px;margin-top:7px;flex-wrap:wrap}
 .badge{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:3px}
-.b-next{background:rgba(232,25,44,.12);color:var(--red);border:1px solid rgba(232,25,44,.25)}
-.b-title{background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2)}
-.b-ppv{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)}
-.fight{padding:11px 13px;border-bottom:1px solid var(--border)}
+.b-next{background:rgba(232,25,44,.12);color:var(–red);border:1px solid rgba(232,25,44,.25)}
+.b-title{background:rgba(201,168,76,.1);color:var(–gold);border:1px solid rgba(201,168,76,.2)}
+.b-ppv{background:rgba(255,255,255,.05);color:var(–muted);border:1px solid var(–border)}
+.b-result{background:rgba(46,204,113,.08);color:var(–green);border:1px solid rgba(46,204,113,.2)}
+
+/* ── Fight rows ── */
+.fight{padding:11px 13px;border-bottom:1px solid var(–border);position:relative}
 .fight:last-of-type{border-bottom:none}
 .flbl{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
-.flbl.main{color:var(--red)}.flbl.co{color:var(--gold)}.flbl.pre{color:var(--muted)}
+.flbl.main{color:var(–red)}.flbl.co{color:var(–gold)}.flbl.pre{color:var(–muted)}
 .mu{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px}
-.ft{display:flex;flex-direction:column;gap:1px;min-width:0}
+.ft{display:flex;flex-direction:column;gap:1px;min-width:0;cursor:pointer}
+.ft:hover .fn{opacity:.8}
 .ft.r{align-items:flex-end;text-align:right}
-.fn{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fn.sm{font-size:15px}.fn.xs{font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500}
-.frec{font-size:11px;color:var(--muted2);margin-top:1px}
+.fn{font-family:‘Bebas Neue’,sans-serif;font-size:19px;letter-spacing:.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .15s}
+.fn.sm{font-size:15px}.fn.xs{font-size:13px;font-family:‘DM Sans’,sans-serif;font-weight:500}
+.frec{font-size:11px;color:var(–muted2);margin-top:1px}
 .fpills{display:flex;gap:3px;flex-wrap:wrap;margin-top:2px}
 .ft.r .fpills{justify-content:flex-end}
-.pchamp{font-size:9px;font-weight:600;padding:1px 5px;border-radius:2px;background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.18);letter-spacing:.06em}
-.prank{font-size:9px;font-weight:600;padding:1px 5px;border-radius:2px;background:rgba(255,255,255,.06);color:var(--muted2);letter-spacing:.05em}
+.pchamp{font-size:9px;font-weight:600;padding:1px 5px;border-radius:2px;background:rgba(201,168,76,.1);color:var(–gold);border:1px solid rgba(201,168,76,.18);letter-spacing:.06em}
+.prank{font-size:9px;font-weight:600;padding:1px 5px;border-radius:2px;background:rgba(255,255,255,.06);color:var(–muted2);letter-spacing:.05em}
 .vc{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0}
-.vs{font-family:'Bebas Neue',sans-serif;font-size:13px;color:rgba(255,255,255,.16);letter-spacing:.08em}
-.wc-lbl{font-size:9px;color:var(--muted);text-align:center;text-transform:uppercase;letter-spacing:.04em;line-height:1.3;max-width:56px}
-.pbtn{width:100%;background:none;border:none;border-top:1px solid var(--border);padding:9px 13px;display:flex;align-items:center;gap:6px;font-size:10px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase;transition:color .15s,background .15s;text-align:left}
-.pbtn:hover{color:var(--muted2);background:rgba(255,255,255,.02)}
+.vs{font-family:‘Bebas Neue’,sans-serif;font-size:13px;color:rgba(255,255,255,.16);letter-spacing:.08em}
+.wc-lbl{font-size:9px;color:var(–muted);text-align:center;text-transform:uppercase;letter-spacing:.04em;line-height:1.3;max-width:56px}
+
+/* ── Odds row ── */
+.odds-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0 0;margin-top:4px}
+.odds-val{font-size:11px;font-weight:600;color:var(–muted2)}
+.odds-val.fav{color:var(–green)}
+.odds-val.dog{color:rgba(232,25,44,.8)}
+
+/* ── Result overlay ── */
+.result-badge{font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:2px;background:rgba(46,204,113,.1);color:var(–green);border:1px solid rgba(46,204,113,.2)}
+.winner-mark{font-size:9px;color:var(–green);font-weight:600}
+
+/* ── Predict row ── */
+.predict-row{display:flex;gap:6px;padding:8px 13px;border-top:1px solid var(–border);background:rgba(255,255,255,.02)}
+.pred-btn{flex:1;padding:6px 8px;border-radius:6px;border:1px solid var(–border2);background:none;color:var(–muted2);font:500 11px ‘DM Sans’,sans-serif;cursor:pointer;transition:all .15s;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pred-btn:hover{border-color:rgba(255,255,255,.3);color:var(–text)}
+.pred-btn.selected{background:rgba(232,25,44,.12);border-color:var(–red);color:var(–red)}
+.pred-btn.correct{background:rgba(46,204,113,.1);border-color:var(–green);color:var(–green)}
+.pred-btn.wrong{background:rgba(255,255,255,.04);border-color:var(–border);color:var(–muted);text-decoration:line-through}
+
+/* ── More fights toggle ── */
+.pbtn{width:100%;background:none;border:none;border-top:1px solid var(–border);padding:9px 13px;display:flex;align-items:center;gap:6px;font-size:10px;color:var(–muted);cursor:pointer;font-family:‘DM Sans’,sans-serif;letter-spacing:.06em;text-transform:uppercase;transition:color .15s,background .15s;text-align:left}
+.pbtn:hover{color:var(–muted2);background:rgba(255,255,255,.02)}
 .pbtn svg{width:12px;height:12px;transition:transform .2s;margin-left:auto;flex-shrink:0}
 .pbtn.open svg{transform:rotate(180deg)}
-.pbody{display:none;border-top:1px solid var(--border)}.pbody.open{display:block}
-@media(min-width:420px){.content{padding:16px}.fn{font-size:21px}.fn.sm{font-size:17px}.hero h1{font-size:40px}}
-@media(min-width:640px){.hdr{padding:0 20px}.hero{padding:24px 20px 18px}.content{padding:20px}}
+.pbody{display:none;border-top:1px solid var(–border)}.pbody.open{display:block}
+
+/* ── Fighter stats modal ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:flex-end;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#1a1a1a;border:1px solid var(–border2);border-radius:14px 14px 0 0;padding:20px 18px 32px;width:100%;max-width:480px;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-close{float:right;background:none;border:none;color:var(–muted);cursor:pointer;font-size:20px;line-height:1;padding:0}
+.modal-fighter{font-family:‘Bebas Neue’,sans-serif;font-size:28px;letter-spacing:.05em;margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(–muted);margin-bottom:16px}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.modal-stat{background:var(–card2);border-radius:8px;padding:10px 12px}
+.modal-stat-val{font-family:‘Bebas Neue’,sans-serif;font-size:22px;letter-spacing:.04em;color:var(–text)}
+.modal-stat-lbl{font-size:10px;color:var(–muted);text-transform:uppercase;letter-spacing:.07em;margin-top:2px}
+.modal-bar-wrap{margin-top:12px}
+.modal-bar-lbl{font-size:10px;color:var(–muted);margin-bottom:4px;display:flex;justify-content:space-between}
+.modal-bar{height:4px;background:var(–border);border-radius:2px;overflow:hidden}
+.modal-bar-fill{height:100%;background:var(–red);border-radius:2px;transition:width .5s ease}
+
+/* ── Predictor leaderboard ── */
+.lb-wrap{background:var(–card);border:1px solid var(–border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.lb-hdr{padding:11px 13px;border-bottom:1px solid var(–border);display:flex;align-items:center;justify-content:space-between}
+.lb-title{font-family:‘Bebas Neue’,sans-serif;font-size:16px;letter-spacing:.06em}
+.lb-row{display:flex;align-items:center;gap:10px;padding:9px 13px;border-bottom:1px solid var(–border)}
+.lb-row:last-child{border-bottom:none}
+.lb-rank{font-family:‘Bebas Neue’,sans-serif;font-size:18px;color:var(–muted);width:20px;text-align:center;flex-shrink:0}
+.lb-rank.gold{color:var(–gold)}
+.lb-name{flex:1;font-size:13px;font-weight:500}
+.lb-score{font-family:‘Bebas Neue’,sans-serif;font-size:18px;color:var(–red)}
+.lb-detail{font-size:10px;color:var(–muted)}
+
+/* ── Fight night mode ── */
+.fn-mode{display:none;position:fixed;inset:0;background:#000;z-index:300;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.fn-mode.open{display:flex}
+.fn-mode-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
+.fn-event{font-family:‘Bebas Neue’,sans-serif;font-size:20px;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:8px;text-align:center}
+.fn-wc{font-size:12px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:24px;text-align:center}
+.fn-vs{font-family:‘Bebas Neue’,sans-serif;font-size:clamp(32px,8vw,64px);color:rgba(255,255,255,.15);letter-spacing:.1em;margin:0 16px}
+.fn-fighters{display:flex;align-items:center;justify-content:center;gap:0;width:100%;margin-bottom:16px}
+.fn-fighter{flex:1;text-align:center}
+.fn-fighter.r{text-align:center}
+.fn-name{font-family:‘Bebas Neue’,sans-serif;font-size:clamp(28px,7vw,56px);letter-spacing:.04em;line-height:1.1;color:#fff}
+.fn-rec{font-size:14px;color:rgba(255,255,255,.4);margin-top:4px}
+.fn-nav{display:flex;gap:12px;margin-top:24px}
+.fn-nav-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);padding:8px 18px;border-radius:6px;cursor:pointer;font:500 12px ‘DM Sans’,sans-serif;display:flex;align-items:center;gap:6px}
+.fn-nav-btn:hover{background:rgba(255,255,255,.14);color:#fff}
+.fn-nav-btn svg{width:14px;height:14px}
+.fn-counter{font-size:11px;color:rgba(255,255,255,.3);margin-top:12px;letter-spacing:.06em}
+
+/* ── Name entry modal ── */
+.name-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:400;align-items:center;justify-content:center;padding:20px}
+.name-modal-bg.open{display:flex}
+.name-modal{background:#1a1a1a;border:1px solid var(–border2);border-radius:12px;padding:24px 20px;width:100%;max-width:340px}
+.name-modal h3{font-family:‘Bebas Neue’,sans-serif;font-size:22px;letter-spacing:.06em;margin-bottom:6px}
+.name-modal p{font-size:12px;color:var(–muted);margin-bottom:16px;line-height:1.5}
+.name-input{width:100%;background:var(–card2);border:1px solid var(–border2);color:var(–text);padding:10px 12px;border-radius:8px;font:500 14px ‘DM Sans’,sans-serif;margin-bottom:12px}
+.name-input:focus{outline:none;border-color:var(–red)}
+.name-btn{width:100%;background:var(–red);border:none;color:#fff;padding:10px;border-radius:8px;font:600 13px ‘DM Sans’,sans-serif;cursor:pointer}
+.name-btn:hover{background:#c9101f}
+
+/* ── Notification toast ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a1a;border:1px solid var(–border2);color:var(–text);padding:10px 18px;border-radius:8px;font-size:12px;z-index:500;transition:transform .3s ease;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(min-width:420px){.content{padding:16px}.fn{font-size:21px}.fn.sm{font-size:17px}.hero h1{font-size:38px}}
+@media(min-width:640px){.hdr{padding:0 20px}.hero{padding:22px 20px 16px}.content{padding:20px}}
 </style>
+
 </head>
 <body>
+
+<!-- ── Fighter stats modal ── -->
+
+<div class="modal-bg" id="statsModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-fighter" id="mName"></div>
+    <div class="modal-sub" id="mSub"></div>
+    <div class="modal-grid" id="mGrid"></div>
+    <div class="modal-bar-wrap" id="mBars"></div>
+  </div>
+</div>
+
+<!-- ── Fight night mode ── -->
+
+<div class="fn-mode" id="fnMode">
+  <button class="fn-mode-close" onclick="closeFNMode()">×</button>
+  <div class="fn-event" id="fn-event"></div>
+  <div class="fn-wc" id="fn-wc"></div>
+  <div class="fn-fighters">
+    <div class="fn-fighter">
+      <div class="fn-name" id="fn-f1"></div>
+      <div class="fn-rec" id="fn-r1"></div>
+    </div>
+    <div class="fn-vs">VS</div>
+    <div class="fn-fighter r">
+      <div class="fn-name" id="fn-f2"></div>
+      <div class="fn-rec" id="fn-r2"></div>
+    </div>
+  </div>
+  <div class="fn-nav">
+    <button class="fn-nav-btn" onclick="fnNav(-1)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Prev
+    </button>
+    <button class="fn-nav-btn" onclick="fnNav(1)">
+      Next<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+  <div class="fn-counter" id="fn-counter"></div>
+</div>
+
+<!-- ── Name entry modal ── -->
+
+<div class="name-modal-bg" id="nameModalBg">
+  <div class="name-modal">
+    <h3>Join the Predictor</h3>
+    <p>Enter your name to start picking fight winners. Your picks are saved on this device.</p>
+    <input class="name-input" id="nameInput" type="text" placeholder="Your name" maxlength="20">
+    <button class="name-btn" onclick="saveName()">Let's Go</button>
+  </div>
+</div>
+
+<!-- ── Toast ── -->
+
+<div class="toast" id="toast"></div>
 
 <header class="hdr">
   <div class="logo">
@@ -78,9 +252,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <span class="logo-text">FIGHT <span>CARDS</span></span>
   </div>
   <div class="hdr-right">
-    <span class="updated-lbl">Updated May 8, 2026</span>
+    <button class="btn-icon" onclick="openFNMode()" title="Fight night mode">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    </button>
     <a class="btn-ufc" href="https://www.ufc.com/events" target="_blank">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
       UFC.com
     </a>
   </div>
@@ -88,13 +264,36 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <section class="hero">
   <h1>UPCOMING<br><span>FIGHT CARDS</span></h1>
-  <p class="hero-sub">Verified from UFC.com · Updated May 8, 2026</p>
+  <p class="hero-sub" id="hero-sub">Verified from UFC.com · Updated May 8, 2026</p>
+  <div class="countdown-wrap" id="countdown-wrap" style="display:none">
+    <div class="countdown-label">Next Event</div>
+    <div class="countdown-event" id="cd-event"></div>
+    <div class="countdown-timer" id="cd-timer"></div>
+  </div>
 </section>
 
 <div class="stats" id="stats"></div>
-<main class="content" id="app"></main>
+
+<div class="tabs" id="tabs">
+  <button class="tab active" data-filter="all" onclick="setFilter('all',this)">All Events</button>
+  <button class="tab" data-filter="Heavyweight" onclick="setFilter('Heavyweight',this)">Heavyweight</button>
+  <button class="tab" data-filter="Middleweight" onclick="setFilter('Middleweight',this)">Middleweight</button>
+  <button class="tab" data-filter="Welterweight" onclick="setFilter('Welterweight',this)">Welterweight</button>
+  <button class="tab" data-filter="Lightweight" onclick="setFilter('Lightweight',this)">Lightweight</button>
+  <button class="tab" data-filter="Featherweight" onclick="setFilter('Featherweight',this)">Featherweight</button>
+  <button class="tab" data-filter="Bantamweight" onclick="setFilter('Bantamweight',this)">Bantamweight</button>
+  <button class="tab" data-filter="Flyweight" onclick="setFilter('Flyweight',this)">Flyweight</button>
+</div>
+
+<main class="content">
+  <div id="app"></div>
+  <div id="leaderboard"></div>
+</main>
 
 <script>
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────────────────────────────────────
 var EVENTS = [
   {
     name: "UFC 328: Chimaev vs. Strickland",
@@ -104,19 +303,19 @@ var EVENTS = [
     broadcast: "Paramount+",
     mainCardTime: "9:00 PM ET",
     fights: [
-      { label:"Main Event",    weightClass:"Middleweight",    titleFight:true,  fighter1:{name:"Khamzat Chimaev",       record:"15-0",    ranking:"C"},   fighter2:{name:"Sean Strickland",      record:"30-7",    ranking:"#3"} },
-      { label:"Co-Main Event", weightClass:"Flyweight",       titleFight:true,  fighter1:{name:"Joshua Van",           record:"12-0",    ranking:"C"},   fighter2:{name:"Tatsuro Taira",        record:"16-1",    ranking:"#3"} },
-      { label:"Main Card",     weightClass:"Heavyweight",     titleFight:false, fighter1:{name:"Alexander Volkov",     record:"38-10",   ranking:"#2"},  fighter2:{name:"Waldo Cortes-Acosta",  record:"13-2",    ranking:"#4"} },
-      { label:"Main Card",     weightClass:"Welterweight",    titleFight:false, fighter1:{name:"Sean Brady",           record:"17-1",    ranking:"#6"},  fighter2:{name:"Joaquin Buckley",      record:"22-5",    ranking:"#9"} },
-      { label:"Main Card",     weightClass:"Lightweight",     titleFight:false, fighter1:{name:"King Green",           record:"34-17-1", ranking:""},    fighter2:{name:"Jeremy Stephens",      record:"29-22-1", ranking:""} },
-      { label:"Prelim",        weightClass:"Middleweight",    titleFight:false, fighter1:{name:"Ateba Gautier",        record:"11-1",    ranking:""},    fighter2:{name:"Ozzy Diaz",            record:"9-2",     ranking:""} },
-      { label:"Prelim",        weightClass:"Welterweight",    titleFight:false, fighter1:{name:"Joel Alvarez",         record:"25-4",    ranking:""},    fighter2:{name:"Yaroslav Amosov",      record:"28-0",    ranking:"#14"} },
-      { label:"Prelim",        weightClass:"Lightweight",     titleFight:false, fighter1:{name:"Grant Dawson",         record:"21-2-1",  ranking:""},    fighter2:{name:"Mateusz Rebecki",      record:"18-4",    ranking:""} },
-      { label:"Prelim",        weightClass:"Lightweight",     titleFight:false, fighter1:{name:"Jim Miller",           record:"37-17-1", ranking:""},    fighter2:{name:"Jared Gordon",         record:"19-7",    ranking:""} },
-      { label:"Early Prelim",  weightClass:"Middleweight",    titleFight:false, fighter1:{name:"Roman Kopylov",        record:"12-3",    ranking:""},    fighter2:{name:"Marco Tulio",          record:"9-1",     ranking:""} },
-      { label:"Early Prelim",  weightClass:"Featherweight",   titleFight:false, fighter1:{name:"Pat Sabatini",         record:"18-3",    ranking:""},    fighter2:{name:"William Gomis",        record:"10-2",    ranking:""} },
-      { label:"Early Prelim",  weightClass:"Middleweight",    titleFight:false, fighter1:{name:"Baisangur Susurkaev", record:"12-0",    ranking:""},    fighter2:{name:"Djorden Santos",       record:"9-2",     ranking:""} },
-      { label:"Early Prelim",  weightClass:"Flyweight",       titleFight:false, fighter1:{name:"Clayton Carpenter",   record:"8-3",     ranking:""},    fighter2:{name:"Jose Ochoa",           record:"7-1",     ranking:""} }
+      { label:"Main Event",    weightClass:"Middleweight",    titleFight:true,  odds:{f1:-575,f2:425},  fighter1:{name:"Khamzat Chimaev",       record:"15-0",    ranking:"C",   stats:{slpm:"4.5",stracc:"55%",tdavg:"3.4",tddefs:"90%",kos:8,subs:3}}, fighter2:{name:"Sean Strickland",      record:"30-7",    ranking:"#3",  stats:{slpm:"5.2",stracc:"46%",tdavg:"0.4",tddefs:"81%",kos:4,subs:2}} },
+      { label:"Co-Main Event", weightClass:"Flyweight",       titleFight:true,  odds:{f1:-145,f2:120},  fighter1:{name:"Joshua Van",           record:"12-0",    ranking:"C",   stats:{slpm:"3.1",stracc:"49%",tdavg:"2.8",tddefs:"88%",kos:3,subs:5}}, fighter2:{name:"Tatsuro Taira",        record:"16-1",    ranking:"#3",  stats:{slpm:"2.9",stracc:"51%",tdavg:"3.2",tddefs:"79%",kos:2,subs:7}} },
+      { label:"Main Card",     weightClass:"Heavyweight",     titleFight:false, odds:{f1:-142,f2:118},  fighter1:{name:"Alexander Volkov",     record:"38-10",   ranking:"#2",  stats:{slpm:"3.8",stracc:"42%",tdavg:"0.3",tddefs:"93%",kos:19,subs:1}}, fighter2:{name:"Waldo Cortes-Acosta",  record:"13-2",    ranking:"#4",  stats:{slpm:"4.1",stracc:"48%",tdavg:"1.8",tddefs:"72%",kos:10,subs:0}} },
+      { label:"Main Card",     weightClass:"Welterweight",    titleFight:false, odds:{f1:-170,f2:140},  fighter1:{name:"Sean Brady",           record:"17-1",    ranking:"#6",  stats:{slpm:"3.2",stracc:"47%",tdavg:"3.5",tddefs:"77%",kos:3,subs:5}}, fighter2:{name:"Joaquin Buckley",      record:"22-5",    ranking:"#9",  stats:{slpm:"5.6",stracc:"51%",tdavg:"0.5",tddefs:"64%",kos:15,subs:1}} },
+      { label:"Main Card",     weightClass:"Lightweight",     titleFight:false, odds:{f1:-320,f2:260},  fighter1:{name:"King Green",           record:"34-17-1", ranking:"",    stats:{slpm:"5.4",stracc:"44%",tdavg:"0.3",tddefs:"80%",kos:11,subs:2}}, fighter2:{name:"Jeremy Stephens",      record:"29-22-1", ranking:"",    stats:{slpm:"4.7",stracc:"39%",tdavg:"0.6",tddefs:"65%",kos:17,subs:1}} },
+      { label:"Prelim",        weightClass:"Middleweight",    titleFight:false, odds:null, fighter1:{name:"Ateba Gautier",        record:"11-1",    ranking:"",    stats:null}, fighter2:{name:"Ozzy Diaz",            record:"9-2",     ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Welterweight",    titleFight:false, odds:null, fighter1:{name:"Joel Alvarez",         record:"25-4",    ranking:"",    stats:null}, fighter2:{name:"Yaroslav Amosov",      record:"28-0",    ranking:"#14", stats:null} },
+      { label:"Prelim",        weightClass:"Lightweight",     titleFight:false, odds:null, fighter1:{name:"Grant Dawson",         record:"21-2-1",  ranking:"",    stats:null}, fighter2:{name:"Mateusz Rebecki",      record:"18-4",    ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Lightweight",     titleFight:false, odds:null, fighter1:{name:"Jim Miller",           record:"37-17-1", ranking:"",    stats:null}, fighter2:{name:"Jared Gordon",         record:"19-7",    ranking:"",    stats:null} },
+      { label:"Early Prelim",  weightClass:"Middleweight",    titleFight:false, odds:null, fighter1:{name:"Roman Kopylov",        record:"12-3",    ranking:"",    stats:null}, fighter2:{name:"Marco Tulio",          record:"9-1",     ranking:"",    stats:null} },
+      { label:"Early Prelim",  weightClass:"Featherweight",   titleFight:false, odds:null, fighter1:{name:"Pat Sabatini",         record:"18-3",    ranking:"",    stats:null}, fighter2:{name:"William Gomis",        record:"10-2",    ranking:"",    stats:null} },
+      { label:"Early Prelim",  weightClass:"Middleweight",    titleFight:false, odds:null, fighter1:{name:"Baisangur Susurkaev", record:"12-0",    ranking:"",    stats:null}, fighter2:{name:"Djorden Santos",       record:"9-2",     ranking:"",    stats:null} },
+      { label:"Early Prelim",  weightClass:"Flyweight",       titleFight:false, odds:null, fighter1:{name:"Clayton Carpenter",   record:"8-3",     ranking:"",    stats:null}, fighter2:{name:"Jose Ochoa",           record:"7-1",     ranking:"",    stats:null} }
     ]
   },
   {
@@ -127,19 +326,19 @@ var EVENTS = [
     broadcast: "Paramount+",
     mainCardTime: "8:00 PM ET",
     fights: [
-      { label:"Main Event",    weightClass:"Featherweight",        titleFight:false, fighter1:{name:"Arnold Allen",         record:"20-4",    ranking:""},    fighter2:{name:"Melquizael Costa",     record:"26-7",    ranking:"#12"} },
-      { label:"Co-Main Event", weightClass:"Featherweight",        titleFight:false, fighter1:{name:"Doo Ho Choi",          record:"16-4-1",  ranking:""},    fighter2:{name:"Daniel Santos",        record:"12-2",    ranking:""} },
-      { label:"Main Card",     weightClass:"Light Heavyweight",    titleFight:false, fighter1:{name:"Modestas Bukauskas",   record:"14-5",    ranking:""},    fighter2:{name:"Rodolfo Bellato",      record:"13-3",    ranking:""} },
-      { label:"Main Card",     weightClass:"Bantamweight",         titleFight:false, fighter1:{name:"Malcolm Wellmaker",    record:"11-0",    ranking:""},    fighter2:{name:"Juan Diaz",            record:"9-1",     ranking:""} },
-      { label:"Main Card",     weightClass:"Bantamweight",         titleFight:false, fighter1:{name:"Timothy Cuamba",       record:"9-1",     ranking:""},    fighter2:{name:"Bernardo Sopaj",       record:"9-0",     ranking:""} },
-      { label:"Prelim",        weightClass:"Welterweight",         titleFight:false, fighter1:{name:"Khaos Williams",       record:"14-3",    ranking:""},    fighter2:{name:"Nikolay Veretennikov", record:"19-3",    ranking:""} },
-      { label:"Prelim",        weightClass:"Welterweight",         titleFight:false, fighter1:{name:"Jeremiah Wells",       record:"13-3-1",  ranking:""},    fighter2:{name:"TBD",                 record:"",        ranking:""} },
-      { label:"Prelim",        weightClass:"Light Heavyweight",    titleFight:false, fighter1:{name:"Tuco Tokkos",          record:"10-1",    ranking:""},    fighter2:{name:"Ivan Erslan",          record:"9-2",     ranking:""} },
-      { label:"Prelim",        weightClass:"Women's Bantamweight", titleFight:false, fighter1:{name:"Ketlen Vieira",        record:"13-4-1",  ranking:""},    fighter2:{name:"Jacqueline Cavalcanti",record:"11-2",    ranking:""} },
-      { label:"Prelim",        weightClass:"Middleweight",         titleFight:false, fighter1:{name:"Andre Petroski",       record:"12-4",    ranking:""},    fighter2:{name:"Cody Brundage",        record:"13-6",    ranking:""} },
-      { label:"Prelim",        weightClass:"Women's Strawweight",  titleFight:false, fighter1:{name:"Alice Ardelean",       record:"8-1",     ranking:""},    fighter2:{name:"Polyana Viana",        record:"14-7",    ranking:""} },
-      { label:"Prelim",        weightClass:"Flyweight",            titleFight:false, fighter1:{name:"Daniel Barez",         record:"10-3",    ranking:""},    fighter2:{name:"Luis Gurule",          record:"9-2",     ranking:""} },
-      { label:"Prelim",        weightClass:"Women's Strawweight",  titleFight:false, fighter1:{name:"Shauna Bannon",        record:"8-2",     ranking:""},    fighter2:{name:"Nicolle Caliari",      record:"7-3",     ranking:""} }
+      { label:"Main Event",    weightClass:"Featherweight",        titleFight:false, odds:{f1:110,f2:-132},  fighter1:{name:"Arnold Allen",         record:"20-4",    ranking:"",    stats:{slpm:"2.8",stracc:"47%",tdavg:"1.7",tddefs:"82%",kos:4,subs:8}}, fighter2:{name:"Melquizael Costa",     record:"26-7",    ranking:"#12", stats:{slpm:"4.4",stracc:"60%",tdavg:"2.0",tddefs:"78%",kos:10,subs:7}} },
+      { label:"Co-Main Event", weightClass:"Featherweight",        titleFight:false, odds:{f1:-175,f2:145},  fighter1:{name:"Doo Ho Choi",          record:"16-4-1",  ranking:"",    stats:{slpm:"5.9",stracc:"45%",tdavg:"0.2",tddefs:"70%",kos:9,subs:1}}, fighter2:{name:"Daniel Santos",        record:"12-2",    ranking:"",    stats:{slpm:"4.3",stracc:"52%",tdavg:"1.5",tddefs:"74%",kos:6,subs:3}} },
+      { label:"Main Card",     weightClass:"Light Heavyweight",    titleFight:false, odds:null, fighter1:{name:"Modestas Bukauskas",   record:"14-5",    ranking:"",    stats:null}, fighter2:{name:"Rodolfo Bellato",      record:"13-3",    ranking:"",    stats:null} },
+      { label:"Main Card",     weightClass:"Bantamweight",         titleFight:false, odds:null, fighter1:{name:"Malcolm Wellmaker",    record:"11-0",    ranking:"",    stats:null}, fighter2:{name:"Juan Diaz",            record:"9-1",     ranking:"",    stats:null} },
+      { label:"Main Card",     weightClass:"Bantamweight",         titleFight:false, odds:null, fighter1:{name:"Timothy Cuamba",       record:"9-1",     ranking:"",    stats:null}, fighter2:{name:"Bernardo Sopaj",       record:"9-0",     ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Welterweight",         titleFight:false, odds:null, fighter1:{name:"Khaos Williams",       record:"14-3",    ranking:"",    stats:null}, fighter2:{name:"Nikolay Veretennikov", record:"19-3",    ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Welterweight",         titleFight:false, odds:null, fighter1:{name:"Jeremiah Wells",       record:"13-3-1",  ranking:"",    stats:null}, fighter2:{name:"TBD",                 record:"",        ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Light Heavyweight",    titleFight:false, odds:null, fighter1:{name:"Tuco Tokkos",          record:"10-1",    ranking:"",    stats:null}, fighter2:{name:"Ivan Erslan",          record:"9-2",     ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Women's Bantamweight", titleFight:false, odds:null, fighter1:{name:"Ketlen Vieira",        record:"13-4-1",  ranking:"",    stats:null}, fighter2:{name:"Jacqueline Cavalcanti",record:"11-2",    ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Middleweight",         titleFight:false, odds:null, fighter1:{name:"Andre Petroski",       record:"12-4",    ranking:"",    stats:null}, fighter2:{name:"Cody Brundage",        record:"13-6",    ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Women's Strawweight",  titleFight:false, odds:null, fighter1:{name:"Alice Ardelean",       record:"8-1",     ranking:"",    stats:null}, fighter2:{name:"Polyana Viana",        record:"14-7",    ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Flyweight",            titleFight:false, odds:null, fighter1:{name:"Daniel Barez",         record:"10-3",    ranking:"",    stats:null}, fighter2:{name:"Luis Gurule",          record:"9-2",     ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Women's Strawweight",  titleFight:false, odds:null, fighter1:{name:"Shauna Bannon",        record:"8-2",     ranking:"",    stats:null}, fighter2:{name:"Nicolle Caliari",      record:"7-3",     ranking:"",    stats:null} }
     ]
   },
   {
@@ -150,16 +349,16 @@ var EVENTS = [
     broadcast: "Paramount+",
     mainCardTime: "7:00 AM ET",
     fights: [
-      { label:"Main Event",    weightClass:"Bantamweight",         titleFight:false, fighter1:{name:"Song Yadong",          record:"22-9-1",  ranking:""},    fighter2:{name:"Deiveson Figueiredo", record:"25-6-1",  ranking:""} },
-      { label:"Co-Main Event", weightClass:"Light Heavyweight",    titleFight:false, fighter1:{name:"Mingyang Zhang",       record:"10-2",    ranking:""},    fighter2:{name:"Alonzo Menifield",    record:"15-5",    ranking:""} },
-      { label:"Main Card",     weightClass:"Heavyweight",          titleFight:false, fighter1:{name:"Sergei Pavlovich",     record:"18-3",    ranking:""},    fighter2:{name:"Tallison Teixeira",   record:"10-1",    ranking:""} },
-      { label:"Main Card",     weightClass:"Flyweight",            titleFight:false, fighter1:{name:"Alex Perez",           record:"12-5",    ranking:""},    fighter2:{name:"Sumudaerji",          record:"18-4",    ranking:""} },
-      { label:"Main Card",     weightClass:"Bantamweight",         titleFight:false, fighter1:{name:"Kai Asakura",          record:"22-6",    ranking:""},    fighter2:{name:"Cameron Smotherman",  record:"10-2",    ranking:""} },
-      { label:"Prelim",        weightClass:"Women's Strawweight",  titleFight:false, fighter1:{name:"Angela Hill",          record:"17-13",   ranking:""},    fighter2:{name:"Jingnan Xiong",       record:"19-2",    ranking:""} },
-      { label:"Prelim",        weightClass:"Middleweight",         titleFight:false, fighter1:{name:"Luis Dias",            record:"9-2",     ranking:""},    fighter2:{name:"Yi Sak Lee",          record:"8-1",     ranking:""} },
-      { label:"Prelim",        weightClass:"Flyweight",            titleFight:false, fighter1:{name:"Rei Tsuruya",          record:"9-1",     ranking:""},    fighter2:{name:"Jesus Aguilar",       record:"11-4",    ranking:""} },
-      { label:"Prelim",        weightClass:"Women's Strawweight",  titleFight:false, fighter1:{name:"Loma Lookboonmee",    record:"9-6",     ranking:""},    fighter2:{name:"Jaqueline Amorim",    record:"8-2",     ranking:""} },
-      { label:"Prelim",        weightClass:"Bantamweight",         titleFight:false, fighter1:{name:"Aoriqileng",           record:"19-10",   ranking:""},    fighter2:{name:"Cody Haddon",         record:"9-2",     ranking:""} }
+      { label:"Main Event",    weightClass:"Bantamweight",         titleFight:false, odds:{f1:-165,f2:138},  fighter1:{name:"Song Yadong",          record:"22-9-1",  ranking:"",    stats:{slpm:"4.4",stracc:"50%",tdavg:"0.8",tddefs:"83%",kos:6,subs:1}}, fighter2:{name:"Deiveson Figueiredo", record:"25-6-1",  ranking:"",    stats:{slpm:"3.7",stracc:"47%",tdavg:"2.3",tddefs:"76%",kos:8,subs:9}} },
+      { label:"Co-Main Event", weightClass:"Light Heavyweight",    titleFight:false, odds:null, fighter1:{name:"Mingyang Zhang",       record:"10-2",    ranking:"",    stats:null}, fighter2:{name:"Alonzo Menifield",    record:"15-5",    ranking:"",    stats:null} },
+      { label:"Main Card",     weightClass:"Heavyweight",          titleFight:false, odds:null, fighter1:{name:"Sergei Pavlovich",     record:"18-3",    ranking:"",    stats:null}, fighter2:{name:"Tallison Teixeira",   record:"10-1",    ranking:"",    stats:null} },
+      { label:"Main Card",     weightClass:"Flyweight",            titleFight:false, odds:null, fighter1:{name:"Alex Perez",           record:"12-5",    ranking:"",    stats:null}, fighter2:{name:"Sumudaerji",          record:"18-4",    ranking:"",    stats:null} },
+      { label:"Main Card",     weightClass:"Bantamweight",         titleFight:false, odds:null, fighter1:{name:"Kai Asakura",          record:"22-6",    ranking:"",    stats:null}, fighter2:{name:"Cameron Smotherman",  record:"10-2",    ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Women's Strawweight",  titleFight:false, odds:null, fighter1:{name:"Angela Hill",          record:"17-13",   ranking:"",    stats:null}, fighter2:{name:"Jingnan Xiong",       record:"19-2",    ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Middleweight",         titleFight:false, odds:null, fighter1:{name:"Luis Dias",            record:"9-2",     ranking:"",    stats:null}, fighter2:{name:"Yi Sak Lee",          record:"8-1",     ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Flyweight",            titleFight:false, odds:null, fighter1:{name:"Rei Tsuruya",          record:"9-1",     ranking:"",    stats:null}, fighter2:{name:"Jesus Aguilar",       record:"11-4",    ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Women's Strawweight",  titleFight:false, odds:null, fighter1:{name:"Loma Lookboonmee",    record:"9-6",     ranking:"",    stats:null}, fighter2:{name:"Jaqueline Amorim",    record:"8-2",     ranking:"",    stats:null} },
+      { label:"Prelim",        weightClass:"Bantamweight",         titleFight:false, odds:null, fighter1:{name:"Aoriqileng",           record:"19-10",   ranking:"",    stats:null}, fighter2:{name:"Cody Haddon",         record:"9-2",     ranking:"",    stats:null} }
     ]
   },
   {
@@ -170,21 +369,254 @@ var EVENTS = [
     broadcast: "Paramount+ / CBS",
     mainCardTime: "8:00 PM ET",
     fights: [
-      { label:"Main Event",    weightClass:"Lightweight",    titleFight:true,  fighter1:{name:"Ilia Topuria",      record:"17-0",    ranking:"C"},   fighter2:{name:"Justin Gaethje",    record:"27-5",    ranking:"#1"} },
-      { label:"Co-Main Event", weightClass:"Heavyweight",    titleFight:true,  fighter1:{name:"Alex Pereira",     record:"10-2",    ranking:"#2"},  fighter2:{name:"Ciryl Gane",        record:"13-4",    ranking:"#1"} },
-      { label:"Main Card",     weightClass:"Bantamweight",   titleFight:false, fighter1:{name:"Sean O'Malley",    record:"19-3",    ranking:"#2"},  fighter2:{name:"Aiemann Zahabi",    record:"14-2",    ranking:"#6"} },
-      { label:"Main Card",     weightClass:"Heavyweight",    titleFight:false, fighter1:{name:"Josh Hokit",       record:"9-0",     ranking:"#5"},  fighter2:{name:"Derrick Lewis",     record:"29-13",   ranking:"#9"} },
-      { label:"Main Card",     weightClass:"Lightweight",    titleFight:false, fighter1:{name:"Mauricio Ruffy",   record:"13-2",    ranking:"#10"}, fighter2:{name:"Michael Chandler",  record:"23-10",   ranking:"#13"} },
-      { label:"Main Card",     weightClass:"Middleweight",   titleFight:false, fighter1:{name:"Bo Nickal",        record:"8-1",     ranking:""},    fighter2:{name:"Kyle Daukaus",      record:"17-4",    ranking:""} },
-      { label:"Main Card",     weightClass:"Featherweight",  titleFight:false, fighter1:{name:"Diego Lopes",      record:"27-8",    ranking:"#2"},  fighter2:{name:"Steve Garcia",      record:"19-5",    ranking:"#9"} }
+      { label:"Main Event",    weightClass:"Lightweight",    titleFight:true,  odds:{f1:-400,f2:310},  fighter1:{name:"Ilia Topuria",      record:"17-0",    ranking:"C",   stats:{slpm:"4.7",stracc:"58%",tdavg:"1.2",tddefs:"94%",kos:10,subs:4}}, fighter2:{name:"Justin Gaethje",    record:"27-5",    ranking:"#1",  stats:{slpm:"5.9",stracc:"43%",tdavg:"0.4",tddefs:"76%",kos:14,subs:1}} },
+      { label:"Co-Main Event", weightClass:"Heavyweight",    titleFight:true,  odds:{f1:-115,f2:-105}, fighter1:{name:"Alex Pereira",     record:"10-2",    ranking:"#2",  stats:{slpm:"5.1",stracc:"54%",tdavg:"0.3",tddefs:"88%",kos:7,subs:0}}, fighter2:{name:"Ciryl Gane",        record:"13-4",    ranking:"#1",  stats:{slpm:"3.8",stracc:"55%",tdavg:"0.4",tddefs:"93%",kos:7,subs:0}} },
+      { label:"Main Card",     weightClass:"Bantamweight",   titleFight:false, odds:{f1:-425,f2:290},  fighter1:{name:"Sean O'Malley",    record:"19-3",    ranking:"#2",  stats:{slpm:"5.4",stracc:"48%",tdavg:"0.2",tddefs:"80%",kos:8,subs:1}}, fighter2:{name:"Aiemann Zahabi",    record:"14-2",    ranking:"#6",  stats:{slpm:"3.2",stracc:"46%",tdavg:"0.8",tddefs:"79%",kos:5,subs:4}} },
+      { label:"Main Card",     weightClass:"Heavyweight",    titleFight:false, odds:{f1:-275,f2:220},  fighter1:{name:"Josh Hokit",       record:"9-0",     ranking:"#5",  stats:{slpm:"4.8",stracc:"52%",tdavg:"2.1",tddefs:"85%",kos:5,subs:2}}, fighter2:{name:"Derrick Lewis",     record:"29-13",   ranking:"#9",  stats:{slpm:"3.9",stracc:"40%",tdavg:"0.2",tddefs:"88%",kos:25,subs:0}} },
+      { label:"Main Card",     weightClass:"Lightweight",    titleFight:false, odds:{f1:-700,f2:500},  fighter1:{name:"Mauricio Ruffy",   record:"13-2",    ranking:"#10", stats:{slpm:"6.1",stracc:"53%",tdavg:"0.6",tddefs:"88%",kos:5,subs:5}}, fighter2:{name:"Michael Chandler",  record:"23-10",   ranking:"#13", stats:{slpm:"5.5",stracc:"42%",tdavg:"2.5",tddefs:"71%",kos:10,subs:3}} },
+      { label:"Main Card",     weightClass:"Middleweight",   titleFight:false, odds:{f1:-340,f2:270},  fighter1:{name:"Bo Nickal",        record:"8-1",     ranking:"",    stats:{slpm:"3.3",stracc:"48%",tdavg:"5.8",tddefs:"88%",kos:2,subs:4}}, fighter2:{name:"Kyle Daukaus",      record:"17-4",    ranking:"",    stats:{slpm:"3.1",stracc:"44%",tdavg:"0.9",tddefs:"72%",kos:5,subs:7}} },
+      { label:"Main Card",     weightClass:"Featherweight",  titleFight:false, odds:{f1:-200,f2:165},  fighter1:{name:"Diego Lopes",      record:"27-8",    ranking:"#2",  stats:{slpm:"4.6",stracc:"50%",tdavg:"0.9",tddefs:"78%",kos:9,subs:9}}, fighter2:{name:"Steve Garcia",      record:"19-5",    ranking:"#9",  stats:{slpm:"3.7",stracc:"45%",tdavg:"0.5",tddefs:"69%",kos:6,subs:2}} }
     ]
   }
 ];
 
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+var currentFilter = 'all';
+var userName = localStorage.getItem('ufc_name') || '';
+var predictions = JSON.parse(localStorage.getItem('ufc_preds') || '{}');
+var results = JSON.parse(localStorage.getItem('ufc_results') || '{}');
+var fnFights = [];
+var fnIdx = 0;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
 function daysOut(d) { return Math.ceil((new Date(d) - Date.now()) / 864e5); }
 function fmtDate(d) { return new Date(d).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}); }
+function predKey(evIdx, fightIdx) { return 'e'+evIdx+'f'+fightIdx; }
 
-function fighterHTML(f, right, size) {
+function saveState() {
+  localStorage.setItem('ufc_preds', JSON.stringify(predictions));
+  localStorage.setItem('ufc_results', JSON.stringify(results));
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+function fmtOdds(n) {
+  return n > 0 ? '+' + n : '' + n;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COUNTDOWN
+// ─────────────────────────────────────────────────────────────────────────────
+function updateCountdown() {
+  var now = Date.now();
+  var upcoming = EVENTS.filter(function(e){ return new Date(e.date) >= now - 864e5; });
+  if (!upcoming.length) return;
+  var next = upcoming[0];
+  var target = new Date(next.date + 'T' + (next.mainCardTime || '21:00').replace(' ET','').replace(' PM',':00').replace(' AM',':00')).getTime();
+  var diff = target - now;
+  var wrap = document.getElementById('countdown-wrap');
+  wrap.style.display = 'block';
+  document.getElementById('cd-event').textContent = next.name;
+
+  if (diff <= 0) {
+    document.getElementById('cd-timer').innerHTML = '<span class="tonight-badge">MAIN CARD LIVE NOW</span>';
+    return;
+  }
+
+  var days  = Math.floor(diff / 864e5);
+  var hours = Math.floor((diff % 864e5) / 36e5);
+  var mins  = Math.floor((diff % 36e5) / 6e4);
+  var secs  = Math.floor((diff % 6e4) / 1e3);
+
+  var html = '';
+  if (days > 0) {
+    html += '<div class="cd-unit"><div class="cd-num">'+days+'</div><div class="cd-lbl">Days</div></div>';
+    html += '<div class="cd-sep">:</div>';
+  }
+  html += '<div class="cd-unit"><div class="cd-num">'+String(hours).padStart(2,'0')+'</div><div class="cd-lbl">Hrs</div></div>';
+  html += '<div class="cd-sep">:</div>';
+  html += '<div class="cd-unit"><div class="cd-num">'+String(mins).padStart(2,'0')+'</div><div class="cd-lbl">Min</div></div>';
+  html += '<div class="cd-sep">:</div>';
+  html += '<div class="cd-unit"><div class="cd-num">'+String(secs).padStart(2,'0')+'</div><div class="cd-lbl">Sec</div></div>';
+  document.getElementById('cd-timer').innerHTML = html;
+}
+setInterval(updateCountdown, 1000);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FILTER
+// ─────────────────────────────────────────────────────────────────────────────
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  btn.classList.add('active');
+  render();
+}
+
+function eventMatchesFilter(ev) {
+  if (currentFilter === 'all') return true;
+  return ev.fights.some(function(f){ return f.weightClass === currentFilter; });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FIGHTER STATS MODAL
+// ─────────────────────────────────────────────────────────────────────────────
+function openStats(name, record, ranking, stats) {
+  if (!stats) { showToast('Detailed stats not available for this fighter'); return; }
+  document.getElementById('mName').textContent = name;
+  document.getElementById('mSub').textContent = record + (ranking ? ' · ' + ranking : '');
+
+  var grid = document.getElementById('mGrid');
+  grid.innerHTML =
+    '<div class="modal-stat"><div class="modal-stat-val">'+stats.kos+'</div><div class="modal-stat-lbl">KO/TKO Wins</div></div>' +
+    '<div class="modal-stat"><div class="modal-stat-val">'+stats.subs+'</div><div class="modal-stat-lbl">Sub Wins</div></div>' +
+    '<div class="modal-stat"><div class="modal-stat-val">'+stats.slpm+'</div><div class="modal-stat-lbl">Sig Str / Min</div></div>' +
+    '<div class="modal-stat"><div class="modal-stat-val">'+stats.tdavg+'</div><div class="modal-stat-lbl">TD Avg</div></div>';
+
+  var bars = document.getElementById('mBars');
+  var acc = parseFloat(stats.stracc);
+  var tdd = parseFloat(stats.tddefs);
+  bars.innerHTML =
+    '<div class="modal-bar-wrap"><div class="modal-bar-lbl"><span>Striking accuracy</span><span>'+stats.stracc+'</span></div><div class="modal-bar"><div class="modal-bar-fill" style="width:'+acc+'%"></div></div></div>' +
+    '<div class="modal-bar-wrap" style="margin-top:8px"><div class="modal-bar-lbl"><span>Takedown defense</span><span>'+stats.tddefs+'</span></div><div class="modal-bar"><div class="modal-bar-fill" style="width:'+tdd+'%"></div></div></div>';
+
+  document.getElementById('statsModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('statsModal').classList.remove('open');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PREDICTOR
+// ─────────────────────────────────────────────────────────────────────────────
+function checkName(callback) {
+  if (userName) { callback(); return; }
+  document.getElementById('nameModalBg').classList.add('open');
+  document.getElementById('nameInput').focus();
+  window._pendingPred = callback;
+}
+
+function saveName() {
+  var val = document.getElementById('nameInput').value.trim();
+  if (!val) return;
+  userName = val;
+  localStorage.setItem('ufc_name', userName);
+  document.getElementById('nameModalBg').classList.remove('open');
+  if (window._pendingPred) { window._pendingPred(); window._pendingPred = null; }
+}
+
+function predict(evIdx, fightIdx, pick, btn) {
+  checkName(function() {
+    var key = predKey(evIdx, fightIdx);
+    predictions[key] = pick;
+    saveState();
+    render();
+    showToast('Pick saved: ' + pick);
+  });
+}
+
+function calcScore() {
+  var correct = 0, total = 0;
+  Object.keys(predictions).forEach(function(k) {
+    if (results[k]) {
+      total++;
+      if (predictions[k] === results[k]) correct++;
+    }
+  });
+  return { correct: correct, total: total };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FIGHT NIGHT MODE
+// ─────────────────────────────────────────────────────────────────────────────
+function openFNMode() {
+  var now = Date.now();
+  var upcoming = EVENTS.filter(function(e){ return new Date(e.date) >= now - 864e5; });
+  if (!upcoming.length) { showToast('No upcoming events'); return; }
+  fnFights = [];
+  upcoming[0].fights.forEach(function(f, i) {
+    fnFights.push({ fight: f, evName: upcoming[0].name });
+  });
+  fnIdx = 0;
+  updateFNMode();
+  document.getElementById('fnMode').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeFNMode() {
+  document.getElementById('fnMode').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function fnNav(dir) {
+  fnIdx = Math.max(0, Math.min(fnFights.length - 1, fnIdx + dir));
+  updateFNMode();
+}
+
+function updateFNMode() {
+  if (!fnFights.length) return;
+  var item = fnFights[fnIdx];
+  var f = item.fight;
+  document.getElementById('fn-event').textContent = item.evName;
+  document.getElementById('fn-wc').textContent = f.label + ' · ' + f.weightClass + (f.titleFight ? ' · TITLE FIGHT' : '');
+  document.getElementById('fn-f1').textContent = f.fighter1.name;
+  document.getElementById('fn-r1').textContent = f.fighter1.record;
+  document.getElementById('fn-f2').textContent = f.fighter2.name;
+  document.getElementById('fn-r2').textContent = f.fighter2.record;
+  document.getElementById('fn-counter').textContent = (fnIdx + 1) + ' of ' + fnFights.length + ' fights';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LEADERBOARD (shared via localStorage key visible to same device/browser)
+// ─────────────────────────────────────────────────────────────────────────────
+function renderLeaderboard() {
+  // Build leaderboard from all stored players on this device
+  // In a shared deployment, each user's picks are stored locally
+  // This shows the current user's stats + placeholder for friends
+  var score = calcScore();
+  var lbEl = document.getElementById('leaderboard');
+
+  if (!userName) { lbEl.innerHTML = ''; return; }
+
+  var html = '<div class="sec-lbl" style="margin-top:8px">Predictor</div>';
+  html += '<div class="lb-wrap">';
+  html += '<div class="lb-hdr"><span class="lb-title">Your Record</span>';
+  html += '<span style="font-size:11px;color:var(--muted)">' + Object.keys(predictions).length + ' picks made</span></div>';
+
+  if (score.total > 0) {
+    html += '<div class="lb-row">';
+    html += '<div class="lb-rank gold">1</div>';
+    html += '<div class="lb-name">' + userName + ' <span style="font-size:10px;color:var(--muted)">(you)</span></div>';
+    html += '<div><div class="lb-score">' + score.correct + '/' + score.total + '</div><div class="lb-detail">' + Math.round(score.correct/score.total*100) + '% correct</div></div>';
+    html += '</div>';
+  } else {
+    html += '<div style="padding:14px 13px;font-size:12px;color:var(--muted)">Make your first pick below to track your accuracy.</div>';
+  }
+
+  html += '</div>';
+  lbEl.innerHTML = html;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+var calSVG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
+var pinSVG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+var tvSVG   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>';
+var clkSVG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+var chevSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>';
+var infoSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+
+function fighterHTML(f, right, size, evIdx, fightIdx) {
   if (!f) return '<div class="ft"></div>';
   var r = right ? 'r' : '';
   var sz = size === 'sm' ? 'sm' : size === 'xs' ? 'xs' : '';
@@ -192,12 +624,84 @@ function fighterHTML(f, right, size) {
   var rank = (!champ && f.ranking) ? f.ranking : null;
   var pill = champ
     ? '<div class="fpills"><span class="pchamp">CHAMP</span></div>'
-    : (rank ? '<div class="fpills"><span class="prank">' + rank + '</span></div>' : '');
-  return '<div class="ft ' + r + '">'
-    + '<div class="fn ' + sz + '">' + (f.name || 'TBD') + '</div>'
-    + (f.record ? '<div class="frec">' + f.record + '</div>' : '')
+    : (rank ? '<div class="fpills"><span class="prank">'+rank+'</span></div>' : '');
+
+  var statsAttr = '';
+  if (f.stats && evIdx !== undefined) {
+    var s = JSON.stringify(f.stats).replace(/"/g,'&quot;');
+    statsAttr = ' onclick="openStats(\''+f.name.replace(/'/g,"\\'")+'\',' +
+      '\''+f.record+'\',' +
+      '\''+f.ranking+'\',' +
+      '\''+s.replace(/'/g,"\\'")+'\')"';
+    statsAttr = ' data-fn="openStats" data-name="'+f.name+'" data-rec="'+f.record+'" data-rank="'+f.ranking+'"';
+    // Use simpler approach via onclick with index
+  }
+
+  var clickable = (f.stats) ? ' style="cursor:pointer" title="Tap for stats"' : '';
+  var infoBtn = (f.stats && size !== 'xs') ? '<div style="font-size:9px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:2px;'+(right?'justify-content:flex-end':'')+'">'+(right?'stats ':'')+'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'+(right?'':' stats')+'</div>' : '';
+
+  var encoded = encodeURIComponent(JSON.stringify(f.stats || null));
+
+  return '<div class="ft '+r+'"'+clickable+' onclick="handleFighterClick(\''+encodeURIComponent(f.name)+'\',\''+f.record+'\',\''+f.ranking+'\',\''+encoded+'\')">'
+    + '<div class="fn '+sz+'">'+f.name+'</div>'
+    + (f.record ? '<div class="frec">'+f.record+'</div>' : '')
     + pill
+    + infoBtn
     + '</div>';
+}
+
+function handleFighterClick(nameEnc, record, ranking, statsEnc) {
+  var name = decodeURIComponent(nameEnc);
+  var stats = null;
+  try { stats = JSON.parse(decodeURIComponent(statsEnc)); } catch(e){}
+  openStats(name, record, ranking, stats);
+}
+
+function renderFight(f, evIdx, fightIdx, isMain, isCo) {
+  var key = predKey(evIdx, fightIdx);
+  var myPick = predictions[key] || '';
+  var result = results[key] || '';
+
+  var labelClass = isMain ? 'main' : isCo ? 'co' : 'pre';
+  var lbl = f.label + (f.weightClass ? ' · ' + f.weightClass : '') + (f.titleFight ? ' · Title' : '');
+
+  var oddsHTML = '';
+  if (f.odds) {
+    var o1 = f.odds.f1, o2 = f.odds.f2;
+    var fav1 = o1 < 0;
+    oddsHTML = '<div class="odds-row">'
+      + '<span class="odds-val'+(fav1?' fav':' dog')+'">'+(fav1?'Fav ':'Dog ')+fmtOdds(o1)+'</span>'
+      + '<span style="font-size:9px;color:var(--muted)">ODDS</span>'
+      + '<span class="odds-val'+(!fav1?' fav':' dog')+'">'+(fav1?'Dog ':'Fav ')+fmtOdds(o2)+'</span>'
+      + '</div>';
+  }
+
+  var sz = isMain ? 'lg' : isCo ? 'sm' : 'xs';
+
+  var html = '<div class="fight">'
+    + '<div class="flbl '+labelClass+'">'+lbl+'</div>'
+    + '<div class="mu">'
+    + fighterHTML(f.fighter1, false, sz, evIdx, fightIdx)
+    + '<div class="vc"><span class="vs">VS</span>'+(isMain?'<span class="wc-lbl">'+f.weightClass+'</span>':'')+'</div>'
+    + fighterHTML(f.fighter2, true, sz, evIdx, fightIdx)
+    + '</div>'
+    + oddsHTML
+    + '</div>';
+
+  // Predict row for main card fights
+  if (isMain || isCo || f.label === 'Main Card') {
+    var n1 = f.fighter1.name.split(' ').pop();
+    var n2 = f.fighter2.name.split(' ').pop();
+    var btn1cls = 'pred-btn' + (myPick===f.fighter1.name?' selected':'') + (result&&result===f.fighter1.name?' correct':'') + (result&&result!==f.fighter1.name&&myPick===f.fighter1.name?' wrong':'');
+    var btn2cls = 'pred-btn' + (myPick===f.fighter2.name?' selected':'') + (result&&result===f.fighter2.name?' correct':'') + (result&&result!==f.fighter2.name&&myPick===f.fighter2.name?' wrong':'');
+    html += '<div class="predict-row">'
+      + '<span style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;align-self:center">Pick:</span>'
+      + '<button class="'+btn1cls+'" onclick="predict('+evIdx+','+fightIdx+',\''+f.fighter1.name.replace(/'/g,"\\'")+'\')" >'+n1+'</button>'
+      + '<button class="'+btn2cls+'" onclick="predict('+evIdx+','+fightIdx+',\''+f.fighter2.name.replace(/'/g,"\\'")+'\')" >'+n2+'</button>'
+      + '</div>';
+  }
+
+  return html;
 }
 
 function tp(id, btn) {
@@ -205,102 +709,98 @@ function tp(id, btn) {
   btn.classList.toggle('open');
 }
 
-var calSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
-var pinSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
-var tvSVG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>';
-var clkSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
-var chevSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>';
-
-function renderEvent(ev, idx) {
-  var isFeat  = idx === 0;
-  var du      = daysOut(ev.date);
-  var duLabel = du === 0 ? 'Tonight' : du === 1 ? 'Tomorrow' : du > 0 ? 'In ' + du + ' days' : 'Completed';
+function renderEvent(ev, evIdx, isFeat) {
+  var du = daysOut(ev.date);
+  var duLabel = du === 0 ? 'Tonight' : du === 1 ? 'Tomorrow' : du > 0 ? 'In '+du+' days' : 'Completed';
   var titleCount = ev.fights.filter(function(f){ return f.titleFight; }).length;
   var hasTitle = titleCount > 0;
-  var isPPV   = /ufc \d/i.test(ev.name);
+  var isPPV = /ufc \d/i.test(ev.name);
 
   var mainFight = ev.fights[0];
   var coFight   = ev.fights[1];
   var mainCard  = ev.fights.slice(2).filter(function(f){ return f.label === 'Main Card'; });
   var prelims   = ev.fights.filter(function(f){ return f.label === 'Prelim' || f.label === 'Early Prelim'; });
-  var pid = 'p' + idx;
+  var pid = 'p'+evIdx;
   var totalExtra = mainCard.length + prelims.length;
 
-  var titleBadge = '';
-  if (hasTitle) {
-    var titleText = titleCount > 1 ? titleCount + ' Title Fights' : 'Title Fight';
-    titleBadge = '<span class="badge b-title">' + titleText + '</span>';
-  }
+  var titleBadge = hasTitle ? '<span class="badge b-title">'+(titleCount>1?titleCount+' Title Fights':'Title Fight')+'</span>' : '';
 
-  var mainCardHTML = mainCard.map(function(f) {
-    return '<div class="fight">'
-      + '<div class="flbl pre">' + f.weightClass + '</div>'
-      + '<div class="mu">' + fighterHTML(f.fighter1, false, 'sm') + '<div class="vc"><span class="vs">VS</span></div>' + fighterHTML(f.fighter2, true, 'sm') + '</div>'
-      + '</div>';
+  var mainCardHTML = mainCard.map(function(f, i) {
+    return renderFight(f, evIdx, i+2, false, false);
   }).join('');
 
-  var prelimHTML = prelims.map(function(f) {
-    var lbl = f.label === 'Early Prelim' ? 'Early · ' + f.weightClass : f.weightClass;
-    return '<div class="fight">'
-      + '<div class="flbl pre">' + lbl + '</div>'
-      + '<div class="mu">' + fighterHTML(f.fighter1, false, 'xs') + '<div class="vc"><span class="vs">VS</span></div>' + fighterHTML(f.fighter2, true, 'xs') + '</div>'
-      + '</div>';
+  var prelimHTML = prelims.map(function(f, i) {
+    return renderFight(f, evIdx, mainCard.length+2+i, false, false);
   }).join('');
 
-  return '<div class="evcard' + (isFeat ? ' featured' : '') + '">'
+  return '<div class="evcard'+(isFeat?' featured':'')+'">'
     + '<div class="ev-hdr">'
-    +   '<div class="ev-name">' + ev.name + '</div>'
+    +   '<div class="ev-name">'+ev.name+'</div>'
     +   '<div class="ev-meta">'
-    +     '<span class="ev-detail">' + calSVG + fmtDate(ev.date) + ' · ' + duLabel + '</span>'
-    +     '<span class="ev-detail">' + pinSVG + ev.venue + ', ' + ev.location + '</span>'
-    +     '<span class="ev-detail">' + tvSVG + ev.broadcast + '</span>'
-    +     '<span class="ev-detail">' + clkSVG + 'Main card ' + ev.mainCardTime + '</span>'
+    +     '<span class="ev-detail">'+calSVG+fmtDate(ev.date)+' · '+duLabel+'</span>'
+    +     '<span class="ev-detail">'+pinSVG+ev.venue+', '+ev.location+'</span>'
+    +     '<span class="ev-detail">'+tvSVG+ev.broadcast+'</span>'
+    +     '<span class="ev-detail">'+clkSVG+'Main card '+ev.mainCardTime+'</span>'
     +   '</div>'
     +   '<div class="badges">'
-    +     (isFeat ? '<span class="badge b-next">Next Up</span>' : '')
+    +     (isFeat?'<span class="badge b-next">Next Up</span>':'')
     +     titleBadge
-    +     (isPPV ? '<span class="badge b-ppv">PPV</span>' : '')
+    +     (isPPV?'<span class="badge b-ppv">PPV</span>':'')
     +   '</div>'
     + '</div>'
-    + '<div class="fight">'
-    +   '<div class="flbl main">Main Event · ' + mainFight.weightClass + (mainFight.titleFight ? ' · Title' : '') + '</div>'
-    +   '<div class="mu">' + fighterHTML(mainFight.fighter1, false, 'lg') + '<div class="vc"><span class="vs">VS</span><span class="wc-lbl">' + mainFight.weightClass + '</span></div>' + fighterHTML(mainFight.fighter2, true, 'lg') + '</div>'
-    + '</div>'
-    + '<div class="fight">'
-    +   '<div class="flbl co">Co-Main · ' + coFight.weightClass + (coFight.titleFight ? ' · Title' : '') + '</div>'
-    +   '<div class="mu">' + fighterHTML(coFight.fighter1, false, 'sm') + '<div class="vc"><span class="vs">VS</span></div>' + fighterHTML(coFight.fighter2, true, 'sm') + '</div>'
-    + '</div>'
+    + renderFight(mainFight, evIdx, 0, true, false)
+    + renderFight(coFight,   evIdx, 1, false, true)
     + (totalExtra
-      ? '<button class="pbtn" data-pid="' + pid + '" onclick="tp(this.dataset.pid,this)">' + chevSVG + totalExtra + ' more fight' + (totalExtra !== 1 ? 's' : '') + '</button>'
-        + '<div class="pbody" id="' + pid + '">' + mainCardHTML + prelimHTML + '</div>'
+      ? '<button class="pbtn" data-pid="'+pid+'" onclick="tp(this.dataset.pid,this)">'+chevSVG+totalExtra+' more fight'+(totalExtra!==1?'s':'')+'</button>'
+        + '<div class="pbody" id="'+pid+'">'+mainCardHTML+prelimHTML+'</div>'
       : '')
     + '</div>';
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN RENDER
+// ─────────────────────────────────────────────────────────────────────────────
 function render() {
-  var now    = Date.now();
-  var events = EVENTS.filter(function(e){ return new Date(e.date) >= now - 864e5 && new Date(e.date) <= now + 864e5 * 60; });
+  var now = Date.now();
+  var allEvents = EVENTS.filter(function(e){
+    return new Date(e.date) >= now - 864e5 && new Date(e.date) <= now + 864e5 * 65;
+  });
 
-  // Count individual title bouts across all events
-  var titles = events.reduce(function(n, e) {
-    return n + e.fights.filter(function(f){ return f.titleFight; }).length;
-  }, 0);
-  var bouts = events.reduce(function(n, e){ return n + e.fights.length; }, 0);
-  var du    = daysOut(events[0].date);
-  var duT   = du === 0 ? 'Now' : du === 1 ? '1d' : du + 'd';
+  var events = allEvents.filter(eventMatchesFilter);
+
+  var titles = allEvents.reduce(function(n,e){ return n+e.fights.filter(function(f){return f.titleFight;}).length; },0);
+  var bouts  = allEvents.reduce(function(n,e){ return n+e.fights.length; },0);
+  var du     = allEvents.length ? daysOut(allEvents[0].date) : 0;
+  var duT    = du===0?'Now':du===1?'1d':du+'d';
+  var totalPicks = Object.keys(predictions).length;
 
   document.getElementById('stats').innerHTML =
-    '<div class="stat"><div class="sv">' + events.length + '</div><div class="sl">Events</div></div>'
-    + '<div class="stat"><div class="sv">' + titles + '</div><div class="sl">Titles</div></div>'
-    + '<div class="stat"><div class="sv">' + bouts + '</div><div class="sl">Bouts</div></div>'
-    + '<div class="stat"><div class="sv">' + duT + '</div><div class="sl">Days Out</div></div>';
+    '<div class="stat"><div class="sv">'+allEvents.length+'</div><div class="sl">Events</div></div>'
+    + '<div class="stat"><div class="sv">'+titles+'</div><div class="sl">Titles</div></div>'
+    + '<div class="stat"><div class="sv">'+bouts+'</div><div class="sl">Bouts</div></div>'
+    + '<div class="stat"><div class="sv">'+totalPicks+'</div><div class="sl">My Picks</div></div>';
 
-  document.getElementById('app').innerHTML =
-    '<div class="sec-lbl">Upcoming Events</div>'
-    + events.map(function(e, i){ return renderEvent(e, i); }).join('');
+  if (!events.length) {
+    document.getElementById('app').innerHTML = '<p style="color:var(--muted);padding:24px 0;text-align:center">No events match this filter.</p>';
+  } else {
+    // Find real index in EVENTS array for each filtered event
+    document.getElementById('app').innerHTML =
+      '<div class="sec-lbl">Upcoming Events</div>'
+      + events.map(function(e, i) {
+          var evIdx = EVENTS.indexOf(e);
+          return renderEvent(e, evIdx, i===0);
+        }).join('');
+  }
+
+  renderLeaderboard();
+  updateCountdown();
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
 render();
 </script>
+
 </body>
 </html>
