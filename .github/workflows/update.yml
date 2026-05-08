@@ -1,0 +1,45 @@
+name: Update UFC Fight Cards
+
+on:
+  schedule:
+    # Runs every Tuesday at 9:00 AM UTC (4am CT / 5am ET)
+    # UFC cards are typically announced Mon-Wed, so Tuesday catches most updates
+    - cron: "0 9 * * 2"
+  workflow_dispatch:
+    # Also lets you trigger it manually from the GitHub Actions tab
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write   # needed to commit index.html back to the repo
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run scraper
+        run: python scrape.py
+
+      - name: Check if index.html changed
+        id: diff
+        run: |
+          git diff --quiet index.html && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push updated index.html
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Auto-update fight cards $(date +'%Y-%m-%d')"
+          git push
