@@ -271,7 +271,7 @@ function renderEvent(ev, idx) {
     +   '<div class="mu">' + fighterHTML(coFight.fighter1, false, 'sm') + '<div class="vc"><span class="vs">VS</span></div>' + fighterHTML(coFight.fighter2, true, 'sm') + '</div>'
     + '</div>'
     + (totalExtra
-      ? '<button class="pbtn" onclick="tp(\"' + pid + '\",this)">' + chevSVG + totalExtra + ' more fight' + (totalExtra !== 1 ? 's' : '') + '</button>'
+      ? '<button class="pbtn" data-pid="' + pid + '" onclick="tp(this.dataset.pid,this)">' + chevSVG + totalExtra + ' more fight' + (totalExtra !== 1 ? 's' : '') + '</button>'
         + '<div class="pbody" id="' + pid + '">' + mainCardHTML + prelimHTML + '</div>'
       : '')
     + '</div>';
