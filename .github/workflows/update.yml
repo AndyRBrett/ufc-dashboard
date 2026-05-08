@@ -2,8 +2,8 @@ name: Update UFC Fight Cards
 
 on:
   schedule:
-    # Runs every Tuesday at 9:00 AM UTC (4am CT / 5am ET)
-    - cron: "0 9 * * 2"
+    # Runs every day at 9:00 AM UTC (4am CT / 5am ET)
+    - cron: "0 9 * * *"
   workflow_dispatch:
     # Lets you trigger manually from the Actions tab
 
