@@ -73,6 +73,8 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 .picks-score-val{font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--red)}
 .share-wrap{padding:0 16px 12px}
 .share-btn-small{background:none;border:1px solid var(--border2);color:var(--muted);cursor:pointer;padding:6px 14px;border-radius:6px;font:500 11px DM Sans,sans-serif;transition:color .15s,border-color .15s}
+.share-icon-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:10px 14px;display:flex;align-items:center;justify-content:center;transition:color .15s;flex-shrink:0}
+.share-icon-btn:hover{color:var(--text)}
 .ev-divider{display:flex;align-items:center;gap:10px;padding:16px 16px 0;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
 .ev-divider::after{content:"";flex:1;height:1px;background:var(--border)}
 .ev-band{border-top:3px solid var(--red);padding:14px 16px 12px}
@@ -299,7 +301,7 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
       <div class="picks-toggle-left"><span class="picks-toggle-title">My Picks</span><span class="picks-badge" id="picksBadge">0</span></div>
       <svg class="picks-toggle-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
     </button>
-    <div class="share-wrap"><button class="share-btn-small" onclick="openShare()">Share</button></div>
+    <button class="share-icon-btn" onclick="openShare()" title="Share picks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
   </div>
   <div class="picks-body" id="picksBody"></div>
 </div>
@@ -308,7 +310,7 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 <script>
 
 var EVENTS=[
-  {name:"UFC 328: Chimaev vs. Strickland",date:"2026-05-09",venue:"Prudential Center",loc:"Newark, NJ",tv:"Paramount+",time:"21:00",
+  {name:"UFC 328: Chimaev vs. Strickland",date:"2026-05-09",venue:"Prudential Center",loc:"Newark, NJ",tv:"Paramount+",time:"21:00",prelimTime:"18:00",earlyPrelimTime:"16:00",
    fights:[
     {lbl:"Main Event",wc:"Middleweight",title:true,odds:{f1:-575,f2:425},winner:"",method:"",round:null,state:"pre",f1:{n:"Khamzat Chimaev",r:"15-0",rk:"C",s:{slpm:"4.5",acc:55,td:"3.4",tdd:90,ko:8,sub:3}},f2:{n:"Sean Strickland",r:"30-7",rk:"#3",s:{slpm:"5.2",acc:46,td:"0.4",tdd:81,ko:4,sub:2}}},
     {lbl:"Co-Main",wc:"Flyweight",title:true,odds:{f1:-145,f2:120},winner:"",method:"",round:null,state:"pre",f1:{n:"Joshua Van",r:"12-0",rk:"C",s:{slpm:"3.1",acc:49,td:"2.8",tdd:88,ko:3,sub:5}},f2:{n:"Tatsuro Taira",r:"16-1",rk:"#3",s:{slpm:"2.9",acc:51,td:"3.2",tdd:79,ko:2,sub:7}}},
@@ -322,7 +324,7 @@ var EVENTS=[
     {lbl:"Prelim",wc:"Lightweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Jim Miller",r:"37-17-1",rk:"",s:null},f2:{n:"Jared Gordon",r:"19-7",rk:"",s:null}},
     {lbl:"Early Prelim",wc:"Featherweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Pat Sabatini",r:"18-3",rk:"",s:null},f2:{n:"William Gomis",r:"10-2",rk:"",s:null}}
    ]},
-  {name:"UFC Fight Night: Allen vs. Costa",date:"2026-05-16",venue:"Meta APEX",loc:"Las Vegas, NV",tv:"Paramount+",time:"20:00",
+  {name:"UFC Fight Night: Allen vs. Costa",date:"2026-05-16",venue:"Meta APEX",loc:"Las Vegas, NV",tv:"Paramount+",time:"20:00",prelimTime:"17:00",
    fights:[
     {lbl:"Main Event",wc:"Featherweight",title:false,odds:{f1:110,f2:-132},winner:"",method:"",round:null,state:"pre",f1:{n:"Arnold Allen",r:"20-4",rk:"",s:{slpm:"2.8",acc:47,td:"1.7",tdd:82,ko:4,sub:8}},f2:{n:"Melquizael Costa",r:"26-7",rk:"#12",s:{slpm:"4.4",acc:60,td:"2.0",tdd:78,ko:10,sub:7}}},
     {lbl:"Co-Main",wc:"Featherweight",title:false,odds:{f1:-175,f2:145},winner:"",method:"",round:null,state:"pre",f1:{n:"Doo Ho Choi",r:"16-4-1",rk:"",s:{slpm:"5.9",acc:45,td:"0.2",tdd:70,ko:9,sub:1}},f2:{n:"Daniel Santos",r:"12-2",rk:"",s:{slpm:"4.3",acc:52,td:"1.5",tdd:74,ko:6,sub:3}}},
@@ -332,7 +334,7 @@ var EVENTS=[
     {lbl:"Prelim",wc:"Welterweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Jeremiah Wells",r:"13-3-1",rk:"",s:null},f2:{n:"TBD",r:"",rk:"",s:null}},
     {lbl:"Prelim",wc:"Middleweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Andre Petroski",r:"12-4",rk:"",s:null},f2:{n:"Cody Brundage",r:"13-6",rk:"",s:null}}
    ]},
-  {name:"UFC Fight Night: Song vs. Figueiredo",date:"2026-05-30",venue:"Galaxy Arena",loc:"Macau, China",tv:"Paramount+",time:"07:00",
+  {name:"UFC Fight Night: Song vs. Figueiredo",date:"2026-05-30",venue:"Galaxy Arena",loc:"Macau, China",tv:"Paramount+",time:"07:00",prelimTime:"04:00",
    fights:[
     {lbl:"Main Event",wc:"Bantamweight",title:false,odds:{f1:-165,f2:138},winner:"",method:"",round:null,state:"pre",f1:{n:"Song Yadong",r:"22-9-1",rk:"",s:{slpm:"4.4",acc:50,td:"0.8",tdd:83,ko:6,sub:1}},f2:{n:"Deiveson Figueiredo",r:"25-6-1",rk:"",s:{slpm:"3.7",acc:47,td:"2.3",tdd:76,ko:8,sub:9}}},
     {lbl:"Co-Main",wc:"Light Heavyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Mingyang Zhang",r:"10-2",rk:"",s:null},f2:{n:"Alonzo Menifield",r:"15-5",rk:"",s:null}},
@@ -341,7 +343,7 @@ var EVENTS=[
     {lbl:"Prelim",wc:"Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Rei Tsuruya",r:"9-1",rk:"",s:null},f2:{n:"Jesus Aguilar",r:"11-4",rk:"",s:null}},
     {lbl:"Prelim",wc:"Bantamweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Aoriqileng",r:"19-10",rk:"",s:null},f2:{n:"Cody Haddon",r:"9-2",rk:"",s:null}}
    ]},
-  {name:"UFC Freedom 250: Topuria vs. Gaethje",date:"2026-06-14",venue:"South Lawn, White House",loc:"Washington, D.C.",tv:"Paramount+ / CBS",time:"20:00",
+  {name:"UFC Freedom 250: Topuria vs. Gaethje",date:"2026-06-14",venue:"South Lawn, White House",loc:"Washington, D.C.",tv:"Paramount+ / CBS",time:"20:00",prelimTime:"17:00",
    fights:[
     {lbl:"Main Event",wc:"Lightweight",title:true,odds:{f1:-400,f2:310},winner:"",method:"",round:null,state:"pre",f1:{n:"Ilia Topuria",r:"17-0",rk:"C",s:{slpm:"4.7",acc:58,td:"1.2",tdd:94,ko:10,sub:4}},f2:{n:"Justin Gaethje",r:"27-5",rk:"#1",s:{slpm:"5.9",acc:43,td:"0.4",tdd:76,ko:14,sub:1}}},
     {lbl:"Co-Main",wc:"Heavyweight",title:true,odds:{f1:-115,f2:-105},winner:"",method:"",round:null,state:"pre",f1:{n:"Alex Pereira",r:"10-2",rk:"#2",s:{slpm:"5.1",acc:54,td:"0.3",tdd:88,ko:7,sub:0}},f2:{n:"Ciryl Gane",r:"13-4",rk:"#1",s:{slpm:"3.8",acc:55,td:"0.4",tdd:93,ko:7,sub:0}}},
@@ -661,6 +663,12 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
 
 function getRegIdx(ei,fi){for(var i=0;i<FIGHTS.length;i++){if(FIGHTS[i].ei===ei&&FIGHTS[i].fi===fi)return i;}return 0;}
 
+function to12hr(t){
+  if(!t||t==="TBD")return t;
+  var p=t.split(":");var h=parseInt(p[0],10);var m=parseInt(p[1]||"0",10);
+  var ap=h>=12?"PM":"AM";h=h%12||12;
+  return h+":"+(m===0?"00":String(m).padStart(2,"0"))+" "+ap;
+}
 function makeEventBlock(ev,ei,evNum,visTotal){
   var frag=document.createDocumentFragment();
   var du=daysOut(ev.date);
@@ -674,7 +682,8 @@ function makeEventBlock(ev,ei,evNum,visTotal){
   var evname=document.createElement("div");evname.className="ev-name";evname.textContent=ev.name;band.appendChild(evname);
   var evrow=document.createElement("div");evrow.className="ev-row";
   function det(icon,txt){var d=document.createElement("span");d.className="ev-detail";d.textContent=txt;evrow.appendChild(d);}
-  det("pin",ev.venue+", "+ev.loc);det("tv",ev.tv);det("clk","Main card "+ev.time+" ET");
+  det("pin",ev.venue+", "+ev.loc);det("tv",ev.tv);det("clk","Main card "+to12hr(ev.time)+" ET");
+  if(ev.prelimTime){det("clk","Prelims "+to12hr(ev.prelimTime)+" ET");}
   band.appendChild(evrow);
   var badges=document.createElement("div");badges.className="ev-badges";
   if(isFeat){var bn=document.createElement("span");bn.className="badge b-next";bn.textContent="Next Up";badges.appendChild(bn);}
@@ -695,10 +704,16 @@ function makeEventBlock(ev,ei,evNum,visTotal){
   if(totalExtra>0){
     var moreId="more"+ei;
     var moreBtn=document.createElement("button");moreBtn.className="more-btn";
-    moreBtn.textContent=totalExtra+" more fight"+(totalExtra!==1?"s":"");
-    var moreArrow=document.createElement("svg");moreArrow.setAttribute("viewBox","0 0 24 24");moreArrow.setAttribute("fill","none");moreArrow.setAttribute("stroke","currentColor");moreArrow.setAttribute("stroke-width","2");
+    moreBtn.appendChild(document.createTextNode(totalExtra+" more fight"+(totalExtra!==1?"s":"")));
+    var moreArrow=document.createElementNS("http://www.w3.org/2000/svg","svg");moreArrow.setAttribute("viewBox","0 0 24 24");moreArrow.setAttribute("fill","none");moreArrow.setAttribute("stroke","currentColor");moreArrow.setAttribute("stroke-width","2");
+    moreArrow.style.cssText="width:14px;height:14px;margin-left:auto;flex-shrink:0;transition:transform .2s;stroke:#666;stroke-width:2.5";
     var moreP=document.createElementNS("http://www.w3.org/2000/svg","polyline");moreP.setAttribute("points","6 9 12 15 18 9");moreArrow.appendChild(moreP);moreBtn.appendChild(moreArrow);
-    (function(id,btn){btn.onclick=function(){document.getElementById(id).classList.toggle("open");btn.classList.toggle("open");};})(moreId,moreBtn);
+    (function(id,btn){btn.onclick=function(){
+      document.getElementById(id).classList.toggle("open");
+      btn.classList.toggle("open");
+      var arr=btn.querySelector("svg");
+      if(arr)arr.style.transform=btn.classList.contains("open")?"rotate(180deg)":"rotate(0deg)";
+    };})(moreId,moreBtn);
     fw.appendChild(moreBtn);
     var moreBody=document.createElement("div");moreBody.className="more-body";moreBody.id=moreId;
     mainCard.forEach(function(f,i){
