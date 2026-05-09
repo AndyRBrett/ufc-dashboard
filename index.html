@@ -215,15 +215,15 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
   <div class="stat"><div class="sv" id="picks-count">0</div><div class="sl">My Picks</div></div>
 </div>
 <div class="filter-wrap">
-  <button class="ftab active" onclick="setFilter('all',this)">All</button>
-  <button class="ftab" onclick="setFilter('Heavyweight',this)">Heavyweight</button>
-  <button class="ftab" onclick="setFilter('Light Heavyweight',this)">Lt. Heavyweight</button>
-  <button class="ftab" onclick="setFilter('Middleweight',this)">Middleweight</button>
-  <button class="ftab" onclick="setFilter('Welterweight',this)">Welterweight</button>
-  <button class="ftab" onclick="setFilter('Lightweight',this)">Lightweight</button>
-  <button class="ftab" onclick="setFilter('Featherweight',this)">Featherweight</button>
-  <button class="ftab" onclick="setFilter('Bantamweight',this)">Bantamweight</button>
-  <button class="ftab" onclick="setFilter('Flyweight',this)">Flyweight</button>
+  <button class="ftab active" data-f="all" onclick="setFilter(this)">All</button>
+  <button class="ftab" data-f="Heavyweight" onclick="setFilter(this)">Heavyweight</button>
+  <button class="ftab" data-f="Light Heavyweight" onclick="setFilter(this)">Lt. Heavyweight</button>
+  <button class="ftab" data-f="Middleweight" onclick="setFilter(this)">Middleweight</button>
+  <button class="ftab" data-f="Welterweight" onclick="setFilter(this)">Welterweight</button>
+  <button class="ftab" data-f="Lightweight" onclick="setFilter(this)">Lightweight</button>
+  <button class="ftab" data-f="Featherweight" onclick="setFilter(this)">Featherweight</button>
+  <button class="ftab" data-f="Bantamweight" onclick="setFilter(this)">Bantamweight</button>
+  <button class="ftab" data-f="Flyweight" onclick="setFilter(this)">Flyweight</button>
 </div>
 <div id="app"></div>
 <script>
@@ -267,22 +267,24 @@ var diff=target-now;
 var wrap=document.getElementById(“cd-wrap”);
 wrap.style.display=“block”;
 document.getElementById(“cd-event”).textContent=ev.name;
-if(diff<=0){document.getElementById(“cd-timer”).innerHTML=”<span class='cd-live'>MAIN CARD LIVE NOW</span>”;return;}
+var timer=document.getElementById(“cd-timer”);
+timer.innerHTML=””;
+if(diff<=0){var live=document.createElement(“span”);live.className=“cd-live”;live.textContent=“MAIN CARD LIVE NOW”;timer.appendChild(live);return;}
 var days=Math.floor(diff/864e5);
 var hours=Math.floor((diff%864e5)/36e5);
 var mins=Math.floor((diff%36e5)/6e4);
 var secs=Math.floor((diff%6e4)/1e3);
-var html=””;
-if(days>0){html+=”<div class='cd-unit'><div class='cd-num'>”+days+”</div><div class='cd-lbl'>Days</div></div><div class='cd-sep'>:</div>”;}
-html+=”<div class='cd-unit'><div class='cd-num'>”+pad(hours)+”</div><div class='cd-lbl'>Hrs</div></div><div class='cd-sep'>:</div>”;
-html+=”<div class='cd-unit'><div class='cd-num'>”+pad(mins)+”</div><div class='cd-lbl'>Min</div></div><div class='cd-sep'>:</div>”;
-html+=”<div class='cd-unit'><div class='cd-num'>”+pad(secs)+”</div><div class='cd-lbl'>Sec</div></div>”;
-document.getElementById(“cd-timer”).innerHTML=html;
+function cdUnit(val,lbl){var u=document.createElement(“div”);u.className=“cd-unit”;var n=document.createElement(“div”);n.className=“cd-num”;n.textContent=val;var l=document.createElement(“div”);l.className=“cd-lbl”;l.textContent=lbl;u.appendChild(n);u.appendChild(l);return u;}
+function cdSep(){var s=document.createElement(“div”);s.className=“cd-sep”;s.textContent=”:”;return s;}
+if(days>0){timer.appendChild(cdUnit(days,“Days”));timer.appendChild(cdSep());}
+timer.appendChild(cdUnit(pad(hours),“Hrs”));timer.appendChild(cdSep());
+timer.appendChild(cdUnit(pad(mins),“Min”));timer.appendChild(cdSep());
+timer.appendChild(cdUnit(pad(secs),“Sec”));
 }
 setInterval(updateCountdown,1000);
 
-function setFilter(f,btn){
-curFilter=f;
+function setFilter(btn){
+curFilter=btn.getAttribute(“data-f”)||“all”;
 document.querySelectorAll(”.ftab”).forEach(function(t){t.classList.remove(“active”);});
 btn.classList.add(“active”);
 render();
@@ -300,14 +302,12 @@ var f=side===0?item.fight.f1:item.fight.f2;
 if(!f.s){toast(“Stats not available”);return;}
 document.getElementById(“mName”).textContent=f.n;
 document.getElementById(“mSub”).textContent=f.r+(f.rk?” - “+f.rk:””);
-document.getElementById(“mGrid”).innerHTML=
-“<div class='ms'><div class='ms-val'>”+f.s.ko+”</div><div class='ms-lbl'>KO/TKO Wins</div></div>”+
-“<div class='ms'><div class='ms-val'>”+f.s.sub+”</div><div class='ms-lbl'>Sub Wins</div></div>”+
-“<div class='ms'><div class='ms-val'>”+f.s.slpm+”</div><div class='ms-lbl'>Sig Str/Min</div></div>”+
-“<div class='ms'><div class='ms-val'>”+f.s.td+”</div><div class='ms-lbl'>TD Avg/15</div></div>”;
-document.getElementById(“mBars”).innerHTML=
-“<div class='mbar-wrap'><div class='mbar-lbl'><span>Striking Accuracy</span><span>”+f.s.acc+”%</span></div><div class='mbar'><div class='mbar-fill' style='width:"+f.s.acc+"%'></div></div></div>”+
-“<div class='mbar-wrap' style='margin-top:8px'><div class='mbar-lbl'><span>Takedown Defense</span><span>”+f.s.tdd+”%</span></div><div class='mbar'><div class='mbar-fill' style='width:"+f.s.tdd+"%'></div></div></div>”;
+var grid=document.getElementById(“mGrid”);grid.innerHTML=””;
+function ms(val,lbl){var d=document.createElement(“div”);d.className=“ms”;var v=document.createElement(“div”);v.className=“ms-val”;v.textContent=val;var l=document.createElement(“div”);l.className=“ms-lbl”;l.textContent=lbl;d.appendChild(v);d.appendChild(l);return d;}
+grid.appendChild(ms(f.s.ko,“KO/TKO Wins”));grid.appendChild(ms(f.s.sub,“Sub Wins”));grid.appendChild(ms(f.s.slpm,“Sig Str/Min”));grid.appendChild(ms(f.s.td,“TD Avg/15”));
+var bars=document.getElementById(“mBars”);bars.innerHTML=””;
+function mbar(lbl,pct){var w=document.createElement(“div”);w.className=“mbar-wrap”;var hl=document.createElement(“div”);hl.className=“mbar-lbl”;var sl=document.createElement(“span”);sl.textContent=lbl;var sv=document.createElement(“span”);sv.textContent=pct+”%”;hl.appendChild(sl);hl.appendChild(sv);w.appendChild(hl);var b=document.createElement(“div”);b.className=“mbar”;var bf=document.createElement(“div”);bf.className=“mbar-fill”;bf.style.width=pct+”%”;b.appendChild(bf);w.appendChild(b);return w;}
+bars.appendChild(mbar(“Striking Accuracy”,f.s.acc));bars.appendChild(mbar(“Takedown Defense”,f.s.tdd));
 document.getElementById(“statsModal”).classList.add(“open”);
 }
 function closeModal(){document.getElementById(“statsModal”).classList.remove(“open”);}
@@ -467,10 +467,10 @@ band.appendChild(evnum);
 var evname=document.createElement(“div”);evname.className=“ev-name”;evname.textContent=ev.name;band.appendChild(evname);
 
 var evrow=document.createElement(“div”);evrow.className=“ev-row”;
-var calSVG=”<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><rect x='3' y='4' width='18' height='18' rx='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>”;
-var pinSVG=”<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z'/><circle cx='12' cy='10' r='3'/></svg>”;
-var tvSVG=”<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><rect x='2' y='7' width='20' height='15' rx='2'/><polyline points='17 2 12 7 7 2'/></svg>”;
-var clkSVG=”<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>”;
+var calSVG=”<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>”;
+var pinSVG=”<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>”;
+var tvSVG=”<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>”;
+var clkSVG=”<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>”;
 function detailEl(svg,txt){var d=document.createElement(“span”);d.className=“ev-detail”;d.innerHTML=svg+txt;return d;}
 evrow.appendChild(detailEl(pinSVG,ev.venue+”, “+ev.loc));
 evrow.appendChild(detailEl(tvSVG,ev.tv));
@@ -507,7 +507,7 @@ fw.appendChild(coRow);
 if(totalExtra>0){
 var moreId=“more”+ei;
 var moreBtn=document.createElement(“button”);moreBtn.className=“more-btn”;
-var chevSVG=”<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>”;
+var chevSVG=”<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>”;
 moreBtn.innerHTML=chevSVG+totalExtra+” more fight”+(totalExtra!==1?“s”:””);
 (function(id,btn){btn.onclick=function(){tog(id,btn);};})(moreId,moreBtn);
 fw.appendChild(moreBtn);
@@ -561,9 +561,18 @@ var correct=0,total=0;
 Object.keys(preds).forEach(function(k){if(results[k]){total++;if(preds[k]===results[k])correct++;}});
 var lb=document.createElement(“div”);lb.className=“lb-wrap”;
 var pct=total>0?Math.round(correct/total*100)+”% correct”:“results pending”;
-lb.innerHTML=”<div class='lb-hdr'><span class='lb-title'>My Predictor Record</span><span style='font-size:10px;color:var(--muted)'>”+Object.keys(preds).length+” picks</span></div>”
-+”<div class='lb-row'><div class='lb-rank'>1</div><div class='lb-name'>”+userName+” <span style='font-size:10px;color:var(--muted)'>(you)</span></div>”
-+”<div><div class='lb-score'>”+(total>0?correct+”/”+total:”–”)+”</div><div class='lb-detail'>”+pct+”</div></div></div>”;
+var lbh=document.createElement(“div”);lbh.className=“lb-hdr”;
+var lbt=document.createElement(“span”);lbt.className=“lb-title”;lbt.textContent=“My Predictor Record”;
+var lbc=document.createElement(“span”);lbc.style.cssText=“font-size:10px;color:var(–muted)”;lbc.textContent=Object.keys(preds).length+” picks”;
+lbh.appendChild(lbt);lbh.appendChild(lbc);lb.appendChild(lbh);
+var lbr=document.createElement(“div”);lbr.className=“lb-row”;
+var lbrk=document.createElement(“div”);lbrk.className=“lb-rank”;lbrk.textContent=“1”;
+var lbn=document.createElement(“div”);lbn.className=“lb-name”;lbn.textContent=userName;
+var lbs=document.createElement(“div”);
+var lbsc=document.createElement(“div”);lbsc.className=“lb-score”;lbsc.textContent=total>0?correct+”/”+total:”–”;
+var lbd=document.createElement(“div”);lbd.className=“lb-detail”;lbd.textContent=pct;
+lbs.appendChild(lbsc);lbs.appendChild(lbd);
+lbr.appendChild(lbrk);lbr.appendChild(lbn);lbr.appendChild(lbs);lb.appendChild(lbr);
 app.appendChild(lb);
 }
 
