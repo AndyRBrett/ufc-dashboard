@@ -42,3 +42,4 @@ jobs:
           git add index.html
           git diff --staged --quiet || git commit -m "Auto-update fight cards $(date +'%Y-%m-%d %H:%M')"
           git push
+ 
