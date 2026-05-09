@@ -425,24 +425,38 @@ return “\n”.join(lines)
 
 def build_html(events, updated_label):
 “”“Inject fresh EVENTS data and timestamp into the existing index.html.”””
-template = Path(“template.html”).read_text(encoding=“utf-8”)
+# Use index.html as the template (contains all features)
+# Fall back to template.html if index.html doesn’t exist yet
+template_path = Path(“index.html”) if Path(“index.html”).exists() else Path(“template.html”)
+template = template_path.read_text(encoding=“utf-8”)
 js_block = events_to_js(events)
 
 ```
-# Replace the EVENTS array
+# Replace the EVENTS array - handle both 'var EVENTS=[' and 'var EVENTS = ['
 output = re.sub(
-    r"var EVENTS=\[.*?\];",
+    r"var EVENTS\s*=\s*\[.*?\];",
     js_block,
     template,
     flags=re.DOTALL,
 )
+
+# Replace timestamp placeholder or existing date string
+output = re.sub(
+    r'Updated <span id="updateDate">[^<]*</span>',
+    'Updated <span id="updateDate">' + updated_label + '</span>',
+    output
+)
+# Also handle bare {{UPDATED}} placeholder
 output = output.replace("{{UPDATED}}", updated_label)
 return output
 ```
 
 def validate_html(html):
-if “var EVENTS=[” not in html:
+# Check for EVENTS array with or without spaces around =
+if not re.search(r”var EVENTS\s*=\s*[”, html):
 return False, “EVENTS array missing”
+if len(html) < 10000:
+return False, “Output suspiciously small”
 return True, “ok”
 
 # ─── MAIN ────────────────────────────────────────────────────────────────────
