@@ -294,9 +294,8 @@ var EVENTS = [
 ];
 
 var curFilter = ‘all’;
-var userName = localStorage.getItem(‘ufc_name’) || ‘’;
-var preds = JSON.parse(localStorage.getItem(‘ufc_preds’) || ‘{}’);
-var results = JSON.parse(localStorage.getItem(‘ufc_results’) || ‘{}’);
+var userName=’’,preds={},results={};
+try{userName=localStorage.getItem(‘ufc_name’)||’’;preds=JSON.parse(localStorage.getItem(‘ufc_preds’)||’{}’);results=JSON.parse(localStorage.getItem(‘ufc_results’)||’{}’);}catch(e){}
 var fnFights = [], fnIdx = 0;
 
 function pad(n){ return String(n).padStart(2,‘0’); }
@@ -304,7 +303,7 @@ function daysOut(d){ return Math.ceil((new Date(d) - Date.now()) / 864e5); }
 function fmtDate(d){ return new Date(d).toLocaleDateString(‘en-US’,{weekday:‘short’,month:‘short’,day:‘numeric’,year:‘numeric’}); }
 function fmtOdds(n){ return n > 0 ? ‘+’+n : ‘’+n; }
 function pk(ei,fi){ return ‘e’+ei+‘f’+fi; }
-function save(){ localStorage.setItem(‘ufc_preds’,JSON.stringify(preds)); localStorage.setItem(‘ufc_results’,JSON.stringify(results)); }
+function save(){try{localStorage.setItem(‘ufc_preds’,JSON.stringify(preds));localStorage.setItem(‘ufc_results’,JSON.stringify(results));}catch(e){}}
 function toast(msg){ var t=document.getElementById(‘toast’); t.textContent=msg; t.classList.add(‘show’); setTimeout(function(){ t.classList.remove(‘show’); },2500); }
 
 // COUNTDOWN FIX: parse HH:MM directly, no string manipulation
@@ -375,7 +374,7 @@ function closeModal(){ document.getElementById(‘statsModal’).classList.remov
 // NAME MODAL
 function closeNameModal(){ document.getElementById(‘nmBg’).classList.remove(‘open’); window._pp=null; }
 function checkName(cb){ if(userName){ cb(); return; } document.getElementById(‘nmBg’).classList.add(‘open’); document.getElementById(‘nmInput’).focus(); window._pp=cb; }
-function saveName(){ var v=document.getElementById(‘nmInput’).value.trim(); if(!v)return; userName=v; localStorage.setItem(‘ufc_name’,userName); document.getElementById(‘nmBg’).classList.remove(‘open’); if(window._pp){ window._pp(); window._pp=null; } }
+function saveName(){ var v=document.getElementById(‘nmInput’).value.trim(); if(!v)return; userName=v; try{localStorage.setItem(‘ufc_name’,userName);}catch(e){} document.getElementById(‘nmBg’).classList.remove(‘open’); if(window._pp){ window._pp(); window._pp=null; } }
 
 // PREDICTOR
 function pickFighter(ei, fi, name){
@@ -421,7 +420,7 @@ var clickable=’’; var hint=’’;
 if(fighter.s){
 var enc=encodeURIComponent(JSON.stringify(fighter.s));
 var ne=encodeURIComponent(fighter.n);
-clickable=’ onclick=“openStats('’+ne+’','’+fighter.r+’','’+fighter.rk+’','’+enc+’')”’;
+clickable=’ data-ne=”’+ne+’” data-re=”’+fighter.r+’” data-rk=”’+fighter.rk+’” data-se=”’+enc+’” onclick=“handleStats(this)”’;
 if(size!==‘xs’) hint=’<div class="stats-hint">Tap for stats</div>’;
 }
 return ‘<div class=“ft ‘+r+’” ‘+clickable+’><div class="fn '+sz+'">’+fighter.n+’</div>’+(fighter.r?’<div class="frec">’+fighter.r+’</div>’:’’)+pill+hint+’</div>’;
@@ -454,8 +453,8 @@ var fn2=fight.f2.n.replace(/\/g,’\\’).replace(/’/g,”\’”);
 var c1=‘pick-btn’+(myPick===fight.f1.n?’ sel’:’’)+(result===fight.f1.n?’ correct’:’’)+(result&&result!==fight.f1.n&&myPick===fight.f1.n?’ wrong’:’’);
 var c2=‘pick-btn’+(myPick===fight.f2.n?’ sel’:’’)+(result===fight.f2.n?’ correct’:’’)+(result&&result!==fight.f2.n&&myPick===fight.f2.n?’ wrong’:’’);
 pickHTML=’<div class="pick-row"><span class="pick-lbl">Pick:</span>’
-+’<button class="'+c1+'" onclick="pickFighter('+ei+','+fi+',\''+fn1+'\')">’+n1+’</button>’
-+’<button class="'+c2+'" onclick="pickFighter('+ei+','+fi+',\''+fn2+'\')">’+n2+’</button>’
++”<button class="”+c1+”" data-ei="”+ei+”" data-fi="”+fi+”" data-fn="”+fn1+”" onclick="handlePick(this)">”+n1+”</button>”
++”<button class="”+c2+”" data-ei="”+ei+”" data-fi="”+fi+”" data-fn="”+fn2+”" onclick="handlePick(this)">”+n2+”</button>”
 +’</div>’;
 }
 
@@ -562,8 +561,18 @@ document.getElementById(‘app’).innerHTML=html;
 updateCountdown();
 }
 
+function handleStats(el){
+openStats(el.getAttribute(‘data-ne’),el.getAttribute(‘data-re’),el.getAttribute(‘data-rk’),el.getAttribute(‘data-se’));
+}
+function handlePick(el){
+var ei=parseInt(el.getAttribute(‘data-ei’),10);
+var fi=parseInt(el.getAttribute(‘data-fi’),10);
+var fn=el.getAttribute(‘data-fn’);
+pickFighter(ei,fi,fn);
+}
+
 render();
 </script>
 
 </body>
-</html> 
+</html>
