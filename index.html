@@ -195,9 +195,9 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 .cmp-name{font-family:Bebas Neue,sans-serif;font-size:17px;letter-spacing:.04em}
 .cmp-rec{font-size:11px;color:var(–muted);margin-top:2px}
 .cmp-vs{font-family:Bebas Neue,sans-serif;font-size:14px;color:var(–muted);align-self:center}
-.cmp-row{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid var(–border)}
+.cmp-row{padding:10px 0;border-bottom:1px solid var(–border)}
 .cmp-row:last-child{border-bottom:none}
-.cmp-val{font-size:13px;font-weight:600;color:var(–text)}
+.cmp-val{font-size:14px;font-weight:600;color:var(–text)}
 .cmp-val.win{color:var(–green)}.cmp-val.r{text-align:right}
 .cmp-lbl{font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.08em;text-align:center}
 .cmp-bar-wrap{position:relative;height:4px;background:var(–border);border-radius:2px;margin:4px 0;overflow:hidden}
@@ -1099,19 +1099,20 @@ function openCmp(f1, f2) {
     var pct2 = 100 - pct1;
     var row = document.createElement("div");
     row.className = "cmp-row";
-    row.style.flexDirection = "column";
-    row.style.gap = "4px";
+    row.style.display = "block";
 
     var vals = document.createElement("div");
-    vals.style.cssText = "display:grid;grid-template-columns:1fr auto 1fr;gap:6px;width:100%";
+    vals.style.cssText = "display:grid;grid-template-columns:1fr auto 1fr;gap:6px;width:100%;align-items:center";
     var v1el = document.createElement("div");
     v1el.className = "cmp-val" + (f1wins ? " win" : "");
+    v1el.style.textAlign = "left";
     v1el.textContent = v1;
     var lblEl = document.createElement("div");
     lblEl.className = "cmp-lbl";
     lblEl.textContent = label;
     var v2el = document.createElement("div");
-    v2el.className = "cmp-val r" + (!f1wins ? " win" : "");
+    v2el.className = "cmp-val" + (!f1wins ? " win" : "");
+    v2el.style.textAlign = "right";
     v2el.textContent = v2;
     vals.appendChild(v1el); vals.appendChild(lblEl); vals.appendChild(v2el);
     row.appendChild(vals);
