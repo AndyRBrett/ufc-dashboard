@@ -49,7 +49,7 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 .ev-band{background:linear-gradient(135deg,#1a0808,#160d0d);border-top:3px solid var(--red);padding:14px 16px 12px}
 .ev-band.dim-band{border-top-color:#2a2a2a;background:#111}
 .ev-number{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px}
-.ev-name{font-family:Bebas Neue,sans-serif;font-size:19px;letter-spacing:.06em;line-height:1;margin-bottom:8px;color:#fff}
+.ev-name{font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:.06em;line-height:1;margin-bottom:8px;color:#fff}
 .ev-row{display:flex;flex-wrap:wrap;gap:4px 14px;margin-bottom:6px}
 .ev-detail{font-size:11px;color:var(--muted2);display:flex;align-items:center;gap:3px}
 .ev-detail svg{width:10px;height:10px;opacity:.5;flex-shrink:0}
@@ -65,14 +65,14 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 .fight-row.fco{background:rgba(201,168,76,.02);border-left:3px solid var(--gold);padding-left:13px}
 .fight-row.fcard{border-left:3px solid rgba(255,255,255,.06);padding-left:13px}
 .fight-row.fpre{border-left:3px solid transparent;background:rgba(255,255,255,.01)}
-.flbl{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.flbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:9px}
 .flbl.lmain{color:var(--red)}.flbl.lco{color:var(--gold)}.flbl.lpre{color:var(--muted)}
 .mu{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
 .ft{display:flex;flex-direction:column;gap:1px;min-width:0}
 .ft.ftr{align-items:flex-end;text-align:right}
-.fn{font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fn.fsm{font-size:16px}.fn.fxs{font-size:13px;font-family:DM Sans,sans-serif;font-weight:500;letter-spacing:0}
-.frec{font-size:11px;color:var(--muted2);margin-top:1px}
+.fn{font-family:Bebas Neue,sans-serif;font-size:24px;letter-spacing:.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fn.fsm{font-size:19px}.fn.fxs{font-size:15px;font-family:DM Sans,sans-serif;font-weight:500;letter-spacing:0}
+.frec{font-size:12px;color:var(--muted2);margin-top:2px}
 .fpills{display:flex;gap:3px;flex-wrap:wrap;margin-top:2px}
 .ft.ftr .fpills{justify-content:flex-end}
 .pchamp{font-size:9px;font-weight:600;padding:1px 5px;border-radius:2px;background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.18)}
@@ -87,12 +87,12 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 .odds-side{display:flex;flex-direction:column;gap:1px}
 .odds-side.osr{align-items:flex-end}
 .odds-nm{font-size:9px;color:var(--muted);text-transform:uppercase}
-.odds-val{font-size:13px;font-weight:600}
+.odds-val{font-size:14px;font-weight:600}
 .odds-val.fav{color:var(--green)}.odds-val.dog{color:#e05060}
 .odds-ctr{font-size:9px;color:var(--muted);text-transform:uppercase;align-self:center}
 .pick-row{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
 .pick-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;flex-shrink:0}
-.pick-btn{flex:1;padding:5px 6px;border-radius:5px;border:1px solid var(--border2);background:none;color:var(--muted2);font:500 11px DM Sans,sans-serif;cursor:pointer;transition:all .15s;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick-btn{flex:1;padding:6px 8px;border-radius:5px;border:1px solid var(--border2);background:none;color:var(--muted2);font:500 12px DM Sans,sans-serif;cursor:pointer;transition:all .15s;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pick-btn:hover{border-color:rgba(255,255,255,.3);color:var(--text)}
 .pick-btn.psel{background:rgba(232,25,44,.12);border-color:var(--red);color:var(--red)}
 .pick-btn.pcorrect{background:rgba(46,204,113,.1);border-color:var(--green);color:var(--green)}
@@ -110,6 +110,7 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 .modal-xbtn:hover{background:rgba(255,255,255,.15);color:var(--text)}
 .modal-name{font-family:Bebas Neue,sans-serif;font-size:26px;letter-spacing:.05em;line-height:1}
 .modal-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
+.modal-photo-row{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
 .ms{background:var(--card2);border-radius:8px;padding:10px 12px;border:1px solid var(--border)}
 .ms-val{font-family:Bebas Neue,sans-serif;font-size:22px}
@@ -154,8 +155,30 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 .lb-name{flex:1;font-size:13px;font-weight:500}
 .lb-score{font-family:Bebas Neue,sans-serif;font-size:18px;color:var(--red)}
 .lb-detail{font-size:10px;color:var(--muted)}
+.picks-widget{margin:0 0 0 0;background:var(--card);border-top:1px solid var(--border)}
+.picks-toggle{width:100%;background:none;border:none;border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:DM Sans,sans-serif}
+.picks-toggle-left{display:flex;align-items:center;gap:10px}
+.picks-toggle-title{font-family:Bebas Neue,sans-serif;font-size:17px;letter-spacing:.06em;color:var(--text)}
+.picks-count-badge{background:var(--red);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px}
+.picks-toggle svg{width:14px;height:14px;transition:transform .2s;color:var(--muted);flex-shrink:0}
+.picks-toggle.open svg{transform:rotate(180deg)}
+.picks-body{display:none;padding:0 16px 16px}.picks-body.open{display:block}
+.picks-event-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:14px 0 8px;display:flex;align-items:center;gap:8px}
+.picks-event-label::after{content:"";flex:1;height:1px;background:var(--border)}
+.pick-summary-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
+.pick-summary-row:last-child{border-bottom:none}
+.pick-fight-label{font-size:10px;color:var(--muted);flex-shrink:0;width:60px}
+.pick-fighter-pick{font-size:13px;font-weight:500;flex:1;color:var(--text)}
+.pick-result-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0}
+.pick-result-badge.win{background:rgba(46,204,113,.1);color:var(--green);border:1px solid rgba(46,204,113,.2)}
+.pick-result-badge.loss{background:rgba(232,25,44,.08);color:var(--red);border:1px solid rgba(232,25,44,.2)}
+.pick-result-badge.pending{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)}
+.picks-score-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:4px}
+.picks-score-label{font-size:11px;color:var(--muted)}
+.picks-score-val{font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--red)}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#222;border:1px solid var(--border2);color:var(--text);padding:10px 18px;border-radius:8px;font-size:12px;z-index:500;transition:transform .25s ease;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
+@media(min-width:420px){.fn{font-size:26px}.fn.fsm{font-size:21px}}
 @media(min-width:640px){.hdr{padding:0 20px}.hero{padding:22px 20px 16px}}
 </style>
 </head>
@@ -163,7 +186,14 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 <div class="modal-bg" id="statsModal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-top"><div class="modal-name" id="mName"></div><button class="modal-xbtn" onclick="closeModal()">x</button></div>
-    <div class="modal-sub" id="mSub"></div>
+    <div class="modal-photo-row" id="mPhotoRow" style="display:none">
+      <img id="mPhoto" src="" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;object-position:top;border:2px solid var(--border2);flex-shrink:0">
+      <div style="flex:1;min-width:0">
+        <div class="modal-sub" id="mSub"></div>
+        <div id="mRanking" style="font-size:11px;color:var(--muted);margin-top:3px"></div>
+      </div>
+    </div>
+    <div class="modal-sub" id="mSubFallback"></div>
     <div class="modal-grid" id="mGrid"></div>
     <div id="mBars"></div>
   </div>
@@ -201,7 +231,7 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 </header>
 <section class="hero">
   <h1>UPCOMING<br><span>FIGHT CARDS</span></h1>
-  <p class="hero-sub">Verified from UFC.com - Updated May 8, 2026</p>
+  <p class="hero-sub">Verified from UFC.com - Updated {{UPDATED}}</p>
   <div class="countdown-wrap" id="cd-wrap" style="display:none">
     <div class="cd-label">Next Main Card</div>
     <div class="cd-event" id="cd-event"></div>
@@ -224,6 +254,16 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
   <button class="ftab" data-f="Featherweight" onclick="setFilter(this)">Featherweight</button>
   <button class="ftab" data-f="Bantamweight" onclick="setFilter(this)">Bantamweight</button>
   <button class="ftab" data-f="Flyweight" onclick="setFilter(this)">Flyweight</button>
+</div>
+<div class="picks-widget" id="picksWidget" style="display:none">
+  <button class="picks-toggle" id="picksToggle" onclick="togglePicks()">
+    <div class="picks-toggle-left">
+      <span class="picks-toggle-title">My Picks</span>
+      <span class="picks-count-badge" id="picksCountBadge">0</span>
+    </div>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+  <div class="picks-body" id="picksBody"></div>
 </div>
 <div id="app"></div>
 
@@ -349,34 +389,8 @@ function setFilter(btn){
 function matchFilter(fight){return curFilter==="all"||fight.wc===curFilter;}
 
 // STATS MODAL - called with registry index, no string passing
-function openStatsByIdx(idx){
-  var item=FIGHTS[idx];if(!item)return;
-  var fighter=item.fight;// Actually we need f1 or f2 - pass side too
-}
-function openStats(idx,side){
-  var item=FIGHTS[idx];if(!item)return;
-  var f=side===0?item.fight.f1:item.fight.f2;
-  if(!f.s){toast("Stats not available");return;}
-  document.getElementById("mName").textContent=f.n;
-  document.getElementById("mSub").textContent=f.r+(f.rk?" - "+f.rk:"");
-  var grid=document.getElementById("mGrid");grid.innerHTML="";
-  function ms(val,lbl){var d=document.createElement("div");d.className="ms";var v=document.createElement("div");v.className="ms-val";v.textContent=val;var l=document.createElement("div");l.className="ms-lbl";l.textContent=lbl;d.appendChild(v);d.appendChild(l);return d;}
-  grid.appendChild(ms(f.s.ko,"KO/TKO Wins"));grid.appendChild(ms(f.s.sub,"Sub Wins"));grid.appendChild(ms(f.s.slpm,"Sig Str/Min"));grid.appendChild(ms(f.s.td,"TD Avg/15"));
-  var bars=document.getElementById("mBars");bars.innerHTML="";
-  function mbar(lbl, pct) {
-    var w = document.createElement("div"); w.className = "mbar-wrap";
-    var hl = document.createElement("div"); hl.className = "mbar-lbl";
-    var sl = document.createElement("span"); sl.textContent = lbl;
-    var sv = document.createElement("span"); sv.textContent = pct + "%";
-    hl.appendChild(sl); hl.appendChild(sv); w.appendChild(hl);
-    var b = document.createElement("div"); b.className = "mbar";
-    var bf = document.createElement("div"); bf.className = "mbar-fill";
-    bf.style.width = pct + "%"; b.appendChild(bf); w.appendChild(b);
-    return w;
-  }
-  bars.appendChild(mbar("Striking Accuracy",f.s.acc));bars.appendChild(mbar("Takedown Defense",f.s.tdd));
-  document.getElementById("statsModal").classList.add("open");
-}
+
+
 function closeModal(){document.getElementById("statsModal").classList.remove("open");}
 
 // NAME MODAL
@@ -390,7 +404,7 @@ function pick(idx,side){
   var f=side===0?item.fight.f1:item.fight.f2;
   checkName(function(){
     preds[pk(item.ei,item.fi)]=f.n;
-    save();render();
+    save();render();updatePicksWidget();
     toast("Picked: "+f.n.split(" ").pop());
   });
 }
@@ -616,6 +630,7 @@ function render(){
   }
 
   document.getElementById("picks-count").textContent=Object.keys(preds).length;
+  updatePicksWidget();
 
   if(userName&&Object.keys(preds).length>0){
     var correct=0,total=0;
@@ -638,6 +653,193 @@ function render(){
   }
 
   updateCountdown();
+}
+
+// ── FIGHTER PHOTO lookup via UFC.com search ──
+var photoCache = {};
+function loadFighterPhoto(name) {
+  if (photoCache[name]) return Promise.resolve(photoCache[name]);
+  // Build a UFC athlete search URL using the fighter name
+  var slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  // Try UFC CDN pattern - most fighters follow this format
+  var url = "https://dmxg5wxfqgde4.cloudfront.net/styles/athlete_bio_full_body/s3/2024-05/" + slug + ".png";
+  photoCache[name] = url;
+  return Promise.resolve(url);
+}
+
+
+
+// ── PICKS SUMMARY WIDGET ──
+function togglePicks() {
+  var body = document.getElementById("picksBody");
+  var toggle = document.getElementById("picksToggle");
+  body.classList.toggle("open");
+  toggle.classList.toggle("open");
+  if (body.classList.contains("open")) renderPicksWidget();
+}
+
+function renderPicksWidget() {
+  var body = document.getElementById("picksBody");
+  body.innerHTML = "";
+  var totalPicks = Object.keys(preds).length;
+  if (totalPicks === 0) {
+    var empty = document.createElement("p");
+    empty.style.cssText = "font-size:13px;color:var(--muted);padding:12px 0";
+    empty.textContent = "No picks yet - tap Pick on any fight to get started.";
+    body.appendChild(empty);
+    return;
+  }
+
+  var correct = 0, total = 0;
+  // Group picks by event
+  EVENTS.forEach(function(ev, ei) {
+    var evPicks = ev.fights.map(function(f, fi) {
+      var key = pk(ei, fi);
+      return preds[key] ? {fi: fi, fight: f, pick: preds[key], result: results[key] || null} : null;
+    }).filter(Boolean);
+
+    if (!evPicks.length) return;
+
+    // Event label
+    var lbl = document.createElement("div");
+    lbl.className = "picks-event-label";
+    lbl.textContent = ev.name;
+    body.appendChild(lbl);
+
+    evPicks.forEach(function(p) {
+      var row = document.createElement("div");
+      row.className = "pick-summary-row";
+
+      var fightLbl = document.createElement("div");
+      fightLbl.className = "pick-fight-label";
+      fightLbl.textContent = p.fight.lbl === "Main Event" ? "Main" :
+                             p.fight.lbl === "Co-Main" ? "Co-Main" : p.fight.wc;
+      row.appendChild(fightLbl);
+
+      var pickName = document.createElement("div");
+      pickName.className = "pick-fighter-pick";
+      // Show last name only for space
+      pickName.textContent = p.pick.split(" ").pop();
+      row.appendChild(pickName);
+
+      // Opponent
+      var opp = document.createElement("div");
+      opp.style.cssText = "font-size:11px;color:var(--muted);flex-shrink:0";
+      var oppName = p.pick === p.fight.f1.n ? p.fight.f2.n : p.fight.f1.n;
+      opp.textContent = "vs " + oppName.split(" ").pop();
+      row.appendChild(opp);
+
+      var badge = document.createElement("div");
+      badge.className = "pick-result-badge";
+      if (!p.result) {
+        badge.className += " pending";
+        badge.textContent = "Pending";
+      } else if (p.result === p.pick) {
+        badge.className += " win";
+        badge.textContent = "Correct";
+        correct++; total++;
+      } else {
+        badge.className += " loss";
+        badge.textContent = "Wrong";
+        total++;
+      }
+      row.appendChild(badge);
+      body.appendChild(row);
+    });
+  });
+
+  // Score summary
+  if (total > 0) {
+    var scoreRow = document.createElement("div");
+    scoreRow.className = "picks-score-row";
+    var scoreLbl = document.createElement("span");
+    scoreLbl.className = "picks-score-label";
+    scoreLbl.textContent = "Overall record";
+    var scoreVal = document.createElement("span");
+    scoreVal.className = "picks-score-val";
+    scoreVal.textContent = correct + "/" + total + " (" + Math.round(correct/total*100) + "%)";
+    scoreRow.appendChild(scoreLbl);
+    scoreRow.appendChild(scoreVal);
+    body.appendChild(scoreRow);
+  }
+}
+
+function updatePicksWidget() {
+  var totalPicks = Object.keys(preds).length;
+  var widget = document.getElementById("picksWidget");
+  var badge = document.getElementById("picksCountBadge");
+  widget.style.display = totalPicks > 0 ? "block" : "none";
+  badge.textContent = totalPicks;
+  // Re-render body if open
+  var body = document.getElementById("picksBody");
+  if (body && body.classList.contains("open")) renderPicksWidget();
+}
+
+function openStats(idx, side) {
+  var item = FIGHTS[idx];
+  if (!item) return;
+  var f = side === 0 ? item.fight.f1 : item.fight.f2;
+  if (!f.s) { toast("Stats not available"); return; }
+
+  document.getElementById("mName").textContent = f.n;
+
+  // Photo loading via ESPN athlete API
+  var photoRow = document.getElementById("mPhotoRow");
+  var subFb = document.getElementById("mSubFallback");
+  var subEl = document.getElementById("mSub");
+  var rankEl = document.getElementById("mRanking");
+  var photoEl = document.getElementById("mPhoto");
+
+  subFb.textContent = f.r + (f.rk ? " - " + f.rk : "");
+  subFb.style.display = "block";
+  subEl.textContent = f.r + (f.rk ? " - " + f.rk : "");
+  rankEl.textContent = f.rk === "C" ? "Champion" : f.rk ? "Ranked " + f.rk : "";
+  photoRow.style.display = "none";
+  photoEl.src = "";
+
+  var espnUrl = "https://site.web.api.espn.com/apis/common/v3/sports/mma/ufc/athletes?query=" + encodeURIComponent(f.n) + "&limit=1";
+  fetch(espnUrl)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var athlete = data && data.items && data.items[0];
+      var photoUrl = athlete && athlete.headshot && athlete.headshot.href;
+      if (photoUrl) {
+        photoEl.onload = function() { photoRow.style.display = "flex"; subFb.style.display = "none"; };
+        photoEl.onerror = function() { photoRow.style.display = "none"; };
+        photoEl.src = photoUrl;
+      }
+    })
+    .catch(function() {});
+
+  var grid = document.getElementById("mGrid");
+  grid.innerHTML = "";
+  function ms(val, lbl) {
+    var d = document.createElement("div"); d.className = "ms";
+    var v = document.createElement("div"); v.className = "ms-val"; v.textContent = val;
+    var l2 = document.createElement("div"); l2.className = "ms-lbl"; l2.textContent = lbl;
+    d.appendChild(v); d.appendChild(l2); return d;
+  }
+  grid.appendChild(ms(f.s.ko, "KO/TKO Wins"));
+  grid.appendChild(ms(f.s.sub, "Sub Wins"));
+  grid.appendChild(ms(f.s.slpm, "Sig Str/Min"));
+  grid.appendChild(ms(f.s.td, "TD Avg/15"));
+
+  var bars = document.getElementById("mBars");
+  bars.innerHTML = "";
+  function mbar(lbl, pct) {
+    var w = document.createElement("div"); w.className = "mbar-wrap";
+    var hl = document.createElement("div"); hl.className = "mbar-lbl";
+    var sl = document.createElement("span"); sl.textContent = lbl;
+    var sv = document.createElement("span"); sv.textContent = pct + "%";
+    hl.appendChild(sl); hl.appendChild(sv); w.appendChild(hl);
+    var b = document.createElement("div"); b.className = "mbar";
+    var bf = document.createElement("div"); bf.className = "mbar-fill";
+    bf.style.width = pct + "%"; b.appendChild(bf); w.appendChild(b);
+    return w;
+  }
+  bars.appendChild(mbar("Striking Accuracy", f.s.acc));
+  bars.appendChild(mbar("Takedown Defense", f.s.tdd));
+  document.getElementById("statsModal").classList.add("open");
 }
 
 document.addEventListener("DOMContentLoaded", function() {
