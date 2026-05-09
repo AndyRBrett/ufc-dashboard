@@ -226,360 +226,423 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
   <button class="ftab" data-f="Flyweight" onclick="setFilter(this)">Flyweight</button>
 </div>
 <div id="app"></div>
+
 <script>
-var EVENTS=[{name:"UFC 328: Chimaev vs. Strickland",date:"2026-05-09",venue:"Prudential Center",loc:"Newark, NJ",tv:"Paramount+",time:"21:00",fights:[{lbl:"Main Event",wc:"Middleweight",title:true,odds:{f1:-575,f2:425},f1:{n:"Khamzat Chimaev",r:"15-0",rk:"C",s:{slpm:"4.5",acc:55,td:"3.4",tdd:90,ko:8,sub:3}},f2:{n:"Sean Strickland",r:"30-7",rk:"#3",s:{slpm:"5.2",acc:46,td:"0.4",tdd:81,ko:4,sub:2}}},{lbl:"Co-Main",wc:"Flyweight",title:true,odds:{f1:-145,f2:120},f1:{n:"Joshua Van",r:"12-0",rk:"C",s:{slpm:"3.1",acc:49,td:"2.8",tdd:88,ko:3,sub:5}},f2:{n:"Tatsuro Taira",r:"16-1",rk:"#3",s:{slpm:"2.9",acc:51,td:"3.2",tdd:79,ko:2,sub:7}}},{lbl:"Main Card",wc:"Heavyweight",title:false,odds:{f1:-142,f2:118},f1:{n:"Alexander Volkov",r:"38-10",rk:"#2",s:{slpm:"3.8",acc:42,td:"0.3",tdd:93,ko:19,sub:1}},f2:{n:"Waldo Cortes-Acosta",r:"13-2",rk:"#4",s:{slpm:"4.1",acc:48,td:"1.8",tdd:72,ko:10,sub:0}}},{lbl:"Main Card",wc:"Welterweight",title:false,odds:{f1:-170,f2:140},f1:{n:"Sean Brady",r:"17-1",rk:"#6",s:{slpm:"3.2",acc:47,td:"3.5",tdd:77,ko:3,sub:5}},f2:{n:"Joaquin Buckley",r:"22-5",rk:"#9",s:{slpm:"5.6",acc:51,td:"0.5",tdd:64,ko:15,sub:1}}},{lbl:"Main Card",wc:"Lightweight",title:false,odds:{f1:-320,f2:260},f1:{n:"King Green",r:"34-17-1",rk:"",s:{slpm:"5.4",acc:44,td:"0.3",tdd:80,ko:11,sub:2}},f2:{n:"Jeremy Stephens",r:"29-22-1",rk:"",s:{slpm:"4.7",acc:39,td:"0.6",tdd:65,ko:17,sub:1}}},{lbl:"Prelim",wc:"Middleweight",title:false,odds:null,f1:{n:"Ateba Gautier",r:"11-1",rk:"",s:null},f2:{n:"Ozzy Diaz",r:"9-2",rk:"",s:null}},{lbl:"Prelim",wc:"Welterweight",title:false,odds:null,f1:{n:"Joel Alvarez",r:"25-4",rk:"",s:null},f2:{n:"Yaroslav Amosov",r:"28-0",rk:"#14",s:null}},{lbl:"Prelim",wc:"Lightweight",title:false,odds:null,f1:{n:"Grant Dawson",r:"21-2-1",rk:"",s:null},f2:{n:"Mateusz Rebecki",r:"18-4",rk:"",s:null}},{lbl:"Prelim",wc:"Lightweight",title:false,odds:null,f1:{n:"Jim Miller",r:"37-17-1",rk:"",s:null},f2:{n:"Jared Gordon",r:"19-7",rk:"",s:null}},{lbl:"Early Prelim",wc:"Middleweight",title:false,odds:null,f1:{n:"Roman Kopylov",r:"12-3",rk:"",s:null},f2:{n:"Marco Tulio",r:"9-1",rk:"",s:null}},{lbl:"Early Prelim",wc:"Featherweight",title:false,odds:null,f1:{n:"Pat Sabatini",r:"18-3",rk:"",s:null},f2:{n:"William Gomis",r:"10-2",rk:"",s:null}},{lbl:"Early Prelim",wc:"Middleweight",title:false,odds:null,f1:{n:"Baisangur Susurkaev",r:"12-0",rk:"",s:null},f2:{n:"Djorden Santos",r:"9-2",rk:"",s:null}},{lbl:"Early Prelim",wc:"Flyweight",title:false,odds:null,f1:{n:"Clayton Carpenter",r:"8-3",rk:"",s:null},f2:{n:"Jose Ochoa",r:"7-1",rk:"",s:null}}]},{name:"UFC Fight Night: Allen vs. Costa",date:"2026-05-16",venue:"Meta APEX",loc:"Las Vegas, NV",tv:"Paramount+",time:"20:00",fights:[{lbl:"Main Event",wc:"Featherweight",title:false,odds:{f1:110,f2:-132},f1:{n:"Arnold Allen",r:"20-4",rk:"",s:{slpm:"2.8",acc:47,td:"1.7",tdd:82,ko:4,sub:8}},f2:{n:"Melquizael Costa",r:"26-7",rk:"#12",s:{slpm:"4.4",acc:60,td:"2.0",tdd:78,ko:10,sub:7}}},{lbl:"Co-Main",wc:"Featherweight",title:false,odds:{f1:-175,f2:145},f1:{n:"Doo Ho Choi",r:"16-4-1",rk:"",s:{slpm:"5.9",acc:45,td:"0.2",tdd:70,ko:9,sub:1}},f2:{n:"Daniel Santos",r:"12-2",rk:"",s:{slpm:"4.3",acc:52,td:"1.5",tdd:74,ko:6,sub:3}}},{lbl:"Main Card",wc:"Light Heavyweight",title:false,odds:null,f1:{n:"Modestas Bukauskas",r:"14-5",rk:"",s:null},f2:{n:"Rodolfo Bellato",r:"13-3",rk:"",s:null}},{lbl:"Main Card",wc:"Bantamweight",title:false,odds:null,f1:{n:"Malcolm Wellmaker",r:"11-0",rk:"",s:null},f2:{n:"Juan Diaz",r:"9-1",rk:"",s:null}},{lbl:"Main Card",wc:"Bantamweight",title:false,odds:null,f1:{n:"Timothy Cuamba",r:"9-1",rk:"",s:null},f2:{n:"Bernardo Sopaj",r:"9-0",rk:"",s:null}},{lbl:"Prelim",wc:"Welterweight",title:false,odds:null,f1:{n:"Khaos Williams",r:"14-3",rk:"",s:null},f2:{n:"Nikolay Veretennikov",r:"19-3",rk:"",s:null}},{lbl:"Prelim",wc:"Welterweight",title:false,odds:null,f1:{n:"Jeremiah Wells",r:"13-3-1",rk:"",s:null},f2:{n:"TBD",r:"",rk:"",s:null}},{lbl:"Prelim",wc:"Light Heavyweight",title:false,odds:null,f1:{n:"Tuco Tokkos",r:"10-1",rk:"",s:null},f2:{n:"Ivan Erslan",r:"9-2",rk:"",s:null}},{lbl:"Prelim",wc:"Women's Bantamweight",title:false,odds:null,f1:{n:"Ketlen Vieira",r:"13-4-1",rk:"",s:null},f2:{n:"Jacqueline Cavalcanti",r:"11-2",rk:"",s:null}},{lbl:"Prelim",wc:"Middleweight",title:false,odds:null,f1:{n:"Andre Petroski",r:"12-4",rk:"",s:null},f2:{n:"Cody Brundage",r:"13-6",rk:"",s:null}},{lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:null,f1:{n:"Alice Ardelean",r:"8-1",rk:"",s:null},f2:{n:"Polyana Viana",r:"14-7",rk:"",s:null}},{lbl:"Prelim",wc:"Flyweight",title:false,odds:null,f1:{n:"Daniel Barez",r:"10-3",rk:"",s:null},f2:{n:"Luis Gurule",r:"9-2",rk:"",s:null}},{lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:null,f1:{n:"Shauna Bannon",r:"8-2",rk:"",s:null},f2:{n:"Nicolle Caliari",r:"7-3",rk:"",s:null}}]},{name:"UFC Fight Night: Song vs. Figueiredo",date:"2026-05-30",venue:"Galaxy Arena",loc:"Macau, China",tv:"Paramount+",time:"07:00",fights:[{lbl:"Main Event",wc:"Bantamweight",title:false,odds:{f1:-165,f2:138},f1:{n:"Song Yadong",r:"22-9-1",rk:"",s:{slpm:"4.4",acc:50,td:"0.8",tdd:83,ko:6,sub:1}},f2:{n:"Deiveson Figueiredo",r:"25-6-1",rk:"",s:{slpm:"3.7",acc:47,td:"2.3",tdd:76,ko:8,sub:9}}},{lbl:"Co-Main",wc:"Light Heavyweight",title:false,odds:null,f1:{n:"Mingyang Zhang",r:"10-2",rk:"",s:null},f2:{n:"Alonzo Menifield",r:"15-5",rk:"",s:null}},{lbl:"Main Card",wc:"Heavyweight",title:false,odds:null,f1:{n:"Sergei Pavlovich",r:"18-3",rk:"",s:null},f2:{n:"Tallison Teixeira",r:"10-1",rk:"",s:null}},{lbl:"Main Card",wc:"Flyweight",title:false,odds:null,f1:{n:"Alex Perez",r:"12-5",rk:"",s:null},f2:{n:"Sumudaerji",r:"18-4",rk:"",s:null}},{lbl:"Main Card",wc:"Bantamweight",title:false,odds:null,f1:{n:"Kai Asakura",r:"22-6",rk:"",s:null},f2:{n:"Cameron Smotherman",r:"10-2",rk:"",s:null}},{lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:null,f1:{n:"Angela Hill",r:"17-13",rk:"",s:null},f2:{n:"Jingnan Xiong",r:"19-2",rk:"",s:null}},{lbl:"Prelim",wc:"Middleweight",title:false,odds:null,f1:{n:"Luis Dias",r:"9-2",rk:"",s:null},f2:{n:"Yi Sak Lee",r:"8-1",rk:"",s:null}},{lbl:"Prelim",wc:"Flyweight",title:false,odds:null,f1:{n:"Rei Tsuruya",r:"9-1",rk:"",s:null},f2:{n:"Jesus Aguilar",r:"11-4",rk:"",s:null}},{lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:null,f1:{n:"Loma Lookboonmee",r:"9-6",rk:"",s:null},f2:{n:"Jaqueline Amorim",r:"8-2",rk:"",s:null}},{lbl:"Prelim",wc:"Bantamweight",title:false,odds:null,f1:{n:"Aoriqileng",r:"19-10",rk:"",s:null},f2:{n:"Cody Haddon",r:"9-2",rk:"",s:null}}]},{name:"UFC Freedom 250: Topuria vs. Gaethje",date:"2026-06-14",venue:"South Lawn, White House",loc:"Washington, D.C.",tv:"Paramount+ / CBS",time:"20:00",fights:[{lbl:"Main Event",wc:"Lightweight",title:true,odds:{f1:-400,f2:310},f1:{n:"Ilia Topuria",r:"17-0",rk:"C",s:{slpm:"4.7",acc:58,td:"1.2",tdd:94,ko:10,sub:4}},f2:{n:"Justin Gaethje",r:"27-5",rk:"#1",s:{slpm:"5.9",acc:43,td:"0.4",tdd:76,ko:14,sub:1}}},{lbl:"Co-Main",wc:"Heavyweight",title:true,odds:{f1:-115,f2:-105},f1:{n:"Alex Pereira",r:"10-2",rk:"#2",s:{slpm:"5.1",acc:54,td:"0.3",tdd:88,ko:7,sub:0}},f2:{n:"Ciryl Gane",r:"13-4",rk:"#1",s:{slpm:"3.8",acc:55,td:"0.4",tdd:93,ko:7,sub:0}}},{lbl:"Main Card",wc:"Bantamweight",title:false,odds:{f1:-425,f2:290},f1:{n:"Sean O'Malley",r:"19-3",rk:"#2",s:{slpm:"5.4",acc:48,td:"0.2",tdd:80,ko:8,sub:1}},f2:{n:"Aiemann Zahabi",r:"14-2",rk:"#6",s:{slpm:"3.2",acc:46,td:"0.8",tdd:79,ko:5,sub:4}}},{lbl:"Main Card",wc:"Heavyweight",title:false,odds:{f1:-275,f2:220},f1:{n:"Josh Hokit",r:"9-0",rk:"#5",s:{slpm:"4.8",acc:52,td:"2.1",tdd:85,ko:5,sub:2}},f2:{n:"Derrick Lewis",r:"29-13",rk:"#9",s:{slpm:"3.9",acc:40,td:"0.2",tdd:88,ko:25,sub:0}}},{lbl:"Main Card",wc:"Lightweight",title:false,odds:{f1:-700,f2:500},f1:{n:"Mauricio Ruffy",r:"13-2",rk:"#10",s:{slpm:"6.1",acc:53,td:"0.6",tdd:88,ko:5,sub:5}},f2:{n:"Michael Chandler",r:"23-10",rk:"#13",s:{slpm:"5.5",acc:42,td:"2.5",tdd:71,ko:10,sub:3}}},{lbl:"Main Card",wc:"Middleweight",title:false,odds:{f1:-340,f2:270},f1:{n:"Bo Nickal",r:"8-1",rk:"",s:{slpm:"3.3",acc:48,td:"5.8",tdd:88,ko:2,sub:4}},f2:{n:"Kyle Daukaus",r:"17-4",rk:"",s:{slpm:"3.1",acc:44,td:"0.9",tdd:72,ko:5,sub:7}}},{lbl:"Main Card",wc:"Featherweight",title:false,odds:{f1:-200,f2:165},f1:{n:"Diego Lopes",r:"27-8",rk:"#2",s:{slpm:"4.6",acc:50,td:"0.9",tdd:78,ko:9,sub:9}},f2:{n:"Steve Garcia",r:"19-5",rk:"#9",s:{slpm:"3.7",acc:45,td:"0.5",tdd:69,ko:6,sub:2}}}]}];
+var EVENTS=[
+  {name:"UFC 328: Chimaev vs. Strickland",date:"2026-05-09",venue:"Prudential Center",loc:"Newark, NJ",tv:"Paramount+",time:"21:00",
+    fights:[
+    {lbl:"Main Event",wc:"Middleweight",title:true,odds:{f1:-575,f2:425},f1:{n:"Khamzat Chimaev",r:"15-0",rk:"C",s:{slpm:"4.5",acc:55,td:"3.4",tdd:90,ko:8,sub:3}},f2:{n:"Sean Strickland",r:"30-7",rk:"#3",s:{slpm:"5.2",acc:46,td:"0.4",tdd:81,ko:4,sub:2}}},
+    {lbl:"Co-Main",wc:"Flyweight",title:true,odds:{f1:-145,f2:120},f1:{n:"Joshua Van",r:"12-0",rk:"C",s:{slpm:"3.1",acc:49,td:"2.8",tdd:88,ko:3,sub:5}},f2:{n:"Tatsuro Taira",r:"16-1",rk:"#3",s:{slpm:"2.9",acc:51,td:"3.2",tdd:79,ko:2,sub:7}}},
+    {lbl:"Main Card",wc:"Heavyweight",title:false,odds:{f1:-142,f2:118},f1:{n:"Alexander Volkov",r:"38-10",rk:"#2",s:{slpm:"3.8",acc:42,td:"0.3",tdd:93,ko:19,sub:1}},f2:{n:"Waldo Cortes-Acosta",r:"13-2",rk:"#4",s:{slpm:"4.1",acc:48,td:"1.8",tdd:72,ko:10,sub:0}}},
+    {lbl:"Main Card",wc:"Welterweight",title:false,odds:{f1:-170,f2:140},f1:{n:"Sean Brady",r:"17-1",rk:"#6",s:{slpm:"3.2",acc:47,td:"3.5",tdd:77,ko:3,sub:5}},f2:{n:"Joaquin Buckley",r:"22-5",rk:"#9",s:{slpm:"5.6",acc:51,td:"0.5",tdd:64,ko:15,sub:1}}},
+    {lbl:"Main Card",wc:"Lightweight",title:false,odds:{f1:-320,f2:260},f1:{n:"King Green",r:"34-17-1",rk:"",s:{slpm:"5.4",acc:44,td:"0.3",tdd:80,ko:11,sub:2}},f2:{n:"Jeremy Stephens",r:"29-22-1",rk:"",s:{slpm:"4.7",acc:39,td:"0.6",tdd:65,ko:17,sub:1}}},
+    {lbl:"Prelim",wc:"Middleweight",title:false,odds:null,f1:{n:"Ateba Gautier",r:"11-1",rk:"",s:null},f2:{n:"Ozzy Diaz",r:"9-2",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Welterweight",title:false,odds:null,f1:{n:"Joel Alvarez",r:"25-4",rk:"",s:null},f2:{n:"Yaroslav Amosov",r:"28-0",rk:"#14",s:null}},
+    {lbl:"Prelim",wc:"Lightweight",title:false,odds:null,f1:{n:"Grant Dawson",r:"21-2-1",rk:"",s:null},f2:{n:"Mateusz Rebecki",r:"18-4",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Lightweight",title:false,odds:null,f1:{n:"Jim Miller",r:"37-17-1",rk:"",s:null},f2:{n:"Jared Gordon",r:"19-7",rk:"",s:null}},
+    {lbl:"Early Prelim",wc:"Middleweight",title:false,odds:null,f1:{n:"Roman Kopylov",r:"12-3",rk:"",s:null},f2:{n:"Marco Tulio",r:"9-1",rk:"",s:null}},
+    {lbl:"Early Prelim",wc:"Featherweight",title:false,odds:null,f1:{n:"Pat Sabatini",r:"18-3",rk:"",s:null},f2:{n:"William Gomis",r:"10-2",rk:"",s:null}},
+    {lbl:"Early Prelim",wc:"Middleweight",title:false,odds:null,f1:{n:"Baisangur Susurkaev",r:"12-0",rk:"",s:null},f2:{n:"Djorden Santos",r:"9-2",rk:"",s:null}},
+    {lbl:"Early Prelim",wc:"Flyweight",title:false,odds:null,f1:{n:"Clayton Carpenter",r:"8-3",rk:"",s:null},f2:{n:"Jose Ochoa",r:"7-1",rk:"",s:null}}
+  ]},
+  {name:"UFC Fight Night: Allen vs. Costa",date:"2026-05-16",venue:"Meta APEX",loc:"Las Vegas, NV",tv:"Paramount+",time:"20:00",
+    fights:[
+    {lbl:"Main Event",wc:"Featherweight",title:false,odds:{f1:110,f2:-132},f1:{n:"Arnold Allen",r:"20-4",rk:"",s:{slpm:"2.8",acc:47,td:"1.7",tdd:82,ko:4,sub:8}},f2:{n:"Melquizael Costa",r:"26-7",rk:"#12",s:{slpm:"4.4",acc:60,td:"2.0",tdd:78,ko:10,sub:7}}},
+    {lbl:"Co-Main",wc:"Featherweight",title:false,odds:{f1:-175,f2:145},f1:{n:"Doo Ho Choi",r:"16-4-1",rk:"",s:{slpm:"5.9",acc:45,td:"0.2",tdd:70,ko:9,sub:1}},f2:{n:"Daniel Santos",r:"12-2",rk:"",s:{slpm:"4.3",acc:52,td:"1.5",tdd:74,ko:6,sub:3}}},
+    {lbl:"Main Card",wc:"Light Heavyweight",title:false,odds:null,f1:{n:"Modestas Bukauskas",r:"14-5",rk:"",s:null},f2:{n:"Rodolfo Bellato",r:"13-3",rk:"",s:null}},
+    {lbl:"Main Card",wc:"Bantamweight",title:false,odds:null,f1:{n:"Malcolm Wellmaker",r:"11-0",rk:"",s:null},f2:{n:"Juan Diaz",r:"9-1",rk:"",s:null}},
+    {lbl:"Main Card",wc:"Bantamweight",title:false,odds:null,f1:{n:"Timothy Cuamba",r:"9-1",rk:"",s:null},f2:{n:"Bernardo Sopaj",r:"9-0",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Welterweight",title:false,odds:null,f1:{n:"Khaos Williams",r:"14-3",rk:"",s:null},f2:{n:"Nikolay Veretennikov",r:"19-3",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Welterweight",title:false,odds:null,f1:{n:"Jeremiah Wells",r:"13-3-1",rk:"",s:null},f2:{n:"TBD",r:"",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Light Heavyweight",title:false,odds:null,f1:{n:"Tuco Tokkos",r:"10-1",rk:"",s:null},f2:{n:"Ivan Erslan",r:"9-2",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Women's Bantamweight",title:false,odds:null,f1:{n:"Ketlen Vieira",r:"13-4-1",rk:"",s:null},f2:{n:"Jacqueline Cavalcanti",r:"11-2",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Middleweight",title:false,odds:null,f1:{n:"Andre Petroski",r:"12-4",rk:"",s:null},f2:{n:"Cody Brundage",r:"13-6",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:null,f1:{n:"Alice Ardelean",r:"8-1",rk:"",s:null},f2:{n:"Polyana Viana",r:"14-7",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Flyweight",title:false,odds:null,f1:{n:"Daniel Barez",r:"10-3",rk:"",s:null},f2:{n:"Luis Gurule",r:"9-2",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:null,f1:{n:"Shauna Bannon",r:"8-2",rk:"",s:null},f2:{n:"Nicolle Caliari",r:"7-3",rk:"",s:null}}
+  ]},
+  {name:"UFC Fight Night: Song vs. Figueiredo",date:"2026-05-30",venue:"Galaxy Arena",loc:"Macau, China",tv:"Paramount+",time:"07:00",
+    fights:[
+    {lbl:"Main Event",wc:"Bantamweight",title:false,odds:{f1:-165,f2:138},f1:{n:"Song Yadong",r:"22-9-1",rk:"",s:{slpm:"4.4",acc:50,td:"0.8",tdd:83,ko:6,sub:1}},f2:{n:"Deiveson Figueiredo",r:"25-6-1",rk:"",s:{slpm:"3.7",acc:47,td:"2.3",tdd:76,ko:8,sub:9}}},
+    {lbl:"Co-Main",wc:"Light Heavyweight",title:false,odds:null,f1:{n:"Mingyang Zhang",r:"10-2",rk:"",s:null},f2:{n:"Alonzo Menifield",r:"15-5",rk:"",s:null}},
+    {lbl:"Main Card",wc:"Heavyweight",title:false,odds:null,f1:{n:"Sergei Pavlovich",r:"18-3",rk:"",s:null},f2:{n:"Tallison Teixeira",r:"10-1",rk:"",s:null}},
+    {lbl:"Main Card",wc:"Flyweight",title:false,odds:null,f1:{n:"Alex Perez",r:"12-5",rk:"",s:null},f2:{n:"Sumudaerji",r:"18-4",rk:"",s:null}},
+    {lbl:"Main Card",wc:"Bantamweight",title:false,odds:null,f1:{n:"Kai Asakura",r:"22-6",rk:"",s:null},f2:{n:"Cameron Smotherman",r:"10-2",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:null,f1:{n:"Angela Hill",r:"17-13",rk:"",s:null},f2:{n:"Jingnan Xiong",r:"19-2",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Middleweight",title:false,odds:null,f1:{n:"Luis Dias",r:"9-2",rk:"",s:null},f2:{n:"Yi Sak Lee",r:"8-1",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Flyweight",title:false,odds:null,f1:{n:"Rei Tsuruya",r:"9-1",rk:"",s:null},f2:{n:"Jesus Aguilar",r:"11-4",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:null,f1:{n:"Loma Lookboonmee",r:"9-6",rk:"",s:null},f2:{n:"Jaqueline Amorim",r:"8-2",rk:"",s:null}},
+    {lbl:"Prelim",wc:"Bantamweight",title:false,odds:null,f1:{n:"Aoriqileng",r:"19-10",rk:"",s:null},f2:{n:"Cody Haddon",r:"9-2",rk:"",s:null}}
+  ]},
+  {name:"UFC Freedom 250: Topuria vs. Gaethje",date:"2026-06-14",venue:"South Lawn, White House",loc:"Washington, D.C.",tv:"Paramount+ / CBS",time:"20:00",
+    fights:[
+    {lbl:"Main Event",wc:"Lightweight",title:true,odds:{f1:-400,f2:310},f1:{n:"Ilia Topuria",r:"17-0",rk:"C",s:{slpm:"4.7",acc:58,td:"1.2",tdd:94,ko:10,sub:4}},f2:{n:"Justin Gaethje",r:"27-5",rk:"#1",s:{slpm:"5.9",acc:43,td:"0.4",tdd:76,ko:14,sub:1}}},
+    {lbl:"Co-Main",wc:"Heavyweight",title:true,odds:{f1:-115,f2:-105},f1:{n:"Alex Pereira",r:"10-2",rk:"#2",s:{slpm:"5.1",acc:54,td:"0.3",tdd:88,ko:7,sub:0}},f2:{n:"Ciryl Gane",r:"13-4",rk:"#1",s:{slpm:"3.8",acc:55,td:"0.4",tdd:93,ko:7,sub:0}}},
+    {lbl:"Main Card",wc:"Bantamweight",title:false,odds:{f1:-425,f2:290},f1:{n:"Sean O'Malley",r:"19-3",rk:"#2",s:{slpm:"5.4",acc:48,td:"0.2",tdd:80,ko:8,sub:1}},f2:{n:"Aiemann Zahabi",r:"14-2",rk:"#6",s:{slpm:"3.2",acc:46,td:"0.8",tdd:79,ko:5,sub:4}}},
+    {lbl:"Main Card",wc:"Heavyweight",title:false,odds:{f1:-275,f2:220},f1:{n:"Josh Hokit",r:"9-0",rk:"#5",s:{slpm:"4.8",acc:52,td:"2.1",tdd:85,ko:5,sub:2}},f2:{n:"Derrick Lewis",r:"29-13",rk:"#9",s:{slpm:"3.9",acc:40,td:"0.2",tdd:88,ko:25,sub:0}}},
+    {lbl:"Main Card",wc:"Lightweight",title:false,odds:{f1:-700,f2:500},f1:{n:"Mauricio Ruffy",r:"13-2",rk:"#10",s:{slpm:"6.1",acc:53,td:"0.6",tdd:88,ko:5,sub:5}},f2:{n:"Michael Chandler",r:"23-10",rk:"#13",s:{slpm:"5.5",acc:42,td:"2.5",tdd:71,ko:10,sub:3}}},
+    {lbl:"Main Card",wc:"Middleweight",title:false,odds:{f1:-340,f2:270},f1:{n:"Bo Nickal",r:"8-1",rk:"",s:{slpm:"3.3",acc:48,td:"5.8",tdd:88,ko:2,sub:4}},f2:{n:"Kyle Daukaus",r:"17-4",rk:"",s:{slpm:"3.1",acc:44,td:"0.9",tdd:72,ko:5,sub:7}}},
+    {lbl:"Main Card",wc:"Featherweight",title:false,odds:{f1:-200,f2:165},f1:{n:"Diego Lopes",r:"27-8",rk:"#2",s:{slpm:"4.6",acc:50,td:"0.9",tdd:78,ko:9,sub:9}},f2:{n:"Steve Garcia",r:"19-5",rk:"#9",s:{slpm:"3.7",acc:45,td:"0.5",tdd:69,ko:6,sub:2}}}]}
+];
+
 
 // Global fight registry - KEY Safari fix: no string escaping needed in event handlers
 // All interactive elements use numeric IDs that look up into this registry
 var FIGHTS=[];
 function buildRegistry(){
-FIGHTS=[];
-EVENTS.forEach(function(ev,ei){
-ev.fights.forEach(function(f,fi){
-FIGHTS.push({ei:ei,fi:fi,ev:ev,fight:f});
-});
-});
+  FIGHTS=[];
+  EVENTS.forEach(function(ev,ei){
+    ev.fights.forEach(function(f,fi){
+      FIGHTS.push({ei:ei,fi:fi,ev:ev,fight:f});
+    });
+  });
 }
 
-var curFilter=“all”;
-var userName=””,preds={},results={};
-try{userName=localStorage.getItem(“ufc_name”)||””;preds=JSON.parse(localStorage.getItem(“ufc_preds”)||”{}”);results=JSON.parse(localStorage.getItem(“ufc_results”)||”{}”);}catch(e){}
+var curFilter="all";
+var userName="",preds={},results={};
+try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.getItem("ufc_preds")||"{}");results=JSON.parse(localStorage.getItem("ufc_results")||"{}");}catch(e){}
 
-function save(){try{localStorage.setItem(“ufc_preds”,JSON.stringify(preds));localStorage.setItem(“ufc_results”,JSON.stringify(results));}catch(e){}}
-function pad(n){return String(n).padStart(2,“0”);}
-function pk(ei,fi){return “e”+ei+“f”+fi;}
-function fmtOdds(n){return n>0?”+”+n:””+n;}
+function save(){try{localStorage.setItem("ufc_preds",JSON.stringify(preds));localStorage.setItem("ufc_results",JSON.stringify(results));}catch(e){}}
+function pad(n){return String(n).padStart(2,"0");}
+function pk(ei,fi){return "e"+ei+"f"+fi;}
+function fmtOdds(n){return n>0?"+"+n:""+n;}
 function daysOut(d){return Math.ceil((new Date(d)-Date.now())/864e5);}
-function fmtDate(d){return new Date(d).toLocaleDateString(“en-US”,{weekday:“short”,month:“short”,day:“numeric”,year:“numeric”});}
+function fmtDate(d){return new Date(d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});}
 
-function toast(msg){var t=document.getElementById(“toast”);t.textContent=msg;t.classList.add(“show”);setTimeout(function(){t.classList.remove(“show”);},2500);}
+function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
 
 // COUNTDOWN - pure numeric, no string parsing
 function updateCountdown(){
-var now=Date.now();
-var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5;});
-if(!upcoming.length)return;
-var ev=upcoming[0];
-var p=ev.time.split(”:”);var h=parseInt(p[0],10);var m=parseInt(p[1]||“0”,10);
-var dp=ev.date.split(”-”);
-var target=Date.UTC(parseInt(dp[0],10),parseInt(dp[1],10)-1,parseInt(dp[2],10),h+4,m,0);
-var diff=target-now;
-var wrap=document.getElementById(“cd-wrap”);
-wrap.style.display=“block”;
-document.getElementById(“cd-event”).textContent=ev.name;
-var timer=document.getElementById(“cd-timer”);
-timer.innerHTML=””;
-if(diff<=0){var live=document.createElement(“span”);live.className=“cd-live”;live.textContent=“MAIN CARD LIVE NOW”;timer.appendChild(live);return;}
-var days=Math.floor(diff/864e5);
-var hours=Math.floor((diff%864e5)/36e5);
-var mins=Math.floor((diff%36e5)/6e4);
-var secs=Math.floor((diff%6e4)/1e3);
-function cdUnit(val,lbl){var u=document.createElement(“div”);u.className=“cd-unit”;var n=document.createElement(“div”);n.className=“cd-num”;n.textContent=val;var l=document.createElement(“div”);l.className=“cd-lbl”;l.textContent=lbl;u.appendChild(n);u.appendChild(l);return u;}
-function cdSep(){var s=document.createElement(“div”);s.className=“cd-sep”;s.textContent=”:”;return s;}
-if(days>0){timer.appendChild(cdUnit(days,“Days”));timer.appendChild(cdSep());}
-timer.appendChild(cdUnit(pad(hours),“Hrs”));timer.appendChild(cdSep());
-timer.appendChild(cdUnit(pad(mins),“Min”));timer.appendChild(cdSep());
-timer.appendChild(cdUnit(pad(secs),“Sec”));
+  var now=Date.now();
+  var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5;});
+  if(!upcoming.length)return;
+  var ev=upcoming[0];
+  var p=ev.time.split(":");var h=parseInt(p[0],10);var m=parseInt(p[1]||"0",10);
+  var dp=ev.date.split("-");
+  var target=Date.UTC(parseInt(dp[0],10),parseInt(dp[1],10)-1,parseInt(dp[2],10),h+4,m,0);
+  var diff=target-now;
+  var wrap=document.getElementById("cd-wrap");
+  wrap.style.display="block";
+  document.getElementById("cd-event").textContent=ev.name;
+  var timer=document.getElementById("cd-timer");
+  timer.innerHTML="";
+  if(diff<=0){var live=document.createElement("span");live.className="cd-live";live.textContent="MAIN CARD LIVE NOW";timer.appendChild(live);return;}
+  var days=Math.floor(diff/864e5);
+  var hours=Math.floor((diff%864e5)/36e5);
+  var mins=Math.floor((diff%36e5)/6e4);
+  var secs=Math.floor((diff%6e4)/1e3);
+  function cdUnit(val,lbl){var u=document.createElement("div");u.className="cd-unit";var n=document.createElement("div");n.className="cd-num";n.textContent=val;var l=document.createElement("div");l.className="cd-lbl";l.textContent=lbl;u.appendChild(n);u.appendChild(l);return u;}
+  function cdSep(){var s=document.createElement("div");s.className="cd-sep";s.textContent=":";return s;}
+  if(days>0){timer.appendChild(cdUnit(days,"Days"));timer.appendChild(cdSep());}
+  timer.appendChild(cdUnit(pad(hours),"Hrs"));timer.appendChild(cdSep());
+  timer.appendChild(cdUnit(pad(mins),"Min"));timer.appendChild(cdSep());
+  timer.appendChild(cdUnit(pad(secs),"Sec"));
 }
 setInterval(updateCountdown,1000);
 
 function setFilter(btn){
-curFilter=btn.getAttribute(“data-f”)||“all”;
-document.querySelectorAll(”.ftab”).forEach(function(t){t.classList.remove(“active”);});
-btn.classList.add(“active”);
-render();
+  curFilter=btn.getAttribute("data-f")||"all";
+  document.querySelectorAll(".ftab").forEach(function(t){t.classList.remove("active");});
+  btn.classList.add("active");
+  render();
 }
-function matchFilter(fight){return curFilter===“all”||fight.wc===curFilter;}
+function matchFilter(fight){return curFilter==="all"||fight.wc===curFilter;}
 
 // STATS MODAL - called with registry index, no string passing
 function openStatsByIdx(idx){
-var item=FIGHTS[idx];if(!item)return;
-var fighter=item.fight;// Actually we need f1 or f2 - pass side too
+  var item=FIGHTS[idx];if(!item)return;
+  var fighter=item.fight;// Actually we need f1 or f2 - pass side too
 }
 function openStats(idx,side){
-var item=FIGHTS[idx];if(!item)return;
-var f=side===0?item.fight.f1:item.fight.f2;
-if(!f.s){toast(“Stats not available”);return;}
-document.getElementById(“mName”).textContent=f.n;
-document.getElementById(“mSub”).textContent=f.r+(f.rk?” - “+f.rk:””);
-var grid=document.getElementById(“mGrid”);grid.innerHTML=””;
-function ms(val,lbl){var d=document.createElement(“div”);d.className=“ms”;var v=document.createElement(“div”);v.className=“ms-val”;v.textContent=val;var l=document.createElement(“div”);l.className=“ms-lbl”;l.textContent=lbl;d.appendChild(v);d.appendChild(l);return d;}
-grid.appendChild(ms(f.s.ko,“KO/TKO Wins”));grid.appendChild(ms(f.s.sub,“Sub Wins”));grid.appendChild(ms(f.s.slpm,“Sig Str/Min”));grid.appendChild(ms(f.s.td,“TD Avg/15”));
-var bars=document.getElementById(“mBars”);bars.innerHTML=””;
-function mbar(lbl,pct){var w=document.createElement(“div”);w.className=“mbar-wrap”;var hl=document.createElement(“div”);hl.className=“mbar-lbl”;var sl=document.createElement(“span”);sl.textContent=lbl;var sv=document.createElement(“span”);sv.textContent=pct+”%”;hl.appendChild(sl);hl.appendChild(sv);w.appendChild(hl);var b=document.createElement(“div”);b.className=“mbar”;var bf=document.createElement(“div”);bf.className=“mbar-fill”;bf.style.width=pct+”%”;b.appendChild(bf);w.appendChild(b);return w;}
-bars.appendChild(mbar(“Striking Accuracy”,f.s.acc));bars.appendChild(mbar(“Takedown Defense”,f.s.tdd));
-document.getElementById(“statsModal”).classList.add(“open”);
+  var item=FIGHTS[idx];if(!item)return;
+  var f=side===0?item.fight.f1:item.fight.f2;
+  if(!f.s){toast("Stats not available");return;}
+  document.getElementById("mName").textContent=f.n;
+  document.getElementById("mSub").textContent=f.r+(f.rk?" - "+f.rk:"");
+  var grid=document.getElementById("mGrid");grid.innerHTML="";
+  function ms(val,lbl){var d=document.createElement("div");d.className="ms";var v=document.createElement("div");v.className="ms-val";v.textContent=val;var l=document.createElement("div");l.className="ms-lbl";l.textContent=lbl;d.appendChild(v);d.appendChild(l);return d;}
+  grid.appendChild(ms(f.s.ko,"KO/TKO Wins"));grid.appendChild(ms(f.s.sub,"Sub Wins"));grid.appendChild(ms(f.s.slpm,"Sig Str/Min"));grid.appendChild(ms(f.s.td,"TD Avg/15"));
+  var bars=document.getElementById("mBars");bars.innerHTML="";
+  function mbar(lbl, pct) {
+    var w = document.createElement("div"); w.className = "mbar-wrap";
+    var hl = document.createElement("div"); hl.className = "mbar-lbl";
+    var sl = document.createElement("span"); sl.textContent = lbl;
+    var sv = document.createElement("span"); sv.textContent = pct + "%";
+    hl.appendChild(sl); hl.appendChild(sv); w.appendChild(hl);
+    var b = document.createElement("div"); b.className = "mbar";
+    var bf = document.createElement("div"); bf.className = "mbar-fill";
+    bf.style.width = pct + "%"; b.appendChild(bf); w.appendChild(b);
+    return w;
+  }
+  bars.appendChild(mbar("Striking Accuracy",f.s.acc));bars.appendChild(mbar("Takedown Defense",f.s.tdd));
+  document.getElementById("statsModal").classList.add("open");
 }
-function closeModal(){document.getElementById(“statsModal”).classList.remove(“open”);}
+function closeModal(){document.getElementById("statsModal").classList.remove("open");}
 
 // NAME MODAL
-function closeNameModal(){document.getElementById(“nmBg”).classList.remove(“open”);window._pp=null;}
-function checkName(cb){if(userName){cb();return;}document.getElementById(“nmBg”).classList.add(“open”);document.getElementById(“nmInput”).focus();window._pp=cb;}
-function saveName(){var v=document.getElementById(“nmInput”).value.trim();if(!v)return;userName=v;try{localStorage.setItem(“ufc_name”,userName);}catch(e){}document.getElementById(“nmBg”).classList.remove(“open”);if(window._pp){window._pp();window._pp=null;}}
+function closeNameModal(){document.getElementById("nmBg").classList.remove("open");window._pp=null;}
+function checkName(cb){if(userName){cb();return;}document.getElementById("nmBg").classList.add("open");document.getElementById("nmInput").focus();window._pp=cb;}
+function saveName(){var v=document.getElementById("nmInput").value.trim();if(!v)return;userName=v;try{localStorage.setItem("ufc_name",userName);}catch(e){}document.getElementById("nmBg").classList.remove("open");if(window._pp){window._pp();window._pp=null;}}
 
 // PICK - called with registry index and side (0=f1, 1=f2)
 function pick(idx,side){
-var item=FIGHTS[idx];if(!item)return;
-var f=side===0?item.fight.f1:item.fight.f2;
-checkName(function(){
-preds[pk(item.ei,item.fi)]=f.n;
-save();render();
-toast(“Picked: “+f.n.split(” “).pop());
-});
+  var item=FIGHTS[idx];if(!item)return;
+  var f=side===0?item.fight.f1:item.fight.f2;
+  checkName(function(){
+    preds[pk(item.ei,item.fi)]=f.n;
+    save();render();
+    toast("Picked: "+f.n.split(" ").pop());
+  });
 }
 
 // MORE TOGGLE
-function tog(id,btn){document.getElementById(id).classList.toggle(“open”);btn.classList.toggle(“open”);}
+function tog(id,btn){document.getElementById(id).classList.toggle("open");btn.classList.toggle("open");}
 
 // FIGHT NIGHT MODE
 var fnFights=[],fnIdx=0;
 function openFN(){
-var now=Date.now();
-var ev=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5;})[0];
-if(!ev){toast(“No upcoming events”);return;}
-fnFights=ev.fights;fnIdx=0;updateFN();
-document.getElementById(“fnMode”).classList.add(“open”);
-document.body.style.overflow=“hidden”;
+  var now=Date.now();
+  var ev=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5;})[0];
+  if(!ev){toast("No upcoming events");return;}
+  fnFights=ev.fights;fnIdx=0;updateFN();
+  document.getElementById("fnMode").classList.add("open");
+  document.body.style.overflow="hidden";
 }
-function closeFN(){document.getElementById(“fnMode”).classList.remove(“open”);document.body.style.overflow=””;}
+function closeFN(){document.getElementById("fnMode").classList.remove("open");document.body.style.overflow="";}
 function fnNav(dir){fnIdx=Math.max(0,Math.min(fnFights.length-1,fnIdx+dir));updateFN();}
 function updateFN(){
-if(!fnFights.length)return;
-var f=fnFights[fnIdx];
-document.getElementById(“fn-ev”).textContent=EVENTS.filter(function(e){return new Date(e.date)>=Date.now()-864e5;})[0].name;
-document.getElementById(“fn-wc”).textContent=f.lbl+” - “+f.wc+(f.title?” - TITLE”:””);
-document.getElementById(“fn-f1”).textContent=f.f1.n;document.getElementById(“fn-r1”).textContent=f.f1.r;
-document.getElementById(“fn-f2”).textContent=f.f2.n;document.getElementById(“fn-r2”).textContent=f.f2.r;
-document.getElementById(“fn-ctr”).textContent=(fnIdx+1)+” of “+fnFights.length;
+  if(!fnFights.length)return;
+  var f=fnFights[fnIdx];
+  document.getElementById("fn-ev").textContent=EVENTS.filter(function(e){return new Date(e.date)>=Date.now()-864e5;})[0].name;
+  document.getElementById("fn-wc").textContent=f.lbl+" - "+f.wc+(f.title?" - TITLE":"");
+  document.getElementById("fn-f1").textContent=f.f1.n;document.getElementById("fn-r1").textContent=f.f1.r;
+  document.getElementById("fn-f2").textContent=f.f2.n;document.getElementById("fn-r2").textContent=f.f2.r;
+  document.getElementById("fn-ctr").textContent=(fnIdx+1)+" of "+fnFights.length;
 }
 
 // DOM-BASED RENDER - no string escaping, no innerHTML for interactive elements
 function makeFighter(fighter,right,size,registryIdx,side){
-var wrap=document.createElement(“div”);
-wrap.className=“ft”+(right?” ftr”:””);
+  var wrap=document.createElement("div");
+  wrap.className="ft"+(right?" ftr":"");
 
-var nm=document.createElement(“div”);
-nm.className=“fn”+(size===“sm”?” fsm”:size===“xs”?” fxs”:””);
-nm.textContent=fighter.n;
-wrap.appendChild(nm);
+  var nm=document.createElement("div");
+  nm.className="fn"+(size==="sm"?" fsm":size==="xs"?" fxs":"");
+  nm.textContent=fighter.n;
+  wrap.appendChild(nm);
 
-if(fighter.r){var rec=document.createElement(“div”);rec.className=“frec”;rec.textContent=fighter.r;wrap.appendChild(rec);}
+  if(fighter.r){var rec=document.createElement("div");rec.className="frec";rec.textContent=fighter.r;wrap.appendChild(rec);}
 
-if(fighter.rk===“C”){
-var pills=document.createElement(“div”);pills.className=“fpills”;
-var chip=document.createElement(“span”);chip.className=“pchamp”;chip.textContent=“CHAMP”;
-pills.appendChild(chip);wrap.appendChild(pills);
-} else if(fighter.rk){
-var pills2=document.createElement(“div”);pills2.className=“fpills”;
-var chip2=document.createElement(“span”);chip2.className=“prank”;chip2.textContent=fighter.rk;
-pills2.appendChild(chip2);wrap.appendChild(pills2);
-}
+  if(fighter.rk==="C"){
+    var pills=document.createElement("div");pills.className="fpills";
+    var chip=document.createElement("span");chip.className="pchamp";chip.textContent="CHAMP";
+    pills.appendChild(chip);wrap.appendChild(pills);
+  } else if(fighter.rk){
+    var pills2=document.createElement("div");pills2.className="fpills";
+    var chip2=document.createElement("span");chip2.className="prank";chip2.textContent=fighter.rk;
+    pills2.appendChild(chip2);wrap.appendChild(pills2);
+  }
 
-if(fighter.s){
-wrap.classList.add(“ft-clickable”);
-wrap.onclick=function(){openStats(registryIdx,side);};
-if(size!==“xs”){var hint=document.createElement(“div”);hint.className=“stats-hint”;hint.textContent=“Tap for stats”;wrap.appendChild(hint);}
-}
-return wrap;
+  if(fighter.s){
+    wrap.classList.add("ft-clickable");
+    wrap.onclick=function(){openStats(registryIdx,side);};
+    if(size!=="xs"){var hint=document.createElement("div");hint.className="stats-hint";hint.textContent="Tap for stats";wrap.appendChild(hint);}
+  }
+  return wrap;
 }
 
 function makeFightRow(fight,ei,fi,registryIdx,showPick){
-var isMain=fight.lbl===“Main Event”,isCo=fight.lbl===“Co-Main”;
-var row=document.createElement(“div”);
-row.className=“fight-row “+(isMain?“fmain”:isCo?“fco”:fight.lbl===“Main Card”?“fcard”:“fpre”);
+  var isMain=fight.lbl==="Main Event",isCo=fight.lbl==="Co-Main";
+  var row=document.createElement("div");
+  row.className="fight-row "+(isMain?"fmain":isCo?"fco":fight.lbl==="Main Card"?"fcard":"fpre");
 
-var lbl=document.createElement(“div”);
-lbl.className=“flbl “+(isMain?“lmain”:isCo?“lco”:“lpre”);
-lbl.textContent=fight.lbl+” - “+fight.wc+(fight.title?” - TITLE”:””);
-row.appendChild(lbl);
+  var lbl=document.createElement("div");
+  lbl.className="flbl "+(isMain?"lmain":isCo?"lco":"lpre");
+  lbl.textContent=fight.lbl+" - "+fight.wc+(fight.title?" - TITLE":"");
+  row.appendChild(lbl);
 
-var mu=document.createElement(“div”);mu.className=“mu”;
-var sz=isMain?“lg”:isCo?“sm”:“xs”;
-mu.appendChild(makeFighter(fight.f1,false,sz,registryIdx,0));
+  var mu=document.createElement("div");mu.className="mu";
+  var sz=isMain?"lg":isCo?"sm":"xs";
+  mu.appendChild(makeFighter(fight.f1,false,sz,registryIdx,0));
 
-var vc=document.createElement(“div”);vc.className=“vc”;
-var vs=document.createElement(“span”);vs.className=“vs”;vs.textContent=“VS”;vc.appendChild(vs);
-if(isMain){var wcsm=document.createElement(“span”);wcsm.className=“wcsm”;wcsm.textContent=fight.wc;vc.appendChild(wcsm);}
-mu.appendChild(vc);
+  var vc=document.createElement("div");vc.className="vc";
+  var vs=document.createElement("span");vs.className="vs";vs.textContent="VS";vc.appendChild(vs);
+  if(isMain){var wcsm=document.createElement("span");wcsm.className="wcsm";wcsm.textContent=fight.wc;vc.appendChild(wcsm);}
+  mu.appendChild(vc);
 
-mu.appendChild(makeFighter(fight.f2,true,sz,registryIdx,1));
-row.appendChild(mu);
+  mu.appendChild(makeFighter(fight.f2,true,sz,registryIdx,1));
+  row.appendChild(mu);
 
-if(fight.odds){
-var or=document.createElement(“div”);or.className=“odds-row”;
-var fav1=fight.odds.f1<0;
-var s1=document.createElement(“div”);s1.className=“odds-side”;
-var n1=document.createElement(“div”);n1.className=“odds-nm”;n1.textContent=fight.f1.n.split(” “).pop();
-var v1=document.createElement(“div”);v1.className=“odds-val “+(fav1?“fav”:“dog”);v1.textContent=fmtOdds(fight.odds.f1);
-s1.appendChild(n1);s1.appendChild(v1);or.appendChild(s1);
-var oc=document.createElement(“div”);oc.className=“odds-ctr”;oc.textContent=“MONEYLINE”;or.appendChild(oc);
-var s2=document.createElement(“div”);s2.className=“odds-side osr”;
-var n2=document.createElement(“div”);n2.className=“odds-nm”;n2.textContent=fight.f2.n.split(” “).pop();
-var v2=document.createElement(“div”);v2.className=“odds-val “+(!fav1?“fav”:“dog”);v2.textContent=fmtOdds(fight.odds.f2);
-s2.appendChild(n2);s2.appendChild(v2);or.appendChild(s2);
-row.appendChild(or);
-}
+  if(fight.odds){
+    var or=document.createElement("div");or.className="odds-row";
+    var fav1=fight.odds.f1<0;
+    var s1=document.createElement("div");s1.className="odds-side";
+    var n1=document.createElement("div");n1.className="odds-nm";n1.textContent=fight.f1.n.split(" ").pop();
+    var v1=document.createElement("div");v1.className="odds-val "+(fav1?"fav":"dog");v1.textContent=fmtOdds(fight.odds.f1);
+    s1.appendChild(n1);s1.appendChild(v1);or.appendChild(s1);
+    var oc=document.createElement("div");oc.className="odds-ctr";oc.textContent="MONEYLINE";or.appendChild(oc);
+    var s2=document.createElement("div");s2.className="odds-side osr";
+    var n2=document.createElement("div");n2.className="odds-nm";n2.textContent=fight.f2.n.split(" ").pop();
+    var v2=document.createElement("div");v2.className="odds-val "+(!fav1?"fav":"dog");v2.textContent=fmtOdds(fight.odds.f2);
+    s2.appendChild(n2);s2.appendChild(v2);or.appendChild(s2);
+    row.appendChild(or);
+  }
 
-if(showPick){
-var key=pk(ei,fi);var myPick=preds[key]||””;var result=results[key]||””;
-var pr=document.createElement(“div”);pr.className=“pick-row”;
-var pl=document.createElement(“span”);pl.className=“pick-lbl”;pl.textContent=“Pick:”;pr.appendChild(pl);
+  if(showPick){
+    var key=pk(ei,fi);var myPick=preds[key]||"";var result=results[key]||"";
+    var pr=document.createElement("div");pr.className="pick-row";
+    var pl=document.createElement("span");pl.className="pick-lbl";pl.textContent="Pick:";pr.appendChild(pl);
 
-```
-var b1=document.createElement("button");
-b1.className="pick-btn"+(myPick===fight.f1.n?" psel":"")+(result===fight.f1.n?" pcorrect":"")+(result&&result!==fight.f1.n&&myPick===fight.f1.n?" pwrong":"");
-b1.textContent=fight.f1.n.split(" ").pop();
-(function(ri){b1.onclick=function(){pick(ri,0);};})(registryIdx);
-pr.appendChild(b1);
+    var b1=document.createElement("button");
+    b1.className="pick-btn"+(myPick===fight.f1.n?" psel":"")+(result===fight.f1.n?" pcorrect":"")+(result&&result!==fight.f1.n&&myPick===fight.f1.n?" pwrong":"");
+    b1.textContent=fight.f1.n.split(" ").pop();
+    (function(ri){b1.onclick=function(){pick(ri,0);};})(registryIdx);
+    pr.appendChild(b1);
 
-var b2=document.createElement("button");
-b2.className="pick-btn"+(myPick===fight.f2.n?" psel":"")+(result===fight.f2.n?" pcorrect":"")+(result&&result!==fight.f2.n&&myPick===fight.f2.n?" pwrong":"");
-b2.textContent=fight.f2.n.split(" ").pop();
-(function(ri){b2.onclick=function(){pick(ri,1);};})(registryIdx);
-pr.appendChild(b2);
+    var b2=document.createElement("button");
+    b2.className="pick-btn"+(myPick===fight.f2.n?" psel":"")+(result===fight.f2.n?" pcorrect":"")+(result&&result!==fight.f2.n&&myPick===fight.f2.n?" pwrong":"");
+    b2.textContent=fight.f2.n.split(" ").pop();
+    (function(ri){b2.onclick=function(){pick(ri,1);};})(registryIdx);
+    pr.appendChild(b2);
 
-row.appendChild(pr);
-```
-
-}
-return row;
+    row.appendChild(pr);
+  }
+  return row;
 }
 
 function makeEventBlock(ev,ei,evNum,visTotal){
-var frag=document.createDocumentFragment();
-var du=daysOut(ev.date);
-var duLabel=du===0?“Tonight”:du===1?“Tomorrow”:du>0?“In “+du+” days”:“Completed”;
-var isFeat=ei===0;
-var titleCount=ev.fights.filter(function(f){return f.title;}).length;
-var isPPV=/ufc \d/i.test(ev.name);
+  var frag=document.createDocumentFragment();
+  var du=daysOut(ev.date);
+  var duLabel=du===0?"Tonight":du===1?"Tomorrow":du>0?"In "+du+" days":"Completed";
+  var isFeat=ei===0;
+  var titleCount=ev.fights.filter(function(f){return f.title;}).length;
+  var isPPV=/ufc \d/i.test(ev.name);
 
-if(evNum>0){
-var div=document.createElement(“div”);div.className=“ev-divider”;
-div.textContent=“Event “+(evNum+1)+” of “+visTotal;
-frag.appendChild(div);
-}
+  if(evNum>0){
+    var div=document.createElement("div");div.className="ev-divider";
+    div.textContent="Event "+(evNum+1)+" of "+visTotal;
+    frag.appendChild(div);
+  }
 
-var band=document.createElement(“div”);
-band.className=“ev-band”+(isFeat?””:” dim-band”);
-var evnum=document.createElement(“div”);evnum.className=“ev-number”;
-evnum.textContent=“Event “+(evNum+1)+” of “+visTotal+” - “+fmtDate(ev.date)+” - “+duLabel;
-band.appendChild(evnum);
-var evname=document.createElement(“div”);evname.className=“ev-name”;evname.textContent=ev.name;band.appendChild(evname);
+  var band=document.createElement("div");
+  band.className="ev-band"+(isFeat?"":" dim-band");
+  var evnum=document.createElement("div");evnum.className="ev-number";
+  evnum.textContent="Event "+(evNum+1)+" of "+visTotal+" - "+fmtDate(ev.date)+" - "+duLabel;
+  band.appendChild(evnum);
+  var evname=document.createElement("div");evname.className="ev-name";evname.textContent=ev.name;band.appendChild(evname);
 
-var evrow=document.createElement(“div”);evrow.className=“ev-row”;
-var calSVG=”<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>”;
-var pinSVG=”<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>”;
-var tvSVG=”<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>”;
-var clkSVG=”<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>”;
-function detailEl(svg,txt){var d=document.createElement(“span”);d.className=“ev-detail”;d.innerHTML=svg+txt;return d;}
-evrow.appendChild(detailEl(pinSVG,ev.venue+”, “+ev.loc));
-evrow.appendChild(detailEl(tvSVG,ev.tv));
-evrow.appendChild(detailEl(clkSVG,“Main card “+ev.time+” ET”));
-band.appendChild(evrow);
+  var evrow=document.createElement("div");evrow.className="ev-row";
+  var calSVG="<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><line x1=\"16\" y1=\"2\" x2=\"16\" y2=\"6\"/><line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"6\"/><line x1=\"3\" y1=\"10\" x2=\"21\" y2=\"10\"/></svg>";
+  var pinSVG="<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/></svg>";
+  var tvSVG="<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"2\" y=\"7\" width=\"20\" height=\"15\" rx=\"2\"/><polyline points=\"17 2 12 7 7 2\"/></svg>";
+  var clkSVG="<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/></svg>";
+  function detailEl(svg,txt){var d=document.createElement("span");d.className="ev-detail";d.innerHTML=svg+txt;return d;}
+  evrow.appendChild(detailEl(pinSVG,ev.venue+", "+ev.loc));
+  evrow.appendChild(detailEl(tvSVG,ev.tv));
+  evrow.appendChild(detailEl(clkSVG,"Main card "+ev.time+" ET"));
+  band.appendChild(evrow);
 
-var badges=document.createElement(“div”);badges.className=“ev-badges”;
-if(isFeat){var bn=document.createElement(“span”);bn.className=“badge b-next”;bn.textContent=“Next Up”;badges.appendChild(bn);}
-if(titleCount>0){var bt=document.createElement(“span”);bt.className=“badge b-title”;bt.textContent=titleCount>1?titleCount+” Title Fights”:“Title Fight”;badges.appendChild(bt);}
-if(isPPV){var bp=document.createElement(“span”);bp.className=“badge b-ppv”;bp.textContent=“PPV”;badges.appendChild(bp);}
-band.appendChild(badges);
-frag.appendChild(band);
+  var badges=document.createElement("div");badges.className="ev-badges";
+  if(isFeat){var bn=document.createElement("span");bn.className="badge b-next";bn.textContent="Next Up";badges.appendChild(bn);}
+  if(titleCount>0){var bt=document.createElement("span");bt.className="badge b-title";bt.textContent=titleCount>1?titleCount+" Title Fights":"Title Fight";badges.appendChild(bt);}
+  if(isPPV){var bp=document.createElement("span");bp.className="badge b-ppv";bp.textContent="PPV";badges.appendChild(bp);}
+  band.appendChild(badges);
+  frag.appendChild(band);
 
-var fw=document.createElement(“div”);fw.className=“fights-wrap”;
+  var fw=document.createElement("div");fw.className="fights-wrap";
 
-var mainCardFights=ev.fights.slice(2).filter(function(f){return f.lbl===“Main Card”;});
-var prelimFights=ev.fights.filter(function(f){return f.lbl===“Prelim”||f.lbl===“Early Prelim”;});
-var totalExtra=mainCardFights.length+prelimFights.length;
+  var mainCardFights=ev.fights.slice(2).filter(function(f){return f.lbl==="Main Card";});
+  var prelimFights=ev.fights.filter(function(f){return f.lbl==="Prelim"||f.lbl==="Early Prelim";});
+  var totalExtra=mainCardFights.length+prelimFights.length;
 
-function getRegIdx(ei,fi){for(var i=0;i<FIGHTS.length;i++){if(FIGHTS[i].ei===ei&&FIGHTS[i].fi===fi)return i;}return 0;}
+  function getRegIdx(ei,fi){for(var i=0;i<FIGHTS.length;i++){if(FIGHTS[i].ei===ei&&FIGHTS[i].fi===fi)return i;}return 0;}
 
-// Main event
-var mainFight=ev.fights[0];var mainDim=!matchFilter(mainFight);
-var mainRow=makeFightRow(mainFight,ei,0,getRegIdx(ei,0),matchFilter(mainFight));
-if(mainDim)mainRow.style.opacity=“0.3”;
-fw.appendChild(mainRow);
+  // Main event
+  var mainFight=ev.fights[0];var mainDim=!matchFilter(mainFight);
+  var mainRow=makeFightRow(mainFight,ei,0,getRegIdx(ei,0),matchFilter(mainFight));
+  if(mainDim)mainRow.style.opacity="0.3";
+  fw.appendChild(mainRow);
 
-// Co-main
-var coFight=ev.fights[1];var coDim=!matchFilter(coFight);
-var coRow=makeFightRow(coFight,ei,1,getRegIdx(ei,1),matchFilter(coFight));
-if(coDim)coRow.style.opacity=“0.3”;
-fw.appendChild(coRow);
+  // Co-main
+  var coFight=ev.fights[1];var coDim=!matchFilter(coFight);
+  var coRow=makeFightRow(coFight,ei,1,getRegIdx(ei,1),matchFilter(coFight));
+  if(coDim)coRow.style.opacity="0.3";
+  fw.appendChild(coRow);
 
-if(totalExtra>0){
-var moreId=“more”+ei;
-var moreBtn=document.createElement(“button”);moreBtn.className=“more-btn”;
-var chevSVG=”<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>”;
-moreBtn.innerHTML=chevSVG+totalExtra+” more fight”+(totalExtra!==1?“s”:””);
-(function(id,btn){btn.onclick=function(){tog(id,btn);};})(moreId,moreBtn);
-fw.appendChild(moreBtn);
+  if(totalExtra>0){
+    var moreId="more"+ei;
+    var moreBtn=document.createElement("button");moreBtn.className="more-btn";
+    var chevSVG="<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polyline points=\"6 9 12 15 18 9\"/></svg>";
+    moreBtn.innerHTML=chevSVG+totalExtra+" more fight"+(totalExtra!==1?"s":"");
+    (function(id,btn){btn.onclick=function(){tog(id,btn);};})(moreId,moreBtn);
+    fw.appendChild(moreBtn);
 
-```
-var moreBody=document.createElement("div");moreBody.className="more-body";moreBody.id=moreId;
+    var moreBody=document.createElement("div");moreBody.className="more-body";moreBody.id=moreId;
 
-mainCardFights.forEach(function(f,i){
-  var fi=i+2;var row=makeFightRow(f,ei,fi,getRegIdx(ei,fi),matchFilter(f));
-  if(!matchFilter(f))row.style.opacity="0.3";
-  moreBody.appendChild(row);
-});
-prelimFights.forEach(function(f,i){
-  var fi=mainCardFights.length+2+i;var row=makeFightRow(f,ei,fi,getRegIdx(ei,fi),false);
-  if(!matchFilter(f))row.style.opacity="0.3";
-  moreBody.appendChild(row);
-});
-fw.appendChild(moreBody);
-```
-
-}
-frag.appendChild(fw);
-return frag;
+    mainCardFights.forEach(function(f,i){
+      var fi=i+2;var row=makeFightRow(f,ei,fi,getRegIdx(ei,fi),matchFilter(f));
+      if(!matchFilter(f))row.style.opacity="0.3";
+      moreBody.appendChild(row);
+    });
+    prelimFights.forEach(function(f,i){
+      var fi=mainCardFights.length+2+i;var row=makeFightRow(f,ei,fi,getRegIdx(ei,fi),false);
+      if(!matchFilter(f))row.style.opacity="0.3";
+      moreBody.appendChild(row);
+    });
+    fw.appendChild(moreBody);
+  }
+  frag.appendChild(fw);
+  return frag;
 }
 
 function render(){
-buildRegistry();
-var now=Date.now();
-var events=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5&&new Date(e.date)<=now+864e5*65;});
-var visEvents=events.filter(function(e){return e.fights.some(matchFilter);});
+  buildRegistry();
+  var now=Date.now();
+  var events=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5&&new Date(e.date)<=now+864e5*65;});
+  var visEvents=events.filter(function(e){return e.fights.some(matchFilter);});
 
-var app=document.getElementById(“app”);
-app.innerHTML=””;
+  var app=document.getElementById("app");
+  app.innerHTML="";
 
-if(!visEvents.length){
-var msg=document.createElement(“div”);
-msg.style.cssText=“padding:32px 16px;text-align:center;color:var(–muted);font-size:13px”;
-msg.textContent=“No fights in this weight class across upcoming events.”;
-app.appendChild(msg);
-} else {
-visEvents.forEach(function(ev,i){
-var ei=EVENTS.indexOf(ev);
-app.appendChild(makeEventBlock(ev,ei,i,visEvents.length));
+  if(!visEvents.length){
+    var msg=document.createElement("div");
+    msg.style.cssText="padding:32px 16px;text-align:center;color:var(--muted);font-size:13px";
+    msg.textContent="No fights in this weight class across upcoming events.";
+    app.appendChild(msg);
+  } else {
+    visEvents.forEach(function(ev,i){
+      var ei=EVENTS.indexOf(ev);
+      app.appendChild(makeEventBlock(ev,ei,i,visEvents.length));
+    });
+  }
+
+  document.getElementById("picks-count").textContent=Object.keys(preds).length;
+
+  if(userName&&Object.keys(preds).length>0){
+    var correct=0,total=0;
+    Object.keys(preds).forEach(function(k){if(results[k]){total++;if(preds[k]===results[k])correct++;}});
+    var lb=document.createElement("div");lb.className="lb-wrap";
+    var pct=total>0?Math.round(correct/total*100)+"% correct":"results pending";
+    var lbh=document.createElement("div");lbh.className="lb-hdr";
+    var lbt=document.createElement("span");lbt.className="lb-title";lbt.textContent="My Predictor Record";
+    var lbc=document.createElement("span");lbc.style.cssText="font-size:10px;color:var(--muted)";lbc.textContent=Object.keys(preds).length+" picks";
+    lbh.appendChild(lbt);lbh.appendChild(lbc);lb.appendChild(lbh);
+    var lbr=document.createElement("div");lbr.className="lb-row";
+    var lbrk=document.createElement("div");lbrk.className="lb-rank";lbrk.textContent="1";
+    var lbn=document.createElement("div");lbn.className="lb-name";lbn.textContent=userName;
+    var lbs=document.createElement("div");
+    var lbsc=document.createElement("div");lbsc.className="lb-score";lbsc.textContent=total>0?correct+"/"+total:"--";
+    var lbd=document.createElement("div");lbd.className="lb-detail";lbd.textContent=pct;
+    lbs.appendChild(lbsc);lbs.appendChild(lbd);
+    lbr.appendChild(lbrk);lbr.appendChild(lbn);lbr.appendChild(lbs);lb.appendChild(lbr);
+    app.appendChild(lb);
+  }
+
+  updateCountdown();
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  render();
 });
-}
-
-document.getElementById(“picks-count”).textContent=Object.keys(preds).length;
-
-if(userName&&Object.keys(preds).length>0){
-var correct=0,total=0;
-Object.keys(preds).forEach(function(k){if(results[k]){total++;if(preds[k]===results[k])correct++;}});
-var lb=document.createElement(“div”);lb.className=“lb-wrap”;
-var pct=total>0?Math.round(correct/total*100)+”% correct”:“results pending”;
-var lbh=document.createElement(“div”);lbh.className=“lb-hdr”;
-var lbt=document.createElement(“span”);lbt.className=“lb-title”;lbt.textContent=“My Predictor Record”;
-var lbc=document.createElement(“span”);lbc.style.cssText=“font-size:10px;color:var(–muted)”;lbc.textContent=Object.keys(preds).length+” picks”;
-lbh.appendChild(lbt);lbh.appendChild(lbc);lb.appendChild(lbh);
-var lbr=document.createElement(“div”);lbr.className=“lb-row”;
-var lbrk=document.createElement(“div”);lbrk.className=“lb-rank”;lbrk.textContent=“1”;
-var lbn=document.createElement(“div”);lbn.className=“lb-name”;lbn.textContent=userName;
-var lbs=document.createElement(“div”);
-var lbsc=document.createElement(“div”);lbsc.className=“lb-score”;lbsc.textContent=total>0?correct+”/”+total:”–”;
-var lbd=document.createElement(“div”);lbd.className=“lb-detail”;lbd.textContent=pct;
-lbs.appendChild(lbsc);lbs.appendChild(lbd);
-lbr.appendChild(lbrk);lbr.appendChild(lbn);lbr.appendChild(lbs);lb.appendChild(lbr);
-app.appendChild(lb);
-}
-
-updateCountdown();
-}
-
-render();
 </script>
 
 </body>
