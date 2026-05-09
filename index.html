@@ -176,11 +176,63 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 .picks-score-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:4px}
 .picks-score-label{font-size:11px;color:var(--muted)}
 .picks-score-val{font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--red)}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#222;border:1px solid var(--border2);color:var(--text);padding:10px 18px;border-radius:8px;font-size:12px;z-index:500;transition:transform .25s ease;white-space:nowrap;pointer-events:none}
+
+/* ── COMPARISON MODAL ── */
+.cmp-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:250;align-items:flex-end;justify-content:center}
+.cmp-bg.open{display:flex}
+.cmp-box{background:#1c1c1c;border:1px solid var(–border2);border-radius:14px 14px 0 0;padding:18px 16px 36px;width:100%;max-width:520px;max-height:85vh;overflow-y:auto}
+.cmp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cmp-title{font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.06em}
+.cmp-close{background:rgba(255,255,255,.08);border:none;color:var(–muted2);cursor:pointer;font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.cmp-names{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;margin-bottom:16px;text-align:center}
+.cmp-name{font-family:Bebas Neue,sans-serif;font-size:17px;letter-spacing:.04em}
+.cmp-rec{font-size:11px;color:var(–muted);margin-top:2px}
+.cmp-vs{font-family:Bebas Neue,sans-serif;font-size:14px;color:var(–muted);align-self:center}
+.cmp-row{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid var(–border)}
+.cmp-row:last-child{border-bottom:none}
+.cmp-val{font-size:13px;font-weight:600;color:var(–text)}
+.cmp-val.win{color:var(–green)}.cmp-val.r{text-align:right}
+.cmp-lbl{font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.08em;text-align:center}
+.cmp-bar-wrap{position:relative;height:4px;background:var(–border);border-radius:2px;margin:4px 0;overflow:hidden}
+.cmp-bar-l{position:absolute;left:0;top:0;height:100%;background:var(–red);border-radius:2px;transition:width .5s}
+.cmp-bar-r{position:absolute;right:0;top:0;height:100%;background:var(–gold);border-radius:2px;transition:width .5s}
+
+/* ── NOTIFICATION BELL ── */
+.notif-btn{position:fixed;bottom:24px;right:16px;background:var(–red);border:none;color:#fff;width:48px;height:48px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(232,25,44,.4);z-index:50;transition:transform .15s}
+.notif-btn:hover{transform:scale(1.08)}
+.notif-btn svg{width:20px;height:20px}
+.notif-btn.active{background:var(–green)}
+.notif-badge{position:absolute;top:-2px;right:-2px;background:#fff;color:var(–red);font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;display:none}
+
+/* ── SHARE MODAL ── */
+.share-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:250;align-items:center;justify-content:center;padding:20px}
+.share-bg.open{display:flex}
+.share-box{background:#1c1c1c;border:1px solid var(–border2);border-radius:12px;padding:20px;width:100%;max-width:360px}
+.share-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.share-title{font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:.06em}
+.share-close{background:rgba(255,255,255,.08);border:none;color:var(–muted2);cursor:pointer;font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.share-card{background:var(–bg);border:1px solid var(–border2);border-radius:8px;padding:14px;margin-bottom:14px;font-family:DM Sans,sans-serif}
+.share-card-title{font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:.06em;color:var(–red);margin-bottom:10px}
+.share-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(–border)}
+.share-row:last-child{border-bottom:none}
+.share-btns{display:flex;gap:8px}
+.share-btn{flex:1;padding:10px;border-radius:7px;border:1px solid var(–border2);background:none;color:var(–text);font:600 12px DM Sans,sans-serif;cursor:pointer;transition:all .15s;text-align:center}
+.share-btn:hover{border-color:var(–red);color:var(–red)}
+.share-btn.primary{background:var(–red);border-color:var(–red);color:#fff}
+.share-btn.primary:hover{background:#c9101f}
+
+/* ── FIGHT NIGHT BANNER ── */
+.fight-night-banner{background:linear-gradient(90deg,var(–red) 0%,#a00 100%);padding:10px 16px;display:none;align-items:center;justify-content:space-between;gap:12px}
+.fight-night-banner.show{display:flex}
+.fnb-text{font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:.08em;color:#fff}
+.fnb-pulse{width:8px;height:8px;border-radius:50%;background:#fff;animation:blink 1s infinite;flex-shrink:0}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#222;border:1px solid var(–border2);color:var(–text);padding:10px 18px;border-radius:8px;font-size:12px;z-index:500;transition:transform .25s ease;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 @media(min-width:420px){.fn{font-size:26px}.fn.fsm{font-size:21px}}
 @media(min-width:640px){.hdr{padding:0 20px}.hero{padding:22px 20px 16px}}
 </style>
+
 </head>
 <body>
 <div class="modal-bg" id="statsModal" onclick="if(event.target===this)closeModal()">
@@ -221,6 +273,45 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
     <button class="nm-btn" onclick="saveName()">Let's Go</button>
   </div>
 </div>
+
+  <div class="fnb-text" id="fnBannerText">FIGHT NIGHT - LIVE UPDATES ON</div>
+  <div class="fnb-pulse"></div>
+</div>
+
+<!-- Comparison modal -->
+
+<div class="cmp-bg" id="cmpModal" onclick="if(event.target===this)closeCmp()">
+  <div class="cmp-box">
+    <div class="cmp-top">
+      <div class="cmp-title">Fighter Comparison</div>
+      <button class="cmp-close" onclick="closeCmp()">x</button>
+    </div>
+    <div id="cmpContent"></div>
+  </div>
+</div>
+
+<!-- Share picks modal -->
+
+<div class="share-bg" id="shareModal" onclick="if(event.target===this)closeShare()">
+  <div class="share-box">
+    <div class="share-top">
+      <div class="share-title">Share My Picks</div>
+      <button class="share-close" onclick="closeShare()">x</button>
+    </div>
+    <div class="share-card" id="shareCard"></div>
+    <div class="share-btns">
+      <button class="share-btn" onclick="copyPicks()">Copy Text</button>
+      <button class="share-btn primary" onclick="closeShare()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notification / fight night bell -->
+
+<button class="notif-btn" id="notifBtn" onclick="toggleNotif()" title="Fight night reminder">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+</button>
+
 <div class="toast" id="toast"></div>
 <header class="hdr">
   <div class="logo"><div class="logo-hex">UFC</div><span class="logo-text">FIGHT <span>CARDS</span></span></div>
@@ -229,6 +320,12 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
     <a class="btn-ufc" href="https://www.ufc.com/events" target="_blank">UFC.com</a>
   </div>
 </header>
+<!-- Fight night banner -->
+<div class="fight-night-banner" id="fnBanner">
+  <div class="fnb-pulse"></div>
+  <div class="fnb-text" id="fnBannerText">FIGHT NIGHT - LIVE UPDATES ON</div>
+  <div class="fnb-pulse"></div>
+</div>
 <section class="hero">
   <h1>UPCOMING<br><span>FIGHT CARDS</span></h1>
   <p class="hero-sub">Verified from UFC.com - Updated <span id="updateDate">May 9, 2026</span></p>
@@ -256,13 +353,19 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
   <button class="ftab" data-f="Flyweight" onclick="setFilter(this)">Flyweight</button>
 </div>
 <div class="picks-widget" id="picksWidget" style="display:none">
-  <button class="picks-toggle" id="picksToggle" onclick="togglePicks()">
-    <div class="picks-toggle-left">
-      <span class="picks-toggle-title">My Picks</span>
-      <span class="picks-count-badge" id="picksCountBadge">0</span>
-    </div>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-  </button>
+  <div style="display:flex;align-items:center;border-bottom:1px solid var(--border)">
+    <button class="picks-toggle" id="picksToggle" onclick="togglePicks()" style="border-bottom:none;flex:1">
+      <div class="picks-toggle-left">
+        <span class="picks-toggle-title">My Picks</span>
+        <span class="picks-count-badge" id="picksCountBadge">0</span>
+      </div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <button onclick="openShare()" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:12px 14px;font-size:11px;font-family:DM Sans,sans-serif;display:flex;align-items:center;gap:4px;letter-spacing:.04em;transition:color .15s;flex-shrink:0" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Share
+    </button>
+  </div>
   <div class="picks-body" id="picksBody"></div>
 </div>
 <div id="app"></div>
@@ -535,6 +638,19 @@ function makeFightRow(fight,ei,fi,registryIdx,showPick){
 
     row.appendChild(pr);
   }
+  // Compare button for main event and co-main
+  if (isMain || isCo) {
+    var cmpBtn = document.createElement("button");
+    cmpBtn.style.cssText = "width:100%;background:none;border:none;border-top:1px solid var(--border);
+      padding:7px 16px;font-size:10px;color:var(--muted);cursor:pointer;font-family:DM Sans,sans-serif;
+      letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:5px;transition:color .15s";
+    cmpBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Compare Fighters';
+    (function(f1, f2) {
+      cmpBtn.onclick = function() { openCmp(f1, f2); };
+    })(fight.f1, fight.f2);
+    row.appendChild(cmpBtn);
+  }
+
   return row;
 }
 
@@ -668,6 +784,7 @@ function render(){
   }
 
   updateCountdown();
+  checkFightNight();
 }
 
 // Fighter photos loaded via Wikipedia API in openStats()
@@ -742,6 +859,19 @@ function renderPicksWidget() {
       var oppName = p.pick === p.fight.f1.n ? p.fight.f2.n : p.fight.f1.n;
       opp.textContent = "vs " + oppName.split(" ").pop();
       row.appendChild(opp);
+
+      // Underdog/Favorite badge
+      if (p.fight.odds) {
+        var pickedF1 = p.pick === p.fight.f1.n;
+        var pickedOdds = pickedF1 ? p.fight.odds.f1 : p.fight.odds.f2;
+        var isFav = pickedOdds < 0;
+        var oddsBadge = document.createElement("div");
+        oddsBadge.style.cssText = "font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;flex-shrink:0;letter-spacing:.04em;" +
+          (isFav ? "background:rgba(46,204,113,.08);color:var(--green);border:1px solid rgba(46,204,113,.2)" :
+                   "background:rgba(232,25,44,.08);color:var(--red);border:1px solid rgba(232,25,44,.2)");
+        oddsBadge.textContent = (isFav ? "FAV " : "DOG ") + (pickedOdds > 0 ? "+" : "") + pickedOdds;
+        row.appendChild(oddsBadge);
+      }
 
       var badge = document.createElement("div");
       badge.className = "pick-result-badge";
@@ -891,6 +1021,266 @@ function openStats(idx, side) {
   bars.appendChild(mbar("Takedown Defense", f.s.tdd));
   document.getElementById("statsModal").classList.add("open");
 }
+
+// ── FIGHT NIGHT BANNER ──
+function checkFightNight() {
+  var now = Date.now();
+  var upcoming = EVENTS.filter(function(e){ return new Date(e.date) >= now - 864e5; });
+  var banner = document.getElementById("fnBanner");
+  var bannerText = document.getElementById("fnBannerText");
+  if (!upcoming.length || !banner) return;
+  var next = upcoming[0];
+  var du = Math.ceil((new Date(next.date) - now) / 864e5);
+  if (du === 0) {
+    banner.classList.add("show");
+    bannerText.textContent = next.name.split(":")[0] + " - LIVE UPDATES EVERY 15 MIN";
+  } else if (du === 1) {
+    banner.classList.add("show");
+    bannerText.textContent = "FIGHT NIGHT TOMORROW - " + next.name.split(":")[0];
+  } else {
+    banner.classList.remove("show");
+  }
+}
+
+// ── FIGHTER COMPARISON ──
+function openCmp(f1, f2) {
+  var el = document.getElementById("cmpContent");
+  if (!el) return;
+
+  function stat(label, v1, v2, higherIsBetter) {
+    var n1 = parseFloat(v1) || 0;
+    var n2 = parseFloat(v2) || 0;
+    var f1wins = higherIsBetter ? n1 >= n2 : n1 <= n2;
+    var pct1 = Math.max(n1, n2) > 0 ? Math.round(n1 / (n1 + n2) * 100) : 50;
+    var pct2 = 100 - pct1;
+    var row = document.createElement("div");
+    row.className = "cmp-row";
+    row.style.flexDirection = "column";
+    row.style.gap = "4px";
+
+    var vals = document.createElement("div");
+    vals.style.cssText = "display:grid;grid-template-columns:1fr auto 1fr;gap:6px;width:100%";
+    var v1el = document.createElement("div");
+    v1el.className = "cmp-val" + (f1wins ? " win" : "");
+    v1el.textContent = v1;
+    var lblEl = document.createElement("div");
+    lblEl.className = "cmp-lbl";
+    lblEl.textContent = label;
+    var v2el = document.createElement("div");
+    v2el.className = "cmp-val r" + (!f1wins ? " win" : "");
+    v2el.textContent = v2;
+    vals.appendChild(v1el); vals.appendChild(lblEl); vals.appendChild(v2el);
+    row.appendChild(vals);
+
+    var barWrap = document.createElement("div");
+    barWrap.className = "cmp-bar-wrap";
+    var barL = document.createElement("div");
+    barL.className = "cmp-bar-l";
+    barL.style.width = pct1 + "%";
+    var barR = document.createElement("div");
+    barR.className = "cmp-bar-r";
+    barR.style.width = pct2 + "%";
+    barWrap.appendChild(barL); barWrap.appendChild(barR);
+    row.appendChild(barWrap);
+    return row;
+  }
+
+  el.innerHTML = "";
+
+  // Names header
+  var names = document.createElement("div");
+  names.className = "cmp-names";
+  var n1 = document.createElement("div");
+  n1.innerHTML = "<div class='cmp-name' style='color:var(--red)'>" + f1.n + "</div><div class='cmp-rec'>" + f1.r + "</div>";
+  var vs = document.createElement("div");
+  vs.className = "cmp-vs";
+  vs.textContent = "VS";
+  var n2 = document.createElement("div");
+  n2.innerHTML = "<div class='cmp-name' style='color:var(--gold)'>" + f2.n + "</div><div class='cmp-rec'>" + f2.r + "</div>";
+  names.appendChild(n1); names.appendChild(vs); names.appendChild(n2);
+  el.appendChild(names);
+
+  if (f1.s && f2.s) {
+    el.appendChild(stat("Sig Str / Min", f1.s.slpm, f2.s.slpm, true));
+    el.appendChild(stat("Striking Acc %", f1.s.acc + "%", f2.s.acc + "%", true));
+    el.appendChild(stat("TD Defense %", f1.s.tdd + "%", f2.s.tdd + "%", true));
+    el.appendChild(stat("TD Avg / 15", f1.s.td, f2.s.td, true));
+    el.appendChild(stat("KO/TKO Wins", f1.s.ko, f2.s.ko, true));
+    el.appendChild(stat("Sub Wins", f1.s.sub, f2.s.sub, true));
+  } else {
+    var note = document.createElement("p");
+    note.style.cssText = "font-size:12px;color:var(--muted);text-align:center;padding:16px 0";
+    note.textContent = "Detailed stats not available for comparison.";
+    el.appendChild(note);
+  }
+
+  document.getElementById("cmpModal").classList.add("open");
+}
+
+function closeCmp() {
+  document.getElementById("cmpModal").classList.remove("open");
+}
+
+// ── SHARE PICKS ──
+function openShare() {
+  if (Object.keys(preds).length === 0) {
+    toast("Make some picks first!");
+    return;
+  }
+
+  var card = document.getElementById("shareCard");
+  card.innerHTML = "";
+
+  var title = document.createElement("div");
+  title.className = "share-card-title";
+  title.textContent = "MY UFC PICKS";
+  card.appendChild(title);
+
+  var totalCorrect = 0, totalResolved = 0;
+
+  EVENTS.forEach(function(ev, ei) {
+    var evPicks = [];
+    ev.fights.forEach(function(f, fi) {
+      var key = pk(ei, fi);
+      if (preds[key]) evPicks.push({ f: f, pick: preds[key], result: results[key] });
+    });
+    if (!evPicks.length) return;
+
+    var evLbl = document.createElement("div");
+    evLbl.style.cssText = "font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 4px";
+    evLbl.textContent = ev.name;
+    card.appendChild(evLbl);
+
+    evPicks.forEach(function(p) {
+      var row = document.createElement("div");
+      row.className = "share-row";
+      var fight = document.createElement("span");
+      fight.style.color = "var(--muted)";
+      fight.textContent = p.f.lbl + ":";
+      var pick = document.createElement("span");
+      pick.style.fontWeight = "600";
+      pick.textContent = p.pick.split(" ").pop();
+      var status = document.createElement("span");
+      if (!p.result) {
+        status.style.color = "var(--muted)";
+        status.textContent = "Pending";
+      } else if (p.result === p.pick) {
+        status.style.color = "var(--green)";
+        status.textContent = "Correct";
+        totalCorrect++; totalResolved++;
+      } else {
+        status.style.color = "var(--red)";
+        status.textContent = "Wrong";
+        totalResolved++;
+      }
+      row.appendChild(fight); row.appendChild(pick); row.appendChild(status);
+      card.appendChild(row);
+    });
+  });
+
+  if (totalResolved > 0) {
+    var score = document.createElement("div");
+    score.style.cssText = "margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text);text-align:center";
+    score.textContent = totalCorrect + "/" + totalResolved + " correct (" + Math.round(totalCorrect/totalResolved*100) + "%)";
+    card.appendChild(score);
+  }
+
+  document.getElementById("shareModal").classList.add("open");
+}
+
+function closeShare() {
+  document.getElementById("shareModal").classList.remove("open");
+}
+
+function copyPicks() {
+  var lines = ["MY UFC PICKS"];
+  EVENTS.forEach(function(ev, ei) {
+    var evPicks = [];
+    ev.fights.forEach(function(f, fi) {
+      var key = pk(ei, fi);
+      if (preds[key]) evPicks.push({ f: f, pick: preds[key], result: results[key] });
+    });
+    if (!evPicks.length) return;
+    lines.push("\n" + ev.name);
+    evPicks.forEach(function(p) {
+      var status = !p.result ? "pending" : p.result === p.pick ? "correct" : "wrong";
+      lines.push(p.f.lbl + ": " + p.pick.split(" ").pop() + " (" + status + ")");
+    });
+  });
+  var text = lines.join("\n");
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() { toast("Picks copied!"); closeShare(); });
+  } else {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    toast("Picks copied!");
+    closeShare();
+  }
+}
+
+// ── FIGHT NIGHT NOTIFICATION ──
+var notifActive = false;
+function toggleNotif() {
+  if (!("Notification" in window)) {
+    toast("Notifications not supported on this device");
+    return;
+  }
+  if (notifActive) {
+    notifActive = false;
+    document.getElementById("notifBtn").classList.remove("active");
+    toast("Fight night reminders off");
+    try { localStorage.setItem("ufc_notif", "0"); } catch(e) {}
+    return;
+  }
+  Notification.requestPermission().then(function(perm) {
+    if (perm === "granted") {
+      notifActive = true;
+      document.getElementById("notifBtn").classList.add("active");
+      try { localStorage.setItem("ufc_notif", "1"); } catch(e) {}
+      toast("Fight night reminders on!");
+      scheduleNotifications();
+    } else {
+      toast("Enable notifications in your browser settings");
+    }
+  });
+}
+
+function scheduleNotifications() {
+  var now = Date.now();
+  var upcoming = EVENTS.filter(function(e){ return new Date(e.date) >= now; });
+  if (!upcoming.length) return;
+  var next = upcoming[0];
+  var p = next.time.split(":");
+  var h = parseInt(p[0], 10); var m = parseInt(p[1] || "0", 10);
+  var dp = next.date.split("-");
+  var mainCardTime = Date.UTC(parseInt(dp[0],10), parseInt(dp[1],10)-1, parseInt(dp[2],10), h+4, m, 0);
+  var oneHourBefore = mainCardTime - 3600000;
+  var delay = oneHourBefore - now;
+  if (delay > 0 && delay < 7 * 864e5) {
+    setTimeout(function() {
+      if (notifActive) {
+        new Notification("UFC Fight Night", {
+          body: next.name + " main card starts in 1 hour!",
+          icon: "https://andyrbrett.github.io/ufc-dashboard/favicon.png"
+        });
+      }
+    }, delay);
+  }
+}
+
+// Init notification state
+try {
+  if (localStorage.getItem("ufc_notif") === "1" && Notification.permission === "granted") {
+    notifActive = true;
+    document.getElementById("notifBtn") && document.getElementById("notifBtn").classList.add("active");
+    scheduleNotifications();
+  }
+} catch(e) {}
+
 
 document.addEventListener("DOMContentLoaded", function() {
   render();
