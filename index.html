@@ -195,12 +195,12 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 .cmp-name{font-family:Bebas Neue,sans-serif;font-size:17px;letter-spacing:.04em}
 .cmp-rec{font-size:11px;color:var(–muted);margin-top:2px}
 .cmp-vs{font-family:Bebas Neue,sans-serif;font-size:14px;color:var(–muted);align-self:center}
-.cmp-row{padding:10px 0;border-bottom:1px solid var(–border)}
+.cmp-row{display:flex;flex-direction:column;gap:4px;padding:10px 0;border-bottom:1px solid var(–border)}
 .cmp-row:last-child{border-bottom:none}
 .cmp-val{font-size:14px;font-weight:600;color:var(–text)}
 .cmp-val.win{color:var(–green)}.cmp-val.r{text-align:right}
 .cmp-lbl{font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.08em;text-align:center}
-.cmp-bar-wrap{position:relative;height:4px;background:var(–border);border-radius:2px;margin:4px 0;overflow:hidden}
+.cmp-bar-wrap{position:relative;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;width:100%}
 .cmp-bar-l{position:absolute;left:0;top:0;height:100%;background:var(–red);border-radius:2px;transition:width .5s}
 .cmp-bar-r{position:absolute;right:0;top:0;height:100%;background:var(–gold);border-radius:2px;transition:width .5s}
 
@@ -1099,7 +1099,6 @@ function openCmp(f1, f2) {
     var pct2 = 100 - pct1;
     var row = document.createElement("div");
     row.className = "cmp-row";
-    row.style.display = "block";
 
     var vals = document.createElement("div");
     vals.style.cssText = "display:grid;grid-template-columns:1fr auto 1fr;gap:6px;width:100%;align-items:center";
