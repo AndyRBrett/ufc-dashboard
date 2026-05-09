@@ -65,6 +65,13 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 .fight-row.fco{background:rgba(201,168,76,.02);border-left:3px solid var(--gold);padding-left:13px}
 .fight-row.fcard{border-left:3px solid rgba(255,255,255,.06);padding-left:13px}
 .fight-row.fpre{border-left:3px solid transparent;background:rgba(255,255,255,.01)}
+.result-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.result-winner{font-size:12px;font-weight:600;color:var(--green);display:flex;align-items:center;gap:5px}
+.result-winner svg{width:12px;height:12px;flex-shrink:0}
+.result-method{font-size:11px;color:var(--muted);background:var(--card2);padding:2px 7px;border-radius:3px}
+.result-live{font-size:11px;font-weight:600;color:var(--red);display:flex;align-items:center;gap:5px;animation:blink 1s infinite}
+.fight-row.fresult{border-left-color:var(--green)}
+.fight-row.flive{border-left-color:var(--red)}
 .flbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:9px}
 .flbl.lmain{color:var(--red)}.flbl.lco{color:var(--gold)}.flbl.lpre{color:var(--muted)}
 .mu{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
@@ -178,9 +185,9 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 .picks-score-val{font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--red)}
 
 /* ── COMPARISON MODAL ── */
-.cmp-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:250;align-items:flex-end;justify-content:center}
+.cmp-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:250;align-items:center;justify-content:center;padding:20px}
 .cmp-bg.open{display:flex}
-.cmp-box{background:#1c1c1c;border:1px solid var(–border2);border-radius:14px 14px 0 0;padding:18px 16px 36px;width:100%;max-width:520px;max-height:85vh;overflow-y:auto}
+.cmp-box{background:#1c1c1c;border:1px solid var(–border2);border-radius:12px;padding:18px 16px 24px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto}
 .cmp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .cmp-title{font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.06em}
 .cmp-close{background:rgba(255,255,255,.08);border:none;color:var(–muted2);cursor:pointer;font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
@@ -625,21 +632,56 @@ function makeFightRow(fight,ei,fi,registryIdx,showPick){
     var pl=document.createElement("span");pl.className="pick-lbl";pl.textContent="Pick:";pr.appendChild(pl);
 
     var b1=document.createElement("button");
-    b1.className="pick-btn"+(myPick===fight.f1.n?" psel":"")+(result===fight.f1.n?" pcorrect":"")+(result&&result!==fight.f1.n&&myPick===fight.f1.n?" pwrong":"");
+    var fw=fight.winner||"";
+    b1.className="pick-btn"+(myPick===fight.f1.n?" psel":"")+(fw===fight.f1.n?" pcorrect":"")+(fw&&fw!==fight.f1.n&&myPick===fight.f1.n?" pwrong":"");
     b1.textContent=fight.f1.n.split(" ").pop();
     (function(ri){b1.onclick=function(){pick(ri,0);};})(registryIdx);
     pr.appendChild(b1);
 
     var b2=document.createElement("button");
-    b2.className="pick-btn"+(myPick===fight.f2.n?" psel":"")+(result===fight.f2.n?" pcorrect":"")+(result&&result!==fight.f2.n&&myPick===fight.f2.n?" pwrong":"");
+    b2.className="pick-btn"+(myPick===fight.f2.n?" psel":"")+(fw===fight.f2.n?" pcorrect":"")+(fw&&fw!==fight.f2.n&&myPick===fight.f2.n?" pwrong":"");
     b2.textContent=fight.f2.n.split(" ").pop();
     (function(ri){b2.onclick=function(){pick(ri,1);};})(registryIdx);
     pr.appendChild(b2);
 
     row.appendChild(pr);
   }
+  // Result row - shown when fight has completed
+  if (fight.winner || fight.state === "in") {
+    var resRow = document.createElement("div");
+    resRow.className = "result-row";
+
+    if (fight.state === "in" && !fight.winner) {
+      // Fight currently in progress
+      var liveEl = document.createElement("div");
+      liveEl.className = "result-live";
+      liveEl.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg> LIVE NOW';
+      resRow.appendChild(liveEl);
+      row.classList.add("flive");
+    } else if (fight.winner) {
+      // Fight completed - show winner and method
+      var winEl = document.createElement("div");
+      winEl.className = "result-winner";
+      winEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+      var winName = document.createElement("span");
+      winName.textContent = fight.winner.split(" ").pop() + " wins";
+      winEl.appendChild(winName);
+      resRow.appendChild(winEl);
+
+      if (fight.method) {
+        var methEl = document.createElement("div");
+        methEl.className = "result-method";
+        methEl.textContent = fight.method + (fight.round ? " R" + fight.round : "");
+        resRow.appendChild(methEl);
+      }
+      row.classList.add("fresult");
+    }
+
+    row.appendChild(resRow);
+  }
+
   // Compare button for main event and co-main
-  if (isMain || isCo) {
+  if (isMain || isCo || fight.lbl === "Main Card") {
     var cmpBtn = document.createElement("button");
     cmpBtn.style.cssText = "width:100%;background:none;border:none;border-top:1px solid var(--border);" +
       "padding:7px 16px;font-size:10px;color:var(--muted);cursor:pointer;font-family:DM Sans,sans-serif;" +
@@ -828,7 +870,7 @@ function renderPicksWidget() {
   EVENTS.forEach(function(ev, ei) {
     var evPicks = ev.fights.map(function(f, fi) {
       var key = pk(ei, fi);
-      return preds[key] ? {fi: fi, fight: f, pick: preds[key], result: results[key] || null} : null;
+      return preds[key] ? {fi: fi, fight: f, pick: preds[key], result: f.winner || results[key] || null} : null;
     }).filter(Boolean);
 
     if (!evPicks.length) return;
