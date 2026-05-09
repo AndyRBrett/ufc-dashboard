@@ -2,52 +2,31 @@ name: Update UFC Fight Cards
 
 on:
   schedule:
-    # ── Standard: daily 9am UTC (4am CT / 5am ET) ──
+    # Daily 9am UTC (4am CT / 5am ET) - card structure + odds
     - cron: "0 9 * * *"
-
-    # ── Fight night (Saturday): aggressive updates ──
-    # Every 10 min from 5pm-midnight UTC (noon-7pm ET) — covers prelims
-    - cron: "*/10 17-23 * * 6"
-    # Every 10 min from midnight-3am UTC Sun (7pm-10pm ET Sat) — covers main card
-    - cron: "*/10 0-3 * * 0"
-    # Every 30 min from 3am-6am UTC Sun (10pm-1am ET Sat) — post-card cooldown
-    - cron: "*/30 3-6 * * 0"
+    # Every 10 min Sat noon-midnight ET (4pm-4am UTC Sat-Sun)
+    - cron: "*/10 16-23 * * 6"
+    - cron: "*/10 0-4 * * 0"
+    # Every 30 min Sun 4am-7am UTC (post-card cooldown)
+    - cron: "*/30 4-7 * * 0"
 
   workflow_dispatch:
-    # Manual trigger from Actions tab anytime
 
 jobs:
   update:
     runs-on: ubuntu-latest
-
     permissions:
       contents: write
-      pages: write
-      id-token: write
-
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      - name: Install dependencies
-        run: pip install requests beautifulsoup4
-
-      - name: Run scraper
-        run: python scrape.py
-
-      - name: Commit and push index.html
-        run: |
-          git config user.name  "github-actions[bot]"
+      - run: pip install requests beautifulsoup4
+      - run: python scrape.py
+      - run: |
+          git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --staged --quiet || git commit -m "Auto-update $(date +'%Y-%m-%d %H:%M UTC')"
           git push
- 
