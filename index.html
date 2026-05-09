@@ -674,7 +674,7 @@ function makeFightRow(fight,ei,fi,registryIdx,showPick){
       ckSvg.setAttribute("stroke","currentColor");ckSvg.setAttribute("stroke-width","2.5");
       ckSvg.style.cssText="width:12px;height:12px;flex-shrink:0";
       var ckPoly=document.createElementNS("http://www.w3.org/2000/svg","polyline");
-      ckPoly.setAttribute("points","20 6 9 17 4 12");ckSvg.appendChild(ckPoly);winEl.appendChild(ckSvg)
+      ckPoly.setAttribute("points","20 6 9 17 4 12");ckSvg.appendChild(ckPoly);winEl.appendChild(ckSvg);
       var winName = document.createElement("span");
       winName.textContent = fight.winner.split(" ").pop() + " wins";
       winEl.appendChild(winName);
@@ -714,7 +714,7 @@ function makeFightRow(fight,ei,fi,registryIdx,showPick){
       line.setAttribute("y2",pts[1].split(",")[1]||"10");
       cmpSvg.appendChild(line);
     });
-    cmpBtn.appendChild(cmpSvg);cmpBtn.appendChild(document.createTextNode(" Compare Fighters"))
+    cmpBtn.appendChild(cmpSvg);cmpBtn.appendChild(document.createTextNode(" Compare Fighters"));
     (function(f1, f2) {
       cmpBtn.onclick = function() { openCmp(f1, f2); };
     })(fight.f1, fight.f2);
