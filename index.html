@@ -655,17 +655,7 @@ function render(){
   updateCountdown();
 }
 
-// ── FIGHTER PHOTO lookup via UFC.com search ──
-var photoCache = {};
-function loadFighterPhoto(name) {
-  if (photoCache[name]) return Promise.resolve(photoCache[name]);
-  // Build a UFC athlete search URL using the fighter name
-  var slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-  // Try UFC CDN pattern - most fighters follow this format
-  var url = "https://dmxg5wxfqgde4.cloudfront.net/styles/athlete_bio_full_body/s3/2024-05/" + slug + ".png";
-  photoCache[name] = url;
-  return Promise.resolve(url);
-}
+// Fighter photos loaded via Wikipedia API in openStats()
 
 
 
@@ -822,43 +812,31 @@ function openStats(idx, side) {
   photoRow.style.display = "none";
   photoEl.src = "";
 
-  // Build UFC CDN slug from fighter name: "Khamzat Chimaev" -> "khamzat-chimaev"
-  var slug = f.n.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  // Try multiple photo sources in order
-  var photoSources = [
-    "https://dmxg5wxfqgde4.cloudfront.net/styles/athlete_bio_full_body/s3/2025-01/" + slug + "_ATHLETE.png",
-    "https://dmxg5wxfqgde4.cloudfront.net/styles/athlete_bio_full_body/s3/2024-09/" + slug + "_ATHLETE.png",
-    "https://dmxg5wxfqgde4.cloudfront.net/styles/athlete_bio_full_body/s3/2024-05/" + slug + "_ATHLETE.png",
-    "https://site.api.espn.com/apis/site/v2/sports/mma/ufc/athletes?limit=1&q=" + encodeURIComponent(f.n)
-  ];
-  var sourceIdx = 0;
-  function tryNextPhoto() {
-    if (sourceIdx >= photoSources.length - 1) {
-      // Last resort: ESPN search API
-      fetch(photoSources[photoSources.length - 1])
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          var items = data && (data.athletes || data.items || []);
-          var athlete = items[0];
-          var url = athlete && athlete.headshot && (athlete.headshot.href || athlete.headshot);
-          if (url) { photoEl.src = url; }
-        })
-        .catch(function() {});
-      return;
-    }
-    photoEl.src = photoSources[sourceIdx];
-    sourceIdx++;
-  }
-  photoEl.onload = function() {
-    if (photoEl.naturalWidth > 10) {
-      photoRow.style.display = "flex";
-      subFb.style.display = "none";
-    } else {
-      tryNextPhoto();
-    }
-  };
-  photoEl.onerror = function() { tryNextPhoto(); };
-  tryNextPhoto();
+  // Wikipedia REST API - free, CORS-open, no key needed
+  // Returns the main image from the fighter's Wikipedia page
+  var wikiName = f.n.replace(/ /g, "_");
+  var wikiUrl = "https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(wikiName);
+  photoEl.style.display = "none";
+  fetch(wikiUrl)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var imgUrl = data && data.thumbnail && data.thumbnail.source;
+      if (imgUrl) {
+        // Upgrade to higher resolution (replace /320px- with /400px-)
+        imgUrl = imgUrl.replace(/\/\d+px-/, "/400px-");
+        photoEl.onload = function() {
+          photoEl.style.display = "block";
+          photoRow.style.display = "flex";
+          subFb.style.display = "none";
+        };
+        photoEl.onerror = function() {
+          photoEl.style.display = "none";
+          photoRow.style.display = "none";
+        };
+        photoEl.src = imgUrl;
+      }
+    })
+    .catch(function() {});
 
   var grid = document.getElementById("mGrid");
   grid.innerHTML = "";
