@@ -7,253 +7,198 @@
 <title>UFC Fight Cards</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--red:#e8192c;--gold:#c9a84c;--bg:#0d0d0d;--card:#161616;--card2:#1e1e1e;--border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);--text:#f0f0f0;--muted:#777;--muted2:#aaa;--green:#2ecc71}
+:root{--red:#e8192c;--gold:#c9a84c;--bg:#0a0a0a;--card:#141414;--card2:#1c1c1c;--border:rgba(255,255,255,.09);--border2:rgba(255,255,255,.16);--text:#f0f0f0;--muted:#666;--muted2:#999;--green:#2ecc71}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:60px;font-size:15px}
-
-/* Header */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;border-bottom:1px solid var(–border);background:rgba(13,13,13,.97);backdrop-filter:blur(8px);position:sticky;top:0;z-index:99}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;border-bottom:1px solid var(--border);background:rgba(10,10,10,.97);backdrop-filter:blur(8px);position:sticky;top:0;z-index:99}
 .logo{display:flex;align-items:center;gap:8px}
-.logo-hex{width:28px;height:28px;background:var(–red);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:‘Bebas Neue’,sans-serif;font-size:10px;color:#fff;flex-shrink:0}
-.logo-text{font-family:‘Bebas Neue’,sans-serif;font-size:22px;letter-spacing:.08em}
-.logo-text span{color:var(–red)}
+.logo-hex{width:28px;height:28px;background:var(--red);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:10px;color:#fff;flex-shrink:0}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em}
+.logo-text span{color:var(--red)}
 .hdr-right{display:flex;align-items:center;gap:8px}
-.btn-tv{background:var(–card2);border:1px solid var(–border2);color:var(–muted2);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s;flex-shrink:0}
-.btn-tv:hover{color:var(–text);border-color:rgba(255,255,255,.3)}
-.btn-tv svg{width:16px;height:16px}
-.btn-ufc{background:var(–red);border:none;color:#fff;padding:6px 10px;border-radius:6px;font:600 11px ‘DM Sans’,sans-serif;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:3px}
+.btn-icon{background:var(--card2);border:1px solid var(--border2);color:var(--muted2);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s;flex-shrink:0}
+.btn-icon:hover{color:var(--text);border-color:rgba(255,255,255,.3)}
+.btn-icon svg{width:15px;height:15px}
+.btn-ufc{background:var(--red);border:none;color:#fff;padding:6px 10px;border-radius:6px;font:600 11px 'DM Sans',sans-serif;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:3px}
 .btn-ufc:hover{background:#c9101f}
-
-/* Hero */
-.hero{padding:18px 16px 14px;border-bottom:1px solid var(–border)}
-.hero h1{font-family:‘Bebas Neue’,sans-serif;font-size:32px;letter-spacing:.07em;line-height:1}
-.hero h1 span{color:var(–red)}
-.hero-sub{font-size:11px;color:var(–muted);margin-top:4px}
-
-/* Countdown */
-.cd-wrap{margin-top:12px;background:var(–card2);border:1px solid var(–border);border-radius:8px;padding:10px 14px}
-.cd-label{font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
-.cd-event{font-size:12px;font-weight:600;color:var(–text);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cd-timer{display:flex;align-items:flex-end;gap:2px}
-.cd-unit{text-align:center;min-width:44px}
-.cd-num{font-family:‘Bebas Neue’,sans-serif;font-size:30px;letter-spacing:.04em;line-height:1;color:var(–red)}
-.cd-lbl{font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.07em}
-.cd-sep{font-family:‘Bebas Neue’,sans-serif;font-size:24px;color:rgba(255,255,255,.2);padding-bottom:4px;margin:0 2px}
-.cd-live{display:inline-block;background:rgba(232,25,44,.15);color:var(–red);border:1px solid rgba(232,25,44,.3);font-size:12px;font-weight:600;padding:5px 12px;border-radius:4px;letter-spacing:.05em}
-
-/* Stats strip */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(–card);border-bottom:1px solid var(–border)}
-.stat{padding:12px 6px;text-align:center;border-right:1px solid var(–border)}
+.hero{padding:18px 16px 14px;border-bottom:1px solid var(--border)}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.07em;line-height:1}
+.hero h1 span{color:var(--red)}
+.hero-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.countdown-wrap{margin-top:12px;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 14px}
+.cd-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.cd-event{font-size:11px;font-weight:600;color:var(--text);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cd-timer{display:flex;align-items:center;gap:6px}
+.cd-unit{text-align:center;min-width:38px}
+.cd-num{font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;color:var(--red)}
+.cd-lbl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:1px}
+.cd-sep{font-family:'Bebas Neue',sans-serif;font-size:20px;color:rgba(255,255,255,.12);padding-bottom:10px}
+.cd-live{display:inline-block;background:rgba(232,25,44,.15);color:var(--red);border:1px solid rgba(232,25,44,.3);font-size:11px;font-weight:600;padding:4px 12px;border-radius:4px;letter-spacing:.04em}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-bottom:1px solid var(--border)}
+.stat{padding:10px 6px;text-align:center;border-right:1px solid var(--border)}
 .stat:last-child{border-right:none}
-.sv{font-family:‘Bebas Neue’,sans-serif;font-size:24px;letter-spacing:.05em;line-height:1}
-.sl{font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
-
-/* Weight class filter tabs */
-.tabs{display:flex;border-bottom:1px solid var(–border);overflow-x:auto;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{padding:9px 14px;font-size:11px;font-weight:600;color:var(–muted);border:none;background:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;letter-spacing:.03em;transition:color .15s;flex-shrink:0}
-.tab.on{color:var(–text);border-bottom-color:var(–red)}
-.tab:hover{color:var(–muted2)}
-
-/* Content */
-.content{padding:14px 12px}
-.sec-lbl{font-size:10px;color:var(–muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.sec-lbl::after{content:’’;flex:1;height:1px;background:var(–border)}
-
-/* Event card */
-.evcard{background:var(–card);border:1px solid var(–border);border-radius:10px;overflow:hidden;margin-bottom:10px;animation:up .3s ease both}
-.evcard.featured{border-color:var(–red)}
-@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.evcard:nth-child(2){animation-delay:.06s}.evcard:nth-child(3){animation-delay:.12s}.evcard:nth-child(4){animation-delay:.18s}
-
-/* Event header */
-.ev-hdr{padding:12px 14px 10px;border-bottom:1px solid var(–border)}
-.ev-name{font-family:‘Bebas Neue’,sans-serif;font-size:17px;letter-spacing:.06em;line-height:1;margin-bottom:6px}
-.ev-meta{display:flex;flex-wrap:wrap;gap:4px 14px}
-.ev-detail{font-size:11px;color:var(–muted);display:flex;align-items:center;gap:3px}
-.ev-detail svg{width:10px;height:10px;opacity:.45;flex-shrink:0}
-.badges{display:flex;gap:4px;margin-top:7px;flex-wrap:wrap}
-.badge{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:3px}
-.b-next{background:rgba(232,25,44,.12);color:var(–red);border:1px solid rgba(232,25,44,.25)}
-.b-title{background:rgba(201,168,76,.1);color:var(–gold);border:1px solid rgba(201,168,76,.2)}
-.b-ppv{background:rgba(255,255,255,.05);color:var(–muted);border:1px solid var(–border)}
-
-/* Fight rows */
-.fight{padding:12px 14px;border-bottom:1px solid var(–border)}
-.fight:last-of-type{border-bottom:none}
-.flbl{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:9px}
-.flbl.main{color:var(–red)}.flbl.co{color:var(–gold)}.flbl.pre{color:var(–muted)}
-
-/* Matchup grid */
+.sv{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;line-height:1}
+.sl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.filter-wrap{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.filter-wrap::-webkit-scrollbar{display:none}
+.ftab{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;color:var(--muted);border:1px solid var(--border);background:none;cursor:pointer;white-space:nowrap;transition:all .15s;letter-spacing:.03em}
+.ftab.active{background:var(--red);color:#fff;border-color:var(--red)}
+.ftab:hover:not(.active){color:var(--text);border-color:var(--border2)}
+.ev-divider{display:flex;align-items:center;gap:10px;padding:16px 16px 0;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.ev-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.ev-band{background:linear-gradient(135deg,#1a0808 0%,#160d0d 100%);border-top:3px solid var(--red);padding:14px 16px 12px}
+.ev-band.dim-event{border-top-color:#2a2a2a;background:#111}
+.ev-number{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px}
+.ev-name{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:.06em;line-height:1;margin-bottom:8px;color:#fff}
+.ev-row{display:flex;flex-wrap:wrap;gap:4px 14px;margin-bottom:6px}
+.ev-detail{font-size:11px;color:var(--muted2);display:flex;align-items:center;gap:3px}
+.ev-detail svg{width:10px;height:10px;opacity:.5;flex-shrink:0}
+.ev-badges{display:flex;gap:5px;flex-wrap:wrap}
+.badge{font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius:3px}
+.b-next{background:rgba(232,25,44,.15);color:var(--red);border:1px solid rgba(232,25,44,.3)}
+.b-title{background:rgba(201,168,76,.12);color:var(--gold);border:1px solid rgba(201,168,76,.25)}
+.b-ppv{background:rgba(255,255,255,.06);color:var(--muted2);border:1px solid var(--border)}
+.fights-wrap{background:var(--card)}
+.fight-row{padding:12px 16px;border-bottom:1px solid var(--border)}
+.fight-row:last-of-type{border-bottom:none}
+.fight-row.main-event{background:rgba(232,25,44,.03);border-left:3px solid var(--red);padding-left:13px}
+.fight-row.co-main{background:rgba(201,168,76,.02);border-left:3px solid var(--gold);padding-left:13px}
+.fight-row.main-card{border-left:3px solid rgba(255,255,255,.06);padding-left:13px}
+.fight-row.prelim{border-left:3px solid transparent;background:rgba(255,255,255,.01)}
+.flbl{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.flbl.main{color:var(--red)}.flbl.co{color:var(--gold)}.flbl.pre{color:var(--muted)}
 .mu{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
-.ft{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ft{display:flex;flex-direction:column;gap:1px;min-width:0}
 .ft.r{align-items:flex-end;text-align:right}
-.fn{font-family:‘Bebas Neue’,sans-serif;font-size:20px;letter-spacing:.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fn.sm{font-size:16px}.fn.xs{font-size:13px;font-family:‘DM Sans’,sans-serif;font-weight:500}
-.frec{font-size:11px;color:var(–muted2)}
-.fpills{display:flex;gap:3px;margin-top:2px}
+.fn{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .15s}
+.fn.sm{font-size:16px}.fn.xs{font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0}
+.frec{font-size:11px;color:var(--muted2);margin-top:1px}
+.fpills{display:flex;gap:3px;flex-wrap:wrap;margin-top:2px}
 .ft.r .fpills{justify-content:flex-end}
-.pchamp{font-size:9px;font-weight:600;padding:1px 5px;border-radius:2px;background:rgba(201,168,76,.1);color:var(–gold);border:1px solid rgba(201,168,76,.18);letter-spacing:.06em}
-.prank{font-size:9px;font-weight:600;padding:1px 5px;border-radius:2px;background:rgba(255,255,255,.06);color:var(–muted2);letter-spacing:.05em}
+.pchamp{font-size:9px;font-weight:600;padding:1px 5px;border-radius:2px;background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.18);letter-spacing:.06em}
+.prank{font-size:9px;font-weight:600;padding:1px 5px;border-radius:2px;background:rgba(255,255,255,.06);color:var(--muted2);letter-spacing:.05em}
 .vc{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0}
-.vs{font-family:‘Bebas Neue’,sans-serif;font-size:13px;color:rgba(255,255,255,.16);letter-spacing:.08em}
-.wc-lbl{font-size:9px;color:var(–muted);text-align:center;text-transform:uppercase;letter-spacing:.04em;line-height:1.3;max-width:58px}
-
-/* Stats tap hint */
-.stats-hint{font-size:9px;color:rgba(255,255,255,.2);margin-top:2px}
-
-/* Odds */
-.odds-row{display:flex;justify-content:space-between;padding:6px 0 0}
-.odds-pill{font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px}
-.odds-fav{background:rgba(46,204,113,.08);color:var(–green);border:1px solid rgba(46,204,113,.18)}
-.odds-dog{background:rgba(232,25,44,.07);color:rgba(232,25,44,.7);border:1px solid rgba(232,25,44,.18)}
-.odds-lbl{font-size:9px;color:var(–muted);align-self:center}
-
-/* Predict row */
-.pred-row{display:flex;align-items:center;gap:6px;padding:8px 14px;border-top:1px solid var(–border);background:rgba(255,255,255,.015)}
-.pred-lbl{font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
-.pred-btn{flex:1;padding:6px 4px;border-radius:6px;border:1px solid var(–border2);background:none;color:var(–muted2);font:500 11px ‘DM Sans’,sans-serif;cursor:pointer;transition:all .15s;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pred-btn:hover{border-color:rgba(255,255,255,.3);color:var(–text)}
-.pred-btn.sel{background:rgba(232,25,44,.1);border-color:var(–red);color:var(–red)}
-.pred-btn.win{background:rgba(46,204,113,.08);border-color:var(–green);color:var(–green)}
-.pred-btn.lose{opacity:.45;text-decoration:line-through}
-
-/* More fights toggle */
-.pbtn{width:100%;background:none;border:none;border-top:1px solid var(–border);padding:9px 14px;display:flex;align-items:center;gap:6px;font-size:10px;color:var(–muted);cursor:pointer;font-family:‘DM Sans’,sans-serif;letter-spacing:.06em;text-transform:uppercase;transition:color .15s,background .15s;text-align:left}
-.pbtn:hover{color:var(–muted2);background:rgba(255,255,255,.02)}
-.pbtn svg{width:12px;height:12px;transition:transform .2s;margin-left:auto;flex-shrink:0}
-.pbtn.open svg{transform:rotate(180deg)}
-.pbody{display:none;border-top:1px solid var(–border)}.pbody.open{display:block}
-
-/* Fighter stats modal */
+.vs{font-family:'Bebas Neue',sans-serif;font-size:12px;color:rgba(255,255,255,.14);letter-spacing:.08em}
+.wc-sm{font-size:8px;color:var(--muted);text-align:center;text-transform:uppercase;letter-spacing:.04em;line-height:1.3;max-width:50px}
+.stats-hint{font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:.02em}
+.ft.r .stats-hint{text-align:right}
+.clickable{cursor:pointer}
+.clickable:hover .fn{opacity:.75}
+.odds-row{display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.odds-side{display:flex;flex-direction:column;gap:1px}
+.odds-side.r{align-items:flex-end}
+.odds-name{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.odds-val{font-size:13px;font-weight:600}
+.odds-val.fav{color:var(--green)}.odds-val.dog{color:#e05060}
+.odds-center{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;align-self:center}
+.pick-row{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.pick-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;flex-shrink:0}
+.pick-btn{flex:1;padding:5px 6px;border-radius:5px;border:1px solid var(--border2);background:none;color:var(--muted2);font:500 11px 'DM Sans',sans-serif;cursor:pointer;transition:all .15s;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pick-btn:hover{border-color:rgba(255,255,255,.3);color:var(--text)}
+.pick-btn.sel{background:rgba(232,25,44,.12);border-color:var(--red);color:var(--red)}
+.pick-btn.correct{background:rgba(46,204,113,.1);border-color:var(--green);color:var(--green)}
+.pick-btn.wrong{opacity:.4;text-decoration:line-through}
+.more-btn{width:100%;background:var(--card2);border:none;border-top:1px solid var(--border);padding:9px 16px;display:flex;align-items:center;gap:6px;font-size:10px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase;transition:color .15s;text-align:left}
+.more-btn:hover{color:var(--muted2)}
+.more-btn svg{width:12px;height:12px;transition:transform .2s;margin-left:auto;flex-shrink:0}
+.more-btn.open svg{transform:rotate(180deg)}
+.more-body{display:none}.more-body.open{display:block}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:flex-end;justify-content:center}
 .modal-bg.open{display:flex}
-.modal{background:#1c1c1c;border:1px solid var(–border2);border-radius:14px 14px 0 0;padding:20px 18px 36px;width:100%;max-width:480px;animation:slideUp .2s ease}
-@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-close{float:right;background:none;border:none;color:var(–muted);cursor:pointer;font-size:22px;line-height:1}
-.modal-fighter{font-family:‘Bebas Neue’,sans-serif;font-size:26px;letter-spacing:.04em;margin-bottom:2px}
-.modal-sub{font-size:12px;color:var(–muted);margin-bottom:16px}
+.modal{background:#1c1c1c;border:1px solid var(--border2);border-radius:14px 14px 0 0;padding:20px 18px 36px;width:100%;max-width:480px;animation:slideUp .22s ease}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.modal-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
+.modal-close{background:rgba(255,255,255,.08);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-close:hover{background:rgba(255,255,255,.15);color:var(--text)}
+.modal-name{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.05em;line-height:1}
+.modal-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
 .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.mstat{background:var(–card2);border-radius:8px;padding:10px 12px}
-.mstat-val{font-family:‘Bebas Neue’,sans-serif;font-size:22px;letter-spacing:.04em}
-.mstat-lbl{font-size:10px;color:var(–muted);text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
-.mbar-wrap{margin-bottom:10px}
-.mbar-lbl{font-size:10px;color:var(–muted);margin-bottom:4px;display:flex;justify-content:space-between}
-.mbar{height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
-.mbar-fill{height:100%;background:var(–red);border-radius:2px}
-
-/* Fight night mode */
+.ms{background:var(--card2);border-radius:8px;padding:10px 12px;border:1px solid var(--border)}
+.ms-val{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em}
+.ms-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:2px}
+.mbar-wrap{margin-top:8px}
+.mbar-lbl{font-size:10px;color:var(--muted);margin-bottom:4px;display:flex;justify-content:space-between}
+.mbar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.mbar-fill{height:100%;background:var(--red);border-radius:2px;transition:width .5s ease}
 .fn-mode{display:none;position:fixed;inset:0;background:#000;z-index:300;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
 .fn-mode.open{display:flex}
-.fn-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
-.fn-evname{font-family:‘Bebas Neue’,sans-serif;font-size:16px;letter-spacing:.12em;color:rgba(255,255,255,.35);margin-bottom:4px}
-.fn-wc{font-size:11px;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.12em;margin-bottom:28px}
-.fn-row{display:flex;align-items:center;gap:16px;width:100%;justify-content:center}
-.fn-side{flex:1;max-width:140px}
-.fn-name{font-family:‘Bebas Neue’,sans-serif;font-size:clamp(26px,6.5vw,52px);letter-spacing:.04em;line-height:1.1;color:#fff}
-.fn-rec{font-size:13px;color:rgba(255,255,255,.35);margin-top:6px}
-.fn-vs{font-family:‘Bebas Neue’,sans-serif;font-size:clamp(20px,5vw,36px);color:rgba(255,255,255,.12);flex-shrink:0}
-.fn-nav{display:flex;gap:10px;margin-top:32px}
-.fn-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);padding:8px 20px;border-radius:6px;cursor:pointer;font:500 12px ‘DM Sans’,sans-serif;display:flex;align-items:center;gap:5px;transition:background .15s,color .15s}
-.fn-btn:hover{background:rgba(255,255,255,.12);color:#fff}
-.fn-btn svg{width:13px;height:13px}
-.fn-count{font-size:11px;color:rgba(255,255,255,.25);margin-top:14px;letter-spacing:.06em}
-
-/* Name modal */
+.fn-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.08);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
+.fn-ev{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.12em;color:rgba(255,255,255,.35);margin-bottom:4px}
+.fn-wc{font-size:11px;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.1em;margin-bottom:28px}
+.fn-mu{display:flex;align-items:center;justify-content:center;gap:16px;width:100%;flex-wrap:wrap}
+.fn-ft{flex:1;min-width:100px}
+.fn-ft.r{text-align:right}
+.fn-nm{font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,7vw,52px);letter-spacing:.04em;line-height:1.1;color:#fff}
+.fn-rc{font-size:13px;color:rgba(255,255,255,.38);margin-top:4px}
+.fn-vs{font-family:'Bebas Neue',sans-serif;font-size:20px;color:rgba(255,255,255,.12);letter-spacing:.1em;flex-shrink:0}
+.fn-nav{display:flex;gap:10px;margin-top:28px}
+.fn-nb{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.55);padding:8px 18px;border-radius:6px;cursor:pointer;font:500 12px 'DM Sans',sans-serif;display:flex;align-items:center;gap:5px;transition:all .15s}
+.fn-nb:hover{background:rgba(255,255,255,.13);color:#fff}
+.fn-nb svg{width:13px;height:13px}
+.fn-ctr{font-size:10px;color:rgba(255,255,255,.25);margin-top:12px;letter-spacing:.06em}
 .nm-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:400;align-items:center;justify-content:center;padding:20px}
 .nm-bg.open{display:flex}
-.nm-box{background:#1c1c1c;border:1px solid var(–border2);border-radius:12px;padding:24px 20px;width:100%;max-width:320px}
-.nm-box h3{font-family:‘Bebas Neue’,sans-serif;font-size:22px;letter-spacing:.06em;margin-bottom:6px}
-.nm-box p{font-size:12px;color:var(–muted);margin-bottom:16px;line-height:1.55}
-.nm-input{width:100%;background:var(–card2);border:1px solid var(–border2);color:var(–text);padding:10px 12px;border-radius:8px;font:500 14px ‘DM Sans’,sans-serif;margin-bottom:10px}
-.nm-input:focus{outline:none;border-color:var(–red)}
-.nm-btn{width:100%;background:var(–red);border:none;color:#fff;padding:10px;border-radius:8px;font:600 13px ‘DM Sans’,sans-serif;cursor:pointer}
-
-/* Leaderboard */
-.lb-card{background:var(–card);border:1px solid var(–border);border-radius:10px;margin-bottom:10px;overflow:hidden}
-.lb-hdr{padding:11px 14px;border-bottom:1px solid var(–border);display:flex;align-items:center;justify-content:space-between}
-.lb-title{font-family:‘Bebas Neue’,sans-serif;font-size:16px;letter-spacing:.06em}
-.lb-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(–border)}
-.lb-row:last-child{border-bottom:none}
-.lb-rank{font-family:‘Bebas Neue’,sans-serif;font-size:18px;color:var(–muted);width:20px;flex-shrink:0}
-.lb-rank.gold{color:var(–gold)}
+.nm-box{background:#1c1c1c;border:1px solid var(--border2);border-radius:12px;padding:24px 20px;width:100%;max-width:320px}
+.nm-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
+.nm-close{background:rgba(255,255,255,.08);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.nm-close:hover{background:rgba(255,255,255,.15);color:var(--text)}
+.nm-box h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em}
+.nm-box p{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.55}
+.nm-input{width:100%;background:var(--card2);border:1px solid var(--border2);color:var(--text);padding:10px 12px;border-radius:7px;font:500 14px 'DM Sans',sans-serif;margin-bottom:10px}
+.nm-input:focus{outline:none;border-color:var(--red)}
+.nm-btn{width:100%;background:var(--red);border:none;color:#fff;padding:10px;border-radius:7px;font:600 13px 'DM Sans',sans-serif;cursor:pointer}
+.nm-btn:hover{background:#c9101f}
+.lb-wrap{margin:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.lb-hdr{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.lb-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.06em}
+.lb-row{display:flex;align-items:center;gap:10px;padding:9px 14px}
+.lb-rank{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);width:20px;text-align:center;flex-shrink:0}
 .lb-name{flex:1;font-size:13px;font-weight:500}
-.lb-score{font-family:‘Bebas Neue’,sans-serif;font-size:20px;color:var(–red)}
-.lb-pct{font-size:10px;color:var(–muted)}
-.lb-empty{padding:14px;font-size:12px;color:var(–muted);text-align:center}
-
-/* Toast */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#222;border:1px solid var(–border2);color:var(–text);padding:9px 16px;border-radius:8px;font-size:12px;z-index:500;transition:transform .25s;white-space:nowrap;pointer-events:none}
+.lb-score{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--red)}
+.lb-detail{font-size:10px;color:var(--muted)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#222;border:1px solid var(--border2);color:var(--text);padding:10px 18px;border-radius:8px;font-size:12px;z-index:500;transition:transform .25s ease;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
-
-/* Filter results note */
-.filter-note{font-size:11px;color:var(–muted);padding:4px 0 10px;text-align:center}
-
-@media(min-width:420px){.content{padding:16px}.fn{font-size:22px}.fn.sm{font-size:17px}.hero h1{font-size:38px}}
-@media(min-width:640px){.hdr{padding:0 20px}.hero{padding:22px 20px 16px}.content{padding:20px}}
+@media(min-width:420px){.fn{font-size:22px}.fn.sm{font-size:17px}.hero h1{font-size:36px}}
+@media(min-width:640px){.hdr{padding:0 20px}.hero{padding:22px 20px 16px}.filter-wrap{padding:10px 20px}}
 </style>
-
 </head>
 <body>
-
-<!-- Fighter stats modal -->
-
 <div class="modal-bg" id="statsModal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal()">×</button>
-    <div class="modal-fighter" id="mName"></div>
+    <div class="modal-top"><div class="modal-name" id="mName"></div><button class="modal-close" onclick="closeModal()">x</button></div>
     <div class="modal-sub" id="mSub"></div>
     <div class="modal-grid" id="mGrid"></div>
     <div id="mBars"></div>
   </div>
 </div>
-
-<!-- Fight night mode -->
-
 <div class="fn-mode" id="fnMode">
-  <button class="fn-close" onclick="closeFN()">×</button>
-  <div class="fn-evname" id="fn-ev"></div>
+  <button class="fn-close" onclick="closeFN()">x</button>
+  <div class="fn-ev" id="fn-ev"></div>
   <div class="fn-wc" id="fn-wc"></div>
-  <div class="fn-row">
-    <div class="fn-side">
-      <div class="fn-name" id="fn-n1"></div>
-      <div class="fn-rec" id="fn-r1"></div>
-    </div>
+  <div class="fn-mu">
+    <div class="fn-ft"><div class="fn-nm" id="fn-f1"></div><div class="fn-rc" id="fn-r1"></div></div>
     <div class="fn-vs">VS</div>
-    <div class="fn-side">
-      <div class="fn-name" id="fn-n2"></div>
-      <div class="fn-rec" id="fn-r2"></div>
-    </div>
+    <div class="fn-ft r"><div class="fn-nm" id="fn-f2"></div><div class="fn-rc" id="fn-r2"></div></div>
   </div>
   <div class="fn-nav">
-    <button class="fn-btn" onclick="fnNav(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Prev</button>
-    <button class="fn-btn" onclick="fnNav(1)">Next<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <button class="fn-nb" onclick="fnNav(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Prev</button>
+    <button class="fn-nb" onclick="fnNav(1)">Next<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
   </div>
-  <div class="fn-count" id="fn-count"></div>
+  <div class="fn-ctr" id="fn-ctr"></div>
 </div>
-
-<!-- Name entry -->
-
 <div class="nm-bg" id="nmBg">
   <div class="nm-box">
-    <h3>Join the Predictor</h3>
-    <p>Enter your name to track your picks across every fight card.</p>
+    <div class="nm-top"><h3>Join the Predictor</h3><button class="nm-close" onclick="closeNameModal()">x</button></div>
+    <p>Enter your name to track your pick accuracy.</p>
     <input class="nm-input" id="nmInput" type="text" placeholder="Your name" maxlength="20" onkeydown="if(event.key==='Enter')saveName()">
-    <button class="nm-btn" onclick="saveName()">Start Picking</button>
+    <button class="nm-btn" onclick="saveName()">Let's Go</button>
   </div>
 </div>
-
-<!-- Toast -->
-
 <div class="toast" id="toast"></div>
-
 <header class="hdr">
-  <div class="logo">
-    <div class="logo-hex">UFC</div>
-    <span class="logo-text">FIGHT <span>CARDS</span></span>
-  </div>
+  <div class="logo"><div class="logo-hex">UFC</div><span class="logo-text">FIGHT <span>CARDS</span></span></div>
   <div class="hdr-right">
-    <button class="btn-tv" onclick="openFN()" title="Fight night mode">
+    <button class="btn-icon" onclick="openFN()" title="Fight night mode">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
     </button>
     <a class="btn-ufc" href="https://www.ufc.com/events" target="_blank">
@@ -262,508 +207,359 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     </a>
   </div>
 </header>
-
 <section class="hero">
   <h1>UPCOMING<br><span>FIGHT CARDS</span></h1>
-  <p class="hero-sub">Verified from UFC.com · Updated May 8, 2026</p>
-  <div class="cd-wrap" id="cdWrap" style="display:none">
-    <div class="cd-label">Next Event Countdown</div>
-    <div class="cd-event" id="cdEv"></div>
-    <div class="cd-timer" id="cdTimer"></div>
+  <p class="hero-sub">Verified from UFC.com - Updated May 8, 2026</p>
+  <div class="countdown-wrap" id="cd-wrap" style="display:none">
+    <div class="cd-label">Next Main Card</div>
+    <div class="cd-event" id="cd-event"></div>
+    <div class="cd-timer" id="cd-timer"></div>
   </div>
 </section>
-
-<div class="stats" id="stats"></div>
-
-<div class="tabs" id="tabs">
-  <button class="tab on"  onclick="setFilter('all',this)">All</button>
-  <button class="tab" onclick="setFilter('Heavyweight',this)">Heavyweight</button>
-  <button class="tab" onclick="setFilter('Light Heavyweight',this)">Lt. HW</button>
-  <button class="tab" onclick="setFilter('Middleweight',this)">MW</button>
-  <button class="tab" onclick="setFilter('Welterweight',this)">WW</button>
-  <button class="tab" onclick="setFilter('Lightweight',this)">LW</button>
-  <button class="tab" onclick="setFilter('Featherweight',this)">FW</button>
-  <button class="tab" onclick="setFilter('Bantamweight',this)">BW</button>
-  <button class="tab" onclick="setFilter('Flyweight',this)">FLY</button>
+<div class="stats" id="stats">
+  <div class="stat"><div class="sv">4</div><div class="sl">Events</div></div>
+  <div class="stat"><div class="sv">4</div><div class="sl">Titles</div></div>
+  <div class="stat"><div class="sv">43</div><div class="sl">Bouts</div></div>
+  <div class="stat"><div class="sv" id="picks-count">0</div><div class="sl">My Picks</div></div>
 </div>
-
-<main class="content">
-  <div id="app"></div>
-  <div id="lb"></div>
-</main>
-
+<div class="filter-wrap">
+  <button class="ftab active" onclick="setFilter('all',this)">All</button>
+  <button class="ftab" onclick="setFilter('Heavyweight',this)">Heavyweight</button>
+  <button class="ftab" onclick="setFilter('Light Heavyweight',this)">Lt. Heavyweight</button>
+  <button class="ftab" onclick="setFilter('Middleweight',this)">Middleweight</button>
+  <button class="ftab" onclick="setFilter('Welterweight',this)">Welterweight</button>
+  <button class="ftab" onclick="setFilter('Lightweight',this)">Lightweight</button>
+  <button class="ftab" onclick="setFilter('Featherweight',this)">Featherweight</button>
+  <button class="ftab" onclick="setFilter('Bantamweight',this)">Bantamweight</button>
+  <button class="ftab" onclick="setFilter('Flyweight',this)">Flyweight</button>
+</div>
+<div id="app"></div>
 <script>
 var EVENTS = [
-  {
-    name: "UFC 328: Chimaev vs. Strickland",
-    date: "2026-05-09", mainCardTime: "9:00 PM ET",
-    venue: "Prudential Center", location: "Newark, NJ", broadcast: "Paramount+",
-    fights: [
-      { label:"Main Event",    wc:"Middleweight",         title:true,  odds:{f1:-575,f2:425},  f1:{name:"Khamzat Chimaev",       rec:"15-0",    rank:"C",   stats:{slpm:"4.5",stracc:"55",tdavg:"3.4",tddefs:"90",kos:8,subs:3}}, f2:{name:"Sean Strickland",      rec:"30-7",    rank:"#3",  stats:{slpm:"5.2",stracc:"46",tdavg:"0.4",tddefs:"81",kos:4,subs:2}} },
-      { label:"Co-Main Event", wc:"Flyweight",            title:true,  odds:{f1:136,f2:-162},  f1:{name:"Joshua Van",           rec:"12-0",    rank:"C",   stats:{slpm:"3.1",stracc:"49",tdavg:"2.8",tddefs:"88",kos:3,subs:5}}, f2:{name:"Tatsuro Taira",        rec:"16-1",    rank:"#3",  stats:{slpm:"2.9",stracc:"51",tdavg:"3.2",tddefs:"79",kos:2,subs:7}} },
-      { label:"Main Card",     wc:"Heavyweight",          title:false, odds:{f1:-142,f2:118},  f1:{name:"Alexander Volkov",     rec:"38-10",   rank:"#2",  stats:{slpm:"3.8",stracc:"42",tdavg:"0.3",tddefs:"93",kos:19,subs:1}}, f2:{name:"Waldo Cortes-Acosta",  rec:"13-2",    rank:"#4",  stats:{slpm:"4.1",stracc:"48",tdavg:"1.8",tddefs:"72",kos:10,subs:0}} },
-      { label:"Main Card",     wc:"Welterweight",         title:false, odds:{f1:-170,f2:140},  f1:{name:"Sean Brady",           rec:"17-1",    rank:"#6",  stats:{slpm:"3.2",stracc:"47",tdavg:"3.5",tddefs:"77",kos:3,subs:5}}, f2:{name:"Joaquin Buckley",      rec:"22-5",    rank:"#9",  stats:{slpm:"5.6",stracc:"51",tdavg:"0.5",tddefs:"64",kos:15,subs:1}} },
-      { label:"Main Card",     wc:"Lightweight",          title:false, odds:{f1:-320,f2:260},  f1:{name:"King Green",           rec:"34-17-1", rank:"",    stats:{slpm:"5.4",stracc:"44",tdavg:"0.3",tddefs:"80",kos:11,subs:2}}, f2:{name:"Jeremy Stephens",      rec:"29-22-1", rank:"",    stats:{slpm:"4.7",stracc:"39",tdavg:"0.6",tddefs:"65",kos:17,subs:1}} },
-      { label:"Prelim",        wc:"Middleweight",         title:false, odds:null, f1:{name:"Ateba Gautier",        rec:"11-1",    rank:"",    stats:null}, f2:{name:"Ozzy Diaz",            rec:"9-2",     rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Welterweight",         title:false, odds:null, f1:{name:"Joel Alvarez",         rec:"25-4",    rank:"",    stats:null}, f2:{name:"Yaroslav Amosov",      rec:"28-0",    rank:"#14", stats:null} },
-      { label:"Prelim",        wc:"Lightweight",          title:false, odds:null, f1:{name:"Grant Dawson",         rec:"21-2-1",  rank:"",    stats:null}, f2:{name:"Mateusz Rebecki",      rec:"18-4",    rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Lightweight",          title:false, odds:null, f1:{name:"Jim Miller",           rec:"37-17-1", rank:"",    stats:null}, f2:{name:"Jared Gordon",         rec:"19-7",    rank:"",    stats:null} },
-      { label:"Early Prelim",  wc:"Middleweight",         title:false, odds:null, f1:{name:"Roman Kopylov",        rec:"12-3",    rank:"",    stats:null}, f2:{name:"Marco Tulio",          rec:"9-1",     rank:"",    stats:null} },
-      { label:"Early Prelim",  wc:"Featherweight",        title:false, odds:null, f1:{name:"Pat Sabatini",         rec:"18-3",    rank:"",    stats:null}, f2:{name:"William Gomis",        rec:"10-2",    rank:"",    stats:null} },
-      { label:"Early Prelim",  wc:"Middleweight",         title:false, odds:null, f1:{name:"Baisangur Susurkaev", rec:"12-0",    rank:"",    stats:null}, f2:{name:"Djorden Santos",       rec:"9-2",     rank:"",    stats:null} },
-      { label:"Early Prelim",  wc:"Flyweight",            title:false, odds:null, f1:{name:"Clayton Carpenter",   rec:"8-3",     rank:"",    stats:null}, f2:{name:"Jose Ochoa",           rec:"7-1",     rank:"",    stats:null} }
-    ]
-  },
-  {
-    name: "UFC Fight Night: Allen vs. Costa",
-    date: "2026-05-16", mainCardTime: "8:00 PM ET",
-    venue: "Meta APEX", location: "Las Vegas, NV", broadcast: "Paramount+",
-    fights: [
-      { label:"Main Event",    wc:"Featherweight",        title:false, odds:{f1:110,f2:-132},  f1:{name:"Arnold Allen",         rec:"20-4",    rank:"",    stats:{slpm:"2.8",stracc:"47",tdavg:"1.7",tddefs:"82",kos:4,subs:8}},  f2:{name:"Melquizael Costa",     rec:"26-7",    rank:"#12", stats:{slpm:"4.4",stracc:"60",tdavg:"2.0",tddefs:"78",kos:10,subs:7}} },
-      { label:"Co-Main Event", wc:"Featherweight",        title:false, odds:{f1:-175,f2:145},  f1:{name:"Doo Ho Choi",          rec:"16-4-1",  rank:"",    stats:{slpm:"5.9",stracc:"45",tdavg:"0.2",tddefs:"70",kos:9,subs:1}},  f2:{name:"Daniel Santos",        rec:"12-2",    rank:"",    stats:{slpm:"4.3",stracc:"52",tdavg:"1.5",tddefs:"74",kos:6,subs:3}} },
-      { label:"Main Card",     wc:"Light Heavyweight",    title:false, odds:null, f1:{name:"Modestas Bukauskas",   rec:"14-5",    rank:"",    stats:null}, f2:{name:"Rodolfo Bellato",      rec:"13-3",    rank:"",    stats:null} },
-      { label:"Main Card",     wc:"Bantamweight",         title:false, odds:null, f1:{name:"Malcolm Wellmaker",    rec:"11-0",    rank:"",    stats:null}, f2:{name:"Juan Diaz",            rec:"9-1",     rank:"",    stats:null} },
-      { label:"Main Card",     wc:"Bantamweight",         title:false, odds:null, f1:{name:"Timothy Cuamba",       rec:"9-1",     rank:"",    stats:null}, f2:{name:"Bernardo Sopaj",       rec:"9-0",     rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Welterweight",         title:false, odds:null, f1:{name:"Khaos Williams",       rec:"14-3",    rank:"",    stats:null}, f2:{name:"Nikolay Veretennikov", rec:"19-3",    rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Welterweight",         title:false, odds:null, f1:{name:"Jeremiah Wells",       rec:"13-3-1",  rank:"",    stats:null}, f2:{name:"TBD",                  rec:"",        rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Light Heavyweight",    title:false, odds:null, f1:{name:"Tuco Tokkos",          rec:"10-1",    rank:"",    stats:null}, f2:{name:"Ivan Erslan",          rec:"9-2",     rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Women's Bantamweight", title:false, odds:null, f1:{name:"Ketlen Vieira",        rec:"13-4-1",  rank:"",    stats:null}, f2:{name:"Jacqueline Cavalcanti", rec:"11-2",   rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Middleweight",         title:false, odds:null, f1:{name:"Andre Petroski",       rec:"12-4",    rank:"",    stats:null}, f2:{name:"Cody Brundage",        rec:"13-6",    rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Women's Strawweight",  title:false, odds:null, f1:{name:"Alice Ardelean",       rec:"8-1",     rank:"",    stats:null}, f2:{name:"Polyana Viana",        rec:"14-7",    rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Flyweight",            title:false, odds:null, f1:{name:"Daniel Barez",         rec:"10-3",    rank:"",    stats:null}, f2:{name:"Luis Gurule",          rec:"9-2",     rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Women's Strawweight",  title:false, odds:null, f1:{name:"Shauna Bannon",        rec:"8-2",     rank:"",    stats:null}, f2:{name:"Nicolle Caliari",      rec:"7-3",     rank:"",    stats:null} }
-    ]
-  },
-  {
-    name: "UFC Fight Night: Song vs. Figueiredo",
-    date: "2026-05-30", mainCardTime: "7:00 AM ET",
-    venue: "Galaxy Arena", location: "Macau, China", broadcast: "Paramount+",
-    fights: [
-      { label:"Main Event",    wc:"Bantamweight",         title:false, odds:{f1:-165,f2:138},  f1:{name:"Song Yadong",          rec:"22-9-1",  rank:"",    stats:{slpm:"4.4",stracc:"50",tdavg:"0.8",tddefs:"83",kos:6,subs:1}},  f2:{name:"Deiveson Figueiredo",  rec:"25-6-1",  rank:"",    stats:{slpm:"3.7",stracc:"47",tdavg:"2.3",tddefs:"76",kos:8,subs:9}} },
-      { label:"Co-Main Event", wc:"Light Heavyweight",    title:false, odds:null, f1:{name:"Mingyang Zhang",       rec:"10-2",    rank:"",    stats:null}, f2:{name:"Alonzo Menifield",     rec:"15-5",    rank:"",    stats:null} },
-      { label:"Main Card",     wc:"Heavyweight",          title:false, odds:null, f1:{name:"Sergei Pavlovich",     rec:"18-3",    rank:"",    stats:null}, f2:{name:"Tallison Teixeira",    rec:"10-1",    rank:"",    stats:null} },
-      { label:"Main Card",     wc:"Flyweight",            title:false, odds:null, f1:{name:"Alex Perez",           rec:"12-5",    rank:"",    stats:null}, f2:{name:"Sumudaerji",           rec:"18-4",    rank:"",    stats:null} },
-      { label:"Main Card",     wc:"Bantamweight",         title:false, odds:null, f1:{name:"Kai Asakura",          rec:"22-6",    rank:"",    stats:null}, f2:{name:"Cameron Smotherman",   rec:"10-2",    rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Women's Strawweight",  title:false, odds:null, f1:{name:"Angela Hill",          rec:"17-13",   rank:"",    stats:null}, f2:{name:"Jingnan Xiong",        rec:"19-2",    rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Middleweight",         title:false, odds:null, f1:{name:"Luis Dias",            rec:"9-2",     rank:"",    stats:null}, f2:{name:"Yi Sak Lee",           rec:"8-1",     rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Flyweight",            title:false, odds:null, f1:{name:"Rei Tsuruya",          rec:"9-1",     rank:"",    stats:null}, f2:{name:"Jesus Aguilar",        rec:"11-4",    rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Women's Strawweight",  title:false, odds:null, f1:{name:"Loma Lookboonmee",     rec:"9-6",     rank:"",    stats:null}, f2:{name:"Jaqueline Amorim",     rec:"8-2",     rank:"",    stats:null} },
-      { label:"Prelim",        wc:"Bantamweight",         title:false, odds:null, f1:{name:"Aoriqileng",           rec:"19-10",   rank:"",    stats:null}, f2:{name:"Cody Haddon",          rec:"9-2",     rank:"",    stats:null} }
-    ]
-  },
-  {
-    name: "UFC Freedom 250: Topuria vs. Gaethje",
-    date: "2026-06-14", mainCardTime: "8:00 PM ET",
-    venue: "South Lawn, The White House", location: "Washington, D.C.", broadcast: "Paramount+ / CBS",
-    fights: [
-      { label:"Main Event",    wc:"Lightweight",          title:true,  odds:{f1:-400,f2:310},  f1:{name:"Ilia Topuria",         rec:"17-0",    rank:"C",   stats:{slpm:"4.7",stracc:"58",tdavg:"1.2",tddefs:"94",kos:10,subs:4}}, f2:{name:"Justin Gaethje",      rec:"27-5",    rank:"#1",  stats:{slpm:"5.9",stracc:"43",tdavg:"0.4",tddefs:"76",kos:14,subs:1}} },
-      { label:"Co-Main Event", wc:"Heavyweight",          title:true,  odds:{f1:-115,f2:-105}, f1:{name:"Alex Pereira",         rec:"10-2",    rank:"#2",  stats:{slpm:"5.1",stracc:"54",tdavg:"0.3",tddefs:"88",kos:7,subs:0}},  f2:{name:"Ciryl Gane",           rec:"13-4",    rank:"#1",  stats:{slpm:"3.8",stracc:"55",tdavg:"0.4",tddefs:"93",kos:7,subs:0}} },
-      { label:"Main Card",     wc:"Bantamweight",         title:false, odds:{f1:-425,f2:290},  f1:{name:"Sean O'Malley",        rec:"19-3",    rank:"#2",  stats:{slpm:"5.4",stracc:"48",tdavg:"0.2",tddefs:"80",kos:8,subs:1}},  f2:{name:"Aiemann Zahabi",       rec:"14-2",    rank:"#6",  stats:{slpm:"3.2",stracc:"46",tdavg:"0.8",tddefs:"79",kos:5,subs:4}} },
-      { label:"Main Card",     wc:"Heavyweight",          title:false, odds:{f1:-275,f2:220},  f1:{name:"Josh Hokit",           rec:"9-0",     rank:"#5",  stats:{slpm:"4.8",stracc:"52",tdavg:"2.1",tddefs:"85",kos:5,subs:2}},  f2:{name:"Derrick Lewis",        rec:"29-13",   rank:"#9",  stats:{slpm:"3.9",stracc:"40",tdavg:"0.2",tddefs:"88",kos:25,subs:0}} },
-      { label:"Main Card",     wc:"Lightweight",          title:false, odds:{f1:-700,f2:500},  f1:{name:"Mauricio Ruffy",       rec:"13-2",    rank:"#10", stats:{slpm:"6.1",stracc:"53",tdavg:"0.6",tddefs:"88",kos:5,subs:5}},  f2:{name:"Michael Chandler",     rec:"23-10",   rank:"#13", stats:{slpm:"5.5",stracc:"42",tdavg:"2.5",tddefs:"71",kos:10,subs:3}} },
-      { label:"Main Card",     wc:"Middleweight",         title:false, odds:{f1:-340,f2:270},  f1:{name:"Bo Nickal",            rec:"8-1",     rank:"",    stats:{slpm:"3.3",stracc:"48",tdavg:"5.8",tddefs:"88",kos:2,subs:4}},  f2:{name:"Kyle Daukaus",         rec:"17-4",    rank:"",    stats:{slpm:"3.1",stracc:"44",tdavg:"0.9",tddefs:"72",kos:5,subs:7}} },
-      { label:"Main Card",     wc:"Featherweight",        title:false, odds:{f1:-200,f2:165},  f1:{name:"Diego Lopes",          rec:"27-8",    rank:"#2",  stats:{slpm:"4.6",stracc:"50",tdavg:"0.9",tddefs:"78",kos:9,subs:9}},  f2:{name:"Steve Garcia",         rec:"19-5",    rank:"#9",  stats:{slpm:"3.7",stracc:"45",tdavg:"0.5",tddefs:"69",kos:6,subs:2}} }
-    ]
-  }
+  {name:"UFC 328: Chimaev vs. Strickland",date:"2026-05-09",venue:"Prudential Center",loc:"Newark, NJ",tv:"Paramount+",time:"21:00",
+   fights:[
+    {lbl:"Main Event",   wc:"Middleweight",   title:true,  odds:{f1:-575,f2:425},  f1:{n:"Khamzat Chimaev",     r:"15-0",    rk:"C",  s:{slpm:"4.5",acc:55,td:"3.4",tdd:90,ko:8,sub:3}},  f2:{n:"Sean Strickland",    r:"30-7",    rk:"#3", s:{slpm:"5.2",acc:46,td:"0.4",tdd:81,ko:4,sub:2}}},
+    {lbl:"Co-Main",      wc:"Flyweight",       title:true,  odds:{f1:-145,f2:120},  f1:{n:"Joshua Van",         r:"12-0",    rk:"C",  s:{slpm:"3.1",acc:49,td:"2.8",tdd:88,ko:3,sub:5}},  f2:{n:"Tatsuro Taira",      r:"16-1",    rk:"#3", s:{slpm:"2.9",acc:51,td:"3.2",tdd:79,ko:2,sub:7}}},
+    {lbl:"Main Card",    wc:"Heavyweight",     title:false, odds:{f1:-142,f2:118},  f1:{n:"Alexander Volkov",   r:"38-10",   rk:"#2", s:{slpm:"3.8",acc:42,td:"0.3",tdd:93,ko:19,sub:1}}, f2:{n:"Waldo Cortes-Acosta",r:"13-2",    rk:"#4", s:{slpm:"4.1",acc:48,td:"1.8",tdd:72,ko:10,sub:0}}},
+    {lbl:"Main Card",    wc:"Welterweight",    title:false, odds:{f1:-170,f2:140},  f1:{n:"Sean Brady",         r:"17-1",    rk:"#6", s:{slpm:"3.2",acc:47,td:"3.5",tdd:77,ko:3,sub:5}},  f2:{n:"Joaquin Buckley",    r:"22-5",    rk:"#9", s:{slpm:"5.6",acc:51,td:"0.5",tdd:64,ko:15,sub:1}}},
+    {lbl:"Main Card",    wc:"Lightweight",     title:false, odds:{f1:-320,f2:260},  f1:{n:"King Green",         r:"34-17-1", rk:"",   s:{slpm:"5.4",acc:44,td:"0.3",tdd:80,ko:11,sub:2}}, f2:{n:"Jeremy Stephens",    r:"29-22-1", rk:"",   s:{slpm:"4.7",acc:39,td:"0.6",tdd:65,ko:17,sub:1}}},
+    {lbl:"Prelim",       wc:"Middleweight",    title:false, odds:null, f1:{n:"Ateba Gautier",      r:"11-1",    rk:"",   s:null}, f2:{n:"Ozzy Diaz",          r:"9-2",     rk:"",   s:null}},
+    {lbl:"Prelim",       wc:"Welterweight",    title:false, odds:null, f1:{n:"Joel Alvarez",       r:"25-4",    rk:"",   s:null}, f2:{n:"Yaroslav Amosov",    r:"28-0",    rk:"#14",s:null}},
+    {lbl:"Prelim",       wc:"Lightweight",     title:false, odds:null, f1:{n:"Grant Dawson",       r:"21-2-1",  rk:"",   s:null}, f2:{n:"Mateusz Rebecki",    r:"18-4",    rk:"",   s:null}},
+    {lbl:"Prelim",       wc:"Lightweight",     title:false, odds:null, f1:{n:"Jim Miller",         r:"37-17-1", rk:"",   s:null}, f2:{n:"Jared Gordon",       r:"19-7",    rk:"",   s:null}},
+    {lbl:"Early Prelim", wc:"Middleweight",    title:false, odds:null, f1:{n:"Roman Kopylov",      r:"12-3",    rk:"",   s:null}, f2:{n:"Marco Tulio",        r:"9-1",     rk:"",   s:null}},
+    {lbl:"Early Prelim", wc:"Featherweight",   title:false, odds:null, f1:{n:"Pat Sabatini",       r:"18-3",    rk:"",   s:null}, f2:{n:"William Gomis",      r:"10-2",    rk:"",   s:null}},
+    {lbl:"Early Prelim", wc:"Middleweight",    title:false, odds:null, f1:{n:"Baisangur Susurkaev",r:"12-0",    rk:"",   s:null}, f2:{n:"Djorden Santos",     r:"9-2",     rk:"",   s:null}},
+    {lbl:"Early Prelim", wc:"Flyweight",       title:false, odds:null, f1:{n:"Clayton Carpenter",  r:"8-3",     rk:"",   s:null}, f2:{n:"Jose Ochoa",         r:"7-1",     rk:"",   s:null}}
+  ]},
+  {name:"UFC Fight Night: Allen vs. Costa",date:"2026-05-16",venue:"Meta APEX",loc:"Las Vegas, NV",tv:"Paramount+",time:"20:00",
+   fights:[
+    {lbl:"Main Event",   wc:"Featherweight",        title:false, odds:{f1:110,f2:-132}, f1:{n:"Arnold Allen",       r:"20-4",    rk:"",    s:{slpm:"2.8",acc:47,td:"1.7",tdd:82,ko:4,sub:8}},  f2:{n:"Melquizael Costa",   r:"26-7",    rk:"#12", s:{slpm:"4.4",acc:60,td:"2.0",tdd:78,ko:10,sub:7}}},
+    {lbl:"Co-Main",      wc:"Featherweight",        title:false, odds:{f1:-175,f2:145}, f1:{n:"Doo Ho Choi",        r:"16-4-1",  rk:"",    s:{slpm:"5.9",acc:45,td:"0.2",tdd:70,ko:9,sub:1}},  f2:{n:"Daniel Santos",      r:"12-2",    rk:"",    s:{slpm:"4.3",acc:52,td:"1.5",tdd:74,ko:6,sub:3}}},
+    {lbl:"Main Card",    wc:"Light Heavyweight",    title:false, odds:null, f1:{n:"Modestas Bukauskas", r:"14-5",    rk:"",    s:null}, f2:{n:"Rodolfo Bellato",    r:"13-3",    rk:"",    s:null}},
+    {lbl:"Main Card",    wc:"Bantamweight",         title:false, odds:null, f1:{n:"Malcolm Wellmaker",  r:"11-0",    rk:"",    s:null}, f2:{n:"Juan Diaz",          r:"9-1",     rk:"",    s:null}},
+    {lbl:"Main Card",    wc:"Bantamweight",         title:false, odds:null, f1:{n:"Timothy Cuamba",     r:"9-1",     rk:"",    s:null}, f2:{n:"Bernardo Sopaj",     r:"9-0",     rk:"",    s:null}},
+    {lbl:"Prelim",       wc:"Welterweight",         title:false, odds:null, f1:{n:"Khaos Williams",     r:"14-3",    rk:"",    s:null}, f2:{n:"Nikolay Veretennikov",r:"19-3",   rk:"",    s:null}},
+    {lbl:"Prelim",       wc:"Welterweight",         title:false, odds:null, f1:{n:"Jeremiah Wells",     r:"13-3-1",  rk:"",    s:null}, f2:{n:"TBD",               r:"",        rk:"",    s:null}},
+    {lbl:"Prelim",       wc:"Light Heavyweight",    title:false, odds:null, f1:{n:"Tuco Tokkos",        r:"10-1",    rk:"",    s:null}, f2:{n:"Ivan Erslan",        r:"9-2",     rk:"",    s:null}},
+    {lbl:"Prelim",       wc:"Women's Bantamweight", title:false, odds:null, f1:{n:"Ketlen Vieira",      r:"13-4-1",  rk:"",    s:null}, f2:{n:"Jacqueline Cavalcanti",r:"11-2",  rk:"",    s:null}},
+    {lbl:"Prelim",       wc:"Middleweight",         title:false, odds:null, f1:{n:"Andre Petroski",     r:"12-4",    rk:"",    s:null}, f2:{n:"Cody Brundage",      r:"13-6",    rk:"",    s:null}},
+    {lbl:"Prelim",       wc:"Women's Strawweight",  title:false, odds:null, f1:{n:"Alice Ardelean",     r:"8-1",     rk:"",    s:null}, f2:{n:"Polyana Viana",      r:"14-7",    rk:"",    s:null}},
+    {lbl:"Prelim",       wc:"Flyweight",            title:false, odds:null, f1:{n:"Daniel Barez",       r:"10-3",    rk:"",    s:null}, f2:{n:"Luis Gurule",        r:"9-2",     rk:"",    s:null}},
+    {lbl:"Prelim",       wc:"Women's Strawweight",  title:false, odds:null, f1:{n:"Shauna Bannon",      r:"8-2",     rk:"",    s:null}, f2:{n:"Nicolle Caliari",    r:"7-3",     rk:"",    s:null}}
+  ]},
+  {name:"UFC Fight Night: Song vs. Figueiredo",date:"2026-05-30",venue:"Galaxy Arena",loc:"Macau, China",tv:"Paramount+",time:"07:00",
+   fights:[
+    {lbl:"Main Event",   wc:"Bantamweight",        title:false, odds:{f1:-165,f2:138}, f1:{n:"Song Yadong",        r:"22-9-1",  rk:"",   s:{slpm:"4.4",acc:50,td:"0.8",tdd:83,ko:6,sub:1}},  f2:{n:"Deiveson Figueiredo",r:"25-6-1",  rk:"",   s:{slpm:"3.7",acc:47,td:"2.3",tdd:76,ko:8,sub:9}}},
+    {lbl:"Co-Main",      wc:"Light Heavyweight",   title:false, odds:null, f1:{n:"Mingyang Zhang",     r:"10-2",    rk:"",   s:null}, f2:{n:"Alonzo Menifield",   r:"15-5",    rk:"",   s:null}},
+    {lbl:"Main Card",    wc:"Heavyweight",         title:false, odds:null, f1:{n:"Sergei Pavlovich",   r:"18-3",    rk:"",   s:null}, f2:{n:"Tallison Teixeira",  r:"10-1",    rk:"",   s:null}},
+    {lbl:"Main Card",    wc:"Flyweight",           title:false, odds:null, f1:{n:"Alex Perez",         r:"12-5",    rk:"",   s:null}, f2:{n:"Sumudaerji",         r:"18-4",    rk:"",   s:null}},
+    {lbl:"Main Card",    wc:"Bantamweight",        title:false, odds:null, f1:{n:"Kai Asakura",        r:"22-6",    rk:"",   s:null}, f2:{n:"Cameron Smotherman", r:"10-2",    rk:"",   s:null}},
+    {lbl:"Prelim",       wc:"Women's Strawweight", title:false, odds:null, f1:{n:"Angela Hill",        r:"17-13",   rk:"",   s:null}, f2:{n:"Jingnan Xiong",      r:"19-2",    rk:"",   s:null}},
+    {lbl:"Prelim",       wc:"Middleweight",        title:false, odds:null, f1:{n:"Luis Dias",          r:"9-2",     rk:"",   s:null}, f2:{n:"Yi Sak Lee",         r:"8-1",     rk:"",   s:null}},
+    {lbl:"Prelim",       wc:"Flyweight",           title:false, odds:null, f1:{n:"Rei Tsuruya",        r:"9-1",     rk:"",   s:null}, f2:{n:"Jesus Aguilar",      r:"11-4",    rk:"",   s:null}},
+    {lbl:"Prelim",       wc:"Women's Strawweight", title:false, odds:null, f1:{n:"Loma Lookboonmee",   r:"9-6",     rk:"",   s:null}, f2:{n:"Jaqueline Amorim",   r:"8-2",     rk:"",   s:null}},
+    {lbl:"Prelim",       wc:"Bantamweight",        title:false, odds:null, f1:{n:"Aoriqileng",         r:"19-10",   rk:"",   s:null}, f2:{n:"Cody Haddon",        r:"9-2",     rk:"",   s:null}}
+  ]},
+  {name:"UFC Freedom 250: Topuria vs. Gaethje",date:"2026-06-14",venue:"South Lawn, White House",loc:"Washington, D.C.",tv:"Paramount+ / CBS",time:"20:00",
+   fights:[
+    {lbl:"Main Event",   wc:"Lightweight",   title:true,  odds:{f1:-400,f2:310},  f1:{n:"Ilia Topuria",   r:"17-0",   rk:"C",   s:{slpm:"4.7",acc:58,td:"1.2",tdd:94,ko:10,sub:4}}, f2:{n:"Justin Gaethje",    r:"27-5",   rk:"#1",  s:{slpm:"5.9",acc:43,td:"0.4",tdd:76,ko:14,sub:1}}},
+    {lbl:"Co-Main",      wc:"Heavyweight",   title:true,  odds:{f1:-115,f2:-105}, f1:{n:"Alex Pereira",   r:"10-2",   rk:"#2",  s:{slpm:"5.1",acc:54,td:"0.3",tdd:88,ko:7,sub:0}},  f2:{n:"Ciryl Gane",        r:"13-4",   rk:"#1",  s:{slpm:"3.8",acc:55,td:"0.4",tdd:93,ko:7,sub:0}}},
+    {lbl:"Main Card",    wc:"Bantamweight",  title:false, odds:{f1:-425,f2:290},  f1:{n:"Sean O'Malley",  r:"19-3",   rk:"#2",  s:{slpm:"5.4",acc:48,td:"0.2",tdd:80,ko:8,sub:1}},  f2:{n:"Aiemann Zahabi",    r:"14-2",   rk:"#6",  s:{slpm:"3.2",acc:46,td:"0.8",tdd:79,ko:5,sub:4}}},
+    {lbl:"Main Card",    wc:"Heavyweight",   title:false, odds:{f1:-275,f2:220},  f1:{n:"Josh Hokit",     r:"9-0",    rk:"#5",  s:{slpm:"4.8",acc:52,td:"2.1",tdd:85,ko:5,sub:2}},  f2:{n:"Derrick Lewis",     r:"29-13",  rk:"#9",  s:{slpm:"3.9",acc:40,td:"0.2",tdd:88,ko:25,sub:0}}},
+    {lbl:"Main Card",    wc:"Lightweight",   title:false, odds:{f1:-700,f2:500},  f1:{n:"Mauricio Ruffy", r:"13-2",   rk:"#10", s:{slpm:"6.1",acc:53,td:"0.6",tdd:88,ko:5,sub:5}},  f2:{n:"Michael Chandler",  r:"23-10",  rk:"#13", s:{slpm:"5.5",acc:42,td:"2.5",tdd:71,ko:10,sub:3}}},
+    {lbl:"Main Card",    wc:"Middleweight",  title:false, odds:{f1:-340,f2:270},  f1:{n:"Bo Nickal",      r:"8-1",    rk:"",    s:{slpm:"3.3",acc:48,td:"5.8",tdd:88,ko:2,sub:4}},   f2:{n:"Kyle Daukaus",      r:"17-4",   rk:"",    s:{slpm:"3.1",acc:44,td:"0.9",tdd:72,ko:5,sub:7}}},
+    {lbl:"Main Card",    wc:"Featherweight", title:false, odds:{f1:-200,f2:165},  f1:{n:"Diego Lopes",    r:"27-8",   rk:"#2",  s:{slpm:"4.6",acc:50,td:"0.9",tdd:78,ko:9,sub:9}},  f2:{n:"Steve Garcia",      r:"19-5",   rk:"#9",  s:{slpm:"3.7",acc:45,td:"0.5",tdd:69,ko:6,sub:2}}}
+  ]}
 ];
 
-// ── State ──
-var filter = 'all';
-var user   = localStorage.getItem('ufc_name') || '';
-var preds  = JSON.parse(localStorage.getItem('ufc_preds')   || '{}');
-var res    = JSON.parse(localStorage.getItem('ufc_results') || '{}');
-var fnList = [], fnIdx = 0;
+var curFilter = ‘all’;
+var userName = localStorage.getItem(‘ufc_name’) || ‘’;
+var preds = JSON.parse(localStorage.getItem(‘ufc_preds’) || ‘{}’);
+var results = JSON.parse(localStorage.getItem(‘ufc_results’) || ‘{}’);
+var fnFights = [], fnIdx = 0;
 
-function save() {
-  localStorage.setItem('ufc_preds',   JSON.stringify(preds));
-  localStorage.setItem('ufc_results', JSON.stringify(res));
+function pad(n){ return String(n).padStart(2,‘0’); }
+function daysOut(d){ return Math.ceil((new Date(d) - Date.now()) / 864e5); }
+function fmtDate(d){ return new Date(d).toLocaleDateString(‘en-US’,{weekday:‘short’,month:‘short’,day:‘numeric’,year:‘numeric’}); }
+function fmtOdds(n){ return n > 0 ? ‘+’+n : ‘’+n; }
+function pk(ei,fi){ return ‘e’+ei+‘f’+fi; }
+function save(){ localStorage.setItem(‘ufc_preds’,JSON.stringify(preds)); localStorage.setItem(‘ufc_results’,JSON.stringify(results)); }
+function toast(msg){ var t=document.getElementById(‘toast’); t.textContent=msg; t.classList.add(‘show’); setTimeout(function(){ t.classList.remove(‘show’); },2500); }
+
+// COUNTDOWN FIX: parse HH:MM directly, no string manipulation
+function updateCountdown(){
+var now = Date.now();
+var upcoming = EVENTS.filter(function(e){ return new Date(e.date) >= now - 864e5; });
+if(!upcoming.length) return;
+var ev = upcoming[0];
+var parts = ev.time.split(’:’);
+var h = parseInt(parts[0],10);
+var m = parseInt(parts[1]||0,10);
+var dp = ev.date.split(’-’);
+// Build local date at event time (ET = UTC-4 for summer)
+var target = Date.UTC(parseInt(dp[0],10), parseInt(dp[1],10)-1, parseInt(dp[2],10), h+4, m, 0);
+var diff = target - now;
+var wrap = document.getElementById(‘cd-wrap’);
+wrap.style.display = ‘block’;
+document.getElementById(‘cd-event’).textContent = ev.name;
+if(diff <= 0){
+document.getElementById(‘cd-timer’).innerHTML = ‘<span class="cd-live">MAIN CARD LIVE NOW</span>’;
+return;
 }
-
-function pk(ei, fi) { return 'e'+ei+'f'+fi; }
-
-// ── Toast ──
-function toast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 2400);
+var days  = Math.floor(diff / 864e5);
+var hours = Math.floor((diff % 864e5) / 36e5);
+var mins  = Math.floor((diff % 36e5) / 6e4);
+var secs  = Math.floor((diff % 6e4) / 1e3);
+var html = ‘’;
+if(days > 0){ html += ‘<div class="cd-unit"><div class="cd-num">’+days+’</div><div class="cd-lbl">Days</div></div><div class="cd-sep">:</div>’; }
+html += ‘<div class="cd-unit"><div class="cd-num">’+pad(hours)+’</div><div class="cd-lbl">Hrs</div></div>’;
+html += ‘<div class="cd-sep">:</div>’;
+html += ‘<div class="cd-unit"><div class="cd-num">’+pad(mins)+’</div><div class="cd-lbl">Min</div></div>’;
+html += ‘<div class="cd-sep">:</div>’;
+html += ‘<div class="cd-unit"><div class="cd-num">’+pad(secs)+’</div><div class="cd-lbl">Sec</div></div>’;
+document.getElementById(‘cd-timer’).innerHTML = html;
 }
-
-// ── Odds formatter ──
-function fmtOdds(n) { return n > 0 ? '+'+n : ''+n; }
-
-// ── Countdown — FIX: properly parse 12-hour time to 24-hour ──
-function parseMainCardHour(timeStr) {
-  // e.g. "9:00 PM ET" → 21, "7:00 AM ET" → 7, "8:00 PM ET" → 20
-  var m = (timeStr || '').match(/(\d+):(\d+)\s*(AM|PM)/i);
-  if (!m) return 21; // default 9pm
-  var h = parseInt(m[1], 10);
-  var ampm = m[3].toUpperCase();
-  if (ampm === 'PM' && h !== 12) h += 12;
-  if (ampm === 'AM' && h === 12) h = 0;
-  return h;
-}
-
-function updateCountdown() {
-  var now = Date.now();
-  var upcoming = EVENTS.filter(function(e){ return new Date(e.date + 'T00:00:00') >= now - 864e5; });
-  if (!upcoming.length) return;
-  var next = upcoming[0];
-  var h = parseMainCardHour(next.mainCardTime);
-  // Build target as UTC-4 (ET) approximation — use local date string
-  var dateParts = next.date.split('-');
-  var target = new Date(
-    parseInt(dateParts[0]), parseInt(dateParts[1])-1, parseInt(dateParts[2]),
-    h, 0, 0
-  ).getTime();
-
-  var diff = target - now;
-  var wrap = document.getElementById('cdWrap');
-  wrap.style.display = 'block';
-  document.getElementById('cdEv').textContent = next.name;
-
-  if (diff <= 0) {
-    document.getElementById('cdTimer').innerHTML = '<span class="cd-live">LIVE NOW</span>';
-    return;
-  }
-
-  var days = Math.floor(diff / 864e5);
-  var hrs  = Math.floor((diff % 864e5) / 36e5);
-  var mins = Math.floor((diff % 36e5) / 6e4);
-  var secs = Math.floor((diff % 6e4) / 1e3);
-
-  var html = '';
-  if (days > 0) {
-    html += '<div class="cd-unit"><div class="cd-num">'+days+'</div><div class="cd-lbl">Days</div></div><div class="cd-sep">:</div>';
-  }
-  html += '<div class="cd-unit"><div class="cd-num">'+pad(hrs)+'</div><div class="cd-lbl">Hrs</div></div>';
-  html += '<div class="cd-sep">:</div>';
-  html += '<div class="cd-unit"><div class="cd-num">'+pad(mins)+'</div><div class="cd-lbl">Min</div></div>';
-  html += '<div class="cd-sep">:</div>';
-  html += '<div class="cd-unit"><div class="cd-num">'+pad(secs)+'</div><div class="cd-lbl">Sec</div></div>';
-  document.getElementById('cdTimer').innerHTML = html;
-}
-
-function pad(n) { return n < 10 ? '0'+n : ''+n; }
 setInterval(updateCountdown, 1000);
 
-// ── Filter — FIX: show whole event, highlight matching fights only ──
-function setFilter(f, btn) {
-  filter = f;
-  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
-  btn.classList.add('on');
-  render();
+// FILTER FIX: dim non-matching fights, don’t hide events
+function setFilter(f, btn){
+curFilter = f;
+document.querySelectorAll(’.ftab’).forEach(function(t){ t.classList.remove(‘active’); });
+btn.classList.add(‘active’);
+render();
 }
 
-// ── Fighter stats modal ──
-function openStats(fi) {
-  var f = JSON.parse(decodeURIComponent(fi));
-  if (!f || !f.stats) { toast('Detailed stats not available'); return; }
-  document.getElementById('mName').textContent = f.name;
-  document.getElementById('mSub').textContent  = f.rec + (f.rank ? ' · ' + f.rank : '');
-  document.getElementById('mGrid').innerHTML =
-    mstat(f.stats.kos,  'KO / TKO Wins') +
-    mstat(f.stats.subs, 'Submission Wins') +
-    mstat(f.stats.slpm, 'Sig Strikes / Min') +
-    mstat(f.stats.tdavg,'Takedowns / 15 Min');
-  document.getElementById('mBars').innerHTML =
-    mbar('Striking accuracy', f.stats.stracc) +
-    mbar('Takedown defense',  f.stats.tddefs);
-  document.getElementById('statsModal').classList.add('open');
-}
-function mstat(val, lbl) {
-  return '<div class="mstat"><div class="mstat-val">'+val+'</div><div class="mstat-lbl">'+lbl+'</div></div>';
-}
-function mbar(lbl, val) {
-  return '<div class="mbar-wrap"><div class="mbar-lbl"><span>'+lbl+'</span><span>'+val+'%</span></div>'
-    +'<div class="mbar"><div class="mbar-fill" style="width:'+Math.min(val,100)+'%"></div></div></div>';
-}
-function closeModal() { document.getElementById('statsModal').classList.remove('open'); }
+function matchesFilter(fight){ return curFilter === ‘all’ || fight.wc === curFilter; }
 
-// ── Name entry ──
-function checkName(cb) {
-  if (user) { cb(); return; }
-  document.getElementById('nmBg').classList.add('open');
-  document.getElementById('nmInput').focus();
-  window._cb = cb;
+// STATS MODAL
+function openStats(ne, re, rk, se){
+var name = decodeURIComponent(ne);
+var stats = null;
+try{ stats = JSON.parse(decodeURIComponent(se)); }catch(e){}
+if(!stats){ toast(‘Stats not available for this fighter’); return; }
+document.getElementById(‘mName’).textContent = name;
+document.getElementById(‘mSub’).textContent = re + (rk ? ’ - ’ + rk : ‘’);
+document.getElementById(‘mGrid’).innerHTML =
+‘<div class="ms"><div class="ms-val">’+stats.ko+’</div><div class="ms-lbl">KO/TKO Wins</div></div>’+
+‘<div class="ms"><div class="ms-val">’+stats.sub+’</div><div class="ms-lbl">Sub Wins</div></div>’+
+‘<div class="ms"><div class="ms-val">’+stats.slpm+’</div><div class="ms-lbl">Sig Str/Min</div></div>’+
+‘<div class="ms"><div class="ms-val">’+stats.td+’</div><div class="ms-lbl">TD Avg/15min</div></div>’;
+document.getElementById(‘mBars’).innerHTML =
+‘<div class="mbar-wrap"><div class="mbar-lbl"><span>Striking Accuracy</span><span>’+stats.acc+’%</span></div><div class="mbar"><div class="mbar-fill" style="width:'+stats.acc+'%"></div></div></div>’+
+‘<div class="mbar-wrap" style="margin-top:8px"><div class="mbar-lbl"><span>Takedown Defense</span><span>’+stats.tdd+’%</span></div><div class="mbar"><div class="mbar-fill" style="width:'+stats.tdd+'%"></div></div></div>’;
+document.getElementById(‘statsModal’).classList.add(‘open’);
 }
-function saveName() {
-  var v = document.getElementById('nmInput').value.trim();
-  if (!v) return;
-  user = v;
-  localStorage.setItem('ufc_name', user);
-  document.getElementById('nmBg').classList.remove('open');
-  if (window._cb) { window._cb(); window._cb = null; }
+function closeModal(){ document.getElementById(‘statsModal’).classList.remove(‘open’); }
+
+// NAME MODAL
+function closeNameModal(){ document.getElementById(‘nmBg’).classList.remove(‘open’); window._pp=null; }
+function checkName(cb){ if(userName){ cb(); return; } document.getElementById(‘nmBg’).classList.add(‘open’); document.getElementById(‘nmInput’).focus(); window._pp=cb; }
+function saveName(){ var v=document.getElementById(‘nmInput’).value.trim(); if(!v)return; userName=v; localStorage.setItem(‘ufc_name’,userName); document.getElementById(‘nmBg’).classList.remove(‘open’); if(window._pp){ window._pp(); window._pp=null; } }
+
+// PREDICTOR
+function pickFighter(ei, fi, name){
+checkName(function(){
+preds[pk(ei,fi)] = name;
+save();
+render();
+toast(‘Picked: ’ + name.split(’ ’).pop());
+});
 }
 
-// ── Predictor ──
-function predict(ei, fi, name, btn) {
-  checkName(function() {
-    var key = pk(ei, fi);
-    if (preds[key] === name) { delete preds[key]; }
-    else { preds[key] = name; toast('Picked: ' + name.split(' ').pop()); }
-    save();
-    render();
-  });
+// FIGHT NIGHT MODE
+function openFN(){
+var now=Date.now();
+var ev=EVENTS.filter(function(e){ return new Date(e.date) >= now-864e5; })[0];
+if(!ev){ toast(‘No upcoming events’); return; }
+fnFights = ev.fights.map(function(f){ return {f:f,evName:ev.name}; });
+fnIdx=0; updateFN();
+document.getElementById(‘fnMode’).classList.add(‘open’);
+document.body.style.overflow=‘hidden’;
+}
+function closeFN(){ document.getElementById(‘fnMode’).classList.remove(‘open’); document.body.style.overflow=’’; }
+function fnNav(dir){ fnIdx=Math.max(0,Math.min(fnFights.length-1,fnIdx+dir)); updateFN(); }
+function updateFN(){
+if(!fnFights.length)return;
+var item=fnFights[fnIdx]; var f=item.f;
+document.getElementById(‘fn-ev’).textContent=item.evName;
+document.getElementById(‘fn-wc’).textContent=f.lbl+’ - ‘+f.wc+(f.title?’ - TITLE’:’’);
+document.getElementById(‘fn-f1’).textContent=f.f1.n;
+document.getElementById(‘fn-r1’).textContent=f.f1.r;
+document.getElementById(‘fn-f2’).textContent=f.f2.n;
+document.getElementById(‘fn-r2’).textContent=f.f2.r;
+document.getElementById(‘fn-ctr’).textContent=(fnIdx+1)+’ of ’+fnFights.length;
 }
 
-// ── Fight night mode ──
-function openFN() {
-  var now = Date.now();
-  var upcoming = EVENTS.filter(function(e){ return new Date(e.date+'T00:00:00') >= now - 864e5; });
-  if (!upcoming.length) { toast('No upcoming events'); return; }
-  fnList = upcoming[0].fights.slice();
-  fnIdx  = 0;
-  updateFN();
-  document.getElementById('fnMode').classList.add('open');
-  document.body.style.overflow = 'hidden';
+// RENDER FIGHTER
+function rFighter(fighter, right, size){
+var r=right?‘r’:’’; var sz=size===‘sm’?‘sm’:size===‘xs’?‘xs’:’’;
+var champ=fighter.rk===‘C’;
+var rank=(!champ&&fighter.rk)?fighter.rk:null;
+var pill=champ?’<div class="fpills"><span class="pchamp">CHAMP</span></div>’:(rank?’<div class="fpills"><span class="prank">’+rank+’</span></div>’:’’);
+var clickable=’’; var hint=’’;
+if(fighter.s){
+var enc=encodeURIComponent(JSON.stringify(fighter.s));
+var ne=encodeURIComponent(fighter.n);
+clickable=’ onclick=“openStats('’+ne+’','’+fighter.r+’','’+fighter.rk+’','’+enc+’')”’;
+if(size!==‘xs’) hint=’<div class="stats-hint">Tap for stats</div>’;
 }
-function closeFN() {
-  document.getElementById('fnMode').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function fnNav(d) {
-  fnIdx = Math.max(0, Math.min(fnList.length-1, fnIdx+d));
-  updateFN();
-}
-function updateFN() {
-  var f = fnList[fnIdx];
-  var ev = EVENTS.filter(function(e){ return new Date(e.date+'T00:00:00') >= Date.now()-864e5; })[0];
-  document.getElementById('fn-ev').textContent    = ev ? ev.name : '';
-  document.getElementById('fn-wc').textContent    = f.label + ' · ' + f.wc + (f.title ? ' · TITLE' : '');
-  document.getElementById('fn-n1').textContent    = f.f1.name;
-  document.getElementById('fn-r1').textContent    = f.f1.rec;
-  document.getElementById('fn-n2').textContent    = f.f2.name;
-  document.getElementById('fn-r2').textContent    = f.f2.rec;
-  document.getElementById('fn-count').textContent = (fnIdx+1) + ' of ' + fnList.length;
+return ‘<div class=“ft ‘+r+’” ‘+clickable+’><div class="fn '+sz+'">’+fighter.n+’</div>’+(fighter.r?’<div class="frec">’+fighter.r+’</div>’:’’)+pill+hint+’</div>’;
 }
 
-// ── SVG icons ──
-var iCal  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
-var iPin  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
-var iTv   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>';
-var iClk  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
-var iChev = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>';
+// RENDER FIGHT ROW
+function rFight(fight, ei, fi, showPick){
+var isMain=fight.lbl===‘Main Event’; var isCo=fight.lbl===‘Co-Main’;
+var rowCls=isMain?‘main-event’:isCo?‘co-main’:fight.lbl===‘Main Card’?‘main-card’:‘prelim’;
+var lblCls=isMain?‘main’:isCo?‘co’:‘pre’;
+var sz=isMain?‘lg’:isCo?‘sm’:‘xs’;
+var lbl=fight.lbl+’ - ‘+fight.wc+(fight.title?’ - TITLE’:’’);
+var key=pk(ei,fi); var myPick=preds[key]||’’; var result=results[key]||’’;
 
-// ── Render fighter ──
-function ftHTML(f, right, size) {
-  var r   = right ? 'r' : '';
-  var sz  = size === 'sm' ? 'sm' : size === 'xs' ? 'xs' : '';
-  var champ = f.rank === 'C';
-  var rank  = (!champ && f.rank) ? f.rank : null;
-  var pill  = champ  ? '<div class="fpills"><span class="pchamp">CHAMP</span></div>'
-            : rank   ? '<div class="fpills"><span class="prank">'+rank+'</span></div>' : '';
-  var hasStats = !!f.stats;
-  var enc  = encodeURIComponent(JSON.stringify({name:f.name, rec:f.rec, rank:f.rank, stats:f.stats}));
-  var click = hasStats ? ' onclick="openStats(\''+enc+'\')" style="cursor:pointer"' : '';
-  var hint  = (hasStats && size !== 'xs') ? '<div class="stats-hint">tap for stats</div>' : '';
-  return '<div class="ft '+r+'"'+click+'>'
-    + '<div class="fn '+sz+'">'+f.name+'</div>'
-    + (f.rec ? '<div class="frec">'+f.rec+'</div>' : '')
-    + pill + hint + '</div>';
+var oddsHTML=’’;
+if(fight.odds){
+var o1=fight.odds.f1; var o2=fight.odds.f2; var fav1=o1<0;
+oddsHTML=’<div class="odds-row">’
++’<div class="odds-side"><div class="odds-name">’+fight.f1.n.split(’ ‘).pop()+’</div><div class="odds-val '+(fav1?'fav':'dog')+'">’+fmtOdds(o1)+’</div></div>’
++’<div class="odds-center">MONEYLINE</div>’
++’<div class="odds-side r"><div class="odds-name">’+fight.f2.n.split(’ ‘).pop()+’</div><div class="odds-val '+(!fav1?'fav':'dog')+'">’+fmtOdds(o2)+’</div></div>’
++’</div>’;
 }
 
-// ── Toggle prelims ──
-function tp(id, btn) {
-  document.getElementById(id).classList.toggle('open');
-  btn.classList.toggle('open');
+var pickHTML=’’;
+if(showPick){
+var n1=fight.f1.n.split(’ ‘).pop(); var n2=fight.f2.n.split(’ ‘).pop();
+var fn1=fight.f1.n.replace(/\/g,’\\’).replace(/’/g,”\’”);
+var fn2=fight.f2.n.replace(/\/g,’\\’).replace(/’/g,”\’”);
+var c1=‘pick-btn’+(myPick===fight.f1.n?’ sel’:’’)+(result===fight.f1.n?’ correct’:’’)+(result&&result!==fight.f1.n&&myPick===fight.f1.n?’ wrong’:’’);
+var c2=‘pick-btn’+(myPick===fight.f2.n?’ sel’:’’)+(result===fight.f2.n?’ correct’:’’)+(result&&result!==fight.f2.n&&myPick===fight.f2.n?’ wrong’:’’);
+pickHTML=’<div class="pick-row"><span class="pick-lbl">Pick:</span>’
++’<button class="'+c1+'" onclick="pickFighter('+ei+','+fi+',\''+fn1+'\')">’+n1+’</button>’
++’<button class="'+c2+'" onclick="pickFighter('+ei+','+fi+',\''+fn2+'\')">’+n2+’</button>’
++’</div>’;
 }
 
-// ── Render single fight row ──
-function fightHTML(fight, ei, fi, isMain, isCo) {
-  var key = pk(ei, fi);
-  var myPick = preds[key] || '';
-  var result = res[key]   || '';
-  var lblCls = isMain ? 'main' : isCo ? 'co' : 'pre';
-  var lbl    = fight.label + ' · ' + fight.wc + (fight.title ? ' · Title' : '');
-  var sz     = isMain ? '' : isCo ? 'sm' : 'xs';
-
-  var html = '<div class="fight">'
-    + '<div class="flbl '+lblCls+'">'+lbl+'</div>'
-    + '<div class="mu">'
-    + ftHTML(fight.f1, false, sz)
-    + '<div class="vc"><span class="vs">VS</span>'+(isMain ? '<span class="wc-lbl">'+fight.wc+'</span>' : '')+'</div>'
-    + ftHTML(fight.f2, true, sz)
-    + '</div>';
-
-  // Odds (main/co-main only)
-  if (fight.odds && (isMain || isCo)) {
-    var o1 = fight.odds.f1, o2 = fight.odds.f2;
-    var fav1 = o1 < 0;
-    html += '<div class="odds-row">'
-      + '<span class="odds-pill '+(fav1?'odds-fav':'odds-dog')+'">'+fmtOdds(o1)+'</span>'
-      + '<span class="odds-lbl">moneyline</span>'
-      + '<span class="odds-pill '+(!fav1?'odds-fav':'odds-dog')+'">'+fmtOdds(o2)+'</span>'
-      + '</div>';
-  }
-
-  html += '</div>';
-
-  // Predict row — only main card fights (label = Main Event / Co-Main / Main Card)
-  var isPredFight = isMain || isCo || fight.label === 'Main Card';
-  if (isPredFight) {
-    var n1 = fight.f1.name.split(' ').pop();
-    var n2 = fight.f2.name.split(' ').pop();
-    var fn1 = fight.f1.name.replace(/'/g, "\\'");
-    var fn2 = fight.f2.name.replace(/'/g, "\\'");
-
-    function btnCls(fname) {
-      var base = 'pred-btn';
-      if (result) {
-        if (myPick === fname && result === fname) return base + ' win';
-        if (myPick === fname && result !== fname) return base + ' lose';
-      }
-      if (myPick === fname) return base + ' sel';
-      return base;
-    }
-
-    html += '<div class="pred-row">'
-      + '<span class="pred-lbl">Pick</span>'
-      + '<button class="'+btnCls(fight.f1.name)+'" onclick="predict('+ei+','+fi+',\''+fn1+'\',this)">'+n1+'</button>'
-      + '<button class="'+btnCls(fight.f2.name)+'" onclick="predict('+ei+','+fi+',\''+fn2+'\',this)">'+n2+'</button>'
-      + '</div>';
-  }
-
-  return html;
+return ‘<div class="fight-row '+rowCls+'"><div class="flbl '+lblCls+'">’+lbl+’</div>’
++’<div class="mu">’+rFighter(fight.f1,false,sz)
++’<div class="vc"><span class="vs">VS</span>’+(isMain?’<span class="wc-sm">’+fight.wc+’</span>’:’’)+’</div>’
++rFighter(fight.f2,true,sz)+’</div>’
++oddsHTML+pickHTML+’</div>’;
 }
 
-// ── Render event card ──
-function eventHTML(ev, evIdx, isFeat) {
-  var now    = Date.now();
-  var du     = Math.ceil((new Date(ev.date+'T00:00:00') - now) / 864e5);
-  var duLbl  = du === 0 ? 'Tonight' : du === 1 ? 'Tomorrow' : du > 0 ? 'In '+du+' days' : 'Completed';
-  var tc     = ev.fights.filter(function(f){ return f.title; }).length;
-  var isPPV  = /ufc \d/i.test(ev.name);
+// RENDER EVENT BLOCK
+function rEvent(ev, ei, evNum, visTotal){
+var du=daysOut(ev.date);
+var duLabel=du===0?‘Tonight’:du===1?‘Tomorrow’:du>0?‘In ‘+du+’ days’:‘Completed’;
+var isFeat=ei===0;
+var titleCount=ev.fights.filter(function(f){ return f.title; }).length;
+var isPPV=/ufc \d/i.test(ev.name);
 
-  // ── FILTER FIX: when a filter is active, reorder fights so matching ones show at top
-  // but always keep the original main event as index 0 for the card header display.
-  // Instead of hiding fights, we show the whole card and highlight matching fights.
-  var allFights = ev.fights;
-  var main   = allFights[0];
-  var coMain = allFights[1];
-  var rest   = allFights.slice(2);
-  var mainCard = rest.filter(function(f){ return f.label === 'Main Card'; });
-  var prelims  = rest.filter(function(f){ return f.label !== 'Main Card'; });
+var mainFight=ev.fights[0]; var coFight=ev.fights[1];
+var mainCardFights=ev.fights.slice(2).filter(function(f){ return f.lbl===‘Main Card’; });
+var prelimFights=ev.fights.filter(function(f){ return f.lbl===‘Prelim’||f.lbl===‘Early Prelim’; });
+var totalExtra=mainCardFights.length+prelimFights.length;
+var pid=‘p’+ei;
 
-  // Highlight label for filtered weight class
-  function highlightWC(wc) {
-    if (filter === 'all') return '';
-    return wc === filter ? ' style="background:rgba(232,25,44,.08);margin:-12px -14px;padding:12px 14px;"' : '';
-  }
+var calSVG=’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>’;
+var pinSVG=’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>’;
+var tvSVG=’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>’;
+var clkSVG=’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>’;
+var chevSVG=’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>’;
 
-  var mainFightHTML = '<div'+highlightWC(main.wc)+'>' + fightHTML(main, evIdx, 0, true, false) + '</div>';
-  var coFightHTML   = '<div'+highlightWC(coMain.wc)+'>' + fightHTML(coMain, evIdx, 1, false, true) + '</div>';
+var mainCardHTML=mainCardFights.map(function(f,i){
+var fi=i+2; var dim=!matchesFilter(f)?’ style=“opacity:.3”’:’’;
+var showPick=matchesFilter(f);
+return ‘<div’+dim+’>’+rFight(f,ei,fi,showPick)+’</div>’;
+}).join(’’);
 
-  var mcHTML = mainCard.map(function(f, i) {
-    var fi = i + 2;
-    return '<div'+highlightWC(f.wc)+'>'+fightHTML(f, evIdx, fi, false, false)+'</div>';
-  }).join('');
+var prelimHTML=prelimFights.map(function(f,i){
+var fi=mainCardFights.length+2+i; var dim=!matchesFilter(f)?’ style=“opacity:.3”’:’’;
+return ‘<div’+dim+’>’+rFight(f,ei,fi,false)+’</div>’;
+}).join(’’);
 
-  var preHTML = prelims.map(function(f, i) {
-    var fi = mainCard.length + 2 + i;
-    return '<div'+highlightWC(f.wc)+'>'+fightHTML(f, evIdx, fi, false, false)+'</div>';
-  }).join('');
+var divider = evNum > 0
+? ‘<div class="ev-divider">Event ‘+(evNum+1)+’ of ‘+visTotal+’</div>’
+: ‘’;
 
-  var pid = 'p'+evIdx;
-  var totalExtra = mainCard.length + prelims.length;
-  var titleBadge = tc > 0 ? '<span class="badge b-title">'+(tc>1?tc+' Title Fights':'Title Fight')+'</span>' : '';
+var mainDim=!matchesFilter(mainFight)?’ style=“opacity:.3”’:’’;
+var coDim=!matchesFilter(coFight)?’ style=“opacity:.3”’:’’;
+var showMainPick=matchesFilter(mainFight); var showCoPick=matchesFilter(coFight);
 
-  // Filter note — tell user which fights match
-  var filterNote = '';
-  if (filter !== 'all') {
-    var matchCount = allFights.filter(function(f){ return f.wc === filter; }).length;
-    filterNote = '<div class="filter-note">'+matchCount+' '+filter+' fight'+(matchCount!==1?'s':'')+' on this card</div>';
-  }
-
-  return '<div class="evcard'+(isFeat?' featured':'')+'">'
-    + '<div class="ev-hdr">'
-    +   '<div class="ev-name">'+ev.name+'</div>'
-    +   '<div class="ev-meta">'
-    +     '<span class="ev-detail">'+iCal+fmtDate(ev.date)+' · '+duLbl+'</span>'
-    +     '<span class="ev-detail">'+iPin+ev.venue+', '+ev.location+'</span>'
-    +     '<span class="ev-detail">'+iTv+ev.broadcast+'</span>'
-    +     '<span class="ev-detail">'+iClk+'Main card '+ev.mainCardTime+'</span>'
-    +   '</div>'
-    +   '<div class="badges">'
-    +     (isFeat?'<span class="badge b-next">Next Up</span>':'')
-    +     titleBadge
-    +     (isPPV?'<span class="badge b-ppv">PPV</span>':'')
-    +   '</div>'
-    + '</div>'
-    + filterNote
-    + mainFightHTML
-    + coFightHTML
-    + (totalExtra
-        ? '<button class="pbtn" data-pid="'+pid+'" onclick="tp(this.dataset.pid,this)">'+iChev+totalExtra+' more fight'+(totalExtra!==1?'s':'')+'</button>'
-          + '<div class="pbody" id="'+pid+'">' + mcHTML + preHTML + '</div>'
-        : '')
-    + '</div>';
+return divider
++’<div class="ev-band '+(isFeat?'':'dim-event')+'">’
++’<div class="ev-number">Event ‘+(evNum+1)+’ of ‘+visTotal+’ - ‘+fmtDate(ev.date)+’ - ‘+duLabel+’</div>’
++’<div class="ev-name">’+ev.name+’</div>’
++’<div class="ev-row">’
++’<span class="ev-detail">’+pinSVG+ev.venue+’, ‘+ev.loc+’</span>’
++’<span class="ev-detail">’+tvSVG+ev.tv+’</span>’
++’<span class="ev-detail">’+clkSVG+‘Main card ‘+ev.time+’ ET</span>’
++’</div>’
++’<div class="ev-badges">’
++(isFeat?’<span class="badge b-next">Next Up</span>’:’’)
++(titleCount>0?’<span class="badge b-title">’+(titleCount>1?titleCount+’ Title Fights’:‘Title Fight’)+’</span>’:’’)
++(isPPV?’<span class="badge b-ppv">PPV</span>’:’’)
++’</div></div>’
++’<div class="fights-wrap">’
++’<div’+mainDim+’>’+rFight(mainFight,ei,0,showMainPick)+’</div>’
++’<div’+coDim+’>’+rFight(coFight,ei,1,showCoPick)+’</div>’
++(totalExtra
+?’<button class="more-btn" data-pid="'+pid+'" onclick="tp(this.dataset.pid,this)">’+chevSVG+totalExtra+’ more fight’+(totalExtra!==1?‘s’:’’)+’</button>’
++’<div class="more-body" id="'+pid+'">’+mainCardHTML+prelimHTML+’</div>’
+:’’)
++’</div>’;
 }
 
-// ── Leaderboard ──
-function lbHTML() {
-  if (!user) return '';
-  var correct = 0, total = 0;
-  Object.keys(preds).forEach(function(k){ if (res[k]) { total++; if (preds[k]===res[k]) correct++; } });
-  var pct = total > 0 ? Math.round(correct/total*100) : 0;
-  var html = '<div class="sec-lbl" style="margin-top:6px">Your Predictor Record</div>';
-  html += '<div class="lb-card">';
-  html += '<div class="lb-hdr"><span class="lb-title">'+user+'</span><span style="font-size:11px;color:var(--muted)">'+Object.keys(preds).length+' picks made</span></div>';
-  if (total > 0) {
-    html += '<div class="lb-row"><div class="lb-rank gold">W</div><div class="lb-name">Correct picks</div><div><div class="lb-score">'+correct+'/'+total+'</div><div class="lb-pct">'+pct+'% accuracy</div></div></div>';
-  } else {
-    html += '<div class="lb-empty">Make picks on the main card fights to track your accuracy.</div>';
-  }
-  html += '</div>';
-  return html;
+function tp(id,btn){ document.getElementById(id).classList.toggle(‘open’); btn.classList.toggle(‘open’); }
+
+function render(){
+var now=Date.now();
+var events=EVENTS.filter(function(e){ return new Date(e.date)>=now-864e5 && new Date(e.date)<=now+864e5*65; });
+var totalPicks=Object.keys(preds).length;
+document.getElementById(‘picks-count’).textContent=totalPicks;
+
+var visEvents=events.filter(function(e){ return e.fights.some(matchesFilter); });
+var html=’’;
+if(!visEvents.length){
+html=’<div style="padding:32px 16px;text-align:center;color:var(--muted);font-size:13px">No fights in this weight class across upcoming events.</div>’;
+} else {
+visEvents.forEach(function(ev,i){
+var ei=EVENTS.indexOf(ev);
+html+=rEvent(ev,ei,i,visEvents.length);
+});
 }
 
-// ── Helpers ──
-function fmtDate(d) {
-  return new Date(d+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+// Leaderboard
+if(userName && Object.keys(preds).length>0){
+var correct=0; var total=0;
+Object.keys(preds).forEach(function(k){ if(results[k]){ total++; if(preds[k]===results[k])correct++; } });
+var pct=total>0?Math.round(correct/total*100)+’% correct’:‘results pending’;
+html+=’<div class="lb-wrap"><div class="lb-hdr"><span class="lb-title">My Predictor Record</span><span style="font-size:10px;color:var(--muted)">’+Object.keys(preds).length+’ picks</span></div>’
++’<div class="lb-row"><div class="lb-rank">1</div><div class="lb-name">’+userName+’ <span style="font-size:10px;color:var(--muted)">(you)</span></div>’
++’<div><div class="lb-score">’+(total>0?correct+’/’+total:’–’)+’</div><div class="lb-detail">’+pct+’</div></div></div></div>’;
 }
 
-// ── Main render ──
-function render() {
-  var now = Date.now();
-  var events = EVENTS.filter(function(e){
-    var d = new Date(e.date+'T00:00:00');
-    return d >= now - 864e5 && d <= now + 864e5 * 65;
-  });
-
-  // Stats
-  var titles = events.reduce(function(n,e){ return n+e.fights.filter(function(f){return f.title;}).length; },0);
-  var bouts  = events.reduce(function(n,e){ return n+e.fights.length; },0);
-  var du     = events.length ? Math.ceil((new Date(events[0].date+'T00:00:00')-now)/864e5) : 0;
-  var duT    = du===0?'Now':du===1?'1d':du+'d';
-  var picks  = Object.keys(preds).length;
-
-  document.getElementById('stats').innerHTML =
-    '<div class="stat"><div class="sv">'+events.length+'</div><div class="sl">Events</div></div>'
-    +'<div class="stat"><div class="sv">'+titles+'</div><div class="sl">Titles</div></div>'
-    +'<div class="stat"><div class="sv">'+bouts+'</div><div class="sl">Bouts</div></div>'
-    +'<div class="stat"><div class="sv">'+picks+'</div><div class="sl">My Picks</div></div>';
-
-  // Filter — when active, show all events but skip events with zero matching fights
-  var shown = events;
-  if (filter !== 'all') {
-    shown = events.filter(function(e){
-      return e.fights.some(function(f){ return f.wc === filter; });
-    });
-  }
-
-  if (!shown.length) {
-    document.getElementById('app').innerHTML = '<p style="color:var(--muted);text-align:center;padding:32px 0">No '+filter+' fights in the next 65 days.</p>';
-  } else {
-    document.getElementById('app').innerHTML =
-      '<div class="sec-lbl">Upcoming Events</div>'
-      + shown.map(function(e, i){
-          return eventHTML(e, EVENTS.indexOf(e), i===0);
-        }).join('');
-  }
-
-  document.getElementById('lb').innerHTML = lbHTML();
-  updateCountdown();
+document.getElementById(‘app’).innerHTML=html;
+updateCountdown();
 }
 
 render();
