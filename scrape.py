@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #!/usr/bin/env python3
 “””
 UFC Fight Card Scraper - v2 with Live Results
@@ -33,7 +35,7 @@ TAPOLOGY_BASE = “https://www.tapology.com”
 TAPOLOGY_EVENTS = “https://www.tapology.com/fightcenter”
 ESPN_SCOREBOARD = “https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard”
 
-# ─── HELPERS ────────────────────────────────────────────────────────────────
+# — HELPERS —
 
 def get_json(url, retries=3, delay=2):
 for attempt in range(retries):
@@ -94,7 +96,7 @@ def norm(n): return re.sub(r”[^a-z]”, “”, n.lower())
 a_last, b_last = last(a), last(b)
 return a_last == b_last or norm(a) in norm(b) or norm(b) in norm(a)
 
-# ─── ESPN LIVE RESULTS ───────────────────────────────────────────────────────
+# — ESPN LIVE RESULTS —
 
 def fetch_espn_results():
 “””
@@ -213,7 +215,7 @@ for ev in events:
 return events
 ```
 
-# ─── TAPOLOGY CARD STRUCTURE ─────────────────────────────────────────────────
+# — TAPOLOGY CARD STRUCTURE —
 
 def scrape_upcoming_events(days_ahead=65):
 soup = get_soup(TAPOLOGY_EVENTS)
@@ -356,7 +358,7 @@ return {
 }
 ```
 
-# ─── JS SERIALIZATION ────────────────────────────────────────────────────────
+# — JS SERIALIZATION —
 
 def fight_to_js(f, indent=”      “):
 “”“Serialize a fight dict to a safe JS object literal string.”””
@@ -459,7 +461,7 @@ if len(html) < 10000:
 return False, “Output suspiciously small”
 return True, “ok”
 
-# ─── MAIN ────────────────────────────────────────────────────────────────────
+# — MAIN —
 
 def is_fight_night():
 “”“True if today is a UFC event day (check against scraped dates).”””
@@ -476,7 +478,7 @@ fight_night = is_fight_night()
 print(f”Fight night mode: {fight_night}”, file=sys.stderr)
 
 ```
-# Always fetch live results — lightweight ESPN call
+# Always fetch live results - lightweight ESPN call
 espn_results = fetch_espn_results()
 
 # On fight night with results available, we can update quickly
@@ -513,8 +515,8 @@ if not events:
     # On fight night with no Tapology data, still try to inject ESPN results
     # into the existing index.html by reading and patching it
     if espn_results:
-        print("No Tapology data but have ESPN results — attempting patch...", file=sys.stderr)
-    print("No events scraped — keeping existing index.html", file=sys.stderr)
+        print("No Tapology data but have ESPN results - attempting patch...", file=sys.stderr)
+    print("No events scraped - keeping existing index.html", file=sys.stderr)
     sys.exit(0)
 
 # Inject ESPN results into scraped events
@@ -524,15 +526,15 @@ events = match_results_to_events(events, espn_results)
 now_utc = datetime.now(timezone.utc)
 if fight_night and espn_results:
     # Show time on fight night for real-time feel
-    updated_label = now_utc.strftime("%-d %b %Y %-I:%M %p UTC")
+    updated_label = now_utc.strftime("%d %b %Y %I:%M %p UTC").lstrip("0")
 else:
-    updated_label = now_utc.strftime("%-d %b %Y")
+    updated_label = now_utc.strftime("%d %b %Y").lstrip("0")
 
 html = build_html(events, updated_label)
 
 ok, reason = validate_html(html)
 if not ok:
-    print(f"Validation failed ({reason}) — keeping existing index.html", file=sys.stderr)
+    print(f"Validation failed ({reason}) - keeping existing index.html", file=sys.stderr)
     sys.exit(0)
 
 Path("index.html").write_text(html, encoding="utf-8")
