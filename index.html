@@ -641,9 +641,11 @@ function makeFightRow(fight,ei,fi,registryIdx,showPick){
   // Compare button for main event and co-main
   if (isMain || isCo) {
     var cmpBtn = document.createElement("button");
-    cmpBtn.style.cssText = "width:100%;background:none;border:none;border-top:1px solid var(--border);
-      padding:7px 16px;font-size:10px;color:var(--muted);cursor:pointer;font-family:DM Sans,sans-serif;
-      letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:5px;transition:color .15s";
+    cmpBtn.style.cssText = "width:100%;background:none;border:none;border-top:1px solid var(--border);" +
+      "padding:7px 16px;font-size:10px;color:var(--muted);cursor:pointer;font-family:DM Sans,sans-serif;" +
+      "letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:5px;transition:color .15s";
+
+
     cmpBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Compare Fighters';
     (function(f1, f2) {
       cmpBtn.onclick = function() { openCmp(f1, f2); };
@@ -791,7 +793,7 @@ function render(){
 
 
 
-// ── PICKS SUMMARY WIDGET ──
+// -- PICKS SUMMARY WIDGET --
 function undoPick(ei, fi) {
   var key = pk(ei, fi);
   delete preds[key];
@@ -1022,7 +1024,7 @@ function openStats(idx, side) {
   document.getElementById("statsModal").classList.add("open");
 }
 
-// ── FIGHT NIGHT BANNER ──
+// -- FIGHT NIGHT BANNER --
 function checkFightNight() {
   var now = Date.now();
   var upcoming = EVENTS.filter(function(e){ return new Date(e.date) >= now - 864e5; });
@@ -1042,7 +1044,7 @@ function checkFightNight() {
   }
 }
 
-// ── FIGHTER COMPARISON ──
+// -- FIGHTER COMPARISON --
 function openCmp(f1, f2) {
   var el = document.getElementById("cmpContent");
   if (!el) return;
@@ -1121,7 +1123,7 @@ function closeCmp() {
   document.getElementById("cmpModal").classList.remove("open");
 }
 
-// ── SHARE PICKS ──
+// -- SHARE PICKS --
 function openShare() {
   if (Object.keys(preds).length === 0) {
     toast("Make some picks first!");
@@ -1222,7 +1224,7 @@ function copyPicks() {
   }
 }
 
-// ── FIGHT NIGHT NOTIFICATION ──
+// -- FIGHT NIGHT NOTIFICATION --
 var notifActive = false;
 function toggleNotif() {
   if (!("Notification" in window)) {
