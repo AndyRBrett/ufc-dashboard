@@ -2,11 +2,19 @@ name: Update UFC Fight Cards
 
 on:
   schedule:
-    # Daily at 9:00 AM UTC (4am CT / 5am ET)
+    # ── Standard: daily 9am UTC (4am CT / 5am ET) ──
     - cron: "0 9 * * *"
-    # Every 15 minutes on Saturdays (fight day) from 6pm-midnight UTC (noon-8pm ET)
-    - cron: "*/15 18-23 * * 6"
+
+    # ── Fight night (Saturday): aggressive updates ──
+    # Every 10 min from 5pm-midnight UTC (noon-7pm ET) — covers prelims
+    - cron: "*/10 17-23 * * 6"
+    # Every 10 min from midnight-3am UTC Sun (7pm-10pm ET Sat) — covers main card
+    - cron: "*/10 0-3 * * 0"
+    # Every 30 min from 3am-6am UTC Sun (10pm-1am ET Sat) — post-card cooldown
+    - cron: "*/30 3-6 * * 0"
+
   workflow_dispatch:
+    # Manual trigger from Actions tab anytime
 
 jobs:
   update:
@@ -40,6 +48,5 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git diff --staged --quiet || git commit -m "Auto-update fight cards $(date +'%Y-%m-%d %H:%M')"
+          git diff --staged --quiet || git commit -m "Auto-update $(date +'%Y-%m-%d %H:%M UTC')"
           git push
- 
