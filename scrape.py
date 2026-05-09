@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-
 # UFC scraper - strict ASCII only
-
 import json, re, sys, time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
