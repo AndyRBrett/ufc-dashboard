@@ -231,7 +231,7 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 </header>
 <section class="hero">
   <h1>UPCOMING<br><span>FIGHT CARDS</span></h1>
-  <p class="hero-sub">Verified from UFC.com - Updated {{UPDATED}}</p>
+  <p class="hero-sub">Verified from UFC.com - Updated <span id="updateDate">May 9, 2026</span></p>
   <div class="countdown-wrap" id="cd-wrap" style="display:none">
     <div class="cd-label">Next Main Card</div>
     <div class="cd-event" id="cd-event"></div>
@@ -670,6 +670,15 @@ function loadFighterPhoto(name) {
 
 
 // ── PICKS SUMMARY WIDGET ──
+function undoPick(ei, fi) {
+  var key = pk(ei, fi);
+  delete preds[key];
+  save();
+  render();
+  updatePicksWidget();
+  toast("Pick removed");
+}
+
 function togglePicks() {
   var body = document.getElementById("picksBody");
   var toggle = document.getElementById("picksToggle");
@@ -744,6 +753,22 @@ function renderPicksWidget() {
         total++;
       }
       row.appendChild(badge);
+
+      // Undo button - only show if no result yet
+      if (!p.result) {
+        var undoBtn = document.createElement("button");
+        undoBtn.style.cssText = "background:none;border:none;color:var(--muted);cursor:pointer;padding:2px 4px;font-size:14px;line-height:1;flex-shrink:0";
+        undoBtn.textContent = "x";
+        undoBtn.title = "Remove pick";
+        (function(ei, fi) {
+          undoBtn.onclick = function(e) {
+            e.stopPropagation();
+            undoPick(ei, fi);
+          };
+        })(ei, p.fi);
+        row.appendChild(undoBtn);
+      }
+
       body.appendChild(row);
     });
   });
@@ -797,19 +822,43 @@ function openStats(idx, side) {
   photoRow.style.display = "none";
   photoEl.src = "";
 
-  var espnUrl = "https://site.web.api.espn.com/apis/common/v3/sports/mma/ufc/athletes?query=" + encodeURIComponent(f.n) + "&limit=1";
-  fetch(espnUrl)
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      var athlete = data && data.items && data.items[0];
-      var photoUrl = athlete && athlete.headshot && athlete.headshot.href;
-      if (photoUrl) {
-        photoEl.onload = function() { photoRow.style.display = "flex"; subFb.style.display = "none"; };
-        photoEl.onerror = function() { photoRow.style.display = "none"; };
-        photoEl.src = photoUrl;
-      }
-    })
-    .catch(function() {});
+  // Build UFC CDN slug from fighter name: "Khamzat Chimaev" -> "khamzat-chimaev"
+  var slug = f.n.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  // Try multiple photo sources in order
+  var photoSources = [
+    "https://dmxg5wxfqgde4.cloudfront.net/styles/athlete_bio_full_body/s3/2025-01/" + slug + "_ATHLETE.png",
+    "https://dmxg5wxfqgde4.cloudfront.net/styles/athlete_bio_full_body/s3/2024-09/" + slug + "_ATHLETE.png",
+    "https://dmxg5wxfqgde4.cloudfront.net/styles/athlete_bio_full_body/s3/2024-05/" + slug + "_ATHLETE.png",
+    "https://site.api.espn.com/apis/site/v2/sports/mma/ufc/athletes?limit=1&q=" + encodeURIComponent(f.n)
+  ];
+  var sourceIdx = 0;
+  function tryNextPhoto() {
+    if (sourceIdx >= photoSources.length - 1) {
+      // Last resort: ESPN search API
+      fetch(photoSources[photoSources.length - 1])
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var items = data && (data.athletes || data.items || []);
+          var athlete = items[0];
+          var url = athlete && athlete.headshot && (athlete.headshot.href || athlete.headshot);
+          if (url) { photoEl.src = url; }
+        })
+        .catch(function() {});
+      return;
+    }
+    photoEl.src = photoSources[sourceIdx];
+    sourceIdx++;
+  }
+  photoEl.onload = function() {
+    if (photoEl.naturalWidth > 10) {
+      photoRow.style.display = "flex";
+      subFb.style.display = "none";
+    } else {
+      tryNextPhoto();
+    }
+  };
+  photoEl.onerror = function() { tryNextPhoto(); };
+  tryNextPhoto();
 
   var grid = document.getElementById("mGrid");
   grid.innerHTML = "";
