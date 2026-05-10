@@ -152,7 +152,8 @@ def parse_wikitext(wikitext):
     def process_row(row):
         row = [clean_wiki(c) for c in row if c and clean_wiki(c)]
         if len(row) < 3: return None
-        if any(h in " ".join(row).lower() for h in ["weight class", "winner", "method", "round"]): return None
+        skip_words = ["weight class", "winner", "method", "round", "main card", "preliminary", "early prelim"]
+        if any(h in " ".join(row).lower() for h in skip_words): return None
         winner = ""; loser = ""; method = ""; rnd = None
         def_idx = next((i for i, c in enumerate(row) if c.strip().lower() in ("def.", "def", "d.")), -1)
         if def_idx > 0:
@@ -163,13 +164,19 @@ def parse_wikitext(wikitext):
             if len(row) < 4: return None
             winner = row[1]; loser = row[2]; rest = row[3:]
         if not winner or len(winner) < 2: return None
+        # Strip (c) championship indicator from names
+        winner = re.sub(r"\s*\(c\)\s*", "", winner).strip()
+        loser  = re.sub(r"\s*\(c\)\s*", "", loser).strip()
         for cell in rest:
             cl = cell.lower()
-            if any(k in cl for k in ["ko", "tko", "decision", "submission", "sub", "dq"]):
+            if any(k in cl for k in ["ko", "tko", "decision", "submission", "sub", "dq", "draw", "nc"]):
                 if not method: method = cell
             elif re.match(r"^\d$", cell.strip()):
                 try: rnd = int(cell.strip())
                 except: pass
+        # If no method found but we have winner/loser/round, default to Decision
+        if not method and winner and loser and rnd:
+            method = "Decision"
         if not method: return None
         return {"winner": winner, "loser": loser, "method": norm_method(method), "round": rnd}
 
