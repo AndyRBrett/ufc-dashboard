@@ -1,0 +1,68 @@
+name: Diagnose Wikipedia Access
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests beautifulsoup4
+      - name: Test all Wikipedia access methods
+        run: |
+          python3 << 'PYEOF'
+          import requests, sys, json
+
+          AGENT_BOT = "UFC-Dashboard/1.0 (https://github.com/AndyRBrett/ufc-dashboard; andyrbrett@gmail.com)"
+          AGENT_BROWSER = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/124.0"
+          AGENT_CURL = "curl/7.88.1"
+
+          tests = [
+              ("Wiki API wikitext",        "https://en.wikipedia.org/w/api.php?action=parse&page=UFC_328&prop=wikitext&format=json", AGENT_BOT),
+              ("Wiki action=raw",          "https://en.wikipedia.org/w/index.php?title=UFC_328&action=raw", AGENT_BOT),
+              ("Wiki HTML browser",        "https://en.wikipedia.org/wiki/UFC_328", AGENT_BROWSER),
+              ("Wiki HTML curl",           "https://en.wikipedia.org/wiki/UFC_328", AGENT_CURL),
+              ("WikiMedia REST bare",      "https://api.wikimedia.org/core/v1/wikipedia/en/page/UFC_328/bare", AGENT_BOT),
+              ("WikiMedia REST full",      "https://api.wikimedia.org/core/v1/wikipedia/en/page/UFC_328", AGENT_BOT),
+              ("Wiki mobile",              "https://en.m.wikipedia.org/wiki/UFC_328", AGENT_BROWSER),
+              ("Wiki RSS history",         "https://en.wikipedia.org/w/index.php?title=UFC_328&action=history&feed=atom", AGENT_BOT),
+              ("allorigins proxy",         "https://api.allorigins.win/get?url=https%3A%2F%2Fen.wikipedia.org%2Fw%2Findex.php%3Ftitle%3DUFC_328%26action%3Draw", AGENT_BOT),
+              ("Tapology event",           "https://www.tapology.com/fightcenter/events/100942-ufc-328-chimaev-vs-strickland", AGENT_BROWSER),
+              ("Sherdog event",            "https://www.sherdog.com/events/UFC-328-Chimaev-vs-Strickland-111957", AGENT_BROWSER),
+              ("UFCStats",                 "http://www.ufcstats.com/event-details/2c5abcccf7e42152", AGENT_BROWSER),
+              ("MMA Fandom wiki",          "https://mma.fandom.com/wiki/UFC_328", AGENT_BROWSER),
+              ("MMA Fandom API",           "https://mma.fandom.com/api.php?action=parse&page=UFC_328&prop=wikitext&format=json", AGENT_BOT),
+          ]
+
+          results = []
+          for name, url, agent in tests:
+              try:
+                  r = requests.get(url, headers={"User-Agent": agent}, timeout=10, allow_redirects=True)
+                  has_data = any(w in r.text for w in ['TKO','Submission','Decision','def.','Chimaev','Strickland'])
+                  entry = {"name": name, "status": r.status_code, "size": len(r.text), "has_fight_data": has_data}
+                  results.append(entry)
+                  print(f"{'OK' if r.status_code==200 else 'FAIL'} {r.status_code} | {name} | {len(r.text)} chars | data:{has_data}")
+                  if r.status_code == 200 and has_data:
+                      for w in ['TKO','Decision','Submission']:
+                          idx = r.text.find(w)
+                          if idx > 0:
+                              print(f"  Sample: ...{r.text[max(0,idx-40):idx+80]}...")
+                              break
+              except Exception as e:
+                  print(f"FAIL | {name} | {e}")
+                  results.append({"name": name, "status": "error", "error": str(e)})
+
+          # Write results to file
+          with open("diagnose_results.json", "w") as f:
+              json.dump(results, f, indent=2)
+          print("\nDiagnosis complete. See diagnose_results.json")
+          PYEOF
+      - name: Upload diagnosis results
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnose-results
+          path: diagnose_results.json
