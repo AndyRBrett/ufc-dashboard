@@ -2,13 +2,11 @@ name: Update UFC Fight Cards
 
 on:
   schedule:
-    # Daily 9am UTC (4am CT / 5am ET) - card structure + odds
+    # Daily 9am UTC - card structure update
     - cron: "0 9 * * *"
-    # Every 10 min Sat noon-midnight ET (4pm-4am UTC Sat-Sun)
+    # Every 10 min Sat 4pm-4am UTC (noon-midnight ET) - live fight night results
     - cron: "*/10 16-23 * * 6"
     - cron: "*/10 0-4 * * 0"
-    # Every 30 min Sun 4am-7am UTC (post-card cooldown)
-    - cron: "*/30 4-7 * * 0"
 
   workflow_dispatch:
 
