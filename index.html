@@ -271,7 +271,7 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 </header>
 <section class="hero">
   <h1>UPCOMING<br><span>FIGHT CARDS</span></h1>
-  <p class="hero-sub">Verified from UFC.com - Updated <span id="updateDate">May 9, 2026</span></p>
+  <p class="hero-sub">Last updated: <span id="updateDate">Loading...</span></p>
   <div class="cd-wrap" id="cd-wrap" style="display:none">
     <div class="cd-label">Next Main Card</div>
     <div class="cd-event" id="cd-event"></div>
@@ -308,7 +308,6 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 <div id="app"></div>
 <button class="notif-btn" id="notifBtn" onclick="toggleNotif()" title="Fight night reminder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
 <script>
-
 var EVENTS=[
   {name:"UFC 328: Chimaev vs. Strickland",date:"2026-05-09",venue:"Prudential Center",loc:"Newark, NJ",tv:"Paramount+",time:"21:00",prelimTime:"18:00",earlyPrelimTime:"16:00",
    fights:[
@@ -810,7 +809,21 @@ function render(){
   } else {
     vis.forEach(function(ev,i){var ei=EVENTS.indexOf(ev);app.appendChild(makeEventBlock(ev,ei,i,vis.length));});
   }
+  // Compute stats dynamically from EVENTS array
+  var allFights=EVENTS.reduce(function(a,e){return a.concat(e.fights||[]);}, []);
+  var titleFights=allFights.filter(function(f){return f.title;});
+  var sevEl=document.getElementById("sev");var stiEl=document.getElementById("sti");var sboEl=document.getElementById("sbo");
+  if(sevEl)sevEl.textContent=EVENTS.length;
+  if(stiEl)stiEl.textContent=titleFights.length;
+  if(sboEl)sboEl.textContent=allFights.length;
   document.getElementById("picks-count").textContent=Object.keys(preds).length;
+  // Update page-load timestamp dynamically
+  var ud=document.getElementById("updateDate");
+  if(ud){
+    var now=new Date();
+    var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    ud.textContent=months[now.getMonth()]+" "+now.getDate()+", "+now.getFullYear();
+  }
   updatePicksWidget();
   updateCountdown();
   checkFightNight();
@@ -828,7 +841,6 @@ document.addEventListener("DOMContentLoaded",function(){
   }
 
 });
-
 </script>
 </body>
 </html>
