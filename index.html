@@ -810,6 +810,53 @@ function render(){
   checkFightNight();
 }
 
+
+function fetchLiveResults(){
+  var ESPN_URL="https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard";
+  fetch(ESPN_URL)
+    .then(function(r){return r.json();})
+    .then(function(data){
+      var updated=false;
+      (data.events||[]).forEach(function(ev){
+        (ev.competitions||[]).forEach(function(comp){
+          var st=comp.status&&comp.status.type||{};
+          var state=st.state||"pre";
+          if(state!=="in"&&state!=="post")return;
+          var cs=comp.competitors||[];
+          var winner=null;
+          cs.forEach(function(c){if(c.winner)winner=c.athlete&&c.athlete.displayName||null;});
+          var detail=st.detail||"";
+          var mm=detail.match(/(KO|TKO|KO\/TKO|Submission|Decision|Split Decision|Unanimous Decision)/i);
+          var method=mm?mm[1]:"Decision";
+          var rm=detail.match(/Round\s*(\d+)/i);
+          var rnd=rm?parseInt(rm[1],10):null;
+          var names=cs.map(function(c){return c.athlete&&c.athlete.displayName||"";});
+          FIGHTS.forEach(function(item){
+            var f1=item.fight.f1.n,f2=item.fight.f2.n;
+            function nl(n){return n.trim().split(" ").pop().toLowerCase();}
+            var r1=names[0]||"",r2=names[1]||"";
+            if((nl(f1)===nl(r1)&&nl(f2)===nl(r2))||(nl(f1)===nl(r2)&&nl(f2)===nl(r1))){
+              if(item.fight.state!==state||item.fight.winner!==winner){
+                item.fight.state=state;
+                item.fight.winner=winner||"";
+                item.fight.method=method;
+                item.fight.round=rnd;
+                // Also update the source EVENTS array
+                EVENTS[item.ei].fights[item.fi].winner=winner||"";
+                EVENTS[item.ei].fights[item.fi].method=method;
+                EVENTS[item.ei].fights[item.fi].round=rnd;
+                EVENTS[item.ei].fights[item.fi].state=state;
+                updated=true;
+              }
+            }
+          });
+        });
+      });
+      if(updated){render();console.log("Results updated from ESPN");}
+    })
+    .catch(function(e){console.log("ESPN fetch failed:",e.message);});
+}
+
 document.addEventListener("DOMContentLoaded",function(){
   try{render();}
   catch(e){
@@ -819,6 +866,10 @@ document.addEventListener("DOMContentLoaded",function(){
       app.textContent="JS ERROR IN render():\n"+e.message+"\n\n"+e.stack;
     }
   }
+  // Fetch live results from ESPN in browser (not blocked like server-side)
+  fetchLiveResults();
+  // Poll every 3 minutes during fight night
+  setInterval(fetchLiveResults, 180000);
 });
 
 </script>
