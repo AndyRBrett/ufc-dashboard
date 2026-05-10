@@ -312,12 +312,12 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 var EVENTS=[
   {name:"UFC 328: Chimaev vs. Strickland",date:"2026-05-09",venue:"Prudential Center",loc:"Newark, NJ",tv:"Paramount+",time:"21:00",prelimTime:"18:00",earlyPrelimTime:"16:00",
    fights:[
-    {lbl:"Main Event",wc:"Middleweight",title:true,odds:{f1:-575,f2:425},winner:"",method:"",round:null,state:"pre",f1:{n:"Khamzat Chimaev",r:"15-0",rk:"C",s:{slpm:"4.5",acc:55,td:"3.4",tdd:90,ko:8,sub:3}},f2:{n:"Sean Strickland",r:"30-7",rk:"#3",s:{slpm:"5.2",acc:46,td:"0.4",tdd:81,ko:4,sub:2}}},
-    {lbl:"Co-Main",wc:"Flyweight",title:true,odds:{f1:-145,f2:120},winner:"",method:"",round:null,state:"pre",f1:{n:"Joshua Van",r:"12-0",rk:"C",s:{slpm:"3.1",acc:49,td:"2.8",tdd:88,ko:3,sub:5}},f2:{n:"Tatsuro Taira",r:"16-1",rk:"#3",s:{slpm:"2.9",acc:51,td:"3.2",tdd:79,ko:2,sub:7}}},
-    {lbl:"Main Card",wc:"Heavyweight",title:false,odds:{f1:-142,f2:118},winner:"",method:"",round:null,state:"pre",
+    {lbl:"Main Event",wc:"Middleweight",title:true,odds:{f1:-575,f2:425},winner:"Sean Strickland",method:"Decision (Split)",round:5,state:"post",f1:{n:"Khamzat Chimaev",r:"15-0",rk:"C",s:{slpm:"4.5",acc:55,td:"3.4",tdd:90,ko:8,sub:3}},f2:{n:"Sean Strickland",r:"30-7",rk:"#3",s:{slpm:"5.2",acc:46,td:"0.4",tdd:81,ko:4,sub:2}}},
+    {lbl:"Co-Main",wc:"Flyweight",title:true,odds:{f1:-145,f2:120},winner:"Joshua Van",method:"KO/TKO",round:5,state:"post",f1:{n:"Joshua Van",r:"12-0",rk:"C",s:{slpm:"3.1",acc:49,td:"2.8",tdd:88,ko:3,sub:5}},f2:{n:"Tatsuro Taira",r:"16-1",rk:"#3",s:{slpm:"2.9",acc:51,td:"3.2",tdd:79,ko:2,sub:7}}},
+    {lbl:"Main Card",wc:"Heavyweight",title:false,odds:{f1:-142,f2:118},winner:"Alexander Volkov",method:"Decision (Unanimous)",round:3,state:"post",
      f1:{n:"Alexander Volkov",r:"38-10",rk:"#2",s:{slpm:"3.8",acc:42,td:"0.3",tdd:93,ko:19,sub:1}},f2:{n:"Waldo Cortes-Acosta",r:"13-2",rk:"#4",s:{slpm:"4.1",acc:48,td:"1.8",tdd:72,ko:10,sub:0}}},
-    {lbl:"Main Card",wc:"Welterweight",title:false,odds:{f1:-170,f2:140},winner:"",method:"",round:null,state:"pre",f1:{n:"Sean Brady",r:"17-1",rk:"#6",s:{slpm:"3.2",acc:47,td:"3.5",tdd:77,ko:3,sub:5}},f2:{n:"Joaquin Buckley",r:"22-5",rk:"#9",s:{slpm:"5.6",acc:51,td:"0.5",tdd:64,ko:15,sub:1}}},
-    {lbl:"Main Card",wc:"Lightweight",title:false,odds:{f1:-320,f2:260},winner:"",method:"",round:null,state:"pre",f1:{n:"King Green",r:"34-17-1",rk:"",s:{slpm:"5.4",acc:44,td:"0.3",tdd:80,ko:11,sub:2}},f2:{n:"Jeremy Stephens",r:"29-22-1",rk:"",s:{slpm:"4.7",acc:39,td:"0.6",tdd:65,ko:17,sub:1}}},
+    {lbl:"Main Card",wc:"Welterweight",title:false,odds:{f1:-170,f2:140},winner:"Sean Brady",method:"Decision (Unanimous)",round:3,state:"post",f1:{n:"Sean Brady",r:"17-1",rk:"#6",s:{slpm:"3.2",acc:47,td:"3.5",tdd:77,ko:3,sub:5}},f2:{n:"Joaquin Buckley",r:"22-5",rk:"#9",s:{slpm:"5.6",acc:51,td:"0.5",tdd:64,ko:15,sub:1}}},
+    {lbl:"Main Card",wc:"Lightweight",title:false,odds:{f1:-320,f2:260},winner:"King Green",method:"Decision (Unanimous)",round:3,state:"post",f1:{n:"King Green",r:"34-17-1",rk:"",s:{slpm:"5.4",acc:44,td:"0.3",tdd:80,ko:11,sub:2}},f2:{n:"Jeremy Stephens",r:"29-22-1",rk:"",s:{slpm:"4.7",acc:39,td:"0.6",tdd:65,ko:17,sub:1}}},
     {lbl:"Prelim",wc:"Middleweight",title:false,odds:null,winner:"Ateba Gautier",method:"KO/TKO",round:2,state:"post",f1:{n:"Ateba Gautier",r:"11-1",rk:"",s:null},f2:{n:"Ozzy Diaz",r:"9-2",rk:"",s:null}},
     {lbl:"Prelim",wc:"Welterweight",title:false,odds:null,winner:"Yaroslav Amosov",method:"Submission",round:2,state:"post",f1:{n:"Joel Alvarez",r:"25-4",rk:"",s:null},f2:{n:"Yaroslav Amosov",r:"28-0",rk:"#14",s:null}},
     {lbl:"Prelim",wc:"Lightweight",title:false,odds:null,winner:"Grant Dawson",method:"Submission",round:3,state:"post",f1:{n:"Grant Dawson",r:"21-2-1",rk:"",s:null},f2:{n:"Mateusz Rebecki",r:"18-4",rk:"",s:null}},
@@ -579,9 +579,11 @@ function checkFightNight(){
   else{banner.classList.remove("show");}
 }
 
-function makeFighter(fighter,right,size,regIdx,side){
+function makeFighter(fighter,right,size,regIdx,side,isWinner){
   var wrap=document.createElement("div");wrap.className="ft"+(right?" ftr":"");
-  var nm=document.createElement("div");nm.className="fn"+(size==="sm"?" fsm":size==="xs"?" fxs":"");nm.textContent=fighter.n;wrap.appendChild(nm);
+  var nm=document.createElement("div");nm.className="fn"+(size==="sm"?" fsm":size==="xs"?" fxs":"");nm.textContent=fighter.n;
+  if(isWinner)nm.style.color="var(--green)";
+  wrap.appendChild(nm);
   if(fighter.r){var rec=document.createElement("div");rec.className="frec";rec.textContent=fighter.r;wrap.appendChild(rec);}
   if(fighter.rk==="C"){var pills=document.createElement("div");pills.className="fpills";var chip=document.createElement("span");chip.className="pchamp";chip.textContent="CHAMP";pills.appendChild(chip);wrap.appendChild(pills);}
   else if(fighter.rk){var pills2=document.createElement("div");pills2.className="fpills";var chip2=document.createElement("span");chip2.className="prank";chip2.textContent=fighter.rk;pills2.appendChild(chip2);wrap.appendChild(pills2);}
@@ -603,12 +605,12 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
   row.appendChild(lbl);
   var sz=isMain?"lg":isCo?"sm":"xs";
   var mu=document.createElement("div");mu.className="mu";
-  mu.appendChild(makeFighter(fight.f1,false,sz,regIdx,0));
+  mu.appendChild(makeFighter(fight.f1,false,sz,regIdx,0,fight.winner&&fight.winner===fight.f1.n));
   var vc=document.createElement("div");vc.className="vc";
   var vs=document.createElement("span");vs.className="vs";vs.textContent="VS";vc.appendChild(vs);
   if(isMain){var wcsm=document.createElement("span");wcsm.className="wcsm";wcsm.textContent=fight.wc;vc.appendChild(wcsm);}
   mu.appendChild(vc);
-  mu.appendChild(makeFighter(fight.f2,true,sz,regIdx,1));
+  mu.appendChild(makeFighter(fight.f2,true,sz,regIdx,1,fight.winner&&fight.winner===fight.f2.n));
   row.appendChild(mu);
   if(fight.odds){
     var or=document.createElement("div");or.className="odds-row";
@@ -825,4 +827,4 @@ document.addEventListener("DOMContentLoaded",function(){
 
 </script>
 </body>
-</html> 
+</html>
