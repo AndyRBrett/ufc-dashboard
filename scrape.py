@@ -85,25 +85,70 @@ def parse_template_results(wikitext):
     return results
 
 def parse_table_results(wikitext):
+    """Parse Wikipedia wikitable - handles both || same-line and newline-per-cell formats."""
     results = []
     in_table = False
-    for line in wikitext.split("\n"):
-        line = line.strip()
-        if "{|" in line and "wikitable" in line: in_table = True; continue
-        if "|}" in line: in_table = False; continue
-        if not in_table or not line.startswith("|"): continue
-        if line.startswith("|-") or line.startswith("|!"): continue
-        cells = [strip_wiki(c.strip()) for c in line.lstrip("|").split("||")]
-        if len(cells) < 4: continue
-        winner = cells[1] if len(cells) > 1 else ""
-        loser  = cells[2] if len(cells) > 2 else ""
-        method = cells[3] if len(cells) > 3 else ""
-        rnd_s  = cells[4] if len(cells) > 4 else ""
-        if not winner or not method: continue
-        if winner.lower() in ("winner","fighter","weight class"): continue
-        try: rnd = int(re.search(r"\d+", rnd_s).group())
-        except: rnd = None
-        results.append({"winner":winner,"loser":loser,"method":norm_method(method),"round":rnd})
+    current_row = []
+
+    def process_row(row):
+        """Try to extract a fight result from a collected row of cells."""
+        if len(row) < 3: return None
+        # Skip header rows
+        if any(h in " ".join(row).lower() for h in ["weight class","winner","loser","method"]): return None
+        # Try to identify cells by content
+        winner = ""; loser = ""; method = ""; rnd = None
+        # Look for "def." marker to split winner/loser
+        def_idx = -1
+        for i, c in enumerate(row):
+            if c.strip().lower() in ("def.", "def", "d."): def_idx = i; break
+        if def_idx > 0:
+            winner = row[def_idx - 1]
+            loser  = row[def_idx + 1] if def_idx + 1 < len(row) else ""
+            rest   = row[def_idx + 2:]
+        else:
+            # No "def." - assume weight, winner, loser, method, round order
+            if len(row) < 4: return None
+            winner = row[1]; loser = row[2]; rest = row[3:]
+        if not winner: return None
+        # Find method and round from remaining cells
+        for cell in rest:
+            cl = cell.lower()
+            if any(k in cl for k in ["ko","tko","decision","submission","sub","dq","draw"]):
+                if not method: method = cell
+            elif re.match(r"^\d$", cell.strip()):
+                try: rnd = int(cell.strip())
+                except: pass
+        if not method: return None
+        return {"winner": winner, "loser": loser, "method": norm_method(method), "round": rnd}
+
+    lines = wikitext.split("\n")
+    for line in lines:
+        stripped = line.strip()
+        if "{|" in stripped and "wikitable" in stripped:
+            in_table = True; current_row = []; continue
+        if stripped.startswith("|}"): in_table = False; current_row = []; continue
+        if not in_table: continue
+        if stripped.startswith("|-"):
+            # New row - process previous
+            if current_row:
+                res = process_row([c for c in current_row if c])
+                if res: results.append(res)
+            current_row = []; continue
+        if stripped.startswith("!"):
+            current_row = []; continue  # header row
+        if stripped.startswith("|"):
+            # Could be single cell or multiple cells with ||
+            content = stripped.lstrip("|")
+            if "||" in content:
+                # Same-line multi-cell
+                parts = [strip_wiki(p.strip()) for p in content.split("||")]
+                current_row.extend(parts)
+            else:
+                current_row.append(strip_wiki(content))
+    # Process final row
+    if current_row:
+        res = process_row([c for c in current_row if c])
+        if res: results.append(res)
     return results
 
 def fetch_wiki_results(ev_name):
