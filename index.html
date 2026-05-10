@@ -374,7 +374,7 @@ function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.c
 
 function updateCountdown(){
   var now=Date.now();
-  var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5;});
+  var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-2*864e5;});
   if(!upcoming.length)return;
   var ev=upcoming[0];
   var p=ev.time.split(":");var h=parseInt(p[0],10);var m=parseInt(p[1]||"0",10);
@@ -569,7 +569,7 @@ try{if(localStorage.getItem("ufc_notif")==="1"&&Notification.permission==="grant
 
 function checkFightNight(){
   var now=Date.now();
-  var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5;});
+  var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-2*864e5;});
   var banner=document.getElementById("fnBanner");
   if(!upcoming.length||!banner)return;
   var next=upcoming[0];
@@ -794,7 +794,7 @@ function togglePicks(){
 function render(){
   buildReg();
   var now=Date.now();
-  var events=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5&&new Date(e.date)<=now+864e5*65;});
+  var events=EVENTS.filter(function(e){return new Date(e.date)>=now-2*864e5&&new Date(e.date)<=now+864e5*65;});
   var vis=events.filter(function(e){return e.fights.some(matchFilter);});
   var app=document.getElementById("app");
   if(!app)return;
