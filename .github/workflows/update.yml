@@ -4,9 +4,9 @@ on:
   schedule:
     # Daily 9am UTC - card structure update
     - cron: "0 9 * * *"
-    # Every 10 min Sat 4pm-4am UTC (noon-midnight ET) - live fight night results
-    - cron: "*/10 16-23 * * 6"
-    - cron: "*/10 0-4 * * 0"
+    # Every 15 min Sat 4pm-4am UTC (noon-midnight ET) - fight night results
+    - cron: "*/15 16-23 * * 6"
+    - cron: "*/15 0-4 * * 0"
 
   workflow_dispatch:
 
