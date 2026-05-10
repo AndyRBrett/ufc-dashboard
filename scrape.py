@@ -65,6 +65,28 @@ def norm_method(m):
     return asc(m).strip()
 
 
+def parse_mmaevent_bouts(wikitext):
+    """Parse {{MMAevent bout}} template format - the standard UFC Wikipedia format."""
+    results = []
+    for block in re.finditer(r"\{\{MMAevent bout\s*\n(.*?)\}\}", wikitext, re.DOTALL | re.IGNORECASE):
+        lines = [l.strip().lstrip("|").strip() for l in block.group(1).split("\n") if l.strip().lstrip("|").strip()]
+        if len(lines) < 5: continue
+        def_idx = next((i for i, l in enumerate(lines) if l.lower().strip() in ("def.", "def", "d.")), -1)
+        if def_idx < 1: continue
+        winner = clean_wiki(lines[def_idx - 1])
+        loser  = clean_wiki(lines[def_idx + 1]) if def_idx + 1 < len(lines) else ""
+        winner = re.sub(r"\s*\(c\)\s*", "", winner).strip()
+        loser  = re.sub(r"\s*\(c\)\s*", "", loser).strip()
+        method_raw = lines[def_idx + 2] if def_idx + 2 < len(lines) else ""
+        rnd_raw    = lines[def_idx + 3] if def_idx + 3 < len(lines) else ""
+        if not winner or not method_raw: continue
+        try: rnd = int(rnd_raw.strip())
+        except: rnd = None
+        results.append({"winner": winner, "loser": loser,
+            "method": norm_method(method_raw), "round": rnd})
+    return results
+
+
 def wiki_slug(ev_name):
     m = re.search(r"UFC (\d+)", ev_name)
     if m: return "UFC_" + m.group(1)
@@ -258,7 +280,14 @@ def fetch_wiki_results(ev_name):
     content, is_html = fetch_wikitext(slug)
     if not content:
         return []
-    results = parse_html(content) if is_html else parse_wikitext(content)
+    if is_html:
+        results = parse_html(content)
+    else:
+        # Try MMAevent bout format first (standard UFC Wikipedia format)
+        results = parse_mmaevent_bouts(content)
+        if not results:
+            print("  MMAevent parser found 0, trying wikitext table parser", file=sys.stderr)
+            results = parse_wikitext(content)
     print("Results for %s: %d" % (ev_name, len(results)), file=sys.stderr)
     for res in results:
         print("  %s def %s by %s R%s" % (res["winner"], res["loser"], res["method"], res["round"]), file=sys.stderr)
