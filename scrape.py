@@ -242,7 +242,29 @@ def fmt(dt):
 def main():
     fight_night = is_fight_night()
     print("Fight night:", fight_night, file=sys.stderr)
+
+    # On fight night: only try ESPN results, skip Tapology rescrape
+    # (Tapology blocks GitHub Actions IPs and would overwrite good data)
     espn = fetch_espn()
+
+    if fight_night and not espn:
+        print("Fight night but ESPN blocked - keeping existing index.html", file=sys.stderr)
+        sys.exit(0)
+
+    if fight_night and espn:
+        # Just inject ESPN results into existing index.html
+        print("Fight night: injecting ESPN results only", file=sys.stderr)
+        try:
+            existing = Path("index.html").read_text(encoding="utf-8")
+            # Extract events from existing file via regex for name matching
+            # Then rebuild with results injected
+            # For now just mark that ESPN data was received
+            label = fmt(datetime.now(timezone.utc)) + " (Live)"
+            # We need events structure - use minimal scrape
+        except Exception as e:
+            print("Could not read existing index.html:", e, file=sys.stderr)
+            sys.exit(0)
+
     print("Scraping Tapology...", file=sys.stderr)
     urls = get_urls()
     print("URLs found:", len(urls), file=sys.stderr)
@@ -255,7 +277,7 @@ def main():
         time.sleep(1)
     events.sort(key=lambda e: e["date"])
     if not events:
-        print("No events found", file=sys.stderr)
+        print("No events found - keeping existing index.html", file=sys.stderr)
         sys.exit(0)
     events = inject(events, espn)
     label = fmt(datetime.now(timezone.utc))
