@@ -351,7 +351,29 @@ var EVENTS=[
     {lbl:"Main Card",wc:"Lightweight",title:false,odds:{f1:-700,f2:500},winner:"",method:"",round:null,state:"pre",
      f1:{n:"Mauricio Ruffy",r:"13-2",rk:"#10",s:{slpm:"6.1",acc:53,td:"0.6",tdd:88,ko:5,sub:5}},f2:{n:"Michael Chandler",r:"23-10",rk:"#13",s:{slpm:"5.5",acc:42,td:"2.5",tdd:71,ko:10,sub:3}}},
     {lbl:"Main Card",wc:"Featherweight",title:false,odds:{f1:-200,f2:165},winner:"",method:"",round:null,state:"pre",f1:{n:"Diego Lopes",r:"27-8",rk:"#2",s:{slpm:"4.6",acc:50,td:"0.9",tdd:78,ko:9,sub:9}},f2:{n:"Steve Garcia",r:"19-5",rk:"#9",s:{slpm:"3.7",acc:45,td:"0.5",tdd:69,ko:6,sub:2}}}
-   ]}
+   ]},
+  {name:"UFC Fight Night: Muhammad vs. Bonfim",date:"2026-06-06",venue:"Meta APEX",loc:"Las Vegas, NV",tv:"Paramount+",time:"20:00",prelimTime:"17:00",
+   fights:[
+    {lbl:"Main Event",wc:"Welterweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Belal Muhammad",r:"24-4",rk:"C",s:null},f2:{n:"Gabriel Bonfim",r:"16-1",rk:"#7",s:null}},
+    {lbl:"Co-Main",wc:"Middleweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Brendan Allen",r:"26-5",rk:"#9",s:null},f2:{n:"Edmen Shahbazyan",r:"13-4",rk:"",s:null}},
+    {lbl:"Main Card",wc:"Middleweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Bruno Silva",r:"24-9",rk:"",s:null},f2:{n:"Edgar Chairez",r:"14-5",rk:"",s:null}}
+   ]
+  },
+  {name:"UFC Fight Night: Kape vs. Horiguchi",date:"2026-06-20",venue:"Meta APEX",loc:"Las Vegas, NV",tv:"Paramount+",time:"20:00",prelimTime:"17:00",
+   fights:[
+    {lbl:"Main Event",wc:"Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Manel Kape",r:"19-6",rk:"#5",s:null},f2:{n:"Kyoji Horiguchi",r:"30-4",rk:"",s:null}}
+   ]
+  },
+  {name:"UFC Fight Night: Fiziev vs. Torres",date:"2026-06-27",venue:"National Gymnastics Arena",loc:"Baku, Azerbaijan",tv:"Paramount+",time:"12:00",prelimTime:"09:00",
+   fights:[
+    {lbl:"Main Event",wc:"Lightweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Rafael Fiziev",r:"14-3",rk:"#6",s:null},f2:{n:"Jesus Torres",r:"15-2",rk:"",s:null}}
+   ]
+  },
+  {name:"UFC 329",date:"2026-07-11",venue:"T-Mobile Arena",loc:"Las Vegas, NV",tv:"Paramount+",time:"22:00",prelimTime:"18:00",
+   fights:[
+    {lbl:"Main Event",wc:"TBD",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"TBD",r:"",rk:"",s:null},f2:{n:"TBD",r:"",rk:"",s:null}}
+   ]
+  }
 ];
 
 var FIGHTS=[];
@@ -703,9 +725,11 @@ function makeEventBlock(ev,ei,evNum,visTotal){
   var mainRow=makeFightRow(mainFight,ei,0,getRegIdx(ei,0),matchFilter(mainFight));
   if(!matchFilter(mainFight))mainRow.style.opacity="0.3";
   fw.appendChild(mainRow);
-  var coRow=makeFightRow(coFight,ei,1,getRegIdx(ei,1),matchFilter(coFight));
-  if(!matchFilter(coFight))coRow.style.opacity="0.3";
-  fw.appendChild(coRow);
+  if(coFight){
+    var coRow=makeFightRow(coFight,ei,1,getRegIdx(ei,1),matchFilter(coFight));
+    if(!matchFilter(coFight))coRow.style.opacity="0.3";
+    fw.appendChild(coRow);
+  }
   if(totalExtra>0){
     var moreId="more"+ei;
     var moreBtn=document.createElement("button");moreBtn.className="more-btn";
@@ -799,7 +823,7 @@ function togglePicks(){
 function render(){
   buildReg();
   var now=Date.now();
-  var events=EVENTS.filter(function(e){return new Date(e.date)>=now-2*864e5&&new Date(e.date)<=now+864e5*65;});
+  var events=EVENTS.filter(function(e){return new Date(e.date)>=now-2*864e5&&new Date(e.date)<=now+864e5*65;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);});
   var vis=events.filter(function(e){return e.fights.some(matchFilter);});
   var app=document.getElementById("app");
   if(!app)return;
