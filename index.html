@@ -809,11 +809,11 @@ function render(){
   } else {
     vis.forEach(function(ev,i){var ei=EVENTS.indexOf(ev);app.appendChild(makeEventBlock(ev,ei,i,vis.length));});
   }
-  // Compute stats dynamically from EVENTS array
-  var allFights=EVENTS.reduce(function(a,e){return a.concat(e.fights||[]);}, []);
+  // Compute stats dynamically from visible events only
+  var allFights=vis.reduce(function(a,e){return a.concat(e.fights||[]);}, []);
   var titleFights=allFights.filter(function(f){return f.title;});
   var sevEl=document.getElementById("sev");var stiEl=document.getElementById("sti");var sboEl=document.getElementById("sbo");
-  if(sevEl)sevEl.textContent=EVENTS.length;
+  if(sevEl)sevEl.textContent=vis.length;
   if(stiEl)stiEl.textContent=titleFights.length;
   if(sboEl)sboEl.textContent=allFights.length;
   document.getElementById("picks-count").textContent=Object.keys(preds).length;
