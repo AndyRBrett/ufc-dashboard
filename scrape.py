@@ -358,17 +358,70 @@ def norm_wc(raw):
     return r.title() if r else "Catchweight"
 
 
-def scrape_tapology():
-    r = get(TAPOLOGY_EVENTS, ua=BROWSER_UA)
+def get_wiki_event_schedule():
+    """Get upcoming UFC events from Wikipedia List of UFC events page."""
+    print("Fetching UFC schedule from Wikipedia...", file=sys.stderr)
+    r = get(WIKI_API, params={
+        "action": "parse", "page": "List_of_UFC_events",
+        "prop": "wikitext", "format": "json"
+    })
     if not r: return []
-    soup = BeautifulSoup(r.text, "html.parser")
-    seen, urls = set(), []
-    for a in soup.select("a[href*='/fightcenter/events/']"):
-        href = a.get("href", "")
-        if "/fightcenter/events/" not in href: continue
-        url = TAPOLOGY_BASE + href if href.startswith("/") else href
-        if url not in seen: seen.add(url); urls.append(url)
-    return urls[:12]
+    try:
+        wikitext = r.json().get("parse", {}).get("wikitext", {}).get("*", "")
+    except Exception as e:
+        print("Wiki schedule error:", e, file=sys.stderr)
+        return []
+    if not wikitext:
+        return []
+    # Parse upcoming events table from wikitext
+    # Format: | event_num | [[Event Name]] | date | venue | city | country
+    events = []
+    now = datetime.now(timezone.utc)
+    # Look for upcoming events - they appear in tables with future dates
+    for m in re.finditer(
+        r"\|\|?\s*\[\[([^\]]+)\]\]\s*\|\|?\s*(\d{4}-\d{2}-\d{2}|[A-Z][a-z]+ \d+, \d{4})\s*\|\|?\s*([^|\n]+)\|\|?\s*([^|\n]+)",
+        wikitext
+    ):
+        name_raw = m.group(1)
+        date_raw = m.group(2).strip()
+        venue_raw = m.group(3).strip()
+        loc_raw   = m.group(4).strip()
+        name = clean_wiki(name_raw)
+        if not name or "ufc" not in name.lower(): continue
+        # Parse date
+        date_str = ""
+        try:
+            if re.match(r"\d{4}-\d{2}-\d{2}", date_raw):
+                date_str = date_raw
+            else:
+                for fmt in ("%B %d, %Y", "%b %d, %Y"):
+                    try: date_str = datetime.strptime(date_raw, fmt).strftime("%Y-%m-%d"); break
+                    except: pass
+        except: pass
+        if not date_str: continue
+        try:
+            ed = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            # Only future events within 65 days
+            if ed < now or ed > now + timedelta(days=65): continue
+        except: continue
+        venue = clean_wiki(venue_raw)
+        loc   = clean_wiki(loc_raw)
+        events.append({
+            "name": name, "date": date_str,
+            "venue": venue, "location": loc,
+            "broadcast": "Paramount+", "time": "TBD",
+            "fights": [{
+                "label": "Main Event", "wc": "TBD", "title": False,
+                "winner": "", "method": "", "round": None, "state": "pre",
+                "f1": {"name": "TBD", "record": "", "ranking": ""},
+                "f2": {"name": "TBD", "record": "", "ranking": ""}
+            }]
+        })
+    events.sort(key=lambda e: e["date"])
+    print("Wiki schedule events found:", len(events), file=sys.stderr)
+    for ev in events:
+        print(" ", ev["date"], ev["name"], file=sys.stderr)
+    return events
 
 
 def scrape_event(url):
@@ -477,13 +530,8 @@ def main():
         sys.exit(0)
 
     # Step 3: Card structure from Tapology
-    print("Scraping Tapology...", file=sys.stderr)
-    urls = scrape_tapology(); events = []
-    for url in urls:
-        ev = scrape_event(url)
-        if ev: events.append(ev); print("OK:", ev["name"], file=sys.stderr)
-        time.sleep(1)
-    events.sort(key=lambda e: e["date"])
+    print("Fetching upcoming events from Wikipedia schedule...", file=sys.stderr)
+    events = get_wiki_event_schedule()
     if not events: print("No events", file=sys.stderr); sys.exit(0)
 
     scraped_dates = set(e["date"] for e in events)
