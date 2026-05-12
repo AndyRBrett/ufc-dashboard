@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -11,168 +10,168 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 
-:root{–red:#e8192c;–gold:#c9a84c;–bg:#0a0a0a;–card:#141414;–card2:#1c1c1c;–border:rgba(255,255,255,.09);–border2:rgba(255,255,255,.16);–text:#f0f0f0;–muted:#666;–muted2:#999;–green:#2ecc71}
+:root{--red:#e8192c;--gold:#c9a84c;--bg:#0a0a0a;--card:#141414;--card2:#1c1c1c;--border:rgba(255,255,255,.09);--border2:rgba(255,255,255,.16);--text:#f0f0f0;--muted:#666;--muted2:#999;--green:#2ecc71}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(–bg);color:var(–text);font-family:DM Sans,sans-serif;min-height:100vh;padding-bottom:60px;font-size:15px}
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;border-bottom:1px solid var(–border);background:rgba(10,10,10,.97);backdrop-filter:blur(8px);position:sticky;top:0;z-index:99}
+body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-height:100vh;padding-bottom:60px;font-size:15px}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;border-bottom:1px solid var(--border);background:rgba(10,10,10,.97);backdrop-filter:blur(8px);position:sticky;top:0;z-index:99}
 .logo{display:flex;align-items:center;gap:8px}
-.logo-hex{width:28px;height:28px;background:var(–red);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:10px;color:#fff}
+.logo-hex{width:28px;height:28px;background:var(--red);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:10px;color:#fff}
 .logo-text{font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:.08em}
-.logo-text span{color:var(–red)}
+.logo-text span{color:var(--red)}
 .hdr-right{display:flex;align-items:center;gap:8px}
-.btn-icon{background:var(–card2);border:1px solid var(–border2);color:var(–muted2);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s}
+.btn-icon{background:var(--card2);border:1px solid var(--border2);color:var(--muted2);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s}
 .btn-icon svg{width:15px;height:15px}
-.btn-ufc{background:var(–red);border:none;color:#fff;padding:6px 10px;border-radius:6px;font:600 11px DM Sans,sans-serif;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:3px}
-.fn-banner{background:linear-gradient(90deg,var(–red),#a00);padding:8px 16px;display:none;align-items:center;gap:10px}
+.btn-ufc{background:var(--red);border:none;color:#fff;padding:6px 10px;border-radius:6px;font:600 11px DM Sans,sans-serif;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:3px}
+.fn-banner{background:linear-gradient(90deg,var(--red),#a00);padding:8px 16px;display:none;align-items:center;gap:10px}
 .fn-banner.show{display:flex}
 .fn-banner-text{font-family:Bebas Neue,sans-serif;font-size:14px;letter-spacing:.08em;color:#fff}
 .fn-banner-dot{width:7px;height:7px;border-radius:50%;background:#fff;animation:blink 1s infinite;flex-shrink:0}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.hero{padding:18px 16px 14px;border-bottom:1px solid var(–border)}
+.hero{padding:18px 16px 14px;border-bottom:1px solid var(--border)}
 .hero h1{font-family:Bebas Neue,sans-serif;font-size:32px;letter-spacing:.07em;line-height:1}
-.hero h1 span{color:var(–red)}
-.hero-sub{font-size:11px;color:var(–muted);margin-top:4px}
-.cd-wrap{margin-top:12px;background:var(–card2);border:1px solid var(–border);border-radius:8px;padding:10px 14px}
-.cd-label{font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
-.cd-event{font-size:11px;font-weight:600;color:var(–text);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero h1 span{color:var(--red)}
+.hero-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.cd-wrap{margin-top:12px;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 14px}
+.cd-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.cd-event{font-size:11px;font-weight:600;color:var(--text);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cd-timer{display:flex;align-items:center;gap:6px}
 .cd-unit{text-align:center;min-width:38px}
-.cd-num{font-family:Bebas Neue,sans-serif;font-size:26px;line-height:1;color:var(–red)}
-.cd-lbl{font-size:8px;color:var(–muted);text-transform:uppercase;letter-spacing:.07em;margin-top:1px}
+.cd-num{font-family:Bebas Neue,sans-serif;font-size:26px;line-height:1;color:var(--red)}
+.cd-lbl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:1px}
 .cd-sep{font-family:Bebas Neue,sans-serif;font-size:20px;color:rgba(255,255,255,.12);padding-bottom:10px}
-.cd-live{display:inline-block;background:rgba(232,25,44,.15);color:var(–red);border:1px solid rgba(232,25,44,.3);font-size:11px;font-weight:600;padding:4px 12px;border-radius:4px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(–card);border-bottom:1px solid var(–border)}
-.stat{padding:10px 6px;text-align:center;border-right:1px solid var(–border)}
+.cd-live{display:inline-block;background:rgba(232,25,44,.15);color:var(--red);border:1px solid rgba(232,25,44,.3);font-size:11px;font-weight:600;padding:4px 12px;border-radius:4px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-bottom:1px solid var(--border)}
+.stat{padding:10px 6px;text-align:center;border-right:1px solid var(--border)}
 .stat:last-child{border-right:none}
 .sv{font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:.05em;line-height:1}
-.sl{font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
-.filter-wrap{padding:10px 12px;border-bottom:1px solid var(–border);display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.sl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.filter-wrap{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
 .filter-wrap::-webkit-scrollbar{display:none}
-.ftab{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;color:var(–muted);border:1px solid var(–border);background:none;cursor:pointer;white-space:nowrap;transition:all .15s}
-.ftab.active{background:var(–red);color:#fff;border-color:var(–red)}
-.picks-widget{background:var(–card);border-top:1px solid var(–border)}
-.picks-toggle{width:100%;background:none;border:none;border-bottom:1px solid var(–border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:DM Sans,sans-serif}
+.ftab{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;color:var(--muted);border:1px solid var(--border);background:none;cursor:pointer;white-space:nowrap;transition:all .15s}
+.ftab.active{background:var(--red);color:#fff;border-color:var(--red)}
+.picks-widget{background:var(--card);border-top:1px solid var(--border)}
+.picks-toggle{width:100%;background:none;border:none;border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:DM Sans,sans-serif}
 .picks-toggle-left{display:flex;align-items:center;gap:10px}
-.picks-toggle-title{font-family:Bebas Neue,sans-serif;font-size:17px;letter-spacing:.06em;color:var(–text)}
-.picks-badge{background:var(–red);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px}
-.picks-toggle-svg{width:14px;height:14px;transition:transform .2s;color:var(–muted);flex-shrink:0}
+.picks-toggle-title{font-family:Bebas Neue,sans-serif;font-size:17px;letter-spacing:.06em;color:var(--text)}
+.picks-badge{background:var(--red);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px}
+.picks-toggle-svg{width:14px;height:14px;transition:transform .2s;color:var(--muted);flex-shrink:0}
 .picks-toggle.open .picks-toggle-svg{transform:rotate(180deg)}
 .picks-body{display:none;padding:0 16px 16px}
 .picks-body.open{display:block}
-.picks-ev-label{font-size:10px;color:var(–muted);text-transform:uppercase;letter-spacing:.1em;margin:14px 0 8px;display:flex;align-items:center;gap:8px}
-.picks-ev-label::after{content:””;flex:1;height:1px;background:var(–border)}
-.pick-summary-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(–border)}
+.picks-ev-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:14px 0 8px;display:flex;align-items:center;gap:8px}
+.picks-ev-label::after{content:"";flex:1;height:1px;background:var(--border)}
+.pick-summary-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
 .pick-summary-row:last-child{border-bottom:none}
-.pick-fight-label{font-size:10px;color:var(–muted);flex-shrink:0;width:60px}
-.pick-fighter-pick{font-size:13px;font-weight:500;flex:1;color:var(–text)}
+.pick-fight-label{font-size:10px;color:var(--muted);flex-shrink:0;width:60px}
+.pick-fighter-pick{font-size:13px;font-weight:500;flex:1;color:var(--text)}
 .pick-result-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0}
-.pick-result-badge.win{background:rgba(46,204,113,.1);color:var(–green);border:1px solid rgba(46,204,113,.2)}
-.pick-result-badge.loss{background:rgba(232,25,44,.08);color:var(–red);border:1px solid rgba(232,25,44,.2)}
-.pick-result-badge.pending{background:rgba(255,255,255,.05);color:var(–muted);border:1px solid var(–border)}
-.picks-score-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0 4px;border-top:1px solid var(–border);margin-top:4px}
-.picks-score-label{font-size:11px;color:var(–muted)}
-.picks-score-val{font-family:Bebas Neue,sans-serif;font-size:20px;color:var(–red)}
+.pick-result-badge.win{background:rgba(46,204,113,.1);color:var(--green);border:1px solid rgba(46,204,113,.2)}
+.pick-result-badge.loss{background:rgba(232,25,44,.08);color:var(--red);border:1px solid rgba(232,25,44,.2)}
+.pick-result-badge.pending{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)}
+.picks-score-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:4px}
+.picks-score-label{font-size:11px;color:var(--muted)}
+.picks-score-val{font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--red)}
 .share-wrap{padding:0 16px 12px}
-.share-btn-small{background:none;border:1px solid var(–border2);color:var(–muted);cursor:pointer;padding:6px 14px;border-radius:6px;font:500 11px DM Sans,sans-serif;transition:color .15s,border-color .15s}
-.share-icon-btn{background:none;border:none;color:var(–muted);cursor:pointer;padding:10px 14px;display:flex;align-items:center;justify-content:center;transition:color .15s;flex-shrink:0}
-.share-icon-btn:hover{color:var(–text)}
-.ev-divider{display:flex;align-items:center;gap:10px;padding:16px 16px 0;font-size:10px;color:var(–muted);text-transform:uppercase;letter-spacing:.1em}
-.ev-divider::after{content:””;flex:1;height:1px;background:var(–border)}
-.ev-band{border-top:3px solid var(–red);padding:14px 16px 12px}
+.share-btn-small{background:none;border:1px solid var(--border2);color:var(--muted);cursor:pointer;padding:6px 14px;border-radius:6px;font:500 11px DM Sans,sans-serif;transition:color .15s,border-color .15s}
+.share-icon-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:10px 14px;display:flex;align-items:center;justify-content:center;transition:color .15s;flex-shrink:0}
+.share-icon-btn:hover{color:var(--text)}
+.ev-divider{display:flex;align-items:center;gap:10px;padding:16px 16px 0;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.ev-divider::after{content:"";flex:1;height:1px;background:var(--border)}
+.ev-band{border-top:3px solid var(--red);padding:14px 16px 12px}
 .ev-band.ev-future{border-top-color:#2a2a2a;background:#111}
-.ev-num{font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px}
+.ev-num{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px}
 .ev-name{font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:.06em;line-height:1;margin-bottom:8px;color:#fff}
 .ev-row{display:flex;flex-wrap:wrap;gap:4px 14px;margin-bottom:6px}
-.ev-detail{font-size:11px;color:var(–muted2);display:flex;align-items:center;gap:3px}
+.ev-detail{font-size:11px;color:var(--muted2);display:flex;align-items:center;gap:3px}
 .ev-detail svg{width:10px;height:10px;opacity:.5;flex-shrink:0}
 .ev-badges{display:flex;gap:5px;flex-wrap:wrap}
 .badge{font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius:3px}
-.b-next{background:rgba(232,25,44,.15);color:var(–red);border:1px solid rgba(232,25,44,.3)}
-.b-title{background:rgba(201,168,76,.12);color:var(–gold);border:1px solid rgba(201,168,76,.25)}
-.b-ppv{background:rgba(255,255,255,.06);color:var(–muted2);border:1px solid var(–border)}
-.fights-wrap{background:var(–card)}
-.fight-row{padding:12px 16px;border-bottom:1px solid var(–border)}
+.b-next{background:rgba(232,25,44,.15);color:var(--red);border:1px solid rgba(232,25,44,.3)}
+.b-title{background:rgba(201,168,76,.12);color:var(--gold);border:1px solid rgba(201,168,76,.25)}
+.b-ppv{background:rgba(255,255,255,.06);color:var(--muted2);border:1px solid var(--border)}
+.fights-wrap{background:var(--card)}
+.fight-row{padding:12px 16px;border-bottom:1px solid var(--border)}
 .fight-row:last-child{border-bottom:none}
-.fight-row.fmain{background:rgba(232,25,44,.03);border-left:3px solid var(–red);padding-left:13px}
-.fight-row.fco{background:rgba(201,168,76,.02);border-left:3px solid var(–gold);padding-left:13px}
+.fight-row.fmain{background:rgba(232,25,44,.03);border-left:3px solid var(--red);padding-left:13px}
+.fight-row.fco{background:rgba(201,168,76,.02);border-left:3px solid var(--gold);padding-left:13px}
 .fight-row.fcard{border-left:3px solid rgba(255,255,255,.06);padding-left:13px}
 .fight-row.fpre{border-left:3px solid transparent;background:rgba(255,255,255,.01)}
-.fight-row.fresult{border-left-color:var(–green)}
-.fight-row.flive{border-left-color:var(–red)}
+.fight-row.fresult{border-left-color:var(--green)}
+.fight-row.flive{border-left-color:var(--red)}
 .flbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
-.flbl.lmain{color:var(–red)}.flbl.lco{color:var(–gold)}.flbl.lpre{color:var(–muted)}
+.flbl.lmain{color:var(--red)}.flbl.lco{color:var(--gold)}.flbl.lpre{color:var(--muted)}
 .mu{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
 .ft{display:flex;flex-direction:column;gap:1px;min-width:0}
 .ft.ftr{align-items:flex-end;text-align:right}
 .fn{font-family:Bebas Neue,sans-serif;font-size:24px;letter-spacing:.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fn.fsm{font-size:19px}.fn.fxs{font-size:15px;font-family:DM Sans,sans-serif;font-weight:500}
-.frec{font-size:12px;color:var(–muted2);margin-top:2px}
+.frec{font-size:12px;color:var(--muted2);margin-top:2px}
 .fpills{display:flex;gap:3px;flex-wrap:wrap;margin-top:2px}
 .ft.ftr .fpills{justify-content:flex-end}
-.pchamp{font-size:9px;font-weight:600;padding:1px 5px;border-radius:2px;background:rgba(201,168,76,.1);color:var(–gold);border:1px solid rgba(201,168,76,.18)}
-.prank{font-size:9px;font-weight:600;padding:1px 5px;border-radius:2px;background:rgba(255,255,255,.06);color:var(–muted2)}
+.pchamp{font-size:9px;font-weight:600;padding:1px 5px;border-radius:2px;background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.18)}
+.prank{font-size:9px;font-weight:600;padding:1px 5px;border-radius:2px;background:rgba(255,255,255,.06);color:var(--muted2)}
 .vc{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0}
 .vs{font-family:Bebas Neue,sans-serif;font-size:12px;color:rgba(255,255,255,.14)}
-.wcsm{font-size:8px;color:var(–muted);text-align:center;text-transform:uppercase;max-width:50px;line-height:1.3}
-.stats-hint{font-size:9px;color:var(–muted);margin-top:2px}
+.wcsm{font-size:8px;color:var(--muted);text-align:center;text-transform:uppercase;max-width:50px;line-height:1.3}
+.stats-hint{font-size:9px;color:var(--muted);margin-top:2px}
 .ft.ftr .stats-hint{text-align:right}
 .ft-click{cursor:pointer}
 .ft-click:hover .fn{opacity:.75}
-.odds-row{display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(–border)}
+.odds-row{display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
 .odds-side{display:flex;flex-direction:column;gap:1px}
 .odds-side.osr{align-items:flex-end}
-.odds-nm{font-size:9px;color:var(–muted);text-transform:uppercase}
+.odds-nm{font-size:9px;color:var(--muted);text-transform:uppercase}
 .odds-val{font-size:14px;font-weight:600}
-.odds-val.fav{color:var(–green)}.odds-val.dog{color:#e05060}
-.odds-ctr{font-size:9px;color:var(–muted);text-transform:uppercase;align-self:center}
-.result-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(–border)}
-.result-winner{font-size:12px;font-weight:600;color:var(–green);display:flex;align-items:center;gap:5px}
-.result-method{font-size:11px;color:var(–muted);background:var(–card2);padding:2px 7px;border-radius:3px}
-.result-live{font-size:11px;font-weight:600;color:var(–red);display:flex;align-items:center;gap:5px;animation:blink 1s infinite}
-.pick-row{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(–border)}
-.pick-lbl{font-size:9px;color:var(–muted);text-transform:uppercase;flex-shrink:0}
-.pick-btn{flex:1;padding:6px 8px;border-radius:5px;border:1px solid var(–border2);background:none;color:var(–muted2);font:500 12px DM Sans,sans-serif;cursor:pointer;transition:all .15s;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pick-btn.psel{background:rgba(232,25,44,.12);border-color:var(–red);color:var(–red)}
-.pick-btn.pcorrect{background:rgba(46,204,113,.1);border-color:var(–green);color:var(–green)}
+.odds-val.fav{color:var(--green)}.odds-val.dog{color:#e05060}
+.odds-ctr{font-size:9px;color:var(--muted);text-transform:uppercase;align-self:center}
+.result-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.result-winner{font-size:12px;font-weight:600;color:var(--green);display:flex;align-items:center;gap:5px}
+.result-method{font-size:11px;color:var(--muted);background:var(--card2);padding:2px 7px;border-radius:3px}
+.result-live{font-size:11px;font-weight:600;color:var(--red);display:flex;align-items:center;gap:5px;animation:blink 1s infinite}
+.pick-row{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.pick-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;flex-shrink:0}
+.pick-btn{flex:1;padding:6px 8px;border-radius:5px;border:1px solid var(--border2);background:none;color:var(--muted2);font:500 12px DM Sans,sans-serif;cursor:pointer;transition:all .15s;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick-btn.psel{background:rgba(232,25,44,.12);border-color:var(--red);color:var(--red)}
+.pick-btn.pcorrect{background:rgba(46,204,113,.1);border-color:var(--green);color:var(--green)}
 .pick-btn.pwrong{opacity:.4;text-decoration:line-through}
-.more-btn{width:100%;background:var(–card2);border:none;border-top:1px solid var(–border);padding:9px 16px;display:flex;align-items:center;gap:6px;font-size:10px;color:var(–muted);cursor:pointer;font-family:DM Sans,sans-serif;letter-spacing:.06em;text-transform:uppercase;text-align:left}
+.more-btn{width:100%;background:var(--card2);border:none;border-top:1px solid var(--border);padding:9px 16px;display:flex;align-items:center;gap:6px;font-size:10px;color:var(--muted);cursor:pointer;font-family:DM Sans,sans-serif;letter-spacing:.06em;text-transform:uppercase;text-align:left}
 .more-btn svg{width:12px;height:12px;transition:transform .2s;margin-left:auto;flex-shrink:0}
 .more-btn.open svg{transform:rotate(180deg)}
 .more-body{display:none}.more-body.open{display:block}
-.cmp-btn-row{width:100%;background:none;border:none;border-top:1px solid var(–border);padding:7px 16px;font-size:10px;color:var(–muted);cursor:pointer;font-family:DM Sans,sans-serif;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:5px;transition:color .15s}
+.cmp-btn-row{width:100%;background:none;border:none;border-top:1px solid var(--border);padding:7px 16px;font-size:10px;color:var(--muted);cursor:pointer;font-family:DM Sans,sans-serif;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:5px;transition:color .15s}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:flex-end;justify-content:center}
 .modal-bg.open{display:flex}
-.modal{background:#1c1c1c;border:1px solid var(–border2);border-radius:14px 14px 0 0;padding:20px 18px 36px;width:100%;max-width:480px}
+.modal{background:#1c1c1c;border:1px solid var(--border2);border-radius:14px 14px 0 0;padding:20px 18px 36px;width:100%;max-width:480px}
 .modal-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
-.modal-xbtn{background:rgba(255,255,255,.08);border:none;color:var(–muted2);cursor:pointer;font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.modal-xbtn{background:rgba(255,255,255,.08);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .modal-name{font-family:Bebas Neue,sans-serif;font-size:26px;letter-spacing:.05em;line-height:1}
 .modal-photo-row{display:flex;align-items:center;gap:14px;margin-bottom:14px}
-.modal-sub{font-size:12px;color:var(–muted);margin-bottom:14px}
+.modal-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
 .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.ms{background:var(–card2);border-radius:8px;padding:10px 12px;border:1px solid var(–border)}
+.ms{background:var(--card2);border-radius:8px;padding:10px 12px;border:1px solid var(--border)}
 .ms-val{font-family:Bebas Neue,sans-serif;font-size:22px}
-.ms-lbl{font-size:9px;color:var(–muted);text-transform:uppercase;margin-top:2px}
+.ms-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;margin-top:2px}
 .mbar-wrap{margin-top:8px}
-.mbar-lbl{font-size:10px;color:var(–muted);margin-bottom:4px;display:flex;justify-content:space-between}
-.mbar{height:4px;background:var(–border);border-radius:2px;overflow:hidden}
-.mbar-fill{height:100%;background:var(–red);border-radius:2px}
+.mbar-lbl{font-size:10px;color:var(--muted);margin-bottom:4px;display:flex;justify-content:space-between}
+.mbar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.mbar-fill{height:100%;background:var(--red);border-radius:2px}
 .cmp-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:250;align-items:center;justify-content:center;padding:20px}
 .cmp-bg.open{display:flex}
-.cmp-box{background:#1c1c1c;border:1px solid var(–border2);border-radius:12px;padding:18px 16px 24px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto}
+.cmp-box{background:#1c1c1c;border:1px solid var(--border2);border-radius:12px;padding:18px 16px 24px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto}
 .cmp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .cmp-title{font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.06em}
-.cmp-xbtn{background:rgba(255,255,255,.08);border:none;color:var(–muted2);cursor:pointer;font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.cmp-xbtn{background:rgba(255,255,255,.08);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .cmp-names{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;margin-bottom:16px}
 .cmp-name{font-family:Bebas Neue,sans-serif;font-size:17px;letter-spacing:.04em;text-align:center}
-.cmp-rec{font-size:11px;color:var(–muted2);margin-top:2px;text-align:center}
-.cmp-vs{font-family:Bebas Neue,sans-serif;font-size:14px;color:var(–muted);align-self:center;text-align:center}
-.cmp-row{display:flex;flex-direction:column;gap:4px;padding:10px 0;border-bottom:1px solid var(–border)}
+.cmp-rec{font-size:11px;color:var(--muted2);margin-top:2px;text-align:center}
+.cmp-vs{font-family:Bebas Neue,sans-serif;font-size:14px;color:var(--muted);align-self:center;text-align:center}
+.cmp-row{display:flex;flex-direction:column;gap:4px;padding:10px 0;border-bottom:1px solid var(--border)}
 .cmp-row:last-child{border-bottom:none}
 .cmp-vals{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center}
-.cmp-val{font-size:14px;font-weight:600;color:var(–text)}
-.cmp-val.win{color:var(–green)}
+.cmp-val{font-size:14px;font-weight:600;color:var(--text)}
+.cmp-val.win{color:var(--green)}
 .cmp-val.cvr{text-align:right}
-.cmp-stat-lbl{font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.08em;text-align:center}
+.cmp-stat-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;text-align:center}
 .cmp-bar-wrap{position:relative;height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;width:100%}
 .cmp-bar-l{position:absolute;left:0;top:0;height:100%;background:#e8192c;border-radius:4px}
 .cmp-bar-r{position:absolute;right:0;top:0;height:100%;background:#c9a84c;border-radius:4px}
@@ -192,31 +191,31 @@ body{background:var(–bg);color:var(–text);font-family:DM Sans,sans-serif;min
 .fn-ctr{font-size:10px;color:rgba(255,255,255,.25);margin-top:12px}
 .nm-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:400;align-items:center;justify-content:center;padding:20px}
 .nm-bg.open{display:flex}
-.nm-box{background:#1c1c1c;border:1px solid var(–border2);border-radius:12px;padding:24px 20px;width:100%;max-width:320px}
+.nm-box{background:#1c1c1c;border:1px solid var(--border2);border-radius:12px;padding:24px 20px;width:100%;max-width:320px}
 .nm-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
-.nm-xbtn{background:rgba(255,255,255,.08);border:none;color:var(–muted2);cursor:pointer;font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.nm-xbtn{background:rgba(255,255,255,.08);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .nm-box h3{font-family:Bebas Neue,sans-serif;font-size:22px}
-.nm-box p{font-size:12px;color:var(–muted);margin-bottom:14px;line-height:1.55}
-.nm-input{width:100%;background:var(–card2);border:1px solid var(–border2);color:var(–text);padding:10px 12px;border-radius:7px;font:500 14px DM Sans,sans-serif;margin-bottom:10px}
-.nm-input:focus{outline:none;border-color:var(–red)}
-.nm-btn{width:100%;background:var(–red);border:none;color:#fff;padding:10px;border-radius:7px;font:600 13px DM Sans,sans-serif;cursor:pointer}
+.nm-box p{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.55}
+.nm-input{width:100%;background:var(--card2);border:1px solid var(--border2);color:var(--text);padding:10px 12px;border-radius:7px;font:500 14px DM Sans,sans-serif;margin-bottom:10px}
+.nm-input:focus{outline:none;border-color:var(--red)}
+.nm-btn{width:100%;background:var(--red);border:none;color:#fff;padding:10px;border-radius:7px;font:600 13px DM Sans,sans-serif;cursor:pointer}
 .share-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:250;align-items:center;justify-content:center;padding:20px}
 .share-modal-bg.open{display:flex}
-.share-modal-box{background:#1c1c1c;border:1px solid var(–border2);border-radius:12px;padding:20px;width:100%;max-width:360px}
+.share-modal-box{background:#1c1c1c;border:1px solid var(--border2);border-radius:12px;padding:20px;width:100%;max-width:360px}
 .share-modal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .share-modal-title{font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:.06em}
-.share-modal-xbtn{background:rgba(255,255,255,.08);border:none;color:var(–muted2);cursor:pointer;font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-.share-card{background:var(–bg);border:1px solid var(–border2);border-radius:8px;padding:14px;margin-bottom:14px}
-.share-card-title{font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:.06em;color:var(–red);margin-bottom:10px}
-.share-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(–border)}
+.share-modal-xbtn{background:rgba(255,255,255,.08);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.share-card{background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-bottom:14px}
+.share-card-title{font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:.06em;color:var(--red);margin-bottom:10px}
+.share-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--border)}
 .share-row:last-child{border-bottom:none}
 .share-btns{display:flex;gap:8px}
-.share-copy-btn{flex:1;padding:10px;border-radius:7px;border:1px solid var(–border2);background:none;color:var(–text);font:600 12px DM Sans,sans-serif;cursor:pointer}
-.share-done-btn{flex:1;padding:10px;border-radius:7px;background:var(–red);border:none;color:#fff;font:600 12px DM Sans,sans-serif;cursor:pointer}
-.notif-btn{position:fixed;bottom:24px;right:16px;background:var(–red);border:none;color:#fff;width:48px;height:48px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(232,25,44,.4);z-index:50}
+.share-copy-btn{flex:1;padding:10px;border-radius:7px;border:1px solid var(--border2);background:none;color:var(--text);font:600 12px DM Sans,sans-serif;cursor:pointer}
+.share-done-btn{flex:1;padding:10px;border-radius:7px;background:var(--red);border:none;color:#fff;font:600 12px DM Sans,sans-serif;cursor:pointer}
+.notif-btn{position:fixed;bottom:24px;right:16px;background:var(--red);border:none;color:#fff;width:48px;height:48px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(232,25,44,.4);z-index:50}
 .notif-btn svg{width:20px;height:20px}
-.notif-btn.active{background:var(–green)}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#222;border:1px solid var(–border2);color:var(–text);padding:10px 18px;border-radius:8px;font-size:12px;z-index:500;transition:transform .25s ease;white-space:nowrap;pointer-events:none}
+.notif-btn.active{background:var(--green)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#222;border:1px solid var(--border2);color:var(--text);padding:10px 18px;border-radius:8px;font-size:12px;z-index:500;transition:transform .25s ease;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 @media(min-width:420px){.fn{font-size:26px}.fn.fsm{font-size:21px}}
 
@@ -358,490 +357,490 @@ var EVENTS=[
 var FIGHTS=[];
 function buildReg(){FIGHTS=[];EVENTS.forEach(function(ev,ei){ev.fights.forEach(function(f,fi){FIGHTS.push({ei:ei,fi:fi,ev:ev,fight:f});});});}
 
-var curFilter=“all”;
-var userName=””,preds={},results={};
-try{userName=localStorage.getItem(“ufc_name”)||””;preds=JSON.parse(localStorage.getItem(“ufc_preds”)||”{}”);results=JSON.parse(localStorage.getItem(“ufc_results”)||”{}”);}catch(e){}
+var curFilter="all";
+var userName="",preds={},results={};
+try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.getItem("ufc_preds")||"{}");results=JSON.parse(localStorage.getItem("ufc_results")||"{}");}catch(e){}
 var fnFights=[],fnIdx=0;
 var notifActive=false;
 
-function pad(n){return String(n).padStart(2,“0”);}
+function pad(n){return String(n).padStart(2,"0");}
 function daysOut(d){return Math.ceil((new Date(d)-Date.now())/864e5);}
-function fmtDate(d){return new Date(d).toLocaleDateString(“en-US”,{weekday:“short”,month:“short”,day:“numeric”,year:“numeric”});}
-function fmtOdds(n){return n>0?”+”+n:””+n;}
-function pk(ei,fi){return “e”+ei+“f”+fi;}
-function save(){try{localStorage.setItem(“ufc_preds”,JSON.stringify(preds));localStorage.setItem(“ufc_results”,JSON.stringify(results));}catch(e){}}
-function toast(msg){var t=document.getElementById(“toast”);t.textContent=msg;t.classList.add(“show”);setTimeout(function(){t.classList.remove(“show”);},2500);}
+function fmtDate(d){return new Date(d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});}
+function fmtOdds(n){return n>0?"+"+n:""+n;}
+function pk(ei,fi){return "e"+ei+"f"+fi;}
+function save(){try{localStorage.setItem("ufc_preds",JSON.stringify(preds));localStorage.setItem("ufc_results",JSON.stringify(results));}catch(e){}}
+function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
 
 function updateCountdown(){
-var now=Date.now();
-var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-2*864e5;});
-if(!upcoming.length)return;
-// Skip events that ended more than 6 hours ago (main card ~4hrs, buffer)
-var ev=upcoming[0];
-var dp0=ev.date.split(”-”);var p0=(ev.time||“0:0”).split(”:”);
-var t0=Date.UTC(parseInt(dp0[0],10),parseInt(dp0[1],10)-1,parseInt(dp0[2],10),parseInt(p0[0],10)+4,parseInt(p0[1]||“0”,10),0);
-if(now-t0>12*36e5&&upcoming.length>1){ev=upcoming[1];}
-var p=ev.time.split(”:”);var h=parseInt(p[0],10);var m=parseInt(p[1]||“0”,10);
-var dp=ev.date.split(”-”);
-var target=Date.UTC(parseInt(dp[0],10),parseInt(dp[1],10)-1,parseInt(dp[2],10),h+4,m,0);
-var diff=target-now;
-var wrap=document.getElementById(“cd-wrap”);
-if(!wrap)return;
-wrap.style.display=“block”;
-document.getElementById(“cd-event”).textContent=ev.name;
-var timer=document.getElementById(“cd-timer”);
-timer.innerHTML=””;
-if(diff<=0){
-var live=document.createElement(“span”);live.className=“cd-live”;live.textContent=“MAIN CARD LIVE NOW”;timer.appendChild(live);return;
-}
-var days=Math.floor(diff/864e5);var hours=Math.floor((diff%864e5)/36e5);
-var mins=Math.floor((diff%36e5)/6e4);var secs=Math.floor((diff%6e4)/1e3);
-function cdUnit(val,lbl){var u=document.createElement(“div”);u.className=“cd-unit”;var n=document.createElement(“div”);n.className=“cd-num”;n.textContent=val;var l=document.createElement(“div”);l.className=“cd-lbl”;l.textContent=lbl;u.appendChild(n);u.appendChild(l);return u;}
-function cdSep(){var s=document.createElement(“div”);s.className=“cd-sep”;s.textContent=”:”;return s;}
-if(days>0){timer.appendChild(cdUnit(days,“Days”));timer.appendChild(cdSep());}
-timer.appendChild(cdUnit(pad(hours),“Hrs”));timer.appendChild(cdSep());
-timer.appendChild(cdUnit(pad(mins),“Min”));timer.appendChild(cdSep());
-timer.appendChild(cdUnit(pad(secs),“Sec”));
+  var now=Date.now();
+  var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-2*864e5;});
+  if(!upcoming.length)return;
+  // Skip events that ended more than 6 hours ago (main card ~4hrs, buffer)
+  var ev=upcoming[0];
+  var dp0=ev.date.split("-");var p0=(ev.time||"0:0").split(":");
+  var t0=Date.UTC(parseInt(dp0[0],10),parseInt(dp0[1],10)-1,parseInt(dp0[2],10),parseInt(p0[0],10)+4,parseInt(p0[1]||"0",10),0);
+  if(now-t0>12*36e5&&upcoming.length>1){ev=upcoming[1];}
+  var p=ev.time.split(":");var h=parseInt(p[0],10);var m=parseInt(p[1]||"0",10);
+  var dp=ev.date.split("-");
+  var target=Date.UTC(parseInt(dp[0],10),parseInt(dp[1],10)-1,parseInt(dp[2],10),h+4,m,0);
+  var diff=target-now;
+  var wrap=document.getElementById("cd-wrap");
+  if(!wrap)return;
+  wrap.style.display="block";
+  document.getElementById("cd-event").textContent=ev.name;
+  var timer=document.getElementById("cd-timer");
+  timer.innerHTML="";
+  if(diff<=0){
+    var live=document.createElement("span");live.className="cd-live";live.textContent="MAIN CARD LIVE NOW";timer.appendChild(live);return;
+  }
+  var days=Math.floor(diff/864e5);var hours=Math.floor((diff%864e5)/36e5);
+  var mins=Math.floor((diff%36e5)/6e4);var secs=Math.floor((diff%6e4)/1e3);
+  function cdUnit(val,lbl){var u=document.createElement("div");u.className="cd-unit";var n=document.createElement("div");n.className="cd-num";n.textContent=val;var l=document.createElement("div");l.className="cd-lbl";l.textContent=lbl;u.appendChild(n);u.appendChild(l);return u;}
+  function cdSep(){var s=document.createElement("div");s.className="cd-sep";s.textContent=":";return s;}
+  if(days>0){timer.appendChild(cdUnit(days,"Days"));timer.appendChild(cdSep());}
+  timer.appendChild(cdUnit(pad(hours),"Hrs"));timer.appendChild(cdSep());
+  timer.appendChild(cdUnit(pad(mins),"Min"));timer.appendChild(cdSep());
+  timer.appendChild(cdUnit(pad(secs),"Sec"));
 }
 setInterval(updateCountdown,1000);
 
 function setFilter(btn){
-curFilter=btn.getAttribute(“data-f”)||“all”;
-document.querySelectorAll(”.ftab”).forEach(function(t){t.classList.remove(“active”);});
-btn.classList.add(“active”);
-render();
+  curFilter=btn.getAttribute("data-f")||"all";
+  document.querySelectorAll(".ftab").forEach(function(t){t.classList.remove("active");});
+  btn.classList.add("active");
+  render();
 }
-function matchFilter(f){return curFilter===“all”||f.wc===curFilter;}
+function matchFilter(f){return curFilter==="all"||f.wc===curFilter;}
 
 function openStats(idx,side){
-var item=FIGHTS[idx];if(!item)return;
-var f=side===0?item.fight.f1:item.fight.f2;
-if(!f.s){toast(“Stats not available”);return;}
-document.getElementById(“mName”).textContent=f.n;
-var subEl=document.getElementById(“mSub”);subEl.textContent=f.r+(f.rk?” - “+f.rk:””);
-var photoRow=document.getElementById(“mPhotoRow”);
-var photoEl=document.getElementById(“mPhoto”);
-photoRow.style.display=“none”;photoEl.src=””;
-var wikiName=f.n.replace(/ /g,”_”);
-fetch(“https://en.wikipedia.org/api/rest_v1/page/summary/”+encodeURIComponent(wikiName))
-.then(function(r){return r.json();})
-.then(function(data){
-var img=data&&data.thumbnail&&data.thumbnail.source;
-if(img){img=img.replace(//\d+px-/,”/400px-”);photoEl.onload=function(){photoRow.style.display=“flex”;subEl.style.display=“none”;};photoEl.src=img;}
-}).catch(function(){});
-var grid=document.getElementById(“mGrid”);grid.innerHTML=””;
-function ms(val,lbl){var d=document.createElement(“div”);d.className=“ms”;var v=document.createElement(“div”);v.className=“ms-val”;v.textContent=val;var l=document.createElement(“div”);l.className=“ms-lbl”;l.textContent=lbl;d.appendChild(v);d.appendChild(l);return d;}
-grid.appendChild(ms(f.s.ko,“KO/TKO Wins”));grid.appendChild(ms(f.s.sub,“Sub Wins”));
-grid.appendChild(ms(f.s.slpm,“Sig Str/Min”));grid.appendChild(ms(f.s.td,“TD Avg/15”));
-var bars=document.getElementById(“mBars”);bars.innerHTML=””;
-function mbar(lbl,pct){
-var w=document.createElement(“div”);w.className=“mbar-wrap”;
-var hl=document.createElement(“div”);hl.className=“mbar-lbl”;
-var sl=document.createElement(“span”);sl.textContent=lbl;
-var sv=document.createElement(“span”);sv.textContent=pct+”%”;
-hl.appendChild(sl);hl.appendChild(sv);w.appendChild(hl);
-var b=document.createElement(“div”);b.className=“mbar”;
-var bf=document.createElement(“div”);bf.className=“mbar-fill”;
-bf.style.width=pct+”%”;b.appendChild(bf);w.appendChild(b);return w;
+  var item=FIGHTS[idx];if(!item)return;
+  var f=side===0?item.fight.f1:item.fight.f2;
+  if(!f.s){toast("Stats not available");return;}
+  document.getElementById("mName").textContent=f.n;
+  var subEl=document.getElementById("mSub");subEl.textContent=f.r+(f.rk?" - "+f.rk:"");
+  var photoRow=document.getElementById("mPhotoRow");
+  var photoEl=document.getElementById("mPhoto");
+  photoRow.style.display="none";photoEl.src="";
+  var wikiName=f.n.replace(/ /g,"_");
+  fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(wikiName))
+    .then(function(r){return r.json();})
+    .then(function(data){
+      var img=data&&data.thumbnail&&data.thumbnail.source;
+      if(img){img=img.replace(/\/\d+px-/,"/400px-");photoEl.onload=function(){photoRow.style.display="flex";subEl.style.display="none";};photoEl.src=img;}
+    }).catch(function(){});
+  var grid=document.getElementById("mGrid");grid.innerHTML="";
+  function ms(val,lbl){var d=document.createElement("div");d.className="ms";var v=document.createElement("div");v.className="ms-val";v.textContent=val;var l=document.createElement("div");l.className="ms-lbl";l.textContent=lbl;d.appendChild(v);d.appendChild(l);return d;}
+  grid.appendChild(ms(f.s.ko,"KO/TKO Wins"));grid.appendChild(ms(f.s.sub,"Sub Wins"));
+  grid.appendChild(ms(f.s.slpm,"Sig Str/Min"));grid.appendChild(ms(f.s.td,"TD Avg/15"));
+  var bars=document.getElementById("mBars");bars.innerHTML="";
+  function mbar(lbl,pct){
+    var w=document.createElement("div");w.className="mbar-wrap";
+    var hl=document.createElement("div");hl.className="mbar-lbl";
+    var sl=document.createElement("span");sl.textContent=lbl;
+    var sv=document.createElement("span");sv.textContent=pct+"%";
+    hl.appendChild(sl);hl.appendChild(sv);w.appendChild(hl);
+    var b=document.createElement("div");b.className="mbar";
+    var bf=document.createElement("div");bf.className="mbar-fill";
+    bf.style.width=pct+"%";b.appendChild(bf);w.appendChild(b);return w;
+  }
+  bars.appendChild(mbar("Striking Accuracy",f.s.acc));
+  bars.appendChild(mbar("Takedown Defense",f.s.tdd));
+  document.getElementById("statsModal").classList.add("open");
 }
-bars.appendChild(mbar(“Striking Accuracy”,f.s.acc));
-bars.appendChild(mbar(“Takedown Defense”,f.s.tdd));
-document.getElementById(“statsModal”).classList.add(“open”);
-}
-function closeModal(){document.getElementById(“statsModal”).classList.remove(“open”);}
+function closeModal(){document.getElementById("statsModal").classList.remove("open");}
 
-function closeNameModal(){document.getElementById(“nmBg”).classList.remove(“open”);window._pp=null;}
-function checkName(cb){if(userName){cb();return;}document.getElementById(“nmBg”).classList.add(“open”);document.getElementById(“nmInput”).focus();window._pp=cb;}
-function saveName(){var v=document.getElementById(“nmInput”).value.trim();if(!v)return;userName=v;try{localStorage.setItem(“ufc_name”,userName);}catch(e){}document.getElementById(“nmBg”).classList.remove(“open”);if(window._pp){window._pp();window._pp=null;}}
+function closeNameModal(){document.getElementById("nmBg").classList.remove("open");window._pp=null;}
+function checkName(cb){if(userName){cb();return;}document.getElementById("nmBg").classList.add("open");document.getElementById("nmInput").focus();window._pp=cb;}
+function saveName(){var v=document.getElementById("nmInput").value.trim();if(!v)return;userName=v;try{localStorage.setItem("ufc_name",userName);}catch(e){}document.getElementById("nmBg").classList.remove("open");if(window._pp){window._pp();window._pp=null;}}
 
 function pick(idx,side){
-var item=FIGHTS[idx];if(!item)return;
-var f=side===0?item.fight.f1:item.fight.f2;
-checkName(function(){preds[pk(item.ei,item.fi)]=f.n;save();render();updatePicksWidget();toast(“Picked: “+f.n.split(” “).pop());});
+  var item=FIGHTS[idx];if(!item)return;
+  var f=side===0?item.fight.f1:item.fight.f2;
+  checkName(function(){preds[pk(item.ei,item.fi)]=f.n;save();render();updatePicksWidget();toast("Picked: "+f.n.split(" ").pop());});
 }
 
-function undoPick(ei,fi){delete preds[pk(ei,fi)];save();render();updatePicksWidget();toast(“Pick removed”);}
+function undoPick(ei,fi){delete preds[pk(ei,fi)];save();render();updatePicksWidget();toast("Pick removed");}
 
 function openFN(){
-var now=Date.now();
-var ev=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5;})[0];
-if(!ev){toast(“No upcoming events”);return;}
-fnFights=ev.fights;fnIdx=0;updateFN();
-document.getElementById(“fnMode”).classList.add(“open”);document.body.style.overflow=“hidden”;
+  var now=Date.now();
+  var ev=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5;})[0];
+  if(!ev){toast("No upcoming events");return;}
+  fnFights=ev.fights;fnIdx=0;updateFN();
+  document.getElementById("fnMode").classList.add("open");document.body.style.overflow="hidden";
 }
-function closeFN(){document.getElementById(“fnMode”).classList.remove(“open”);document.body.style.overflow=””;}
+function closeFN(){document.getElementById("fnMode").classList.remove("open");document.body.style.overflow="";}
 function fnNav(dir){fnIdx=Math.max(0,Math.min(fnFights.length-1,fnIdx+dir));updateFN();}
 function updateFN(){
-if(!fnFights.length)return;
-var f=fnFights[fnIdx];
-var now=Date.now();
-var ev=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5;})[0];
-document.getElementById(“fn-ev”).textContent=ev?ev.name:””;
-document.getElementById(“fn-wc”).textContent=f.lbl+” - “+f.wc+(f.title?” - TITLE”:””);
-document.getElementById(“fn-f1”).textContent=f.f1.n;document.getElementById(“fn-r1”).textContent=f.f1.r;
-document.getElementById(“fn-f2”).textContent=f.f2.n;document.getElementById(“fn-r2”).textContent=f.f2.r;
-document.getElementById(“fn-ctr”).textContent=(fnIdx+1)+” of “+fnFights.length;
+  if(!fnFights.length)return;
+  var f=fnFights[fnIdx];
+  var now=Date.now();
+  var ev=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5;})[0];
+  document.getElementById("fn-ev").textContent=ev?ev.name:"";
+  document.getElementById("fn-wc").textContent=f.lbl+" - "+f.wc+(f.title?" - TITLE":"");
+  document.getElementById("fn-f1").textContent=f.f1.n;document.getElementById("fn-r1").textContent=f.f1.r;
+  document.getElementById("fn-f2").textContent=f.f2.n;document.getElementById("fn-r2").textContent=f.f2.r;
+  document.getElementById("fn-ctr").textContent=(fnIdx+1)+" of "+fnFights.length;
 }
 
 function openCmp(f1,f2){
-var el=document.getElementById(“cmpContent”);if(!el)return;
-el.innerHTML=””;
-var names=document.createElement(“div”);names.className=“cmp-names”;
-var n1=document.createElement(“div”);
-var n1n=document.createElement(“div”);n1n.className=“cmp-name”;n1n.style.color=”#e8192c”;n1n.textContent=f1.n;n1.appendChild(n1n);
-var n1r=document.createElement(“div”);n1r.className=“cmp-rec”;n1r.textContent=f1.r;n1.appendChild(n1r);
-var vs=document.createElement(“div”);vs.className=“cmp-vs”;vs.textContent=“VS”;
-var n2=document.createElement(“div”);
-var n2n=document.createElement(“div”);n2n.className=“cmp-name”;n2n.style.color=”#c9a84c”;n2n.textContent=f2.n;n2.appendChild(n2n);
-var n2r=document.createElement(“div”);n2r.className=“cmp-rec”;n2r.textContent=f2.r;n2.appendChild(n2r);
-names.appendChild(n1);names.appendChild(vs);names.appendChild(n2);el.appendChild(names);
-if(f1.s&&f2.s){
-function cmpRow(lbl,v1,v2,higher){
-var n1=parseFloat(v1)||0,n2=parseFloat(v2)||0;
-var f1w=higher?n1>=n2:n1<=n2;
-var pct1=Math.max(n1,n2)>0?Math.round(n1/(n1+n2)*100):50,pct2=100-pct1;
-var row=document.createElement(“div”);row.className=“cmp-row”;
-var vals=document.createElement(“div”);vals.className=“cmp-vals”;
-var vl=document.createElement(“div”);vl.className=“cmp-val”+(f1w?” win”:””);vl.style.textAlign=“left”;vl.textContent=v1;
-var sl=document.createElement(“div”);sl.className=“cmp-stat-lbl”;sl.textContent=lbl;
-var vr=document.createElement(“div”);vr.className=“cmp-val cvr”+(!f1w?” win”:””);vr.textContent=v2;
-vals.appendChild(vl);vals.appendChild(sl);vals.appendChild(vr);row.appendChild(vals);
-var bw=document.createElement(“div”);bw.className=“cmp-bar-wrap”;
-var bl=document.createElement(“div”);bl.className=“cmp-bar-l”;bl.style.width=pct1+”%”;bl.style.background=”#e8192c”;
-var br=document.createElement(“div”);br.className=“cmp-bar-r”;br.style.width=pct2+”%”;br.style.background=”#c9a84c”;
-bw.appendChild(bl);bw.appendChild(br);row.appendChild(bw);
-return row;
+  var el=document.getElementById("cmpContent");if(!el)return;
+  el.innerHTML="";
+  var names=document.createElement("div");names.className="cmp-names";
+  var n1=document.createElement("div");
+  var n1n=document.createElement("div");n1n.className="cmp-name";n1n.style.color="#e8192c";n1n.textContent=f1.n;n1.appendChild(n1n);
+  var n1r=document.createElement("div");n1r.className="cmp-rec";n1r.textContent=f1.r;n1.appendChild(n1r);
+  var vs=document.createElement("div");vs.className="cmp-vs";vs.textContent="VS";
+  var n2=document.createElement("div");
+  var n2n=document.createElement("div");n2n.className="cmp-name";n2n.style.color="#c9a84c";n2n.textContent=f2.n;n2.appendChild(n2n);
+  var n2r=document.createElement("div");n2r.className="cmp-rec";n2r.textContent=f2.r;n2.appendChild(n2r);
+  names.appendChild(n1);names.appendChild(vs);names.appendChild(n2);el.appendChild(names);
+  if(f1.s&&f2.s){
+    function cmpRow(lbl,v1,v2,higher){
+      var n1=parseFloat(v1)||0,n2=parseFloat(v2)||0;
+      var f1w=higher?n1>=n2:n1<=n2;
+      var pct1=Math.max(n1,n2)>0?Math.round(n1/(n1+n2)*100):50,pct2=100-pct1;
+      var row=document.createElement("div");row.className="cmp-row";
+      var vals=document.createElement("div");vals.className="cmp-vals";
+      var vl=document.createElement("div");vl.className="cmp-val"+(f1w?" win":"");vl.style.textAlign="left";vl.textContent=v1;
+      var sl=document.createElement("div");sl.className="cmp-stat-lbl";sl.textContent=lbl;
+      var vr=document.createElement("div");vr.className="cmp-val cvr"+(!f1w?" win":"");vr.textContent=v2;
+      vals.appendChild(vl);vals.appendChild(sl);vals.appendChild(vr);row.appendChild(vals);
+      var bw=document.createElement("div");bw.className="cmp-bar-wrap";
+      var bl=document.createElement("div");bl.className="cmp-bar-l";bl.style.width=pct1+"%";bl.style.background="#e8192c";
+      var br=document.createElement("div");br.className="cmp-bar-r";br.style.width=pct2+"%";br.style.background="#c9a84c";
+      bw.appendChild(bl);bw.appendChild(br);row.appendChild(bw);
+      return row;
+    }
+    el.appendChild(cmpRow("Sig Str / Min",f1.s.slpm,f2.s.slpm,true));
+    el.appendChild(cmpRow("Striking Acc %",f1.s.acc+"%",f2.s.acc+"%",true));
+    el.appendChild(cmpRow("TD Defense %",f1.s.tdd+"%",f2.s.tdd+"%",true));
+    el.appendChild(cmpRow("TD Avg / 15",f1.s.td,f2.s.td,true));
+    el.appendChild(cmpRow("KO/TKO Wins",f1.s.ko,f2.s.ko,true));
+    el.appendChild(cmpRow("Sub Wins",f1.s.sub,f2.s.sub,true));
+  }
+  document.getElementById("cmpBg").classList.add("open");
 }
-el.appendChild(cmpRow(“Sig Str / Min”,f1.s.slpm,f2.s.slpm,true));
-el.appendChild(cmpRow(“Striking Acc %”,f1.s.acc+”%”,f2.s.acc+”%”,true));
-el.appendChild(cmpRow(“TD Defense %”,f1.s.tdd+”%”,f2.s.tdd+”%”,true));
-el.appendChild(cmpRow(“TD Avg / 15”,f1.s.td,f2.s.td,true));
-el.appendChild(cmpRow(“KO/TKO Wins”,f1.s.ko,f2.s.ko,true));
-el.appendChild(cmpRow(“Sub Wins”,f1.s.sub,f2.s.sub,true));
-}
-document.getElementById(“cmpBg”).classList.add(“open”);
-}
-function closeCmp(){document.getElementById(“cmpBg”).classList.remove(“open”);}
+function closeCmp(){document.getElementById("cmpBg").classList.remove("open");}
 
 function openShare(){
-if(!Object.keys(preds).length){toast(“Make some picks first!”);return;}
-var card=document.getElementById(“shareCard”);card.innerHTML=””;
-var title=document.createElement(“div”);title.className=“share-card-title”;title.textContent=“MY UFC PICKS”;card.appendChild(title);
-var tc=0,tr=0;
-EVENTS.forEach(function(ev,ei){
-var eps=ev.fights.map(function(f,fi){var k=pk(ei,fi);return preds[k]?{f:f,pick:preds[k],result:f.winner||””}:null;}).filter(Boolean);
-if(!eps.length)return;
-var el=document.createElement(“div”);el.style.cssText=“font-size:9px;color:var(–muted);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 4px”;el.textContent=ev.name;card.appendChild(el);
-eps.forEach(function(p){
-var row=document.createElement(“div”);row.className=“share-row”;
-var fl=document.createElement(“span”);fl.style.color=“var(–muted)”;fl.textContent=p.f.lbl+”:”;
-var pn=document.createElement(“span”);pn.style.fontWeight=“600”;pn.textContent=p.pick.split(” “).pop();
-var st=document.createElement(“span”);
-if(!p.result){st.style.color=“var(–muted)”;st.textContent=“Pending”;}
-else if(p.result===p.pick){st.style.color=“var(–green)”;st.textContent=“Correct”;tc++;tr++;}
-else{st.style.color=“var(–red)”;st.textContent=“Wrong”;tr++;}
-row.appendChild(fl);row.appendChild(pn);row.appendChild(st);card.appendChild(row);
-});
-});
-if(tr>0){var sc=document.createElement(“div”);sc.style.cssText=“margin-top:10px;padding-top:8px;border-top:1px solid var(–border);font-size:12px;font-weight:600;text-align:center”;sc.textContent=tc+”/”+tr+” correct (”+Math.round(tc/tr*100)+”%)”;card.appendChild(sc);}
-document.getElementById(“shareBg”).classList.add(“open”);
+  if(!Object.keys(preds).length){toast("Make some picks first!");return;}
+  var card=document.getElementById("shareCard");card.innerHTML="";
+  var title=document.createElement("div");title.className="share-card-title";title.textContent="MY UFC PICKS";card.appendChild(title);
+  var tc=0,tr=0;
+  EVENTS.forEach(function(ev,ei){
+    var eps=ev.fights.map(function(f,fi){var k=pk(ei,fi);return preds[k]?{f:f,pick:preds[k],result:f.winner||""}:null;}).filter(Boolean);
+    if(!eps.length)return;
+    var el=document.createElement("div");el.style.cssText="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 4px";el.textContent=ev.name;card.appendChild(el);
+    eps.forEach(function(p){
+      var row=document.createElement("div");row.className="share-row";
+      var fl=document.createElement("span");fl.style.color="var(--muted)";fl.textContent=p.f.lbl+":";
+      var pn=document.createElement("span");pn.style.fontWeight="600";pn.textContent=p.pick.split(" ").pop();
+      var st=document.createElement("span");
+      if(!p.result){st.style.color="var(--muted)";st.textContent="Pending";}
+      else if(p.result===p.pick){st.style.color="var(--green)";st.textContent="Correct";tc++;tr++;}
+      else{st.style.color="var(--red)";st.textContent="Wrong";tr++;}
+      row.appendChild(fl);row.appendChild(pn);row.appendChild(st);card.appendChild(row);
+    });
+  });
+  if(tr>0){var sc=document.createElement("div");sc.style.cssText="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-size:12px;font-weight:600;text-align:center";sc.textContent=tc+"/"+tr+" correct ("+Math.round(tc/tr*100)+"%)";card.appendChild(sc);}
+  document.getElementById("shareBg").classList.add("open");
 }
-function closeShare(){document.getElementById(“shareBg”).classList.remove(“open”);}
+function closeShare(){document.getElementById("shareBg").classList.remove("open");}
 function copyPicks(){
-var lines=[“MY UFC PICKS”];
-EVENTS.forEach(function(ev,ei){
-var eps=[];
-ev.fights.forEach(function(f,fi){var k=pk(ei,fi);if(preds[k])eps.push({f:f,pick:preds[k],result:f.winner||””});});
-if(!eps.length)return;
-lines.push(””);lines.push(ev.name);
-eps.forEach(function(p){var st=!p.result?“pending”:p.result===p.pick?“correct”:“wrong”;lines.push(p.f.lbl+”: “+p.pick.split(” “).pop()+” (”+st+”)”);});
-});
-var text=lines.join(”\n”);
-if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){toast(“Copied!”);closeShare();});}
-else{try{var ta=document.createElement(“textarea”);ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand(“copy”);document.body.removeChild(ta);toast(“Copied!”);closeShare();}catch(e){toast(“Copy failed”);}}
+  var lines=["MY UFC PICKS"];
+  EVENTS.forEach(function(ev,ei){
+    var eps=[];
+    ev.fights.forEach(function(f,fi){var k=pk(ei,fi);if(preds[k])eps.push({f:f,pick:preds[k],result:f.winner||""});});
+    if(!eps.length)return;
+    lines.push("");lines.push(ev.name);
+    eps.forEach(function(p){var st=!p.result?"pending":p.result===p.pick?"correct":"wrong";lines.push(p.f.lbl+": "+p.pick.split(" ").pop()+" ("+st+")");});
+  });
+  var text=lines.join("\n");
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){toast("Copied!");closeShare();});}
+  else{try{var ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);toast("Copied!");closeShare();}catch(e){toast("Copy failed");}}
 }
 
 function toggleNotif(){
-if(!(“Notification” in window)){toast(“Notifications not supported”);return;}
-if(notifActive){notifActive=false;document.getElementById(“notifBtn”).classList.remove(“active”);toast(“Reminders off”);try{localStorage.setItem(“ufc_notif”,“0”);}catch(e){}return;}
-Notification.requestPermission().then(function(perm){
-if(perm===“granted”){notifActive=true;document.getElementById(“notifBtn”).classList.add(“active”);try{localStorage.setItem(“ufc_notif”,“1”);}catch(e){}toast(“Fight night reminders on!”);}
-else{toast(“Enable notifications in settings”);}
-});
+  if(!("Notification" in window)){toast("Notifications not supported");return;}
+  if(notifActive){notifActive=false;document.getElementById("notifBtn").classList.remove("active");toast("Reminders off");try{localStorage.setItem("ufc_notif","0");}catch(e){}return;}
+  Notification.requestPermission().then(function(perm){
+    if(perm==="granted"){notifActive=true;document.getElementById("notifBtn").classList.add("active");try{localStorage.setItem("ufc_notif","1");}catch(e){}toast("Fight night reminders on!");}
+    else{toast("Enable notifications in settings");}
+  });
 }
-try{if(localStorage.getItem(“ufc_notif”)===“1”&&Notification.permission===“granted”){notifActive=true;var nb=document.getElementById(“notifBtn”);if(nb)nb.classList.add(“active”);}}catch(e){}
+try{if(localStorage.getItem("ufc_notif")==="1"&&Notification.permission==="granted"){notifActive=true;var nb=document.getElementById("notifBtn");if(nb)nb.classList.add("active");}}catch(e){}
 
 function checkFightNight(){
-var now=Date.now();
-var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-2*864e5;});
-var banner=document.getElementById(“fnBanner”);
-if(!upcoming.length||!banner)return;
-var next=upcoming[0];
-var du=Math.ceil((new Date(next.date)-now)/864e5);
-if(du<=0){banner.classList.add(“show”);document.getElementById(“fnBannerText”).textContent=next.name.split(”:”)[0]+” - LIVE UPDATES EVERY 10 MIN”;}
-else if(du===1){banner.classList.add(“show”);document.getElementById(“fnBannerText”).textContent=“FIGHT NIGHT TOMORROW - “+next.name.split(”:”)[0];}
-else{banner.classList.remove(“show”);}
+  var now=Date.now();
+  var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-2*864e5;});
+  var banner=document.getElementById("fnBanner");
+  if(!upcoming.length||!banner)return;
+  var next=upcoming[0];
+  var du=Math.ceil((new Date(next.date)-now)/864e5);
+  if(du<=0){banner.classList.add("show");document.getElementById("fnBannerText").textContent=next.name.split(":")[0]+" - LIVE UPDATES EVERY 10 MIN";}
+  else if(du===1){banner.classList.add("show");document.getElementById("fnBannerText").textContent="FIGHT NIGHT TOMORROW - "+next.name.split(":")[0];}
+  else{banner.classList.remove("show");}
 }
 
 function makeFighter(fighter,right,size,regIdx,side,isWinner){
-var wrap=document.createElement(“div”);wrap.className=“ft”+(right?” ftr”:””);
-var nm=document.createElement(“div”);nm.className=“fn”+(size===“sm”?” fsm”:size===“xs”?” fxs”:””);nm.textContent=fighter.n;
-if(isWinner)nm.style.color=“var(–green)”;
-wrap.appendChild(nm);
-if(fighter.r){var rec=document.createElement(“div”);rec.className=“frec”;rec.textContent=fighter.r;wrap.appendChild(rec);}
-if(fighter.rk===“C”){var pills=document.createElement(“div”);pills.className=“fpills”;var chip=document.createElement(“span”);chip.className=“pchamp”;chip.textContent=“CHAMP”;pills.appendChild(chip);wrap.appendChild(pills);}
-else if(fighter.rk){var pills2=document.createElement(“div”);pills2.className=“fpills”;var chip2=document.createElement(“span”);chip2.className=“prank”;chip2.textContent=fighter.rk;pills2.appendChild(chip2);wrap.appendChild(pills2);}
-if(fighter.s){
-wrap.classList.add(“ft-click”);
-(function(ri,si){wrap.onclick=function(){openStats(ri,si);};})(regIdx,side);
-if(size!==“xs”){var hint=document.createElement(“div”);hint.className=“stats-hint”;hint.textContent=“Tap for stats”;wrap.appendChild(hint);}
-}
-return wrap;
+  var wrap=document.createElement("div");wrap.className="ft"+(right?" ftr":"");
+  var nm=document.createElement("div");nm.className="fn"+(size==="sm"?" fsm":size==="xs"?" fxs":"");nm.textContent=fighter.n;
+  if(isWinner)nm.style.color="var(--green)";
+  wrap.appendChild(nm);
+  if(fighter.r){var rec=document.createElement("div");rec.className="frec";rec.textContent=fighter.r;wrap.appendChild(rec);}
+  if(fighter.rk==="C"){var pills=document.createElement("div");pills.className="fpills";var chip=document.createElement("span");chip.className="pchamp";chip.textContent="CHAMP";pills.appendChild(chip);wrap.appendChild(pills);}
+  else if(fighter.rk){var pills2=document.createElement("div");pills2.className="fpills";var chip2=document.createElement("span");chip2.className="prank";chip2.textContent=fighter.rk;pills2.appendChild(chip2);wrap.appendChild(pills2);}
+  if(fighter.s){
+    wrap.classList.add("ft-click");
+    (function(ri,si){wrap.onclick=function(){openStats(ri,si);};})(regIdx,side);
+    if(size!=="xs"){var hint=document.createElement("div");hint.className="stats-hint";hint.textContent="Tap for stats";wrap.appendChild(hint);}
+  }
+  return wrap;
 }
 
 function makeFightRow(fight,ei,fi,regIdx,showPick){
-var isMain=fight.lbl===“Main Event”,isCo=fight.lbl===“Co-Main”;
-var row=document.createElement(“div”);
-row.className=“fight-row “+(isMain?“fmain”:isCo?“fco”:fight.lbl===“Main Card”?“fcard”:“fpre”);
-var lbl=document.createElement(“div”);
-lbl.className=“flbl “+(isMain?“lmain”:isCo?“lco”:“lpre”);
-lbl.textContent=fight.lbl+” - “+fight.wc+(fight.title?” - TITLE”:””);
-row.appendChild(lbl);
-var sz=isMain?“lg”:isCo?“sm”:“xs”;
-var mu=document.createElement(“div”);mu.className=“mu”;
-mu.appendChild(makeFighter(fight.f1,false,sz,regIdx,0,fight.winner&&fight.winner===fight.f1.n));
-var vc=document.createElement(“div”);vc.className=“vc”;
-var vs=document.createElement(“span”);vs.className=“vs”;vs.textContent=“VS”;vc.appendChild(vs);
-if(isMain){var wcsm=document.createElement(“span”);wcsm.className=“wcsm”;wcsm.textContent=fight.wc;vc.appendChild(wcsm);}
-mu.appendChild(vc);
-mu.appendChild(makeFighter(fight.f2,true,sz,regIdx,1,fight.winner&&fight.winner===fight.f2.n));
-row.appendChild(mu);
-if(fight.odds){
-var or=document.createElement(“div”);or.className=“odds-row”;
-var fav1=fight.odds.f1<0;
-var s1=document.createElement(“div”);s1.className=“odds-side”;
-var on1=document.createElement(“div”);on1.className=“odds-nm”;on1.textContent=fight.f1.n.split(” “).pop();
-var ov1=document.createElement(“div”);ov1.className=“odds-val “+(fav1?“fav”:“dog”);ov1.textContent=fmtOdds(fight.odds.f1);
-s1.appendChild(on1);s1.appendChild(ov1);or.appendChild(s1);
-var oc=document.createElement(“div”);oc.className=“odds-ctr”;oc.textContent=“MONEYLINE”;or.appendChild(oc);
-var s2=document.createElement(“div”);s2.className=“odds-side osr”;
-var on2=document.createElement(“div”);on2.className=“odds-nm”;on2.textContent=fight.f2.n.split(” “).pop();
-var ov2=document.createElement(“div”);ov2.className=“odds-val “+(!fav1?“fav”:“dog”);ov2.textContent=fmtOdds(fight.odds.f2);
-s2.appendChild(on2);s2.appendChild(ov2);or.appendChild(s2);
-row.appendChild(or);
-}
-if(fight.winner||fight.state===“in”||fight.state===“post”){
-var rr=document.createElement(“div”);rr.className=“result-row”;
-if(fight.state===“in”&&!fight.winner){
-var rl=document.createElement(“div”);rl.className=“result-live”;rl.textContent=“LIVE NOW”;rr.appendChild(rl);row.classList.add(“flive”);
-} else if(fight.winner){
-var rw=document.createElement(“div”);rw.className=“result-winner”;
-var rwt=document.createElement(“span”);rwt.textContent=fight.winner.split(” “).pop()+” wins”;rw.appendChild(rwt);rr.appendChild(rw);
-if(fight.method){var rm=document.createElement(“div”);rm.className=“result-method”;rm.textContent=fight.method+(fight.round?” R”+fight.round:””);rr.appendChild(rm);}
-row.classList.add(“fresult”);
-}
-row.appendChild(rr);
-}
-if(showPick){
-var key=pk(ei,fi);var myPick=preds[key]||””;var fw=fight.winner||””;
-var pr=document.createElement(“div”);pr.className=“pick-row”;
-var pl=document.createElement(“span”);pl.className=“pick-lbl”;pl.textContent=“Pick:”;pr.appendChild(pl);
-var b1=document.createElement(“button”);
-b1.className=“pick-btn”+(myPick===fight.f1.n?” psel”:””)+(fw===fight.f1.n?” pcorrect”:””)+(fw&&fw!==fight.f1.n&&myPick===fight.f1.n?” pwrong”:””);
-b1.textContent=fight.f1.n.split(” “).pop();
-(function(ri){b1.onclick=function(){pick(ri,0);};})(regIdx);
-pr.appendChild(b1);
-var b2=document.createElement(“button”);
-b2.className=“pick-btn”+(myPick===fight.f2.n?” psel”:””)+(fw===fight.f2.n?” pcorrect”:””)+(fw&&fw!==fight.f2.n&&myPick===fight.f2.n?” pwrong”:””);
-b2.textContent=fight.f2.n.split(” “).pop();
-(function(ri){b2.onclick=function(){pick(ri,1);};})(regIdx);
-pr.appendChild(b2);
-row.appendChild(pr);
-}
-if(isMain||isCo||fight.lbl===“Main Card”){
-var cb=document.createElement(“button”);cb.className=“cmp-btn-row”;
-cb.textContent=“Compare Fighters”;
-(function(f1,f2){cb.onclick=function(){openCmp(f1,f2);};})(fight.f1,fight.f2);
-row.appendChild(cb);
-}
-return row;
+  var isMain=fight.lbl==="Main Event",isCo=fight.lbl==="Co-Main";
+  var row=document.createElement("div");
+  row.className="fight-row "+(isMain?"fmain":isCo?"fco":fight.lbl==="Main Card"?"fcard":"fpre");
+  var lbl=document.createElement("div");
+  lbl.className="flbl "+(isMain?"lmain":isCo?"lco":"lpre");
+  lbl.textContent=fight.lbl+" - "+fight.wc+(fight.title?" - TITLE":"");
+  row.appendChild(lbl);
+  var sz=isMain?"lg":isCo?"sm":"xs";
+  var mu=document.createElement("div");mu.className="mu";
+  mu.appendChild(makeFighter(fight.f1,false,sz,regIdx,0,fight.winner&&fight.winner===fight.f1.n));
+  var vc=document.createElement("div");vc.className="vc";
+  var vs=document.createElement("span");vs.className="vs";vs.textContent="VS";vc.appendChild(vs);
+  if(isMain){var wcsm=document.createElement("span");wcsm.className="wcsm";wcsm.textContent=fight.wc;vc.appendChild(wcsm);}
+  mu.appendChild(vc);
+  mu.appendChild(makeFighter(fight.f2,true,sz,regIdx,1,fight.winner&&fight.winner===fight.f2.n));
+  row.appendChild(mu);
+  if(fight.odds){
+    var or=document.createElement("div");or.className="odds-row";
+    var fav1=fight.odds.f1<0;
+    var s1=document.createElement("div");s1.className="odds-side";
+    var on1=document.createElement("div");on1.className="odds-nm";on1.textContent=fight.f1.n.split(" ").pop();
+    var ov1=document.createElement("div");ov1.className="odds-val "+(fav1?"fav":"dog");ov1.textContent=fmtOdds(fight.odds.f1);
+    s1.appendChild(on1);s1.appendChild(ov1);or.appendChild(s1);
+    var oc=document.createElement("div");oc.className="odds-ctr";oc.textContent="MONEYLINE";or.appendChild(oc);
+    var s2=document.createElement("div");s2.className="odds-side osr";
+    var on2=document.createElement("div");on2.className="odds-nm";on2.textContent=fight.f2.n.split(" ").pop();
+    var ov2=document.createElement("div");ov2.className="odds-val "+(!fav1?"fav":"dog");ov2.textContent=fmtOdds(fight.odds.f2);
+    s2.appendChild(on2);s2.appendChild(ov2);or.appendChild(s2);
+    row.appendChild(or);
+  }
+  if(fight.winner||fight.state==="in"||fight.state==="post"){
+    var rr=document.createElement("div");rr.className="result-row";
+    if(fight.state==="in"&&!fight.winner){
+      var rl=document.createElement("div");rl.className="result-live";rl.textContent="LIVE NOW";rr.appendChild(rl);row.classList.add("flive");
+    } else if(fight.winner){
+      var rw=document.createElement("div");rw.className="result-winner";
+      var rwt=document.createElement("span");rwt.textContent=fight.winner.split(" ").pop()+" wins";rw.appendChild(rwt);rr.appendChild(rw);
+      if(fight.method){var rm=document.createElement("div");rm.className="result-method";rm.textContent=fight.method+(fight.round?" R"+fight.round:"");rr.appendChild(rm);}
+      row.classList.add("fresult");
+    }
+    row.appendChild(rr);
+  }
+  if(showPick){
+    var key=pk(ei,fi);var myPick=preds[key]||"";var fw=fight.winner||"";
+    var pr=document.createElement("div");pr.className="pick-row";
+    var pl=document.createElement("span");pl.className="pick-lbl";pl.textContent="Pick:";pr.appendChild(pl);
+    var b1=document.createElement("button");
+    b1.className="pick-btn"+(myPick===fight.f1.n?" psel":"")+(fw===fight.f1.n?" pcorrect":"")+(fw&&fw!==fight.f1.n&&myPick===fight.f1.n?" pwrong":"");
+    b1.textContent=fight.f1.n.split(" ").pop();
+    (function(ri){b1.onclick=function(){pick(ri,0);};})(regIdx);
+    pr.appendChild(b1);
+    var b2=document.createElement("button");
+    b2.className="pick-btn"+(myPick===fight.f2.n?" psel":"")+(fw===fight.f2.n?" pcorrect":"")+(fw&&fw!==fight.f2.n&&myPick===fight.f2.n?" pwrong":"");
+    b2.textContent=fight.f2.n.split(" ").pop();
+    (function(ri){b2.onclick=function(){pick(ri,1);};})(regIdx);
+    pr.appendChild(b2);
+    row.appendChild(pr);
+  }
+  if(isMain||isCo||fight.lbl==="Main Card"){
+    var cb=document.createElement("button");cb.className="cmp-btn-row";
+    cb.textContent="Compare Fighters";
+    (function(f1,f2){cb.onclick=function(){openCmp(f1,f2);};})(fight.f1,fight.f2);
+    row.appendChild(cb);
+  }
+  return row;
 }
 
 function getRegIdx(ei,fi){for(var i=0;i<FIGHTS.length;i++){if(FIGHTS[i].ei===ei&&FIGHTS[i].fi===fi)return i;}return 0;}
 
 function to12hr(t){
-if(!t||t===“TBD”)return t;
-var p=t.split(”:”);var h=parseInt(p[0],10);var m=parseInt(p[1]||“0”,10);
-var ap=h>=12?“PM”:“AM”;h=h%12||12;
-return h+”:”+(m===0?“00”:String(m).padStart(2,“0”))+” “+ap;
+  if(!t||t==="TBD")return t;
+  var p=t.split(":");var h=parseInt(p[0],10);var m=parseInt(p[1]||"0",10);
+  var ap=h>=12?"PM":"AM";h=h%12||12;
+  return h+":"+(m===0?"00":String(m).padStart(2,"0"))+" "+ap;
 }
 function makeEventBlock(ev,ei,evNum,visTotal){
-var frag=document.createDocumentFragment();
-var du=daysOut(ev.date);
-var duLabel=du===0?“Tonight”:du===1?“Tomorrow”:du>0?“In “+du+” days”:“Completed”;
-var isFeat=ei===0;
-var titleCount=ev.fights.filter(function(f){return f.title;}).length;
-var isPPV=/ufc \d/i.test(ev.name);
-if(evNum>0){var div=document.createElement(“div”);div.className=“ev-divider”;div.textContent=“Event “+(evNum+1)+” of “+visTotal;frag.appendChild(div);}
-var band=document.createElement(“div”);band.className=“ev-band”+(isFeat?””:” ev-future”);
-var evnum=document.createElement(“div”);evnum.className=“ev-num”;evnum.textContent=“Event “+(evNum+1)+” of “+visTotal+” - “+fmtDate(ev.date)+” - “+duLabel;band.appendChild(evnum);
-var evname=document.createElement(“div”);evname.className=“ev-name”;evname.textContent=ev.name;band.appendChild(evname);
-var evrow=document.createElement(“div”);evrow.className=“ev-row”;
-function det(icon,txt){var d=document.createElement(“span”);d.className=“ev-detail”;d.textContent=txt;evrow.appendChild(d);}
-det(“pin”,ev.venue+”, “+ev.loc);det(“tv”,ev.tv);det(“clk”,“Main card “+to12hr(ev.time)+” ET”);
-if(ev.prelimTime){det(“clk”,“Prelims “+to12hr(ev.prelimTime)+” ET”);}
-band.appendChild(evrow);
-var badges=document.createElement(“div”);badges.className=“ev-badges”;
-if(isFeat){var bn=document.createElement(“span”);bn.className=“badge b-next”;bn.textContent=“Next Up”;badges.appendChild(bn);}
-if(titleCount>0){var bt=document.createElement(“span”);bt.className=“badge b-title”;bt.textContent=titleCount>1?titleCount+” Title Fights”:“Title Fight”;badges.appendChild(bt);}
-if(isPPV){var bp=document.createElement(“span”);bp.className=“badge b-ppv”;bp.textContent=“PPV”;badges.appendChild(bp);}
-band.appendChild(badges);frag.appendChild(band);
-var fw=document.createElement(“div”);fw.className=“fights-wrap”;
-var mainCard=ev.fights.slice(2).filter(function(f){return f.lbl===“Main Card”;});
-var prelims=ev.fights.filter(function(f){return f.lbl===“Prelim”||f.lbl===“Early Prelim”;});
-var totalExtra=mainCard.length+prelims.length;
-var mainFight=ev.fights[0],coFight=ev.fights[1];
-var mainRow=makeFightRow(mainFight,ei,0,getRegIdx(ei,0),matchFilter(mainFight));
-if(!matchFilter(mainFight))mainRow.style.opacity=“0.3”;
-fw.appendChild(mainRow);
-var coRow=makeFightRow(coFight,ei,1,getRegIdx(ei,1),matchFilter(coFight));
-if(!matchFilter(coFight))coRow.style.opacity=“0.3”;
-fw.appendChild(coRow);
-if(totalExtra>0){
-var moreId=“more”+ei;
-var moreBtn=document.createElement(“button”);moreBtn.className=“more-btn”;
-moreBtn.appendChild(document.createTextNode(totalExtra+” more fight”+(totalExtra!==1?“s”:””)));
-var moreArrow=document.createElementNS(“http://www.w3.org/2000/svg”,“svg”);moreArrow.setAttribute(“viewBox”,“0 0 24 24”);moreArrow.setAttribute(“fill”,“none”);moreArrow.setAttribute(“stroke”,“currentColor”);moreArrow.setAttribute(“stroke-width”,“2”);
-moreArrow.style.cssText=“width:14px;height:14px;margin-left:auto;flex-shrink:0;transition:transform .2s;stroke:#666;stroke-width:2.5”;
-var moreP=document.createElementNS(“http://www.w3.org/2000/svg”,“polyline”);moreP.setAttribute(“points”,“6 9 12 15 18 9”);moreArrow.appendChild(moreP);moreBtn.appendChild(moreArrow);
-(function(id,btn){btn.onclick=function(){
-document.getElementById(id).classList.toggle(“open”);
-btn.classList.toggle(“open”);
-var arr=btn.querySelector(“svg”);
-if(arr)arr.style.transform=btn.classList.contains(“open”)?“rotate(180deg)”:“rotate(0deg)”;
-};})(moreId,moreBtn);
-fw.appendChild(moreBtn);
-var moreBody=document.createElement(“div”);moreBody.className=“more-body”;moreBody.id=moreId;
-mainCard.forEach(function(f,i){
-var fi=i+2;var r=makeFightRow(f,ei,fi,getRegIdx(ei,fi),matchFilter(f));
-if(!matchFilter(f))r.style.opacity=“0.3”;moreBody.appendChild(r);
-});
-prelims.forEach(function(f,i){
-var fi=mainCard.length+2+i;var r=makeFightRow(f,ei,fi,getRegIdx(ei,fi),false);
-if(!matchFilter(f))r.style.opacity=“0.3”;moreBody.appendChild(r);
-});
-fw.appendChild(moreBody);
-}
-frag.appendChild(fw);
-return frag;
+  var frag=document.createDocumentFragment();
+  var du=daysOut(ev.date);
+  var duLabel=du===0?"Tonight":du===1?"Tomorrow":du>0?"In "+du+" days":"Completed";
+  var isFeat=ei===0;
+  var titleCount=ev.fights.filter(function(f){return f.title;}).length;
+  var isPPV=/ufc \d/i.test(ev.name);
+  if(evNum>0){var div=document.createElement("div");div.className="ev-divider";div.textContent="Event "+(evNum+1)+" of "+visTotal;frag.appendChild(div);}
+  var band=document.createElement("div");band.className="ev-band"+(isFeat?"":" ev-future");
+  var evnum=document.createElement("div");evnum.className="ev-num";evnum.textContent="Event "+(evNum+1)+" of "+visTotal+" - "+fmtDate(ev.date)+" - "+duLabel;band.appendChild(evnum);
+  var evname=document.createElement("div");evname.className="ev-name";evname.textContent=ev.name;band.appendChild(evname);
+  var evrow=document.createElement("div");evrow.className="ev-row";
+  function det(icon,txt){var d=document.createElement("span");d.className="ev-detail";d.textContent=txt;evrow.appendChild(d);}
+  det("pin",ev.venue+", "+ev.loc);det("tv",ev.tv);det("clk","Main card "+to12hr(ev.time)+" ET");
+  if(ev.prelimTime){det("clk","Prelims "+to12hr(ev.prelimTime)+" ET");}
+  band.appendChild(evrow);
+  var badges=document.createElement("div");badges.className="ev-badges";
+  if(isFeat){var bn=document.createElement("span");bn.className="badge b-next";bn.textContent="Next Up";badges.appendChild(bn);}
+  if(titleCount>0){var bt=document.createElement("span");bt.className="badge b-title";bt.textContent=titleCount>1?titleCount+" Title Fights":"Title Fight";badges.appendChild(bt);}
+  if(isPPV){var bp=document.createElement("span");bp.className="badge b-ppv";bp.textContent="PPV";badges.appendChild(bp);}
+  band.appendChild(badges);frag.appendChild(band);
+  var fw=document.createElement("div");fw.className="fights-wrap";
+  var mainCard=ev.fights.slice(2).filter(function(f){return f.lbl==="Main Card";});
+  var prelims=ev.fights.filter(function(f){return f.lbl==="Prelim"||f.lbl==="Early Prelim";});
+  var totalExtra=mainCard.length+prelims.length;
+  var mainFight=ev.fights[0],coFight=ev.fights[1];
+  var mainRow=makeFightRow(mainFight,ei,0,getRegIdx(ei,0),matchFilter(mainFight));
+  if(!matchFilter(mainFight))mainRow.style.opacity="0.3";
+  fw.appendChild(mainRow);
+  var coRow=makeFightRow(coFight,ei,1,getRegIdx(ei,1),matchFilter(coFight));
+  if(!matchFilter(coFight))coRow.style.opacity="0.3";
+  fw.appendChild(coRow);
+  if(totalExtra>0){
+    var moreId="more"+ei;
+    var moreBtn=document.createElement("button");moreBtn.className="more-btn";
+    moreBtn.appendChild(document.createTextNode(totalExtra+" more fight"+(totalExtra!==1?"s":"")));
+    var moreArrow=document.createElementNS("http://www.w3.org/2000/svg","svg");moreArrow.setAttribute("viewBox","0 0 24 24");moreArrow.setAttribute("fill","none");moreArrow.setAttribute("stroke","currentColor");moreArrow.setAttribute("stroke-width","2");
+    moreArrow.style.cssText="width:14px;height:14px;margin-left:auto;flex-shrink:0;transition:transform .2s;stroke:#666;stroke-width:2.5";
+    var moreP=document.createElementNS("http://www.w3.org/2000/svg","polyline");moreP.setAttribute("points","6 9 12 15 18 9");moreArrow.appendChild(moreP);moreBtn.appendChild(moreArrow);
+    (function(id,btn){btn.onclick=function(){
+      document.getElementById(id).classList.toggle("open");
+      btn.classList.toggle("open");
+      var arr=btn.querySelector("svg");
+      if(arr)arr.style.transform=btn.classList.contains("open")?"rotate(180deg)":"rotate(0deg)";
+    };})(moreId,moreBtn);
+    fw.appendChild(moreBtn);
+    var moreBody=document.createElement("div");moreBody.className="more-body";moreBody.id=moreId;
+    mainCard.forEach(function(f,i){
+      var fi=i+2;var r=makeFightRow(f,ei,fi,getRegIdx(ei,fi),matchFilter(f));
+      if(!matchFilter(f))r.style.opacity="0.3";moreBody.appendChild(r);
+    });
+    prelims.forEach(function(f,i){
+      var fi=mainCard.length+2+i;var r=makeFightRow(f,ei,fi,getRegIdx(ei,fi),false);
+      if(!matchFilter(f))r.style.opacity="0.3";moreBody.appendChild(r);
+    });
+    fw.appendChild(moreBody);
+  }
+  frag.appendChild(fw);
+  return frag;
 }
 
 function updatePicksWidget(){
-var total=Object.keys(preds).length;
-var widget=document.getElementById(“picksWidget”);
-var badge=document.getElementById(“picksBadge”);
-if(widget)widget.style.display=total>0?“block”:“none”;
-if(badge)badge.textContent=total;
-var body=document.getElementById(“picksBody”);
-if(body&&body.classList.contains(“open”))renderPicksWidget();
+  var total=Object.keys(preds).length;
+  var widget=document.getElementById("picksWidget");
+  var badge=document.getElementById("picksBadge");
+  if(widget)widget.style.display=total>0?"block":"none";
+  if(badge)badge.textContent=total;
+  var body=document.getElementById("picksBody");
+  if(body&&body.classList.contains("open"))renderPicksWidget();
 }
 
 function renderPicksWidget(){
-var body=document.getElementById(“picksBody”);if(!body)return;
-body.innerHTML=””;
-var total=Object.keys(preds).length;
-if(!total){var e=document.createElement(“p”);e.style.cssText=“font-size:13px;color:var(–muted);padding:12px 0”;e.textContent=“No picks yet.”;body.appendChild(e);return;}
-var correct=0,resolved=0;
-EVENTS.forEach(function(ev,ei){
-var eps=ev.fights.map(function(f,fi){var k=pk(ei,fi);return preds[k]?{fi:fi,fight:f,pick:preds[k],result:f.winner||””}:null;}).filter(Boolean);
-if(!eps.length)return;
-var lbl=document.createElement(“div”);lbl.className=“picks-ev-label”;lbl.textContent=ev.name;body.appendChild(lbl);
-eps.forEach(function(p){
-var row=document.createElement(“div”);row.className=“pick-summary-row”;
-var fl=document.createElement(“div”);fl.className=“pick-fight-label”;fl.textContent=p.fight.lbl===“Main Event”?“Main”:p.fight.lbl===“Co-Main”?“Co-Main”:p.fight.wc;row.appendChild(fl);
-var pn=document.createElement(“div”);pn.className=“pick-fighter-pick”;pn.textContent=p.pick.split(” “).pop();row.appendChild(pn);
-var opp=document.createElement(“div”);opp.style.cssText=“font-size:11px;color:var(–muted);flex-shrink:0”;
-var oppName=p.pick===p.fight.f1.n?p.fight.f2.n:p.fight.f1.n;opp.textContent=“vs “+oppName.split(” “).pop();row.appendChild(opp);
-if(p.fight.odds){
-var pickedF1=p.pick===p.fight.f1.n;
-var pickedOdds=pickedF1?p.fight.odds.f1:p.fight.odds.f2;
-var isFav=pickedOdds<0;
-var ob=document.createElement(“div”);
-ob.style.cssText=“font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;flex-shrink:0;”+(isFav?“background:rgba(46,204,113,.08);color:var(–green);border:1px solid rgba(46,204,113,.2)”:“background:rgba(232,25,44,.08);color:var(–red);border:1px solid rgba(232,25,44,.2)”);
-ob.textContent=(isFav?“FAV “:“DOG “)+(pickedOdds>0?”+”:””)+pickedOdds;row.appendChild(ob);
-}
-var bdg=document.createElement(“div”);bdg.className=“pick-result-badge”;
-if(!p.result){bdg.className+=” pending”;bdg.textContent=“Pending”;}
-else if(p.result===p.pick){bdg.className+=” win”;bdg.textContent=“Correct”;correct++;resolved++;}
-else{bdg.className+=” loss”;bdg.textContent=“Wrong”;resolved++;}
-row.appendChild(bdg);
-if(!p.result){
-var ub=document.createElement(“button”);ub.style.cssText=“background:none;border:none;color:var(–muted);cursor:pointer;padding:2px 6px;font-size:14px;flex-shrink:0”;ub.textContent=“x”;
-(function(ei2,fi2){ub.onclick=function(ev2){ev2.stopPropagation();undoPick(ei2,fi2);};})(ei,p.fi);row.appendChild(ub);
-}
-body.appendChild(row);
-});
-});
-if(resolved>0){
-var sr=document.createElement(“div”);sr.className=“picks-score-row”;
-var sl=document.createElement(“span”);sl.className=“picks-score-label”;sl.textContent=“Overall record”;
-var sv=document.createElement(“span”);sv.className=“picks-score-val”;
-sv.textContent=correct+”/”+resolved+” (”+Math.round(correct/resolved*100)+”%)”;
-sr.appendChild(sl);sr.appendChild(sv);body.appendChild(sr);
-}
+  var body=document.getElementById("picksBody");if(!body)return;
+  body.innerHTML="";
+  var total=Object.keys(preds).length;
+  if(!total){var e=document.createElement("p");e.style.cssText="font-size:13px;color:var(--muted);padding:12px 0";e.textContent="No picks yet.";body.appendChild(e);return;}
+  var correct=0,resolved=0;
+  EVENTS.forEach(function(ev,ei){
+    var eps=ev.fights.map(function(f,fi){var k=pk(ei,fi);return preds[k]?{fi:fi,fight:f,pick:preds[k],result:f.winner||""}:null;}).filter(Boolean);
+    if(!eps.length)return;
+    var lbl=document.createElement("div");lbl.className="picks-ev-label";lbl.textContent=ev.name;body.appendChild(lbl);
+    eps.forEach(function(p){
+      var row=document.createElement("div");row.className="pick-summary-row";
+      var fl=document.createElement("div");fl.className="pick-fight-label";fl.textContent=p.fight.lbl==="Main Event"?"Main":p.fight.lbl==="Co-Main"?"Co-Main":p.fight.wc;row.appendChild(fl);
+      var pn=document.createElement("div");pn.className="pick-fighter-pick";pn.textContent=p.pick.split(" ").pop();row.appendChild(pn);
+      var opp=document.createElement("div");opp.style.cssText="font-size:11px;color:var(--muted);flex-shrink:0";
+      var oppName=p.pick===p.fight.f1.n?p.fight.f2.n:p.fight.f1.n;opp.textContent="vs "+oppName.split(" ").pop();row.appendChild(opp);
+      if(p.fight.odds){
+        var pickedF1=p.pick===p.fight.f1.n;
+        var pickedOdds=pickedF1?p.fight.odds.f1:p.fight.odds.f2;
+        var isFav=pickedOdds<0;
+        var ob=document.createElement("div");
+        ob.style.cssText="font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;flex-shrink:0;"+(isFav?"background:rgba(46,204,113,.08);color:var(--green);border:1px solid rgba(46,204,113,.2)":"background:rgba(232,25,44,.08);color:var(--red);border:1px solid rgba(232,25,44,.2)");
+        ob.textContent=(isFav?"FAV ":"DOG ")+(pickedOdds>0?"+":"")+pickedOdds;row.appendChild(ob);
+      }
+      var bdg=document.createElement("div");bdg.className="pick-result-badge";
+      if(!p.result){bdg.className+=" pending";bdg.textContent="Pending";}
+      else if(p.result===p.pick){bdg.className+=" win";bdg.textContent="Correct";correct++;resolved++;}
+      else{bdg.className+=" loss";bdg.textContent="Wrong";resolved++;}
+      row.appendChild(bdg);
+      if(!p.result){
+        var ub=document.createElement("button");ub.style.cssText="background:none;border:none;color:var(--muted);cursor:pointer;padding:2px 6px;font-size:14px;flex-shrink:0";ub.textContent="x";
+        (function(ei2,fi2){ub.onclick=function(ev2){ev2.stopPropagation();undoPick(ei2,fi2);};})(ei,p.fi);row.appendChild(ub);
+      }
+      body.appendChild(row);
+    });
+  });
+  if(resolved>0){
+    var sr=document.createElement("div");sr.className="picks-score-row";
+    var sl=document.createElement("span");sl.className="picks-score-label";sl.textContent="Overall record";
+    var sv=document.createElement("span");sv.className="picks-score-val";
+    sv.textContent=correct+"/"+resolved+" ("+Math.round(correct/resolved*100)+"%)";
+    sr.appendChild(sl);sr.appendChild(sv);body.appendChild(sr);
+  }
 }
 
 function togglePicks(){
-var body=document.getElementById(“picksBody”);var toggle=document.getElementById(“picksToggle”);
-body.classList.toggle(“open”);toggle.classList.toggle(“open”);
-if(body.classList.contains(“open”))renderPicksWidget();
+  var body=document.getElementById("picksBody");var toggle=document.getElementById("picksToggle");
+  body.classList.toggle("open");toggle.classList.toggle("open");
+  if(body.classList.contains("open"))renderPicksWidget();
 }
 
 function render(){
-buildReg();
-var now=Date.now();
-var events=EVENTS.filter(function(e){return new Date(e.date)>=now-2*864e5&&new Date(e.date)<=now+864e5*65;});
-var vis=events.filter(function(e){return e.fights.some(matchFilter);});
-var app=document.getElementById(“app”);
-if(!app)return;
-app.innerHTML=””;
-if(!vis.length){
-var msg=document.createElement(“div”);msg.style.cssText=“padding:32px 16px;text-align:center;color:var(–muted);font-size:13px”;msg.textContent=“No fights in this weight class.”;app.appendChild(msg);
-} else {
-vis.forEach(function(ev,i){var ei=EVENTS.indexOf(ev);app.appendChild(makeEventBlock(ev,ei,i,vis.length));});
-}
-// Compute stats dynamically from visible events only
-var allFights=vis.reduce(function(a,e){return a.concat(e.fights||[]);}, []);
-var titleFights=allFights.filter(function(f){return f.title;});
-var sevEl=document.getElementById(“sev”);var stiEl=document.getElementById(“sti”);var sboEl=document.getElementById(“sbo”);
-if(sevEl)sevEl.textContent=vis.length;
-if(stiEl)stiEl.textContent=titleFights.length;
-if(sboEl)sboEl.textContent=allFights.length;
-document.getElementById(“picks-count”).textContent=Object.keys(preds).length;
-// Update page-load timestamp dynamically
-var ud=document.getElementById(“updateDate”);
-if(ud){
-var now=new Date();
-var months=[“Jan”,“Feb”,“Mar”,“Apr”,“May”,“Jun”,“Jul”,“Aug”,“Sep”,“Oct”,“Nov”,“Dec”];
-ud.textContent=months[now.getMonth()]+” “+now.getDate()+”, “+now.getFullYear();
-}
-updatePicksWidget();
-updateCountdown();
-checkFightNight();
+  buildReg();
+  var now=Date.now();
+  var events=EVENTS.filter(function(e){return new Date(e.date)>=now-2*864e5&&new Date(e.date)<=now+864e5*65;});
+  var vis=events.filter(function(e){return e.fights.some(matchFilter);});
+  var app=document.getElementById("app");
+  if(!app)return;
+  app.innerHTML="";
+  if(!vis.length){
+    var msg=document.createElement("div");msg.style.cssText="padding:32px 16px;text-align:center;color:var(--muted);font-size:13px";msg.textContent="No fights in this weight class.";app.appendChild(msg);
+  } else {
+    vis.forEach(function(ev,i){var ei=EVENTS.indexOf(ev);app.appendChild(makeEventBlock(ev,ei,i,vis.length));});
+  }
+  // Compute stats dynamically from visible events only
+  var allFights=vis.reduce(function(a,e){return a.concat(e.fights||[]);}, []);
+  var titleFights=allFights.filter(function(f){return f.title;});
+  var sevEl=document.getElementById("sev");var stiEl=document.getElementById("sti");var sboEl=document.getElementById("sbo");
+  if(sevEl)sevEl.textContent=vis.length;
+  if(stiEl)stiEl.textContent=titleFights.length;
+  if(sboEl)sboEl.textContent=allFights.length;
+  document.getElementById("picks-count").textContent=Object.keys(preds).length;
+  // Update page-load timestamp dynamically
+  var ud=document.getElementById("updateDate");
+  if(ud){
+    var now=new Date();
+    var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    ud.textContent=months[now.getMonth()]+" "+now.getDate()+", "+now.getFullYear();
+  }
+  updatePicksWidget();
+  updateCountdown();
+  checkFightNight();
 }
 
-document.addEventListener(“DOMContentLoaded”,function(){
-try{render();}
-catch(e){
-var app=document.getElementById(“app”);
-if(app){
-app.style.cssText=“padding:20px;background:#1a0000;color:#ff6666;font-family:monospace;font-size:12px;white-space:pre-wrap”;
-app.textContent=“JS ERROR IN render():\n”+e.message+”\n\n”+e.stack;
-}
-}
+
+document.addEventListener("DOMContentLoaded",function(){
+  try{render();}
+  catch(e){
+    var app=document.getElementById("app");
+    if(app){
+      app.style.cssText="padding:20px;background:#1a0000;color:#ff6666;font-family:monospace;font-size:12px;white-space:pre-wrap";
+      app.textContent="JS ERROR IN render():\n"+e.message+"\n\n"+e.stack;
+    }
+  }
 
 });
 </script>
-
 </body>
 </html>
