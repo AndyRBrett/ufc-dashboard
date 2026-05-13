@@ -532,6 +532,29 @@ def main():
     # Step 3: Card structure from Tapology
     print("Fetching upcoming events from Wikipedia schedule...", file=sys.stderr)
     events = get_wiki_event_schedule()
+    # For each event, try to get full fight card from its Wikipedia page
+    for ev in events:
+        slug = wiki_slug(ev["name"])
+        print("Fetching card for:", ev["name"], file=sys.stderr)
+        wikitext = fetch_wikitext(slug)[0]
+        if wikitext:
+            bouts = parse_mmaevent_bouts(wikitext)
+            if bouts:
+                # Convert bouts to fight objects
+                fights = []
+                for i, b in enumerate(bouts):
+                    lbl = "Main Event" if i==0 else "Co-Main" if i==1 else "Main Card" if i<5 else "Prelim"
+                    fights.append({
+                        "label": lbl, "wc": "TBD", "title": False,
+                        "winner": b.get("winner",""), "method": b.get("method",""),
+                        "round": b.get("round"), "state": "pre",
+                        "f1": {"name": b.get("winner","TBD"), "record": "", "ranking": ""},
+                        "f2": {"name": b.get("loser","TBD"), "record": "", "ranking": ""}
+                    })
+                if fights:
+                    ev["fights"] = fights
+                    print("  Got", len(fights), "fights", file=sys.stderr)
+        time.sleep(1)
     if not events: print("No events", file=sys.stderr); sys.exit(0)
 
     scraped_dates = set(e["date"] for e in events)
