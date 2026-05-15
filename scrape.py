@@ -19,8 +19,11 @@ WIKI_HEADERS = {"User-Agent": WIKI_UA}
 EVENT_NAMES = {
     "2026-05-16": "UFC Fight Night: Allen vs. Costa",
     "2026-05-30": "UFC Fight Night: Song vs. Figueiredo",
+    "2026-06-06": "UFC Fight Night: Muhammad vs. Bonfim",
+    "2026-06-13": "UFC Freedom 250: Topuria vs. Gaethje",
     "2026-06-14": "UFC Freedom 250: Topuria vs. Gaethje",
-    "2026-06-27": "UFC Fight Night: Fiziev vs. Torres",
+    "2026-06-27": "UFC 329",
+    "2026-06-28": "UFC 329",
     "2026-07-11": "UFC 329",
 }
 
@@ -144,8 +147,17 @@ def group_by_event(fights):
         events[et_date].append(f)
     return dict(sorted(events.items()))
 
+def get_main_event_names(ev_name):
+    """Extract the two fighter last names from event name like 'UFC Fight Night: Allen vs. Costa'."""
+    import re as _re
+    m = _re.search(r":\s*(\w+)\s+vs\.?\s+(\w+)", ev_name, _re.IGNORECASE)
+    if m:
+        return [m.group(1).lower(), m.group(2).lower()]
+    return []
+
+
 def build_events_from_odds(fights):
-    """Convert Odds API fights into EVENTS array structure."""
+    """Convert Odds API fights into EVENTS array, correctly ordered by card position."""
     grouped = group_by_event(fights)
     now = datetime.now(timezone.utc)
     events = []
@@ -153,117 +165,122 @@ def build_events_from_odds(fights):
     for et_date, day_fights in grouped.items():
         try:
             ed = datetime.strptime(et_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-        except: continue
-        # Skip past events (more than 2 days ago) and far future (>65 days)
+        except:
+            continue
         if ed < now - timedelta(days=2) or ed > now + timedelta(days=65):
             continue
-        # Skip events happening today or earlier if they have no future fights
-        # (avoids pulling in fights that already happened today)
+        # Skip days where all fights are already past
         day_future = [f for f in day_fights
                       if datetime.fromisoformat(f["commence_time"].replace("Z","+00:00")) > now]
         if not day_future and ed <= now:
-            print("Skipping past-day event:", et_date, file=sys.stderr)
+            print("Skipping completed event:", et_date, file=sys.stderr)
             continue
         if len(day_fights) < 4:
-            continue  # UFC events have at least 4-6 fights with major odds
+            continue
 
-        # Get event name from known map or derive from fighters
         ev_name = EVENT_NAMES.get(et_date, "UFC Fight Night")
+        main_names = get_main_event_names(ev_name)
 
-        # Sort fights by commence_time to determine card position
-        day_fights_sorted = sorted(day_fights, key=lambda f: f["commence_time"])
-
-        # The main event is typically the last fight (latest start time)
-        # For numbered events, reverse the order since early prelims come first
-        # Use commence time: later = higher card position
-        fights_by_time = sorted(day_fights_sorted, key=lambda f: f["commence_time"])
-
-        # Deduplicate fights (API may have dupes with different bookmakers)
+        # Deduplicate fights by fighter pair
         seen_pairs = set()
         unique_fights = []
-        for f in fights_by_time:
+        for f in day_fights:
             pair = tuple(sorted([f["home_team"].lower(), f["away_team"].lower()]))
             if pair not in seen_pairs:
                 seen_pairs.add(pair)
                 unique_fights.append(f)
 
-        # Reverse to get main event first (latest commence = main card)
-        unique_fights = list(reversed(unique_fights))
+        # Identify main event fight by matching last names from event title
+        main_event_fight = None
+        if main_names:
+            for f in unique_fights:
+                h = f["home_team"].lower()
+                a = f["away_team"].lower()
+                if any(n in h or n in a for n in main_names):
+                    # Both names should appear in this fight
+                    matches = sum(1 for n in main_names if n in h or n in a)
+                    if matches >= 2 or (len(main_names) == 2 and
+                        (main_names[0] in h or main_names[0] in a) and
+                        (main_names[1] in h or main_names[1] in a)):
+                        main_event_fight = f
+                        break
 
-        # Assign labels
+        # Sort remaining fights: by commence_time DESC, then bookmaker count DESC
+        other_fights = [f for f in unique_fights if f is not main_event_fight]
+        other_fights.sort(
+            key=lambda f: (f["commence_time"], len(f.get("bookmakers", []))),
+            reverse=True
+        )
+
+        # Build ordered fight list: main event first, then rest
+        ordered = []
+        if main_event_fight:
+            ordered.append(main_event_fight)
+        ordered.extend(other_fights)
+
+        # Determine card times
+        times = sorted(set(f["commence_time"] for f in unique_fights))
+        if times:
+            # Main card = latest time window
+            latest_ct = datetime.fromisoformat(times[-1].replace("Z","+00:00"))
+            latest_et = latest_ct - timedelta(hours=4)
+            main_time = "%02d:%02d" % (latest_et.hour, latest_et.minute)
+            # Prelims = earliest time window
+            if len(times) > 1:
+                early_ct = datetime.fromisoformat(times[0].replace("Z","+00:00"))
+                early_et = early_ct - timedelta(hours=4)
+                prelim_time = "%02d:%02d" % (early_et.hour, early_et.minute)
+            else:
+                prelim_time = None
+        else:
+            main_time = "TBD"
+            prelim_time = None
+
+        # Build fight card with proper labels
+        # Fights at the latest commence time = main card
+        # Fights at earlier times = prelims
+        latest_time = times[-1] if times else None
         card_fights = []
-        for i, f in enumerate(unique_fights):
-            # Strip non-ASCII from fighter names (API uses unicode like \u0107)
-            f1 = "".join(c for c in f["home_team"] if ord(c) < 128).strip()
-            f2 = "".join(c for c in f["away_team"] if ord(c) < 128).strip()
-            if not f1 or not f2: continue
-            odds = best_odds(f, f1, f2)
-            if i == 0: lbl = "Main Event"
-            elif i == 1: lbl = "Co-Main"
-            elif i < 5: lbl = "Main Card"
-            else: lbl = "Prelim"
+        for i, f in enumerate(ordered):
+            f1n = "".join(c for c in f["home_team"] if ord(c) < 128).strip()
+            f2n = "".join(c for c in f["away_team"] if ord(c) < 128).strip()
+            if not f1n or not f2n:
+                continue
+            odds = best_odds(f, f1n, f2n)
+            is_main_card = f["commence_time"] == latest_time
+            if i == 0:
+                lbl = "Main Event"
+            elif i == 1 and is_main_card:
+                lbl = "Co-Main"
+            elif is_main_card and i < 5:
+                lbl = "Main Card"
+            else:
+                lbl = "Prelim"
             card_fights.append({
                 "label": lbl, "wc": "TBD", "title": False,
                 "odds": odds,
                 "winner": "", "method": "", "round": None, "state": "pre",
-                "f1": {"name": f1, "record": "", "ranking": ""},
-                "f2": {"name": f2, "record": "", "ranking": ""},
+                "f1": {"name": f1n, "record": "", "ranking": ""},
+                "f2": {"name": f2n, "record": "", "ranking": ""},
             })
 
-        # Determine main card time from last few fights
-        if unique_fights:
-            last_ct = datetime.fromisoformat(unique_fights[0]["commence_time"].replace("Z", "+00:00"))
-            last_et = last_ct - timedelta(hours=4)
-            main_time = "%02d:%02d" % (last_et.hour, last_et.minute)
-        else:
-            main_time = "TBD"
+        if not card_fights:
+            continue
 
-        events.append({
+        ev = {
             "name": ev_name,
             "date": et_date,
             "venue": "", "location": "",
             "broadcast": "Paramount+",
             "time": main_time,
             "fights": card_fights,
-        })
+        }
+        if prelim_time:
+            ev["prelimTime"] = prelim_time
+        events.append(ev)
 
     return events
 
-# -- Wikipedia results --------------------------------------------------------
-def wiki_slug(ev_name):
-    m = re.search(r"UFC (\d+)", ev_name)
-    if m: return "UFC_" + m.group(1)
-    clean = re.sub(r"[^a-zA-Z0-9 :._-]", "", ev_name)
-    return clean.replace(" ", "_")
-
-def clean_wiki(text):
-    if not text: return ""
-    text = re.sub(r"\[\[([^\]|]+\|)?([^\]]+)\]\]", r"\2", text)
-    text = re.sub(r"\{\{[^}]+\}\}", "", text)
-    text = re.sub(r"<[^>]+>", "", text)
-    text = re.sub(r"\[\d+\]", "", text)
-    return asc(text).strip().strip(",").strip()
-
-def fetch_wikitext(slug):
-    for method, url, params in [
-        ("API", WIKI_API, {"action":"parse","page":slug,"prop":"wikitext","format":"json"}),
-        ("raw", "https://en.wikipedia.org/w/index.php", {"title":slug,"action":"raw"}),
-    ]:
-        try:
-            r = requests.get(url, headers=WIKI_HEADERS, params=params, timeout=15)
-            print("  Wiki %s: %d" % (method, r.status_code), file=sys.stderr)
-            if r.status_code == 200:
-                if method == "API":
-                    wt = r.json().get("parse",{}).get("wikitext",{}).get("*","")
-                else:
-                    wt = r.text
-                if wt and len(wt) > 500:
-                    print("  Got %d chars" % len(wt), file=sys.stderr)
-                    return wt
-        except Exception as e:
-            print("  Wiki %s error: %s" % (method, e), file=sys.stderr)
-        time.sleep(1)
-    return ""
 
 def parse_mmaevent_bouts(wikitext):
     """Parse {{MMAevent bout}} template - the standard UFC Wikipedia format."""
