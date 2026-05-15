@@ -99,70 +99,39 @@ def fetch_wikitext(slug):
 # Wikipedia - parse upcoming fight card (MMAevent fight template)
 # ---------------------------------------------------------------------------
 def parse_upcoming_card(wikitext):
-    """Parse upcoming fight card - handles both || same-line and newline-per-cell formats."""
+    """
+    Parse {{MMAevent bout}} templates - handles both upcoming (vs.) and completed (def.) formats.
+    Format:
+    {{MMAevent bout
+    |Featherweight
+    |[[Arnold Allen]]
+    |vs.
+    |[[Melquizael Costa]]
+    |...
+    }}
+    """
     fights = []
-    in_table = False
-    current_row = []
-
-    def process_row(row):
-        row = [clean_wiki(c) for c in row if clean_wiki(c).strip()]
-        if len(row) < 2: return None
-        skip = ["weight class","fighter","method","round","time","notes",
-                "main card","preliminary","early prelim"]
-        joined = " ".join(row).lower()
-        if any(h in joined for h in skip): return None
-        result_kw = ["decision","tko","ko/tko","submission","no contest"]
-        if any(k in joined for k in result_kw): return None
-        wc_raw = row[0]
-        wc = norm_wc(wc_raw)
-        wc_kw = ["weight","heavy","middle","welter","light","feather",
-                 "bantam","fly","straw","catch","pound"]
-        if not any(k in wc_raw.lower() for k in wc_kw): return None
-        fighters = []
-        for cell in row[1:]:
-            c = cell.strip()
-            if not c or len(c) < 2: continue
-            if any(k in c.lower() for k in result_kw+["round","method","time"]): continue
-            if re.match(r"^\d", c): continue
-            fighters.append(re.sub(r"\s*\(c\)\s*", "", c).strip())
-            if len(fighters) == 2: break
-        if not fighters: return None
-        f1 = fighters[0]
-        f2 = fighters[1] if len(fighters) > 1 else "TBD"
-        if len(f1) < 2: return None
-        return {"f1": f1, "f2": f2, "wc": wc, "title": False}
-
-    for line in wikitext.split("\n"):
-        s = line.strip()
-        if "{|" in s and "wikitable" in s.lower():
-            in_table = True; current_row = []; continue
-        if s.startswith("|}"):
-            if current_row:
-                res = process_row(current_row)
-                if res: fights.append(res)
-            in_table = False; current_row = []; continue
-        if not in_table: continue
-        if s.startswith("|-"):
-            if current_row:
-                res = process_row(current_row)
-                if res: fights.append(res)
-            current_row = []; continue
-        if s.startswith("!"):
-            if current_row:
-                res = process_row(current_row)
-                if res: fights.append(res)
-            current_row = []; continue
-        if s.startswith("|"):
-            content = s.lstrip("|")
-            if "||" in content:
-                current_row.extend([clean_wiki(p.strip()) for p in content.split("||")])
-            else:
-                current_row.append(clean_wiki(content))
-
-    if current_row:
-        res = process_row(current_row)
-        if res: fights.append(res)
-
+    for block in re.finditer(r"\{\{MMAevent bout\s*\n(.*?)\}\}", wikitext, re.DOTALL | re.IGNORECASE):
+        lines = [l.strip().lstrip("|").strip() for l in block.group(1).split("\n")
+                 if l.strip().lstrip("|").strip()]
+        if len(lines) < 3: continue
+        vs_idx  = next((i for i,l in enumerate(lines) if l.lower().strip() in ("vs.","vs","v.")), -1)
+        def_idx = next((i for i,l in enumerate(lines) if l.lower().strip() in ("def.","def","d.")), -1)
+        if vs_idx > 0:
+            wc_raw = lines[0]
+            f1 = clean_wiki(lines[vs_idx - 1])
+            f2 = clean_wiki(lines[vs_idx + 1]) if vs_idx + 1 < len(lines) else "TBD"
+        elif def_idx > 0:
+            wc_raw = lines[0]
+            f1 = clean_wiki(lines[def_idx - 1])
+            f2 = clean_wiki(lines[def_idx + 1]) if def_idx + 1 < len(lines) else ""
+        else:
+            continue
+        f1 = re.sub(r"\s*\(c\)\s*", "", f1).strip()
+        f2 = re.sub(r"\s*\(c\)\s*", "", f2).strip()
+        if not f1 or len(f1) < 2: continue
+        wc = norm_wc(clean_wiki(wc_raw))
+        fights.append({"f1": f1, "f2": f2 or "TBD", "wc": wc, "title": False})
     return fights
 
 
