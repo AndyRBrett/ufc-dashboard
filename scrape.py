@@ -92,12 +92,21 @@ def fetch_odds():
         print("Odds API exception:", e, file=sys.stderr)
     return []
 
+MAJOR_BOOKS = {"fanduel", "draftkings", "betrivers", "bovada", "betus"}
+
 def is_ufc_fight(fight):
     h = fight.get("home_team", "").lower()
     a = fight.get("away_team", "").lower()
+    # Exclude known non-UFC fighters
     for name in EXCLUDE_FIGHTERS:
         if name in h or name in a:
             return False
+    # Require at least 2 major US bookmakers - filters out small/regional shows
+    # UFC fights are covered by FanDuel, DraftKings, BetRivers, Bovada, BetUS
+    # Non-UFC fringe fights usually only appear on BetOnline
+    major_count = sum(1 for bm in fight.get("bookmakers", []) if bm["key"] in MAJOR_BOOKS)
+    if major_count < 2:
+        return False
     return True
 
 def best_odds(fight, f1_name, f2_name):
@@ -148,8 +157,15 @@ def build_events_from_odds(fights):
         # Skip past events (more than 2 days ago) and far future (>65 days)
         if ed < now - timedelta(days=2) or ed > now + timedelta(days=65):
             continue
-        if len(day_fights) < 2:
-            continue  # Skip isolated non-event fights
+        # Skip events happening today or earlier if they have no future fights
+        # (avoids pulling in fights that already happened today)
+        day_future = [f for f in day_fights
+                      if datetime.fromisoformat(f["commence_time"].replace("Z","+00:00")) > now]
+        if not day_future and ed <= now:
+            print("Skipping past-day event:", et_date, file=sys.stderr)
+            continue
+        if len(day_fights) < 4:
+            continue  # UFC events have at least 4-6 fights with major odds
 
         # Get event name from known map or derive from fighters
         ev_name = EVENT_NAMES.get(et_date, "UFC Fight Night")
