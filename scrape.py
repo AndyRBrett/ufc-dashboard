@@ -177,8 +177,10 @@ def build_events_from_odds(fights):
         # Assign labels
         card_fights = []
         for i, f in enumerate(unique_fights):
-            f1 = f["home_team"]
-            f2 = f["away_team"]
+            # Strip non-ASCII from fighter names (API uses unicode like \u0107)
+            f1 = "".join(c for c in f["home_team"] if ord(c) < 128).strip()
+            f2 = "".join(c for c in f["away_team"] if ord(c) < 128).strip()
+            if not f1 or not f2: continue
             odds = best_odds(f, f1, f2)
             if i == 0: lbl = "Main Event"
             elif i == 1: lbl = "Co-Main"
@@ -504,10 +506,10 @@ def main():
 
     # Write new EVENTS array
     new_js_events = events_js(new_events)
-    html_new = re.sub(r"var EVENTS\s*=\s*\[.*?\];", new_js_events, html, flags=re.DOTALL)
+    html_new = re.sub(r"var EVENTS\s*=\s*\[.*?\];", lambda m: new_js_events, html, flags=re.DOTALL)
     label = fmt_update(now)
-    html_new = re.sub('Updated <span id="updateDate">[^<]*</span>',
-                     'Updated <span id="updateDate">' + label + '</span>', html_new)
+    lbl_repl = 'Updated <span id="updateDate">' + label + '</span>'
+    html_new = re.sub('Updated <span id="updateDate">[^<]*</span>', lambda m: lbl_repl, html_new)
     if len(html_new) < 30000:
         print("Output too small - aborting", file=sys.stderr); sys.exit(0)
 
