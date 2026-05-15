@@ -176,8 +176,8 @@ def build_events(raw_fights, existing_names):
             print("Skipping completed:", et_date, file=sys.stderr)
             continue
 
-        # Must have at least 4 fights to be a real UFC event card
-        if len(day) < 4:
+        # Must have at least 2 fights with major book coverage to be a real UFC event
+        if len(day) < 2:
             print("Too few fights (%d) for %s - skipping" % (len(day), et_date), file=sys.stderr)
             continue
 
