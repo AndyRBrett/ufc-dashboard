@@ -14,18 +14,7 @@ WIKI_API     = "https://en.wikipedia.org/w/api.php"
 WIKI_UA      = "UFC-Dashboard/1.0 (https://github.com/AndyRBrett/ufc-dashboard; andyrbrett@gmail.com)"
 WIKI_HEADERS = {"User-Agent": WIKI_UA}
 
-# Known UFC event names keyed by ET date string
-# Scraper updates these when it finds new fights on a date
-EVENT_NAMES = {
-    "2026-05-16": "UFC Fight Night: Allen vs. Costa",
-    "2026-05-30": "UFC Fight Night: Song vs. Figueiredo",
-    "2026-06-06": "UFC Fight Night: Muhammad vs. Bonfim",
-    "2026-06-13": "UFC Freedom 250: Topuria vs. Gaethje",
-    "2026-06-14": "UFC Freedom 250: Topuria vs. Gaethje",
-    "2026-06-27": "UFC 329",
-    "2026-06-28": "UFC 329",
-    "2026-07-11": "UFC 329",
-}
+# No hardcoded event names - all derived dynamically from the API
 
 # Fights to exclude (non-UFC promotions appearing in MMA API)
 EXCLUDE_FIGHTERS = {
@@ -178,8 +167,37 @@ def build_events_from_odds(fights):
         if len(day_fights) < 4:
             continue
 
-        ev_name = EVENT_NAMES.get(et_date, "UFC Fight Night")
-        main_names = get_main_event_names(ev_name)
+        # Identify main event: latest commence time + most bookmakers
+        # Sort all fights by (commence_time DESC, bookmaker_count DESC)
+        scored = sorted(unique_fights,
+            key=lambda f: (f["commence_time"], len(f.get("bookmakers",[]))),
+            reverse=True)
+        main_candidate = scored[0] if scored else None
+
+        # Derive event name dynamically from main event fighters
+        if main_candidate:
+            h_last = main_candidate["home_team"].strip().split()[-1]
+            a_last = main_candidate["away_team"].strip().split()[-1]
+            # Check if this looks like a numbered UFC event from our known list
+            # by seeing if the fighters appear in any existing event name
+            derived_name = "UFC Fight Night: %s vs. %s" % (h_last, a_last)
+            # Check existing index.html for a matching event name on this date
+            existing_name = existing_events.get(et_date, "")
+            if not existing_name:
+                # Also check adjacent dates (prelims day before main card)
+                import datetime as _dt
+                ed_obj = _dt.date.fromisoformat(et_date)
+                for delta in [1, -1]:
+                    adj = (ed_obj + _dt.timedelta(days=delta)).isoformat()
+                    if adj in existing_events:
+                        existing_name = existing_events[adj]
+                        break
+            ev_name = existing_name if existing_name else derived_name
+        else:
+            ev_name = "UFC Fight Night"
+
+        main_names = [main_candidate["home_team"].strip().split()[-1].lower(),
+                      main_candidate["away_team"].strip().split()[-1].lower()] if main_candidate else []
 
         # Deduplicate fights by fighter pair
         seen_pairs = set()
@@ -512,27 +530,7 @@ def main():
     for ev_name, ev_date in zip(ex_names, ex_dates):
         existing_events[ev_date] = ev_name
 
-    for ev in new_events:
-        # Try to pull weight classes from existing event if available
-        # For now just ensure event name is preserved if we know it
-        if ev["date"] in existing_events:
-            ev["name"] = existing_events[ev["date"]]
-        # Also try to enrich from Wikipedia fight card
-        slug = wiki_slug(ev["name"])
-        wikitext = fetch_wikitext(slug)
-        if wikitext:
-            # Try to get weight classes from Wikipedia
-            bouts = parse_mmaevent_bouts(wikitext)
-            if bouts:
-                # Match wiki bouts to odds fights by fighter names
-                for fight in ev["fights"]:
-                    for bout in bouts:
-                        if (names_match(fight["f1"]["name"], bout.get("winner","")) or
-                            names_match(fight["f1"]["name"], bout.get("loser","")) or
-                            names_match(fight["f2"]["name"], bout.get("winner","")) or
-                            names_match(fight["f2"]["name"], bout.get("loser",""))):
-                            pass  # Could pull weight class here if Wikipedia had it
-        time.sleep(1)
+    # No manual name fixup needed - names derived dynamically above
 
     # Sort events by date
     new_events.sort(key=lambda e: e["date"])
