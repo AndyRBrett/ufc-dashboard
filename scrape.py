@@ -131,9 +131,9 @@ def parse_upcoming_card(wikitext):
         f2 = re.sub(r"\s*\(c\)\s*", "", f2).strip()
         if not f1 or len(f1) < 2: continue
         wc = norm_wc(clean_wiki(wc_raw))
-        # Detect title fights from remaining lines (notes mention championship)
-        notes = " ".join(lines).lower()
-        title = any(k in notes for k in ["championship","title bout","title fight","ufc belt"])
+        # Title fight = one fighter has (c) champion marker in the raw wikitext
+        raw_block = block.group(1)
+        title = "(c)" in raw_block.lower()
         fights.append({"f1": f1, "f2": f2 or "TBD", "wc": wc, "title": title})
     return fights
 
