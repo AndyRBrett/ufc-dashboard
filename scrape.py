@@ -151,6 +151,21 @@ def build_events(raw_fights, existing_names):
                          key=lambda f: (f["commence_time"], len(f.get("bookmakers", []))),
                          reverse=True)
         main = ordered[0]
+
+        # Override: if an existing event name matches a fight's fighters, that's the main event
+        # e.g. "Allen vs. Costa" -> find fight with Allen and Costa
+        for cand in ordered:
+            h_last = clean_fighter(cand["home_team"]).split()[-1].lower() if cand["home_team"].strip() else ""
+            a_last = clean_fighter(cand["away_team"]).split()[-1].lower() if cand["away_team"].strip() else ""
+            for en in existing_names.values():
+                en_lower = en.lower()
+                if h_last and a_last and h_last in en_lower and a_last in en_lower:
+                    main = cand
+                    break
+            else:
+                continue
+            break
+
         f1_main = clean_fighter(main["home_team"])
         f2_main = clean_fighter(main["away_team"])
 
