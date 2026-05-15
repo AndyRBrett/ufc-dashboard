@@ -100,53 +100,57 @@ def fetch_wikitext(slug):
 # ---------------------------------------------------------------------------
 def parse_upcoming_card(wikitext):
     """
-    Parse upcoming fights from Wikipedia event page.
-    Handles {{MMAevent fight}} template format used for upcoming bouts.
-    Returns list of {f1, f2, wc, title, label}
+    Parse upcoming fight card from Wikipedia wikitable.
+    Format: | Weight || [[Fighter1]] || || [[Fighter2]] || || ||
     """
     fights = []
+    in_table = False
+    in_section = None
 
-    # Try {{MMAevent fight}} template (used for upcoming events)
-    # Format: {{MMAevent fight|f1name|f2name|weightclass|notes}}
-    for block in re.finditer(
-        r"\{\{MMAevent fight\s*\n(.*?)\}\}", wikitext, re.DOTALL | re.IGNORECASE
-    ):
-        lines = [l.strip().lstrip("|").strip() for l in block.group(1).split("\n")
-                 if l.strip().lstrip("|").strip()]
-        if len(lines) < 2: continue
-        f1 = clean(re.sub(r"\[\[([^\]|]+\|)?([^\]]+)\]\]", r"\2", lines[0])).strip()
-        f2 = clean(re.sub(r"\[\[([^\]|]+\|)?([^\]]+)\]\]", r"\2", lines[1])).strip() if len(lines) > 1 else "TBD"
-        wc_raw = lines[2] if len(lines) > 2 else ""
-        wc_raw = re.sub(r"\[\[([^\]|]+\|)?([^\]]+)\]\]", r"\2", wc_raw)
-        wc = norm_wc(clean(wc_raw))
-        notes = " ".join(lines[3:]).lower() if len(lines) > 3 else ""
-        title = "title" in notes or "championship" in notes
-        f1 = re.sub(r"\s*\(c\)\s*", "", f1).strip()
-        f2 = re.sub(r"\s*\(c\)\s*", "", f2).strip()
-        if not f1 or f1.lower() in ("tbd", "n/a", ""): continue
-        fights.append({"f1": f1, "f2": f2 or "TBD", "wc": wc, "title": title})
+    for line in wikitext.split("\n"):
+        s = line.strip()
+        if "{|" in s and "wikitable" in s.lower():
+            in_table = True; continue
+        if s.startswith("|}"):
+            in_table = False; in_section = None; continue
+        if not in_table: continue
 
-    # Also try wikitable row format as fallback
-    if not fights:
-        in_table = False
-        row = []
-        for line in wikitext.split("\n"):
-            s = line.strip()
-            if "{|" in s and "wikitable" in s.lower(): in_table = True; row = []; continue
-            if s.startswith("|}"): in_table = False; row = []; continue
-            if not in_table: continue
-            if s.startswith("|-"):
-                if row: process_card_row(row, fights)
-                row = []; continue
-            if s.startswith("!"): row = []; continue
-            if s.startswith("|"):
-                content = s.lstrip("|")
-                if "||" in content:
-                    parts = [clean_wiki(p.strip()) for p in content.split("||")]
-                    row.extend(parts)
-                else:
-                    row.append(clean_wiki(content))
-        if row: process_card_row(row, fights)
+        # Section headers: Main card, Preliminary card, Early preliminary
+        if s.startswith("!") and "colspan" in s.lower():
+            sl = s.lower()
+            if "main card" in sl or "main event" in sl: in_section = "main"
+            elif "prelim" in sl or "early" in sl: in_section = "prelim"
+            continue
+
+        # Skip column header rows and dividers
+        if s.startswith("!") and "weight" in s.lower(): continue
+        if s.startswith("|-"): continue
+
+        # Parse fight rows with || separators
+        if s.startswith("|") and "||" in s:
+            cells = [clean_wiki(c.strip()) for c in s.lstrip("|").split("||")]
+            non_empty = [c for c in cells if c.strip()]
+            if len(non_empty) < 2: continue
+
+            wc_raw = non_empty[0]
+            f1 = non_empty[1] if len(non_empty) > 1 else "TBD"
+            f2 = non_empty[2] if len(non_empty) > 2 else "TBD"
+
+            # Clean champion markers
+            f1 = re.sub(r"\s*\(c\)\s*", "", f1).strip()
+            f2 = re.sub(r"\s*\(c\)\s*", "", f2).strip()
+
+            # Skip if not a fighter name (contains result keywords)
+            skip_kw = ["decision", "tko", "ko", "submission", "round", "method", "time"]
+            if any(k in f1.lower() for k in skip_kw): continue
+            if not f1 or len(f1) < 2: continue
+
+            # Skip if f2 looks like a method
+            if any(k in f2.lower() for k in skip_kw): f2 = "TBD"
+
+            wc = norm_wc(wc_raw)
+            title = "title" in (wc_raw + " ".join(non_empty[3:])).lower() if non_empty else False
+            fights.append({"f1": f1, "f2": f2, "wc": wc, "title": title})
 
     return fights
 
@@ -158,20 +162,7 @@ def clean_wiki(text):
     text = re.sub(r"\[\d+\]", "", text)
     return asc(text).strip().strip(",").strip()
 
-def process_card_row(row, fights):
-    row = [clean_wiki(c) for c in row if clean_wiki(c)]
-    if len(row) < 2: return
-    skip = ["weight class", "winner", "method", "round", "main card", "preliminary", "bout"]
-    if any(h in " ".join(row).lower() for h in skip): return
-    # Look for "vs." separator
-    vs_idx = next((i for i, c in enumerate(row) if c.strip().lower() in ("vs.", "vs", "v.")), -1)
-    if vs_idx > 0:
-        f1 = re.sub(r"\s*\(c\)\s*", "", row[vs_idx - 1]).strip()
-        f2 = re.sub(r"\s*\(c\)\s*", "", row[vs_idx + 1]).strip() if vs_idx + 1 < len(row) else "TBD"
-        wc_raw = row[0] if vs_idx > 1 else ""
-        wc = norm_wc(wc_raw)
-        if f1 and len(f1) > 2:
-            fights.append({"f1": f1, "f2": f2, "wc": wc, "title": False})
+
 
 # ---------------------------------------------------------------------------
 # Wikipedia - parse results (fight night)
