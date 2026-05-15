@@ -2,7 +2,7 @@ name: Update UFC Fight Cards
 
 on:
   schedule:
-    # Daily 9am UTC - card structure update
+    # Daily 9am UTC - card structure + odds update
     - cron: "0 9 * * *"
     # Every 15 min Sat 4pm-4am UTC (noon-midnight ET) - fight night results
     - cron: "*/15 16-23 * * 6"
@@ -22,6 +22,8 @@ jobs:
           python-version: "3.12"
       - run: pip install requests beautifulsoup4
       - run: python scrape.py
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
