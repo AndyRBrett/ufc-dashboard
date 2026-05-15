@@ -167,28 +167,34 @@ def build_events_from_odds(fights):
         if len(day_fights) < 4:
             continue
 
+        # Deduplicate fights by fighter pair
+        seen_pairs = set()
+        unique_fights = []
+        for f in day_fights:
+            pair = tuple(sorted([f["home_team"].lower(), f["away_team"].lower()]))
+            if pair not in seen_pairs:
+                seen_pairs.add(pair)
+                unique_fights.append(f)
+
         # Identify main event: latest commence time + most bookmakers
-        # Sort all fights by (commence_time DESC, bookmaker_count DESC)
         scored = sorted(unique_fights,
-            key=lambda f: (f["commence_time"], len(f.get("bookmakers",[]))),
+            key=lambda f: (f["commence_time"], len(f.get("bookmakers", []))),
             reverse=True)
         main_candidate = scored[0] if scored else None
 
-        # Derive event name dynamically from main event fighters
+        # Derive event name from main event fighters
         if main_candidate:
             h_last = main_candidate["home_team"].strip().split()[-1]
             a_last = main_candidate["away_team"].strip().split()[-1]
-            # Check if this looks like a numbered UFC event from our known list
-            # by seeing if the fighters appear in any existing event name
             derived_name = "UFC Fight Night: %s vs. %s" % (h_last, a_last)
-            # Check existing index.html for a matching event name on this date
+            # Preserve existing name from index.html if available
             existing_name = existing_events.get(et_date, "")
             if not existing_name:
-                # Also check adjacent dates (prelims day before main card)
-                import datetime as _dt
-                ed_obj = _dt.date.fromisoformat(et_date)
+                # Check adjacent dates (prelims day before main card)
+                from datetime import date as _date, timedelta as _td
+                ed_obj = _date.fromisoformat(et_date)
                 for delta in [1, -1]:
-                    adj = (ed_obj + _dt.timedelta(days=delta)).isoformat()
+                    adj = (ed_obj + _td(days=delta)).isoformat()
                     if adj in existing_events:
                         existing_name = existing_events[adj]
                         break
@@ -198,15 +204,6 @@ def build_events_from_odds(fights):
 
         main_names = [main_candidate["home_team"].strip().split()[-1].lower(),
                       main_candidate["away_team"].strip().split()[-1].lower()] if main_candidate else []
-
-        # Deduplicate fights by fighter pair
-        seen_pairs = set()
-        unique_fights = []
-        for f in day_fights:
-            pair = tuple(sorted([f["home_team"].lower(), f["away_team"].lower()]))
-            if pair not in seen_pairs:
-                seen_pairs.add(pair)
-                unique_fights.append(f)
 
         # Identify main event fight by matching last names from event title
         main_event_fight = None
