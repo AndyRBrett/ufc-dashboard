@@ -19,7 +19,7 @@ WIKI_HDR     = {"User-Agent": "UFC-Dashboard/1.0 (https://github.com/AndyRBrett/
 UPCOMING_EVENTS = [
     ("2026-05-16", "UFC_Fight_Night:_Allen_vs._Costa",         "UFC Fight Night: Allen vs. Costa",         "Meta APEX", "Las Vegas, NV", "20:00", "17:00"),
     ("2026-06-06", "UFC_Fight_Night:_Muhammad_vs._Bonfim",     "UFC Fight Night: Muhammad vs. Bonfim",     "Meta APEX", "Las Vegas, NV", "20:00", "17:00"),
-    ("2026-06-14", "UFC_Freedom_250:_Topuria_vs._Gaethje",     "UFC Freedom 250: Topuria vs. Gaethje",     "South Lawn, White House", "Washington, D.C.", "20:00", "17:00"),
+    ("2026-06-14", "UFC_Freedom_250",                          "UFC Freedom 250: Topuria vs. Gaethje",     "South Lawn, White House", "Washington, D.C.", "20:00", "17:00"),
     ("2026-06-20", "UFC_Fight_Night:_Kape_vs._Horiguchi",      "UFC Fight Night: Kape vs. Horiguchi",      "Meta APEX", "Las Vegas, NV", "20:00", "17:00"),
     ("2026-06-27", "UFC_Fight_Night:_Fiziev_vs._Torres",       "UFC Fight Night: Fiziev vs. Torres",       "National Gymnastics Arena", "Baku, Azerbaijan", "12:00", "09:00"),
     ("2026-07-12", "UFC_329",                                  "UFC 329",                                  "T-Mobile Arena", "Las Vegas, NV", "22:00", "18:00"),
