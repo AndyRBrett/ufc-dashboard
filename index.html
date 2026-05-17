@@ -321,6 +321,7 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 <div id="app"></div>
 <button class="notif-btn" id="notifBtn" onclick="toggleNotif()" title="Fight night reminder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
 <script>
+var FIGHTER_STATS={};
 var EVENTS=[
   {
     name:"UFC Fight Night: Allen vs. Costa",
@@ -456,6 +457,7 @@ function daysOut(d){return Math.ceil((new Date(d)-Date.now())/864e5);}
 function fmtDate(d){return new Date(d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});}
 function fmtOdds(n){return n>0?"+"+n:""+n;}
 function pk(ev,fight){return ev.date+"|"+fight.f1.n+"|"+fight.f2.n;}
+function stOf(f){return f.s||(FIGHTER_STATS[f.n]||null);}
 function save(){try{localStorage.setItem("ufc_preds",JSON.stringify(preds));}catch(e){}}
 function toggleTheme(){var l=document.body.classList.toggle("light");try{localStorage.setItem("ufc_theme",l?"light":"dark");}catch(e){}}
 function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
@@ -504,7 +506,8 @@ function matchFilter(f){return curFilter==="all"||f.wc===curFilter;}
 function openStats(idx,side){
   var item=FIGHTS[idx];if(!item)return;
   var f=side===0?item.fight.f1:item.fight.f2;
-  if(!f.s){toast("Stats not available");return;}
+  var s=stOf(f);
+  if(!s){toast("Stats not available");return;}
   document.getElementById("mName").textContent=f.n;
   var subEl=document.getElementById("mSub");subEl.textContent=f.r+(f.rk?" - "+f.rk:"");
   var photoRow=document.getElementById("mPhotoRow");
@@ -518,22 +521,23 @@ function openStats(idx,side){
       if(img){img=img.replace(/\/\d+px-/,"/400px-");photoEl.onload=function(){photoRow.style.display="flex";subEl.style.display="none";};photoEl.src=img;}
     }).catch(function(){});
   var grid=document.getElementById("mGrid");grid.innerHTML="";
-  function ms(val,lbl){var d=document.createElement("div");d.className="ms";var v=document.createElement("div");v.className="ms-val";v.textContent=val;var l=document.createElement("div");l.className="ms-lbl";l.textContent=lbl;d.appendChild(v);d.appendChild(l);return d;}
-  grid.appendChild(ms(f.s.ko,"KO/TKO Wins"));grid.appendChild(ms(f.s.sub,"Sub Wins"));
-  grid.appendChild(ms(f.s.slpm,"Sig Str/Min"));grid.appendChild(ms(f.s.td,"TD Avg/15"));
+  function ms(val,lbl){var d=document.createElement("div");d.className="ms";var v=document.createElement("div");v.className="ms-val";v.textContent=val!=null?val:"—";var l=document.createElement("div");l.className="ms-lbl";l.textContent=lbl;d.appendChild(v);d.appendChild(l);return d;}
+  grid.appendChild(ms(s.ko,"KO/TKO Wins"));grid.appendChild(ms(s.sub,"Sub Wins"));
+  grid.appendChild(ms(s.slpm,"Sig Str/Min"));grid.appendChild(ms(s.td,"TD Avg/15"));
   var bars=document.getElementById("mBars");bars.innerHTML="";
   function mbar(lbl,pct){
+    var p=pct||0;
     var w=document.createElement("div");w.className="mbar-wrap";
     var hl=document.createElement("div");hl.className="mbar-lbl";
     var sl=document.createElement("span");sl.textContent=lbl;
-    var sv=document.createElement("span");sv.textContent=pct+"%";
+    var sv=document.createElement("span");sv.textContent=p+"%";
     hl.appendChild(sl);hl.appendChild(sv);w.appendChild(hl);
     var b=document.createElement("div");b.className="mbar";
     var bf=document.createElement("div");bf.className="mbar-fill";
-    bf.style.width=pct+"%";b.appendChild(bf);w.appendChild(b);return w;
+    bf.style.width=p+"%";b.appendChild(bf);w.appendChild(b);return w;
   }
-  bars.appendChild(mbar("Striking Accuracy",f.s.acc));
-  bars.appendChild(mbar("Takedown Defense",f.s.tdd));
+  bars.appendChild(mbar("Striking Accuracy",s.acc));
+  bars.appendChild(mbar("Takedown Defense",s.tdd));
   document.getElementById("statsModal").classList.add("open");
 }
 function closeModal(){document.getElementById("statsModal").classList.remove("open");}
@@ -587,7 +591,8 @@ function openCmp(f1,f2){
   var n2n=document.createElement("div");n2n.className="cmp-name";n2n.style.color="#c9a84c";n2n.textContent=f2.n;n2.appendChild(n2n);
   var n2r=document.createElement("div");n2r.className="cmp-rec";n2r.textContent=f2.r;n2.appendChild(n2r);
   names.appendChild(n1);names.appendChild(vs);names.appendChild(n2);el.appendChild(names);
-  if(f1.s&&f2.s){
+  var s1=stOf(f1),s2=stOf(f2);
+  if(s1&&s2){
     function cmpRow(lbl,v1,v2,higher){
       var n1=parseFloat(v1)||0,n2=parseFloat(v2)||0;
       var f1w=higher?n1>=n2:n1<=n2;
@@ -604,12 +609,12 @@ function openCmp(f1,f2){
       bw.appendChild(bl);bw.appendChild(br);row.appendChild(bw);
       return row;
     }
-    el.appendChild(cmpRow("Sig Str / Min",f1.s.slpm,f2.s.slpm,true));
-    el.appendChild(cmpRow("Striking Acc %",f1.s.acc+"%",f2.s.acc+"%",true));
-    el.appendChild(cmpRow("TD Defense %",f1.s.tdd+"%",f2.s.tdd+"%",true));
-    el.appendChild(cmpRow("TD Avg / 15",f1.s.td,f2.s.td,true));
-    el.appendChild(cmpRow("KO/TKO Wins",f1.s.ko,f2.s.ko,true));
-    el.appendChild(cmpRow("Sub Wins",f1.s.sub,f2.s.sub,true));
+    el.appendChild(cmpRow("Sig Str / Min",s1.slpm,s2.slpm,true));
+    el.appendChild(cmpRow("Striking Acc %",(s1.acc||0)+"%",(s2.acc||0)+"%",true));
+    el.appendChild(cmpRow("TD Defense %",(s1.tdd||0)+"%",(s2.tdd||0)+"%",true));
+    el.appendChild(cmpRow("TD Avg / 15",s1.td,s2.td,true));
+    el.appendChild(cmpRow("KO/TKO Wins",s1.ko,s2.ko,true));
+    el.appendChild(cmpRow("Sub Wins",s1.sub,s2.sub,true));
   }
   document.getElementById("cmpBg").classList.add("open");
 }
@@ -683,7 +688,7 @@ function makeFighter(fighter,right,size,regIdx,side,isWinner){
   if(fighter.r){var rec=document.createElement("div");rec.className="frec";rec.textContent=fighter.r;wrap.appendChild(rec);}
   if(fighter.rk==="C"){var pills=document.createElement("div");pills.className="fpills";var chip=document.createElement("span");chip.className="pchamp";chip.textContent="CHAMP";pills.appendChild(chip);wrap.appendChild(pills);}
   else if(fighter.rk){var pills2=document.createElement("div");pills2.className="fpills";var chip2=document.createElement("span");chip2.className="prank";chip2.textContent=fighter.rk;pills2.appendChild(chip2);wrap.appendChild(pills2);}
-  if(fighter.s){
+  if(stOf(fighter)){
     wrap.classList.add("ft-click");
     (function(ri,si){wrap.onclick=function(){openStats(ri,si);};})(regIdx,side);
     if(size!=="xs"){var hint=document.createElement("div");hint.className="stats-hint";hint.textContent="Tap for stats";wrap.appendChild(hint);}

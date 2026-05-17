@@ -290,6 +290,100 @@ def get_odds(odds_index, f1_name, f2_name):
     return None
 
 # ---------------------------------------------------------------------------
+# UFCStats - fighter stats
+# ---------------------------------------------------------------------------
+def fetch_fighter_stats(name):
+    """Fetch fighter stats from ufcstats.com. Returns dict or None."""
+    parts = clean(name).strip().split()
+    if not parts:
+        return None
+    first = parts[0] if len(parts) > 1 else ""
+    last  = parts[-1]
+    try:
+        r = requests.get(
+            "http://www.ufcstats.com/statistics/fighters",
+            params={"action": "search", "SearchFirstName": first, "SearchLastName": last},
+            timeout=15, headers={"User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)"}
+        )
+        print("  UFCStats search [%s]: %d" % (name, r.status_code), file=sys.stderr)
+        if r.status_code != 200:
+            return None
+        soup = BeautifulSoup(r.text, "html.parser")
+        rows = soup.select("table.b-statistics__table tbody tr")
+        slpm = acc = td = tdd = 0.0
+        detail_url = None
+        for row in rows:
+            link = row.select_one("td a")
+            if not link:
+                continue
+            if not names_match(link.get_text(strip=True), name):
+                continue
+            href = link.get("href", "")
+            if href:
+                detail_url = href
+            cells = row.select("td")
+            # cols: Name Nickname Ht Wt Reach Stance W L D Belt SLpM Str.Acc SApM Str.Def TDAvg TDAcc TDDef SubAvg
+            if len(cells) >= 17:
+                def g(i):
+                    return cells[i].get_text(strip=True).replace("%", "").replace("---", "0").strip() or "0"
+                try: slpm = round(float(g(10)), 2)
+                except: slpm = 0.0
+                try: acc = int(round(float(g(11))))
+                except: acc = 0
+                try: td = round(float(g(14)), 2)
+                except: td = 0.0
+                try: tdd = int(round(float(g(16))))
+                except: tdd = 0
+            break
+        if not detail_url:
+            print("  UFCStats: no match for %s" % name, file=sys.stderr)
+            return None
+        # Fetch detail page for KO/sub win counts
+        ko = sub = 0
+        time.sleep(0.5)
+        dr = requests.get(detail_url, timeout=15,
+                          headers={"User-Agent": "UFC-Dashboard/1.0"})
+        if dr.status_code == 200:
+            dsoup = BeautifulSoup(dr.text, "html.parser")
+            for frow in dsoup.select("tbody.b-fight-details__table-body tr"):
+                cells_d = frow.select("td")
+                if len(cells_d) < 8:
+                    continue
+                result = cells_d[0].get_text(strip=True).upper()
+                if result != "W":
+                    continue
+                # Check all cells from index 6 onward for method text
+                method_text = " ".join(
+                    cells_d[i].get_text(strip=True).lower()
+                    for i in range(6, min(10, len(cells_d)))
+                )
+                if "ko" in method_text or "tko" in method_text:
+                    ko += 1
+                elif "sub" in method_text:
+                    sub += 1
+        print("  Stats %s: slpm=%s acc=%s td=%s tdd=%s ko=%s sub=%s" % (
+            name, slpm, acc, td, tdd, ko, sub), file=sys.stderr)
+        return {"slpm": slpm, "acc": acc, "td": td, "tdd": tdd, "ko": ko, "sub": sub}
+    except Exception as e:
+        print("  UFCStats error [%s]: %s" % (name, e), file=sys.stderr)
+        return None
+
+def extract_stats_cache(html):
+    """Read FIGHTER_STATS JSON from HTML. Returns dict."""
+    m = re.search(r"var FIGHTER_STATS=(\{.*?\});", html, re.DOTALL)
+    if not m:
+        return {}
+    try:
+        return json.loads(m.group(1))
+    except:
+        return {}
+
+def write_stats_cache(html, cache):
+    """Replace FIGHTER_STATS object in HTML with updated cache."""
+    js_str = json.dumps(cache, separators=(",", ":"), ensure_ascii=False)
+    return re.sub(r"var FIGHTER_STATS=\{.*?\};", "var FIGHTER_STATS=%s;" % js_str, html, flags=re.DOTALL)
+
+# ---------------------------------------------------------------------------
 # Inject results into JS
 # ---------------------------------------------------------------------------
 def inject_results(js, results):
@@ -465,8 +559,26 @@ def main():
 
     new_js = events_js(new_events)
     html_new = re.sub(r"var EVENTS\s*=\s*\[.*?\];", lambda m: new_js, html, flags=re.DOTALL)
-    label = fmt_update(now)
     pass  # updateDate is computed dynamically in JS from fight data
+
+    # -- Step 4: Fetch stats for fighters not already in cache --
+    stats_cache = extract_stats_cache(html_new)
+    all_fighters = set()
+    for ev in new_events:
+        for fight in ev["fights"]:
+            for side in (fight["f1"], fight["f2"]):
+                n = side.get("name", "")
+                if n and n != "TBD":
+                    all_fighters.add(n)
+    new_fighters = sorted(n for n in all_fighters if n not in stats_cache)
+    print("Fetching stats for %d new fighters..." % len(new_fighters), file=sys.stderr)
+    for fname in new_fighters:
+        s = fetch_fighter_stats(fname)
+        if s:
+            stats_cache[fname] = s
+        time.sleep(1)
+    html_new = write_stats_cache(html_new, stats_cache)
+    print("Stats cache: %d fighters" % len(stats_cache), file=sys.stderr)
 
     if len(html_new) < 30000:
         print("Output too small - aborting", file=sys.stderr); sys.exit(0)
