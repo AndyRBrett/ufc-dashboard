@@ -401,8 +401,7 @@ def main():
     if total_injected > 0:
         label = fmt_update(now)
         html_new = html[:js_start] + js + html[js_end:]
-        html_new = re.sub(r'Updated <span id="updateDate">[^<]*</span>',
-            lambda m: 'Updated <span id="updateDate">' + label + '</span>', html_new)
+        pass  # updateDate is computed dynamically in JS from fight data
         index.write_text(html_new, encoding="utf-8")
         print("Results injected:", total_injected, file=sys.stderr)
         sys.exit(0)
@@ -467,8 +466,7 @@ def main():
     new_js = events_js(new_events)
     html_new = re.sub(r"var EVENTS\s*=\s*\[.*?\];", lambda m: new_js, html, flags=re.DOTALL)
     label = fmt_update(now)
-    html_new = re.sub(r'Updated <span id="updateDate">[^<]*</span>',
-        lambda m: 'Updated <span id="updateDate">' + label + '</span>', html_new)
+    pass  # updateDate is computed dynamically in JS from fight data
 
     if len(html_new) < 30000:
         print("Output too small - aborting", file=sys.stderr); sys.exit(0)

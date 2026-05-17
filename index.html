@@ -279,9 +279,9 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
   </div>
 </section>
 <div class="stats">
-  <div class="stat"><div class="sv" id="sev">4</div><div class="sl">Events</div></div>
-  <div class="stat"><div class="sv" id="sti">4</div><div class="sl">Titles</div></div>
-  <div class="stat"><div class="sv" id="sbo">43</div><div class="sl">Bouts</div></div>
+  <div class="stat"><div class="sv" id="sev">-</div><div class="sl">Events</div></div>
+  <div class="stat"><div class="sv" id="sti">-</div><div class="sl">Titles</div></div>
+  <div class="stat"><div class="sv" id="sbo">-</div><div class="sl">Bouts</div></div>
   <div class="stat"><div class="sv" id="picks-count">0</div><div class="sl">My Picks</div></div>
 </div>
 <div class="filter-wrap">
@@ -294,6 +294,9 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
   <button class="ftab" data-f="Featherweight" onclick="setFilter(this)">Featherweight</button>
   <button class="ftab" data-f="Bantamweight" onclick="setFilter(this)">Bantamweight</button>
   <button class="ftab" data-f="Flyweight" onclick="setFilter(this)">Flyweight</button>
+  <button class="ftab" data-f="Women's Strawweight" onclick="setFilter(this)">W. Strawweight</button>
+  <button class="ftab" data-f="Women's Bantamweight" onclick="setFilter(this)">W. Bantamweight</button>
+  <button class="ftab" data-f="Women's Flyweight" onclick="setFilter(this)">W. Flyweight</button>
 </div>
 <div class="picks-widget" id="picksWidget" style="display:none">
   <div style="display:flex;align-items:center;border-bottom:1px solid var(--border)">
@@ -302,6 +305,7 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
       <svg class="picks-toggle-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
     </button>
     <button class="share-icon-btn" onclick="openShare()" title="Share picks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+    <button class="share-icon-btn" onclick="resetPicks()" title="Reset all picks" style="color:var(--muted)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
   </div>
   <div class="picks-body" id="picksBody"></div>
 </div>
@@ -326,7 +330,7 @@ var EVENTS=[
       {lbl:"Prelim",wc:"Welterweight",title:false,odds:{f1:-120,f2:101},winner:"Khaos Williams",method:"KO/TKO",round:1,state:"post",f1:{n:"Nikolay Veretennikov",r:"",rk:"",s:null},f2:{n:"Khaos Williams",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Light Heavyweight",title:false,odds:{f1:-167,f2:139},winner:"Ivan Erslan",method:"Decision (Unanimous)",round:3,state:"post",f1:{n:"Tuco Tokkos",r:"",rk:"",s:null},f2:{n:"Ivan Erslan",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Lightweight",title:false,odds:{f1:156,f2:-185},winner:"Thomas Gantt",method:"KO/TKO",round:2,state:"post",f1:{n:"Thomas Gantt",r:"",rk:"",s:null},f2:{n:"Artur Minev",r:"",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Women'S Bantamweight",title:false,odds:{f1:-154,f2:127},winner:"Ketlen Vieira",method:"Decision (Unanimous)",round:3,state:"post",f1:{n:"Ketlen Vieira",r:"",rk:"",s:null},f2:{n:"Jacqueline Cavalcanti",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Women's Bantamweight",title:false,odds:{f1:-154,f2:127},winner:"Ketlen Vieira",method:"Decision (Unanimous)",round:3,state:"post",f1:{n:"Ketlen Vieira",r:"",rk:"",s:null},f2:{n:"Jacqueline Cavalcanti",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Middleweight",title:false,odds:{f1:-153,f2:127},winner:"Cody Brundage",method:"KO/TKO",round:2,state:"post",f1:{n:"Cody Brundage",r:"",rk:"",s:null},f2:{n:"Andre Petroski",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:{f1:-190,f2:156},winner:"Alice Ardelean",method:"Submission",round:2,state:"post",f1:{n:"Alice Ardelean",r:"",rk:"",s:null},f2:{n:"Polyana Viana",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Flyweight",title:false,odds:{f1:141,f2:-172},winner:"Luis Gurule",method:"Decision (Unanimous)",round:3,state:"post",f1:{n:"Daniel Barez",r:"",rk:"",s:null},f2:{n:"Luis Gurule",r:"",rk:"",s:null}},
@@ -351,8 +355,8 @@ var EVENTS=[
       {lbl:"Prelim",wc:"Featherweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Jordan Leavitt",r:"",rk:"",s:null},f2:{n:"Joanderson Brito",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Lightweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Fars Ziam",r:"",rk:"",s:null},f2:{n:"Tom Nolan",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Ketlen Souza",r:"",rk:"",s:null},f2:{n:"Ariane Carnelossi",r:"",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Women'S Bantamweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Priscila Cachoeira",r:"",rk:"",s:null},f2:{n:"Chelsea Chandler",r:"",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Women'S Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Jeisla Chaves",r:"",rk:"",s:null},f2:{n:"Yuneisy Duben",r:"",rk:"",s:null}}
+      {lbl:"Prelim",wc:"Women's Bantamweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Priscila Cachoeira",r:"",rk:"",s:null},f2:{n:"Chelsea Chandler",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Women's Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Jeisla Chaves",r:"",rk:"",s:null},f2:{n:"Yuneisy Duben",r:"",rk:"",s:null}}
     ]
   },
   {
@@ -386,7 +390,7 @@ var EVENTS=[
       {lbl:"Co-Main",wc:"Light Heavyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Ion Cuelaba",r:"",rk:"",s:null},f2:{n:"Navajo Stirling",r:"",rk:"",s:null}},
       {lbl:"Main Card",wc:"Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Andr Lima",r:"",rk:"",s:null},f2:{n:"Kevin Borjas",r:"",rk:"",s:null}},
       {lbl:"Main Card",wc:"Featherweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Hyder Amil",r:"",rk:"",s:null},f2:{n:"Christian Rodriguez",r:"",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Women'S Bantamweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Beatriz Mesquita",r:"",rk:"",s:null},f2:{n:"Melissa Mullins",r:"",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Women's Bantamweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Beatriz Mesquita",r:"",rk:"",s:null},f2:{n:"Melissa Mullins",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Allan Nascimento",r:"",rk:"",s:null},f2:{n:"Mitch Raposo",r:"",rk:"",s:null}}
     ]
   },
@@ -419,17 +423,31 @@ var FIGHTS=[];
 function buildReg(){FIGHTS=[];EVENTS.forEach(function(ev,ei){ev.fights.forEach(function(f,fi){FIGHTS.push({ei:ei,fi:fi,ev:ev,fight:f});});});}
 
 var curFilter="all";
-var userName="",preds={},results={};
-try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.getItem("ufc_preds")||"{}");results=JSON.parse(localStorage.getItem("ufc_results")||"{}");}catch(e){}
-var fnFights=[],fnIdx=0;
+var userName="",preds={};
+try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.getItem("ufc_preds")||"{}");}catch(e){}
+// Migrate old index-based pick keys (e0f0) to stable event+fighter keys
+(function(){
+  var hasOld=Object.keys(preds).some(function(k){return /^e\d+f\d+$/.test(k);});
+  if(!hasOld)return;
+  var migrated={};
+  EVENTS.forEach(function(ev,ei){
+    ev.fights.forEach(function(f,fi){
+      var v=preds["e"+ei+"f"+fi];
+      if(v&&(v===f.f1.n||v===f.f2.n))migrated[pk(ev,f)]=v;
+    });
+  });
+  preds=migrated;
+  try{localStorage.setItem("ufc_preds",JSON.stringify(preds));}catch(e){}
+})();
+var fnFights=[],fnIdx=0,fnEv=null;
 var notifActive=false;
 
 function pad(n){return String(n).padStart(2,"0");}
 function daysOut(d){return Math.ceil((new Date(d)-Date.now())/864e5);}
 function fmtDate(d){return new Date(d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});}
 function fmtOdds(n){return n>0?"+"+n:""+n;}
-function pk(ei,fi){return "e"+ei+"f"+fi;}
-function save(){try{localStorage.setItem("ufc_preds",JSON.stringify(preds));localStorage.setItem("ufc_results",JSON.stringify(results));}catch(e){}}
+function pk(ev,fight){return ev.date+"|"+fight.f1.n+"|"+fight.f2.n;}
+function save(){try{localStorage.setItem("ufc_preds",JSON.stringify(preds));}catch(e){}}
 function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
 
 function updateCountdown(){
@@ -517,16 +535,22 @@ function saveName(){var v=document.getElementById("nmInput").value.trim();if(!v)
 function pick(idx,side){
   var item=FIGHTS[idx];if(!item)return;
   var f=side===0?item.fight.f1:item.fight.f2;
-  checkName(function(){preds[pk(item.ei,item.fi)]=f.n;save();render();updatePicksWidget();toast("Picked: "+f.n.split(" ").pop());});
+  checkName(function(){preds[pk(item.ev,item.fight)]=f.n;save();render();updatePicksWidget();toast("Picked: "+f.n.split(" ").pop());});
 }
 
-function undoPick(ei,fi){delete preds[pk(ei,fi)];save();render();updatePicksWidget();toast("Pick removed");}
+function undoPick(ev,fight){delete preds[pk(ev,fight)];save();render();updatePicksWidget();toast("Pick removed");}
+
+function resetPicks(){
+  if(!Object.keys(preds).length)return;
+  if(!confirm("Reset all picks?"))return;
+  preds={};save();render();updatePicksWidget();toast("All picks cleared");
+}
 
 function openFN(){
   var now=Date.now();
   var ev=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5;})[0];
   if(!ev){toast("No upcoming events");return;}
-  fnFights=ev.fights;fnIdx=0;updateFN();
+  fnFights=ev.fights;fnEv=ev;fnIdx=0;updateFN();
   document.getElementById("fnMode").classList.add("open");document.body.style.overflow="hidden";
 }
 function closeFN(){document.getElementById("fnMode").classList.remove("open");document.body.style.overflow="";}
@@ -534,9 +558,7 @@ function fnNav(dir){fnIdx=Math.max(0,Math.min(fnFights.length-1,fnIdx+dir));upda
 function updateFN(){
   if(!fnFights.length)return;
   var f=fnFights[fnIdx];
-  var now=Date.now();
-  var ev=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5;})[0];
-  document.getElementById("fn-ev").textContent=ev?ev.name:"";
+  document.getElementById("fn-ev").textContent=fnEv?fnEv.name:"";
   document.getElementById("fn-wc").textContent=f.lbl+" - "+f.wc+(f.title?" - TITLE":"");
   document.getElementById("fn-f1").textContent=f.f1.n;document.getElementById("fn-r1").textContent=f.f1.r;
   document.getElementById("fn-f2").textContent=f.f2.n;document.getElementById("fn-r2").textContent=f.f2.r;
@@ -589,7 +611,7 @@ function openShare(){
   var title=document.createElement("div");title.className="share-card-title";title.textContent="MY UFC PICKS";card.appendChild(title);
   var tc=0,tr=0;
   EVENTS.forEach(function(ev,ei){
-    var eps=ev.fights.map(function(f,fi){var k=pk(ei,fi);return preds[k]?{f:f,pick:preds[k],result:f.winner||""}:null;}).filter(Boolean);
+    var eps=ev.fights.map(function(f){var k=pk(ev,f);return preds[k]?{f:f,pick:preds[k],result:f.winner||""}:null;}).filter(Boolean);
     if(!eps.length)return;
     var el=document.createElement("div");el.style.cssText="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 4px";el.textContent=ev.name;card.appendChild(el);
     eps.forEach(function(p){
@@ -611,7 +633,7 @@ function copyPicks(){
   var lines=["MY UFC PICKS"];
   EVENTS.forEach(function(ev,ei){
     var eps=[];
-    ev.fights.forEach(function(f,fi){var k=pk(ei,fi);if(preds[k])eps.push({f:f,pick:preds[k],result:f.winner||""});});
+    ev.fights.forEach(function(f){var k=pk(ev,f);if(preds[k])eps.push({f:f,pick:preds[k],result:f.winner||""});});
     if(!eps.length)return;
     lines.push("");lines.push(ev.name);
     eps.forEach(function(p){var st=!p.result?"pending":p.result===p.pick?"correct":"wrong";lines.push(p.f.lbl+": "+p.pick.split(" ").pop()+" ("+st+")");});
@@ -703,7 +725,7 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
     row.appendChild(rr);
   }
   if(showPick){
-    var key=pk(ei,fi);var myPick=preds[key]||"";var fw=fight.winner||"";
+    var key=pk(EVENTS[ei],fight);var myPick=preds[key]||"";var fw=fight.winner||"";
     var pr=document.createElement("div");pr.className="pick-row";
     var pl=document.createElement("span");pl.className="pick-lbl";pl.textContent="Pick:";pr.appendChild(pl);
     var b1=document.createElement("button");
@@ -735,11 +757,10 @@ function to12hr(t){
   var ap=h>=12?"PM":"AM";h=h%12||12;
   return h+":"+(m===0?"00":String(m).padStart(2,"0"))+" "+ap;
 }
-function makeEventBlock(ev,ei,evNum,visTotal){
+function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
   var frag=document.createDocumentFragment();
   var du=daysOut(ev.date);
   var duLabel=du===0?"Tonight":du===1?"Tomorrow":du>0?"In "+du+" days":"Completed";
-  var isFeat=ei===0;
   var titleCount=ev.fights.filter(function(f){return f.title;}).length;
   var isPPV=/ufc \d/i.test(ev.name);
   if(evNum>0){var div=document.createElement("div");div.className="ev-divider";div.textContent="Event "+(evNum+1)+" of "+visTotal;frag.appendChild(div);}
@@ -789,7 +810,7 @@ function makeEventBlock(ev,ei,evNum,visTotal){
       if(!matchFilter(f))r.style.opacity="0.3";moreBody.appendChild(r);
     });
     prelims.forEach(function(f,i){
-      var fi=mainCard.length+2+i;var r=makeFightRow(f,ei,fi,getRegIdx(ei,fi),false);
+      var fi=mainCard.length+2+i;var r=makeFightRow(f,ei,fi,getRegIdx(ei,fi),matchFilter(f));
       if(!matchFilter(f))r.style.opacity="0.3";moreBody.appendChild(r);
     });
     fw.appendChild(moreBody);
@@ -819,7 +840,7 @@ function renderPicksWidget(){
   // Split events into upcoming (has pending picks) and completed (all resolved)
   var upcomingEvs=[];var completedEvs=[];
   EVENTS.forEach(function(ev,ei){
-    var eps=ev.fights.map(function(f,fi){var k=pk(ei,fi);return preds[k]?{fi:fi,fight:f,pick:preds[k],result:f.winner||""}:null;}).filter(Boolean);
+    var eps=ev.fights.map(function(f){var k=pk(ev,f);return preds[k]?{fight:f,pick:preds[k],result:f.winner||""}:null;}).filter(Boolean);
     if(!eps.length)return;
     var hasPending=eps.some(function(p){return !p.result;});
     var evDate=new Date(ev.date).getTime();
@@ -853,7 +874,7 @@ function renderPicksWidget(){
       var ub=document.createElement("button");
       ub.style.cssText="background:none;border:none;color:var(--muted);cursor:pointer;padding:2px 6px;font-size:14px;flex-shrink:0";
       ub.textContent="x";
-      (function(ei2,fi2){ub.onclick=function(e2){e2.stopPropagation();undoPick(ei2,fi2);};})(ei,p.fi);
+      (function(ev2,fight2){ub.onclick=function(e2){e2.stopPropagation();undoPick(ev2,fight2);};})(EVENTS[ei],p.fight);
       row.appendChild(ub);
     }
     return row;
@@ -869,12 +890,6 @@ function renderPicksWidget(){
 
   // Completed section - collapsible
   if(completedEvs.length){
-    // Count resolved from completed events first (affects overall score)
-    completedEvs.forEach(function(item){
-      item.eps.forEach(function(p){
-        if(p.result){if(p.result===p.pick)correct++;resolved++;}
-      });
-    });
     var compHdr=document.createElement("div");
     compHdr.style.cssText="display:flex;align-items:center;gap:8px;padding:14px 0 8px;cursor:pointer";
     var compLbl=document.createElement("div");
@@ -884,7 +899,9 @@ function renderPicksWidget(){
     var compArrow=document.createElement("span");compArrow.style.cssText="font-size:10px;color:var(--muted);transition:transform .2s";
     compArrow.textContent="v";
     compHdr.appendChild(compLbl);compHdr.appendChild(compLine);compHdr.appendChild(compArrow);
-    var compBody=document.createElement("div");compBody.style.display="none";
+    var startOpen=!upcomingEvs.length;
+    var compBody=document.createElement("div");compBody.style.display=startOpen?"block":"none";
+    if(startOpen)compArrow.style.transform="rotate(180deg)";
     compHdr.onclick=function(){
       var open=compBody.style.display!=="none";
       compBody.style.display=open?"none":"block";
@@ -923,7 +940,11 @@ function render(){
   if(!vis.length){
     var msg=document.createElement("div");msg.style.cssText="padding:32px 16px;text-align:center;color:var(--muted);font-size:13px";msg.textContent="No fights in this weight class.";app.appendChild(msg);
   } else {
-    vis.forEach(function(ev,i){var ei=EVENTS.indexOf(ev);app.appendChild(makeEventBlock(ev,ei,i,vis.length));});
+    var now2=Date.now();
+    var featIdx=-1;
+    vis.forEach(function(ev,i){if(featIdx===-1&&new Date(ev.date).getTime()>=now2-864e5)featIdx=i;});
+    if(featIdx===-1)featIdx=0;
+    vis.forEach(function(ev,i){var ei=EVENTS.indexOf(ev);app.appendChild(makeEventBlock(ev,ei,i,vis.length,i===featIdx));});
   }
   // Compute stats dynamically from visible events only
   var allFights=vis.reduce(function(a,e){return a.concat(e.fights||[]);}, []);
@@ -933,12 +954,12 @@ function render(){
   if(stiEl)stiEl.textContent=titleFights.length;
   if(sboEl)sboEl.textContent=allFights.length;
   document.getElementById("picks-count").textContent=Object.keys(preds).length;
-  // Update page-load timestamp dynamically
+  // Show the date of the most recently completed event as "data freshness"
   var ud=document.getElementById("updateDate");
   if(ud){
-    var now=new Date();
-    var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    ud.textContent=months[now.getMonth()]+" "+now.getDate()+", "+now.getFullYear();
+    var latestEv=null;
+    EVENTS.forEach(function(ev){if(ev.fights.some(function(f){return f.state==="post";}))latestEv=ev;});
+    ud.textContent=latestEv?fmtDate(latestEv.date):"—";
   }
   updatePicksWidget();
   updateCountdown();
