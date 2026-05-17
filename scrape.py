@@ -15,15 +15,21 @@ WIKI_API     = "https://en.wikipedia.org/w/api.php"
 WIKI_HDR     = {"User-Agent": "UFC-Dashboard/1.0 (https://github.com/AndyRBrett/ufc-dashboard; andyrbrett@gmail.com)"}
 
 # Upcoming UFC events - Wikipedia page slugs
-# Scraper reads these to get full fight cards
+# Provides accurate venue/time data; auto-discovery fills in any missing events.
 UPCOMING_EVENTS = [
-    ("2026-05-16", "UFC_Fight_Night:_Allen_vs._Costa",         "UFC Fight Night: Allen vs. Costa",         "Meta APEX", "Las Vegas, NV", "20:00", "17:00"),
-    ("2026-06-06", "UFC_Fight_Night:_Muhammad_vs._Bonfim",     "UFC Fight Night: Muhammad vs. Bonfim",     "Meta APEX", "Las Vegas, NV", "20:00", "17:00"),
-    ("2026-06-14", "UFC_Freedom_250",                          "UFC Freedom 250: Topuria vs. Gaethje",     "South Lawn, White House", "Washington, D.C.", "20:00", "17:00"),
-    ("2026-06-20", "UFC_Fight_Night:_Kape_vs._Horiguchi",      "UFC Fight Night: Kape vs. Horiguchi",      "Meta APEX", "Las Vegas, NV", "20:00", "17:00"),
-    ("2026-06-27", "UFC_Fight_Night:_Fiziev_vs._Torres",       "UFC Fight Night: Fiziev vs. Torres",       "National Gymnastics Arena", "Baku, Azerbaijan", "12:00", "09:00"),
-    ("2026-07-12", "UFC_329",                                  "UFC 329",                                  "T-Mobile Arena", "Las Vegas, NV", "22:00", "18:00"),
+    ("2026-05-16", "UFC_Fight_Night:_Allen_vs._Costa",         "UFC Fight Night: Allen vs. Costa",         "Meta APEX",                   "Las Vegas, NV",        "20:00", "17:00"),
+    ("2026-05-30", "UFC_Fight_Night:_Song_vs._Figueiredo",     "UFC Fight Night: Song vs. Figueiredo",     "Galaxy Arena",                "Macau SAR, China",     "06:00", "03:00"),
+    ("2026-06-06", "UFC_Fight_Night:_Muhammad_vs._Bonfim",     "UFC Fight Night: Muhammad vs. Bonfim",     "Meta APEX",                   "Las Vegas, NV",        "20:00", "17:00"),
+    ("2026-06-14", "UFC_Freedom_250",                          "UFC Freedom 250: Topuria vs. Gaethje",     "South Lawn, White House",     "Washington, D.C.",     "20:00", "17:00"),
+    ("2026-06-20", "UFC_Fight_Night:_Kape_vs._Horiguchi",      "UFC Fight Night: Kape vs. Horiguchi",      "Meta APEX",                   "Las Vegas, NV",        "20:00", "17:00"),
+    ("2026-06-27", "UFC_Fight_Night:_Fiziev_vs._Torres",       "UFC Fight Night: Fiziev vs. Torres",       "National Gymnastics Arena",   "Baku, Azerbaijan",     "12:00", "09:00"),
+    ("2026-07-12", "UFC_329",                                  "UFC 329",                                  "T-Mobile Arena",              "Las Vegas, NV",        "22:00", "18:00"),
 ]
+
+MONTH_MAP = {m.lower(): i+1 for i, m in enumerate(
+    ["January","February","March","April","May","June",
+     "July","August","September","October","November","December"]
+)}
 
 # ---------------------------------------------------------------------------
 # Utilities
@@ -80,6 +86,59 @@ def norm_wc(raw):
     if "strawweight" in r: return "Women's Strawweight"
     if "atomweight" in r: return "Women's Atomweight"
     return r.title() if r else "TBD"
+
+# ---------------------------------------------------------------------------
+# Auto-discover upcoming events from Wikipedia "20XX_in_UFC"
+# ---------------------------------------------------------------------------
+def parse_date_wiki(s):
+    """Parse a date from wikitext context. Returns 'YYYY-MM-DD' or ''."""
+    m = re.search(r"\{\{dts\|(\d{4})\|(\d{1,2})\|(\d{1,2})", s)
+    if m:
+        return "%04d-%02d-%02d" % (int(m.group(1)), int(m.group(2)), int(m.group(3)))
+    m = re.search(
+        r"(January|February|March|April|May|June|July|August"
+        r"|September|October|November|December)\s+(\d{1,2}),?\s*(\d{4})",
+        s, re.IGNORECASE,
+    )
+    if m:
+        return "%04d-%02d-%02d" % (int(m.group(3)), MONTH_MAP[m.group(1).lower()], int(m.group(2)))
+    return ""
+
+def discover_upcoming_events(now):
+    """Scrape 'YYYY_in_UFC' Wikipedia page and return list of (date, slug, name)."""
+    wt = fetch_wikitext("%d_in_UFC" % now.year)
+    if not wt:
+        print("Auto-discovery: could not fetch %d_in_UFC" % now.year, file=sys.stderr)
+        return []
+    events = []
+    seen = set()
+    for lm in re.finditer(r"\[\[(UFC[^\]\|#]+?)(?:\|([^\]]+))?\]\]", wt):
+        slug_raw = lm.group(1).strip()
+        display  = (lm.group(2) or slug_raw).strip()
+        slug = slug_raw.replace(" ", "_")
+        if slug in seen:
+            continue
+        # Skip fighter/organisation pages (no colon or number = likely not an event)
+        if ":" not in slug_raw and not re.search(r"\d", slug_raw):
+            continue
+        ctx = wt[max(0, lm.start()-400):lm.end()+200]
+        ev_date = parse_date_wiki(ctx)
+        if not ev_date:
+            continue
+        try:
+            ed = datetime.strptime(ev_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        except:
+            continue
+        if ed < now - timedelta(days=2) or ed > now + timedelta(days=120):
+            continue
+        ev_name = clean_wiki(display)
+        if not ev_name.startswith("UFC"):
+            ev_name = slug_raw.replace("_", " ")
+        seen.add(slug)
+        events.append((ev_date, slug, asc(ev_name)))
+        print("  Discovered: %s (%s)" % (ev_name, ev_date), file=sys.stderr)
+    events.sort(key=lambda x: x[0])
+    return events
 
 # ---------------------------------------------------------------------------
 # Wikipedia - fetch wikitext
@@ -292,6 +351,41 @@ def get_odds(odds_index, f1_name, f2_name):
 # ---------------------------------------------------------------------------
 # UFCStats - fighter stats
 # ---------------------------------------------------------------------------
+def _search_ufcstats(name, first, last):
+    """Search ufcstats.com. Returns (detail_url, slpm, acc, td, tdd) or None."""
+    try:
+        r = requests.get(
+            "http://www.ufcstats.com/statistics/fighters",
+            params={"action": "search", "SearchFirstName": first, "SearchLastName": last},
+            timeout=15, headers={"User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)"}
+        )
+        if r.status_code != 200:
+            return None
+        soup = BeautifulSoup(r.text, "html.parser")
+        for row in soup.select("table.b-statistics__table tbody tr"):
+            link = row.select_one("td a")
+            if not link or not names_match(link.get_text(strip=True), name):
+                continue
+            href = link.get("href", "")
+            cells = row.select("td")
+            # cols: Name Nickname Ht Wt Reach Stance W L D Belt SLpM Str.Acc SApM Str.Def TDAvg TDAcc TDDef SubAvg
+            slpm = acc = td = tdd = 0.0
+            if len(cells) >= 17:
+                def g(i):
+                    return cells[i].get_text(strip=True).replace("%","").replace("---","0").strip() or "0"
+                try: slpm = round(float(g(10)), 2)
+                except: pass
+                try: acc = int(round(float(g(11))))
+                except: pass
+                try: td = round(float(g(14)), 2)
+                except: pass
+                try: tdd = int(round(float(g(16))))
+                except: pass
+            return (href, slpm, acc, td, tdd)
+    except Exception as e:
+        print("  UFCStats search error: %s" % e, file=sys.stderr)
+    return None
+
 def fetch_fighter_stats(name):
     """Fetch fighter stats from ufcstats.com. Returns dict or None."""
     parts = clean(name).strip().split()
@@ -299,74 +393,55 @@ def fetch_fighter_stats(name):
         return None
     first = parts[0] if len(parts) > 1 else ""
     last  = parts[-1]
-    try:
-        r = requests.get(
-            "http://www.ufcstats.com/statistics/fighters",
-            params={"action": "search", "SearchFirstName": first, "SearchLastName": last},
-            timeout=15, headers={"User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)"}
-        )
-        print("  UFCStats search [%s]: %d" % (name, r.status_code), file=sys.stderr)
-        if r.status_code != 200:
-            return None
-        soup = BeautifulSoup(r.text, "html.parser")
-        rows = soup.select("table.b-statistics__table tbody tr")
-        slpm = acc = td = tdd = 0.0
-        detail_url = None
-        for row in rows:
-            link = row.select_one("td a")
-            if not link:
-                continue
-            if not names_match(link.get_text(strip=True), name):
-                continue
-            href = link.get("href", "")
-            if href:
-                detail_url = href
-            cells = row.select("td")
-            # cols: Name Nickname Ht Wt Reach Stance W L D Belt SLpM Str.Acc SApM Str.Def TDAvg TDAcc TDDef SubAvg
-            if len(cells) >= 17:
-                def g(i):
-                    return cells[i].get_text(strip=True).replace("%", "").replace("---", "0").strip() or "0"
-                try: slpm = round(float(g(10)), 2)
-                except: slpm = 0.0
-                try: acc = int(round(float(g(11))))
-                except: acc = 0
-                try: td = round(float(g(14)), 2)
-                except: td = 0.0
-                try: tdd = int(round(float(g(16))))
-                except: tdd = 0
+
+    # Try full name first, fall back to last name only
+    searches = [(first, last)]
+    if first:
+        searches.append(("", last))
+
+    hit = None
+    for sf, sl in searches:
+        print("  UFCStats search [%s] first=%r last=%r" % (name, sf, sl), file=sys.stderr)
+        hit = _search_ufcstats(name, sf, sl)
+        if hit:
             break
-        if not detail_url:
-            print("  UFCStats: no match for %s" % name, file=sys.stderr)
-            return None
-        # Fetch detail page for KO/sub win counts
-        ko = sub = 0
-        time.sleep(0.5)
-        dr = requests.get(detail_url, timeout=15,
-                          headers={"User-Agent": "UFC-Dashboard/1.0"})
-        if dr.status_code == 200:
-            dsoup = BeautifulSoup(dr.text, "html.parser")
-            for frow in dsoup.select("tbody.b-fight-details__table-body tr"):
-                cells_d = frow.select("td")
-                if len(cells_d) < 8:
-                    continue
-                result = cells_d[0].get_text(strip=True).upper()
-                if result != "W":
-                    continue
-                # Check all cells from index 6 onward for method text
-                method_text = " ".join(
-                    cells_d[i].get_text(strip=True).lower()
-                    for i in range(6, min(10, len(cells_d)))
-                )
-                if "ko" in method_text or "tko" in method_text:
-                    ko += 1
-                elif "sub" in method_text:
-                    sub += 1
-        print("  Stats %s: slpm=%s acc=%s td=%s tdd=%s ko=%s sub=%s" % (
-            name, slpm, acc, td, tdd, ko, sub), file=sys.stderr)
-        return {"slpm": slpm, "acc": acc, "td": td, "tdd": tdd, "ko": ko, "sub": sub}
-    except Exception as e:
-        print("  UFCStats error [%s]: %s" % (name, e), file=sys.stderr)
+        if sf:
+            time.sleep(0.5)
+
+    if not hit:
+        print("  UFCStats: no match for %s" % name, file=sys.stderr)
         return None
+
+    detail_url, slpm, acc, td, tdd = hit
+
+    # Fetch detail page for KO/sub win counts
+    ko = sub = 0
+    if detail_url:
+        time.sleep(0.5)
+        try:
+            dr = requests.get(detail_url, timeout=15, headers={"User-Agent": "UFC-Dashboard/1.0"})
+            if dr.status_code == 200:
+                dsoup = BeautifulSoup(dr.text, "html.parser")
+                for frow in dsoup.select("tbody.b-fight-details__table-body tr"):
+                    cells_d = frow.select("td")
+                    if len(cells_d) < 8:
+                        continue
+                    if cells_d[0].get_text(strip=True).upper() != "W":
+                        continue
+                    method_text = " ".join(
+                        cells_d[i].get_text(strip=True).lower()
+                        for i in range(6, min(10, len(cells_d)))
+                    )
+                    if "ko" in method_text or "tko" in method_text:
+                        ko += 1
+                    elif "sub" in method_text:
+                        sub += 1
+        except Exception as e:
+            print("  UFCStats detail error: %s" % e, file=sys.stderr)
+
+    print("  Stats %s: slpm=%s acc=%s td=%s tdd=%s ko=%s sub=%s" % (
+        name, slpm, acc, td, tdd, ko, sub), file=sys.stderr)
+    return {"slpm": slpm, "acc": acc, "td": td, "tdd": tdd, "ko": ko, "sub": sub}
 
 def extract_stats_cache(html):
     """Read FIGHTER_STATS JSON from HTML. Returns dict."""
@@ -508,7 +583,18 @@ def main():
     print("Building events from Wikipedia...", file=sys.stderr)
     new_events = []
 
-    for ev_date, slug, ev_name, venue, loc, main_time, prelim_time in UPCOMING_EVENTS:
+    # Merge hardcoded events with auto-discovered ones from Wikipedia
+    hc_slugs = {row[1] for row in UPCOMING_EVENTS}
+    discovered = discover_upcoming_events(now)
+    merged = list(UPCOMING_EVENTS)
+    for ev_date, slug, ev_name in discovered:
+        if slug not in hc_slugs:
+            print("  Auto-adding missing event: %s (%s)" % (ev_name, ev_date), file=sys.stderr)
+            merged.append((ev_date, slug, ev_name, "TBD", "TBD", "20:00", "17:00"))
+            hc_slugs.add(slug)
+    merged.sort(key=lambda x: x[0])
+
+    for ev_date, slug, ev_name, venue, loc, main_time, prelim_time in merged:
         try: ed = datetime.strptime(ev_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
         except: continue
         if ed < now - timedelta(days=2) or ed > now + timedelta(days=90): continue
