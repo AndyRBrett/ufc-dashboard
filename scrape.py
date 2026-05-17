@@ -3,7 +3,7 @@
 # Card structure: Wikipedia (full cards, all fights)
 # Odds enrichment: The Odds API (live moneylines)
 # Results: Wikipedia MMAevent bout parser (fight night)
-import json, os, re, sys, time
+import json, os, re, sys, time, unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import requests
@@ -29,11 +29,15 @@ UPCOMING_EVENTS = [
 # Utilities
 # ---------------------------------------------------------------------------
 def asc(t):
+    """Transliterate accented characters to ASCII equivalents (e.g. É->E, í->i)."""
     if not t: return ""
-    return "".join(c for c in str(t) if ord(c) < 128).strip()
+    normalized = unicodedata.normalize("NFKD", str(t))
+    return "".join(c for c in normalized if ord(c) < 128).strip()
 
 def clean(name):
-    return "".join(c for c in (name or "") if ord(c) < 128).strip()
+    """Transliterate and strip accented characters from a name."""
+    normalized = unicodedata.normalize("NFKD", str(name or ""))
+    return "".join(c for c in normalized if ord(c) < 128).strip()
 
 def last_name(n):
     p = clean(n).strip().split()
@@ -70,6 +74,9 @@ def norm_wc(raw):
     if "featherweight" in r and "women" not in r: return "Featherweight"
     if "bantamweight" in r and "women" not in r: return "Bantamweight"
     if "flyweight" in r and "women" not in r: return "Flyweight"
+    if "women" in r and "featherweight" in r: return "Women's Featherweight"
+    if "women" in r and "bantamweight" in r: return "Women's Bantamweight"
+    if "women" in r and "flyweight" in r: return "Women's Flyweight"
     if "strawweight" in r: return "Women's Strawweight"
     if "atomweight" in r: return "Women's Atomweight"
     return r.title() if r else "TBD"
