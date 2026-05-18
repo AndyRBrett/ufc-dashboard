@@ -41,8 +41,9 @@ def asc(t):
     return "".join(c for c in normalized if ord(c) < 128).strip()
 
 def clean(name):
-    """Transliterate and strip accented characters from a name."""
-    normalized = unicodedata.normalize("NFKD", str(name or ""))
+    """Transliterate, strip accented chars, and remove parenthetical suffixes like (ic), (c)."""
+    s = re.sub(r"\s*\([^)]+\)\s*$", "", str(name or "")).strip()
+    normalized = unicodedata.normalize("NFKD", s)
     return "".join(c for c in normalized if ord(c) < 128).strip()
 
 def last_name(n):
@@ -348,6 +349,36 @@ def get_odds(odds_index, f1_name, f2_name):
             return {"f1": o["f2_odds"], "f2": o["f1_odds"]}
     return None
 
+def extract_existing_odds(html):
+    """Extract existing odds from the current EVENTS array in HTML.
+    Returns dict keyed by frozenset of last names -> {f1_name, f2_name, f1_odds, f2_odds}."""
+    existing = {}
+    # Serialization order: odds:{f1:N,f2:M},...,f1:{n:"NAME"...},f2:{n:"NAME"...}
+    pat = re.compile(
+        r'odds:\{f1:(-?\d+),f2:(-?\d+)\}[^f]*?f1:\{n:"([^"]+)"[^}]*\},f2:\{n:"([^"]+)"'
+    )
+    for m in pat.finditer(html):
+        f1o, f2o, f1n, f2n = int(m.group(1)), int(m.group(2)), m.group(3), m.group(4)
+        key = frozenset([last_name(f1n), last_name(f2n)])
+        existing[key] = {"f1_name": f1n, "f2_name": f2n, "f1_odds": f1o, "f2_odds": f2o}
+    print("Existing odds preserved: %d fights" % len(existing), file=sys.stderr)
+    return existing
+
+def get_odds_with_fallback(odds_index, existing_odds, f1_name, f2_name):
+    """Look up odds from API first, fall back to existing HTML odds."""
+    result = get_odds(odds_index, f1_name, f2_name)
+    if result:
+        return result
+    # Fall back to existing odds from previous HTML
+    key = frozenset([last_name(f1_name), last_name(f2_name)])
+    o = existing_odds.get(key)
+    if not o:
+        return None
+    # Return odds in the right order (f1/f2 may be swapped vs stored)
+    if last_name(f1_name) == last_name(o["f1_name"]):
+        return {"f1": o["f1_odds"], "f2": o["f2_odds"]}
+    return {"f1": o["f2_odds"], "f2": o["f1_odds"]}
+
 # ---------------------------------------------------------------------------
 # UFCStats - fighter stats
 # ---------------------------------------------------------------------------
@@ -632,8 +663,9 @@ def main():
         print("Results injected:", total_injected, file=sys.stderr)
         sys.exit(0)
 
-    # -- Step 2: Fetch Odds API for moneylines --
+    # -- Step 2: Fetch Odds API for moneylines (preserve existing if key absent) --
     print("Fetching odds...", file=sys.stderr)
+    existing_odds = extract_existing_odds(html)
     odds_index = fetch_odds()
 
     # -- Step 3: Build events from Wikipedia + enrich with odds --
@@ -675,7 +707,7 @@ def main():
             elif i == 1: lbl = "Co-Main"
             elif i < 5:  lbl = "Main Card"
             else:        lbl = "Prelim"
-            odds = get_odds(odds_index, f1, f2)
+            odds = get_odds_with_fallback(odds_index, existing_odds, f1, f2)
             card.append({
                 "label": lbl, "wc": wf.get("wc","TBD"), "title": wf.get("title",False),
                 "odds": odds, "winner": "", "method": "", "round": None, "state": "pre",
