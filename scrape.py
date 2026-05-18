@@ -476,7 +476,7 @@ def inject_results(js, results):
             if fs < 0: continue
             if 'state:"post"' in js[fs:fs+300]:
                 print("  Already set: %s" % wn, file=sys.stderr)
-                count += 1; break
+                break
             depth=0; fe=fs
             for i in range(fs,min(fs+2000,len(js))):
                 if js[i]=="{": depth+=1
