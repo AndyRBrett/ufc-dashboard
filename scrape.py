@@ -194,14 +194,15 @@ def parse_upcoming_card(wikitext):
             f2 = clean_wiki(lines[def_idx + 1]) if def_idx + 1 < len(lines) else ""
         else:
             continue
-        f1 = re.sub(r"\s*\(c\)\s*", "", f1).strip()
-        f2 = re.sub(r"\s*\(c\)\s*", "", f2).strip()
+        f1_rk = "C" if re.search(r"\(c\)", f1, re.IGNORECASE) else ("IC" if re.search(r"\(ic\)", f1, re.IGNORECASE) else "")
+        f2_rk = "C" if re.search(r"\(c\)", f2, re.IGNORECASE) else ("IC" if re.search(r"\(ic\)", f2, re.IGNORECASE) else "")
+        f1 = re.sub(r"\s*\((ic|c)\)\s*", "", f1, flags=re.IGNORECASE).strip()
+        f2 = re.sub(r"\s*\((ic|c)\)\s*", "", f2, flags=re.IGNORECASE).strip()
         if not f1 or len(f1) < 2: continue
         wc = norm_wc(clean_wiki(wc_raw))
-        # Title fight = one fighter has (c) champion marker in the raw wikitext
         raw_block = block.group(1)
         title = "(c)" in raw_block.lower()
-        fights.append({"f1": f1, "f2": f2 or "TBD", "wc": wc, "title": title})
+        fights.append({"f1": f1, "f1_rk": f1_rk, "f2": f2 or "TBD", "f2_rk": f2_rk, "wc": wc, "title": title})
     return fights
 
 
@@ -708,8 +709,8 @@ def main():
             card.append({
                 "label": lbl, "wc": wf.get("wc","TBD"), "title": wf.get("title",False),
                 "odds": odds, "winner": "", "method": "", "round": None, "state": "pre",
-                "f1": {"name": f1, "record": "", "ranking": ""},
-                "f2": {"name": f2, "record": "", "ranking": ""},
+                "f1": {"name": f1, "record": "", "ranking": wf.get("f1_rk", "")},
+                "f2": {"name": f2, "record": "", "ranking": wf.get("f2_rk", "")},
             })
 
         if not card: continue
