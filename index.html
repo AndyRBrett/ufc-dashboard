@@ -224,7 +224,7 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 @media(min-width:420px){.fn{font-size:26px}.fn.fsm{font-size:21px}}
 .search-input{background:none;border:1px solid var(--border);color:var(--text);padding:4px 10px;border-radius:20px;font:500 11px DM Sans,sans-serif;outline:none;width:130px;flex-shrink:0}
 .search-input::placeholder{color:var(--muted)}
-.ft-photo{width:40px;height:40px;border-radius:50%;object-fit:cover;display:none;border:2px solid var(--border);margin-bottom:3px}
+.ft-photo{width:40px;height:40px;border-radius:50%;border:2px solid var(--border);margin-bottom:4px;overflow:hidden;flex-shrink:0}
 .ft.ftr .ft-photo{align-self:flex-end}
 .parlay-wrap{border-top:1px solid var(--border);margin-top:4px;padding:10px 0 4px;display:flex;justify-content:space-between;align-items:center}
 .parlay-lbl{font-size:11px;color:var(--muted)}
@@ -461,6 +461,7 @@ function buildReg(){FIGHTS=[];EVENTS.forEach(function(ev,ei){ev.fights.forEach(f
 
 var curFilter="all",curSearch="";
 var FIGHTER_PHOTOS={};
+try{FIGHTER_PHOTOS=JSON.parse(localStorage.getItem("ufc_photos")||"{}");}catch(e){}
 var userName="",preds={},resolvedPicks={};
 try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.getItem("ufc_preds")||"{}");resolvedPicks=JSON.parse(localStorage.getItem("ufc_resolved")||"{}");}catch(e){}
 // Migrate old index-based pick keys (e0f0) to stable event+fighter keys
@@ -732,26 +733,46 @@ function checkFightNight(){
 function makeFighter(fighter,right,size,regIdx,side,isWinner){
   var wrap=document.createElement("div");wrap.className="ft"+(right?" ftr":"");
   if(size!=="xs"){
-    var ph=document.createElement("img");ph.className="ft-photo";
+    // Photo circle: show initials immediately, replace with real photo when loaded
+    var phWrap=document.createElement("div");phWrap.className="ft-photo";
+    var initials=fighter.n.trim().split(" ").filter(Boolean).map(function(w){return w[0].toUpperCase();});
+    phWrap.textContent=(initials[0]||"")+(initials[initials.length-1]||"");
+    phWrap.style.cssText="display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);background:var(--card2);";
     var cached=FIGHTER_PHOTOS[fighter.n];
-    if(cached){
-      ph.onload=function(){ph.style.display="block";};
+    if(cached&&cached!=="none"){
+      var ph=document.createElement("img");
+      ph.style.cssText="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;";
+      phWrap.style.position="relative";
+      ph.onload=function(){phWrap.appendChild(ph);};
       ph.src=cached;
-      if(ph.complete&&ph.naturalHeight)ph.style.display="block";
+      if(ph.complete&&ph.naturalHeight!==0)phWrap.appendChild(ph);
     } else if(cached===undefined){
       FIGHTER_PHOTOS[fighter.n]=null;
       var wn=fighter.n.replace(/'/g,"").replace(/ /g,"_");
-      (function(img,fn){
-        fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(wn))
+      (function(wrap2,fn){
+        fetch("https://en.wikipedia.org/w/api.php?action=query&titles="+encodeURIComponent(wn)+"&prop=pageimages&format=json&pithumbsize=80&origin=*")
           .then(function(r){return r.json();})
           .then(function(d){
-            var src=d&&d.thumbnail&&d.thumbnail.source;
-            if(src){src=src.replace(/\/\d+px-/,"/80px-");FIGHTER_PHOTOS[fn]=src;img.onload=function(){img.style.display="block";};img.src=src;if(img.complete&&img.naturalHeight)img.style.display="block";}
-            else{FIGHTER_PHOTOS[fn]=null;}
-          }).catch(function(){FIGHTER_PHOTOS[fighter.n]=null;});
-      })(ph,fighter.n);
+            var pages=d&&d.query&&d.query.pages;
+            var page=pages&&Object.values(pages)[0];
+            var src=page&&page.thumbnail&&page.thumbnail.source;
+            if(src){
+              FIGHTER_PHOTOS[fn]=src;
+              try{localStorage.setItem("ufc_photos",JSON.stringify(FIGHTER_PHOTOS));}catch(e){}
+              var img=document.createElement("img");
+              img.style.cssText="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;";
+              wrap2.style.position="relative";
+              img.onload=function(){wrap2.appendChild(img);};
+              img.src=src;
+              if(img.complete&&img.naturalHeight!==0)wrap2.appendChild(img);
+            } else {
+              FIGHTER_PHOTOS[fn]="none";
+              try{localStorage.setItem("ufc_photos",JSON.stringify(FIGHTER_PHOTOS));}catch(e){}
+            }
+          }).catch(function(){FIGHTER_PHOTOS[fighter.n]="none";});
+      })(phWrap,fighter.n);
     }
-    wrap.appendChild(ph);
+    wrap.appendChild(phWrap);
   }
   var nm=document.createElement("div");nm.className="fn"+(size==="sm"?" fsm":size==="xs"?" fxs":"");nm.textContent=fighter.n;
   if(isWinner)nm.style.color="var(--green)";
