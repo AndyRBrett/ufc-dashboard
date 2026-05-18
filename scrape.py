@@ -352,7 +352,8 @@ def get_odds(odds_index, f1_name, f2_name):
 # UFCStats - fighter stats
 # ---------------------------------------------------------------------------
 def _search_ufcstats(name, first, last):
-    """Search ufcstats.com. Returns (detail_url, slpm, acc, td, tdd) or None."""
+    """Search ufcstats.com. Returns (detail_url, rec) or None.
+    Stats are NOT in search results — only W/L/D available here."""
     try:
         r = requests.get(
             "http://www.ufcstats.com/statistics/fighters",
@@ -363,32 +364,29 @@ def _search_ufcstats(name, first, last):
             return None
         soup = BeautifulSoup(r.text, "html.parser")
         for row in soup.select("table.b-statistics__table tbody tr"):
-            link = row.select_one("td a")
-            if not link or not names_match(link.get_text(strip=True), name):
-                continue
-            href = link.get("href", "")
             cells = row.select("td")
-            # cols: Name Nickname Ht Wt Reach Stance W L D Belt SLpM Str.Acc SApM Str.Def TDAvg TDAcc TDDef SubAvg
-            slpm = acc = td = tdd = 0.0
+            if len(cells) < 9:
+                continue
+            # cols: 0=First(link) 1=Last(link) 2=Nickname 3=Ht 4=Wt 5=Reach 6=Stance 7=W 8=L 9=D 10=Belt
+            fl = cells[0].find("a")
+            ll = cells[1].find("a")
+            if not fl and not ll:
+                continue
+            row_name = ((fl.get_text(strip=True) if fl else "") + " " +
+                        (ll.get_text(strip=True) if ll else "")).strip()
+            if not names_match(row_name, name):
+                continue
+            href = (fl or ll).get("href", "")
             rec = ""
-            if len(cells) >= 17:
-                def g(i):
-                    return cells[i].get_text(strip=True).replace("%","").replace("---","0").strip() or "0"
-                try: slpm = round(float(g(10)), 2)
-                except: pass
-                try: acc = int(round(float(g(11))))
-                except: pass
-                try: td = round(float(g(14)), 2)
-                except: pass
-                try: tdd = int(round(float(g(16))))
-                except: pass
-                try:
-                    w=int(cells[6].get_text(strip=True) or 0)
-                    l=int(cells[7].get_text(strip=True) or 0)
-                    d=int(cells[8].get_text(strip=True) or 0)
-                    if w or l: rec="%d-%d-%d"%(w,l,d)
-                except: pass
-            return (href, slpm, acc, td, tdd, rec)
+            try:
+                w = int(cells[7].get_text(strip=True) or 0)
+                l = int(cells[8].get_text(strip=True) or 0)
+                d = int(cells[9].get_text(strip=True) or 0)
+                if w or l:
+                    rec = "%d-%d-%d" % (w, l, d)
+            except:
+                pass
+            return (href, rec)
     except Exception as e:
         print("  UFCStats search error: %s" % e, file=sys.stderr)
     return None
@@ -419,32 +417,53 @@ def fetch_fighter_stats(name):
         print("  UFCStats: no match for %s" % name, file=sys.stderr)
         return None
 
-    detail_url, slpm, acc, td, tdd, rec = hit
+    detail_url, rec = hit
+    if not detail_url:
+        return None
 
-    # Fetch detail page for KO/sub win counts
+    # Fetch detail page for career stats and KO/sub win counts
+    slpm = acc = td = tdd = 0.0
     ko = sub = 0
-    if detail_url:
-        time.sleep(0.5)
-        try:
-            dr = requests.get(detail_url, timeout=15, headers={"User-Agent": "UFC-Dashboard/1.0"})
-            if dr.status_code == 200:
-                dsoup = BeautifulSoup(dr.text, "html.parser")
-                for frow in dsoup.select("tbody.b-fight-details__table-body tr"):
-                    cells_d = frow.select("td")
-                    if len(cells_d) < 8:
-                        continue
-                    if cells_d[0].get_text(strip=True).upper() != "W":
-                        continue
-                    method_text = " ".join(
-                        cells_d[i].get_text(strip=True).lower()
-                        for i in range(6, min(10, len(cells_d)))
-                    )
-                    if "ko" in method_text or "tko" in method_text:
-                        ko += 1
-                    elif "sub" in method_text:
-                        sub += 1
-        except Exception as e:
-            print("  UFCStats detail error: %s" % e, file=sys.stderr)
+    time.sleep(0.5)
+    try:
+        dr = requests.get(detail_url, timeout=15, headers={"User-Agent": "UFC-Dashboard/1.0"})
+        if dr.status_code == 200:
+            dsoup = BeautifulSoup(dr.text, "html.parser")
+            # Career stats are in li.b-list__box-list-item as "SLpM:4.61" style text
+            for li in dsoup.select("li.b-list__box-list-item"):
+                txt = li.get_text(strip=True)
+                if ":" not in txt:
+                    continue
+                key, _, val = txt.partition(":")
+                key = key.strip().lower()
+                val = val.strip().replace("%", "").replace("---", "0") or "0"
+                try:
+                    if "slpm" in key:
+                        slpm = round(float(val), 2)
+                    elif "str. acc" in key or "str.acc" in key:
+                        acc = int(round(float(val)))
+                    elif "td avg" in key:
+                        td = round(float(val), 2)
+                    elif "td def" in key:
+                        tdd = int(round(float(val)))
+                except:
+                    pass
+            for frow in dsoup.select("tbody.b-fight-details__table-body tr"):
+                cells_d = frow.select("td")
+                if len(cells_d) < 8:
+                    continue
+                if cells_d[0].get_text(strip=True).upper() != "W":
+                    continue
+                method_text = " ".join(
+                    cells_d[i].get_text(strip=True).lower()
+                    for i in range(6, min(10, len(cells_d)))
+                )
+                if "ko" in method_text or "tko" in method_text:
+                    ko += 1
+                elif "sub" in method_text:
+                    sub += 1
+    except Exception as e:
+        print("  UFCStats detail error: %s" % e, file=sys.stderr)
 
     print("  Stats %s: slpm=%s acc=%s td=%s tdd=%s ko=%s sub=%s rec=%s" % (
         name, slpm, acc, td, tdd, ko, sub, rec), file=sys.stderr)
