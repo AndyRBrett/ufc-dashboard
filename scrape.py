@@ -351,44 +351,87 @@ def get_odds(odds_index, f1_name, f2_name):
 # ---------------------------------------------------------------------------
 # UFCStats - fighter stats
 # ---------------------------------------------------------------------------
-def _search_ufcstats(name, first, last):
-    """Search ufcstats.com. Returns (detail_url, rec) or None.
-    Stats are NOT in search results — only W/L/D available here."""
+_ufcstats_letter_cache = {}  # letter -> list of (first, last, href, w, l, d)
+
+def _load_ufcstats_letter(letter):
+    """Fetch all fighters whose last name starts with letter. Cached per letter."""
+    letter = letter.lower()
+    if letter in _ufcstats_letter_cache:
+        return _ufcstats_letter_cache[letter]
     try:
         r = requests.get(
             "http://www.ufcstats.com/statistics/fighters",
-            params={"action": "search", "SearchFirstName": first, "SearchLastName": last},
-            timeout=15, headers={"User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)"}
+            params={"char": letter, "page": "all"},
+            timeout=20, headers={"User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)"}
         )
         if r.status_code != 200:
-            return None
+            _ufcstats_letter_cache[letter] = []
+            return []
         soup = BeautifulSoup(r.text, "html.parser")
+        entries = []
         for row in soup.select("table.b-statistics__table tbody tr"):
             cells = row.select("td")
-            if len(cells) < 9:
+            if len(cells) < 10:
                 continue
-            # cols: 0=First(link) 1=Last(link) 2=Nickname 3=Ht 4=Wt 5=Reach 6=Stance 7=W 8=L 9=D 10=Belt
             fl = cells[0].find("a")
             ll = cells[1].find("a")
             if not fl and not ll:
                 continue
-            row_name = ((fl.get_text(strip=True) if fl else "") + " " +
-                        (ll.get_text(strip=True) if ll else "")).strip()
-            if not names_match(row_name, name):
-                continue
-            href = (fl or ll).get("href", "")
-            rec = ""
+            first = fl.get_text(strip=True) if fl else ""
+            last  = ll.get_text(strip=True) if ll else ""
+            href  = (fl or ll).get("href", "")
             try:
                 w = int(cells[7].get_text(strip=True) or 0)
                 l = int(cells[8].get_text(strip=True) or 0)
                 d = int(cells[9].get_text(strip=True) or 0)
-                if w or l:
-                    rec = "%d-%d-%d" % (w, l, d)
             except:
-                pass
-            return (href, rec)
+                w = l = d = 0
+            entries.append((first, last, href, w, l, d))
+        _ufcstats_letter_cache[letter] = entries
+        time.sleep(0.5)
+        return entries
     except Exception as e:
-        print("  UFCStats search error: %s" % e, file=sys.stderr)
+        print("  UFCStats letter fetch error (%s): %s" % (letter, e), file=sys.stderr)
+        _ufcstats_letter_cache[letter] = []
+        return []
+
+def _name_tokens_match(row_first, row_last, target_name):
+    """Strict match: require last name equality AND at least one first-name token match."""
+    target_parts = clean(target_name).lower().split()
+    if not target_parts:
+        return False
+    row_f = clean(row_first).lower()
+    row_l = clean(row_last).lower()
+    target_last = target_parts[-1]
+    target_firsts = set(target_parts[:-1])
+
+    # Allow last names to match in either direction (Western vs Asian ordering)
+    if row_l == target_last:
+        if not target_firsts:
+            return True
+        return any(t == row_f or row_f.startswith(t[:2]) for t in target_firsts if len(t) >= 2)
+    # Also try if row_first matches target_last (reversed order like Song Yadong)
+    if row_f == target_last:
+        if not target_firsts:
+            return True
+        return any(t == row_l or row_l.startswith(t[:2]) for t in target_firsts if len(t) >= 2)
+    return False
+
+def _search_ufcstats(name, last):
+    """Search ufcstats.com by last-name initial (with first-name fallback). Returns (detail_url, rec) or None."""
+    if not last:
+        return None
+    parts = clean(name).split()
+    # Try last-name initial first, then first-name initial as fallback (for Asian name ordering)
+    letters_to_try = [last[0].lower()]
+    if len(parts) >= 2 and parts[0][0].lower() != last[0].lower():
+        letters_to_try.append(parts[0][0].lower())
+    for letter in letters_to_try:
+        entries = _load_ufcstats_letter(letter)
+        for row_first, row_last, href, w, l, d in entries:
+            if _name_tokens_match(row_first, row_last, name):
+                rec = "%d-%d-%d" % (w, l, d) if (w or l) else ""
+                return (href, rec)
     return None
 
 def fetch_fighter_stats(name):
@@ -396,22 +439,10 @@ def fetch_fighter_stats(name):
     parts = clean(name).strip().split()
     if not parts:
         return None
-    first = parts[0] if len(parts) > 1 else ""
-    last  = parts[-1]
+    last = parts[-1]
 
-    # Try full name first, fall back to last name only
-    searches = [(first, last)]
-    if first:
-        searches.append(("", last))
-
-    hit = None
-    for sf, sl in searches:
-        print("  UFCStats search [%s] first=%r last=%r" % (name, sf, sl), file=sys.stderr)
-        hit = _search_ufcstats(name, sf, sl)
-        if hit:
-            break
-        if sf:
-            time.sleep(0.5)
+    print("  UFCStats search [%s] last=%r" % (name, last), file=sys.stderr)
+    hit = _search_ufcstats(name, last)
 
     if not hit:
         print("  UFCStats: no match for %s" % name, file=sys.stderr)
