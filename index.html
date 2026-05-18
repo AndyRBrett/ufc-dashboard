@@ -321,30 +321,29 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 <div id="app"></div>
 <button class="notif-btn" id="notifBtn" onclick="toggleNotif()" title="Fight night reminder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
 <script>
-var FIGHTER_STATS={};
+var FIGHTER_STATS={"Bo Nickal":{"slpm":0.0,"acc":0.0,"td":0.0,"tdd":0.0,"ko":0,"sub":0},"Charles Johnson":{"slpm":0.0,"acc":0.0,"td":0.0,"tdd":0.0,"ko":0,"sub":0}};
 var EVENTS=[
   {
-    name:"UFC Fight Night: Allen vs. Costa",
-    date:"2026-05-16",
-    venue:"Meta APEX",
-    loc:"Las Vegas, NV",
+    name:"UFC Fight Night: Song vs. Figueiredo",
+    date:"2026-05-30",
+    venue:"Galaxy Arena",
+    loc:"Macau SAR, China",
     tv:"Paramount+",
-    time:"20:00",
-    prelimTime:"17:00",
+    time:"06:00",
+    prelimTime:"03:00",
     fights:[
-      {lbl:"Main Event",wc:"Featherweight",title:false,odds:{f1:-126,f2:38},winner:"Arnold Allen",method:"Decision (Unanimous)",round:5,state:"post",f1:{n:"Arnold Allen",r:"",rk:"",s:null},f2:{n:"Melquizael Costa",r:"",rk:"",s:null}},
-      {lbl:"Co-Main",wc:"Featherweight",title:false,odds:null,winner:"Choi Doo-ho",method:"KO/TKO",round:2,state:"post",f1:{n:"Choi Doo-ho",r:"",rk:"",s:null},f2:{n:"Daniel Santos",r:"",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Bantamweight",title:false,odds:null,winner:"Juan Daz",method:"Submission",round:2,state:"post",f1:{n:"Malcolm Wellmaker",r:"",rk:"",s:null},f2:{n:"Juan Daz",r:"",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Catchweight (215 Lb)",title:false,odds:{f1:258,f2:-320},winner:"Modestas Bukauskas",method:"Decision (Split)",round:3,state:"post",f1:{n:"Modestas Bukauskas",r:"",rk:"",s:null},f2:{n:"Christian Edwards",r:"",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Bantamweight",title:false,odds:{f1:-129,f2:108},winner:"Bernardo Sopaj",method:"Submission",round:2,state:"post",f1:{n:"Timothy Cuamba",r:"",rk:"",s:null},f2:{n:"Bernardo Sopaj",r:"",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Welterweight",title:false,odds:{f1:-120,f2:101},winner:"Khaos Williams",method:"KO/TKO",round:1,state:"post",f1:{n:"Nikolay Veretennikov",r:"",rk:"",s:null},f2:{n:"Khaos Williams",r:"",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Light Heavyweight",title:false,odds:{f1:-167,f2:139},winner:"Ivan Erslan",method:"Decision (Unanimous)",round:3,state:"post",f1:{n:"Tuco Tokkos",r:"",rk:"",s:null},f2:{n:"Ivan Erslan",r:"",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Lightweight",title:false,odds:{f1:156,f2:-185},winner:"Thomas Gantt",method:"KO/TKO",round:2,state:"post",f1:{n:"Thomas Gantt",r:"",rk:"",s:null},f2:{n:"Artur Minev",r:"",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Women's Bantamweight",title:false,odds:{f1:-154,f2:127},winner:"Ketlen Vieira",method:"Decision (Unanimous)",round:3,state:"post",f1:{n:"Ketlen Vieira",r:"",rk:"",s:null},f2:{n:"Jacqueline Cavalcanti",r:"",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Middleweight",title:false,odds:{f1:-153,f2:127},winner:"Cody Brundage",method:"KO/TKO",round:2,state:"post",f1:{n:"Cody Brundage",r:"",rk:"",s:null},f2:{n:"Andre Petroski",r:"",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:{f1:-190,f2:156},winner:"Alice Ardelean",method:"Submission",round:2,state:"post",f1:{n:"Alice Ardelean",r:"",rk:"",s:null},f2:{n:"Polyana Viana",r:"",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Flyweight",title:false,odds:{f1:141,f2:-172},winner:"Luis Gurule",method:"Decision (Unanimous)",round:3,state:"post",f1:{n:"Daniel Barez",r:"",rk:"",s:null},f2:{n:"Luis Gurule",r:"",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:{f1:-273,f2:218},winner:"Nicolle Caliari",method:"Submission",round:3,state:"post",f1:{n:"Shauna Bannon",r:"",rk:"",s:null},f2:{n:"Nicolle Caliari",r:"",rk:"",s:null}}
+      {lbl:"Main Event",wc:"Bantamweight",title:false,odds:{f1:392,f2:-523},winner:"",method:"",round:null,state:"pre",f1:{n:"Song Yadong",r:"",rk:"",s:null},f2:{n:"Deiveson Figueiredo",r:"",rk:"",s:null}},
+      {lbl:"Co-Main",wc:"Light Heavyweight",title:false,odds:{f1:180,f2:-216},winner:"",method:"",round:null,state:"pre",f1:{n:"Zhang Mingyang",r:"",rk:"",s:null},f2:{n:"Alonzo Menifield",r:"",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Heavyweight",title:false,odds:{f1:-483,f2:367},winner:"",method:"",round:null,state:"pre",f1:{n:"Sergei Pavlovich",r:"",rk:"",s:null},f2:{n:"Tallison Teixeira",r:"",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Bantamweight",title:false,odds:{f1:248,f2:-302},winner:"",method:"",round:null,state:"pre",f1:{n:"Kai Asakura",r:"",rk:"",s:null},f2:{n:"Cameron Smotherman",r:"",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Welterweight",title:false,odds:{f1:-105,f2:-115},winner:"",method:"",round:null,state:"pre",f1:{n:"Muslim Salikhov",r:"",rk:"",s:null},f2:{n:"Jake Matthews",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Flyweight",title:false,odds:{f1:-125,f2:105},winner:"",method:"",round:null,state:"pre",f1:{n:"Alex Perez",r:"",rk:"",s:null},f2:{n:"Su Mudaerji",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Middleweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Lee Yi-sak",r:"",rk:"",s:null},f2:{n:"Luis Felipe Dias",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Welterweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Ding Meng",r:"",rk:"",s:null},f2:{n:"Jose Henrique Souza",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Bantamweight",title:false,odds:{f1:278,f2:-348},winner:"",method:"",round:null,state:"pre",f1:{n:"Aori Qileng",r:"",rk:"",s:null},f2:{n:"Cody Haddon",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Flyweight",title:false,odds:{f1:252,f2:-308},winner:"",method:"",round:null,state:"pre",f1:{n:"Rei Tsuruya",r:"",rk:"",s:null},f2:{n:"Jesus Santos Aguilar",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Angela Hill",r:"",rk:"",s:null},f2:{n:"Xiong Jingnan",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:{f1:36,f2:-122},winner:"",method:"",round:null,state:"pre",f1:{n:"Loma Lookboonmee",r:"",rk:"",s:null},f2:{n:"Jaqueline Amorim",r:"",rk:"",s:null}}
     ]
   },
   {
@@ -360,10 +359,10 @@ var EVENTS=[
       {lbl:"Co-Main",wc:"Middleweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Brendan Allen",r:"",rk:"",s:null},f2:{n:"Edmen Shahbazyan",r:"",rk:"",s:null}},
       {lbl:"Main Card",wc:"Bantamweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Bryce Mitchell",r:"",rk:"",s:null},f2:{n:"Victor Henry",r:"",rk:"",s:null}},
       {lbl:"Main Card",wc:"Light Heavyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Iwo Baraniewski",r:"",rk:"",s:null},f2:{n:"Billy Elekana",r:"",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Imanol Rodrguez",r:"",rk:"",s:null},f2:{n:"Matt Schnell",r:"",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Bruno Gustavo da Silva",r:"",rk:"",s:null},f2:{n:"dgar Chirez",r:"",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Imanol Rodriguez",r:"",rk:"",s:null},f2:{n:"Matt Schnell",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Bruno Gustavo da Silva",r:"",rk:"",s:null},f2:{n:"Edgar Chairez",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Featherweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Jordan Leavitt",r:"",rk:"",s:null},f2:{n:"Joanderson Brito",r:"",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Lightweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Fars Ziam",r:"",rk:"",s:null},f2:{n:"Tom Nolan",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Lightweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Fares Ziam",r:"",rk:"",s:null},f2:{n:"Tom Nolan",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Women's Strawweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Ketlen Souza",r:"",rk:"",s:null},f2:{n:"Ariane Carnelossi",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Women's Bantamweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Priscila Cachoeira",r:"",rk:"",s:null},f2:{n:"Chelsea Chandler",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Women's Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Jeisla Chaves",r:"",rk:"",s:null},f2:{n:"Yuneisy Duben",r:"",rk:"",s:null}}
@@ -381,8 +380,8 @@ var EVENTS=[
       {lbl:"Main Event",wc:"Lightweight",title:true,odds:{f1:-790,f2:520},winner:"",method:"",round:null,state:"pre",f1:{n:"Ilia Topuria",r:"",rk:"",s:null},f2:{n:"Justin Gaethje (ic)",r:"",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Heavyweight",title:false,odds:{f1:-114,f2:-109},winner:"",method:"",round:null,state:"pre",f1:{n:"Alex Pereira",r:"",rk:"",s:null},f2:{n:"Ciryl Gane",r:"",rk:"",s:null}},
       {lbl:"Main Card",wc:"Bantamweight",title:false,odds:{f1:307,f2:-415},winner:"",method:"",round:null,state:"pre",f1:{n:"Sean O'Malley",r:"",rk:"",s:null},f2:{n:"Aiemann Zahabi",r:"",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Heavyweight",title:false,odds:{f1:-327,f2:252},winner:"",method:"",round:null,state:"pre",f1:{n:"Josh Hokit",r:"",rk:"",s:null},f2:{n:"Derrick Lewis",r:"",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Lightweight",title:false,odds:{f1:-622,f2:432},winner:"",method:"",round:null,state:"pre",f1:{n:"Maurcio Ruffy",r:"",rk:"",s:null},f2:{n:"Michael Chandler",r:"",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Heavyweight",title:false,odds:{f1:-332,f2:255},winner:"",method:"",round:null,state:"pre",f1:{n:"Josh Hokit",r:"",rk:"",s:null},f2:{n:"Derrick Lewis",r:"",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Lightweight",title:false,odds:{f1:-613,f2:427},winner:"",method:"",round:null,state:"pre",f1:{n:"Mauricio Ruffy",r:"",rk:"",s:null},f2:{n:"Michael Chandler",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Middleweight",title:false,odds:{f1:-311,f2:240},winner:"",method:"",round:null,state:"pre",f1:{n:"Bo Nickal",r:"",rk:"",s:null},f2:{n:"Kyle Daukaus",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Featherweight",title:false,odds:{f1:-190,f2:156},winner:"",method:"",round:null,state:"pre",f1:{n:"Diego Lopes",r:"",rk:"",s:null},f2:{n:"Steve Garcia",r:"",rk:"",s:null}}
     ]
@@ -397,8 +396,8 @@ var EVENTS=[
     prelimTime:"17:00",
     fights:[
       {lbl:"Main Event",wc:"Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Manel Kape",r:"",rk:"",s:null},f2:{n:"Kyoji Horiguchi",r:"",rk:"",s:null}},
-      {lbl:"Co-Main",wc:"Light Heavyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Ion Cuelaba",r:"",rk:"",s:null},f2:{n:"Navajo Stirling",r:"",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Andr Lima",r:"",rk:"",s:null},f2:{n:"Kevin Borjas",r:"",rk:"",s:null}},
+      {lbl:"Co-Main",wc:"Light Heavyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Ion Cutelaba",r:"",rk:"",s:null},f2:{n:"Navajo Stirling",r:"",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Andre Lima",r:"",rk:"",s:null},f2:{n:"Kevin Borjas",r:"",rk:"",s:null}},
       {lbl:"Main Card",wc:"Featherweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Hyder Amil",r:"",rk:"",s:null},f2:{n:"Christian Rodriguez",r:"",rk:"",s:null}},
       {lbl:"Main Card",wc:"Women's Bantamweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Beatriz Mesquita",r:"",rk:"",s:null},f2:{n:"Melissa Mullins",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Allan Nascimento",r:"",rk:"",s:null},f2:{n:"Mitch Raposo",r:"",rk:"",s:null}}
@@ -425,6 +424,26 @@ var EVENTS=[
       {lbl:"Prelim",wc:"Light Heavyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Abdul-Rakhman Yakhyaev",r:"",rk:"",s:null},f2:{n:"Julius Walker",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Asu Almabayev",r:"",rk:"",s:null},f2:{n:"Charles Johnson",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Welterweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Farman Hasanov",r:"",rk:"",s:null},f2:{n:"Eric Nolan",r:"",rk:"",s:null}}
+    ]
+  },
+  {
+    name:"UFC 329",
+    date:"2026-07-12",
+    venue:"T-Mobile Arena",
+    loc:"Las Vegas, NV",
+    tv:"Paramount+",
+    time:"22:00",
+    prelimTime:"18:00",
+    fights:[
+      {lbl:"Main Event",wc:"Welterweight",title:false,odds:{f1:330,f2:-435},winner:"",method:"",round:null,state:"pre",f1:{n:"Conor McGregor",r:"",rk:"",s:null},f2:{n:"Max Holloway",r:"",rk:"",s:null}},
+      {lbl:"Co-Main",wc:"Lightweight",title:false,odds:{f1:148,f2:-175},winner:"",method:"",round:null,state:"pre",f1:{n:"Paddy Pimblett",r:"",rk:"",s:null},f2:{n:"Benoit Saint Denis",r:"",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Bantamweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Cody Garbrandt",r:"",rk:"",s:null},f2:{n:"Adrian Yanez",r:"",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Light Heavyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Robert Whittaker",r:"",rk:"",s:null},f2:{n:"Nikita Krylov",r:"",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Flyweight",title:false,odds:{f1:145,f2:-170},winner:"",method:"",round:null,state:"pre",f1:{n:"Brandon Royval",r:"",rk:"",s:null},f2:{n:"Lone'er Kavanagh",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Women's Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Tracy Cortez",r:"",rk:"",s:null},f2:{n:"Wang Cong",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Middleweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Damian Pinas",r:"",rk:"",s:null},f2:{n:"Cesar Almeida",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Featherweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Luke Riley",r:"",rk:"",s:null},f2:{n:"Kai Kamaka III",r:"",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Flyweight",title:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Ode' Osbourne",r:"",rk:"",s:null},f2:{n:"Cody Durden",r:"",rk:"",s:null}}
     ]
   }
 ];
