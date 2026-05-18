@@ -972,7 +972,25 @@ function renderPicksWidget(){
   // Upcoming picks first
   upcomingEvs.forEach(function(item){makeEvSection(item.ev,item.ei,item.eps,true);});
 
-  // Completed section - collapsible
+  // Collect pick keys matched by current EVENTS
+  var matchedKeys=new Set();
+  upcomingEvs.forEach(function(item){item.eps.forEach(function(p){matchedKeys.add(pk(item.ev,p.fight));});});
+  completedEvs.forEach(function(item){item.eps.forEach(function(p){matchedKeys.add(pk(item.ev,p.fight));});});
+
+  // Orphaned picks: stored in preds but not in current EVENTS (old completed events)
+  var orphanGroups={};
+  Object.keys(preds).forEach(function(k){
+    if(matchedKeys.has(k))return;
+    var parts=k.split("|");
+    if(parts.length<3)return;
+    var date=parts[0],f1n=parts[1],f2n=parts[2];
+    if(!orphanGroups[date])orphanGroups[date]={date:date,rows:[]};
+    orphanGroups[date].rows.push({f1n:f1n,f2n:f2n,pick:preds[k]});
+  });
+  var orphanList=Object.values(orphanGroups).sort(function(a,b){return b.date.localeCompare(a.date);});
+  completedEvs=completedEvs.concat(orphanList.map(function(g){return {ev:{name:g.date,date:g.date},ei:-1,eps:g.rows.map(function(r){return {fight:{lbl:"",wc:"",f1:{n:r.f1n},f2:{n:r.f2n},odds:null,winner:""},pick:r.pick,result:""};}),isOrphan:true};}));
+
+  // Completed + historical section - collapsible
   if(completedEvs.length){
     var compHdr=document.createElement("div");
     compHdr.style.cssText="display:flex;align-items:center;gap:8px;padding:14px 0 8px;cursor:pointer";
@@ -981,7 +999,7 @@ function renderPicksWidget(){
     compLbl.textContent="Completed Events";
     var compLine=document.createElement("div");compLine.style.cssText="flex:1;height:1px;background:var(--border)";
     var compArrow=document.createElement("span");compArrow.style.cssText="font-size:10px;color:var(--muted);transition:transform .2s";
-    compArrow.textContent="v";
+    compArrow.textContent="▼";
     compHdr.appendChild(compLbl);compHdr.appendChild(compLine);compHdr.appendChild(compArrow);
     var startOpen=!upcomingEvs.length;
     var compBody=document.createElement("div");compBody.style.display=startOpen?"block":"none";
@@ -993,8 +1011,23 @@ function renderPicksWidget(){
     };
     body.appendChild(compHdr);body.appendChild(compBody);
     completedEvs.forEach(function(item){
-      var lbl=document.createElement("div");lbl.className="picks-ev-label";lbl.textContent=item.ev.name;compBody.appendChild(lbl);
-      item.eps.forEach(function(p){compBody.appendChild(makePickRow(p,item.ei,false));});
+      if(item.isOrphan){
+        // Orphaned picks from old events — parse date for label
+        var d=item.ev.date;try{d=new Date(d).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});}catch(e){}
+        var lbl=document.createElement("div");lbl.className="picks-ev-label";lbl.textContent=d;compBody.appendChild(lbl);
+        item.eps.forEach(function(p){
+          var row=document.createElement("div");row.className="pick-summary-row";
+          var pn=document.createElement("div");pn.className="pick-fighter-pick";pn.textContent=p.pick.split(" ").pop();row.appendChild(pn);
+          var opp=document.createElement("div");opp.style.cssText="font-size:11px;color:var(--muted);flex-shrink:0";
+          var oppName=p.pick===p.fight.f1.n?p.fight.f2.n:p.fight.f1.n;
+          opp.textContent="vs "+oppName.split(" ").pop();row.appendChild(opp);
+          var bdg=document.createElement("div");bdg.className="pick-result-badge pending";bdg.textContent="Past";row.appendChild(bdg);
+          compBody.appendChild(row);
+        });
+      } else {
+        var lbl=document.createElement("div");lbl.className="picks-ev-label";lbl.textContent=item.ev.name;compBody.appendChild(lbl);
+        item.eps.forEach(function(p){compBody.appendChild(makePickRow(p,item.ei,false));});
+      }
     });
   }
 
