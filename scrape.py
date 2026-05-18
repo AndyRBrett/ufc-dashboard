@@ -370,6 +370,7 @@ def _search_ufcstats(name, first, last):
             cells = row.select("td")
             # cols: Name Nickname Ht Wt Reach Stance W L D Belt SLpM Str.Acc SApM Str.Def TDAvg TDAcc TDDef SubAvg
             slpm = acc = td = tdd = 0.0
+            rec = ""
             if len(cells) >= 17:
                 def g(i):
                     return cells[i].get_text(strip=True).replace("%","").replace("---","0").strip() or "0"
@@ -381,7 +382,13 @@ def _search_ufcstats(name, first, last):
                 except: pass
                 try: tdd = int(round(float(g(16))))
                 except: pass
-            return (href, slpm, acc, td, tdd)
+                try:
+                    w=int(cells[6].get_text(strip=True) or 0)
+                    l=int(cells[7].get_text(strip=True) or 0)
+                    d=int(cells[8].get_text(strip=True) or 0)
+                    if w or l: rec="%d-%d-%d"%(w,l,d)
+                except: pass
+            return (href, slpm, acc, td, tdd, rec)
     except Exception as e:
         print("  UFCStats search error: %s" % e, file=sys.stderr)
     return None
@@ -412,7 +419,7 @@ def fetch_fighter_stats(name):
         print("  UFCStats: no match for %s" % name, file=sys.stderr)
         return None
 
-    detail_url, slpm, acc, td, tdd = hit
+    detail_url, slpm, acc, td, tdd, rec = hit
 
     # Fetch detail page for KO/sub win counts
     ko = sub = 0
@@ -439,9 +446,9 @@ def fetch_fighter_stats(name):
         except Exception as e:
             print("  UFCStats detail error: %s" % e, file=sys.stderr)
 
-    print("  Stats %s: slpm=%s acc=%s td=%s tdd=%s ko=%s sub=%s" % (
-        name, slpm, acc, td, tdd, ko, sub), file=sys.stderr)
-    return {"slpm": slpm, "acc": acc, "td": td, "tdd": tdd, "ko": ko, "sub": sub}
+    print("  Stats %s: slpm=%s acc=%s td=%s tdd=%s ko=%s sub=%s rec=%s" % (
+        name, slpm, acc, td, tdd, ko, sub, rec), file=sys.stderr)
+    return {"slpm": slpm, "acc": acc, "td": td, "tdd": tdd, "ko": ko, "sub": sub, "rec": rec}
 
 def extract_stats_cache(html):
     """Read FIGHTER_STATS JSON from HTML. Returns dict."""
@@ -643,12 +650,8 @@ def main():
         print("No events built - keeping existing", file=sys.stderr)
         sys.exit(0)
 
-    new_js = events_js(new_events)
-    html_new = re.sub(r"var EVENTS\s*=\s*\[.*?\];", lambda m: new_js, html, flags=re.DOTALL)
-    pass  # updateDate is computed dynamically in JS from fight data
-
-    # -- Step 4: Fetch stats for fighters not already in cache --
-    stats_cache = extract_stats_cache(html_new)
+    # -- Step 4: Fetch stats before serialization so records can be back-filled --
+    stats_cache = extract_stats_cache(html)
     all_fighters = set()
     for ev in new_events:
         for fight in ev["fights"]:
@@ -663,8 +666,22 @@ def main():
         if s:
             stats_cache[fname] = s
         time.sleep(1)
-    html_new = write_stats_cache(html_new, stats_cache)
     print("Stats cache: %d fighters" % len(stats_cache), file=sys.stderr)
+
+    # Back-fill fighter records from stats cache into new_events before serialization
+    for ev in new_events:
+        for fight in ev["fights"]:
+            for sk in ("f1", "f2"):
+                f = fight[sk]
+                if not f.get("record"):
+                    s = stats_cache.get(f.get("name", ""), {})
+                    if s and s.get("rec"):
+                        f["record"] = s["rec"]
+
+    new_js = events_js(new_events)
+    html_new = re.sub(r"var EVENTS\s*=\s*\[.*?\];", lambda m: new_js, html, flags=re.DOTALL)
+    pass  # updateDate is computed dynamically in JS from fight data
+    html_new = write_stats_cache(html_new, stats_cache)
 
     if len(html_new) < 30000:
         print("Output too small - aborting", file=sys.stderr); sys.exit(0)

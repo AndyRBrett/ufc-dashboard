@@ -222,6 +222,13 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:10px 18px;border-radius:8px;font-size:12px;z-index:500;transition:transform .25s ease;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 @media(min-width:420px){.fn{font-size:26px}.fn.fsm{font-size:21px}}
+.search-input{background:none;border:1px solid var(--border);color:var(--text);padding:4px 10px;border-radius:20px;font:500 11px DM Sans,sans-serif;outline:none;width:130px;flex-shrink:0}
+.search-input::placeholder{color:var(--muted)}
+.ft-photo{width:40px;height:40px;border-radius:50%;object-fit:cover;display:none;border:2px solid var(--border);margin-bottom:3px}
+.ft.ftr .ft-photo{align-self:flex-end}
+.parlay-wrap{border-top:1px solid var(--border);margin-top:4px;padding:10px 0 4px;display:flex;justify-content:space-between;align-items:center}
+.parlay-lbl{font-size:11px;color:var(--muted)}
+.parlay-val{font-family:Bebas Neue,sans-serif;font-size:16px;color:var(--gold)}
 
 </style>
 </head>
@@ -306,6 +313,7 @@ body{background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;min-h
   <button class="ftab" data-f="Women's Strawweight" onclick="setFilter(this)">W. Strawweight</button>
   <button class="ftab" data-f="Women's Bantamweight" onclick="setFilter(this)">W. Bantamweight</button>
   <button class="ftab" data-f="Women's Flyweight" onclick="setFilter(this)">W. Flyweight</button>
+  <input type="search" class="search-input" id="fighterSearch" placeholder="Search fighter..." oninput="setSearch(this.value)">
 </div>
 <div class="picks-widget" id="picksWidget" style="display:none">
   <div style="display:flex;align-items:center;border-bottom:1px solid var(--border)">
@@ -451,7 +459,8 @@ var EVENTS=[
 var FIGHTS=[];
 function buildReg(){FIGHTS=[];EVENTS.forEach(function(ev,ei){ev.fights.forEach(function(f,fi){FIGHTS.push({ei:ei,fi:fi,ev:ev,fight:f});});});}
 
-var curFilter="all";
+var curFilter="all",curSearch="";
+var FIGHTER_PHOTOS={};
 var userName="",preds={};
 try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.getItem("ufc_preds")||"{}");}catch(e){}
 // Migrate old index-based pick keys (e0f0) to stable event+fighter keys
@@ -520,7 +529,12 @@ function setFilter(btn){
   btn.classList.add("active");
   render();
 }
-function matchFilter(f){return curFilter==="all"||f.wc===curFilter;}
+function matchFilter(f){
+  if(curFilter!=="all"&&f.wc!==curFilter)return false;
+  if(!curSearch)return true;
+  return f.f1.n.toLowerCase().indexOf(curSearch)>-1||f.f2.n.toLowerCase().indexOf(curSearch)>-1;
+}
+function setSearch(v){curSearch=v.trim().toLowerCase();render();}
 
 function openStats(idx,side){
   var item=FIGHTS[idx];if(!item)return;
@@ -601,16 +615,16 @@ function updateFN(){
 function openCmp(f1,f2){
   var el=document.getElementById("cmpContent");if(!el)return;
   el.innerHTML="";
+  var s1=stOf(f1),s2=stOf(f2);
   var names=document.createElement("div");names.className="cmp-names";
   var n1=document.createElement("div");
   var n1n=document.createElement("div");n1n.className="cmp-name";n1n.style.color="#e8192c";n1n.textContent=f1.n;n1.appendChild(n1n);
-  var n1r=document.createElement("div");n1r.className="cmp-rec";n1r.textContent=f1.r;n1.appendChild(n1r);
+  var n1r=document.createElement("div");n1r.className="cmp-rec";n1r.textContent=f1.r||(s1&&s1.rec)||"";n1.appendChild(n1r);
   var vs=document.createElement("div");vs.className="cmp-vs";vs.textContent="VS";
   var n2=document.createElement("div");
   var n2n=document.createElement("div");n2n.className="cmp-name";n2n.style.color="#c9a84c";n2n.textContent=f2.n;n2.appendChild(n2n);
-  var n2r=document.createElement("div");n2r.className="cmp-rec";n2r.textContent=f2.r;n2.appendChild(n2r);
+  var n2r=document.createElement("div");n2r.className="cmp-rec";n2r.textContent=f2.r||(s2&&s2.rec)||"";n2.appendChild(n2r);
   names.appendChild(n1);names.appendChild(vs);names.appendChild(n2);el.appendChild(names);
-  var s1=stOf(f1),s2=stOf(f2);
   if(s1&&s2){
     function cmpRow(lbl,v1,v2,higher){
       var n1=parseFloat(v1)||0,n2=parseFloat(v2)||0;
@@ -677,11 +691,27 @@ function copyPicks(){
   else{try{var ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);toast("Copied!");closeShare();}catch(e){toast("Copy failed");}}
 }
 
+function fireNotif(title,body){
+  if(Notification.permission!=="granted")return;
+  try{new Notification(title,{body:body,icon:"https://andyrbrett.github.io/ufc-dashboard/icon.png"});}catch(e){}
+}
+function checkNotifSchedule(){
+  if(!notifActive||Notification.permission!=="granted")return;
+  var now=Date.now();
+  EVENTS.forEach(function(ev){
+    var dp=ev.date.split("-");
+    function evTime(t){var p=(t||"0:0").split(":");return Date.UTC(+dp[0],+dp[1]-1,+dp[2],+p[0]+4,+(p[1]||0),0);}
+    var mainT=evTime(ev.time);var diff=mainT-now;
+    if(diff>0&&diff<=36e5&&!ev._notifMain){ev._notifMain=true;setTimeout(function(){fireNotif("UFC Main Card Starting",ev.name+" main card begins in 30 min!");},Math.max(0,diff-30*6e4));}
+    if(ev.prelimTime){var preT=evTime(ev.prelimTime);var pd=preT-now;if(pd>0&&pd<=36e5&&!ev._notifPre){ev._notifPre=true;setTimeout(function(){fireNotif("UFC Prelims Starting",ev.name+" prelims begin in 30 min!");},Math.max(0,pd-30*6e4));}}
+  });
+}
+setInterval(checkNotifSchedule,5*60*1000);
 function toggleNotif(){
   if(!("Notification" in window)){toast("Notifications not supported");return;}
   if(notifActive){notifActive=false;document.getElementById("notifBtn").classList.remove("active");toast("Reminders off");try{localStorage.setItem("ufc_notif","0");}catch(e){}return;}
   Notification.requestPermission().then(function(perm){
-    if(perm==="granted"){notifActive=true;document.getElementById("notifBtn").classList.add("active");try{localStorage.setItem("ufc_notif","1");}catch(e){}toast("Fight night reminders on!");}
+    if(perm==="granted"){notifActive=true;document.getElementById("notifBtn").classList.add("active");try{localStorage.setItem("ufc_notif","1");}catch(e){}checkNotifSchedule();toast("Fight night reminders on!");}
     else{toast("Enable notifications in settings");}
   });
 }
@@ -701,10 +731,30 @@ function checkFightNight(){
 
 function makeFighter(fighter,right,size,regIdx,side,isWinner){
   var wrap=document.createElement("div");wrap.className="ft"+(right?" ftr":"");
+  if(size!=="xs"){
+    var ph=document.createElement("img");ph.className="ft-photo";
+    var cached=FIGHTER_PHOTOS[fighter.n];
+    if(cached){ph.src=cached;ph.onload=function(){ph.style.display="block";};}
+    else if(cached===undefined){
+      FIGHTER_PHOTOS[fighter.n]=null;
+      var wn=fighter.n.replace(/ /g,"_");
+      (function(img,fn){
+        fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(wn))
+          .then(function(r){return r.json();})
+          .then(function(d){
+            var src=d&&d.thumbnail&&d.thumbnail.source;
+            if(src){src=src.replace(/\/\d+px-/,"/80px-");FIGHTER_PHOTOS[fn]=src;img.src=src;img.onload=function(){img.style.display="block";};}
+            else{FIGHTER_PHOTOS[fn]=null;}
+          }).catch(function(){FIGHTER_PHOTOS[fighter.n]=null;});
+      })(ph,fighter.n);
+    }
+    wrap.appendChild(ph);
+  }
   var nm=document.createElement("div");nm.className="fn"+(size==="sm"?" fsm":size==="xs"?" fxs":"");nm.textContent=fighter.n;
   if(isWinner)nm.style.color="var(--green)";
   wrap.appendChild(nm);
-  if(fighter.r){var rec=document.createElement("div");rec.className="frec";rec.textContent=fighter.r;wrap.appendChild(rec);}
+  var recTxt=fighter.r||(stOf(fighter)&&stOf(fighter).rec)||"";
+  if(recTxt){var rec=document.createElement("div");rec.className="frec";rec.textContent=recTxt;wrap.appendChild(rec);}
   if(fighter.rk==="C"){var pills=document.createElement("div");pills.className="fpills";var chip=document.createElement("span");chip.className="pchamp";chip.textContent="CHAMP";pills.appendChild(chip);wrap.appendChild(pills);}
   else if(fighter.rk){var pills2=document.createElement("div");pills2.className="fpills";var chip2=document.createElement("span");chip2.className="prank";chip2.textContent=fighter.rk;pills2.appendChild(chip2);wrap.appendChild(pills2);}
   if(stOf(fighter)){
@@ -946,6 +996,26 @@ function renderPicksWidget(){
       var lbl=document.createElement("div");lbl.className="picks-ev-label";lbl.textContent=item.ev.name;compBody.appendChild(lbl);
       item.eps.forEach(function(p){compBody.appendChild(makePickRow(p,item.ei,false));});
     });
+  }
+
+  // Parlay calculator for pending picks with odds
+  var parlayOdds=[];
+  upcomingEvs.forEach(function(item){
+    item.eps.forEach(function(p){
+      if(!p.result&&p.fight.odds){
+        var o=p.pick===p.fight.f1.n?p.fight.odds.f1:p.fight.odds.f2;
+        parlayOdds.push(o);
+      }
+    });
+  });
+  if(parlayOdds.length>1){
+    var mult=1;
+    parlayOdds.forEach(function(o){mult*=o>0?1+o/100:1-100/o;});
+    var profit=Math.round((mult-1)*10*100)/100;
+    var pw=document.createElement("div");pw.className="parlay-wrap";
+    var pl=document.createElement("span");pl.className="parlay-lbl";pl.textContent="Parlay ("+parlayOdds.length+" picks) on $10";
+    var pv=document.createElement("span");pv.className="parlay-val";pv.textContent="$"+profit.toFixed(2)+" profit";
+    pw.appendChild(pl);pw.appendChild(pv);body.appendChild(pw);
   }
 
   if(resolved>0){
