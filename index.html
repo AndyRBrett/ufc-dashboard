@@ -461,8 +461,8 @@ function buildReg(){FIGHTS=[];EVENTS.forEach(function(ev,ei){ev.fights.forEach(f
 
 var curFilter="all",curSearch="";
 var FIGHTER_PHOTOS={};
-var userName="",preds={};
-try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.getItem("ufc_preds")||"{}");}catch(e){}
+var userName="",preds={},resolvedPicks={};
+try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.getItem("ufc_preds")||"{}");resolvedPicks=JSON.parse(localStorage.getItem("ufc_resolved")||"{}");}catch(e){}
 // Migrate old index-based pick keys (e0f0) to stable event+fighter keys
 (function(){
   var hasOld=Object.keys(preds).some(function(k){return /^e\d+f\d+$/.test(k);});
@@ -734,16 +734,19 @@ function makeFighter(fighter,right,size,regIdx,side,isWinner){
   if(size!=="xs"){
     var ph=document.createElement("img");ph.className="ft-photo";
     var cached=FIGHTER_PHOTOS[fighter.n];
-    if(cached){ph.src=cached;ph.onload=function(){ph.style.display="block";};}
-    else if(cached===undefined){
+    if(cached){
+      ph.onload=function(){ph.style.display="block";};
+      ph.src=cached;
+      if(ph.complete&&ph.naturalHeight)ph.style.display="block";
+    } else if(cached===undefined){
       FIGHTER_PHOTOS[fighter.n]=null;
-      var wn=fighter.n.replace(/ /g,"_");
+      var wn=fighter.n.replace(/'/g,"").replace(/ /g,"_");
       (function(img,fn){
         fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(wn))
           .then(function(r){return r.json();})
           .then(function(d){
             var src=d&&d.thumbnail&&d.thumbnail.source;
-            if(src){src=src.replace(/\/\d+px-/,"/80px-");FIGHTER_PHOTOS[fn]=src;img.src=src;img.onload=function(){img.style.display="block";};}
+            if(src){src=src.replace(/\/\d+px-/,"/80px-");FIGHTER_PHOTOS[fn]=src;img.onload=function(){img.style.display="block";};img.src=src;if(img.complete&&img.naturalHeight)img.style.display="block";}
             else{FIGHTER_PHOTOS[fn]=null;}
           }).catch(function(){FIGHTER_PHOTOS[fighter.n]=null;});
       })(ph,fighter.n);
@@ -951,8 +954,13 @@ function renderPicksWidget(){
     }
     var bdg=document.createElement("div");bdg.className="pick-result-badge";
     if(!p.result){bdg.className+=" pending";bdg.textContent="Pending";}
-    else if(p.result===p.pick){bdg.className+=" win";bdg.textContent="Correct";correct++;resolved++;}
-    else{bdg.className+=" loss";bdg.textContent="Wrong";resolved++;}
+    else if(p.result===p.pick){
+      bdg.className+=" win";bdg.textContent="Correct";correct++;resolved++;
+      if(ei>=0){var rk=pk(EVENTS[ei],p.fight);resolvedPicks[rk]="win";try{localStorage.setItem("ufc_resolved",JSON.stringify(resolvedPicks));}catch(e){}}
+    } else {
+      bdg.className+=" loss";bdg.textContent="Wrong";resolved++;
+      if(ei>=0){var rk=pk(EVENTS[ei],p.fight);resolvedPicks[rk]="loss";try{localStorage.setItem("ufc_resolved",JSON.stringify(resolvedPicks));}catch(e){}}
+    }
     row.appendChild(bdg);
     if(showUndo&&!p.result){
       var ub=document.createElement("button");
@@ -985,10 +993,10 @@ function renderPicksWidget(){
     if(parts.length<3)return;
     var date=parts[0],f1n=parts[1],f2n=parts[2];
     if(!orphanGroups[date])orphanGroups[date]={date:date,rows:[]};
-    orphanGroups[date].rows.push({f1n:f1n,f2n:f2n,pick:preds[k]});
+    orphanGroups[date].rows.push({f1n:f1n,f2n:f2n,pick:preds[k],key:k});
   });
   var orphanList=Object.values(orphanGroups).sort(function(a,b){return b.date.localeCompare(a.date);});
-  completedEvs=completedEvs.concat(orphanList.map(function(g){return {ev:{name:g.date,date:g.date},ei:-1,eps:g.rows.map(function(r){return {fight:{lbl:"",wc:"",f1:{n:r.f1n},f2:{n:r.f2n},odds:null,winner:""},pick:r.pick,result:""};}),isOrphan:true};}));
+  completedEvs=completedEvs.concat(orphanList.map(function(g){return {ev:{name:g.date,date:g.date},ei:-1,eps:g.rows.map(function(r){return {fight:{lbl:"",wc:"",f1:{n:r.f1n},f2:{n:r.f2n},odds:null,winner:"",_key:r.key},pick:r.pick,result:""};}),isOrphan:true};}));
 
   // Completed + historical section - collapsible
   if(completedEvs.length){
@@ -1021,7 +1029,12 @@ function renderPicksWidget(){
           var opp=document.createElement("div");opp.style.cssText="font-size:11px;color:var(--muted);flex-shrink:0";
           var oppName=p.pick===p.fight.f1.n?p.fight.f2.n:p.fight.f1.n;
           opp.textContent="vs "+oppName.split(" ").pop();row.appendChild(opp);
-          var bdg=document.createElement("div");bdg.className="pick-result-badge pending";bdg.textContent="Past";row.appendChild(bdg);
+          var outcome=resolvedPicks[p.fight._key];
+          var bdg=document.createElement("div");bdg.className="pick-result-badge";
+          if(outcome==="win"){bdg.className+=" win";bdg.textContent="Correct";correct++;resolved++;}
+          else if(outcome==="loss"){bdg.className+=" loss";bdg.textContent="Wrong";resolved++;}
+          else{bdg.className+=" pending";bdg.textContent="Past";}
+          row.appendChild(bdg);
           compBody.appendChild(row);
         });
       } else {
