@@ -514,15 +514,12 @@ def fetch_fighter_stats(name):
                 cells_d = frow.select("td")
                 if len(cells_d) < 8:
                     continue
-                if cells_d[0].get_text(strip=True).upper() != "W":
+                if cells_d[0].get_text(strip=True).lower() != "win":
                     continue
-                method_text = " ".join(
-                    cells_d[i].get_text(strip=True).lower()
-                    for i in range(6, min(10, len(cells_d)))
-                )
-                if "ko" in method_text or "tko" in method_text:
+                method = cells_d[7].get_text(strip=True).lower() if len(cells_d) > 7 else ""
+                if "ko" in method or "tko" in method:
                     ko += 1
-                elif "sub" in method_text:
+                elif "sub" in method:
                     sub += 1
     except Exception as e:
         print("  UFCStats detail error: %s" % e, file=sys.stderr)
