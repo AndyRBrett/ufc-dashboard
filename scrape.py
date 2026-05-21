@@ -484,9 +484,11 @@ def fetch_fighter_stats(name):
     if not detail_url:
         return None
 
-    # Fetch detail page for career stats and KO/sub win counts
+    # Fetch detail page for career stats, KO/sub counts, physical attributes, and fight form
     slpm = acc = td = tdd = 0.0
     ko = sub = 0
+    ht = rch = stn = dob = ""
+    form = []
     time.sleep(0.5)
     try:
         dr = requests.get(detail_url, timeout=15, headers={"User-Agent": "UFC-Dashboard/1.0"})
@@ -499,7 +501,8 @@ def fetch_fighter_stats(name):
                     continue
                 key, _, val = txt.partition(":")
                 key = key.strip().lower()
-                val = val.strip().replace("%", "").replace("---", "0") or "0"
+                raw_val = val.strip()
+                val = raw_val.replace("%", "").replace("---", "0") or "0"
                 try:
                     if "slpm" in key:
                         slpm = round(float(val), 2)
@@ -509,25 +512,50 @@ def fetch_fighter_stats(name):
                         td = round(float(val), 2)
                     elif "td def" in key:
                         tdd = int(round(float(val)))
+                    elif "height" in key and raw_val and raw_val not in ("---", "--"):
+                        ht = raw_val
+                    elif "reach" in key and raw_val and raw_val not in ("---", "--"):
+                        rch = raw_val
+                    elif "stance" in key and raw_val and raw_val not in ("---", "--"):
+                        stn = raw_val
+                    elif "dob" in key and raw_val and raw_val not in ("---", "--"):
+                        dob = raw_val
                 except:
                     pass
             for frow in dsoup.select("tbody.b-fight-details__table-body tr"):
                 cells_d = frow.select("td")
                 if len(cells_d) < 8:
                     continue
-                if cells_d[0].get_text(strip=True).lower() != "win":
-                    continue
-                method = cells_d[7].get_text(strip=True).lower() if len(cells_d) > 7 else ""
-                if "ko" in method or "tko" in method:
-                    ko += 1
-                elif "sub" in method:
-                    sub += 1
+                result_txt = cells_d[0].get_text(strip=True).lower()
+                method_txt = cells_d[7].get_text(strip=True) if len(cells_d) > 7 else ""
+                ml = method_txt.lower()
+                if result_txt == "win":
+                    if "ko" in ml or "tko" in ml:
+                        ko += 1
+                    elif "sub" in ml:
+                        sub += 1
+                if result_txt in ("win", "loss", "draw") and len(form) < 5:
+                    r_char = "W" if result_txt == "win" else ("L" if result_txt == "loss" else "D")
+                    if "tko" in ml:
+                        ms_str = "TKO"
+                    elif "ko" in ml:
+                        ms_str = "KO"
+                    elif "sub" in ml:
+                        ms_str = "Sub"
+                    elif "dec" in ml or "decision" in ml:
+                        ms_str = "Dec"
+                    elif "dq" in ml:
+                        ms_str = "DQ"
+                    else:
+                        ms_str = method_txt.strip()[:3] if method_txt.strip() else ""
+                    form.append({"r": r_char, "m": ms_str})
     except Exception as e:
         print("  UFCStats detail error: %s" % e, file=sys.stderr)
 
-    print("  Stats %s: slpm=%s acc=%s td=%s tdd=%s ko=%s sub=%s rec=%s" % (
-        name, slpm, acc, td, tdd, ko, sub, rec), file=sys.stderr)
-    return {"slpm": slpm, "acc": acc, "td": td, "tdd": tdd, "ko": ko, "sub": sub, "rec": rec}
+    print("  Stats %s: slpm=%s acc=%s td=%s tdd=%s ko=%s sub=%s rec=%s ht=%r form=%d" % (
+        name, slpm, acc, td, tdd, ko, sub, rec, ht, len(form)), file=sys.stderr)
+    return {"slpm": slpm, "acc": acc, "td": td, "tdd": tdd, "ko": ko, "sub": sub, "rec": rec,
+            "ht": ht, "rch": rch, "stn": stn, "dob": dob, "form": form}
 
 def extract_stats_cache(html):
     """Read FIGHTER_STATS JSON from HTML. Returns dict."""
@@ -740,8 +768,13 @@ def main():
                 if n and n != "TBD":
                     all_fighters.add(n)
     new_fighters = sorted(n for n in all_fighters if n not in stats_cache)
-    print("Fetching stats for %d new fighters..." % len(new_fighters), file=sys.stderr)
-    for fname in new_fighters:
+    # Re-fetch fighters whose cache entry predates the ht/form fields (limit 8 per run)
+    stale_fighters = sorted(n for n in all_fighters
+                            if n in stats_cache and "form" not in stats_cache[n])
+    to_fetch = new_fighters + stale_fighters[:8]
+    print("Fetching stats for %d fighters (%d new, %d refreshing)..." % (
+        len(to_fetch), len(new_fighters), len(to_fetch) - len(new_fighters)), file=sys.stderr)
+    for fname in to_fetch:
         s = fetch_fighter_stats(fname)
         if s:
             stats_cache[fname] = s
