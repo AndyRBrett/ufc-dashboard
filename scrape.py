@@ -158,15 +158,18 @@ def _fetch_rankings_impl():
         return {}
     rankings = {}
     # Table format: "! N\n| {{flagicon|XX}}\n| [[Fighter Name]]"
+    # Rank line can have any parenthetical annotation: (T), (T2), etc.
     for m in re.finditer(
-        r"^!\s*(\d{1,2})(?:\s*\(T\))?\s*\n\|[^\n]*flagicon[^\n]*\n\|\s*\[\[(?:[^\]|]+\|)?([^\]]+)\]\]",
+        r"^!\s*(\d{1,2})(?:\s*\([^)]*\))?\s*\n\|[^\n]*flagicon[^\n]*\n\|\s*\[\[(?:[^\]|]+\|)?([^\]]+)\]\]",
         wt, re.MULTILINE
     ):
         rank = int(m.group(1))
         name = clean_wiki(m.group(2).strip())
-        name = re.sub(r"\s*\(c\)\s*|\s*\(ic\)\s*", "", name, flags=re.IGNORECASE).strip()
-        if name and 1 <= rank <= 15 and name not in rankings:
-            rankings[asc(name)] = rank
+        # Strip champion / interim champion markers and any trailing parentheticals
+        name = re.sub(r"\s*\([^)]*\)\s*", "", name).strip()
+        key = asc(name)   # strips diacritics → matches Odds API names
+        if key and 1 <= rank <= 15 and key not in rankings:
+            rankings[key] = rank
     print("Rankings: %d fighters indexed" % len(rankings), file=sys.stderr)
     return rankings
 
