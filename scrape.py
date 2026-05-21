@@ -151,21 +151,21 @@ def fetch_rankings():
 
 def _fetch_rankings_impl():
     """Actual rankings fetch - called in main() after fetch_wikitext is available."""
-    wt = fetch_wikitext("UFC_Rankings")
+    # UFC_Rankings redirects to UFC_rankings; action=parse follows redirects automatically
+    wt = fetch_wikitext("UFC_rankings")
     if not wt:
         print("Rankings: could not fetch", file=sys.stderr)
         return {}
     rankings = {}
-    # Match "| 1 || [[Fighter Name]]" or "| 1 || [[Page|Display Name]]" patterns
+    # Table format: "! N\n| {{flagicon|XX}}\n| [[Fighter Name]]"
     for m in re.finditer(
-        r"^\|\s*(\d{1,2})\s*\|\|\s*\[\[(?:[^\]|]+\|)?([^\]]+)\]\]",
+        r"^!\s*(\d{1,2})\s*\n\|[^\n]*flagicon[^\n]*\n\|\s*\[\[(?:[^\]|]+\|)?([^\]]+)\]\]",
         wt, re.MULTILINE
     ):
         rank = int(m.group(1))
         name = clean_wiki(m.group(2).strip())
-        # Strip champion markers
         name = re.sub(r"\s*\(c\)\s*|\s*\(ic\)\s*", "", name, flags=re.IGNORECASE).strip()
-        if name and 1 <= rank <= 15:
+        if name and 1 <= rank <= 15 and name not in rankings:
             rankings[asc(name)] = rank
     print("Rankings: %d fighters indexed" % len(rankings), file=sys.stderr)
     return rankings
