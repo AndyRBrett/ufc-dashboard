@@ -808,12 +808,30 @@ def main():
                 if n and n != "TBD":
                     all_fighters.add(n)
     new_fighters = sorted(n for n in all_fighters if n not in stats_cache)
-    # Re-fetch fighters whose cache entry predates the ht/form fields (limit 8 per run)
+
+    # Fighters missing form data (first-time backfill — no cap, fetch all at once)
     stale_fighters = sorted(n for n in all_fighters
                             if n in stats_cache and "form" not in stats_cache[n])
-    to_fetch = new_fighters + stale_fighters[:8]
-    print("Fetching stats for %d fighters (%d new, %d refreshing)..." % (
-        len(to_fetch), len(new_fighters), len(to_fetch) - len(new_fighters)), file=sys.stderr)
+
+    # Fighters whose record has changed since last fetch (they had a new fight)
+    # Build a record lookup from the current event cards
+    card_records = {}
+    for ev in new_events:
+        for fight in ev["fights"]:
+            for side in (fight["f1"], fight["f2"]):
+                n = side.get("name", "")
+                r = side.get("record", "")
+                if n and r:
+                    card_records[n] = r
+    outdated_fighters = sorted(
+        n for n in all_fighters
+        if n in stats_cache and "form" in stats_cache[n]
+        and card_records.get(n) and card_records[n] != stats_cache[n].get("rec", "")
+    )
+
+    to_fetch = new_fighters + stale_fighters + outdated_fighters
+    print("Fetching stats for %d fighters (%d new, %d backfill, %d record-changed)..." % (
+        len(to_fetch), len(new_fighters), len(stale_fighters), len(outdated_fighters)), file=sys.stderr)
     for fname in to_fetch:
         s = fetch_fighter_stats(fname)
         if s:
