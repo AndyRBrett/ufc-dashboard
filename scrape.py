@@ -142,6 +142,43 @@ def discover_upcoming_events(now):
     return events
 
 # ---------------------------------------------------------------------------
+# UFC Rankings - from Wikipedia UFC_Rankings page
+# ---------------------------------------------------------------------------
+def fetch_rankings():
+    """Parse UFC_Rankings Wikipedia page. Returns dict of fighter_name -> rank (int)."""
+    wt = fetch_wikitext("UFC_Rankings") if False else ""  # called after fetch_wikitext defined
+    return {}  # placeholder - real impl below after fetch_wikitext
+
+def _fetch_rankings_impl():
+    """Actual rankings fetch - called in main() after fetch_wikitext is available."""
+    wt = fetch_wikitext("UFC_Rankings")
+    if not wt:
+        print("Rankings: could not fetch", file=sys.stderr)
+        return {}
+    rankings = {}
+    # Match "| 1 || [[Fighter Name]]" or "| 1 || [[Page|Display Name]]" patterns
+    for m in re.finditer(
+        r"^\|\s*(\d{1,2})\s*\|\|\s*\[\[(?:[^\]|]+\|)?([^\]]+)\]\]",
+        wt, re.MULTILINE
+    ):
+        rank = int(m.group(1))
+        name = clean_wiki(m.group(2).strip())
+        # Strip champion markers
+        name = re.sub(r"\s*\(c\)\s*|\s*\(ic\)\s*", "", name, flags=re.IGNORECASE).strip()
+        if name and 1 <= rank <= 15:
+            rankings[asc(name)] = rank
+    print("Rankings: %d fighters indexed" % len(rankings), file=sys.stderr)
+    return rankings
+
+def write_rankings(html, rankings):
+    """Replace var RANKINGS={...} in HTML with fresh data."""
+    js_str = json.dumps(rankings, separators=(",", ":"), ensure_ascii=False)
+    updated = re.sub(r"var RANKINGS=\{[^;]*\};", "var RANKINGS=%s;" % js_str, html)
+    if updated == html:
+        print("Rankings: RANKINGS placeholder not found in HTML", file=sys.stderr)
+    return updated
+
+# ---------------------------------------------------------------------------
 # Wikipedia - fetch wikitext
 # ---------------------------------------------------------------------------
 def fetch_wikitext(slug):
@@ -712,7 +749,7 @@ def main():
     for ev_date, slug, ev_name, venue, loc, main_time, prelim_time in merged:
         try: ed = datetime.strptime(ev_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
         except: continue
-        if ed < now - timedelta(days=2) or ed > now + timedelta(days=90): continue
+        if ed < now - timedelta(days=30) or ed > now + timedelta(days=90): continue
 
         print("Fetching:", ev_name, file=sys.stderr)
         wt = fetch_wikitext(slug)
@@ -795,6 +832,10 @@ def main():
     html_new = re.sub(r"var EVENTS\s*=\s*\[.*?\];", lambda m: new_js, html, flags=re.DOTALL)
     pass  # updateDate is computed dynamically in JS from fight data
     html_new = write_stats_cache(html_new, stats_cache)
+
+    rankings = _fetch_rankings_impl()
+    if rankings:
+        html_new = write_rankings(html_new, rankings)
 
     if len(html_new) < 30000:
         print("Output too small - aborting", file=sys.stderr); sys.exit(0)
