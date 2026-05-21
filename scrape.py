@@ -159,7 +159,7 @@ def _fetch_rankings_impl():
     rankings = {}
     # Table format: "! N\n| {{flagicon|XX}}\n| [[Fighter Name]]"
     for m in re.finditer(
-        r"^!\s*(\d{1,2})\s*\n\|[^\n]*flagicon[^\n]*\n\|\s*\[\[(?:[^\]|]+\|)?([^\]]+)\]\]",
+        r"^!\s*(\d{1,2})(?:\s*\(T\))?\s*\n\|[^\n]*flagicon[^\n]*\n\|\s*\[\[(?:[^\]|]+\|)?([^\]]+)\]\]",
         wt, re.MULTILINE
     ):
         rank = int(m.group(1))
