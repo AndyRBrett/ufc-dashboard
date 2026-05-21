@@ -874,7 +874,7 @@ function makeFighter(fighter,right,size,regIdx,side,isWinner){
   var _fst=stOf(fighter);
   if(_fst&&_fst.form&&_fst.form.length){
     var fstrip=document.createElement("div");fstrip.className="form-strip";
-    _fst.form.slice(0,3).forEach(function(fr){
+    _fst.form.slice(0,3).reverse().forEach(function(fr){
       var pill=document.createElement("span");
       pill.className="form-pill form-"+fr.r.toLowerCase();
       pill.textContent=fr.r+(size!=="xs"&&fr.m?" "+fr.m:"");
