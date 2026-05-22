@@ -806,7 +806,8 @@ function undoPick(ev,fight){deleteSbPick(ev,fight);delete preds[pk(ev,fight)];sa
 function resetPicks(){
   if(!Object.keys(preds).length)return;
   if(!confirm("Reset all picks?"))return;
-  preds={};save();render();updatePicksWidget();toast("All picks cleared");
+  fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:_sbHeaders()}).catch(function(){});
+  preds={};preds_method={};preds_conf={};save();saveMethod();saveConf();render();updatePicksWidget();toast("All picks cleared");
 }
 
 function openFN(){
