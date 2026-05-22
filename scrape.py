@@ -724,7 +724,7 @@ def main():
     if total_injected > 0:
         label = fmt_update(now)
         html_new = html[:js_start] + js + html[js_end:]
-        pass  # updateDate is computed dynamically in JS from fight data
+        html_new = re.sub(r'var GENERATED_AT="[^"]*"', 'var GENERATED_AT="%s"' % fmt_update(now), html_new)
         index.write_text(html_new, encoding="utf-8")
         print("Results injected:", total_injected, file=sys.stderr)
         sys.exit(0)
@@ -861,6 +861,7 @@ def main():
     if len(html_new) < 30000:
         print("Output too small - aborting", file=sys.stderr); sys.exit(0)
 
+    html_new = re.sub(r'var GENERATED_AT="[^"]*"', 'var GENERATED_AT="%s"' % fmt_update(now), html_new)
     index.write_text(html_new, encoding="utf-8")
     print("Done: %d events, %d fights" % (
         len(new_events), sum(len(e["fights"]) for e in new_events)
