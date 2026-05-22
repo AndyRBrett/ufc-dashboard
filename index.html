@@ -1469,57 +1469,105 @@ function loadLeaderboard(){
       body.innerHTML='<div class="lb-empty">No picks submitted yet.<br>Make some picks to appear here!</div>';
       return;
     }
-    // Score each row against EVENTS data
     var users={};
     rows.forEach(function(p){
       var uid=p.user_id;
-      if(!users[uid])users[uid]={nickname:p.nickname,correct:0,total:0,methods:0,isMe:uid===USER_ID};
-      var ev=null,fight=null;
+      if(!users[uid])users[uid]={nickname:p.nickname,correct:0,total:0,methods:0,isMe:uid===USER_ID,picks:[]};
+      var fight=null;
       for(var i=0;i<EVENTS.length;i++){
         if(EVENTS[i].date===p.event_date){
           for(var j=0;j<EVENTS[i].fights.length;j++){
             var f=EVENTS[i].fights[j];
-            if(f.f1.n===p.f1&&f.f2.n===p.f2){ev=EVENTS[i];fight=f;break;}
+            if(f.f1.n===p.f1&&f.f2.n===p.f2){fight=f;break;}
           }
           if(fight)break;
         }
       }
+      var result=null;
       users[uid].total++;
       if(fight&&fight.winner){
-        if(fight.winner===p.pick){
-          users[uid].correct++;
-          if(scoreMethod(p.method,fight.method||""))users[uid].methods++;
-        }
+        if(fight.winner===p.pick){users[uid].correct++;result=true;if(scoreMethod(p.method,fight.method||""))users[uid].methods++;}
+        else{result=false;}
       }
+      users[uid].picks.push({f1:p.f1,f2:p.f2,pick:p.pick,method:p.method,result:result,evName:p.event_name});
     });
-    // Sort: pts = correct + methods*0.5, then total picks as tiebreak
     var sorted=Object.values(users).sort(function(a,b){
-      var pa=a.correct+a.methods*0.5, pb=b.correct+b.methods*0.5;
+      var pa=a.correct+a.methods*0.5,pb=b.correct+b.methods*0.5;
       return pa!==pb?pb-pa:b.total-a.total;
     });
+    var anyResolved=sorted.some(function(u){return u.correct>0||u.picks.some(function(p){return p.result===false;});});
     var medals=["🥇","🥈","🥉"];
     body.innerHTML="";
+    if(!anyResolved){
+      var note=document.createElement("div");
+      note.style.cssText="text-align:center;padding:10px 14px;margin-bottom:12px;background:var(--card);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--muted)";
+      note.textContent="Scores update after fights complete — tap any row to see picks";
+      body.appendChild(note);
+    }
     sorted.forEach(function(u,i){
       var pts=u.correct+u.methods*0.5;
+      var pending=u.picks.filter(function(p){return p.result===null;}).length;
+      var wrap=document.createElement("div");wrap.style.cssText="margin-bottom:8px";
+      // Header row
       var row=document.createElement("div");
       row.className="lb-row"+(u.isMe?" lb-me":"");
-      var med=document.createElement("div");
-      med.className=i<3?"lb-medal":"lb-rank";
-      med.textContent=i<3?medals[i]:i+1;
-      row.appendChild(med);
-      var nameDiv=document.createElement("div");nameDiv.className="lb-name";
-      nameDiv.textContent=u.nickname;
+      row.style.cssText+="cursor:pointer;border-radius:12px;transition:border-radius .15s";
+      var med=document.createElement("div");med.className=i<3?"lb-medal":"lb-rank";med.textContent=i<3?medals[i]:i+1;row.appendChild(med);
+      var nameDiv=document.createElement("div");nameDiv.className="lb-name";nameDiv.textContent=u.nickname;
       if(u.isMe){var you=document.createElement("span");you.className="lb-you";you.textContent="YOU";nameDiv.appendChild(you);}
       row.appendChild(nameDiv);
       var right=document.createElement("div");right.className="lb-right";
-      var ptsDiv=document.createElement("div");ptsDiv.className="lb-pts";ptsDiv.textContent=pts%1===0?pts+"pts":pts.toFixed(1)+"pts";right.appendChild(ptsDiv);
+      var ptsDiv=document.createElement("div");ptsDiv.className="lb-pts";
+      ptsDiv.textContent=anyResolved?(pts%1===0?pts+"pts":pts.toFixed(1)+"pts"):u.total+(u.total===1?" pick":" picks");
+      right.appendChild(ptsDiv);
       var det=document.createElement("div");det.className="lb-detail";
-      det.textContent=u.correct+"/"+u.total+" correct"+(u.methods?" · +"+u.methods+" method":"");
+      det.textContent=anyResolved?(u.correct+"/"+u.total+" correct"+(u.methods?" · +"+u.methods+" method":"")):pending+" pending";
       right.appendChild(det);
       row.appendChild(right);
-      body.appendChild(row);
+      var arr=document.createElement("span");arr.style.cssText="font-size:10px;color:var(--muted);flex-shrink:0;display:inline-block;transition:transform .2s";arr.textContent="▼";row.appendChild(arr);
+      // Detail panel
+      var detail=document.createElement("div");
+      detail.style.cssText="display:none;background:var(--card2);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;overflow:hidden;margin-top:-6px;padding-top:4px";
+      // Group picks by event
+      var byEv={};var evOrder=[];
+      u.picks.forEach(function(p){if(!byEv[p.evName]){byEv[p.evName]=[];evOrder.push(p.evName);}byEv[p.evName].push(p);});
+      evOrder.forEach(function(evName){
+        var evLbl=document.createElement("div");
+        evLbl.style.cssText="font-size:10px;font-weight:600;color:var(--muted);padding:8px 14px 4px;text-transform:uppercase;letter-spacing:.05em";
+        evLbl.textContent=evName.replace("UFC Fight Night: ","").replace("UFC ","");
+        detail.appendChild(evLbl);
+        byEv[evName].forEach(function(p,pi,arr){
+          var pr=document.createElement("div");
+          var isLast=pi===arr.length-1;
+          pr.style.cssText="display:flex;align-items:center;gap:8px;padding:7px 14px;"+(isLast?"padding-bottom:12px":"");
+          // Opponent label
+          var opp=p.pick===p.f1?p.f2:p.f1;
+          var oppDiv=document.createElement("div");oppDiv.style.cssText="font-size:11px;color:var(--muted);width:70px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
+          oppDiv.textContent="vs "+opp.split(" ").pop();
+          pr.appendChild(oppDiv);
+          // Pick
+          var pickDiv=document.createElement("div");pickDiv.style.cssText="font-size:13px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
+          pickDiv.textContent=p.pick.split(" ").pop();
+          pr.appendChild(pickDiv);
+          // Method
+          if(p.method){var mspan=document.createElement("span");mspan.style.cssText="font-size:10px;color:var(--muted);flex-shrink:0";mspan.textContent="via "+p.method;pr.appendChild(mspan);}
+          // Result
+          var bdg=document.createElement("div");bdg.style.cssText="font-size:11px;flex-shrink:0;width:20px;text-align:center";
+          bdg.textContent=p.result===null?"⏳":p.result===true?"✅":"❌";
+          pr.appendChild(bdg);
+          detail.appendChild(pr);
+        });
+      });
+      var expanded=false;
+      row.onclick=function(){
+        expanded=!expanded;
+        detail.style.display=expanded?"block":"none";
+        arr.style.transform=expanded?"rotate(180deg)":"";
+        row.style.borderRadius=expanded?"12px 12px 0 0":"12px";
+      };
+      wrap.appendChild(row);wrap.appendChild(detail);body.appendChild(wrap);
     });
-  }).catch(function(e){
+  }).catch(function(){
     body.innerHTML='<div class="lb-empty">Could not load leaderboard.<br>Check your connection.</div>';
   });
 }
