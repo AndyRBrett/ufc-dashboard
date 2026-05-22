@@ -7,6 +7,12 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>UFC Fight Cards</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#e8192c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="UFC Picks">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--red:#e8192c;--red-dim:rgba(232,25,44,.12);--gold:#c9a84c;--gold-dim:rgba(201,168,76,.12);--bg:#07070a;--card:#0f0f14;--card2:#171720;--surface:#171720;--future-bg:#0b0b0f;--future-border:rgba(255,255,255,.06);--text:#ededef;--muted:#8a8f98;--muted2:#b0b5c0;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(255,255,255,.07);--pill-bg:rgba(255,255,255,.06);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--green:#2ecc71;--hdr-bg:rgba(7,7,10,.96);--shadow-card:0 2px 12px rgba(0,0,0,.4);--shadow-el:0 8px 32px rgba(0,0,0,.55)}
@@ -1170,7 +1176,7 @@ function renderPicksWidget(){
   // Split events into upcoming (has pending picks) and completed (all resolved)
   var upcomingEvs=[];var completedEvs=[];
   EVENTS.forEach(function(ev,ei){
-    var eps=ev.fights.map(function(f){var k=pk(ev,f);return preds[k]?{fight:f,pick:preds[k],result:f.winner||""}:null;}).filter(Boolean);
+    var eps=ev.fights.map(function(f){var k=pk(ev,f);return preds[k]?{fight:f,pick:preds[k],result:f.winner||"",method:preds_method[k]||"",fightMethod:f.method||""}:null;}).filter(Boolean);
     if(!eps.length)return;
     var hasPending=eps.some(function(p){return !p.result;});
     var evDate=new Date(ev.date).getTime();
@@ -1205,6 +1211,20 @@ function renderPicksWidget(){
       if(ei>=0){var rk=pk(EVENTS[ei],p.fight);resolvedPicks[rk]="loss";try{localStorage.setItem("ufc_resolved",JSON.stringify(resolvedPicks));}catch(e){}}
     }
     row.appendChild(bdg);
+    if(p.method){
+      var mm=document.createElement("div");mm.className="pick-method-tag";
+      var fm=(p.fightMethod||"").toUpperCase();
+      var methodCorrect=!p.result?null:
+        (p.method==="KO/TKO"&&(fm.indexOf("KO")>=0||fm.indexOf("TKO")>=0))||
+        (p.method==="Sub"&&(fm.indexOf("SUB")>=0))||
+        (p.method==="Dec"&&(fm.indexOf("DEC")>=0||fm==="UD"||fm==="SD"||fm==="MD"));
+      mm.style.cssText="font-size:10px;padding:1px 6px;border-radius:3px;flex-shrink:0;border:1px solid;"+(
+        methodCorrect===null?"color:var(--muted);border-color:var(--border);background:var(--pending-bg)":
+        methodCorrect?"color:var(--gold);border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.08)":
+        "color:var(--muted);border-color:var(--border);background:var(--pending-bg);text-decoration:line-through");
+      mm.textContent="via "+p.method;
+      row.appendChild(mm);
+    }
     if(showUndo&&!p.result){
       var ub=document.createElement("button");
       ub.style.cssText="background:none;border:none;color:var(--muted);cursor:pointer;padding:2px 6px;font-size:14px;flex-shrink:0";
@@ -1381,5 +1401,6 @@ document.addEventListener("DOMContentLoaded",function(){
 
 });
 </script>
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}</script>
 </body>
 </html>
