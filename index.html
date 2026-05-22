@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--red:#e8192c;--red-dim:rgba(232,25,44,.12);--gold:#c9a84c;--gold-dim:rgba(201,168,76,.12);--bg:#07070a;--card:#0f0f14;--card2:#171720;--surface:#171720;--future-bg:#0b0b0f;--future-border:rgba(255,255,255,.06);--text:#ededef;--muted:#8a8f98;--muted2:#b0b5c0;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(255,255,255,.07);--pill-bg:rgba(255,255,255,.06);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--green:#2ecc71;--hdr-bg:rgba(7,7,10,.96);--shadow-card:0 2px 12px rgba(0,0,0,.4);--shadow-el:0 8px 32px rgba(0,0,0,.55)}
-body.light{--bg:#f0f2f5;--card:#ffffff;--card2:#eaedf2;--border:rgba(0,0,0,.09);--border2:rgba(0,0,0,.16);--text:#111217;--muted:#6b7280;--muted2:#4b5563;--hdr-bg:rgba(240,242,245,.96);--surface:#ffffff;--future-bg:#f5f6f8;--future-border:#dde0e8;--btn-bg:rgba(0,0,0,.06);--sep:rgba(0,0,0,.16);--stripe-border:rgba(0,0,0,.08);--pill-bg:rgba(0,0,0,.06);--bar-bg:rgba(0,0,0,.08);--pending-bg:rgba(0,0,0,.04);--shadow-card:0 2px 8px rgba(0,0,0,.08);--shadow-el:0 8px 24px rgba(0,0,0,.12)}
+body.light{--bg:#e2e5ec;--card:#ffffff;--card2:#f1f2f7;--border:rgba(0,0,0,.1);--border2:rgba(0,0,0,.2);--sep:rgba(0,0,0,.13);--text:#0b0d1a;--muted:#52607a;--muted2:#303850;--hdr-bg:rgba(255,255,255,.99);--surface:#ffffff;--future-bg:#f4f5fa;--future-border:#b4bace;--btn-bg:rgba(0,0,0,.06);--stripe-border:rgba(0,0,0,.12);--pill-bg:rgba(0,0,0,.07);--bar-bg:rgba(0,0,0,.1);--pending-bg:rgba(0,0,0,.05);--red-dim:rgba(232,25,44,.09);--gold-dim:rgba(201,168,76,.09);--shadow-card:0 2px 8px rgba(0,0,0,.09),0 1px 2px rgba(0,0,0,.07);--shadow-el:0 8px 32px rgba(0,0,0,.15),0 2px 8px rgba(0,0,0,.09)}
 #themeBtn .theme-moon{display:none}
 body.light #themeBtn .theme-sun{display:none}
 body.light #themeBtn .theme-moon{display:block}
@@ -55,7 +55,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .ftab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;color:var(--muted);border:1px solid var(--border);background:none;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:Inter,sans-serif}
 .ftab:hover{color:var(--muted2);border-color:var(--border2)}
 .ftab.active{background:var(--red);color:#fff;border-color:var(--red);box-shadow:0 2px 8px rgba(232,25,44,.3)}
-.picks-widget{background:var(--card);border-top:1px solid var(--border)}
+.picks-widget{background:var(--card);border-top:1px solid var(--border);margin:12px 12px;border-radius:14px;border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow-card)}
 .picks-toggle{width:100%;background:none;border:none;border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:Inter,sans-serif;transition:background .15s}
 .picks-toggle:hover{background:rgba(255,255,255,.02)}
 .picks-toggle-left{display:flex;align-items:center;gap:10px}
@@ -85,7 +85,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .share-icon-btn:hover{color:var(--text)}
 .ev-divider{display:flex;align-items:center;gap:10px;padding:18px 16px 0;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-weight:500}
 .ev-divider::after{content:"";flex:1;height:1px;background:var(--border)}
-.ev-band{border-top:3px solid var(--red);padding:16px 16px 14px}
+.ev-band{border-top:3px solid var(--red);padding:16px 16px 14px;margin:6px 12px 0;border-radius:14px 14px 0 0;border-left:1px solid var(--border);border-right:1px solid var(--border)}
 .ev-band.ev-future{border-top-color:var(--future-border);background:var(--future-bg)}
 .ev-num{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:5px;font-weight:600}
 .ev-name{font-family:Bebas Neue,sans-serif;font-size:23px;letter-spacing:.05em;line-height:1;margin-bottom:10px;color:var(--text)}
@@ -97,7 +97,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .b-next{background:rgba(232,25,44,.15);color:var(--red);border:1px solid rgba(232,25,44,.3)}
 .b-title{background:rgba(201,168,76,.12);color:var(--gold);border:1px solid rgba(201,168,76,.25)}
 .b-ppv{background:var(--pill-bg);color:var(--muted2);border:1px solid var(--border)}
-.fights-wrap{background:var(--card)}
+.fights-wrap{background:var(--card);margin:0 12px 20px;border-radius:0 0 14px 14px;border:1px solid var(--border);border-top:1px solid var(--stripe-border);box-shadow:var(--shadow-card);overflow:hidden}
 .fight-row{padding:14px 16px;border-bottom:1px solid var(--border);transition:background .15s}
 .fight-row:last-child{border-bottom:none}
 .fight-row:hover{background:rgba(255,255,255,.015)}
@@ -266,6 +266,58 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .share-badge{background:linear-gradient(135deg,#a00,var(--red));border-radius:10px;padding:16px;margin-bottom:14px;text-align:center}
 .share-badge-num{font-family:Bebas Neue,sans-serif;font-size:46px;color:#fff;line-height:1}
 .share-badge-sub{font-size:12px;color:rgba(255,255,255,.7);margin-top:3px}
+/* ===== LIGHT MODE — STADIUM COLOURWAY ===== */
+/* Header: white, bold red underline */
+body.light .hdr{background:#ffffff;border-bottom:3px solid var(--red);box-shadow:0 2px 16px rgba(0,0,0,.1)}
+/* Hero: blends with cool page bg */
+body.light .hero{background:linear-gradient(180deg,rgba(232,25,44,.06) 0%,transparent 100%);border-bottom:none}
+/* Stats bar — dark punchy strip */
+body.light .stats{background:#0c0d18;border-bottom:none}
+body.light .sv{color:#f0f0f8}
+body.light .sl{color:rgba(240,240,248,.5)}
+body.light .stat{border-right-color:rgba(255,255,255,.08)}
+/* Filter bar */
+body.light .filter-wrap{background:#ffffff;border-bottom:1px solid rgba(0,0,0,.1);box-shadow:0 2px 8px rgba(0,0,0,.05)}
+/* Picks widget: gold left accent */
+body.light .picks-widget{margin:16px 12px;border-color:rgba(0,0,0,.1);border-left:4px solid var(--gold);box-shadow:0 4px 16px rgba(0,0,0,.12)}
+body.light .picks-toggle:hover{background:rgba(0,0,0,.03)}
+
+/* ── EVENT CARDS ── */
+/* Next-up event: bold UFC red gradient header */
+body.light .ev-band{background:linear-gradient(135deg,#8b000f 0%,#c8001a 100%);border-left-color:rgba(255,255,255,.08);border-right-color:rgba(255,255,255,.08);border-top:3px solid #ff3a4e}
+/* Text inside red header */
+body.light .ev-name{color:#ffffff}
+body.light .ev-num{color:rgba(255,255,255,.6)}
+body.light .ev-detail{color:rgba(255,255,255,.78)}
+/* Badges on coloured header */
+body.light .b-next{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.35)}
+body.light .b-title{background:rgba(201,168,76,.32);color:#ffd060;border-color:rgba(201,168,76,.5)}
+body.light .b-ppv{background:rgba(255,255,255,.14);color:rgba(255,255,255,.82);border-color:rgba(255,255,255,.22)}
+/* Future events: deep navy blue header */
+body.light .ev-band.ev-future{background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%);border-top-color:#60a5fa}
+/* Fights wrap: white content card */
+body.light .fights-wrap{background:#ffffff;border-color:rgba(0,0,0,.1);border-top-color:rgba(0,0,0,.07)}
+body.light .ev-band.ev-future+.fights-wrap{background:#f6f9ff}
+/* Fight rows */
+body.light .fight-row{border-bottom-color:rgba(0,0,0,.07)}
+body.light .fight-row:hover{background:rgba(0,0,0,.025)}
+body.light .fight-row.fmain{background:linear-gradient(135deg,rgba(232,25,44,.07) 0%,rgba(232,25,44,.02) 100%)}
+body.light .fight-row.fco{background:linear-gradient(135deg,rgba(201,168,76,.09) 0%,rgba(201,168,76,.025) 100%)}
+body.light .fight-row.fpre{background:transparent}
+body.light .more-btn{background:rgba(0,0,0,.025);border-top-color:rgba(0,0,0,.08)}
+body.light .more-btn:hover{background:rgba(0,0,0,.05);color:var(--muted2)}
+
+/* ── HOVER/INTERACTION FIXES (white-rgba invisible in light) ── */
+body.light .pick-btn:hover{background:rgba(0,0,0,.07);color:var(--text)}
+body.light .modal-xbtn:hover{background:rgba(0,0,0,.08)}
+body.light .btn-icon:hover{background:rgba(0,0,0,.08);color:var(--text)}
+body.light .share-copy-btn:hover{background:rgba(0,0,0,.05)}
+body.light .cmp-xbtn:hover{background:rgba(0,0,0,.08)}
+body.light .nm-xbtn:hover{background:rgba(0,0,0,.08)}
+body.light .share-modal-xbtn:hover{background:rgba(0,0,0,.08)}
+body.light .form-d{background:rgba(0,0,0,.06);border-color:rgba(0,0,0,.12);color:var(--muted2)}
+body.light .cmp-bar-wrap{background:rgba(0,0,0,.1)}
+body.light .fotn-row{background:var(--card2);border-top:1px solid rgba(0,0,0,.08)}
 </style>
 </head>
 <body>
