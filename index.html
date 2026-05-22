@@ -649,6 +649,7 @@ try{preds_method=JSON.parse(localStorage.getItem("ufc_method")||"{}");preds_conf
 })();
 var fnFights=[],fnIdx=0,fnEv=null;
 var notifActive=false;
+var _openMore={};
 
 function pad(n){return String(n).padStart(2,"0");}
 function daysOut(d){return Math.ceil((new Date(d)-Date.now())/864e5);}
@@ -1181,14 +1182,19 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
     var moreArrow=document.createElementNS("http://www.w3.org/2000/svg","svg");moreArrow.setAttribute("viewBox","0 0 24 24");moreArrow.setAttribute("fill","none");moreArrow.setAttribute("stroke","currentColor");moreArrow.setAttribute("stroke-width","2");
     moreArrow.style.cssText="width:14px;height:14px;margin-left:auto;flex-shrink:0;transition:transform .2s;stroke:#666;stroke-width:2.5";
     var moreP=document.createElementNS("http://www.w3.org/2000/svg","polyline");moreP.setAttribute("points","6 9 12 15 18 9");moreArrow.appendChild(moreP);moreBtn.appendChild(moreArrow);
-    (function(id,btn){btn.onclick=function(){
-      document.getElementById(id).classList.toggle("open");
-      btn.classList.toggle("open");
-      var arr=btn.querySelector("svg");
-      if(arr)arr.style.transform=btn.classList.contains("open")?"rotate(180deg)":"rotate(0deg)";
-    };})(moreId,moreBtn);
+    (function(id,btn,eiKey){
+      if(_openMore[eiKey]){btn.classList.add("open");var a=btn.querySelector("svg");if(a)a.style.transform="rotate(180deg)";}
+      btn.onclick=function(){
+        var body=document.getElementById(id);
+        var nowOpen=body.classList.toggle("open");
+        btn.classList.toggle("open");
+        _openMore[eiKey]=nowOpen;
+        var arr=btn.querySelector("svg");
+        if(arr)arr.style.transform=nowOpen?"rotate(180deg)":"rotate(0deg)";
+      };
+    })(moreId,moreBtn,ei);
     fw.appendChild(moreBtn);
-    var moreBody=document.createElement("div");moreBody.className="more-body";moreBody.id=moreId;
+    var moreBody=document.createElement("div");moreBody.className="more-body"+(_openMore[ei]?" open":"");moreBody.id=moreId;
     mainCard.forEach(function(f,i){
       var fi=i+2;var r=makeFightRow(f,ei,fi,getRegIdx(ei,fi),matchFilter(f));
       if(!matchFilter(f))r.style.opacity="0.3";moreBody.appendChild(r);
@@ -1649,6 +1655,26 @@ document.addEventListener("DOMContentLoaded",function(){
     </div>
   </div>
 </div>
-<script>if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}</script>
+<script>
+if('serviceWorker'in navigator){
+  navigator.serviceWorker.register('sw.js').then(function(reg){
+    reg.addEventListener('updatefound',function(){
+      var newSW=reg.installing;
+      newSW.addEventListener('statechange',function(){
+        if(newSW.state==='activated'){
+          // New SW just took over — show tap-to-refresh banner
+          var b=document.createElement('div');
+          b.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#e8192c;color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;font-weight:600;z-index:9999;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4);white-space:nowrap';
+          b.textContent='Update ready — tap to refresh';
+          b.onclick=function(){window.location.reload();};
+          document.body.appendChild(b);
+        }
+      });
+    });
+  }).catch(function(){});
+  // Also catch SW controller change (activated from waiting)
+  navigator.serviceWorker.addEventListener('controllerchange',function(){window.location.reload();});
+}
+</script>
 </body>
 </html>
