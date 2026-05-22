@@ -76,7 +76,8 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .pick-summary-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)}
 .pick-summary-row:last-child{border-bottom:none}
 .pick-fight-label{font-size:11px;color:var(--muted);flex-shrink:0;width:60px;font-weight:500}
-.pick-fighter-pick{font-size:13px;font-weight:500;flex:1;color:var(--text)}
+.pick-fighter-pick{font-size:13px;font-weight:500;flex:1;min-width:0;color:var(--text);display:flex;flex-direction:column;gap:2px}
+.pick-method-sub{font-size:10px;color:var(--muted);font-weight:400}
 .pick-result-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;flex-shrink:0;letter-spacing:.02em}
 .pick-result-badge.win{background:rgba(46,204,113,.1);color:var(--green);border:1px solid rgba(46,204,113,.2)}
 .pick-result-badge.loss{background:rgba(232,25,44,.08);color:var(--red);border:1px solid rgba(232,25,44,.2)}
@@ -1189,7 +1190,10 @@ function renderPicksWidget(){
     var row=document.createElement("div");row.className="pick-summary-row";
     var fl=document.createElement("div");fl.className="pick-fight-label";
     fl.textContent=p.fight.lbl==="Main Event"?"Main":p.fight.lbl==="Co-Main"?"Co-Main":wcLabel(p.fight.wc);row.appendChild(fl);
-    var pn=document.createElement("div");pn.className="pick-fighter-pick";pn.textContent=p.pick.split(" ").pop();row.appendChild(pn);
+    var pn=document.createElement("div");pn.className="pick-fighter-pick";
+    var pnName=document.createElement("span");pnName.textContent=p.pick.split(" ").pop();pn.appendChild(pnName);
+    if(p.method){var pnM=document.createElement("span");pnM.className="pick-method-sub";pnM.textContent="via "+p.method;pn.appendChild(pnM);}
+    row.appendChild(pn);
     var opp=document.createElement("div");opp.style.cssText="font-size:11px;color:var(--muted);flex-shrink:0";
     var oppName=p.pick===p.fight.f1.n?p.fight.f2.n:p.fight.f1.n;
     opp.textContent="vs "+oppName.split(" ").pop();row.appendChild(opp);
@@ -1211,19 +1215,14 @@ function renderPicksWidget(){
       if(ei>=0){var rk=pk(EVENTS[ei],p.fight);resolvedPicks[rk]="loss";try{localStorage.setItem("ufc_resolved",JSON.stringify(resolvedPicks));}catch(e){}}
     }
     row.appendChild(bdg);
-    if(p.method){
-      var mm=document.createElement("div");mm.className="pick-method-tag";
+    if(p.method&&pnM){
       var fm=(p.fightMethod||"").toUpperCase();
       var methodCorrect=!p.result?null:
         (p.method==="KO/TKO"&&(fm.indexOf("KO")>=0||fm.indexOf("TKO")>=0))||
         (p.method==="Sub"&&(fm.indexOf("SUB")>=0))||
         (p.method==="Dec"&&(fm.indexOf("DEC")>=0||fm==="UD"||fm==="SD"||fm==="MD"));
-      mm.style.cssText="font-size:10px;padding:1px 6px;border-radius:3px;flex-shrink:0;border:1px solid;"+(
-        methodCorrect===null?"color:var(--muted);border-color:var(--border);background:var(--pending-bg)":
-        methodCorrect?"color:var(--gold);border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.08)":
-        "color:var(--muted);border-color:var(--border);background:var(--pending-bg);text-decoration:line-through");
-      mm.textContent="via "+p.method;
-      row.appendChild(mm);
+      if(methodCorrect===true){pnM.style.color="var(--gold)";}
+      else if(methodCorrect===false){pnM.style.textDecoration="line-through";}
     }
     if(showUndo&&!p.result){
       var ub=document.createElement("button");
