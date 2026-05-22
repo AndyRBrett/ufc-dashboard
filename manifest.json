@@ -1,0 +1,24 @@
+{
+  "name": "UFC Fight Cards",
+  "short_name": "UFC Picks",
+  "description": "Live UFC fight cards, picks, and results",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#07070a",
+  "theme_color": "#e8192c",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
