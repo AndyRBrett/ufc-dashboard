@@ -193,9 +193,9 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .more-body{display:none}.more-body.open{display:block}
 .cmp-btn-row{width:100%;background:none;border:none;border-top:1px solid var(--border);padding:8px 16px;font-size:11px;color:var(--muted);cursor:pointer;font-family:Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:5px;transition:color .15s;font-weight:500}
 .cmp-btn-row:hover{color:var(--text)}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .modal-bg.open{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px 18px 0 0;padding:22px 18px 40px;width:100%;max-width:480px;box-shadow:var(--shadow-el)}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:22px 18px 28px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:var(--shadow-el)}
 .modal-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:5px}
 .modal-xbtn{background:var(--btn-bg);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .modal-xbtn:hover{background:rgba(255,255,255,.12)}
@@ -212,7 +212,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .mbar-fill{height:100%;background:var(--red);border-radius:3px}
 .cmp-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:250;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .cmp-bg.open{display:flex}
-.cmp-box{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:20px 16px 28px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-el)}
+.cmp-box{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:20px 16px 28px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:var(--shadow-el)}
 .cmp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .cmp-title{font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:.06em}
 .cmp-xbtn{background:var(--btn-bg);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center}
@@ -680,6 +680,9 @@ var communityPicks={};
 var fnFights=[],fnIdx=0,fnEv=null;
 var notifActive=false;
 var _openMore={};var _collapsed={};
+var _scrollY=0;
+function lockScroll(){_scrollY=window.scrollY;document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.width='100%';document.body.style.top='-'+_scrollY+'px';}
+function unlockScroll(){document.body.style.overflow='';document.body.style.position='';document.body.style.width='';document.body.style.top='';window.scrollTo(0,_scrollY);}
 
 function pad(n){return String(n).padStart(2,"0");}
 function daysOut(d){return Math.ceil((new Date(d)-Date.now())/864e5);}
@@ -883,8 +886,9 @@ function openStats(idx,side){
     bars.appendChild(finsec);
   }
   document.getElementById("statsModal").classList.add("open");
+  lockScroll();
 }
-function closeModal(){document.getElementById("statsModal").classList.remove("open");}
+function closeModal(){document.getElementById("statsModal").classList.remove("open");unlockScroll();}
 
 function closeNameModal(){document.getElementById("nmBg").classList.remove("open");window._pp=null;}
 function checkName(cb){if(userName){cb();return;}
@@ -1019,8 +1023,9 @@ function openCmp(f1,f2){
     if((s1&&s1.stn)||(s2&&s2.stn))el.appendChild(tapeRow("Stance",(s1&&s1.stn)||"—",(s2&&s2.stn)||"—"));
   }
   document.getElementById("cmpBg").classList.add("open");
+  lockScroll();
 }
-function closeCmp(){document.getElementById("cmpBg").classList.remove("open");}
+function closeCmp(){document.getElementById("cmpBg").classList.remove("open");unlockScroll();}
 
 function openShare(){
   if(!Object.keys(preds).length){toast("Make some picks first!");return;}
@@ -1054,8 +1059,9 @@ function openShare(){
     });
   });
   document.getElementById("shareBg").classList.add("open");
+  lockScroll();
 }
-function closeShare(){document.getElementById("shareBg").classList.remove("open");}
+function closeShare(){document.getElementById("shareBg").classList.remove("open");unlockScroll();}
 function copyPicks(){
   var lines=["MY UFC PICKS"];
   EVENTS.forEach(function(ev,ei){
