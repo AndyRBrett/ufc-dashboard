@@ -684,6 +684,19 @@ var _openMore={};
 function pad(n){return String(n).padStart(2,"0");}
 function daysOut(d){return Math.ceil((new Date(d)-Date.now())/864e5);}
 function fmtDate(d){return new Date(d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});}
+function fmtUpdated(s){
+  if(!s)return"Updating soon";
+  var d=new Date(s.replace(" UTC"," +0000"));
+  if(isNaN(d))return s;
+  var now=new Date(),diff=now-d,mins=Math.floor(diff/6e4),hrs=Math.floor(diff/36e5),days=Math.floor(diff/864e5);
+  var t=d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
+  if(mins<2)return"Just now";
+  if(mins<60)return mins+" min ago";
+  if(hrs<2)return"1 hr ago";
+  if(hrs<24)return hrs+" hrs ago";
+  if(days===1)return"Yesterday at "+t;
+  return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})+" at "+t;
+}
 function fmtOdds(n){return n>0?"+"+n:""+n;}
 function pk(ev,fight){return ev.date+"|"+fight.f1.n+"|"+fight.f2.n;}
 function stOf(f){return f.s||(FIGHTER_STATS[f.n]||null);}
@@ -1595,7 +1608,7 @@ function render(){
   // Show the date of the most recently completed event as "data freshness"
   var ud=document.getElementById("updateDate");
   if(ud){
-    if(GENERATED_AT){ud.textContent=GENERATED_AT;}
+    if(GENERATED_AT){ud.textContent=fmtUpdated(GENERATED_AT);}
     else{var latestEv=null;EVENTS.forEach(function(ev){if(ev.fights.some(function(f){return f.state==="post";}))latestEv=ev;});ud.textContent=latestEv?fmtDate(latestEv.date):"Updating soon";}
   }
   if(pastEvs.length&&curFilter==="all"&&!curSearch){
