@@ -303,6 +303,18 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .streak-badge{background:rgba(201,168,76,.15);color:var(--gold);border:1px solid rgba(201,168,76,.25);font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px}
 .arch-hdr{display:flex;align-items:center;gap:10px;padding:18px 16px 0;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;cursor:pointer;user-select:none;font-weight:500}
 .arch-hdr::after{content:"";flex:1;height:1px;background:var(--border)}
+.comm-row{padding:4px 16px 6px}
+.comm-bar-wrap{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:6px}
+.comm-pct{font-size:10px;font-weight:600;color:var(--muted);min-width:28px}
+.comm-pct.cr{text-align:right}
+.comm-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;position:relative}
+.comm-bar-fill{position:absolute;left:0;top:0;height:100%;background:var(--red);border-radius:2px}
+.comm-total{font-size:10px;color:var(--muted);text-align:center;margin-top:3px;letter-spacing:.02em}
+.achv-row{display:flex;flex-wrap:wrap;gap:5px;padding:10px 0 8px}
+.achv-chip{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.achv-streak{background:rgba(232,25,44,.12);color:var(--red);border:1px solid rgba(232,25,44,.22)}
+.achv-gold{background:rgba(201,168,76,.14);color:var(--gold);border:1px solid rgba(201,168,76,.28)}
+.achv-green{background:rgba(46,204,113,.1);color:var(--green);border:1px solid rgba(46,204,113,.22)}
 .share-badge{background:linear-gradient(135deg,#a00,var(--red));border-radius:10px;padding:16px;margin-bottom:14px;text-align:center}
 .share-badge-num{font-family:Bebas Neue,sans-serif;font-size:46px;color:#fff;line-height:1}
 .share-badge-sub{font-size:12px;color:rgba(255,255,255,.7);margin-top:3px}
@@ -650,6 +662,7 @@ var userName="",preds={},resolvedPicks={};
 try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.getItem("ufc_preds")||"{}");resolvedPicks=JSON.parse(localStorage.getItem("ufc_resolved")||"{}");}catch(e){}
 var preds_method={},preds_conf={},preds_fotn={};
 try{preds_method=JSON.parse(localStorage.getItem("ufc_method")||"{}");preds_conf=JSON.parse(localStorage.getItem("ufc_conf")||"{}");preds_fotn=JSON.parse(localStorage.getItem("ufc_fotn")||"{}");}catch(e){}
+var communityPicks={};
 // Migrate old index-based pick keys (e0f0) to stable event+fighter keys
 (function(){
   var hasOld=Object.keys(preds).some(function(k){return /^e\d+f\d+$/.test(k);});
@@ -699,12 +712,63 @@ function syncAllPicks(){
   EVENTS.forEach(function(ev){ev.fights.forEach(function(fight){if(preds[pk(ev,fight)])syncPick(ev,fight);});});
 }
 function saveFOTN(){try{localStorage.setItem("ufc_fotn",JSON.stringify(preds_fotn));}catch(e){}}
+function fetchCommunityPicks(){
+  fetch(SUPABASE_URL+"/rest/v1/picks?select=event_date,f1,f2,pick",{
+    headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+SUPABASE_ANON}
+  }).then(function(r){return r.json();}).then(function(rows){
+    if(!Array.isArray(rows))return;
+    communityPicks={};
+    rows.forEach(function(p){
+      var k=p.event_date+"|"+p.f1+"|"+p.f2;
+      if(!communityPicks[k])communityPicks[k]={f1:0,f2:0,total:0};
+      communityPicks[k].total++;
+      if(p.pick===p.f1)communityPicks[k].f1++;
+      else if(p.pick===p.f2)communityPicks[k].f2++;
+    });
+    render();
+  }).catch(function(){});
+}
 function computeStreak(){
   var res=[];
   Object.keys(resolvedPicks).forEach(function(k){if(resolvedPicks[k])res.push({date:k.split("|")[0],r:resolvedPicks[k]});});
   EVENTS.forEach(function(ev){ev.fights.forEach(function(f){var k=pk(ev,f);if(preds[k]&&f.winner&&!resolvedPicks[k])res.push({date:ev.date,r:preds[k]===f.winner?"win":"loss"});});});
   res.sort(function(a,b){return b.date.localeCompare(a.date);});
   var s=0;for(var i=0;i<res.length;i++){if(res[i].r==="win")s++;else break;}return s;
+}
+function computeBestStreak(){
+  var res=[];
+  Object.keys(resolvedPicks).forEach(function(k){if(resolvedPicks[k])res.push({date:k.split("|")[0],r:resolvedPicks[k]});});
+  EVENTS.forEach(function(ev){ev.fights.forEach(function(f){var k=pk(ev,f);if(preds[k]&&f.winner&&!resolvedPicks[k])res.push({date:ev.date,r:preds[k]===f.winner?"win":"loss"});});});
+  res.sort(function(a,b){return a.date.localeCompare(b.date);});
+  var best=0,curr=0;
+  res.forEach(function(r){if(r.r==="win"){curr++;if(curr>best)best=curr;}else curr=0;});
+  return best;
+}
+function countPerfectCards(){
+  var count=0;
+  EVENTS.forEach(function(ev){
+    var results=ev.fights.map(function(f){var k=pk(ev,f);if(!preds[k]||!f.winner)return null;return preds[k]===f.winner;}).filter(function(x){return x!==null;});
+    if(results.length>=3&&results.every(function(r){return r===true;}))count++;
+  });
+  return count;
+}
+function countUpsetsCorrect(){
+  var count=0;
+  EVENTS.forEach(function(ev){ev.fights.forEach(function(f){
+    var k=pk(ev,f);if(!preds[k]||!f.winner||!f.odds)return;
+    var pickedF1=preds[k]===f.f1.n;
+    var pickedOdds=pickedF1?f.odds.f1:f.odds.f2;
+    if(pickedOdds>0&&preds[k]===f.winner)count++;
+  });});
+  return count;
+}
+function countMethodsCorrect(){
+  var count=0;
+  EVENTS.forEach(function(ev){ev.fights.forEach(function(f){
+    var k=pk(ev,f);if(!preds[k]||!f.winner||!f.method||!preds_method[k])return;
+    if(scoreMethod(preds_method[k],f.method))count++;
+  });});
+  return count;
 }
 function toggleTheme(){var l=document.body.classList.toggle("light");try{localStorage.setItem("ufc_theme",l?"light":"dark");}catch(e){}}
 function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
@@ -1169,6 +1233,21 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
     (function(ri){b2.onclick=function(){pick(ri,1);};})(regIdx);
     pr.appendChild(b2);
     row.appendChild(pr);
+    if(!fw){
+      var ck=pk(EVENTS[ei],fight);var cp=communityPicks[ck];
+      if(cp&&cp.total>=2){
+        var f1p=Math.round(cp.f1/cp.total*100);var f2p=100-f1p;
+        var commRow=document.createElement("div");commRow.className="comm-row";
+        var cbw=document.createElement("div");cbw.className="comm-bar-wrap";
+        var cl=document.createElement("span");cl.className="comm-pct";cl.textContent=f1p+"%";cbw.appendChild(cl);
+        var cb=document.createElement("div");cb.className="comm-bar";
+        var cbf=document.createElement("div");cbf.className="comm-bar-fill";cbf.style.width=f1p+"%";cb.appendChild(cbf);cbw.appendChild(cb);
+        var crEl=document.createElement("span");crEl.className="comm-pct cr";crEl.textContent=f2p+"%";cbw.appendChild(crEl);
+        commRow.appendChild(cbw);
+        var ct=document.createElement("div");ct.className="comm-total";ct.textContent=cp.total+(cp.total===1?" person picked":" people picked");commRow.appendChild(ct);
+        row.appendChild(commRow);
+      }
+    }
     if(myPick&&!fw){
       var myM=preds_method[key]||"";
       var mpr=document.createElement("div");mpr.className="method-pick-row";
@@ -1303,6 +1382,20 @@ function renderPicksWidget(){
   body.innerHTML="";
   var total=Object.keys(preds).length;
   if(!total){var e=document.createElement("p");e.style.cssText="font-size:13px;color:var(--muted);padding:12px 0";e.textContent="No picks yet.";body.appendChild(e);return;}
+  // Achievement badges
+  var achvStreak=computeStreak();var achvBest=computeBestStreak();
+  var achvPerf=countPerfectCards();var achvUpset=countUpsetsCorrect();var achvMethod=countMethodsCorrect();
+  var achvList=[];
+  if(achvStreak>=3)achvList.push({cls:"achv-streak",text:"🔥 "+achvStreak+" in a row"});
+  if(achvBest>=3&&achvBest>achvStreak)achvList.push({cls:"achv-gold",text:"⭐ Best: "+achvBest});
+  if(achvPerf>=1)achvList.push({cls:"achv-gold",text:"🏆 "+(achvPerf>1?achvPerf+"× ":"")+"Perfect Card"});
+  if(achvUpset>=3)achvList.push({cls:"achv-green",text:"💥 Upset Caller ×"+achvUpset});
+  if(achvMethod>=5)achvList.push({cls:"achv-green",text:"🎯 Method Man ×"+achvMethod});
+  if(achvList.length){
+    var ar=document.createElement("div");ar.className="achv-row";
+    achvList.forEach(function(a){var c=document.createElement("span");c.className="achv-chip "+a.cls;c.textContent=a.text;ar.appendChild(c);});
+    body.appendChild(ar);
+  }
   var correct=0,resolved=0;
   var now=Date.now();
 
@@ -1676,6 +1769,7 @@ document.addEventListener("DOMContentLoaded",function(){
     }
   }
   setTimeout(syncAllPicks, 2000);
+  setTimeout(fetchCommunityPicks, 3000);
   try{if(localStorage.getItem("ufc_push")==="1")_setBellActive(true);}catch(e){}
 
 });
