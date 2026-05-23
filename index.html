@@ -1610,15 +1610,16 @@ function togglePicks(){
 function buildPastPicksData(){
   var now=Date.now(),result=[],matched=new Set();
   EVENTS.forEach(function(ev){
-    if(new Date(ev.date).getTime()>=now-2*864e5)return;
+    var isPast=new Date(ev.date).getTime()<now-2*864e5;
     var picks=[];
     ev.fights.forEach(function(f){
       var k=pk(ev,f);if(!preds[k])return;
-      matched.add(k);
+      matched.add(k); // mark matched for ALL events so future picks don't leak into orphans
+      if(!isPast)return;
       var res=f.winner?(preds[k]===f.winner?"win":"loss"):(resolvedPicks[k]||"");
       picks.push({f1n:f.f1.n,f2n:f.f2.n,pick:preds[k],result:res,method:preds_method[k]||""});
     });
-    if(!picks.length)return;
+    if(!isPast||!picks.length)return;
     var correct=picks.filter(function(p){return p.result==="win";}).length;
     var resolved=picks.filter(function(p){return p.result;}).length;
     result.push({name:ev.name,date:ev.date,picks:picks,correct:correct,resolved:resolved});
@@ -1628,6 +1629,7 @@ function buildPastPicksData(){
     if(matched.has(k))return;
     var parts=k.split("|");if(parts.length<3)return;
     var date=parts[0],f1n=parts[1],f2n=parts[2];
+    if(new Date(date).getTime()>=now-2*864e5)return; // skip future/recent orphan picks
     if(!og[date])og[date]=[];
     og[date].push({f1n:f1n,f2n:f2n,pick:preds[k],result:resolvedPicks[k]||"",method:preds_method[k]||""});
   });
@@ -1650,7 +1652,7 @@ function makePastEvCard(item){
   sc.className="past-ev-sc "+(item.resolved===0?"sc-pend":ratio>=0.6?"sc-good":ratio>=0.4?"sc-mid":"sc-bad");
   sc.textContent=item.resolved===0?item.picks.length+" pending":item.correct+"/"+item.resolved;
   var arr=document.createElementNS("http://www.w3.org/2000/svg","svg");
-  arr.setAttribute("viewBox","0 0 24 24");arr.setAttribute("fill","none");arr.setAttribute("stroke","currentColor");arr.setAttribute("stroke-width","2.5");arr.className="past-ev-arr";
+  arr.setAttribute("viewBox","0 0 24 24");arr.setAttribute("fill","none");arr.setAttribute("stroke","currentColor");arr.setAttribute("stroke-width","2.5");arr.setAttribute("class","past-ev-arr");
   var poly=document.createElementNS("http://www.w3.org/2000/svg","polyline");poly.setAttribute("points","6 9 12 15 18 9");arr.appendChild(poly);
   hdr.appendChild(nm);if(!item.isOrphan)hdr.appendChild(dt);hdr.appendChild(sc);hdr.appendChild(arr);
   card.appendChild(hdr);
