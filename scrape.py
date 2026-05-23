@@ -692,6 +692,20 @@ def _norm_name(n):
     return parts[-1].lower() if parts else ""
 
 
+def _wiki_rematch(wikitext, f1_name, f2_name):
+    """Return True if the wikitext mentions 'rematch' within 400 chars of both fighter names."""
+    if not wikitext:
+        return False
+    wl = wikitext.lower()
+    f1l = _norm_name(f1_name)
+    f2l = _norm_name(f2_name)
+    for m in re.finditer(r'\brematch\b', wl):
+        window = wl[max(0, m.start() - 400): m.end() + 400]
+        if f1l in window and f2l in window:
+            return True
+    return False
+
+
 def fetch_fighter_stats(name):
     """Fetch career stats for one fighter from UFCStats. Returns a dict or None."""
     print(f"  UFCStats search [{name}]", file=sys.stderr)
@@ -1026,11 +1040,14 @@ def step_build_events(html, now):
             elif i < 5:   lbl = "Main Card"
             else:         lbl = "Prelim"
             f1, f2 = wf["f1"], wf["f2"]
+            wiki_rematch = wf.get("rematch", False) or _wiki_rematch(wt, f1, f2)
+            if wiki_rematch:
+                print(f"  Rematch (wiki): {f1} vs {f2}", file=sys.stderr)
             card.append({
                 "label":   lbl,
                 "wc":      wf.get("wc", "TBD"),
                 "title":   wf.get("title", False),
-                "rematch": wf.get("rematch", False),
+                "rematch": wiki_rematch,
                 "odds":   get_odds_with_fallback(odds_index, existing_odds, f1, f2),
                 "winner": "", "method": "", "round": None, "state": "pre",
                 "f1":     {"name": f1, "record": "", "ranking": wf.get("f1_rk", "")},
