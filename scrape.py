@@ -684,6 +684,14 @@ def _search_ufcstats(name):
     return None
 
 
+def _norm_name(n):
+    """Last name, lowercased, accents stripped — for rematch cross-reference."""
+    n = unicodedata.normalize("NFD", n)
+    n = "".join(c for c in n if unicodedata.category(c) != "Mn")
+    parts = n.strip().split()
+    return parts[-1].lower() if parts else ""
+
+
 def fetch_fighter_stats(name):
     """Fetch career stats for one fighter from UFCStats. Returns a dict or None."""
     print(f"  UFCStats search [{name}]", file=sys.stderr)
@@ -699,6 +707,7 @@ def fetch_fighter_stats(name):
     ko = sub = 0
     ht = rch = stn = dob = ""
     form = []
+    opponents = []
     time.sleep(0.5)
     try:
         dr = requests.get(detail_url, timeout=15, headers={"User-Agent": "UFC-Dashboard/1.0"})
@@ -752,6 +761,12 @@ def fetch_fighter_stats(name):
                     elif "dq" in ml:   ms_str = "DQ"
                     else:              ms_str = method_txt.strip()[:3]
                     form.append({"r": r_char, "m": ms_str})
+                # Opponent name: cells_d[1] has two <a> tags — self then opponent
+                opp_links = cells_d[1].select("a")
+                if len(opp_links) >= 2:
+                    opp_name = opp_links[1].get_text(strip=True)
+                    if opp_name:
+                        opponents.append(opp_name)
     except Exception as e:
         print(f"  UFCStats detail error: {e}", file=sys.stderr)
 
@@ -765,6 +780,7 @@ def fetch_fighter_stats(name):
         "ko": ko, "sub": sub, "rec": rec,
         "ht": ht, "rch": rch, "stn": stn, "dob": dob,
         "form": form,
+        "opp": opponents,
     }
 
 
@@ -1059,6 +1075,7 @@ def step_build_events(html, now):
         if (
             n not in stats_cache
             or "form" not in stats_cache[n]
+            or "opp" not in stats_cache[n]
             or (card_records.get(n) and card_records[n] != stats_cache[n].get("rec", ""))
         )
     )
@@ -1083,10 +1100,31 @@ def step_build_events(html, now):
                     if cached.get("rec"):
                         side["record"] = cached["rec"]
 
+    # Rematch detection via UFCStats opponent history
+    for ev in new_events:
+        for fight in ev["fights"]:
+            if fight.get("rematch"):
+                continue  # already flagged by Wikipedia
+            f1n = fight["f1"]["name"]
+            f2n = fight["f2"]["name"]
+            f1_opps = stats_cache.get(f1n, {}).get("opp", [])
+            f2_opps = stats_cache.get(f2n, {}).get("opp", [])
+            f2_norm = _norm_name(f2n)
+            f1_norm = _norm_name(f1n)
+            if (any(_norm_name(o) == f2_norm for o in f1_opps) or
+                    any(_norm_name(o) == f1_norm for o in f2_opps)):
+                fight["rematch"] = True
+                print(f"  Rematch detected: {f1n} vs {f2n}", file=sys.stderr)
+
     html = patch_js_var(html, "EVENTS", events_js(new_events))
+    # Strip opponent lists before writing to JS — they're internal-only
+    stats_for_js = {
+        k: {kk: vv for kk, vv in v.items() if kk != "opp"}
+        for k, v in stats_cache.items()
+    }
     html = patch_js_var(
         html, "FIGHTER_STATS",
-        json.dumps(stats_cache, separators=(",", ":"), ensure_ascii=False),
+        json.dumps(stats_for_js, separators=(",", ":"), ensure_ascii=False),
     )
     rankings = fetch_rankings()
     if rankings:
