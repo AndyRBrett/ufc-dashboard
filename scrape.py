@@ -9,10 +9,65 @@ from pathlib import Path
 import requests
 from bs4 import BeautifulSoup
 
-ODDS_API_KEY = os.environ.get("ODDS_API_KEY", "")
-ODDS_API_URL = "https://api.the-odds-api.com/v4/sports/mma_mixed_martial_arts/odds"
-WIKI_API     = "https://en.wikipedia.org/w/api.php"
-WIKI_HDR     = {"User-Agent": "UFC-Dashboard/1.0 (https://github.com/AndyRBrett/ufc-dashboard; andyrbrett@gmail.com)"}
+ODDS_API_KEY      = os.environ.get("ODDS_API_KEY", "")
+ODDS_API_URL      = "https://api.the-odds-api.com/v4/sports/mma_mixed_martial_arts/odds"
+WIKI_API          = "https://en.wikipedia.org/w/api.php"
+WIKI_HDR          = {"User-Agent": "UFC-Dashboard/1.0 (https://github.com/AndyRBrett/ufc-dashboard; andyrbrett@gmail.com)"}
+SUPABASE_URL      = os.environ.get("SUPABASE_URL", "https://gkccophrdqtqcowmblre.supabase.co")
+SUPABASE_ANON     = os.environ.get("SUPABASE_ANON", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrY2NvcGhyZHF0cWNvd21ibHJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAyMTAsImV4cCI6MjA5NTA0NjIxMH0.zSi-PcQL_ti5KXRq3YRQX4RbsP6HhQ5bAqh5x5kKkbE")
+VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "")
+VAPID_CLAIMS      = {"sub": "mailto:andyrbrett@gmail.com"}
+
+import urllib.request as _ur
+
+def _sb_get(path):
+    try:
+        req = _ur.Request(SUPABASE_URL + path, headers={"apikey": SUPABASE_ANON, "Authorization": "Bearer " + SUPABASE_ANON})
+        with _ur.urlopen(req, timeout=10) as r: return json.load(r)
+    except Exception as e:
+        print("Supabase GET error:", e, file=sys.stderr); return []
+
+def send_push_notifications(new_results):
+    """Send win/loss notifications after fight results are injected."""
+    if not VAPID_PRIVATE_KEY or not new_results:
+        return
+    try:
+        from pywebpush import webpush, WebPushException
+    except ImportError:
+        print("pywebpush not installed, skipping push", file=sys.stderr); return
+
+    subs  = _sb_get("/rest/v1/push_subs?select=*")
+    picks = _sb_get("/rest/v1/picks?select=*")
+    if not subs or not picks:
+        return
+
+    sub_map = {s["user_id"]: s for s in subs}
+
+    for res in new_results:
+        winner, loser = res["winner"], res["loser"]
+        for pick in picks:
+            f1, f2, chosen = pick["f1"], pick["f2"], pick["pick"]
+            # Match this pick to the result
+            is_this_fight = (names_match(f1, winner) and names_match(f2, loser)) or \
+                            (names_match(f2, winner) and names_match(f1, loser))
+            if not is_this_fight:
+                continue
+            sub = sub_map.get(pick["user_id"])
+            if not sub:
+                continue
+            picked_winner = names_match(chosen, winner)
+            title = "Your pick WON! 🔥" if picked_winner else "Tough luck ❌"
+            body  = f"{winner} def. {loser}" + (" — you called it!" if picked_winner else "")
+            try:
+                webpush(
+                    subscription_info={"endpoint": sub["endpoint"], "keys": {"p256dh": sub["p256dh"], "auth": sub["auth"]}},
+                    data=json.dumps({"title": title, "body": body}),
+                    vapid_private_key=VAPID_PRIVATE_KEY,
+                    vapid_claims=VAPID_CLAIMS
+                )
+                print(f"  Push sent to {pick['nickname']}: {title}", file=sys.stderr)
+            except Exception as e:
+                print(f"  Push failed for {pick['nickname']}: {e}", file=sys.stderr)
 
 # Upcoming UFC events - Wikipedia page slugs
 # Provides accurate venue/time data; auto-discovery fills in any missing events.
@@ -722,11 +777,21 @@ def main():
         time.sleep(1)
 
     if total_injected > 0:
-        label = fmt_update(now)
         html_new = html[:js_start] + js + html[js_end:]
         html_new = re.sub(r'var GENERATED_AT="[^"]*"', 'var GENERATED_AT="%s"' % fmt_update(now), html_new)
         index.write_text(html_new, encoding="utf-8")
         print("Results injected:", total_injected, file=sys.stderr)
+        # Collect newly-injected results for push notifications
+        new_results = []
+        for ev_name, ev_date in zip(ex_names, ex_dates):
+            try: ed = datetime.strptime(ev_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            except: continue
+            if ed < now - timedelta(days=2) or ed > now + timedelta(hours=6): continue
+            slug = re.sub(r"[^a-zA-Z0-9 :._-]", "", ev_name).replace(" ", "_")
+            wt = fetch_wikitext(slug)
+            if wt:
+                new_results.extend(parse_results(wt))
+        send_push_notifications(new_results)
         sys.exit(0)
 
     # -- Step 2: Fetch Odds API for moneylines (preserve existing if key absent) --
