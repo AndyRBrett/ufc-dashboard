@@ -349,12 +349,13 @@ def parse_upcoming_card(wikitext):
         if not f1 or len(f1) < 2:
             continue
         fights.append({
-            "f1":    f1,
-            "f1_rk": f1_rk,
-            "f2":    f2 or "TBD",
-            "f2_rk": f2_rk,
-            "wc":    norm_wc(clean_wiki(wc_raw)),
-            "title": "(c)" in block.group(1).lower(),
+            "f1":      f1,
+            "f1_rk":   f1_rk,
+            "f2":      f2 or "TBD",
+            "f2_rk":   f2_rk,
+            "wc":      norm_wc(clean_wiki(wc_raw)),
+            "title":   "(c)" in block.group(1).lower(),
+            "rematch": bool(re.search(r"\brematch\b", block.group(1), re.I)),
         })
     return fights
 
@@ -1009,9 +1010,10 @@ def step_build_events(html, now):
             else:         lbl = "Prelim"
             f1, f2 = wf["f1"], wf["f2"]
             card.append({
-                "label":  lbl,
-                "wc":     wf.get("wc", "TBD"),
-                "title":  wf.get("title", False),
+                "label":   lbl,
+                "wc":      wf.get("wc", "TBD"),
+                "title":   wf.get("title", False),
+                "rematch": wf.get("rematch", False),
                 "odds":   get_odds_with_fallback(odds_index, existing_odds, f1, f2),
                 "winner": "", "method": "", "round": None, "state": "pre",
                 "f1":     {"name": f1, "record": "", "ranking": wf.get("f1_rk", "")},

@@ -237,7 +237,6 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .fn-ev{font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:.14em;color:rgba(255,255,255,.3);margin-bottom:4px}
 .fn-wc{font-size:11px;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.08em;margin-bottom:30px}
 .fn-mu{display:flex;align-items:center;justify-content:center;gap:16px;width:100%;flex-wrap:wrap}
-.fn-ft{flex:1;min-width:100px}
 .fn-ft.fnr{text-align:right}
 .fn-nm{font-family:Bebas Neue,sans-serif;font-size:clamp(28px,7vw,56px);line-height:1.1;color:#fff}
 .fn-rc{font-size:13px;color:rgba(255,255,255,.35);margin-top:5px}
@@ -245,6 +244,17 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .fn-nav{display:flex;gap:10px;margin-top:32px}
 .fn-nb{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.55);padding:9px 20px;border-radius:7px;cursor:pointer;font:500 13px Inter,sans-serif;display:flex;align-items:center;gap:5px;transition:background .15s}
 .fn-nb:hover{background:rgba(255,255,255,.12)}
+.fn-ft{flex:1;min-width:100px;cursor:pointer;border-radius:12px;padding:10px 8px;transition:opacity .25s,background .15s}
+.fn-ft:active{background:rgba(255,255,255,.06)}
+.fn-ft.fn-picked{opacity:1;background:rgba(255,255,255,.07)}
+.fn-ft.fn-not-picked{opacity:.18;pointer-events:none}
+.fn-pick-hint{font-size:11px;color:rgba(255,255,255,.22);margin-top:14px;letter-spacing:.06em}
+.fn-picked-lbl{font-size:13px;color:rgba(255,255,255,.45);margin-top:14px}
+.rematch-tag{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:rgba(201,168,76,.12);color:var(--gold);border:1px solid rgba(201,168,76,.3);vertical-align:middle;margin-left:8px}
+.ev-qp{background:none;border:1px solid var(--border2);color:var(--muted);font:600 10px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:4px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.ev-qp:hover{background:var(--btn-bg);color:var(--text)}
+body.light .ev-qp{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.6)}
+body.light .ev-qp:hover{background:rgba(255,255,255,.12);color:#fff}
 .fn-ctr{font-size:11px;color:rgba(255,255,255,.2);margin-top:14px}
 .nm-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:400;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .nm-bg.open{display:flex}
@@ -417,8 +427,10 @@ body.light .fotn-row{background:var(--card2);border-top:1px solid rgba(0,0,0,.08
   <button class="fn-close" onclick="closeFN()">x</button>
   <div class="fn-ev" id="fn-ev"></div>
   <div class="fn-wc" id="fn-wc"></div>
-  <div class="fn-mu"><div class="fn-ft"><div class="fn-nm" id="fn-f1"></div><div class="fn-rc" id="fn-r1"></div></div><div class="fn-vs">VS</div><div class="fn-ft fnr"><div class="fn-nm" id="fn-f2"></div><div class="fn-rc" id="fn-r2"></div></div></div>
-  <div class="fn-nav"><button class="fn-nb" onclick="fnNav(-1)">Prev</button><button class="fn-nb" onclick="fnNav(1)">Next</button></div>
+  <div class="fn-mu"><div class="fn-ft" id="fn-f1-wrap" onclick="fnPick(0)"><div class="fn-nm" id="fn-f1"></div><div class="fn-rc" id="fn-r1"></div></div><div class="fn-vs">VS</div><div class="fn-ft fnr" id="fn-f2-wrap" onclick="fnPick(1)"><div class="fn-nm" id="fn-f2"></div><div class="fn-rc" id="fn-r2"></div></div></div>
+  <div class="fn-pick-hint" id="fn-pick-hint">Tap a fighter to pick · Swipe to pick</div>
+  <div class="fn-picked-lbl" id="fn-picked-lbl"></div>
+  <div class="fn-nav"><button class="fn-nb" onclick="fnNav(-1)">← Prev</button><button class="fn-nb" onclick="fnNav(1)">Next →</button></div>
   <div class="fn-ctr" id="fn-ctr"></div>
 </div>
 <div class="nm-bg" id="nmBg">
@@ -704,7 +716,7 @@ var communityPicks={};
   preds=migrated;
   try{localStorage.setItem("ufc_preds",JSON.stringify(preds));}catch(e){}
 })();
-var fnFights=[],fnIdx=0,fnEv=null;
+var fnFights=[],fnIdx=0,fnEv=null,fnPickedAny=false;
 var notifActive=false;
 var _openMore={};var _collapsed={};
 var _scrollY=0;
@@ -985,24 +997,54 @@ function resetPicks(){
   preds={};preds_method={};preds_conf={};save();saveMethod();saveConf();render();updatePicksWidget();toast("All picks cleared");
 }
 
-function openFN(){
+function openFN(evArg){
   var now=Date.now();
-  var ev=EVENTS.filter(function(e){return new Date(e.date)>=now-864e5;})[0];
+  var ev=evArg||(EVENTS.filter(function(e){return new Date(e.date)>=now-864e5;})[0]);
   if(!ev){toast("No upcoming events");return;}
-  fnFights=ev.fights;fnEv=ev;fnIdx=0;updateFN();
-  document.getElementById("fnMode").classList.add("open");document.body.style.overflow="hidden";
+  fnFights=ev.fights;fnEv=ev;fnIdx=0;fnPickedAny=false;updateFN();
+  document.getElementById("fnMode").classList.add("open");lockScroll();
 }
-function closeFN(){document.getElementById("fnMode").classList.remove("open");document.body.style.overflow="";}
+function closeFN(){
+  document.getElementById("fnMode").classList.remove("open");unlockScroll();
+  if(fnPickedAny){render();updatePicksWidget();}
+}
 function fnNav(dir){fnIdx=Math.max(0,Math.min(fnFights.length-1,fnIdx+dir));updateFN();}
+function fnPick(side){
+  if(!fnFights.length)return;
+  var f=fnFights[fnIdx];if(f.winner)return;
+  checkName(function(){
+    preds[pk(fnEv,f)]=side===0?f.f1.n:f.f2.n;
+    save();syncPick(fnEv,f);fnPickedAny=true;updateFN();
+    if(fnIdx<fnFights.length-1)setTimeout(function(){fnIdx++;updateFN();},650);
+  });
+}
 function updateFN(){
   if(!fnFights.length)return;
   var f=fnFights[fnIdx];
   document.getElementById("fn-ev").textContent=fnEv?fnEv.name:"";
-  document.getElementById("fn-wc").textContent=f.lbl+" - "+wcLabel(f.wc)+(f.title?" - TITLE":"");
-  document.getElementById("fn-f1").textContent=f.f1.n;document.getElementById("fn-r1").textContent=f.f1.r;
-  document.getElementById("fn-f2").textContent=f.f2.n;document.getElementById("fn-r2").textContent=f.f2.r;
+  document.getElementById("fn-wc").textContent=f.lbl+" · "+wcLabel(f.wc)+(f.title?" · TITLE":"")+(f.rematch?" · REMATCH":"");
+  document.getElementById("fn-f1").textContent=f.f1.n;document.getElementById("fn-r1").textContent=f.f1.r||"";
+  document.getElementById("fn-f2").textContent=f.f2.n;document.getElementById("fn-r2").textContent=f.f2.r||"";
   document.getElementById("fn-ctr").textContent=(fnIdx+1)+" of "+fnFights.length;
+  var myPick=fnEv?preds[pk(fnEv,f)]:"";
+  var w1=document.getElementById("fn-f1-wrap"),w2=document.getElementById("fn-f2-wrap");
+  var hint=document.getElementById("fn-pick-hint"),lbl=document.getElementById("fn-picked-lbl");
+  if(myPick){
+    w1.className="fn-ft"+(myPick===f.f1.n?" fn-picked":" fn-not-picked");
+    w2.className="fn-ft fnr"+(myPick===f.f2.n?" fn-picked":" fn-not-picked");
+    hint.style.display="none";lbl.textContent="You picked: "+myPick.split(" ").pop();
+  } else {
+    w1.className="fn-ft";w2.className="fn-ft fnr";hint.style.display="";lbl.textContent="";
+  }
 }
+(function(){
+  var t={x:0,y:0},m=document.getElementById("fnMode");
+  m.addEventListener("touchstart",function(e){t.x=e.touches[0].clientX;t.y=e.touches[0].clientY;},{passive:true});
+  m.addEventListener("touchend",function(e){
+    var dx=e.changedTouches[0].clientX-t.x,dy=e.changedTouches[0].clientY-t.y;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)fnPick(dx<0?0:1);
+  },{passive:true});
+})();
 
 function openCmp(f1,f2){
   var el=document.getElementById("cmpContent");if(!el)return;
@@ -1228,6 +1270,7 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
   var lbl=document.createElement("div");
   lbl.className="flbl "+(isMain?"lmain":isCo?"lco":"lpre");
   lbl.textContent=fight.lbl+" - "+wcLabel(fight.wc)+(fight.title?" - TITLE":"");
+  if(fight.rematch){var rt=document.createElement("span");rt.className="rematch-tag";rt.textContent="Rematch";lbl.appendChild(rt);}
   row.appendChild(lbl);
   var sz=isMain?"lg":isCo?"sm":"xs";
   var mu=document.createElement("div");mu.className="mu";
@@ -1356,6 +1399,9 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
   if(isFeat){var bn=document.createElement("span");bn.className="badge b-next";bn.textContent="Next Up";badges.appendChild(bn);}
   if(titleCount>0){var bt=document.createElement("span");bt.className="badge b-title";bt.textContent=titleCount>1?titleCount+" Title Fights":"Title Fight";badges.appendChild(bt);}
   if(isPPV){var bp=document.createElement("span");bp.className="badge b-ppv";bp.textContent="PPV";badges.appendChild(bp);}
+  var qpBtn=document.createElement("button");qpBtn.className="ev-qp";qpBtn.textContent="Quick Pick";
+  (function(evRef){qpBtn.onclick=function(e){e.stopPropagation();openFN(evRef);};})(ev);
+  badges.appendChild(qpBtn);
   band.appendChild(badges);var colBtn=document.createElement("div");colBtn.className="ev-collapse-btn";var colSvg=document.createElementNS("http://www.w3.org/2000/svg","svg");colSvg.setAttribute("viewBox","0 0 24 24");colSvg.setAttribute("fill","none");colSvg.setAttribute("stroke","currentColor");colSvg.setAttribute("stroke-width","2.5");colSvg.style.cssText="width:18px;height:18px";var colPoly=document.createElementNS("http://www.w3.org/2000/svg","polyline");colPoly.setAttribute("points","6 9 12 15 18 9");colSvg.appendChild(colPoly);colBtn.appendChild(colSvg);band.appendChild(colBtn);frag.appendChild(band);
   var fw=document.createElement("div");fw.className="fights-wrap";
   var mainCard=ev.fights.slice(2).filter(function(f){return f.lbl==="Main Card";});
