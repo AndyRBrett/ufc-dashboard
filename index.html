@@ -303,6 +303,26 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .streak-badge{background:rgba(201,168,76,.15);color:var(--gold);border:1px solid rgba(201,168,76,.25);font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px}
 .arch-hdr{display:flex;align-items:center;gap:10px;padding:18px 16px 0;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;cursor:pointer;user-select:none;font-weight:500}
 .arch-hdr::after{content:"";flex:1;height:1px;background:var(--border)}
+.past-ev-card{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:0 12px 8px;overflow:hidden}
+.past-ev-hdr{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;user-select:none;transition:background .15s}
+.past-ev-hdr:hover{background:rgba(255,255,255,.025)}
+.past-ev-nm{font-family:Bebas Neue,sans-serif;font-size:17px;letter-spacing:.04em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.past-ev-dt{font-size:11px;color:var(--muted);flex-shrink:0}
+.past-ev-sc{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;flex-shrink:0;white-space:nowrap}
+.past-ev-sc.sc-good{background:rgba(46,204,113,.1);color:var(--green);border:1px solid rgba(46,204,113,.2)}
+.past-ev-sc.sc-mid{background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2)}
+.past-ev-sc.sc-bad{background:rgba(232,25,44,.08);color:var(--red);border:1px solid rgba(232,25,44,.15)}
+.past-ev-sc.sc-pend{background:var(--card2);color:var(--muted);border:1px solid var(--border)}
+.past-ev-arr{width:13px;height:13px;opacity:.35;transition:transform .2s;flex-shrink:0}
+.past-ev-body{border-top:1px solid var(--border)}
+.past-pr{display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:12px}
+.past-pr+.past-pr{border-top:1px solid var(--border)}
+.past-pr-fighter{font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.past-pr-opp{font-size:11px;color:var(--muted);flex-shrink:0}
+.past-pr-bdg{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0}
+.past-pr-bdg.win{background:rgba(46,204,113,.1);color:var(--green);border:1px solid rgba(46,204,113,.18)}
+.past-pr-bdg.loss{background:rgba(232,25,44,.08);color:var(--red);border:1px solid rgba(232,25,44,.15)}
+.past-pr-bdg.pend{background:var(--card2);color:var(--muted);border:1px solid var(--border)}
 .comm-row{padding:4px 16px 6px}
 .comm-bar-wrap{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:6px}
 .comm-pct{font-size:10px;font-weight:600;color:var(--muted);min-width:28px}
@@ -1587,6 +1607,67 @@ function togglePicks(){
   if(body.classList.contains("open"))renderPicksWidget();
 }
 
+function buildPastPicksData(){
+  var now=Date.now(),result=[],matched=new Set();
+  EVENTS.forEach(function(ev){
+    if(new Date(ev.date).getTime()>=now-2*864e5)return;
+    var picks=[];
+    ev.fights.forEach(function(f){
+      var k=pk(ev,f);if(!preds[k])return;
+      matched.add(k);
+      var res=f.winner?(preds[k]===f.winner?"win":"loss"):(resolvedPicks[k]||"");
+      picks.push({f1n:f.f1.n,f2n:f.f2.n,pick:preds[k],result:res,method:preds_method[k]||""});
+    });
+    if(!picks.length)return;
+    var correct=picks.filter(function(p){return p.result==="win";}).length;
+    var resolved=picks.filter(function(p){return p.result;}).length;
+    result.push({name:ev.name,date:ev.date,picks:picks,correct:correct,resolved:resolved});
+  });
+  var og={};
+  Object.keys(preds).forEach(function(k){
+    if(matched.has(k))return;
+    var parts=k.split("|");if(parts.length<3)return;
+    var date=parts[0],f1n=parts[1],f2n=parts[2];
+    if(!og[date])og[date]=[];
+    og[date].push({f1n:f1n,f2n:f2n,pick:preds[k],result:resolvedPicks[k]||"",method:preds_method[k]||""});
+  });
+  Object.keys(og).forEach(function(date){
+    var picks=og[date];
+    var correct=picks.filter(function(p){return p.result==="win";}).length;
+    var resolved=picks.filter(function(p){return p.result;}).length;
+    result.push({name:date,date:date,picks:picks,correct:correct,resolved:resolved,isOrphan:true});
+  });
+  return result.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+}
+
+function makePastEvCard(item){
+  var card=document.createElement("div");card.className="past-ev-card";
+  var hdr=document.createElement("div");hdr.className="past-ev-hdr";
+  var nm=document.createElement("div");nm.className="past-ev-nm";nm.textContent=item.isOrphan?fmtDate(item.date):item.name;
+  var dt=document.createElement("div");dt.className="past-ev-dt";dt.textContent=fmtDate(item.date);
+  var ratio=item.resolved>0?item.correct/item.resolved:-1;
+  var sc=document.createElement("div");
+  sc.className="past-ev-sc "+(item.resolved===0?"sc-pend":ratio>=0.6?"sc-good":ratio>=0.4?"sc-mid":"sc-bad");
+  sc.textContent=item.resolved===0?item.picks.length+" pending":item.correct+"/"+item.resolved;
+  var arr=document.createElementNS("http://www.w3.org/2000/svg","svg");
+  arr.setAttribute("viewBox","0 0 24 24");arr.setAttribute("fill","none");arr.setAttribute("stroke","currentColor");arr.setAttribute("stroke-width","2.5");arr.className="past-ev-arr";
+  var poly=document.createElementNS("http://www.w3.org/2000/svg","polyline");poly.setAttribute("points","6 9 12 15 18 9");arr.appendChild(poly);
+  hdr.appendChild(nm);if(!item.isOrphan)hdr.appendChild(dt);hdr.appendChild(sc);hdr.appendChild(arr);
+  card.appendChild(hdr);
+  var body=document.createElement("div");body.className="past-ev-body";body.style.display="none";
+  item.picks.forEach(function(p){
+    var row=document.createElement("div");row.className="past-pr";
+    var fn=document.createElement("div");fn.className="past-pr-fighter";fn.textContent=p.pick.split(" ").pop()+(p.method?" · "+p.method:"");
+    var opp=document.createElement("div");opp.className="past-pr-opp";opp.textContent="vs "+(p.pick===p.f1n?p.f2n:p.f1n).split(" ").pop();
+    var bdg=document.createElement("div");bdg.className="past-pr-bdg "+(p.result==="win"?"win":p.result==="loss"?"loss":"pend");
+    bdg.textContent=p.result==="win"?"✓":p.result==="loss"?"✗":"–";
+    row.appendChild(fn);row.appendChild(opp);row.appendChild(bdg);body.appendChild(row);
+  });
+  hdr.onclick=function(){var open=body.style.display!=="none";body.style.display=open?"none":"block";arr.style.transform=open?"":"rotate(180deg)";};
+  card.appendChild(body);
+  return card;
+}
+
 function render(){
   buildReg();
   var now=Date.now();
@@ -1619,14 +1700,18 @@ function render(){
     if(GENERATED_AT){ud.textContent=fmtUpdated(GENERATED_AT);}
     else{var latestEv=null;EVENTS.forEach(function(ev){if(ev.fights.some(function(f){return f.state==="post";}))latestEv=ev;});ud.textContent=latestEv?fmtDate(latestEv.date):"Updating soon";}
   }
-  if(pastEvs.length&&curFilter==="all"&&!curSearch){
+  var pastPicksData=buildPastPicksData();
+  if(pastPicksData.length&&curFilter==="all"&&!curSearch){
     var archHdr=document.createElement("div");archHdr.className="arch-hdr";
     var archArrow=document.createElement("span");archArrow.style.cssText="font-size:10px;margin-right:4px;transition:transform .2s;display:inline-block";archArrow.textContent="▶";
-    archHdr.appendChild(archArrow);archHdr.appendChild(document.createTextNode("Past Results ("+pastEvs.length+")"));
-    var archBody=document.createElement("div");archBody.style.display="none";
+    var archTotal=pastPicksData.reduce(function(s,i){return s+i.correct;},0);
+    var archResolved=pastPicksData.reduce(function(s,i){return s+i.resolved;},0);
+    var archSuffix=archResolved>0?" · "+archTotal+"/"+archResolved+" correct":"";
+    archHdr.appendChild(archArrow);archHdr.appendChild(document.createTextNode("Past Picks ("+pastPicksData.length+" events"+archSuffix+")"));
+    var archBody=document.createElement("div");archBody.style.cssText="padding-top:8px";archBody.style.display="none";
     archHdr.onclick=function(){var open=archBody.style.display!=="none";archBody.style.display=open?"none":"block";archArrow.style.transform=open?"":"rotate(90deg)";};
     app.appendChild(archHdr);app.appendChild(archBody);
-    pastEvs.forEach(function(ev,i){var ei=EVENTS.indexOf(ev);archBody.appendChild(makeEventBlock(ev,ei,i,pastEvs.length,false));});
+    pastPicksData.forEach(function(item){archBody.appendChild(makePastEvCard(item));});
   }
   updatePicksWidget();
   updateCountdown();
