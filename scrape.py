@@ -899,7 +899,8 @@ def fight_js(f, comma=""):
     rnd    = str(f.get("round") or "null")
     return (
         f"      {{lbl:{json.dumps(f.get('label', ''))},wc:{json.dumps(f.get('wc', 'TBD'))},"
-        f"title:{'true' if f.get('title') else 'false'},odds:{odds_s},"
+        f"title:{'true' if f.get('title') else 'false'},"
+        f"rematch:{'true' if f.get('rematch') else 'false'},odds:{odds_s},"
         f"winner:{json.dumps(f.get('winner', ''))},method:{json.dumps(f.get('method', ''))},"
         f"round:{rnd},state:{json.dumps(f.get('state', 'pre'))},"
         f"f1:{{n:{json.dumps(f1.get('name', 'TBD'))},r:{json.dumps(f1.get('record', ''))},"
@@ -1117,14 +1118,9 @@ def step_build_events(html, now):
                 print(f"  Rematch detected: {f1n} vs {f2n}", file=sys.stderr)
 
     html = patch_js_var(html, "EVENTS", events_js(new_events))
-    # Strip opponent lists before writing to JS — they're internal-only
-    stats_for_js = {
-        k: {kk: vv for kk, vv in v.items() if kk != "opp"}
-        for k, v in stats_cache.items()
-    }
     html = patch_js_var(
         html, "FIGHTER_STATS",
-        json.dumps(stats_for_js, separators=(",", ":"), ensure_ascii=False),
+        json.dumps(stats_cache, separators=(",", ":"), ensure_ascii=False),
     )
     rankings = fetch_rankings()
     if rankings:
