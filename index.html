@@ -125,14 +125,14 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .share-icon-btn:hover{color:var(--text)}
 .ev-divider{display:flex;align-items:center;gap:10px;padding:18px 16px 0;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-weight:500}
 .ev-divider::after{content:"";flex:1;height:1px;background:var(--border)}
-.ev-band{border-top:3px solid var(--red);padding:16px 16px 14px;margin:6px 12px 0;border-radius:14px 14px 0 0;border-left:1px solid var(--border);border-right:1px solid var(--border)}
+.ev-band{border-top:3px solid var(--red);padding:16px 16px 14px;margin:6px 12px 0;border-radius:14px 14px 0 0;border-left:1px solid var(--border);border-right:1px solid var(--border);cursor:pointer;user-select:none;position:relative}
 .ev-band.ev-future{border-top-color:var(--future-border);background:var(--future-bg)}
 .ev-num{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:5px;font-weight:600}
 .ev-name{font-family:Bebas Neue,sans-serif;font-size:23px;letter-spacing:.05em;line-height:1;margin-bottom:10px;color:var(--text)}
 .ev-row{display:flex;flex-wrap:wrap;gap:4px 14px;margin-bottom:8px}
 .ev-detail{font-size:12px;color:var(--muted2);display:flex;align-items:center;gap:4px}
 .ev-detail svg{width:11px;height:11px;opacity:.6;flex-shrink:0}
-.ev-badges{display:flex;gap:6px;flex-wrap:wrap}
+.ev-badges{display:flex;gap:6px;flex-wrap:wrap}.ev-collapse-btn{position:absolute;top:16px;right:14px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;opacity:.45;transition:transform .2s,opacity .15s;pointer-events:none}.ev-band:hover .ev-collapse-btn{opacity:.75}.ev-band.ev-collapsed .ev-collapse-btn{transform:rotate(180deg)}
 .badge{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:4px}
 .b-next{background:rgba(232,25,44,.15);color:var(--red);border:1px solid rgba(232,25,44,.3)}
 .b-title{background:rgba(201,168,76,.12);color:var(--gold);border:1px solid rgba(201,168,76,.25)}
@@ -679,7 +679,7 @@ var communityPicks={};
 })();
 var fnFights=[],fnIdx=0,fnEv=null;
 var notifActive=false;
-var _openMore={};
+var _openMore={};var _collapsed={};
 
 function pad(n){return String(n).padStart(2,"0");}
 function daysOut(d){return Math.ceil((new Date(d)-Date.now())/864e5);}
@@ -1319,7 +1319,7 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
   if(isFeat){var bn=document.createElement("span");bn.className="badge b-next";bn.textContent="Next Up";badges.appendChild(bn);}
   if(titleCount>0){var bt=document.createElement("span");bt.className="badge b-title";bt.textContent=titleCount>1?titleCount+" Title Fights":"Title Fight";badges.appendChild(bt);}
   if(isPPV){var bp=document.createElement("span");bp.className="badge b-ppv";bp.textContent="PPV";badges.appendChild(bp);}
-  band.appendChild(badges);frag.appendChild(band);
+  band.appendChild(badges);var colBtn=document.createElement("div");colBtn.className="ev-collapse-btn";var colSvg=document.createElementNS("http://www.w3.org/2000/svg","svg");colSvg.setAttribute("viewBox","0 0 24 24");colSvg.setAttribute("fill","none");colSvg.setAttribute("stroke","currentColor");colSvg.setAttribute("stroke-width","2.5");colSvg.style.cssText="width:18px;height:18px";var colPoly=document.createElementNS("http://www.w3.org/2000/svg","polyline");colPoly.setAttribute("points","6 9 12 15 18 9");colSvg.appendChild(colPoly);colBtn.appendChild(colSvg);band.appendChild(colBtn);frag.appendChild(band);
   var fw=document.createElement("div");fw.className="fights-wrap";
   var mainCard=ev.fights.slice(2).filter(function(f){return f.lbl==="Main Card";});
   var prelims=ev.fights.filter(function(f){return f.lbl==="Prelim"||f.lbl==="Early Prelim";});
@@ -1373,6 +1373,8 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
   (function(fk){fotSel.onchange=function(){preds_fotn[fk]=fotSel.value;saveFOTN();if(fotSel.value)toast("Bonus: "+fotSel.value.split(" ").pop());};})(fotKey);
   fotRow.appendChild(fotSel);
   fw.appendChild(fotRow);
+  if(_collapsed[ei]){fw.style.display="none";band.classList.add("ev-collapsed");}
+  band.onclick=function(){var c=!_collapsed[ei];_collapsed[ei]=c;fw.style.display=c?"none":"";band.classList.toggle("ev-collapsed",c);};
   frag.appendChild(fw);
   return frag;
 }
