@@ -323,6 +323,10 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .past-pr-bdg.win{background:rgba(46,204,113,.1);color:var(--green);border:1px solid rgba(46,204,113,.18)}
 .past-pr-bdg.loss{background:rgba(232,25,44,.08);color:var(--red);border:1px solid rgba(232,25,44,.15)}
 .past-pr-bdg.pend{background:var(--card2);color:var(--muted);border:1px solid var(--border)}
+.odds-mv{font-size:9px;font-weight:700;margin-left:3px;vertical-align:middle}
+.odds-mv-up{color:var(--green)}.odds-mv-dn{color:var(--red)}
+@keyframes muSwipe{0%{background:rgba(46,204,113,.12)}100%{background:transparent}}
+.mu.pick-flash{animation:muSwipe .3s ease-out;border-radius:8px}
 .comm-row{padding:4px 16px 6px}
 .comm-bar-wrap{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:6px}
 .comm-pct{font-size:10px;font-weight:600;color:var(--muted);min-width:28px}
@@ -682,6 +686,9 @@ var userName="",preds={},resolvedPicks={};
 try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.getItem("ufc_preds")||"{}");resolvedPicks=JSON.parse(localStorage.getItem("ufc_resolved")||"{}");}catch(e){}
 var preds_method={},preds_conf={},preds_fotn={};
 try{preds_method=JSON.parse(localStorage.getItem("ufc_method")||"{}");preds_conf=JSON.parse(localStorage.getItem("ufc_conf")||"{}");preds_fotn=JSON.parse(localStorage.getItem("ufc_fotn")||"{}");}catch(e){}
+var prevOdds={};
+try{prevOdds=JSON.parse(localStorage.getItem("ufc_prev_odds")||"{}");}catch(e){}
+(function(){var co={};EVENTS.forEach(function(ev){ev.fights.forEach(function(f){if(!f.odds)return;co[ev.date+"|"+f.f1.n+"|"+f.f2.n]={f1:f.odds.f1,f2:f.odds.f2};});});try{localStorage.setItem("ufc_prev_odds",JSON.stringify(co));}catch(e){}})();
 var communityPicks={};
 // Migrate old index-based pick keys (e0f0) to stable event+fighter keys
 (function(){
@@ -1231,6 +1238,7 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
   mu.appendChild(vc);
   mu.appendChild(makeFighter(fight.f2,true,sz,regIdx,1,fight.winner&&fight.winner===fight.f2.n));
   row.appendChild(mu);
+  if(showPick&&!fight.winner){(function(ri,m){var tx=0,ty=0;m.addEventListener("touchstart",function(e){tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});m.addEventListener("touchend",function(e){var dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;if(Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)*1.5)return;m.classList.add("pick-flash");setTimeout(function(){m.classList.remove("pick-flash");},300);pick(ri,dx>0?1:0);},{passive:true});})(regIdx,mu);}
   if(fight.odds){
     var or=document.createElement("div");or.className="odds-row";
     var fav1=fight.odds.f1<0;
@@ -1243,6 +1251,9 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
     var on2=document.createElement("div");on2.className="odds-nm";on2.textContent=fight.f2.n.split(" ").pop();
     var ov2=document.createElement("div");ov2.className="odds-val "+(!fav1?"fav":"dog");ov2.textContent=fmtOdds(fight.odds.f2);
     s2.appendChild(on2);s2.appendChild(ov2);or.appendChild(s2);
+    var ok=EVENTS[ei]?EVENTS[ei].date+"|"+fight.f1.n+"|"+fight.f2.n:"";var po=ok?prevOdds[ok]:null;
+    if(po&&po.f1!==fight.odds.f1){var mv1=document.createElement("span");mv1.className="odds-mv "+(fight.odds.f1<po.f1?"odds-mv-up":"odds-mv-dn");mv1.title="Was "+(po.f1>0?"+":"")+po.f1;mv1.textContent=fight.odds.f1<po.f1?"▲":"▼";ov1.appendChild(mv1);}
+    if(po&&po.f2!==fight.odds.f2){var mv2=document.createElement("span");mv2.className="odds-mv "+(fight.odds.f2<po.f2?"odds-mv-up":"odds-mv-dn");mv2.title="Was "+(po.f2>0?"+":"")+po.f2;mv2.textContent=fight.odds.f2<po.f2?"▲":"▼";ov2.appendChild(mv2);}
     row.appendChild(or);
   }
   if(fight.winner||fight.state==="in"||fight.state==="post"){
