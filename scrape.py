@@ -619,6 +619,7 @@ def _load_ufcstats_letter(letter):
             headers={"User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)"},
         )
         if r.status_code != 200:
+            print(f"  UFCStats letter page ({letter}): HTTP {r.status_code}", file=sys.stderr)
             _ufcstats_letter_cache[letter] = []
             return []
         entries = []
@@ -642,12 +643,14 @@ def _load_ufcstats_letter(letter):
             except ValueError:
                 w = l = d = 0
             entries.append((first, last, href, w, l, d))
+        if not entries:
+            print(f"  UFCStats letter page ({letter}): 0 rows parsed — possible structure change", file=sys.stderr)
         _ufcstats_letter_cache[letter] = entries
         time.sleep(0.5)
         return entries
     except Exception as e:
         print(f"  UFCStats letter fetch error ({letter}): {e}", file=sys.stderr)
-        _ufcstats_letter_cache[letter] = []
+        # Don't cache the failure — allow a retry next call for this letter
         return []
 
 
@@ -677,10 +680,16 @@ def _search_ufcstats(name):
     letters = [last[0].lower()]
     if len(parts) >= 2 and parts[0][0].lower() != last[0].lower():
         letters.append(parts[0][0].lower())   # fallback for Asian name ordering
-    for letter in letters:
-        for row_first, row_last, href, w, l, d in _load_ufcstats_letter(letter):
-            if _name_tokens_match(row_first, row_last, name):
-                return (href, f"{w}-{l}-{d}" if (w or l) else "")
+    for attempt in range(2):  # one retry on empty result
+        for letter in letters:
+            rows = _load_ufcstats_letter(letter)
+            for row_first, row_last, href, w, l, d in rows:
+                if _name_tokens_match(row_first, row_last, name):
+                    return (href, f"{w}-{l}-{d}" if (w or l) else "")
+            if not rows and attempt == 0:
+                # Letter page returned empty — clear cache and retry after a pause
+                _ufcstats_letter_cache.pop(letter, None)
+                time.sleep(2)
     return None
 
 
