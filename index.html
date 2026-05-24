@@ -1398,7 +1398,10 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
         var cbf=document.createElement("div");cbf.className="comm-bar-fill";cbf.style.width=f1p+"%";cb.appendChild(cbf);cbw.appendChild(cb);
         var crEl=document.createElement("span");crEl.className="comm-pct cr";crEl.textContent=f2p+"%";cbw.appendChild(crEl);
         commRow.appendChild(cbw);
-        var ct=document.createElement("div");ct.className="comm-total";ct.textContent=cp.total+(cp.total===1?" person picked":" people picked");commRow.appendChild(ct);
+        var ct=document.createElement("div");ct.className="comm-total";
+        var iHavePick=!!myPick;var others=cp.total-(iHavePick?1:0);
+        var ctTxt=iHavePick?(others===0?"Just you picked":(others===1?"You and 1 other picked":"You and "+others+" others picked")):(cp.total===1?"1 person picked":cp.total+" people picked");
+        ct.textContent=ctTxt;commRow.appendChild(ct);
         row.appendChild(commRow);
       }
     }
