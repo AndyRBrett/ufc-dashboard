@@ -717,16 +717,21 @@ def _wiki_rematch(wikitext, f1_name, f2_name):
     return False
 
 
-def fetch_fighter_stats(name):
+def fetch_fighter_stats(name, cached_url=None):
     """Fetch career stats for one fighter from UFCStats. Returns a dict or None."""
-    print(f"  UFCStats search [{name}]", file=sys.stderr)
-    hit = _search_ufcstats(name)
-    if not hit:
-        print(f"  UFCStats: no match for {name}", file=sys.stderr)
-        return None
-    detail_url, rec = hit
-    if not detail_url:
-        return None
+    if cached_url:
+        detail_url = cached_url
+        rec = ""
+        print(f"  UFCStats direct [{name}]", file=sys.stderr)
+    else:
+        print(f"  UFCStats search [{name}]", file=sys.stderr)
+        hit = _search_ufcstats(name)
+        if not hit:
+            print(f"  UFCStats: no match for {name}", file=sys.stderr)
+            return None
+        detail_url, rec = hit
+        if not detail_url:
+            return None
 
     slpm = acc = td = tdd = 0.0
     ko = sub = 0
@@ -806,6 +811,7 @@ def fetch_fighter_stats(name):
         "ht": ht, "rch": rch, "stn": stn, "dob": dob,
         "form": form,
         "opp": opponents,
+        "url": detail_url,
     }
 
 
@@ -1114,7 +1120,8 @@ def step_build_events(html, now):
         file=sys.stderr,
     )
     for fname in to_fetch:
-        s = fetch_fighter_stats(fname)
+        cached_url = stats_cache.get(fname, {}).get("url")
+        s = fetch_fighter_stats(fname, cached_url=cached_url)
         if s:
             stats_cache[fname] = s
         elif fname in stats_cache:
