@@ -986,10 +986,37 @@ function togglePush(){
 function pick(idx,side){
   var item=FIGHTS[idx];if(!item)return;
   var f=side===0?item.fight.f1:item.fight.f2;
-  checkName(function(){preds[pk(item.ev,item.fight)]=f.n;save();render();updatePicksWidget();toast("Picked: "+f.n.split(" ").pop());syncPick(item.ev,item.fight);});
+  checkName(function(){
+    var key=pk(item.ev,item.fight);
+    var old=preds[key]||null;
+    preds[key]=f.n;
+    _cpDelta(item.ev,item.fight,old,f.n);
+    save();render();updatePicksWidget();toast("Picked: "+f.n.split(" ").pop());syncPick(item.ev,item.fight);
+  });
 }
 
-function undoPick(ev,fight){deleteSbPick(ev,fight);delete preds[pk(ev,fight)];save();render();updatePicksWidget();toast("Pick removed");}
+function undoPick(ev,fight){
+  var old=preds[pk(ev,fight)]||null;
+  deleteSbPick(ev,fight);delete preds[pk(ev,fight)];
+  _cpDelta(ev,fight,old,null);
+  save();render();updatePicksWidget();toast("Pick removed");
+}
+
+function _cpDelta(ev,fight,oldName,newName){
+  var k=pk(ev,fight);
+  if(!communityPicks[k])communityPicks[k]={f1:0,f2:0,total:0};
+  var cp=communityPicks[k];
+  if(oldName){
+    if(oldName===fight.f1.n)cp.f1=Math.max(0,cp.f1-1);
+    else if(oldName===fight.f2.n)cp.f2=Math.max(0,cp.f2-1);
+    if(!newName)cp.total=Math.max(0,cp.total-1);
+  }
+  if(newName){
+    if(newName===fight.f1.n)cp.f1++;
+    else if(newName===fight.f2.n)cp.f2++;
+    if(!oldName)cp.total++;
+  }
+}
 
 function resetPicks(){
   if(!Object.keys(preds).length)return;
@@ -1969,6 +1996,8 @@ document.addEventListener("DOMContentLoaded",function(){
   }
   setTimeout(syncAllPicks, 2000);
   setTimeout(fetchCommunityPicks, 3000);
+  setInterval(fetchCommunityPicks, 30000);
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")fetchCommunityPicks();});
   try{if(localStorage.getItem("ufc_push")==="1")_setBellActive(true);}catch(e){}
 
 });
