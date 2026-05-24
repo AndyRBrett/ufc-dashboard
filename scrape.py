@@ -702,14 +702,16 @@ def _norm_name(n):
 
 
 def _wiki_rematch(wikitext, f1_name, f2_name):
-    """Return True if the wikitext mentions 'rematch' within 400 chars of both fighter names."""
+    """Return True if the wikitext mentions a rematch between both fighters."""
     if not wikitext:
         return False
     wl = wikitext.lower()
     f1l = _norm_name(f1_name)
     f2l = _norm_name(f2_name)
-    for m in re.finditer(r'\brematch\b', wl):
-        window = wl[max(0, m.start() - 400): m.end() + 400]
+    # Catch 'rematch', 'II', 'trilogy', 'rubber match' near both names
+    pattern = r'\b(rematch|re\-match|trilogy|rubber\s+match)\b|(?<!\w)II(?!\w)'
+    for m in re.finditer(pattern, wl):
+        window = wl[max(0, m.start() - 800): m.end() + 800]
         if f1l in window and f2l in window:
             return True
     return False
@@ -1115,6 +1117,10 @@ def step_build_events(html, now):
         s = fetch_fighter_stats(fname)
         if s:
             stats_cache[fname] = s
+        elif fname in stats_cache:
+            # UFCStats lookup failed but fighter is already cached — stamp opp:[]
+            # so we don't retry every run (wiki rematch scan is the fallback)
+            stats_cache[fname]["opp"] = []
         time.sleep(1)
     print(f"Stats cache: {len(stats_cache)} fighters", file=sys.stderr)
 
