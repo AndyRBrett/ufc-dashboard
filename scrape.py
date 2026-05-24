@@ -729,18 +729,19 @@ def _fighter_wiki_past_fight(wikitext, opp_norm):
     if not m:
         return False
     # Extract just that section (up to the next == heading)
-    section_start = m.start()
     nxt = re.search(r'\n==\s*\w', wikitext[m.end():])
-    section = wikitext[section_start: m.end() + nxt.start() if nxt else len(wikitext)].lower()
+    section = wikitext[m.start(): m.end() + nxt.start() if nxt else len(wikitext)]
 
-    if opp_norm not in section:
+    if opp_norm not in section.lower():
         return False
 
-    # Only count it if opp_norm appears near an actual result keyword (not "scheduled")
-    result_pat = re.compile(r'\b(win|loss|draw|no contest|nc)\b')
-    for rm in result_pat.finditer(section):
-        window = section[max(0, rm.start() - 400): rm.end() + 400]
-        if opp_norm in window:
+    # Split into individual table rows (separated by |-) and require BOTH
+    # a result keyword AND the opponent name to appear in the SAME row.
+    # This prevents a "Win" from row N bleeding into a "Scheduled" row N+1.
+    result_pat = re.compile(r'\b(win|loss|draw|no contest|nc)\b', re.IGNORECASE)
+    for row in re.split(r'\|\-', section):
+        row_l = row.lower()
+        if opp_norm in row_l and result_pat.search(row):
             return True
     return False
 
