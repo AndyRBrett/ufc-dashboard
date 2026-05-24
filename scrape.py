@@ -1060,6 +1060,15 @@ def step_build_events(html, now):
             wiki_rematch = wf.get("rematch", False) or _wiki_rematch(wt, f1, f2)
             if wiki_rematch:
                 print(f"  Rematch (wiki): {f1} vs {f2}", file=sys.stderr)
+            # Layer 4: check each fighter's own Wikipedia page for opponent mentions
+            if not wiki_rematch and i < 2:
+                for fname, opp_norm in [(f1, _norm_name(f2)), (f2, _norm_name(f1))]:
+                    fw = fetch_wikitext(fname.replace(" ", "_"))
+                    if fw and opp_norm in fw.lower():
+                        wiki_rematch = True
+                        print(f"  Rematch (fighter wiki): {fname} page mentions {opp_norm}", file=sys.stderr)
+                        break
+                    time.sleep(0.5)
             card.append({
                 "label":   lbl,
                 "wc":      wf.get("wc", "TBD"),
