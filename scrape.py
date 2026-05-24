@@ -717,9 +717,17 @@ def _wiki_rematch(wikitext, f1_name, f2_name):
     return False
 
 
-def _fighter_wiki_past_fight(wikitext, opp_norm):
-    """Return True if the fighter's Wikipedia fight record section shows a past result against opp_norm."""
+def _fighter_wiki_past_fight(wikitext, opp_name):
+    """Return True if the fighter's Wikipedia fight record section shows a past result against opp_name."""
     if not wikitext:
+        return False
+    # Normalize name parts (accent-strip + lowercase)
+    _n = unicodedata.normalize("NFD", opp_name)
+    _n = "".join(c for c in _n if unicodedata.category(c) != "Mn").lower()
+    parts = _n.strip().split()
+    last_l = parts[-1] if parts else ""
+    first_l = parts[0] if len(parts) > 1 else ""
+    if not last_l:
         return False
     # Locate the professional/MMA record section
     m = re.search(
@@ -732,17 +740,26 @@ def _fighter_wiki_past_fight(wikitext, opp_norm):
     nxt = re.search(r'\n==\s*\w', wikitext[m.end():])
     section = wikitext[m.start(): m.end() + nxt.start() if nxt else len(wikitext)]
 
-    if opp_norm not in section.lower():
+    if last_l not in section.lower():
         return False
 
     # Split into individual table rows (separated by |-) and require BOTH
     # a result keyword AND the opponent name to appear in the SAME row.
-    # This prevents a "Win" from row N bleeding into a "Scheduled" row N+1.
     result_pat = re.compile(r'\b(win|loss|draw|no contest|nc)\b', re.IGNORECASE)
     for row in re.split(r'\|\-', section):
         row_l = row.lower()
-        if opp_norm in row_l and result_pat.search(row):
-            return True
+        if last_l not in row_l:
+            continue
+        if not result_pat.search(row):
+            continue
+        # Disambiguate common last names (e.g. "Pereira", "Silva", "Santos") by
+        # requiring the full first name to also appear near the last name in the row.
+        if first_l:
+            idx = row_l.find(last_l)
+            context = row_l[max(0, idx - 80): idx + len(last_l) + 80]
+            if first_l not in context:
+                continue
+        return True
     return False
 
 
@@ -1091,11 +1108,11 @@ def step_build_events(html, now):
                 print(f"  Rematch (wiki): {f1} vs {f2}", file=sys.stderr)
             # Layer 4: check each fighter's own Wikipedia fight record for a past bout
             if not wiki_rematch and i < 2:
-                for fname, opp_norm in [(f1, _norm_name(f2)), (f2, _norm_name(f1))]:
+                for fname, opp_name in [(f1, f2), (f2, f1)]:
                     fw = fetch_wikitext(fname.replace(" ", "_"))
-                    if _fighter_wiki_past_fight(fw, opp_norm):
+                    if _fighter_wiki_past_fight(fw, opp_name):
                         wiki_rematch = True
-                        print(f"  Rematch (fighter wiki record): {fname} vs {opp_norm}", file=sys.stderr)
+                        print(f"  Rematch (fighter wiki record): {fname} vs {opp_name}", file=sys.stderr)
                         break
                     time.sleep(0.5)
             card.append({
