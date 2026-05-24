@@ -150,7 +150,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 @keyframes livepulse{0%,100%{background:rgba(232,25,44,.04)}50%{background:rgba(232,25,44,.08)}}
 .flbl{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;margin-bottom:10px}
 .flbl.lmain{color:var(--red)}.flbl.lco{color:var(--gold)}.flbl.lpre{color:var(--muted)}
-.mu{display:grid;grid-template-columns:1fr 60px 1fr;align-items:center;gap:8px}
+.mu{display:grid;grid-template-columns:1fr 60px 1fr;align-items:center;gap:8px;position:relative;will-change:transform}
 .ft{display:flex;flex-direction:column;gap:2px;min-width:0}
 .ft.ftr{align-items:flex-end;text-align:right}
 .fn{font-family:Bebas Neue,sans-serif;font-size:25px;letter-spacing:.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -335,8 +335,9 @@ body.light .ev-qp:hover{background:rgba(255,255,255,.12);color:#fff}
 .past-pr-bdg.pend{background:var(--card2);color:var(--muted);border:1px solid var(--border)}
 .odds-mv{font-size:9px;font-weight:700;margin-left:3px;vertical-align:middle}
 .odds-mv-up{color:var(--green)}.odds-mv-dn{color:var(--red)}
-@keyframes muSwipe{0%{background:rgba(46,204,113,.12)}100%{background:transparent}}
-.mu.pick-flash{animation:muSwipe .3s ease-out;border-radius:8px}
+@keyframes muPickConfirm{0%{background:rgba(232,25,44,.18)}60%{background:rgba(232,25,44,.08)}100%{background:transparent}}
+.mu.pick-flash{animation:muPickConfirm .4s ease-out;border-radius:8px}
+.mu-swipe-badge{position:absolute;top:50%;transform:translateY(-50%);background:var(--red);color:#fff;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:10;letter-spacing:.04em;white-space:nowrap}
 .comm-row{padding:4px 16px 6px}
 .comm-bar-wrap{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:6px}
 .comm-pct{font-size:10px;font-weight:600;color:var(--muted);min-width:28px}
@@ -1281,7 +1282,40 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
   mu.appendChild(vc);
   mu.appendChild(makeFighter(fight.f2,true,sz,regIdx,1,fight.winner&&fight.winner===fight.f2.n));
   row.appendChild(mu);
-  if(showPick&&!fight.winner){(function(ri,m){var tx=0,ty=0;m.addEventListener("touchstart",function(e){tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});m.addEventListener("touchend",function(e){var dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;if(Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)*1.5)return;m.classList.add("pick-flash");setTimeout(function(){m.classList.remove("pick-flash");},300);pick(ri,dx>0?1:0);},{passive:true});})(regIdx,mu);}
+  if(showPick&&!fight.winner){(function(ri,m,f){
+    var tx=0,ty=0,swiping=false,badge=null;
+    function removeBadge(){if(badge){badge.remove();badge=null;}}
+    m.addEventListener("touchstart",function(e){
+      tx=e.touches[0].clientX;ty=e.touches[0].clientY;swiping=false;
+      m.style.transition="none";
+    },{passive:true});
+    m.addEventListener("touchmove",function(e){
+      var dx=e.touches[0].clientX-tx,dy=e.touches[0].clientY-ty;
+      if(!swiping&&Math.abs(dy)>Math.abs(dx))return;
+      swiping=true;
+      var shifted=Math.max(-80,Math.min(80,dx*0.38));
+      m.style.transform="translateX("+shifted+"px)";
+      if(Math.abs(dx)>28){
+        if(!badge){badge=document.createElement("div");badge.className="mu-swipe-badge";m.appendChild(badge);}
+        var toRight=dx>0;
+        badge.textContent=toRight?f.f2.n.split(" ").pop():f.f1.n.split(" ").pop();
+        badge.style.left=toRight?"auto":"8px";
+        badge.style.right=toRight?"8px":"auto";
+        badge.style.opacity="1";
+      } else if(badge){badge.style.opacity="0";}
+    },{passive:true});
+    m.addEventListener("touchend",function(e){
+      var dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
+      removeBadge();
+      m.style.transition="transform .2s ease";
+      m.style.transform="translateX(0)";
+      if(!swiping||Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)*1.5)return;
+      if(navigator.vibrate)navigator.vibrate(22);
+      m.classList.add("pick-flash");
+      setTimeout(function(){m.classList.remove("pick-flash");},400);
+      pick(ri,dx>0?1:0);
+    },{passive:true});
+  })(regIdx,mu,fight);}
   if(fight.odds){
     var or=document.createElement("div");or.className="odds-row";
     var fav1=fight.odds.f1<0;
@@ -1318,12 +1352,12 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
     var b1=document.createElement("button");
     b1.className="pick-btn"+(myPick===fight.f1.n?" psel":"")+(fw===fight.f1.n?" pcorrect":"")+(fw&&fw!==fight.f1.n&&myPick===fight.f1.n?" pwrong":"");
     b1.textContent=fight.f1.n.split(" ").pop();
-    (function(ri){b1.onclick=function(){pick(ri,0);};})(regIdx);
+    (function(ri,fn){b1.onclick=function(){var it=FIGHTS[ri];if(preds[pk(it.ev,it.fight)]===fn){undoPick(it.ev,it.fight);}else{pick(ri,0);}};})(regIdx,fight.f1.n);
     pr.appendChild(b1);
     var b2=document.createElement("button");
     b2.className="pick-btn"+(myPick===fight.f2.n?" psel":"")+(fw===fight.f2.n?" pcorrect":"")+(fw&&fw!==fight.f2.n&&myPick===fight.f2.n?" pwrong":"");
     b2.textContent=fight.f2.n.split(" ").pop();
-    (function(ri){b2.onclick=function(){pick(ri,1);};})(regIdx);
+    (function(ri,fn){b2.onclick=function(){var it=FIGHTS[ri];if(preds[pk(it.ev,it.fight)]===fn){undoPick(it.ev,it.fight);}else{pick(ri,1);}};})(regIdx,fight.f2.n);
     pr.appendChild(b2);
     row.appendChild(pr);
     if(!fw){
