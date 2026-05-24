@@ -705,13 +705,13 @@ def _wiki_rematch(wikitext, f1_name, f2_name):
     """Return True if the wikitext mentions a rematch between both fighters."""
     if not wikitext:
         return False
+    # Search original text case-insensitively; use lowercased text for name matching
     wl = wikitext.lower()
     f1l = _norm_name(f1_name)
     f2l = _norm_name(f2_name)
-    # Catch 'rematch', 'II', 'trilogy', 'rubber match' near both names
-    pattern = r'\b(rematch|re\-match|trilogy|rubber\s+match)\b|(?<!\w)II(?!\w)'
-    for m in re.finditer(pattern, wl):
-        window = wl[max(0, m.start() - 800): m.end() + 800]
+    pattern = r'\b(rematch|re\-match|trilogy|rubber\s+match|II)\b'
+    for m in re.finditer(pattern, wikitext, re.IGNORECASE):
+        window = wl[max(0, m.start() - 1000): m.end() + 1000]
         if f1l in window and f2l in window:
             return True
     return False
@@ -1124,10 +1124,12 @@ def step_build_events(html, now):
         s = fetch_fighter_stats(fname, cached_url=cached_url)
         if s:
             stats_cache[fname] = s
-        elif fname in stats_cache:
-            # UFCStats lookup failed but fighter is already cached — stamp opp:[]
-            # so we don't retry every run (wiki rematch scan is the fallback)
-            stats_cache[fname]["opp"] = []
+        else:
+            # Stamp opp:[] on any failure so this fighter isn't retried every run.
+            # Works whether the fighter is already cached or brand-new.
+            if fname not in stats_cache:
+                stats_cache[fname] = {}
+            stats_cache[fname].setdefault("opp", [])
         time.sleep(1)
     print(f"Stats cache: {len(stats_cache)} fighters", file=sys.stderr)
 
