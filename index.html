@@ -1362,7 +1362,7 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
     row.appendChild(pr);
     if(!fw){
       var ck=pk(EVENTS[ei],fight);var cp=communityPicks[ck];
-      if(cp&&cp.total>=2){
+      if(cp&&cp.total>=1){
         var f1p=Math.round(cp.f1/cp.total*100);var f2p=100-f1p;
         var commRow=document.createElement("div");commRow.className="comm-row";
         var cbw=document.createElement("div");cbw.className="comm-bar-wrap";
