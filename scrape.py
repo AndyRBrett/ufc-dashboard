@@ -1106,15 +1106,17 @@ def step_build_events(html, now):
             wiki_rematch = wf.get("rematch", False) or _wiki_rematch(wt, f1, f2)
             if wiki_rematch:
                 print(f"  Rematch (wiki): {f1} vs {f2}", file=sys.stderr)
-            # Layer 4: check each fighter's own Wikipedia fight record for a past bout
+            # Layer 4: BOTH fighters' Wikipedia fight records must confirm the past bout.
+            # Requiring cross-confirmation eliminates false positives from common surnames
+            # or upcoming fights inadvertently appearing in one fighter's record.
             if not wiki_rematch and i < 2:
-                for fname, opp_name in [(f1, f2), (f2, f1)]:
-                    fw = fetch_wikitext(fname.replace(" ", "_"))
-                    if _fighter_wiki_past_fight(fw, opp_name):
-                        wiki_rematch = True
-                        print(f"  Rematch (fighter wiki record): {fname} vs {opp_name}", file=sys.stderr)
-                        break
+                fw1 = fetch_wikitext(f1.replace(" ", "_"))
+                if _fighter_wiki_past_fight(fw1, f2):
                     time.sleep(0.5)
+                    fw2 = fetch_wikitext(f2.replace(" ", "_"))
+                    if _fighter_wiki_past_fight(fw2, f1):
+                        wiki_rematch = True
+                        print(f"  Rematch (fighter wiki): {f1} vs {f2}", file=sys.stderr)
             card.append({
                 "label":   lbl,
                 "wc":      wf.get("wc", "TBD"),
