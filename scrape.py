@@ -717,6 +717,34 @@ def _wiki_rematch(wikitext, f1_name, f2_name):
     return False
 
 
+def _fighter_wiki_past_fight(wikitext, opp_norm):
+    """Return True if the fighter's Wikipedia fight record section shows a past result against opp_norm."""
+    if not wikitext:
+        return False
+    # Locate the professional/MMA record section
+    m = re.search(
+        r'==\s*(?:Professional record|Mixed martial arts record|MMA record|Career statistics)\s*==',
+        wikitext, re.IGNORECASE,
+    )
+    if not m:
+        return False
+    # Extract just that section (up to the next == heading)
+    section_start = m.start()
+    nxt = re.search(r'\n==\s*\w', wikitext[m.end():])
+    section = wikitext[section_start: m.end() + nxt.start() if nxt else len(wikitext)].lower()
+
+    if opp_norm not in section:
+        return False
+
+    # Only count it if opp_norm appears near an actual result keyword (not "scheduled")
+    result_pat = re.compile(r'\b(win|loss|draw|no contest|nc)\b')
+    for rm in result_pat.finditer(section):
+        window = section[max(0, rm.start() - 400): rm.end() + 400]
+        if opp_norm in window:
+            return True
+    return False
+
+
 def fetch_fighter_stats(name, cached_url=None):
     """Fetch career stats for one fighter from UFCStats. Returns a dict or None."""
     if cached_url:
@@ -1060,13 +1088,13 @@ def step_build_events(html, now):
             wiki_rematch = wf.get("rematch", False) or _wiki_rematch(wt, f1, f2)
             if wiki_rematch:
                 print(f"  Rematch (wiki): {f1} vs {f2}", file=sys.stderr)
-            # Layer 4: check each fighter's own Wikipedia page for opponent mentions
+            # Layer 4: check each fighter's own Wikipedia fight record for a past bout
             if not wiki_rematch and i < 2:
                 for fname, opp_norm in [(f1, _norm_name(f2)), (f2, _norm_name(f1))]:
                     fw = fetch_wikitext(fname.replace(" ", "_"))
-                    if fw and opp_norm in fw.lower():
+                    if _fighter_wiki_past_fight(fw, opp_norm):
                         wiki_rematch = True
-                        print(f"  Rematch (fighter wiki): {fname} page mentions {opp_norm}", file=sys.stderr)
+                        print(f"  Rematch (fighter wiki record): {fname} vs {opp_norm}", file=sys.stderr)
                         break
                     time.sleep(0.5)
             card.append({
