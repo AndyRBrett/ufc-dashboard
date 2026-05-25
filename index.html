@@ -846,12 +846,16 @@ function syncPick(ev,fight){
   var key=pk(ev,fight);var myPick=preds[key];
   if(!myPick){deleteSbPick(ev,fight);return;}
   var data={user_id:USER_ID,nickname:userName,event_date:ev.date,event_name:ev.name,f1:fight.f1.n,f2:fight.f2.n,pick:myPick,method:preds_method[key]||"",confidence:preds_conf[key]||0,updated_at:new Date().toISOString()};
-  fetch(SUPABASE_URL+"/rest/v1/picks"+_sbQ(ev,fight),{method:"DELETE",headers:_sbHeaders()})
-    .then(function(){fetch(SUPABASE_URL+"/rest/v1/picks",{method:"POST",headers:_sbHeaders(),body:JSON.stringify(data)});})
-    .catch(function(){});
+  _authReady.then(function(){
+    fetch(SUPABASE_URL+"/rest/v1/picks"+_sbQ(ev,fight),{method:"DELETE",headers:_sbHeaders()})
+      .then(function(){fetch(SUPABASE_URL+"/rest/v1/picks",{method:"POST",headers:_sbHeaders(),body:JSON.stringify(data)});})
+      .catch(function(){});
+  });
 }
 function deleteSbPick(ev,fight){
-  fetch(SUPABASE_URL+"/rest/v1/picks"+_sbQ(ev,fight),{method:"DELETE",headers:_sbHeaders()}).catch(function(){});
+  _authReady.then(function(){
+    fetch(SUPABASE_URL+"/rest/v1/picks"+_sbQ(ev,fight),{method:"DELETE",headers:_sbHeaders()}).catch(function(){});
+  });
 }
 function syncAllPicks(){
   if(!userName)return;
@@ -862,17 +866,18 @@ function syncAllPicks(){
 function saveFOTN(){try{localStorage.setItem("ufc_fotn",JSON.stringify(preds_fotn));}catch(e){}}
 function fetchCommunityPicks(){
   fetch(SUPABASE_URL+"/rest/v1/picks?select=event_date,f1,f2,pick",{
-    headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+SUPABASE_ANON}
+    headers:{apikey:SUPABASE_ANON,Authorization:_authBearer()}
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
     if(!Array.isArray(rows))return;
-    communityPicks={};
+    var fresh={};
     rows.forEach(function(p){
       var k=p.event_date+"|"+p.f1+"|"+p.f2;
-      if(!communityPicks[k])communityPicks[k]={f1:0,f2:0,total:0};
-      communityPicks[k].total++;
-      if(p.pick===p.f1)communityPicks[k].f1++;
-      else if(p.pick===p.f2)communityPicks[k].f2++;
+      if(!fresh[k])fresh[k]={f1:0,f2:0,total:0};
+      fresh[k].total++;
+      if(p.pick===p.f1)fresh[k].f1++;
+      else if(p.pick===p.f2)fresh[k].f2++;
     });
+    communityPicks=fresh;
     render();
   }).catch(function(){});
 }
@@ -1952,7 +1957,7 @@ function loadLeaderboard(){
   var body=document.getElementById("lbBody");
   body.innerHTML='<div class="lb-loading">Loading picks...</div>';
   fetch(SUPABASE_URL+"/rest/v1/picks?select=event_date,f1,f2,pick,method,confidence,nickname,updated_at&order=updated_at.desc",{
-    headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+SUPABASE_ANON}
+    headers:{apikey:SUPABASE_ANON,Authorization:_authBearer()}
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
     if(!Array.isArray(rows)||rows.length===0){
       body.innerHTML='<div class="lb-empty">No picks submitted yet.<br>Make some picks to appear here!</div>';
