@@ -65,9 +65,10 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .btn-icon:hover{color:var(--text);background:rgba(255,255,255,.1)}
 .btn-icon svg{width:15px;height:15px;flex-shrink:0}
 .btn-icon-lbl{font-size:7.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;line-height:1;opacity:.8}
-.btn-icon#notifBell{color:rgba(201,168,76,.55)}
-.btn-icon#notifBell:hover{color:var(--gold);background:var(--gold-dim)}
-.btn-icon.bell-active{color:var(--gold)!important}
+.btn-more-item#notifBell{color:var(--muted2)}
+.btn-more-item#notifBell svg{color:rgba(201,168,76,.7)}
+.btn-more-item#notifBell.bell-active{color:var(--gold)}
+.btn-more-item#notifBell.bell-active svg{color:var(--gold)}
 .btn-icon-fn{color:rgba(232,25,44,.7)!important;border-color:rgba(232,25,44,.25)!important}
 .btn-icon-fn:hover{color:var(--red)!important;background:var(--red-dim)!important}
 .btn-more-wrap{position:relative}
@@ -481,29 +482,6 @@ body.light .fotn-row{background:var(--card2);border-top:1px solid rgba(0,0,0,.08
 <header class="hdr">
   <div class="logo"><div class="logo-hex">UFC</div><span class="logo-text">FIGHT <span>CARDS</span></span></div>
   <div class="hdr-right">
-    <!-- ⋯ More: theme + install -->
-    <div class="btn-more-wrap">
-      <button class="btn-icon" onclick="toggleMoreMenu()" title="More options">
-        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
-        <span class="btn-icon-lbl">More</span>
-      </button>
-      <div class="btn-more-menu" id="moreMenu">
-        <button class="btn-more-item" id="themeBtn" onclick="toggleTheme();closeMoreMenu()">
-          <svg class="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-          <svg class="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-          <span>Light / Dark Mode</span>
-        </button>
-        <button class="btn-more-item" id="installBtn" onclick="showInstall();closeMoreMenu()" style="display:none">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="6" x2="12" y2="12"/><polyline points="9 9 12 6 15 9"/></svg>
-          <span>Add to Home Screen</span>
-        </button>
-      </div>
-    </div>
-    <!-- Bell -->
-    <button class="btn-icon" id="notifBell" onclick="togglePush()" title="Fight notifications">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      <span class="btn-icon-lbl">Alerts</span>
-    </button>
     <!-- Leaderboard -->
     <button class="btn-icon" onclick="openLeaderboard()" title="Leaderboard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><path d="M8 5h8v14H8z"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
@@ -515,6 +493,28 @@ body.light .fotn-row{background:var(--card2);border-top:1px solid rgba(0,0,0,.08
       <span class="btn-icon-lbl">FN Mode</span>
     </button>
     <a class="btn-ufc" href="https://www.ufc.com/events" target="_blank">UFC.com</a>
+    <!-- ⋯ More: notifications + theme + install -->
+    <div class="btn-more-wrap">
+      <button class="btn-icon" onclick="toggleMoreMenu()" title="More options">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        <span class="btn-icon-lbl">More</span>
+      </button>
+      <div class="btn-more-menu" id="moreMenu">
+        <button class="btn-more-item" id="notifBell" onclick="togglePush();closeMoreMenu()" title="Fight notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span>Notifications</span>
+        </button>
+        <button class="btn-more-item" id="themeBtn" onclick="toggleTheme();closeMoreMenu()">
+          <svg class="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <span>Light / Dark Mode</span>
+        </button>
+        <button class="btn-more-item" id="installBtn" onclick="showInstall();closeMoreMenu()" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="6" x2="12" y2="12"/><polyline points="9 9 12 6 15 9"/></svg>
+          <span>Add to Home Screen</span>
+        </button>
+      </div>
+    </div>
   </div>
 </header>
 <section class="hero">
