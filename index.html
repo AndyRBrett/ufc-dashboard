@@ -6,6 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
+<meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none'; connect-src 'self' https://gkccophrdqtqcowmblre.supabase.co https://en.wikipedia.org; img-src 'self' https://upload.wikimedia.org data:; object-src 'none'">
 <title>UFC Fight Cards</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#e8192c">
@@ -514,7 +515,7 @@ body.light .fotn-row{background:var(--card2);border-top:1px solid rgba(0,0,0,.08
         </button>
       </div>
     </div>
-    <a class="btn-ufc" href="https://www.ufc.com/events" target="_blank">UFC.com</a>
+    <a class="btn-ufc" href="https://www.ufc.com/events" target="_blank" rel="noopener noreferrer">UFC.com</a>
   </div>
 </header>
 <section class="hero">
@@ -565,7 +566,7 @@ var FIGHTER_STATS={"Abdul-Rakhman Yakhyaev":{"slpm":7.4,"acc":67,"td":11.49,"tdd
 var GENERATED_AT="25 May 2026 12:39 PM UTC";
 var SUPABASE_URL="https://gkccophrdqtqcowmblre.supabase.co";
 var SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrY2NvcGhyZHF0cWNvd21ibHJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAyMTAsImV4cCI6MjA5NTA0NjIxMH0.zSi-PcQL_ti5KXRq3YRQX4RbsP6HhQ5bAqh5x5kKkbE";
-var USER_ID=(function(){var id=localStorage.getItem("ufc_uid");if(!id){id="u"+Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem("ufc_uid",id);}return id;})();
+var USER_ID=(function(){var id=localStorage.getItem("ufc_uid");if(!id){id=typeof crypto!=="undefined"&&crypto.randomUUID?crypto.randomUUID():"u"+Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem("ufc_uid",id);}return id;})();
 var VAPID_PUBLIC_KEY="BFcYiIWCtwaWZv-NRoF4grvdqxPltRt8CDYp0YVDJF5S34hymCle20mLEsCGyrCO3WSNPUWpznMKfOoA78YfZJw";
 var userEmoji="🥊";
 try{userEmoji=localStorage.getItem("ufc_emoji")||"🥊";}catch(e){}
@@ -733,6 +734,7 @@ function buildReg(){FIGHTS=[];EVENTS.forEach(function(ev,ei){ev.fights.forEach(f
 var curFilter="all",curSearch="";
 var FIGHTER_PHOTOS={};
 try{FIGHTER_PHOTOS=JSON.parse(localStorage.getItem("ufc_photos")||"{}");}catch(e){}
+function _safeImgUrl(url){if(!url||url==="none")return null;try{var p=new URL(url);if(p.protocol!=="https:")return null;if(!p.hostname.endsWith(".wikimedia.org")&&!p.hostname.endsWith(".wikipedia.org"))return null;return url;}catch(e){return null;}}
 var userName="",preds={},resolvedPicks={};
 try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.getItem("ufc_preds")||"{}");resolvedPicks=JSON.parse(localStorage.getItem("ufc_resolved")||"{}");}catch(e){}
 var preds_method={},preds_conf={},preds_fotn={};
@@ -809,7 +811,7 @@ function saveFOTN(){try{localStorage.setItem("ufc_fotn",JSON.stringify(preds_fot
 function fetchCommunityPicks(){
   fetch(SUPABASE_URL+"/rest/v1/picks?select=event_date,f1,f2,pick",{
     headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+SUPABASE_ANON}
-  }).then(function(r){return r.json();}).then(function(rows){
+  }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
     if(!Array.isArray(rows))return;
     communityPicks={};
     rows.forEach(function(p){
@@ -928,7 +930,7 @@ function openStats(idx,side){
   photoRow.style.display="none";photoEl.src="";
   var wikiName=f.n.replace(/ /g,"_");
   fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(wikiName))
-    .then(function(r){return r.json();})
+    .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
     .then(function(data){
       var img=data&&data.thumbnail&&data.thumbnail.source;
       if(img){img=img.replace(/\/\d+px-/,"/400px-");photoEl.onload=function(){photoRow.style.display="flex";subEl.style.display="none";};photoEl.src=img;}
@@ -1260,8 +1262,8 @@ function makeFighter(fighter,right,size,regIdx,side,isWinner){
     var initials=fighter.n.trim().split(" ").filter(Boolean).map(function(w){return w[0].toUpperCase();});
     phWrap.textContent=(initials[0]||"")+(initials[initials.length-1]||"");
     phWrap.style.cssText="display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);background:var(--card2);";
-    var cached=FIGHTER_PHOTOS[fighter.n];
-    if(cached&&cached!=="none"){
+    var cached=_safeImgUrl(FIGHTER_PHOTOS[fighter.n]);
+    if(cached){
       var ph=document.createElement("img");
       ph.style.cssText="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;";
       phWrap.style.position="relative";
@@ -1273,11 +1275,11 @@ function makeFighter(fighter,right,size,regIdx,side,isWinner){
       var wn=fighter.n.replace(/'/g,"").replace(/ /g,"_");
       (function(wrap2,fn){
         fetch("https://en.wikipedia.org/w/api.php?action=query&titles="+encodeURIComponent(wn)+"&prop=pageimages&format=json&pithumbsize=80&origin=*")
-          .then(function(r){return r.json();})
+          .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
           .then(function(d){
             var pages=d&&d.query&&d.query.pages;
             var page=pages&&Object.values(pages)[0];
-            var src=page&&page.thumbnail&&page.thumbnail.source;
+            var src=_safeImgUrl(page&&page.thumbnail&&page.thumbnail.source);
             if(src){
               FIGHTER_PHOTOS[fn]=src;
               try{localStorage.setItem("ufc_photos",JSON.stringify(FIGHTER_PHOTOS));}catch(e){}
@@ -1897,9 +1899,9 @@ function scoreMethod(userMethod, fightMethod){
 function loadLeaderboard(){
   var body=document.getElementById("lbBody");
   body.innerHTML='<div class="lb-loading">Loading picks...</div>';
-  fetch(SUPABASE_URL+"/rest/v1/picks?select=*&order=updated_at.desc",{
+  fetch(SUPABASE_URL+"/rest/v1/picks?select=event_date,f1,f2,pick,method,confidence,nickname,updated_at&order=updated_at.desc",{
     headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+SUPABASE_ANON}
-  }).then(function(r){return r.json();}).then(function(rows){
+  }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
     if(!Array.isArray(rows)||rows.length===0){
       body.innerHTML='<div class="lb-empty">No picks submitted yet.<br>Make some picks to appear here!</div>';
       return;
@@ -2032,10 +2034,11 @@ document.addEventListener("DOMContentLoaded",function(){
   }
   try{render();}
   catch(e){
+    console.error("render() failed:",e);
     var app=document.getElementById("app");
     if(app){
-      app.style.cssText="padding:20px;background:#1a0000;color:#ff6666;font-family:monospace;font-size:12px;white-space:pre-wrap";
-      app.textContent="JS ERROR IN render():\n"+e.message+"\n\n"+e.stack;
+      app.style.cssText="padding:20px;color:#ff6666;font-family:Inter,sans-serif;font-size:14px;text-align:center;padding-top:60px";
+      app.textContent="Something went wrong. Please refresh the page.";
     }
   }
   setTimeout(syncAllPicks, 2000);
