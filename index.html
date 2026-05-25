@@ -830,6 +830,22 @@ function syncAllPicks(){
   });
 }
 function saveFOTN(){try{localStorage.setItem("ufc_fotn",JSON.stringify(preds_fotn));}catch(e){}}
+function reconcileMyPicks(){
+  if(!Object.keys(preds).length&&!Object.keys(preds_method).length)return;
+  fetch(SUPABASE_URL+"/rest/v1/picks?select=f1&user_id=eq."+encodeURIComponent(USER_ID)+"&limit=1",{
+    headers:{apikey:SUPABASE_ANON,Authorization:_authBearer()}
+  }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
+    if(!Array.isArray(rows)||rows.length>0)return;
+    preds={};preds_method={};preds_conf={};preds_fotn={};resolvedPicks={};
+    try{localStorage.removeItem("ufc_preds");}catch(e){}
+    try{localStorage.removeItem("ufc_method");}catch(e){}
+    try{localStorage.removeItem("ufc_conf");}catch(e){}
+    try{localStorage.removeItem("ufc_fotn");}catch(e){}
+    try{localStorage.removeItem("ufc_resolved");}catch(e){}
+    render();
+    toast("Picks were reset — make new picks!");
+  }).catch(function(){});
+}
 function fetchCommunityPicks(){
   fetch(SUPABASE_URL+"/rest/v1/picks?select=event_date,f1,f2,pick",{
     headers:{apikey:SUPABASE_ANON,Authorization:_authBearer()}
@@ -2065,6 +2081,7 @@ document.addEventListener("DOMContentLoaded",function(){
       app.textContent="Something went wrong. Please refresh the page.";
     }
   }
+  setTimeout(reconcileMyPicks, 1500);
   setTimeout(syncAllPicks, 2000);
   setTimeout(fetchCommunityPicks, 3000);
   setInterval(fetchCommunityPicks, 30000);
