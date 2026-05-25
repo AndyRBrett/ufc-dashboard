@@ -1956,7 +1956,7 @@ function scoreMethod(userMethod, fightMethod){
 function loadLeaderboard(){
   var body=document.getElementById("lbBody");
   body.innerHTML='<div class="lb-loading">Loading picks...</div>';
-  fetch(SUPABASE_URL+"/rest/v1/picks?select=event_date,f1,f2,pick,method,confidence,nickname,updated_at&order=updated_at.desc",{
+  fetch(SUPABASE_URL+"/rest/v1/picks?select=user_id,event_date,f1,f2,pick,method,confidence,nickname,updated_at&order=updated_at.desc",{
     headers:{apikey:SUPABASE_ANON,Authorization:_authBearer()}
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
     if(!Array.isArray(rows)||rows.length===0){
@@ -1965,7 +1965,7 @@ function loadLeaderboard(){
     }
     var users={};
     rows.forEach(function(p){
-      var uid=p.user_id;
+      var uid=p.user_id||p.nickname||"unknown";
       if(!users[uid])users[uid]={nickname:p.nickname,correct:0,total:0,methods:0,isMe:uid===USER_ID,picks:[]};
       var fight=null;
       for(var i=0;i<EVENTS.length;i++){
@@ -2061,7 +2061,8 @@ function loadLeaderboard(){
       };
       wrap.appendChild(row);wrap.appendChild(detail);body.appendChild(wrap);
     });
-  }).catch(function(){
+  }).catch(function(err){
+    console.error("loadLeaderboard failed:",err);
     body.innerHTML='<div class="lb-empty">Could not load leaderboard.<br>Check your connection.</div>';
   });
 }
