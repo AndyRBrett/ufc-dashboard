@@ -1992,6 +1992,23 @@ function loadLeaderboard(){
       }
       users[uid].picks.push({f1:p.f1,f2:p.f2,pick:p.pick,method:p.method,result:result,evName:p.event_name});
     });
+    // De-duplicate by name text (everything after the emoji prefix).
+    // If two user_ids share the same base name, keep the one with more picks.
+    var seenNames={};
+    Object.keys(users).forEach(function(uid){
+      var base=(users[uid].nickname||"").replace(/^.\s/,"").toLowerCase();
+      if(!seenNames[base]){seenNames[base]=uid;}
+      else{
+        var prev=seenNames[base];
+        if(users[uid].total>users[prev].total){
+          if(users[uid].isMe||!users[prev].isMe){delete users[prev];seenNames[base]=uid;}
+          else{delete users[uid];}
+        }else{
+          if(users[prev].isMe||!users[uid].isMe){delete users[uid];}
+          else{delete users[prev];seenNames[base]=uid;}
+        }
+      }
+    });
     var sorted=Object.values(users).sort(function(a,b){
       var pa=a.correct+a.methods*0.5,pb=b.correct+b.methods*0.5;
       return pa!==pb?pb-pa:b.total-a.total;
