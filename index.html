@@ -579,44 +579,9 @@ var GENERATED_AT="25 May 2026 12:39 PM UTC";
 var SUPABASE_URL="https://gkccophrdqtqcowmblre.supabase.co";
 var SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrY2NvcGhyZHF0cWNvd21ibHJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAyMTAsImV4cCI6MjA5NTA0NjIxMH0.zSi-PcQL_ti5KXRq3YRQX4RbsP6HhQ5bAqh5x5kKkbE";
 var USER_ID=(function(){var id=localStorage.getItem("ufc_uid");if(!id){id=typeof crypto!=="undefined"&&crypto.randomUUID?crypto.randomUUID():"u"+Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem("ufc_uid",id);}return id;})();
-var _sbSession=null;
-function _authBearer(){return _sbSession?"Bearer "+_sbSession.access_token:"Bearer "+SUPABASE_ANON;}
-var _authReady=(function(){
-  function _anonSignIn(){
-    return fetch(SUPABASE_URL+"/auth/v1/token?grant_type=anonymous",{method:"POST",headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+SUPABASE_ANON,"Content-Type":"application/json"},body:JSON.stringify({data:{}})})
-      .then(function(r){if(!r.ok)return r.text().then(function(t){console.error("Supabase anon-auth "+r.status+":",t);throw new Error("anon-auth "+r.status);});return r.json();});
-  }
-  function _applySession(session){
-    _sbSession=session;
-    try{localStorage.setItem("ufc_sb_session",JSON.stringify(session));}catch(e){}
-    var newId=session.user.id;
-    var oldId=localStorage.getItem("ufc_uid");
-    if(oldId&&oldId!==newId){
-      var mh={apikey:SUPABASE_ANON,"Authorization":"Bearer "+session.access_token,"Content-Type":"application/json","Prefer":"return=minimal"};
-      fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(oldId),{method:"PATCH",headers:mh,body:JSON.stringify({user_id:newId})}).catch(function(){});
-      fetch(SUPABASE_URL+"/rest/v1/push_subs?user_id=eq."+encodeURIComponent(oldId),{method:"PATCH",headers:mh,body:JSON.stringify({user_id:newId})}).catch(function(){});
-    }
-    USER_ID=newId;
-    try{localStorage.setItem("ufc_uid",newId);}catch(e){}
-    return newId;
-  }
-  try{
-    var stored=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");
-    if(stored&&stored.expires_at&&(Date.now()/1000)<stored.expires_at-300){
-      _sbSession=stored;USER_ID=stored.user.id;
-      try{localStorage.setItem("ufc_uid",stored.user.id);}catch(e){}
-      return Promise.resolve(stored.user.id);
-    }
-    if(stored&&stored.refresh_token){
-      return fetch(SUPABASE_URL+"/auth/v1/token?grant_type=refresh_token",{method:"POST",headers:{apikey:SUPABASE_ANON,"Content-Type":"application/json"},body:JSON.stringify({refresh_token:stored.refresh_token})})
-        .then(function(r){if(!r.ok)throw new Error("refresh failed");return r.json();})
-        .catch(function(){return _anonSignIn();})
-        .then(_applySession)
-        .catch(function(){return USER_ID;});
-    }
-  }catch(e){}
-  return _anonSignIn().then(_applySession).catch(function(){return USER_ID;});
-})();
+function _authBearer(){return"Bearer "+SUPABASE_ANON;}
+var _authReady=Promise.resolve(USER_ID);
+try{localStorage.removeItem("ufc_sb_session");}catch(e){}
 var VAPID_PUBLIC_KEY="BFcYiIWCtwaWZv-NRoF4grvdqxPltRt8CDYp0YVDJF5S34hymCle20mLEsCGyrCO3WSNPUWpznMKfOoA78YfZJw";
 var userEmoji="🥊";
 try{userEmoji=localStorage.getItem("ufc_emoji")||"🥊";}catch(e){}
