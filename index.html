@@ -297,6 +297,8 @@ body.light .ev-qp:hover{background:rgba(255,255,255,.12);color:#fff}
 .nm-input:focus{outline:none;border-color:var(--red)}
 .nm-btn{width:100%;background:var(--red);border:none;color:#fff;padding:12px;border-radius:9px;font:600 14px Inter,sans-serif;cursor:pointer;transition:opacity .15s}
 .nm-btn:hover{opacity:.88}
+.nm-btn:disabled{opacity:.5;cursor:not-allowed}
+.nm-err{color:#ff5555;font-size:12px;text-align:center;margin:-4px 0 10px;display:none}
 .share-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:250;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .share-modal-bg.open{display:flex}
 .share-modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:22px;width:100%;max-width:360px;box-shadow:var(--shadow-el)}
@@ -480,8 +482,9 @@ body.light .fotn-row{background:var(--card2);border-top:1px solid rgba(0,0,0,.08
       <button class="nm-emoji-btn" data-e="😤" onclick="selectEmoji(this)">😤</button>
       <button class="nm-emoji-btn" data-e="🤙" onclick="selectEmoji(this)">🤙</button>
     </div>
-    <input class="nm-input" id="nmInput" type="text" placeholder="Your name" maxlength="20">
-    <button class="nm-btn" onclick="saveName()">Let's go</button>
+    <input class="nm-input" id="nmInput" type="text" placeholder="Your name" maxlength="20" oninput="document.getElementById('nmErr').style.display='none'">
+    <div class="nm-err" id="nmErr"></div>
+    <button class="nm-btn" id="nmBtn" onclick="saveName()">Let's go</button>
   </div>
 </div>
 <div class="share-modal-bg" id="shareBg" onclick="if(event.target===this)closeShare()">
@@ -1024,7 +1027,26 @@ function selectEmoji(btn){document.querySelectorAll(".nm-emoji-btn").forEach(fun
 function saveName(){
   var v=document.getElementById("nmInput").value.trim();if(!v)return;
   var selBtn=document.querySelector(".nm-emoji-btn.selected");
-  userEmoji=selBtn?selBtn.dataset.e:"🥊";
+  var emoji=selBtn?selBtn.dataset.e:"🥊";
+  var errEl=document.getElementById("nmErr");var btn=document.getElementById("nmBtn");
+  errEl.style.display="none";btn.disabled=true;btn.textContent="Checking…";
+  // Check the text portion of the name against all other users' nicknames (ilike "% name")
+  fetch(SUPABASE_URL+"/rest/v1/picks?select=user_id&nickname=ilike."+encodeURIComponent("% "+v)+"&user_id=neq."+encodeURIComponent(USER_ID)+"&limit=1",{
+    headers:{apikey:SUPABASE_ANON,Authorization:_authBearer()}
+  }).then(function(r){return r.ok?r.json():[];}).then(function(rows){
+    btn.disabled=false;btn.textContent="Let's go";
+    if(Array.isArray(rows)&&rows.length>0){
+      errEl.textContent="That name is already taken — pick another!";errEl.style.display="block";
+      return;
+    }
+    _commitName(emoji,v);
+  }).catch(function(){
+    btn.disabled=false;btn.textContent="Let's go";
+    _commitName(emoji,v); // allow on network error rather than blocking
+  });
+}
+function _commitName(emoji,v){
+  userEmoji=emoji;
   try{localStorage.setItem("ufc_emoji",userEmoji);}catch(e){}
   userName=userEmoji+" "+v;
   try{localStorage.setItem("ufc_name",userName);}catch(e){}
