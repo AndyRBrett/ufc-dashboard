@@ -584,7 +584,7 @@ function _authBearer(){return _sbSession?"Bearer "+_sbSession.access_token:"Bear
 var _authReady=(function(){
   function _anonSignIn(){
     return fetch(SUPABASE_URL+"/auth/v1/token?grant_type=anonymous",{method:"POST",headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+SUPABASE_ANON,"Content-Type":"application/json"},body:JSON.stringify({data:{}})})
-      .then(function(r){if(!r.ok)return r.json().then(function(e){throw new Error("anon-auth "+r.status+": "+(e.message||e.error_description||JSON.stringify(e)));});return r.json();});
+      .then(function(r){if(!r.ok)return r.text().then(function(t){console.error("Supabase anon-auth "+r.status+":",t);throw new Error("anon-auth "+r.status);});return r.json();});
   }
   function _applySession(session){
     _sbSession=session;
