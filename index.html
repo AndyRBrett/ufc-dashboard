@@ -813,9 +813,10 @@ function syncPick(ev,fight){
   if(!myPick){deleteSbPick(ev,fight);return;}
   var data={user_id:USER_ID,nickname:userName,event_date:ev.date,event_name:ev.name,f1:fight.f1.n,f2:fight.f2.n,pick:myPick,method:preds_method[key]||"",confidence:preds_conf[key]||0,updated_at:new Date().toISOString()};
   _authReady.then(function(){
-    fetch(SUPABASE_URL+"/rest/v1/picks"+_sbQ(ev,fight),{method:"DELETE",headers:_sbHeaders()})
-      .then(function(){fetch(SUPABASE_URL+"/rest/v1/picks",{method:"POST",headers:_sbHeaders(),body:JSON.stringify(data)});})
-      .catch(function(){});
+    var hdrs=Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return=minimal"});
+    fetch(SUPABASE_URL+"/rest/v1/picks",{method:"POST",headers:hdrs,body:JSON.stringify(data)})
+      .then(function(r){if(!r.ok)r.text().then(function(t){console.error("syncPick failed",r.status,t);});})
+      .catch(function(err){console.error("syncPick error",err);});
   });
 }
 function deleteSbPick(ev,fight){
@@ -832,7 +833,9 @@ function syncAllPicks(){
 function saveFOTN(){try{localStorage.setItem("ufc_fotn",JSON.stringify(preds_fotn));}catch(e){}}
 function reconcileMyPicks(){
   if(!Object.keys(preds).length&&!Object.keys(preds_method).length)return;
-  fetch(SUPABASE_URL+"/rest/v1/picks?select=f1&user_id=eq."+encodeURIComponent(USER_ID)+"&limit=1",{
+  // Only clear local picks when the ENTIRE table is empty (admin wipe signal).
+  // Checking only this user's rows would false-positive on a sync failure.
+  fetch(SUPABASE_URL+"/rest/v1/picks?select=user_id&limit=1",{
     headers:{apikey:SUPABASE_ANON,Authorization:_authBearer()}
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
     if(!Array.isArray(rows)||rows.length>0)return;
@@ -861,7 +864,7 @@ function fetchCommunityPicks(){
     });
     communityPicks=fresh;
     render();
-  }).catch(function(){});
+  }).catch(function(err){console.error("fetchCommunityPicks error",err);});
 }
 function computeStreak(){
   var res=[];
