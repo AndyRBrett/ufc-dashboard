@@ -583,7 +583,7 @@ var _sbSession=null;
 function _authBearer(){return _sbSession?"Bearer "+_sbSession.access_token:"Bearer "+SUPABASE_ANON;}
 var _authReady=(function(){
   function _anonSignIn(){
-    return fetch(SUPABASE_URL+"/auth/v1/token?grant_type=anonymous",{method:"POST",headers:{apikey:SUPABASE_ANON,"Content-Type":"application/json"}})
+    return fetch(SUPABASE_URL+"/auth/v1/token?grant_type=anonymous",{method:"POST",headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+SUPABASE_ANON,"Content-Type":"application/json"},body:JSON.stringify({})})
       .then(function(r){if(!r.ok)throw new Error("anon-auth "+r.status);return r.json();});
   }
   function _applySession(session){
@@ -1956,7 +1956,7 @@ function scoreMethod(userMethod, fightMethod){
 function loadLeaderboard(){
   var body=document.getElementById("lbBody");
   body.innerHTML='<div class="lb-loading">Loading picks...</div>';
-  fetch(SUPABASE_URL+"/rest/v1/picks?select=user_id,event_date,f1,f2,pick,method,confidence,nickname,updated_at&order=updated_at.desc",{
+  fetch(SUPABASE_URL+"/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at&order=updated_at.desc",{
     headers:{apikey:SUPABASE_ANON,Authorization:_authBearer()}
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
     if(!Array.isArray(rows)||rows.length===0){
