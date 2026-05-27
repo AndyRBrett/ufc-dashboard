@@ -220,6 +220,18 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .more-body{display:none}.more-body.open{display:block}
 .cmp-btn-row{width:100%;background:none;border:none;border-top:1px solid var(--border);padding:8px 16px;font-size:11px;color:var(--muted);cursor:pointer;font-family:Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:5px;transition:color .15s;font-weight:500}
 .cmp-btn-row:hover{color:var(--text)}
+.ai-btn-row{padding:4px 16px 8px;display:flex;justify-content:flex-end}
+.ai-btn{display:inline-flex;align-items:center;gap:4px;background:none;border:1px solid rgba(255,255,255,.15);color:var(--muted);font:600 10px Inter,sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:4px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;flex-shrink:0;white-space:nowrap}
+.ai-btn:hover{color:var(--text);border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.04)}
+.ai-btn.ai-loading{opacity:.6;pointer-events:none}
+.ai-btn.ai-done{color:var(--gold);border-color:rgba(201,168,76,.35)}
+.ai-panel{display:none;padding:10px 16px 12px;border-top:1px solid var(--border);background:var(--card2)}
+.ai-panel.open{display:block}
+.ai-panel-text{font-size:12px;color:var(--muted2);line-height:1.65}
+.ai-panel-meta{font-size:10px;color:var(--muted);margin-top:6px;letter-spacing:.04em}
+.ai-err{font-size:12px;color:#e05060}
+body.light .ai-btn{border-color:rgba(0,0,0,.18)}
+body.light .ai-btn:hover{border-color:rgba(0,0,0,.3);background:rgba(0,0,0,.04)}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .modal-bg.open{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:22px 18px 28px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:var(--shadow-el)}
@@ -764,6 +776,46 @@ try{preds_method=JSON.parse(localStorage.getItem("ufc_method")||"{}");preds_conf
 var prevOdds={};
 try{prevOdds=JSON.parse(localStorage.getItem("ufc_prev_odds")||"{}");}catch(e){}
 (function(){var co={};EVENTS.forEach(function(ev){ev.fights.forEach(function(f){if(!f.odds)return;co[ev.date+"|"+f.f1.n+"|"+f.f2.n]={f1:f.odds.f1,f2:f.odds.f2};});});try{localStorage.setItem("ufc_prev_odds",JSON.stringify(co));}catch(e){}})();
+var _aiCache={};
+try{var _aiRaw=sessionStorage.getItem("ufc_ai_cache");if(_aiRaw)_aiCache=JSON.parse(_aiRaw);}catch(e){}
+var AI_BREAKDOWN_URL=SUPABASE_URL+"/functions/v1/ai-breakdown";
+function fetchAIBreakdown(fight,ev,btn,panel){
+  var cacheKey=ev.date+"|"+fight.f1.n+"|"+fight.f2.n;
+  if(_aiCache[cacheKey]){renderAIPanel(panel,btn,_aiCache[cacheKey]);return;}
+  btn.classList.add("ai-loading");btn.textContent="⚡ Loading…";
+  var s1=stOf(fight.f1),s2=stOf(fight.f2);
+  var payload={
+    f1:{n:fight.f1.n,rec:fight.f1.r||"",rk:fight.f1.rk||""},
+    f2:{n:fight.f2.n,rec:fight.f2.r||"",rk:fight.f2.rk||""},
+    wc:fight.wc,title:!!fight.title,event:ev.name,odds:fight.odds||null,
+    s1:s1?{slpm:s1.slpm,acc:s1.acc,td:s1.td,tdd:s1.tdd,ko:s1.ko,sub:s1.sub,stn:s1.stn}:null,
+    s2:s2?{slpm:s2.slpm,acc:s2.acc,td:s2.td,tdd:s2.tdd,ko:s2.ko,sub:s2.sub,stn:s2.stn}:null,
+    form1:s1&&s1.form?s1.form.slice(0,3):[],form2:s2&&s2.form?s2.form.slice(0,3):[]
+  };
+  fetch(AI_BREAKDOWN_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
+    body:JSON.stringify(payload)
+  }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
+  .then(function(data){
+    var text=data.breakdown||"";
+    if(!text)throw new Error("Empty");
+    try{_aiCache[cacheKey]=text;sessionStorage.setItem("ufc_ai_cache",JSON.stringify(_aiCache));}catch(e){}
+    renderAIPanel(panel,btn,text);
+  }).catch(function(){
+    btn.classList.remove("ai-loading");btn.textContent="⚡ AI";
+    panel.innerHTML="<div class='ai-err'>Analysis unavailable. Try again.</div>";
+    panel.classList.add("open");
+  });
+}
+function renderAIPanel(panel,btn,text){
+  btn.classList.remove("ai-loading");btn.classList.add("ai-done");btn.textContent="⚡ AI";
+  if(panel.classList.contains("open")){panel.classList.remove("open");return;}
+  panel.innerHTML="";
+  var p=document.createElement("div");p.className="ai-panel-text";p.textContent=text;panel.appendChild(p);
+  var m=document.createElement("div");m.className="ai-panel-meta";m.textContent="AI analysis · claude-haiku";panel.appendChild(m);
+  panel.classList.add("open");
+}
 var communityPicks={};
 // Migrate old index-based pick keys (e0f0) to stable event+fighter keys
 (function(){
@@ -1544,6 +1596,13 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
     (function(f1,f2){cb.onclick=function(){openCmp(f1,f2);};})(fight.f1,fight.f2);
     row.appendChild(cb);
   }
+  (function(fightRef,evRef){
+    var aiPanel=document.createElement("div");aiPanel.className="ai-panel";
+    var aiBtn=document.createElement("button");aiBtn.className="ai-btn";aiBtn.textContent="⚡ AI";aiBtn.title="AI Fight Breakdown";
+    var aiBtnRow=document.createElement("div");aiBtnRow.className="ai-btn-row";
+    aiBtnRow.appendChild(aiBtn);row.appendChild(aiBtnRow);row.appendChild(aiPanel);
+    aiBtn.onclick=function(e){e.stopPropagation();fetchAIBreakdown(fightRef,evRef,aiBtn,aiPanel);};
+  })(fight,EVENTS[ei]);
   return row;
 }
 
