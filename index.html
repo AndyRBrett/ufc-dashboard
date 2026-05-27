@@ -1329,7 +1329,8 @@ function makeFighter(fighter,right,size,regIdx,side,isWinner){
     var initials=fighter.n.trim().split(" ").filter(Boolean).map(function(w){return w[0].toUpperCase();});
     phWrap.textContent=(initials[0]||"")+(initials[initials.length-1]||"");
     phWrap.style.cssText="display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);background:var(--card2);";
-    var cached=_safeImgUrl(FIGHTER_PHOTOS[fighter.n]);
+    var _cachedRaw=FIGHTER_PHOTOS[fighter.n];
+    var cached=_safeImgUrl(_cachedRaw);
     if(cached){
       var ph=document.createElement("img");
       ph.style.cssText="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;";
@@ -1337,7 +1338,7 @@ function makeFighter(fighter,right,size,regIdx,side,isWinner){
       ph.onload=function(){phWrap.appendChild(ph);};
       ph.src=cached;
       if(ph.complete&&ph.naturalHeight!==0)phWrap.appendChild(ph);
-    } else if(cached===undefined){
+    } else if(_cachedRaw===undefined){
       FIGHTER_PHOTOS[fighter.n]=null;
       var wn=fighter.n.replace(/'/g,"").replace(/ /g,"_");
       (function(wrap2,fn){
