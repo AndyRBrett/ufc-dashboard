@@ -868,7 +868,7 @@ function _buildCardSummary(ev){
   var lines=[];
   ev.fights.forEach(function(f){
     var o=f.odds?(" | "+f.f1.n+": "+(f.odds.f1>0?"+":"")+f.odds.f1+", "+f.f2.n+": "+(f.odds.f2>0?"+":"")+f.odds.f2):"";
-    lines.push(f.f1.n+(f.f1.rk?" (#"+f.f1.rk+")"):"")+" vs "+f.f2.n+(f.f2.rk?" (#"+f.f2.rk+")")+""+o+" ["+f.wc+"]");
+    lines.push((f.f1.n+(f.f1.rk?" (#"+f.f1.rk+")":""))+" vs "+(f.f2.n+(f.f2.rk?" (#"+f.f2.rk+")":""))+o+" ["+f.wc+"]");
   });
   return lines.join("\n");
 }
