@@ -232,6 +232,36 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .ai-err{font-size:12px;color:#e05060}
 body.light .ai-btn{border-color:rgba(0,0,0,.18)}
 body.light .ai-btn:hover{border-color:rgba(0,0,0,.3);background:rgba(0,0,0,.04)}
+/* AI event toolbar */
+.ai-event-toolbar{display:flex;gap:8px;padding:10px 16px 6px;border-bottom:1px solid var(--border)}
+.ai-event-btn{flex:1;background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted2);font:600 11px Inter,sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:7px 10px;border-radius:8px;cursor:pointer;transition:color .15s,background .15s,border-color .15s;display:flex;align-items:center;justify-content:center;gap:5px}
+.ai-event-btn:hover{color:var(--text);background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.22)}
+.ai-event-btn.btn-gold{border-color:rgba(201,168,76,.3);color:var(--gold)}
+body.light .ai-event-btn{border-color:rgba(0,0,0,.18)}
+body.light .ai-event-btn:hover{background:rgba(0,0,0,.06);border-color:rgba(0,0,0,.3)}
+/* Chat modal */
+.chat-modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.chat-ev-name{font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:.05em;color:var(--text);line-height:1.1}
+.chat-history{display:flex;flex-direction:column;gap:10px;min-height:60px;margin-bottom:12px;max-height:320px;overflow-y:auto}
+.chat-bubble{max-width:88%;padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.55}
+.chat-bubble.user{align-self:flex-end;background:var(--red);color:#fff;border-radius:12px 12px 3px 12px}
+.chat-bubble.claude{align-self:flex-start;background:var(--card2);color:var(--muted2);border-radius:12px 12px 12px 3px;border:1px solid var(--border)}
+.chat-bubble.loading{opacity:.6;font-style:italic;color:var(--muted)}
+.quick-qs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.quick-q{background:var(--pill-bg);border:1px solid var(--border);color:var(--muted2);font-size:11px;padding:5px 10px;border-radius:20px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
+.quick-q:hover{background:var(--btn-bg);color:var(--text)}
+.chat-input-row{display:flex;gap:8px;align-items:center}
+.chat-input{flex:1;background:var(--card2);border:1px solid var(--border2);color:var(--text);font:14px Inter,sans-serif;padding:9px 12px;border-radius:10px;outline:none}
+.chat-input:focus{border-color:rgba(255,255,255,.25)}
+.chat-send-btn{background:var(--red);border:none;color:#fff;font:700 12px Inter,sans-serif;padding:9px 14px;border-radius:10px;cursor:pointer;transition:opacity .15s;flex-shrink:0}
+.chat-send-btn:disabled{opacity:.45;pointer-events:none}
+/* Parlay modal */
+.parlay-loading{font-size:13px;color:var(--muted);font-style:italic;padding:8px 0}
+.parlay-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.parlay-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.parlay-fighters{font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px}
+.parlay-reason{font-size:12px;color:var(--muted2);line-height:1.5}
+.parlay-meta{font-size:10px;color:var(--muted);margin-top:14px;letter-spacing:.04em}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .modal-bg.open{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:22px 18px 28px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:var(--shadow-el)}
@@ -504,6 +534,20 @@ body.light .fotn-row{background:var(--card2);border-top:1px solid rgba(0,0,0,.08
     <div class="share-modal-top"><div class="share-modal-title">Share My Picks</div><button class="share-modal-xbtn" onclick="closeShare()">x</button></div>
     <div class="share-card" id="shareCard"></div>
     <div class="share-btns"><button class="share-copy-btn" onclick="copyPicks()">Copy</button><button class="share-done-btn" onclick="closeShare()">Done</button></div>
+  </div>
+</div>
+<div class="modal-bg" id="chatModal" onclick="if(event.target===this)closeChat()">
+  <div class="modal" style="padding:18px 16px 20px;display:flex;flex-direction:column;gap:0">
+    <div class="chat-modal-header"><div class="chat-ev-name" id="chatEvName"></div><button class="modal-xbtn" onclick="closeChat()">x</button></div>
+    <div class="quick-qs" id="chatQuickQs"></div>
+    <div class="chat-history" id="chatHistory"></div>
+    <div class="chat-input-row"><input class="chat-input" id="chatInput" type="text" placeholder="Ask about this card…" maxlength="200"><button class="chat-send-btn" id="chatSendBtn" onclick="sendPickChat()">Send</button></div>
+  </div>
+</div>
+<div class="modal-bg" id="parlayModal" onclick="if(event.target===this)closeParlay()">
+  <div class="modal" style="padding:18px 16px 20px">
+    <div class="chat-modal-header"><div class="chat-ev-name" id="parlayEvName"></div><button class="modal-xbtn" onclick="closeParlay()">x</button></div>
+    <div id="parlayContent"></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -816,6 +860,142 @@ function renderAIPanel(panel,btn,text){
   var m=document.createElement("div");m.className="ai-panel-meta";m.textContent="AI analysis · claude-haiku";panel.appendChild(m);
   panel.classList.add("open");
 }
+
+// ── Pick Assistant ──────────────────────────────────────────────
+var _chatEv=null,_chatEi=-1,_chatBusy=false;
+var _chatHistory={};// keyed by ei, persists within session
+function _buildCardSummary(ev){
+  var lines=[];
+  ev.fights.forEach(function(f){
+    var o=f.odds?(" | "+f.f1.n+": "+(f.odds.f1>0?"+":"")+f.odds.f1+", "+f.f2.n+": "+(f.odds.f2>0?"+":"")+f.odds.f2):"";
+    lines.push(f.f1.n+(f.f1.rk?" (#"+f.f1.rk+")"):"")+" vs "+f.f2.n+(f.f2.rk?" (#"+f.f2.rk+")")+""+o+" ["+f.wc+"]");
+  });
+  return lines.join("\n");
+}
+function _buildUserPicks(ev,ei){
+  var picks=[];
+  ev.fights.forEach(function(f,fi){
+    var k=ev.date+"|"+f.f1.n+"|"+f.f2.n;
+    if(preds[k])picks.push("You picked: "+preds[k]+(preds_method[k]?" by "+preds_method[k]:""));
+  });
+  return picks.length?picks.join(", "):"No picks yet";
+}
+function openPickChat(ev,ei){
+  _chatEv=ev;_chatEi=ei;
+  document.getElementById("chatEvName").textContent=ev.name;
+  var hist=_chatHistory[ei]||[];
+  var hEl=document.getElementById("chatHistory");hEl.innerHTML="";
+  hist.forEach(function(h){
+    var b=document.createElement("div");b.className="chat-bubble "+h.role;b.textContent=h.text;hEl.appendChild(b);
+  });
+  if(hist.length)hEl.scrollTop=hEl.scrollHeight;
+  var qqEl=document.getElementById("chatQuickQs");qqEl.innerHTML="";
+  ["Top pick this card?","Best underdog value?","Who should I fade?","Parlay suggestions?"].forEach(function(q){
+    var btn=document.createElement("button");btn.className="quick-q";btn.textContent=q;
+    btn.onclick=function(){document.getElementById("chatInput").value=q;sendPickChat();};
+    qqEl.appendChild(btn);
+  });
+  document.getElementById("chatInput").value="";
+  document.getElementById("chatModal").classList.add("open");
+  lockScroll();
+  setTimeout(function(){document.getElementById("chatInput").focus();},300);
+}
+function closeChat(){document.getElementById("chatModal").classList.remove("open");unlockScroll();}
+function sendPickChat(){
+  if(_chatBusy||!_chatEv)return;
+  var input=document.getElementById("chatInput");
+  var q=input.value.trim();
+  if(!q)return;
+  input.value="";
+  _chatBusy=true;
+  document.getElementById("chatSendBtn").disabled=true;
+  var hEl=document.getElementById("chatHistory");
+  var uBubble=document.createElement("div");uBubble.className="chat-bubble user";uBubble.textContent=q;hEl.appendChild(uBubble);
+  var lBubble=document.createElement("div");lBubble.className="chat-bubble claude loading";lBubble.textContent="Thinking…";hEl.appendChild(lBubble);
+  hEl.scrollTop=hEl.scrollHeight;
+  if(!_chatHistory[_chatEi])_chatHistory[_chatEi]=[];
+  _chatHistory[_chatEi].push({role:"user",text:q});
+  fetch(AI_BREAKDOWN_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
+    body:JSON.stringify({
+      action:"chat",
+      event:_chatEv.name,
+      card:_buildCardSummary(_chatEv),
+      userPicks:_buildUserPicks(_chatEv,_chatEi),
+      question:q
+    })
+  }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
+  .then(function(d){
+    var text=d.breakdown||"";
+    if(!text)throw new Error("Empty");
+    lBubble.className="chat-bubble claude";lBubble.textContent=text;
+    _chatHistory[_chatEi].push({role:"claude",text:text});
+  }).catch(function(){
+    lBubble.className="chat-bubble claude";lBubble.textContent="Sorry, couldn't get a response. Try again.";
+  }).finally(function(){
+    _chatBusy=false;document.getElementById("chatSendBtn").disabled=false;
+    hEl.scrollTop=hEl.scrollHeight;
+  });
+}
+
+// ── Parlay Suggester ────────────────────────────────────────────
+var _parlayCache={};
+function openParlay(ev,ei){
+  document.getElementById("parlayEvName").textContent=ev.name+" — Parlay Picks";
+  var content=document.getElementById("parlayContent");
+  document.getElementById("parlayModal").classList.add("open");
+  lockScroll();
+  var cacheKey=ev.date;
+  if(_parlayCache[cacheKey]){renderParlays(content,_parlayCache[cacheKey]);return;}
+  content.innerHTML="<div class='parlay-loading'>Building parlay suggestions…</div>";
+  fetch(AI_BREAKDOWN_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
+    body:JSON.stringify({
+      action:"parlay",
+      event:ev.name,
+      card:_buildCardSummary(ev)
+    })
+  }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
+  .then(function(d){
+    var text=d.breakdown||"";
+    if(!text)throw new Error("Empty");
+    _parlayCache[cacheKey]=text;
+    renderParlays(content,text);
+  }).catch(function(){
+    content.innerHTML="<div class='ai-err'>Couldn't load suggestions. Try again.</div>";
+  });
+}
+function renderParlays(content,text){
+  content.innerHTML="";
+  // Parse "PARLAY N: fighters | reasoning" format
+  var blocks=text.split(/\n+/).filter(function(l){return l.trim();});
+  var parlayNum=0;
+  blocks.forEach(function(line){
+    var m=line.match(/^PARLAY\s*\d*:?\s*(.*)/i);
+    if(m){
+      parlayNum++;
+      var rest=m[1];
+      var parts=rest.split("|");
+      var fighters=parts[0]?parts[0].trim():"";
+      var reason=parts.slice(1).join("|").trim();
+      var card=document.createElement("div");card.className="parlay-card";
+      var lbl=document.createElement("div");lbl.className="parlay-label";lbl.textContent="Parlay "+parlayNum;card.appendChild(lbl);
+      var f=document.createElement("div");f.className="parlay-fighters";f.textContent=fighters;card.appendChild(f);
+      if(reason){var r=document.createElement("div");r.className="parlay-reason";r.textContent=reason;card.appendChild(r);}
+      content.appendChild(card);
+    }
+  });
+  if(!parlayNum){
+    // Fallback: show raw text in cards by paragraph
+    var card=document.createElement("div");card.className="parlay-card";
+    var r=document.createElement("div");r.className="parlay-reason";r.textContent=text;card.appendChild(r);content.appendChild(card);
+  }
+  var meta=document.createElement("div");meta.className="parlay-meta";meta.textContent="AI suggestions · Not financial advice · claude-haiku";content.appendChild(meta);
+}
+function closeParlay(){document.getElementById("parlayModal").classList.remove("open");unlockScroll();}
+
 var communityPicks={};
 // Migrate old index-based pick keys (e0f0) to stable event+fighter keys
 (function(){
@@ -1638,6 +1818,14 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
   badges.appendChild(qpBtn);
   band.appendChild(badges);var colBtn=document.createElement("div");colBtn.className="ev-collapse-btn";var colSvg=document.createElementNS("http://www.w3.org/2000/svg","svg");colSvg.setAttribute("viewBox","0 0 24 24");colSvg.setAttribute("fill","none");colSvg.setAttribute("stroke","currentColor");colSvg.setAttribute("stroke-width","2.5");colSvg.style.cssText="width:18px;height:18px";var colPoly=document.createElementNS("http://www.w3.org/2000/svg","polyline");colPoly.setAttribute("points","6 9 12 15 18 9");colSvg.appendChild(colPoly);colBtn.appendChild(colSvg);band.appendChild(colBtn);frag.appendChild(band);
   var fw=document.createElement("div");fw.className="fights-wrap";
+  (function(evRef,eiRef){
+    var tb=document.createElement("div");tb.className="ai-event-toolbar";
+    var chatBtn=document.createElement("button");chatBtn.className="ai-event-btn";chatBtn.innerHTML="💬 Ask Claude";
+    chatBtn.onclick=function(e){e.stopPropagation();openPickChat(evRef,eiRef);};
+    var parlayBtn=document.createElement("button");parlayBtn.className="ai-event-btn btn-gold";parlayBtn.innerHTML="🎰 Parlay Picks";
+    parlayBtn.onclick=function(e){e.stopPropagation();openParlay(evRef,eiRef);};
+    tb.appendChild(chatBtn);tb.appendChild(parlayBtn);fw.appendChild(tb);
+  })(ev,ei);
   var mainCard=ev.fights.slice(2).filter(function(f){return f.lbl==="Main Card";});
   var prelims=ev.fights.filter(function(f){return f.lbl==="Prelim"||f.lbl==="Early Prelim";});
   var totalExtra=mainCard.length+prelims.length;
