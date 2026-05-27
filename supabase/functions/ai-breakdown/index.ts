@@ -51,7 +51,7 @@ serve(async (req) => {
   }
 
   // Validate caller via Supabase anon key
-  const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+  const ANON_KEY = Deno.env.get("SB_ANON_KEY") ?? "";
   const auth = req.headers.get("Authorization") ?? "";
   if (ANON_KEY && auth !== `Bearer ${ANON_KEY}`) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: CORS_HEADERS });
