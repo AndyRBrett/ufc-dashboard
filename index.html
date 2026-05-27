@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://gkccophrdqtqcowmblre.supabase.co https://en.wikipedia.org; img-src 'self' https://upload.wikimedia.org data:; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://gkccophrdqtqcowmblre.supabase.co wss://gkccophrdqtqcowmblre.supabase.co https://en.wikipedia.org; img-src 'self' https://upload.wikimedia.org data:; object-src 'none'">
 <title>UFC Fight Cards</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#e8192c">
@@ -810,6 +810,56 @@ function _sbHeaders(){return{apikey:SUPABASE_ANON,Authorization:_authBearer(),"C
 function _sbQ(ev,fight){return"?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(ev.date)+"&f1=eq."+encodeURIComponent(fight.f1.n)+"&f2=eq."+encodeURIComponent(fight.f2.n);}
 function findByKey(key){var p=key.split("|");if(p.length<3)return null;for(var i=0;i<EVENTS.length;i++){if(EVENTS[i].date===p[0]){for(var j=0;j<EVENTS[i].fights.length;j++){var f=EVENTS[i].fights[j];if(f.f1.n===p[1]&&f.f2.n===p[2])return{ev:EVENTS[i],fight:f};}}}return null;}
 
+/* ── Supabase Realtime WebSocket — real-time community picks ─────────────── *
+ * Uses Phoenix WebSocket protocol (raw, no library). Two update paths:       *
+ *  1. Broadcast: any user's pick/unpick immediately signals all clients      *
+ *  2. Postgres Changes: fires automatically if Realtime is enabled on the    *
+ *     `picks` table in Supabase Dashboard → Database → Replication           *
+ * Falls back to 60s polling if WebSocket unavailable.                        */
+var _rtWs=null,_rtRef=0,_rtHb=null,_rtJoinRef=null,_rtOpen=false;
+function _rtNext(){return String(++_rtRef);}
+function _rtSend(o){try{if(_rtWs&&_rtWs.readyState===1)_rtWs.send(JSON.stringify(o));}catch(e){}}
+function _rtBroadcast(){
+  if(!_rtOpen)return;
+  _rtSend({topic:"realtime:picks-live",event:"broadcast",
+    payload:{type:"broadcast",event:"pick-change",payload:{}},
+    ref:_rtNext(),join_ref:_rtJoinRef});
+}
+function _rtConnect(){
+  if(_rtWs&&(_rtWs.readyState===0||_rtWs.readyState===1))return;
+  try{
+    _rtWs=new WebSocket("wss://"+SUPABASE_URL.replace(/^https?:\/\//,"")+"/realtime/v1/websocket?apikey="+SUPABASE_ANON+"&vsn=1.0.0");
+    _rtWs.onopen=function(){
+      _rtRef=0;_rtOpen=false;
+      if(_rtHb)clearInterval(_rtHb);
+      _rtHb=setInterval(function(){_rtSend({topic:"phoenix",event:"heartbeat",payload:{},ref:_rtNext()});},25000);
+      _rtJoinRef=_rtNext();
+      _rtSend({topic:"realtime:picks-live",event:"phx_join",
+        payload:{config:{broadcast:{self:false,ack:false},presence:{key:""},
+          postgres_changes:[{event:"*",schema:"public",table:"picks"}]},
+          access_token:SUPABASE_ANON},
+        ref:_rtJoinRef,join_ref:_rtJoinRef});
+    };
+    _rtWs.onmessage=function(e){
+      try{
+        var m=JSON.parse(e.data);
+        if(m.event==="phx_reply"&&m.payload&&m.payload.status==="ok")_rtOpen=true;
+        if(_rtOpen&&(
+          (m.event==="broadcast"&&m.payload&&m.payload.event==="pick-change")||
+          m.event==="postgres_changes"
+        ))fetchCommunityPicks();
+      }catch(err){}
+    };
+    _rtWs.onclose=function(){
+      _rtOpen=false;
+      if(_rtHb){clearInterval(_rtHb);_rtHb=null;}
+      setTimeout(_rtConnect,5000);  // auto-reconnect
+    };
+    _rtWs.onerror=function(){};  // onclose handles cleanup
+  }catch(e){}  // WebSocket not available; polling handles it
+}
+/* ───────────────────────────────────────────────────────────────────────── */
+
 function syncPick(ev,fight){
   if(!userName)return;
   var key=pk(ev,fight);var myPick=preds[key];
@@ -818,13 +868,13 @@ function syncPick(ev,fight){
   _authReady.then(function(){
     var hdrs=Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return=minimal"});
     fetch(SUPABASE_URL+"/rest/v1/picks",{method:"POST",headers:hdrs,body:JSON.stringify(data)})
-      .then(function(r){if(!r.ok)r.text().then(function(t){console.error("syncPick failed",r.status,t);});})
+      .then(function(r){if(!r.ok)r.text().then(function(t){console.error("syncPick failed",r.status,t);});else _rtBroadcast();})
       .catch(function(err){console.error("syncPick error",err);});
   });
 }
 function deleteSbPick(ev,fight){
   _authReady.then(function(){
-    fetch(SUPABASE_URL+"/rest/v1/picks"+_sbQ(ev,fight),{method:"DELETE",headers:_sbHeaders()}).catch(function(){});
+    fetch(SUPABASE_URL+"/rest/v1/picks"+_sbQ(ev,fight),{method:"DELETE",headers:_sbHeaders()}).then(function(r){if(r.ok)_rtBroadcast();}).catch(function(){});
   });
 }
 function syncAllPicks(){
@@ -2126,8 +2176,9 @@ document.addEventListener("DOMContentLoaded",function(){
   setTimeout(reconcileMyPicks, 1500);
   setTimeout(syncAllPicks, 2000);
   setTimeout(fetchCommunityPicks, 3000);
-  setInterval(fetchCommunityPicks, 30000);
+  setInterval(fetchCommunityPicks, 60000);  // backup poll; WebSocket handles real-time
   document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")fetchCommunityPicks();});
+  _rtConnect();  // open persistent WebSocket for real-time pick propagation
   try{if(localStorage.getItem("ufc_push")==="1")_setBellActive(true);}catch(e){}
 
 });
