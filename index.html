@@ -225,7 +225,9 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .ai-btn:hover{color:var(--text);border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.04)}
 .ai-btn.ai-loading{opacity:.6;pointer-events:none}
 .ai-btn.ai-done{color:var(--gold);border-color:rgba(201,168,76,.35)}
-.ai-panel{display:none;padding:10px 16px 12px;border-top:1px solid var(--border);background:var(--card2)}
+.ai-panel{display:none;padding:10px 16px 12px;border-top:1px solid var(--border);background:var(--card2);position:relative}
+.ai-panel-close{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;line-height:1;padding:2px 4px}
+.ai-panel-close:hover{color:var(--text)}
 .ai-panel.open{display:block}
 .ai-panel-text{font-size:12px;color:var(--muted2);line-height:1.65}
 .ai-panel-meta{font-size:10px;color:var(--muted);margin-top:6px;letter-spacing:.04em}
@@ -854,8 +856,11 @@ function fetchAIBreakdown(fight,ev,btn,panel){
 }
 function renderAIPanel(panel,btn,text){
   btn.classList.remove("ai-loading");btn.classList.add("ai-done");btn.textContent="⚡ AI";
-  if(panel.classList.contains("open")){panel.classList.remove("open");return;}
+  if(panel.classList.contains("open"))return;
   panel.innerHTML="";
+  var x=document.createElement("button");x.className="ai-panel-close";x.textContent="×";
+  x.onclick=function(e){e.stopPropagation();panel.classList.remove("open");};
+  panel.appendChild(x);
   var p=document.createElement("div");p.className="ai-panel-text";p.textContent=text;panel.appendChild(p);
   var m=document.createElement("div");m.className="ai-panel-meta";m.textContent="AI analysis · claude-haiku";panel.appendChild(m);
   panel.classList.add("open");
