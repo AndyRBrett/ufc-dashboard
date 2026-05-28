@@ -225,9 +225,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .ai-btn:hover{color:var(--text);border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.04)}
 .ai-btn.ai-loading{opacity:.6;pointer-events:none}
 .ai-btn.ai-done{color:var(--gold);border-color:rgba(201,168,76,.35)}
-.ai-panel{display:none;padding:10px 16px 12px;border-top:1px solid var(--border);background:var(--card2);position:relative}
-.ai-panel-close{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;line-height:1;padding:2px 4px}
-.ai-panel-close:hover{color:var(--text)}
+.ai-panel{display:none;padding:10px 16px 12px;border-top:1px solid var(--border);background:var(--card2)}
 .ai-panel.open{display:block}
 .ai-panel-text{font-size:12px;color:var(--muted2);line-height:1.65}
 .ai-panel-meta{font-size:10px;color:var(--muted);margin-top:6px;letter-spacing:.04em}
@@ -855,12 +853,9 @@ function fetchAIBreakdown(fight,ev,btn,panel){
   });
 }
 function renderAIPanel(panel,btn,text){
-  btn.classList.remove("ai-loading");btn.classList.add("ai-done");btn.textContent="⚡ AI";
-  if(panel.classList.contains("open"))return;
+  if(btn&&btn.classList){btn.classList.remove("ai-loading");btn.classList.add("ai-done");btn.textContent="⚡ AI";}
+  if(panel.classList.contains("open")){panel.classList.remove("open");return;}
   panel.innerHTML="";
-  var x=document.createElement("button");x.className="ai-panel-close";x.textContent="×";
-  x.onclick=function(e){e.stopPropagation();panel.classList.remove("open");};
-  panel.appendChild(x);
   var p=document.createElement("div");p.className="ai-panel-text";p.textContent=text;panel.appendChild(p);
   var m=document.createElement("div");m.className="ai-panel-meta";m.textContent="AI analysis · claude-haiku";panel.appendChild(m);
   panel.classList.add("open");
@@ -1782,7 +1777,7 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
     row.appendChild(cb);
   }
   (function(fightRef,evRef){
-    var aiPanel=document.createElement("div");aiPanel.className="ai-panel";
+    var aiPanel=document.createElement("div");aiPanel.className="ai-panel";aiPanel.dataset.ck=evRef.date+"|"+fightRef.f1.n+"|"+fightRef.f2.n;
     var aiBtn=document.createElement("button");aiBtn.className="ai-btn";aiBtn.textContent="⚡ AI";aiBtn.title="AI Fight Breakdown";
     var aiBtnRow=document.createElement("div");aiBtnRow.className="ai-btn-row";
     aiBtnRow.appendChild(aiBtn);row.appendChild(aiBtnRow);row.appendChild(aiPanel);
@@ -2162,6 +2157,8 @@ function render(){
   var vis=events.filter(function(e){return e.fights.some(matchFilter);});
   var app=document.getElementById("app");
   if(!app)return;
+  var _openAI={};
+  app.querySelectorAll(".ai-panel.open").forEach(function(el){if(el.dataset.ck)_openAI[el.dataset.ck]=true;});
   app.innerHTML="";
   if(!vis.length){
     var msg=document.createElement("div");msg.style.cssText="padding:32px 16px;text-align:center;color:var(--muted);font-size:13px";msg.textContent="No fights in this weight class.";app.appendChild(msg);
@@ -2199,6 +2196,13 @@ function render(){
     app.appendChild(archHdr);app.appendChild(archBody);
     pastPicksData.forEach(function(item){archBody.appendChild(makePastEvCard(item));});
   }
+  Object.keys(_openAI).forEach(function(ck){
+    if(!_aiCache[ck])return;
+    var panel=app.querySelector('.ai-panel[data-ck="'+ck+'"]');
+    if(!panel)return;
+    var btn=panel.previousElementSibling&&panel.previousElementSibling.querySelector&&panel.previousElementSibling.querySelector(".ai-btn");
+    renderAIPanel(panel,btn||null,_aiCache[ck]);
+  });
   updatePicksWidget();
   updateCountdown();
   checkFightNight();
