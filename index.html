@@ -1067,7 +1067,19 @@ function syncPick(ev,fight){
   _authReady.then(function(){
     var hdrs=Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return=minimal"});
     fetch(SUPABASE_URL+"/rest/v1/picks",{method:"POST",headers:hdrs,body:JSON.stringify(data)})
-      .then(function(r){if(!r.ok)r.text().then(function(t){console.error("syncPick failed",r.status,t);});else _rtBroadcast();})
+      .then(function(r){
+        if(!r.ok)r.text().then(function(t){console.error("syncPick failed",r.status,t);});
+        else{
+          _rtBroadcast();
+          var notifKey="ufc_notif_pick_"+ev.date;
+          if(!localStorage.getItem(notifKey)){
+            localStorage.setItem(notifKey,"1");
+            var evShort=ev.name.replace("UFC Fight Night: ","").split(":")[0];
+            var displayName=userName.replace(/^.\s*/,"");
+            _triggerPush(ev.date,"pick-"+USER_ID,"🎯 "+displayName+" is in!",displayName+" just locked in their picks for "+evShort,USER_ID);
+          }
+        }
+      })
       .catch(function(err){console.error("syncPick error",err);});
   });
 }
@@ -1572,11 +1584,11 @@ function etOffset(){
   var e=new Date(y,10,1);e.setDate(1+(7-e.getDay())%7); // 1st Sunday November
   return(d>=s&&d<e)?4:5;
 }
-function _triggerPush(evDate,type,title,body){
+function _triggerPush(evDate,type,title,body,excludeUid){
   fetch(SUPABASE_URL+"/functions/v1/send-push",{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-    body:JSON.stringify({event_date:evDate,type:type,title:title,body:body})
+    body:JSON.stringify({event_date:evDate,type:type,title:title,body:body,exclude_user_id:excludeUid||null})
   }).catch(function(){});
 }
 function checkNotifSchedule(){

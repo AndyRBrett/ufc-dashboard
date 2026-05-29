@@ -10,9 +10,10 @@ const CORS_HEADERS = {
 
 interface ReqBody {
   event_date: string;
-  type: "main" | "prelim";
+  type: string;
   title: string;
   body: string;
+  exclude_user_id?: string | null;
 }
 
 serve(async (req) => {
@@ -77,10 +78,11 @@ serve(async (req) => {
     return new Response(JSON.stringify({ sent: 0, skipped: true }), { status: 200, headers: CORS_HEADERS });
   }
 
-  // Fetch all push subscriptions
-  const subsRes = await fetch(`${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth`, {
-    headers: sbHeaders,
-  });
+  // Fetch all push subscriptions (excluding sender if specified)
+  const subsUrl = body.exclude_user_id
+    ? `${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth&user_id=neq.${encodeURIComponent(body.exclude_user_id)}`
+    : `${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth`;
+  const subsRes = await fetch(subsUrl, { headers: sbHeaders });
   if (!subsRes.ok) {
     return new Response(JSON.stringify({ error: "Failed to fetch subscriptions" }), { status: 502, headers: CORS_HEADERS });
   }
