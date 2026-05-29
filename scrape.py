@@ -1279,6 +1279,32 @@ def step_build_events(html, now):
                 fight["rematch"] = True
                 print(f"  Rematch detected: {f1n} vs {f2n}", file=sys.stderr)
 
+    # Detect odds changes against the pre-scrape values so the UI can show arrows.
+    prev_odds = {}
+    for ev in new_events:
+        for fight in ev["fights"]:
+            if not fight.get("odds"):
+                continue
+            f1n = fight["f1"]["name"]
+            f2n = fight["f2"]["name"]
+            new_f1 = fight["odds"]["f1"]
+            new_f2 = fight["odds"]["f2"]
+            key = frozenset([last_name(f1n), last_name(f2n)])
+            old = existing_odds.get(key)
+            if not old:
+                continue
+            if last_name(f1n) == last_name(old["f1_name"]):
+                old_f1, old_f2 = old["f1_odds"], old["f2_odds"]
+            else:
+                old_f1, old_f2 = old["f2_odds"], old["f1_odds"]
+            if old_f1 != new_f1 or old_f2 != new_f2:
+                js_key = f"{ev['date']}|{f1n}|{f2n}"
+                prev_odds[js_key] = {"f1": old_f1, "f2": old_f2}
+                print(f"  Odds changed: {f1n} vs {f2n} {old_f1}/{old_f2} → {new_f1}/{new_f2}",
+                      file=sys.stderr)
+    html = patch_js_var(html, "PREV_ODDS",
+                        json.dumps(prev_odds, separators=(",", ":"), ensure_ascii=False))
+
     html = patch_js_var(html, "EVENTS", events_js(new_events))
     html = patch_js_var(
         html, "FIGHTER_STATS",
