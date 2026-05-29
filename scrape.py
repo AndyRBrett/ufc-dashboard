@@ -15,7 +15,7 @@ import re
 import sys
 import time
 import unicodedata
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
@@ -1058,6 +1058,20 @@ def step_inject_results(html, now):
     return updated, new_results
 
 
+def _stale_failure(cached: dict) -> bool:
+    """True if a cached fighter entry is a failure stub old enough to retry."""
+    if "slpm" in cached:
+        return False  # has real stats — not a failure stub
+    failed_at = cached.get("_failed_at")
+    if not failed_at:
+        return True  # old-style opp:[] stub with no date — retry once
+    try:
+        delta = (date.today() - date.fromisoformat(failed_at)).days
+        return delta >= 3
+    except (ValueError, TypeError):
+        return True
+
+
 def step_build_events(html, now):
     """
     Rebuild the EVENTS block from Wikipedia and The Odds API, refresh fighter
@@ -1168,6 +1182,7 @@ def step_build_events(html, now):
             n not in stats_cache
             or "form" not in stats_cache[n]
             or "opp" not in stats_cache[n]
+            or _stale_failure(stats_cache.get(n, {}))
             or (card_records.get(n) and card_records[n] != stats_cache[n].get("rec", ""))
         )
     )
@@ -1180,13 +1195,16 @@ def step_build_events(html, now):
         cached_url = stats_cache.get(fname, {}).get("url")
         s = fetch_fighter_stats(fname, cached_url=cached_url)
         if s:
+            s.pop("_failed_at", None)
             stats_cache[fname] = s
         else:
-            # Stamp opp:[] on any failure so this fighter isn't retried every run.
-            # Works whether the fighter is already cached or brand-new.
+            # Stamp a dated failure so the fighter is retried after 3 days rather
+            # than being blocked permanently by the presence of opp:[].
             if fname not in stats_cache:
                 stats_cache[fname] = {}
-            stats_cache[fname].setdefault("opp", [])
+            if "slpm" not in stats_cache[fname]:
+                stats_cache[fname]["opp"] = []
+                stats_cache[fname]["_failed_at"] = date.today().isoformat()
         time.sleep(1)
     print(f"Stats cache: {len(stats_cache)} fighters", file=sys.stderr)
 
