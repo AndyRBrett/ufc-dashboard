@@ -763,6 +763,52 @@ def _fighter_wiki_past_fight(wikitext, opp_name):
     return False
 
 
+def _wiki_fighter_stats(name):
+    """Fetch minimal fighter stats from Wikipedia as a fallback when UFCStats fails.
+    Extracts record, recent form, and finish counts. Returns a partial stats dict or None."""
+    slug = name.strip().replace(" ", "_")
+    wt = fetch_wikitext(slug)
+    if not wt:
+        return None
+
+    rec = ""
+    m = re.search(
+        r'\|\s*wins\s*=\s*(\d+).*?\|\s*losses\s*=\s*(\d+)(?:.*?\|\s*draws\s*=\s*(\d+))?',
+        wt, re.IGNORECASE | re.DOTALL,
+    )
+    if m:
+        w, l, d = int(m.group(1)), int(m.group(2)), int(m.group(3) or 0)
+        rec = f"{w}-{l}-{d}"
+
+    form = []
+    ko = sub = 0
+    for row_m in re.finditer(
+        r'\|\s*(Win|Loss|Draw|No Contest)\s*\|[^|]*\|[^|]*\|[^|]*\|\s*([^|\n]+)',
+        wt, re.IGNORECASE,
+    ):
+        result_raw = row_m.group(1).strip().lower()
+        method_raw = row_m.group(2).strip().lower()
+        r_code = "W" if result_raw == "win" else ("L" if result_raw == "loss" else "D")
+        if "ko" in method_raw or "tko" in method_raw:
+            m_code = "TKO"
+            if r_code == "W":
+                ko += 1
+        elif "sub" in method_raw:
+            m_code = "Sub"
+            if r_code == "W":
+                sub += 1
+        else:
+            m_code = "Dec"
+        form.append({"r": r_code, "m": m_code})
+
+    form = form[:5]
+
+    if not rec and not form:
+        return None
+
+    return {"rec": rec, "form": form, "ko": ko, "sub": sub, "opp": [], "_wiki_fallback": True}
+
+
 def fetch_fighter_stats(name, cached_url=None):
     """Fetch career stats for one fighter from UFCStats. Returns a dict or None."""
     if cached_url:
@@ -773,8 +819,8 @@ def fetch_fighter_stats(name, cached_url=None):
         print(f"  UFCStats search [{name}]", file=sys.stderr)
         hit = _search_ufcstats(name)
         if not hit:
-            print(f"  UFCStats: no match for {name}", file=sys.stderr)
-            return None
+            print(f"  UFCStats: no match for {name}, trying Wikipedia fallback", file=sys.stderr)
+            return _wiki_fighter_stats(name)
         detail_url, rec = hit
         if not detail_url:
             return None

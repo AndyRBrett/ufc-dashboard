@@ -831,8 +831,10 @@ try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.
 var preds_method={},preds_conf={},preds_fotn={};
 try{preds_method=JSON.parse(localStorage.getItem("ufc_method")||"{}");preds_conf=JSON.parse(localStorage.getItem("ufc_conf")||"{}");preds_fotn=JSON.parse(localStorage.getItem("ufc_fotn")||"{}");}catch(e){}
 var prevOdds={};
+var _currOddsSnap={};
 try{prevOdds=JSON.parse(localStorage.getItem("ufc_prev_odds")||"{}");}catch(e){}
-(function(){var co={};EVENTS.forEach(function(ev){ev.fights.forEach(function(f){if(!f.odds)return;co[ev.date+"|"+f.f1.n+"|"+f.f2.n]={f1:f.odds.f1,f2:f.odds.f2};});});try{localStorage.setItem("ufc_prev_odds",JSON.stringify(co));}catch(e){}})();
+try{_currOddsSnap=JSON.parse(localStorage.getItem("ufc_curr_odds")||"{}");}catch(e){}
+(function(){var co={};EVENTS.forEach(function(ev){ev.fights.forEach(function(f){if(!f.odds)return;co[ev.date+"|"+f.f1.n+"|"+f.f2.n]={f1:f.odds.f1,f2:f.odds.f2};});});var hasChange=Object.keys(co).some(function(k){var p=_currOddsSnap[k];return !p||p.f1!==co[k].f1||p.f2!==co[k].f2;})||Object.keys(_currOddsSnap).some(function(k){return !co[k];});if(hasChange){try{localStorage.setItem("ufc_prev_odds",JSON.stringify(_currOddsSnap));}catch(e){}try{localStorage.setItem("ufc_curr_odds",JSON.stringify(co));}catch(e){}prevOdds=_currOddsSnap;}})();
 var _aiCache={};
 try{var _aiRaw=sessionStorage.getItem("ufc_ai_cache");if(_aiRaw)_aiCache=JSON.parse(_aiRaw);}catch(e){}
 var AI_BREAKDOWN_URL=SUPABASE_URL+"/functions/v1/ai-breakdown";
