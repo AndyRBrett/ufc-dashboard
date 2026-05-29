@@ -1344,7 +1344,7 @@ function enablePush(){
     navigator.serviceWorker.ready.then(function(reg){
       reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64ToUint8(VAPID_PUBLIC_KEY)}).then(function(sub){
         var s=sub.toJSON();
-        _authReady.then(function(){fetch(SUPABASE_URL+"/rest/v1/push_subs",{method:"POST",headers:{..._sbHeaders(),'Prefer':'resolution=merge-duplicates'},body:JSON.stringify({user_id:USER_ID,nickname:userName,endpoint:s.endpoint,p256dh:s.keys.p256dh,auth:s.keys.auth})});});
+        _authReady.then(function(){fetch(SUPABASE_URL+"/rest/v1/push_subs",{method:"POST",headers:_sbHeaders(),body:JSON.stringify({user_id:USER_ID,nickname:userName,endpoint:s.endpoint,p256dh:s.keys.p256dh,auth:s.keys.auth})});});
         try{localStorage.setItem("ufc_push","1");}catch(e){}
         _setBellActive(true);
         toast("Fight notifications enabled! 🔔");
