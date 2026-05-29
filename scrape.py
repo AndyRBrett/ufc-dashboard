@@ -1279,8 +1279,19 @@ def step_build_events(html, now):
                 fight["rematch"] = True
                 print(f"  Rematch detected: {f1n} vs {f2n}", file=sys.stderr)
 
-    # Detect odds changes against the pre-scrape values so the UI can show arrows.
-    prev_odds = {}
+    # Build PREV_ODDS: the "before last change" odds used by the UI for arrows.
+    # When a fight's odds change this scrape → record the old value.
+    # When they haven't changed → carry forward whatever PREV_ODDS already has,
+    # so arrows stay visible in the HTML across scrapes until odds change again.
+    existing_prev_odds: dict = {}
+    try:
+        m = re.search(r'var PREV_ODDS=(\{.*?\});', html)
+        if m:
+            existing_prev_odds = json.loads(m.group(1))
+    except Exception:
+        pass
+
+    prev_odds: dict = {}
     for ev in new_events:
         for fight in ev["fights"]:
             if not fight.get("odds"):
@@ -1289,19 +1300,24 @@ def step_build_events(html, now):
             f2n = fight["f2"]["name"]
             new_f1 = fight["odds"]["f1"]
             new_f2 = fight["odds"]["f2"]
+            js_key = f"{ev['date']}|{f1n}|{f2n}"
             key = frozenset([last_name(f1n), last_name(f2n)])
             old = existing_odds.get(key)
-            if not old:
-                continue
-            if last_name(f1n) == last_name(old["f1_name"]):
-                old_f1, old_f2 = old["f1_odds"], old["f2_odds"]
-            else:
-                old_f1, old_f2 = old["f2_odds"], old["f1_odds"]
-            if old_f1 != new_f1 or old_f2 != new_f2:
-                js_key = f"{ev['date']}|{f1n}|{f2n}"
-                prev_odds[js_key] = {"f1": old_f1, "f2": old_f2}
-                print(f"  Odds changed: {f1n} vs {f2n} {old_f1}/{old_f2} → {new_f1}/{new_f2}",
-                      file=sys.stderr)
+            if old:
+                if last_name(f1n) == last_name(old["f1_name"]):
+                    old_f1, old_f2 = old["f1_odds"], old["f2_odds"]
+                else:
+                    old_f1, old_f2 = old["f2_odds"], old["f1_odds"]
+                if old_f1 != new_f1 or old_f2 != new_f2:
+                    # New change: record old odds as the arrow baseline
+                    prev_odds[js_key] = {"f1": old_f1, "f2": old_f2}
+                    print(f"  Odds changed: {f1n} vs {f2n} {old_f1}/{old_f2} → {new_f1}/{new_f2}",
+                          file=sys.stderr)
+                    continue
+            # No change this scrape (or no previous entry): carry forward existing baseline
+            if js_key in existing_prev_odds:
+                prev_odds[js_key] = existing_prev_odds[js_key]
+
     html = patch_js_var(html, "PREV_ODDS",
                         json.dumps(prev_odds, separators=(",", ":"), ensure_ascii=False))
 
