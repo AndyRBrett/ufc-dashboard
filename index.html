@@ -1058,7 +1058,7 @@ function _sbHeaders(){return{apikey:SUPABASE_ANON,Authorization:_authBearer(),"C
 function _sbQ(ev,fight){return"?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(ev.date)+"&f1=eq."+encodeURIComponent(fight.f1.n)+"&f2=eq."+encodeURIComponent(fight.f2.n);}
 function findByKey(key){var p=key.split("|");if(p.length<3)return null;for(var i=0;i<EVENTS.length;i++){if(EVENTS[i].date===p[0]){for(var j=0;j<EVENTS[i].fights.length;j++){var f=EVENTS[i].fights[j];if(f.f1.n===p[1]&&f.f2.n===p[2])return{ev:EVENTS[i],fight:f};}}}return null;}
 
-function syncPick(ev,fight){
+function syncPick(ev,fight,notifyFriends){
   if(!userName)return;
   var key=pk(ev,fight);var myPick=preds[key];
   if(!myPick){deleteSbPick(ev,fight);return;}
@@ -1070,12 +1070,14 @@ function syncPick(ev,fight){
         if(!r.ok)r.text().then(function(t){console.error("syncPick failed",r.status,t);});
         else{
           _rtBroadcast();
-          var notifKey="ufc_notif_pick_"+ev.date;
-          if(!localStorage.getItem(notifKey)){
-            localStorage.setItem(notifKey,"1");
-            var evShort=ev.name.replace("UFC Fight Night: ","").split(":")[0];
-            var displayName=userName.replace(/^.\s*/,"");
-            _triggerPush(ev.date,"pick-"+USER_ID,"🎯 "+displayName+" is in!",displayName+" just locked in their picks for "+evShort,USER_ID);
+          if(notifyFriends&&daysOut(ev.date)>=0){
+            var notifKey="ufc_notif_pick_"+ev.date;
+            if(!localStorage.getItem(notifKey)){
+              localStorage.setItem(notifKey,"1");
+              var evShort=ev.name.replace("UFC Fight Night: ","").split(":")[0];
+              var displayName=userName.replace(/^.\s*/,"");
+              _triggerPush(ev.date,"pick-"+USER_ID,"🎯 "+displayName+" is in!",displayName+" just locked in their picks for "+evShort,USER_ID);
+            }
           }
         }
       })
@@ -1390,7 +1392,7 @@ function pick(idx,side){
     var old=preds[key]||null;
     preds[key]=f.n;
     _cpDelta(item.ev,item.fight,old,f.n);
-    save();render();updatePicksWidget();toast("Picked: "+f.n.split(" ").pop());syncPick(item.ev,item.fight);
+    save();render();updatePicksWidget();toast("Picked: "+f.n.split(" ").pop());syncPick(item.ev,item.fight,true);
   });
 }
 
