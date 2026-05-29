@@ -657,7 +657,7 @@ var USER_ID=(function(){var id=localStorage.getItem("ufc_uid");if(!id){id=typeof
 function _authBearer(){return"Bearer "+SUPABASE_ANON;}
 var _authReady=Promise.resolve(USER_ID);
 try{localStorage.removeItem("ufc_sb_session");}catch(e){}
-var VAPID_PUBLIC_KEY="BFcYiIWCtwaWZv-NRoF4grvdqxPltRt8CDYp0YVDJF5S34hymCle20mLEsCGyrCO3WSNPUWpznMKfOoA78YfZJw";
+var VAPID_PUBLIC_KEY="BDsk51TS3jHISYUwDIyiAayIq5-W1U8RqZsBdAbIZ45aKurpDIwIsCjImxF8g5zUQnIhn2kIIWTYf6BbNA_swGU";
 var userEmoji="🥊";
 try{userEmoji=localStorage.getItem("ufc_emoji")||"🥊";}catch(e){}
 var WC_LBS={"Strawweight":115,"Flyweight":125,"Bantamweight":135,"Featherweight":145,"Lightweight":155,"Welterweight":170,"Middleweight":185,"Light Heavyweight":205,"Heavyweight":265,"Women's Strawweight":115,"Women's Flyweight":125,"Women's Bantamweight":135,"Women's Featherweight":145,"Women's Atomweight":105};
