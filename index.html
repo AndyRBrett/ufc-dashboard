@@ -1071,14 +1071,10 @@ function syncPick(ev,fight,notifyFriends){
         else{
           _rtBroadcast();
           if(notifyFriends&&daysOut(ev.date)>=0){
-            var notifKey="ufc_notif_pick_"+ev.date;
-            if(!localStorage.getItem(notifKey)){
-              localStorage.setItem(notifKey,"1");
               var evShort=ev.name.replace("UFC Fight Night: ","").split(":")[0];
               var displayName=userName.replace(/^.\s*/,"");
               _triggerPush(ev.date,"pick-"+USER_ID,"🎯 "+displayName+" is in!",displayName+" just locked in their picks for "+evShort,USER_ID);
             }
-          }
         }
       })
       .catch(function(err){console.error("syncPick error",err);});
