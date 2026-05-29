@@ -1071,12 +1071,17 @@ function syncPick(ev,fight,notifyFriends){
         else{
           _rtBroadcast();
           if(notifyFriends&&daysOut(ev.date)>=0){
+              var evShort=ev.name.replace("UFC Fight Night: ","").split(":")[0];
+              var displayName=userName.replace(/^.\s*/,"");
               var mainFights=ev.fights.filter(function(f){return f.lbl==="Main Card"||f.lbl==="Main Event"||f.lbl==="Co-Main";});
-              var allPicked=mainFights.length>0&&mainFights.every(function(f){return !!preds[pk(ev,f)];});
-              if(allPicked){
-                var evShort=ev.name.replace("UFC Fight Night: ","").split(":")[0];
-                var displayName=userName.replace(/^.\s*/,"");
-                _triggerPush(ev.date,"pick-"+USER_ID,"🥊 "+displayName+" is locked in!",displayName+" completed all main card picks for "+evShort,USER_ID);
+              var pickedMainCount=mainFights.filter(function(f){return !!preds[pk(ev,f)];}).length;
+              // First pick on the card
+              if(pickedMainCount===1){
+                _triggerPush(ev.date,"pick-first-"+USER_ID,"🎯 "+displayName+" is picking!",displayName+" just made their first pick for "+evShort,USER_ID);
+              }
+              // All main card picks complete
+              if(pickedMainCount===mainFights.length&&mainFights.length>0){
+                _triggerPush(ev.date,"pick-done-"+USER_ID,"🥊 "+displayName+" is locked in!",displayName+" completed all main card picks for "+evShort,USER_ID);
               }
             }
         }
