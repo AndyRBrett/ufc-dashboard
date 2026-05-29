@@ -1058,7 +1058,7 @@ function syncPick(ev,fight){
   if(!userName)return;
   var key=pk(ev,fight);var myPick=preds[key];
   if(!myPick){deleteSbPick(ev,fight);return;}
-  var data={user_id:USER_ID,nickname:userName,event_date:ev.date,event_name:ev.name,f1:fight.f1.n,f2:fight.f2.n,pick:myPick,method:preds_method[key]||"",confidence:preds_conf[key]||0,updated_at:new Date().toISOString()};
+  var data={user_id:USER_ID,nickname:userName,event_date:ev.date,event_name:ev.name,f1:fight.f1.n,f2:fight.f2.n,pick:myPick,method:preds_method[key]||"",confidence:preds_conf[key]||0,updated_at:new Date().toISOString(),bonus_pick:preds_fotn["fotn_"+ev.date]||null};
   _authReady.then(function(){
     var hdrs=Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return=minimal"});
     fetch(SUPABASE_URL+"/rest/v1/picks",{method:"POST",headers:hdrs,body:JSON.stringify(data)})
@@ -1916,7 +1916,7 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
   var dOpt=document.createElement("option");dOpt.value="";dOpt.textContent="Performance/Fight Night...";fotSel.appendChild(dOpt);
   var evFs=[];ev.fights.forEach(function(f){evFs.push(f.f1.n,f.f2.n);});
   evFs.forEach(function(fn){var o=document.createElement("option");o.value=fn;o.textContent=fn.split(" ").pop();if(fn===fotPick)o.selected=true;fotSel.appendChild(o);});
-  (function(fk){fotSel.onchange=function(){preds_fotn[fk]=fotSel.value;saveFOTN();if(fotSel.value)toast("Bonus: "+fotSel.value.split(" ").pop());};})(fotKey);
+  (function(fk,fevt){fotSel.onchange=function(){preds_fotn[fk]=fotSel.value;saveFOTN();if(userName)fevt.fights.forEach(function(fight){if(preds[pk(fevt,fight)])syncPick(fevt,fight);});if(fotSel.value)toast("Bonus: "+fotSel.value.split(" ").pop());};})(fotKey,ev);
   fotRow.appendChild(fotSel);
   fw.appendChild(fotRow);
   if(_collapsed[ei]){fw.style.display="none";band.classList.add("ev-collapsed");}
@@ -2264,7 +2264,7 @@ function scoreMethod(userMethod, fightMethod){
 function loadLeaderboard(isLive){
   var body=document.getElementById("lbBody");
   if(!isLive)body.innerHTML='<div class="lb-loading">Loading picks...</div>';
-  fetch(SUPABASE_URL+"/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at&order=updated_at.desc",{
+  fetch(SUPABASE_URL+"/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc",{
     headers:{apikey:SUPABASE_ANON,Authorization:_authBearer()}
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
     if(!Array.isArray(rows)||rows.length===0){
@@ -2274,7 +2274,7 @@ function loadLeaderboard(isLive){
     var users={};
     rows.forEach(function(p){
       var uid=p.user_id||p.nickname||"unknown";
-      if(!users[uid])users[uid]={nickname:p.nickname,correct:0,total:0,methods:0,isMe:uid===USER_ID,picks:[]};
+      if(!users[uid])users[uid]={nickname:p.nickname,correct:0,total:0,methods:0,fotn:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
       var fight=null;
       for(var i=0;i<EVENTS.length;i++){
         if(EVENTS[i].date===p.event_date){
@@ -2292,6 +2292,7 @@ function loadLeaderboard(isLive){
         else{result=false;}
       }
       users[uid].picks.push({f1:p.f1,f2:p.f2,pick:p.pick,method:p.method,result:result,evName:p.event_name,evDate:p.event_date});
+      if(p.bonus_pick)users[uid].bonusPicks[p.event_date]=p.bonus_pick;
     });
     // De-duplicate by name (keep higher pick count)
     var seenNames={};
@@ -2320,12 +2321,21 @@ function loadLeaderboard(isLive){
       u.currentStreak=streak;
       u.accuracy=resolved.length>0?Math.round(u.correct/resolved.length*100):null;
     });
+    // Score bonus picks (FOTN/POTN)
+    Object.values(users).forEach(function(u){
+      u.fotn=0;
+      Object.keys(u.bonusPicks).forEach(function(evDate){
+        var ev=null;
+        for(var i=0;i<EVENTS.length;i++){if(EVENTS[i].date===evDate){ev=EVENTS[i];break;}}
+        if(ev&&ev.fotn&&u.bonusPicks[evDate]===ev.fotn)u.fotn++;
+      });
+    });
     // Find next upcoming event for pick chips
     var nowMs=Date.now();
     var nextEv=EVENTS.filter(function(e){return new Date(e.date)>=nowMs-864e5&&e.fights.some(function(f){return f.state==="pre";});}).sort(function(a,b){return new Date(a.date)-new Date(b.date);})[0]||null;
     var nextMainFights=nextEv?nextEv.fights.filter(function(f){return f.lbl==="Main Event"||f.lbl==="Co-Main"||f.lbl==="Main Card";}).slice(0,5):[];
     var sorted=Object.values(users).sort(function(a,b){
-      var pa=a.correct+a.methods*0.5,pb=b.correct+b.methods*0.5;
+      var pa=a.correct+a.methods*0.5+a.fotn,pb=b.correct+b.methods*0.5+b.fotn;
       return pa!==pb?pb-pa:b.total-a.total;
     });
     var anyResolved=sorted.some(function(u){return u.correct>0||u.picks.some(function(p){return p.result===false;});});
@@ -2344,7 +2354,7 @@ function loadLeaderboard(isLive){
       body.appendChild(evHdr);
     }
     sorted.forEach(function(u,i){
-      var pts=u.correct+u.methods*0.5;
+      var pts=u.correct+u.methods*0.5+u.fotn;
       var pending=u.picks.filter(function(p){return p.result===null;}).length;
       var hasNextPicks=nextMainFights.length>0;
       var wrap=document.createElement("div");wrap.style.cssText="margin-bottom:8px";
@@ -2367,7 +2377,7 @@ function loadLeaderboard(isLive){
       ptsDiv.textContent=anyResolved?(pts%1===0?pts+"pts":pts.toFixed(1)+"pts"):u.total+(u.total===1?" pick":" picks");
       right.appendChild(ptsDiv);
       var det=document.createElement("div");det.className="lb-detail";
-      det.textContent=anyResolved?(u.correct+"/"+u.total+" correct"+(u.methods?" · +"+u.methods+" method":"")):pending+" pending";
+      det.textContent=anyResolved?(u.correct+"/"+u.total+" correct"+(u.methods?" · +"+u.methods+" method":"")+(u.fotn?" · +"+u.fotn+" bonus":"")):pending+" pending";
       right.appendChild(det);
       row.appendChild(right);
       var arr=document.createElement("span");arr.style.cssText="font-size:10px;color:var(--muted);flex-shrink:0;display:inline-block;transition:transform .2s";arr.textContent="▼";row.appendChild(arr);
