@@ -1565,15 +1565,30 @@ function fireNotif(title,body){
   if(Notification.permission!=="granted")return;
   try{new Notification(title,{body:body,icon:"https://andyrbrett.github.io/ufc-dashboard/icon.png"});}catch(e){}
 }
+function etOffset(){
+  // Eastern Time: UTC-4 (EDT, Mar-Nov) or UTC-5 (EST, Nov-Mar)
+  var d=new Date(),y=d.getFullYear();
+  var s=new Date(y,2,8);s.setDate(8+(7-s.getDay())%7); // 2nd Sunday March
+  var e=new Date(y,10,1);e.setDate(1+(7-e.getDay())%7); // 1st Sunday November
+  return(d>=s&&d<e)?4:5;
+}
+function _triggerPush(evDate,type,title,body){
+  fetch(SUPABASE_URL+"/functions/v1/send-push",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
+    body:JSON.stringify({event_date:evDate,type:type,title:title,body:body})
+  }).catch(function(){});
+}
 function checkNotifSchedule(){
   if(!notifActive||Notification.permission!=="granted")return;
   var now=Date.now();
+  var eto=etOffset();
   EVENTS.forEach(function(ev){
     var dp=ev.date.split("-");
-    function evTime(t){var p=(t||"0:0").split(":");return Date.UTC(+dp[0],+dp[1]-1,+dp[2],+p[0]+4,+(p[1]||0),0);}
+    function evTime(t){var p=(t||"0:0").split(":");return Date.UTC(+dp[0],+dp[1]-1,+dp[2],+p[0]+eto,+(p[1]||0),0);}
     var mainT=evTime(ev.time);var diff=mainT-now;
-    if(diff>0&&diff<=36e5&&!ev._notifMain){ev._notifMain=true;setTimeout(function(){fireNotif("UFC Main Card Starting",ev.name+" main card begins in 30 min!");},Math.max(0,diff-30*6e4));}
-    if(ev.prelimTime){var preT=evTime(ev.prelimTime);var pd=preT-now;if(pd>0&&pd<=36e5&&!ev._notifPre){ev._notifPre=true;setTimeout(function(){fireNotif("UFC Prelims Starting",ev.name+" prelims begin in 30 min!");},Math.max(0,pd-30*6e4));}}
+    if(diff>0&&diff<=36e5&&!ev._notifMain){ev._notifMain=true;setTimeout(function(){fireNotif("UFC Main Card Starting",ev.name+" main card begins in 30 min!");},Math.max(0,diff-30*6e4));_triggerPush(ev.date,"main","🥊 "+ev.name.split(":")[0]+" — Main Card","Starting in under 1 hour. Lock in your picks!");}
+    if(ev.prelimTime){var preT=evTime(ev.prelimTime);var pd=preT-now;if(pd>0&&pd<=36e5&&!ev._notifPre){ev._notifPre=true;setTimeout(function(){fireNotif("UFC Prelims Starting",ev.name+" prelims begin in 30 min!");},Math.max(0,pd-30*6e4));_triggerPush(ev.date,"prelim","🥊 "+ev.name.split(":")[0]+" — Prelims","Starting in under 1 hour.");}}
   });
 }
 setInterval(checkNotifSchedule,5*60*1000);
