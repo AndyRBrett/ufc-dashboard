@@ -2415,7 +2415,7 @@ function loadLeaderboard(isLive){
       row.appendChild(streakDiv);
       var right=document.createElement("div");right.className="lb-right";
       var ptsDiv=document.createElement("div");ptsDiv.className="lb-pts";
-      ptsDiv.textContent=anyResolved?(pts%1===0?pts+"pts":pts.toFixed(1)+"pts"):u.total+(u.total===1?" pick":" picks");
+      ptsDiv.textContent=anyResolved?(pts%1===0?pts+" pts":pts.toFixed(1)+" pts"):u.total+(u.total===1?" pick":" picks");
       right.appendChild(ptsDiv);
       var det=document.createElement("div");det.className="lb-detail";
       det.textContent=anyResolved?(u.correct+"/"+u.total+" correct"+(u.methods?" · +"+u.methods+" method":"")+(u.fotn?" · +"+u.fotn+" bonus":"")):pending+" pending";
