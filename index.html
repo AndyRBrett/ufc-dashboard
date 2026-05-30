@@ -2432,15 +2432,18 @@ function loadLeaderboard(isLive){
       if(hasNextPicks){
         nextPicksDiv=document.createElement("div");nextPicksDiv.className="lb-next-picks";
         var nextMap={};
-        u.picks.forEach(function(p){if(p.evDate===nextEv.date)nextMap[p.f1+"|"+p.f2]={pick:p.pick,method:p.method};});
+        u.picks.forEach(function(p){if(p.evDate===nextEv.date){var k=p.f1+"|"+p.f2;if(!nextMap[k])nextMap[k]={pick:p.pick,method:p.method};}});
         var isMainCard={};["Main Event","Co-Main","Main Card"].forEach(function(l){isMainCard[l]=true;});
         nextMainFights.forEach(function(f){
+          var fkey=pk(nextEv,f);
           var entry=nextMap[f.f1.n+"|"+f.f2.n];
-          var picked=entry?entry.pick:null;
+          // For current user prefer localStorage so display matches main page
+          var picked=u.isMe?(preds[fkey]||null):(entry?entry.pick:null);
+          var chipMethod=u.isMe?(preds_method[fkey]||""):(entry?entry.method:"");
           if(!picked&&!isMainCard[f.lbl])return;
           var chip=document.createElement("span");chip.className="lb-pick-chip";
           var nameSpan=document.createElement("span");nameSpan.textContent=picked?picked.split(" ").pop():"?";chip.appendChild(nameSpan);
-          if(picked&&entry.method){var ms=document.createElement("span");ms.className="lb-pick-method";var mAbbr=entry.method==="KO/TKO"?"KO":entry.method;ms.textContent=mAbbr;chip.appendChild(ms);}
+          if(picked&&chipMethod){var ms=document.createElement("span");ms.className="lb-pick-method";var mAbbr=chipMethod==="KO/TKO"?"KO":chipMethod;ms.textContent=mAbbr;chip.appendChild(ms);}
           if(!picked){chip.classList.add("lbc-none");}
           else if(f.winner){chip.classList.add(picked===f.winner?"lbc-win":"lbc-loss");}
           else if(u.isMe){chip.classList.add("lbc-me");}
