@@ -2487,8 +2487,9 @@ function loadLeaderboard(isLive){
           var oppDiv=document.createElement("div");oppDiv.style.cssText="font-size:11px;color:var(--muted);width:70px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
           oppDiv.textContent="vs "+opp.split(" ").pop();pr.appendChild(oppDiv);
           var pickDiv=document.createElement("div");pickDiv.style.cssText="font-size:13px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
+          pickDiv.style.color=p.result===true?"var(--green)":p.result===false?"var(--red)":"var(--text)";
           pickDiv.textContent=p.pick.split(" ").pop();pr.appendChild(pickDiv);
-          if(p.method){var mspan=document.createElement("span");mspan.style.cssText="font-size:10px;color:var(--muted);flex-shrink:0";mspan.textContent="via "+p.method;pr.appendChild(mspan);}
+          if(p.method){var mspan=document.createElement("span");mspan.style.cssText="font-size:10px;flex-shrink:0";mspan.style.color=p.result===true?(p.methodCorrect?"var(--green)":"var(--red)"):p.result===false?"var(--red)":"var(--muted)";mspan.textContent="via "+p.method;pr.appendChild(mspan);}
           var bdg=document.createElement("div");bdg.style.cssText="font-size:11px;font-weight:600;flex-shrink:0;min-width:36px;text-align:right";
           if(p.result===null){bdg.textContent="⏳";bdg.style.color="var(--muted)";}
           else if(p.result===true){var pickPts=1+(p.methodCorrect?0.5:0);bdg.textContent="+"+pickPts+" pt"+(pickPts!==1?"s":"");bdg.style.color="var(--green)";}
