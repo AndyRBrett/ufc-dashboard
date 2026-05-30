@@ -93,6 +93,13 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-trash-text{font-size:15px;line-height:1.6;color:var(--text);min-height:60px}
 .lb-trash-close{position:absolute;top:14px;right:14px;background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;padding:0 4px;line-height:1}
 .lb-trash-sent{font-size:11px;color:var(--green);margin-top:12px;font-weight:600}
+.lb-trash-targets{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+.lb-trash-target-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px}
+.lb-trash-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.lb-trash-chip{font-size:12px;font-weight:600;padding:5px 11px;border-radius:20px;background:var(--card);border:1px solid var(--border2);color:var(--muted2);cursor:pointer;transition:all .15s;user-select:none;-webkit-user-select:none}
+.lb-trash-chip.selected{background:var(--red-dim);border-color:rgba(232,25,44,.4);color:var(--red)}
+.lb-trash-send{width:100%;padding:11px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:opacity .15s}
+.lb-trash-send:disabled{opacity:.4;cursor:not-allowed}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 .logo{display:flex;align-items:center;gap:9px}
 .logo-hex{width:30px;height:30px;background:var(--red);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:11px;color:#fff;box-shadow:0 0 14px rgba(232,25,44,.35)}
@@ -1043,6 +1050,7 @@ var fnFights=[],fnIdx=0,fnEv=null,fnPickedAny=false;
 var notifActive=false;
 var _openMore={};var _collapsed={};
 var _lbSorted=[];
+var _trashText="",_trashPersona="",_trashMe=null,_selectedTargets=new Set();
 var _trashPersonas=["Conor McGregor","Mike Tyson","Muhammad Ali","Dana White","Floyd Mayweather","Khabib Nurmagomedov","Charles Barkley","Draymond Green","Chael Sonnen","Jon Jones","Nate Diaz","Jorge Masvidal","Israel Adesanya","Colby Covington","Sean O'Malley","Tyson Fury","Canelo Alvarez","Manny Pacquiao","Deontay Wilder","Oscar De La Hoya","Don King","Stephen A. Smith","Skip Bayless","Shannon Sharpe","Richard Sherman","Kevin Garnett","Gary Payton","Reggie Miller","Shaquille O'Neal","LeBron James","Kevin Hart","Joe Rogan","Andrew Schulz","Bill Burr","Gordon Ramsay","Simon Cowell","Samuel L. Jackson","Eminem","Kanye West","Ice Cube","The Rock","Ric Flair","Stone Cold Steve Austin","John Cena","Marshawn Lynch","Theo Von","Gary Vaynerchuk","Howard Cosell","Don Rickles","Larry David"];
 var _scrollY=0;
 function lockScroll(){_scrollY=window.scrollY;document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.width='100%';document.body.style.top='-'+_scrollY+'px';}
@@ -2322,7 +2330,45 @@ function render(){
 function openLeaderboard(){document.getElementById("lbPanel").classList.add("open");loadLeaderboard();if(typeof liveRefresh==="function")liveRefresh();}
 function closeLeaderboard(){document.getElementById("lbPanel").classList.remove("open");document.getElementById("lbInfoModal").classList.remove("open");closeTrashSheet();}
 document.addEventListener("click",function(e){var m=document.getElementById("lbInfoModal");if(m&&m.classList.contains("open")&&!m.contains(e.target)&&!e.target.classList.contains("lb-info-btn"))m.classList.remove("open");});
-function closeTrashSheet(){document.getElementById("trashSheet").classList.remove("open");}
+function closeTrashSheet(){
+  document.getElementById("trashSheet").classList.remove("open");
+  document.getElementById("trashTargets").style.display="none";
+  document.getElementById("trashSent").style.display="none";
+  _trashText="";_trashPersona="";_trashMe=null;_selectedTargets=new Set();
+}
+function toggleTrashTarget(chip){
+  var uid=chip.dataset.uid;
+  if(uid==="__all__"){
+    _selectedTargets.clear();_selectedTargets.add("__all__");
+    document.querySelectorAll(".lb-trash-chip").forEach(function(c){c.classList.add("selected");});
+  }else{
+    _selectedTargets.delete("__all__");
+    document.querySelector(".lb-trash-chip[data-uid='__all__']").classList.remove("selected");
+    if(_selectedTargets.has(uid)){_selectedTargets.delete(uid);chip.classList.remove("selected");}
+    else{_selectedTargets.add(uid);chip.classList.add("selected");}
+    var all=document.querySelectorAll(".lb-trash-chip:not([data-uid='__all__'])");
+    if(all.length&&Array.from(all).every(function(c){return c.classList.contains("selected");})){
+      _selectedTargets.add("__all__");document.querySelector(".lb-trash-chip[data-uid='__all__']").classList.add("selected");
+    }
+  }
+  document.getElementById("trashSendBtn").disabled=_selectedTargets.size===0;
+}
+function fireTrashTalk(){
+  if(!_trashText||_selectedTargets.size===0)return;
+  var btn=document.getElementById("trashSendBtn");btn.disabled=true;
+  var includeIds=_selectedTargets.has("__all__")?null:Array.from(_selectedTargets);
+  var pushBody=_trashPersona+": "+_trashText+"\n---\n"+_trashText;
+  var req={event_date:new Date().toISOString().slice(0,10),type:"trash-talk-"+Date.now(),
+    title:"🔥 "+(_trashMe?_trashMe.nickname:"Someone")+" is talking trash!",body:pushBody,exclude_user_id:USER_ID};
+  if(includeIds)req.include_user_ids=includeIds;
+  fetch(SUPABASE_URL+"/functions/v1/send-push",{
+    method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
+    body:JSON.stringify(req)
+  }).then(function(){
+    document.getElementById("trashTargets").style.display="none";
+    document.getElementById("trashSent").style.display="block";
+  }).catch(function(){btn.disabled=false;});
+}
 function showIncomingTrashTalk(text){
   var m=text.match(/—\s*(.+)$/);
   var persona=m?m[1].trim():"A Famous Friend";
@@ -2339,18 +2385,20 @@ function openTrashTalk(){
   _lbSorted.forEach(function(u,i){
     var pts=u.correct+u.methods*0.5+u.fotn;
     if(u.isMe){me=u;myRank=i+1;}
-    else{opponents.push({nickname:u.nickname,rank:i+1,points:pts,accuracy:u.accuracy,streak:u.currentStreak});}
+    else{opponents.push({nickname:u.nickname,user_id:u.user_id,rank:i+1,points:pts,accuracy:u.accuracy,streak:u.currentStreak});}
   });
   if(!me){toast("Make some picks to trash talk!");return;}
+  _trashMe=me;
   var persona=_trashPersonas[Math.floor(Math.random()*_trashPersonas.length)];
+  _trashPersona=persona;
   var myPts=me.correct+me.methods*0.5+me.fotn;
   var sheet=document.getElementById("trashSheet");
   var personaEl=document.getElementById("trashPersona");
   var textEl=document.getElementById("trashText");
-  var sentEl=document.getElementById("trashSent");
+  document.getElementById("trashTargets").style.display="none";
+  document.getElementById("trashSent").style.display="none";
   personaEl.textContent="🎤 "+persona+" says...";
   textEl.textContent="Generating trash talk...";
-  sentEl.style.display="none";
   sheet.classList.add("open");
   var myName=me.nickname||"The Champ";
   var cardLines=opponents.map(function(o){return "#"+o.rank+" "+o.nickname+" — "+o.points+" pts, "+(o.accuracy!=null?o.accuracy+"% acc":"?% acc")+", "+o.streak+"-streak";}).join("\n")||"(no competition yet)";
@@ -2360,11 +2408,20 @@ function openTrashTalk(){
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
     body:JSON.stringify({action:"chat",event:"UFC Picks Leaderboard",card:cardLines,userPicks:myName+" — Rank #"+myRank+" | "+myPts+" pts | "+(me.accuracy!=null?me.accuracy+"% accuracy":"")+" | "+me.currentStreak+"-win streak | "+me.correct+"/"+me.total+" correct",question:question})
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(data){
-    var text=data.breakdown||"No trash talk generated.";
-    textEl.textContent=text;
+    _trashText=data.breakdown||"No trash talk generated.";
+    textEl.textContent=_trashText;
     if(opponents.length){
-      _triggerPush(new Date().toISOString().slice(0,10),"trash-talk-"+Date.now(),"🔥 "+(me.nickname||"Someone")+" is talking trash!",persona+": "+text+"\n---\n"+text,USER_ID);
-      sentEl.style.display="block";
+      // Build targeting chips
+      var chipsDiv=document.getElementById("trashChips");
+      chipsDiv.innerHTML="";
+      _selectedTargets=new Set(["__all__"]);
+      var allChip=document.createElement("span");allChip.className="lb-trash-chip selected";allChip.dataset.uid="__all__";allChip.textContent="Everyone";allChip.onclick=function(){toggleTrashTarget(allChip);};chipsDiv.appendChild(allChip);
+      opponents.forEach(function(o){
+        if(!o.user_id)return;
+        var c=document.createElement("span");c.className="lb-trash-chip selected";c.dataset.uid=o.user_id;c.textContent=o.nickname;c.onclick=function(){toggleTrashTarget(c);};chipsDiv.appendChild(c);
+      });
+      document.getElementById("trashSendBtn").disabled=false;
+      document.getElementById("trashTargets").style.display="block";
     }
   }).catch(function(){
     textEl.textContent="Couldn't generate trash talk right now. Try again!";
@@ -2392,7 +2449,7 @@ function loadLeaderboard(isLive){
     var users={};
     rows.forEach(function(p){
       var uid=p.user_id||p.nickname||"unknown";
-      if(!users[uid])users[uid]={nickname:p.nickname,correct:0,total:0,methods:0,fotn:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
+      if(!users[uid])users[uid]={nickname:p.nickname,user_id:p.user_id||null,correct:0,total:0,methods:0,fotn:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
       var fight=null;
       for(var i=0;i<EVENTS.length;i++){
         if(EVENTS[i].date===p.event_date){
@@ -2826,7 +2883,12 @@ document.addEventListener("DOMContentLoaded",function(){
     <button class="lb-trash-close" onclick="closeTrashSheet()">✕</button>
     <div class="lb-trash-persona" id="trashPersona"></div>
     <div class="lb-trash-text" id="trashText"></div>
-    <div class="lb-trash-sent" id="trashSent" style="display:none">🔔 Fired off to all competitors!</div>
+    <div class="lb-trash-targets" id="trashTargets" style="display:none">
+      <div class="lb-trash-target-lbl">Send to</div>
+      <div class="lb-trash-chips" id="trashChips"></div>
+      <button class="lb-trash-send" id="trashSendBtn" onclick="fireTrashTalk()">Fire it off 🔥</button>
+    </div>
+    <div class="lb-trash-sent" id="trashSent" style="display:none">🔔 Fired off!</div>
   </div>
 </div>
 <div id="install-overlay" onclick="if(event.target===this)closeInstall()">

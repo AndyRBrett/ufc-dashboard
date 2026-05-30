@@ -14,6 +14,7 @@ interface ReqBody {
   title: string;
   body: string;
   exclude_user_id?: string | null;
+  include_user_ids?: string[] | null;
 }
 
 serve(async (req) => {
@@ -78,10 +79,16 @@ serve(async (req) => {
     return new Response(JSON.stringify({ sent: 0, skipped: true }), { status: 200, headers: CORS_HEADERS });
   }
 
-  // Fetch all push subscriptions (excluding sender if specified)
-  const subsUrl = body.exclude_user_id
-    ? `${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth&user_id=neq.${encodeURIComponent(body.exclude_user_id)}`
-    : `${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth`;
+  // Fetch push subscriptions — targeted list takes priority, then exclude-self, then all
+  let subsUrl: string;
+  if (body.include_user_ids && body.include_user_ids.length > 0) {
+    const ids = body.include_user_ids.map(encodeURIComponent).join(",");
+    subsUrl = `${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth&user_id=in.(${ids})`;
+  } else if (body.exclude_user_id) {
+    subsUrl = `${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth&user_id=neq.${encodeURIComponent(body.exclude_user_id)}`;
+  } else {
+    subsUrl = `${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth`;
+  }
   const subsRes = await fetch(subsUrl, { headers: sbHeaders });
   if (!subsRes.ok) {
     return new Response(JSON.stringify({ error: "Failed to fetch subscriptions" }), { status: 502, headers: CORS_HEADERS });
