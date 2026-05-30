@@ -2350,7 +2350,7 @@ function openTrashTalk(){
   sheet.classList.add("open");
   var myName=me.nickname||"The Champ";
   var cardLines=opponents.map(function(o){return "#"+o.rank+" "+o.nickname+" — "+o.points+" pts, "+(o.accuracy!=null?o.accuracy+"% acc":"?% acc")+", "+o.streak+"-streak";}).join("\n")||"(no competition yet)";
-  var question="Write 2-3 sentences of SAVAGE, funny trash talk spoken EXACTLY in the authentic voice and style of "+persona+", roasting the other pickers on behalf of "+myName+". Use each person's full handle including their emoji (e.g. '🔥 John', '💪 Mike') when calling them out — it makes it personal. Be hyper-specific about names and weak numbers. No matter what the standings say, always make "+myName+" sound like the undisputed GOAT — spin every stat positively. End with '— "+persona+"'. No preamble.";
+  var question="Write 2-3 sentences of SAVAGE, funny trash talk spoken EXACTLY in the authentic voice and style of "+persona+", roasting the other pickers on behalf of "+myName+". Mock their chosen emoji icons — if someone picked 🐺 they're not a wolf, if they picked 💎 their picks are coal, if they picked 🔥 they're getting extinguished, etc. Be hyper-specific about names, emojis, and weak numbers. No matter what the standings say, always make "+myName+" sound like the undisputed GOAT — spin every stat positively. End with '— "+persona+"'. No preamble.";
   fetch(AI_BREAKDOWN_URL,{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
