@@ -16,12 +16,12 @@ self.addEventListener('push', function(e) {
   var data = {};
   try { data = e.data ? e.data.json() : {}; } catch(err) {}
 
-  // Body may contain full message after \n---\n separator (trash talk feature).
-  // OS shows only displayBody; full message is stored in notification data.
+  // Full body text shown in notification — iOS collapses to ~2 lines, long-press to expand.
+  // Separator \n---\n is legacy; fullMessage falls back to rawBody so in-app tap always works.
   var rawBody = data.body || '';
   var sep = rawBody.indexOf('\n---\n');
   var displayBody = sep >= 0 ? rawBody.slice(0, sep) : rawBody;
-  var fullMessage = sep >= 0 ? rawBody.slice(sep + 5) : '';
+  var fullMessage = sep >= 0 ? rawBody.slice(sep + 5) : rawBody;
 
   e.waitUntil(
     self.registration.showNotification(data.title || 'UFC Picks', {

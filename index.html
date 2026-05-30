@@ -2359,10 +2359,7 @@ function openTrashTalk(){
     var text=data.breakdown||"No trash talk generated.";
     textEl.textContent=text;
     if(opponents.length){
-      var si=text.search(/[.!?](?:\s|$)/);
-      var shortBody=si>=0?text.slice(0,si+1):text.slice(0,90);
-      if(shortBody.length>100)shortBody=shortBody.slice(0,97)+"...";
-      _triggerPush(new Date().toISOString().slice(0,10),"trash-talk-"+Date.now(),"🔥 "+(me.nickname||"Someone")+" is talking trash!",shortBody+"\n---\n"+text,USER_ID);
+      _triggerPush(new Date().toISOString().slice(0,10),"trash-talk-"+Date.now(),"🔥 "+(me.nickname||"Someone")+" is talking trash!",text,USER_ID);
       sentEl.style.display="block";
     }
   }).catch(function(){
