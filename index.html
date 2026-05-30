@@ -2363,7 +2363,7 @@ function openTrashTalk(){
     var text=data.breakdown||"No trash talk generated.";
     textEl.textContent=text;
     if(opponents.length){
-      _triggerPush(new Date().toISOString().slice(0,10),"trash-talk-"+Date.now(),persona+": 🔥 "+(me.nickname||"Someone")+" is talking trash!",text,USER_ID);
+      _triggerPush(new Date().toISOString().slice(0,10),"trash-talk-"+Date.now(),"🔥 "+(me.nickname||"Someone")+" is talking trash!",persona+": "+text,USER_ID);
       sentEl.style.display="block";
     }
   }).catch(function(){
