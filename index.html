@@ -566,7 +566,7 @@ body.light .fotn-row{background:var(--card2);border-top:1px solid rgba(0,0,0,.08
   </div>
 </div>
 <div class="toast" id="toast"></div>
-<div class="fn-banner" id="fnBanner"><div class="fn-banner-dot"></div><div class="fn-banner-text" id="fnBannerText">FIGHT NIGHT</div><div class="fn-banner-dot"></div></div>
+<div class="fn-banner" id="fnBanner"><div class="fn-banner-dot"></div><div class="fn-banner-text" id="fnBannerText">FIGHT NIGHT</div><div class="fn-banner-dot"></div><div id="fnLastChecked" style="font-size:10px;opacity:.6;margin-left:8px;font-family:Inter,sans-serif;letter-spacing:.04em"></div></div>
 <header class="hdr">
   <div class="logo"><div class="logo-hex">UFC</div><span class="logo-text">FIGHT <span>CARDS</span></span></div>
   <div class="hdr-right">
@@ -2650,13 +2650,15 @@ document.addEventListener("DOMContentLoaded",function(){
   function _pollOne(ev){
     var slug=_deriveSlug(ev.name);
     var url="https://en.wikipedia.org/w/api.php?action=parse&page="+encodeURIComponent(slug)+"&prop=wikitext&format=json&origin=*";
+    console.log("[UFC live poll] fetching",url);
     return fetch(url,{cache:"no-store"})
       .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
       .then(function(d){
         var wt=d&&d.parse&&d.parse.wikitext&&d.parse.wikitext["*"];
-        if(!wt)return false;
+        if(!wt){console.warn("[UFC live poll] no wikitext for",slug);return false;}
         var parsed=_parseMMATemplate(wt);
         if(!parsed.length)parsed=_parseWikitable(wt);
+        console.log("[UFC live poll]",slug,"→",parsed.length,"results parsed");
         var changed=false;
         parsed.forEach(function(res){
           ev.fights.forEach(function(fight){
@@ -2666,28 +2668,37 @@ document.addEventListener("DOMContentLoaded",function(){
             var loseF1=_namesMatch(res.loser,fight.f1.n),loseF2=_namesMatch(res.loser,fight.f2.n);
             if(res.loser&&!loseF1&&!loseF2)return;
             fight.winner=res.winner;fight.method=res.method;fight.round=res.round;fight.state="post";
+            console.log("[UFC live poll] NEW RESULT:",fight.f1.n,"vs",fight.f2.n,"→",res.winner,res.method);
             changed=true;
           });
         });
         return changed;
       })
-      .catch(function(e){console.warn("[UFC live poll]",e);return false;});
+      .catch(function(e){console.warn("[UFC live poll] fetch error:",e);return false;});
+  }
+
+  function _updateCheckedTime(){
+    var el=document.getElementById("fnLastChecked");
+    if(!el)return;
+    var d=new Date();
+    el.textContent="checked "+d.getHours()+":"+(d.getMinutes()<10?"0":"")+d.getMinutes();
   }
 
   function _poll(){
     var active=_activeEvents();
     if(!active.length){clearInterval(_interval);_interval=null;return;}
     Promise.all(active.map(_pollOne)).then(function(results){
+      _updateCheckedTime();
       if(results.some(Boolean))render();
     });
   }
 
   window.startLivePolling=function(){
     if(_interval)return;
-    if(!_activeEvents().length)return;
-    console.log("[UFC] Fight night — live polling Wikipedia every 5 min");
+    if(!_activeEvents().length){console.log("[UFC live poll] no active events found, polling skipped");return;}
+    console.log("[UFC] Fight night — live polling Wikipedia every 2 min");
     _poll();
-    _interval=setInterval(_poll,5*60*1000);
+    _interval=setInterval(_poll,2*60*1000);
   };
 })();
 </script>
