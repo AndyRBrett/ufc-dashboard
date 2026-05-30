@@ -2290,7 +2290,7 @@ function render(){
 }
 
 
-function openLeaderboard(){document.getElementById("lbPanel").classList.add("open");loadLeaderboard();}
+function openLeaderboard(){document.getElementById("lbPanel").classList.add("open");loadLeaderboard();if(typeof liveRefresh==="function")liveRefresh();}
 function closeLeaderboard(){document.getElementById("lbPanel").classList.remove("open");document.getElementById("lbInfoModal").classList.remove("open");}
 document.addEventListener("click",function(e){var m=document.getElementById("lbInfoModal");if(m&&m.classList.contains("open")&&!m.contains(e.target)&&!e.target.classList.contains("lb-info-btn"))m.classList.remove("open");});
 
@@ -2329,8 +2329,12 @@ function loadLeaderboard(isLive){
       var result=null;
       users[uid].total++;
       if(fight&&fight.winner){
-        if(fight.winner===p.pick){users[uid].correct++;result=true;if(scoreMethod(p.method,fight.method||""))users[uid].methods++;}
-        else{result=false;}
+        var pickedMethod=p.method||(uid===USER_ID?preds_method[p.event_date+"|"+p.f1+"|"+p.f2]||"":"");
+        if(fight.winner===p.pick){
+          users[uid].correct++;result=true;
+          console.log("[lb score]",p.f1,"vs",p.f2,"→ winner match. p.method="+JSON.stringify(p.method)+" fallback="+JSON.stringify(pickedMethod)+" fight.method="+JSON.stringify(fight.method));
+          if(scoreMethod(pickedMethod,fight.method||""))users[uid].methods++;
+        }else{result=false;}
       }
       users[uid].picks.push({f1:p.f1,f2:p.f2,pick:p.pick,method:p.method,result:result,evName:p.event_name,evDate:p.event_date});
       if(p.bonus_pick)users[uid].bonusPicks[p.event_date]=p.bonus_pick;
@@ -2711,6 +2715,7 @@ document.addEventListener("DOMContentLoaded",function(){
     _poll();
     _interval=setInterval(_poll,2*60*1000);
   };
+  window.liveRefresh=_poll;
 })();
 </script>
 <div class="lb-panel" id="lbPanel">
