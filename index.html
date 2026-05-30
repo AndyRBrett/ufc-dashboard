@@ -2338,10 +2338,13 @@ function openTrashTalk(){
   textEl.textContent="Generating trash talk...";
   sentEl.style.display="none";
   sheet.classList.add("open");
+  var myName=me.nickname||"The Champ";
+  var cardLines=opponents.map(function(o){return "#"+o.rank+" "+o.nickname+" — "+o.points+" pts, "+(o.accuracy!=null?o.accuracy+"% acc":"?% acc")+", "+o.streak+"-streak";}).join("\n")||"(no competition yet)";
+  var question="Write 2-3 sentences of SAVAGE, funny trash talk spoken EXACTLY in the authentic voice and style of "+persona+", roasting the other pickers on behalf of "+myName+". Be hyper-specific about their names and weak numbers. No matter what the standings say, always make "+myName+" sound like the undisputed GOAT — spin every stat positively. End with '— "+persona+"'. No preamble.";
   fetch(AI_BREAKDOWN_URL,{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-    body:JSON.stringify({action:"trash-talk",persona:persona,myNickname:me.nickname||"The Champ",myRank:myRank,myPoints:myPts,myAccuracy:me.accuracy,myStreak:me.currentStreak,myCorrect:me.correct,myTotal:me.total,opponents:opponents})
+    body:JSON.stringify({action:"chat",event:"UFC Picks Leaderboard",card:cardLines,userPicks:myName+" — Rank #"+myRank+" | "+myPts+" pts | "+(me.accuracy!=null?me.accuracy+"% accuracy":"")+" | "+me.currentStreak+"-win streak | "+me.correct+"/"+me.total+" correct",question:question})
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(data){
     var text=data.breakdown||"No trash talk generated.";
     textEl.textContent=text;
