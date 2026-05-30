@@ -1627,7 +1627,7 @@ function checkFightNight(){
   if(!upcoming.length||!banner)return;
   var next=upcoming[0];
   var today=new Date();today.setHours(0,0,0,0);var du=Math.round((new Date(next.date+"T00:00:00")-today)/864e5);
-  if(du<=0){banner.classList.add("show");document.getElementById("fnBannerText").textContent=next.name.split(":")[0]+" - LIVE UPDATES EVERY 10 MIN";}
+  if(du<=0){banner.classList.add("show");document.getElementById("fnBannerText").textContent=next.name.split(":")[0]+" - LIVE AUTO-UPDATING";}
   else if(du===1){banner.classList.add("show");document.getElementById("fnBannerText").textContent="FIGHT NIGHT TOMORROW - "+next.name.split(":")[0];}
   else{banner.classList.remove("show");}
 }
@@ -2527,8 +2527,169 @@ document.addEventListener("DOMContentLoaded",function(){
     if(panel&&panel.classList.contains("open"))loadLeaderboard(true);
   });
   try{if(localStorage.getItem("ufc_push")==="1")_setBellActive(true);}catch(e){}
+  setTimeout(startLivePolling,4000);
 
 });
+
+// ---------------------------------------------------------------------------
+// Client-side live result polling from Wikipedia (no server required)
+// Runs in the browser on fight nights; bypasses GitHub Actions schedule limits.
+// ---------------------------------------------------------------------------
+(function(){
+  var _interval=null;
+
+  function _cleanWiki(t){
+    if(!t)return"";
+    t=t.replace(/\[\[(?:[^\]|]+\|)?([^\]]+)\]\]/g,"$1");
+    t=t.replace(/\{\{[^}]+\}\}/g,"");
+    t=t.replace(/<[^>]+>/g,"");
+    t=t.replace(/\[\d+\]/g,"");
+    try{t=t.normalize("NFD").replace(/[̀-ͯ]/g,"");}catch(e){}
+    return t.trim().replace(/^,|,$/g,"").trim();
+  }
+
+  function _normMethod(m){
+    if(!m)return"";
+    var ml=m.toLowerCase();
+    if(ml.indexOf("ko")>=0||ml.indexOf("tko")>=0)return"KO/TKO";
+    if(ml.indexOf("submission")>=0||ml.indexOf("sub")>=0)return"Submission";
+    if(ml.indexOf("unanimous")>=0)return"Decision (Unanimous)";
+    if(ml.indexOf("split")>=0)return"Decision (Split)";
+    if(ml.indexOf("majority")>=0)return"Decision (Majority)";
+    if(ml.indexOf("decision")>=0)return"Decision";
+    if(ml.indexOf("dq")>=0)return"DQ";
+    return m.trim();
+  }
+
+  function _lastName(name){
+    var p=_cleanWiki(name).trim().split(/\s+/);
+    return p.length?p[p.length-1].toLowerCase():"";
+  }
+
+  function _namesMatch(a,b){
+    var a2=a.toLowerCase().replace(/[^a-z]/g,"");
+    var b2=b.toLowerCase().replace(/[^a-z]/g,"");
+    return _lastName(a)===_lastName(b)||(a2.length>3&&b2.indexOf(a2)>=0)||(b2.length>3&&a2.indexOf(b2)>=0);
+  }
+
+  function _parseMMATemplate(wt){
+    var results=[];
+    var re=/\{\{MMAevent bout\s*\n([\s\S]*?)\}\}/gi;
+    var m;
+    while((m=re.exec(wt))!==null){
+      var lines=m[1].split("\n").map(function(l){return l.trim().replace(/^\|/,"").trim();}).filter(Boolean);
+      if(lines.length<5)continue;
+      var di=-1;
+      for(var i=0;i<lines.length;i++){var ll=lines[i].toLowerCase().trim();if(ll==="def."||ll==="def"||ll==="d."){di=i;break;}}
+      if(di<1)continue;
+      var winner=_cleanWiki(lines[di-1]).replace(/\s*\(c\)\s*/g,"").trim();
+      var loser=di+1<lines.length?_cleanWiki(lines[di+1]).replace(/\s*\(c\)\s*/g,"").trim():"";
+      var method=di+2<lines.length?lines[di+2]:"";
+      var rndS=di+3<lines.length?lines[di+3]:"";
+      if(!winner||!method)continue;
+      var rnd=parseInt(rndS,10);
+      results.push({winner:winner,loser:loser,method:_normMethod(method),round:isNaN(rnd)?null:rnd});
+    }
+    return results;
+  }
+
+  function _flushRow(row){
+    row=row.map(_cleanWiki).filter(Boolean);
+    if(row.length<3)return null;
+    var skipHdrs=["weight class","winner","method","round","main card","preliminary","early prelim"];
+    var joined=row.join(" ").toLowerCase();
+    if(skipHdrs.some(function(h){return joined.indexOf(h)>=0;}))return null;
+    var winner="",loser="",method="",rnd=null,di=-1;
+    for(var i=0;i<row.length;i++){var cl=row[i].trim().toLowerCase();if(cl==="def."||cl==="def"||cl==="d."){di=i;break;}}
+    var rest;
+    if(di>0){
+      winner=row[di-1].replace(/\s*\(c\)\s*/g,"").trim();
+      loser=di+1<row.length?row[di+1].replace(/\s*\(c\)\s*/g,"").trim():"";
+      rest=row.slice(di+2);
+    } else {
+      if(row.length<4)return null;
+      winner=row[1];loser=row[2];rest=row.slice(3);
+    }
+    if(!winner||winner.length<2)return null;
+    rest.forEach(function(cell){
+      var cl=cell.toLowerCase();
+      if(!method&&(cl.indexOf("ko")>=0||cl.indexOf("tko")>=0||cl.indexOf("decision")>=0||cl.indexOf("submission")>=0||cl.indexOf("sub")>=0||cl.indexOf("dq")>=0))method=cell;
+      else if(!rnd&&/^\d$/.test(cell.trim()))rnd=parseInt(cell.trim(),10);
+    });
+    if(!method&&winner&&loser&&rnd)method="Decision";
+    if(!method)return null;
+    return{winner:winner,loser:loser,method:_normMethod(method),round:rnd||null};
+  }
+
+  function _parseWikitable(wt){
+    var results=[],inTable=false,row=[];
+    wt.split("\n").forEach(function(line){
+      var s=line.trim();
+      if(s.indexOf("{|")>=0&&s.toLowerCase().indexOf("wikitable")>=0){inTable=true;row=[];return;}
+      if(s.indexOf("|}")===0){if(row.length){var r=_flushRow(row);if(r)results.push(r);}inTable=false;row=[];return;}
+      if(!inTable)return;
+      if(s.indexOf("|-")===0){if(row.length){var r2=_flushRow(row);if(r2)results.push(r2);}row=[];return;}
+      if(s.indexOf("!")===0){row=[];return;}
+      if(s.indexOf("|")===0){var content=s.replace(/^\|/,"");if(content.indexOf("||")>=0)content.split("||").forEach(function(p){row.push(p.trim());});else row.push(content);}
+    });
+    return results;
+  }
+
+  function _deriveSlug(evName){
+    return evName.replace(/[^a-zA-Z0-9 :._-]/g,"").replace(/ /g,"_");
+  }
+
+  function _activeEvents(){
+    var now=Date.now();
+    return EVENTS.filter(function(ev){
+      var evMs=new Date(ev.date+"T00:00:00").getTime();
+      return evMs>=now-36*36e5&&evMs<=now+36*36e5&&ev.fights.some(function(f){return!f.winner;});
+    });
+  }
+
+  function _pollOne(ev){
+    var slug=_deriveSlug(ev.name);
+    var url="https://en.wikipedia.org/w/api.php?action=parse&page="+encodeURIComponent(slug)+"&prop=wikitext&format=json&origin=*";
+    return fetch(url,{cache:"no-store"})
+      .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
+      .then(function(d){
+        var wt=d&&d.parse&&d.parse.wikitext&&d.parse.wikitext["*"];
+        if(!wt)return false;
+        var parsed=_parseMMATemplate(wt);
+        if(!parsed.length)parsed=_parseWikitable(wt);
+        var changed=false;
+        parsed.forEach(function(res){
+          ev.fights.forEach(function(fight){
+            if(fight.winner)return;
+            var winF1=_namesMatch(res.winner,fight.f1.n),winF2=_namesMatch(res.winner,fight.f2.n);
+            if(!winF1&&!winF2)return;
+            var loseF1=_namesMatch(res.loser,fight.f1.n),loseF2=_namesMatch(res.loser,fight.f2.n);
+            if(res.loser&&!loseF1&&!loseF2)return;
+            fight.winner=res.winner;fight.method=res.method;fight.round=res.round;fight.state="post";
+            changed=true;
+          });
+        });
+        return changed;
+      })
+      .catch(function(e){console.warn("[UFC live poll]",e);return false;});
+  }
+
+  function _poll(){
+    var active=_activeEvents();
+    if(!active.length){clearInterval(_interval);_interval=null;return;}
+    Promise.all(active.map(_pollOne)).then(function(results){
+      if(results.some(Boolean))render();
+    });
+  }
+
+  window.startLivePolling=function(){
+    if(_interval)return;
+    if(!_activeEvents().length)return;
+    console.log("[UFC] Fight night — live polling Wikipedia every 5 min");
+    _poll();
+    _interval=setInterval(_poll,5*60*1000);
+  };
+})();
 </script>
 <div class="lb-panel" id="lbPanel">
   <div class="lb-hdr">
