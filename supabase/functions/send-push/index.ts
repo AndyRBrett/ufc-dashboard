@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import webpush from "npm:web-push";
+// v2 — supports include_user_ids for targeted push
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
