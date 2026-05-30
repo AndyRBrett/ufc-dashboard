@@ -2696,7 +2696,11 @@ document.addEventListener("DOMContentLoaded",function(){
     if(!active.length){clearInterval(_interval);_interval=null;return;}
     Promise.all(active.map(_pollOne)).then(function(results){
       _updateCheckedTime();
-      if(results.some(Boolean))render();
+      if(results.some(Boolean)){
+        render();
+        var lbPanel=document.getElementById("lbPanel");
+        if(lbPanel&&lbPanel.classList.contains("open"))loadLeaderboard(true);
+      }
     });
   }
 
