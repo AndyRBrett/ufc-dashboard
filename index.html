@@ -2398,7 +2398,7 @@ function loadLeaderboard(isLive){
         if(EVENTS[i].date===p.event_date){
           for(var j=0;j<EVENTS[i].fights.length;j++){
             var f=EVENTS[i].fights[j];
-            if(f.f1.n===p.f1&&f.f2.n===p.f2){fight=f;break;}
+            if((f.f1.n===p.f1&&f.f2.n===p.f2)||(f.f1.n===p.f2&&f.f2.n===p.f1)){fight=f;break;}
           }
           if(fight)break;
         }
