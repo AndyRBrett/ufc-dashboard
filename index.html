@@ -2319,6 +2319,16 @@ function openLeaderboard(){document.getElementById("lbPanel").classList.add("ope
 function closeLeaderboard(){document.getElementById("lbPanel").classList.remove("open");document.getElementById("lbInfoModal").classList.remove("open");closeTrashSheet();}
 document.addEventListener("click",function(e){var m=document.getElementById("lbInfoModal");if(m&&m.classList.contains("open")&&!m.contains(e.target)&&!e.target.classList.contains("lb-info-btn"))m.classList.remove("open");});
 function closeTrashSheet(){document.getElementById("trashSheet").classList.remove("open");}
+function showIncomingTrashTalk(text){
+  var m=text.match(/—\s*(.+)$/);
+  var persona=m?m[1].trim():"A Famous Friend";
+  if(!document.getElementById("lbPanel").classList.contains("open"))openLeaderboard();
+  var sheet=document.getElementById("trashSheet");
+  document.getElementById("trashPersona").textContent="🎤 "+persona+" says...";
+  document.getElementById("trashText").textContent=text;
+  document.getElementById("trashSent").style.display="none";
+  sheet.classList.add("open");
+}
 function openTrashTalk(){
   if(!_lbSorted||!_lbSorted.length){toast("Load the leaderboard first!");return;}
   var me=null,myRank=0,opponents=[];
@@ -2349,8 +2359,10 @@ function openTrashTalk(){
     var text=data.breakdown||"No trash talk generated.";
     textEl.textContent=text;
     if(opponents.length){
-      var notifBody=text.length>120?text.slice(0,117)+"...":text;
-      _triggerPush(new Date().toISOString().slice(0,10),"trash-talk-"+Date.now(),"🔥 "+(me.nickname||"Someone")+" has something to say...",notifBody,USER_ID);
+      var si=text.search(/[.!?](?:\s|$)/);
+      var shortBody=si>=0?text.slice(0,si+1):text.slice(0,90);
+      if(shortBody.length>100)shortBody=shortBody.slice(0,97)+"...";
+      _triggerPush(new Date().toISOString().slice(0,10),"trash-talk-"+Date.now(),"🔥 "+(me.nickname||"Someone")+" is talking trash!",shortBody+"\n---\n"+text,USER_ID);
       sentEl.style.display="block";
     }
   }).catch(function(){
@@ -2868,7 +2880,17 @@ if('serviceWorker'in navigator){
   }).catch(function(){});
   // Also catch SW controller change (activated from waiting)
   navigator.serviceWorker.addEventListener('controllerchange',function(){window.location.reload();});
+  // Receive full trash talk message from service worker on notification tap
+  navigator.serviceWorker.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='trash-talk'&&e.data.fullMessage)showIncomingTrashTalk(e.data.fullMessage);
+  });
 }
+// If opened via notification tap when app was closed, check URL param for full message
+(function(){
+  var params=new URLSearchParams(window.location.search);
+  var msg=params.get('trash');
+  if(msg){history.replaceState(null,'',window.location.pathname);setTimeout(function(){showIncomingTrashTalk(decodeURIComponent(msg));},800);}
+})();
 </script>
 </body>
 </html>
