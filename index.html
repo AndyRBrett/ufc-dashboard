@@ -79,7 +79,8 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-acc{font-size:11px;font-weight:600;color:var(--muted2);flex-shrink:0}
 .lb-next-picks{padding:8px 14px 10px;display:flex;flex-wrap:wrap;gap:5px;border-top:1px solid var(--border)}
 .lb-next-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;width:100%;margin-bottom:3px}
-.lb-pick-chip{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--card2);border:1px solid var(--border2);color:var(--muted2);white-space:nowrap}
+.lb-pick-chip{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--card2);border:1px solid var(--border2);color:var(--muted2);white-space:nowrap;display:inline-flex;flex-direction:column;align-items:center;line-height:1.3}
+.lb-pick-method{font-size:9px;font-weight:500;opacity:.75;margin-top:0;line-height:1}
 .lb-pick-chip.lbc-none{color:var(--muted);background:none;border-style:dashed;opacity:.55}
 .lb-pick-chip.lbc-me{border-color:rgba(232,25,44,.4);color:var(--red);background:var(--red-dim)}
 .lb-pick-chip.lbc-win{border-color:rgba(46,204,113,.4);color:var(--green);background:rgba(46,204,113,.1)}
@@ -2327,16 +2328,16 @@ function loadLeaderboard(isLive){
         }
       }
       var result=null;
+      var pickedMethod=p.method||(uid===USER_ID?preds_method[p.event_date+"|"+p.f1+"|"+p.f2]||"":"");
       users[uid].total++;
       if(fight&&fight.winner){
-        var pickedMethod=p.method||(uid===USER_ID?preds_method[p.event_date+"|"+p.f1+"|"+p.f2]||"":"");
         if(fight.winner===p.pick){
           users[uid].correct++;result=true;
           console.log("[lb score]",p.f1,"vs",p.f2,"→ winner match. p.method="+JSON.stringify(p.method)+" fallback="+JSON.stringify(pickedMethod)+" fight.method="+JSON.stringify(fight.method));
           if(scoreMethod(pickedMethod,fight.method||""))users[uid].methods++;
         }else{result=false;}
       }
-      users[uid].picks.push({f1:p.f1,f2:p.f2,pick:p.pick,method:p.method,result:result,evName:p.event_name,evDate:p.event_date});
+      users[uid].picks.push({f1:p.f1,f2:p.f2,pick:p.pick,method:pickedMethod,result:result,evName:p.event_name,evDate:p.event_date});
       if(p.bonus_pick)users[uid].bonusPicks[p.event_date]=p.bonus_pick;
     });
     // De-duplicate by name (keep higher pick count)
@@ -2431,13 +2432,15 @@ function loadLeaderboard(isLive){
       if(hasNextPicks){
         nextPicksDiv=document.createElement("div");nextPicksDiv.className="lb-next-picks";
         var nextMap={};
-        u.picks.forEach(function(p){if(p.evDate===nextEv.date)nextMap[p.f1+"|"+p.f2]=p.pick;});
+        u.picks.forEach(function(p){if(p.evDate===nextEv.date)nextMap[p.f1+"|"+p.f2]={pick:p.pick,method:p.method};});
         var isMainCard={};["Main Event","Co-Main","Main Card"].forEach(function(l){isMainCard[l]=true;});
         nextMainFights.forEach(function(f){
-          var picked=nextMap[f.f1.n+"|"+f.f2.n];
+          var entry=nextMap[f.f1.n+"|"+f.f2.n];
+          var picked=entry?entry.pick:null;
           if(!picked&&!isMainCard[f.lbl])return;
           var chip=document.createElement("span");chip.className="lb-pick-chip";
-          chip.textContent=picked?picked.split(" ").pop():"?";
+          var nameSpan=document.createElement("span");nameSpan.textContent=picked?picked.split(" ").pop():"?";chip.appendChild(nameSpan);
+          if(picked&&entry.method){var ms=document.createElement("span");ms.className="lb-pick-method";var mAbbr=entry.method==="KO/TKO"?"KO":entry.method;ms.textContent=mAbbr;chip.appendChild(ms);}
           if(!picked){chip.classList.add("lbc-none");}
           else if(f.winner){chip.classList.add(picked===f.winner?"lbc-win":"lbc-loss");}
           else if(u.isMe){chip.classList.add("lbc-me");}
