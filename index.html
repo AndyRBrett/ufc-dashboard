@@ -2674,7 +2674,7 @@ document.addEventListener("DOMContentLoaded",function(){
             if(!winF1&&!winF2)return;
             var loseF1=_namesMatch(res.loser,fight.f1.n),loseF2=_namesMatch(res.loser,fight.f2.n);
             if(res.loser&&!loseF1&&!loseF2)return;
-            fight.winner=res.winner;fight.method=res.method;fight.round=res.round;fight.state="post";
+            fight.winner=winF1?fight.f1.n:fight.f2.n;fight.method=res.method;fight.round=res.round;fight.state="post";
             console.log("[UFC live poll] NEW RESULT:",fight.f1.n,"vs",fight.f2.n,"→",res.winner,res.method);
             changed=true;
           });
