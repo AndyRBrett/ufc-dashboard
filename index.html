@@ -1237,7 +1237,7 @@ function updateCountdown(){
   var ev=upcoming[0];
   var dp0=ev.date.split("-");var p0=(ev.time||"0:0").split(":");
   var t0=Date.UTC(parseInt(dp0[0],10),parseInt(dp0[1],10)-1,parseInt(dp0[2],10),parseInt(p0[0],10)+4,parseInt(p0[1]||"0",10),0);
-  if(now-t0>12*36e5&&upcoming.length>1){ev=upcoming[1];}
+  if(now-t0>6*36e5&&upcoming.length>1){ev=upcoming[1];}
   var p=ev.time.split(":");var h=parseInt(p[0],10);var m=parseInt(p[1]||"0",10);
   var dp=ev.date.split("-");
   var target=Date.UTC(parseInt(dp[0],10),parseInt(dp[1],10)-1,parseInt(dp[2],10),h+4,m,0);
