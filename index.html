@@ -231,6 +231,8 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .pick-btn.psel{background:rgba(232,25,44,.12);border-color:rgba(232,25,44,.5);color:var(--red);box-shadow:0 0 0 1px rgba(232,25,44,.15)}
 .pick-btn.pcorrect{background:rgba(46,204,113,.1);border-color:rgba(46,204,113,.4);color:var(--green)}
 .pick-btn.pwrong{opacity:.35;text-decoration:line-through}
+.pick-btn.plocked{opacity:.4;cursor:not-allowed}
+.pick-locked-lbl{font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;padding:2px 0 4px;opacity:.7}
 .more-btn{width:100%;background:var(--card2);border:none;border-top:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer;font-family:Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-align:left;font-weight:500;transition:color .15s,background .15s}
 .more-btn:hover{background:rgba(255,255,255,.03);color:var(--muted2)}
 .more-btn svg{width:13px;height:13px;transition:transform .2s;margin-left:auto;flex-shrink:0}
@@ -1394,6 +1396,7 @@ function togglePush(){
 
 function pick(idx,side){
   var item=FIGHTS[idx];if(!item)return;
+  if(picksLocked(item.ev)){toast("Picks are locked — event has started");return;}
   var f=side===0?item.fight.f1:item.fight.f2;
   checkName(function(){
     var key=pk(item.ev,item.fight);
@@ -1449,6 +1452,7 @@ function fnNav(dir){fnIdx=Math.max(0,Math.min(fnFights.length-1,fnIdx+dir));upda
 function fnPick(side){
   if(!fnFights.length)return;
   var f=fnFights[fnIdx];if(f.winner)return;
+  if(fnEv&&picksLocked(fnEv)){toast("Picks are locked — event has started");return;}
   checkName(function(){
     preds[pk(fnEv,f)]=side===0?f.f1.n:f.f2.n;
     save();syncPick(fnEv,f);fnPickedAny=true;updateFN();
@@ -1466,12 +1470,15 @@ function updateFN(){
   var myPick=fnEv?preds[pk(fnEv,f)]:"";
   var w1=document.getElementById("fn-f1-wrap"),w2=document.getElementById("fn-f2-wrap");
   var hint=document.getElementById("fn-pick-hint"),lbl=document.getElementById("fn-picked-lbl");
+  var fnLocked=fnEv&&picksLocked(fnEv)&&!f.winner;
   if(myPick){
     w1.className="fn-ft"+(myPick===f.f1.n?" fn-picked":" fn-not-picked");
     w2.className="fn-ft fnr"+(myPick===f.f2.n?" fn-picked":" fn-not-picked");
-    hint.style.display="none";lbl.textContent="You picked: "+myPick.split(" ").pop();
+    hint.style.display="none";lbl.textContent=(fnLocked?"🔒 Locked: ":"You picked: ")+myPick.split(" ").pop();
   } else {
-    w1.className="fn-ft";w2.className="fn-ft fnr";hint.style.display="";lbl.textContent="";
+    w1.className="fn-ft";w2.className="fn-ft fnr";
+    hint.style.display="";hint.textContent=fnLocked?"🔒 Picks locked":"Tap a fighter to pick · Swipe to pick";
+    lbl.textContent="";
   }
 }
 (function(){
@@ -1592,6 +1599,12 @@ function etOffset(){
   var s=new Date(y,2,8);s.setDate(8+(7-s.getDay())%7); // 2nd Sunday March
   var e=new Date(y,10,1);e.setDate(1+(7-e.getDay())%7); // 1st Sunday November
   return(d>=s&&d<e)?4:5;
+}
+function picksLocked(ev){
+  var now=Date.now(),eto=etOffset();
+  var dp=ev.date.split("-");
+  var t=ev.prelimTime||ev.time;var pp=t.split(":");
+  return now>=Date.UTC(+dp[0],+dp[1]-1,+dp[2],+pp[0]+eto,+(pp[1]||0),0);
 }
 function _triggerPush(evDate,type,title,body,excludeUid){
   fetch(SUPABASE_URL+"/functions/v1/send-push",{
@@ -1799,17 +1812,20 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
   }
   if(showPick){
     var key=pk(EVENTS[ei],fight);var myPick=preds[key]||"";var fw=fight.winner||"";
+    var locked=!fw&&picksLocked(EVENTS[ei]);
     var pr=document.createElement("div");pr.className="pick-row";
-    var pl=document.createElement("span");pl.className="pick-lbl";pl.textContent="Pick:";pr.appendChild(pl);
+    var pl=document.createElement("span");pl.className="pick-lbl";
+    if(locked){pl.innerHTML="&#x1F512;";pl.title="Picks locked";}else{pl.textContent="Pick:";}
+    pr.appendChild(pl);
     var b1=document.createElement("button");
-    b1.className="pick-btn"+(myPick===fight.f1.n?" psel":"")+(fw===fight.f1.n?" pcorrect":"")+(fw&&fw!==fight.f1.n&&myPick===fight.f1.n?" pwrong":"");
+    b1.className="pick-btn"+(myPick===fight.f1.n?" psel":"")+(fw===fight.f1.n?" pcorrect":"")+(fw&&fw!==fight.f1.n&&myPick===fight.f1.n?" pwrong":"")+(locked?" plocked":"");
     b1.textContent=fight.f1.n.split(" ").pop();
-    (function(ri,fn){b1.onclick=function(){var it=FIGHTS[ri];if(preds[pk(it.ev,it.fight)]===fn){undoPick(it.ev,it.fight);}else{pick(ri,0);}};})(regIdx,fight.f1.n);
+    if(!locked)(function(ri,fn){b1.onclick=function(){var it=FIGHTS[ri];if(preds[pk(it.ev,it.fight)]===fn){undoPick(it.ev,it.fight);}else{pick(ri,0);}};})(regIdx,fight.f1.n);
     pr.appendChild(b1);
     var b2=document.createElement("button");
-    b2.className="pick-btn"+(myPick===fight.f2.n?" psel":"")+(fw===fight.f2.n?" pcorrect":"")+(fw&&fw!==fight.f2.n&&myPick===fight.f2.n?" pwrong":"");
+    b2.className="pick-btn"+(myPick===fight.f2.n?" psel":"")+(fw===fight.f2.n?" pcorrect":"")+(fw&&fw!==fight.f2.n&&myPick===fight.f2.n?" pwrong":"")+(locked?" plocked":"");
     b2.textContent=fight.f2.n.split(" ").pop();
-    (function(ri,fn){b2.onclick=function(){var it=FIGHTS[ri];if(preds[pk(it.ev,it.fight)]===fn){undoPick(it.ev,it.fight);}else{pick(ri,1);}};})(regIdx,fight.f2.n);
+    if(!locked)(function(ri,fn){b2.onclick=function(){var it=FIGHTS[ri];if(preds[pk(it.ev,it.fight)]===fn){undoPick(it.ev,it.fight);}else{pick(ri,1);}};})(regIdx,fight.f2.n);
     pr.appendChild(b2);
     row.appendChild(pr);
     if(!fw){
@@ -1830,7 +1846,7 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
         row.appendChild(commRow);
       }
     }
-    if(myPick&&!fw){
+    if(myPick&&!fw&&!locked){
       var myM=preds_method[key]||"";
       var mpr=document.createElement("div");mpr.className="method-pick-row";
       var mpl=document.createElement("span");mpl.className="pick-lbl";mpl.textContent="How:";mpr.appendChild(mpl);
