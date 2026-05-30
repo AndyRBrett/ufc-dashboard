@@ -2344,16 +2344,17 @@ function loadLeaderboard(isLive){
         }
       }
       var result=null;
+      var methodCorrect=false;
       var pickedMethod=p.method||(uid===USER_ID?preds_method[p.event_date+"|"+p.f1+"|"+p.f2]||"":"");
       users[uid].total++;
       if(fight&&fight.winner){
         if(fight.winner===p.pick){
           users[uid].correct++;result=true;
           console.log("[lb score]",p.f1,"vs",p.f2,"→ winner match. p.method="+JSON.stringify(p.method)+" fallback="+JSON.stringify(pickedMethod)+" fight.method="+JSON.stringify(fight.method));
-          if(scoreMethod(pickedMethod,fight.method||""))users[uid].methods++;
+          if(scoreMethod(pickedMethod,fight.method||"")){users[uid].methods++;methodCorrect=true;}
         }else{result=false;}
       }
-      users[uid].picks.push({f1:p.f1,f2:p.f2,pick:p.pick,method:pickedMethod,result:result,evName:p.event_name,evDate:p.event_date});
+      users[uid].picks.push({f1:p.f1,f2:p.f2,pick:p.pick,method:pickedMethod,result:result,methodCorrect:methodCorrect,evName:p.event_name,evDate:p.event_date});
       if(p.bonus_pick)users[uid].bonusPicks[p.event_date]=p.bonus_pick;
     });
     // De-duplicate by name (keep higher pick count)
@@ -2488,8 +2489,11 @@ function loadLeaderboard(isLive){
           var pickDiv=document.createElement("div");pickDiv.style.cssText="font-size:13px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
           pickDiv.textContent=p.pick.split(" ").pop();pr.appendChild(pickDiv);
           if(p.method){var mspan=document.createElement("span");mspan.style.cssText="font-size:10px;color:var(--muted);flex-shrink:0";mspan.textContent="via "+p.method;pr.appendChild(mspan);}
-          var bdg=document.createElement("div");bdg.style.cssText="font-size:11px;flex-shrink:0;width:20px;text-align:center";
-          bdg.textContent=p.result===null?"⏳":p.result===true?"✅":"❌";pr.appendChild(bdg);
+          var bdg=document.createElement("div");bdg.style.cssText="font-size:11px;font-weight:600;flex-shrink:0;min-width:36px;text-align:right";
+          if(p.result===null){bdg.textContent="⏳";bdg.style.color="var(--muted)";}
+          else if(p.result===true){var pickPts=1+(p.methodCorrect?0.5:0);bdg.textContent="+"+pickPts+" pt"+(pickPts!==1?"s":"");bdg.style.color="var(--green)";}
+          else{bdg.textContent="0 pts";bdg.style.color="var(--muted);opacity:.5";}
+          pr.appendChild(bdg);
           detail.appendChild(pr);
         });
       });
