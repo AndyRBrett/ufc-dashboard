@@ -13,6 +13,7 @@ const CORS_HEADERS = {
 interface Fighter { n: string; rec: string; rk: string; }
 interface Stats { slpm: number; acc: number; td: number; tdd: number; ko: number; sub: number; stn: string; }
 interface FormEntry { r: string; m: string; }
+interface TrashTalkOpponent { nickname: string; rank: number; points: number; accuracy: number | null; streak: number; }
 interface ReqBody {
   action?: string;
   // breakdown fields
@@ -23,6 +24,12 @@ interface ReqBody {
   form1?: FormEntry[]; form2?: FormEntry[];
   // chat fields
   card?: string; userPicks?: string; question?: string;
+  // trash-talk fields
+  persona?: string;
+  myNickname?: string; myRank?: number; myPoints?: number;
+  myAccuracy?: number | null; myStreak?: number;
+  myCorrect?: number; myTotal?: number;
+  opponents?: TrashTalkOpponent[];
 }
 
 function buildBreakdownPrompt(d: ReqBody): string {
@@ -56,6 +63,23 @@ USER'S CURRENT PICKS: ${d.userPicks || "None yet"}
 QUESTION: ${d.question}
 
 Answer only the question — no preamble, no sign-off.`;
+}
+
+function buildTrashTalkPrompt(d: ReqBody): string {
+  const me = `${d.myNickname} — Rank #${d.myRank} | ${d.myPoints} pts | ${d.myAccuracy != null ? d.myAccuracy + "% accuracy" : "unstoppable accuracy"} | ${d.myStreak}-pick win streak | ${d.myCorrect}/${d.myTotal} correct`;
+  const chumps = (d.opponents ?? []).map(o =>
+    `  #${o.rank} ${o.nickname} — ${o.points} pts, ${o.accuracy != null ? o.accuracy + "% accuracy" : "unknown accuracy"}, ${o.streak}-streak`
+  ).join("\n") || "  (No competition — absolute dominance)";
+  return `You are ${d.persona}. You've been hired to trash talk on behalf of ${d.myNickname} in a UFC fight picks leaderboard competition. You absolutely love ${d.myNickname} and think they're the GOAT.
+
+Write 2-3 sentences of savage, funny trash talk obliterating the competition. Speak in ${d.persona}'s exact voice and style. Be hyper-specific about names and numbers. Even if ${d.myNickname} isn't #1, spin it — maybe they're playing the long game, maybe the others got lucky, maybe ${d.myNickname} is sandbagging. Never hedge. End with "— ${d.persona}".
+
+DEFENDING CHAMPION: ${me}
+
+THE CHUMPS:
+${chumps}
+
+No preamble. Just the trash talk + signature.`;
 }
 
 function buildParlayPrompt(d: ReqBody): string {
@@ -108,6 +132,9 @@ serve(async (req) => {
   } else if (action === "parlay") {
     prompt = buildParlayPrompt(body);
     maxTokens = 300;
+  } else if (action === "trash-talk") {
+    prompt = buildTrashTalkPrompt(body);
+    maxTokens = 200;
   } else {
     prompt = buildBreakdownPrompt(body);
     maxTokens = 250;

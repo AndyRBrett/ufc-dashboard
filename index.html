@@ -87,6 +87,12 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-pick-chip.lbc-loss{border-color:rgba(232,25,44,.25);color:var(--muted);background:rgba(232,25,44,.07);opacity:.75}
 @keyframes lb-blink{0%,100%{opacity:1}50%{opacity:.3}}
 .lb-title.lb-live::after{content:" ●";color:var(--green);font-size:10px;animation:lb-blink .6s 2}
+.lb-trash-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--card2);border-top:2px solid var(--gold);border-radius:16px 16px 0 0;padding:20px 16px 28px;transform:translateY(100%);transition:transform .3s ease;z-index:10}
+.lb-trash-sheet.open{transform:translateY(0)}
+.lb-trash-persona{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--gold);letter-spacing:.12em;margin-bottom:10px}
+.lb-trash-text{font-size:15px;line-height:1.6;color:var(--text);min-height:60px}
+.lb-trash-close{position:absolute;top:14px;right:14px;background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;padding:0 4px;line-height:1}
+.lb-trash-sent{font-size:11px;color:var(--green);margin-top:12px;font-weight:600}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 .logo{display:flex;align-items:center;gap:9px}
 .logo-hex{width:30px;height:30px;background:var(--red);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:11px;color:#fff;box-shadow:0 0 14px rgba(232,25,44,.35)}
@@ -1032,6 +1038,8 @@ var communityPicks={};
 var fnFights=[],fnIdx=0,fnEv=null,fnPickedAny=false;
 var notifActive=false;
 var _openMore={};var _collapsed={};
+var _lbSorted=[];
+var _trashPersonas=["Conor McGregor","Mike Tyson","Muhammad Ali","Dana White","Floyd Mayweather","Khabib Nurmagomedov","Charles Barkley","Draymond Green"];
 var _scrollY=0;
 function lockScroll(){_scrollY=window.scrollY;document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.width='100%';document.body.style.top='-'+_scrollY+'px';}
 function unlockScroll(){document.body.style.overflow='';document.body.style.position='';document.body.style.width='';document.body.style.top='';window.scrollTo(0,_scrollY);}
@@ -2308,8 +2316,44 @@ function render(){
 
 
 function openLeaderboard(){document.getElementById("lbPanel").classList.add("open");loadLeaderboard();if(typeof liveRefresh==="function")liveRefresh();}
-function closeLeaderboard(){document.getElementById("lbPanel").classList.remove("open");document.getElementById("lbInfoModal").classList.remove("open");}
+function closeLeaderboard(){document.getElementById("lbPanel").classList.remove("open");document.getElementById("lbInfoModal").classList.remove("open");closeTrashSheet();}
 document.addEventListener("click",function(e){var m=document.getElementById("lbInfoModal");if(m&&m.classList.contains("open")&&!m.contains(e.target)&&!e.target.classList.contains("lb-info-btn"))m.classList.remove("open");});
+function closeTrashSheet(){document.getElementById("trashSheet").classList.remove("open");}
+function openTrashTalk(){
+  if(!_lbSorted||!_lbSorted.length){toast("Load the leaderboard first!");return;}
+  var me=null,myRank=0,opponents=[];
+  _lbSorted.forEach(function(u,i){
+    var pts=u.correct+u.methods*0.5+u.fotn;
+    if(u.isMe){me=u;myRank=i+1;}
+    else{opponents.push({nickname:u.nickname,rank:i+1,points:pts,accuracy:u.accuracy,streak:u.currentStreak});}
+  });
+  if(!me){toast("Make some picks to trash talk!");return;}
+  var persona=_trashPersonas[Math.floor(Math.random()*_trashPersonas.length)];
+  var myPts=me.correct+me.methods*0.5+me.fotn;
+  var sheet=document.getElementById("trashSheet");
+  var personaEl=document.getElementById("trashPersona");
+  var textEl=document.getElementById("trashText");
+  var sentEl=document.getElementById("trashSent");
+  personaEl.textContent="🎤 "+persona+" says...";
+  textEl.textContent="Generating trash talk...";
+  sentEl.style.display="none";
+  sheet.classList.add("open");
+  fetch(AI_BREAKDOWN_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
+    body:JSON.stringify({action:"trash-talk",persona:persona,myNickname:me.nickname||"The Champ",myRank:myRank,myPoints:myPts,myAccuracy:me.accuracy,myStreak:me.currentStreak,myCorrect:me.correct,myTotal:me.total,opponents:opponents})
+  }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(data){
+    var text=data.breakdown||"No trash talk generated.";
+    textEl.textContent=text;
+    if(opponents.length){
+      var notifBody=text.length>120?text.slice(0,117)+"...":text;
+      _triggerPush(new Date().toISOString().slice(0,10),"trash-talk-"+Date.now(),"🔥 "+(me.nickname||"Someone")+" has something to say...",notifBody,USER_ID);
+      sentEl.style.display="block";
+    }
+  }).catch(function(){
+    textEl.textContent="Couldn't generate trash talk right now. Try again!";
+  });
+}
 
 function scoreMethod(userMethod, fightMethod){
   if(!userMethod||!fightMethod)return false;
@@ -2513,6 +2557,7 @@ function loadLeaderboard(isLive){
       wrap.appendChild(detail);
       body.appendChild(wrap);
     });
+    _lbSorted=sorted;
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
   }).catch(function(err){
@@ -2750,6 +2795,7 @@ document.addEventListener("DOMContentLoaded",function(){
     <button class="btn-icon" onclick="closeLeaderboard()" title="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
     <div class="lb-title">Leaderboard</div>
     <button class="lb-info-btn" onclick="document.getElementById('lbInfoModal').classList.toggle('open')" title="How scoring works">ℹ</button>
+    <button class="lb-info-btn" onclick="openTrashTalk()" title="Trash Talk" id="trashTalkBtn" style="font-size:17px">🔥</button>
     <button class="lb-info-btn" onclick="loadLeaderboard()" title="Refresh"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
   </div>
   <div class="lb-info-modal" id="lbInfoModal">
@@ -2760,6 +2806,12 @@ document.addEventListener("DOMContentLoaded",function(){
     <div style="font-size:11px;color:var(--muted);margin-top:10px">Methods: KO/TKO · Submission · Decision</div>
   </div>
   <div class="lb-body" id="lbBody"><div class="lb-loading">Loading picks...</div></div>
+  <div class="lb-trash-sheet" id="trashSheet">
+    <button class="lb-trash-close" onclick="closeTrashSheet()">✕</button>
+    <div class="lb-trash-persona" id="trashPersona"></div>
+    <div class="lb-trash-text" id="trashText"></div>
+    <div class="lb-trash-sent" id="trashSent" style="display:none">🔔 Fired off to all competitors!</div>
+  </div>
 </div>
 <div id="install-overlay" onclick="if(event.target===this)closeInstall()">
   <div id="install-panel">
