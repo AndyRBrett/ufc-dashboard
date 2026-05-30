@@ -1400,7 +1400,7 @@ function pick(idx,side){
     var old=preds[key]||null;
     preds[key]=f.n;
     _cpDelta(item.ev,item.fight,old,f.n);
-    save();render();updatePicksWidget();toast("Picked: "+f.n.split(" ").pop());syncPick(item.ev,item.fight,true);
+    save();render();updatePicksWidget();updateFN();toast("Picked: "+f.n.split(" ").pop());syncPick(item.ev,item.fight,true);
   });
 }
 
@@ -1408,7 +1408,7 @@ function undoPick(ev,fight){
   var old=preds[pk(ev,fight)]||null;
   deleteSbPick(ev,fight);delete preds[pk(ev,fight)];
   _cpDelta(ev,fight,old,null);
-  save();render();updatePicksWidget();toast("Pick removed");
+  save();render();updatePicksWidget();updateFN();toast("Pick removed");
 }
 
 function _cpDelta(ev,fight,oldName,newName){
