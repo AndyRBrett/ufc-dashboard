@@ -832,7 +832,31 @@ try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.
 var preds_method={},preds_conf={},preds_fotn={};
 try{preds_method=JSON.parse(localStorage.getItem("ufc_method")||"{}");preds_conf=JSON.parse(localStorage.getItem("ufc_conf")||"{}");preds_fotn=JSON.parse(localStorage.getItem("ufc_fotn")||"{}");}catch(e){}
 var prevOdds={};
-if(Object.keys(PREV_ODDS).length){prevOdds=PREV_ODDS;try{localStorage.setItem("ufc_prev_odds",JSON.stringify(PREV_ODDS));}catch(e){}}else{try{prevOdds=JSON.parse(localStorage.getItem("ufc_prev_odds")||"{}");}catch(e){}}
+(function(){
+  var co={};
+  EVENTS.forEach(function(ev){ev.fights.forEach(function(f){
+    if(!f.odds)return;
+    co[ev.date+"|"+f.f1.n+"|"+f.f2.n]={f1:f.odds.f1,f2:f.odds.f2};
+  });});
+  var storedGen="",storedSnap={},storedPrev={};
+  try{storedGen=localStorage.getItem("ufc_gen")||"";}catch(e){}
+  try{storedSnap=JSON.parse(localStorage.getItem("ufc_snap")||"{}");}catch(e){}
+  try{storedPrev=JSON.parse(localStorage.getItem("ufc_prev_odds")||"{}");}catch(e){}
+  if(Object.keys(PREV_ODDS).length){
+    storedPrev=PREV_ODDS;
+    try{localStorage.setItem("ufc_prev_odds",JSON.stringify(PREV_ODDS));}catch(e){}
+  }
+  if(storedGen===GENERATED_AT){
+    prevOdds=storedPrev;
+    return;
+  }
+  if(storedGen&&Object.keys(storedSnap).length){
+    var hasChange=Object.keys(co).some(function(k){var p=storedSnap[k];return !p||p.f1!==co[k].f1||p.f2!==co[k].f2;})||Object.keys(storedSnap).some(function(k){return !co[k];});
+    if(hasChange){prevOdds=storedSnap;try{localStorage.setItem("ufc_prev_odds",JSON.stringify(storedSnap));}catch(e){}}
+    else{prevOdds=storedPrev;}
+  }else{prevOdds=storedPrev;}
+  try{localStorage.setItem("ufc_gen",GENERATED_AT);localStorage.setItem("ufc_snap",JSON.stringify(co));}catch(e){}
+})();
 var _aiCache={};
 try{var _aiRaw=sessionStorage.getItem("ufc_ai_cache");if(_aiRaw)_aiCache=JSON.parse(_aiRaw);}catch(e){}
 var AI_BREAKDOWN_URL=SUPABASE_URL+"/functions/v1/ai-breakdown";

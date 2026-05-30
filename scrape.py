@@ -1318,6 +1318,26 @@ def step_build_events(html, now):
             if js_key in existing_prev_odds:
                 prev_odds[js_key] = existing_prev_odds[js_key]
 
+    # First-run seeding: PREV_ODDS was empty (never had a detected change yet).
+    # Populate it with the current HTML odds so the next real change can show arrows.
+    if not existing_prev_odds:
+        for ev in new_events:
+            for fight in ev["fights"]:
+                if not fight.get("odds"):
+                    continue
+                f1n = fight["f1"]["name"]
+                f2n = fight["f2"]["name"]
+                js_key = f"{ev['date']}|{f1n}|{f2n}"
+                if js_key in prev_odds:
+                    continue  # already set by a detected change above
+                key = frozenset([last_name(f1n), last_name(f2n)])
+                old = existing_odds.get(key)
+                if old:
+                    if last_name(f1n) == last_name(old["f1_name"]):
+                        prev_odds[js_key] = {"f1": old["f1_odds"], "f2": old["f2_odds"]}
+                    else:
+                        prev_odds[js_key] = {"f1": old["f2_odds"], "f2": old["f1_odds"]}
+
     html = patch_js_var(html, "PREV_ODDS",
                         json.dumps(prev_odds, separators=(",", ":"), ensure_ascii=False))
 
