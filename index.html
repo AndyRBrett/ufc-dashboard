@@ -2415,16 +2415,21 @@ function generateTrashTalk(){
   var myPts=me.correct+me.methods*0.5+me.fotn;
   var myName=me.nickname||"The Champ";
   var cardLines=opponents.map(function(o){return "#"+o.rank+" "+o.nickname+" — "+o.points+" pts, "+(o.accuracy!=null?o.accuracy+"% acc":"?% acc")+", "+o.streak+"-streak";}).join("\n")||"(no competition yet)";
-  var angles=[
-    "Occasionally mock their chosen emoji icons — 🐺 isn't a wolf, 💎 picks are coal, 🔥 is getting extinguished.",
-    "Tear apart their worst pick accuracy and hot-streak lies.",
-    "Focus on the point gap — make it sound insurmountable.",
-    "Call out whoever is closest to "+myName+" and explain exactly why they'll never catch up.",
-    "Roast their overall record like a boxing pre-fight press conference.",
-    ""
-  ];
-  var angleHint=angles[Math.floor(Math.random()*angles.length)];
-  var question="Write 2-3 sentences of SAVAGE, funny trash talk spoken EXACTLY in the authentic voice and style of "+persona+", roasting the other pickers on behalf of "+myName+". "+(angleHint?angleHint+" ":"")+(hint?"Also work in this personal angle from the user: \""+hint+"\". ":"")+"Be hyper-specific about names and numbers. Always make "+myName+" sound like the undisputed GOAT — spin every stat positively. End with '— "+persona+"'. No preamble.";
+  var question;
+  if(hint){
+    question="Write 2-3 sentences of SAVAGE, funny trash talk spoken EXACTLY in the authentic voice and style of "+persona+", roasting the other pickers on behalf of "+myName+". The entire message must be built around this angle: \""+hint+"\". That is the spine of the trash talk — open with it, hammer it, land on it. Use the names and stats only to reinforce that angle. Make "+myName+" sound untouchable. End with '— "+persona+"'. No preamble.";
+  } else {
+    var angles=[
+      "Mock their emoji icons — 🐺 isn't a wolf, 💎 picks are coal, 🔥 is getting extinguished.",
+      "Tear apart their worst pick accuracy and expose their hot-streak as a myth.",
+      "Focus on the point gap — make it sound completely insurmountable.",
+      "Call out whoever is closest to "+myName+" and explain exactly why they'll never catch up.",
+      "Roast their overall record like a boxing pre-fight press conference.",
+      ""
+    ];
+    var angleHint=angles[Math.floor(Math.random()*angles.length)];
+    question="Write 2-3 sentences of SAVAGE, funny trash talk spoken EXACTLY in the authentic voice and style of "+persona+", roasting the other pickers on behalf of "+myName+". "+(angleHint?angleHint+" ":"")+"Be hyper-specific about names and numbers. Always make "+myName+" sound like the undisputed GOAT — spin every stat positively. End with '— "+persona+"'. No preamble.";
+  }
   fetch(AI_BREAKDOWN_URL,{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
