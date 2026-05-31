@@ -104,8 +104,17 @@ serve(async (req) => {
         payload
       );
       sent++;
-    } catch {
+    } catch (err: any) {
       failed++;
+      // Push service returned 410 (Gone) or 404 (Not Found) — subscription is permanently invalid.
+      // Delete it so future notifications don't silently fail for this user.
+      const status = err?.statusCode ?? err?.status;
+      if (status === 410 || status === 404) {
+        await fetch(
+          `${SUPABASE_URL}/rest/v1/push_subs?endpoint=eq.${encodeURIComponent(sub.endpoint)}`,
+          { method: "DELETE", headers: sbHeaders }
+        ).catch(() => {});
+      }
     }
   }));
 
