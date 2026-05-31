@@ -2329,8 +2329,12 @@ function showIncomingTrashTalk(text){
   document.getElementById("trashSent").style.display="none";
   sheet.classList.add("open");
 }
+var _TRASH_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes between sends
 function openTrashTalk(){
   if(!_lbSorted||!_lbSorted.length){toast("Load the leaderboard first!");return;}
+  var lastSent=parseInt(localStorage.getItem("_lastTrashTalk")||"0",10);
+  var remaining=_TRASH_COOLDOWN_MS-(Date.now()-lastSent);
+  if(remaining>0){var mins=Math.ceil(remaining/60000);toast("Chill! You can trash talk again in "+mins+" min"+(mins===1?"":"s")+".");return;}
   var me=null,myRank=0,opponents=[];
   _lbSorted.forEach(function(u,i){
     var pts=u.correct+u.methods*0.5+u.fotn;
@@ -2360,6 +2364,7 @@ function openTrashTalk(){
     textEl.textContent=text;
     if(opponents.length){
       _triggerPush(new Date().toISOString().slice(0,10),"trash-talk-"+Date.now(),"🔥 "+(me.nickname||"Someone")+" is talking trash!",text,USER_ID);
+      localStorage.setItem("_lastTrashTalk",Date.now());
       sentEl.style.display="block";
     }
   }).catch(function(){
