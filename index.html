@@ -2344,24 +2344,33 @@ function closeTrashSheet(){
 }
 function toggleTrashTarget(chip){
   var uid=chip.dataset.uid;
+  var allChip=document.querySelector(".lb-trash-chip[data-uid='__all__']");
   if(uid==="__all__"){
-    _selectedTargets.clear();_selectedTargets.add("__all__");
-    document.querySelectorAll(".lb-trash-chip").forEach(function(c){c.classList.add("selected");});
+    if(_selectedTargets.has("__all__")){
+      _selectedTargets.clear();
+      document.querySelectorAll(".lb-trash-chip").forEach(function(c){c.classList.remove("selected");c.textContent=c.dataset.label;});
+    }else{
+      _selectedTargets.clear();_selectedTargets.add("__all__");
+      document.querySelectorAll(".lb-trash-chip").forEach(function(c){c.classList.add("selected");c.textContent="✓ "+c.dataset.label;});
+    }
   }else{
     _selectedTargets.delete("__all__");
-    document.querySelector(".lb-trash-chip[data-uid='__all__']").classList.remove("selected");
-    if(_selectedTargets.has(uid)){_selectedTargets.delete(uid);chip.classList.remove("selected");}
-    else{_selectedTargets.add(uid);chip.classList.add("selected");}
+    allChip.classList.remove("selected");allChip.textContent=allChip.dataset.label;
+    if(_selectedTargets.has(uid)){
+      _selectedTargets.delete(uid);chip.classList.remove("selected");chip.textContent=chip.dataset.label;
+    }else{
+      _selectedTargets.add(uid);chip.classList.add("selected");chip.textContent="✓ "+chip.dataset.label;
+    }
     var all=document.querySelectorAll(".lb-trash-chip:not([data-uid='__all__'])");
     if(all.length&&Array.from(all).every(function(c){return c.classList.contains("selected");})){
-      _selectedTargets.add("__all__");document.querySelector(".lb-trash-chip[data-uid='__all__']").classList.add("selected");
+      _selectedTargets.add("__all__");allChip.classList.add("selected");allChip.textContent="✓ "+allChip.dataset.label;
     }
   }
   var btn=document.getElementById("trashSendBtn");
   var individualChips=document.querySelectorAll(".lb-trash-chip:not([data-uid='__all__'])");
   var n=_selectedTargets.has("__all__")?individualChips.length:_selectedTargets.size;
   btn.disabled=n===0;
-  btn.textContent=n===0?"Select someone first":n===individualChips.length?"Fire at everyone 🔥":"Fire at "+n+" 🔥";
+  btn.textContent=n===0?"Select who gets it":n===individualChips.length?"Fire at everyone 🔥":"Fire at "+n+" 🔥";
 }
 function fireTrashTalk(){
   if(!_trashText||_selectedTargets.size===0)return;
@@ -2444,15 +2453,15 @@ function generateTrashTalk(){
     if(opponents.length){
       var chipsDiv=document.getElementById("trashChips");
       chipsDiv.innerHTML="";
-      _selectedTargets=new Set(["__all__"]);
-      var allChip=document.createElement("span");allChip.className="lb-trash-chip selected";allChip.dataset.uid="__all__";allChip.textContent="Everyone";allChip.onclick=function(){toggleTrashTarget(allChip);};chipsDiv.appendChild(allChip);
+      _selectedTargets=new Set();
+      var allChip=document.createElement("span");allChip.className="lb-trash-chip";allChip.dataset.uid="__all__";allChip.dataset.label="Everyone";allChip.textContent="Everyone";allChip.onclick=function(){toggleTrashTarget(allChip);};chipsDiv.appendChild(allChip);
       opponents.forEach(function(o){
         if(!o.user_id)return;
-        var c=document.createElement("span");c.className="lb-trash-chip selected";c.dataset.uid=o.user_id;c.textContent=o.nickname;c.onclick=function(){toggleTrashTarget(c);};chipsDiv.appendChild(c);
+        var c=document.createElement("span");c.className="lb-trash-chip";c.dataset.uid=o.user_id;c.dataset.label=o.nickname;c.textContent=o.nickname;c.onclick=function(){toggleTrashTarget(c);};chipsDiv.appendChild(c);
       });
       var sendBtn=document.getElementById("trashSendBtn");
-      sendBtn.disabled=false;
-      sendBtn.textContent="Fire at everyone 🔥";
+      sendBtn.disabled=true;
+      sendBtn.textContent="Select who gets it";
       document.getElementById("trashTargets").style.display="block";
     }
   }).catch(function(){
