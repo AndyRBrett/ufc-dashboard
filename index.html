@@ -96,8 +96,8 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-trash-targets{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
 .lb-trash-target-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px}
 .lb-trash-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.lb-trash-chip{font-size:12px;font-weight:600;padding:5px 11px;border-radius:20px;background:var(--card);border:1px solid var(--border2);color:var(--muted2);cursor:pointer;transition:all .15s;user-select:none;-webkit-user-select:none}
-.lb-trash-chip.selected{background:var(--red-dim);border-color:rgba(232,25,44,.4);color:var(--red)}
+.lb-trash-chip{font-size:12px;font-weight:600;padding:5px 11px;border-radius:20px;background:var(--card);border:1px solid var(--border2);color:var(--muted);cursor:pointer;transition:all .2s;user-select:none;-webkit-user-select:none;opacity:.45}
+.lb-trash-chip.selected{background:var(--red);border-color:var(--red);color:#fff;opacity:1}
 .lb-trash-send{width:100%;padding:11px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:opacity .15s}
 .lb-trash-send:disabled{opacity:.4;cursor:not-allowed}
 .lb-trash-hint-section{margin-bottom:2px}
@@ -2357,7 +2357,11 @@ function toggleTrashTarget(chip){
       _selectedTargets.add("__all__");document.querySelector(".lb-trash-chip[data-uid='__all__']").classList.add("selected");
     }
   }
-  document.getElementById("trashSendBtn").disabled=_selectedTargets.size===0;
+  var btn=document.getElementById("trashSendBtn");
+  var individualChips=document.querySelectorAll(".lb-trash-chip:not([data-uid='__all__'])");
+  var n=_selectedTargets.has("__all__")?individualChips.length:_selectedTargets.size;
+  btn.disabled=n===0;
+  btn.textContent=n===0?"Select someone first":n===individualChips.length?"Fire at everyone 🔥":"Fire at "+n+" 🔥";
 }
 function fireTrashTalk(){
   if(!_trashText||_selectedTargets.size===0)return;
@@ -2446,7 +2450,9 @@ function generateTrashTalk(){
         if(!o.user_id)return;
         var c=document.createElement("span");c.className="lb-trash-chip selected";c.dataset.uid=o.user_id;c.textContent=o.nickname;c.onclick=function(){toggleTrashTarget(c);};chipsDiv.appendChild(c);
       });
-      document.getElementById("trashSendBtn").disabled=false;
+      var sendBtn=document.getElementById("trashSendBtn");
+      sendBtn.disabled=false;
+      sendBtn.textContent="Fire at everyone 🔥";
       document.getElementById("trashTargets").style.display="block";
     }
   }).catch(function(){
