@@ -2329,7 +2329,7 @@ function showIncomingTrashTalk(text){
   document.getElementById("trashSent").style.display="none";
   sheet.classList.add("open");
 }
-var _TRASH_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes between sends
+var _TRASH_COOLDOWN_MS = 2 * 60 * 1000; // 2 minutes between sends
 function openTrashTalk(){
   if(!_lbSorted||!_lbSorted.length){toast("Load the leaderboard first!");return;}
   var lastSent=parseInt(localStorage.getItem("_lastTrashTalk")||"0",10);
