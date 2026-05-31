@@ -2320,7 +2320,7 @@ function closeLeaderboard(){document.getElementById("lbPanel").classList.remove(
 document.addEventListener("click",function(e){var m=document.getElementById("lbInfoModal");if(m&&m.classList.contains("open")&&!m.contains(e.target)&&!e.target.classList.contains("lb-info-btn"))m.classList.remove("open");});
 function closeTrashSheet(){document.getElementById("trashSheet").classList.remove("open");}
 function showIncomingTrashTalk(text){
-  var m=text.match(/—\s*(.+)$/);
+  var m=text.match(/—\s*([^—\n]+?)\s*$/);
   var persona=m?m[1].trim():"A Famous Friend";
   if(!document.getElementById("lbPanel").classList.contains("open"))openLeaderboard();
   var sheet=document.getElementById("trashSheet");
