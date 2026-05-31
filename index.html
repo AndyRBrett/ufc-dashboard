@@ -100,6 +100,11 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-trash-chip.selected{background:var(--red-dim);border-color:rgba(232,25,44,.4);color:var(--red)}
 .lb-trash-send{width:100%;padding:11px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:opacity .15s}
 .lb-trash-send:disabled{opacity:.4;cursor:not-allowed}
+.lb-trash-hint-section{margin-bottom:2px}
+.lb-trash-input{width:100%;background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:9px 12px;font-size:13px;color:var(--text);font-family:inherit;box-sizing:border-box;outline:none;margin-bottom:9px}
+.lb-trash-input:focus{border-color:var(--gold)}
+.lb-trash-input::placeholder{color:var(--muted)}
+.lb-trash-gen{width:100%;padding:11px;background:var(--gold);color:#000;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 .logo{display:flex;align-items:center;gap:9px}
 .logo-hex{width:30px;height:30px;background:var(--red);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:11px;color:#fff;box-shadow:0 0 14px rgba(232,25,44,.35)}
@@ -1050,7 +1055,7 @@ var fnFights=[],fnIdx=0,fnEv=null,fnPickedAny=false;
 var notifActive=false;
 var _openMore={};var _collapsed={};
 var _lbSorted=[];
-var _trashText="",_trashPersona="",_trashMe=null,_selectedTargets=new Set();
+var _trashText="",_trashPersona="",_trashMe=null,_trashOpponents=[],_trashMyRank=0,_selectedTargets=new Set();
 var _trashPersonas=["Conor McGregor","Mike Tyson","Muhammad Ali","Dana White","Floyd Mayweather","Khabib Nurmagomedov","Charles Barkley","Draymond Green","Chael Sonnen","Jon Jones","Nate Diaz","Jorge Masvidal","Israel Adesanya","Colby Covington","Sean O'Malley","Tyson Fury","Canelo Alvarez","Manny Pacquiao","Deontay Wilder","Oscar De La Hoya","Don King","Stephen A. Smith","Skip Bayless","Shannon Sharpe","Richard Sherman","Kevin Garnett","Gary Payton","Reggie Miller","Shaquille O'Neal","LeBron James","Kevin Hart","Joe Rogan","Andrew Schulz","Bill Burr","Gordon Ramsay","Simon Cowell","Samuel L. Jackson","Eminem","Kanye West","Ice Cube","The Rock","Ric Flair","Stone Cold Steve Austin","John Cena","Marshawn Lynch","Theo Von","Gary Vaynerchuk","Howard Cosell","Don Rickles","Larry David"];
 var _scrollY=0;
 function lockScroll(){_scrollY=window.scrollY;document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.width='100%';document.body.style.top='-'+_scrollY+'px';}
@@ -2334,6 +2339,7 @@ function closeTrashSheet(){
   document.getElementById("trashSheet").classList.remove("open");
   document.getElementById("trashTargets").style.display="none";
   document.getElementById("trashSent").style.display="none";
+  document.getElementById("trashHintSection").style.display="none";
   _trashText="";_trashPersona="";_trashMe=null;_selectedTargets=new Set();
 }
 function toggleTrashTarget(chip){
@@ -2388,30 +2394,45 @@ function openTrashTalk(){
     else{opponents.push({nickname:u.nickname,user_id:u.user_id,rank:i+1,points:pts,accuracy:u.accuracy,streak:u.currentStreak});}
   });
   if(!me){toast("Make some picks to trash talk!");return;}
-  _trashMe=me;
-  var persona=_trashPersonas[Math.floor(Math.random()*_trashPersonas.length)];
-  _trashPersona=persona;
-  var myPts=me.correct+me.methods*0.5+me.fotn;
-  var sheet=document.getElementById("trashSheet");
-  var personaEl=document.getElementById("trashPersona");
-  var textEl=document.getElementById("trashText");
+  _trashMe=me;_trashOpponents=opponents;_trashMyRank=myRank;
+  _trashPersona=_trashPersonas[Math.floor(Math.random()*_trashPersonas.length)];
+  document.getElementById("trashPersona").textContent="🎤 "+_trashPersona+" says...";
+  document.getElementById("trashText").textContent="";
   document.getElementById("trashTargets").style.display="none";
   document.getElementById("trashSent").style.display="none";
-  personaEl.textContent="🎤 "+persona+" says...";
-  textEl.textContent="Generating trash talk...";
-  sheet.classList.add("open");
+  document.getElementById("trashHintInput").value="";
+  document.getElementById("trashHintSection").style.display="block";
+  document.getElementById("trashSheet").classList.add("open");
+}
+function generateTrashTalk(){
+  var hint=document.getElementById("trashHintInput").value.trim();
+  var me=_trashMe,opponents=_trashOpponents,persona=_trashPersona,myRank=_trashMyRank;
+  if(!me)return;
+  document.getElementById("trashHintSection").style.display="none";
+  document.getElementById("trashText").textContent="Generating...";
+  document.getElementById("trashTargets").style.display="none";
+  document.getElementById("trashSent").style.display="none";
+  var myPts=me.correct+me.methods*0.5+me.fotn;
   var myName=me.nickname||"The Champ";
   var cardLines=opponents.map(function(o){return "#"+o.rank+" "+o.nickname+" — "+o.points+" pts, "+(o.accuracy!=null?o.accuracy+"% acc":"?% acc")+", "+o.streak+"-streak";}).join("\n")||"(no competition yet)";
-  var question="Write 2-3 sentences of SAVAGE, funny trash talk spoken EXACTLY in the authentic voice and style of "+persona+", roasting the other pickers on behalf of "+myName+". Mock their chosen emoji icons — if someone picked 🐺 they're not a wolf, if they picked 💎 their picks are coal, if they picked 🔥 they're getting extinguished, etc. Be hyper-specific about names, emojis, and weak numbers. No matter what the standings say, always make "+myName+" sound like the undisputed GOAT — spin every stat positively. End with '— "+persona+"'. No preamble.";
+  var angles=[
+    "Occasionally mock their chosen emoji icons — 🐺 isn't a wolf, 💎 picks are coal, 🔥 is getting extinguished.",
+    "Tear apart their worst pick accuracy and hot-streak lies.",
+    "Focus on the point gap — make it sound insurmountable.",
+    "Call out whoever is closest to "+myName+" and explain exactly why they'll never catch up.",
+    "Roast their overall record like a boxing pre-fight press conference.",
+    ""
+  ];
+  var angleHint=angles[Math.floor(Math.random()*angles.length)];
+  var question="Write 2-3 sentences of SAVAGE, funny trash talk spoken EXACTLY in the authentic voice and style of "+persona+", roasting the other pickers on behalf of "+myName+". "+(angleHint?angleHint+" ":"")+(hint?"Also work in this personal angle from the user: \""+hint+"\". ":"")+"Be hyper-specific about names and numbers. Always make "+myName+" sound like the undisputed GOAT — spin every stat positively. End with '— "+persona+"'. No preamble.";
   fetch(AI_BREAKDOWN_URL,{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
     body:JSON.stringify({action:"chat",event:"UFC Picks Leaderboard",card:cardLines,userPicks:myName+" — Rank #"+myRank+" | "+myPts+" pts | "+(me.accuracy!=null?me.accuracy+"% accuracy":"")+" | "+me.currentStreak+"-win streak | "+me.correct+"/"+me.total+" correct",question:question})
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(data){
     _trashText=data.breakdown||"No trash talk generated.";
-    textEl.textContent=_trashText;
+    document.getElementById("trashText").textContent=_trashText;
     if(opponents.length){
-      // Build targeting chips
       var chipsDiv=document.getElementById("trashChips");
       chipsDiv.innerHTML="";
       _selectedTargets=new Set(["__all__"]);
@@ -2424,7 +2445,8 @@ function openTrashTalk(){
       document.getElementById("trashTargets").style.display="block";
     }
   }).catch(function(){
-    textEl.textContent="Couldn't generate trash talk right now. Try again!";
+    document.getElementById("trashText").textContent="Couldn't generate trash talk right now. Try again!";
+    document.getElementById("trashHintSection").style.display="block";
   });
 }
 
@@ -2882,6 +2904,10 @@ document.addEventListener("DOMContentLoaded",function(){
   <div class="lb-trash-sheet" id="trashSheet">
     <button class="lb-trash-close" onclick="closeTrashSheet()">✕</button>
     <div class="lb-trash-persona" id="trashPersona"></div>
+    <div class="lb-trash-hint-section" id="trashHintSection" style="display:none">
+      <input class="lb-trash-input" id="trashHintInput" placeholder="Your angle... (optional)" maxlength="120">
+      <button class="lb-trash-gen" onclick="generateTrashTalk()">Generate 🔥</button>
+    </div>
     <div class="lb-trash-text" id="trashText"></div>
     <div class="lb-trash-targets" id="trashTargets" style="display:none">
       <div class="lb-trash-target-lbl">Send to</div>
