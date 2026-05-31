@@ -2490,7 +2490,6 @@ function loadLeaderboard(isLive){
     var users={};
     rows.forEach(function(p){
       var uid=p.user_id||p.nickname||"unknown";
-      if(!users[uid])users[uid]={nickname:p.nickname,user_id:p.user_id||null,correct:0,total:0,methods:0,fotn:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
       var fight=null;
       for(var i=0;i<EVENTS.length;i++){
         if(EVENTS[i].date===p.event_date){
@@ -2501,6 +2500,8 @@ function loadLeaderboard(isLive){
           if(fight)break;
         }
       }
+      if(!fight)return;
+      if(!users[uid])users[uid]={nickname:p.nickname,user_id:p.user_id||null,correct:0,total:0,methods:0,fotn:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
       var result=null;
       var methodCorrect=false;
       var pickedMethod=p.method||(uid===USER_ID?preds_method[p.event_date+"|"+p.f1+"|"+p.f2]||"":"");
