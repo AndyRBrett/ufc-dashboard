@@ -2044,7 +2044,7 @@ function renderPicksWidget(){
   // Split events into upcoming (has pending picks) and completed (all resolved)
   var upcomingEvs=[];var completedEvs=[];
   EVENTS.forEach(function(ev,ei){
-    var eps=ev.fights.map(function(f){var k=pk(ev,f);return preds[k]?{fight:f,pick:preds[k],result:f.winner||"",method:preds_method[k]||"",fightMethod:f.method||""}:null;}).filter(Boolean);
+    var eps=ev.fights.map(function(f){var k=pk(ev,f),kr=ev.date+"|"+f.f2.n+"|"+f.f1.n,ak=preds[k]?k:(preds[kr]?kr:null);return ak?{fight:f,pick:preds[ak],result:f.winner||"",method:preds_method[ak]||"",fightMethod:f.method||"",_ak:ak}:null;}).filter(Boolean);
     if(!eps.length)return;
     var hasPending=eps.some(function(p){return !p.result;});
     var evDate=new Date(ev.date).getTime();
@@ -2111,8 +2111,8 @@ function renderPicksWidget(){
 
   // Collect pick keys matched by current EVENTS
   var matchedKeys=new Set();
-  upcomingEvs.forEach(function(item){item.eps.forEach(function(p){matchedKeys.add(pk(item.ev,p.fight));});});
-  completedEvs.forEach(function(item){item.eps.forEach(function(p){matchedKeys.add(pk(item.ev,p.fight));});});
+  upcomingEvs.forEach(function(item){item.eps.forEach(function(p){matchedKeys.add(p._ak||pk(item.ev,p.fight));});});
+  completedEvs.forEach(function(item){item.eps.forEach(function(p){matchedKeys.add(p._ak||pk(item.ev,p.fight));});});
 
   // Orphaned picks: stored in preds but not in current EVENTS (old completed events)
   var orphanGroups={};
