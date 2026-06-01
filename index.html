@@ -2214,11 +2214,12 @@ function buildPastPicksData(){
     var isPast=new Date(ev.date).getTime()<now-2*864e5;
     var picks=[];
     ev.fights.forEach(function(f){
-      var k=pk(ev,f);if(!preds[k])return;
-      matched.add(k); // mark matched for ALL events so future picks don't leak into orphans
+      var k=pk(ev,f),kr=ev.date+"|"+f.f2.n+"|"+f.f1.n,ak=preds[k]?k:(preds[kr]?kr:null);
+      if(!ak)return;
+      matched.add(ak); // mark matched for ALL events so future picks don't leak into orphans
       if(!isPast)return;
-      var res=f.winner?(preds[k]===f.winner?"win":"loss"):(resolvedPicks[k]||"");
-      picks.push({f1n:f.f1.n,f2n:f.f2.n,pick:preds[k],result:res,method:preds_method[k]||""});
+      var res=f.winner?(preds[ak]===f.winner?"win":"loss"):(resolvedPicks[ak]||"");
+      picks.push({f1n:f.f1.n,f2n:f.f2.n,pick:preds[ak],result:res,method:preds_method[ak]||""});
     });
     if(!isPast||!picks.length)return;
     var correct=picks.filter(function(p){return p.result==="win";}).length;
