@@ -2631,7 +2631,7 @@ function loadLeaderboard(isLive){
       detail.style.cssText="display:none;background:var(--card2);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;overflow:hidden;margin-top:-6px;padding-top:4px";
       var byEv={};var evOrder=[];
       u.picks.forEach(function(p){if(!byEv[p.evName]){byEv[p.evName]=[];evOrder.push(p.evName);}byEv[p.evName].push(p);});
-      function _fightIdx(p){for(var i=0;i<EVENTS.length;i++){if(EVENTS[i].date===p.evDate){for(var j=0;j<EVENTS[i].fights.length;j++){var f=EVENTS[i].fights[j];if(f.f1.n===p.f1&&f.f2.n===p.f2)return j;}}}return 999;}
+      function _fightIdx(p){for(var i=0;i<EVENTS.length;i++){if(EVENTS[i].date===p.evDate){for(var j=0;j<EVENTS[i].fights.length;j++){var f=EVENTS[i].fights[j];if((f.f1.n===p.f1&&f.f2.n===p.f2)||(f.f1.n===p.f2&&f.f2.n===p.f1))return j;}}}return 999;}
       evOrder.forEach(function(evName){byEv[evName].sort(function(a,b){return _fightIdx(a)-_fightIdx(b);});});
       evOrder.forEach(function(evName){
         var evLbl=document.createElement("div");
