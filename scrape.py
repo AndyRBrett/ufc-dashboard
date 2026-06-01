@@ -1036,7 +1036,7 @@ def step_inject_results(html, now):
             ed = datetime.strptime(ev_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
         except ValueError:
             continue
-        if ed < now - timedelta(days=2) or ed > now + timedelta(hours=6):
+        if ed < now - timedelta(days=4) or ed > now + timedelta(hours=6):
             continue
         print(f"Checking results: {ev_name}", file=sys.stderr)
         slug = re.sub(r"[^a-zA-Z0-9 :._-]", "", ev_name).replace(" ", "_")
@@ -1145,6 +1145,31 @@ def step_build_events(html, now):
     if not new_events:
         print("No events built — keeping existing HTML", file=sys.stderr)
         return html
+
+    # Preserve results already injected into the existing HTML so a full rebuild
+    # never wipes winners for fights that finished more than 2 days ago.
+    _post_pat = re.compile(
+        r'winner:"([^"]+)",method:"([^"]*)",round:(\d+|null),state:"post"[^{]*'
+        r'f1:\{n:"([^"]+)"[^}]+\},f2:\{n:"([^"]+)"'
+    )
+    existing_results = {}
+    for m in _post_pat.finditer(html):
+        winner, method, rnd, f1n, f2n = m.groups()
+        if winner:
+            key = frozenset([f1n.lower(), f2n.lower()])
+            existing_results[key] = {
+                "winner": winner, "method": method,
+                "round": int(rnd) if rnd != "null" else None, "state": "post",
+            }
+    if existing_results:
+        print(f"  Preserving {len(existing_results)} post-fight results", file=sys.stderr)
+        for ev in new_events:
+            for fight in ev["fights"]:
+                key = frozenset([fight["f1"]["name"].lower(), fight["f2"]["name"].lower()])
+                if key in existing_results:
+                    r = existing_results[key]
+                    fight.update({"winner": r["winner"], "method": r["method"],
+                                  "round": r["round"], "state": r["state"]})
 
     # Fighter stats — fetch new, backfill missing form, refresh changed records
     stats_cache  = extract_stats_cache(html)
