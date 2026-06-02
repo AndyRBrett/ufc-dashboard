@@ -1062,7 +1062,7 @@ function unlockScroll(){document.body.style.overflow='';document.body.style.posi
 
 function pad(n){return String(n).padStart(2,"0");}
 function daysOut(d){var t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(d+"T00:00:00")-t)/864e5);}
-function fmtDate(d){return new Date(d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});}
+function fmtDate(d){return new Date(d+"T00:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});}
 function fmtUpdated(s){
   if(!s)return"Updating soon";
   var d=new Date(s.replace(" UTC"," +0000"));
