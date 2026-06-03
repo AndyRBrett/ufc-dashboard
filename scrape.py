@@ -262,31 +262,21 @@ def _default_prelim_time(loc):
     return "17:00" if _US_REGIONS.search(loc or "") else "TBD"
 
 
-def _infer_venue_loc(cells):
-    """Extract venue and location strings from a list of table cell texts."""
-    candidates = []
-    for cell in cells:
-        cleaned = clean_wiki(cell)
-        if not cleaned:
-            continue
-        # Skip cells that are clearly dates, numbers, or the event link itself
-        if re.search(r"\d{4}-\d{2}-\d{2}", cleaned):
-            continue
-        if re.match(r"^\d+$", cleaned):
-            continue
-        if re.match(r"UFC\b", cleaned, re.IGNORECASE):
-            continue
-        candidates.append(cleaned)
-
-    venue = candidates[0] if candidates else "TBD"
-    loc   = candidates[1] if len(candidates) > 1 else "TBD"
-
-    # Many rows combine venue + city in one cell ("T-Mobile Arena, Las Vegas")
-    if loc == "TBD" and venue != "TBD" and "," in venue:
-        parts = venue.split(",", 1)
-        venue = parts[0].strip()
-        loc   = parts[1].strip()
-
+def _infer_venue_loc_from_row(row, after_pos):
+    """
+    Extract venue and location from the row text after the event link position.
+    Strips wikitext markup and tries to find a 'Venue, City' pattern.
+    """
+    tail = clean_wiki(row[after_pos:])
+    # Remove date-like strings, standalone numbers, and TBD
+    tail = re.sub(r"\b(TBD|N/A|\d{4,})\b", "", tail)
+    tail = re.sub(r"\s+", " ", tail).strip().strip("|").strip()
+    if not tail:
+        return "TBD", "TBD"
+    # Split on pipe chars (cell boundaries that survived clean_wiki) or commas
+    parts = [p.strip() for p in re.split(r"[|,]", tail) if p.strip()]
+    venue = parts[0] if parts else "TBD"
+    loc   = parts[1] if len(parts) > 1 else "TBD"
     return venue or "TBD", loc or "TBD"
 
 
@@ -294,53 +284,47 @@ def _parse_event_table_rows(wt, now, seen):
     """
     Parse UFC events from wikitext table rows.
 
-    Splits on row separators (|-) so date and event link are found within
-    the same row rather than by proximity scanning across the whole page.
+    Splits on row separators (|-) and searches each entire row for a date
+    and a UFC event link. Scanning the full row avoids cell-splitting
+    edge cases from inline styles, sort templates, and mixed formats.
     Returns list of (date, slug, name, venue, location) tuples.
     """
     results = []
     all_rows = re.split(r"^\s*\|-", wt, flags=re.MULTILINE)
-    print(f"  [DBG] _parse_event_table_rows: {len(all_rows)} row blocks, wt[:200]={wt[:200]!r}", file=sys.stderr)
-    for row_idx, row in enumerate(all_rows):
-        # Normalise cells: handle both inline (||) and one-cell-per-line formats
-        cells = re.split(r"\|\||\n\s*\|(?!\|)", row)
-        cells = [c.strip().lstrip("|").strip() for c in cells]
+    print(f"  [DBG] rows={len(all_rows)}, wt_start={wt[:120]!r}", file=sys.stderr)
+    for row in all_rows:
+        # Search the whole row for a date and a UFC link — no cell splitting needed
+        ev_date = parse_date_wiki(row)
+        if not ev_date:
+            continue
 
-        ev_date  = ""
-        slug     = ""
-        ev_name  = ""
-        loc_cells = []
+        lm = re.search(r"\[\[(UFC[^\]\|#]+?)(?:\|([^\]]+))?\]\]", row)
+        if not lm:
+            continue
 
-        for cell in cells:
-            if not ev_date:
-                ev_date = parse_date_wiki(cell)
-            if not slug:
-                lm = re.search(r"\[\[(UFC[^\]\|#]+?)(?:\|([^\]]+))?\]\]", cell)
-                if lm:
-                    slug_raw = lm.group(1).strip()
-                    display  = (lm.group(2) or slug_raw).strip()
-                    if ":" in slug_raw or re.search(r"\d", slug_raw):
-                        slug    = slug_raw.replace(" ", "_")
-                        ev_name = clean_wiki(display)
-                        if not ev_name.startswith("UFC"):
-                            ev_name = slug_raw.replace("_", " ")
-            else:
-                loc_cells.append(cell)
+        slug_raw = lm.group(1).strip()
+        display  = (lm.group(2) or slug_raw).strip()
+        if ":" not in slug_raw and not re.search(r"\d", slug_raw):
+            continue
 
-        if slug and not ev_date:
-            print(f"  [DBG] slug={slug!r} found but no date; cells={cells[:5]}", file=sys.stderr)
-        if not ev_date or not slug or slug in seen:
+        slug    = slug_raw.replace(" ", "_")
+        ev_name = clean_wiki(display)
+        if not ev_name.startswith("UFC"):
+            ev_name = slug_raw.replace("_", " ")
+
+        if slug in seen:
             continue
         try:
             ed = datetime.strptime(ev_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
         except ValueError:
-            print(f"  [DBG] bad date {ev_date!r} for {slug}", file=sys.stderr)
             continue
         if ed < now - timedelta(days=2) or ed > now + timedelta(days=120):
-            print(f"  [DBG] {slug} date {ev_date} out of range", file=sys.stderr)
+            print(f"  [DBG] {slug} ({ev_date}) out of range", file=sys.stderr)
             continue
 
-        venue, loc = _infer_venue_loc(loc_cells)
+        # Best-effort venue/location: strip wikitext from the row and split on commas
+        venue, loc = _infer_venue_loc_from_row(row, lm.end())
+
         seen.add(slug)
         results.append((ev_date, slug, asc(ev_name), venue, loc))
         print(f"  Discovered: {ev_name} ({ev_date})", file=sys.stderr)
