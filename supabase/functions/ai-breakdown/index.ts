@@ -140,23 +140,34 @@ serve(async (req) => {
     maxTokens = 250;
   }
 
-  const claudeRes = await fetch(CLAUDE_API_URL, {
-    method: "POST",
-    headers: {
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: maxTokens,
-      messages: [{ role: "user", content: prompt }],
-    }),
+  const claudeReqBody = JSON.stringify({
+    model: MODEL,
+    max_tokens: maxTokens,
+    messages: [{ role: "user", content: prompt }],
   });
 
-  if (!claudeRes.ok) {
-    const err = await claudeRes.text();
-    return new Response(JSON.stringify({ error: "Claude API error", detail: err }), { status: 502, headers: CORS_HEADERS });
+  let claudeRes: Response | null = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt > 0) await new Promise((r) => setTimeout(r, attempt * 1500));
+    claudeRes = await fetch(CLAUDE_API_URL, {
+      method: "POST",
+      headers: {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: claudeReqBody,
+    });
+    if (claudeRes.ok || claudeRes.status !== 529) break;
+  }
+
+  if (!claudeRes!.ok) {
+    const err = await claudeRes!.text();
+    const overloaded = claudeRes!.status === 529;
+    return new Response(
+      JSON.stringify({ error: overloaded ? "overloaded" : "Claude API error", detail: err }),
+      { status: 502, headers: CORS_HEADERS }
+    );
   }
 
   const data = await claudeRes.json();

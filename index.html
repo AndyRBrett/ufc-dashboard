@@ -932,10 +932,16 @@ function fetchAIBreakdown(fight,ev,btn,panel){
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
     body:JSON.stringify(payload)
-  }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
-  .then(function(data){
-    var text=data.breakdown||"";
-    if(!text)throw new Error("Empty");
+  }).then(function(r){return r.json().then(function(d){return{ok:r.ok,data:d};});})
+  .then(function(res){
+    btn.classList.remove("ai-loading");btn.textContent="⚡ AI";
+    if(!res.ok){
+      var msg=res.data&&res.data.error==="overloaded"?"AI is overloaded — tap to retry":"Analysis unavailable. Try again.";
+      panel.innerHTML="<div class='ai-err'>"+msg+"</div>";
+      panel.classList.add("open");return;
+    }
+    var text=res.data.breakdown||"";
+    if(!text){panel.innerHTML="<div class='ai-err'>Analysis unavailable. Try again.</div>";panel.classList.add("open");return;}
     try{_aiCache[cacheKey]=text;sessionStorage.setItem("ufc_ai_cache",JSON.stringify(_aiCache));}catch(e){}
     renderAIPanel(panel,btn,text);
   }).catch(function(){
