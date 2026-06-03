@@ -299,7 +299,9 @@ def _parse_event_table_rows(wt, now, seen):
     Returns list of (date, slug, name, venue, location) tuples.
     """
     results = []
-    for row in re.split(r"^\s*\|-", wt, flags=re.MULTILINE):
+    all_rows = re.split(r"^\s*\|-", wt, flags=re.MULTILINE)
+    print(f"  [DBG] _parse_event_table_rows: {len(all_rows)} row blocks, wt[:200]={wt[:200]!r}", file=sys.stderr)
+    for row_idx, row in enumerate(all_rows):
         # Normalise cells: handle both inline (||) and one-cell-per-line formats
         cells = re.split(r"\|\||\n\s*\|(?!\|)", row)
         cells = [c.strip().lstrip("|").strip() for c in cells]
@@ -325,13 +327,17 @@ def _parse_event_table_rows(wt, now, seen):
             else:
                 loc_cells.append(cell)
 
+        if slug and not ev_date:
+            print(f"  [DBG] slug={slug!r} found but no date; cells={cells[:5]}", file=sys.stderr)
         if not ev_date or not slug or slug in seen:
             continue
         try:
             ed = datetime.strptime(ev_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
         except ValueError:
+            print(f"  [DBG] bad date {ev_date!r} for {slug}", file=sys.stderr)
             continue
         if ed < now - timedelta(days=2) or ed > now + timedelta(days=120):
+            print(f"  [DBG] {slug} date {ev_date} out of range", file=sys.stderr)
             continue
 
         venue, loc = _infer_venue_loc(loc_cells)
@@ -359,10 +365,15 @@ def discover_upcoming_events(now):
     if wt:
         m = re.search(r"==+\s*Upcoming events?\s*==+", wt, re.IGNORECASE)
         if m:
+            print(f"  [DBG] Found upcoming section at pos {m.start()}", file=sys.stderr)
             tail    = wt[m.end():]
             end_m   = re.search(r"==+[^=]", tail)
             section = tail[:end_m.start()] if end_m else tail
+            print(f"  [DBG] Section length: {len(section)} chars", file=sys.stderr)
+            print(f"  [DBG] Section preview: {section[:800]!r}", file=sys.stderr)
         else:
+            hdgs = re.findall(r"==[^=\n][^\n]*==", wt)[:10]
+            print(f"  [DBG] No upcoming section found; headings: {hdgs}", file=sys.stderr)
             section = wt
         events.extend(_parse_event_table_rows(section, now, seen))
 
