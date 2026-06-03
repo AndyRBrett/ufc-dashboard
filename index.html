@@ -1442,12 +1442,20 @@ function enablePush(){
   Notification.requestPermission().then(function(p){
     if(p!=='granted'){toast("Notifications blocked — check Settings");return;}
     navigator.serviceWorker.ready.then(function(reg){
-      reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64ToUint8(VAPID_PUBLIC_KEY)}).then(function(sub){
-        var s=sub.toJSON();
-        _authReady.then(function(){fetch(SUPABASE_URL+"/rest/v1/push_subs",{method:"POST",headers:Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return=minimal"}),body:JSON.stringify({user_id:USER_ID,nickname:userName,endpoint:s.endpoint,p256dh:s.keys.p256dh,auth:s.keys.auth})});});
-        try{localStorage.setItem("ufc_push","1");}catch(e){}
-        _setBellActive(true);
-        toast("Fight notifications enabled! 🔔");
+      // Always unsubscribe any existing subscription first so subscribe() returns a
+      // guaranteed-fresh endpoint rather than the same (potentially stale) one.
+      reg.pushManager.getSubscription().then(function(existing){
+        var doSubscribe=function(){
+          reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64ToUint8(VAPID_PUBLIC_KEY)}).then(function(sub){
+            var s=sub.toJSON();
+            _authReady.then(function(){fetch(SUPABASE_URL+"/rest/v1/push_subs?on_conflict=user_id",{method:"POST",headers:Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return=minimal"}),body:JSON.stringify({user_id:USER_ID,nickname:userName,endpoint:s.endpoint,p256dh:s.keys.p256dh,auth:s.keys.auth})});});
+            try{localStorage.setItem("ufc_push","1");}catch(e){}
+            _setBellActive(true);
+            toast("Fight notifications enabled! 🔔");
+          }).catch(function(){toast("Could not subscribe to notifications");});
+        };
+        if(existing){existing.unsubscribe().then(doSubscribe).catch(doSubscribe);}
+        else{doSubscribe();}
       }).catch(function(){toast("Could not subscribe to notifications");});
     });
   });

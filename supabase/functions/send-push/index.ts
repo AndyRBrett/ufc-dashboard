@@ -112,8 +112,15 @@ serve(async (req) => {
         payload
       );
       sent++;
-    } catch {
+    } catch (err: any) {
       failed++;
+      // 410 Gone = unsubscribed; 404 = endpoint gone. Remove the dead row so future sends skip it.
+      if (err?.statusCode === 410 || err?.statusCode === 404) {
+        await fetch(`${SUPABASE_URL}/rest/v1/push_subs?endpoint=eq.${encodeURIComponent(sub.endpoint)}`, {
+          method: "DELETE",
+          headers: sbHeaders,
+        }).catch(() => {});
+      }
     }
   }));
 
