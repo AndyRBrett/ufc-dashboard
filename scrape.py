@@ -309,7 +309,6 @@ def _parse_event_table_rows(wt, now, seen):
     """
     results = []
     all_rows = re.split(r"^\s*\|-", wt, flags=re.MULTILINE)
-    print(f"  [DBG] rows={len(all_rows)}, wt_start={wt[:120]!r}", file=sys.stderr)
     for row in all_rows:
         # Search the whole row for a date and a UFC link — no cell splitting needed
         ev_date = parse_date_wiki(row)
@@ -349,7 +348,6 @@ def _parse_event_table_rows(wt, now, seen):
         except ValueError:
             continue
         if ed < now - timedelta(days=2) or ed > now + timedelta(days=120):
-            print(f"  [DBG] {slug} ({ev_date}) out of range", file=sys.stderr)
             continue
 
         # Best-effort venue/location: strip wikitext from the row and split on commas
@@ -379,15 +377,10 @@ def discover_upcoming_events(now):
     if wt:
         m = re.search(r"==+\s*(?:Upcoming|Scheduled)\s+events?\s*==+", wt, re.IGNORECASE)
         if m:
-            print(f"  [DBG] Found upcoming section at pos {m.start()}", file=sys.stderr)
             tail    = wt[m.end():]
             end_m   = re.search(r"==+[^=]", tail)
             section = tail[:end_m.start()] if end_m else tail
-            print(f"  [DBG] Section length: {len(section)} chars", file=sys.stderr)
-            print(f"  [DBG] Section preview: {section[:800]!r}", file=sys.stderr)
         else:
-            hdgs = re.findall(r"==[^=\n][^\n]*==", wt)[:10]
-            print(f"  [DBG] No upcoming section found; headings: {hdgs}", file=sys.stderr)
             section = wt
         events.extend(_parse_event_table_rows(section, now, seen))
 
