@@ -347,7 +347,7 @@ def discover_upcoming_events(now):
     # Primary: canonical events list — isolate the Upcoming section
     wt = fetch_wikitext("List_of_UFC_events")
     if wt:
-        m = re.search(r"==+\s*Upcoming events?\s*==+", wt, re.IGNORECASE)
+        m = re.search(r"==+\s*(?:Upcoming|Scheduled)\s+events?\s*==+", wt, re.IGNORECASE)
         if m:
             print(f"  [DBG] Found upcoming section at pos {m.start()}", file=sys.stderr)
             tail    = wt[m.end():]
@@ -361,15 +361,19 @@ def discover_upcoming_events(now):
             section = wt
         events.extend(_parse_event_table_rows(section, now, seen))
 
-    # Fallback: year pages — supplements gaps and handles year-boundary
-    years = {now.year}
-    if (now + timedelta(days=90)).year != now.year:
-        years.add(now.year + 1)
-    for year in sorted(years):
-        wt = fetch_wikitext(f"{year}_in_UFC")
-        if wt:
-            events.extend(_parse_event_table_rows(wt, now, seen))
-        time.sleep(1)
+    # Fallback: year pages only if primary source found nothing.
+    # Note: YYYY_in_UFC pages use {{Year in UFC}} template-based layout which
+    # stores event data as named parameters, not as parseable table rows.
+    # Only attempt if the primary source failed entirely.
+    if not events:
+        years = {now.year}
+        if (now + timedelta(days=90)).year != now.year:
+            years.add(now.year + 1)
+        for year in sorted(years):
+            wt = fetch_wikitext(f"{year}_in_UFC")
+            if wt:
+                events.extend(_parse_event_table_rows(wt, now, seen))
+            time.sleep(1)
 
     if not events:
         print("Auto-discovery: no events found from Wikipedia", file=sys.stderr)
