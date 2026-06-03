@@ -1436,6 +1436,7 @@ function _commitName(emoji,v){
   syncAllPicks();
 }
 function urlB64ToUint8(b64){var pad='='.repeat((4-b64.length%4)%4);var raw=atob((b64+pad).replace(/-/g,'+').replace(/_/g,'/'));var arr=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i);return arr;}
+function _bufToBase64Url(buf){var bytes=new Uint8Array(buf);var str='';for(var i=0;i<bytes.length;i++)str+=String.fromCharCode(bytes[i]);return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 function _setBellActive(on){var nb=document.getElementById("notifBell");if(!nb)return;if(on)nb.classList.add("bell-active");else nb.classList.remove("bell-active");}
 function enablePush(){
   if(!('Notification'in window)||!('serviceWorker'in navigator)){toast("Notifications not supported");return;}
@@ -1445,9 +1446,11 @@ function enablePush(){
       reg.pushManager.getSubscription().then(function(existing){
         var doSubscribe=function(){
           reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64ToUint8(VAPID_PUBLIC_KEY)}).then(function(sub){
-            var s=sub.toJSON();
+            var p256dhBuf=sub.getKey('p256dh');var authBuf=sub.getKey('auth');
+            if(!p256dhBuf||!authBuf){toast("Push keys unavailable — try a different browser");return;}
+            var p256dh=_bufToBase64Url(p256dhBuf);var auth=_bufToBase64Url(authBuf);
             _authReady.then(function(){
-              var row=JSON.stringify({user_id:USER_ID,nickname:userName,endpoint:s.endpoint,p256dh:s.keys.p256dh,auth:s.keys.auth});
+              var row=JSON.stringify({user_id:USER_ID,nickname:userName||USER_ID.slice(0,8),endpoint:sub.endpoint,p256dh:p256dh,auth:auth});
               var doInsert=function(){
                 fetch(SUPABASE_URL+"/rest/v1/push_subs",{method:"POST",headers:Object.assign({},_sbHeaders(),{"Prefer":"return=minimal"}),body:row})
                   .then(function(r){if(!r.ok)r.text().then(function(t){console.error("push_subs insert failed",r.status,t);toast("⚠️ Notification setup failed ("+r.status+") — try again");});})
