@@ -1451,14 +1451,9 @@ function enablePush(){
             var p256dh=_bufToBase64Url(p256dhBuf);var auth=_bufToBase64Url(authBuf);
             _authReady.then(function(){
               var row=JSON.stringify({user_id:USER_ID,nickname:userName||USER_ID.slice(0,8),endpoint:sub.endpoint,p256dh:p256dh,auth:auth});
-              var doInsert=function(){
-                fetch(SUPABASE_URL+"/rest/v1/push_subs",{method:"POST",headers:Object.assign({},_sbHeaders(),{"Prefer":"return=minimal"}),body:row})
-                  .then(function(r){if(!r.ok)r.text().then(function(t){console.error("push_subs insert failed",r.status,t);toast("⚠️ Notification setup failed ("+r.status+") — try again");});})
-                  .catch(function(e){console.error("push_subs insert error",e);toast("⚠️ Notification setup failed — check connection");});
-              };
-              // DELETE first so there's never a unique-constraint conflict on re-subscribe
-              fetch(SUPABASE_URL+"/rest/v1/push_subs?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:_sbHeaders()})
-                .then(doInsert).catch(doInsert);
+              fetch(SUPABASE_URL+"/rest/v1/push_subs?on_conflict=user_id",{method:"POST",headers:Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return=minimal"}),body:row})
+                .then(function(r){if(!r.ok)r.text().then(function(t){console.error("push_subs upsert failed",r.status,t);toast("⚠️ Notification setup failed ("+r.status+") — try again");});})
+                .catch(function(e){console.error("push_subs upsert error",e);toast("⚠️ Notification setup failed — check connection");});
             });
             try{localStorage.setItem("ufc_push","1");}catch(e){}
             _setBellActive(true);
