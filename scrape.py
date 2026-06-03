@@ -51,6 +51,14 @@ MONTH_MAP = {
         "July", "August", "September", "October", "November", "December",
     ])
 }
+# Add 3-letter abbreviations (Jan, Feb, … Dec) used by {{dts|YYYY|Mon|DD}}
+MONTH_MAP.update({
+    m[:3].lower(): i + 1
+    for i, m in enumerate([
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December",
+    ])
+})
 
 
 # ---------------------------------------------------------------------------
@@ -162,9 +170,19 @@ def fmt_update(dt):
 
 def parse_date_wiki(s):
     """Extract a YYYY-MM-DD date from a snippet of wikitext."""
+    # Numeric month: {{dts|2026|8|15}}
     m = re.search(r"\{\{dts\|(\d{4})\|(\d{1,2})\|(\d{1,2})", s)
     if m:
         return f"{int(m.group(1)):04d}-{int(m.group(2)):02d}-{int(m.group(3)):02d}"
+    # Abbreviated month: {{dts|2026|Aug|15}}
+    m = re.search(
+        r"\{\{dts\|(\d{4})\|([A-Za-z]{3,9})\|(\d{1,2})",
+        s,
+    )
+    if m:
+        month_num = MONTH_MAP.get(m.group(2).lower(), 0)
+        if month_num:
+            return f"{int(m.group(1)):04d}-{month_num:02d}-{int(m.group(3)):02d}"
     m = re.search(r"\{\{[Ss]tart date(?:\s+and\s+age)?\|(\d{4})\|(\d{1,2})\|(\d{1,2})", s)
     if m:
         return f"{int(m.group(1)):04d}-{int(m.group(2)):02d}-{int(m.group(3)):02d}"
@@ -298,12 +316,24 @@ def _parse_event_table_rows(wt, now, seen):
         if not ev_date:
             continue
 
+        # Prefer a wikilinked event name; fall back to plain-text cell value
         lm = re.search(r"\[\[(UFC[^\]\|#]+?)(?:\|([^\]]+))?\]\]", row)
-        if not lm:
-            continue
+        if lm:
+            slug_raw  = lm.group(1).strip()
+            display   = (lm.group(2) or slug_raw).strip()
+            after_pos = lm.end()
+        else:
+            # Match a plain (unlinked) UFC event name at the start of a cell
+            pm = re.search(
+                r"(?:^|\|)\s*(UFC\s+(?:Fight\s+Night|[A-Z][a-z]*(?:\s+[A-Z][a-z]*)*\s*)?\d+[^\n|]*)",
+                row, re.MULTILINE
+            )
+            if not pm:
+                continue
+            slug_raw  = pm.group(1).strip()
+            display   = slug_raw
+            after_pos = pm.end()
 
-        slug_raw = lm.group(1).strip()
-        display  = (lm.group(2) or slug_raw).strip()
         if ":" not in slug_raw and not re.search(r"\d", slug_raw):
             continue
 
@@ -323,7 +353,7 @@ def _parse_event_table_rows(wt, now, seen):
             continue
 
         # Best-effort venue/location: strip wikitext from the row and split on commas
-        venue, loc = _infer_venue_loc_from_row(row, lm.end())
+        venue, loc = _infer_venue_loc_from_row(row, after_pos)
 
         seen.add(slug)
         results.append((ev_date, slug, asc(ev_name), venue, loc))
