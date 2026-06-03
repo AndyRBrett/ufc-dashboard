@@ -52,17 +52,6 @@ MONTH_MAP = {
     ])
 }
 
-# Hardcoded event metadata; auto-discovery supplements any gaps.
-# Columns: date, wiki_slug, name, venue, location, main_card_time_et, prelims_time_et
-UPCOMING_EVENTS = [
-    ("2026-05-16", "UFC_Fight_Night:_Allen_vs._Costa",     "UFC Fight Night: Allen vs. Costa",     "Meta APEX",                 "Las Vegas, NV",    "20:00", "17:00"),
-    ("2026-05-30", "UFC_Fight_Night:_Song_vs._Figueiredo", "UFC Fight Night: Song vs. Figueiredo", "Galaxy Arena",              "Macau SAR, China", "06:00", "03:00"),
-    ("2026-06-06", "UFC_Fight_Night:_Muhammad_vs._Bonfim", "UFC Fight Night: Muhammad vs. Bonfim", "Meta APEX",                 "Las Vegas, NV",    "20:00", "17:00"),
-    ("2026-06-14", "UFC_Freedom_250",                      "UFC Freedom 250: Topuria vs. Gaethje", "South Lawn, White House",   "Washington, D.C.", "20:00", "17:00"),
-    ("2026-06-20", "UFC_Fight_Night:_Kape_vs._Horiguchi",  "UFC Fight Night: Kape vs. Horiguchi",  "Meta APEX",                 "Las Vegas, NV",    "20:00", "17:00"),
-    ("2026-06-27", "UFC_Fight_Night:_Fiziev_vs._Torres",   "UFC Fight Night: Fiziev vs. Torres",   "National Gymnastics Arena", "Baku, Azerbaijan", "12:00", "09:00"),
-    ("2026-07-11", "UFC_329",                              "UFC 329",                              "T-Mobile Arena",            "Las Vegas, NV",    "22:00", "18:00"),
-]
 
 # ---------------------------------------------------------------------------
 # Text utilities
@@ -176,6 +165,9 @@ def parse_date_wiki(s):
     m = re.search(r"\{\{dts\|(\d{4})\|(\d{1,2})\|(\d{1,2})", s)
     if m:
         return f"{int(m.group(1)):04d}-{int(m.group(2)):02d}-{int(m.group(3)):02d}"
+    m = re.search(r"\{\{[Ss]tart date(?:\s+and\s+age)?\|(\d{4})\|(\d{1,2})\|(\d{1,2})", s)
+    if m:
+        return f"{int(m.group(1)):04d}-{int(m.group(2)):02d}-{int(m.group(3)):02d}"
     m = re.search(
         r"(January|February|March|April|May|June|July|August"
         r"|September|October|November|December)\s+(\d{1,2}),?\s*(\d{4})",
@@ -254,25 +246,86 @@ def fetch_wikitext(slug):
     return ""
 
 
-def discover_upcoming_events(now):
-    """Scrape the YYYY_in_UFC Wikipedia page and return upcoming (date, slug, name) tuples."""
-    wt = fetch_wikitext(f"{now.year}_in_UFC")
-    if not wt:
-        print(f"Auto-discovery: could not fetch {now.year}_in_UFC", file=sys.stderr)
-        return []
-    events = []
-    seen   = set()
-    for lm in re.finditer(r"\[\[(UFC[^\]\|#]+?)(?:\|([^\]]+))?\]\]", wt):
-        slug_raw = lm.group(1).strip()
-        display  = (lm.group(2) or slug_raw).strip()
-        slug     = slug_raw.replace(" ", "_")
-        if slug in seen:
+_US_REGIONS = re.compile(
+    r"\b(Nevada|Texas|Florida|New York|New Jersey|Arizona|California|"
+    r"Las Vegas|Houston|Newark|Inglewood|Sacramento|"
+    r"Washington,?\s*D\.?C\.?|Canada|Vancouver|Toronto)\b",
+    re.IGNORECASE,
+)
+
+
+def _default_main_time(loc):
+    return "20:00" if _US_REGIONS.search(loc or "") else "TBD"
+
+
+def _default_prelim_time(loc):
+    return "17:00" if _US_REGIONS.search(loc or "") else "TBD"
+
+
+def _infer_venue_loc(cells):
+    """Extract venue and location strings from a list of table cell texts."""
+    candidates = []
+    for cell in cells:
+        cleaned = clean_wiki(cell)
+        if not cleaned:
             continue
-        if ":" not in slug_raw and not re.search(r"\d", slug_raw):
+        # Skip cells that are clearly dates, numbers, or the event link itself
+        if re.search(r"\d{4}-\d{2}-\d{2}", cleaned):
             continue
-        ctx      = wt[max(0, lm.start() - 400):lm.end() + 200]
-        ev_date  = parse_date_wiki(ctx)
-        if not ev_date:
+        if re.match(r"^\d+$", cleaned):
+            continue
+        if re.match(r"UFC\b", cleaned, re.IGNORECASE):
+            continue
+        candidates.append(cleaned)
+
+    venue = candidates[0] if candidates else "TBD"
+    loc   = candidates[1] if len(candidates) > 1 else "TBD"
+
+    # Many rows combine venue + city in one cell ("T-Mobile Arena, Las Vegas")
+    if loc == "TBD" and venue != "TBD" and "," in venue:
+        parts = venue.split(",", 1)
+        venue = parts[0].strip()
+        loc   = parts[1].strip()
+
+    return venue or "TBD", loc or "TBD"
+
+
+def _parse_event_table_rows(wt, now, seen):
+    """
+    Parse UFC events from wikitext table rows.
+
+    Splits on row separators (|-) so date and event link are found within
+    the same row rather than by proximity scanning across the whole page.
+    Returns list of (date, slug, name, venue, location) tuples.
+    """
+    results = []
+    for row in re.split(r"^\s*\|-", wt, flags=re.MULTILINE):
+        # Normalise cells: handle both inline (||) and one-cell-per-line formats
+        cells = re.split(r"\|\||\n\s*\|(?!\|)", row)
+        cells = [c.strip().lstrip("|").strip() for c in cells]
+
+        ev_date  = ""
+        slug     = ""
+        ev_name  = ""
+        loc_cells = []
+
+        for cell in cells:
+            if not ev_date:
+                ev_date = parse_date_wiki(cell)
+            if not slug:
+                lm = re.search(r"\[\[(UFC[^\]\|#]+?)(?:\|([^\]]+))?\]\]", cell)
+                if lm:
+                    slug_raw = lm.group(1).strip()
+                    display  = (lm.group(2) or slug_raw).strip()
+                    if ":" in slug_raw or re.search(r"\d", slug_raw):
+                        slug    = slug_raw.replace(" ", "_")
+                        ev_name = clean_wiki(display)
+                        if not ev_name.startswith("UFC"):
+                            ev_name = slug_raw.replace("_", " ")
+            else:
+                loc_cells.append(cell)
+
+        if not ev_date or not slug or slug in seen:
             continue
         try:
             ed = datetime.strptime(ev_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
@@ -280,12 +333,52 @@ def discover_upcoming_events(now):
             continue
         if ed < now - timedelta(days=2) or ed > now + timedelta(days=120):
             continue
-        ev_name = clean_wiki(display)
-        if not ev_name.startswith("UFC"):
-            ev_name = slug_raw.replace("_", " ")
+
+        venue, loc = _infer_venue_loc(loc_cells)
         seen.add(slug)
-        events.append((ev_date, slug, asc(ev_name)))
+        results.append((ev_date, slug, asc(ev_name), venue, loc))
         print(f"  Discovered: {ev_name} ({ev_date})", file=sys.stderr)
+    return results
+
+
+def discover_upcoming_events(now):
+    """
+    Discover upcoming UFC events from Wikipedia.
+
+    Primary source: List_of_UFC_events (has a dedicated Upcoming section).
+    Fallback: YYYY_in_UFC pages for the current year and next year (handles
+    year-boundary when the 90-day window crosses into January).
+
+    Returns list of (date, slug, name, venue, location) tuples sorted by date.
+    """
+    seen   = set()
+    events = []
+
+    # Primary: canonical events list — isolate the Upcoming section
+    wt = fetch_wikitext("List_of_UFC_events")
+    if wt:
+        m = re.search(r"==+\s*Upcoming events?\s*==+", wt, re.IGNORECASE)
+        if m:
+            tail    = wt[m.end():]
+            end_m   = re.search(r"==+[^=]", tail)
+            section = tail[:end_m.start()] if end_m else tail
+        else:
+            section = wt
+        events.extend(_parse_event_table_rows(section, now, seen))
+
+    # Fallback: year pages — supplements gaps and handles year-boundary
+    years = {now.year}
+    if (now + timedelta(days=90)).year != now.year:
+        years.add(now.year + 1)
+    for year in sorted(years):
+        wt = fetch_wikitext(f"{year}_in_UFC")
+        if wt:
+            events.extend(_parse_event_table_rows(wt, now, seen))
+        time.sleep(1)
+
+    if not events:
+        print("Auto-discovery: no events found from Wikipedia", file=sys.stderr)
+
     events.sort(key=lambda x: x[0])
     return events
 
@@ -1068,14 +1161,12 @@ def step_build_events(html, now):
     odds_index    = fetch_odds()
 
     print("Building events from Wikipedia...", file=sys.stderr)
-    hc_slugs   = {row[1] for row in UPCOMING_EVENTS}
     discovered = discover_upcoming_events(now)
-    merged     = list(UPCOMING_EVENTS)
-    for ev_date, slug, ev_name in discovered:
-        if slug not in hc_slugs:
-            print(f"  Auto-adding: {ev_name} ({ev_date})", file=sys.stderr)
-            merged.append((ev_date, slug, ev_name, "TBD", "TBD", "20:00", "17:00"))
-            hc_slugs.add(slug)
+    merged = [
+        (ev_date, slug, ev_name, venue, loc,
+         _default_main_time(loc), _default_prelim_time(loc))
+        for ev_date, slug, ev_name, venue, loc in discovered
+    ]
     merged.sort(key=lambda x: x[0])
 
     new_events = []
