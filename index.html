@@ -914,10 +914,13 @@ try{prevOdds=JSON.parse(localStorage.getItem("ufc_prev_odds")||"{}");}catch(e){}
 (function(){var co={};EVENTS.forEach(function(ev){ev.fights.forEach(function(f){if(!f.odds)return;co[ev.date+"|"+f.f1.n+"|"+f.f2.n]={f1:f.odds.f1,f2:f.odds.f2};});});try{localStorage.setItem("ufc_prev_odds",JSON.stringify(co));}catch(e){}})();
 var _aiCache={};
 try{var _aiRaw=sessionStorage.getItem("ufc_ai_cache");if(_aiRaw)_aiCache=JSON.parse(_aiRaw);}catch(e){}
+var _aiFetching={};
 var AI_BREAKDOWN_URL=SUPABASE_URL+"/functions/v1/ai-breakdown";
 function fetchAIBreakdown(fight,ev,btn,panel){
   var cacheKey=ev.date+"|"+fight.f1.n+"|"+fight.f2.n;
   if(_aiCache[cacheKey]){renderAIPanel(panel,btn,_aiCache[cacheKey]);return;}
+  if(_aiFetching[cacheKey])return;
+  _aiFetching[cacheKey]=true;
   btn.classList.add("ai-loading");btn.textContent="⚡ Loading…";
   var s1=stOf(fight.f1),s2=stOf(fight.f2);
   var payload={
@@ -934,6 +937,7 @@ function fetchAIBreakdown(fight,ev,btn,panel){
     body:JSON.stringify(payload)
   }).then(function(r){return r.json().then(function(d){return{ok:r.ok,data:d};});})
   .then(function(res){
+    delete _aiFetching[cacheKey];
     btn.classList.remove("ai-loading");btn.textContent="⚡ AI";
     if(!res.ok){
       var msg=res.data&&res.data.error==="overloaded"?"AI is overloaded — tap to retry":"Analysis unavailable. Try again.";
@@ -945,6 +949,7 @@ function fetchAIBreakdown(fight,ev,btn,panel){
     try{_aiCache[cacheKey]=text;sessionStorage.setItem("ufc_ai_cache",JSON.stringify(_aiCache));}catch(e){}
     renderAIPanel(panel,btn,text);
   }).catch(function(){
+    delete _aiFetching[cacheKey];
     btn.classList.remove("ai-loading");btn.textContent="⚡ AI";
     panel.innerHTML="<div class='ai-err'>Analysis unavailable. Try again.</div>";
     panel.classList.add("open");
@@ -1038,7 +1043,7 @@ function sendPickChat(){
 }
 
 // ── Parlay Suggester ────────────────────────────────────────────
-var _parlayCache={};
+var _parlayCache={},_parlayFetching={};
 function openParlay(ev,ei){
   document.getElementById("parlayEvName").textContent=ev.name+" — Parlay Picks";
   var content=document.getElementById("parlayContent");
@@ -1046,6 +1051,8 @@ function openParlay(ev,ei){
   lockScroll();
   var cacheKey=ev.date;
   if(_parlayCache[cacheKey]){renderParlays(content,_parlayCache[cacheKey]);return;}
+  if(_parlayFetching[cacheKey]){content.innerHTML="<div class='parlay-loading'>Building parlay suggestions…</div>";return;}
+  _parlayFetching[cacheKey]=true;
   content.innerHTML="<div class='parlay-loading'>Building parlay suggestions…</div>";
   fetch(AI_BREAKDOWN_URL,{
     method:"POST",
@@ -1057,11 +1064,13 @@ function openParlay(ev,ei){
     })
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
   .then(function(d){
+    delete _parlayFetching[cacheKey];
     var text=d.breakdown||"";
     if(!text)throw new Error("Empty");
     _parlayCache[cacheKey]=text;
     renderParlays(content,text);
   }).catch(function(){
+    delete _parlayFetching[cacheKey];
     content.innerHTML="<div class='ai-err'>Couldn't load suggestions. Try again.</div>";
   });
 }
@@ -2502,10 +2511,14 @@ function openTrashTalk(){
   document.getElementById("trashHintSection").style.display="block";
   document.getElementById("trashSheet").classList.add("open");
 }
+var _trashGenerating=false;
 function generateTrashTalk(){
+  if(_trashGenerating)return;
   var hint=document.getElementById("trashHintInput").value.trim();
   var me=_trashMe,opponents=_trashOpponents,persona=_trashPersona,myRank=_trashMyRank;
   if(!me)return;
+  _trashGenerating=true;
+  var genBtn=document.querySelector(".lb-trash-gen");if(genBtn)genBtn.disabled=true;
   document.getElementById("trashHintSection").style.display="none";
   document.getElementById("trashText").textContent="Generating...";
   document.getElementById("trashTargets").style.display="none";
@@ -2552,6 +2565,9 @@ function generateTrashTalk(){
   }).catch(function(){
     document.getElementById("trashText").textContent="Couldn't generate trash talk right now. Try again!";
     document.getElementById("trashHintSection").style.display="block";
+  }).finally(function(){
+    _trashGenerating=false;
+    var genBtn=document.querySelector(".lb-trash-gen");if(genBtn)genBtn.disabled=false;
   });
 }
 
