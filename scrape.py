@@ -701,6 +701,41 @@ def extract_existing_odds(html):
     return existing
 
 
+def extract_recent_past_events(html, now, seen):
+    """
+    Read events already embedded in the HTML that fall within the last 30 days
+    but are NOT yet in `seen` (already discovered from Wikipedia).
+
+    Returns a list of 5-tuples (date, slug, name, venue, location) so that
+    step_build_events can re-scrape them and preserve their results.
+    """
+    results = []
+    cutoff  = now - timedelta(days=30)
+    # Match event-level fields as written by events_js (name before date)
+    pat = re.compile(
+        r'name:"([^"]+)",\s*\n\s*'
+        r'date:"(\d{4}-\d{2}-\d{2})",\s*\n\s*'
+        r'venue:"([^"]*)",\s*\n\s*'
+        r'loc:"([^"]*)"'
+    )
+    for m in pat.finditer(html):
+        ev_name, ev_date, venue, loc = m.groups()
+        # Derive the Wikipedia slug from the event name
+        slug = ev_name.replace(" ", "_")
+        if slug in seen:
+            continue
+        try:
+            ed = datetime.strptime(ev_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        except ValueError:
+            continue
+        if ed < cutoff or ed >= now - timedelta(days=2):
+            continue
+        seen.add(slug)
+        results.append((ev_date, slug, ev_name, venue, loc))
+        print(f"  Preserving past event: {ev_name} ({ev_date})", file=sys.stderr)
+    return results
+
+
 def get_odds_with_fallback(odds_index, existing_odds, f1_name, f2_name):
     """Return live odds, falling back to the odds already embedded in the HTML."""
     result = get_odds(odds_index, f1_name, f2_name)
@@ -1184,10 +1219,17 @@ def step_build_events(html, now):
 
     print("Building events from Wikipedia...", file=sys.stderr)
     discovered = discover_upcoming_events(now)
+    seen_slugs = {slug for _, slug, *_ in discovered}
+
+    # Include recent past events from the current HTML that Wikipedia's "Scheduled"
+    # section no longer lists — ensures results for events in the last 30 days are
+    # preserved when the EVENTS array is rebuilt.
+    past = extract_recent_past_events(html, now, seen_slugs)
+
     merged = [
         (ev_date, slug, ev_name, venue, loc,
          _default_main_time(loc), _default_prelim_time(loc))
-        for ev_date, slug, ev_name, venue, loc in discovered
+        for ev_date, slug, ev_name, venue, loc in (discovered + past)
     ]
     merged.sort(key=lambda x: x[0])
 
