@@ -2459,10 +2459,23 @@ function drawWheel(angle){
     ctx.strokeStyle="rgba(0,0,0,.35)";ctx.lineWidth=2;ctx.stroke();
     ctx.save();
     ctx.translate(cx,cy);ctx.rotate(start+arc/2);
-    ctx.textAlign="right";ctx.fillStyle="#fff";ctx.font="bold 12px Inter,sans-serif";
-    ctx.shadowColor="rgba(0,0,0,.5)";ctx.shadowBlur=3;
+    ctx.fillStyle="#fff";ctx.shadowColor="rgba(0,0,0,.7)";ctx.shadowBlur=4;
     var seg=_wheelSegments[i];
-    ctx.fillText(seg.emoji+" "+seg.label,r-8,4);
+    var words=seg.label.split(" ");
+    var mid=Math.ceil(words.length/2);
+    var line1=words.slice(0,mid).join(" "),line2=words.slice(mid).join(" ");
+    var hasTwo=line2.length>0;
+    // emoji
+    ctx.textAlign="right";ctx.font="18px sans-serif";
+    ctx.fillText(seg.emoji,r-10,hasTwo?-16:-10);
+    // label line(s)
+    ctx.font="bold 14px Inter,sans-serif";
+    if(hasTwo){
+      ctx.fillText(line1,r-10,2);
+      ctx.fillText(line2,r-10,18);
+    }else{
+      ctx.fillText(line1,r-10,6);
+    }
     ctx.restore();
   }
   ctx.beginPath();ctx.arc(cx,cy,14,0,Math.PI*2);
