@@ -2466,15 +2466,15 @@ function drawWheel(angle){
     var line1=words.slice(0,mid).join(" "),line2=words.slice(mid).join(" ");
     var hasTwo=line2.length>0;
     // emoji
-    ctx.textAlign="right";ctx.font="18px sans-serif";
-    ctx.fillText(seg.emoji,r-10,hasTwo?-16:-10);
+    ctx.textAlign="right";ctx.font="22px sans-serif";
+    ctx.fillText(seg.emoji,r-10,hasTwo?-22:-14);
     // label line(s)
-    ctx.font="bold 14px Inter,sans-serif";
+    ctx.font="bold 17px Inter,sans-serif";
     if(hasTwo){
       ctx.fillText(line1,r-10,2);
-      ctx.fillText(line2,r-10,18);
+      ctx.fillText(line2,r-10,22);
     }else{
-      ctx.fillText(line1,r-10,6);
+      ctx.fillText(line1,r-10,8);
     }
     ctx.restore();
   }
