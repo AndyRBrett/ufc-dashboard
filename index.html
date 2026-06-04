@@ -2842,11 +2842,16 @@ function loadLeaderboard(isLive){
       u.picks.forEach(function(p){if(!byEv[p.evName]){byEv[p.evName]=[];evOrder.push(p.evName);}byEv[p.evName].push(p);});
       function _fightIdx(p){for(var i=0;i<EVENTS.length;i++){if(EVENTS[i].date===p.evDate){for(var j=0;j<EVENTS[i].fights.length;j++){var f=EVENTS[i].fights[j];if((f.f1.n===p.f1&&f.f2.n===p.f2)||(f.f1.n===p.f2&&f.f2.n===p.f1))return j;}}}return 999;}
       evOrder.forEach(function(evName){byEv[evName].sort(function(a,b){return _fightIdx(a)-_fightIdx(b);});});
-      evOrder.forEach(function(evName){
+      evOrder.forEach(function(evName,evIdx){
         var evLbl=document.createElement("div");
-        evLbl.style.cssText="font-size:10px;font-weight:600;color:var(--muted);padding:8px 14px 4px;text-transform:uppercase;letter-spacing:.05em";
-        evLbl.textContent=evName.replace("UFC Fight Night: ","").replace("UFC ","");
+        evLbl.style.cssText="font-size:10px;font-weight:600;color:var(--muted);padding:8px 14px 4px;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;display:flex;align-items:center;user-select:none";
+        var evLblText=document.createElement("span");evLblText.style.flex="1";
+        evLblText.textContent=evName.replace("UFC Fight Night: ","").replace("UFC ","");
+        evLbl.appendChild(evLblText);
+        var evArrow=document.createElement("span");evArrow.style.cssText="font-size:9px;color:var(--muted);transition:transform .15s;padding-right:2px";evArrow.textContent="▼";
+        evLbl.appendChild(evArrow);
         detail.appendChild(evLbl);
+        var evPicksWrap=document.createElement("div");
         byEv[evName].forEach(function(p,pi,parr){
           var pr=document.createElement("div");
           var isLast=pi===parr.length-1;
@@ -2863,8 +2868,10 @@ function loadLeaderboard(isLive){
           else if(p.result===true){var pickPts=1+(p.methodCorrect?0.5:0);bdg.textContent="+"+pickPts+" pt"+(pickPts!==1?"s":"");bdg.style.color="var(--green)";}
           else{bdg.textContent="0 pts";bdg.style.color="var(--muted);opacity:.5";}
           pr.appendChild(bdg);
-          detail.appendChild(pr);
+          evPicksWrap.appendChild(pr);
         });
+        evLbl.onclick=function(e){e.stopPropagation();var open=evPicksWrap.style.display!=="none";evPicksWrap.style.display=open?"none":"";evArrow.style.transform=open?"rotate(-90deg)":"";};
+        detail.appendChild(evPicksWrap);
       });
       var expanded=false;
       row.onclick=function(){
