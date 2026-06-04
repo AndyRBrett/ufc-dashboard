@@ -2474,8 +2474,8 @@ function fireTrashTalk(){
   }).catch(function(){btn.disabled=false;});
 }
 function showIncomingTrashTalk(text){
-  var m=text.match(/—\s*(.+)$/);
-  var persona=m?m[1].trim():"A Famous Friend";
+  var lastDash=text.lastIndexOf('—');
+  var persona=lastDash>=0?text.slice(lastDash+1).trim():"A Famous Friend";
   if(!document.getElementById("lbPanel").classList.contains("open"))openLeaderboard();
   var sheet=document.getElementById("trashSheet");
   document.getElementById("trashPersona").textContent="🎤 "+persona+" says...";
