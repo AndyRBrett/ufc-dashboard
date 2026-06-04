@@ -10,12 +10,18 @@ const CORS_HEADERS = {
 };
 
 interface ReqBody {
-  event_date: string;
+  event_date?: string;
   type: string;
-  title: string;
-  body: string;
+  title?: string;
+  body?: string;
   exclude_user_id?: string | null;
   include_user_ids?: string[] | null;
+  // type="register" fields
+  user_id?: string;
+  nickname?: string;
+  endpoint?: string;
+  p256dh?: string;
+  auth?: string;
 }
 
 serve(async (req) => {
@@ -49,15 +55,36 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: "Invalid JSON" }), { status: 400, headers: CORS_HEADERS });
   }
 
-  if (!body.event_date || !body.type) {
-    return new Response(JSON.stringify({ error: "Missing event_date or type" }), { status: 400, headers: CORS_HEADERS });
-  }
-
   const sbHeaders = {
     "apikey": SERVICE_ROLE_KEY,
     "Authorization": `Bearer ${SERVICE_ROLE_KEY}`,
     "Content-Type": "application/json",
   };
+
+  // Subscription registration — uses service role to bypass RLS on push_subs
+  if (body.type === "register") {
+    const { user_id, nickname, endpoint, p256dh, auth } = body;
+    if (!user_id || !endpoint || !p256dh || !auth) {
+      return new Response(JSON.stringify({ error: "Missing required subscription fields" }), { status: 400, headers: CORS_HEADERS });
+    }
+    const upsertRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/push_subs?on_conflict=user_id`,
+      {
+        method: "POST",
+        headers: { ...sbHeaders, "Prefer": "resolution=merge-duplicates,return=minimal" },
+        body: JSON.stringify({ user_id, nickname: nickname || user_id.slice(0, 8), endpoint, p256dh, auth }),
+      }
+    );
+    if (!upsertRes.ok) {
+      const detail = await upsertRes.text();
+      return new Response(JSON.stringify({ error: "Failed to save subscription", detail }), { status: 502, headers: CORS_HEADERS });
+    }
+    return new Response(JSON.stringify({ ok: true }), { status: 200, headers: CORS_HEADERS });
+  }
+
+  if (!body.event_date || !body.type) {
+    return new Response(JSON.stringify({ error: "Missing event_date or type" }), { status: 400, headers: CORS_HEADERS });
+  }
 
   // Deduplicate: check if already sent for this event + type
   const logCheck = await fetch(
