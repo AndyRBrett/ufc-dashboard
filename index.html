@@ -2490,8 +2490,12 @@ function spinWheel(){
   document.getElementById("wheelResult").className="lb-wheel-result";
   var n=_wheelSegments.length,arc=Math.PI*2/n;
   var target=Math.floor(Math.random()*n);
-  var targetAngle=Math.PI*2-((target*arc)+(arc/2));
-  var totalSpin=(5+Math.random()*3)*Math.PI*2+targetAngle-(_wheelAngle%(Math.PI*2));
+  // Pointer is at the top = -π/2. Compute the final wheel angle that puts
+  // the centre of the target segment exactly under the pointer.
+  var desiredFinal=-Math.PI/2-target*arc-arc/2;
+  var diff=(desiredFinal-_wheelAngle)%(Math.PI*2);
+  if(diff<0)diff+=Math.PI*2;
+  var totalSpin=(5+Math.floor(Math.random()*3))*Math.PI*2+diff;
   var startAngle=_wheelAngle,duration=3500,start=null;
   function easeOut(t){return 1-Math.pow(1-t,4);}
   function step(ts){
