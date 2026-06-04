@@ -2536,28 +2536,28 @@ function generateTrashTalk(){
   document.getElementById("trashText").textContent="Generating...";
   document.getElementById("trashTargets").style.display="none";
   document.getElementById("trashSent").style.display="none";
-  var myPts=me.correct+me.methods*0.5+me.fotn;
   var myName=me.nickname||"The Champ";
-  var cardLines=opponents.map(function(o){return "#"+o.rank+" "+o.nickname+" — "+o.points+" pts, "+(o.accuracy!=null?o.accuracy+"% acc":"?% acc")+", "+o.streak+"-streak";}).join("\n")||"(no competition yet)";
+  var opponentNames=opponents.map(function(o){return o.nickname;}).join(", ")||"nobody worth mentioning";
+  var cardLines=opponents.map(function(o){return o.nickname+(o.rank?" (rank #"+o.rank+")":"");}).join("\n")||"(no competition)";
   var question;
   if(hint){
-    question="Write 2-3 sentences of SAVAGE, funny trash talk spoken EXACTLY in the authentic voice and style of "+persona+", roasting the other pickers on behalf of "+myName+". The entire message must be built around this angle: \""+hint+"\". That is the spine of the trash talk — open with it, hammer it, land on it. Use the names and stats only to reinforce that angle. Make "+myName+" sound untouchable. End with '— "+persona+"'. No preamble.";
+    question="You are "+persona+". Trash talk on behalf of "+myName+", burying their competition: "+opponentNames+". Build the entire bit around this angle: \""+hint+"\". Lead with "+persona+"'s personality, attitude, and voice — that's the whole point. You can drop one stat as flavor but never let numbers be the punchline. End with '— "+persona+"'. No preamble. 2-3 sentences max.";
   } else {
     var angles=[
-      "Mock their emoji icons — 🐺 isn't a wolf, 💎 picks are coal, 🔥 is getting extinguished.",
-      "Tear apart their worst pick accuracy and expose their hot-streak as a myth.",
-      "Focus on the point gap — make it sound completely insurmountable.",
-      "Call out whoever is closest to "+myName+" and explain exactly why they'll never catch up.",
-      "Roast their overall record like a boxing pre-fight press conference.",
-      ""
+      "Go full "+persona+" persona — lean into your most iconic catchphrases, attitude, and delivery.",
+      "Roast their nicknames and usernames like they're the most embarrassing things you've ever heard.",
+      "Talk about "+myName+" like they're already a legend and the rest are just tourists.",
+      "Make it personal — question their taste, their lifestyle, their life choices. Stats are irrelevant.",
+      "Channel pure "+persona+" chaos energy. This is a vibe, not a spreadsheet.",
+      "Dismiss the competition the way only "+persona+" can — with contempt, style, and zero mercy."
     ];
     var angleHint=angles[Math.floor(Math.random()*angles.length)];
-    question="Write 2-3 sentences of SAVAGE, funny trash talk spoken EXACTLY in the authentic voice and style of "+persona+", roasting the other pickers on behalf of "+myName+". "+(angleHint?angleHint+" ":"")+"Be hyper-specific about names and numbers. Always make "+myName+" sound like the undisputed GOAT — spin every stat positively. End with '— "+persona+"'. No preamble.";
+    question="You are "+persona+". Trash talk on behalf of "+myName+", burying their competition: "+opponentNames+". "+angleHint+" Insults and personality first — one stat reference at most, only if it lands harder with it. Speak in "+persona+"'s unmistakable voice. End with '— "+persona+"'. No preamble. 2-3 sentences max.";
   }
   fetch(AI_BREAKDOWN_URL,{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-    body:JSON.stringify({action:"chat",event:"UFC Picks Leaderboard",card:cardLines,userPicks:myName+" — Rank #"+myRank+" | "+myPts+" pts | "+(me.accuracy!=null?me.accuracy+"% accuracy":"")+" | "+me.currentStreak+"-win streak | "+me.correct+"/"+me.total+" correct",question:question})
+    body:JSON.stringify({action:"chat",event:"UFC Picks Leaderboard",card:cardLines,userPicks:myName+(myRank?" — Rank #"+myRank:""),question:question})
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(data){
     _trashText=data.breakdown||"No trash talk generated.";
     document.getElementById("trashText").textContent=_trashText;
