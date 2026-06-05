@@ -1,14 +1,45 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const CLAUDE_API_URL = "https://api.anthropic.com/v1/messages";
-const MODEL = "claude-haiku-4-5-20251001";
+// Overridable so the model can be upgraded without redeploying code.
+const MODEL = Deno.env.get("MODEL") ?? "claude-haiku-4-5-20251001";
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  "Content-Type": "application/json",
-};
+// Restrict which sites may call this (Claude-backed, cost-bearing) endpoint.
+// Comma-separated env override; defaults to the production GitHub Pages origin.
+const ALLOWED_ORIGINS = (Deno.env.get("ALLOWED_ORIGINS") ?? "https://andyrbrett.github.io")
+  .split(",").map((o) => o.trim()).filter(Boolean);
+
+function corsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get("Origin") ?? "";
+  const allowOrigin = ALLOWED_ORIGINS.includes("*")
+    ? "*"
+    : ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowOrigin,
+    "Vary": "Origin",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Content-Type": "application/json",
+  };
+}
+
+// Lightweight per-IP rate limit to cap Claude cost from runaway/abusive callers.
+// In-memory and per-instance (resets on cold start) — a cheap guard, not a hard global quota.
+const RATE_LIMIT = Number(Deno.env.get("RATE_LIMIT") ?? "20");          // requests...
+const RATE_WINDOW_MS = Number(Deno.env.get("RATE_WINDOW_MS") ?? "60000"); // ...per this window
+const _hits = new Map<string, number[]>();
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+  const recent = (_hits.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
+  recent.push(now);
+  _hits.set(ip, recent);
+  if (_hits.size > 5000) {
+    for (const [k, v] of _hits) {
+      if (v.every((t) => now - t >= RATE_WINDOW_MS)) _hits.delete(k);
+    }
+  }
+  return recent.length > RATE_LIMIT;
+}
 
 interface Fighter { n: string; rec: string; rk: string; }
 interface Stats { slpm: number; acc: number; td: number; tdd: number; ko: number; sub: number; stn: string; }
@@ -98,29 +129,35 @@ ${d.card}`;
 }
 
 serve(async (req) => {
+  const CORS = corsHeaders(req);
   if (req.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: CORS_HEADERS });
+    return new Response(null, { status: 204, headers: CORS });
   }
   if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: CORS });
   }
 
   const ANON_KEY = Deno.env.get("SB_ANON_KEY") ?? "";
   const auth = req.headers.get("Authorization") ?? "";
   if (ANON_KEY && auth !== `Bearer ${ANON_KEY}`) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: CORS });
+  }
+
+  const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+  if (rateLimited(ip)) {
+    return new Response(JSON.stringify({ error: "Rate limit exceeded. Slow down." }), { status: 429, headers: CORS });
   }
 
   let body: ReqBody;
   try {
     body = await req.json();
   } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON" }), { status: 400, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ error: "Invalid JSON" }), { status: 400, headers: CORS });
   }
 
   const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
   if (!apiKey) {
-    return new Response(JSON.stringify({ error: "Server misconfigured: missing API key" }), { status: 500, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ error: "Server misconfigured: missing API key" }), { status: 500, headers: CORS });
   }
 
   const action = body.action ?? "breakdown";
@@ -136,6 +173,13 @@ serve(async (req) => {
     prompt = buildTrashTalkPrompt(body);
     maxTokens = 200;
   } else {
+    // breakdown needs both fighters — guard before the non-null assertions in buildBreakdownPrompt
+    if (!body.f1?.n || !body.f2?.n) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields: f1 and f2" }),
+        { status: 400, headers: CORS }
+      );
+    }
     prompt = buildBreakdownPrompt(body);
     maxTokens = 250;
   }
@@ -166,11 +210,11 @@ serve(async (req) => {
     const overloaded = claudeRes!.status === 529;
     return new Response(
       JSON.stringify({ error: overloaded ? "overloaded" : "Claude API error", detail: err }),
-      { status: 502, headers: CORS_HEADERS }
+      { status: 502, headers: CORS }
     );
   }
 
-  const data = await claudeRes.json();
+  const data = await claudeRes!.json();
   const text: string = data?.content?.[0]?.text ?? "";
-  return new Response(JSON.stringify({ breakdown: text }), { status: 200, headers: CORS_HEADERS });
+  return new Response(JSON.stringify({ breakdown: text }), { status: 200, headers: CORS });
 });

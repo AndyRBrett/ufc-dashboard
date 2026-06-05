@@ -4,7 +4,7 @@ on:
   schedule:
     # Daily 9am UTC - card structure + odds update
     - cron: "0 9 * * *"
-    # Every 15 min Sat 4pm-4am UTC (noon-midnight ET) - fight night results
+    # Every 5 min Sat 4pm-4am UTC (noon-midnight ET) - fight night results
     - cron: "*/5 16-23 * * 6"
     - cron: "*/5 0-4 * * 0"
 
@@ -22,6 +22,11 @@ jobs:
           python-version: "3.12"
       - run: pip install requests beautifulsoup4
       - run: pip install pywebpush || echo "pywebpush optional — push notifications disabled"
+      - name: Guard — fail fast if the scraper is broken before it can overwrite index.html
+        run: |
+          pip install pytest
+          python -m py_compile scrape.py
+          python -m pytest -q
       - run: python scrape.py
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}

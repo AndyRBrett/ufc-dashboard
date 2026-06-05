@@ -60,6 +60,20 @@ MONTH_MAP.update({
     ])
 })
 
+# ---------------------------------------------------------------------------
+# Compiled regex patterns (hoisted to module scope so they compile once)
+# ---------------------------------------------------------------------------
+
+# Wikipedia rankings table: "! <rank>\n|...flagicon...\n|[[Fighter Name]]"
+RANKINGS_RE = re.compile(
+    r"^!\s*(\d{1,2})(?:\s*\([^)]*\))?\s*\n\|[^\n]*flagicon[^\n]*\n\|\s*\[\[(?:[^\]|]+\|)?([^\]]+)\]\]",
+    re.MULTILINE,
+)
+# Odds already embedded in a previously generated index.html.
+EXISTING_ODDS_RE = re.compile(
+    r'odds:\{f1:(-?\d+),f2:(-?\d+)\}[^f]*?f1:\{n:"([^"]+)"[^}]*\},f2:\{n:"([^"]+)"'
+)
+
 
 # ---------------------------------------------------------------------------
 # Text utilities
@@ -412,11 +426,7 @@ def fetch_rankings():
         print("Rankings: could not fetch", file=sys.stderr)
         return {}
     rankings = {}
-    for m in re.finditer(
-        r"^!\s*(\d{1,2})(?:\s*\([^)]*\))?\s*\n\|[^\n]*flagicon[^\n]*\n\|\s*\[\[(?:[^\]|]+\|)?([^\]]+)\]\]",
-        wt,
-        re.MULTILINE,
-    ):
+    for m in RANKINGS_RE.finditer(wt):
         rank = int(m.group(1))
         name = re.sub(r"\s*\([^)]*\)\s*", "", clean_wiki(m.group(2).strip())).strip()
         key  = asc(name)
@@ -560,7 +570,7 @@ def _parse_results_wikitable(wikitext):
 
 def _flush_wikitable_row(row):
     """Convert a raw wikitable row into a result dict, or None if invalid."""
-    row = [clean_wiki(c) for c in row if clean_wiki(c)]
+    row = [cleaned for cleaned in (clean_wiki(c) for c in row) if cleaned]
     if len(row) < 3:
         return None
     skip_headers = [
@@ -690,10 +700,7 @@ def get_odds(odds_index, f1_name, f2_name):
 def extract_existing_odds(html):
     """Read odds already embedded in the HTML to preserve them when the API has no data."""
     existing = {}
-    pat = re.compile(
-        r'odds:\{f1:(-?\d+),f2:(-?\d+)\}[^f]*?f1:\{n:"([^"]+)"[^}]*\},f2:\{n:"([^"]+)"'
-    )
-    for m in pat.finditer(html):
+    for m in EXISTING_ODDS_RE.finditer(html):
         f1o, f2o, f1n, f2n = int(m.group(1)), int(m.group(2)), m.group(3), m.group(4)
         key = frozenset([last_name(f1n), last_name(f2n)])
         existing[key] = {"f1_name": f1n, "f2_name": f2n, "f1_odds": f1o, "f2_odds": f2o}
@@ -1037,6 +1044,11 @@ def send_push_notifications(new_results):
     subs  = sb_get("/rest/v1/push_subs?select=*")
     picks = sb_get("/rest/v1/picks?select=*")
     if not subs or not picks:
+        print(
+            f"Push notifications skipped: no {'subscriptions' if not subs else 'picks'} "
+            "available (Supabase empty or unreachable)",
+            file=sys.stderr,
+        )
         return
     sub_map = {s["user_id"]: s for s in subs}
     for res in new_results:
@@ -1379,19 +1391,24 @@ def step_build_events(html, now):
                     if cached.get("rec"):
                         side["record"] = cached["rec"]
 
-    # Rematch detection via UFCStats opponent history
+    # Rematch detection via UFCStats opponent history.
+    # Normalise each fighter's opponent list once into a set (cached per fighter,
+    # since fighters recur across the card) so each check is an O(1) lookup.
+    _norm_opp_cache = {}
+    def _norm_opp_set(name):
+        if name not in _norm_opp_cache:
+            opps = stats_cache.get(name, {}).get("opp", [])
+            _norm_opp_cache[name] = {_norm_name(o) for o in opps}
+        return _norm_opp_cache[name]
+
     for ev in new_events:
         for fight in ev["fights"]:
             if fight.get("rematch"):
                 continue  # already flagged by Wikipedia
             f1n = fight["f1"]["name"]
             f2n = fight["f2"]["name"]
-            f1_opps = stats_cache.get(f1n, {}).get("opp", [])
-            f2_opps = stats_cache.get(f2n, {}).get("opp", [])
-            f2_norm = _norm_name(f2n)
-            f1_norm = _norm_name(f1n)
-            if (any(_norm_name(o) == f2_norm for o in f1_opps) or
-                    any(_norm_name(o) == f1_norm for o in f2_opps)):
+            if (_norm_name(f2n) in _norm_opp_set(f1n) or
+                    _norm_name(f1n) in _norm_opp_set(f2n)):
                 fight["rematch"] = True
                 print(f"  Rematch detected: {f1n} vs {f2n}", file=sys.stderr)
 
