@@ -2446,7 +2446,10 @@ var _wheelAngle=0,_wheelSpinning=false;
 function drawWheel(angle){
   var canvas=document.getElementById("wheelCanvas");
   if(!canvas)return;
+  var dpr=window.devicePixelRatio||1;
+  if(canvas._dpr!==dpr){canvas.width=280*dpr;canvas.height=280*dpr;canvas.style.width="280px";canvas.style.height="280px";canvas._dpr=dpr;}
   var ctx=canvas.getContext("2d");
+  ctx.setTransform(dpr,0,0,dpr,0,0);
   var cx=140,cy=140,r=132;
   var n=_wheelSegments.length,arc=Math.PI*2/n;
   ctx.clearRect(0,0,280,280);
@@ -2457,7 +2460,7 @@ function drawWheel(angle){
     ctx.strokeStyle="rgba(0,0,0,.35)";ctx.lineWidth=2;ctx.stroke();
     ctx.save();
     ctx.translate(cx,cy);ctx.rotate(start+arc/2);
-    ctx.fillStyle="#fff";ctx.shadowColor="rgba(0,0,0,.7)";ctx.shadowBlur=4;
+    ctx.fillStyle="#fff";ctx.shadowColor="rgba(0,0,0,.6)";ctx.shadowBlur=2;
     var seg=_wheelSegments[i];
     var words=seg.label.split(" ");
     var mid=Math.ceil(words.length/2);
