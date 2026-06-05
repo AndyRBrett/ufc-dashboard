@@ -2,12 +2,24 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import webpush from "npm:web-push";
 // v2 — supports include_user_ids for targeted push
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  "Content-Type": "application/json",
-};
+// Restrict which sites may invoke this endpoint. Comma-separated env override;
+// defaults to the production GitHub Pages origin.
+const ALLOWED_ORIGINS = (Deno.env.get("ALLOWED_ORIGINS") ?? "https://andyrbrett.github.io")
+  .split(",").map((o) => o.trim()).filter(Boolean);
+
+function corsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get("Origin") ?? "";
+  const allowOrigin = ALLOWED_ORIGINS.includes("*")
+    ? "*"
+    : ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowOrigin,
+    "Vary": "Origin",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Content-Type": "application/json",
+  };
+}
 
 interface ReqBody {
   event_date?: string;
@@ -25,17 +37,18 @@ interface ReqBody {
 }
 
 serve(async (req) => {
+  const CORS = corsHeaders(req);
   if (req.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: CORS_HEADERS });
+    return new Response(null, { status: 204, headers: CORS });
   }
   if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: CORS });
   }
 
   const ANON_KEY = Deno.env.get("SB_ANON_KEY") ?? "";
   const auth = req.headers.get("Authorization") ?? "";
   if (ANON_KEY && auth !== `Bearer ${ANON_KEY}`) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: CORS });
   }
 
   const VAPID_PRIVATE_KEY = Deno.env.get("VAPID_PRIVATE_KEY");
@@ -45,14 +58,14 @@ serve(async (req) => {
   const VAPID_PUBLIC_KEY = Deno.env.get("VAPID_PUBLIC_KEY");
 
   if (!VAPID_PRIVATE_KEY || !VAPID_SUBJECT || !SUPABASE_URL || !SERVICE_ROLE_KEY || !VAPID_PUBLIC_KEY) {
-    return new Response(JSON.stringify({ error: "Server misconfigured" }), { status: 500, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ error: "Server misconfigured" }), { status: 500, headers: CORS });
   }
 
   let body: ReqBody;
   try {
     body = await req.json();
   } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON" }), { status: 400, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ error: "Invalid JSON" }), { status: 400, headers: CORS });
   }
 
   const sbHeaders = {
@@ -65,7 +78,7 @@ serve(async (req) => {
   if (body.type === "register") {
     const { user_id, nickname, endpoint, p256dh, auth } = body;
     if (!user_id || !endpoint || !p256dh || !auth) {
-      return new Response(JSON.stringify({ error: "Missing required subscription fields" }), { status: 400, headers: CORS_HEADERS });
+      return new Response(JSON.stringify({ error: "Missing required subscription fields" }), { status: 400, headers: CORS });
     }
     const upsertRes = await fetch(
       `${SUPABASE_URL}/rest/v1/push_subs?on_conflict=user_id`,
@@ -77,13 +90,13 @@ serve(async (req) => {
     );
     if (!upsertRes.ok) {
       const detail = await upsertRes.text();
-      return new Response(JSON.stringify({ error: "Failed to save subscription", detail }), { status: 502, headers: CORS_HEADERS });
+      return new Response(JSON.stringify({ error: "Failed to save subscription", detail }), { status: 502, headers: CORS });
     }
-    return new Response(JSON.stringify({ ok: true }), { status: 200, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ ok: true }), { status: 200, headers: CORS });
   }
 
   if (!body.event_date || !body.type) {
-    return new Response(JSON.stringify({ error: "Missing event_date or type" }), { status: 400, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ error: "Missing event_date or type" }), { status: 400, headers: CORS });
   }
 
   // Deduplicate: check if already sent for this event + type
@@ -93,7 +106,7 @@ serve(async (req) => {
   );
   const logRows = await logCheck.json();
   if (Array.isArray(logRows) && logRows.length > 0) {
-    return new Response(JSON.stringify({ sent: 0, skipped: true }), { status: 200, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ sent: 0, skipped: true }), { status: 200, headers: CORS });
   }
 
   // Insert log entry first (prevents race conditions — second caller will see this row)
@@ -104,7 +117,7 @@ serve(async (req) => {
   });
   if (!logInsert.ok && logInsert.status !== 409) {
     // If insert failed for a reason other than duplicate, another caller likely won the race
-    return new Response(JSON.stringify({ sent: 0, skipped: true }), { status: 200, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ sent: 0, skipped: true }), { status: 200, headers: CORS });
   }
 
   // Fetch push subscriptions — targeted list takes priority, then exclude-self, then all
@@ -119,12 +132,12 @@ serve(async (req) => {
   }
   const subsRes = await fetch(subsUrl, { headers: sbHeaders });
   if (!subsRes.ok) {
-    return new Response(JSON.stringify({ error: "Failed to fetch subscriptions" }), { status: 502, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ error: "Failed to fetch subscriptions" }), { status: 502, headers: CORS });
   }
   const subs: { endpoint: string; p256dh: string; auth: string }[] = await subsRes.json();
 
   if (!subs.length) {
-    return new Response(JSON.stringify({ sent: 0, skipped: false, reason: "no subscribers" }), { status: 200, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ sent: 0, skipped: false, reason: "no subscribers" }), { status: 200, headers: CORS });
   }
 
   webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
@@ -151,5 +164,5 @@ serve(async (req) => {
     }
   }));
 
-  return new Response(JSON.stringify({ sent, failed }), { status: 200, headers: CORS_HEADERS });
+  return new Response(JSON.stringify({ sent, failed }), { status: 200, headers: CORS });
 });

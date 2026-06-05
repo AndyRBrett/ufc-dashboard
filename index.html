@@ -1769,6 +1769,19 @@ function checkFightNight(){
   else{banner.classList.remove("show");}
 }
 
+// Render a loaded photo URL into a circular slot (shared by every code path that shows a fighter photo).
+function _setPhoto(container,src){
+  var img=document.createElement("img");
+  img.style.cssText="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;";
+  container.style.position="relative";
+  img.onload=function(){container.appendChild(img);};
+  img.src=src;
+  if(img.complete&&img.naturalHeight!==0)container.appendChild(img);
+}
+// Slots waiting on an in-flight fetch, keyed by fighter name, so one fetch fills every card for that fighter.
+var _photoWaiters={};
+function _persistPhotos(){try{localStorage.setItem("ufc_photos",JSON.stringify(FIGHTER_PHOTOS));}catch(e){}}
+
 function makeFighter(fighter,right,size,regIdx,side,isWinner){
   var wrap=document.createElement("div");wrap.className="ft"+(right?" ftr":"");
   if(size!=="xs"){
@@ -1780,16 +1793,15 @@ function makeFighter(fighter,right,size,regIdx,side,isWinner){
     var _cachedRaw=FIGHTER_PHOTOS[fighter.n];
     var cached=_safeImgUrl(_cachedRaw);
     if(cached){
-      var ph=document.createElement("img");
-      ph.style.cssText="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;";
-      phWrap.style.position="relative";
-      ph.onload=function(){phWrap.appendChild(ph);};
-      ph.src=cached;
-      if(ph.complete&&ph.naturalHeight!==0)phWrap.appendChild(ph);
+      _setPhoto(phWrap,cached);
+    } else if(_cachedRaw===null){
+      // A fetch for this fighter is already in flight (kicked off by another card) — just wait for it.
+      (_photoWaiters[fighter.n]=_photoWaiters[fighter.n]||[]).push(phWrap);
     } else if(_cachedRaw===undefined){
       FIGHTER_PHOTOS[fighter.n]=null;
+      (_photoWaiters[fighter.n]=_photoWaiters[fighter.n]||[]).push(phWrap);
       var wn=fighter.n.replace(/'/g,"").replace(/ /g,"_");
-      (function(wrap2,fn){
+      (function(fn){
         fetch("https://en.wikipedia.org/w/api.php?action=query&titles="+encodeURIComponent(wn)+"&prop=pageimages&format=json&pithumbsize=80&origin=*")
           .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
           .then(function(d){
@@ -1797,20 +1809,14 @@ function makeFighter(fighter,right,size,regIdx,side,isWinner){
             var page=pages&&Object.values(pages)[0];
             var src=_safeImgUrl(page&&page.thumbnail&&page.thumbnail.source);
             if(src){
-              FIGHTER_PHOTOS[fn]=src;
-              try{localStorage.setItem("ufc_photos",JSON.stringify(FIGHTER_PHOTOS));}catch(e){}
-              var img=document.createElement("img");
-              img.style.cssText="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;";
-              wrap2.style.position="relative";
-              img.onload=function(){wrap2.appendChild(img);};
-              img.src=src;
-              if(img.complete&&img.naturalHeight!==0)wrap2.appendChild(img);
+              FIGHTER_PHOTOS[fn]=src;_persistPhotos();
+              (_photoWaiters[fn]||[]).forEach(function(c){_setPhoto(c,src);});
             } else {
-              FIGHTER_PHOTOS[fn]="none";
-              try{localStorage.setItem("ufc_photos",JSON.stringify(FIGHTER_PHOTOS));}catch(e){}
+              FIGHTER_PHOTOS[fn]="none";_persistPhotos();
             }
-          }).catch(function(){FIGHTER_PHOTOS[fighter.n]="none";});
-      })(phWrap,fighter.n);
+            delete _photoWaiters[fn];
+          }).catch(function(){FIGHTER_PHOTOS[fn]="none";delete _photoWaiters[fn];});
+      })(fighter.n);
     }
     wrap.appendChild(phWrap);
   }
