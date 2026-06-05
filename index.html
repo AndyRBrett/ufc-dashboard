@@ -911,7 +911,9 @@ var EVENTS=[
 ];
 
 var FIGHTS=[];
-function buildReg(){FIGHTS=[];EVENTS.forEach(function(ev,ei){ev.fights.forEach(function(f,fi){FIGHTS.push({ei:ei,fi:fi,ev:ev,fight:f});});});}
+var _fightIndex=null;
+function _buildFightIndex(){_fightIndex={};EVENTS.forEach(function(ev){ev.fights.forEach(function(f){_fightIndex[ev.date+"|"+f.f1.n+"|"+f.f2.n]={ev:ev,fight:f};});});}
+function buildReg(){FIGHTS=[];EVENTS.forEach(function(ev,ei){ev.fights.forEach(function(f,fi){FIGHTS.push({ei:ei,fi:fi,ev:ev,fight:f});});});_buildFightIndex();}
 
 var curFilter="all",curSearch="";
 var FIGHTER_PHOTOS={};
@@ -947,12 +949,13 @@ function fetchAIBreakdown(fight,ev,btn,panel){
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
     body:JSON.stringify(payload)
-  }).then(function(r){return r.json().then(function(d){return{ok:r.ok,data:d};});})
+  }).then(function(r){return r.json().then(function(d){return{ok:r.ok,status:r.status,data:d};});})
   .then(function(res){
     delete _aiFetching[cacheKey];
     btn.classList.remove("ai-loading");btn.textContent="⚡ AI";
     if(!res.ok){
       var msg=res.data&&res.data.error==="overloaded"?"AI is overloaded — tap to retry":"Analysis unavailable. Try again.";
+      if(res.status===429)msg="Too many AI requests — give it a moment.";
       panel.innerHTML="<div class='ai-err'>"+msg+"</div>";
       panel.classList.add("open");return;
     }
@@ -1165,7 +1168,7 @@ function saveConf(){try{localStorage.setItem("ufc_conf",JSON.stringify(preds_con
 
 function _sbHeaders(){return{apikey:SUPABASE_ANON,Authorization:_authBearer(),"Content-Type":"application/json"};}
 function _sbQ(ev,fight){return"?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(ev.date)+"&f1=eq."+encodeURIComponent(fight.f1.n)+"&f2=eq."+encodeURIComponent(fight.f2.n);}
-function findByKey(key){var p=key.split("|");if(p.length<3)return null;for(var i=0;i<EVENTS.length;i++){if(EVENTS[i].date===p[0]){for(var j=0;j<EVENTS[i].fights.length;j++){var f=EVENTS[i].fights[j];if(f.f1.n===p[1]&&f.f2.n===p[2])return{ev:EVENTS[i],fight:f};}}}return null;}
+function findByKey(key){if(!_fightIndex)_buildFightIndex();return _fightIndex[key]||null;}
 
 function syncPick(ev,fight,notifyFriends){
   if(!userName)return;

@@ -1391,19 +1391,24 @@ def step_build_events(html, now):
                     if cached.get("rec"):
                         side["record"] = cached["rec"]
 
-    # Rematch detection via UFCStats opponent history
+    # Rematch detection via UFCStats opponent history.
+    # Normalise each fighter's opponent list once into a set (cached per fighter,
+    # since fighters recur across the card) so each check is an O(1) lookup.
+    _norm_opp_cache = {}
+    def _norm_opp_set(name):
+        if name not in _norm_opp_cache:
+            opps = stats_cache.get(name, {}).get("opp", [])
+            _norm_opp_cache[name] = {_norm_name(o) for o in opps}
+        return _norm_opp_cache[name]
+
     for ev in new_events:
         for fight in ev["fights"]:
             if fight.get("rematch"):
                 continue  # already flagged by Wikipedia
             f1n = fight["f1"]["name"]
             f2n = fight["f2"]["name"]
-            f1_opps = stats_cache.get(f1n, {}).get("opp", [])
-            f2_opps = stats_cache.get(f2n, {}).get("opp", [])
-            f2_norm = _norm_name(f2n)
-            f1_norm = _norm_name(f1n)
-            if (any(_norm_name(o) == f2_norm for o in f1_opps) or
-                    any(_norm_name(o) == f1_norm for o in f2_opps)):
+            if (_norm_name(f2n) in _norm_opp_set(f1n) or
+                    _norm_name(f1n) in _norm_opp_set(f2n)):
                 fight["rematch"] = True
                 print(f"  Rematch detected: {f1n} vs {f2n}", file=sys.stderr)
 

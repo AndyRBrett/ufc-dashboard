@@ -22,6 +22,11 @@ jobs:
           python-version: "3.12"
       - run: pip install requests beautifulsoup4
       - run: pip install pywebpush || echo "pywebpush optional — push notifications disabled"
+      - name: Guard — fail fast if the scraper is broken before it can overwrite index.html
+        run: |
+          pip install pytest
+          python -m py_compile scrape.py
+          python -m pytest -q
       - run: python scrape.py
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}

@@ -23,6 +23,24 @@ function corsHeaders(req: Request): Record<string, string> {
   };
 }
 
+// Lightweight per-IP rate limit to cap Claude cost from runaway/abusive callers.
+// In-memory and per-instance (resets on cold start) — a cheap guard, not a hard global quota.
+const RATE_LIMIT = Number(Deno.env.get("RATE_LIMIT") ?? "20");          // requests...
+const RATE_WINDOW_MS = Number(Deno.env.get("RATE_WINDOW_MS") ?? "60000"); // ...per this window
+const _hits = new Map<string, number[]>();
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+  const recent = (_hits.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
+  recent.push(now);
+  _hits.set(ip, recent);
+  if (_hits.size > 5000) {
+    for (const [k, v] of _hits) {
+      if (v.every((t) => now - t >= RATE_WINDOW_MS)) _hits.delete(k);
+    }
+  }
+  return recent.length > RATE_LIMIT;
+}
+
 interface Fighter { n: string; rec: string; rk: string; }
 interface Stats { slpm: number; acc: number; td: number; tdd: number; ko: number; sub: number; stn: string; }
 interface FormEntry { r: string; m: string; }
@@ -123,6 +141,11 @@ serve(async (req) => {
   const auth = req.headers.get("Authorization") ?? "";
   if (ANON_KEY && auth !== `Bearer ${ANON_KEY}`) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: CORS });
+  }
+
+  const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+  if (rateLimited(ip)) {
+    return new Response(JSON.stringify({ error: "Rate limit exceeded. Slow down." }), { status: 429, headers: CORS });
   }
 
   let body: ReqBody;
