@@ -214,7 +214,7 @@ serve(async (req) => {
     );
   }
 
-  const data = await claudeRes.json();
+  const data = await claudeRes!.json();
   const text: string = data?.content?.[0]?.text ?? "";
   return new Response(JSON.stringify({ breakdown: text }), { status: 200, headers: CORS });
 });
