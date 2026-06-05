@@ -1925,15 +1925,15 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
   })(regIdx,mu,fight);}
   if(fight.odds){
     var or=document.createElement("div");or.className="odds-row";
-    var fav1=fight.odds.f1<0;
+    var pickem=fight.odds.f1===fight.odds.f2;var fav1=fight.odds.f1<fight.odds.f2;
     var s1=document.createElement("div");s1.className="odds-side";
     var on1=document.createElement("div");on1.className="odds-nm";on1.textContent=fight.f1.n.split(" ").pop();
-    var ov1=document.createElement("div");ov1.className="odds-val "+(fav1?"fav":"dog");ov1.textContent=fmtOdds(fight.odds.f1);
+    var ov1=document.createElement("div");ov1.className="odds-val "+(pickem?"":fav1?"fav":"dog");ov1.textContent=fmtOdds(fight.odds.f1);
     s1.appendChild(on1);s1.appendChild(ov1);or.appendChild(s1);
     var oc=document.createElement("div");oc.className="odds-ctr";oc.textContent="MONEYLINE";or.appendChild(oc);
     var s2=document.createElement("div");s2.className="odds-side osr";
     var on2=document.createElement("div");on2.className="odds-nm";on2.textContent=fight.f2.n.split(" ").pop();
-    var ov2=document.createElement("div");ov2.className="odds-val "+(!fav1?"fav":"dog");ov2.textContent=fmtOdds(fight.odds.f2);
+    var ov2=document.createElement("div");ov2.className="odds-val "+(pickem?"":fav1?"dog":"fav");ov2.textContent=fmtOdds(fight.odds.f2);
     s2.appendChild(on2);s2.appendChild(ov2);or.appendChild(s2);
     var ok=EVENTS[ei]?EVENTS[ei].date+"|"+fight.f1.n+"|"+fight.f2.n:"";var po=ok?prevOdds[ok]:null;
     if(po&&po.f1!==fight.odds.f1){var mv1=document.createElement("span");mv1.className="odds-mv "+(fight.odds.f1<po.f1?"odds-mv-up":"odds-mv-dn");mv1.title="Was "+(po.f1>0?"+":"")+po.f1;mv1.textContent=fight.odds.f1<po.f1?"▲":"▼";ov1.appendChild(mv1);}
