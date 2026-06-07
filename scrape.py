@@ -281,7 +281,7 @@ def fetch_wikitext(slug):
 _US_REGIONS = re.compile(
     r"\b(Nevada|Texas|Florida|New York|New Jersey|Arizona|California|"
     r"Las Vegas|Houston|Newark|Inglewood|Sacramento|"
-    r"Washington,?\s*D\.?C\.?|Canada|Vancouver|Toronto)\b",
+    r"Washington|Canada|Vancouver|Toronto)\b",
     re.IGNORECASE,
 )
 
