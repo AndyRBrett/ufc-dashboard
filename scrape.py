@@ -1468,6 +1468,15 @@ def main():
     # Step 2: full rebuild — events, odds, stats, rankings
     updated = step_build_events(html, now)
     if len(updated) >= 30000:
+        # A rebuild re-adds recently-finished events as "pending". Inject their
+        # results in the same run so a freshly restored card (e.g. one that had
+        # dropped out of the data) is scored immediately instead of waiting for a
+        # second pass. Push is suppressed here — these are catch-up results, not
+        # live ones, and would otherwise fire stale notifications.
+        reinjected, _ = step_inject_results(updated, now)
+        if reinjected:
+            updated = reinjected
+            print("Results injected after rebuild", file=sys.stderr)
         index.write_text(updated, encoding="utf-8")
         new_events = re.findall(r'name:"([^"]+)"', updated)
         new_fights = len(re.findall(r'"lbl":|lbl:', updated))
