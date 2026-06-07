@@ -735,7 +735,11 @@ def extract_recent_past_events(html, now, seen):
             ed = datetime.strptime(ev_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
         except ValueError:
             continue
-        if ed < cutoff or ed >= now - timedelta(days=2):
+        # Preserve recent past events through today. (The upcoming-events scraper
+        # only sees events still on Wikipedia's "Scheduled" list, which drops them
+        # the moment they finish — so just-completed cards must be preserved here,
+        # or they vanish into a gap and their picks can no longer be scored.)
+        if ed < cutoff or ed > now:
             continue
         seen.add(slug)
         results.append((ev_date, slug, ev_name, venue, loc))
