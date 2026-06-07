@@ -2803,7 +2803,11 @@ function loadLeaderboard(isLive){
     if(nextEv&&nextMainFights.length){
       var evHdr=document.createElement("div");
       evHdr.style.cssText="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;padding:2px 2px 10px";
-      evHdr.textContent="Next up: "+nextEv.name.replace("UFC Fight Night: ","").replace("UFC ","UFC ");
+      var _anyLive=nextEv.fights.some(function(f){return f.state==="in";});
+      var _anyPre=nextEv.fights.some(function(f){return f.state==="pre";});
+      var _allPost=nextEv.fights.every(function(f){return f.state==="post";});
+      var _hdrLbl=_allPost?"Latest":(_anyLive||!_anyPre)?"Live":"Next up";
+      evHdr.textContent=_hdrLbl+": "+nextEv.name.replace("UFC Fight Night: ","").replace("UFC ","UFC ");
       body.appendChild(evHdr);
     }
     sorted.forEach(function(u,i){
