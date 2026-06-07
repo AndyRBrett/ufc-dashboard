@@ -294,6 +294,20 @@ def _default_prelim_time(loc):
     return "17:00" if _US_REGIONS.search(loc or "") else "TBD"
 
 
+# Outlier cards whose published start times differ from the location-based
+# default. Keyed by exact event name -> (main_time, prelim_time) in 24h ET.
+_TIME_OVERRIDES = {
+    "UFC Freedom 250": ("20:00", "16:00"),  # White House: prelims 4pm ET, main 8pm ET
+}
+
+
+def _event_times(ev_name, loc):
+    """Published times for known outlier cards, else location-based defaults."""
+    if ev_name in _TIME_OVERRIDES:
+        return _TIME_OVERRIDES[ev_name]
+    return _default_main_time(loc), _default_prelim_time(loc)
+
+
 def _infer_venue_loc_from_row(row, after_pos):
     """
     Extract venue and location from the row text after the event link position.
@@ -1243,8 +1257,7 @@ def step_build_events(html, now):
     past = extract_recent_past_events(html, now, seen_slugs)
 
     merged = [
-        (ev_date, slug, ev_name, venue, loc,
-         _default_main_time(loc), _default_prelim_time(loc))
+        (ev_date, slug, ev_name, venue, loc) + _event_times(ev_name, loc)
         for ev_date, slug, ev_name, venue, loc in (discovered + past)
     ]
     merged.sort(key=lambda x: x[0])
