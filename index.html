@@ -1163,7 +1163,7 @@ function syncPick(ev,fight,notifyFriends){
   var data={user_id:USER_ID,nickname:userName,event_date:ev.date,event_name:ev.name,f1:fight.f1.n,f2:fight.f2.n,pick:myPick,method:preds_method[key]||"",confidence:preds_conf[key]||0,updated_at:new Date().toISOString(),bonus_pick:preds_fotn["fotn_"+ev.date]||null};
   return _authReady.then(function(){
     var hdrs=Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return=minimal"});
-    return fetch(SUPABASE_URL+"/rest/v1/picks",{method:"POST",headers:hdrs,body:JSON.stringify(data)})
+    return fetch(SUPABASE_URL+"/rest/v1/picks?on_conflict=user_id,event_date,f1,f2",{method:"POST",headers:hdrs,body:JSON.stringify(data)})
       .then(function(r){
         if(!r.ok)r.text().then(function(t){console.error("syncPick failed",r.status,t);});
         else{
@@ -3171,7 +3171,7 @@ document.addEventListener("DOMContentLoaded",function(){
 <div class="lb-panel" id="lbPanel">
   <div class="lb-hdr">
     <button class="btn-icon" onclick="closeLeaderboard()" title="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <div class="lb-title">Leaderboard <span style="font-size:9px;color:var(--muted);font-weight:400;letter-spacing:0;vertical-align:middle">v2026-06-07-4</span></div>
+    <div class="lb-title">Leaderboard <span style="font-size:9px;color:var(--muted);font-weight:400;letter-spacing:0;vertical-align:middle">v2026-06-07-5</span></div>
     <button class="lb-info-btn" onclick="document.getElementById('lbInfoModal').classList.toggle('open')" title="How scoring works">ℹ</button>
     <button class="lb-info-btn" onclick="openTrashTalk()" title="Trash Talk" id="trashTalkBtn" style="font-size:17px">🔥</button>
     <button class="lb-info-btn" onclick="openWheelSheet()" title="Spin the Wheel" style="font-size:17px">🎡</button>
