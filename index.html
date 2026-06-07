@@ -2785,7 +2785,11 @@ function loadLeaderboard(isLive){
     });
     // Find next upcoming event for pick chips
     var nowMs=Date.now();
-    var nextEv=EVENTS.filter(function(e){return new Date(e.date)>=nowMs-DAY_MS;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);})[0]||null;
+    var _eto=etOffset();
+    function _evStartMs(e){var dp=e.date.split("-");var t=e.prelimTime||e.time||"";var pp=t.split(":");var h=parseInt(pp[0],10);if(isNaN(h))return new Date(e.date).getTime()+DAY_MS;return Date.UTC(+dp[0],+dp[1]-1,+dp[2],h+_eto,+(pp[1]||0),0);}
+    // Keep an event's pick chips visible until ~a day after its (prelim) start, so they
+    // persist through the live main event instead of vanishing the moment it begins.
+    var nextEv=EVENTS.filter(function(e){return _evStartMs(e)>nowMs-DAY_MS;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);})[0]||null;
     var nextMainFights=nextEv?nextEv.fights.slice().reverse():[];
     var sorted=Object.values(users).sort(function(a,b){
       var pa=a.correct+a.methods*0.5+a.fotn,pb=b.correct+b.methods*0.5+b.fotn;
@@ -2803,10 +2807,9 @@ function loadLeaderboard(isLive){
     if(nextEv&&nextMainFights.length){
       var evHdr=document.createElement("div");
       evHdr.style.cssText="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;padding:2px 2px 10px";
-      var _anyLive=nextEv.fights.some(function(f){return f.state==="in";});
-      var _anyPre=nextEv.fights.some(function(f){return f.state==="pre";});
+      var _allPre=nextEv.fights.every(function(f){return f.state==="pre";});
       var _allPost=nextEv.fights.every(function(f){return f.state==="post";});
-      var _hdrLbl=_allPost?"Latest":(_anyLive||!_anyPre)?"Live":"Next up";
+      var _hdrLbl=_allPre?"Next up":_allPost?"Latest":"Live";
       evHdr.textContent=_hdrLbl+": "+nextEv.name.replace("UFC Fight Night: ","").replace("UFC ","UFC ");
       body.appendChild(evHdr);
     }
