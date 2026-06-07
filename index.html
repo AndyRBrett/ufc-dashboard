@@ -2951,7 +2951,7 @@ function loadLeaderboard(isLive){
       var med=document.createElement("div");med.className=i<3?"lb-medal":"lb-rank";med.textContent=i<3?medals[i]:i+1;row.appendChild(med);
       var nameDiv=document.createElement("div");nameDiv.className="lb-name";
       var nameTxt=document.createElement("span");nameTxt.className="lb-name-txt";nameTxt.textContent=u.nickname;nameDiv.appendChild(nameTxt);
-      if(u.isMe){var you=document.createElement("span");you.className="lb-you";you.textContent="YOU";nameDiv.appendChild(you);var editBtn=document.createElement("button");editBtn.className="lb-edit-btn";editBtn.title="Edit your name & emoji";editBtn.textContent="✏️";editBtn.onclick=function(e){e.stopPropagation();openEditName();};nameDiv.appendChild(editBtn);}
+      if(u.isMe){var you=document.createElement("span");you.className="lb-you";you.textContent="YOU";nameDiv.appendChild(you);}
       row.appendChild(nameDiv);
       // Stats: accuracy + streak
       if(anyResolved&&u.accuracy!==null){var accDiv=document.createElement("div");accDiv.className="lb-acc";accDiv.textContent=u.accuracy+"%";row.appendChild(accDiv);}
@@ -3284,6 +3284,7 @@ document.addEventListener("DOMContentLoaded",function(){
     <button class="lb-info-btn" onclick="document.getElementById('lbInfoModal').classList.toggle('open')" title="How scoring works">ℹ</button>
     <button class="lb-info-btn" onclick="openTrashTalk()" title="Trash Talk" id="trashTalkBtn" style="font-size:17px">🔥</button>
     <button class="lb-info-btn" onclick="openWheelSheet()" title="Spin the Wheel" style="font-size:17px">🎡</button>
+    <button class="lb-info-btn" onclick="openEditName()" title="Edit your name & emoji" style="font-size:15px">✏️</button>
     <button class="lb-info-btn" onclick="loadLeaderboard()" title="Refresh"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
   </div>
   <div class="lb-info-modal" id="lbInfoModal">
