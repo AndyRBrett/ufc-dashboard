@@ -2843,7 +2843,10 @@ function loadLeaderboard(isLive){
     var nextMainFights=nextEv?nextEv.fights.slice().reverse():[];
     var sorted=Object.values(users).sort(function(a,b){
       var pa=a.correct+a.methods*0.5+a.fotn,pb=b.correct+b.methods*0.5+b.fotn;
-      return pa!==pb?pb-pa:b.total-a.total;
+      if(pa!==pb)return pb-pa;                                  // 1) most points
+      var aa=a.accuracy==null?-1:a.accuracy,ab=b.accuracy==null?-1:b.accuracy;
+      if(aa!==ab)return ab-aa;                                  // 2) tiebreak: higher pick %
+      return b.total-a.total;                                   // 3) then more picks made
     });
     var anyResolved=sorted.some(function(u){return u.correct>0||u.picks.some(function(p){return p.result===false;});});
     var medals=["🥇","🥈","🥉"];
@@ -3203,7 +3206,7 @@ document.addEventListener("DOMContentLoaded",function(){
 <div class="lb-panel" id="lbPanel">
   <div class="lb-hdr">
     <button class="btn-icon" onclick="closeLeaderboard()" title="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <div class="lb-title">Leaderboard <span style="font-size:9px;color:var(--muted);font-weight:400;letter-spacing:0;vertical-align:middle">v2026-06-07-7</span></div>
+    <div class="lb-title">Leaderboard <span style="font-size:9px;color:var(--muted);font-weight:400;letter-spacing:0;vertical-align:middle">v2026-06-07-8</span></div>
     <button class="lb-info-btn" onclick="document.getElementById('lbInfoModal').classList.toggle('open')" title="How scoring works">ℹ</button>
     <button class="lb-info-btn" onclick="openTrashTalk()" title="Trash Talk" id="trashTalkBtn" style="font-size:17px">🔥</button>
     <button class="lb-info-btn" onclick="openWheelSheet()" title="Spin the Wheel" style="font-size:17px">🎡</button>
