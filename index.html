@@ -2709,6 +2709,25 @@ function scoreMethod(userMethod, fightMethod){
          (userMethod==="Dec"&&(fm.indexOf("DEC")>=0||fm==="UD"||fm==="SD"||fm==="MD"));
 }
 
+// Repair: persist locally-stored method picks that never reached the DB, so every
+// device scores them — not just the pick's author. Also patches the just-fetched
+// rows in place so your own score is correct immediately, before the DB catches up.
+var _methodsBackfilled=false;
+function _reconcileMyMethods(rows){
+  if(!USER_ID||!userName)return;
+  var mine={};
+  rows.forEach(function(p){if((p.user_id||null)===USER_ID)mine[p.event_date+"|"+p.f1+"|"+p.f2]=p;});
+  Object.keys(preds).forEach(function(key){
+    var m=preds_method[key];
+    if(!m)return;                 // only picks that carry a local method
+    var row=mine[key];
+    if(!row||row.method)return;   // pick row unsynced, or DB already has a method
+    row.method=m;                 // make this render reflect it right away
+    if(!_methodsBackfilled){var ref=findByKey(key);if(ref)syncPick(ref.ev,ref.fight);} // push to DB once
+  });
+  _methodsBackfilled=true;
+}
+
 function loadLeaderboard(isLive){
   var body=document.getElementById("lbBody");
   if(!isLive)body.innerHTML='<div class="lb-loading">Loading picks...</div>';
@@ -2719,6 +2738,7 @@ function loadLeaderboard(isLive){
       body.innerHTML='<div class="lb-empty">No picks submitted yet.<br>Make some picks to appear here!</div>';
       return;
     }
+    _reconcileMyMethods(rows);
     var users={};
     rows.forEach(function(p){
       var uid=p.user_id||p.nickname||"unknown";
@@ -2735,7 +2755,7 @@ function loadLeaderboard(isLive){
       }
       var result=null;
       var methodCorrect=false;
-      var pickedMethod=p.method||(uid===USER_ID?preds_method[p.event_date+"|"+p.f1+"|"+p.f2]||"":"");
+      var pickedMethod=p.method||"";
       users[uid].total++;
       if(fight&&fight.winner){
         if(fight.winner===p.pick){
