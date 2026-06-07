@@ -61,8 +61,11 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-row.lb-me{border-color:var(--gold);background:var(--gold-dim)}
 .lb-medal{font-size:20px;width:28px;text-align:center;flex-shrink:0}
 .lb-rank{font-family:Bebas Neue,sans-serif;font-size:18px;color:var(--muted);width:28px;text-align:center;flex-shrink:0}
-.lb-name{font-weight:600;font-size:14px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lb-you{font-size:9px;font-weight:700;background:var(--gold);color:#000;border-radius:3px;padding:1px 4px;margin-left:5px;vertical-align:middle;letter-spacing:.04em}
+.lb-name{font-weight:600;font-size:14px;flex:1;min-width:0;display:flex;align-items:center;gap:4px;overflow:hidden}
+.lb-name-txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.lb-you{font-size:9px;font-weight:700;background:var(--gold);color:#000;border-radius:3px;padding:1px 4px;vertical-align:middle;letter-spacing:.04em;flex-shrink:0}
+.lb-edit-btn{background:none;border:none;cursor:pointer;padding:0 2px;font-size:13px;flex-shrink:0;color:var(--muted);line-height:1;border-radius:4px;transition:background .15s}
+.lb-edit-btn:hover{background:var(--btn-bg)}
 .lb-right{text-align:right;flex-shrink:0}
 .lb-pts{font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--gold);line-height:1}
 .lb-detail{font-size:10px;color:var(--muted);margin-top:1px}
@@ -384,7 +387,7 @@ body.light .ev-qp:hover{background:rgba(255,255,255,.12);color:#fff}
 .nm-xbtn{background:var(--btn-bg);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .nm-box h3{font-family:Bebas Neue,sans-serif;font-size:24px}
 .nm-box p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6}
-.nm-emoji-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;justify-content:center}
+.nm-emoji-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;justify-content:center;max-height:160px;overflow-y:auto}
 .nm-emoji-btn{font-size:22px;background:var(--btn-bg);border:2px solid transparent;border-radius:10px;width:42px;height:42px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .15s,transform .1s}
 .nm-emoji-btn.selected{border-color:var(--red);transform:scale(1.15)}
 .nm-input{width:100%;background:var(--card2);border:1px solid var(--border2);color:var(--text);padding:11px 14px;border-radius:9px;font:500 15px Inter,sans-serif;margin-bottom:12px;transition:border-color .15s}
@@ -564,17 +567,50 @@ body.light .fotn-row{background:var(--card2);border-top:1px solid rgba(0,0,0,.08
     <p>Pick your avatar and enter your name.</p>
     <div class="nm-emoji-row" id="nmEmojiRow">
       <button class="nm-emoji-btn selected" data-e="🥊" onclick="selectEmoji(this)">🥊</button>
-      <button class="nm-emoji-btn" data-e="🔥" onclick="selectEmoji(this)">🔥</button>
+      <button class="nm-emoji-btn" data-e="🥋" onclick="selectEmoji(this)">🥋</button>
+      <button class="nm-emoji-btn" data-e="🏋️" onclick="selectEmoji(this)">🏋️</button>
+      <button class="nm-emoji-btn" data-e="🤼" onclick="selectEmoji(this)">🤼</button>
+      <button class="nm-emoji-btn" data-e="🤺" onclick="selectEmoji(this)">🤺</button>
+      <button class="nm-emoji-btn" data-e="🥇" onclick="selectEmoji(this)">🥇</button>
+      <button class="nm-emoji-btn" data-e="🏅" onclick="selectEmoji(this)">🏅</button>
+      <button class="nm-emoji-btn" data-e="🎽" onclick="selectEmoji(this)">🎽</button>
       <button class="nm-emoji-btn" data-e="💪" onclick="selectEmoji(this)">💪</button>
-      <button class="nm-emoji-btn" data-e="🏆" onclick="selectEmoji(this)">🏆</button>
+      <button class="nm-emoji-btn" data-e="🔥" onclick="selectEmoji(this)">🔥</button>
       <button class="nm-emoji-btn" data-e="⚡" onclick="selectEmoji(this)">⚡</button>
-      <button class="nm-emoji-btn" data-e="👑" onclick="selectEmoji(this)">👑</button>
-      <button class="nm-emoji-btn" data-e="🦁" onclick="selectEmoji(this)">🦁</button>
-      <button class="nm-emoji-btn" data-e="🐺" onclick="selectEmoji(this)">🐺</button>
-      <button class="nm-emoji-btn" data-e="💎" onclick="selectEmoji(this)">💎</button>
+      <button class="nm-emoji-btn" data-e="💥" onclick="selectEmoji(this)">💥</button>
       <button class="nm-emoji-btn" data-e="🎯" onclick="selectEmoji(this)">🎯</button>
+      <button class="nm-emoji-btn" data-e="🌪️" onclick="selectEmoji(this)">🌪️</button>
+      <button class="nm-emoji-btn" data-e="🚀" onclick="selectEmoji(this)">🚀</button>
+      <button class="nm-emoji-btn" data-e="💨" onclick="selectEmoji(this)">💨</button>
+      <button class="nm-emoji-btn" data-e="🦁" onclick="selectEmoji(this)">🦁</button>
+      <button class="nm-emoji-btn" data-e="🐯" onclick="selectEmoji(this)">🐯</button>
+      <button class="nm-emoji-btn" data-e="🐺" onclick="selectEmoji(this)">🐺</button>
+      <button class="nm-emoji-btn" data-e="🦅" onclick="selectEmoji(this)">🦅</button>
+      <button class="nm-emoji-btn" data-e="🐻" onclick="selectEmoji(this)">🐻</button>
+      <button class="nm-emoji-btn" data-e="🦊" onclick="selectEmoji(this)">🦊</button>
+      <button class="nm-emoji-btn" data-e="🐉" onclick="selectEmoji(this)">🐉</button>
+      <button class="nm-emoji-btn" data-e="🦈" onclick="selectEmoji(this)">🦈</button>
+      <button class="nm-emoji-btn" data-e="🦂" onclick="selectEmoji(this)">🦂</button>
+      <button class="nm-emoji-btn" data-e="🐗" onclick="selectEmoji(this)">🐗</button>
+      <button class="nm-emoji-btn" data-e="🦍" onclick="selectEmoji(this)">🦍</button>
+      <button class="nm-emoji-btn" data-e="🐊" onclick="selectEmoji(this)">🐊</button>
       <button class="nm-emoji-btn" data-e="😤" onclick="selectEmoji(this)">😤</button>
+      <button class="nm-emoji-btn" data-e="😈" onclick="selectEmoji(this)">😈</button>
+      <button class="nm-emoji-btn" data-e="🤬" onclick="selectEmoji(this)">🤬</button>
+      <button class="nm-emoji-btn" data-e="💀" onclick="selectEmoji(this)">💀</button>
+      <button class="nm-emoji-btn" data-e="😎" onclick="selectEmoji(this)">😎</button>
+      <button class="nm-emoji-btn" data-e="🥶" onclick="selectEmoji(this)">🥶</button>
       <button class="nm-emoji-btn" data-e="🤙" onclick="selectEmoji(this)">🤙</button>
+      <button class="nm-emoji-btn" data-e="👊" onclick="selectEmoji(this)">👊</button>
+      <button class="nm-emoji-btn" data-e="🤘" onclick="selectEmoji(this)">🤘</button>
+      <button class="nm-emoji-btn" data-e="👑" onclick="selectEmoji(this)">👑</button>
+      <button class="nm-emoji-btn" data-e="💎" onclick="selectEmoji(this)">💎</button>
+      <button class="nm-emoji-btn" data-e="⚔️" onclick="selectEmoji(this)">⚔️</button>
+      <button class="nm-emoji-btn" data-e="🔱" onclick="selectEmoji(this)">🔱</button>
+      <button class="nm-emoji-btn" data-e="🏆" onclick="selectEmoji(this)">🏆</button>
+      <button class="nm-emoji-btn" data-e="🌟" onclick="selectEmoji(this)">🌟</button>
+      <button class="nm-emoji-btn" data-e="💯" onclick="selectEmoji(this)">💯</button>
+      <button class="nm-emoji-btn" data-e="🛡️" onclick="selectEmoji(this)">🛡️</button>
     </div>
     <input class="nm-input" id="nmInput" type="text" placeholder="Your name" maxlength="20" oninput="document.getElementById('nmErr').style.display='none'">
     <div class="nm-err" id="nmErr"></div>
@@ -1447,11 +1483,34 @@ function openStats(idx,side){
 }
 function closeModal(){document.getElementById("statsModal").classList.remove("open");unlockScroll();}
 
-function closeNameModal(){document.getElementById("nmBg").classList.remove("open");window._pp=null;}
+function closeNameModal(){
+  document.getElementById("nmBg").classList.remove("open");
+  window._pp=null;
+  document.getElementById("nmInput").value="";
+  document.getElementById("nmErr").style.display="none";
+  if(window._nmEditMode){
+    window._nmEditMode=false;
+    document.querySelector(".nm-box h3").textContent="Join the Predictor";
+    document.querySelector(".nm-box p").textContent="Pick your avatar and enter your name.";
+    document.getElementById("nmBtn").textContent="Let's go";
+  }
+}
 function checkName(cb){if(userName){cb();return;}
   // Pre-select current emoji if set
   document.querySelectorAll(".nm-emoji-btn").forEach(function(b){b.classList.toggle("selected",b.dataset.e===userEmoji);});
   document.getElementById("nmBg").classList.add("open");document.getElementById("nmInput").focus();window._pp=cb;}
+function openEditName(){
+  var namePart=userName?userName.split(" ").slice(1).join(" "):"";
+  document.querySelectorAll(".nm-emoji-btn").forEach(function(b){b.classList.toggle("selected",b.dataset.e===userEmoji);});
+  document.getElementById("nmInput").value=namePart;
+  document.getElementById("nmErr").style.display="none";
+  document.querySelector(".nm-box h3").textContent="Edit Your Profile";
+  document.querySelector(".nm-box p").textContent="Update your avatar or name.";
+  document.getElementById("nmBtn").textContent="Save Changes";
+  window._nmEditMode=true;
+  document.getElementById("nmBg").classList.add("open");
+  document.getElementById("nmInput").focus();
+}
 function selectEmoji(btn){document.querySelectorAll(".nm-emoji-btn").forEach(function(b){b.classList.remove("selected");});btn.classList.add("selected");}
 function saveName(){
   var v=document.getElementById("nmInput").value.trim();if(!v)return;
@@ -1459,29 +1518,43 @@ function saveName(){
   var emoji=selBtn?selBtn.dataset.e:"🥊";
   var errEl=document.getElementById("nmErr");var btn=document.getElementById("nmBtn");
   errEl.style.display="none";btn.disabled=true;btn.textContent="Checking…";
+  var _btnLabel=window._nmEditMode?"Save Changes":"Let's go";
   // Check the text portion of the name against all other users' nicknames (ilike "% name")
   fetch(SUPABASE_URL+"/rest/v1/picks?select=user_id&nickname=ilike."+encodeURIComponent("% "+v)+"&user_id=neq."+encodeURIComponent(USER_ID)+"&limit=1",{
     headers:{apikey:SUPABASE_ANON,Authorization:_authBearer()}
   }).then(function(r){return r.ok?r.json():[];}).then(function(rows){
-    btn.disabled=false;btn.textContent="Let's go";
+    btn.disabled=false;btn.textContent=_btnLabel;
     if(Array.isArray(rows)&&rows.length>0){
       errEl.textContent="That name is already taken — pick another!";errEl.style.display="block";
       return;
     }
     _commitName(emoji,v);
   }).catch(function(){
-    btn.disabled=false;btn.textContent="Let's go";
+    btn.disabled=false;btn.textContent=_btnLabel;
     _commitName(emoji,v); // allow on network error rather than blocking
   });
 }
 function _commitName(emoji,v){
+  var wasEdit=window._nmEditMode;
   userEmoji=emoji;
   try{localStorage.setItem("ufc_emoji",userEmoji);}catch(e){}
   userName=userEmoji+" "+v;
   try{localStorage.setItem("ufc_name",userName);}catch(e){}
+  window._nmEditMode=false;
+  if(wasEdit){
+    document.querySelector(".nm-box h3").textContent="Join the Predictor";
+    document.querySelector(".nm-box p").textContent="Pick your avatar and enter your name.";
+    document.getElementById("nmBtn").textContent="Let's go";
+    document.getElementById("nmInput").value="";
+  }
   document.getElementById("nmBg").classList.remove("open");
   if(window._pp){window._pp();window._pp=null;}
   syncAllPicks();
+  if(wasEdit){
+    toast("Profile updated!");
+    var lbPanel=document.getElementById("lbPanel");
+    if(lbPanel&&lbPanel.classList.contains("open")){setTimeout(function(){loadLeaderboard(false);},800);}
+  }
 }
 function urlB64ToUint8(b64){var pad='='.repeat((4-b64.length%4)%4);var raw=atob((b64+pad).replace(/-/g,'+').replace(/_/g,'/'));var arr=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i);return arr;}
 function _bufToBase64Url(buf){var bytes=new Uint8Array(buf);var str='';for(var i=0;i<bytes.length;i++)str+=String.fromCharCode(bytes[i]);return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
@@ -2876,8 +2949,9 @@ function loadLeaderboard(isLive){
       row.className="lb-row"+(u.isMe?" lb-me":"");
       row.style.cssText+="cursor:pointer;flex-wrap:wrap;border-radius:"+(hasNextPicks?"12px 12px 0 0":"12px")+";transition:border-radius .15s";
       var med=document.createElement("div");med.className=i<3?"lb-medal":"lb-rank";med.textContent=i<3?medals[i]:i+1;row.appendChild(med);
-      var nameDiv=document.createElement("div");nameDiv.className="lb-name";nameDiv.textContent=u.nickname;
-      if(u.isMe){var you=document.createElement("span");you.className="lb-you";you.textContent="YOU";nameDiv.appendChild(you);}
+      var nameDiv=document.createElement("div");nameDiv.className="lb-name";
+      var nameTxt=document.createElement("span");nameTxt.className="lb-name-txt";nameTxt.textContent=u.nickname;nameDiv.appendChild(nameTxt);
+      if(u.isMe){var you=document.createElement("span");you.className="lb-you";you.textContent="YOU";nameDiv.appendChild(you);var editBtn=document.createElement("button");editBtn.className="lb-edit-btn";editBtn.title="Edit your name & emoji";editBtn.textContent="✏️";editBtn.onclick=function(e){e.stopPropagation();openEditName();};nameDiv.appendChild(editBtn);}
       row.appendChild(nameDiv);
       // Stats: accuracy + streak
       if(anyResolved&&u.accuracy!==null){var accDiv=document.createElement("div");accDiv.className="lb-acc";accDiv.textContent=u.accuracy+"%";row.appendChild(accDiv);}
