@@ -1157,13 +1157,13 @@ function _sbQ(ev,fight){return"?user_id=eq."+encodeURIComponent(USER_ID)+"&event
 function findByKey(key){if(!_fightIndex)_buildFightIndex();return _fightIndex[key]||null;}
 
 function syncPick(ev,fight,notifyFriends){
-  if(!userName)return;
+  if(!userName)return Promise.resolve(null);
   var key=pk(ev,fight);var myPick=preds[key];
-  if(!myPick){deleteSbPick(ev,fight);return;}
+  if(!myPick){deleteSbPick(ev,fight);return Promise.resolve(null);}
   var data={user_id:USER_ID,nickname:userName,event_date:ev.date,event_name:ev.name,f1:fight.f1.n,f2:fight.f2.n,pick:myPick,method:preds_method[key]||"",confidence:preds_conf[key]||0,updated_at:new Date().toISOString(),bonus_pick:preds_fotn["fotn_"+ev.date]||null};
-  _authReady.then(function(){
+  return _authReady.then(function(){
     var hdrs=Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return=minimal"});
-    fetch(SUPABASE_URL+"/rest/v1/picks",{method:"POST",headers:hdrs,body:JSON.stringify(data)})
+    return fetch(SUPABASE_URL+"/rest/v1/picks",{method:"POST",headers:hdrs,body:JSON.stringify(data)})
       .then(function(r){
         if(!r.ok)r.text().then(function(t){console.error("syncPick failed",r.status,t);});
         else{
@@ -1183,8 +1183,9 @@ function syncPick(ev,fight,notifyFriends){
               }
             }
         }
+        return {ok:r.ok,status:r.status};
       })
-      .catch(function(err){console.error("syncPick error",err);});
+      .catch(function(err){console.error("syncPick error",err);return {ok:false,status:0};});
   });
 }
 function deleteSbPick(ev,fight){
@@ -1518,6 +1519,7 @@ function pick(idx,side){
 }
 
 function undoPick(ev,fight){
+  if(picksLocked(ev)){toast("Picks are locked — event has started");return;}
   var old=preds[pk(ev,fight)]||null;
   deleteSbPick(ev,fight);delete preds[pk(ev,fight)];
   _cpDelta(ev,fight,old,null);
@@ -2698,7 +2700,13 @@ function _reconcileMyMethods(rows){
     mine[p.event_date+"|"+p.f1+"|"+p.f2]=p;   // index both fighter-name orders, since the
     mine[p.event_date+"|"+p.f2+"|"+p.f1]=p;   // stored f1/f2 orientation can vary
   });
-  var n=0;
+  // Detect a split identity: existing picks under my name but a different user_id
+  var myBase=(userName||"").replace(/^.\s/,"").toLowerCase(),myIdRows=0,otherIdSameName=0;
+  rows.forEach(function(p){
+    if((p.user_id||null)===USER_ID)myIdRows++;
+    else if(((p.nickname||"").replace(/^.\s/,"").toLowerCase())===myBase)otherIdSameName++;
+  });
+  var syncs=[];
   Object.keys(preds).forEach(function(key){
     var m=preds_method[key];
     if(!m)return;                              // only picks that carry a local method
@@ -2707,9 +2715,15 @@ function _reconcileMyMethods(rows){
     var row=mine[key];
     if(row&&row.method)return;                 // DB already has this method — nothing to do
     if(row)row.method=m;                       // patch this render so your score is right now
-    if(!_syncedMethodKeys[key]){syncPick(ref.ev,ref.fight);_syncedMethodKeys[key]=true;n++;} // upsert, once per key
+    if(!_syncedMethodKeys[key]){_syncedMethodKeys[key]=true;syncs.push(syncPick(ref.ev,ref.fight));} // upsert, once per key
   });
-  if(n&&typeof toast==="function")toast("Syncing "+n+" method pick"+(n>1?"s":"")+" to the leaderboard…");
+  if(!syncs.length||typeof toast!=="function")return;
+  Promise.all(syncs).then(function(res){
+    var fail=res.filter(function(r){return r&&!r.ok;})[0];
+    if(fail)toast("⚠️ Method sync rejected by server — HTTP "+fail.status);
+    else if(myIdRows===0&&otherIdSameName>0)toast("⚠️ Your picks use a different ID on this device — see chat");
+    else toast("✓ Synced "+syncs.length+" method pick"+(syncs.length>1?"s":"")+" — now refresh other phones");
+  });
 }
 
 function loadLeaderboard(isLive){
@@ -3157,7 +3171,7 @@ document.addEventListener("DOMContentLoaded",function(){
 <div class="lb-panel" id="lbPanel">
   <div class="lb-hdr">
     <button class="btn-icon" onclick="closeLeaderboard()" title="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <div class="lb-title">Leaderboard <span style="font-size:9px;color:var(--muted);font-weight:400;letter-spacing:0;vertical-align:middle">v2026-06-07-3</span></div>
+    <div class="lb-title">Leaderboard <span style="font-size:9px;color:var(--muted);font-weight:400;letter-spacing:0;vertical-align:middle">v2026-06-07-4</span></div>
     <button class="lb-info-btn" onclick="document.getElementById('lbInfoModal').classList.toggle('open')" title="How scoring works">ℹ</button>
     <button class="lb-info-btn" onclick="openTrashTalk()" title="Trash Talk" id="trashTalkBtn" style="font-size:17px">🔥</button>
     <button class="lb-info-btn" onclick="openWheelSheet()" title="Spin the Wheel" style="font-size:17px">🎡</button>
