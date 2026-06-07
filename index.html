@@ -2785,7 +2785,7 @@ function loadLeaderboard(isLive){
     });
     // Find next upcoming event for pick chips
     var nowMs=Date.now();
-    var nextEv=EVENTS.filter(function(e){return new Date(e.date)>=nowMs-DAY_MS&&e.fights.some(function(f){return f.state==="pre";});}).sort(function(a,b){return new Date(a.date)-new Date(b.date);})[0]||null;
+    var nextEv=EVENTS.filter(function(e){return new Date(e.date)>=nowMs-DAY_MS;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);})[0]||null;
     var nextMainFights=nextEv?nextEv.fights.slice().reverse():[];
     var sorted=Object.values(users).sort(function(a,b){
       var pa=a.correct+a.methods*0.5+a.fotn,pb=b.correct+b.methods*0.5+b.fotn;
