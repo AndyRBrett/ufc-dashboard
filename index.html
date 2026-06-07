@@ -1517,8 +1517,11 @@ function saveName(){
   var selBtn=document.querySelector(".nm-emoji-btn.selected");
   var emoji=selBtn?selBtn.dataset.e:"🥊";
   var errEl=document.getElementById("nmErr");var btn=document.getElementById("nmBtn");
-  errEl.style.display="none";btn.disabled=true;btn.textContent="Checking…";
   var _btnLabel=window._nmEditMode?"Save Changes":"Let's go";
+  // In edit mode, if the name text hasn't changed (only emoji changed), skip the uniqueness check
+  var currentNamePart=userName?userName.split(" ").slice(1).join(" "):"";
+  if(window._nmEditMode&&v===currentNamePart){_commitName(emoji,v);return;}
+  errEl.style.display="none";btn.disabled=true;btn.textContent="Checking…";
   // Check the text portion of the name against all other users' nicknames (ilike "% name")
   fetch(SUPABASE_URL+"/rest/v1/picks?select=user_id&nickname=ilike."+encodeURIComponent("% "+v)+"&user_id=neq."+encodeURIComponent(USER_ID)+"&limit=1",{
     headers:{apikey:SUPABASE_ANON,Authorization:_authBearer()}
