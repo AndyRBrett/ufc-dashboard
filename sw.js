@@ -1,4 +1,8 @@
-// Minimal service worker — installability + push notifications only, no caching.
+// Minimal service worker — installability + push notifications, network-first.
+// Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
+// detect a SW update, which (via the controllerchange listener in index.html)
+// auto-reloads open clients onto the latest code.
+const SW_VERSION = '2026-06-07-1';
 
 self.addEventListener('install', function() { self.skipWaiting(); });
 
@@ -10,7 +14,17 @@ self.addEventListener('activate', function(e) {
   );
 });
 
-// No fetch handler — all requests go straight to the network.
+// Always pull the page itself fresh from the network so code updates land
+// immediately, bypassing any stale HTTP cache (iOS PWAs cache HTML stubbornly).
+// Falls back to a normal fetch if the forced revalidation fails.
+self.addEventListener('fetch', function(e) {
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request, { cache: 'reload' }).catch(function() { return fetch(e.request); })
+    );
+  }
+});
+
 
 self.addEventListener('push', function(e) {
   var data = {};
