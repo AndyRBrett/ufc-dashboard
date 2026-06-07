@@ -2710,22 +2710,29 @@ function scoreMethod(userMethod, fightMethod){
 }
 
 // Repair: persist locally-stored method picks that never reached the DB, so every
-// device scores them — not just the pick's author. Also patches the just-fetched
-// rows in place so your own score is correct immediately, before the DB catches up.
-var _methodsBackfilled=false;
+// device scores them — not just the pick's author. Patches the fetched rows in place
+// so your own score is right immediately, and upserts the missing data to Supabase.
+var _syncedMethodKeys={};
 function _reconcileMyMethods(rows){
   if(!USER_ID||!userName)return;
   var mine={};
-  rows.forEach(function(p){if((p.user_id||null)===USER_ID)mine[p.event_date+"|"+p.f1+"|"+p.f2]=p;});
+  rows.forEach(function(p){
+    if((p.user_id||null)!==USER_ID)return;
+    mine[p.event_date+"|"+p.f1+"|"+p.f2]=p;   // index both fighter-name orders, since the
+    mine[p.event_date+"|"+p.f2+"|"+p.f1]=p;   // stored f1/f2 orientation can vary
+  });
+  var n=0;
   Object.keys(preds).forEach(function(key){
     var m=preds_method[key];
-    if(!m)return;                 // only picks that carry a local method
+    if(!m)return;                              // only picks that carry a local method
+    var ref=findByKey(key);
+    if(!ref)return;
     var row=mine[key];
-    if(!row||row.method)return;   // pick row unsynced, or DB already has a method
-    row.method=m;                 // make this render reflect it right away
-    if(!_methodsBackfilled){var ref=findByKey(key);if(ref)syncPick(ref.ev,ref.fight);} // push to DB once
+    if(row&&row.method)return;                 // DB already has this method — nothing to do
+    if(row)row.method=m;                       // patch this render so your score is right now
+    if(!_syncedMethodKeys[key]){syncPick(ref.ev,ref.fight);_syncedMethodKeys[key]=true;n++;} // upsert, once per key
   });
-  _methodsBackfilled=true;
+  if(n&&typeof toast==="function")toast("Syncing "+n+" method pick"+(n>1?"s":"")+" to the leaderboard…");
 }
 
 function loadLeaderboard(isLive){
