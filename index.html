@@ -2874,9 +2874,14 @@ function loadLeaderboard(isLive){
       if(p.bonus_pick)users[uid].bonusPicks[p.event_date]=p.bonus_pick;
     });
     // De-duplicate by name (keep higher pick count)
+    // Strip the leading emoji by taking everything after the first space — a regex
+    // like /^.\s/ fails on emoji that are surrogate pairs (🐺,😀,…), which would
+    // leave the emoji in the key and break dedup when a user changes their emoji.
     var seenNames={};
     Object.keys(users).forEach(function(uid){
-      var base=(users[uid].nickname||"").replace(/^.\s/,"").toLowerCase();
+      var nn=users[uid].nickname||"";
+      var sp=nn.indexOf(" ");
+      var base=(sp>=0?nn.slice(sp+1):nn).trim().toLowerCase();
       if(!seenNames[base]){seenNames[base]=uid;}
       else{
         var prev=seenNames[base];
