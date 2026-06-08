@@ -355,26 +355,37 @@ body.light .ai-event-btn:hover{background:rgba(0,0,0,.06);border-color:rgba(0,0,
 .cmp-bar-wrap{position:relative;height:8px;background:var(--bar-bg);border-radius:4px;overflow:hidden;width:100%}
 .cmp-bar-l{position:absolute;left:0;top:0;height:100%;background:var(--red);border-radius:4px}
 .cmp-bar-r{position:absolute;right:0;top:0;height:100%;background:var(--gold);border-radius:4px}
-.fn-mode{display:none;position:fixed;inset:0;background:linear-gradient(180deg,#0a000a 0%,#000 100%);z-index:300;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+.fn-mode{display:none;position:fixed;inset:0;background:radial-gradient(ellipse 85% 50% at 50% 0%,rgba(232,25,44,.14),transparent 60%),linear-gradient(180deg,#0a000a 0%,#000 100%);z-index:300;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
 .fn-mode.open{display:flex}
-.fn-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background .15s}
-.fn-close:hover{background:rgba(255,255,255,.14)}
-.fn-ev{font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:.14em;color:rgba(255,255,255,.3);margin-bottom:4px}
-.fn-wc{font-size:11px;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.08em;margin-bottom:30px}
-.fn-mu{display:flex;align-items:center;justify-content:center;gap:16px;width:100%;flex-wrap:wrap}
+.fn-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.fn-close:hover{background:rgba(255,255,255,.16)}
+.fn-ev{font-family:Bebas Neue,sans-serif;font-size:19px;letter-spacing:.18em;color:rgba(255,255,255,.62);margin-bottom:8px}
+.fn-wc{font-size:11px;color:rgba(255,255,255,.42);text-transform:uppercase;letter-spacing:.09em;margin-bottom:36px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.fn-tag{font-weight:700;font-size:9px;letter-spacing:.1em;padding:2px 7px;border-radius:4px}
+.fn-tag-title{color:var(--gold);background:var(--gold-dim);border:1px solid rgba(201,168,76,.45)}
+.fn-tag-rematch{color:var(--red);background:var(--red-dim);border:1px solid rgba(232,25,44,.38)}
+.fn-mu{display:flex;align-items:center;justify-content:center;gap:14px;width:100%;flex-wrap:wrap}
 .fn-ft.fnr{text-align:right}
-.fn-nm{font-family:Bebas Neue,sans-serif;font-size:clamp(28px,7vw,56px);line-height:1.1;color:#fff}
-.fn-rc{font-size:13px;color:rgba(255,255,255,.35);margin-top:5px}
-.fn-vs{font-family:Bebas Neue,sans-serif;font-size:22px;color:rgba(255,255,255,.1);flex-shrink:0}
-.fn-nav{display:flex;gap:10px;margin-top:32px}
-.fn-nb{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.55);padding:9px 20px;border-radius:7px;cursor:pointer;font:500 13px Inter,sans-serif;display:flex;align-items:center;gap:5px;transition:background .15s}
-.fn-nb:hover{background:rgba(255,255,255,.12)}
-.fn-ft{flex:1;min-width:100px;cursor:pointer;border-radius:12px;padding:10px 8px;transition:opacity .25s,background .15s}
+.fn-nm{font-family:Bebas Neue,sans-serif;font-size:clamp(26px,7vw,54px);line-height:1.05;color:#fff;overflow-wrap:anywhere}
+.fn-nm::before{content:"";display:block;width:34px;height:3px;border-radius:2px;margin:0 auto 12px}
+#fn-f1-wrap .fn-nm::before{background:var(--red);box-shadow:0 0 10px rgba(232,25,44,.5)}
+#fn-f2-wrap .fn-nm::before{background:var(--gold);box-shadow:0 0 10px rgba(201,168,76,.5);margin:0 0 12px auto}
+.fn-rc{font-size:13px;margin-top:8px;letter-spacing:.03em;font-weight:500}
+#fn-r1{color:rgba(232,25,44,.85)}
+#fn-r2{color:rgba(201,168,76,.92)}
+.fn-vs{flex-shrink:0;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:17px;color:rgba(255,255,255,.45);letter-spacing:.04em}
+.fn-nav{display:flex;gap:10px;margin-top:34px}
+.fn-nb{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:rgba(255,255,255,.72);padding:10px 22px;border-radius:8px;cursor:pointer;font:600 13px Inter,sans-serif;display:flex;align-items:center;gap:5px;transition:background .15s,border-color .15s}
+.fn-nb:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.22)}
+.fn-ft{flex:1;min-width:96px;cursor:pointer;border-radius:14px;padding:14px 8px;transition:opacity .25s,background .15s,box-shadow .2s}
 .fn-ft:active{background:rgba(255,255,255,.06)}
-.fn-ft.fn-picked{opacity:1;background:rgba(255,255,255,.07)}
-.fn-ft.fn-not-picked{opacity:.18;pointer-events:none}
-.fn-pick-hint{font-size:11px;color:rgba(255,255,255,.22);margin-top:14px;letter-spacing:.06em}
-.fn-picked-lbl{font-size:13px;color:rgba(255,255,255,.45);margin-top:14px}
+.fn-ft.fn-picked{opacity:1}
+#fn-f1-wrap.fn-picked{background:var(--red-dim);box-shadow:inset 0 0 0 1.5px rgba(232,25,44,.55),0 0 28px rgba(232,25,44,.17)}
+#fn-f2-wrap.fn-picked{background:var(--gold-dim);box-shadow:inset 0 0 0 1.5px rgba(201,168,76,.55),0 0 28px rgba(201,168,76,.17)}
+.fn-ft.fn-not-picked{opacity:.32;pointer-events:none}
+.fn-pick-hint{font-size:11px;color:rgba(255,255,255,.35);margin-top:18px;letter-spacing:.06em}
+.fn-picked-lbl{display:inline-block;font-size:13px;font-weight:600;color:#fff;margin-top:18px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);padding:7px 16px;border-radius:20px}
+.fn-picked-lbl:empty{display:none}
 /* ---- Fight Night LIVE (watch-party) layout ---- */
 .fn-mode.fn-mode-live{justify-content:flex-start;padding:0}
 #fnLiveBody{display:none;flex-direction:column;width:100%;height:100%;max-width:560px;margin:0 auto}
@@ -1801,7 +1812,10 @@ function updateFN(){
 function updateFNPre(){
   var f=fnFights[fnIdx];
   document.getElementById("fn-ev").textContent=fnEv?fnEv.name:"";
-  document.getElementById("fn-wc").textContent=f.lbl+" · "+wcLabel(f.wc)+(f.title?" · TITLE":"")+(f.rematch?" · REMATCH":"");
+  var wc=document.getElementById("fn-wc");wc.innerHTML="";
+  wc.appendChild(document.createTextNode(f.lbl+" · "+wcLabel(f.wc)));
+  if(f.title){var tt=document.createElement("span");tt.className="fn-tag fn-tag-title";tt.textContent="TITLE";wc.appendChild(tt);}
+  if(f.rematch){var rm=document.createElement("span");rm.className="fn-tag fn-tag-rematch";rm.textContent="REMATCH";wc.appendChild(rm);}
   document.getElementById("fn-f1").textContent=f.f1.n;document.getElementById("fn-r1").textContent=f.f1.r||"";
   document.getElementById("fn-f2").textContent=f.f2.n;document.getElementById("fn-r2").textContent=f.f2.r||"";
   document.getElementById("fn-ctr").textContent=(fnIdx+1)+" of "+fnFights.length;
