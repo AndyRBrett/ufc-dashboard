@@ -122,6 +122,27 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-wheel-result{text-align:center;font-size:22px;font-weight:800;color:var(--text);min-height:36px;margin-bottom:8px;display:none}
 .lb-wheel-result.show{display:block;animation:wheel-result-pop .35s ease}
 @keyframes wheel-result-pop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+.lb-wheel-edit{position:absolute;top:14px;left:14px;background:none;border:none;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;padding:0;font-family:inherit}
+.lb-wheel-back{position:absolute;top:14px;left:14px;background:none;border:none;font-size:13px;font-weight:600;color:var(--gold);cursor:pointer;padding:0;font-family:inherit;display:none}
+.lb-wheel-sheet.managing .lb-wheel-edit{display:none}
+.lb-wheel-sheet.managing .lb-wheel-back{display:block}
+.lb-wheel-sheet.managing .lb-wheel-spin-view{display:none}
+.lb-wheel-manage-view{display:none}
+.lb-wheel-sheet.managing .lb-wheel-manage-view{display:block;padding-top:14px}
+.lb-wheel-manage-title{text-align:center;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:10px}
+.lb-wheel-list{max-height:46vh;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.lb-wheel-row{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:7px 10px}
+.lb-wheel-row-label{flex:1;font-size:14px;font-weight:600;color:var(--text);line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-wheel-pill{font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;background:var(--card2);border:1px solid var(--border2);color:var(--muted);cursor:pointer;font-family:inherit;flex-shrink:0;min-width:42px}
+.lb-wheel-pill.selected{background:var(--red);border-color:var(--red);color:#fff}
+.lb-wheel-del{background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0}
+.lb-wheel-add{display:flex;gap:6px;margin-bottom:10px}
+.lb-wheel-emoji-input{width:46px;text-align:center;background:var(--card2);border:1px solid var(--border2);color:var(--text);padding:9px 4px;border-radius:9px;font:500 16px Inter,sans-serif;flex-shrink:0}
+.lb-wheel-label-input{flex:1}
+.lb-wheel-emoji-input:focus,.lb-wheel-label-input:focus{outline:none;border-color:var(--red)}
+.lb-wheel-add-btn{padding:9px 16px;background:var(--gold);color:#000;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0}
+.lb-wheel-reset{width:100%;background:none;border:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px;text-decoration:underline}
+.lb-wheel-hint{text-align:center;font-size:12px;color:var(--muted);margin-bottom:8px;display:none}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 .logo{display:flex;align-items:center;gap:9px}
 .logo-hex{width:30px;height:30px;background:var(--red);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:11px;color:#fff;box-shadow:0 0 14px rgba(232,25,44,.35)}
@@ -2795,9 +2816,52 @@ function closeTrashSheet(){
   document.getElementById("trashHintSection").style.display="none";
   _trashText="";_trashPersona="";_trashMe=null;_selectedTargets=new Set();
 }
-var _wheelSegments=[{label:"Beer Funnel",emoji:"🍺"},{label:"Beer Shotgun",emoji:"🍻"},{label:"Shot",emoji:"🥃"},{label:"Pushups",emoji:"💪"},{label:"Smelling Salts",emoji:"🧂"},{label:"Give a Pick",emoji:"🎯"}];
-var _wheelColors=["#e8192c","#c9a84c","#2980b9","#27ae60","#8e44ad","#e67e22"];
+var _wheelDefaults=[
+  // Drinking
+  {label:"Beer Funnel",emoji:"🍺",on:true},
+  {label:"Beer Shotgun",emoji:"🍻",on:true},
+  {label:"Take a Shot",emoji:"🥃",on:true},
+  {label:"Chug a Beer",emoji:"🍺",on:false},
+  {label:"Waterfall",emoji:"🌊",on:false},
+  {label:"Finish Your Drink",emoji:"🍷",on:false},
+  {label:"Cheers & Sip",emoji:"🥂",on:false},
+  // Physical
+  {label:"10 Pushups",emoji:"💪",on:true},
+  {label:"20 Jumping Jacks",emoji:"🤸",on:false},
+  {label:"Wall Sit 30s",emoji:"🪑",on:false},
+  {label:"10 Burpees",emoji:"🏋️",on:false},
+  {label:"Plank 30s",emoji:"🧘",on:false},
+  {label:"Shadowbox 30s",emoji:"🥊",on:false},
+  {label:"10 Air Squats",emoji:"🦵",on:false},
+  // Other / fun
+  {label:"Smelling Salts",emoji:"🧂",on:true},
+  {label:"Give a Pick",emoji:"🎯",on:true},
+  {label:"Trash Talk Someone",emoji:"📢",on:false},
+  {label:"Bruce Buffer Impression",emoji:"🎤",on:false},
+  {label:"Group Selfie",emoji:"🤳",on:false},
+  {label:"$5 Side Bet",emoji:"💵",on:false}
+];
+function _cloneWheelDefaults(){return _wheelDefaults.map(function(c){return {label:c.label,emoji:c.emoji,on:c.on};});}
+var _wheelChallenges=_cloneWheelDefaults();
+function loadWheelChallenges(){
+  try{
+    var raw=localStorage.getItem("ufc_wheel_challenges");
+    if(raw){
+      var arr=JSON.parse(raw);
+      if(Array.isArray(arr)&&arr.length){
+        _wheelChallenges=arr.filter(function(c){return c&&typeof c.label==="string";})
+          .map(function(c){return {label:c.label,emoji:c.emoji||"🎲",on:!!c.on};});
+      }
+    }
+  }catch(e){}
+}
+function saveWheelChallenges(){
+  try{localStorage.setItem("ufc_wheel_challenges",JSON.stringify(_wheelChallenges));}catch(e){}
+}
+function activeSegments(){return _wheelChallenges.filter(function(c){return c.on;});}
+var _wheelPalette=["#e8192c","#c9a84c","#2980b9","#27ae60","#8e44ad","#e67e22","#16a085","#d35400","#2c3e50","#c0392b"];
 var _wheelAngle=0,_wheelSpinning=false;
+loadWheelChallenges();
 function drawWheel(angle){
   var canvas=document.getElementById("wheelCanvas");
   if(!canvas)return;
@@ -2806,17 +2870,18 @@ function drawWheel(angle){
   var ctx=canvas.getContext("2d");
   ctx.setTransform(dpr,0,0,dpr,0,0);
   var cx=140,cy=140,r=132;
-  var n=_wheelSegments.length,arc=Math.PI*2/n;
+  var segs=activeSegments();
+  var n=segs.length,arc=Math.PI*2/n;
   ctx.clearRect(0,0,280,280);
   for(var i=0;i<n;i++){
     var start=angle+i*arc,end=start+arc;
     ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,end);ctx.closePath();
-    ctx.fillStyle=_wheelColors[i];ctx.fill();
+    ctx.fillStyle=_wheelPalette[i%_wheelPalette.length];ctx.fill();
     ctx.strokeStyle="rgba(0,0,0,.35)";ctx.lineWidth=2;ctx.stroke();
     ctx.save();
     ctx.translate(cx,cy);ctx.rotate(start+arc/2);
     ctx.fillStyle="#fff";ctx.shadowColor="rgba(0,0,0,.6)";ctx.shadowBlur=2;
-    var seg=_wheelSegments[i];
+    var seg=segs[i];
     var words=seg.label.split(" ");
     var mid=Math.ceil(words.length/2);
     var line1=words.slice(0,mid).join(" "),line2=words.slice(mid).join(" ");
@@ -2843,7 +2908,8 @@ function openWheelSheet(){
   var sheet=document.getElementById("wheelSheet");
   document.getElementById("wheelResult").className="lb-wheel-result";
   document.getElementById("wheelResult").textContent="";
-  var btn=document.getElementById("wheelSpinBtn");btn.disabled=false;btn.textContent="Spin 🎡";
+  var sbtn=document.getElementById("wheelSpinBtn");if(sbtn)delete sbtn.dataset.spun;
+  showWheelView("spin");
   _wheelSpinning=false;
   sheet.classList.add("open");
   requestAnimationFrame(function(){drawWheel(_wheelAngle);});
@@ -2852,12 +2918,79 @@ function closeWheelSheet(){
   document.getElementById("wheelSheet").classList.remove("open");
   _wheelSpinning=false;
 }
+// Toggle between the spin view and the manage (edit) view inside the wheel sheet.
+function showWheelView(view){
+  var sheet=document.getElementById("wheelSheet");
+  if(!sheet)return;
+  var manage=view==="manage";
+  sheet.classList.toggle("managing",manage);
+  if(manage){renderChallengeList();}
+  else{
+    updateSpinAvailability();
+    requestAnimationFrame(function(){drawWheel(_wheelAngle);});
+  }
+}
+// Keep the spin button + hint in sync with how many challenges are active.
+function updateSpinAvailability(){
+  var btn=document.getElementById("wheelSpinBtn");
+  var hint=document.getElementById("wheelHint");
+  var enough=activeSegments().length>=2;
+  if(btn){btn.disabled=!enough||_wheelSpinning;if(!_wheelSpinning)btn.textContent=btn.dataset.spun?"Spin Again 🎡":"Spin 🎡";}
+  if(hint)hint.style.display=enough?"none":"block";
+}
+function renderChallengeList(){
+  var list=document.getElementById("wheelList");
+  if(!list)return;
+  list.innerHTML="";
+  _wheelChallenges.forEach(function(c,i){
+    var row=document.createElement("div");
+    row.className="lb-wheel-row";
+    var pill=document.createElement("button");
+    pill.className="lb-wheel-pill"+(c.on?" selected":"");
+    pill.textContent=(c.on?"On":"Off");
+    pill.onclick=function(){toggleChallenge(i);};
+    var label=document.createElement("div");
+    label.className="lb-wheel-row-label";
+    label.textContent=(c.emoji?c.emoji+" ":"")+c.label;
+    var del=document.createElement("button");
+    del.className="lb-wheel-del";del.textContent="✕";del.title="Remove";
+    del.onclick=function(){deleteChallenge(i);};
+    row.appendChild(label);row.appendChild(pill);row.appendChild(del);
+    list.appendChild(row);
+  });
+}
+function toggleChallenge(i){
+  if(!_wheelChallenges[i])return;
+  _wheelChallenges[i].on=!_wheelChallenges[i].on;
+  saveWheelChallenges();renderChallengeList();
+}
+function deleteChallenge(i){
+  _wheelChallenges.splice(i,1);
+  saveWheelChallenges();renderChallengeList();
+}
+function addChallenge(){
+  var eIn=document.getElementById("wheelAddEmoji");
+  var lIn=document.getElementById("wheelAddLabel");
+  var label=(lIn.value||"").trim();
+  if(!label)return;
+  var emoji=(eIn.value||"").trim()||"🎲";
+  _wheelChallenges.push({label:label,emoji:emoji,on:true});
+  saveWheelChallenges();
+  eIn.value="";lIn.value="";lIn.focus();
+  renderChallengeList();
+}
+function resetChallenges(){
+  _wheelChallenges=_cloneWheelDefaults();
+  saveWheelChallenges();renderChallengeList();
+}
 function spinWheel(){
   if(_wheelSpinning)return;
+  var segs=activeSegments();
+  if(segs.length<2)return;
   _wheelSpinning=true;
   var btn=document.getElementById("wheelSpinBtn");btn.disabled=true;
   document.getElementById("wheelResult").className="lb-wheel-result";
-  var n=_wheelSegments.length,arc=Math.PI*2/n;
+  var n=segs.length,arc=Math.PI*2/n;
   var target=Math.floor(Math.random()*n);
   // Pointer is at the top = -π/2. Compute the final wheel angle that puts
   // the centre of the target segment exactly under the pointer.
@@ -2876,11 +3009,11 @@ function spinWheel(){
     else{
       _wheelAngle=current;
       _wheelSpinning=false;
-      var seg=_wheelSegments[target];
+      var seg=segs[target];
       var res=document.getElementById("wheelResult");
       res.textContent=seg.emoji+" "+seg.label;
       res.className="lb-wheel-result show";
-      btn.disabled=false;btn.textContent="Spin Again 🎡";
+      btn.disabled=false;btn.dataset.spun="1";btn.textContent="Spin Again 🎡";
     }
   }
   requestAnimationFrame(step);
@@ -3625,13 +3758,28 @@ document.addEventListener("DOMContentLoaded",function(){
     <div class="lb-trash-sent" id="trashSent" style="display:none">🔔 Fired off!</div>
   </div>
   <div class="lb-wheel-sheet" id="wheelSheet">
+    <button class="lb-wheel-edit" id="wheelEditBtn" onclick="showWheelView('manage')">⚙ Edit</button>
+    <button class="lb-wheel-back" id="wheelBackBtn" onclick="showWheelView('spin')">← Done</button>
     <button class="lb-wheel-close" onclick="closeWheelSheet()">✕</button>
-    <div class="lb-wheel-canvas-wrap">
-      <div class="lb-wheel-pointer"></div>
-      <canvas id="wheelCanvas" width="280" height="280"></canvas>
+    <div class="lb-wheel-spin-view">
+      <div class="lb-wheel-canvas-wrap">
+        <div class="lb-wheel-pointer"></div>
+        <canvas id="wheelCanvas" width="280" height="280"></canvas>
+      </div>
+      <div class="lb-wheel-result" id="wheelResult"></div>
+      <div class="lb-wheel-hint" id="wheelHint">Add at least 2 challenges in ⚙ Edit to spin.</div>
+      <button class="lb-wheel-spin-btn" id="wheelSpinBtn" onclick="spinWheel()">Spin 🎡</button>
     </div>
-    <div class="lb-wheel-result" id="wheelResult"></div>
-    <button class="lb-wheel-spin-btn" id="wheelSpinBtn" onclick="spinWheel()">Spin 🎡</button>
+    <div class="lb-wheel-manage-view">
+      <div class="lb-wheel-manage-title">Challenges</div>
+      <div class="lb-wheel-list" id="wheelList"></div>
+      <div class="lb-wheel-add">
+        <input class="lb-wheel-emoji-input" id="wheelAddEmoji" type="text" placeholder="🎲" maxlength="4">
+        <input class="nm-input lb-wheel-label-input" id="wheelAddLabel" type="text" placeholder="Add a challenge…" maxlength="28">
+        <button class="lb-wheel-add-btn" onclick="addChallenge()">Add</button>
+      </div>
+      <button class="lb-wheel-reset" onclick="resetChallenges()">Reset to defaults</button>
+    </div>
   </div>
 </div>
 <div id="install-overlay" onclick="if(event.target===this)closeInstall()">
