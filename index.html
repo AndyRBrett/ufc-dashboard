@@ -2969,6 +2969,15 @@ function loadLeaderboard(isLive){
       evHdr.textContent=_hdrLbl+": "+nextEv.name.replace("UFC Fight Night: ","").replace("UFC ","UFC ");
       body.appendChild(evHdr);
     }
+    // Tie-aware ranking by points: users on equal points share a rank (1,1,3,…),
+    // so before any fights resolve — everyone on 0 pts — nobody gets a solo podium.
+    var ranks=[],tieCount={};
+    sorted.forEach(function(u,i){
+      var p=u.correct+u.methods*0.5+u.fotn;
+      var prev=i>0?(sorted[i-1].correct+sorted[i-1].methods*0.5+sorted[i-1].fotn):null;
+      ranks[i]=(i>0&&p===prev)?ranks[i-1]:i+1;
+      tieCount[ranks[i]]=(tieCount[ranks[i]]||0)+1;
+    });
     sorted.forEach(function(u,i){
       var pts=u.correct+u.methods*0.5+u.fotn;
       var pending=u.picks.filter(function(p){return p.result===null;}).length;
@@ -2978,7 +2987,11 @@ function loadLeaderboard(isLive){
       var row=document.createElement("div");
       row.className="lb-row"+(u.isMe?" lb-me":"");
       row.style.cssText+="cursor:pointer;flex-wrap:wrap;border-radius:"+(hasNextPicks?"12px 12px 0 0":"12px")+";transition:border-radius .15s";
-      var med=document.createElement("div");med.className=i<3?"lb-medal":"lb-rank";med.textContent=i<3?medals[i]:i+1;row.appendChild(med);
+      var rank=ranks[i],tied=tieCount[rank]>1;
+      var med=document.createElement("div");
+      if(rank<=3&&!tied){med.className="lb-medal";med.textContent=medals[rank-1];}
+      else{med.className="lb-rank";med.textContent=(tied?"T":"")+rank;}
+      row.appendChild(med);
       var nameDiv=document.createElement("div");nameDiv.className="lb-name";
       var nameTxt=document.createElement("span");nameTxt.className="lb-name-txt";nameTxt.textContent=u.nickname;nameDiv.appendChild(nameTxt);
       if(u.isMe){var you=document.createElement("span");you.className="lb-you";you.textContent="YOU";nameDiv.appendChild(you);}
