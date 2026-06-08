@@ -174,6 +174,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .ftab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;color:var(--muted);border:1px solid var(--border);background:none;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:Inter,sans-serif}
 .ftab:hover{color:var(--muted2);border-color:var(--border2)}
 .ftab.active{background:var(--red);color:#fff;border-color:var(--red);box-shadow:0 2px 8px rgba(232,25,44,.3)}
+.lb-modebar{display:flex;gap:8px;justify-content:center;padding:10px 14px 4px;flex-shrink:0}
 .picks-widget{background:var(--card);border-top:1px solid var(--border);margin:12px 12px;border-radius:14px;border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow-card)}
 .picks-toggle{width:100%;background:none;border:none;border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:Inter,sans-serif;transition:background .15s}
 .picks-toggle:hover{background:rgba(255,255,255,.02)}
@@ -960,6 +961,7 @@ function _buildFightIndex(){_fightIndex={};EVENTS.forEach(function(ev){ev.fights
 function buildReg(){FIGHTS=[];EVENTS.forEach(function(ev,ei){ev.fights.forEach(function(f,fi){FIGHTS.push({ei:ei,fi:fi,ev:ev,fight:f});});});_buildFightIndex();}
 
 var curFilter="all",curSearch="";
+var lbMode=(function(){try{return localStorage.getItem("ufc_lb_mode")||"current";}catch(e){return "current";}})();
 var FIGHTER_PHOTOS={};
 try{FIGHTER_PHOTOS=JSON.parse(localStorage.getItem("ufc_photos")||"{}");}catch(e){}
 function _safeImgUrl(url){if(!url||url==="none")return null;try{var p=new URL(url);if(p.protocol!=="https:")return null;if(!p.hostname.endsWith(".wikimedia.org")&&!p.hostname.endsWith(".wikipedia.org"))return null;return url;}catch(e){return null;}}
@@ -1420,6 +1422,17 @@ function setFilter(btn){
   document.querySelectorAll(".ftab").forEach(function(t){t.classList.remove("active");});
   btn.classList.add("active");
   render();
+}
+function setLbMode(btn){
+  lbMode=btn.getAttribute("data-lbmode")||"current";
+  try{localStorage.setItem("ufc_lb_mode",lbMode);}catch(e){}
+  syncLbModeBar();
+  loadLeaderboard();
+}
+function syncLbModeBar(){
+  document.querySelectorAll(".lb-modebar .ftab").forEach(function(t){
+    t.classList.toggle("active",t.getAttribute("data-lbmode")===lbMode);
+  });
 }
 function matchFilter(f){
   if(curFilter!=="all"&&f.wc!==curFilter)return false;
@@ -2534,7 +2547,7 @@ function render(){
 }
 
 
-function openLeaderboard(){document.getElementById("lbPanel").classList.add("open");loadLeaderboard();if(typeof liveRefresh==="function")liveRefresh();}
+function openLeaderboard(){document.getElementById("lbPanel").classList.add("open");syncLbModeBar();loadLeaderboard();if(typeof liveRefresh==="function")liveRefresh();}
 function closeLeaderboard(){document.getElementById("lbPanel").classList.remove("open");document.getElementById("lbInfoModal").classList.remove("open");closeTrashSheet();closeWheelSheet();}
 document.addEventListener("click",function(e){var m=document.getElementById("lbInfoModal");if(m&&m.classList.contains("open")&&!m.contains(e.target)&&!e.target.classList.contains("lb-info-btn"))m.classList.remove("open");});
 function closeTrashSheet(){
@@ -2845,8 +2858,21 @@ function loadLeaderboard(isLive){
       return;
     }
     _reconcileMyMethods(rows);
+    // Find the current/active event up front so "This Event" mode can scope scoring to it.
+    var nowMs=Date.now();
+    var _eto=etOffset();
+    function _evStartMs(e){var dp=e.date.split("-");var t=e.prelimTime||e.time||"";var pp=t.split(":");var h=parseInt(pp[0],10);if(isNaN(h))return new Date(e.date).getTime()+DAY_MS;return Date.UTC(+dp[0],+dp[1]-1,+dp[2],h+_eto,+(pp[1]||0),0);}
+    // Keep an event's pick chips visible until ~a day after its (prelim) start, so they
+    // persist through the live main event instead of vanishing the moment it begins.
+    var nextEv=EVENTS.filter(function(e){return _evStartMs(e)>nowMs-DAY_MS;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);})[0]||null;
+    var nextMainFights=nextEv?nextEv.fights.slice().reverse():[];
+    if(lbMode==="current"&&!nextEv){
+      body.innerHTML='<div class="lb-empty">No active event right now.<br>Switch to All-Time to see standings.</div>';
+      return;
+    }
     var users={};
     rows.forEach(function(p){
+      if(lbMode==="current"&&p.event_date!==nextEv.date)return;
       var uid=p.user_id||p.nickname||"unknown";
       if(!users[uid])users[uid]={nickname:p.nickname,user_id:p.user_id||null,correct:0,total:0,methods:0,fotn:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
       var fight=null;
@@ -2914,14 +2940,6 @@ function loadLeaderboard(isLive){
         if(ev&&ev.fotn&&u.bonusPicks[evDate]===ev.fotn)u.fotn++;
       });
     });
-    // Find next upcoming event for pick chips
-    var nowMs=Date.now();
-    var _eto=etOffset();
-    function _evStartMs(e){var dp=e.date.split("-");var t=e.prelimTime||e.time||"";var pp=t.split(":");var h=parseInt(pp[0],10);if(isNaN(h))return new Date(e.date).getTime()+DAY_MS;return Date.UTC(+dp[0],+dp[1]-1,+dp[2],h+_eto,+(pp[1]||0),0);}
-    // Keep an event's pick chips visible until ~a day after its (prelim) start, so they
-    // persist through the live main event instead of vanishing the moment it begins.
-    var nextEv=EVENTS.filter(function(e){return _evStartMs(e)>nowMs-DAY_MS;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);})[0]||null;
-    var nextMainFights=nextEv?nextEv.fights.slice().reverse():[];
     var sorted=Object.values(users).sort(function(a,b){
       var pa=a.correct+a.methods*0.5+a.fotn,pb=b.correct+b.methods*0.5+b.fotn;
       if(pa!==pb)return pb-pa;                                  // 1) most points
@@ -2929,6 +2947,10 @@ function loadLeaderboard(isLive){
       if(aa!==ab)return ab-aa;                                  // 2) tiebreak: higher pick %
       return b.total-a.total;                                   // 3) then more picks made
     });
+    if(lbMode==="current"&&sorted.length===0){
+      body.innerHTML='<div class="lb-empty">No picks yet for '+nextEv.name.replace("UFC Fight Night: ","").replace("UFC ","UFC ")+'.<br>Make your picks to appear here!</div>';
+      return;
+    }
     var anyResolved=sorted.some(function(u){return u.correct>0||u.picks.some(function(p){return p.result===false;});});
     var medals=["🥇","🥈","🥉"];
     body.innerHTML="";
@@ -3307,6 +3329,10 @@ document.addEventListener("DOMContentLoaded",function(){
     <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">🎡</span><div><div style="font-size:12px;font-weight:600">Spin the Wheel</div><div style="font-size:11px;color:var(--muted)">Random challenge picker</div></div></div>
     <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">✏️</span><div><div style="font-size:12px;font-weight:600">Edit Profile</div><div style="font-size:11px;color:var(--muted)">Change your name & emoji</div></div></div>
     <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">↺</span><div><div style="font-size:12px;font-weight:600">Refresh</div><div style="font-size:11px;color:var(--muted)">Reload scores</div></div></div>
+  </div>
+  <div class="lb-modebar">
+    <button class="ftab" data-lbmode="current" onclick="setLbMode(this)">This Event</button>
+    <button class="ftab" data-lbmode="all" onclick="setLbMode(this)">All-Time</button>
   </div>
   <div class="lb-body" id="lbBody"><div class="lb-loading">Loading picks...</div></div>
   <div class="lb-trash-sheet" id="trashSheet">
