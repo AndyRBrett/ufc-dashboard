@@ -35,12 +35,11 @@ WIKI_HDR     = {
     )
 }
 SUPABASE_URL  = os.environ.get("SUPABASE_URL", "https://gkccophrdqtqcowmblre.supabase.co")
-SUPABASE_ANON = os.environ.get(
-    "SUPABASE_ANON",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrY2"
-    "NvcGhyZHF0cWNvd21ibHJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAyMTAsImV4cCI6"
-    "MjA5NTA0NjIxMH0.zSi-PcQL_ti5KXRq3YRQX4RbsP6HhQ5bAqh5x5kKkbE",
-)
+# Supplied via the SUPABASE_ANON env var (set as a GitHub Actions secret). The anon
+# key is public by design — it ships in index.html for the browser — but we read it
+# from the environment rather than hardcoding a fallback so there's a single source
+# of truth to rotate. Reads/writes are governed by Supabase Row-Level Security.
+SUPABASE_ANON = os.environ.get("SUPABASE_ANON", "")
 VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "")
 VAPID_CLAIMS      = {"sub": "mailto:andyrbrett@gmail.com"}
 
@@ -237,6 +236,9 @@ def patch_js_var(html, name, value):
 
 def sb_get(path):
     """GET a Supabase REST API endpoint. Returns a list, or [] on error."""
+    if not SUPABASE_ANON:
+        print("Supabase GET skipped: SUPABASE_ANON not set", file=sys.stderr)
+        return []
     headers = {
         "apikey": SUPABASE_ANON,
         "Authorization": f"Bearer {SUPABASE_ANON}",

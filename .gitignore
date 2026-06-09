@@ -2,3 +2,8 @@ __pycache__/
 *.pyc
 *.pyo
 .preview/
+
+# Secrets — never commit environment files
+.env
+.env.*
+!.env.example

@@ -1,0 +1,17 @@
+# Gitleaks configuration for UFC Dashboard.
+# Extends the default ruleset, then allowlists the ONE secret that is public by
+# design: the Supabase anon key. Everything else (service_role keys, API keys,
+# private VAPID keys, etc.) will still be flagged if ever committed.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allowlist the public-by-design Supabase anon key"
+# The Supabase anon JWT is meant to ship to the browser (it lives in index.html)
+# and is constrained by Row-Level Security. Match the specific token so any OTHER
+# JWT or secret is still caught. The payload encodes role "anon" for project
+# ref gkccophrdqtqcowmblre.
+regexes = [
+  '''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrY2NvcGhyZHF0cWNvd21ibHJlIiwicm9sZSI6ImFub24i[A-Za-z0-9_.\-]+''',
+]
