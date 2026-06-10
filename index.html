@@ -477,6 +477,12 @@ body.light .ev-qp:hover{background:rgba(255,255,255,.12);color:#fff}
 .nm-btn:hover{opacity:.88}
 .nm-btn:disabled{opacity:.5;cursor:not-allowed}
 .nm-err{color:#ff5555;font-size:12px;text-align:center;margin:-4px 0 10px;display:none}
+.nm-del-link{display:block;width:100%;background:none;border:none;color:var(--muted);padding:0;margin-top:14px;font:500 12.5px Inter,sans-serif;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.nm-del-link:hover{color:#ff5555}
+.nm-del-actions{display:flex;gap:10px}
+.nm-del-actions .nm-btn{flex:1;width:auto;margin:0}
+.nm-btn-ghost{background:var(--card2);color:var(--text)}
+.nm-btn-danger{background:#d11}
 .share-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:250;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .share-modal-bg.open{display:flex}
 .share-modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:22px;width:100%;max-width:360px;box-shadow:var(--shadow-el)}
@@ -728,6 +734,17 @@ body.light .fotn-row{background:var(--card2);border-top:1px solid rgba(0,0,0,.08
     <input class="nm-input" id="nmInput" type="text" placeholder="Your name" maxlength="20" oninput="document.getElementById('nmErr').style.display='none'">
     <div class="nm-err" id="nmErr"></div>
     <button class="nm-btn" id="nmBtn" onclick="saveName()">Let's go</button>
+    <button class="nm-del-link" id="nmDelBtn" onclick="confirmDeleteAccount()" style="display:none">Delete my account</button>
+  </div>
+</div>
+<div class="nm-bg" id="delBg">
+  <div class="nm-box" style="max-width:300px">
+    <div class="nm-top"><h3>Delete account?</h3></div>
+    <p>This permanently removes your profile, all your picks, and notification settings. Your leaderboard entry will be gone for good — this can't be undone.</p>
+    <div class="nm-del-actions">
+      <button class="nm-btn nm-btn-ghost" onclick="closeDeleteConfirm()">Cancel</button>
+      <button class="nm-btn nm-btn-danger" id="delConfirmBtn" onclick="deleteAccount()">Delete forever</button>
+    </div>
   </div>
 </div>
 <div class="share-modal-bg" id="shareBg" onclick="if(event.target===this)closeShare()">
@@ -1635,6 +1652,7 @@ function closeModal(){document.getElementById("statsModal").classList.remove("op
 
 function closeNameModal(){
   document.getElementById("nmBg").classList.remove("open");
+  document.getElementById("nmDelBtn").style.display="none";
   window._pp=null;
   document.getElementById("nmInput").value="";
   document.getElementById("nmErr").style.display="none";
@@ -1646,6 +1664,7 @@ function closeNameModal(){
   }
 }
 function checkName(cb){if(userName){cb();return;}
+  document.getElementById("nmDelBtn").style.display="none";
   // Pre-select current emoji if set
   document.querySelectorAll(".nm-emoji-btn").forEach(function(b){b.classList.toggle("selected",b.dataset.e===userEmoji);});
   document.getElementById("nmBg").classList.add("open");document.getElementById("nmInput").focus();window._pp=cb;}
@@ -1658,8 +1677,31 @@ function openEditName(){
   document.querySelector(".nm-box p").textContent="Update your avatar or name.";
   document.getElementById("nmBtn").textContent="Save Changes";
   window._nmEditMode=true;
+  document.getElementById("nmDelBtn").style.display="block";
   document.getElementById("nmBg").classList.add("open");
   document.getElementById("nmInput").focus();
+}
+function confirmDeleteAccount(){document.getElementById("delBg").classList.add("open");}
+function closeDeleteConfirm(){document.getElementById("delBg").classList.remove("open");}
+function deleteAccount(){
+  var btn=document.getElementById("delConfirmBtn");
+  btn.disabled=true;btn.textContent="Deleting…";
+  _authReady.then(function(){
+    var h=_sbHeaders();
+    // Delete the user's own rows first, using the current authenticated session.
+    return fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h}).then(function(r){
+      if(!r.ok)throw new Error("delete "+r.status);
+      return fetch(SUPABASE_URL+"/rest/v1/push_subs?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h}).catch(function(){});
+    });
+  }).then(function(){
+    // Best-effort: drop the browser push subscription, then wipe all local state.
+    try{if('serviceWorker'in navigator)navigator.serviceWorker.ready.then(function(reg){reg.pushManager.getSubscription().then(function(s){if(s)s.unsubscribe();});}).catch(function(){});}catch(e){}
+    try{localStorage.clear();}catch(e){}
+    location.reload(); // reboots a fresh anonymous session + shows the join screen
+  }).catch(function(){
+    btn.disabled=false;btn.textContent="Delete forever";
+    toast("Couldn't delete — check your connection and try again");
+  });
 }
 function selectEmoji(btn){document.querySelectorAll(".nm-emoji-btn").forEach(function(b){b.classList.remove("selected");});btn.classList.add("selected");}
 function saveName(){
