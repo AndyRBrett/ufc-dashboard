@@ -1084,6 +1084,11 @@ def send_push_notifications(new_results):
                 continue
             (winners if names_match(chosen, winner) else losers).append(pick["user_id"])
         fight_key = re.sub(r"[^a-z0-9]+", "-", f"{winner}-{loser}".lower()).strip("-")
+        # safe_title/safe_body is the spoiler-free variant — identical for both
+        # groups and naming no winner, so neither the text nor a difference
+        # between notifications can leak the result. The send-push function
+        # delivers it to everyone except subscribers who opted in to live
+        # results (push_subs.live_results), who get the full title/body.
         for group, user_ids, title, body in (
             ("win",  winners, "Your pick WON! 🔥", f"{winner} def. {loser} — you called it!"),
             ("loss", losers,  "Tough luck ❌",      f"{winner} def. {loser}"),
@@ -1102,6 +1107,8 @@ def send_push_notifications(new_results):
                         "type": f"result:{fight_key}:{group}",
                         "title": title,
                         "body": body,
+                        "safe_title": "🥊 Fight result is in",
+                        "safe_body": "A fight you picked is final — open the app to see how you did. (No spoilers here!)",
                         "include_user_ids": user_ids,
                     },
                     timeout=15,

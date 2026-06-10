@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import webpush from "npm:web-push";
-// v2 — supports include_user_ids for targeted push
+// v3 — spoiler-free by default: safe_title/safe_body go to everyone except
+// subscribers with live_results = true (also supports include_user_ids targeting)
 
 // Restrict which sites may invoke this endpoint. Comma-separated env override;
 // defaults to the production GitHub Pages origin.
@@ -26,6 +27,11 @@ interface ReqBody {
   type: string;
   title?: string;
   body?: string;
+  // Spoiler-free variant. When present, only subscribers who opted in to live
+  // results (push_subs.live_results = true) get title/body; everyone else gets
+  // safe_title/safe_body. Spoiler-free is the default for all subscribers.
+  safe_title?: string;
+  safe_body?: string;
   exclude_user_id?: string | null;
   include_user_ids?: string[] | null;
   // type="register" fields
@@ -34,6 +40,7 @@ interface ReqBody {
   endpoint?: string;
   p256dh?: string;
   auth?: string;
+  live_results?: boolean;
 }
 
 serve(async (req) => {
@@ -80,14 +87,29 @@ serve(async (req) => {
     if (!user_id || !endpoint || !p256dh || !auth) {
       return new Response(JSON.stringify({ error: "Missing required subscription fields" }), { status: 400, headers: CORS });
     }
-    const upsertRes = await fetch(
+    const row: Record<string, unknown> = {
+      user_id,
+      nickname: nickname || user_id.slice(0, 8),
+      endpoint,
+      p256dh,
+      auth,
+      live_results: body.live_results === true,
+    };
+    const upsert = (r: Record<string, unknown>) => fetch(
       `${SUPABASE_URL}/rest/v1/push_subs?on_conflict=user_id`,
       {
         method: "POST",
         headers: { ...sbHeaders, "Prefer": "resolution=merge-duplicates,return=minimal" },
-        body: JSON.stringify({ user_id, nickname: nickname || user_id.slice(0, 8), endpoint, p256dh, auth }),
+        body: JSON.stringify(r),
       }
     );
+    let upsertRes = await upsert(row);
+    if (!upsertRes.ok) {
+      // live_results column may not exist yet (migration 0002 not applied) —
+      // retry without it; the subscriber stays spoiler-free by default.
+      delete row.live_results;
+      upsertRes = await upsert(row);
+    }
     if (!upsertRes.ok) {
       const detail = await upsertRes.text();
       return new Response(JSON.stringify({ error: "Failed to save subscription", detail }), { status: 502, headers: CORS });
@@ -121,20 +143,31 @@ serve(async (req) => {
   }
 
   // Fetch push subscriptions — targeted list takes priority, then exclude-self, then all
-  let subsUrl: string;
+  let subsFilter: string;
   if (body.include_user_ids && body.include_user_ids.length > 0) {
     const ids = body.include_user_ids.map(encodeURIComponent).join(",");
-    subsUrl = `${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth&user_id=in.(${ids})`;
+    subsFilter = `&user_id=in.(${ids})`;
   } else if (body.exclude_user_id) {
-    subsUrl = `${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth&user_id=neq.${encodeURIComponent(body.exclude_user_id)}`;
+    subsFilter = `&user_id=neq.${encodeURIComponent(body.exclude_user_id)}`;
   } else {
-    subsUrl = `${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth`;
+    subsFilter = "";
   }
-  const subsRes = await fetch(subsUrl, { headers: sbHeaders });
+  let subsRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth,live_results${subsFilter}`,
+    { headers: sbHeaders }
+  );
+  if (!subsRes.ok) {
+    // live_results column may not exist yet (migration 0002 not applied) —
+    // refetch without it; everyone is then treated as spoiler-free.
+    subsRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth${subsFilter}`,
+      { headers: sbHeaders }
+    );
+  }
   if (!subsRes.ok) {
     return new Response(JSON.stringify({ error: "Failed to fetch subscriptions" }), { status: 502, headers: CORS });
   }
-  const subs: { endpoint: string; p256dh: string; auth: string }[] = await subsRes.json();
+  const subs: { endpoint: string; p256dh: string; auth: string; live_results?: boolean }[] = await subsRes.json();
 
   if (!subs.length) {
     return new Response(JSON.stringify({ sent: 0, skipped: false, reason: "no subscribers" }), { status: 200, headers: CORS });
@@ -142,11 +175,17 @@ serve(async (req) => {
 
   webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
-  const payload = JSON.stringify({ title: body.title, body: body.body });
+  const livePayload = JSON.stringify({ title: body.title, body: body.body });
+  // When a spoiler-free variant is supplied, it is the default; the full
+  // result only goes to subscribers who explicitly opted in to live results.
+  const safePayload = body.safe_title
+    ? JSON.stringify({ title: body.safe_title, body: body.safe_body ?? "" })
+    : null;
   let sent = 0, failed = 0;
 
   await Promise.all(subs.map(async (sub) => {
     try {
+      const payload = safePayload && sub.live_results !== true ? safePayload : livePayload;
       await webpush.sendNotification(
         { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
         payload
