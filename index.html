@@ -839,10 +839,25 @@ var FIGHTER_STATS={"Abdul-Rakhman Yakhyaev":{"slpm":7.4,"acc":67,"td":11.49,"tdd
 var GENERATED_AT="9 Jun 2026 12:12 PM UTC";
 var SUPABASE_URL="https://gkccophrdqtqcowmblre.supabase.co";
 var SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrY2NvcGhyZHF0cWNvd21ibHJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAyMTAsImV4cCI6MjA5NTA0NjIxMH0.zSi-PcQL_ti5KXRq3YRQX4RbsP6HhQ5bAqh5x5kKkbE";
-var USER_ID=(function(){var id=localStorage.getItem("ufc_uid");if(!id){id=typeof crypto!=="undefined"&&crypto.randomUUID?crypto.randomUUID():"u"+Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem("ufc_uid",id);}return id;})();
-function _authBearer(){return"Bearer "+SUPABASE_ANON;}
-var _authReady=Promise.resolve(USER_ID);
-try{localStorage.removeItem("ufc_sb_session");}catch(e){}
+// Supabase anonymous auth. Each visitor gets a real auth.uid() so RLS policies
+// can scope writes to the owner (auth.uid()::text = user_id) instead of trusting
+// a client-supplied id. USER_ID is the auth uid; _authBearer() carries the user's
+// JWT for REST/realtime. Edge-function calls keep using the anon key separately.
+var USER_ID=null,_sbToken=null,_refreshTimer=null;
+function _authBearer(){return"Bearer "+(_sbToken||SUPABASE_ANON);}
+function _saveSession(s){try{localStorage.setItem("ufc_sb_session",JSON.stringify(s));}catch(e){}}
+function _applySession(s){_sbToken=s.access_token;USER_ID=s.user_id||(s.user&&s.user.id)||USER_ID;return s;}
+function _normSession(raw,prev){var now=Math.floor(Date.now()/1000);return{access_token:raw.access_token,refresh_token:raw.refresh_token||(prev&&prev.refresh_token),expires_at:raw.expires_at||(now+(raw.expires_in||3600)),user_id:(raw.user&&raw.user.id)||(prev&&prev.user_id)};}
+function _authPost(path,body){return fetch(SUPABASE_URL+path,{method:"POST",headers:{apikey:SUPABASE_ANON,"Content-Type":"application/json"},body:JSON.stringify(body)}).then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error("auth "+r.status+" "+t);});return r.json();});}
+function _signInAnon(){return _authPost("/auth/v1/signup",{data:{},gotrue_meta_security:{}});}
+function _refreshToken(rt){return _authPost("/auth/v1/token?grant_type=refresh_token",{refresh_token:rt});}
+function _adoptSession(raw,prev){var ns=_normSession(raw,prev);_saveSession(ns);_applySession(ns);_scheduleRefresh(ns);return USER_ID;}
+function _scheduleRefresh(s){if(_refreshTimer)clearTimeout(_refreshTimer);var now=Math.floor(Date.now()/1000);var delay=Math.max(30,(s.expires_at||now+3600)-now-120)*1000;_refreshTimer=setTimeout(function(){if(s.refresh_token)_refreshToken(s.refresh_token).then(function(r){_adoptSession(r,s);}).catch(function(){});},delay);}
+function _ensureAuth(){var stored=null;try{stored=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");}catch(e){}var now=Math.floor(Date.now()/1000);if(stored&&stored.access_token&&stored.user_id){_applySession(stored);if(stored.expires_at>now+60){_scheduleRefresh(stored);return Promise.resolve(USER_ID);}if(stored.refresh_token)return _refreshToken(stored.refresh_token).then(function(r){return _adoptSession(r,stored);}).catch(function(){return _signInAnon().then(function(r){return _adoptSession(r,null);});});}return _signInAnon().then(function(r){return _adoptSession(r,null);});}
+// Never reject: if anonymous sign-in is unavailable (e.g. not yet enabled in the
+// dashboard), fall back to a local id + anon key so the app keeps working during
+// rollout. Owner-scoped writes only take effect once the RLS migration is applied.
+var _authReady=_ensureAuth().catch(function(){var id=null;try{id=localStorage.getItem("ufc_uid");}catch(e){}if(!id){id=(typeof crypto!=="undefined"&&crypto.randomUUID)?crypto.randomUUID():"u"+Math.random().toString(36).slice(2)+Date.now().toString(36);try{localStorage.setItem("ufc_uid",id);}catch(e){}}USER_ID=id;_sbToken=null;return USER_ID;});
 var VAPID_PUBLIC_KEY="BDsk51TS3jHISYUwDIyiAayIq5-W1U8RqZsBdAbIZ45aKurpDIwIsCjImxF8g5zUQnIhn2kIIWTYf6BbNA_swGU";
 var userEmoji="🥊";
 try{userEmoji=localStorage.getItem("ufc_emoji")||"🥊";}catch(e){}
@@ -1385,7 +1400,7 @@ function _rtConnect(){
       var hb=setInterval(function(){if(_rtWs&&_rtWs.readyState===1)_rtWs.send(JSON.stringify({topic:"phoenix",event:"heartbeat",payload:{},ref:String(++_rtRef)}));else clearInterval(hb);},25000);
       _rtJoinRef=String(++_rtRef);
       _rtWs.send(JSON.stringify({topic:"realtime:picks-live",event:"phx_join",
-        payload:{config:{broadcast:{self:false,ack:false},postgres_changes:[{event:"*",schema:"public",table:"picks"}]},access_token:SUPABASE_ANON},
+        payload:{config:{broadcast:{self:false,ack:false},postgres_changes:[{event:"*",schema:"public",table:"picks"}]},access_token:(_sbToken||SUPABASE_ANON)},
         ref:_rtJoinRef,join_ref:_rtJoinRef}));
     };
     _rtWs.onmessage=function(e){
@@ -1787,7 +1802,7 @@ function _cpDelta(ev,fight,oldName,newName){
 function resetPicks(){
   if(!Object.keys(preds).length)return;
   if(!confirm("Reset all picks?"))return;
-  fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:_sbHeaders()}).catch(function(){});
+  _authReady.then(function(){fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:_sbHeaders()}).catch(function(){});});
   preds={};preds_method={};preds_conf={};save();saveMethod();saveConf();render();updatePicksWidget();toast("All picks cleared");
 }
 
@@ -3519,7 +3534,7 @@ document.addEventListener("DOMContentLoaded",function(){
   setTimeout(fetchCommunityPicks, 3000);
   setInterval(fetchCommunityPicks, 30000);
   document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")fetchCommunityPicks();});
-  _rtConnect();
+  _authReady.then(_rtConnect);
   _rtOn(fetchCommunityPicks);
   _rtOn(function(){
     var panel=document.getElementById("lbPanel");

@@ -31,13 +31,25 @@ security boundary is RLS, documented as code in
 Because the anon key is public, every table the frontend touches must have RLS
 enabled with least-privilege policies:
 
-- `picks` — anon may `SELECT` (public leaderboard) and upsert (`INSERT`/`UPDATE`);
-  no `DELETE`.
+- `picks` — `SELECT` is public (the leaderboard is public by design). Writes
+  (`INSERT`/`UPDATE`/`DELETE`) are restricted to the `authenticated` role and
+  scoped to the owner via `auth.uid()::text = user_id`.
 - `push_subs` / `notif_log` — no anon access; written only by the `send-push`
-  edge function using the service_role key.
+  edge function using the service_role key (which bypasses RLS).
 
-See the migration for the authoritative definitions. Keep RLS in version control:
-run `supabase db pull` after any dashboard change so policies stay reviewable.
+### Per-user identity via anonymous auth
+Because the picks table needs per-user writes but the app has no login, each
+visitor is signed in through **Supabase anonymous auth** (`/auth/v1/signup`,
+enabled in Authentication settings). The browser stores the returned session in
+`localStorage` (`ufc_sb_session`), uses the user's JWT — not the raw anon key —
+for all REST/realtime calls, and `USER_ID` is the auth `uid`. This lets RLS
+enforce `auth.uid()::text = user_id`, so a user can only modify their own picks.
+Edge-function calls (`ai-breakdown`, `send-push`) still send the anon key, which
+is what those functions authenticate against.
+
+See [`supabase/migrations/0001_rls_baseline.sql`](supabase/migrations/0001_rls_baseline.sql)
+for the authoritative policy definitions. Keep RLS in version control: run
+`supabase db pull` after any dashboard change so policies stay reviewable.
 
 ## Defenses in place
 
