@@ -717,7 +717,7 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
     <div class="nm-err" id="acctErr"></div>
     <button class="nm-btn" id="acctSendBtn" onclick="acctSend()">Email me a code</button>
     <div id="acctCodeWrap" style="display:none">
-      <input class="nm-input" id="acctCode" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" maxlength="10" style="margin-top:12px" oninput="document.getElementById('acctErr').style.display='none'">
+      <input class="nm-input" id="acctCode" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="Code from email" maxlength="10" style="margin-top:12px" oninput="document.getElementById('acctErr').style.display='none'">
       <button class="nm-btn" id="acctVerifyBtn" onclick="acctVerify()">Verify code</button>
       <button class="nm-del-link" onclick="acctSend()">Resend code</button>
     </div>
@@ -1629,7 +1629,7 @@ function _commitName(emoji,v){
     if(lbPanel&&lbPanel.classList.contains("open")){setTimeout(function(){loadLeaderboard(false);},800);}
   }
 }
-/* ===== Account: magic-link email (6-digit code, PWA-safe) ===== */
+/* ===== Account: magic-link email (one-time code, PWA-safe) ===== */
 var _acctPending=null,_acctMode=null;
 function _sessEmail(){try{var s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");return s&&s.email||null;}catch(e){return null;}}
 function _syncAcctBtn(){var el=document.getElementById("acctBtnLbl");if(el)el.textContent=_sessEmail()||"Sign In / Link Email";}
@@ -1641,7 +1641,7 @@ function openAcct(){
   document.getElementById("acctTitle").textContent=em?"Account":"Protect Your Picks";
   document.getElementById("acctDesc").textContent=em
     ?"Your picks are protected. Enter a different email to switch accounts."
-    :"Link an email so your picks and stats survive a new phone or a cleared browser. We'll send a 6-digit code.";
+    :"Link an email so your picks and stats survive a new phone or a cleared browser. We'll send a one-time code.";
   var row=document.getElementById("acctSignedRow");
   if(em){row.style.display="block";document.getElementById("acctEmailCur").textContent=em;}
   else row.style.display="none";
