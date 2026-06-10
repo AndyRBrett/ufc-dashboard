@@ -1262,10 +1262,22 @@ function _sbFetchAll(query){
   return page(0,[]);
 }
 function fetchCommunityPicks(){
-  _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick&order=user_id.asc,event_date.asc,f1.asc,f2.asc").then(function(rows){
+  _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,nickname,updated_at&order=updated_at.asc,event_date.asc,f1.asc,f2.asc").then(function(rows){
     if(!Array.isArray(rows))return;
-    var fresh={};
+    // One name = one vote per fight. Stale duplicate identities (a user whose
+    // device storage reset gets a new user_id but keeps their nickname) leave
+    // ghost rows that the leaderboard de-dupes by base name — mirror that here
+    // so the community bar count matches the leaderboard. updated_at is sorted
+    // ascending, so the newest row for a name wins.
+    var byVoter={};
     rows.forEach(function(p){
+      var nn=p.nickname||"";var sp=nn.indexOf(" ");
+      var base=(sp>=0?nn.slice(sp+1):nn).trim().toLowerCase()||"anon";
+      byVoter[p.event_date+"|"+p.f1+"|"+p.f2+"|"+base]=p;
+    });
+    var fresh={};
+    Object.keys(byVoter).forEach(function(vk){
+      var p=byVoter[vk];
       var k=p.event_date+"|"+p.f1+"|"+p.f2;
       if(!fresh[k])fresh[k]={f1:0,f2:0,total:0};
       fresh[k].total++;
@@ -1525,13 +1537,23 @@ function saveName(){
   // In edit mode, if the name text hasn't changed (only emoji changed), skip the uniqueness check
   var currentNamePart=userName?userName.split(" ").slice(1).join(" "):"";
   if(window._nmEditMode&&v===currentNamePart){_commitName(emoji,v);return;}
+  // Names previously used on this device are always reclaimable — renaming strands
+  // the old name on rows from other devices/old IDs, and you shouldn't be locked
+  // out of your own former name by your own ghost rows.
+  var prevNames=[];try{prevNames=JSON.parse(localStorage.getItem("ufc_prev_names")||"[]");}catch(e){}
+  if(prevNames.indexOf(v.toLowerCase())>=0){_commitName(emoji,v);return;}
   errEl.style.display="none";btn.disabled=true;btn.textContent="Checking…";
   // Check the text portion of the name against all other users' nicknames (ilike "% name")
-  fetch(SUPABASE_URL+"/rest/v1/picks?select=user_id&nickname=ilike."+encodeURIComponent("% "+v)+"&user_id=neq."+encodeURIComponent(USER_ID)+"&limit=1",{
+  fetch(SUPABASE_URL+"/rest/v1/picks?select=event_date&nickname=ilike."+encodeURIComponent("% "+v)+"&user_id=neq."+encodeURIComponent(USER_ID)+"&limit=200",{
     headers:{apikey:SUPABASE_ANON,Authorization:_authBearer()}
   }).then(function(r){return r.ok?r.json():[];}).then(function(rows){
     btn.disabled=false;btn.textContent=_btnLabel;
-    if(Array.isArray(rows)&&rows.length>0){
+    // Only block when that name is actively playing — i.e. has picks on a
+    // current/upcoming event. Abandoned identities (ghost rows under old IDs,
+    // historical events only) don't reserve the name forever.
+    var cutoff=new Date(Date.now()-2*DAY_MS).toISOString().slice(0,10);
+    var active=Array.isArray(rows)&&rows.some(function(p){return (p.event_date||"")>=cutoff;});
+    if(active){
       errEl.textContent="That name is already taken — pick another!";errEl.style.display="block";
       return;
     }
@@ -1543,6 +1565,14 @@ function saveName(){
 }
 function _commitName(emoji,v){
   var wasEdit=window._nmEditMode;
+  // Remember the outgoing name so it can be reclaimed later on this device
+  var oldBase=userName?userName.split(" ").slice(1).join(" ").trim().toLowerCase():"";
+  if(oldBase&&oldBase!==v.toLowerCase()){
+    try{
+      var pn=JSON.parse(localStorage.getItem("ufc_prev_names")||"[]");
+      if(pn.indexOf(oldBase)<0){pn.push(oldBase);localStorage.setItem("ufc_prev_names",JSON.stringify(pn));}
+    }catch(e){}
+  }
   userEmoji=emoji;
   try{localStorage.setItem("ufc_emoji",userEmoji);}catch(e){}
   userName=userEmoji+" "+v;
