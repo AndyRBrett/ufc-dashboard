@@ -704,7 +704,23 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
     <input class="nm-input" id="nmInput" type="text" placeholder="Your name" maxlength="20" oninput="document.getElementById('nmErr').style.display='none'">
     <div class="nm-err" id="nmErr"></div>
     <button class="nm-btn" id="nmBtn" onclick="saveName()">Let's go</button>
+    <button class="nm-del-link" id="nmSigninLink" onclick="closeNameModal();openAcct()">Played before? Sign in with email</button>
     <button class="nm-del-link" id="nmDelBtn" onclick="confirmDeleteAccount()" style="display:none">Delete my account</button>
+  </div>
+</div>
+<div class="nm-bg" id="acctBg" onclick="if(event.target===this)closeAcct()">
+  <div class="nm-box">
+    <div class="nm-top"><h3 id="acctTitle">Protect Your Picks</h3><button class="nm-xbtn" onclick="closeAcct()">x</button></div>
+    <p id="acctDesc">Link an email so your picks and stats survive a new phone or a cleared browser.</p>
+    <div id="acctSignedRow" style="display:none;font-size:13px;color:var(--muted);margin:-6px 0 14px">Signed in as <b id="acctEmailCur" style="color:var(--text)"></b></div>
+    <input class="nm-input" id="acctEmail" type="email" placeholder="you@email.com" autocomplete="email" oninput="document.getElementById('acctErr').style.display='none'">
+    <div class="nm-err" id="acctErr"></div>
+    <button class="nm-btn" id="acctSendBtn" onclick="acctSend()">Email me a code</button>
+    <div id="acctCodeWrap" style="display:none">
+      <input class="nm-input" id="acctCode" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" maxlength="10" style="margin-top:12px" oninput="document.getElementById('acctErr').style.display='none'">
+      <button class="nm-btn" id="acctVerifyBtn" onclick="acctVerify()">Verify code</button>
+      <button class="nm-del-link" onclick="acctSend()">Resend code</button>
+    </div>
   </div>
 </div>
 <div class="nm-bg" id="delBg">
@@ -763,6 +779,10 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
         <button class="btn-more-item" id="notifBell" onclick="togglePush();closeMoreMenu()" title="Fight notifications">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <span>Notifications</span>
+        </button>
+        <button class="btn-more-item" id="acctBtn" onclick="openAcct();closeMoreMenu()" title="Account">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span id="acctBtnLbl">Sign In / Link Email</span>
         </button>
         <div class="btn-more-sep"></div>
         <div class="btn-more-label">Theme</div>
@@ -854,17 +874,33 @@ var USER_ID=null,_sbToken=null,_refreshTimer=null;
 function _authBearer(){return"Bearer "+(_sbToken||SUPABASE_ANON);}
 function _saveSession(s){try{localStorage.setItem("ufc_sb_session",JSON.stringify(s));}catch(e){}}
 function _applySession(s){_sbToken=s.access_token;USER_ID=s.user_id||(s.user&&s.user.id)||USER_ID;return s;}
-function _normSession(raw,prev){var now=Math.floor(Date.now()/1000);return{access_token:raw.access_token,refresh_token:raw.refresh_token||(prev&&prev.refresh_token),expires_at:raw.expires_at||(now+(raw.expires_in||3600)),user_id:(raw.user&&raw.user.id)||(prev&&prev.user_id)};}
+function _normSession(raw,prev){var now=Math.floor(Date.now()/1000);return{access_token:raw.access_token,refresh_token:raw.refresh_token||(prev&&prev.refresh_token),expires_at:raw.expires_at||(now+(raw.expires_in||3600)),user_id:(raw.user&&raw.user.id)||(prev&&prev.user_id),email:(raw.user&&raw.user.email)||(prev&&prev.email)||null};}
 function _authPost(path,body){return fetch(SUPABASE_URL+path,{method:"POST",headers:{apikey:SUPABASE_ANON,"Content-Type":"application/json"},body:JSON.stringify(body)}).then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error("auth "+r.status+" "+t);});return r.json();});}
 function _signInAnon(){return _authPost("/auth/v1/signup",{data:{},gotrue_meta_security:{}});}
 function _refreshToken(rt){return _authPost("/auth/v1/token?grant_type=refresh_token",{refresh_token:rt});}
 function _adoptSession(raw,prev){var ns=_normSession(raw,prev);_saveSession(ns);_applySession(ns);_scheduleRefresh(ns);return USER_ID;}
 function _scheduleRefresh(s){if(_refreshTimer)clearTimeout(_refreshTimer);var now=Math.floor(Date.now()/1000);var delay=Math.max(30,(s.expires_at||now+3600)-now-120)*1000;_refreshTimer=setTimeout(function(){if(s.refresh_token)_refreshToken(s.refresh_token).then(function(r){_adoptSession(r,s);}).catch(function(){});},delay);}
-function _ensureAuth(){var stored=null;try{stored=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");}catch(e){}var now=Math.floor(Date.now()/1000);if(stored&&stored.access_token&&stored.user_id){_applySession(stored);if(stored.expires_at>now+60){_scheduleRefresh(stored);return Promise.resolve(USER_ID);}if(stored.refresh_token)return _refreshToken(stored.refresh_token).then(function(r){return _adoptSession(r,stored);}).catch(function(){return _signInAnon().then(function(r){return _adoptSession(r,null);});});}return _signInAnon().then(function(r){return _adoptSession(r,null);});}
+function _ensureAuth(){var stored=null;try{stored=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");}catch(e){}var now=Math.floor(Date.now()/1000);if(stored&&stored.access_token&&!stored.user_id){return fetch(SUPABASE_URL+"/auth/v1/user",{headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+stored.access_token}}).then(function(r){if(!r.ok)throw new Error("user "+r.status);return r.json();}).then(function(u){if(!u||!u.id)throw new Error("no user in response");stored.user_id=u.id;stored.email=u.email||null;_saveSession(stored);_applySession(stored);_scheduleRefresh(stored);return USER_ID;}).catch(function(){return _signInAnon().then(function(r){return _adoptSession(r,null);});});}if(stored&&stored.access_token&&stored.user_id){_applySession(stored);if(stored.expires_at>now+60){_scheduleRefresh(stored);return Promise.resolve(USER_ID);}if(stored.refresh_token)return _refreshToken(stored.refresh_token).then(function(r){return _adoptSession(r,stored);}).catch(function(){return _signInAnon().then(function(r){return _adoptSession(r,null);});});}return _signInAnon().then(function(r){return _adoptSession(r,null);});}
 // Never reject: if anonymous sign-in is unavailable (e.g. not yet enabled in the
 // dashboard), fall back to a local id + anon key so the app keeps working during
 // rollout. Owner-scoped writes only take effect once the RLS migration is applied.
+// Magic-link landing: if the URL hash carries a session (user tapped the email
+// link in a browser), store it so _ensureAuth adopts it instead of the old one.
+var _hashSignIn=false,_hashPrevId=null;
+try{
+  if(location.hash&&location.hash.indexOf("access_token=")>=0){
+    var _hp={};location.hash.slice(1).split("&").forEach(function(kv){var p=kv.split("=");_hp[p[0]]=decodeURIComponent(p[1]||"");});
+    if(_hp.access_token&&_hp.refresh_token){
+      var _prevS=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");
+      _hashPrevId=_prevS&&_prevS.user_id||null;
+      localStorage.setItem("ufc_sb_session",JSON.stringify({access_token:_hp.access_token,refresh_token:_hp.refresh_token,expires_at:Math.floor(Date.now()/1000)+(+_hp.expires_in||3600),user_id:null}));
+      _hashSignIn=true;
+      history.replaceState(null,"",location.pathname+location.search);
+    }
+  }
+}catch(e){}
 var _authReady=_ensureAuth().catch(function(){var id=null;try{id=localStorage.getItem("ufc_uid");}catch(e){}if(!id){id=(typeof crypto!=="undefined"&&crypto.randomUUID)?crypto.randomUUID():"u"+Math.random().toString(36).slice(2)+Date.now().toString(36);try{localStorage.setItem("ufc_uid",id);}catch(e){}}USER_ID=id;_sbToken=null;return USER_ID;});
+_authReady.then(function(){if(_hashSignIn&&typeof _postSignIn==="function")_postSignIn(_hashPrevId,null);});
 var VAPID_PUBLIC_KEY="BDsk51TS3jHISYUwDIyiAayIq5-W1U8RqZsBdAbIZ45aKurpDIwIsCjImxF8g5zUQnIhn2kIIWTYf6BbNA_swGU";
 var userEmoji="🥊";
 try{userEmoji=localStorage.getItem("ufc_emoji")||"🥊";}catch(e){}
@@ -1592,6 +1628,103 @@ function _commitName(emoji,v){
     var lbPanel=document.getElementById("lbPanel");
     if(lbPanel&&lbPanel.classList.contains("open")){setTimeout(function(){loadLeaderboard(false);},800);}
   }
+}
+/* ===== Account: magic-link email (6-digit code, PWA-safe) ===== */
+var _acctPending=null,_acctMode=null;
+function _sessEmail(){try{var s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");return s&&s.email||null;}catch(e){return null;}}
+function _syncAcctBtn(){var el=document.getElementById("acctBtnLbl");if(el)el.textContent=_sessEmail()||"Sign In / Link Email";}
+function openAcct(){
+  var em=_sessEmail();
+  // "link" upgrades the current anonymous identity in place (same user_id, picks
+  // kept); "signin" requests an OTP for an email account (new or existing).
+  _acctMode=(em||!_sbToken)?"signin":"link";
+  document.getElementById("acctTitle").textContent=em?"Account":"Protect Your Picks";
+  document.getElementById("acctDesc").textContent=em
+    ?"Your picks are protected. Enter a different email to switch accounts."
+    :"Link an email so your picks and stats survive a new phone or a cleared browser. We'll send a 6-digit code.";
+  var row=document.getElementById("acctSignedRow");
+  if(em){row.style.display="block";document.getElementById("acctEmailCur").textContent=em;}
+  else row.style.display="none";
+  document.getElementById("acctErr").style.display="none";
+  document.getElementById("acctCodeWrap").style.display="none";
+  document.getElementById("acctEmail").value="";
+  document.getElementById("acctCode").value="";
+  document.getElementById("acctBg").classList.add("open");
+}
+function closeAcct(){document.getElementById("acctBg").classList.remove("open");}
+function acctSend(){
+  var email=(document.getElementById("acctEmail").value||"").trim().toLowerCase();
+  var errEl=document.getElementById("acctErr");errEl.style.display="none";
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){errEl.textContent="Enter a valid email";errEl.style.display="block";return;}
+  var btn=document.getElementById("acctSendBtn");btn.disabled=true;btn.textContent="Sending…";
+  var done=function(type){
+    _acctPending={email:email,type:type};
+    btn.disabled=false;btn.textContent="Email me a code";
+    document.getElementById("acctCodeWrap").style.display="block";
+    document.getElementById("acctCode").focus();
+    toast("Code sent — check your email");
+  };
+  var fail=function(){btn.disabled=false;btn.textContent="Email me a code";errEl.textContent="Couldn't send the code — try again in a minute";errEl.style.display="block";};
+  if(_acctMode==="link"&&_sbToken){
+    // Attach the email to the current anonymous user (uid unchanged). If the
+    // email already has an account, fall back to signing in to that account.
+    fetch(SUPABASE_URL+"/auth/v1/user",{method:"PUT",headers:{apikey:SUPABASE_ANON,Authorization:_authBearer(),"Content-Type":"application/json"},body:JSON.stringify({email:email})})
+      .then(function(r){if(!r.ok)throw new Error("update "+r.status);done("email_change");})
+      .catch(function(){_acctOtp(email,done,fail);});
+  }else{_acctOtp(email,done,fail);}
+}
+function _acctOtp(email,done,fail){
+  fetch(SUPABASE_URL+"/auth/v1/otp",{method:"POST",headers:{apikey:SUPABASE_ANON,"Content-Type":"application/json"},body:JSON.stringify({email:email,create_user:true,gotrue_meta_security:{}})})
+    .then(function(r){if(!r.ok)throw new Error("otp "+r.status);done("email");})
+    .catch(function(){fail();});
+}
+function acctVerify(){
+  if(!_acctPending)return;
+  var code=(document.getElementById("acctCode").value||"").trim();
+  var errEl=document.getElementById("acctErr");errEl.style.display="none";
+  if(!code)return;
+  var btn=document.getElementById("acctVerifyBtn");btn.disabled=true;btn.textContent="Verifying…";
+  var hdrs={apikey:SUPABASE_ANON,"Content-Type":"application/json"};
+  if(_acctPending.type==="email_change")hdrs.Authorization=_authBearer();
+  fetch(SUPABASE_URL+"/auth/v1/verify",{method:"POST",headers:hdrs,body:JSON.stringify({type:_acctPending.type,email:_acctPending.email,token:code,gotrue_meta_security:{}})})
+    .then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error((j&&(j.msg||j.error_description))||"verify "+r.status);return j;});})
+    .then(function(raw){
+      var prevId=USER_ID,email=_acctPending.email;
+      if(raw.access_token)_adoptSession(raw,null);
+      btn.disabled=false;btn.textContent="Verify code";
+      _acctPending=null;
+      closeAcct();
+      _postSignIn(prevId,email);
+    })
+    .catch(function(){btn.disabled=false;btn.textContent="Verify code";errEl.textContent="Wrong or expired code — try again";errEl.style.display="block";});
+}
+function _postSignIn(prevId,email){
+  if(email){try{var s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");if(s&&!s.email){s.email=email;_saveSession(s);}}catch(e){}}
+  var changed=(prevId&&USER_ID&&prevId!==USER_ID)||(!userName&&!!USER_ID);
+  var finish=function(){
+    _syncAcctBtn();
+    if(window._pp&&userName){window._pp();window._pp=null;}
+    syncAllPicks();           // merge this device's local picks into the signed-in identity
+    fetchCommunityPicks();
+    var lbPanel=document.getElementById("lbPanel");
+    if(lbPanel&&lbPanel.classList.contains("open"))loadLeaderboard(false);
+    toast(changed?"Signed in — picks restored!":"Email linked — picks protected!");
+  };
+  if(changed){
+    // Signed into a different identity: restore its name + avatar from its picks
+    fetch(SUPABASE_URL+"/rest/v1/picks?select=nickname&user_id=eq."+encodeURIComponent(USER_ID)+"&order=updated_at.desc&limit=1",{headers:{apikey:SUPABASE_ANON,Authorization:_authBearer()}})
+      .then(function(r){return r.ok?r.json():[];})
+      .then(function(rows){
+        if(rows&&rows[0]&&rows[0].nickname){
+          userName=rows[0].nickname;
+          try{localStorage.setItem("ufc_name",userName);}catch(e){}
+          var sp=userName.indexOf(" ");
+          if(sp>0){userEmoji=userName.slice(0,sp);try{localStorage.setItem("ufc_emoji",userEmoji);}catch(e){}}
+        }
+        if(typeof render==="function")render();
+        finish();
+      }).catch(finish);
+  }else finish();
 }
 function urlB64ToUint8(b64){var pad='='.repeat((4-b64.length%4)%4);var raw=atob((b64+pad).replace(/-/g,'+').replace(/_/g,'/'));var arr=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i);return arr;}
 function _bufToBase64Url(buf){var bytes=new Uint8Array(buf);var str='';for(var i=0;i<bytes.length;i++)str+=String.fromCharCode(bytes[i]);return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
@@ -3419,6 +3552,9 @@ function closeInstall(){document.getElementById("install-overlay").classList.rem
 function triggerInstall(){if(_deferredInstall){_deferredInstall.prompt();_deferredInstall.userChoice.then(function(){_deferredInstall=null;closeInstall();});}}
 
 document.addEventListener("DOMContentLoaded",function(){
+  _syncAcctBtn();
+  // Ask the browser not to evict our storage (reduces silent identity loss on iOS PWAs)
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
   // Show install button unless already running as installed PWA
   var isStandalone=window.navigator.standalone===true||window.matchMedia("(display-mode:standalone)").matches;
   if(!isStandalone){
