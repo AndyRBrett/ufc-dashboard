@@ -570,6 +570,22 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .share-badge{background:linear-gradient(135deg,var(--banner-edge),var(--red));border-radius:10px;padding:16px;margin-bottom:14px;text-align:center}
 .share-badge-num{font-family:Bebas Neue,sans-serif;font-size:46px;color:var(--on-accent);line-height:1}
 .share-badge-sub{font-size:12px;color:var(--on-accent);opacity:.7;margin-top:3px}
+/* ===== MOTION — subtle dynamic touches ===== */
+.btn-icon:active,.ftab:active,.pick-btn:active,.ev-qp:active,.btn-ufc:active,.btn-more-item:active,.more-btn:active,.cmp-btn-row:active,.share-btn-small:active,.share-copy-btn:active,.share-done-btn:active,.lb-trash-chip:active,.lb-wheel-pill:active,.lb-trash-send:active,.lb-trash-gen:active,.lb-wheel-spin-btn:active,.quick-q:active,.fn-nb:active,.nm-btn:active,.ai-event-btn:active,.chat-send-btn:active,.picks-toggle:active{transform:scale(.96)}
+body.theme-fade,body.theme-fade *{transition:background-color .35s ease,color .35s ease,border-color .35s ease,box-shadow .35s ease!important}
+@media (prefers-reduced-motion:no-preference){
+@keyframes evReveal{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.ev-reveal{animation:evReveal .38s ease-out both}
+@keyframes cdTick{from{opacity:.35;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.cd-tick .cd-num{animation:cdTick .28s ease-out}
+@keyframes logoBreathe{0%,100%{box-shadow:0 0 10px var(--accent-glow)}50%{box-shadow:0 0 22px var(--accent-glow)}}
+.logo-hex{animation:logoBreathe 3.6s ease-in-out infinite}
+@keyframes bandSheen{0%{transform:translateX(-130%) skewX(-18deg)}20%,100%{transform:translateX(260%) skewX(-18deg)}}
+.ev-band:not(.ev-future){overflow:hidden}
+.ev-band:not(.ev-future)::after{content:"";position:absolute;top:0;bottom:0;left:0;width:45%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.07),transparent);pointer-events:none;animation:bandSheen 7s ease-in-out 1.2s infinite}
+@keyframes dotRipple{from{box-shadow:0 0 0 0 var(--accent-glow)}to{box-shadow:0 0 0 9px transparent}}
+.fn-banner-dot,.fnl-live-dot::before{animation:blink 1s infinite,dotRipple 1.6s ease-out infinite}
+}
 </style>
 </head>
 <body>
@@ -1313,7 +1329,13 @@ function applyTheme(t){
   var items=document.querySelectorAll(".theme-item");
   for(var i=0;i<items.length;i++)items[i].classList.toggle("active",items[i].getAttribute("data-theme")===t);
 }
-function setTheme(t){applyTheme(t);try{localStorage.setItem("ufc_theme",t);}catch(e){}}
+var _themeFadeT=null;
+function setTheme(t){
+  document.body.classList.add("theme-fade");
+  clearTimeout(_themeFadeT);
+  _themeFadeT=setTimeout(function(){document.body.classList.remove("theme-fade");},420);
+  applyTheme(t);try{localStorage.setItem("ufc_theme",t);}catch(e){}
+}
 applyTheme(document.body.getAttribute("data-theme")||"octagon");
 function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
 
@@ -1354,14 +1376,17 @@ function updateCountdown(){
   if(days>0){timer.appendChild(cdUnit(days,"Days"));timer.appendChild(cdSep());}
   timer.appendChild(cdUnit(pad(hours),"Hrs"));timer.appendChild(cdSep());
   timer.appendChild(cdUnit(pad(mins),"Min"));timer.appendChild(cdSep());
-  timer.appendChild(cdUnit(pad(secs),"Sec"));
+  var secUnit=cdUnit(pad(secs),"Sec");secUnit.classList.add("cd-tick");
+  timer.appendChild(secUnit);
 }
 setInterval(updateCountdown,1000);
 
+var _animRender=true;
 function setFilter(btn){
   curFilter=btn.getAttribute("data-f")||"all";
   document.querySelectorAll(".ftab").forEach(function(t){t.classList.remove("active");});
   btn.classList.add("active");
+  _animRender=true;
   render();
 }
 function setLbMode(btn){
@@ -1380,7 +1405,7 @@ function matchFilter(f){
   if(!curSearch)return true;
   return f.f1.n.toLowerCase().indexOf(curSearch)>-1||f.f2.n.toLowerCase().indexOf(curSearch)>-1;
 }
-function setSearch(v){curSearch=v.trim().toLowerCase();render();}
+function setSearch(v){curSearch=v.trim().toLowerCase();_animRender=true;render();}
 
 function openStats(idx,side){
   var item=FIGHTS[idx];if(!item)return;
@@ -2241,6 +2266,7 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
   var isPPV=/ufc \d/i.test(ev.name);
   if(evNum>0){var div=document.createElement("div");div.className="ev-divider";div.textContent="Event "+(evNum+1)+" of "+visTotal;frag.appendChild(div);}
   var band=document.createElement("div");band.className="ev-band"+(isFeat?"":" ev-future");
+  if(_animRender){band.classList.add("ev-reveal");band.style.animationDelay=Math.min(evNum,6)*70+"ms";}
   var evnum=document.createElement("div");evnum.className="ev-num";evnum.textContent="Event "+(evNum+1)+" of "+visTotal+" - "+fmtDate(ev.date)+" - "+duLabel;band.appendChild(evnum);
   var evname=document.createElement("div");evname.className="ev-name";evname.textContent=ev.name;band.appendChild(evname);
   var evrow=document.createElement("div");evrow.className="ev-row";
@@ -2257,6 +2283,7 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
   badges.appendChild(qpBtn);
   band.appendChild(badges);var colBtn=document.createElement("div");colBtn.className="ev-collapse-btn";var colSvg=document.createElementNS("http://www.w3.org/2000/svg","svg");colSvg.setAttribute("viewBox","0 0 24 24");colSvg.setAttribute("fill","none");colSvg.setAttribute("stroke","currentColor");colSvg.setAttribute("stroke-width","2.5");colSvg.style.cssText="width:18px;height:18px";var colPoly=document.createElementNS("http://www.w3.org/2000/svg","polyline");colPoly.setAttribute("points","6 9 12 15 18 9");colSvg.appendChild(colPoly);colBtn.appendChild(colSvg);band.appendChild(colBtn);frag.appendChild(band);
   var fw=document.createElement("div");fw.className="fights-wrap";
+  if(_animRender){fw.classList.add("ev-reveal");fw.style.animationDelay=Math.min(evNum,6)*70+"ms";}
   (function(evRef,eiRef){
     var tb=document.createElement("div");tb.className="ai-event-toolbar";
     var chatBtn=document.createElement("button");chatBtn.className="ai-event-btn";chatBtn.innerHTML="💬 Ask Claude";
@@ -2613,10 +2640,19 @@ function render(){
   var allFights=vis.reduce(function(a,e){return a.concat(e.fights||[]);}, []);
   var titleFights=allFights.filter(function(f){return f.title;});
   var sevEl=document.getElementById("sev");var stiEl=document.getElementById("sti");var sboEl=document.getElementById("sbo");
-  if(sevEl)sevEl.textContent=vis.length;
-  if(stiEl)stiEl.textContent=titleFights.length;
-  if(sboEl)sboEl.textContent=allFights.length;
-  document.getElementById("picks-count").textContent=Object.keys(preds).length;
+  var pkEl=document.getElementById("picks-count");
+  if(!_statsCounted&&!matchMedia("(prefers-reduced-motion: reduce)").matches){
+    _statsCounted=true;
+    countUp(sevEl,vis.length);
+    countUp(stiEl,titleFights.length);
+    countUp(sboEl,allFights.length);
+    countUp(pkEl,Object.keys(preds).length);
+  } else {
+    if(sevEl)sevEl.textContent=vis.length;
+    if(stiEl)stiEl.textContent=titleFights.length;
+    if(sboEl)sboEl.textContent=allFights.length;
+    pkEl.textContent=Object.keys(preds).length;
+  }
   // Show the date of the most recently completed event as "data freshness"
   var ud=document.getElementById("updateDate");
   if(ud){
@@ -2646,6 +2682,19 @@ function render(){
   updatePicksWidget();
   updateCountdown();
   checkFightNight();
+  _animRender=false;
+}
+var _statsCounted=false;
+function countUp(el,target){
+  if(!el)return;
+  target=+target||0;
+  var t0=performance.now();
+  function step(now){
+    var p=Math.min((now-t0)/600,1);
+    el.textContent=Math.round(target*(1-Math.pow(1-p,3)));
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
 }
 
 
