@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-UFC scraper — rebuilds index.html with live fight cards, odds, and results.
+UFC scraper — rebuilds data.js (fight cards, odds, stats, results) consumed by
+the static index.html. App code and data are deliberately separate files so a
+bad data write can never corrupt the app itself.
 
 Data sources:
   Wikipedia  — event cards, fight results, fighter rankings
@@ -40,8 +42,6 @@ SUPABASE_URL  = os.environ.get("SUPABASE_URL", "https://gkccophrdqtqcowmblre.sup
 # from the environment rather than hardcoding a fallback so there's a single source
 # of truth to rotate. Reads/writes are governed by Supabase Row-Level Security.
 SUPABASE_ANON = os.environ.get("SUPABASE_ANON", "")
-VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "")
-VAPID_CLAIMS      = {"sub": "mailto:andyrbrett@gmail.com"}
 
 MONTH_MAP = {
     m.lower(): i + 1
@@ -68,7 +68,7 @@ RANKINGS_RE = re.compile(
     r"^!\s*(\d{1,2})(?:\s*\([^)]*\))?\s*\n\|[^\n]*flagicon[^\n]*\n\|\s*\[\[(?:[^\]|]+\|)?([^\]]+)\]\]",
     re.MULTILINE,
 )
-# Odds already embedded in a previously generated index.html.
+# Odds already embedded in a previously generated data.js.
 EXISTING_ODDS_RE = re.compile(
     r'odds:\{f1:(-?\d+),f2:(-?\d+)\}[^f]*?f1:\{n:"([^"]+)"[^}]*\},f2:\{n:"([^"]+)"'
 )
@@ -214,19 +214,19 @@ def parse_date_wiki(s):
     return ""
 
 # ---------------------------------------------------------------------------
-# HTML patching
+# data.js patching
 # ---------------------------------------------------------------------------
 
-def patch_js_var(html, name, value):
-    """Replace var NAME=<old>; with var NAME=<value>; in the HTML template."""
+def patch_js_var(data, name, value):
+    """Replace var NAME=<old>; with var NAME=<value>; in the data.js text."""
     replacement = f"var {name}={value};"
-    updated = re.sub(
+    updated, n = re.subn(
         rf"var {re.escape(name)}\s*=\s*.*?;",
         lambda _: replacement,
-        html,
+        data,
         flags=re.DOTALL,
     )
-    if updated == html:
+    if n == 0:
         print(f"Warning: could not patch JS var '{name}'", file=sys.stderr)
     return updated
 
@@ -1053,53 +1053,66 @@ def extract_stats_cache(html):
 # ---------------------------------------------------------------------------
 
 def send_push_notifications(new_results):
-    """Send win/loss push notifications for newly resolved fights."""
-    if not VAPID_PRIVATE_KEY or not new_results:
+    """Send win/loss push notifications for newly resolved fights.
+
+    push_subs is readable only by the service role (RLS), so the actual web-push
+    delivery happens inside the send-push edge function. This groups pickers of
+    each fight into win/loss lists and makes one targeted call per group. The
+    function's notif_log dedup (event_date + type) makes re-sends from
+    overlapping cron runs no-ops.
+    """
+    if not new_results:
         return
-    try:
-        from pywebpush import webpush
-    except ImportError:
-        print("pywebpush not installed, skipping push", file=sys.stderr)
+    if not SUPABASE_ANON:
+        print("Push skipped: SUPABASE_ANON not set", file=sys.stderr)
         return
-    subs  = sb_get("/rest/v1/push_subs?select=*")
-    picks = sb_get("/rest/v1/picks?select=*")
-    if not subs or not picks:
-        print(
-            f"Push notifications skipped: no {'subscriptions' if not subs else 'picks'} "
-            "available (Supabase empty or unreachable)",
-            file=sys.stderr,
-        )
+    picks = sb_get("/rest/v1/picks?select=user_id,f1,f2,pick")
+    if not picks:
+        print("Push skipped: no picks available (Supabase empty or unreachable)", file=sys.stderr)
         return
-    sub_map = {s["user_id"]: s for s in subs}
     for res in new_results:
         winner, loser = res["winner"], res["loser"]
+        event_date = res.get("event_date", "")
+        winners, losers = [], []
         for pick in picks:
             f1, f2, chosen = pick["f1"], pick["f2"], pick["pick"]
             is_this_fight = (
                 (names_match(f1, winner) and names_match(f2, loser))
                 or (names_match(f2, winner) and names_match(f1, loser))
             )
-            if not is_this_fight:
+            if not is_this_fight or not pick.get("user_id"):
                 continue
-            sub = sub_map.get(pick["user_id"])
-            if not sub:
+            (winners if names_match(chosen, winner) else losers).append(pick["user_id"])
+        fight_key = re.sub(r"[^a-z0-9]+", "-", f"{winner}-{loser}".lower()).strip("-")
+        for group, user_ids, title, body in (
+            ("win",  winners, "Your pick WON! 🔥", f"{winner} def. {loser} — you called it!"),
+            ("loss", losers,  "Tough luck ❌",      f"{winner} def. {loser}"),
+        ):
+            if not user_ids:
                 continue
-            picked_winner = names_match(chosen, winner)
-            title = "Your pick WON! 🔥" if picked_winner else "Tough luck ❌"
-            body  = f"{winner} def. {loser}" + (" — you called it!" if picked_winner else "")
             try:
-                webpush(
-                    subscription_info={
-                        "endpoint": sub["endpoint"],
-                        "keys": {"p256dh": sub["p256dh"], "auth": sub["auth"]},
+                r = requests.post(
+                    f"{SUPABASE_URL}/functions/v1/send-push",
+                    headers={
+                        "Authorization": f"Bearer {SUPABASE_ANON}",
+                        "Content-Type": "application/json",
                     },
-                    data=json.dumps({"title": title, "body": body}),
-                    vapid_private_key=VAPID_PRIVATE_KEY,
-                    vapid_claims=VAPID_CLAIMS,
+                    json={
+                        "event_date": event_date,
+                        "type": f"result:{fight_key}:{group}",
+                        "title": title,
+                        "body": body,
+                        "include_user_ids": user_ids,
+                    },
+                    timeout=15,
                 )
-                print(f"  Push sent to {pick['nickname']}: {title}", file=sys.stderr)
+                r.raise_for_status()
+                print(
+                    f"  Push {group} ({winner} def. {loser}): {r.json()}",
+                    file=sys.stderr,
+                )
             except Exception as e:
-                print(f"  Push failed for {pick['nickname']}: {e}", file=sys.stderr)
+                print(f"  Push failed ({group}, {winner} def. {loser}): {e}", file=sys.stderr)
 
 # ---------------------------------------------------------------------------
 # Results injection
@@ -1197,19 +1210,16 @@ def events_js(evs):
 # Pipeline steps
 # ---------------------------------------------------------------------------
 
-def step_inject_results(html, now):
+def step_inject_results(data, now):
     """
     Check Wikipedia for results from events in the past 2 days and inject them
-    into the HTML. Returns (updated_html, new_results) on success, (None, [])
-    if nothing changed.
+    into the data.js text. Returns (updated_data, new_results) on success,
+    (None, []) if nothing changed.
     """
-    ex_names = re.findall(r'name:"([^"]+)"', html)
-    ex_dates = re.findall(r'date:"(\d{4}-\d{2}-\d{2})"', html)
+    ex_names = re.findall(r'name:"([^"]+)"', data)
+    ex_dates = re.findall(r'date:"(\d{4}-\d{2}-\d{2})"', data)
 
-    js_start = html.find("<script>") + len("<script>")
-    js_end   = html.rfind("</script>")
-    js       = html[js_start:js_end]
-
+    js             = data
     total_injected = 0
     new_results    = []
 
@@ -1229,34 +1239,36 @@ def step_inject_results(html, now):
         if results:
             js, n = inject_results(js, results)
             total_injected += n
-            new_results.extend(results)
+            if n:
+                for r in results:
+                    r["event_date"] = ev_date
+                new_results.extend(results)
         time.sleep(1)
 
     if not total_injected:
         return None, []
 
-    updated = html[:js_start] + js + html[js_end:]
-    updated = patch_js_var(updated, "GENERATED_AT", f'"{fmt_update(now)}"')
+    updated = patch_js_var(js, "GENERATED_AT", f'"{fmt_update(now)}"')
     return updated, new_results
 
 
-def step_build_events(html, now):
+def step_build_events(data, now):
     """
     Rebuild the EVENTS block from Wikipedia and The Odds API, refresh fighter
-    stats, and update rankings. Returns the updated HTML string.
+    stats, and update rankings. Returns the updated data.js string.
     """
     print("Fetching odds...", file=sys.stderr)
-    existing_odds = extract_existing_odds(html)
+    existing_odds = extract_existing_odds(data)
     odds_index    = fetch_odds()
 
     print("Building events from Wikipedia...", file=sys.stderr)
     discovered = discover_upcoming_events(now)
     seen_slugs = {slug for _, slug, *_ in discovered}
 
-    # Include recent past events from the current HTML that Wikipedia's "Scheduled"
-    # section no longer lists — ensures results for events in the last 30 days are
-    # preserved when the EVENTS array is rebuilt.
-    past = extract_recent_past_events(html, now, seen_slugs)
+    # Include recent past events from the current data.js that Wikipedia's
+    # "Scheduled" section no longer lists — ensures results for events in the
+    # last 30 days are preserved when the EVENTS array is rebuilt.
+    past = extract_recent_past_events(data, now, seen_slugs)
 
     merged = [
         (ev_date, slug, ev_name, venue, loc) + _event_times(ev_name, loc)
@@ -1329,17 +1341,17 @@ def step_build_events(html, now):
         time.sleep(1)
 
     if not new_events:
-        print("No events built — keeping existing HTML", file=sys.stderr)
-        return html
+        print("No events built — keeping existing data.js", file=sys.stderr)
+        return data
 
-    # Preserve results already injected into the existing HTML so a full rebuild
+    # Preserve results already injected into the existing data so a full rebuild
     # never wipes winners for fights that finished more than 2 days ago.
     _post_pat = re.compile(
         r'winner:"([^"]+)",method:"([^"]*)",round:(\d+|null),state:"post"[^{]*'
         r'f1:\{n:"([^"]+)"[^}]+\},f2:\{n:"([^"]+)"'
     )
     existing_results = {}
-    for m in _post_pat.finditer(html):
+    for m in _post_pat.finditer(data):
         winner, method, rnd, f1n, f2n = m.groups()
         if winner:
             key = frozenset([f1n.lower(), f2n.lower()])
@@ -1358,7 +1370,7 @@ def step_build_events(html, now):
                                   "round": r["round"], "state": r["state"]})
 
     # Fighter stats — fetch new, backfill missing form, refresh changed records
-    stats_cache  = extract_stats_cache(html)
+    stats_cache  = extract_stats_cache(data)
     all_fighters = {
         side["name"]
         for ev in new_events
@@ -1431,58 +1443,58 @@ def step_build_events(html, now):
                 fight["rematch"] = True
                 print(f"  Rematch detected: {f1n} vs {f2n}", file=sys.stderr)
 
-    html = patch_js_var(html, "EVENTS", events_js(new_events))
-    html = patch_js_var(
-        html, "FIGHTER_STATS",
+    data = patch_js_var(data, "EVENTS", events_js(new_events))
+    data = patch_js_var(
+        data, "FIGHTER_STATS",
         json.dumps(stats_cache, separators=(",", ":"), ensure_ascii=False),
     )
     rankings = fetch_rankings()
     if rankings:
-        html = patch_js_var(
-            html, "RANKINGS",
+        data = patch_js_var(
+            data, "RANKINGS",
             json.dumps(rankings, separators=(",", ":"), ensure_ascii=False),
         )
-    html = patch_js_var(html, "GENERATED_AT", f'"{fmt_update(now)}"')
+    data = patch_js_var(data, "GENERATED_AT", f'"{fmt_update(now)}"')
 
-    if len(html) < 30000:
+    if len(data) < 20000:
         print("Output suspiciously small — aborting write", file=sys.stderr)
-        return html   # caller will detect no-write
+        return data   # caller will detect no-write
 
-    return html
+    return data
 
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
 
 def main():
-    index = Path("index.html")
-    if not index.exists():
-        print("No index.html", file=sys.stderr)
+    data_path = Path("data.js")
+    if not data_path.exists():
+        print("No data.js", file=sys.stderr)
         sys.exit(1)
 
-    html = index.read_text(encoding="utf-8")
+    data = data_path.read_text(encoding="utf-8")
     now  = datetime.now(timezone.utc)
 
     print(
         "Existing events:",
         list(zip(
-            re.findall(r'date:"(\d{4}-\d{2}-\d{2})"', html)[:6],
-            re.findall(r'name:"([^"]+)"', html)[:6],
+            re.findall(r'date:"(\d{4}-\d{2}-\d{2})"', data)[:6],
+            re.findall(r'name:"([^"]+)"', data)[:6],
         )),
         file=sys.stderr,
     )
 
     # Step 1: inject results for recent/live events
-    updated, new_results = step_inject_results(html, now)
+    updated, new_results = step_inject_results(data, now)
     if updated:
-        index.write_text(updated, encoding="utf-8")
+        data_path.write_text(updated, encoding="utf-8")
         print(f"Results injected", file=sys.stderr)
         send_push_notifications(new_results)
         sys.exit(0)
 
     # Step 2: full rebuild — events, odds, stats, rankings
-    updated = step_build_events(html, now)
-    if len(updated) >= 30000:
+    updated = step_build_events(data, now)
+    if len(updated) >= 20000:
         # A rebuild re-adds recently-finished events as "pending". Inject their
         # results in the same run so a freshly restored card (e.g. one that had
         # dropped out of the data) is scored immediately instead of waiting for a
@@ -1492,7 +1504,7 @@ def main():
         if reinjected:
             updated = reinjected
             print("Results injected after rebuild", file=sys.stderr)
-        index.write_text(updated, encoding="utf-8")
+        data_path.write_text(updated, encoding="utf-8")
         new_events = re.findall(r'name:"([^"]+)"', updated)
         new_fights = len(re.findall(r'"lbl":|lbl:', updated))
         print(f"Done: {len(new_events)} events", file=sys.stderr)

@@ -5,11 +5,13 @@ that the security posture is reviewable, and explains how to rotate keys.
 
 ## Architecture
 
-- **Frontend:** a single static `index.html` (vanilla, inline JS) served from the
-  repo root via GitHub Pages. `scrape.py` edits it in place to refresh fight data.
+- **Frontend:** a static `index.html` (vanilla, inline JS) plus a generated
+  `data.js` (fight cards, odds, stats), served from the repo root via GitHub
+  Pages. App code and data are separate files so a bad data write can never
+  corrupt the app.
 - **Backend:** Supabase (managed Postgres + Edge Functions).
-- **Pipeline:** `scrape.py` runs in GitHub Actions to rebuild `index.html` and
-  trigger push notifications.
+- **Pipeline:** `scrape.py` runs in GitHub Actions to rebuild `data.js` and
+  trigger result push notifications via the `send-push` edge function.
 
 ## What is exposed to the browser — and why it's safe
 
@@ -18,7 +20,7 @@ that the security posture is reviewable, and explains how to rotate keys.
 | Supabase **anon** key | `index.html` | ✅ Yes | **Public by design.** Anon keys are meant to be shipped to clients. Data is protected by Row-Level Security (RLS), not by hiding this key. |
 | `ANTHROPIC_API_KEY` | `ai-breakdown` edge function env | ❌ No | Server-side only. The browser calls the edge function, never Anthropic directly. |
 | Supabase **service_role** key | `send-push` edge function env | ❌ No | Bypasses RLS — must never reach the client. Server-side only. |
-| `VAPID_PRIVATE_KEY` | `send-push` edge function + GH Actions | ❌ No | Web Push signing key. The matching public key is safe to ship. |
+| `VAPID_PRIVATE_KEY` | `send-push` edge function env | ❌ No | Web Push signing key. The matching public key is safe to ship. All web-push delivery happens in the edge function — `scrape.py` never holds this key. |
 | `ODDS_API_KEY` | GitHub Actions secret | ❌ No | Used only by `scrape.py` in CI. |
 
 **The anon key is not a leak.** In Supabase, the anon key identifies the project
@@ -59,8 +61,13 @@ for the authoritative policy definitions. Keep RLS in version control: run
   inline-JS file on a static host; externalizing the JS to drop `'unsafe-inline'`
   is a future improvement. Note: `frame-ancestors` (clickjacking) can't be set via
   a `<meta>` tag — it requires an HTTP header, which GitHub Pages doesn't allow.
-- **Edge functions:** CORS allowlist, per-IP rate limiting (`ai-breakdown`), and a
-  `CRON_SECRET` bearer check (`send-push`).
+- **Edge functions:** CORS allowlist, per-IP rate limiting (`ai-breakdown`), and
+  an anon-key bearer check on both functions. ⚠️ Known gap: the anon key is
+  public, so anyone can invoke `send-push` directly with arbitrary notification
+  content (the `notif_log` dedup only limits repeats per `event_date`+`type`,
+  and both are caller-supplied). Planned hardening: a `CRON_SECRET` bearer
+  requirement for broadcast sends, server-built payloads for client-triggered
+  types, and per-user rate limiting.
 - **Secret scanning:** `gitleaks` runs in CI (`.github/workflows/secret-scan.yml`)
   on every push/PR. The public anon key is allowlisted in `.gitleaks.toml`; any
   other secret will fail the build.

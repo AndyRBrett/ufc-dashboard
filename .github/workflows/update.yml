@@ -21,8 +21,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install requests beautifulsoup4
-      - run: pip install pywebpush || echo "pywebpush optional — push notifications disabled"
-      - name: Guard — fail fast if the scraper is broken before it can overwrite index.html
+      - name: Guard — fail fast if the scraper is broken before it can overwrite data.js
         run: |
           pip install pytest
           python -m py_compile scrape.py
@@ -30,10 +29,10 @@ jobs:
       - run: python scrape.py
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          SUPABASE_ANON: ${{ secrets.SUPABASE_ANON }}
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html
+          git add data.js
           git diff --staged --quiet || git commit -m "Auto-update $(date +'%Y-%m-%d %H:%M UTC')"
           git push

@@ -1,26 +1,75 @@
-// Minimal service worker — installability + push notifications, network-first.
+// Service worker — installability, push notifications, offline fallback.
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = '2026-06-07-10';
+const SW_VERSION = '2026-06-10-1';
+const CACHE = 'ufc-' + SW_VERSION;
 
-self.addEventListener('install', function() { self.skipWaiting(); });
+self.addEventListener('install', function(e) {
+  self.skipWaiting();
+  // Precache the app shell so the PWA opens offline. Each URL is cached
+  // independently — one miss must not block install.
+  e.waitUntil(caches.open(CACHE).then(function(c) {
+    return Promise.all(['./', './data.js', './manifest.json', './icon-192-v2.png'].map(function(u) {
+      return c.add(u).catch(function() {});
+    }));
+  }));
+});
 
 self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys()
-      .then(function(keys) { return Promise.all(keys.map(function(k) { return caches.delete(k); })); })
+      .then(function(keys) {
+        return Promise.all(keys.filter(function(k) { return k !== CACHE; })
+          .map(function(k) { return caches.delete(k); }));
+      })
       .then(function() { return self.clients.claim(); })
   );
 });
 
-// Always pull the page itself fresh from the network so code updates land
-// immediately, bypassing any stale HTTP cache (iOS PWAs cache HTML stubbornly).
-// Falls back to a normal fetch if the forced revalidation fails.
+// The page and data.js are pulled fresh from the network so code/result updates
+// land immediately, bypassing any stale HTTP cache (iOS PWAs cache stubbornly).
+// Successful responses refresh the offline copy; when the network is down, the
+// last-good copy is served instead of a white screen. Everything else
+// (fonts, icons) is cache-first.
 self.addEventListener('fetch', function(e) {
-  if (e.request.mode === 'navigate') {
+  var req = e.request;
+  if (req.method !== 'GET') return;
+  var isNavigate = req.mode === 'navigate';
+  var isData = !isNavigate && new URL(req.url).pathname.slice(-8) === '/data.js';
+  if (isNavigate || isData) {
+    var cacheKey = isNavigate ? './' : './data.js';
     e.respondWith(
-      fetch(e.request, { cache: 'reload' }).catch(function() { return fetch(e.request); })
+      fetch(req, { cache: 'reload' })
+        .catch(function() { return fetch(req); })
+        .then(function(res) {
+          if (res && res.ok) {
+            var copy = res.clone();
+            caches.open(CACHE).then(function(c) { c.put(cacheKey, copy); });
+          }
+          return res;
+        })
+        .catch(function() {
+          return caches.match(cacheKey).then(function(hit) {
+            if (hit) return hit;
+            throw new Error('offline and no cached copy');
+          });
+        })
+    );
+    return;
+  }
+  if (req.url.indexOf(self.location.origin + '/') === 0) {
+    e.respondWith(
+      caches.match(req).then(function(hit) {
+        if (hit) return hit;
+        return fetch(req).then(function(res) {
+          if (res && res.ok) {
+            var copy = res.clone();
+            caches.open(CACHE).then(function(c) { c.put(req, copy); });
+          }
+          return res;
+        });
+      })
     );
   }
 });

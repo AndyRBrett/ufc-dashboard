@@ -3,7 +3,7 @@ Unit tests for the pure parsing/normalisation helpers in scrape.py.
 
 These are the brittle, format-sensitive functions that silently break when
 Wikipedia / the Odds API change shape. They make no network calls, so they run
-fast in CI and act as a safety net before the scraper can overwrite index.html.
+fast in CI and act as a safety net before the scraper can overwrite data.js.
 
 Run with:  python -m pytest -q
 """
