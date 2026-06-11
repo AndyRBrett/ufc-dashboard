@@ -3645,13 +3645,13 @@ function loadLeaderboard(isLive){
           nr.style.cssText="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:0 2px 12px";
           var nlbl=document.createElement("span");
           nlbl.style.cssText="font-size:11px;color:var(--muted);flex-shrink:0";
-          nlbl.textContent="⏰ "+slackers.length+" haven't picked:";
+          nlbl.textContent="⏰ "+slackers.length+" "+(slackers.length===1?"hasn't":"haven't")+" finished picks:";
           nr.appendChild(nlbl);
           slackers.slice(0,8).forEach(function(s){
             var maxed=nudgeCount(s.user_id)>=MAX_NUDGES_PER_DAY;
             var chipEl=document.createElement("span");
             chipEl.className="lb-trash-chip"+(maxed?"":" selected");
-            chipEl.textContent=_displayBase(s.name)+(maxed?" ✓":" 👀");
+            chipEl.textContent=_displayBase(s.name)+" "+s.done+"/"+s.total+(maxed?" ✓":" 👀");
             chipEl.title=maxed?"Daily nudge limit reached":"Tap to nudge "+s.name+" (3/day max)";
             if(!maxed)(function(ss,el){chipEl.onclick=function(){sendNudge(nextEv,ss,el);};})(s,chipEl);
             nr.appendChild(chipEl);
@@ -3818,7 +3818,7 @@ function loadLeaderboard(isLive){
       bhWrap.appendChild(bl);
       body.appendChild(bhWrap);
     }
-    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-7";body.appendChild(verEl);
+    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-8";body.appendChild(verEl);
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
   }).catch(function(err){
@@ -4134,7 +4134,7 @@ function renderActivityFeed(){
   if(nextEv&&!picksLocked(nextEv)){
     var slk=_slackersFor(nextEv,_commRows);
     if(slk.length)items.unshift({t:0,emoji:"⏰",link:"lb",
-      txt:slk.length+(slk.length===1?" friend hasn't":" friends haven't")+" picked for "+nextEv.name.replace("UFC Fight Night: ","")+" — nudge them"});
+      txt:slk.length+(slk.length===1?" friend hasn't":" friends haven't")+" finished picks for "+nextEv.name.replace("UFC Fight Night: ","")+" — nudge them"});
   }
   if(!items.length){wrap.style.display="none";return;}
   wrap.style.display="";
@@ -4159,25 +4159,38 @@ function renderActivityFeed(){
 })();
 
 // ========================= Slacker nudges ⏰ ================================
-// Known users (picked within the last 60 days) who have nothing in for the
-// given event yet. Works on either the leaderboard or community row shapes.
+// Known users (picked within the last 60 days) who haven't COMPLETED their
+// main-card picks (Main Event / Co-Main / Main Card) for the given event.
+// Returns progress (done/total) so the UI can show who's half-finished.
+// Works on either the leaderboard or community row shapes.
 function _slackersFor(nextEv,rows){
   if(!nextEv||!rows)return[];
+  var mainKeys={},mainTotal=0;
+  nextEv.fights.forEach(function(f){
+    if(f.lbl!=="Main Event"&&f.lbl!=="Co-Main"&&f.lbl!=="Main Card")return;
+    mainKeys[[f.f1.n,f.f2.n].sort().join("|")]=true;mainTotal++;
+  });
+  if(!mainTotal)return[];
   var users={},cutoff=Date.now()-60*DAY_MS;
   rows.forEach(function(p){
     var base=_lbBaseName(p.nickname);if(!base)return;
-    var u=users[base]||(users[base]={base:base,name:p.nickname,user_id:null,_t:0,_uidT:-1,latestEv:"",hasNext:false});
+    var u=users[base]||(users[base]={base:base,name:p.nickname,user_id:null,_t:0,_uidT:-1,latestEv:"",picked:{}});
     var t=Date.parse(p.updated_at||"")||0;
     if(t>=u._t){u._t=t;u.name=p.nickname;}
     if(p.user_id&&t>=u._uidT){u._uidT=t;u.user_id=p.user_id;}
     if(p.event_date>u.latestEv)u.latestEv=p.event_date;
-    if(p.event_date===nextEv.date)u.hasNext=true;
+    if(p.event_date===nextEv.date){
+      var fk=[p.f1,p.f2].sort().join("|");
+      if(mainKeys[fk])u.picked[fk]=true;
+    }
   });
   var me=_lbBaseName(userName);
-  return Object.keys(users).map(function(b){return users[b];}).filter(function(u){
+  return Object.keys(users).map(function(b){
+    var u=users[b];u.done=Object.keys(u.picked).length;u.total=mainTotal;return u;
+  }).filter(function(u){
     // Exclude myself by user_id as well as base name — old rows under a
     // previous nickname share my user_id and must never make me a nudge target.
-    return !u.hasNext&&u.base!==me&&u.user_id!==USER_ID&&(Date.parse(u.latestEv)||0)>=cutoff;
+    return u.done<u.total&&u.base!==me&&u.user_id!==USER_ID&&(Date.parse(u.latestEv)||0)>=cutoff;
   });
 }
 // Display form of a nickname: emoji stripped, full name preserved — last-word
@@ -4200,8 +4213,11 @@ function _setNudgeCount(uid,n){try{localStorage.setItem(_nudgeCountKey(uid),Stri
 function sendNudge(ev,u,chipEl){
   if(!u.user_id)return;
   var evShort=ev.name.replace("UFC Fight Night: ","");
+  var nudgeMsg=u.done>0
+    ?(userName||"A rival")+" noticed you're only "+u.done+"/"+u.total+" on picks for "+evShort+" 👀"
+    :(userName||"A rival")+" noticed you have no picks for "+evShort+" yet 👀";
   function markDone(){
-    if(chipEl){chipEl.classList.remove("selected");chipEl.textContent=_displayBase(u.name)+" ✓";chipEl.onclick=null;}
+    if(chipEl){chipEl.classList.remove("selected");chipEl.textContent=_displayBase(u.name)+" "+(u.done||0)+"/"+(u.total||"?")+" ✓";chipEl.onclick=null;}
   }
   function fire(n){
     if(n>MAX_NUDGES_PER_DAY){
@@ -4210,7 +4226,7 @@ function sendNudge(ev,u,chipEl){
       markDone();return;
     }
     _triggerPush(_todayStr(),"nudge-"+u.user_id+"-"+(USER_ID||"anon")+"-"+n,"⏰ Card locks soon!",
-      (userName||"A rival")+" noticed you have no picks for "+evShort+" yet 👀",USER_ID,{includeIds:[u.user_id]})
+      nudgeMsg,USER_ID,{includeIds:[u.user_id]})
     .then(function(res){
       if(!res){toast("Could not send — check connection");return;}
       if(res.skipped){fire(n+1);return;}     // slot already used — try the next one
@@ -4482,7 +4498,7 @@ document.addEventListener("DOMContentLoaded",function(){
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">⚔️ Challenges</div>
     <div style="font-size:11px;color:var(--muted)">Tap ⚔️ on a rival's row to call them out on one fight or the whole card, with stakes (wheel spin, $5, or your own). They accept or decline; results settle automatically when fights finish. No pick on the contested fight = forfeit. Tie = push, nobody pays. Losers of wheel stakes get a "spin now" button in the inbox.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">⏰ Nudges</div>
-    <div style="font-size:11px;color:var(--muted)">Friends who haven't picked for the next card show under "Next up." Tap a name to send them a callout push — it's signed with your name. Max 3 nudges per person per day, resets at midnight.</div>
+    <div style="font-size:11px;color:var(--muted)">Friends who haven't finished their main-card picks for the next card show under "Next up" with their progress (e.g. 3/6). Tap a name to send them a callout push — it's signed with your name. Max 3 nudges per person per day, resets at midnight.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">⚡ Activity</div>
     <div style="font-size:11px;color:var(--muted)">The Activity strip on the home screen shows pick lock-ins, hot streaks, belt changes, and challenges as they happen — spoiler-free.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">Buttons</div>
