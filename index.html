@@ -3818,7 +3818,7 @@ function loadLeaderboard(isLive){
       bhWrap.appendChild(bl);
       body.appendChild(bhWrap);
     }
-    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-8";body.appendChild(verEl);
+    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-9";body.appendChild(verEl);
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
   }).catch(function(err){
@@ -4029,14 +4029,21 @@ function fireChallenge(){
     f1:_chalFightSel?_chalFightSel.f1.n:null,f2:_chalFightSel?_chalFightSel.f2.n:null,stake:stake};
   fetch(SUPABASE_URL+"/rest/v1/challenges",{
     method:"POST",headers:Object.assign(_sbHeaders(),{Prefer:"return=representation"}),body:JSON.stringify(row)
-  }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
+  }).then(function(r){if(!r.ok){var err=new Error("HTTP "+r.status);err.status=r.status;throw err;}return r.json();}).then(function(rows){
     var ch=rows&&rows[0];
     document.getElementById("chalSent").style.display="block";btn.style.display="none";
     if(ch)_triggerPush(_chalEvent.date,"chal-"+ch.id,"⚔️ "+userName+" challenged you!",
       _chalFightLbl(row)+" — "+stake,USER_ID,{includeIds:[ch.target_id],url:"./?inbox=1",kind:"challenge"});
     _rtBroadcastChal();fetchChallenges();
     setTimeout(closeChalSheet,1200);
-  }).catch(function(){btn.disabled=false;toast("Could not send — are you signed in?");});
+  }).catch(function(e){
+    btn.disabled=false;
+    // 404 = the challenges table doesn't exist (migration 0003 not applied);
+    // 401/403 = auth/RLS rejected the write. Surface which, so it's debuggable.
+    if(e&&e.status===404)toast("Challenges table missing — apply migration 0003 in Supabase");
+    else if(e&&(e.status===401||e.status===403))toast("Not signed in — reopen the app and try again");
+    else toast("Could not send"+(e&&e.status?" (HTTP "+e.status+")":" — check connection"));
+  });
 }
 function _rtBroadcastChal(){
   if(!_rtOpen||!_rtWs||_rtWs.readyState!==1)return;
