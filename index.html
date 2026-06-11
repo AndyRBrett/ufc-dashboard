@@ -3641,7 +3641,7 @@ function loadLeaderboard(isLive){
             var nudged=wasNudged(nextEv.date,s.user_id);
             var chipEl=document.createElement("span");
             chipEl.className="lb-trash-chip"+(nudged?"":" selected");
-            chipEl.textContent=s.name.split(" ").pop()+(nudged?" ✓":" 👀");
+            chipEl.textContent=_displayBase(s.name)+(nudged?" ✓":" 👀");
             chipEl.title=nudged?"Already nudged":"Tap to nudge "+s.name;
             if(!nudged)(function(ss,el){chipEl.onclick=function(){sendNudge(nextEv,ss,el);};})(s,chipEl);
             nr.appendChild(chipEl);
@@ -3808,7 +3808,7 @@ function loadLeaderboard(isLive){
       bhWrap.appendChild(bl);
       body.appendChild(bhWrap);
     }
-    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-2";body.appendChild(verEl);
+    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-3";body.appendChild(verEl);
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
   }).catch(function(err){
@@ -4169,6 +4169,12 @@ function _slackersFor(nextEv,rows){
   });
 }
 function _nudgedKey(evDate,uid){return "ufc_nudged_"+evDate+"_"+uid;}
+// Display form of a nickname: emoji stripped, full name preserved — last-word
+// truncation would mangle multi-word names ("Adam B" → "B").
+function _displayBase(nick){
+  var nn=nick||"";var sp=nn.indexOf(" ");
+  return (sp>=0?nn.slice(sp+1):nn).trim();
+}
 function wasNudged(evDate,uid){try{return localStorage.getItem(_nudgedKey(evDate,uid))==="1";}catch(e){return false;}}
 // The send-push notif_log dedup on (event_date, "nudge-"+uid) makes this
 // max-once-per-target-per-event globally — a {skipped:true} response means
@@ -4181,7 +4187,7 @@ function sendNudge(ev,u,chipEl){
   .then(function(res){
     try{localStorage.setItem(_nudgedKey(ev.date,u.user_id),"1");}catch(e){}
     toast(res&&res.skipped?"Someone already nudged them for this card":"Nudge sent 👀");
-    if(chipEl){chipEl.classList.remove("selected");chipEl.textContent=u.name.split(" ").pop()+" ✓";chipEl.onclick=null;}
+    if(chipEl){chipEl.classList.remove("selected");chipEl.textContent=_displayBase(u.name)+" ✓";chipEl.onclick=null;}
   });
 }
 
