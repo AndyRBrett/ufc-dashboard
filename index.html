@@ -3648,12 +3648,12 @@ function loadLeaderboard(isLive){
           nlbl.textContent="⏰ "+slackers.length+" haven't picked:";
           nr.appendChild(nlbl);
           slackers.slice(0,8).forEach(function(s){
-            var nudged=wasNudged(nextEv.date,s.user_id);
+            var maxed=nudgeCount(s.user_id)>=MAX_NUDGES_PER_DAY;
             var chipEl=document.createElement("span");
-            chipEl.className="lb-trash-chip"+(nudged?"":" selected");
-            chipEl.textContent=_displayBase(s.name)+(nudged?" ✓":" 👀");
-            chipEl.title=nudged?"Already nudged":"Tap to nudge "+s.name;
-            if(!nudged)(function(ss,el){chipEl.onclick=function(){sendNudge(nextEv,ss,el);};})(s,chipEl);
+            chipEl.className="lb-trash-chip"+(maxed?"":" selected");
+            chipEl.textContent=_displayBase(s.name)+(maxed?" ✓":" 👀");
+            chipEl.title=maxed?"Daily nudge limit reached":"Tap to nudge "+s.name+" (3/day max)";
+            if(!maxed)(function(ss,el){chipEl.onclick=function(){sendNudge(nextEv,ss,el);};})(s,chipEl);
             nr.appendChild(chipEl);
           });
           body.appendChild(nr);
@@ -3818,7 +3818,7 @@ function loadLeaderboard(isLive){
       bhWrap.appendChild(bl);
       body.appendChild(bhWrap);
     }
-    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-5";body.appendChild(verEl);
+    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-6";body.appendChild(verEl);
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
   }).catch(function(err){
@@ -4180,28 +4180,47 @@ function _slackersFor(nextEv,rows){
     return !u.hasNext&&u.base!==me&&u.user_id!==USER_ID&&(Date.parse(u.latestEv)||0)>=cutoff;
   });
 }
-function _nudgedKey(evDate,uid){return "ufc_nudged_"+evDate+"_"+uid;}
 // Display form of a nickname: emoji stripped, full name preserved — last-word
 // truncation would mangle multi-word names ("Adam B" → "B").
 function _displayBase(nick){
   var nn=nick||"";var sp=nn.indexOf(" ");
   return (sp>=0?nn.slice(sp+1):nn).trim();
 }
-function wasNudged(evDate,uid){try{return localStorage.getItem(_nudgedKey(evDate,uid))==="1";}catch(e){return false;}}
-// The send-push notif_log dedup on (event_date, "nudge-"+target+"-"+sender)
-// makes each sender's nudge max-once-per-target-per-event — so a slacker can
-// be nudged by every friend, but no one can spam them. A {skipped:true}
-// response means this same sender already nudged them for this card.
+// Each sender may nudge a given target up to 3× per DAY. The notif_log dedup
+// is binary per (event_date, type), so each nudge claims a numbered daily
+// slot: (today, "nudge-<target>-<sender>-<n>") for n = 1..3. localStorage
+// tracks the local count; on {skipped:true} (slot already burned — cleared
+// storage or another device) the client walks to the next slot, so the server
+// enforces the cap regardless of client state.
+var MAX_NUDGES_PER_DAY=3;
+function _todayStr(){return new Date().toISOString().slice(0,10);}
+function _nudgeCountKey(uid){return "ufc_nudges_"+_todayStr()+"_"+uid;}
+function nudgeCount(uid){try{return Math.min(MAX_NUDGES_PER_DAY,parseInt(localStorage.getItem(_nudgeCountKey(uid))||"0",10)||0);}catch(e){return 0;}}
+function _setNudgeCount(uid,n){try{localStorage.setItem(_nudgeCountKey(uid),String(n));}catch(e){}}
 function sendNudge(ev,u,chipEl){
   if(!u.user_id)return;
   var evShort=ev.name.replace("UFC Fight Night: ","");
-  _triggerPush(ev.date,"nudge-"+u.user_id+"-"+(USER_ID||"anon"),"⏰ Card locks soon!",
-    (userName||"A rival")+" noticed you have no picks for "+evShort+" yet 👀",USER_ID,{includeIds:[u.user_id]})
-  .then(function(res){
-    try{localStorage.setItem(_nudgedKey(ev.date,u.user_id),"1");}catch(e){}
-    toast(res&&res.skipped?"You already nudged them for this card":"Nudge sent 👀");
+  function markDone(){
     if(chipEl){chipEl.classList.remove("selected");chipEl.textContent=_displayBase(u.name)+" ✓";chipEl.onclick=null;}
-  });
+  }
+  function fire(n){
+    if(n>MAX_NUDGES_PER_DAY){
+      _setNudgeCount(u.user_id,MAX_NUDGES_PER_DAY);
+      toast("Nudge limit reached for today (3 max)");
+      markDone();return;
+    }
+    _triggerPush(_todayStr(),"nudge-"+u.user_id+"-"+(USER_ID||"anon")+"-"+n,"⏰ Card locks soon!",
+      (userName||"A rival")+" noticed you have no picks for "+evShort+" yet 👀",USER_ID,{includeIds:[u.user_id]})
+    .then(function(res){
+      if(!res){toast("Could not send — check connection");return;}
+      if(res.skipped){fire(n+1);return;}     // slot already used — try the next one
+      _setNudgeCount(u.user_id,n);
+      var left=MAX_NUDGES_PER_DAY-n;
+      toast(left>0?"Nudge sent 👀 ("+left+" left today)":"Nudge sent 👀 (last one today)");
+      if(left<=0)markDone();
+    });
+  }
+  fire(nudgeCount(u.user_id)+1);
 }
 
 var _deferredInstall=null;
