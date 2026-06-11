@@ -78,7 +78,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:14px}
 .lb-loading{text-align:center;padding:48px 20px;color:var(--muted);font-size:14px}
 .lb-info-btn{background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.lb-info-modal{display:none;position:absolute;top:56px;right:12px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;width:240px;z-index:400;box-shadow:var(--shadow-el)}
+.lb-info-modal{display:none;position:absolute;top:56px;right:12px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;width:260px;max-height:70vh;overflow-y:auto;z-index:400;box-shadow:var(--shadow-el)}
 .lb-info-modal.open{display:block}
 .lb-info-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;color:var(--text)}
 .lb-info-row+.lb-info-row{border-top:1px solid var(--border)}
@@ -3818,7 +3818,7 @@ function loadLeaderboard(isLive){
       bhWrap.appendChild(bl);
       body.appendChild(bhWrap);
     }
-    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-6";body.appendChild(verEl);
+    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-7";body.appendChild(verEl);
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
   }).catch(function(err){
@@ -4478,12 +4478,18 @@ document.addEventListener("DOMContentLoaded",function(){
     <div class="lb-info-row"><span>Bonus pick (POTN/FOTN)</span><span class="lb-info-pts">+1 pt</span></div>
     <div style="font-size:11px;color:var(--muted);margin-top:10px">Methods: KO/TKO · Submission · Decision</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">🏆 The Belt</div>
-    <div style="font-size:11px;color:var(--muted)">Top scorer of each card takes the belt. The champ defends every event — skip a card and anyone who scores can steal it. Ties go to the champion.</div>
+    <div style="font-size:11px;color:var(--muted)">Top scorer of each card takes the belt. The champ defends every event — skip a card and anyone who scores can steal it. Ties go to the champion. Tap Title History at the bottom of the board for the full lineage.</div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">⚔️ Challenges</div>
+    <div style="font-size:11px;color:var(--muted)">Tap ⚔️ on a rival's row to call them out on one fight or the whole card, with stakes (wheel spin, $5, or your own). They accept or decline; results settle automatically when fights finish. No pick on the contested fight = forfeit. Tie = push, nobody pays. Losers of wheel stakes get a "spin now" button in the inbox.</div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">⏰ Nudges</div>
+    <div style="font-size:11px;color:var(--muted)">Friends who haven't picked for the next card show under "Next up." Tap a name to send them a callout push — it's signed with your name. Max 3 nudges per person per day, resets at midnight.</div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">⚡ Activity</div>
+    <div style="font-size:11px;color:var(--muted)">The Activity strip on the home screen shows pick lock-ins, hot streaks, belt changes, and challenges as they happen — spoiler-free.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">Buttons</div>
-    <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">🔥</span><div><div style="font-size:12px;font-weight:600">Trash Talk</div><div style="font-size:11px;color:var(--muted)">AI smack talk generator</div></div></div>
-    <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">🎡</span><div><div style="font-size:12px;font-weight:600">Spin the Wheel</div><div style="font-size:11px;color:var(--muted)">Random challenge picker</div></div></div>
-    <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">✏️</span><div><div style="font-size:12px;font-weight:600">Edit Profile</div><div style="font-size:11px;color:var(--muted)">Change your name & emoji</div></div></div>
-    <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">↺</span><div><div style="font-size:12px;font-weight:600">Refresh</div><div style="font-size:11px;color:var(--muted)">Reload scores</div></div></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">🔥</span><div><div style="font-size:12px;font-weight:600">Trash Talk</div><div style="font-size:11px;color:var(--muted)">AI smack talk, sent as a push</div></div></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">⚔️</span><div><div style="font-size:12px;font-weight:600">Challenges</div><div style="font-size:11px;color:var(--muted)">Your inbox — incoming, live & settled bets</div></div></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">🎡</span><div><div style="font-size:12px;font-weight:600">Wheel</div><div style="font-size:11px;color:var(--muted)">Random forfeit picker for losers</div></div></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">✏️</span><div><div style="font-size:12px;font-weight:600">Profile</div><div style="font-size:11px;color:var(--muted)">Change your name & emoji</div></div></div>
   </div>
   <div class="lb-modebar">
     <button class="ftab" data-lbmode="current" onclick="setLbMode(this)">This Event</button>
