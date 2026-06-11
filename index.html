@@ -85,6 +85,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-info-pts{font-family:Bebas Neue,sans-serif;font-size:16px;color:var(--gold)}
 .lb-streak{font-size:11px;font-weight:700;background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border);border-radius:10px;padding:2px 7px;white-space:nowrap;flex-shrink:0}
 .lb-streak.lb-streak-0{background:var(--pill-bg);color:var(--muted);border-color:var(--border)}
+.lb-belt-chip{font-size:10px;font-weight:700;background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border);border-radius:10px;padding:1px 6px;white-space:nowrap;flex-shrink:0;letter-spacing:.02em}
 .lb-acc{font-size:11px;font-weight:600;color:var(--muted2);flex-shrink:0}
 .lb-next-picks{padding:8px 14px 10px;display:flex;flex-wrap:wrap;gap:5px;border-top:1px solid var(--border)}
 .lb-next-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;width:100%;margin-bottom:3px}
@@ -3291,6 +3292,103 @@ function scoreMethod(userMethod, fightMethod){
          (userMethod==="Dec"&&(fm.indexOf("DEC")>=0||fm==="UD"||fm==="SD"||fm==="MD"));
 }
 
+// Strip the leading emoji by taking everything after the first space — a regex
+// like /^.\s/ fails on emoji that are surrogate pairs (🐺,😀,…), which would
+// leave the emoji in the key and break matching when a user changes their emoji.
+function _lbBaseName(nick){
+  var nn=nick||"";var sp=nn.indexOf(" ");
+  return (sp>=0?nn.slice(sp+1):nn).trim().toLowerCase();
+}
+
+// Resolve a finished fight by event date + fighter pair: the live EVENTS window
+// first, then the permanent RESULTS_ARCHIVE for cards that have aged out.
+function _findFightResult(date,f1,f2){
+  for(var i=0;i<EVENTS.length;i++){
+    if(EVENTS[i].date!==date)continue;
+    for(var j=0;j<EVENTS[i].fights.length;j++){
+      var f=EVENTS[i].fights[j];
+      if((f.f1.n===f1&&f.f2.n===f2)||(f.f1.n===f2&&f.f2.n===f1))
+        return f.winner?{winner:f.winner,method:f.method||""}:null;
+    }
+  }
+  var a=RESULTS_ARCHIVE[date];
+  if(a&&a.fights)for(var k=0;k<a.fights.length;k++){
+    var af=a.fights[k];
+    if((af.f1===f1&&af.f2===f2)||(af.f1===f2&&af.f2===f1))
+      return af.winner?{winner:af.winner,method:af.method||""}:null;
+  }
+  return null;
+}
+
+// The Belt 🏆 — a lineal king-of-the-hill title replayed deterministically from
+// everyone's pick history, so every phone computes the same champion. Rules:
+// the belt is decided per finished event; the champion must defend on every
+// card (skipping scores 0) and RETAINS on ties; a challenger takes the belt
+// only by strictly outscoring the champion. When the belt is vacant or the
+// champ is beaten by challengers tied on points, cumulative accuracy (then
+// total picks) breaks the tie — a dead heat leaves the belt vacant.
+function computeBeltLineage(rows){
+  var evScores={};   // date -> base name -> {name,pts,correct,total}
+  rows.forEach(function(p){
+    var base=_lbBaseName(p.nickname);
+    if(!base)return;
+    var res=_findFightResult(p.event_date,p.f1,p.f2);
+    if(!res)return;
+    var d=evScores[p.event_date]||(evScores[p.event_date]={});
+    var u=d[base]||(d[base]={name:p.nickname,pts:0,correct:0,total:0});
+    u.total++;
+    if(res.winner===p.pick){u.correct++;u.pts+=1+(scoreMethod(p.method||"",res.method||"")?0.5:0);}
+  });
+  // Finished events, oldest first: every fight final, or the card is >2 days
+  // old with results in (a cancelled bout would otherwise hold it "pre" forever).
+  var nowMs=Date.now(),evNames={},dates=[];
+  EVENTS.forEach(function(ev){
+    var allPost=ev.fights.length>0&&ev.fights.every(function(f){return f.state==="post";});
+    var anyResult=ev.fights.some(function(f){return f.state==="post"&&f.winner;});
+    var old=new Date(ev.date).getTime()<nowMs-2*DAY_MS;
+    if((allPost&&anyResult)||(old&&anyResult)){dates.push(ev.date);evNames[ev.date]=ev.name;}
+  });
+  Object.keys(RESULTS_ARCHIVE).forEach(function(d){
+    if(!evNames[d]){dates.push(d);evNames[d]=RESULTS_ARCHIVE[d].name;}
+  });
+  dates.sort();
+  var holder=null,reigns=[],cum={};   // cum accuracy per base for tiebreaks
+  dates.forEach(function(date){
+    var scores=evScores[date]||{};
+    var entries=Object.keys(scores).map(function(b){var s=scores[b];return{base:b,name:s.name,pts:s.pts,correct:s.correct,total:s.total};});
+    entries.forEach(function(e){var c=cum[e.base]||(cum[e.base]={correct:0,total:0});c.correct+=e.correct;c.total+=e.total;});
+    entries.sort(function(a,b){return b.pts-a.pts;});
+    if(!entries.length||entries[0].pts<=0)return;          // nobody scored — no contest
+    var top=entries[0],tiedTop=entries.filter(function(e){return e.pts===top.pts;});
+    var champPts=holder&&scores[holder.base]?scores[holder.base].pts:0;
+    if(holder&&champPts>=top.pts){                          // ties go to the champion
+      reigns[reigns.length-1].defenses++;
+      return;
+    }
+    if(tiedTop.length>1){
+      tiedTop.sort(function(a,b){
+        var ca=cum[a.base],cb=cum[b.base];
+        var aa=ca.total?ca.correct/ca.total:0,ab=cb.total?cb.correct/cb.total:0;
+        if(aa!==ab)return ab-aa;
+        return cb.total-ca.total;
+      });
+      var c0=cum[tiedTop[0].base],c1=cum[tiedTop[1].base];
+      if((c0.total?c0.correct/c0.total:0)===(c1.total?c1.correct/c1.total:0)&&c0.total===c1.total){
+        if(holder){reigns[reigns.length-1].end={evName:evNames[date],vacated:true};holder=null;}
+        return;                                             // dead heat — belt goes vacant
+      }
+    }
+    var wn=tiedTop[0];
+    if(holder)reigns[reigns.length-1].end={evName:evNames[date],takenBy:wn.name};
+    holder={base:wn.base,name:wn.name};
+    reigns.push({base:wn.base,name:wn.name,evName:evNames[date],date:date,defenses:0,end:null});
+  });
+  if(!reigns.length)return null;
+  var cur=reigns[reigns.length-1];
+  return {holderBase:holder?holder.base:null,holderName:holder?holder.name:null,
+          defenses:holder?cur.defenses:0,reigns:reigns};
+}
+
 // Repair: persist locally-stored method picks that never reached the DB, so every
 // device scores them — not just the pick's author. Patches the fetched rows in place
 // so your own score is right immediately, and upserts the missing data to Supabase.
@@ -3339,6 +3437,9 @@ function loadLeaderboard(isLive){
       return;
     }
     _reconcileMyMethods(rows);
+    // The belt is inherently all-time, so it's computed from the full row set
+    // regardless of which leaderboard mode is active.
+    var belt=computeBeltLineage(rows);
     // Find the current/active event up front so "This Event" mode can scope scoring to it.
     var nowMs=Date.now();
     var _eto=etOffset();
@@ -3382,14 +3483,9 @@ function loadLeaderboard(isLive){
       if(p.bonus_pick)users[uid].bonusPicks[p.event_date]=p.bonus_pick;
     });
     // De-duplicate by name (keep higher pick count)
-    // Strip the leading emoji by taking everything after the first space — a regex
-    // like /^.\s/ fails on emoji that are surrogate pairs (🐺,😀,…), which would
-    // leave the emoji in the key and break dedup when a user changes their emoji.
     var seenNames={};
     Object.keys(users).forEach(function(uid){
-      var nn=users[uid].nickname||"";
-      var sp=nn.indexOf(" ");
-      var base=(sp>=0?nn.slice(sp+1):nn).trim().toLowerCase();
+      var base=_lbBaseName(users[uid].nickname);
       if(!seenNames[base]){seenNames[base]=uid;}
       else{
         var prev=seenNames[base];
@@ -3491,6 +3587,12 @@ function loadLeaderboard(isLive){
       row.appendChild(med);
       var nameDiv=document.createElement("div");nameDiv.className="lb-name";
       var nameTxt=document.createElement("span");nameTxt.className="lb-name-txt";nameTxt.textContent=u.nickname;nameDiv.appendChild(nameTxt);
+      if(belt&&belt.holderBase&&_lbBaseName(u.nickname)===belt.holderBase){
+        var beltChip=document.createElement("span");beltChip.className="lb-belt-chip";
+        beltChip.title="Lineal champion — outscore them on a card to take the belt";
+        beltChip.textContent="🏆"+(belt.defenses>0?" "+belt.defenses+" DEF":"");
+        nameDiv.appendChild(beltChip);
+      }
       if(u.isMe){var you=document.createElement("span");you.className="lb-you";you.textContent="YOU";nameDiv.appendChild(you);}
       row.appendChild(nameDiv);
       // Stats: accuracy + streak
@@ -3585,6 +3687,33 @@ function loadLeaderboard(isLive){
       body.appendChild(wrap);
     });
     _lbSorted=sorted;
+    // Title history — collapsed reign list under the standings
+    if(belt&&belt.reigns.length){
+      function _shortEv(n){return (n||"").replace("UFC Fight Night: ","");}
+      var bhWrap=document.createElement("div");bhWrap.style.cssText="margin-top:4px";
+      var bh=document.createElement("div");
+      bh.style.cssText="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;padding:8px 2px;cursor:pointer;display:flex;align-items:center;user-select:none";
+      var bhTxt=document.createElement("span");bhTxt.style.flex="1";
+      bhTxt.textContent="🏆 Title History"+(belt.holderName?" — "+belt.holderName:" — vacant");
+      bh.appendChild(bhTxt);
+      var bhArrow=document.createElement("span");bhArrow.style.cssText="font-size:9px;transition:transform .15s";bhArrow.textContent="▼";bh.appendChild(bhArrow);
+      bhWrap.appendChild(bh);
+      var bl=document.createElement("div");bl.style.display="none";
+      belt.reigns.slice().reverse().forEach(function(r){
+        var rr=document.createElement("div");
+        rr.style.cssText="display:flex;align-items:baseline;gap:8px;padding:6px 2px;font-size:12px;border-bottom:1px solid var(--border)";
+        var who=document.createElement("span");who.style.cssText="font-weight:600;flex-shrink:0";who.textContent=(r.end?"":"🏆 ")+r.name;rr.appendChild(who);
+        var det2=document.createElement("span");det2.style.cssText="color:var(--muted);font-size:11px;flex:1;min-width:0";
+        var s="won at "+_shortEv(r.evName);
+        if(r.defenses>0)s+=" · "+r.defenses+" defense"+(r.defenses>1?"s":"");
+        if(r.end)s+=r.end.vacated?" · vacated":" · lost to "+r.end.takenBy+" at "+_shortEv(r.end.evName);
+        det2.textContent=s;rr.appendChild(det2);
+        bl.appendChild(rr);
+      });
+      bh.onclick=function(){var open=bl.style.display!=="none";bl.style.display=open?"none":"";bhArrow.style.transform=open?"":"rotate(180deg)";};
+      bhWrap.appendChild(bl);
+      body.appendChild(bhWrap);
+    }
     var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-07-10";body.appendChild(verEl);
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
@@ -3843,6 +3972,8 @@ document.addEventListener("DOMContentLoaded",function(){
     <div class="lb-info-row"><span>Correct finish method</span><span class="lb-info-pts">+0.5 pt</span></div>
     <div class="lb-info-row"><span>Bonus pick (POTN/FOTN)</span><span class="lb-info-pts">+1 pt</span></div>
     <div style="font-size:11px;color:var(--muted);margin-top:10px">Methods: KO/TKO · Submission · Decision</div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">🏆 The Belt</div>
+    <div style="font-size:11px;color:var(--muted)">Top scorer of each card takes the belt. The champ defends every event — skip a card and anyone who scores can steal it. Ties go to the champion.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">Buttons</div>
     <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">🔥</span><div><div style="font-size:12px;font-weight:600">Trash Talk</div><div style="font-size:11px;color:var(--muted)">AI smack talk generator</div></div></div>
     <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">🎡</span><div><div style="font-size:12px;font-weight:600">Spin the Wheel</div><div style="font-size:11px;color:var(--muted)">Random challenge picker</div></div></div>
