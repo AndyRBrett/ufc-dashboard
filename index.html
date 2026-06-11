@@ -62,7 +62,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-panel.open{display:flex}
 .lb-hdr{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:56px;border-bottom:1px solid var(--border);background:var(--hdr-bg);flex-shrink:0;gap:10px}
 .lb-title{font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:.06em;flex:1}
-.lb-body{flex:1;overflow-y:auto;padding:12px;-webkit-overflow-scrolling:touch}
+.lb-body{flex:1;overflow-y:auto;padding:12px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .lb-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;margin-bottom:8px;background:var(--card);border:1px solid var(--border)}
 .lb-row.lb-me{border-color:var(--gold);background:var(--gold-dim)}
 .lb-medal{font-size:20px;width:28px;text-align:center;flex-shrink:0}
@@ -2960,8 +2960,8 @@ function countUp(el,target){
 }
 
 
-function openLeaderboard(){document.getElementById("lbPanel").classList.add("open");syncLbModeBar();loadLeaderboard();fetchChallenges();if(typeof liveRefresh==="function")liveRefresh();}
-function closeLeaderboard(){document.getElementById("lbPanel").classList.remove("open");document.getElementById("lbInfoModal").classList.remove("open");closeTrashSheet();closeWheelSheet();}
+function openLeaderboard(){var p=document.getElementById("lbPanel");if(!p.classList.contains("open")){p.classList.add("open");lockScroll();}syncLbModeBar();loadLeaderboard();fetchChallenges();if(typeof liveRefresh==="function")liveRefresh();}
+function closeLeaderboard(){var p=document.getElementById("lbPanel");if(p.classList.contains("open")){p.classList.remove("open");unlockScroll();}document.getElementById("lbInfoModal").classList.remove("open");closeTrashSheet();closeWheelSheet();closeChalSheet();}
 document.addEventListener("click",function(e){var m=document.getElementById("lbInfoModal");if(m&&m.classList.contains("open")&&!m.contains(e.target)&&!e.target.classList.contains("lb-info-btn"))m.classList.remove("open");});
 function closeTrashSheet(){
   document.getElementById("trashSheet").classList.remove("open");
@@ -3818,7 +3818,7 @@ function loadLeaderboard(isLive){
       bhWrap.appendChild(bl);
       body.appendChild(bhWrap);
     }
-    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-9";body.appendChild(verEl);
+    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-10";body.appendChild(verEl);
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
   }).catch(function(err){
@@ -3988,7 +3988,12 @@ function respondChallenge(c,accept){
 }
 function openChallengeCompose(u){
   if(!userName){toast("Set your name first (✏️)");return;}
-  var ev=EVENTS.filter(function(e){return !picksLocked(e);}).sort(function(a,b){return a.date<b.date?-1:1;})[0];
+  // Restored past events can carry time:"TBD", which makes picksLocked() return
+  // false — guard on date and finished-ness too so a month-old card can never
+  // be selected as the challenge battleground.
+  var ev=EVENTS.filter(function(e){
+    return !_eventFinished(e.date)&&!picksLocked(e)&&new Date(e.date).getTime()>Date.now()-DAY_MS;
+  }).sort(function(a,b){return a.date<b.date?-1:1;})[0];
   if(!ev){toast("No upcoming card to challenge on");return;}
   _chalTarget=u;_chalEvent=ev;_chalFightSel=null;_chalStake=CHAL_STAKES[0];
   document.getElementById("chalInboxView").style.display="none";
@@ -4553,7 +4558,7 @@ document.addEventListener("DOMContentLoaded",function(){
     </div>
     <div id="chalInboxView" style="display:none">
       <div class="lb-trash-persona">⚔️ Challenges</div>
-      <div id="chalList" style="max-height:55vh;overflow-y:auto;margin-top:10px"></div>
+      <div id="chalList" style="max-height:55vh;overflow-y:auto;margin-top:10px;overscroll-behavior:contain"></div>
     </div>
   </div>
   <div class="lb-wheel-sheet" id="wheelSheet">
