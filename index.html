@@ -916,6 +916,9 @@ function wcShort(wc){if(!wc)return"";var m=wc.match(/Catchweight\s*\((\d+)/i);if
 
 // Milliseconds per day / hour / minute — used throughout for date math.
 var DAY_MS=864e5,HOUR_MS=36e5,MIN_MS=6e4;
+// Permanent per-event results emitted by scrape.py; tolerate older data.js
+// deploys that don't carry it yet.
+var RESULTS_ARCHIVE=window.RESULTS_ARCHIVE||{};
 var FIGHTS=[];
 var _fightIndex=null;
 function _buildFightIndex(){_fightIndex={};EVENTS.forEach(function(ev){ev.fights.forEach(function(f){_fightIndex[ev.date+"|"+f.f1.n+"|"+f.f2.n]={ev:ev,fight:f};});});}

@@ -763,6 +763,63 @@ def extract_recent_past_events(html, now, seen):
     return results
 
 
+def update_results_archive(data, now):
+    """
+    Maintain a permanent RESULTS_ARCHIVE var in data.js. EVENTS only keeps the
+    last 30 days, so finished events (and their results) eventually vanish —
+    which silently breaks all-time scoring and any belt/title lineage in the
+    frontend. While a past event is still in EVENTS its archive entry is
+    re-snapshotted (so late result injections land), and entries are never
+    deleted once the event ages out.
+    """
+    archive = {}
+    m = re.search(r"var RESULTS_ARCHIVE=(\{.*?\});", data, flags=re.DOTALL)
+    if m:
+        try:
+            archive = json.loads(m.group(1))
+        except ValueError:
+            print("Warning: RESULTS_ARCHIVE unparseable — keeping current snapshot only", file=sys.stderr)
+
+    hdr_pat = re.compile(
+        r'name:"([^"]+)",\s*\n\s*'
+        r'date:"(\d{4}-\d{2}-\d{2})",\s*\n\s*'
+        r'venue:"[^"]*"'
+    )
+    fight_pat = re.compile(
+        r'winner:"([^"]+)",method:"([^"]*)",round:(?:\d+|null),state:"post"'
+        r'[^{]*f1:\{n:"([^"]+)"[^}]+\},f2:\{n:"([^"]+)"'
+    )
+    headers = list(hdr_pat.finditer(data))
+    today   = now.strftime("%Y-%m-%d")
+    changed = 0
+    for i, hm in enumerate(headers):
+        ev_name, ev_date = hm.group(1), hm.group(2)
+        if ev_date >= today:
+            continue
+        end   = headers[i + 1].start() if i + 1 < len(headers) else len(data)
+        chunk = data[hm.end():end]
+        fights = [
+            {"f1": f1, "f2": f2, "winner": w, "method": meth}
+            for w, meth, f1, f2 in fight_pat.findall(chunk)
+        ]
+        if not fights:
+            continue
+        entry = {"name": ev_name, "fights": fights}
+        if archive.get(ev_date) != entry:
+            changed += 1
+        archive[ev_date] = entry
+
+    if not archive:
+        return data
+    if changed:
+        print(f"Results archive: {changed} event(s) added/updated ({len(archive)} total)", file=sys.stderr)
+    js_json = json.dumps(archive, separators=(",", ":"), ensure_ascii=False, sort_keys=True)
+    if "var RESULTS_ARCHIVE" in data:
+        return patch_js_var(data, "RESULTS_ARCHIVE", js_json)
+    # First run: declare the var just above EVENTS
+    return data.replace("var EVENTS=", f"var RESULTS_ARCHIVE={js_json};\nvar EVENTS=", 1)
+
+
 def get_odds_with_fallback(odds_index, existing_odds, f1_name, f2_name):
     """Return live odds, falling back to the odds already embedded in the HTML."""
     result = get_odds(odds_index, f1_name, f2_name)
@@ -1494,6 +1551,7 @@ def main():
     # Step 1: inject results for recent/live events
     updated, new_results = step_inject_results(data, now)
     if updated:
+        updated = update_results_archive(updated, now)
         data_path.write_text(updated, encoding="utf-8")
         print(f"Results injected", file=sys.stderr)
         send_push_notifications(new_results)
@@ -1511,6 +1569,7 @@ def main():
         if reinjected:
             updated = reinjected
             print("Results injected after rebuild", file=sys.stderr)
+        updated = update_results_archive(updated, now)
         data_path.write_text(updated, encoding="utf-8")
         new_events = re.findall(r'name:"([^"]+)"', updated)
         new_fights = len(re.findall(r'"lbl":|lbl:', updated))
