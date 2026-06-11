@@ -33,6 +33,10 @@ interface ReqBody {
   safe_title?: string;
   safe_body?: string;
   exclude_user_id?: string | null;
+  // Senders may have a push_subs row registered under an older anonymous
+  // user_id, which exclude_user_id can't match — excluding the device's push
+  // endpoint as well guarantees they never receive their own notification.
+  exclude_endpoint?: string | null;
   include_user_ids?: string[] | null;
   // type="register" fields
   user_id?: string;
@@ -114,6 +118,13 @@ serve(async (req) => {
       const detail = await upsertRes.text();
       return new Response(JSON.stringify({ error: "Failed to save subscription", detail }), { status: 502, headers: CORS });
     }
+    // The upsert conflicts on user_id, so a device whose anonymous user_id has
+    // changed leaves a stale row with the same endpoint under the old id —
+    // causing duplicate (and self-) notifications. Remove those here.
+    await fetch(
+      `${SUPABASE_URL}/rest/v1/push_subs?endpoint=eq.${encodeURIComponent(endpoint)}&user_id=neq.${encodeURIComponent(user_id)}`,
+      { method: "DELETE", headers: sbHeaders }
+    ).catch(() => {});
     return new Response(JSON.stringify({ ok: true }), { status: 200, headers: CORS });
   }
 
@@ -167,7 +178,17 @@ serve(async (req) => {
   if (!subsRes.ok) {
     return new Response(JSON.stringify({ error: "Failed to fetch subscriptions" }), { status: 502, headers: CORS });
   }
-  const subs: { endpoint: string; p256dh: string; auth: string; live_results?: boolean }[] = await subsRes.json();
+  let subs: { endpoint: string; p256dh: string; auth: string; live_results?: boolean }[] = await subsRes.json();
+
+  // Drop the sender's own device and collapse duplicate rows that share an
+  // endpoint (left behind when a device re-registers under a new user_id).
+  const seenEndpoints = new Set<string>();
+  subs = subs.filter((sub) => {
+    if (body.exclude_endpoint && sub.endpoint === body.exclude_endpoint) return false;
+    if (seenEndpoints.has(sub.endpoint)) return false;
+    seenEndpoints.add(sub.endpoint);
+    return true;
+  });
 
   if (!subs.length) {
     return new Response(JSON.stringify({ sent: 0, skipped: false, reason: "no subscribers" }), { status: 200, headers: CORS });

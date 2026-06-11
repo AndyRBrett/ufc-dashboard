@@ -174,8 +174,8 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .btn-more-sep{height:1px;background:var(--border);margin:4px 6px}
 .btn-more-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 12px 2px}
 .theme-swatch{width:16px;height:16px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0}
-.theme-item .theme-check{display:none;margin-left:auto;color:var(--gold);font-size:12px}
-.theme-item.active .theme-check{display:block}
+.theme-item .theme-check,#notifBell .theme-check,#liveResBtn .theme-check{display:none;margin-left:auto;color:var(--gold);font-size:12px}
+.theme-item.active .theme-check,#notifBell.bell-active .theme-check,#liveResBtn.bell-active .theme-check{display:block}
 .btn-ufc{background:var(--red);border:none;color:var(--on-accent);padding:7px 12px;border-radius:7px;font:600 12px Inter,sans-serif;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:4px;letter-spacing:.02em;transition:opacity .15s}
 .btn-ufc:hover{opacity:.88}
 .fn-banner{background:linear-gradient(90deg,var(--banner-edge),var(--red),var(--banner-edge));padding:9px 16px;display:none;align-items:center;gap:10px}
@@ -778,11 +778,11 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
       <div class="btn-more-menu" id="moreMenu">
         <button class="btn-more-item" id="notifBell" onclick="togglePush();closeMoreMenu()" title="Fight notifications">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          <span>Notifications</span>
+          <span>Notifications</span><span class="theme-check">&#10003;</span>
         </button>
         <button class="btn-more-item" id="liveResBtn" onclick="toggleLiveResults();closeMoreMenu()" title="Show winners in result notifications (off = spoiler-free)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span>Result Spoilers</span>
+          <span>Result Spoilers</span><span class="theme-check">&#10003;</span>
         </button>
         <button class="btn-more-item" id="acctBtn" onclick="openAcct();closeMoreMenu()" title="Account">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1146,6 +1146,8 @@ var notifActive=false;
 var _openMore={};var _collapsed={};
 var _lbSorted=[];
 var _trashText="",_trashPersona="",_trashMe=null,_trashOpponents=[],_trashMyRank=0,_selectedTargets=new Set();
+// Which leaderboard the trash talk is about, captured when the sheet opens.
+var _trashLbMode="current",_trashLbEvName=null,_lbCtxEvName=null;
 var _trashPersonas=["Conor McGregor","Chael Sonnen","Colby Covington","Sean Strickland","Nate Diaz","Jorge Masvidal","Israel Adesanya","Jon Jones","Michael Bisping","Dominick Cruz","Daniel Cormier","Rampage Jackson","Tito Ortiz","Kevin Holland","Paddy Pimblett","Sean O'Malley","Dustin Poirier","Justin Gaethje","Kamaru Usman","Henry Cejudo","Ben Askren","Josh Koscheck","Matt Serra","Donald Cerrone","Khabib Nurmagomedov","Muhammad Ali","Mike Tyson","Floyd Mayweather Jr.","Tyson Fury","Deontay Wilder","Prince Naseem Hamed","Adrien Broner","James Toney","Bernard Hopkins","Shannon Briggs","Ricardo Mayorga","Chris Eubank Sr.","Roy Jones Jr.","Oscar De La Hoya","Tommy Hearns","Ric Flair","Dwayne Johnson","Stone Cold Steve Austin","John Cena","CM Punk","Triple H","The Miz","MJF","Paul Heyman","Randy Savage","Roddy Piper","Hulk Hogan","Kurt Angle","Booker T","Chris Jericho","Kevin Garnett","Gary Payton","Charles Barkley","Draymond Green","Richard Sherman","Deion Sanders","Terrell Owens","Chad Johnson","Dennis Rodman","Reggie Miller","Pat McAfee","Marshawn Lynch","Cam Newton","Jalen Ramsey","Rasheed Wallace","Stephen A. Smith","Skip Bayless","Shannon Sharpe","Joe Rogan","Bill Burr","Andrew Schulz","Kevin Hart","Theo Von","Don Rickles","Larry David","Howard Stern","Gordon Ramsay","Simon Cowell","Samuel L. Jackson","Katt Williams","Tony Stark","Deadpool","Ron Swanson","Logan Ninefingers","Tyler Durden","Trevor Philips","Kratos","Duke Nukem","Sterling Archer","The Joker","Captain Jack Sparrow","Johnny Lawrence","Homelander","Bender Bending Rodríguez"];
 var _scrollY=0;
 function lockScroll(){_scrollY=window.scrollY;document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.width='100%';document.body.style.top='-'+_scrollY+'px';}
@@ -3143,13 +3145,25 @@ function fireTrashTalk(){
   var req={event_date:new Date().toISOString().slice(0,10),type:"trash-talk-"+Date.now(),
     title:"🔥 "+(_trashMe?_trashMe.nickname:"Someone")+" is talking trash!",body:pushBody,exclude_user_id:USER_ID};
   if(includeIds)req.include_user_ids=includeIds;
-  fetch(SUPABASE_URL+"/functions/v1/send-push",{
-    method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-    body:JSON.stringify(req)
-  }).then(function(){
-    document.getElementById("trashTargets").style.display="none";
-    document.getElementById("trashSent").style.display="block";
-  }).catch(function(){btn.disabled=false;});
+  var send=function(){
+    fetch(SUPABASE_URL+"/functions/v1/send-push",{
+      method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
+      body:JSON.stringify(req)
+    }).then(function(){
+      document.getElementById("trashTargets").style.display="none";
+      document.getElementById("trashSent").style.display="block";
+    }).catch(function(){btn.disabled=false;});
+  };
+  // Also exclude this device's push endpoint — the push_subs row can be
+  // registered under an older anonymous user_id, which exclude_user_id misses
+  // (that's how you end up receiving your own trash talk). Time-boxed so a
+  // never-resolving serviceWorker.ready can't block the send.
+  if('serviceWorker' in navigator){
+    Promise.race([
+      navigator.serviceWorker.ready.then(function(reg){return reg.pushManager.getSubscription();}),
+      new Promise(function(res){setTimeout(function(){res(null);},1500);})
+    ]).then(function(sub){if(sub)req.exclude_endpoint=sub.endpoint;}).catch(function(){}).then(send);
+  }else send();
 }
 function showIncomingTrashTalk(text){
   var lastDash=text.lastIndexOf('—');
@@ -3171,6 +3185,7 @@ function openTrashTalk(){
   });
   if(!me){toast("Make some picks to trash talk!");return;}
   _trashMe=me;_trashOpponents=opponents;_trashMyRank=myRank;_trashPersona="";
+  _trashLbMode=lbMode;_trashLbEvName=_lbCtxEvName;
   var shuffled=_trashPersonas.slice().sort(function(){return Math.random()-.5;});
   var picks=shuffled.slice(0,3);
   var cardsDiv=document.getElementById("trashPickerCards");
@@ -3212,9 +3227,17 @@ function generateTrashTalk(){
   var myName=me.nickname||"The Champ";
   var opponentNames=opponents.map(function(o){return o.nickname;}).join(", ")||"nobody worth mentioning";
   var cardLines=opponents.map(function(o){return o.nickname+(o.rank?" (rank #"+o.rank+")":"");}).join("\n")||"(no competition)";
+  // Ground the smack talk in whichever leaderboard is actually on screen —
+  // this week's event standings vs all-time career records read very differently.
+  var boardName=_trashLbMode==="current"
+    ?"this week's "+(_trashLbEvName||"event")+" leaderboard (picks for this event only)"
+    :"the ALL-TIME leaderboard (career records across every event)";
+  var boardAngle=_trashLbMode==="current"
+    ?"The rankings are about "+(_trashLbEvName||"this week's card")+" — work that event into the smack talk."
+    :"This is about all-time, career-long bragging rights — make the history sting.";
   var question;
   if(hint){
-    question="You are "+persona+". Trash talk on behalf of "+myName+", burying their competition: "+opponentNames+". Build the entire bit around this angle: \""+hint+"\". Lead with "+persona+"'s personality, attitude, and voice — that's the whole point. You can drop one stat as flavor but never let numbers be the punchline. End with '— "+persona+"'. No preamble. 2-3 sentences max.";
+    question="You are "+persona+". Trash talk on behalf of "+myName+", burying their competition on "+boardName+": "+opponentNames+". "+boardAngle+" Build the entire bit around this angle: \""+hint+"\". Lead with "+persona+"'s personality, attitude, and voice — that's the whole point. You can drop one stat as flavor but never let numbers be the punchline. End with '— "+persona+"'. No preamble. 2-3 sentences max.";
   } else {
     var angles=[
       "Go full "+persona+" persona — lean into your most iconic catchphrases, attitude, and delivery.",
@@ -3225,12 +3248,12 @@ function generateTrashTalk(){
       "Dismiss the competition the way only "+persona+" can — with contempt, style, and zero mercy."
     ];
     var angleHint=angles[Math.floor(Math.random()*angles.length)];
-    question="You are "+persona+". Trash talk on behalf of "+myName+", burying their competition: "+opponentNames+". "+angleHint+" Insults and personality first — one stat reference at most, only if it lands harder with it. Speak in "+persona+"'s unmistakable voice. End with '— "+persona+"'. No preamble. 2-3 sentences max.";
+    question="You are "+persona+". Trash talk on behalf of "+myName+", burying their competition on "+boardName+": "+opponentNames+". "+boardAngle+" "+angleHint+" Insults and personality first — one stat reference at most, only if it lands harder with it. Speak in "+persona+"'s unmistakable voice. End with '— "+persona+"'. No preamble. 2-3 sentences max.";
   }
   fetch(AI_BREAKDOWN_URL,{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-    body:JSON.stringify({action:"chat",event:"UFC Picks Leaderboard",card:cardLines,userPicks:myName+(myRank?" — Rank #"+myRank:""),question:question})
+    body:JSON.stringify({action:"chat",event:"UFC Picks Leaderboard — "+boardName,card:cardLines,userPicks:myName+(myRank?" — Rank #"+myRank+" on "+boardName:""),question:question})
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(data){
     _trashText=data.breakdown||"No trash talk generated.";
     document.getElementById("trashText").textContent=_trashText;
@@ -3320,6 +3343,7 @@ function loadLeaderboard(isLive){
     // Keep an event's pick chips visible until ~a day after its (prelim) start, so they
     // persist through the live main event instead of vanishing the moment it begins.
     var nextEv=EVENTS.filter(function(e){return _evStartMs(e)>nowMs-DAY_MS;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);})[0]||null;
+    _lbCtxEvName=nextEv?nextEv.name:null;
     var nextMainFights=nextEv?nextEv.fights.slice().reverse():[];
     if(lbMode==="current"&&!nextEv){
       body.innerHTML='<div class="lb-empty">No active event right now.<br>Switch to All-Time to see standings.</div>';
