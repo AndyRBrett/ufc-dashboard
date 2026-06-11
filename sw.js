@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = '2026-06-10-9';
+const SW_VERSION = '2026-06-11-1';
 const CACHE = 'ufc-' + SW_VERSION;
 
 self.addEventListener('install', function(e) {
@@ -91,7 +91,7 @@ self.addEventListener('push', function(e) {
       body: displayBody,
       icon: './icon-192-v2.png',
       badge: './icon-192-v2.png',
-      data: { url: data.url || './', fullMessage: fullMessage }
+      data: { url: data.url || './', kind: data.kind || '', fullMessage: fullMessage }
     })
   );
 });
@@ -99,20 +99,23 @@ self.addEventListener('push', function(e) {
 self.addEventListener('notificationclick', function(e) {
   e.notification.close();
   var fullMessage = e.notification.data && e.notification.data.fullMessage;
+  var kind = (e.notification.data && e.notification.data.kind) || '';
   var baseUrl = (e.notification.data && e.notification.data.url) || './';
 
   e.waitUntil(clients.matchAll({ type: 'window' }).then(function(cs) {
-    // App is already open — focus it and postMessage the full trash talk
+    // App is already open — focus it and route the tap by kind
     for (var i = 0; i < cs.length; i++) {
       if (cs[i].url && 'focus' in cs[i]) {
         cs[i].focus();
-        if (fullMessage) cs[i].postMessage({ type: 'trash-talk', fullMessage: fullMessage });
+        if (kind) cs[i].postMessage({ type: kind, fullMessage: fullMessage });
+        else if (fullMessage) cs[i].postMessage({ type: 'trash-talk', fullMessage: fullMessage });
         return;
       }
     }
-    // App is closed — encode full message in URL param so the app reads it on load
+    // App is closed — the routed URL (e.g. ./?inbox=1) carries the destination;
+    // legacy trash talk encodes the full message in a URL param instead
     var url = baseUrl;
-    if (fullMessage) url += (url.indexOf('?') >= 0 ? '&' : '?') + 'trash=' + encodeURIComponent(fullMessage);
+    if (!kind && fullMessage) url += (url.indexOf('?') >= 0 ? '&' : '?') + 'trash=' + encodeURIComponent(fullMessage);
     if (clients.openWindow) return clients.openWindow(url);
   }));
 });

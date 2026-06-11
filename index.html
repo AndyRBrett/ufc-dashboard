@@ -86,6 +86,21 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-streak{font-size:11px;font-weight:700;background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border);border-radius:10px;padding:2px 7px;white-space:nowrap;flex-shrink:0}
 .lb-streak.lb-streak-0{background:var(--pill-bg);color:var(--muted);border-color:var(--border)}
 .lb-belt-chip{font-size:10px;font-weight:700;background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border);border-radius:10px;padding:1px 6px;white-space:nowrap;flex-shrink:0;letter-spacing:.02em}
+.lb-chal-btn{background:none;border:1px solid var(--border2);border-radius:8px;width:28px;height:28px;font-size:13px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0;opacity:.75;transition:opacity .15s}
+.lb-chal-btn:hover{opacity:1}
+.chal-badge{position:absolute;top:-4px;right:-4px;background:var(--red);color:var(--on-accent);font-size:9px;font-weight:700;min-width:14px;height:14px;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.chal-row{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.chal-row-top{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.chal-row-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.chal-row-stake{font-size:12px;color:var(--gold);margin-top:4px;font-weight:600}
+.chal-row-actions{display:flex;gap:8px;margin-top:9px}
+.chal-act-btn{flex:1;padding:8px;border-radius:8px;border:none;font:700 12px Inter,sans-serif;cursor:pointer;letter-spacing:.03em}
+.chal-act-accept{background:var(--red);color:var(--on-accent)}
+.chal-act-decline{background:var(--card2);color:var(--muted);border:1px solid var(--border2)}
+.chal-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-left:auto;letter-spacing:.04em;text-transform:uppercase}
+.chal-status.w{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border)}
+.chal-status.l{background:var(--loss-dim);color:var(--loss);border:1px solid var(--loss-border)}
+.chal-status.n{background:var(--pending-bg);color:var(--muted);border:1px solid var(--border)}
 .lb-acc{font-size:11px;font-weight:600;color:var(--muted2);flex-shrink:0}
 .lb-next-picks{padding:8px 14px 10px;display:flex;flex-wrap:wrap;gap:5px;border-top:1px solid var(--border)}
 .lb-next-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;width:100%;margin-bottom:3px}
@@ -1251,6 +1266,8 @@ function _rtConnect(){
           _rtCbs.forEach(function(cb){try{cb();}catch(err){}});
         if(_rtOpen&&m.event==="broadcast"&&m.payload&&m.payload.event==="reaction")
           _fnReactCbs.forEach(function(cb){try{cb(m.payload.payload);}catch(err){}});
+        if(_rtOpen&&m.event==="broadcast"&&m.payload&&m.payload.event==="chal-change")
+          {try{if(typeof fetchChallenges==="function")fetchChallenges();}catch(err){}}
       }catch(err){}
     };
     _rtWs.onclose=function(){_rtWs=null;_rtOpen=false;setTimeout(_rtConnect,5000);};
@@ -2165,12 +2182,19 @@ function picksLocked(ev){
   var t=ev.prelimTime||ev.time;var pp=t.split(":");
   return now>=Date.UTC(+dp[0],+dp[1]-1,+dp[2],+pp[0]+eto,+(pp[1]||0),0);
 }
-function _triggerPush(evDate,type,title,body,excludeUid){
-  fetch(SUPABASE_URL+"/functions/v1/send-push",{
+// opts: {includeIds:[uid,…] target specific users, url:"./?…" tap deep-link,
+// kind:"challenge"|… SW tap routing}. Resolves to the server's JSON ({sent}
+// or {skipped:true} when the event_date+type pair was already sent).
+function _triggerPush(evDate,type,title,body,excludeUid,opts){
+  var req={event_date:evDate,type:type,title:title,body:body,exclude_user_id:excludeUid||null};
+  if(opts&&opts.includeIds)req.include_user_ids=opts.includeIds;
+  if(opts&&opts.url)req.url=opts.url;
+  if(opts&&opts.kind)req.kind=opts.kind;
+  return fetch(SUPABASE_URL+"/functions/v1/send-push",{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-    body:JSON.stringify({event_date:evDate,type:type,title:title,body:body,exclude_user_id:excludeUid||null})
-  }).catch(function(){});
+    body:JSON.stringify(req)
+  }).then(function(r){return r.json();}).catch(function(){return null;});
 }
 function checkNotifSchedule(){
   if(!notifActive||Notification.permission!=="granted")return;
@@ -2898,7 +2922,7 @@ function countUp(el,target){
 }
 
 
-function openLeaderboard(){document.getElementById("lbPanel").classList.add("open");syncLbModeBar();loadLeaderboard();if(typeof liveRefresh==="function")liveRefresh();}
+function openLeaderboard(){document.getElementById("lbPanel").classList.add("open");syncLbModeBar();loadLeaderboard();fetchChallenges();if(typeof liveRefresh==="function")liveRefresh();}
 function closeLeaderboard(){document.getElementById("lbPanel").classList.remove("open");document.getElementById("lbInfoModal").classList.remove("open");closeTrashSheet();closeWheelSheet();}
 document.addEventListener("click",function(e){var m=document.getElementById("lbInfoModal");if(m&&m.classList.contains("open")&&!m.contains(e.target)&&!e.target.classList.contains("lb-info-btn"))m.classList.remove("open");});
 function closeTrashSheet(){
@@ -3320,6 +3344,21 @@ function _findFightResult(date,f1,f2){
   return null;
 }
 
+// An event is "finished" when every fight is final, or the card is >2 days old
+// with results in (a cancelled bout would otherwise hold it "pre" forever).
+// Cards that have aged out of EVENTS count as finished via the results archive.
+function _eventFinished(date){
+  for(var i=0;i<EVENTS.length;i++){
+    if(EVENTS[i].date!==date)continue;
+    var fs=EVENTS[i].fights;
+    var allPost=fs.length>0&&fs.every(function(f){return f.state==="post";});
+    var anyResult=fs.some(function(f){return f.state==="post"&&f.winner;});
+    var old=new Date(date).getTime()<Date.now()-2*DAY_MS;
+    return (allPost&&anyResult)||(old&&anyResult);
+  }
+  return !!RESULTS_ARCHIVE[date];
+}
+
 // The Belt 🏆 — a lineal king-of-the-hill title replayed deterministically from
 // everyone's pick history, so every phone computes the same champion. Rules:
 // the belt is decided per finished event; the champion must defend on every
@@ -3339,14 +3378,10 @@ function computeBeltLineage(rows){
     u.total++;
     if(res.winner===p.pick){u.correct++;u.pts+=1+(scoreMethod(p.method||"",res.method||"")?0.5:0);}
   });
-  // Finished events, oldest first: every fight final, or the card is >2 days
-  // old with results in (a cancelled bout would otherwise hold it "pre" forever).
-  var nowMs=Date.now(),evNames={},dates=[];
+  // Finished events, oldest first
+  var evNames={},dates=[];
   EVENTS.forEach(function(ev){
-    var allPost=ev.fights.length>0&&ev.fights.every(function(f){return f.state==="post";});
-    var anyResult=ev.fights.some(function(f){return f.state==="post"&&f.winner;});
-    var old=new Date(ev.date).getTime()<nowMs-2*DAY_MS;
-    if((allPost&&anyResult)||(old&&anyResult)){dates.push(ev.date);evNames[ev.date]=ev.name;}
+    if(_eventFinished(ev.date)){dates.push(ev.date);evNames[ev.date]=ev.name;}
   });
   Object.keys(RESULTS_ARCHIVE).forEach(function(d){
     if(!evNames[d]){dates.push(d);evNames[d]=RESULTS_ARCHIVE[d].name;}
@@ -3428,6 +3463,7 @@ function _reconcileMyMethods(rows){
   });
 }
 
+var _lbRows=null;   // raw picks rows from the last leaderboard fetch
 function loadLeaderboard(isLive){
   var body=document.getElementById("lbBody");
   if(!isLive)body.innerHTML='<div class="lb-loading">Loading picks...</div>';
@@ -3437,6 +3473,8 @@ function loadLeaderboard(isLive){
       return;
     }
     _reconcileMyMethods(rows);
+    _lbRows=rows;            // challenge resolution reads the same row set
+    updateChalBadge();
     // The belt is inherently all-time, so it's computed from the full row set
     // regardless of which leaderboard mode is active.
     var belt=computeBeltLineage(rows);
@@ -3609,6 +3647,12 @@ function loadLeaderboard(isLive){
       det.textContent=anyResolved?(u.correct+"/"+u.total+" correct"+(u.methods?" · +"+u.methods+" method":"")+(u.fotn?" · +"+u.fotn+" bonus":"")):pending+" pending";
       right.appendChild(det);
       row.appendChild(right);
+      if(!u.isMe&&u.user_id){
+        var cbtn=document.createElement("button");cbtn.className="lb-chal-btn";cbtn.textContent="⚔️";
+        cbtn.title="Challenge "+u.nickname;
+        (function(uu){cbtn.onclick=function(e){e.stopPropagation();openChallengeCompose(uu);};})(u);
+        row.appendChild(cbtn);
+      }
       var arr=document.createElement("span");arr.style.cssText="font-size:10px;color:var(--muted);flex-shrink:0;display:inline-block;transition:transform .2s";arr.textContent="▼";row.appendChild(arr);
       // Next-event pick chips (always visible)
       var nextPicksDiv=null;
@@ -3721,6 +3765,223 @@ function loadLeaderboard(isLive){
     console.error("loadLeaderboard failed:",err);
     if(!isLive)body.innerHTML='<div class="lb-empty">Could not load leaderboard.<br>Check your connection.</div>';
   });
+}
+
+// =========================== Challenges ⚔️ =================================
+// Call out a rival on a fight or a whole card with stakes. Rows live in the
+// public `challenges` table; the OUTCOME is never stored — it's derived here
+// from picks + results, so every phone agrees and nothing can be forged.
+var _challenges=[],_chalTarget=null,_chalEvent=null,_chalFightSel=null,_chalStake="Loser spins the wheel 🎡";
+var CHAL_STAKES=["Loser spins the wheel 🎡","$5 💵","Loser buys drinks 🍺"];
+
+function fetchChallenges(){
+  return _sbFetchAll("/rest/v1/challenges?select=*&order=created_at.desc").then(function(rows){
+    _challenges=Array.isArray(rows)?rows:[];
+    updateChalBadge();
+    var sheet=document.getElementById("chalSheet");
+    if(sheet&&sheet.classList.contains("open")&&document.getElementById("chalInboxView").style.display!=="none")renderChallengeInbox();
+  }).catch(function(){});
+}
+function _isMyChal(c){
+  if(c.challenger_id===USER_ID||c.target_id===USER_ID)return true;
+  var me=_lbBaseName(userName);
+  return !!me&&(_lbBaseName(c.challenger_name)===me||_lbBaseName(c.target_name)===me);
+}
+function _chalIncoming(c){return c.target_id===USER_ID||(_lbBaseName(userName)&&_lbBaseName(c.target_name)===_lbBaseName(userName));}
+function _chalFightLbl(c){return c.f1&&c.f2?c.f1.split(" ").pop()+" vs "+c.f2.split(" ").pop():"Whole card";}
+function _chalEvLocked(c){
+  for(var i=0;i<EVENTS.length;i++)if(EVENTS[i].date===c.event_date)return picksLocked(EVENTS[i]);
+  return new Date(c.event_date).getTime()<Date.now();   // aged out ⇒ long past
+}
+// Latest pick a user (by base name) made on a specific fight. _lbRows is
+// ordered updated_at.desc, so the first hit is the freshest.
+function _userFightPick(base,evDate,f1,f2){
+  if(!_lbRows)return null;
+  for(var i=0;i<_lbRows.length;i++){var p=_lbRows[i];
+    if(p.event_date===evDate&&_lbBaseName(p.nickname)===base&&
+       ((p.f1===f1&&p.f2===f2)||(p.f1===f2&&p.f2===f1)))return p;}
+  return null;
+}
+function _userEventScore(base,evDate){
+  var pts=0,resolved=0,seen={};
+  if(_lbRows)_lbRows.forEach(function(p){
+    if(p.event_date!==evDate||_lbBaseName(p.nickname)!==base)return;
+    var fk=[p.f1,p.f2].sort().join("|");
+    if(seen[fk])return;seen[fk]=true;          // rows are newest-first; keep the latest per fight
+    var res=_findFightResult(p.event_date,p.f1,p.f2);
+    if(!res)return;
+    resolved++;
+    if(res.winner===p.pick)pts+=1+(scoreMethod(p.method||"",res.method||"")?0.5:0);
+  });
+  return{pts:pts,resolved:resolved};
+}
+// → {kind:"pending"|"declined"|"void"|"open"|"push"|"decided", winner?, loser?, how?}
+function resolveChallenge(c){
+  if(c.status==="declined")return{kind:"declined"};
+  if(c.status==="pending")return _chalEvLocked(c)?{kind:"void",how:"not accepted before lock-in"}:{kind:"pending"};
+  var cb=_lbBaseName(c.challenger_name),tb=_lbBaseName(c.target_name);
+  if(c.f1&&c.f2){
+    var res=_findFightResult(c.event_date,c.f1,c.f2);
+    if(!res||!_lbRows)return{kind:"open"};
+    var cp=_userFightPick(cb,c.event_date,c.f1,c.f2),tp=_userFightPick(tb,c.event_date,c.f1,c.f2);
+    if(!cp&&!tp)return{kind:"void",how:"neither picked"};
+    if(!cp)return{kind:"decided",winner:c.target_name,loser:c.challenger_name,how:"forfeit — no pick"};
+    if(!tp)return{kind:"decided",winner:c.challenger_name,loser:c.target_name,how:"forfeit — no pick"};
+    function pts(p){return res.winner===p.pick?1+(scoreMethod(p.method||"",res.method||"")?0.5:0):0;}
+    var a=pts(cp),b=pts(tp);
+    if(a===b)return{kind:"push"};
+    return a>b?{kind:"decided",winner:c.challenger_name,loser:c.target_name}
+              :{kind:"decided",winner:c.target_name,loser:c.challenger_name};
+  }
+  if(!_eventFinished(c.event_date)||!_lbRows)return{kind:"open"};
+  var cs=_userEventScore(cb,c.event_date),ts=_userEventScore(tb,c.event_date);
+  if(!cs.resolved&&!ts.resolved)return{kind:"void",how:"neither picked"};
+  if(!cs.resolved)return{kind:"decided",winner:c.target_name,loser:c.challenger_name,how:"forfeit — no picks"};
+  if(!ts.resolved)return{kind:"decided",winner:c.challenger_name,loser:c.target_name,how:"forfeit — no picks"};
+  if(cs.pts===ts.pts)return{kind:"push"};
+  return cs.pts>ts.pts?{kind:"decided",winner:c.challenger_name,loser:c.target_name,how:cs.pts+"–"+ts.pts}
+                      :{kind:"decided",winner:c.target_name,loser:c.challenger_name,how:ts.pts+"–"+cs.pts};
+}
+function updateChalBadge(){
+  var n=_challenges.filter(function(c){return _chalIncoming(c)&&resolveChallenge(c).kind==="pending";}).length;
+  var b=document.getElementById("chalBadge");
+  if(b){b.textContent=n;b.style.display=n?"flex":"none";}
+}
+function openChallengeInbox(){
+  if(!document.getElementById("lbPanel").classList.contains("open"))openLeaderboard();
+  document.getElementById("chalComposeView").style.display="none";
+  document.getElementById("chalInboxView").style.display="block";
+  document.getElementById("chalSheet").classList.add("open");
+  renderChallengeInbox();
+  fetchChallenges();
+}
+function closeChalSheet(){document.getElementById("chalSheet").classList.remove("open");}
+function renderChallengeInbox(){
+  var list=document.getElementById("chalList");if(!list)return;
+  list.innerHTML="";
+  var mine=_challenges.filter(_isMyChal);
+  if(!mine.length){
+    var e=document.createElement("div");e.style.cssText="text-align:center;padding:28px 12px;color:var(--muted);font-size:13px";
+    e.textContent="No challenges yet. Hit ⚔️ on a rival's leaderboard row to throw down.";
+    list.appendChild(e);return;
+  }
+  // Actionable first, then live, then history
+  var order={pending:0,open:1,decided:2,push:3,void:4,declined:5};
+  mine.sort(function(a,b){
+    var oa=order[resolveChallenge(a).kind],ob=order[resolveChallenge(b).kind];
+    if(oa!==ob)return oa-ob;
+    return (b.created_at||"").localeCompare(a.created_at||"");
+  });
+  mine.slice(0,25).forEach(function(c){
+    var r=resolveChallenge(c);
+    var incoming=_chalIncoming(c);
+    var rival=incoming?c.challenger_name:c.target_name;
+    var row=document.createElement("div");row.className="chal-row";
+    var top=document.createElement("div");top.className="chal-row-top";
+    var dir=document.createElement("span");dir.textContent=incoming?"⬇️":"⬆️";dir.title=incoming?"They challenged you":"You challenged them";dir.style.fontSize="11px";top.appendChild(dir);
+    var who=document.createElement("span");who.textContent=rival;who.style.cssText="overflow:hidden;text-overflow:ellipsis;white-space:nowrap";top.appendChild(who);
+    var st=document.createElement("span");st.className="chal-status n";
+    if(r.kind==="pending")st.textContent=incoming?"your move":"waiting";
+    else if(r.kind==="open")st.textContent="in play";
+    else if(r.kind==="push")st.textContent="push";
+    else if(r.kind==="void")st.textContent="void";
+    else if(r.kind==="declined")st.textContent="declined";
+    else{
+      var iWon=r.winner&&(_lbBaseName(r.winner)===_lbBaseName(userName));
+      st.className="chal-status "+(iWon?"w":"l");st.textContent=iWon?"won":"lost";
+    }
+    top.appendChild(st);
+    row.appendChild(top);
+    var sub=document.createElement("div");sub.className="chal-row-sub";
+    sub.textContent=_chalFightLbl(c)+" · "+(c.event_name||"").replace("UFC Fight Night: ","")+(r.how?" · "+r.how:"");
+    row.appendChild(sub);
+    var stake=document.createElement("div");stake.className="chal-row-stake";stake.textContent="💰 "+c.stake;row.appendChild(stake);
+    if(r.kind==="pending"&&incoming&&c.target_id===USER_ID){
+      var acts=document.createElement("div");acts.className="chal-row-actions";
+      var acc=document.createElement("button");acc.className="chal-act-btn chal-act-accept";acc.textContent="Accept ⚔️";
+      var dec=document.createElement("button");dec.className="chal-act-btn chal-act-decline";dec.textContent="Decline";
+      (function(ch){acc.onclick=function(){respondChallenge(ch,true);};dec.onclick=function(){respondChallenge(ch,false);};})(c);
+      acts.appendChild(acc);acts.appendChild(dec);row.appendChild(acts);
+    }
+    if(r.kind==="decided"&&r.loser&&_lbBaseName(r.loser)===_lbBaseName(userName)&&/wheel|spin/i.test(c.stake)){
+      var acts2=document.createElement("div");acts2.className="chal-row-actions";
+      var spin=document.createElement("button");spin.className="chal-act-btn chal-act-accept";spin.textContent="Pay up — spin now 🎡";
+      spin.onclick=function(){closeChalSheet();openWheelSheet();};
+      acts2.appendChild(spin);row.appendChild(acts2);
+    }
+    list.appendChild(row);
+  });
+}
+function respondChallenge(c,accept){
+  fetch(SUPABASE_URL+"/rest/v1/challenges?id=eq."+encodeURIComponent(c.id)+"&status=eq.pending",{
+    method:"PATCH",headers:Object.assign(_sbHeaders(),{Prefer:"return=representation"}),
+    body:JSON.stringify({status:accept?"accepted":"declined",responded_at:new Date().toISOString()})
+  }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
+    if(!rows||!rows.length)throw new Error("not permitted");
+    c.status=accept?"accepted":"declined";
+    renderChallengeInbox();updateChalBadge();_rtBroadcastChal();
+    if(accept)_triggerPush(c.event_date,"chal-resp-"+c.id,"⚔️ "+userName+" accepted your challenge!",
+      _chalFightLbl(c)+" — "+c.stake+" · It's on!",USER_ID,{includeIds:[c.challenger_id],url:"./?inbox=1",kind:"challenge"});
+    toast(accept?"It's on! ⚔️":"Declined");
+  }).catch(function(){toast("Could not respond — try again");});
+}
+function openChallengeCompose(u){
+  if(!userName){toast("Set your name first (✏️)");return;}
+  var ev=EVENTS.filter(function(e){return !picksLocked(e);}).sort(function(a,b){return a.date<b.date?-1:1;})[0];
+  if(!ev){toast("No upcoming card to challenge on");return;}
+  _chalTarget=u;_chalEvent=ev;_chalFightSel=null;_chalStake=CHAL_STAKES[0];
+  document.getElementById("chalInboxView").style.display="none";
+  document.getElementById("chalComposeView").style.display="block";
+  document.getElementById("chalComposeTitle").textContent="⚔️ Challenge "+u.nickname;
+  document.getElementById("chalComposeEv").textContent=ev.name.replace("UFC Fight Night: ","")+" · "+ev.date;
+  var fc=document.getElementById("chalFightChips");fc.innerHTML="";
+  function chip(label,sel,onpick){
+    var s=document.createElement("span");s.className="lb-trash-chip"+(sel?" selected":"");s.textContent=label;
+    s.onclick=function(){onpick();renderComposeChips();};
+    return s;
+  }
+  function renderComposeChips(){
+    fc.innerHTML="";
+    fc.appendChild(chip("Whole card",!_chalFightSel,function(){_chalFightSel=null;}));
+    ev.fights.forEach(function(f){
+      if(f.lbl!=="Main Event"&&f.lbl!=="Co-Main"&&f.lbl!=="Main Card")return;
+      fc.appendChild(chip(f.f1.n.split(" ").pop()+" vs "+f.f2.n.split(" ").pop(),_chalFightSel===f,function(){_chalFightSel=f;}));
+    });
+    var sc=document.getElementById("chalStakeChips");sc.innerHTML="";
+    CHAL_STAKES.forEach(function(s){
+      sc.appendChild(chip(s,_chalStake===s,function(){_chalStake=s;document.getElementById("chalStakeInput").value="";}));
+    });
+  }
+  renderComposeChips();
+  document.getElementById("chalStakeInput").value="";
+  document.getElementById("chalSent").style.display="none";
+  var btn=document.getElementById("chalSendBtn");btn.disabled=false;btn.style.display="";
+  document.getElementById("chalSheet").classList.add("open");
+}
+function fireChallenge(){
+  if(!_chalTarget||!_chalEvent)return;
+  var stake=(document.getElementById("chalStakeInput").value.trim()||_chalStake||"").slice(0,60);
+  if(!stake){toast("Pick the stakes!");return;}
+  var btn=document.getElementById("chalSendBtn");btn.disabled=true;
+  var row={challenger_id:USER_ID,challenger_name:userName,target_id:_chalTarget.user_id,target_name:_chalTarget.nickname,
+    event_date:_chalEvent.date,event_name:_chalEvent.name,
+    f1:_chalFightSel?_chalFightSel.f1.n:null,f2:_chalFightSel?_chalFightSel.f2.n:null,stake:stake};
+  fetch(SUPABASE_URL+"/rest/v1/challenges",{
+    method:"POST",headers:Object.assign(_sbHeaders(),{Prefer:"return=representation"}),body:JSON.stringify(row)
+  }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
+    var ch=rows&&rows[0];
+    document.getElementById("chalSent").style.display="block";btn.style.display="none";
+    if(ch)_triggerPush(_chalEvent.date,"chal-"+ch.id,"⚔️ "+userName+" challenged you!",
+      _chalFightLbl(row)+" — "+stake,USER_ID,{includeIds:[ch.target_id],url:"./?inbox=1",kind:"challenge"});
+    _rtBroadcastChal();fetchChallenges();
+    setTimeout(closeChalSheet,1200);
+  }).catch(function(){btn.disabled=false;toast("Could not send — are you signed in?");});
+}
+function _rtBroadcastChal(){
+  if(!_rtOpen||!_rtWs||_rtWs.readyState!==1)return;
+  _rtWs.send(JSON.stringify({topic:"realtime:picks-live",event:"broadcast",
+    payload:{type:"broadcast",event:"chal-change",payload:{}},
+    ref:String(++_rtRef),join_ref:_rtJoinRef}));
 }
 
 var _deferredInstall=null;
@@ -3962,6 +4223,7 @@ document.addEventListener("DOMContentLoaded",function(){
     <div class="lb-title">Leaderboard</div>
     <button class="lb-info-btn" onclick="document.getElementById('lbInfoModal').classList.toggle('open')" title="How scoring works">ℹ</button>
     <button class="lb-info-btn" onclick="openTrashTalk()" title="Trash Talk" id="trashTalkBtn" style="font-size:17px">🔥</button>
+    <button class="lb-info-btn" onclick="openChallengeInbox()" title="Challenges" id="chalInboxBtn" style="font-size:15px;position:relative">⚔️<span class="chal-badge" id="chalBadge" style="display:none"></span></button>
     <button class="lb-info-btn" onclick="openWheelSheet()" title="Spin the Wheel" style="font-size:17px">🎡</button>
     <button class="lb-info-btn" onclick="openEditName()" title="Edit your name & emoji" style="font-size:15px">✏️</button>
     <button class="lb-info-btn" onclick="loadLeaderboard()" title="Refresh"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
@@ -4003,6 +4265,24 @@ document.addEventListener("DOMContentLoaded",function(){
       <button class="lb-trash-send" id="trashSendBtn" onclick="fireTrashTalk()">Fire it off 🔥</button>
     </div>
     <div class="lb-trash-sent" id="trashSent" style="display:none">🔔 Fired off!</div>
+  </div>
+  <div class="lb-trash-sheet" id="chalSheet">
+    <button class="lb-trash-close" onclick="closeChalSheet()">✕</button>
+    <div id="chalComposeView" style="display:none">
+      <div class="lb-trash-persona" id="chalComposeTitle">⚔️ Challenge</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px" id="chalComposeEv"></div>
+      <div class="lb-trash-target-lbl">Battleground</div>
+      <div class="lb-trash-chips" id="chalFightChips"></div>
+      <div class="lb-trash-target-lbl">Stakes</div>
+      <div class="lb-trash-chips" id="chalStakeChips"></div>
+      <input class="lb-trash-input" id="chalStakeInput" placeholder="…or custom stakes" maxlength="60">
+      <button class="lb-trash-send" id="chalSendBtn" onclick="fireChallenge()">Throw down ⚔️</button>
+      <div class="lb-trash-sent" id="chalSent" style="display:none">⚔️ Challenge sent!</div>
+    </div>
+    <div id="chalInboxView" style="display:none">
+      <div class="lb-trash-persona">⚔️ Challenges</div>
+      <div id="chalList" style="max-height:55vh;overflow-y:auto;margin-top:10px"></div>
+    </div>
   </div>
   <div class="lb-wheel-sheet" id="wheelSheet">
     <button class="lb-wheel-edit" id="wheelEditBtn" onclick="showWheelView('manage')">⚙ Edit</button>
@@ -4081,16 +4361,18 @@ if('serviceWorker'in navigator){
   }).catch(function(){});
   // Also catch SW controller change (activated from waiting)
   navigator.serviceWorker.addEventListener('controllerchange',function(){window.location.reload();});
-  // Receive full trash talk message from service worker on notification tap
+  // Receive routed notification taps from the service worker
   navigator.serviceWorker.addEventListener('message',function(e){
     if(e.data&&e.data.type==='trash-talk'&&e.data.fullMessage)showIncomingTrashTalk(e.data.fullMessage);
+    if(e.data&&e.data.type==='challenge')openChallengeInbox();
   });
 }
-// If opened via notification tap when app was closed, check URL param for full message
+// If opened via notification tap when app was closed, check URL params
 (function(){
   var params=new URLSearchParams(window.location.search);
   var msg=params.get('trash');
   if(msg){history.replaceState(null,'',window.location.pathname);setTimeout(function(){showIncomingTrashTalk(decodeURIComponent(msg));},800);}
+  if(params.get('inbox')){history.replaceState(null,'',window.location.pathname);setTimeout(function(){openChallengeInbox();},800);}
 })();
 </script>
 </body>

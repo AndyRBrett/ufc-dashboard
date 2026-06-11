@@ -38,6 +38,11 @@ interface ReqBody {
   // endpoint as well guarantees they never receive their own notification.
   exclude_endpoint?: string | null;
   include_user_ids?: string[] | null;
+  // Optional client-routing hints forwarded into the push payload: `url` is a
+  // same-app relative link the SW opens on tap; `kind` lets the SW route the
+  // tap (e.g. "challenge" opens the challenge inbox instead of the trash sheet).
+  url?: string;
+  kind?: string;
   // type="register" fields
   user_id?: string;
   nickname?: string;
@@ -196,11 +201,15 @@ serve(async (req) => {
 
   webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
-  const livePayload = JSON.stringify({ title: body.title, body: body.body });
+  // Only relative same-app URLs may be forwarded — a push must never be able
+  // to deep-link the PWA to a foreign origin.
+  const safeUrl = body.url && /^\.\/(\?[\w=&-]*)?$/.test(body.url) ? body.url : undefined;
+  const routing = { url: safeUrl, kind: body.kind || undefined };
+  const livePayload = JSON.stringify({ title: body.title, body: body.body, ...routing });
   // When a spoiler-free variant is supplied, it is the default; the full
   // result only goes to subscribers who explicitly opted in to live results.
   const safePayload = body.safe_title
-    ? JSON.stringify({ title: body.safe_title, body: body.safe_body ?? "" })
+    ? JSON.stringify({ title: body.safe_title, body: body.safe_body ?? "", ...routing })
     : null;
   let sent = 0, failed = 0;
 
