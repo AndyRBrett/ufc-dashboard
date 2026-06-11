@@ -61,13 +61,15 @@ for the authoritative policy definitions. Keep RLS in version control: run
   inline-JS file on a static host; externalizing the JS to drop `'unsafe-inline'`
   is a future improvement. Note: `frame-ancestors` (clickjacking) can't be set via
   a `<meta>` tag — it requires an HTTP header, which GitHub Pages doesn't allow.
-- **Edge functions:** CORS allowlist, per-IP rate limiting (`ai-breakdown`), and
-  an anon-key bearer check on both functions. ⚠️ Known gap: the anon key is
-  public, so anyone can invoke `send-push` directly with arbitrary notification
-  content (the `notif_log` dedup only limits repeats per `event_date`+`type`,
-  and both are caller-supplied). Planned hardening: a `CRON_SECRET` bearer
-  requirement for broadcast sends, server-built payloads for client-triggered
-  types, and per-user rate limiting.
+- **Edge functions:** CORS allowlist, per-IP rate limiting (both functions), and
+  an anon-key bearer check on both functions. `send-push` additionally enforces
+  a notification-type allowlist, title/body length caps, and only forwards
+  relative same-app `url` values into push payloads. ⚠️ Remaining gap: the anon
+  key is public, so anyone can still invoke `send-push` with crafted content for
+  an allowed type (the `notif_log` dedup only limits repeats per
+  `event_date`+`type`, and both are caller-supplied). Planned hardening: a
+  `CRON_SECRET` bearer requirement for broadcast sends and server-built payloads
+  for client-triggered types.
 - **Secret scanning:** `gitleaks` runs in CI (`.github/workflows/secret-scan.yml`)
   on every push/PR. The public anon key is allowlisted in `.gitleaks.toml`; any
   other secret will fail the build.

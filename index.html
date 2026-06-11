@@ -101,6 +101,18 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .chal-status.w{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border)}
 .chal-status.l{background:var(--loss-dim);color:var(--loss);border:1px solid var(--loss-border)}
 .chal-status.n{background:var(--pending-bg);color:var(--muted);border:1px solid var(--border)}
+.feed-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden}
+.feed-hdr{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;user-select:none;-webkit-user-select:none}
+.feed-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.feed-new{background:var(--red);color:var(--on-accent);font-size:10px;font-weight:700;padding:1px 7px;border-radius:9px}
+.feed-arrow{margin-left:auto;font-size:9px;color:var(--muted);transition:transform .15s}
+.feed-body{display:none;border-top:1px solid var(--border);padding:4px 14px 10px}
+.feed-wrap.open .feed-body{display:block}
+.feed-wrap.open .feed-arrow{transform:rotate(180deg)}
+.feed-item{display:flex;gap:8px;align-items:baseline;padding:6px 0;font-size:12px;color:var(--text);border-bottom:1px solid var(--border)}
+.feed-item:last-child{border-bottom:none}
+.feed-item-txt{flex:1;min-width:0}
+.feed-item-ago{font-size:10px;color:var(--muted);flex-shrink:0}
 .lb-acc{font-size:11px;font-weight:600;color:var(--muted2);flex-shrink:0}
 .lb-next-picks{padding:8px 14px 10px;display:flex;flex-wrap:wrap;gap:5px;border-top:1px solid var(--border)}
 .lb-next-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;width:100%;margin-bottom:3px}
@@ -855,6 +867,14 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
   <div class="stat"><div class="sv" id="sbo">-</div><div class="sl">Bouts</div></div>
   <div class="stat"><div class="sv" id="picks-count">0</div><div class="sl">My Picks</div></div>
 </div>
+<div class="feed-wrap" id="activityFeed" style="display:none">
+  <div class="feed-hdr" onclick="toggleActivityFeed()">
+    <span class="feed-title">⚡ Activity</span>
+    <span class="feed-new" id="feedNew" style="display:none"></span>
+    <span class="feed-arrow">▼</span>
+  </div>
+  <div class="feed-body" id="feedBody"></div>
+</div>
 <div class="filter-wrap">
   <button class="ftab active" data-f="all" onclick="setFilter(this)">All</button>
   <button class="ftab" data-f="Heavyweight" onclick="setFilter(this)">Heavyweight</button>
@@ -1325,8 +1345,9 @@ function _sbFetchAll(query){
   return page(0,[]);
 }
 function fetchCommunityPicks(){
-  _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,nickname,updated_at&order=updated_at.asc,event_date.asc,f1.asc,f2.asc").then(function(rows){
+  _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,method,nickname,updated_at&order=updated_at.asc,event_date.asc,f1.asc,f2.asc").then(function(rows){
     if(!Array.isArray(rows))return;
+    _commRows=rows;   // activity feed derives lock-ins/streaks/belt from the same rows
     // One name = one vote per fight. Stale duplicate identities (a user whose
     // device storage reset gets a new user_id but keeps their nickname) leave
     // ghost rows that the leaderboard de-dupes by base name — mirror that here
@@ -1349,6 +1370,7 @@ function fetchCommunityPicks(){
     });
     communityPicks=fresh;
     render();
+    renderActivityFeed();
   }).catch(function(err){console.error("fetchCommunityPicks error",err);});
 }
 function computeStreak(){
@@ -3599,6 +3621,28 @@ function loadLeaderboard(isLive){
       var _hdrLbl=_allPre?"Next up":_allPost?"Latest":"Live";
       evHdr.textContent=_hdrLbl+": "+nextEv.name.replace("UFC Fight Night: ","").replace("UFC ","UFC ");
       body.appendChild(evHdr);
+      // Slacker nudges — call out anyone who hasn't picked before lock-in
+      if(_allPre&&!picksLocked(nextEv)){
+        var slackers=_slackersFor(nextEv,rows).filter(function(u){return u.user_id;});
+        if(slackers.length){
+          var nr=document.createElement("div");
+          nr.style.cssText="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:0 2px 12px";
+          var nlbl=document.createElement("span");
+          nlbl.style.cssText="font-size:11px;color:var(--muted);flex-shrink:0";
+          nlbl.textContent="⏰ "+slackers.length+" haven't picked:";
+          nr.appendChild(nlbl);
+          slackers.slice(0,8).forEach(function(s){
+            var nudged=wasNudged(nextEv.date,s.user_id);
+            var chipEl=document.createElement("span");
+            chipEl.className="lb-trash-chip"+(nudged?"":" selected");
+            chipEl.textContent=s.name.split(" ").pop()+(nudged?" ✓":" 👀");
+            chipEl.title=nudged?"Already nudged":"Tap to nudge "+s.name;
+            if(!nudged)(function(ss,el){chipEl.onclick=function(){sendNudge(nextEv,ss,el);};})(s,chipEl);
+            nr.appendChild(chipEl);
+          });
+          body.appendChild(nr);
+        }
+      }
     }
     // Tie-aware ranking by points: users on equal points share a rank (1,1,3,…),
     // so before any fights resolve — everyone on 0 pts — nobody gets a solo podium.
@@ -3758,7 +3802,7 @@ function loadLeaderboard(isLive){
       bhWrap.appendChild(bl);
       body.appendChild(bhWrap);
     }
-    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-07-10";body.appendChild(verEl);
+    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-1";body.appendChild(verEl);
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
   }).catch(function(err){
@@ -3778,6 +3822,7 @@ function fetchChallenges(){
   return _sbFetchAll("/rest/v1/challenges?select=*&order=created_at.desc").then(function(rows){
     _challenges=Array.isArray(rows)?rows:[];
     updateChalBadge();
+    renderActivityFeed();
     var sheet=document.getElementById("chalSheet");
     if(sheet&&sheet.classList.contains("open")&&document.getElementById("chalInboxView").style.display!=="none")renderChallengeInbox();
   }).catch(function(){});
@@ -3984,6 +4029,156 @@ function _rtBroadcastChal(){
     ref:String(++_rtRef),join_ref:_rtJoinRef}));
 }
 
+// ========================= Activity feed ⚡ =================================
+// Spoiler-safe ticker derived from data the app already fetches: pick lock-in
+// counts (never WHO was picked pre-event), streaks/belt from finished events
+// only, and challenge callouts. Refreshes with the 30s community-picks poll
+// and on realtime pick broadcasts.
+var _commRows=null;
+function _agoStr(t){
+  var d=Date.now()-t;
+  if(d<MIN_MS)return"now";
+  if(d<HOUR_MS)return Math.floor(d/MIN_MS)+"m";
+  if(d<DAY_MS)return Math.floor(d/HOUR_MS)+"h";
+  return Math.floor(d/DAY_MS)+"d";
+}
+function toggleActivityFeed(){
+  var w=document.getElementById("activityFeed");
+  var open=w.classList.toggle("open");
+  try{localStorage.setItem("ufc_feed_open",open?"1":"0");}catch(e){}
+  if(open){
+    try{localStorage.setItem("ufc_feed_seen",String(Date.now()));}catch(e){}
+    var fn=document.getElementById("feedNew");if(fn)fn.style.display="none";
+  }
+}
+function renderActivityFeed(){
+  var wrap=document.getElementById("activityFeed"),bodyEl=document.getElementById("feedBody");
+  if(!wrap||!bodyEl||!_commRows)return;
+  var items=[];
+  // Latest row per fight+voter (rows are updated_at ASCENDING — last write wins)
+  var byKey={};
+  _commRows.forEach(function(p){
+    var base=_lbBaseName(p.nickname)||"anon";
+    byKey[p.event_date+"|"+[p.f1,p.f2].sort().join("|")+"|"+base]=p;
+  });
+  var latest=Object.keys(byKey).map(function(k){return byKey[k];});
+  // 1) Lock-ins for the next card that isn't finished — counts only, no names of fighters
+  var nextEv=EVENTS.filter(function(e){return !_eventFinished(e.date);}).sort(function(a,b){return a.date<b.date?-1:1;})[0];
+  if(nextEv){
+    var lockins={};
+    latest.forEach(function(p){
+      if(p.event_date!==nextEv.date)return;
+      var base=_lbBaseName(p.nickname)||"anon";
+      var l=lockins[base]||(lockins[base]={name:p.nickname,n:0,t:0});
+      l.n++;l.name=p.nickname;
+      var t=Date.parse(p.updated_at||"")||0;if(t>l.t)l.t=t;
+    });
+    var evShort=nextEv.name.replace("UFC Fight Night: ","");
+    Object.keys(lockins).forEach(function(b){
+      var l=lockins[b];
+      items.push({t:l.t,txt:l.name+" locked in "+l.n+" pick"+(l.n!==1?"s":"")+" for "+evShort,emoji:"🥊"});
+    });
+  }
+  // 2) Streaks ≥3 from finished events only (no live-result leaks)
+  var perUser={};
+  latest.forEach(function(p){
+    if(!_eventFinished(p.event_date))return;
+    var res=_findFightResult(p.event_date,p.f1,p.f2);
+    if(!res)return;
+    var base=_lbBaseName(p.nickname)||"anon";
+    var u=perUser[base]||(perUser[base]={name:p.nickname,res:[]});
+    u.name=p.nickname;
+    u.res.push({d:p.event_date,w:res.winner===p.pick});
+  });
+  Object.keys(perUser).forEach(function(b){
+    var u=perUser[b];
+    u.res.sort(function(a,c){return a.d<c.d?-1:1;});
+    var s=0;
+    for(var i=u.res.length-1;i>=0;i--){if(u.res[i].w)s++;else break;}
+    if(s>=3)items.push({t:Date.parse(u.res[u.res.length-1].d)||0,txt:u.name+" is on a "+s+"-pick heater",emoji:"🔥"});
+  });
+  // 3) The belt
+  var belt=computeBeltLineage(_commRows);
+  if(belt&&belt.holderName){
+    var reign=belt.reigns[belt.reigns.length-1];
+    items.push({t:Date.parse(reign.date)||0,
+      txt:belt.holderName+" holds the belt"+(belt.defenses>0?" · "+belt.defenses+" defense"+(belt.defenses>1?"s":""):" — took it at "+reign.evName.replace("UFC Fight Night: ","")),
+      emoji:"🏆"});
+  }
+  // 4) Challenge callouts (creations/responses only — outcomes stay in the inbox)
+  _challenges.slice(0,10).forEach(function(c){
+    var t=Date.parse(c.created_at||"")||0;
+    if(Date.now()-t>14*DAY_MS)return;
+    var verb=c.status==="accepted"?" — it's on!":c.status==="declined"?" (declined)":"";
+    items.push({t:t,txt:c.challenger_name+" challenged "+c.target_name+" · "+c.stake+verb,emoji:"⚔️"});
+  });
+  items.sort(function(a,b){return b.t-a.t;});
+  items=items.slice(0,8);
+  // Pinned: who still owes picks for the next card (deep-links to the leaderboard)
+  if(nextEv&&!picksLocked(nextEv)){
+    var slk=_slackersFor(nextEv,_commRows);
+    if(slk.length)items.unshift({t:0,emoji:"⏰",link:"lb",
+      txt:slk.length+(slk.length===1?" friend hasn't":" friends haven't")+" picked for "+nextEv.name.replace("UFC Fight Night: ","")+" — nudge them"});
+  }
+  if(!items.length){wrap.style.display="none";return;}
+  wrap.style.display="";
+  bodyEl.innerHTML="";
+  items.forEach(function(it){
+    var row=document.createElement("div");row.className="feed-item";
+    var em=document.createElement("span");em.textContent=it.emoji;em.style.flexShrink="0";row.appendChild(em);
+    var tx=document.createElement("span");tx.className="feed-item-txt";tx.textContent=it.txt;row.appendChild(tx);
+    if(it.t){var ago=document.createElement("span");ago.className="feed-item-ago";ago.textContent=_agoStr(it.t);row.appendChild(ago);}
+    if(it.link==="lb"){row.style.cursor="pointer";row.onclick=function(){openLeaderboard();};}
+    bodyEl.appendChild(row);
+  });
+  var seen=0;try{seen=parseInt(localStorage.getItem("ufc_feed_seen")||"0",10)||0;}catch(e){}
+  var isOpen=wrap.classList.contains("open");
+  var fresh=items.filter(function(it){return it.t>seen;}).length;
+  var fn=document.getElementById("feedNew");
+  if(fn){fn.textContent=fresh+" new";fn.style.display=(fresh&&!isOpen)?"":"none";}
+}
+// Restore the open/collapsed state (collapsed by default)
+(function(){
+  try{if(localStorage.getItem("ufc_feed_open")==="1")document.getElementById("activityFeed").classList.add("open");}catch(e){}
+})();
+
+// ========================= Slacker nudges ⏰ ================================
+// Known users (picked within the last 60 days) who have nothing in for the
+// given event yet. Works on either the leaderboard or community row shapes.
+function _slackersFor(nextEv,rows){
+  if(!nextEv||!rows)return[];
+  var users={},cutoff=Date.now()-60*DAY_MS;
+  rows.forEach(function(p){
+    var base=_lbBaseName(p.nickname);if(!base)return;
+    var u=users[base]||(users[base]={base:base,name:p.nickname,user_id:null,_t:0,_uidT:-1,latestEv:"",hasNext:false});
+    var t=Date.parse(p.updated_at||"")||0;
+    if(t>=u._t){u._t=t;u.name=p.nickname;}
+    if(p.user_id&&t>=u._uidT){u._uidT=t;u.user_id=p.user_id;}
+    if(p.event_date>u.latestEv)u.latestEv=p.event_date;
+    if(p.event_date===nextEv.date)u.hasNext=true;
+  });
+  var me=_lbBaseName(userName);
+  return Object.keys(users).map(function(b){return users[b];}).filter(function(u){
+    return !u.hasNext&&u.base!==me&&(Date.parse(u.latestEv)||0)>=cutoff;
+  });
+}
+function _nudgedKey(evDate,uid){return "ufc_nudged_"+evDate+"_"+uid;}
+function wasNudged(evDate,uid){try{return localStorage.getItem(_nudgedKey(evDate,uid))==="1";}catch(e){return false;}}
+// The send-push notif_log dedup on (event_date, "nudge-"+uid) makes this
+// max-once-per-target-per-event globally — a {skipped:true} response means
+// someone else already nudged them for this card.
+function sendNudge(ev,u,chipEl){
+  if(!u.user_id)return;
+  var evShort=ev.name.replace("UFC Fight Night: ","");
+  _triggerPush(ev.date,"nudge-"+u.user_id,"⏰ Card locks soon!",
+    (userName||"A rival")+" noticed you have no picks for "+evShort+" yet 👀",USER_ID,{includeIds:[u.user_id]})
+  .then(function(res){
+    try{localStorage.setItem(_nudgedKey(ev.date,u.user_id),"1");}catch(e){}
+    toast(res&&res.skipped?"Someone already nudged them for this card":"Nudge sent 👀");
+    if(chipEl){chipEl.classList.remove("selected");chipEl.textContent=u.name.split(" ").pop()+" ✓";chipEl.onclick=null;}
+  });
+}
+
 var _deferredInstall=null;
 window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();_deferredInstall=e;var btn=document.getElementById("installBtn");if(btn)btn.style.display="flex";});
 
@@ -4023,6 +4218,8 @@ document.addEventListener("DOMContentLoaded",function(){
   setTimeout(syncAllPicks, 2000);
   setTimeout(fetchCommunityPicks, 3000);
   setInterval(fetchCommunityPicks, 30000);
+  setTimeout(fetchChallenges, 3500);
+  setInterval(fetchChallenges, 120000);
   document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")fetchCommunityPicks();});
   _authReady.then(_rtConnect);
   _rtOn(fetchCommunityPicks);

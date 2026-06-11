@@ -22,6 +22,30 @@ function corsHeaders(req: Request): Record<string, string> {
   };
 }
 
+// Lightweight per-IP rate limit so a runaway/abusive caller can't spam pushes.
+// In-memory and per-instance (resets on cold start) — a cheap guard, not a hard
+// global quota (same trade-off as ai-breakdown).
+const RATE_LIMIT = Number(Deno.env.get("RATE_LIMIT") ?? "20");             // requests...
+const RATE_WINDOW_MS = Number(Deno.env.get("RATE_WINDOW_MS") ?? "60000");  // ...per this window
+const _hits = new Map<string, number[]>();
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+  const recent = (_hits.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
+  recent.push(now);
+  _hits.set(ip, recent);
+  if (_hits.size > 5000) {
+    for (const [k, v] of _hits) {
+      if (v.every((t) => now - t >= RATE_WINDOW_MS)) _hits.delete(k);
+    }
+  }
+  return recent.length > RATE_LIMIT;
+}
+
+// Only notification types the app actually sends. Anything else is rejected so
+// the public anon key can't be used to mint arbitrary notification streams.
+const TYPE_RE = /^(main|prelim|register|result:.+|pick-(first|done)-.+|trash-talk-\d+|chal(-resp)?-[\w-]+|nudge-[\w-]+)$/;
+const MAX_TITLE = 120, MAX_BODY = 600;
+
 interface ReqBody {
   event_date?: string;
   type: string;
@@ -82,6 +106,18 @@ serve(async (req) => {
     body = await req.json();
   } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON" }), { status: 400, headers: CORS });
+  }
+
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  if (rateLimited(ip)) {
+    return new Response(JSON.stringify({ error: "Rate limit exceeded — slow down" }), { status: 429, headers: CORS });
+  }
+  if (!body.type || !TYPE_RE.test(body.type)) {
+    return new Response(JSON.stringify({ error: "Unknown notification type" }), { status: 400, headers: CORS });
+  }
+  if ((body.title ?? "").length > MAX_TITLE || (body.body ?? "").length > MAX_BODY ||
+      (body.safe_title ?? "").length > MAX_TITLE || (body.safe_body ?? "").length > MAX_BODY) {
+    return new Response(JSON.stringify({ error: "Notification content too long" }), { status: 400, headers: CORS });
   }
 
   const sbHeaders = {
