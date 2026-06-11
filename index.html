@@ -3818,7 +3818,7 @@ function loadLeaderboard(isLive){
       bhWrap.appendChild(bl);
       body.appendChild(bhWrap);
     }
-    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-4";body.appendChild(verEl);
+    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-5";body.appendChild(verEl);
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
   }).catch(function(err){
@@ -4188,17 +4188,18 @@ function _displayBase(nick){
   return (sp>=0?nn.slice(sp+1):nn).trim();
 }
 function wasNudged(evDate,uid){try{return localStorage.getItem(_nudgedKey(evDate,uid))==="1";}catch(e){return false;}}
-// The send-push notif_log dedup on (event_date, "nudge-"+uid) makes this
-// max-once-per-target-per-event globally — a {skipped:true} response means
-// someone else already nudged them for this card.
+// The send-push notif_log dedup on (event_date, "nudge-"+target+"-"+sender)
+// makes each sender's nudge max-once-per-target-per-event — so a slacker can
+// be nudged by every friend, but no one can spam them. A {skipped:true}
+// response means this same sender already nudged them for this card.
 function sendNudge(ev,u,chipEl){
   if(!u.user_id)return;
   var evShort=ev.name.replace("UFC Fight Night: ","");
-  _triggerPush(ev.date,"nudge-"+u.user_id,"⏰ Card locks soon!",
+  _triggerPush(ev.date,"nudge-"+u.user_id+"-"+(USER_ID||"anon"),"⏰ Card locks soon!",
     (userName||"A rival")+" noticed you have no picks for "+evShort+" yet 👀",USER_ID,{includeIds:[u.user_id]})
   .then(function(res){
     try{localStorage.setItem(_nudgedKey(ev.date,u.user_id),"1");}catch(e){}
-    toast(res&&res.skipped?"Someone already nudged them for this card":"Nudge sent 👀");
+    toast(res&&res.skipped?"You already nudged them for this card":"Nudge sent 👀");
     if(chipEl){chipEl.classList.remove("selected");chipEl.textContent=_displayBase(u.name)+" ✓";chipEl.onclick=null;}
   });
 }
