@@ -1351,7 +1351,7 @@ function _sbFetchAll(query){
   return page(0,[]);
 }
 function fetchCommunityPicks(){
-  _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,method,nickname,updated_at&order=updated_at.asc,event_date.asc,f1.asc,f2.asc").then(function(rows){
+  _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,method,nickname,user_id,updated_at&order=updated_at.asc,event_date.asc,f1.asc,f2.asc").then(function(rows){
     if(!Array.isArray(rows))return;
     _commRows=rows;   // activity feed derives lock-ins/streaks/belt from the same rows
     // One name = one vote per fight. Stale duplicate identities (a user whose
@@ -1678,6 +1678,16 @@ function _commitName(emoji,v){
   document.getElementById("nmBg").classList.remove("open");
   if(window._pp){window._pp();window._pp=null;}
   syncAllPicks();
+  // Rename ALL my existing rows too — syncAllPicks only re-upserts picks still
+  // in localStorage for current events, so without this a rename strands old
+  // rows under the previous nickname and forks your identity (separate
+  // leaderboard row, belt history, and nudge-target ghost).
+  _authReady.then(function(){
+    if(!USER_ID)return;
+    fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID),{
+      method:"PATCH",headers:_sbHeaders(),body:JSON.stringify({nickname:userName})
+    }).catch(function(){});
+  });
   if(wasEdit){
     toast("Profile updated!");
     var lbPanel=document.getElementById("lbPanel");
@@ -3808,7 +3818,7 @@ function loadLeaderboard(isLive){
       bhWrap.appendChild(bl);
       body.appendChild(bhWrap);
     }
-    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-3";body.appendChild(verEl);
+    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-4";body.appendChild(verEl);
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
   }).catch(function(err){
@@ -4165,7 +4175,9 @@ function _slackersFor(nextEv,rows){
   });
   var me=_lbBaseName(userName);
   return Object.keys(users).map(function(b){return users[b];}).filter(function(u){
-    return !u.hasNext&&u.base!==me&&(Date.parse(u.latestEv)||0)>=cutoff;
+    // Exclude myself by user_id as well as base name — old rows under a
+    // previous nickname share my user_id and must never make me a nudge target.
+    return !u.hasNext&&u.base!==me&&u.user_id!==USER_ID&&(Date.parse(u.latestEv)||0)>=cutoff;
   });
 }
 function _nudgedKey(evDate,uid){return "ufc_nudged_"+evDate+"_"+uid;}
