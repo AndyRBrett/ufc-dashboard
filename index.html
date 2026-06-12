@@ -44,14 +44,15 @@ body[data-theme="usa"]{--bg:#070a13;--card:#0e1322;--card2:#161d33;--surface:#16
    stripes, NOT three solid bands which reads French), tiled faded white stars in the
    page + hero backgrounds, and an eagle beside the wordmark. */
 body[data-theme="usa"] .hdr::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:linear-gradient(90deg,#3c6dd6 0 17%,transparent 17%),repeating-linear-gradient(90deg,#b31942 0 13px,#e7ebf5 13px 26px)}
-body[data-theme="usa"] .logo::after{content:"🦅";font-size:22px;line-height:1}
 body[data-theme="usa"] .hero{background:
   repeating-linear-gradient(180deg,rgba(255,46,68,.05) 0 7px,transparent 7px 14px),
   linear-gradient(180deg,rgba(91,140,255,.09) 0%,transparent 100%)}
-/* Full-page faded star field overlay + shooting stars (USA theme only). Fixed,
-   non-interactive, below the sticky header (z 99) and all sheets/modals. */
+/* Full-page faded star field overlay + shooting stars (USA theme only). Spans the
+   whole document so stars scroll with the content; non-interactive, below the
+   sticky header (z 99) and all sheets/modals. */
 .usa-stars{display:none}
-body[data-theme="usa"] .usa-stars{display:block;position:fixed;inset:0;pointer-events:none;z-index:5;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='%23ffffff'%3E%3Cpath opacity='.12' transform='translate(20,30) scale(.95)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.07' transform='translate(120,15) scale(.6)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.09' transform='translate(196,62) scale(.8)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.06' transform='translate(60,110) scale(.55)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.11' transform='translate(156,140) scale(.9)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.07' transform='translate(28,190) scale(.65)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.05' transform='translate(204,206) scale(.5)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3C/g%3E%3C/svg%3E")}
+body[data-theme="usa"]{position:relative}
+body[data-theme="usa"] .usa-stars{display:block;position:absolute;inset:0;pointer-events:none;z-index:5;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='%23ffffff'%3E%3Cpath opacity='.12' transform='translate(20,30) scale(.95)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.07' transform='translate(120,15) scale(.6)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.09' transform='translate(196,62) scale(.8)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.06' transform='translate(60,110) scale(.55)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.11' transform='translate(156,140) scale(.9)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.07' transform='translate(28,190) scale(.65)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.05' transform='translate(204,206) scale(.5)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3C/g%3E%3C/svg%3E")}
 .usa-shooting{position:absolute;width:110px;height:2px;border-radius:2px;background:linear-gradient(90deg,rgba(255,255,255,.85),rgba(255,255,255,0));opacity:0;animation:usaShoot 1.1s ease-out forwards}
 @keyframes usaShoot{0%{opacity:0;transform:rotate(var(--ang)) translateX(0)}12%{opacity:1}100%{opacity:0;transform:rotate(var(--ang)) translateX(260px)}}
 /* ===== THEME: APEX NEON — near-black, electric teal & magenta ===== */
@@ -201,8 +202,9 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-wheel-hint{text-align:center;font-size:12px;color:var(--muted);margin-bottom:8px;display:none}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 .logo{display:flex;align-items:center;gap:9px}
-.logo-oct{width:36px;height:36px;background:var(--red);clip-path:polygon(29.3% 0%,70.7% 0%,100% 29.3%,100% 70.7%,70.7% 100%,29.3% 100%,0% 70.7%,0% 29.3%);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:16px;color:var(--on-accent);box-shadow:0 0 14px var(--accent-glow)}
-.logo-text{font-family:Bebas Neue,sans-serif;font-size:17px;letter-spacing:.12em;display:flex;flex-direction:column;line-height:1.02}
+.logo-eagle{background:none;border:none;font-size:32px;line-height:1;cursor:pointer;padding:0}
+.logo-text{font-family:Bebas Neue,sans-serif;font-size:25px;letter-spacing:.08em;white-space:nowrap}
+@media (max-width:350px){.hdr{padding:0 12px}.logo{gap:6px}.logo-eagle{font-size:28px}.logo-text{font-size:18px}.hdr-right{gap:6px}.btn-icon{min-width:44px;padding:0 6px}}
 .logo-text span{color:var(--red)}
 .hdr-right{display:flex;align-items:center;gap:8px}
 .btn-icon{background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted2);min-width:54px;height:50px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 9px;transition:color .15s,background .15s}
@@ -626,8 +628,9 @@ body.theme-fade,body.theme-fade *{transition:background-color .35s ease,color .3
 .ev-reveal{animation:evReveal .38s ease-out both}
 @keyframes cdTick{from{opacity:.35;transform:translateY(-3px)}to{opacity:1;transform:none}}
 .cd-tick .cd-num{animation:cdTick .28s ease-out}
-@keyframes logoBreathe{0%,100%{box-shadow:0 0 10px var(--accent-glow)}50%{box-shadow:0 0 22px var(--accent-glow)}}
-.logo-oct{animation:logoBreathe 3.6s ease-in-out infinite}
+@keyframes logoBreathe{0%,100%{filter:drop-shadow(0 0 3px var(--accent-glow))}50%{filter:drop-shadow(0 0 9px var(--accent-glow))}}
+.logo-eagle{animation:logoBreathe 3.6s ease-in-out infinite}
+.logo-eagle:active{transform:scale(.88)}
 @keyframes bandSheen{0%{transform:translateX(-130%) skewX(-18deg)}20%,100%{transform:translateX(260%) skewX(-18deg)}}
 .ev-band:not(.ev-future){overflow:hidden}
 .ev-band:not(.ev-future)::after{content:"";position:absolute;top:0;bottom:0;left:0;width:45%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.07),transparent);pointer-events:none;animation:bandSheen 7s ease-in-out 1.2s infinite}
@@ -806,7 +809,7 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
 <div class="toast" id="toast"></div>
 <div class="fn-banner" id="fnBanner"><div class="fn-banner-dot"></div><div class="fn-banner-text" id="fnBannerText">FIGHT NIGHT</div><div class="fn-banner-dot"></div><div id="fnLastChecked" style="font-size:10px;opacity:.6;margin-left:8px;font-family:Inter,sans-serif;letter-spacing:.04em"></div></div>
 <header class="hdr">
-  <div class="logo"><div class="logo-oct">UFC</div><span class="logo-text">FIGHT <span>CARDS</span></span></div>
+  <div class="logo"><button class="logo-eagle" onclick="eagleCry()" title="Freedom" aria-label="Play eagle screech">🦅</button><span class="logo-text">FIGHT <span>CARDS</span></span></div>
   <div class="hdr-right">
     <!-- Leaderboard -->
     <button class="btn-icon" onclick="openLeaderboard()" title="Leaderboard">
@@ -1460,6 +1463,36 @@ function setTheme(t){
   applyTheme(t);try{localStorage.setItem("ufc_theme",t);}catch(e){}
 }
 applyTheme(document.body.getAttribute("data-theme")||"octagon");
+// Synthesized eagle screech (the classic movie "eagle" is a red-tailed hawk:
+// a raspy descending whistle). WebAudio so it needs no audio asset and works
+// offline; created/resumed inside the click gesture for iOS autoplay rules.
+var _eagleCtx=null;
+function eagleCry(){
+  try{
+    if(!_eagleCtx)_eagleCtx=new (window.AudioContext||window.webkitAudioContext)();
+    var ctx=_eagleCtx;
+    if(ctx.state==="suspended")ctx.resume();
+    var t=ctx.currentTime,dur=1.1;
+    var o=ctx.createOscillator();o.type="sawtooth";
+    o.frequency.setValueAtTime(2600,t);
+    o.frequency.exponentialRampToValueAtTime(2100,t+.18);
+    o.frequency.exponentialRampToValueAtTime(850,t+dur);
+    // fast vibrato gives the cry its raspy shake
+    var vib=ctx.createOscillator();vib.frequency.value=34;
+    var vg=ctx.createGain();vg.gain.value=130;
+    vib.connect(vg);vg.connect(o.frequency);
+    var bp=ctx.createBiquadFilter();bp.type="bandpass";bp.Q.value=2.2;
+    bp.frequency.setValueAtTime(2400,t);
+    bp.frequency.exponentialRampToValueAtTime(950,t+dur);
+    var g=ctx.createGain();
+    g.gain.setValueAtTime(.0001,t);
+    g.gain.exponentialRampToValueAtTime(.45,t+.05);
+    g.gain.setValueAtTime(.45,t+dur*.55);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(bp);bp.connect(g);g.connect(ctx.destination);
+    o.start(t);vib.start(t);o.stop(t+dur);vib.stop(t+dur);
+  }catch(e){}
+}
 // Random shooting stars across the page while the USA theme is active.
 setInterval(function(){
   if(document.hidden||document.body.getAttribute("data-theme")!=="usa")return;
@@ -1468,7 +1501,8 @@ setInterval(function(){
   if(!wrap)return;
   var s=document.createElement("div");
   s.className="usa-shooting";
-  s.style.top=(Math.random()*70+5)+"%";
+  // overlay spans the whole document, so anchor the streak inside the current viewport
+  s.style.top=Math.round(window.scrollY+(Math.random()*.7+.05)*window.innerHeight)+"px";
   s.style.left=(Math.random()*60+5)+"%";
   s.style.setProperty("--ang",(20+Math.random()*30)+"deg");
   s.addEventListener("animationend",function(){s.remove();});
