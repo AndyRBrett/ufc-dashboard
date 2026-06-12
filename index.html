@@ -217,23 +217,25 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .fn-banner-text{font-family:Bebas Neue,sans-serif;font-size:15px;letter-spacing:.12em;color:var(--on-accent)}
 .fn-banner-dot{width:7px;height:7px;border-radius:50%;background:var(--on-accent);animation:blink 1s infinite;flex-shrink:0}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-.hero{padding:22px 16px 18px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,color-mix(in srgb,var(--red) 5%,transparent) 0%,transparent 100%)}
-.hero h1{font-family:Bebas Neue,sans-serif;font-size:36px;letter-spacing:.07em;line-height:1}
+.hero{padding:10px 16px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,color-mix(in srgb,var(--red) 5%,transparent) 0%,transparent 100%)}
+.hero-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.hero h1{font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:.07em;line-height:1;white-space:nowrap}
 .hero h1 span{color:var(--red)}
-.hero-sub{font-size:12px;color:var(--muted);margin-top:5px;letter-spacing:.01em}
-.cd-wrap{margin-top:14px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow-card)}
-.cd-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;font-weight:500}
-.cd-event{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cd-timer{display:flex;align-items:center;gap:8px}
-.cd-unit{text-align:center;min-width:42px}
-.cd-num{font-family:Bebas Neue,sans-serif;font-size:30px;line-height:1;color:var(--red)}
+.hero-sub{font-size:12px;color:var(--muted);letter-spacing:.01em}
+.cd-wrap{margin-top:8px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:var(--shadow-card)}
+.cd-info{min-width:0}
+.cd-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:2px;font-weight:500}
+.cd-event{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cd-timer{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.cd-unit{text-align:center;min-width:30px}
+.cd-num{font-family:Bebas Neue,sans-serif;font-size:20px;line-height:1;color:var(--red)}
 .cd-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
-.cd-sep{font-family:Bebas Neue,sans-serif;font-size:22px;color:var(--border2);padding-bottom:12px}
+.cd-sep{font-family:Bebas Neue,sans-serif;font-size:16px;color:var(--border2);padding-bottom:10px}
 .cd-live{display:inline-block;background:var(--red-dim);color:var(--red);border:1px solid var(--red-border);font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;letter-spacing:.04em}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-bottom:1px solid var(--border)}
-.stat{padding:12px 6px;text-align:center;border-right:1px solid var(--border)}
+.stat{padding:8px 6px;text-align:center;border-right:1px solid var(--border)}
 .stat:last-child{border-right:none}
-.sv{font-family:Bebas Neue,sans-serif;font-size:24px;letter-spacing:.05em;line-height:1;color:var(--text)}
+.sv{font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.05em;line-height:1;color:var(--text)}
 .sl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;font-weight:500}
 .filter-wrap{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;background:var(--card)}
 .filter-wrap::-webkit-scrollbar{display:none}
@@ -859,11 +861,15 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
   </div>
 </header>
 <section class="hero">
-  <h1>UPCOMING<br><span>FIGHT CARDS</span></h1>
-  <p class="hero-sub">Last updated: <span id="updateDate">Loading...</span></p>
+  <div class="hero-row">
+    <h1>UPCOMING <span>FIGHT CARDS</span></h1>
+    <p class="hero-sub">Last updated: <span id="updateDate">Loading...</span></p>
+  </div>
   <div class="cd-wrap" id="cd-wrap" style="display:none">
-    <div class="cd-label">Next Main Card</div>
-    <div class="cd-event" id="cd-event"></div>
+    <div class="cd-info">
+      <div class="cd-label">Next Main Card</div>
+      <div class="cd-event" id="cd-event"></div>
+    </div>
     <div class="cd-timer" id="cd-timer"></div>
   </div>
 </section>
@@ -1457,7 +1463,7 @@ function updateCountdown(){
   var diff=target-now;
   var wrap=document.getElementById("cd-wrap");
   if(!wrap)return;
-  wrap.style.display="block";
+  wrap.style.display="flex";
   document.getElementById("cd-event").textContent=ev.name;
   var timer=document.getElementById("cd-timer");
   timer.innerHTML="";
