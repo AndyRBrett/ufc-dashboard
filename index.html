@@ -962,8 +962,30 @@ function _authPost(path,body){return fetch(SUPABASE_URL+path,{method:"POST",head
 function _signInAnon(){return _authPost("/auth/v1/signup",{data:{},gotrue_meta_security:{}});}
 function _refreshToken(rt){return _authPost("/auth/v1/token?grant_type=refresh_token",{refresh_token:rt});}
 function _adoptSession(raw,prev){var ns=_normSession(raw,prev);_saveSession(ns);_applySession(ns);_scheduleRefresh(ns);return USER_ID;}
-function _scheduleRefresh(s){if(_refreshTimer)clearTimeout(_refreshTimer);var now=Math.floor(Date.now()/1000);var delay=Math.max(30,(s.expires_at||now+3600)-now-120)*1000;_refreshTimer=setTimeout(function(){if(s.refresh_token)_refreshToken(s.refresh_token).then(function(r){_adoptSession(r,s);}).catch(function(){});},delay);}
-function _ensureAuth(){var stored=null;try{stored=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");}catch(e){}var now=Math.floor(Date.now()/1000);if(stored&&stored.access_token&&!stored.user_id){return fetch(SUPABASE_URL+"/auth/v1/user",{headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+stored.access_token}}).then(function(r){if(!r.ok)throw new Error("user "+r.status);return r.json();}).then(function(u){if(!u||!u.id)throw new Error("no user in response");stored.user_id=u.id;stored.email=u.email||null;_saveSession(stored);_applySession(stored);_scheduleRefresh(stored);return USER_ID;}).catch(function(){return _signInAnon().then(function(r){return _adoptSession(r,null);});});}if(stored&&stored.access_token&&stored.user_id){_applySession(stored);if(stored.expires_at>now+60){_scheduleRefresh(stored);return Promise.resolve(USER_ID);}if(stored.refresh_token)return _refreshToken(stored.refresh_token).then(function(r){return _adoptSession(r,stored);}).catch(function(){return _signInAnon().then(function(r){return _adoptSession(r,null);});});}return _signInAnon().then(function(r){return _adoptSession(r,null);});}
+function _scheduleRefresh(s){if(_refreshTimer)clearTimeout(_refreshTimer);var now=Math.floor(Date.now()/1000);var delay=Math.max(30,(s.expires_at||now+3600)-now-120)*1000;_refreshTimer=setTimeout(function(){if(s.refresh_token)_refreshToken(s.refresh_token).then(function(r){_adoptSession(r,s);}).catch(function(){setTimeout(_ensureFreshToken,30000);});},delay);}
+// Refresh the access token when the stored session is expired or about to be.
+// Safe to call before any REST hit: resolves immediately when nothing needs
+// doing, and concurrent callers share one in-flight refresh. On failure the
+// stale JWT is dropped so requests fall back to the anon key — public reads
+// (leaderboard, community picks) must keep working rather than 401.
+var _refreshInflight=null;
+function _ensureFreshToken(){
+  var s=null;try{s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");}catch(e){}
+  if(!s||!s.access_token||!s.user_id||!s.refresh_token)return Promise.resolve();
+  var now=Math.floor(Date.now()/1000);
+  if((s.expires_at||0)>now+60){if(!_sbToken)_applySession(s);return Promise.resolve();}
+  if(!_refreshInflight)_refreshInflight=_refreshToken(s.refresh_token)
+    .then(function(r){_adoptSession(r,s);})
+    .catch(function(err){
+      _sbToken=null;
+      // The server rejected the refresh token outright — stop retrying it on
+      // every fetch; _ensureAuth re-signs-in on the next launch.
+      if(/^auth 4\d\d/.test((err&&err.message)||"")){s.refresh_token=null;_saveSession(s);}
+    })
+    .then(function(){_refreshInflight=null;});
+  return _refreshInflight;
+}
+function _ensureAuth(){var stored=null;try{stored=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");}catch(e){}var now=Math.floor(Date.now()/1000);if(stored&&stored.access_token&&!stored.user_id){return fetch(SUPABASE_URL+"/auth/v1/user",{headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+stored.access_token}}).then(function(r){if(!r.ok)throw new Error("user "+r.status);return r.json();}).then(function(u){if(!u||!u.id)throw new Error("no user in response");stored.user_id=u.id;stored.email=u.email||null;_saveSession(stored);_applySession(stored);_scheduleRefresh(stored);return USER_ID;}).catch(function(){return _signInAnon().then(function(r){return _adoptSession(r,null);});});}if(stored&&stored.access_token&&stored.user_id){if(stored.expires_at>now+60){_applySession(stored);_scheduleRefresh(stored);return Promise.resolve(USER_ID);}USER_ID=stored.user_id;if(stored.refresh_token)return _refreshToken(stored.refresh_token).then(function(r){return _adoptSession(r,stored);}).catch(function(err){if(/^auth 4\d\d/.test((err&&err.message)||""))return _signInAnon().then(function(r){return _adoptSession(r,null);});return USER_ID;});}return _signInAnon().then(function(r){return _adoptSession(r,null);});}
 // Never reject: if anonymous sign-in is unavailable (e.g. not yet enabled in the
 // dashboard), fall back to a local id + anon key so the app keeps working during
 // rollout. Owner-scoped writes only take effect once the RLS migration is applied.
@@ -1373,19 +1395,23 @@ function reconcileMyPicks(){
 // ORDER (ideally ending in a unique column combo) or rows can shift between pages.
 function _sbFetchAll(query){
   var PAGE=1000;
-  function page(from,acc){
+  function page(from,acc,retried){
     return fetch(SUPABASE_URL+query,{
       headers:{apikey:SUPABASE_ANON,Authorization:_authBearer(),Range:from+"-"+(from+PAGE-1)}
     }).then(function(r){
+      // A stale user JWT (e.g. PWA resumed after the token expired) 401s even
+      // though these reads are public — drop it and retry once on the anon key
+      // while a refresh runs in the background.
+      if(r.status===401&&!retried){_sbToken=null;_ensureFreshToken();return page(from,acc,true);}
       if(!r.ok)throw new Error("HTTP "+r.status);
-      return r.json();
-    }).then(function(rows){
-      if(!Array.isArray(rows))return acc;
-      acc=acc.concat(rows);
-      return rows.length<PAGE?acc:page(from+PAGE,acc);
+      return r.json().then(function(rows){
+        if(!Array.isArray(rows))return acc;
+        acc=acc.concat(rows);
+        return rows.length<PAGE?acc:page(from+PAGE,acc,retried);
+      });
     });
   }
-  return page(0,[]);
+  return _ensureFreshToken().then(function(){return page(0,[],false);});
 }
 function fetchCommunityPicks(){
   _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,method,nickname,user_id,updated_at&order=updated_at.asc,event_date.asc,f1.asc,f2.asc").then(function(rows){
@@ -3946,7 +3972,7 @@ function loadLeaderboard(isLive){
       bhWrap.appendChild(bl);
       body.appendChild(bhWrap);
     }
-    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-11-10";body.appendChild(verEl);
+    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-12-2";body.appendChild(verEl);
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
   }).catch(function(err){
@@ -4420,7 +4446,9 @@ document.addEventListener("DOMContentLoaded",function(){
   setInterval(fetchCommunityPicks, 30000);
   setTimeout(fetchChallenges, 3500);
   setInterval(fetchChallenges, 120000);
-  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")fetchCommunityPicks();});
+  // On foreground (iOS PWAs resume from a frozen state where the refresh timer
+  // never fired) get a fresh token first so nothing fetches with an expired JWT.
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")_ensureFreshToken().then(fetchCommunityPicks);});
   _authReady.then(_rtConnect);
   _rtOn(fetchCommunityPicks);
   _rtOn(function(){
