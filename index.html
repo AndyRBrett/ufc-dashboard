@@ -202,9 +202,12 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-wheel-hint{text-align:center;font-size:12px;color:var(--muted);margin-bottom:8px;display:none}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 .logo{display:flex;align-items:center;gap:9px}
-.logo-eagle{background:none;border:none;font-size:32px;line-height:1;cursor:pointer;padding:0}
+.logo-oct{width:36px;height:36px;background:var(--red);clip-path:polygon(29.3% 0%,70.7% 0%,100% 29.3%,100% 70.7%,70.7% 100%,29.3% 100%,0% 70.7%,0% 29.3%);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:16px;color:var(--on-accent);box-shadow:0 0 14px var(--accent-glow)}
+.logo-eagle{background:none;border:none;font-size:32px;line-height:1;cursor:pointer;padding:0;display:none}
+body[data-theme="usa"] .logo-oct{display:none}
+body[data-theme="usa"] .logo-eagle{display:block}
 .logo-text{font-family:Bebas Neue,sans-serif;font-size:25px;letter-spacing:.08em;white-space:nowrap}
-@media (max-width:350px){.hdr{padding:0 12px}.logo{gap:6px}.logo-eagle{font-size:28px}.logo-text{font-size:18px}.hdr-right{gap:6px}.btn-icon{min-width:44px;padding:0 6px}}
+@media (max-width:350px){.hdr{padding:0 12px}.logo{gap:6px}.logo-oct{width:32px;height:32px;font-size:14px}.logo-eagle{font-size:28px}.logo-text{font-size:18px}.hdr-right{gap:6px}.btn-icon{min-width:44px;padding:0 6px}}
 .logo-text span{color:var(--red)}
 .hdr-right{display:flex;align-items:center;gap:8px}
 .btn-icon{background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted2);min-width:54px;height:50px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 9px;transition:color .15s,background .15s}
@@ -628,8 +631,10 @@ body.theme-fade,body.theme-fade *{transition:background-color .35s ease,color .3
 .ev-reveal{animation:evReveal .38s ease-out both}
 @keyframes cdTick{from{opacity:.35;transform:translateY(-3px)}to{opacity:1;transform:none}}
 .cd-tick .cd-num{animation:cdTick .28s ease-out}
-@keyframes logoBreathe{0%,100%{filter:drop-shadow(0 0 3px var(--accent-glow))}50%{filter:drop-shadow(0 0 9px var(--accent-glow))}}
-.logo-eagle{animation:logoBreathe 3.6s ease-in-out infinite}
+@keyframes logoBreathe{0%,100%{box-shadow:0 0 10px var(--accent-glow)}50%{box-shadow:0 0 22px var(--accent-glow)}}
+.logo-oct{animation:logoBreathe 3.6s ease-in-out infinite}
+@keyframes eagleBreathe{0%,100%{filter:drop-shadow(0 0 3px var(--accent-glow))}50%{filter:drop-shadow(0 0 9px var(--accent-glow))}}
+.logo-eagle{animation:eagleBreathe 3.6s ease-in-out infinite}
 .logo-eagle:active{transform:scale(.88)}
 @keyframes bandSheen{0%{transform:translateX(-130%) skewX(-18deg)}20%,100%{transform:translateX(260%) skewX(-18deg)}}
 .ev-band:not(.ev-future){overflow:hidden}
@@ -809,7 +814,7 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
 <div class="toast" id="toast"></div>
 <div class="fn-banner" id="fnBanner"><div class="fn-banner-dot"></div><div class="fn-banner-text" id="fnBannerText">FIGHT NIGHT</div><div class="fn-banner-dot"></div><div id="fnLastChecked" style="font-size:10px;opacity:.6;margin-left:8px;font-family:Inter,sans-serif;letter-spacing:.04em"></div></div>
 <header class="hdr">
-  <div class="logo"><button class="logo-eagle" onclick="eagleCry()" title="Freedom" aria-label="Play eagle screech">🦅</button><span class="logo-text">FIGHT <span>CARDS</span></span></div>
+  <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry()" title="Freedom" aria-label="Play eagle screech">🦅</button><span class="logo-text">FIGHT <span>CARDS</span></span></div>
   <div class="hdr-right">
     <!-- Leaderboard -->
     <button class="btn-icon" onclick="openLeaderboard()" title="Leaderboard">
