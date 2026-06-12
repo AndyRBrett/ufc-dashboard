@@ -1832,6 +1832,7 @@ function _commitName(emoji,v){
   document.getElementById("nmBg").classList.remove("open");
   if(window._pp){window._pp();window._pp=null;}
   syncAllPicks();
+  if(typeof renderActivityFeed==="function")renderActivityFeed();  // feed names resolve through _freshNick — repaint with the new identity now
   // Rename ALL my existing rows too — syncAllPicks only re-upserts picks still
   // in localStorage for current events, so without this a rename strands old
   // rows under the previous nickname and forks your identity (separate
@@ -3515,6 +3516,21 @@ function _lbBaseName(nick){
   var nn=nick||"";var sp=nn.indexOf(" ");
   return (sp>=0?nn.slice(sp+1):nn).trim().toLowerCase();
 }
+// Challenge rows freeze challenger/target nicknames at creation time (and RLS
+// only lets the target touch status/responded_at), but a profile edit renames
+// every picks row. Resolve the freshest display name for the same base
+// identity so old challenges don't keep showing a stale avatar. My own name
+// short-circuits to userName so an edit shows instantly, before any refetch.
+function _freshNick(name){
+  var base=_lbBaseName(name);
+  if(!base)return name;
+  if(userName&&_lbBaseName(userName)===base)return userName;
+  if(_lbRows)for(var i=0;i<_lbRows.length;i++)            // updated_at DESC — first hit is freshest
+    if(_lbBaseName(_lbRows[i].nickname)===base)return _lbRows[i].nickname;
+  if(_commRows)for(var j=_commRows.length-1;j>=0;j--)     // updated_at ASC — last hit is freshest
+    if(_lbBaseName(_commRows[j].nickname)===base)return _commRows[j].nickname;
+  return name;
+}
 
 // Resolve a finished fight by event date + fighter pair: the live EVENTS window
 // first, then the permanent RESULTS_ARCHIVE for cards that have aged out.
@@ -3972,7 +3988,7 @@ function loadLeaderboard(isLive){
       bhWrap.appendChild(bl);
       body.appendChild(bhWrap);
     }
-    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-12-2";body.appendChild(verEl);
+    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-12-3";body.appendChild(verEl);
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
   }).catch(function(err){
@@ -4090,7 +4106,7 @@ function renderChallengeInbox(){
   mine.slice(0,25).forEach(function(c){
     var r=resolveChallenge(c);
     var incoming=_chalIncoming(c);
-    var rival=incoming?c.challenger_name:c.target_name;
+    var rival=_freshNick(incoming?c.challenger_name:c.target_name);
     var row=document.createElement("div");row.className="chal-row";
     var top=document.createElement("div");top.className="chal-row-top";
     var dir=document.createElement("span");dir.textContent=incoming?"⬇️":"⬆️";dir.title=incoming?"They challenged you":"You challenged them";dir.style.fontSize="11px";top.appendChild(dir);
@@ -4292,7 +4308,7 @@ function renderActivityFeed(){
     var t=Date.parse(c.created_at||"")||0;
     if(Date.now()-t>14*DAY_MS)return;
     var verb=c.status==="accepted"?" — it's on!":c.status==="declined"?" (declined)":"";
-    items.push({t:t,txt:c.challenger_name+" challenged "+c.target_name+" · "+c.stake+verb,emoji:"⚔️"});
+    items.push({t:t,txt:_freshNick(c.challenger_name)+" challenged "+_freshNick(c.target_name)+" · "+c.stake+verb,emoji:"⚔️"});
   });
   items.sort(function(a,b){return b.t-a.t;});
   items=items.slice(0,8);
