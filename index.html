@@ -45,11 +45,15 @@ body[data-theme="usa"]{--bg:#070a13;--card:#0e1322;--card2:#161d33;--surface:#16
    page + hero backgrounds, and an eagle beside the wordmark. */
 body[data-theme="usa"] .hdr::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:linear-gradient(90deg,#3c6dd6 0 17%,transparent 17%),repeating-linear-gradient(90deg,#b31942 0 13px,#e7ebf5 13px 26px)}
 body[data-theme="usa"] .logo::after{content:"🦅";font-size:22px;line-height:1}
-body[data-theme="usa"]{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cg fill='%23ffffff'%3E%3Cpath opacity='.10' transform='translate(24,28) scale(.95)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.06' transform='translate(138,76) scale(.55)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.08' transform='translate(58,148) scale(.7)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.05' transform='translate(168,182) scale(.5)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3C/g%3E%3C/svg%3E")}
 body[data-theme="usa"] .hero{background:
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cg fill='%23ffffff'%3E%3Cpath opacity='.13' transform='translate(24,28) scale(.95)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.08' transform='translate(138,76) scale(.55)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.10' transform='translate(58,148) scale(.7)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.07' transform='translate(168,182) scale(.5)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3C/g%3E%3C/svg%3E"),
   repeating-linear-gradient(180deg,rgba(255,46,68,.05) 0 7px,transparent 7px 14px),
   linear-gradient(180deg,rgba(91,140,255,.09) 0%,transparent 100%)}
+/* Full-page faded star field overlay + shooting stars (USA theme only). Fixed,
+   non-interactive, below the sticky header (z 99) and all sheets/modals. */
+.usa-stars{display:none}
+body[data-theme="usa"] .usa-stars{display:block;position:fixed;inset:0;pointer-events:none;z-index:5;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='%23ffffff'%3E%3Cpath opacity='.12' transform='translate(20,30) scale(.95)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.07' transform='translate(120,15) scale(.6)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.09' transform='translate(196,62) scale(.8)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.06' transform='translate(60,110) scale(.55)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.11' transform='translate(156,140) scale(.9)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.07' transform='translate(28,190) scale(.65)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3Cpath opacity='.05' transform='translate(204,206) scale(.5)' d='M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z'/%3E%3C/g%3E%3C/svg%3E")}
+.usa-shooting{position:absolute;width:110px;height:2px;border-radius:2px;background:linear-gradient(90deg,rgba(255,255,255,.85),rgba(255,255,255,0));opacity:0;animation:usaShoot 1.1s ease-out forwards}
+@keyframes usaShoot{0%{opacity:0;transform:rotate(var(--ang)) translateX(0)}12%{opacity:1}100%{opacity:0;transform:rotate(var(--ang)) translateX(260px)}}
 /* ===== THEME: APEX NEON — near-black, electric teal & magenta ===== */
 body[data-theme="neon"]{--bg:#050608;--card:#0b0e14;--card2:#121723;--surface:#121723;--future-bg:#080a10;--future-border:rgba(22,224,207,.1);--text:#e8f6f6;--muted:#7c8a99;--muted2:#aebecf;--border:rgba(22,224,207,.1);--border2:rgba(22,224,207,.2);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(22,224,207,.07);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:rgba(5,6,8,.95);--red:#16e0cf;--red-dim:rgba(22,224,207,.1);--red-border:rgba(22,224,207,.35);--gold:#f23bd4;--gold-dim:rgba(242,59,212,.12);--gold-border:rgba(242,59,212,.35);--green:#3df08c;--green-dim:rgba(61,240,140,.12);--green-border:rgba(61,240,140,.3);--loss:#ff5d7e;--loss-dim:rgba(255,93,126,.12);--loss-border:rgba(255,93,126,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5),0 0 24px rgba(22,224,207,.04);--shadow-el:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(22,224,207,.07);--on-accent:#03211e;--on-gold:#2a0322;--accent-glow:rgba(22,224,207,.4);--gold-glow:rgba(242,59,212,.45);--banner-edge:#0a6e66;--fn-tint:rgba(22,224,207,.12)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -198,7 +202,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 .logo{display:flex;align-items:center;gap:9px}
 .logo-oct{width:36px;height:36px;background:var(--red);clip-path:polygon(29.3% 0%,70.7% 0%,100% 29.3%,100% 70.7%,70.7% 100%,29.3% 100%,0% 70.7%,0% 29.3%);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:16px;color:var(--on-accent);box-shadow:0 0 14px var(--accent-glow)}
-.logo-text{font-family:Bebas Neue,sans-serif;font-size:28px;letter-spacing:.08em}
+.logo-text{font-family:Bebas Neue,sans-serif;font-size:17px;letter-spacing:.12em;display:flex;flex-direction:column;line-height:1.02}
 .logo-text span{color:var(--red)}
 .hdr-right{display:flex;align-items:center;gap:8px}
 .btn-icon{background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted2);min-width:54px;height:50px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 9px;transition:color .15s,background .15s}
@@ -637,6 +641,7 @@ body.theme-fade,body.theme-fade *{transition:background-color .35s ease,color .3
 var _ok={octagon:1,gold:1,neon:1,fire:1,venom:1,reign:1,usa:1};
 if(!_ok[_t])_t="octagon";
 document.body.setAttribute("data-theme",_t);}catch(e){}</script>
+<div class="usa-stars" aria-hidden="true"></div>
 <div class="modal-bg" id="statsModal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-top"><div class="modal-name" id="mName"></div><button class="modal-xbtn" onclick="closeModal()">x</button></div>
@@ -1455,6 +1460,20 @@ function setTheme(t){
   applyTheme(t);try{localStorage.setItem("ufc_theme",t);}catch(e){}
 }
 applyTheme(document.body.getAttribute("data-theme")||"octagon");
+// Random shooting stars across the page while the USA theme is active.
+setInterval(function(){
+  if(document.hidden||document.body.getAttribute("data-theme")!=="usa")return;
+  if(Math.random()<.55)return;
+  var wrap=document.querySelector(".usa-stars");
+  if(!wrap)return;
+  var s=document.createElement("div");
+  s.className="usa-shooting";
+  s.style.top=(Math.random()*70+5)+"%";
+  s.style.left=(Math.random()*60+5)+"%";
+  s.style.setProperty("--ang",(20+Math.random()*30)+"deg");
+  s.addEventListener("animationend",function(){s.remove();});
+  wrap.appendChild(s);
+},2600);
 function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
 
 function updateCountdown(){
