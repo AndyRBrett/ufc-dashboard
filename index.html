@@ -38,6 +38,22 @@ body[data-theme="venom"]{--bg:#060806;--card:#0c110c;--card2:#131a13;--surface:#
 body[data-theme="reign"]{--bg:#0b0714;--card:#150e22;--card2:#1d1430;--surface:#1d1430;--future-bg:#0e0919;--future-border:rgba(167,139,250,.12);--text:#efeaf7;--muted:#8e84a3;--muted2:#c3b9d6;--border:rgba(167,139,250,.12);--border2:rgba(167,139,250,.22);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(167,139,250,.08);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:rgba(11,7,20,.96);--red:#9d6bff;--red-dim:rgba(157,107,255,.12);--red-border:rgba(157,107,255,.38);--gold:#d8cdf0;--gold-dim:rgba(216,205,240,.1);--gold-border:rgba(216,205,240,.3);--green:#34d399;--green-dim:rgba(52,211,153,.12);--green-border:rgba(52,211,153,.3);--loss:#ef6480;--loss-dim:rgba(239,100,128,.12);--loss-border:rgba(239,100,128,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5);--shadow-el:0 8px 32px rgba(0,0,0,.65);--on-accent:#150a2e;--on-gold:#1a1028;--accent-glow:rgba(157,107,255,.4);--gold-glow:rgba(216,205,240,.4);--banner-edge:#4c2a8f;--fn-tint:rgba(157,107,255,.14)}
 /* ===== THEME: CHAMPIONSHIP GOLD — black & gold, title-belt vibes ===== */
 body[data-theme="gold"]{--bg:#0a0908;--card:#14120e;--card2:#1d1a14;--surface:#1d1a14;--future-bg:#0e0d0a;--future-border:rgba(212,175,55,.12);--text:#f2e9d8;--muted:#9a8f7a;--muted2:#c9bda2;--border:rgba(212,175,55,.12);--border2:rgba(212,175,55,.22);--sep:rgba(212,175,55,.15);--stripe-border:rgba(212,175,55,.08);--btn-bg:rgba(212,175,55,.08);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:rgba(10,9,8,.96);--red:#d4af37;--red-dim:rgba(212,175,55,.1);--red-border:rgba(212,175,55,.38);--gold:#f0d78c;--gold-dim:rgba(240,215,140,.1);--gold-border:rgba(240,215,140,.32);--green:#37c878;--green-dim:rgba(55,200,120,.12);--green-border:rgba(55,200,120,.28);--loss:#d2705e;--loss-dim:rgba(210,112,94,.12);--loss-border:rgba(210,112,94,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5);--shadow-el:0 8px 32px rgba(0,0,0,.65);--on-accent:#1a1407;--on-gold:#1a1407;--accent-glow:rgba(212,175,55,.3);--gold-glow:rgba(240,215,140,.4);--banner-edge:#6b520f;--fn-tint:rgba(212,175,55,.12)}
+/* ===== THEME: STARS & STRIPES — midnight navy, Old Glory red, white & blue ===== */
+body[data-theme="usa"]{--bg:#070a13;--card:#0e1322;--card2:#161d33;--surface:#161d33;--future-bg:#0a0e1a;--future-border:rgba(91,140,255,.12);--text:#eef2fb;--muted:#8a93ab;--muted2:#bcc6dd;--border:rgba(91,140,255,.13);--border2:rgba(91,140,255,.24);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(91,140,255,.08);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:rgba(7,10,19,.96);--red:#ff2e44;--red-dim:rgba(255,46,68,.12);--red-border:rgba(255,46,68,.38);--gold:#5b8cff;--gold-dim:rgba(91,140,255,.12);--gold-border:rgba(91,140,255,.35);--green:#3ecf6e;--green-dim:rgba(62,207,110,.12);--green-border:rgba(62,207,110,.3);--loss:#ff5d6e;--loss-dim:rgba(255,93,110,.12);--loss-border:rgba(255,93,110,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5),0 0 24px rgba(91,140,255,.05);--shadow-el:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(91,140,255,.07);--on-accent:#fff;--on-gold:#0a1430;--accent-glow:rgba(255,46,68,.4);--gold-glow:rgba(91,140,255,.5);--banner-edge:#7d1426;--fn-tint:rgba(255,46,68,.14)}
+/* USA flourishes: tricolor ribbon under the header, star field + faint flag stripes in the hero */
+body[data-theme="usa"] .hdr::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:linear-gradient(90deg,#b31942 0 33.3%,#e7ebf5 33.3% 66.6%,#3c6dd6 66.6% 100%)}
+body[data-theme="usa"] .hero{background:
+  radial-gradient(circle at 8% 28%,rgba(255,255,255,.5) 1px,transparent 1.8px),
+  radial-gradient(circle at 16% 72%,rgba(255,255,255,.35) 1px,transparent 1.8px),
+  radial-gradient(circle at 27% 40%,rgba(255,255,255,.45) 1px,transparent 1.8px),
+  radial-gradient(circle at 38% 78%,rgba(255,255,255,.3) 1px,transparent 1.8px),
+  radial-gradient(circle at 49% 30%,rgba(255,255,255,.4) 1px,transparent 1.8px),
+  radial-gradient(circle at 61% 66%,rgba(255,255,255,.32) 1px,transparent 1.8px),
+  radial-gradient(circle at 72% 36%,rgba(255,255,255,.45) 1px,transparent 1.8px),
+  radial-gradient(circle at 84% 74%,rgba(255,255,255,.32) 1px,transparent 1.8px),
+  radial-gradient(circle at 93% 32%,rgba(255,255,255,.42) 1px,transparent 1.8px),
+  repeating-linear-gradient(180deg,rgba(255,46,68,.05) 0 7px,transparent 7px 14px),
+  linear-gradient(180deg,rgba(91,140,255,.09) 0%,transparent 100%)}
 /* ===== THEME: APEX NEON — near-black, electric teal & magenta ===== */
 body[data-theme="neon"]{--bg:#050608;--card:#0b0e14;--card2:#121723;--surface:#121723;--future-bg:#080a10;--future-border:rgba(22,224,207,.1);--text:#e8f6f6;--muted:#7c8a99;--muted2:#aebecf;--border:rgba(22,224,207,.1);--border2:rgba(22,224,207,.2);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(22,224,207,.07);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:rgba(5,6,8,.95);--red:#16e0cf;--red-dim:rgba(22,224,207,.1);--red-border:rgba(22,224,207,.35);--gold:#f23bd4;--gold-dim:rgba(242,59,212,.12);--gold-border:rgba(242,59,212,.35);--green:#3df08c;--green-dim:rgba(61,240,140,.12);--green-border:rgba(61,240,140,.3);--loss:#ff5d7e;--loss-dim:rgba(255,93,126,.12);--loss-border:rgba(255,93,126,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5),0 0 24px rgba(22,224,207,.04);--shadow-el:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(22,224,207,.07);--on-accent:#03211e;--on-gold:#2a0322;--accent-glow:rgba(22,224,207,.4);--gold-glow:rgba(242,59,212,.45);--banner-edge:#0a6e66;--fn-tint:rgba(22,224,207,.12)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -622,7 +638,7 @@ body.theme-fade,body.theme-fade *{transition:background-color .35s ease,color .3
 </head>
 <body>
 <script>try{var _t=localStorage.getItem("ufc_theme");
-var _ok={octagon:1,gold:1,neon:1,fire:1,venom:1,reign:1};
+var _ok={octagon:1,gold:1,neon:1,fire:1,venom:1,reign:1,usa:1};
 if(!_ok[_t])_t="octagon";
 document.body.setAttribute("data-theme",_t);}catch(e){}</script>
 <div class="modal-bg" id="statsModal" onclick="if(event.target===this)closeModal()">
@@ -845,6 +861,10 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
         <button class="btn-more-item theme-item" data-theme="reign" onclick="setTheme('reign')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#150e22 55%,#9d6bff 55%)"></span>
           <span>Royal Reign</span><span class="theme-check">&#10003;</span>
+        </button>
+        <button class="btn-more-item theme-item" data-theme="usa" onclick="setTheme('usa')">
+          <span class="theme-swatch" style="background:linear-gradient(135deg,#0a3161 40%,#b31942 40%,#b31942 60%,#e7ebf5 60%,#e7ebf5 70%,#b31942 70%,#b31942 80%,#e7ebf5 80%,#e7ebf5 90%,#b31942 90%)"></span>
+          <span>Stars &amp; Stripes</span><span class="theme-check">&#10003;</span>
         </button>
         <div class="btn-more-sep"></div>
         <button class="btn-more-item" id="installBtn" onclick="showInstall();closeMoreMenu()" style="display:none">
@@ -1423,7 +1443,7 @@ function countMethodsCorrect(){
   });});
   return count;
 }
-var THEMES={octagon:"#e8192c",gold:"#0a0908",neon:"#050608",fire:"#0a0705",venom:"#060806",reign:"#0b0714"};
+var THEMES={octagon:"#e8192c",gold:"#0a0908",neon:"#050608",fire:"#0a0705",venom:"#060806",reign:"#0b0714",usa:"#070a13"};
 function applyTheme(t){
   if(!THEMES[t])t="octagon";
   document.body.setAttribute("data-theme",t);
