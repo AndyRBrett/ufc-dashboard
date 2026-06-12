@@ -1486,6 +1486,19 @@ function _eaglePlay(){
   src.start();
 }
 function eagleCry(){
+  // wiggle on every press — Web Animations API so each tap restarts the
+  // shake even mid-animation, independent of the CSS breathe glow
+  try{
+    var btn=document.querySelector(".logo-eagle");
+    if(btn&&btn.animate)btn.animate([
+      {transform:"rotate(0deg) scale(1)"},
+      {transform:"rotate(-18deg) scale(1.15)"},
+      {transform:"rotate(14deg) scale(1.1)"},
+      {transform:"rotate(-9deg) scale(1.05)"},
+      {transform:"rotate(5deg) scale(1.02)"},
+      {transform:"rotate(0deg) scale(1)"}
+    ],{duration:500,easing:"ease-out"});
+  }catch(e){}
   try{
     if(!_eagleCtx)_eagleCtx=new (window.AudioContext||window.webkitAudioContext)();
     if(_eagleCtx.state==="suspended")_eagleCtx.resume();
