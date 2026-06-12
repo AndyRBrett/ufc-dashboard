@@ -43,7 +43,8 @@ body[data-theme="usa"]{--bg:#070a13;--card:#0e1322;--card2:#161d33;--surface:#16
 /* USA flourishes: Old Glory ribbon under the header (blue union + repeating red/white
    stripes, NOT three solid bands which reads French), tiled faded white stars in the
    page + hero backgrounds, and an eagle beside the wordmark. */
-body[data-theme="usa"] .hdr::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:linear-gradient(90deg,#3c6dd6 0 17%,transparent 17%),repeating-linear-gradient(90deg,#b31942 0 13px,#e7ebf5 13px 26px)}
+body[data-theme="usa"] .hdr::after,body[data-theme="usa"] .lb-hdr::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:linear-gradient(90deg,#3c6dd6 0 17%,transparent 17%),repeating-linear-gradient(90deg,#b31942 0 13px,#e7ebf5 13px 26px)}
+body[data-theme="usa"] .lb-hdr{position:relative}
 body[data-theme="usa"] .hero{background:
   repeating-linear-gradient(180deg,rgba(255,46,68,.05) 0 7px,transparent 7px 14px),
   linear-gradient(180deg,rgba(91,140,255,.09) 0%,transparent 100%)}
