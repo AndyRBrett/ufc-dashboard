@@ -1463,15 +1463,45 @@ function setTheme(t){
   applyTheme(t);try{localStorage.setItem("ufc_theme",t);}catch(e){}
 }
 applyTheme(document.body.getAttribute("data-theme")||"octagon");
-// Synthesized eagle screech (the classic movie "eagle" is a red-tailed hawk:
-// a raspy descending whistle). WebAudio so it needs no audio asset and works
-// offline; created/resumed inside the click gesture for iOS autoplay rules.
-var _eagleCtx=null;
+// Eagle screech: two real recordings (sounds/eagle-*.mp3, precached by the SW
+// for offline) picked at random per tap. Raw bytes are prefetched at load and
+// decoded lazily on the first tap (AudioContext must be born inside a user
+// gesture on iOS). Every tap spawns its own buffer source, so rapid presses
+// overlap freely. The synthesized cry remains only as a fallback if the
+// files can't be fetched/decoded.
+var _eagleCtx=null,_eagleRaw=[],_eagleBufs=[],_eagleTried=[],_eaglePending=false;
+var EAGLE_SOUNDS=["sounds/eagle-1.mp3","sounds/eagle-2.mp3"];
+EAGLE_SOUNDS.forEach(function(u,i){
+  try{fetch(u).then(function(r){return r.ok?r.arrayBuffer():null;}).then(function(ab){if(ab)_eagleRaw[i]=ab;}).catch(function(){});}catch(e){}
+});
+function _eaglePlay(){
+  var src=_eagleCtx.createBufferSource();
+  src.buffer=_eagleBufs[Math.floor(Math.random()*_eagleBufs.length)];
+  src.connect(_eagleCtx.destination);
+  src.start();
+}
 function eagleCry(){
   try{
     if(!_eagleCtx)_eagleCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(_eagleCtx.state==="suspended")_eagleCtx.resume();
+    if(_eagleBufs.length){_eaglePlay();return;}
+    _eaglePending=true;
+    _eagleRaw.forEach(function(ab,i){
+      if(!ab||_eagleTried[i])return;
+      _eagleTried[i]=true;
+      // callback form for older iOS Safari; slice() because decode detaches the buffer
+      _eagleCtx.decodeAudioData(ab.slice(0),function(b){
+        _eagleBufs.push(b);
+        if(_eaglePending){_eaglePending=false;_eaglePlay();}
+      },function(){});
+    });
+    setTimeout(function(){if(_eaglePending){_eaglePending=false;_eagleSynth();}},700);
+  }catch(e){}
+}
+function _eagleSynth(){
+  try{
     var ctx=_eagleCtx;
-    if(ctx.state==="suspended")ctx.resume();
+    if(!ctx)return;
     var t=ctx.currentTime,dur=1.1;
     var o=ctx.createOscillator();o.type="sawtooth";
     o.frequency.setValueAtTime(2600,t);

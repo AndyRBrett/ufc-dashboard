@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = '2026-06-11-10';
+const SW_VERSION = '2026-06-12-1';
 const CACHE = 'ufc-' + SW_VERSION;
 
 self.addEventListener('install', function(e) {
@@ -10,7 +10,7 @@ self.addEventListener('install', function(e) {
   // Precache the app shell so the PWA opens offline. Each URL is cached
   // independently — one miss must not block install.
   e.waitUntil(caches.open(CACHE).then(function(c) {
-    return Promise.all(['./', './data.js', './manifest.json', './icon-192-v2.png'].map(function(u) {
+    return Promise.all(['./', './data.js', './manifest.json', './icon-192-v2.png', './sounds/eagle-1.mp3', './sounds/eagle-2.mp3'].map(function(u) {
       return c.add(u).catch(function() {});
     }));
   }));
