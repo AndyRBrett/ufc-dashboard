@@ -1067,7 +1067,7 @@ function fetchAIBreakdown(fight,ev,btn,panel){
     if(!res.ok){
       var msg=res.data&&res.data.error==="overloaded"?"AI is overloaded — tap to retry":"Analysis unavailable. Try again.";
       if(res.status===429)msg="Too many AI requests — give it a moment.";
-      panel.innerHTML="<div class='ai-err'>"+msg+"</div>";
+      panel.textContent="";var errDiv=document.createElement("div");errDiv.className="ai-err";errDiv.textContent=msg;panel.appendChild(errDiv);
       panel.classList.add("open");return;
     }
     var text=res.data.breakdown||"";
@@ -1774,7 +1774,7 @@ function deleteAccount(){
 }
 function selectEmoji(btn){document.querySelectorAll(".nm-emoji-btn").forEach(function(b){b.classList.remove("selected");});btn.classList.add("selected");}
 function saveName(){
-  var v=document.getElementById("nmInput").value.trim();if(!v)return;
+  var v=document.getElementById("nmInput").value.trim().replace(/[<>]/g,"");if(!v)return;
   var selBtn=document.querySelector(".nm-emoji-btn.selected");
   var emoji=selBtn?selBtn.dataset.e:"🥊";
   var errEl=document.getElementById("nmErr");var btn=document.getElementById("nmBtn");
@@ -2162,9 +2162,12 @@ function fnRenderStandings(){
     var pts=u.correct+u.methods*0.5+u.fotn;
     var row=document.createElement("div");row.className="fnl-stand-row"+(u.isMe?" me":"");
     var prev=_fnStandSnapshot[u.user_id||u.nickname];
-    var deltaHtml="";
-    if(prev&&prev!==rank){var up=rank<prev;deltaHtml='<span class="fnl-stand-delta '+(up?"up":"down")+'">'+(up?"▲":"▼")+Math.abs(prev-rank)+"</span>";}
-    row.innerHTML='<span class="fnl-stand-rank">'+rank+'</span><span>'+_fnAvatar(u.nickname)+" "+_fnNameShort(u.nickname)+'</span>'+deltaHtml+'<span class="fnl-stand-pts">'+(pts%1===0?pts:pts.toFixed(1))+'</span>';
+    // Build with textContent — nickname is user-controlled and must never be parsed as HTML
+    var rankSpan=document.createElement("span");rankSpan.className="fnl-stand-rank";rankSpan.textContent=rank;
+    var nameSpan=document.createElement("span");nameSpan.textContent=_fnAvatar(u.nickname)+" "+_fnNameShort(u.nickname);
+    row.appendChild(rankSpan);row.appendChild(nameSpan);
+    if(prev&&prev!==rank){var up=rank<prev;var delta=document.createElement("span");delta.className="fnl-stand-delta "+(up?"up":"down");delta.textContent=(up?"▲":"▼")+Math.abs(prev-rank);row.appendChild(delta);}
+    var ptsSpan=document.createElement("span");ptsSpan.className="fnl-stand-pts";ptsSpan.textContent=(pts%1===0?pts:pts.toFixed(1));row.appendChild(ptsSpan);
     el.appendChild(row);
   });
 }
@@ -2184,7 +2187,7 @@ function updateFNLive(){
   if(myPick){var tid=myPick===f.f1.n?"fnl-r1":"fnl-r2";var tag=document.createElement("span");tag.className="fnl-mine-tag";tag.textContent="MY PICK";document.getElementById(tid).appendChild(document.createElement("br"));document.getElementById(tid).appendChild(tag);}
   fnRenderFans(f);
   var res=document.getElementById("fnl-result");
-  if(f.winner){res.innerHTML="<b>"+_fnNameShort(f.winner)+"</b> def. "+_fnNameShort(f.winner===f.f1.n?f.f2.n:f.f1.n)+(f.method?" · "+f.method:"")+(f.round?" · R"+f.round:"");}
+  if(f.winner){res.textContent="";var wb=document.createElement("b");wb.textContent=_fnNameShort(f.winner);res.appendChild(wb);res.appendChild(document.createTextNode(" def. "+_fnNameShort(f.winner===f.f1.n?f.f2.n:f.f1.n)+(f.method?" · "+f.method:"")+(f.round?" · R"+f.round:"")));}
   else{res.textContent=picksLocked(fnEv)?"In progress — waiting on result…":"Up next";}
   // Jump-to-live pill visible only when user has navigated off the live fight
   var liveIdx=fnFights.findIndex(function(x){return !x.winner;});
