@@ -1023,7 +1023,8 @@ var RESULTS_ARCHIVE=window.RESULTS_ARCHIVE||{};
 var FIGHTS=[];
 var _fightIndex=null;
 function _buildFightIndex(){_fightIndex={};EVENTS.forEach(function(ev){ev.fights.forEach(function(f){_fightIndex[ev.date+"|"+f.f1.n+"|"+f.f2.n]={ev:ev,fight:f};});});}
-function buildReg(){FIGHTS=[];EVENTS.forEach(function(ev,ei){ev.fights.forEach(function(f,fi){FIGHTS.push({ei:ei,fi:fi,ev:ev,fight:f});});});_buildFightIndex();}
+var _regIdxMap=null;
+function buildReg(){FIGHTS=[];_regIdxMap={};EVENTS.forEach(function(ev,ei){ev.fights.forEach(function(f,fi){_regIdxMap[ei+"|"+fi]=FIGHTS.length;FIGHTS.push({ei:ei,fi:fi,ev:ev,fight:f});});});_buildFightIndex();}
 
 var curFilter="all",curSearch="";
 var lbMode=(function(){try{return localStorage.getItem("ufc_lb_mode")||"current";}catch(e){return "current";}})();
@@ -1438,10 +1439,18 @@ function fetchCommunityPicks(){
       else if(p.pick===p.f2)fresh[k].f2++;
     });
     communityPicks=fresh;
-    render();
+    // Only pay for a full re-render when the community pick distribution actually
+    // changed — the 30s poll and realtime bursts otherwise rebuild the DOM for nothing.
+    var fp=JSON.stringify(fresh);
+    if(fp!==_commFP){_commFP=fp;render();}
     renderActivityFeed();
   }).catch(function(err){console.error("fetchCommunityPicks error",err);});
 }
+var _commFP="";
+// Realtime can fire many pick-change broadcasts in a burst on a busy card; coalesce
+// them into a single fetch+render instead of one per message.
+var _commFetchT=null;
+function fetchCommunityPicksDebounced(){if(_commFetchT)clearTimeout(_commFetchT);_commFetchT=setTimeout(function(){_commFetchT=null;fetchCommunityPicks();},500);}
 function computeStreak(){
   var res=[];
   Object.keys(resolvedPicks).forEach(function(k){if(resolvedPicks[k])res.push({date:k.split("|")[0],r:resolvedPicks[k]});});
@@ -1614,9 +1623,9 @@ function updateCountdown(){
   wrap.style.display="flex";
   document.getElementById("cd-event").textContent=ev.name;
   var timer=document.getElementById("cd-timer");
-  timer.innerHTML="";
   if(isNaN(h)){
     // No start time set yet (e.g. "TBD") — show the date instead of a NaN timer
+    timer.innerHTML="";_cdSig="";
     var tbd=document.createElement("span");tbd.className="cd-live";
     tbd.style.cssText="background:var(--card2);color:var(--muted);border-color:var(--border2)";
     var dtbd=new Date(ev.date+"T00:00:00");
@@ -1624,18 +1633,31 @@ function updateCountdown(){
     timer.appendChild(tbd);return;
   }
   if(diff<=0){
+    timer.innerHTML="";_cdSig="";
     var live=document.createElement("span");live.className="cd-live";live.textContent="MAIN CARD LIVE NOW";timer.appendChild(live);return;
   }
   var days=Math.floor(diff/DAY_MS);var hours=Math.floor((diff%DAY_MS)/HOUR_MS);
   var mins=Math.floor((diff%HOUR_MS)/MIN_MS);var secs=Math.floor((diff%MIN_MS)/1e3);
-  function cdUnit(val,lbl){var u=document.createElement("div");u.className="cd-unit";var n=document.createElement("div");n.className="cd-num";n.textContent=val;var l=document.createElement("div");l.className="cd-lbl";l.textContent=lbl;u.appendChild(n);u.appendChild(l);return u;}
-  function cdSep(){var s=document.createElement("div");s.className="cd-sep";s.textContent=":";return s;}
-  if(days>0){timer.appendChild(cdUnit(days,"Days"));timer.appendChild(cdSep());}
-  timer.appendChild(cdUnit(pad(hours),"Hrs"));timer.appendChild(cdSep());
-  timer.appendChild(cdUnit(pad(mins),"Min"));timer.appendChild(cdSep());
-  var secUnit=cdUnit(pad(secs),"Sec");secUnit.classList.add("cd-tick");
-  timer.appendChild(secUnit);
+  var showDays=days>0,sig="count|"+showDays;
+  if(_cdSig!==sig){
+    // Structure changed (or first run) — build the units once and cache their number
+    // nodes so each subsequent tick only writes textContent, avoiding per-second reflow.
+    timer.innerHTML="";_cdNums={};
+    function cdUnit(key,val,lbl){var u=document.createElement("div");u.className="cd-unit";var n=document.createElement("div");n.className="cd-num";n.textContent=val;var l=document.createElement("div");l.className="cd-lbl";l.textContent=lbl;u.appendChild(n);u.appendChild(l);_cdNums[key]=n;return u;}
+    function cdSep(){var s=document.createElement("div");s.className="cd-sep";s.textContent=":";return s;}
+    if(showDays){timer.appendChild(cdUnit("days",days,"Days"));timer.appendChild(cdSep());}
+    timer.appendChild(cdUnit("hours",pad(hours),"Hrs"));timer.appendChild(cdSep());
+    timer.appendChild(cdUnit("mins",pad(mins),"Min"));timer.appendChild(cdSep());
+    var secUnit=cdUnit("secs",pad(secs),"Sec");secUnit.classList.add("cd-tick");timer.appendChild(secUnit);
+    _cdSig=sig;
+  }else{
+    if(showDays&&_cdNums.days)_cdNums.days.textContent=days;
+    if(_cdNums.hours)_cdNums.hours.textContent=pad(hours);
+    if(_cdNums.mins)_cdNums.mins.textContent=pad(mins);
+    if(_cdNums.secs)_cdNums.secs.textContent=pad(secs);
+  }
 }
+var _cdSig="",_cdNums={};
 setInterval(updateCountdown,1000);
 
 var _animRender=true;
@@ -2541,40 +2563,10 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
   mu.appendChild(vc);
   mu.appendChild(makeFighter(fight.f2,true,sz,regIdx,1,fight.winner&&fight.winner===fight.f2.n));
   row.appendChild(mu);
-  if(showPick&&!fight.winner){(function(ri,m,f){
-    var tx=0,ty=0,swiping=false,badge=null;
-    function removeBadge(){if(badge){badge.remove();badge=null;}}
-    m.addEventListener("touchstart",function(e){
-      tx=e.touches[0].clientX;ty=e.touches[0].clientY;swiping=false;
-      m.style.transition="none";
-    },{passive:true});
-    m.addEventListener("touchmove",function(e){
-      var dx=e.touches[0].clientX-tx,dy=e.touches[0].clientY-ty;
-      if(!swiping&&Math.abs(dy)>Math.abs(dx))return;
-      swiping=true;
-      var shifted=Math.max(-80,Math.min(80,dx*0.38));
-      m.style.transform="translateX("+shifted+"px)";
-      if(Math.abs(dx)>28){
-        if(!badge){badge=document.createElement("div");badge.className="mu-swipe-badge";m.appendChild(badge);}
-        var toRight=dx>0;
-        badge.textContent=toRight?f.f2.n.split(" ").pop():f.f1.n.split(" ").pop();
-        badge.style.left=toRight?"auto":"8px";
-        badge.style.right=toRight?"8px":"auto";
-        badge.style.opacity="1";
-      } else if(badge){badge.style.opacity="0";}
-    },{passive:true});
-    m.addEventListener("touchend",function(e){
-      var dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
-      removeBadge();
-      m.style.transition="transform .2s ease";
-      m.style.transform="translateX(0)";
-      if(!swiping||Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)*1.5)return;
-      if(navigator.vibrate)navigator.vibrate(22);
-      m.classList.add("pick-flash");
-      setTimeout(function(){m.classList.remove("pick-flash");},400);
-      pick(ri,dx>0?1:0);
-    },{passive:true});
-  })(regIdx,mu,fight);}
+  // Swipe-to-pick is wired via one delegated handler on #app (see _initSwipe) rather
+  // than three listeners per row that get re-added on every render — mark the
+  // pickable matchup with its registry index so the delegate knows what to act on.
+  if(showPick&&!fight.winner){mu.dataset.ri=regIdx;}
   if(fight.odds){
     var or=document.createElement("div");or.className="odds-row";
     var pickem=fight.odds.f1===fight.odds.f2;var fav1=fight.odds.f1<fight.odds.f2;
@@ -2670,7 +2662,51 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
   return row;
 }
 
-function getRegIdx(ei,fi){for(var i=0;i<FIGHTS.length;i++){if(FIGHTS[i].ei===ei&&FIGHTS[i].fi===fi)return i;}return 0;}
+function getRegIdx(ei,fi){if(_regIdxMap){var v=_regIdxMap[ei+"|"+fi];if(v!==undefined)return v;}for(var i=0;i<FIGHTS.length;i++){if(FIGHTS[i].ei===ei&&FIGHTS[i].fi===fi)return i;}return 0;}
+
+// Delegated swipe-to-pick. Bound once to the persistent #app container so re-rendering
+// the fight list (app.innerHTML="") doesn't accumulate per-row touch listeners.
+var _swipe=null;
+function _initSwipe(){
+  var app=document.getElementById("app");
+  if(!app||app._swipeBound)return;
+  app._swipeBound=true;
+  app.addEventListener("touchstart",function(e){
+    var m=e.target.closest?e.target.closest(".mu"):null;
+    if(!m||m.dataset.ri===undefined){_swipe=null;return;}
+    _swipe={m:m,ri:+m.dataset.ri,tx:e.touches[0].clientX,ty:e.touches[0].clientY,swiping:false,badge:null};
+    m.style.transition="none";
+  },{passive:true});
+  app.addEventListener("touchmove",function(e){
+    var s=_swipe;if(!s)return;
+    var dx=e.touches[0].clientX-s.tx,dy=e.touches[0].clientY-s.ty;
+    if(!s.swiping&&Math.abs(dy)>Math.abs(dx))return;
+    s.swiping=true;
+    s.m.style.transform="translateX("+Math.max(-80,Math.min(80,dx*0.38))+"px)";
+    var f=(FIGHTS[s.ri]||{}).fight;
+    if(Math.abs(dx)>28&&f){
+      if(!s.badge){s.badge=document.createElement("div");s.badge.className="mu-swipe-badge";s.m.appendChild(s.badge);}
+      var toRight=dx>0;
+      s.badge.textContent=toRight?f.f2.n.split(" ").pop():f.f1.n.split(" ").pop();
+      s.badge.style.left=toRight?"auto":"8px";
+      s.badge.style.right=toRight?"8px":"auto";
+      s.badge.style.opacity="1";
+    }else if(s.badge){s.badge.style.opacity="0";}
+  },{passive:true});
+  app.addEventListener("touchend",function(e){
+    var s=_swipe;if(!s)return;
+    _swipe=null;
+    var dx=e.changedTouches[0].clientX-s.tx,dy=e.changedTouches[0].clientY-s.ty;
+    if(s.badge){s.badge.remove();s.badge=null;}
+    s.m.style.transition="transform .2s ease";
+    s.m.style.transform="translateX(0)";
+    if(!s.swiping||Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)*1.5)return;
+    if(navigator.vibrate)navigator.vibrate(22);
+    s.m.classList.add("pick-flash");
+    setTimeout(function(){s.m.classList.remove("pick-flash");},400);
+    pick(s.ri,dx>0?1:0);
+  },{passive:true});
+}
 
 function to12hr(t){
   if(!t||t==="TBD")return t;
@@ -4462,14 +4498,16 @@ document.addEventListener("DOMContentLoaded",function(){
   setTimeout(reconcileMyPicks, 1500);
   setTimeout(syncAllPicks, 2000);
   setTimeout(fetchCommunityPicks, 3000);
-  setInterval(fetchCommunityPicks, 30000);
+  // Skip the full-table poll while the app is backgrounded (returning to the
+  // foreground already triggers a fresh fetch via the visibilitychange handler below).
+  setInterval(function(){if(!document.hidden)fetchCommunityPicks();}, 30000);
   setTimeout(fetchChallenges, 3500);
   setInterval(fetchChallenges, 120000);
   // On foreground (iOS PWAs resume from a frozen state where the refresh timer
   // never fired) get a fresh token first so nothing fetches with an expired JWT.
   document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")_ensureFreshToken().then(fetchCommunityPicks);});
   _authReady.then(_rtConnect);
-  _rtOn(fetchCommunityPicks);
+  _rtOn(fetchCommunityPicksDebounced);
   _rtOn(function(){
     var panel=document.getElementById("lbPanel");
     if(panel&&panel.classList.contains("open"))loadLeaderboard(true);
@@ -4479,6 +4517,7 @@ document.addEventListener("DOMContentLoaded",function(){
   try{if(localStorage.getItem("ufc_push")==="1")_setBellActive(true);}catch(e){}
   _setLiveResActive(_liveResultsOn());
   setTimeout(startLivePolling,4000);
+  _initSwipe();
 
 });
 
