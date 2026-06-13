@@ -414,6 +414,9 @@ body[data-theme="usa"] .logo-eagle{display:block}
 .modal-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:5px}
 .modal-xbtn{background:var(--btn-bg);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .modal-xbtn:hover{background:rgba(255,255,255,.12)}
+/* Keep the 30px visual circle but extend the touch target to ~44px (WCAG/Apple min) */
+.install-close,.modal-xbtn,.cmp-xbtn,.nm-xbtn{position:relative}
+.install-close::before,.modal-xbtn::before,.cmp-xbtn::before,.nm-xbtn::before{content:"";position:absolute;inset:-7px}
 .modal-name{font-family:Bebas Neue,sans-serif;font-size:28px;letter-spacing:.05em;line-height:1}
 .modal-photo-row{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .modal-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
@@ -767,7 +770,7 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
       <button class="nm-emoji-btn" data-e="💯" onclick="selectEmoji(this)">💯</button>
       <button class="nm-emoji-btn" data-e="🛡️" onclick="selectEmoji(this)">🛡️</button>
     </div>
-    <input class="nm-input" id="nmInput" type="text" placeholder="Your name" maxlength="20" oninput="document.getElementById('nmErr').style.display='none'">
+    <input class="nm-input" id="nmInput" type="text" placeholder="Your name" maxlength="20" aria-label="Your display name" autocomplete="nickname" oninput="document.getElementById('nmErr').style.display='none'">
     <div class="nm-err" id="nmErr"></div>
     <button class="nm-btn" id="nmBtn" onclick="saveName()">Let's go</button>
     <button class="nm-del-link" id="nmSigninLink" onclick="closeNameModal();openAcct()">Played before? Sign in with email</button>
@@ -779,11 +782,11 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
     <div class="nm-top"><h3 id="acctTitle">Protect Your Picks</h3><button class="nm-xbtn" onclick="closeAcct()">x</button></div>
     <p id="acctDesc">Link an email so your picks and stats survive a new phone or a cleared browser.</p>
     <div id="acctSignedRow" style="display:none;font-size:13px;color:var(--muted);margin:-6px 0 14px">Signed in as <b id="acctEmailCur" style="color:var(--text)"></b></div>
-    <input class="nm-input" id="acctEmail" type="email" placeholder="you@email.com" autocomplete="email" oninput="document.getElementById('acctErr').style.display='none'">
+    <input class="nm-input" id="acctEmail" type="email" placeholder="you@email.com" aria-label="Email address" autocomplete="email" oninput="document.getElementById('acctErr').style.display='none'">
     <div class="nm-err" id="acctErr"></div>
     <button class="nm-btn" id="acctSendBtn" onclick="acctSend()">Email me a code</button>
     <div id="acctCodeWrap" style="display:none">
-      <input class="nm-input" id="acctCode" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="Code from email" maxlength="10" style="margin-top:12px" oninput="document.getElementById('acctErr').style.display='none'">
+      <input class="nm-input" id="acctCode" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="Code from email" maxlength="10" aria-label="Verification code from email" style="margin-top:12px" oninput="document.getElementById('acctErr').style.display='none'">
       <button class="nm-btn" id="acctVerifyBtn" onclick="acctVerify()">Verify code</button>
       <button class="nm-del-link" onclick="acctSend()">Resend code</button>
     </div>
@@ -931,7 +934,7 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
   <button class="ftab" data-f="Women's Strawweight" onclick="setFilter(this)">W. Strawweight</button>
   <button class="ftab" data-f="Women's Bantamweight" onclick="setFilter(this)">W. Bantamweight</button>
   <button class="ftab" data-f="Women's Flyweight" onclick="setFilter(this)">W. Flyweight</button>
-  <input type="search" class="search-input" id="fighterSearch" placeholder="Search fighter..." oninput="setSearch(this.value)">
+  <input type="search" class="search-input" id="fighterSearch" placeholder="Search fighter..." aria-label="Search for a fighter" oninput="setSearch(this.value)">
 </div>
 <div class="picks-widget" id="picksWidget" style="display:none">
   <div style="display:flex;align-items:center;border-bottom:1px solid var(--border)">
@@ -1057,29 +1060,34 @@ function fetchAIBreakdown(fight,ev,btn,panel){
     s2:s2?{slpm:s2.slpm,acc:s2.acc,td:s2.td,tdd:s2.tdd,ko:s2.ko,sub:s2.sub,stn:s2.stn}:null,
     form1:s1&&s1.form?s1.form.slice(0,3):[],form2:s2&&s2.form?s2.form.slice(0,3):[]
   };
+  function aiErr(msg){panel.textContent="";var errDiv=document.createElement("div");errDiv.className="ai-err";errDiv.textContent=msg;panel.appendChild(errDiv);panel.classList.add("open");}
+  // Abort a stuck request after 20s so the in-flight guard clears and the user can retry.
+  var ctrl=("AbortController" in window)?new AbortController():null;
+  var to=setTimeout(function(){if(ctrl)ctrl.abort();},20000);
   fetch(AI_BREAKDOWN_URL,{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-    body:JSON.stringify(payload)
+    body:JSON.stringify(payload),
+    signal:ctrl?ctrl.signal:undefined
   }).then(function(r){return r.json().then(function(d){return{ok:r.ok,status:r.status,data:d};});})
   .then(function(res){
+    clearTimeout(to);
     delete _aiFetching[cacheKey];
     btn.classList.remove("ai-loading");btn.textContent="⚡ AI";
     if(!res.ok){
       var msg=res.data&&res.data.error==="overloaded"?"AI is overloaded — tap to retry":"Analysis unavailable. Try again.";
       if(res.status===429)msg="Too many AI requests — give it a moment.";
-      panel.textContent="";var errDiv=document.createElement("div");errDiv.className="ai-err";errDiv.textContent=msg;panel.appendChild(errDiv);
-      panel.classList.add("open");return;
+      aiErr(msg);return;
     }
     var text=res.data.breakdown||"";
-    if(!text){panel.innerHTML="<div class='ai-err'>Analysis unavailable. Try again.</div>";panel.classList.add("open");return;}
+    if(!text){aiErr("Analysis unavailable. Try again.");return;}
     try{_aiCache[cacheKey]=text;sessionStorage.setItem("ufc_ai_cache",JSON.stringify(_aiCache));}catch(e){}
     renderAIPanel(panel,btn,text);
-  }).catch(function(){
+  }).catch(function(err){
+    clearTimeout(to);
     delete _aiFetching[cacheKey];
     btn.classList.remove("ai-loading");btn.textContent="⚡ AI";
-    panel.innerHTML="<div class='ai-err'>Analysis unavailable. Try again.</div>";
-    panel.classList.add("open");
+    aiErr((err&&err.name==="AbortError")?"AI timed out — tap to retry":"Analysis unavailable. Try again.");
   });
 }
 function renderAIPanel(panel,btn,text){
@@ -1695,7 +1703,7 @@ function openStats(idx,side){
   var subEl=document.getElementById("mSub");subEl.textContent=f.r+(f.rk?" - "+f.rk:"");
   var photoRow=document.getElementById("mPhotoRow");
   var photoEl=document.getElementById("mPhoto");
-  photoRow.style.display="none";photoEl.src="";
+  photoRow.style.display="none";photoEl.src="";photoEl.alt=f.n+" photo";
   var wikiName=f.n.replace(/ /g,"_");
   fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(wikiName))
     .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
@@ -2452,6 +2460,7 @@ function checkFightNight(){
 // Render a loaded photo URL into a circular slot (shared by every code path that shows a fighter photo).
 function _setPhoto(container,src){
   var img=document.createElement("img");
+  img.alt=container.dataset&&container.dataset.fn?container.dataset.fn+" photo":"Fighter photo";
   img.style.cssText="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;";
   container.style.position="relative";
   img.onload=function(){container.appendChild(img);};
@@ -2466,7 +2475,7 @@ function makeFighter(fighter,right,size,regIdx,side,isWinner){
   var wrap=document.createElement("div");wrap.className="ft"+(right?" ftr":"");
   if(size!=="xs"){
     // Photo circle: show initials immediately, replace with real photo when loaded
-    var phWrap=document.createElement("div");phWrap.className="ft-photo";
+    var phWrap=document.createElement("div");phWrap.className="ft-photo";phWrap.dataset.fn=fighter.n;
     var initials=fighter.n.trim().split(" ").filter(Boolean).map(function(w){return w[0].toUpperCase();});
     phWrap.textContent=(initials[0]||"")+(initials[initials.length-1]||"");
     phWrap.style.cssText="display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);background:var(--card2);";
@@ -4473,6 +4482,36 @@ function showInstall(){
   document.getElementById("install-overlay").classList.add("open");
 }
 function closeInstall(){document.getElementById("install-overlay").classList.remove("open");}
+// Escape closes the topmost open overlay (sub-sheets before their parent panels).
+// Keyboard/desktop a11y — harmless on touch devices that have no Escape key.
+var _escClosers=[
+  ["lbInfoModal",function(){document.getElementById("lbInfoModal").classList.remove("open");}],
+  ["trashSheet",function(){closeTrashSheet();}],
+  ["wheelSheet",function(){closeWheelSheet();}],
+  ["chalSheet",function(){closeChalSheet();}],
+  ["chatModal",function(){closeChat();}],
+  ["parlayModal",function(){closeParlay();}],
+  ["cmpBg",function(){closeCmp();}],
+  ["shareBg",function(){closeShare();}],
+  ["statsModal",function(){closeModal();}],
+  ["delBg",function(){closeDeleteConfirm();}],
+  ["acctBg",function(){closeAcct();}],
+  ["nmBg",function(){closeNameModal();}],
+  ["install-overlay",function(){closeInstall();}],
+  ["fnMode",function(){closeFN();}],
+  ["lbPanel",function(){closeLeaderboard();}],
+  ["moreMenu",function(){closeMoreMenu();}]
+];
+document.addEventListener("keydown",function(e){
+  if(e.key!=="Escape"&&e.key!=="Esc")return;
+  for(var i=0;i<_escClosers.length;i++){
+    var el=document.getElementById(_escClosers[i][0]);
+    if(el&&el.classList.contains("open")){
+      try{_escClosers[i][1]();}catch(_){el.classList.remove("open");}
+      e.preventDefault();return;
+    }
+  }
+});
 function triggerInstall(){if(_deferredInstall){_deferredInstall.prompt();_deferredInstall.userChoice.then(function(){_deferredInstall=null;closeInstall();});}}
 
 document.addEventListener("DOMContentLoaded",function(){
@@ -4859,6 +4898,22 @@ if('serviceWorker'in navigator){
     if(e.data&&e.data.type==='challenge')openChallengeInbox();
   });
 }
+// Persistent offline banner — make it obvious when the network drops and the app is
+// showing cached/stale data rather than live picks and results.
+(function(){
+  var ob=null;
+  function show(){
+    if(ob)return;
+    ob=document.createElement('div');ob.setAttribute('role','status');
+    ob.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--card2);color:var(--text);border:1px solid var(--border2);padding:10px 18px;border-radius:24px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.4);white-space:nowrap';
+    ob.textContent="⚠️ You're offline — showing saved data";
+    document.body.appendChild(ob);
+  }
+  function hide(){if(ob){ob.remove();ob=null;}}
+  window.addEventListener('offline',show);
+  window.addEventListener('online',hide);
+  if(navigator.onLine===false)show();
+})();
 // If opened via notification tap when app was closed, check URL params
 (function(){
   var params=new URLSearchParams(window.location.search);
