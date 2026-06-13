@@ -55,3 +55,55 @@ Actions log doesn't dump response bodies.
 - `_search_ufcstats()` now prefers the most-experienced match when multiple
   fighters share a name (covered by tests in `tests/test_parsers.py`). This is
   correct but can't take effect until the parser returns rows again.
+
+---
+
+# Code-review follow-ups (2026-06-13 full-app review)
+
+Deferred improvements from the full-app review. Already shipped to `main`:
+stored-XSS fix, performance pass (O(1) lookup, render coalescing, in-place
+countdown, delegated swipe), UX/accessibility pass, icon cleanup, optional
+minify build, and the version bump/footer sync.
+
+Priority key: **P0** security · **P2** maintainability · **P3** polish.
+
+## 1. Edge-function hardening — P0 (needs Supabase access)
+Harden the push-notification broadcast path.
+- Require a `CRON_SECRET` (not just the public anon key) for broadcast sends in
+  `supabase/functions/send-push/index.ts` (bearer check at ~`:88-92`).
+- Derive the dedup key **server-side** instead of trusting caller-supplied
+  `event_date` / `type` (~`:176-195`).
+- **You must:** set `CRON_SECRET` in Supabase project settings, redeploy the
+  function, and update whatever cron invokes it. Code change alone won't take
+  effect (and would reject the real sender until the secret is set).
+
+## 2. Full CSP lockdown — P0 (blocked by #3)
+- Remove `script-src 'unsafe-inline'` (ideally `style-src 'unsafe-inline'` too)
+  from the CSP meta in `index.html` (the `<meta http-equiv="Content-Security-Policy">`).
+- **Blocked until #3:** ~170 inline `onclick`/`oninput` handlers require
+  `'unsafe-inline'`. The rest of the CSP is already tight (`object-src 'none'`,
+  `base-uri 'self'`, locked `connect-src`/`img-src`).
+
+## 3. De-inline handlers + modularize globals — P2
+- Convert the ~170 inline event handlers to `addEventListener` (unblocks #2).
+- Wrap the ~100 globals in `index.html` in a namespace/object to reduce collision
+  risk and clarify state flow.
+- **Test on a preview** — not run-verifiable in a sandbox; click through picks,
+  themes, leaderboard, modals, and swipe before deploying.
+
+## 4. Wire up the minify build — P2 (optional)
+- `npm run build` already produces a minified `dist/` (see `build.mjs`) without
+  touching source. To use it: point the host at `dist/` or add a deploy step that
+  runs the build, then verify on a preview.
+- Savings: index.html -14%, data.js -13%, sw.js -44%. More is possible by
+  enabling name-mangling **after** #3 removes the global-name dependency.
+
+## 5. Housekeeping — P3
+- **Single source of truth for the version.** It lives in two hand-edited places
+  that already drifted once: `SW_VERSION` in `sw.js` and the footer `v…` literal
+  in `index.html` (the `verEl.textContent` line). Derive both from one constant
+  (or a build/git step) so they can't fall out of sync.
+- Gate the ~16 `console.*` calls behind a `DEBUG` flag.
+- Prune unused `@font-face` unicode-ranges in `index.html`.
+- Consider `<dialog>` + a focus-trap for modals (Escape-to-close is done; focus
+  management on open/close is not).
