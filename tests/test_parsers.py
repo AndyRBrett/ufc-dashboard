@@ -138,3 +138,26 @@ def test_existing_odds_regex_extracts_embedded_odds():
     html = '...odds:{f1:-150,f2:130},f1:{n:"Jon Jones",a:1},f2:{n:"Stipe Miocic",a:2}...'
     m = scrape.EXISTING_ODDS_RE.search(html)
     assert m.groups() == ("-150", "130", "Jon Jones", "Stipe Miocic")
+
+
+# --- UFCStats fighter disambiguation ---------------------------------------
+
+def test_search_ufcstats_prefers_most_experienced_namesake(monkeypatch):
+    # Two distinct fighters named "Diego Lopes" exist on UFCStats. The active
+    # UFC contender (27-8) must win over the lesser-known namesake (19-3),
+    # regardless of listing order — otherwise the wrong record/stats get cached.
+    rows = [
+        ("Diego", "Lopes", "http://ufcstats.com/fighter-details/aaa", 19, 3, 0),
+        ("Diego", "Lopes", "http://ufcstats.com/fighter-details/bbb", 27, 8, 0),
+    ]
+    monkeypatch.setattr(scrape, "_load_ufcstats_letter", lambda letter: rows)
+    assert scrape._search_ufcstats("Diego Lopes") == (
+        "http://ufcstats.com/fighter-details/bbb", "27-8-0")
+
+
+def test_search_ufcstats_single_match_unchanged(monkeypatch):
+    # A unique name must still resolve to its one row (no behavior change).
+    rows = [("Steve", "Garcia", "http://ufcstats.com/fighter-details/ccc", 19, 5, 0)]
+    monkeypatch.setattr(scrape, "_load_ufcstats_letter", lambda letter: rows)
+    assert scrape._search_ufcstats("Steve Garcia") == (
+        "http://ufcstats.com/fighter-details/ccc", "19-5-0")

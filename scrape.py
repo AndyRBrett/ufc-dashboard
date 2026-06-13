@@ -906,7 +906,14 @@ def _name_tokens_match(row_first, row_last, target_name):
 
 
 def _search_ufcstats(name):
-    """Search UFCStats for *name* by last-name initial. Returns (url, record) or None."""
+    """Search UFCStats for *name* by last-name initial. Returns (url, record) or None.
+
+    Several fighters can share a name (e.g. two distinct "Diego Lopes" on
+    UFCStats). Returning whichever is listed first silently caches the wrong
+    fighter's record and stats, so when more than one row matches the name
+    tokens, prefer the most-experienced (most total fights) — that's the active
+    UFC roster member a current card refers to.
+    """
     parts = clean(name).split()
     if not parts:
         return None
@@ -917,9 +924,21 @@ def _search_ufcstats(name):
     for attempt in range(2):  # one retry on empty result
         for letter in letters:
             rows = _load_ufcstats_letter(letter)
-            for row_first, row_last, href, w, l, d in rows:
-                if _name_tokens_match(row_first, row_last, name):
-                    return (href, f"{w}-{l}-{d}" if (w or l) else "")
+            matches = [
+                (href, w, l, d)
+                for row_first, row_last, href, w, l, d in rows
+                if _name_tokens_match(row_first, row_last, name)
+            ]
+            if matches:
+                if len(matches) > 1:
+                    print(
+                        f"  UFCStats: {len(matches)} fighters match {name!r} — "
+                        f"picking the most-experienced",
+                        file=sys.stderr,
+                    )
+                    matches.sort(key=lambda m: m[1] + m[2] + m[3], reverse=True)
+                href, w, l, d = matches[0]
+                return (href, f"{w}-{l}-{d}" if (w or l) else "")
             if not rows and attempt == 0:
                 # Letter page returned empty — clear cache and retry after a pause
                 _ufcstats_letter_cache.pop(letter, None)
