@@ -3,6 +3,10 @@ __pycache__/
 *.pyo
 .preview/
 
+# Node build tooling and generated output (run `npm install && npm run build`)
+node_modules/
+dist/
+
 # Secrets — never commit environment files
 .env
 .env.*

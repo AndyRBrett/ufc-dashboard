@@ -1,0 +1,14 @@
+{
+  "name": "ufc-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "UFC Picks PWA — optional static-asset minification build",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "devDependencies": {
+    "html-minifier-terser": "^7.2.0",
+    "terser": "^5.31.0"
+  }
+}
