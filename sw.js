@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = '2026-06-13-1';
+const SW_VERSION = '2026-06-13-2';
 const CACHE = 'ufc-' + SW_VERSION;
 
 self.addEventListener('install', function(e) {

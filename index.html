@@ -3410,7 +3410,12 @@ function fireTrashTalk(){
   if(!_trashText||_selectedTargets.size===0)return;
   var btn=document.getElementById("trashSendBtn");btn.disabled=true;
   var includeIds=_selectedTargets.has("__all__")?null:Array.from(_selectedTargets);
-  var pushBody=_trashPersona+": "+_trashText+"\n---\n"+_trashText;
+  // Send the AI text once — duplicating it (with a \n---\n split + persona prefix)
+  // roughly doubled the body and pushed typical 2-3 sentence roasts past the
+  // server's 600-char MAX_BODY guard, which silently rejected them. The SW shows
+  // a body with no \n---\n separator in both the notification and the in-app
+  // sheet, and showIncomingTrashTalk reads the persona from the trailing "— X".
+  var pushBody=_trashText;
   var req={event_date:new Date().toISOString().slice(0,10),type:"trash-talk-"+Date.now(),
     title:"🔥 "+(_trashMe?_trashMe.nickname:"Someone")+" is talking trash!",body:pushBody,exclude_user_id:USER_ID};
   if(includeIds)req.include_user_ids=includeIds;
@@ -3418,10 +3423,13 @@ function fireTrashTalk(){
     fetch(SUPABASE_URL+"/functions/v1/send-push",{
       method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
       body:JSON.stringify(req)
-    }).then(function(){
+    }).then(function(r){
+      // Don't claim success on a server rejection (e.g. 400/429) — surface it
+      // and re-enable the button so the user knows the trash talk didn't send.
+      if(!r.ok){r.text().then(function(t){console.error("trash-talk push failed",r.status,t);});btn.disabled=false;toast("⚠️ Trash talk didn't send ("+r.status+")");return;}
       document.getElementById("trashTargets").style.display="none";
       document.getElementById("trashSent").style.display="block";
-    }).catch(function(){btn.disabled=false;});
+    }).catch(function(){btn.disabled=false;toast("⚠️ Trash talk didn't send — check connection");});
   };
   // Also exclude this device's push endpoint — the push_subs row can be
   // registered under an older anonymous user_id, which exclude_user_id misses
@@ -4036,7 +4044,7 @@ function loadLeaderboard(isLive){
       bhWrap.appendChild(bl);
       body.appendChild(bhWrap);
     }
-    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-13-1";body.appendChild(verEl);
+    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-13-2";body.appendChild(verEl);
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
   }).catch(function(err){
