@@ -170,7 +170,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-trash-send{width:100%;padding:11px;background:var(--red);color:var(--on-accent);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:opacity .15s}
 .lb-trash-send:disabled{opacity:.4;cursor:not-allowed}
 .lb-trash-hint-section{margin-bottom:2px}
-.lb-trash-input{width:100%;background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:9px 12px;font-size:13px;color:var(--text);font-family:inherit;box-sizing:border-box;outline:none;margin-bottom:9px}
+.lb-trash-input{width:100%;background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:9px 12px;font-size:16px;color:var(--text);font-family:inherit;box-sizing:border-box;outline:none;margin-bottom:9px}
 .lb-trash-input:focus{border-color:var(--gold)}
 .lb-trash-input::placeholder{color:var(--muted)}
 .lb-trash-gen{width:100%;padding:11px;background:var(--gold);color:var(--on-gold);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em}
@@ -3453,7 +3453,7 @@ function showIncomingTrashTalk(text){
   if(!document.getElementById("lbPanel").classList.contains("open"))openLeaderboard();
   var sheet=document.getElementById("trashSheet");
   document.getElementById("trashPersona").textContent="🎤 "+persona+" says...";
-  document.getElementById("trashText").textContent=text;
+  document.getElementById("trashText").textContent=text;document.getElementById("trashText").style.display="block";
   document.getElementById("trashSent").style.display="none";
   sheet.classList.add("open");
 }
@@ -3483,7 +3483,7 @@ function openTrashTalk(){
   renderTrashPersonaList("");
   document.getElementById("trashPersonaPicker").style.display="block";
   document.getElementById("trashPersona").textContent="";
-  document.getElementById("trashText").textContent="";
+  document.getElementById("trashText").textContent="";document.getElementById("trashText").style.display="none";
   document.getElementById("trashTargets").style.display="none";
   document.getElementById("trashSent").style.display="none";
   document.getElementById("trashHintInput").value="";
@@ -3528,7 +3528,7 @@ function generateTrashTalk(){
   _trashGenerating=true;
   var genBtn=document.querySelector(".lb-trash-gen");if(genBtn)genBtn.disabled=true;
   document.getElementById("trashHintSection").style.display="none";
-  document.getElementById("trashText").textContent="Generating...";
+  document.getElementById("trashText").textContent="Generating...";document.getElementById("trashText").style.display="block";
   document.getElementById("trashTargets").style.display="none";
   document.getElementById("trashSent").style.display="none";
   var myName=me.nickname||"The Champ";
