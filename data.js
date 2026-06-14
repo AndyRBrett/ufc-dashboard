@@ -86,7 +86,7 @@ var EVENTS=[
     fights:[
       {lbl:"Main Event",wc:"Lightweight",title:true,rematch:false,odds:{f1:-537,f2:390},winner:"",method:"",round:null,state:"pre",f1:{n:"Ilia Topuria",r:"17-0-0",rk:"C",s:null},f2:{n:"Justin Gaethje",r:"27-5-0",rk:"IC",s:null}},
       {lbl:"Co-Main",wc:"Heavyweight",title:false,rematch:false,odds:{f1:-109,f2:-112},winner:"",method:"",round:null,state:"pre",f1:{n:"Alex Pereira",r:"13-3-0",rk:"",s:null},f2:{n:"Ciryl Gane",r:"13-2-0",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Bantamweight",title:false,rematch:false,odds:{f1:350,f2:-472},winner:"",method:"",round:null,state:"pre",f1:{n:"Sean O'Malley",r:"19-3-0",rk:"",s:null},f2:{n:"Aiemann Zahabi",r:"14-2-0",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Bantamweight",title:false,rematch:false,odds:{f1:-472,f2:350},winner:"",method:"",round:null,state:"pre",f1:{n:"Sean O'Malley",r:"19-3-0",rk:"",s:null},f2:{n:"Aiemann Zahabi",r:"14-2-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Heavyweight",title:false,rematch:false,odds:{f1:-432,f2:325},winner:"",method:"",round:null,state:"pre",f1:{n:"Josh Hokit",r:"9-0-0",rk:"",s:null},f2:{n:"Derrick Lewis",r:"29-13-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Lightweight",title:false,rematch:false,odds:{f1:-615,f2:437},winner:"",method:"",round:null,state:"pre",f1:{n:"Mauricio Ruffy",r:"13-2-0",rk:"",s:null},f2:{n:"Michael Chandler",r:"23-10-0",rk:"",s:null}},
       {lbl:"Prelim",wc:"Middleweight",title:false,rematch:false,odds:{f1:-322,f2:248},winner:"",method:"",round:null,state:"pre",f1:{n:"Bo Nickal",r:"8-1-0",rk:"",s:null},f2:{n:"Kyle Daukaus",r:"17-4-0",rk:"",s:null}},
