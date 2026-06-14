@@ -2351,53 +2351,178 @@ function openCmp(f1,f2){
 }
 function closeCmp(){document.getElementById("cmpBg").classList.remove("open");unlockScroll();}
 
-function openShare(){
-  if(!Object.keys(preds).length){toast("Make some picks first!");return;}
-  var card=document.getElementById("shareCard");card.innerHTML="";
-  var tc=0,tr=0;
-  // Count resolved picks from all events + resolvedPicks history
-  var allR=0,allC=0;
-  Object.keys(resolvedPicks).forEach(function(k){if(resolvedPicks[k]){allR++;if(resolvedPicks[k]==="win")allC++;}});
-  EVENTS.forEach(function(ev){ev.fights.forEach(function(f){var k=pk(ev,f);if(preds[k]&&f.winner&&!resolvedPicks[k]){allR++;if(preds[k]===f.winner)allC++;}});});
-  if(allR>0){
-    var bdg=document.createElement("div");bdg.className="share-badge";
-    var bnum=document.createElement("div");bnum.className="share-badge-num";bnum.textContent=allC+"/"+allR;bdg.appendChild(bnum);
-    var bsub=document.createElement("div");bsub.className="share-badge-sub";bsub.textContent=Math.round(allC/allR*100)+"% correct · UFC Fight Cards";bdg.appendChild(bsub);
-    card.appendChild(bdg);
-  } else {
-    var title=document.createElement("div");title.className="share-card-title";title.textContent="MY UFC PICKS";card.appendChild(title);
+var _shareCanvas=null,_shareEv=null;
+// True if the user has at least one pick on this event's card.
+function _evHasPicks(ev){return ev.fights.some(function(f){return preds[pk(ev,f)];});}
+// The single "current card" to share — the upcoming/next event (mirrors the
+// countdown logic in updateCountdown), with fallbacks so Share still works if
+// the only picks live on a different card.
+function shareEvent(){
+  var now=Date.now();
+  var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-2*DAY_MS;});
+  var cur=null;
+  if(upcoming.length){
+    cur=upcoming[0];
+    var dp0=cur.date.split("-");var p0=(cur.time||"0:0").split(":");
+    var t0=Date.UTC(parseInt(dp0[0],10),parseInt(dp0[1],10)-1,parseInt(dp0[2],10),(parseInt(p0[0],10)||0)+4,parseInt(p0[1]||"0",10),0);
+    if(now-t0>6*HOUR_MS&&upcoming.length>1)cur=upcoming[1];
   }
-  EVENTS.forEach(function(ev,ei){
-    var eps=ev.fights.map(function(f){var k=pk(ev,f);return preds[k]?{f:f,pick:preds[k],result:f.winner||"",method:preds_method[k]||"",conf:preds_conf[k]||0}:null;}).filter(Boolean);
-    if(!eps.length)return;
-    var el=document.createElement("div");el.style.cssText="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 4px";el.textContent=ev.name;card.appendChild(el);
-    eps.forEach(function(p){
-      var row=document.createElement("div");row.className="share-row";
-      var fl=document.createElement("span");fl.style.color="var(--muted)";fl.textContent=p.f.lbl+":";
-      var pn=document.createElement("span");pn.style.fontWeight="600";pn.textContent=p.pick.split(" ").pop()+(p.method?" ("+p.method+")":"")+(p.conf===3?" ★★★":p.conf===2?" ★★":p.conf===1?" ★":"");
-      var st=document.createElement("span");
-      if(!p.result){st.style.color="var(--muted)";st.textContent="Pending";}
-      else if(p.result===p.pick){st.style.color="var(--green)";st.textContent="Correct";tc++;tr++;}
-      else{st.style.color="var(--loss)";st.textContent="Wrong";tr++;}
-      row.appendChild(fl);row.appendChild(pn);row.appendChild(st);card.appendChild(row);
-    });
+  if(cur&&_evHasPicks(cur))return cur;
+  for(var i=0;i<upcoming.length;i++)if(_evHasPicks(upcoming[i]))return upcoming[i];
+  for(var j=EVENTS.length-1;j>=0;j--)if(_evHasPicks(EVENTS[j]))return EVENTS[j];
+  return cur;
+}
+// Render the current card's picks to a themed PNG canvas. All colors are read
+// live from the active theme's CSS custom properties so the image matches
+// whatever theme the user is on.
+function buildShareImage(ev){
+  var cs=getComputedStyle(document.body);
+  function v(n,d){var x=cs.getPropertyValue(n).trim();return x||d;}
+  var C={
+    bg:v('--bg','#07070a'),text:v('--text','#ededef'),muted:v('--muted','#8a8f98'),
+    accent:v('--red','#e8192c'),edge:v('--banner-edge','#a0000a'),
+    green:v('--green','#2ecc71'),loss:v('--loss','#d65a68'),
+    onAccent:v('--on-accent','#fff'),border:v('--border2','rgba(255,255,255,.14)')
+  };
+  var picks=[];
+  ev.fights.forEach(function(f){
+    var k=pk(ev,f);if(!preds[k])return;
+    picks.push({lbl:f.lbl,name:preds[k].split(" ").pop(),method:preds_method[k]||"",
+      conf:preds_conf[k]||0,result:f.winner||"",win:!!f.winner&&f.winner===preds[k]});
   });
+  var resolved=0,correct=0;
+  picks.forEach(function(p){if(p.result){resolved++;if(p.win)correct++;}});
+
+  var S=2,W=540,M=26;
+  var pad=24,brandH=20,afterBrand=18;
+  var badgeH=resolved>0?98:74,afterBadge=16;
+  var evNameH=24,evMetaH=16,afterMeta=12;
+  var rowH=34,afterRows=12,footH=15;
+  var H=pad+brandH+afterBrand+badgeH+afterBadge+evNameH+evMetaH+afterMeta+picks.length*rowH+afterRows+footH+pad;
+
+  var cv=document.createElement("canvas");
+  cv.width=W*S;cv.height=Math.round(H)*S;
+  var ctx=cv.getContext("2d");
+  ctx.scale(S,S);
+  ctx.textBaseline="alphabetic";
+  function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  function fitText(str,maxW){if(ctx.measureText(str).width<=maxW)return str;while(str.length>1&&ctx.measureText(str+"…").width>maxW)str=str.slice(0,-1);return str+"…";}
+
+  // Background
+  ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);
+  var bw=W-2*M;
+  var y=pad;
+
+  // Wordmark
+  ctx.font="18px 'Bebas Neue',sans-serif";
+  ctx.textAlign="left";
+  ctx.fillStyle=C.accent;ctx.fillText("UFC ",M,y+brandH-4);
+  var uw=ctx.measureText("UFC ").width;
+  ctx.fillStyle=C.text;ctx.fillText("FIGHT CARDS",M+uw,y+brandH-4);
+  y+=brandH+afterBrand;
+
+  // Score badge
+  var grad=ctx.createLinearGradient(M,y,M+bw,y+badgeH);
+  grad.addColorStop(0,C.edge);grad.addColorStop(1,C.accent);
+  roundRect(M,y,bw,badgeH,12);ctx.fillStyle=grad;ctx.fill();
+  ctx.textAlign="center";ctx.fillStyle=C.onAccent;
+  if(resolved>0){
+    ctx.font="50px 'Bebas Neue',sans-serif";ctx.fillText(correct+"/"+resolved,M+bw/2,y+60);
+    ctx.font="13px Inter,sans-serif";ctx.globalAlpha=.85;
+    ctx.fillText(Math.round(correct/resolved*100)+"% correct · UFC Fight Cards",M+bw/2,y+82);ctx.globalAlpha=1;
+  } else {
+    ctx.font="36px 'Bebas Neue',sans-serif";ctx.fillText("MY PICKS",M+bw/2,y+46);
+    ctx.font="13px Inter,sans-serif";ctx.globalAlpha=.85;
+    ctx.fillText(picks.length+" pick"+(picks.length!==1?"s":"")+" · UFC Fight Cards",M+bw/2,y+66);ctx.globalAlpha=1;
+  }
+  ctx.textAlign="left";
+  y+=badgeH+afterBadge;
+
+  // Event name + meta
+  ctx.fillStyle=C.text;ctx.font="22px 'Bebas Neue',sans-serif";
+  ctx.fillText(fitText(ev.name,bw),M,y+evNameH-6);
+  y+=evNameH;
+  ctx.fillStyle=C.muted;ctx.font="12px Inter,sans-serif";
+  var meta=fmtDate(ev.date)+(ev.loc?"  ·  "+ev.loc:"");
+  ctx.fillText(fitText(meta,bw),M,y+evMetaH-5);
+  y+=evMetaH+afterMeta;
+
+  // Pick rows
+  picks.forEach(function(p){
+    var ty=y+21;
+    ctx.textAlign="left";
+    ctx.font="13px Inter,sans-serif";ctx.fillStyle=C.muted;
+    ctx.fillText(p.lbl,M,ty);
+    var lw=ctx.measureText(p.lbl).width;
+    var x=M+lw+12;
+    ctx.font="600 14px Inter,sans-serif";ctx.fillStyle=C.text;
+    var pickStr=p.name+(p.method?" ("+p.method+")":"");
+    ctx.fillText(pickStr,x,ty);
+    if(p.conf>0){
+      x+=ctx.measureText(pickStr).width+6;
+      ctx.fillStyle=C.accent;ctx.font="12px Inter,sans-serif";
+      ctx.fillText(new Array(p.conf+1).join("★"),x,ty);
+    }
+    var rTxt,rCol;
+    if(!p.result){rTxt="Pending";rCol=C.muted;}
+    else if(p.win){rTxt="Correct";rCol=C.green;}
+    else{rTxt="Wrong";rCol=C.loss;}
+    ctx.font="600 13px Inter,sans-serif";ctx.fillStyle=rCol;ctx.textAlign="right";
+    ctx.fillText(rTxt,W-M,ty);
+    ctx.textAlign="left";
+    ctx.strokeStyle=C.border;ctx.globalAlpha=.5;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(M,y+rowH-0.5);ctx.lineTo(W-M,y+rowH-0.5);ctx.stroke();ctx.globalAlpha=1;
+    y+=rowH;
+  });
+  y+=afterRows;
+
+  // Footer
+  ctx.textAlign="center";ctx.fillStyle=C.muted;ctx.font="11px Inter,sans-serif";
+  ctx.globalAlpha=.8;ctx.fillText("Make your picks at UFC Fight Cards",W/2,y+footH-4);ctx.globalAlpha=1;
+
+  return cv;
+}
+function openShare(){
+  var ev=shareEvent();
+  if(!ev||!_evHasPicks(ev)){toast("Make some picks first!");return;}
+  _shareEv=ev;
+  var card=document.getElementById("shareCard");
+  card.innerHTML="";card.style.padding="0";card.style.overflow="hidden";
   document.getElementById("shareBg").classList.add("open");
   lockScroll();
+  var draw=function(){
+    _shareCanvas=buildShareImage(ev);
+    _shareCanvas.style.width="100%";_shareCanvas.style.display="block";
+    card.innerHTML="";card.appendChild(_shareCanvas);
+  };
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(draw);}else{draw();}
 }
 function closeShare(){document.getElementById("shareBg").classList.remove("open");unlockScroll();}
-function copyPicks(){
-  var lines=["MY UFC PICKS"];
-  EVENTS.forEach(function(ev,ei){
-    var eps=[];
-    ev.fights.forEach(function(f){var k=pk(ev,f);if(preds[k])eps.push({f:f,pick:preds[k],result:f.winner||""});});
-    if(!eps.length)return;
-    lines.push("");lines.push(ev.name);
-    eps.forEach(function(p){var st=!p.result?"pending":p.result===p.pick?"correct":"wrong";lines.push(p.f.lbl+": "+p.pick.split(" ").pop()+" ("+st+")");});
+// Plain-text fallback, scoped to the single current card.
+function copyPicksText(ev){
+  ev=ev||shareEvent();if(!ev)return;
+  var lines=["My UFC picks — "+ev.name];
+  ev.fights.forEach(function(f){
+    var k=pk(ev,f);if(!preds[k])return;
+    var st=!f.winner?"pending":f.winner===preds[k]?"correct":"wrong";
+    lines.push(f.lbl+": "+preds[k].split(" ").pop()+(preds_method[k]?" ("+preds_method[k]+")":"")+" — "+st);
   });
   var text=lines.join("\n");
-  if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){toast("Copied!");closeShare();});}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){toast("Copied!");closeShare();},function(){toast("Copy failed");});}
   else{try{var ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);toast("Copied!");closeShare();}catch(e){toast("Copy failed");}}
+}
+function copyPicks(){
+  if(_shareCanvas&&navigator.clipboard&&window.ClipboardItem){
+    var canvas=_shareCanvas;
+    try{
+      var item=new ClipboardItem({"image/png":new Promise(function(resolve,reject){
+        canvas.toBlob(function(b){b?resolve(b):reject(new Error("no blob"));},"image/png");
+      })});
+      navigator.clipboard.write([item]).then(function(){toast("Image copied!");closeShare();},function(){copyPicksText(_shareEv);});
+      return;
+    }catch(e){}
+  }
+  copyPicksText(_shareEv);
 }
 
 function fireNotif(title,body){
