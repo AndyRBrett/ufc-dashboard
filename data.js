@@ -143,8 +143,8 @@ var EVENTS=[
     venue:"T-Mobile Arena",
     loc:"Las Vegas",
     tv:"Paramount+",
-    time:"20:00",
-    prelimTime:"17:00",
+    time:"21:00",
+    prelimTime:"19:00",
     fights:[
       {lbl:"Main Event",wc:"Welterweight",title:false,rematch:true,odds:{f1:245,f2:-315},winner:"",method:"",round:null,state:"pre",f1:{n:"Conor McGregor",r:"22-6-0",rk:"",s:null},f2:{n:"Max Holloway",r:"27-9-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Lightweight",title:false,rematch:false,odds:{f1:148,f2:-180},winner:"",method:"",round:null,state:"pre",f1:{n:"Paddy Pimblett",r:"23-4-0",rk:"",s:null},f2:{n:"Benoit Saint Denis",r:"",rk:"",s:null}},

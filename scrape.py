@@ -287,13 +287,26 @@ _US_REGIONS = re.compile(
     re.IGNORECASE,
 )
 
+# Numbered pay-per-view events ("UFC 329: ...") run later than Fight Nights:
+# US PPV main cards start at 9pm ET with prelims at 7pm ET, versus 8pm/5pm ET
+# for a standard Fight Night.
+_PPV_RE = re.compile(r"^UFC\s+\d+\b")
 
-def _default_main_time(loc):
-    return "20:00" if _US_REGIONS.search(loc or "") else "TBD"
+
+def _is_ppv(ev_name):
+    return bool(_PPV_RE.match(ev_name or ""))
 
 
-def _default_prelim_time(loc):
-    return "17:00" if _US_REGIONS.search(loc or "") else "TBD"
+def _default_main_time(loc, ev_name=""):
+    if not _US_REGIONS.search(loc or ""):
+        return "TBD"
+    return "21:00" if _is_ppv(ev_name) else "20:00"
+
+
+def _default_prelim_time(loc, ev_name=""):
+    if not _US_REGIONS.search(loc or ""):
+        return "TBD"
+    return "19:00" if _is_ppv(ev_name) else "17:00"
 
 
 # Outlier cards whose published start times differ from the location-based
@@ -316,7 +329,7 @@ def _event_times(ev_name, loc):
     """Published times for known outlier cards, else location-based defaults."""
     if ev_name in _TIME_OVERRIDES:
         return _TIME_OVERRIDES[ev_name]
-    return _default_main_time(loc), _default_prelim_time(loc)
+    return _default_main_time(loc, ev_name), _default_prelim_time(loc, ev_name)
 
 
 def _infer_venue_loc_from_row(row, after_pos):
