@@ -82,15 +82,14 @@ var EVENTS=[
     loc:"Washington",
     tv:"Paramount+",
     time:"20:00",
-    prelimTime:"16:00",
     fights:[
       {lbl:"Main Event",wc:"Lightweight",title:true,rematch:false,odds:{f1:-490,f2:373},winner:"",method:"",round:null,state:"pre",f1:{n:"Ilia Topuria",r:"17-0-0",rk:"C",s:null},f2:{n:"Justin Gaethje",r:"27-5-0",rk:"IC",s:null}},
       {lbl:"Co-Main",wc:"Heavyweight",title:false,rematch:false,odds:{f1:-109,f2:-110},winner:"",method:"",round:null,state:"pre",f1:{n:"Alex Pereira",r:"13-3-0",rk:"",s:null},f2:{n:"Ciryl Gane",r:"13-2-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Bantamweight",title:false,rematch:false,odds:{f1:-460,f2:350},winner:"",method:"",round:null,state:"pre",f1:{n:"Sean O'Malley",r:"19-3-0",rk:"",s:null},f2:{n:"Aiemann Zahabi",r:"14-2-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Heavyweight",title:false,rematch:false,odds:{f1:-420,f2:323},winner:"",method:"",round:null,state:"pre",f1:{n:"Josh Hokit",r:"9-0-0",rk:"",s:null},f2:{n:"Derrick Lewis",r:"29-13-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Lightweight",title:false,rematch:false,odds:{f1:-592,f2:433},winner:"",method:"",round:null,state:"pre",f1:{n:"Mauricio Ruffy",r:"13-2-0",rk:"",s:null},f2:{n:"Michael Chandler",r:"23-10-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Middleweight",title:false,rematch:false,odds:{f1:-318,f2:250},winner:"",method:"",round:null,state:"pre",f1:{n:"Bo Nickal",r:"8-1-0",rk:"",s:null},f2:{n:"Kyle Daukaus",r:"17-4-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Featherweight",title:false,rematch:false,odds:{f1:-150,f2:125},winner:"",method:"",round:null,state:"pre",f1:{n:"Diego Lopes",r:"27-8-0",rk:"",s:null},f2:{n:"Steve Garcia",r:"19-5-0",rk:"",s:null}}
+      {lbl:"Main Card",wc:"Middleweight",title:false,rematch:false,odds:{f1:-318,f2:250},winner:"",method:"",round:null,state:"pre",f1:{n:"Bo Nickal",r:"8-1-0",rk:"",s:null},f2:{n:"Kyle Daukaus",r:"17-4-0",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Featherweight",title:false,rematch:false,odds:{f1:-150,f2:125},winner:"",method:"",round:null,state:"pre",f1:{n:"Diego Lopes",r:"27-8-0",rk:"",s:null},f2:{n:"Steve Garcia",r:"19-5-0",rk:"",s:null}}
     ]
   },
   {

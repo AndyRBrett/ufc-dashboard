@@ -298,8 +298,17 @@ def _default_prelim_time(loc):
 
 # Outlier cards whose published start times differ from the location-based
 # default. Keyed by exact event name -> (main_time, prelim_time) in 24h ET.
+# An empty prelim_time means the card has no preliminary bouts (every fight is
+# on the main card), so no prelim start time is published.
 _TIME_OVERRIDES = {
-    "UFC Freedom 250": ("20:00", "16:00"),  # White House: prelims 4pm ET, main 8pm ET
+    # White House: single seven-fight main card at 8pm ET, no prelims.
+    "UFC Freedom 250": ("20:00", ""),
+}
+
+# Cards with no preliminary bouts -- every fight is treated as a main-card fight
+# regardless of its position on the card.
+_NO_PRELIM_CARDS = {
+    "UFC Freedom 250",
 }
 
 
@@ -1385,11 +1394,13 @@ def step_build_events(data, now):
                 wiki_fights = [{"f1": m.group(1), "f2": m.group(2), "wc": "TBD", "title": False}]
 
         card = []
+        no_prelims = ev_name in _NO_PRELIM_CARDS
         for i, wf in enumerate(wiki_fights):
-            if i == 0:    lbl = "Main Event"
-            elif i == 1:  lbl = "Co-Main"
-            elif i < 5:   lbl = "Main Card"
-            else:         lbl = "Prelim"
+            if i == 0:        lbl = "Main Event"
+            elif i == 1:      lbl = "Co-Main"
+            elif no_prelims:  lbl = "Main Card"
+            elif i < 5:       lbl = "Main Card"
+            else:             lbl = "Prelim"
             f1, f2 = wf["f1"], wf["f2"]
             wiki_rematch = wf.get("rematch", False) or _wiki_rematch(wt, f1, f2)
             if wiki_rematch:
