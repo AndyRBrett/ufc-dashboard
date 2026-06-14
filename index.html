@@ -1041,6 +1041,10 @@ try{FIGHTER_PHOTOS=JSON.parse(localStorage.getItem("ufc_photos")||"{}");}catch(e
 function _safeImgUrl(url){if(!url||url==="none")return null;try{var p=new URL(url);if(p.protocol!=="https:")return null;if(!p.hostname.endsWith(".wikimedia.org")&&!p.hostname.endsWith(".wikipedia.org"))return null;return url;}catch(e){return null;}}
 var userName="",preds={},resolvedPicks={};
 try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.getItem("ufc_preds")||"{}");resolvedPicks=JSON.parse(localStorage.getItem("ufc_resolved")||"{}");}catch(e){}
+// Guard against a stringified empty identity persisted by an earlier session —
+// otherwise the literal "undefined"/"null" becomes the user's name and is
+// written onto every pick + shown on the leaderboard.
+if(userName==="undefined"||userName==="null"){userName="";try{localStorage.removeItem("ufc_name");}catch(e){}}
 var preds_method={},preds_conf={},preds_fotn={};
 try{preds_method=JSON.parse(localStorage.getItem("ufc_method")||"{}");preds_conf=JSON.parse(localStorage.getItem("ufc_conf")||"{}");preds_fotn=JSON.parse(localStorage.getItem("ufc_fotn")||"{}");}catch(e){}
 var prevOdds={};
@@ -2136,7 +2140,7 @@ function fnPick(side){
   if(fnEv&&picksLocked(fnEv)){toast("Picks are locked — event has started");return;}
   checkName(function(){
     preds[pk(fnEv,f)]=side===0?f.f1.n:f.f2.n;
-    save();syncPick(fnEv,f);fnPickedAny=true;updateFN();
+    save();syncPick(fnEv,f,true);fnPickedAny=true;updateFN();
     if(fnIdx<fnFights.length-1)setTimeout(function(){fnIdx++;updateFN();},650);
   });
 }
@@ -4447,7 +4451,7 @@ function _slackersFor(nextEv,rows){
   if(!mainTotal)return[];
   var users={},cutoff=Date.now()-60*DAY_MS;
   rows.forEach(function(p){
-    var base=_lbBaseName(p.nickname);if(!base)return;
+    var base=_lbBaseName(p.nickname);if(!base||base==="undefined"||base==="null")return;
     var u=users[base]||(users[base]={base:base,name:p.nickname,user_id:null,_t:0,_uidT:-1,latestEv:"",picked:{}});
     var t=Date.parse(p.updated_at||"")||0;
     if(t>=u._t){u._t=t;u.name=p.nickname;}
