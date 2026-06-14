@@ -3421,8 +3421,14 @@ function fireTrashTalk(){
   // a body with no \n---\n separator in both the notification and the in-app
   // sheet, and showIncomingTrashTalk reads the persona from the trailing "— X".
   var pushBody=_trashText;
+  // Lead the notification with the persona we're impersonating (mirrors the
+  // in-app sheet's "🎤 X says..."), and credit the sender in parens so the
+  // recipient still knows which friend hired the voice. Fall back to the
+  // trailing "— X" signature if _trashPersona somehow isn't set.
+  var fxPersona=_trashPersona||(function(){var i=_trashText.lastIndexOf("—");return i>=0?_trashText.slice(i+1).trim():"A famous voice";})();
+  var fxSender=_trashMe?_trashMe.nickname:"Someone";
   var req={event_date:new Date().toISOString().slice(0,10),type:"trash-talk-"+Date.now(),
-    title:"🔥 "+(_trashMe?_trashMe.nickname:"Someone")+" is talking trash!",body:pushBody,exclude_user_id:USER_ID};
+    title:"🎤 "+fxPersona+" (via "+fxSender+")",body:pushBody,exclude_user_id:USER_ID};
   if(includeIds)req.include_user_ids=includeIds;
   var send=function(){
     fetch(SUPABASE_URL+"/functions/v1/send-push",{
