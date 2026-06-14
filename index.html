@@ -170,7 +170,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-trash-send{width:100%;padding:11px;background:var(--red);color:var(--on-accent);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:opacity .15s}
 .lb-trash-send:disabled{opacity:.4;cursor:not-allowed}
 .lb-trash-hint-section{margin-bottom:2px}
-.lb-trash-input{width:100%;background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:9px 12px;font-size:13px;color:var(--text);font-family:inherit;box-sizing:border-box;outline:none;margin-bottom:9px}
+.lb-trash-input{width:100%;background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:9px 12px;font-size:16px;color:var(--text);font-family:inherit;box-sizing:border-box;outline:none;margin-bottom:9px}
 .lb-trash-input:focus{border-color:var(--gold)}
 .lb-trash-input::placeholder{color:var(--muted)}
 .lb-trash-gen{width:100%;padding:11px;background:var(--gold);color:var(--on-gold);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em}
@@ -178,6 +178,11 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-trash-picker-cards{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
 .lb-trash-picker-card{padding:10px 14px;background:var(--card);border:1px solid var(--border2);border-radius:10px;cursor:pointer;text-align:left;width:100%;font-family:inherit;color:var(--text);font-size:14px;font-weight:700;transition:border-color .15s,background .15s;line-height:1.3}
 .lb-trash-picker-card:active{border-color:var(--gold);background:var(--card2)}
+.lb-trash-persona-search{margin-top:12px;margin-bottom:8px}
+.lb-trash-persona-list{display:flex;flex-direction:column;gap:6px;max-height:230px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:2px}
+.lb-trash-persona-row{padding:9px 13px;background:var(--card);border:1px solid var(--border);border-radius:9px;cursor:pointer;text-align:left;width:100%;font-family:inherit;color:var(--text);font-size:13px;font-weight:600;line-height:1.3;flex:0 0 auto}
+.lb-trash-persona-row:active{border-color:var(--gold);background:var(--card2)}
+.lb-trash-persona-empty{font-size:12px;color:var(--muted);text-align:center;padding:14px 0}
 .lb-wheel-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--card2);border-top:2px solid var(--gold);border-radius:16px 16px 0 0;padding:20px 16px 28px;transform:translateY(100%);transition:transform .3s ease;z-index:10}
 .lb-wheel-sheet.open{transform:translateY(0)}
 .lb-wheel-close{position:absolute;top:14px;right:14px;background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;padding:0 4px;line-height:1}
@@ -1261,7 +1266,7 @@ var _lbSorted=[];
 var _trashText="",_trashPersona="",_trashMe=null,_trashOpponents=[],_trashMyRank=0,_selectedTargets=new Set();
 // Which leaderboard the trash talk is about, captured when the sheet opens.
 var _trashLbMode="current",_trashLbEvName=null,_lbCtxEvName=null;
-var _trashPersonas=["Conor McGregor","Chael Sonnen","Colby Covington","Sean Strickland","Nate Diaz","Jorge Masvidal","Israel Adesanya","Jon Jones","Michael Bisping","Dominick Cruz","Daniel Cormier","Rampage Jackson","Tito Ortiz","Kevin Holland","Paddy Pimblett","Sean O'Malley","Dustin Poirier","Justin Gaethje","Kamaru Usman","Henry Cejudo","Ben Askren","Josh Koscheck","Matt Serra","Donald Cerrone","Khabib Nurmagomedov","Muhammad Ali","Mike Tyson","Floyd Mayweather Jr.","Tyson Fury","Deontay Wilder","Prince Naseem Hamed","Adrien Broner","James Toney","Bernard Hopkins","Shannon Briggs","Ricardo Mayorga","Chris Eubank Sr.","Roy Jones Jr.","Oscar De La Hoya","Tommy Hearns","Ric Flair","Dwayne Johnson","Stone Cold Steve Austin","John Cena","CM Punk","Triple H","The Miz","MJF","Paul Heyman","Randy Savage","Roddy Piper","Hulk Hogan","Kurt Angle","Booker T","Chris Jericho","Kevin Garnett","Gary Payton","Charles Barkley","Draymond Green","Richard Sherman","Deion Sanders","Terrell Owens","Chad Johnson","Dennis Rodman","Reggie Miller","Pat McAfee","Marshawn Lynch","Cam Newton","Jalen Ramsey","Rasheed Wallace","Stephen A. Smith","Skip Bayless","Shannon Sharpe","Joe Rogan","Bill Burr","Andrew Schulz","Kevin Hart","Theo Von","Don Rickles","Larry David","Howard Stern","Gordon Ramsay","Simon Cowell","Samuel L. Jackson","Katt Williams","Tony Stark","Deadpool","Ron Swanson","Logan Ninefingers","Tyler Durden","Trevor Philips","Kratos","Duke Nukem","Sterling Archer","The Joker","Captain Jack Sparrow","Johnny Lawrence","Homelander","Bender Bending Rodríguez"];
+var _trashPersonas=["Conor McGregor","Chael Sonnen","Colby Covington","Sean Strickland","Nate Diaz","Jorge Masvidal","Israel Adesanya","Jon Jones","Michael Bisping","Dominick Cruz","Daniel Cormier","Rampage Jackson","Tito Ortiz","Kevin Holland","Paddy Pimblett","Sean O'Malley","Dustin Poirier","Justin Gaethje","Kamaru Usman","Henry Cejudo","Ben Askren","Matt Serra","Donald Cerrone","Khabib Nurmagomedov","Muhammad Ali","Mike Tyson","Floyd Mayweather Jr.","Tyson Fury","Deontay Wilder","Shannon Briggs","Ric Flair","Dwayne Johnson","Stone Cold Steve Austin","John Cena","CM Punk","Triple H","The Miz","MJF","Paul Heyman","Randy Savage","Roddy Piper","Hulk Hogan","Kurt Angle","Booker T","Chris Jericho","Kevin Garnett","Gary Payton","Charles Barkley","Draymond Green","Richard Sherman","Deion Sanders","Terrell Owens","Chad Johnson","Dennis Rodman","Pat McAfee","Marshawn Lynch","Cam Newton","Jalen Ramsey","Shannon Sharpe","Joe Rogan","Bill Burr","Andrew Schulz","Kevin Hart","Theo Von","Don Rickles","Larry David","Howard Stern","Gordon Ramsay","Simon Cowell","Samuel L. Jackson","Katt Williams","Tony Stark","Deadpool","Ron Swanson","Tyler Durden","Trevor Philips","Kratos","Duke Nukem","Sterling Archer","The Joker","Captain Jack Sparrow","Johnny Lawrence","Homelander","Bender Bending Rodríguez","Kenny Powers","Ron Burgundy","Ricky Bobby","Shooter McGavin","Happy Gilmore","Eric Cartman","Rick Sanchez","Stewie Griffin","Saul Goodman","Walter White","Tony Montana","Dave Chappelle","Ricky Gervais","Yosemite Sam","Patrick Bateman","Frank Reynolds","Dr. Cox","Michael Scott","GOB Bluth"];
 var _scrollY=0;
 function lockScroll(){_scrollY=window.scrollY;document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.width='100%';document.body.style.top='-'+_scrollY+'px';}
 function unlockScroll(){document.body.style.overflow='';document.body.style.position='';document.body.style.width='';document.body.style.top='';window.scrollTo(0,_scrollY);}
@@ -3448,7 +3453,7 @@ function showIncomingTrashTalk(text){
   if(!document.getElementById("lbPanel").classList.contains("open"))openLeaderboard();
   var sheet=document.getElementById("trashSheet");
   document.getElementById("trashPersona").textContent="🎤 "+persona+" says...";
-  document.getElementById("trashText").textContent=text;
+  document.getElementById("trashText").textContent=text;document.getElementById("trashText").style.display="block";
   document.getElementById("trashSent").style.display="none";
   sheet.classList.add("open");
 }
@@ -3474,14 +3479,39 @@ function openTrashTalk(){
     btn.onclick=function(){selectTrashPersona(name);};
     cardsDiv.appendChild(btn);
   });
+  document.getElementById("trashPersonaSearch").value="";
+  renderTrashPersonaList("");
   document.getElementById("trashPersonaPicker").style.display="block";
   document.getElementById("trashPersona").textContent="";
-  document.getElementById("trashText").textContent="";
+  document.getElementById("trashText").textContent="";document.getElementById("trashText").style.display="none";
   document.getElementById("trashTargets").style.display="none";
   document.getElementById("trashSent").style.display="none";
   document.getElementById("trashHintInput").value="";
   document.getElementById("trashHintSection").style.display="none";
   document.getElementById("trashSheet").classList.add("open");
+}
+function renderTrashPersonaList(q){
+  var listDiv=document.getElementById("trashPersonaList");
+  listDiv.innerHTML="";
+  q=(q||"").trim().toLowerCase();
+  var matches=q?_trashPersonas.filter(function(n){return n.toLowerCase().indexOf(q)>=0;}):_trashPersonas.slice().sort(function(a,b){return a.localeCompare(b);});
+  if(!matches.length){
+    var empty=document.createElement("div");
+    empty.className="lb-trash-persona-empty";
+    empty.textContent="No voices match \""+q+"\"";
+    listDiv.appendChild(empty);
+    return;
+  }
+  matches.forEach(function(name){
+    var btn=document.createElement("button");
+    btn.className="lb-trash-persona-row";
+    btn.textContent=name;
+    btn.onclick=function(){selectTrashPersona(name);};
+    listDiv.appendChild(btn);
+  });
+}
+function filterTrashPersonas(){
+  renderTrashPersonaList(document.getElementById("trashPersonaSearch").value);
 }
 function selectTrashPersona(name){
   _trashPersona=name;
@@ -3498,7 +3528,7 @@ function generateTrashTalk(){
   _trashGenerating=true;
   var genBtn=document.querySelector(".lb-trash-gen");if(genBtn)genBtn.disabled=true;
   document.getElementById("trashHintSection").style.display="none";
-  document.getElementById("trashText").textContent="Generating...";
+  document.getElementById("trashText").textContent="Generating...";document.getElementById("trashText").style.display="block";
   document.getElementById("trashTargets").style.display="none";
   document.getElementById("trashSent").style.display="none";
   var myName=me.nickname||"The Champ";
@@ -4789,8 +4819,10 @@ document.addEventListener("DOMContentLoaded",function(){
   <div class="lb-trash-sheet" id="trashSheet">
     <button class="lb-trash-close" onclick="closeTrashSheet()">✕</button>
     <div id="trashPersonaPicker">
-      <div class="lb-trash-picker-lbl">Choose your voice</div>
+      <div class="lb-trash-picker-lbl">Recommended voices</div>
       <div class="lb-trash-picker-cards" id="trashPickerCards"></div>
+      <input class="lb-trash-input lb-trash-persona-search" id="trashPersonaSearch" placeholder="🔍 Search all voices..." oninput="filterTrashPersonas()" autocomplete="off">
+      <div class="lb-trash-persona-list" id="trashPersonaList"></div>
     </div>
     <div class="lb-trash-persona" id="trashPersona"></div>
     <div class="lb-trash-hint-section" id="trashHintSection" style="display:none">
