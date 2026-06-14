@@ -3464,6 +3464,12 @@ function showIncomingTrashTalk(text){
   var sheet=document.getElementById("trashSheet");
   document.getElementById("trashPersona").textContent="🎤 "+persona+" says...";
   document.getElementById("trashText").textContent=text;document.getElementById("trashText").style.display="block";
+  // Reading a received roast — hide every compose-only control so the voice
+  // picker / search box, hint field and target chips don't leak into the
+  // recipient's view (the sheet is shared with openTrashTalk).
+  document.getElementById("trashPersonaPicker").style.display="none";
+  document.getElementById("trashHintSection").style.display="none";
+  document.getElementById("trashTargets").style.display="none";
   document.getElementById("trashSent").style.display="none";
   sheet.classList.add("open");
 }
