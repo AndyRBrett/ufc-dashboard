@@ -124,6 +124,19 @@ def test_get_odds_no_match_returns_none():
     assert scrape.get_odds(idx, "Jon Jones", "Stipe Miocic") is None
 
 
+def test_get_odds_key_sorted_opposite_to_home_away():
+    # Regression for the O'Malley/Zahabi swap. fetch_odds keys the index with the
+    # fighter names sorted alphabetically, while f1_odds/f2_odds are aligned to
+    # home/away. Here the home fighter ("Sean O'Malley") sorts AFTER the away
+    # fighter ("Aiemann Zahabi"), so the sorted key is the reverse of home/away —
+    # orientation must follow the stored names, not the key.
+    home, away = "Sean O'Malley", "Aiemann Zahabi"
+    idx = {tuple(sorted([home.lower(), away.lower()])): {
+        "f1_name": home, "f2_name": away, "f1_odds": -460, "f2_odds": 350}}
+    assert scrape.get_odds(idx, "Sean O'Malley", "Aiemann Zahabi") == {"f1": -460, "f2": 350}
+    assert scrape.get_odds(idx, "Aiemann Zahabi", "Sean O'Malley") == {"f1": 350, "f2": -460}
+
+
 # --- hoisted regexes -------------------------------------------------------
 
 def test_rankings_regex_extracts_rank_and_name():

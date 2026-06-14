@@ -695,13 +695,20 @@ def fetch_odds():
 
 
 def get_odds(odds_index, f1_name, f2_name):
-    """Look up odds for a fight by fuzzy name matching. Returns {f1, f2} or None."""
+    """Look up odds for a fight by fuzzy name matching. Returns {f1, f2} or None.
+
+    Orientation must come from the stored home/away names (f1_name aligns with
+    f1_odds, f2_name with f2_odds) — NOT from the index key, which is sorted
+    alphabetically. Using the sorted key swapped odds whenever alphabetical order
+    differed from home/away order (e.g. "Sean O'Malley" sorts after "Aiemann
+    Zahabi", flipping their moneylines).
+    """
     f1l    = f1_name.lower()
     f2l    = f2_name.lower()
     f1last = last_name(f1_name)
     f2last = last_name(f2_name)
-    for pair, o in odds_index.items():
-        n1, n2 = pair
+    for o in odds_index.values():
+        n1, n2 = o["f1_name"].lower(), o["f2_name"].lower()
         match_f1    = f1last in n1 or n1 in f1l or f1l in n1
         match_f2    = f2last in n2 or n2 in f2l or f2l in n2
         match_swap1 = f1last in n2 or n2 in f1l or f1l in n2
