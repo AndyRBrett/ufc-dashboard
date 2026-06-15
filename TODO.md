@@ -147,8 +147,8 @@ the mixed feed; logged here so it's a known quick win.
 
 ## Duplicate pick rows when the scrape flips a bout's fighter order — needs DB cleanup
 
-**Status:** open · **Added:** 2026-06-15 · **Severity:** medium (data integrity) ·
-**Owner action:** Andy will do the Supabase side (dedup + optional write-time normalize).
+**Status:** mostly mitigated client-side · **Added:** 2026-06-15 · **Severity:** medium (data integrity) ·
+**Owner action:** Andy — optional Supabase-side backstop for users who never reopen.
 
 ### Why
 The scrape can flip a bout's `f1`/`f2` order between runs (commonly when winners
@@ -158,11 +158,12 @@ get filled in — e.g. UFC Freedom 250's main event went `Topuria vs Gaethje` �
 (`index.html` `syncPick` → `POST /rest/v1/picks?on_conflict=user_id,event_date,f1,f2`).
 Because `f1`/`f2` are part of the conflict key, a pick saved under the **old**
 order and then re-saved after a flip lands as a **second row** instead of
-updating the first. Result: the same user can hold two rows for one fight.
+updating the first — this actually bit Freedom 250 (a user's score jumped from
+5/7 to 6/9 with the main event + co-main double-counted).
 
-The **display layer is now order-agnostic** (shipped — see below), so this is
-not user-visible today, but stale duplicate rows can skew anything that counts
-raw rows server-side and is generally dirty data.
+Now self-heals client-side (see below), but each user only repairs **their own**
+rows and only when they next open the app — so a server-side backstop is still
+worth doing for accounts that never return.
 
 ### Plan (DB side)
 1. **Clean up existing dups:** for each `(user_id, event_date, {f1,f2} as a set)`
@@ -184,6 +185,11 @@ raw rows server-side and is generally dirty data.
 - Community-pick tally is oriented to the current fight via `_fightIndex`
   (both orders) and deduped order-agnostically.
 - Leaderboard scoring already matched both orderings (`f.f1.n===p.f1 && … || …`).
+- **Duplicate prevention + self-heal (2026-06-15-3):** `syncPick` deletes any
+  reverse-order row after a write, so a flip can only ever leave one row; and
+  `_dedupeMyPicks()` runs once per session to remove this user's existing dup
+  rows (keeps the row matching current data / newest, never deletes a lone pick).
+  Remaining gap = other users' rows until they reopen → the DB backstop above.
 
 ---
 
