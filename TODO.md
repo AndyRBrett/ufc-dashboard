@@ -228,10 +228,10 @@ Harden the push-notification broadcast path.
   enabling name-mangling **after** #3 removes the global-name dependency.
 
 ## 5. Housekeeping — P3
-- **Single source of truth for the version.** It lives in two hand-edited places
-  that already drifted once: `SW_VERSION` in `sw.js` and the footer `v…` literal
-  in `index.html` (the `verEl.textContent` line). Derive both from one constant
-  (or a build/git step) so they can't fall out of sync.
+- ~~**Single source of truth for the version.**~~ **Done (2026-06-15).**
+  `SW_VERSION` in `sw.js` is now the only place to edit; the footer reads it live
+  from the controlling service worker via a `getVersion` message, so it can't
+  drift. Bumping `SW_VERSION` on deploy remains required (it's the cache-buster).
 - Gate the ~16 `console.*` calls behind a `DEBUG` flag.
 - Prune unused `@font-face` unicode-ranges in `index.html`.
 - Consider `<dialog>` + a focus-trap for modals (Escape-to-close is done; focus

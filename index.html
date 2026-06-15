@@ -1361,6 +1361,11 @@ function syncPick(ev,fight,notifyFriends){
         if(!r.ok)r.text().then(function(t){console.error("syncPick failed",r.status,t);});
         else{
           _rtBroadcast();
+          // Heal fighter-order flips: the upsert key is (user_id,event_date,f1,f2), so a
+          // pick re-synced under a new order would otherwise sit beside the old-order row.
+          // Drop any reverse-order row for this same bout so exactly one row survives.
+          var _rq="?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(ev.date)+"&f1=eq."+encodeURIComponent(fight.f2.n)+"&f2=eq."+encodeURIComponent(fight.f1.n);
+          fetch(SUPABASE_URL+"/rest/v1/picks"+_rq,{method:"DELETE",headers:_sbHeaders()}).catch(function(){});
           if(notifyFriends&&daysOut(ev.date)>=0){
               var evShort=ev.name.replace("UFC Fight Night: ","").split(":")[0];
               var displayName=userName.replace(/^.\s*/,"");
@@ -1384,6 +1389,38 @@ function syncPick(ev,fight,notifyFriends){
 function deleteSbPick(ev,fight){
   _authReady.then(function(){
     fetch(SUPABASE_URL+"/rest/v1/picks"+_sbQ(ev,fight),{method:"DELETE",headers:_sbHeaders()}).then(function(r){if(r.ok)_rtBroadcast();}).catch(function(){});
+  });
+}
+// One-time-per-session repair: a fighter-order flip can leave the same bout stored under
+// two orders for this user (the upsert key includes f1,f2). Keep the row matching current
+// event data (or the newest), delete the rest. Scoped to USER_ID's own rows, and only ever
+// touches a bout that genuinely has >1 row — a lone pick is never deleted.
+var _dedupeRan=false;
+function _dedupeMyPicks(){
+  if(_dedupeRan||!userName||!USER_ID)return;_dedupeRan=true;
+  _authReady.then(function(){
+    fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID)+"&select=event_date,f1,f2,updated_at&order=updated_at.desc",{headers:_sbHeaders()})
+      .then(function(r){return r.ok?r.json():[];})
+      .then(function(rows){
+        if(!Array.isArray(rows)||rows.length<2)return;
+        if(!_fightIndex)_buildFightIndex();
+        var groups={};
+        rows.forEach(function(p){var g=p.event_date+"|"+[p.f1,p.f2].sort().join("|");(groups[g]=groups[g]||[]).push(p);});
+        var del=[];
+        Object.keys(groups).forEach(function(g){
+          var arr=groups[g];if(arr.length<2)return;       // not duplicated — leave alone
+          var fi=_fightIndex[arr[0].event_date+"|"+arr[0].f1+"|"+arr[0].f2]||_fightIndex[arr[0].event_date+"|"+arr[0].f2+"|"+arr[0].f1]||null;
+          var keep=null;
+          if(fi){keep=arr.filter(function(p){return p.f1===fi.fight.f1.n&&p.f2===fi.fight.f2.n;})[0];}
+          if(!keep)keep=arr[0];                            // newest (rows are updated_at desc)
+          arr.forEach(function(p){if(p!==keep)del.push(p);});
+        });
+        if(!del.length)return;
+        Promise.all(del.map(function(p){
+          var q="?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(p.event_date)+"&f1=eq."+encodeURIComponent(p.f1)+"&f2=eq."+encodeURIComponent(p.f2);
+          return fetch(SUPABASE_URL+"/rest/v1/picks"+q,{method:"DELETE",headers:_sbHeaders()}).catch(function(){});
+        })).then(function(){console.log("[dedupe] removed "+del.length+" duplicate pick row(s)");_rtBroadcast();if(typeof loadLeaderboard==="function"&&document.getElementById("lbPanel")&&document.getElementById("lbPanel").classList.contains("open"))loadLeaderboard(true);});
+      }).catch(function(){});
   });
 }
 function syncAllPicks(){
@@ -3369,6 +3406,7 @@ function makePastEvCard(item){
 function render(){
   buildReg();
   _reconcilePickOrder();
+  _dedupeMyPicks();
   var now=Date.now();
   var events=EVENTS.filter(function(e){return new Date(e.date)>=now-2*DAY_MS&&new Date(e.date)<=now+DAY_MS*65;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);});
   var pastEvs=EVENTS.filter(function(e){return new Date(e.date)<now-2*DAY_MS&&e.fights.some(function(f){return f.state==="post";});}).sort(function(a,b){return new Date(b.date)-new Date(a.date);});
@@ -4374,7 +4412,7 @@ function loadLeaderboard(isLive){
       bhWrap.appendChild(bl);
       body.appendChild(bhWrap);
     }
-    var verEl=document.createElement("div");verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent="v2026-06-15-2";body.appendChild(verEl);
+    var verEl=document.createElement("div");verEl.id="appVer";verEl.style.cssText="text-align:center;font-size:10px;color:var(--muted);opacity:.45;padding:12px 0 4px";verEl.textContent=_appVer?("v"+_appVer):"";body.appendChild(verEl);_ensureAppVer();
     // Flash live indicator if triggered by WebSocket
     if(isLive){var t=document.querySelector(".lb-title");if(t){t.classList.add("lb-live");setTimeout(function(){t.classList.remove("lb-live");},1200);}}
   }).catch(function(err){
@@ -5303,6 +5341,20 @@ document.addEventListener("DOMContentLoaded",function(){
   </div>
 </div>
 <script>
+// The footer version is read live from the controlling service worker (SW_VERSION
+// in sw.js is the single source of truth), so it can't drift from the deployed code.
+var _appVer=null;
+function _paintAppVer(){var el=document.getElementById('appVer');if(el&&_appVer)el.textContent='v'+_appVer;}
+function _ensureAppVer(){
+  if(_appVer){_paintAppVer();return;}
+  if(!('serviceWorker'in navigator))return;
+  navigator.serviceWorker.ready.then(function(reg){
+    var sw=reg.active||navigator.serviceWorker.controller;if(!sw)return;
+    var mc=new MessageChannel();
+    mc.port1.onmessage=function(ev){if(ev.data&&ev.data.type==='version'&&ev.data.version){_appVer=ev.data.version;_paintAppVer();}};
+    sw.postMessage({type:'getVersion'},[mc.port2]);
+  }).catch(function(){});
+}
 if('serviceWorker'in navigator){
   navigator.serviceWorker.register('sw.js').then(function(reg){
     reg.addEventListener('updatefound',function(){

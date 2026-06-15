@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = '2026-06-15-2';
+const SW_VERSION = '2026-06-15-3';
 const CACHE = 'ufc-' + SW_VERSION;
 
 self.addEventListener('install', function(e) {
@@ -74,6 +74,15 @@ self.addEventListener('fetch', function(e) {
   }
 });
 
+
+// Single source of truth for the app version: the page asks the controlling SW
+// for SW_VERSION and renders it in the footer, so the footer can't drift from the
+// real running version (and surfaces stale-cache situations at a glance).
+self.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'getVersion' && e.ports && e.ports[0]) {
+    e.ports[0].postMessage({ type: 'version', version: SW_VERSION });
+  }
+});
 
 self.addEventListener('push', function(e) {
   var data = {};
