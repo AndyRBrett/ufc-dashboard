@@ -4747,11 +4747,26 @@ document.addEventListener("DOMContentLoaded",function(){
 // ---------------------------------------------------------------------------
 (function(){
   var _interval=null;
-  // Per-event baseline: the first poll of an event seeds whatever is already
-  // final on Wikipedia WITHOUT pushing (so opening the app to a stale data.js
-  // never blasts hours-old spoilers). Only fights that flip on a later poll —
-  // i.e. while someone has the app open — trigger a push.
-  var _seeded={};
+  // Which fights we've already seen final, persisted in localStorage so it
+  // SURVIVES reloads / PWA restarts. An in-memory baseline reset on every
+  // reload, so a fight that went final while the app was reloading got silently
+  // re-absorbed into the new baseline and never pushed. With this:
+  //   - First time we ever record an event (no persisted baseline): seed
+  //     whatever is already final silently, so opening to a stale data.js can't
+  //     blast hours-old spoilers.
+  //   - Once a baseline exists (even from a prior session): any newly-final
+  //     fight is genuinely new → push it. The server notif_log still dedups
+  //     across clients, so a reload can never double-notify.
+  var _NOTIFIED_KEY="ufc_notified_results";
+  function _loadNotified(){try{return JSON.parse(localStorage.getItem(_NOTIFIED_KEY)||"{}")||{};}catch(e){return {};}}
+  function _saveNotified(m){
+    try{
+      // Prune events older than ~10 days so this can't grow without bound.
+      var cut=new Date(Date.now()-10*864e5).toISOString().slice(0,10);
+      Object.keys(m).forEach(function(d){if(d<cut)delete m[d];});
+      localStorage.setItem(_NOTIFIED_KEY,JSON.stringify(m));
+    }catch(e){}
+  }
 
   function _cleanWiki(t){
     if(!t)return"";
@@ -4909,7 +4924,12 @@ document.addEventListener("DOMContentLoaded",function(){
     var slug=_deriveSlug(ev.name);
     var url="https://en.wikipedia.org/w/api.php?action=parse&page="+encodeURIComponent(slug)+"&prop=wikitext&format=json&origin=*";
     console.log("[UFC live poll] fetching",url);
-    var seeding=!_seeded[ev.date];
+    var notified=_loadNotified();
+    var evSeen=notified[ev.date];
+    // hasBaseline: we've completed at least one poll of this event before (even
+    // in a prior session) — so anything newly final now is genuinely live.
+    var hasBaseline=!!(evSeen&&evSeen._polled);
+    if(!evSeen)evSeen=notified[ev.date]={};
     return fetch(url,{cache:"no-store"})
       .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
       .then(function(d){
@@ -4917,8 +4937,8 @@ document.addEventListener("DOMContentLoaded",function(){
         if(!wt){console.warn("[UFC live poll] no wikitext for",slug);return false;}
         var parsed=_parseMMATemplate(wt);
         if(!parsed.length)parsed=_parseWikitable(wt);
-        console.log("[UFC live poll]",slug,"→",parsed.length,"results parsed"+(seeding?" (seeding baseline — no push)":""));
-        var changed=false;
+        console.log("[UFC live poll]",slug,"→",parsed.length,"results parsed"+(hasBaseline?"":" (first sight — seeding baseline, no push)"));
+        var changed=false,dirty=false;
         parsed.forEach(function(res){
           ev.fights.forEach(function(fight){
             if(fight.winner)return;
@@ -4928,14 +4948,20 @@ document.addEventListener("DOMContentLoaded",function(){
             if(res.loser&&!loseF1&&!loseF2)return;
             fight.winner=winF1?fight.f1.n:fight.f2.n;fight.method=res.method;fight.round=res.round;fight.state="post";
             console.log("[UFC live poll] NEW RESULT:",fight.f1.n,"vs",fight.f2.n,"→",res.winner,res.method);
-            // Only push for results that flip after the per-event baseline — a
-            // fight that resolves while the app is open. Seeding catches up a
-            // stale data.js silently.
-            if(!seeding)_pushResult(ev,fight,res);
+            var fk=[fight.f1.n,fight.f2.n].sort().join("|");
+            if(!evSeen[fk]){
+              // New to this client. Push only if a baseline already existed —
+              // otherwise this is a first-sight catch-up, so seed it silently.
+              if(hasBaseline)_pushResult(ev,fight,res);
+              evSeen[fk]=1;dirty=true;
+            }
             changed=true;
           });
         });
-        _seeded[ev.date]=true;
+        // Record that this event now has a baseline so future polls (and future
+        // sessions after a reload) treat later results as live, not catch-up.
+        if(!evSeen._polled){evSeen._polled=1;dirty=true;}
+        if(dirty)_saveNotified(notified);
         return changed;
       })
       .catch(function(e){console.warn("[UFC live poll] fetch error:",e);return false;});
