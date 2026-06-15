@@ -145,6 +145,48 @@ the mixed feed; logged here so it's a known quick win.
 
 ---
 
+## Duplicate pick rows when the scrape flips a bout's fighter order — needs DB cleanup
+
+**Status:** open · **Added:** 2026-06-15 · **Severity:** medium (data integrity) ·
+**Owner action:** Andy will do the Supabase side (dedup + optional write-time normalize).
+
+### Why
+The scrape can flip a bout's `f1`/`f2` order between runs (commonly when winners
+get filled in — e.g. UFC Freedom 250's main event went `Topuria vs Gaethje` →
+`Gaethje vs Topuria`, co-main `Pereira vs Gane` → `Gane vs Pereira`). The
+`picks` upsert conflict target is **`(user_id, event_date, f1, f2)`**
+(`index.html` `syncPick` → `POST /rest/v1/picks?on_conflict=user_id,event_date,f1,f2`).
+Because `f1`/`f2` are part of the conflict key, a pick saved under the **old**
+order and then re-saved after a flip lands as a **second row** instead of
+updating the first. Result: the same user can hold two rows for one fight.
+
+The **display layer is now order-agnostic** (shipped — see below), so this is
+not user-visible today, but stale duplicate rows can skew anything that counts
+raw rows server-side and is generally dirty data.
+
+### Plan (DB side)
+1. **Clean up existing dups:** for each `(user_id, event_date, {f1,f2} as a set)`
+   keep the most recent `updated_at` row, delete the rest. A `frozenset`-style
+   normalized pair (lower-name|higher-name) makes the grouping order-independent.
+2. **Prevent new dups:** normalize fighter order at write time so a bout always
+   stores the same `f1`/`f2` regardless of scrape order — e.g. store the pair
+   sorted, or add a generated normalized-pair column and move the unique
+   constraint / `on_conflict` onto `(user_id, event_date, normalized_pair)`.
+   (Client `syncPick` would then send the normalized order, or a trigger
+   normalizes on insert.)
+3. Optional: a periodic dedup job as a backstop.
+
+### Already shipped (client side, no DB needed)
+- Leaderboard chips key picks under **both** orderings (`index.html` `nextMap`).
+- `_reconcilePickOrder()` re-keys the local user's `preds`/method/conf to the
+  current event-data order on every `render()`, so the fight card, local
+  scoring, and the "you" chip survive a flip.
+- Community-pick tally is oriented to the current fight via `_fightIndex`
+  (both orders) and deduped order-agnostically.
+- Leaderboard scoring already matched both orderings (`f.f1.n===p.f1 && … || …`).
+
+---
+
 # Code-review follow-ups (2026-06-13 full-app review)
 
 Deferred improvements from the full-app review. Already shipped to `main`:
