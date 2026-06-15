@@ -2110,10 +2110,10 @@ function resetPicks(){
 }
 
 function fnIsLive(ev){return ev&&picksLocked(ev)&&ev.fights.some(function(f){return !f.winner;});}
-// The currently-live bout is the LAST unresolved fight in array order: the card is
-// stored main-event-first but resolves prelims-first, so winners fill in from the end.
-// (findIndex from the front would park on the main event all night.) -1 when all resolved.
-function _liveFightIdx(fights){for(var i=fights.length-1;i>=0;i--){if(!fights[i].winner)return i;}return -1;}
+// fnFights is held in chronological order (opener → main event; openFN reverses the
+// main-event-first source array), so the live bout is simply the first one without a
+// winner — fights resolve front to back. -1 when all resolved.
+function _liveFightIdx(fights){for(var i=0;i<fights.length;i++){if(!fights[i].winner)return i;}return -1;}
 function fnModeOpen(){var m=document.getElementById("fnMode");return m&&m.classList.contains("open");}
 function openFN(evArg){
   var now=Date.now();
@@ -2125,7 +2125,10 @@ function openFN(evArg){
   var recent=EVENTS.filter(function(e){return new Date(e.date)>=now-2*DAY_MS;});
   var ev=evArg||recent.filter(fnIsLive)[0]||recent[0];
   if(!ev){toast("No upcoming events");return;}
-  fnFights=ev.fights;fnEv=ev;fnPickedAny=false;
+  // Show the card in chronological order (opener first, main event last) so the live
+  // counter reads "1 of N" at the first fight. Copy before reversing — ev.fights is the
+  // source of truth for the main card view and must stay main-event-first.
+  fnFights=ev.fights.slice().reverse();fnEv=ev;fnPickedAny=false;
   fnLive=fnIsLive(ev);fnAutoFollow=true;
   // Treat fights already resolved when the screen opens as "seen" — don't replay points badges for them.
   _fnRevealed={};fnFights.forEach(function(f){if(f.winner)_fnRevealed[pk(ev,f)]=true;});
