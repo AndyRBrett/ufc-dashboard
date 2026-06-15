@@ -4745,6 +4745,11 @@ document.addEventListener("DOMContentLoaded",function(){
 // ---------------------------------------------------------------------------
 (function(){
   var _interval=null;
+  // Per-event baseline: the first poll of an event seeds whatever is already
+  // final on Wikipedia WITHOUT pushing (so opening the app to a stale data.js
+  // never blasts hours-old spoilers). Only fights that flip on a later poll —
+  // i.e. while someone has the app open — trigger a push.
+  var _seeded={};
 
   function _cleanWiki(t){
     if(!t)return"";
@@ -4855,10 +4860,54 @@ document.addEventListener("DOMContentLoaded",function(){
     });
   }
 
+  // Fire win/loss result pushes for a fight the live poll just saw resolve.
+  // Mirrors scrape.py's send_push_notifications exactly (same event_date, the
+  // same "result:<fight_key>:<group>" type, and identical title/body/safe_*),
+  // so the send-push notif_log dedup collapses duplicates whether the trigger
+  // is this client, another open client, or the GitHub scraper — only one push
+  // per fight goes out. This makes any open browser a backup result-notifier,
+  // immune to GitHub Actions schedule throttling.
+  function _pushResult(ev,fight,res){
+    if(!SUPABASE_ANON)return;
+    var winner=res.winner||fight.winner;
+    var loser=res.loser||(fight.winner===fight.f1.n?fight.f2.n:fight.f1.n);
+    var fightKey=(winner+"-"+loser).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+    // Jitter so dozens of clients detecting the same result don't stampede
+    // send-push simultaneously — the first to claim the notif_log row wins and
+    // the rest get {skipped:true}.
+    setTimeout(function(){
+      _sbFetchAll("/rest/v1/picks?select=user_id,f1,f2,pick&event_date=eq."+encodeURIComponent(ev.date)).then(function(picks){
+        var winners=[],losers=[];
+        (picks||[]).forEach(function(p){
+          if(!p.user_id)return;
+          var isFight=(_namesMatch(p.f1,fight.f1.n)&&_namesMatch(p.f2,fight.f2.n))||(_namesMatch(p.f1,fight.f2.n)&&_namesMatch(p.f2,fight.f1.n));
+          if(!isFight)return;
+          (_namesMatch(p.pick,fight.winner)?winners:losers).push(p.user_id);
+        });
+        [["win",winners,"Your pick WON! 🔥",winner+" def. "+loser+" — you called it!"],
+         ["loss",losers,"Tough luck ❌",winner+" def. "+loser]].forEach(function(g){
+          if(!g[1].length)return;
+          fetch(SUPABASE_URL+"/functions/v1/send-push",{
+            method:"POST",
+            headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
+            body:JSON.stringify({event_date:ev.date,type:"result:"+fightKey+":"+g[0],
+              title:g[2],body:g[3],
+              safe_title:"🥊 Fight result is in",
+              safe_body:"A fight you picked is final — open the app to see how you did. (No spoilers here!)",
+              include_user_ids:g[1]})
+          }).then(function(r){return r.json();}).then(function(j){
+            console.log("[UFC live poll] result push",g[0],fightKey,j);
+          }).catch(function(){});
+        });
+      }).catch(function(){});
+    },Math.floor(Math.random()*8000));
+  }
+
   function _pollOne(ev){
     var slug=_deriveSlug(ev.name);
     var url="https://en.wikipedia.org/w/api.php?action=parse&page="+encodeURIComponent(slug)+"&prop=wikitext&format=json&origin=*";
     console.log("[UFC live poll] fetching",url);
+    var seeding=!_seeded[ev.date];
     return fetch(url,{cache:"no-store"})
       .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
       .then(function(d){
@@ -4866,7 +4915,7 @@ document.addEventListener("DOMContentLoaded",function(){
         if(!wt){console.warn("[UFC live poll] no wikitext for",slug);return false;}
         var parsed=_parseMMATemplate(wt);
         if(!parsed.length)parsed=_parseWikitable(wt);
-        console.log("[UFC live poll]",slug,"→",parsed.length,"results parsed");
+        console.log("[UFC live poll]",slug,"→",parsed.length,"results parsed"+(seeding?" (seeding baseline — no push)":""));
         var changed=false;
         parsed.forEach(function(res){
           ev.fights.forEach(function(fight){
@@ -4877,9 +4926,14 @@ document.addEventListener("DOMContentLoaded",function(){
             if(res.loser&&!loseF1&&!loseF2)return;
             fight.winner=winF1?fight.f1.n:fight.f2.n;fight.method=res.method;fight.round=res.round;fight.state="post";
             console.log("[UFC live poll] NEW RESULT:",fight.f1.n,"vs",fight.f2.n,"→",res.winner,res.method);
+            // Only push for results that flip after the per-event baseline — a
+            // fight that resolves while the app is open. Seeding catches up a
+            // stale data.js silently.
+            if(!seeding)_pushResult(ev,fight,res);
             changed=true;
           });
         });
+        _seeded[ev.date]=true;
         return changed;
       })
       .catch(function(e){console.warn("[UFC live poll] fetch error:",e);return false;});
