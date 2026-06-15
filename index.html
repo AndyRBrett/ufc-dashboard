@@ -3582,12 +3582,14 @@ function fireTrashTalk(){
     ]).then(function(sub){if(sub)req.exclude_endpoint=sub.endpoint;}).catch(function(){}).then(send);
   }else send();
 }
-function showIncomingTrashTalk(text){
+function showIncomingTrashTalk(text,sender){
   var lastDash=text.lastIndexOf('—');
   var persona=lastDash>=0?text.slice(lastDash+1).trim():"A Famous Friend";
   if(!document.getElementById("lbPanel").classList.contains("open"))openLeaderboard();
   var sheet=document.getElementById("trashSheet");
-  document.getElementById("trashPersona").textContent="🎤 "+persona+" says...";
+  // The notification shows "🎤 Persona (via Sender)"; mirror the sender here so
+  // the recipient still sees who hired the voice once they're in the app.
+  document.getElementById("trashPersona").textContent="🎤 "+persona+" says..."+(sender?" — sent by "+sender:"");
   document.getElementById("trashText").textContent=text;document.getElementById("trashText").style.display="block";
   // Reading a received roast — hide every compose-only control so the voice
   // picker / search box, hint field and target chips don't leak into the
@@ -5129,7 +5131,7 @@ if('serviceWorker'in navigator){
   navigator.serviceWorker.addEventListener('controllerchange',function(){window.location.reload();});
   // Receive routed notification taps from the service worker
   navigator.serviceWorker.addEventListener('message',function(e){
-    if(e.data&&e.data.type==='trash-talk'&&e.data.fullMessage)showIncomingTrashTalk(e.data.fullMessage);
+    if(e.data&&e.data.type==='trash-talk'&&e.data.fullMessage)showIncomingTrashTalk(e.data.fullMessage,e.data.sender);
     if(e.data&&e.data.type==='challenge')openChallengeInbox();
   });
 }
@@ -5153,7 +5155,7 @@ if('serviceWorker'in navigator){
 (function(){
   var params=new URLSearchParams(window.location.search);
   var msg=params.get('trash');
-  if(msg){history.replaceState(null,'',window.location.pathname);setTimeout(function(){showIncomingTrashTalk(decodeURIComponent(msg));},800);}
+  if(msg){var from=params.get('from');history.replaceState(null,'',window.location.pathname);setTimeout(function(){showIncomingTrashTalk(decodeURIComponent(msg),from?decodeURIComponent(from):"");},800);}
   if(params.get('inbox')){history.replaceState(null,'',window.location.pathname);setTimeout(function(){openChallengeInbox();},800);}
 })();
 </script>
