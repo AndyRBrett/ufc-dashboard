@@ -101,6 +101,50 @@ Actions log doesn't dump response bodies.
 
 ---
 
+## fn-live activity ticker (reactions + picks + trash-talk feed) — needs backend
+
+**Status:** open · **Added:** 2026-06-15 · **Severity:** low (feature) ·
+**Owner action:** Andy will do the Supabase side.
+
+### Why
+fn-live mode now has a pick-split bar, "on the line" stakes, and tale of the
+tape filling the midsection. The remaining idea is a live **activity ticker**
+("🔥 Tristin · AB picked Gaethje · 'you're cooked' —JPe$o") so the dead space
+between fights feels alive. Held back because the full version needs backend:
+
+- **Reactions** — already client-side. The `reaction` broadcast on the
+  `picks-live` realtime channel carries `{e, by, uid, t}` (`_rtBroadcastReaction`
+  / `_fnOnReaction`), so a reactions-only feed needs **zero backend** — it's the
+  same data that already drives the floating-emoji animation.
+- **Picks** — can't really populate a *live* ticker: picks lock at event start
+  (`picksLocked`), so nobody is changing picks during the card. And the
+  `pick-change` broadcast payload is empty (`_rtBroadcast`), so attributing
+  "X picked Y" would need the broadcast enriched anyway.
+- **Trash-talk** — **this is the backend dependency.** Trash-talk is delivered
+  via the **push** path (`_triggerPush` → `send-push` edge function → service-
+  worker `message`, `index.html:~3577` send / `:~5182` receive), *not* the
+  realtime channel. To surface it in-app live for everyone you'd either (a) also
+  broadcast each jab on the `picks-live` channel — but jabs can be **targeted**
+  (`include_user_ids`), so blanket-broadcasting would leak targeted trash-talk to
+  the whole room — or (b) persist a `trash_talk` table + realtime subscription.
+  Both are backend/edge-function work.
+
+### Plan (when backend is on the table)
+1. Decide trash-talk delivery: a dedicated `trash_talk` table with realtime
+   `postgres_changes` (respects targeting via row-level filters) is cleaner than
+   channel-broadcasting and gives history.
+2. Add a capped (~last 12), auto-expiring ticker UI in `#fnLiveBody` (above the
+   reaction bar) fed by `_fnOnReaction` + the new trash-talk stream.
+3. Optionally enrich the `pick-change` broadcast with `{by, fighter}` for
+   pre-event pick activity (not needed during a locked live card).
+
+### Zero-backend slice (shippable now, if wanted)
+A reactions-only feed (who just reacted, with names) needs no backend — wire a
+small recent-list off `_fnOnReaction`. Skipped for now because the value is in
+the mixed feed; logged here so it's a known quick win.
+
+---
+
 # Code-review follow-ups (2026-06-13 full-app review)
 
 Deferred improvements from the full-app review. Already shipped to `main`:

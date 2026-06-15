@@ -522,6 +522,32 @@ body[data-theme="usa"] .logo-eagle{display:block}
 .fnl-nav{display:flex;align-items:center;justify-content:center;gap:8px;padding:6px 16px}
 .fnl-jump{display:none;background:var(--red);border:none;color:var(--on-accent);font:700 11px Inter,sans-serif;letter-spacing:.06em;padding:8px 16px;border-radius:20px;cursor:pointer}
 .fnl-jump.show{display:inline-block}
+/* Pick-split bar, "on the line" stakes, and tale-of-the-tape — fn-live midsection */
+.fnl-split{padding:2px 16px 8px}
+.fnl-split-top{display:flex;align-items:baseline;justify-content:space-between;font:700 13px Inter,sans-serif;margin-bottom:5px}
+.fnl-split-p1{color:var(--red)}
+.fnl-split-p2{color:var(--gold)}
+.fnl-split-lbl{font:600 9px Inter,sans-serif;color:rgba(255,255,255,.4);letter-spacing:.1em}
+.fnl-split-bar{display:flex;height:8px;border-radius:5px;overflow:hidden;background:rgba(255,255,255,.06)}
+.fnl-split-bar .s1{background:var(--red);transition:width .4s}
+.fnl-split-bar .s2{background:var(--gold);transition:width .4s}
+.fnl-split-odds{text-align:center;font-size:10px;color:rgba(255,255,255,.4);margin-top:6px;letter-spacing:.04em}
+.fnl-stakes{margin:2px 16px 8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:9px 12px}
+.fnl-stakes-hdr{font:600 9px Inter,sans-serif;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.12em;text-align:center;margin-bottom:7px}
+.fnl-stake-row{display:flex;align-items:center;gap:8px;font:600 12px Inter,sans-serif;padding:4px 0}
+.fnl-stake-row.mine .fnl-stake-out{color:#fff}
+.fnl-stake-out{flex:1;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fnl-stake-gain{width:34px;text-align:center;font-weight:800;color:rgba(255,255,255,.3)}
+.fnl-stake-gain.up{color:#3ad07a}
+.fnl-stake-rank{width:70px;text-align:right;color:#fff;display:inline-flex;gap:5px;justify-content:flex-end;align-items:center}
+.fnl-stake-d{font-size:9px}
+.fnl-stake-d.up{color:#3ad07a}.fnl-stake-d.down{color:#e8505b}
+.fnl-tape{margin:0 16px 12px}
+.fnl-tape-hdr{font:600 9px Inter,sans-serif;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.12em;text-align:center;padding:9px 0 5px;border-top:1px solid rgba(255,255,255,.07)}
+.fnl-tape-row{display:flex;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);font:600 12px Inter,sans-serif}
+.fnl-tape-v1{color:var(--red);width:80px;flex-shrink:0;text-align:left}
+.fnl-tape-l{flex:1;font:600 9px Inter,sans-serif;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;text-align:center}
+.fnl-tape-v2{color:var(--gold);width:80px;flex-shrink:0;text-align:right}
 .fnl-stand{flex-shrink:0;border-top:1px solid rgba(255,255,255,.07);padding:10px 12px;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .fnl-stand-row{flex-shrink:0;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border-radius:10px;padding:6px 10px;font:600 11px Inter,sans-serif;color:rgba(255,255,255,.7)}
 .fnl-stand-row.me{background:var(--gold-dim);color:#fff}
@@ -706,12 +732,15 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
         <div class="fnl-vs">VS</div>
         <div class="fnl-side" id="fnl-s2"><div class="fnl-side-nm" id="fnl-n2"></div><div class="fnl-side-rc" id="fnl-r2"></div><div class="fnl-fans" id="fnl-fans2"></div></div>
       </div>
+      <div class="fnl-split" id="fnl-split"></div>
       <div class="fnl-result" id="fnl-result"></div>
       <div class="fnl-nav">
         <button class="fn-nb" onclick="fnLiveNav(-1)">← Prev</button>
         <button class="fn-nb" onclick="fnLiveNav(1)">Next →</button>
         <button class="fnl-jump" id="fnl-jump" onclick="fnJumpLive()">● Jump to Live</button>
       </div>
+      <div class="fnl-stakes" id="fnl-stakes"></div>
+      <div class="fnl-tape" id="fnl-tape"></div>
     </div>
     <div class="fnl-stand" id="fnl-stand"></div>
     <div class="fnl-react">
@@ -2223,6 +2252,89 @@ function fnRenderStandings(){
     el.appendChild(row);
   });
 }
+function _fnUid(u){return u.user_id||u.nickname;}
+function _fnOrd(n){var s=["th","st","nd","rd"],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+// Rank = 1 + (how many sit on strictly more points), so ties share a rank.
+function _fnRankIn(list,pts,id){var mine=pts[id]||0,b=0;list.forEach(function(u){if((pts[_fnUid(u)]||0)>mine)b++;});return b+1;}
+function _fnRankLbl(ftr){var rk=ftr.rk;if(rk==="C")return"CHAMP";if(rk==="IC")return"INT";if(rk)return"#"+rk;var r=RANKINGS[ftr.n];return r?"#"+r:"";}
+// Pick-split bar: what % of the group backed each fighter, plus the Vegas line.
+function fnRenderSplit(f){
+  var el=document.getElementById("fnl-split");if(!el)return;el.innerHTML="";
+  var b=_fnPicksByFight[pk(fnEv,f)]||{f1:[],f2:[]};
+  var c1=(b.f1||[]).length,c2=(b.f2||[]).length,tot=c1+c2;
+  var pct1=tot?Math.round(c1/tot*100):50,pct2=tot?100-pct1:50;
+  var top=document.createElement("div");top.className="fnl-split-top";
+  var p1=document.createElement("span");p1.className="fnl-split-p1";p1.textContent=tot?pct1+"%":"";
+  var mid=document.createElement("span");mid.className="fnl-split-lbl";mid.textContent=tot?("WHO YA GOT · "+tot+" in"):"NO PICKS IN YET";
+  var p2=document.createElement("span");p2.className="fnl-split-p2";p2.textContent=tot?pct2+"%":"";
+  top.appendChild(p1);top.appendChild(mid);top.appendChild(p2);el.appendChild(top);
+  var bar=document.createElement("div");bar.className="fnl-split-bar";
+  var s1=document.createElement("div");s1.className="s1";s1.style.width=pct1+"%";
+  var s2=document.createElement("div");s2.className="s2";s2.style.width=pct2+"%";
+  bar.appendChild(s1);bar.appendChild(s2);el.appendChild(bar);
+  if(f.odds&&(f.odds.f1!=null||f.odds.f2!=null)){
+    var od=document.createElement("div");od.className="fnl-split-odds";
+    od.textContent="Vegas  "+(f.odds.f1!=null?fmtOdds(f.odds.f1):"—")+"  /  "+(f.odds.f2!=null?fmtOdds(f.odds.f2):"—");
+    el.appendChild(od);
+  }
+}
+// "On the line": project your standings rank for each outcome of THIS fight. When it
+// resolves, everyone who backed the winner gets +1, so your rank shift depends on the room.
+function fnRenderStakes(f){
+  var el=document.getElementById("fnl-stakes");if(!el)return;el.innerHTML="";el.style.display="none";
+  if(!fnEv||f.winner)return;                       // resolved → the result line says it all
+  var myPick=preds[pk(fnEv,f)];if(!myPick)return;  // only meaningful when you've got a horse
+  var list=_lbSorted||[];if(!list.length)return;
+  var base={},meId=null;
+  list.forEach(function(u){base[_fnUid(u)]=u.correct+u.methods*0.5+u.fotn;if(u.isMe)meId=_fnUid(u);});
+  if(meId==null)return;
+  var b=_fnPicksByFight[pk(fnEv,f)]||{f1:[],f2:[]},picked={f1:{},f2:{}};
+  (b.f1||[]).forEach(function(u){picked.f1[_fnUid(u)]=1;});
+  (b.f2||[]).forEach(function(u){picked.f2[_fnUid(u)]=1;});
+  var curRank=_fnRankIn(list,base,meId),mySide=myPick===f.f1.n?"f1":"f2";
+  el.style.display="";
+  var hdr=document.createElement("div");hdr.className="fnl-stakes-hdr";hdr.textContent="On the line · you're "+_fnOrd(curRank)+" now";el.appendChild(hdr);
+  [["f1",f.f1.n],["f2",f.f2.n]].forEach(function(spec){
+    var side=spec[0],proj={};
+    list.forEach(function(u){var id=_fnUid(u);proj[id]=base[id]+(picked[side][id]?1:0);});
+    var pr=_fnRankIn(list,proj,meId),d=curRank-pr;  // +ve = you climb
+    var row=document.createElement("div");row.className="fnl-stake-row"+(side===mySide?" mine":"");
+    var out=document.createElement("span");out.className="fnl-stake-out";out.textContent=_fnNameShort(spec[1])+" wins";
+    var gain=document.createElement("span");gain.className="fnl-stake-gain"+(side===mySide?" up":"");gain.textContent=side===mySide?"+1":"—";
+    var rank=document.createElement("span");rank.className="fnl-stake-rank";
+    var rk=document.createElement("span");rk.textContent=_fnOrd(pr);rank.appendChild(rk);
+    if(d!==0){var dd=document.createElement("span");dd.className="fnl-stake-d "+(d>0?"up":"down");dd.textContent=(d>0?"▲":"▼")+Math.abs(d);rank.appendChild(dd);}
+    row.appendChild(out);row.appendChild(gain);row.appendChild(rank);el.appendChild(row);
+  });
+}
+// Tale of the tape: odds, rank, and any physical/striking stats we actually have.
+// Rows with no data on either side are skipped (deep stats are often empty per the
+// UFCStats scraping gap), so the panel degrades to whatever's known.
+function fnRenderTape(f){
+  var el=document.getElementById("fnl-tape");if(!el)return;el.innerHTML="";
+  var s1=stOf(f.f1)||{},s2=stOf(f.f2)||{},rows=[],num=function(v){return parseFloat(v)||0;};
+  if(f.odds&&(f.odds.f1!=null||f.odds.f2!=null))rows.push(["Odds",f.odds.f1!=null?fmtOdds(f.odds.f1):"—",f.odds.f2!=null?fmtOdds(f.odds.f2):"—"]);
+  var r1=_fnRankLbl(f.f1),r2=_fnRankLbl(f.f2);if(r1||r2)rows.push(["Rank",r1||"—",r2||"—"]);
+  if(s1.ht||s2.ht)rows.push(["Height",s1.ht||"—",s2.ht||"—"]);
+  if(s1.rch||s2.rch)rows.push(["Reach",s1.rch||"—",s2.rch||"—"]);
+  if(s1.stn||s2.stn)rows.push(["Stance",s1.stn||"—",s2.stn||"—"]);
+  if(num(s1.slpm)||num(s2.slpm))rows.push(["Str / Min",""+(s1.slpm||0),""+(s2.slpm||0)]);
+  if(num(s1.acc)||num(s2.acc))rows.push(["Str Acc",(s1.acc||0)+"%",(s2.acc||0)+"%"]);
+  if(num(s1.td)||num(s2.td))rows.push(["TD / 15",""+(s1.td||0),""+(s2.td||0)]);
+  if(num(s1.tdd)||num(s2.tdd))rows.push(["TD Def",(s1.tdd||0)+"%",(s2.tdd||0)+"%"]);
+  if(num(s1.ko)||num(s2.ko))rows.push(["KO Wins",""+(s1.ko||0),""+(s2.ko||0)]);
+  if(num(s1.sub)||num(s2.sub))rows.push(["Sub Wins",""+(s1.sub||0),""+(s2.sub||0)]);
+  if(!rows.length){el.style.display="none";return;}
+  el.style.display="";
+  var hdr=document.createElement("div");hdr.className="fnl-tape-hdr";hdr.textContent="Tale of the Tape";el.appendChild(hdr);
+  rows.forEach(function(r){
+    var row=document.createElement("div");row.className="fnl-tape-row";
+    var v1=document.createElement("span");v1.className="fnl-tape-v1";v1.textContent=r[1];
+    var l=document.createElement("span");l.className="fnl-tape-l";l.textContent=r[0];
+    var v2=document.createElement("span");v2.className="fnl-tape-v2";v2.textContent=r[2];
+    row.appendChild(v1);row.appendChild(l);row.appendChild(v2);el.appendChild(row);
+  });
+}
 function updateFNLive(){
   if(!fnFights.length)return;
   var f=fnFights[fnIdx];
@@ -2246,6 +2358,8 @@ function updateFNLive(){
   var jump=document.getElementById("fnl-jump");
   if(jump)jump.classList.toggle("show",!fnAutoFollow&&liveIdx>=0&&liveIdx!==fnIdx);
   fnRenderStandings();
+  // Midsection panels last, so a hiccup here can never blank the core live view.
+  fnRenderSplit(f);fnRenderStakes(f);fnRenderTape(f);
 }
 function fnLiveNav(dir){
   fnAutoFollow=false;
