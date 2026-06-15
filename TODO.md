@@ -18,7 +18,7 @@ Need a layer that fires even when no browser is open and regardless of GitHub.
 
 ### Plan
 Move result detection + push into a Supabase **scheduled edge function** driven
-by `pg_cron` (or `pg_net` + a cron), running every ~1 min during fight windows:
+by `pg_cron` (or `pg_net` + a cron), running every ~2 min during fight windows:
 1. New edge function (e.g. `check-results`) that parses Wikipedia results for
    active events and calls the existing `send-push` for each newly-final fight,
    reusing the **same** `result:<fight_key>:<group>` type + `safe_*` payload.
@@ -27,13 +27,22 @@ by `pg_cron` (or `pg_net` + a cron), running every ~1 min during fight windows:
 3. Relies on the existing `notif_log` dedup, so it stacks safely with the
    client trigger and the GitHub scraper — only one push per fight ever.
 
-### Owner must (after event)
-- Create the `check-results` function and deploy it.
-- Enable `pg_cron`/`pg_net` and add the schedule (or wire an external cron).
-- Optionally fold in the `CRON_SECRET` hardening from "Edge-function hardening"
-  below so only the cron (not the public anon key) can trigger broadcasts.
+### Owner must (after event) — see `supabase/functions/check-results/README.md`
+- `supabase functions deploy check-results`.
+- `supabase secrets set CRON_SECRET=…` (`SB_ANON_KEY`/`SUPABASE_URL` already set).
+- Enable `pg_cron`/`pg_net` and add the `*/2 * * * *` schedule (SQL in the
+  README), or wire an external cron pinging the function URL with the same
+  `Authorization: Bearer <CRON_SECRET>` header.
 
 ### Already shipped (code side, no DB needed)
+- **`check-results` edge function (2026-06-15):** Deno port of the client
+  live-poll + scraper push logic at `supabase/functions/check-results/index.ts`.
+  Picks-driven (reads recent `event_name`/`event_date` from `picks`, no card
+  file needed), parses Wikipedia, POSTs win/loss result pushes to `send-push`
+  with the same type + `safe_*` payload. Inbound trigger gated by `CRON_SECRET`;
+  outbound uses the anon key (`send-push` left unchanged). Still needs the owner
+  deploy + cron steps above to go live. `deno check` not run in the dev sandbox
+  (no egress to deno.land) — run it before/at deploy.
 - Client-side live poll now triggers `send-push` on each detected result
   (`index.html`), making any open browser a backup notifier.
 - Scraper now also pushes from the rebuild path, guarded by `notif_log` dedup +
