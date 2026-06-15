@@ -2113,7 +2113,10 @@ function fnIsLive(ev){return ev&&picksLocked(ev)&&ev.fights.some(function(f){ret
 function fnModeOpen(){var m=document.getElementById("fnMode");return m&&m.classList.contains("open");}
 function openFN(evArg){
   var now=Date.now();
-  var ev=evArg||(EVENTS.filter(function(e){return new Date(e.date)>=now-DAY_MS;})[0]);
+  // Prefer a card that's live right now (fn mode is built to watch it); a Sat-night
+  // US card runs past midnight UTC, so a plain date>=now-1d window drops it and lands
+  // on next week's card. Fall back to the same now-2d "current/upcoming" window as the rest of the app.
+  var ev=evArg||EVENTS.filter(fnIsLive)[0]||EVENTS.filter(function(e){return new Date(e.date)>=now-2*DAY_MS;})[0];
   if(!ev){toast("No upcoming events");return;}
   fnFights=ev.fights;fnEv=ev;fnPickedAny=false;
   fnLive=fnIsLive(ev);fnAutoFollow=true;
