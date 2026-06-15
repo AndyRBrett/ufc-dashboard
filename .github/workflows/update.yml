@@ -4,9 +4,15 @@ on:
   schedule:
     # Daily 9am UTC - card structure + odds update
     - cron: "0 9 * * *"
-    # Every 5 min Sat 4pm-4am UTC (noon-midnight ET) - fight night results
+    # Every 5 min during US prime-time fight windows - live results + push.
+    # Covers BOTH Saturday-night and Sunday-night (ET) cards. ET start of each
+    # window maps to UTC the same day 16:00 → next day 04:59.
+    # Saturday card (Sat noon-midnight ET):
     - cron: "*/5 16-23 * * 6"
     - cron: "*/5 0-4 * * 0"
+    # Sunday card (Sun noon-midnight ET) — e.g. UFC Freedom 250 (White House):
+    - cron: "*/5 16-23 * * 0"
+    - cron: "*/5 0-4 * * 1"
 
   workflow_dispatch:
 
