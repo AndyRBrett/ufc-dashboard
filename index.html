@@ -4725,7 +4725,16 @@ document.addEventListener("DOMContentLoaded",function(){
   setInterval(fetchChallenges, 120000);
   // On foreground (iOS PWAs resume from a frozen state where the refresh timer
   // never fired) get a fresh token first so nothing fetches with an expired JWT.
-  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")_ensureFreshToken().then(fetchCommunityPicks);});
+  document.addEventListener("visibilitychange",function(){
+    if(document.visibilityState!=="visible")return;
+    _ensureFreshToken().then(fetchCommunityPicks);
+    // The 2-min live result poll is frozen while backgrounded/locked (esp. iOS
+    // PWAs). On resume, re-arm the interval if it had stopped and fire one poll
+    // right away so a fight that finished in your pocket updates — and this
+    // device can trigger its push — the moment you glance at the app.
+    if(typeof startLivePolling==="function")startLivePolling();
+    if(typeof liveRefresh==="function")liveRefresh();
+  });
   _authReady.then(_rtConnect);
   _rtOn(fetchCommunityPicksDebounced);
   _rtOn(function(){
