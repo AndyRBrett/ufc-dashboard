@@ -2110,6 +2110,10 @@ function resetPicks(){
 }
 
 function fnIsLive(ev){return ev&&picksLocked(ev)&&ev.fights.some(function(f){return !f.winner;});}
+// The currently-live bout is the LAST unresolved fight in array order: the card is
+// stored main-event-first but resolves prelims-first, so winners fill in from the end.
+// (findIndex from the front would park on the main event all night.) -1 when all resolved.
+function _liveFightIdx(fights){for(var i=fights.length-1;i>=0;i--){if(!fights[i].winner)return i;}return -1;}
 function fnModeOpen(){var m=document.getElementById("fnMode");return m&&m.classList.contains("open");}
 function openFN(evArg){
   var now=Date.now();
@@ -2122,7 +2126,7 @@ function openFN(evArg){
   fnLive=fnIsLive(ev);fnAutoFollow=true;
   // Treat fights already resolved when the screen opens as "seen" — don't replay points badges for them.
   _fnRevealed={};fnFights.forEach(function(f){if(f.winner)_fnRevealed[pk(ev,f)]=true;});
-  fnIdx=fnLive?Math.max(0,fnFights.findIndex(function(f){return !f.winner;})):0;
+  fnIdx=fnLive?Math.max(0,_liveFightIdx(fnFights)):0;
   var m=document.getElementById("fnMode");
   m.classList.toggle("fn-mode-live",fnLive);
   if(fnLive){loadLeaderboard(true);}  // populate _lbSorted + _fnPicksByFight for the live view
@@ -2232,7 +2236,7 @@ function updateFNLive(){
   if(f.winner){res.textContent="";var wb=document.createElement("b");wb.textContent=_fnNameShort(f.winner);res.appendChild(wb);res.appendChild(document.createTextNode(" def. "+_fnNameShort(f.winner===f.f1.n?f.f2.n:f.f1.n)+(f.method?" · "+f.method:"")+(f.round?" · R"+f.round:"")));}
   else{res.textContent=picksLocked(fnEv)?"In progress — waiting on result…":"Up next";}
   // Jump-to-live pill visible only when user has navigated off the live fight
-  var liveIdx=fnFights.findIndex(function(x){return !x.winner;});
+  var liveIdx=_liveFightIdx(fnFights);
   var jump=document.getElementById("fnl-jump");
   if(jump)jump.classList.toggle("show",!fnAutoFollow&&liveIdx>=0&&liveIdx!==fnIdx);
   fnRenderStandings();
@@ -2243,14 +2247,14 @@ function fnLiveNav(dir){
   updateFNLive();
 }
 function fnJumpLive(){
-  var liveIdx=fnFights.findIndex(function(x){return !x.winner;});
+  var liveIdx=_liveFightIdx(fnFights);
   fnAutoFollow=true;
   if(liveIdx>=0)fnIdx=liveIdx;
   updateFNLive();
 }
 function fnMaybeAdvance(){
   if(!fnAutoFollow)return;
-  var liveIdx=fnFights.findIndex(function(x){return !x.winner;});
+  var liveIdx=_liveFightIdx(fnFights);
   if(liveIdx<0||liveIdx===fnIdx)return;
   setTimeout(function(){if(fnAutoFollow&&fnLive&&fnModeOpen()){fnIdx=liveIdx;updateFNLive();}},2500);
 }
