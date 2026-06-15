@@ -1328,6 +1328,23 @@ function save(){_saveJSON("ufc_preds",preds);}
 function saveMethod(){_saveJSON("ufc_method",preds_method);}
 function saveConf(){_saveJSON("ufc_conf",preds_conf);}
 
+// The scrape can flip a bout's f1/f2 between runs (commonly when winners get filled in).
+// Local picks live in preds/method/conf keyed by pk() = date|f1|f2 in the order at pick
+// time, so a flip orphans them and every preds[pk(ev,f)] read (card highlight, scoring,
+// the "you" leaderboard chip) silently misses. Re-key any reversed-order entries to the
+// current order so the whole app stays order-agnostic — the same two-way intent the DB
+// scoring already uses. Cheap no-op when nothing flipped.
+function _reconcilePickOrder(){
+  var moved=false,movedM=false,movedC=false;
+  EVENTS.forEach(function(ev){ev.fights.forEach(function(f){
+    var k=ev.date+"|"+f.f1.n+"|"+f.f2.n,kr=ev.date+"|"+f.f2.n+"|"+f.f1.n;
+    if(preds[k]===undefined&&preds[kr]!==undefined){preds[k]=preds[kr];delete preds[kr];moved=true;}
+    if(preds_method[k]===undefined&&preds_method[kr]!==undefined){preds_method[k]=preds_method[kr];delete preds_method[kr];movedM=true;}
+    if(preds_conf[k]===undefined&&preds_conf[kr]!==undefined){preds_conf[k]=preds_conf[kr];delete preds_conf[kr];movedC=true;}
+  });});
+  if(moved)save();if(movedM)saveMethod();if(movedC)saveConf();
+}
+
 function _sbHeaders(){return{apikey:SUPABASE_ANON,Authorization:_authBearer(),"Content-Type":"application/json"};}
 function _sbQ(ev,fight){return"?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(ev.date)+"&f1=eq."+encodeURIComponent(fight.f1.n)+"&f2=eq."+encodeURIComponent(fight.f2.n);}
 function findByKey(key){if(!_fightIndex)_buildFightIndex();return _fightIndex[key]||null;}
@@ -1473,16 +1490,23 @@ function fetchCommunityPicks(){
     rows.forEach(function(p){
       var nn=p.nickname||"";var sp=nn.indexOf(" ");
       var base=(sp>=0?nn.slice(sp+1):nn).trim().toLowerCase()||"anon";
-      byVoter[p.event_date+"|"+p.f1+"|"+p.f2+"|"+base]=p;
+      // Dedup per voter+fight order-agnostically: a scrape flip mustn't split one vote in two.
+      var pair=[p.f1,p.f2].sort().join("|");
+      byVoter[p.event_date+"|"+pair+"|"+base]=p;
     });
     var fresh={};
+    if(!_fightIndex)_buildFightIndex();
     Object.keys(byVoter).forEach(function(vk){
       var p=byVoter[vk];
-      var k=p.event_date+"|"+p.f1+"|"+p.f2;
+      // Orient the tally to the CURRENT event-data order so the bar lines up with the
+      // pk()-keyed read on the card, even after the scrape flips this bout's fighters.
+      var fi=_fightIndex[p.event_date+"|"+p.f1+"|"+p.f2]||_fightIndex[p.event_date+"|"+p.f2+"|"+p.f1]||null;
+      var f1n=fi?fi.fight.f1.n:p.f1,f2n=fi?fi.fight.f2.n:p.f2;
+      var k=p.event_date+"|"+f1n+"|"+f2n;
       if(!fresh[k])fresh[k]={f1:0,f2:0,total:0};
       fresh[k].total++;
-      if(p.pick===p.f1)fresh[k].f1++;
-      else if(p.pick===p.f2)fresh[k].f2++;
+      if(p.pick===f1n)fresh[k].f1++;
+      else if(p.pick===f2n)fresh[k].f2++;
     });
     communityPicks=fresh;
     // Only pay for a full re-render when the community pick distribution actually
@@ -3344,6 +3368,7 @@ function makePastEvCard(item){
 
 function render(){
   buildReg();
+  _reconcilePickOrder();
   var now=Date.now();
   var events=EVENTS.filter(function(e){return new Date(e.date)>=now-2*DAY_MS&&new Date(e.date)<=now+DAY_MS*65;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);});
   var pastEvs=EVENTS.filter(function(e){return new Date(e.date)<now-2*DAY_MS&&e.fights.some(function(f){return f.state==="post";});}).sort(function(a,b){return new Date(b.date)-new Date(a.date);});
@@ -4254,9 +4279,10 @@ function loadLeaderboard(isLive){
         nextMainFights.forEach(function(f){
           var fkey=pk(nextEv,f);
           var entry=nextMap[f.f1.n+"|"+f.f2.n];
-          // For current user prefer localStorage so display matches main page
-          var picked=u.isMe?(preds[fkey]||null):(entry?entry.pick:null);
-          var chipMethod=u.isMe?(preds_method[fkey]||""):(entry?entry.method:"");
+          // For current user prefer localStorage so display matches main page; fall back to
+          // the (order-agnostic) server entry so a not-yet-reconciled order flip still renders.
+          var picked=u.isMe?(preds[fkey]||(entry?entry.pick:null)):(entry?entry.pick:null);
+          var chipMethod=u.isMe?(preds_method[fkey]||(entry?entry.method:"")):(entry?entry.method:"");
           if(!picked&&!isMainCard[f.lbl])return;
           var chip=document.createElement("span");chip.className="lb-pick-chip";
           var nameSpan=document.createElement("span");nameSpan.textContent=picked?picked.split(" ").pop():"?";chip.appendChild(nameSpan);
