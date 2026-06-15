@@ -1,5 +1,48 @@
 # TODO
 
+## Always-on server-side result-push backup (Supabase pg_cron) — needs DB changes
+
+**Status:** open · **Added:** 2026-06-15 · **Severity:** medium (resilience) ·
+**Owner action:** Andy will make the DB/Supabase changes after the event.
+
+### Why
+Result push notifications currently come from two places, both with gaps:
+- **GitHub Actions scraper** — GitHub throttles scheduled runs hard (the "every
+  5 min" cron effectively ran ~hourly, and not at all outside its window). On
+  2026-06-14 (UFC Freedom 250) no scheduled run fired during the fights at all.
+- **Client-side live poll** (`index.html` `startLivePolling` → `_pushResult`) —
+  reliable and throttle-proof, but only fires while **someone has the app open**.
+  If nobody's watching when a fight ends, no push.
+
+Need a layer that fires even when no browser is open and regardless of GitHub.
+
+### Plan
+Move result detection + push into a Supabase **scheduled edge function** driven
+by `pg_cron` (or `pg_net` + a cron), running every ~1 min during fight windows:
+1. New edge function (e.g. `check-results`) that parses Wikipedia results for
+   active events and calls the existing `send-push` for each newly-final fight,
+   reusing the **same** `result:<fight_key>:<group>` type + `safe_*` payload.
+2. Schedule it with `pg_cron` (Supabase Dashboard → Database → Cron), or an
+   external uptime-cron (cron-job.org / Cloudflare Worker cron) pinging it.
+3. Relies on the existing `notif_log` dedup, so it stacks safely with the
+   client trigger and the GitHub scraper — only one push per fight ever.
+
+### Owner must (after event)
+- Create the `check-results` function and deploy it.
+- Enable `pg_cron`/`pg_net` and add the schedule (or wire an external cron).
+- Optionally fold in the `CRON_SECRET` hardening from "Edge-function hardening"
+  below so only the cron (not the public anon key) can trigger broadcasts.
+
+### Already shipped (code side, no DB needed)
+- Client-side live poll now triggers `send-push` on each detected result
+  (`index.html`), making any open browser a backup notifier.
+- Scraper now also pushes from the rebuild path, guarded by `notif_log` dedup +
+  a 2-day recency filter (`scrape.py` `send_push_notifications`).
+- Added Sunday-ET / Monday-UTC cron windows to `.github/workflows/update.yml`
+  so Sunday-night cards get covered (best-effort, still GitHub-throttled).
+
+---
+
 ## UFCStats scraping returns 0 rows for every fighter (stats can't refresh)
 
 **Status:** open · **Found:** 2026-06-13 · **Severity:** medium (records/odds unaffected; deep stats go stale)
