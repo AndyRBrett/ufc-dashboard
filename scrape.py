@@ -1178,6 +1178,19 @@ def send_push_notifications(new_results):
     for res in new_results:
         winner, loser = res["winner"], res["loser"]
         event_date = res.get("event_date", "")
+        # Recency guard: a full rebuild re-injects an entire recent card at once,
+        # so every fight looks "newly injected" here. notif_log dedups fights
+        # already announced (by an earlier run or a client-side trigger), and
+        # this bounds whatever remains to genuinely-recent cards — so a catch-up
+        # rebuild can back up the live path without ever firing stale spoilers
+        # for an event that aged out and got re-scraped. Live fights are same-day.
+        if event_date:
+            try:
+                ed = datetime.strptime(event_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                if ed < datetime.now(timezone.utc) - timedelta(days=2):
+                    continue
+            except ValueError:
+                pass
         winners, losers = [], []
         for pick in picks:
             f1, f2, chosen = pick["f1"], pick["f2"], pick["pick"]
@@ -1613,12 +1626,15 @@ def main():
         # A rebuild re-adds recently-finished events as "pending". Inject their
         # results in the same run so a freshly restored card (e.g. one that had
         # dropped out of the data) is scored immediately instead of waiting for a
-        # second pass. Push is suppressed here — these are catch-up results, not
-        # live ones, and would otherwise fire stale notifications.
-        reinjected, _ = step_inject_results(updated, now)
+        # second pass. Push fires here too so the scraper backs up the client-
+        # side trigger when a result lands only via this path — the notif_log
+        # dedup and the recency guard in send_push_notifications keep it from
+        # re-announcing or spoiling already-final / aged-out fights.
+        reinjected, reinjected_results = step_inject_results(updated, now)
         if reinjected:
             updated = reinjected
             print("Results injected after rebuild", file=sys.stderr)
+            send_push_notifications(reinjected_results)
         updated = update_results_archive(updated, now)
         data_path.write_text(updated, encoding="utf-8")
         new_events = re.findall(r'name:"([^"]+)"', updated)
