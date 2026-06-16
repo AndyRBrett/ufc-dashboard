@@ -181,6 +181,11 @@ serve(async (req) => {
   if (!SUPABASE_URL || !SB_ANON_KEY) {
     return new Response(JSON.stringify({ error: "Server misconfigured" }), { status: 500, headers: { "Content-Type": "application/json" } });
   }
+  // Service-role key is used ONLY to read the dedup log (notif_log is RLS-locked
+  // to service-role; see migration 0001). It is a project-wide secret already set
+  // for send-push. If absent we fall back to no pre-filtering — send-push still
+  // dedups, we just lose the invocation saving — so this stays best-effort.
+  const SB_SERVICE_ROLE_KEY = Deno.env.get("SB_SERVICE_ROLE_KEY") ?? "";
 
   const anonHeaders = { "apikey": SB_ANON_KEY, "Authorization": `Bearer ${SB_ANON_KEY}` };
   const pushHeaders = { "Content-Type": "application/json", "Authorization": `Bearer ${SB_ANON_KEY}` };
@@ -203,7 +208,28 @@ serve(async (req) => {
     if (r.event_date && r.event_name && !events.has(r.event_date)) events.set(r.event_date, r.event_name);
   }
 
-  let parsedCount = 0, pushedCount = 0, processed = 0;
+  // Pre-read the dedup log once so we can skip send-push entirely for fights any
+  // trigger already notified. Without this the function re-POSTs send-push every
+  // run for the whole lookback window just to get {skipped:true} back — one wasted
+  // invocation per already-final picked fight per run. `${event_date}|${type}`
+  // keys mirror send-push's (event_date, type) notif_log dedup exactly.
+  const alreadySent = new Set<string>();
+  if (SB_SERVICE_ROLE_KEY) {
+    try {
+      const logRes = await fetch(
+        `${SUPABASE_URL}/rest/v1/notif_log?event_date=gte.${lo}&event_date=lte.${hi}&select=event_date,type`,
+        { headers: { "apikey": SB_SERVICE_ROLE_KEY, "Authorization": `Bearer ${SB_SERVICE_ROLE_KEY}` } },
+      );
+      if (logRes.ok) {
+        const logRows: { event_date: string; type: string }[] = await logRes.json();
+        for (const lr of logRows) {
+          if (lr.event_date && lr.type) alreadySent.add(`${lr.event_date}|${lr.type}`);
+        }
+      }
+    } catch (_e) { /* best-effort; send-push still dedups if this read fails */ }
+  }
+
+  let parsedCount = 0, pushedCount = 0, skippedCount = 0, processed = 0;
   const fights: unknown[] = [];
 
   for (const [eventDate, eventName] of events) {
@@ -250,13 +276,16 @@ serve(async (req) => {
       ];
       for (const [group, userIds, title, body] of groups) {
         if (!userIds.length) continue;
+        const notifType = `result:${fightKey}:${group}`;
+        // Already notified by some trigger — skip the (otherwise dedup'd) send-push call.
+        if (alreadySent.has(`${eventDate}|${notifType}`)) { skippedCount++; continue; }
         try {
           const r = await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
             method: "POST",
             headers: pushHeaders,
             body: JSON.stringify({
               event_date: eventDate,
-              type: `result:${fightKey}:${group}`,
+              type: notifType,
               title, body,
               safe_title: SAFE_TITLE,
               safe_body: SAFE_BODY,
@@ -265,14 +294,14 @@ serve(async (req) => {
           });
           const j = await r.json().catch(() => ({}));
           if (j && typeof j.sent === "number" && j.sent > 0) pushedCount += j.sent;
-          fights.push({ event_date: eventDate, type: `result:${fightKey}:${group}`, recipients: userIds.length, result: j });
+          fights.push({ event_date: eventDate, type: notifType, recipients: userIds.length, result: j });
         } catch (_e) { /* best-effort; cron retries next run, notif_log dedups */ }
       }
     }
   }
 
   return new Response(
-    JSON.stringify({ events: events.size, parsed: parsedCount, pushed: pushedCount, fights }),
+    JSON.stringify({ events: events.size, parsed: parsedCount, pushed: pushedCount, skipped: skippedCount, fights }),
     { status: 200, headers: { "Content-Type": "application/json" } },
   );
 });

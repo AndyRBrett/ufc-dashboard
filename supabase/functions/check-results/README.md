@@ -25,6 +25,14 @@ Per invocation it:
 No state table is needed: `notif_log` in `send-push` handles dedup, and the
 2-day lookback mirrors the scraper's stale-spoiler guard.
 
+To avoid re-calling `send-push` once per already-final fight on every run (each
+such call just returns `{skipped:true}` but still costs an invocation), this
+function reads `notif_log` once per run and skips fights already logged. That
+table is service-role-only (migration `0001` blocks anon), so the read uses
+`SB_SERVICE_ROLE_KEY` — for that one read only; `picks` and `send-push` still go
+through the anon key. If the key is absent the read is skipped and behavior falls
+back to the old path (`send-push` still dedups; only the invocation saving lost).
+
 ## Auth / config
 
 - **Inbound** (the cron → this function): gated by `CRON_SECRET`. Requests must
@@ -32,11 +40,12 @@ No state table is needed: `notif_log` in `send-push` handles dedup, and the
 - **Outbound** (this function → `send-push` and `picks`): uses the public anon
   key `SB_ANON_KEY`, exactly like the web client. `send-push` is left unchanged.
 
-| Secret         | Purpose                                            |
-| -------------- | -------------------------------------------------- |
-| `CRON_SECRET`  | Authenticates the inbound cron trigger (new).      |
-| `SB_ANON_KEY`  | Calls `send-push` + reads `picks` (already exists). |
-| `SUPABASE_URL` | Auto-provided by the Edge runtime.                 |
+| Secret               | Purpose                                                  |
+| -------------------- | -------------------------------------------------------- |
+| `CRON_SECRET`        | Authenticates the inbound cron trigger (new).            |
+| `SB_ANON_KEY`        | Calls `send-push` + reads `picks` (already exists).      |
+| `SB_SERVICE_ROLE_KEY`| Reads `notif_log` for per-run dedup (already exists).    |
+| `SUPABASE_URL`       | Auto-provided by the Edge runtime.                       |
 
 ## Deploy & schedule (owner steps)
 
@@ -80,5 +89,7 @@ curl -XPOST localhost:54321/functions/v1/check-results \
 ```
 
 The JSON response reports `events` scanned, `parsed` results, `pushed` count,
-and per-group `result` (a second run for an already-final fight returns
-`{skipped:true}` from `send-push`, proving the `notif_log` dedup).
+`skipped` (fights short-circuited by the `notif_log` pre-read), and per-group
+`result`. On a second run for an already-final fight, `skipped` increments and no
+`send-push` call is made; if the service-role read is unavailable the call still
+goes out and returns `{skipped:true}` from `send-push` instead.
