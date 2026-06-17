@@ -1068,6 +1068,9 @@ var lbMode=(function(){try{return localStorage.getItem("ufc_lb_mode")||"current"
 var FIGHTER_PHOTOS={};
 try{FIGHTER_PHOTOS=JSON.parse(localStorage.getItem("ufc_photos")||"{}");}catch(e){}
 function _safeImgUrl(url){if(!url||url==="none")return null;try{var p=new URL(url);if(p.protocol!=="https:")return null;if(!p.hostname.endsWith(".wikimedia.org")&&!p.hostname.endsWith(".wikipedia.org"))return null;return url;}catch(e){return null;}}
+// Picks before this date are the wiped pre-UFC-Freedom-250 test phase. They were
+// deleted server-side; the client must never (re-)upload or re-cache them.
+var PICKS_CUTOFF="2026-06-14";
 var userName="",preds={},resolvedPicks={};
 try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.getItem("ufc_preds")||"{}");resolvedPicks=JSON.parse(localStorage.getItem("ufc_resolved")||"{}");}catch(e){}
 // Guard against a stringified empty identity persisted by an earlier session —
@@ -1299,7 +1302,7 @@ var communityPicks={};
 // keeps UFC Freedom 250 (2026-06-14) and everything after it intact.
 (function(){
   if(localStorage.getItem("ufc_reset_pre_freedom250"))return;
-  var CUT="2026-06-14";
+  var CUT=PICKS_CUTOFF;
   function _isOld(k){var d=k.indexOf("fotn_")===0?k.slice(5):k.split("|")[0];return d<CUT;}
   [preds,preds_method,preds_conf,preds_fotn,resolvedPicks].forEach(function(o){
     Object.keys(o).forEach(function(k){if(_isOld(k))delete o[k];});
@@ -1373,6 +1376,10 @@ function findByKey(key){if(!_fightIndex)_buildFightIndex();return _fightIndex[ke
 
 function syncPick(ev,fight,notifyFriends){
   if(!userName)return Promise.resolve(null);
+  // Never (re-)upload picks from the wiped pre-Freedom-250 test phase. A device
+  // with a stale local cache would otherwise resurrect rows the server delete
+  // removed — exactly how _reconcileMyMethods re-created them after the first wipe.
+  if(ev.date<PICKS_CUTOFF)return Promise.resolve(null);
   var key=pk(ev,fight);var myPick=preds[key];
   if(!myPick){deleteSbPick(ev,fight);return Promise.resolve(null);}
   var data={user_id:USER_ID,nickname:userName,event_date:ev.date,event_name:ev.name,f1:fight.f1.n,f2:fight.f2.n,pick:myPick,method:preds_method[key]||"",confidence:preds_conf[key]||0,updated_at:new Date().toISOString(),bonus_pick:preds_fotn["fotn_"+ev.date]||null};
