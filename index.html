@@ -1291,6 +1291,28 @@ var communityPicks={};
   preds=migrated;
   try{localStorage.setItem("ufc_preds",JSON.stringify(preds));}catch(e){}
 })();
+// One-time local prune (server-side reset before UFC Freedom 250): the test-phase
+// events before 2026-06-14 were deleted from the database, but a device's OWN
+// picks live in localStorage and render straight from there, so they survive a
+// server wipe. Clear the pre-cutoff entries automatically — once per device, on
+// load. Keys are "<date>|f1|f2" (and "fotn_<date>"), so a lexical date compare
+// keeps UFC Freedom 250 (2026-06-14) and everything after it intact.
+(function(){
+  if(localStorage.getItem("ufc_reset_pre_freedom250"))return;
+  var CUT="2026-06-14";
+  function _isOld(k){var d=k.indexOf("fotn_")===0?k.slice(5):k.split("|")[0];return d<CUT;}
+  [preds,preds_method,preds_conf,preds_fotn,resolvedPicks].forEach(function(o){
+    Object.keys(o).forEach(function(k){if(_isOld(k))delete o[k];});
+  });
+  try{
+    localStorage.setItem("ufc_preds",JSON.stringify(preds));
+    localStorage.setItem("ufc_method",JSON.stringify(preds_method));
+    localStorage.setItem("ufc_conf",JSON.stringify(preds_conf));
+    localStorage.setItem("ufc_fotn",JSON.stringify(preds_fotn));
+    localStorage.setItem("ufc_resolved",JSON.stringify(resolvedPicks));
+    localStorage.setItem("ufc_reset_pre_freedom250","1");
+  }catch(e){}
+})();
 var fnFights=[],fnIdx=0,fnEv=null,fnPickedAny=false;
 var fnLive=false,fnAutoFollow=true,_fnReactCbs=[],_fnPicksByFight={},_fnStandSnapshot={},_fnRevealed={};
 var notifActive=false;
