@@ -3926,19 +3926,29 @@ function _trashRecord(u){
 function _trashFacts(me,opponents){
   var myByFight={};
   (me.picks||[]).forEach(function(p){myByFight[p.evDate+"|"+_trashPairKey(p)]=p;});
+  var myName=me.nickname||"You";
   var blocks=opponents.slice(0,4).map(function(o){
-    var clashes=[];
+    var oName=o.nickname;
+    // Only ammo that makes the TARGET look bad, attributed by real name so the
+    // model can't swap roles: their own blown picks, and head-to-heads I won.
+    // Crucially, NEVER feed fights where I lost and they won — that's ammo
+    // against me, and handing it over makes the model misattribute my bad pick
+    // to them (e.g. blaming the target for my own Derrick Lewis whiff).
+    var whiffs=[],beat=[],pending=[];
     (o.picks||[]).forEach(function(op){
+      if(op.result===false)whiffs.push(op.pick);                 // they backed op.pick and LOST
       var mine=myByFight[op.evDate+"|"+_trashPairKey(op)];
-      if(!mine||mine.pick===op.pick)return;            // only fights where we actually disagreed
-      var tag="";
-      if(mine.result===true&&op.result===false)tag=" -> I nailed it, they ate it";
-      else if(mine.result===false&&op.result===true)tag=" -> they got it, I missed";
-      else if(mine.result===null||op.result===null)tag=" -> still unsettled";
-      clashes.push(mine.pick+" (me) vs "+op.pick+" (them)"+tag);
+      if(!mine||mine.pick===op.pick)return;                      // only fights we disagreed on
+      if(mine.result===true&&op.result===false)
+        beat.push(op.f1+"/"+op.f2+": "+oName+" took "+op.pick+" and lost, "+myName+" took "+mine.pick+" and won");
+      else if(mine.result===null||op.result===null)
+        pending.push(op.f1+"/"+op.f2+": "+myName+" on "+mine.pick+", "+oName+" on "+op.pick);
     });
-    var b="#"+o.rank+" "+o.nickname+" — "+_trashRecord(o);
-    if(clashes.length)b+="\n  head-to-head: "+clashes.slice(0,4).join("; ");
+    var b=oName+" — "+_trashRecord(o);
+    if(whiffs.length)b+="\n  "+oName+" backed and LOST with: "+whiffs.slice(0,5).join(", ");
+    if(beat.length)b+="\n  "+myName+" beat them head-to-head: "+beat.slice(0,3).join("; ");
+    if(pending.length&&!whiffs.length&&!beat.length)b+="\n  still-open clashes: "+pending.slice(0,3).join("; ");
+    if(!whiffs.length&&!beat.length)b+="\n  (no blown picks to mock — lean on attitude, do NOT invent picks or stats)";
     return b;
   });
   return blocks.join("\n")||"(no real competition to speak of)";
@@ -3997,7 +4007,7 @@ function generateTrashTalk(){
   var angleHint=angles[Math.floor(Math.random()*angles.length)];
   var seed=Math.random().toString(36).slice(2,7);
   // Rude and generic FIRST, the stat as a follow-up kicker — and never percentages.
-  var baseRules="STRUCTURE THE ROAST: open with a blunt, generic, genuinely RUDE insult in "+persona+"'s voice — pure attitude, NO numbers or stats up front. THEN follow up with ONE specific dig pulled from the CARD (a fight they blew, a fighter they backed, a cold streak). Never quote percentages — they don't land in trash talk. Don't open on a rank or username, skip the emoji crutch, speak purely in "+persona+"'s unmistakable voice. End with '— "+persona+"'. No preamble. 2-3 sentences. (variety token, do not print: "+seed+")";
+  var baseRules="STRUCTURE THE ROAST: open with a blunt, generic, genuinely RUDE insult in "+persona+"'s voice — pure attitude, NO numbers or stats up front. THEN follow up with ONE specific dig pulled from the CARD (a fight they blew, a fighter they backed, a cold streak). FACTS ARE STRICT: only mock the target for picks explicitly attributed to THEM in the CARD; NEVER claim they backed a fighter that isn't listed under their name, and never blame them for a fight they actually won — if there's nothing real to mock, lean on pure persona attitude instead of inventing anything. Never quote percentages — they don't land in trash talk. Don't open on a rank or username, skip the emoji crutch, speak purely in "+persona+"'s unmistakable voice. End with '— "+persona+"'. No preamble. 2-3 sentences. (variety token, do not print: "+seed+")";
   var who=solo?("ripping into "+opponentNames):("burying "+opponentNames);
   var question;
   if(hint){
