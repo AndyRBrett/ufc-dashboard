@@ -3523,6 +3523,8 @@ function closeTrashSheet(){
   document.getElementById("trashSheet").classList.remove("open");
   document.getElementById("trashPersonaPicker").style.display="none";
   document.getElementById("trashTargets").style.display="none";
+  document.getElementById("trashSendSection").style.display="none";
+  document.getElementById("trashText").style.display="none";
   document.getElementById("trashSent").style.display="none";
   document.getElementById("trashHintSection").style.display="none";
   _trashText="";_trashPersona="";_trashMe=null;_selectedTargets=new Set();
@@ -3753,11 +3755,15 @@ function toggleTrashTarget(chip){
       _selectedTargets.add("__all__");allChip.classList.add("selected");allChip.textContent="✓ "+allChip.dataset.label;
     }
   }
-  var btn=document.getElementById("trashSendBtn");
+  // Targets are chosen before generation now, so a selection change gates the
+  // Generate step and throws away any roast written about the previous targets.
   var individualChips=document.querySelectorAll(".lb-trash-chip:not([data-uid='__all__'])");
   var n=_selectedTargets.has("__all__")?individualChips.length:_selectedTargets.size;
-  btn.disabled=n===0;
-  btn.textContent=n===0?"Select who gets it":n===individualChips.length?"Fire at everyone 🔥":"Fire at "+n+" 🔥";
+  _trashText="";
+  document.getElementById("trashText").style.display="none";
+  document.getElementById("trashSendSection").style.display="none";
+  document.getElementById("trashSent").style.display="none";
+  document.getElementById("trashHintSection").style.display=n>0?"block":"none";
 }
 function fireTrashTalk(){
   if(!_trashText||_selectedTargets.size===0)return;
@@ -3786,7 +3792,7 @@ function fireTrashTalk(){
       // Don't claim success on a server rejection (e.g. 400/429) — surface it
       // and re-enable the button so the user knows the trash talk didn't send.
       if(!r.ok){r.text().then(function(t){console.error("trash-talk push failed",r.status,t);});btn.disabled=false;toast("⚠️ Trash talk didn't send ("+r.status+")");return;}
-      document.getElementById("trashTargets").style.display="none";
+      document.getElementById("trashSendSection").style.display="none";
       document.getElementById("trashSent").style.display="block";
     }).catch(function(){btn.disabled=false;toast("⚠️ Trash talk didn't send — check connection");});
   };
@@ -3847,6 +3853,7 @@ function openTrashTalk(){
   document.getElementById("trashPersona").textContent="";
   document.getElementById("trashText").textContent="";document.getElementById("trashText").style.display="none";
   document.getElementById("trashTargets").style.display="none";
+  document.getElementById("trashSendSection").style.display="none";
   document.getElementById("trashSent").style.display="none";
   document.getElementById("trashHintInput").value="";
   document.getElementById("trashHintSection").style.display="none";
@@ -3879,7 +3886,29 @@ function selectTrashPersona(name){
   _trashPersona=name;
   document.getElementById("trashPersonaPicker").style.display="none";
   document.getElementById("trashPersona").textContent="🎤 "+name+" says...";
-  document.getElementById("trashHintSection").style.display="block";
+  // Pick the target(s) BEFORE generating — the roast is written about whoever
+  // you're actually firing it at, not the whole leaderboard.
+  renderTrashTargets();
+  document.getElementById("trashTargets").style.display="block";
+}
+// Build the "Roast who?" chips up front. Generation and sending are both scoped
+// to the selection, so you choose the victim first and the AI roasts them by name.
+function renderTrashTargets(){
+  var chipsDiv=document.getElementById("trashChips");
+  chipsDiv.innerHTML="";
+  _selectedTargets=new Set();
+  var opps=_trashOpponents||[];
+  var withId=opps.filter(function(o){return o.user_id;});
+  if(opps.length>1||(withId.length===0&&opps.length>0)){
+    var allChip=document.createElement("span");allChip.className="lb-trash-chip";allChip.dataset.uid="__all__";allChip.dataset.label="Everyone";allChip.textContent="Everyone";allChip.onclick=function(){toggleTrashTarget(allChip);};chipsDiv.appendChild(allChip);
+  }
+  withId.forEach(function(o){
+    var c=document.createElement("span");c.className="lb-trash-chip";c.dataset.uid=o.user_id;c.dataset.label=o.nickname;c.textContent=o.nickname;c.onclick=function(){toggleTrashTarget(c);};chipsDiv.appendChild(c);
+  });
+  document.getElementById("trashHintSection").style.display="none";
+  document.getElementById("trashText").style.display="none";
+  document.getElementById("trashSendSection").style.display="none";
+  document.getElementById("trashSent").style.display="none";
 }
 var _trashGenerating=false;
 // Pull concrete, varied ammo out of the leaderboard picks so the trash talk can
@@ -3888,9 +3917,10 @@ var _trashGenerating=false;
 function _trashPairKey(p){return [p.f1,p.f2].sort().join("|");}
 function _trashRecord(u){
   var resolved=(u.picks||[]).filter(function(p){return p.result!==null;}).length;
-  return (u.correct||0)+"/"+(resolved||u.total||0)+" right"
-    +(u.accuracy!=null?", "+u.accuracy+"% acc":"")
-    +(u.currentStreak>0?", on a "+u.currentStreak+"-pick heater":(resolved>0&&!u.currentStreak?", ice cold":""))
+  // No percentages — they read like a spreadsheet, not a roast. Raw counts,
+  // streaks and blown picks land harder.
+  return (u.correct||0)+" of "+(resolved||u.total||0)+" right"
+    +(u.currentStreak>0?", on a "+u.currentStreak+"-pick heater":(resolved>0&&!u.currentStreak?", stone cold":""))
     +(u.methods?", "+u.methods+" method bonus"+(u.methods>1?"es":""):"");
 }
 function _trashFacts(me,opponents){
@@ -3918,18 +3948,25 @@ function generateTrashTalk(){
   var hint=document.getElementById("trashHintInput").value.trim();
   var me=_trashMe,opponents=_trashOpponents,persona=_trashPersona,myRank=_trashMyRank;
   if(!me)return;
+  // Generation follows target selection now, so scope the roast to whoever's
+  // actually getting it — the AI writes about exactly who you're firing at.
+  var targets=(_selectedTargets.has("__all__")||_selectedTargets.size===0)
+    ?opponents
+    :opponents.filter(function(o){return _selectedTargets.has(o.user_id);});
+  if(!targets.length)targets=opponents;
+  var solo=targets.length===1;
   _trashGenerating=true;
   var genBtn=document.querySelector(".lb-trash-gen");if(genBtn)genBtn.disabled=true;
   document.getElementById("trashHintSection").style.display="none";
   document.getElementById("trashText").textContent="Generating...";document.getElementById("trashText").style.display="block";
-  document.getElementById("trashTargets").style.display="none";
+  document.getElementById("trashSendSection").style.display="none";
   document.getElementById("trashSent").style.display="none";
   var myName=me.nickname||"The Champ";
-  var opponentNames=opponents.map(function(o){return o.nickname;}).join(", ")||"nobody worth mentioning";
+  var opponentNames=targets.map(function(o){return o.nickname;}).join(", ")||"nobody worth mentioning";
   // The real anti-repetition lever: hand the model concrete, varied material
   // (actual fighters picked, the fights you clashed on, who blew which call,
   // who's hot or cold) instead of just names + ranks, which is all it had before.
-  var facts=_trashFacts(me,opponents);
+  var facts=_trashFacts(me,targets);
   var myRecord=_trashRecord(me);
   // Ground the smack talk in whichever leaderboard is actually on screen —
   // this week's event standings vs all-time career records read very differently.
@@ -3941,25 +3978,32 @@ function generateTrashTalk(){
     :"This is about all-time, career-long bragging rights — make the history sting.";
   // A randomised hook + a freshness token so the same persona on the same board
   // doesn't keep producing the same line — fresh marching orders on every tap.
-  var angles=[
-    "Zero in on ONE fight a rival blew and never let them live it down — name the fighter.",
-    "Brag about a call "+myName+" nailed that the others fumbled — name both fighters involved.",
-    "Act genuinely baffled that anyone picks the way they do, citing one specific bad take.",
-    "Pick the lowest chump on the board and make an example of them, by name.",
-    "Roast the whole group for all fading the same fighter and being wrong together.",
-    "Riff on a fighter one of them backed like it's the dumbest take in MMA history.",
-    "Compare "+myName+"'s fight IQ to theirs using an actual head-to-head clash from the dossier.",
-    "Spin "+myName+"'s spot as a masterclass and everyone else's as pure desperation.",
-    "Go full chaos energy — but anchor every shot to a real pick from the dossier."
+  // Each angle bakes in the structure the user wants: lead rude + generic, THEN
+  // twist the knife with one concrete stat/pick. Branch on solo vs group so the
+  // hook actually fits who's being roasted.
+  var angles=solo?[
+    "Open by writing them off as a clueless nobody, THEN twist the knife with the one fight they blew — name the fighter.",
+    "Trash how they pick fights in general, THEN back it with a specific bad call from the dossier.",
+    "Tell them to find a new hobby, THEN cite the cold streak or whiffed pick that proves it.",
+    "Treat them as beneath "+myName+", THEN drop the head-to-head clash where they ate it.",
+    "Question whether they've ever watched a fight, THEN name the fighter they backed that exposes it."
+  ]:[
+    "Write the whole group off as clowns, THEN single out the one who blew the biggest pick by name.",
+    "Mock them all for fading the same fighter, THEN name who got buried worst.",
+    "Dismiss the entire board as tourists, THEN twist the knife with one specific blown call.",
+    "Crown "+myName+" and bury the rest, THEN drop a real head-to-head clash someone lost.",
+    "Tell them collectively to quit, THEN back it with the coldest streak on the board."
   ];
   var angleHint=angles[Math.floor(Math.random()*angles.length)];
   var seed=Math.random().toString(36).slice(2,7);
-  var baseRules="Use the SPECIFICS in the CARD as your ammo — name real fighters, the fights you clashed on, who whiffed, who's hot or cold. Do NOT just mock usernames, ranks or emojis; that's the lazy way out. Make it feel spontaneous: vary the structure, don't open on their rank or username, and skip the emoji crutch. One number at most, and only if it actually lands. Speak purely in "+persona+"'s unmistakable voice. End with '— "+persona+"'. No preamble. 2-3 sentences. (variety token, do not print: "+seed+")";
+  // Rude and generic FIRST, the stat as a follow-up kicker — and never percentages.
+  var baseRules="STRUCTURE THE ROAST: open with a blunt, generic, genuinely RUDE insult in "+persona+"'s voice — pure attitude, NO numbers or stats up front. THEN follow up with ONE specific dig pulled from the CARD (a fight they blew, a fighter they backed, a cold streak). Never quote percentages — they don't land in trash talk. Don't open on a rank or username, skip the emoji crutch, speak purely in "+persona+"'s unmistakable voice. End with '— "+persona+"'. No preamble. 2-3 sentences. (variety token, do not print: "+seed+")";
+  var who=solo?("ripping into "+opponentNames):("burying "+opponentNames);
   var question;
   if(hint){
-    question="You ARE "+persona+". Trash talk on behalf of "+myName+" on "+boardName+", burying "+opponentNames+". "+boardAngle+" Build the bit around this angle: \""+hint+"\". "+baseRules;
+    question="You ARE "+persona+". Trash talk on behalf of "+myName+" "+who+" on "+boardName+". "+boardAngle+" Build the bit around this angle: \""+hint+"\". "+baseRules;
   } else {
-    question="You ARE "+persona+". Trash talk on behalf of "+myName+" on "+boardName+", burying "+opponentNames+". "+boardAngle+" "+angleHint+" "+baseRules;
+    question="You ARE "+persona+". Trash talk on behalf of "+myName+" "+who+" on "+boardName+". "+boardAngle+" "+angleHint+" "+baseRules;
   }
   fetch(AI_BREAKDOWN_URL,{
     method:"POST",
@@ -3968,20 +4012,15 @@ function generateTrashTalk(){
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(data){
     _trashText=data.breakdown||"No trash talk generated.";
     document.getElementById("trashText").textContent=_trashText;
-    if(opponents.length){
-      var chipsDiv=document.getElementById("trashChips");
-      chipsDiv.innerHTML="";
-      _selectedTargets=new Set();
-      var allChip=document.createElement("span");allChip.className="lb-trash-chip";allChip.dataset.uid="__all__";allChip.dataset.label="Everyone";allChip.textContent="Everyone";allChip.onclick=function(){toggleTrashTarget(allChip);};chipsDiv.appendChild(allChip);
-      opponents.forEach(function(o){
-        if(!o.user_id)return;
-        var c=document.createElement("span");c.className="lb-trash-chip";c.dataset.uid=o.user_id;c.dataset.label=o.nickname;c.textContent=o.nickname;c.onclick=function(){toggleTrashTarget(c);};chipsDiv.appendChild(c);
-      });
-      var sendBtn=document.getElementById("trashSendBtn");
-      sendBtn.disabled=true;
-      sendBtn.textContent="Select who gets it";
-      document.getElementById("trashTargets").style.display="block";
-    }
+    document.getElementById("trashText").style.display="block";
+    // Targets were chosen up front — just arm the send button for them.
+    var individualChips=document.querySelectorAll(".lb-trash-chip:not([data-uid='__all__'])");
+    var n=_selectedTargets.has("__all__")?individualChips.length:_selectedTargets.size;
+    var everyone=_selectedTargets.has("__all__")||(n>1&&n===individualChips.length);
+    var sendBtn=document.getElementById("trashSendBtn");
+    sendBtn.disabled=false;
+    sendBtn.textContent=everyone?"Fire at everyone 🔥":(n<=1?"Fire it off 🔥":"Fire at "+n+" 🔥");
+    document.getElementById("trashSendSection").style.display="block";
   }).catch(function(){
     document.getElementById("trashText").textContent="Couldn't generate trash talk right now. Try again!";
     document.getElementById("trashHintSection").style.display="block";
@@ -5323,14 +5362,16 @@ document.addEventListener("DOMContentLoaded",function(){
       <div class="lb-trash-persona-list" id="trashPersonaList"></div>
     </div>
     <div class="lb-trash-persona" id="trashPersona"></div>
+    <div class="lb-trash-targets" id="trashTargets" style="display:none">
+      <div class="lb-trash-target-lbl">Roast who?</div>
+      <div class="lb-trash-chips" id="trashChips"></div>
+    </div>
     <div class="lb-trash-hint-section" id="trashHintSection" style="display:none">
       <input class="lb-trash-input" id="trashHintInput" placeholder="Your angle... (optional)" maxlength="120">
       <button class="lb-trash-gen" onclick="generateTrashTalk()">Generate 🔥</button>
     </div>
     <div class="lb-trash-text" id="trashText"></div>
-    <div class="lb-trash-targets" id="trashTargets" style="display:none">
-      <div class="lb-trash-target-lbl">Send to</div>
-      <div class="lb-trash-chips" id="trashChips"></div>
+    <div class="lb-trash-send-section" id="trashSendSection" style="display:none;margin-top:14px">
       <button class="lb-trash-send" id="trashSendBtn" onclick="fireTrashTalk()">Fire it off 🔥</button>
     </div>
     <div class="lb-trash-sent" id="trashSent" style="display:none">🔔 Fired off!</div>
