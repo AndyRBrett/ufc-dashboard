@@ -3825,7 +3825,7 @@ function openTrashTalk(){
   _lbSorted.forEach(function(u,i){
     var pts=u.correct+u.methods*0.5+u.fotn;
     if(u.isMe){me=u;myRank=i+1;}
-    else{opponents.push({nickname:u.nickname,user_id:u.user_id,rank:i+1,points:pts,accuracy:u.accuracy,streak:u.currentStreak});}
+    else{opponents.push({nickname:u.nickname,user_id:u.user_id,rank:i+1,points:pts,accuracy:u.accuracy,streak:u.currentStreak,currentStreak:u.currentStreak,correct:u.correct,total:u.total,methods:u.methods,fotn:u.fotn,picks:u.picks||[]});}
   });
   if(!me){toast("Make some picks to trash talk!");return;}
   _trashMe=me;_trashOpponents=opponents;_trashMyRank=myRank;_trashPersona="";
@@ -3882,6 +3882,37 @@ function selectTrashPersona(name){
   document.getElementById("trashHintSection").style.display="block";
 }
 var _trashGenerating=false;
+// Pull concrete, varied ammo out of the leaderboard picks so the trash talk can
+// reference real fighters, head-to-head clashes and blown calls instead of
+// recycling the same username/rank/emoji jokes every time.
+function _trashPairKey(p){return [p.f1,p.f2].sort().join("|");}
+function _trashRecord(u){
+  var resolved=(u.picks||[]).filter(function(p){return p.result!==null;}).length;
+  return (u.correct||0)+"/"+(resolved||u.total||0)+" right"
+    +(u.accuracy!=null?", "+u.accuracy+"% acc":"")
+    +(u.currentStreak>0?", on a "+u.currentStreak+"-pick heater":(resolved>0&&!u.currentStreak?", ice cold":""))
+    +(u.methods?", "+u.methods+" method bonus"+(u.methods>1?"es":""):"");
+}
+function _trashFacts(me,opponents){
+  var myByFight={};
+  (me.picks||[]).forEach(function(p){myByFight[p.evDate+"|"+_trashPairKey(p)]=p;});
+  var blocks=opponents.slice(0,4).map(function(o){
+    var clashes=[];
+    (o.picks||[]).forEach(function(op){
+      var mine=myByFight[op.evDate+"|"+_trashPairKey(op)];
+      if(!mine||mine.pick===op.pick)return;            // only fights where we actually disagreed
+      var tag="";
+      if(mine.result===true&&op.result===false)tag=" -> I nailed it, they ate it";
+      else if(mine.result===false&&op.result===true)tag=" -> they got it, I missed";
+      else if(mine.result===null||op.result===null)tag=" -> still unsettled";
+      clashes.push(mine.pick+" (me) vs "+op.pick+" (them)"+tag);
+    });
+    var b="#"+o.rank+" "+o.nickname+" — "+_trashRecord(o);
+    if(clashes.length)b+="\n  head-to-head: "+clashes.slice(0,4).join("; ");
+    return b;
+  });
+  return blocks.join("\n")||"(no real competition to speak of)";
+}
 function generateTrashTalk(){
   if(_trashGenerating)return;
   var hint=document.getElementById("trashHintInput").value.trim();
@@ -3895,7 +3926,11 @@ function generateTrashTalk(){
   document.getElementById("trashSent").style.display="none";
   var myName=me.nickname||"The Champ";
   var opponentNames=opponents.map(function(o){return o.nickname;}).join(", ")||"nobody worth mentioning";
-  var cardLines=opponents.map(function(o){return o.nickname+(o.rank?" (rank #"+o.rank+")":"");}).join("\n")||"(no competition)";
+  // The real anti-repetition lever: hand the model concrete, varied material
+  // (actual fighters picked, the fights you clashed on, who blew which call,
+  // who's hot or cold) instead of just names + ranks, which is all it had before.
+  var facts=_trashFacts(me,opponents);
+  var myRecord=_trashRecord(me);
   // Ground the smack talk in whichever leaderboard is actually on screen —
   // this week's event standings vs all-time career records read very differently.
   var boardName=_trashLbMode==="current"
@@ -3904,25 +3939,32 @@ function generateTrashTalk(){
   var boardAngle=_trashLbMode==="current"
     ?"The rankings are about "+(_trashLbEvName||"this week's card")+" — work that event into the smack talk."
     :"This is about all-time, career-long bragging rights — make the history sting.";
+  // A randomised hook + a freshness token so the same persona on the same board
+  // doesn't keep producing the same line — fresh marching orders on every tap.
+  var angles=[
+    "Zero in on ONE fight a rival blew and never let them live it down — name the fighter.",
+    "Brag about a call "+myName+" nailed that the others fumbled — name both fighters involved.",
+    "Act genuinely baffled that anyone picks the way they do, citing one specific bad take.",
+    "Pick the lowest chump on the board and make an example of them, by name.",
+    "Roast the whole group for all fading the same fighter and being wrong together.",
+    "Riff on a fighter one of them backed like it's the dumbest take in MMA history.",
+    "Compare "+myName+"'s fight IQ to theirs using an actual head-to-head clash from the dossier.",
+    "Spin "+myName+"'s spot as a masterclass and everyone else's as pure desperation.",
+    "Go full chaos energy — but anchor every shot to a real pick from the dossier."
+  ];
+  var angleHint=angles[Math.floor(Math.random()*angles.length)];
+  var seed=Math.random().toString(36).slice(2,7);
+  var baseRules="Use the SPECIFICS in the CARD as your ammo — name real fighters, the fights you clashed on, who whiffed, who's hot or cold. Do NOT just mock usernames, ranks or emojis; that's the lazy way out. Make it feel spontaneous: vary the structure, don't open on their rank or username, and skip the emoji crutch. One number at most, and only if it actually lands. Speak purely in "+persona+"'s unmistakable voice. End with '— "+persona+"'. No preamble. 2-3 sentences. (variety token, do not print: "+seed+")";
   var question;
   if(hint){
-    question="You are "+persona+". Trash talk on behalf of "+myName+", burying their competition on "+boardName+": "+opponentNames+". "+boardAngle+" Build the entire bit around this angle: \""+hint+"\". Lead with "+persona+"'s personality, attitude, and voice — that's the whole point. You can drop one stat as flavor but never let numbers be the punchline. End with '— "+persona+"'. No preamble. 2-3 sentences max.";
+    question="You ARE "+persona+". Trash talk on behalf of "+myName+" on "+boardName+", burying "+opponentNames+". "+boardAngle+" Build the bit around this angle: \""+hint+"\". "+baseRules;
   } else {
-    var angles=[
-      "Go full "+persona+" persona — lean into your most iconic catchphrases, attitude, and delivery.",
-      "Roast their nicknames and usernames like they're the most embarrassing things you've ever heard.",
-      "Talk about "+myName+" like they're already a legend and the rest are just tourists.",
-      "Make it personal — question their taste, their lifestyle, their life choices. Stats are irrelevant.",
-      "Channel pure "+persona+" chaos energy. This is a vibe, not a spreadsheet.",
-      "Dismiss the competition the way only "+persona+" can — with contempt, style, and zero mercy."
-    ];
-    var angleHint=angles[Math.floor(Math.random()*angles.length)];
-    question="You are "+persona+". Trash talk on behalf of "+myName+", burying their competition on "+boardName+": "+opponentNames+". "+boardAngle+" "+angleHint+" Insults and personality first — one stat reference at most, only if it lands harder with it. Speak in "+persona+"'s unmistakable voice. End with '— "+persona+"'. No preamble. 2-3 sentences max.";
+    question="You ARE "+persona+". Trash talk on behalf of "+myName+" on "+boardName+", burying "+opponentNames+". "+boardAngle+" "+angleHint+" "+baseRules;
   }
   fetch(AI_BREAKDOWN_URL,{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-    body:JSON.stringify({action:"chat",event:"UFC Picks Leaderboard — "+boardName,card:cardLines,userPicks:myName+(myRank?" — Rank #"+myRank+" on "+boardName:""),question:question})
+    body:JSON.stringify({action:"chat",event:"UFC Picks Leaderboard — "+boardName,card:facts,userPicks:myName+(myRank?" — Rank #"+myRank+", "+myRecord:""),question:question})
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(data){
     _trashText=data.breakdown||"No trash talk generated.";
     document.getElementById("trashText").textContent=_trashText;
