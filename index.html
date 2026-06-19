@@ -2767,11 +2767,26 @@ function _triggerPush(evDate,type,title,body,excludeUid,opts){
   if(opts&&opts.includeIds)req.include_user_ids=opts.includeIds;
   if(opts&&opts.url)req.url=opts.url;
   if(opts&&opts.kind)req.kind=opts.kind;
-  return fetch(SUPABASE_URL+"/functions/v1/send-push",{
-    method:"POST",
-    headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-    body:JSON.stringify(req)
-  }).then(function(r){return r.json();}).catch(function(){return null;});
+  var send=function(){
+    return fetch(SUPABASE_URL+"/functions/v1/send-push",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
+      body:JSON.stringify(req)
+    }).then(function(r){return r.json();}).catch(function(){return null;});
+  };
+  // Also exclude this device's own push endpoint. When the sender is excluding
+  // themselves (excludeUid is this user), their push_subs row may be registered
+  // under an older anonymous user_id that exclude_user_id can't match — that's
+  // how you end up receiving your own "is picking!" / "locked in!" push. Pulling
+  // the live subscription endpoint guarantees self-exclusion regardless of id
+  // drift. Time-boxed so a never-resolving serviceWorker.ready can't block send.
+  if(excludeUid&&excludeUid===USER_ID&&'serviceWorker' in navigator){
+    return Promise.race([
+      navigator.serviceWorker.ready.then(function(reg){return reg.pushManager.getSubscription();}),
+      new Promise(function(res){setTimeout(function(){res(null);},1500);})
+    ]).then(function(sub){if(sub)req.exclude_endpoint=sub.endpoint;}).catch(function(){}).then(send);
+  }
+  return send();
 }
 function checkNotifSchedule(){
   if(!notifActive||Notification.permission!=="granted")return;
