@@ -36,9 +36,11 @@ jobs:
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           SUPABASE_ANON: ${{ secrets.SUPABASE_ANON }}
+      - name: Write data-freshness status for the Project Overseer
+        run: python write_status.py
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data.js
+          git add data.js overseer-status.json
           git diff --staged --quiet || git commit -m "Auto-update $(date +'%Y-%m-%d %H:%M UTC')"
           git push
