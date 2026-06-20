@@ -174,10 +174,13 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: { "Content-Type": "application/json" } });
   }
 
-  // Inbound auth: only the cron (which knows CRON_SECRET) may trigger a scrape.
+  // Inbound auth: only a caller that knows CRON_SECRET may trigger a scrape.
+  // Accept it as `Authorization: Bearer <secret>` (GitHub Actions) or a ?key=
+  // query param (so external cron UIs work without custom headers).
   const CRON_SECRET = Deno.env.get("CRON_SECRET") ?? "";
   const auth = req.headers.get("Authorization") ?? "";
-  if (!CRON_SECRET || auth !== `Bearer ${CRON_SECRET}`) {
+  const key = new URL(req.url).searchParams.get("key") ?? "";
+  if (!CRON_SECRET || (auth !== `Bearer ${CRON_SECRET}` && key !== CRON_SECRET)) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
   }
 
