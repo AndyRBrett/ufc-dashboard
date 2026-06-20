@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = '2026-06-20-1';
+const SW_VERSION = '2026-06-20-2';
 const CACHE = 'ufc-' + SW_VERSION;
 
 self.addEventListener('install', function(e) {
@@ -82,6 +82,53 @@ self.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'getVersion' && e.ports && e.ports[0]) {
     e.ports[0].postMessage({ type: 'version', version: SW_VERSION });
   }
+});
+
+// Base64url <-> bytes, mirroring the page helpers, so the SW can re-subscribe
+// and re-register without the page being open.
+function urlB64ToUint8(b64) {
+  var pad = '='.repeat((4 - b64.length % 4) % 4);
+  var raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+  var out = new Uint8Array(raw.length);
+  for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+  return out;
+}
+function bufToB64Url(buf) {
+  var bytes = new Uint8Array(buf), s = '';
+  for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+// Browsers (notably Chrome/FCM) periodically rotate push subscriptions. Without
+// this handler the old endpoint just dies and the user silently stops receiving
+// pushes while the app is closed. Re-subscribe and re-register using the identity
+// the page stashed in the 'ufc-push-id' cache.
+self.addEventListener('pushsubscriptionchange', function(e) {
+  e.waitUntil(
+    caches.open('ufc-push-id')
+      .then(function(c) { return c.match('/__push_id'); })
+      .then(function(res) { return res ? res.json() : null; })
+      .then(function(id) {
+        if (!id || !id.vapid || !id.url) return;
+        return self.registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlB64ToUint8(id.vapid)
+        }).then(function(sub) {
+          var p256dh = sub.getKey('p256dh'), auth = sub.getKey('auth');
+          if (!p256dh || !auth) return;
+          return fetch(id.url + '/functions/v1/send-push', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + id.anon },
+            body: JSON.stringify({
+              type: 'register', user_id: id.user_id, nickname: id.nickname,
+              endpoint: sub.endpoint, p256dh: bufToB64Url(p256dh), auth: bufToB64Url(auth),
+              live_results: !!id.live_results
+            })
+          });
+        });
+      })
+      .catch(function() {})
+  );
 });
 
 self.addEventListener('push', function(e) {

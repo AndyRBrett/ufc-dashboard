@@ -2131,8 +2131,54 @@ function toggleLiveResults(){
   var on=!_liveResultsOn();
   try{localStorage.setItem("ufc_live_results",on?"1":"0");}catch(e){}
   _setLiveResActive(on);
+  _stashPushIdentity();
   _syncLivePref();
   toast(on?"Live results on — alerts will name winners 🚨":"Spoiler-free — alerts won't reveal winners 🙈");
+}
+// Stash the identity the service worker needs to re-register itself if the
+// browser rotates the push subscription while the app is closed (the
+// pushsubscriptionchange handler in sw.js reads this). Everything here is
+// already public (shipped in the page), so caching it is no extra exposure.
+function _stashPushIdentity(){
+  try{
+    if(!('caches'in self)||!USER_ID)return;
+    var payload=JSON.stringify({user_id:USER_ID,nickname:userName||USER_ID.slice(0,8),
+      live_results:_liveResultsOn(),vapid:VAPID_PUBLIC_KEY,url:SUPABASE_URL,anon:SUPABASE_ANON});
+    caches.open("ufc-push-id").then(function(c){
+      c.put("/__push_id",new Response(payload,{headers:{"Content-Type":"application/json"}}));
+    }).catch(function(){});
+  }catch(e){}
+}
+// Single source of truth for registering a subscription with the server. Routed
+// through the Edge Function so the service role key is used — the anon key is
+// blocked by RLS from updating existing rows directly. Returns the fetch promise.
+function _pushRegister(sub){
+  var p256dhBuf=sub.getKey('p256dh'),authBuf=sub.getKey('auth');
+  if(!p256dhBuf||!authBuf)return Promise.reject(new Error("push keys unavailable"));
+  _stashPushIdentity();
+  return fetch(SUPABASE_URL+"/functions/v1/send-push",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
+    body:JSON.stringify({type:"register",user_id:USER_ID,nickname:userName||USER_ID.slice(0,8),
+      endpoint:sub.endpoint,p256dh:_bufToBase64Url(p256dhBuf),auth:_bufToBase64Url(authBuf),live_results:_liveResultsOn()})
+  });
+}
+// Self-heal the web-push subscription. The bell only persists a flag in
+// localStorage, but the underlying subscription can be rotated by the browser
+// or its push_subs row pruned server-side after a 410 — leaving a user who
+// thinks notifications are on silently unreachable when the app is closed
+// (exactly how targeted challenge/nudge pushes go missing). On every load and
+// foreground, re-subscribe if needed and re-register so the row stays valid.
+function _ensurePushFresh(){
+  try{if(localStorage.getItem("ufc_push")!=="1")return;}catch(e){return;}
+  if(!('serviceWorker'in navigator)||!('PushManager'in window)||!('Notification'in window))return;
+  if(Notification.permission!=="granted"||!USER_ID)return;
+  navigator.serviceWorker.ready.then(function(reg){
+    return reg.pushManager.getSubscription().then(function(sub){
+      if(sub)return sub;
+      return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64ToUint8(VAPID_PUBLIC_KEY)});
+    });
+  }).then(function(sub){if(sub)return _pushRegister(sub);}).catch(function(e){console.error("push refresh failed",e);});
 }
 function enablePush(){
   if(!('Notification'in window)||!('serviceWorker'in navigator)){toast("Notifications not supported");return;}
@@ -2142,16 +2188,7 @@ function enablePush(){
       reg.pushManager.getSubscription().then(function(existing){
         var doSubscribe=function(){
           reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64ToUint8(VAPID_PUBLIC_KEY)}).then(function(sub){
-            var p256dhBuf=sub.getKey('p256dh');var authBuf=sub.getKey('auth');
-            if(!p256dhBuf||!authBuf){toast("Push keys unavailable — try a different browser");return;}
-            var p256dh=_bufToBase64Url(p256dhBuf);var auth=_bufToBase64Url(authBuf);
-            // Route through the Edge Function so the service role key is used —
-            // the anon key is blocked by RLS from updating existing rows directly.
-            fetch(SUPABASE_URL+"/functions/v1/send-push",{
-              method:"POST",
-              headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-              body:JSON.stringify({type:"register",user_id:USER_ID,nickname:userName||USER_ID.slice(0,8),endpoint:sub.endpoint,p256dh:p256dh,auth:auth,live_results:_liveResultsOn()})
-            }).then(function(r){
+            _pushRegister(sub).then(function(r){
               if(!r.ok)r.text().then(function(t){console.error("push register failed",r.status,t);toast("⚠️ Notification setup failed ("+r.status+") — try again");});
             }).catch(function(e){console.error("push register error",e);toast("⚠️ Notification setup failed — check connection");});
             try{localStorage.setItem("ufc_push","1");}catch(e){}
@@ -4767,7 +4804,10 @@ function fireChallenge(){
     var ch=rows&&rows[0];
     document.getElementById("chalSent").style.display="block";btn.style.display="none";
     if(ch)_triggerPush(_chalEvent.date,"chal-"+ch.id,"⚔️ "+userName+" challenged you!",
-      _chalFightLbl(row)+" — "+stake,USER_ID,{includeIds:[ch.target_id],url:"./?inbox=1",kind:"challenge"});
+      _chalFightLbl(row)+" — "+stake,USER_ID,{includeIds:[ch.target_id],url:"./?inbox=1",kind:"challenge"})
+      // The challenge is saved either way (it shows in their inbox on next open);
+      // sent:0 just means they haven't enabled push, so no instant alert fires.
+      .then(function(res){if(res&&res.sent===0)toast(_displayBase(row.target_name)+" hasn't enabled push — they'll see it in their inbox");});
     _rtBroadcastChal();fetchChallenges();
     setTimeout(closeChalSheet,1200);
   }).catch(function(e){
@@ -5074,6 +5114,7 @@ document.addEventListener("DOMContentLoaded",function(){
     // device can trigger its push — the moment you glance at the app.
     if(typeof startLivePolling==="function")startLivePolling();
     if(typeof liveRefresh==="function")liveRefresh();
+    _ensurePushFresh();   // re-validate the push subscription on resume
   });
   _authReady.then(_rtConnect);
   _rtOn(fetchCommunityPicksDebounced);
@@ -5084,6 +5125,10 @@ document.addEventListener("DOMContentLoaded",function(){
   });
   _fnOnReaction(function(p){if(p&&fnLive&&fnModeOpen())spawnReactionFloat(p.e,p.by);});
   try{if(localStorage.getItem("ufc_push")==="1")_setBellActive(true);}catch(e){}
+  // Re-validate the push subscription on every load so an enabled bell can't
+  // silently become a dead subscription (rotated endpoint / pruned row) that
+  // never reaches the phone while the app is closed.
+  _authReady.then(_ensurePushFresh);
   _setLiveResActive(_liveResultsOn());
   setTimeout(startLivePolling,4000);
   _initSwipe();
