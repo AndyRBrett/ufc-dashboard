@@ -13,6 +13,10 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // the `result:<fightKey>:<group>` type — and therefore the `send-push`
 // `notif_log` (event_date, type) dedup — is identical across all three senders.
 // Only one push per fight ever goes out, whichever trigger sees it first.
+//
+// Deployed with --no-verify-jwt: the Supabase gateway would otherwise reject the
+// cron's `Authorization: Bearer <CRON_SECRET>` as an invalid JWT before this code
+// runs. Inbound auth is enforced here via CRON_SECRET instead.
 
 // ---------------------------------------------------------------------------
 // Wikipedia result parsing — ported verbatim from index.html (~4975-5074).
