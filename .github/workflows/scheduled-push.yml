@@ -1,0 +1,44 @@
+name: Scheduled Push Triggers
+
+# Drives the always-on server-side push senders without pg_cron/pg_net (which
+# can fail with "Quote command returned error" / pgaudit issues). GitHub's
+# scheduler can run a few minutes late, which is harmless here: send-reminders
+# has a 1-hour lead window and check-results dedups via notif_log, so a late or
+# duplicate run never double-notifies.
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}
+
+# If a run overruns, let the next scheduled run wait rather than pile up.
+concurrency:
+  group: scheduled-push
+  cancel-in-progress: false
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    env:
+      BASE: https://gkccophrdqtqcowmblre.supabase.co/functions/v1
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+    steps:
+      - name: Preflight — secret present
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::CRON_SECRET repo secret is not set — add it under Settings → Secrets and variables → Actions"
+            exit 1
+          fi
+      - name: Trigger send-reminders
+        run: |
+          code=$(curl -s -o /tmp/r.json -w '%{http_code}' -X POST "$BASE/send-reminders" \
+            -H "Authorization: Bearer $CRON_SECRET" -H "Content-Type: application/json")
+          echo "send-reminders -> HTTP $code"; cat /tmp/r.json || true; echo
+          test "$code" -ge 200 && test "$code" -lt 300
+      - name: Trigger check-results
+        if: always()
+        run: |
+          code=$(curl -s -o /tmp/c.json -w '%{http_code}' -X POST "$BASE/check-results" \
+            -H "Authorization: Bearer $CRON_SECRET" -H "Content-Type: application/json")
+          echo "check-results -> HTTP $code"; cat /tmp/c.json || true; echo
+          test "$code" -ge 200 && test "$code" -lt 300
