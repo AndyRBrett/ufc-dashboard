@@ -32,56 +32,56 @@ No state table is needed: `notif_log` in `send-push` handles dedup.
 
 ## Auth / config
 
-- **Inbound** (cron → this function): gated by `CRON_SECRET`; requests must send
-  `Authorization: Bearer <CRON_SECRET>`, else 401.
-- **Outbound** (this function → `send-push`): uses the public anon key
-  `SB_ANON_KEY`, exactly like the web client.
+Deployed with `--no-verify-jwt` (see `deploy-functions.yml`) so the Supabase
+gateway doesn't reject the cron's non-JWT bearer before the function runs.
+Inbound auth is enforced here via `CRON_SECRET`, accepted **either** way:
+
+- `Authorization: Bearer <CRON_SECRET>` header (used by GitHub Actions), **or**
+- a `?key=<CRON_SECRET>` query param (used by cron-job.org — no custom headers).
+
+Anything else → 401. Outbound (this function → `send-push`) uses the public anon
+key `SB_ANON_KEY`, exactly like the web client.
 
 | Secret         | Purpose                                                   |
 | -------------- | -------------------------------------------------------- |
-| `CRON_SECRET`  | Authenticates the inbound cron trigger (already exists if check-results is set up). |
+| `CRON_SECRET`  | Authenticates the inbound cron trigger (shared with check-results). |
 | `SB_ANON_KEY`  | Calls `send-push` (already exists).                       |
 | `SUPABASE_URL` | Auto-provided by the Edge runtime.                       |
 | `DATA_URL`     | Optional override for the schedule source (defaults to the GitHub Pages `data.js`). |
 
 ## Deploy & schedule (owner steps)
 
-The GitHub Actions workflow `deploy-functions.yml` deploys this on push to
-`main`. To deploy manually / set the secret:
+**Deploy** is automatic: `deploy-functions.yml` deploys this (with
+`--no-verify-jwt`) on every push to `main` that touches `supabase/functions/**`.
 
-```bash
-supabase functions deploy send-reminders
-# Reuse the same CRON_SECRET as check-results (skip if already set):
-supabase secrets set CRON_SECRET="$(openssl rand -hex 24)"
-```
+**Scheduling** is external, not pg_cron — the project's `pg_net` fails to queue
+requests ("Quote command returned error") and `pgaudit` blocks updating it, so
+in-database cron is dead here. Two redundant triggers drive it instead, and
+`send-push`'s `notif_log` dedup makes the overlap free:
 
-Schedule it with pg_cron (Database → Cron, or SQL). Every ~5 min comfortably
-catches the 1-hour lead window; on days with no in-window event it returns
-cheaply.
+1. **cron-job.org (primary)** — one job per function, every 2 min, **no
+   headers**, just the URL with the secret in the query string:
+   ```
+   https://<project-ref>.supabase.co/functions/v1/send-reminders?key=<CRON_SECRET>
+   ```
+2. **GitHub Actions (backup)** — `.github/workflows/scheduled-push.yml`, every
+   5 min, POSTs with the `Authorization: Bearer` header (repo secret
+   `CRON_SECRET`).
 
-```sql
-select cron.schedule('send-reminders-5m', '*/5 * * * *', $$
-  select net.http_post(
-    url     := 'https://<project-ref>.supabase.co/functions/v1/send-reminders',
-    headers := jsonb_build_object(
-      'Content-Type','application/json',
-      'Authorization','Bearer <CRON_SECRET>')
-  );
-$$);
-```
+A 2–5 min cadence comfortably catches the 1-hour lead window; off-window runs
+return cheaply (`fired: 0`).
 
-To unschedule: `select cron.unschedule('send-reminders-5m');`
-
-**External-cron fallback:** point cron-job.org or a Cloudflare Worker cron at the
-same URL with the same `Authorization: Bearer <CRON_SECRET>` header.
+> See [`/NOTIFICATIONS.md`](../../../NOTIFICATIONS.md) for the full notification
+> topography (all triggers, auth, and delivery paths).
 
 ## Local smoke test
 
 ```bash
 supabase functions serve send-reminders
-curl -XPOST localhost:54321/functions/v1/send-reminders \
-  -H "Authorization: Bearer <CRON_SECRET>"
-# Missing/bad bearer must return 401.
+# Either auth form works:
+curl -XPOST "localhost:54321/functions/v1/send-reminders?key=<CRON_SECRET>"
+curl -XPOST localhost:54321/functions/v1/send-reminders -H "Authorization: Bearer <CRON_SECRET>"
+# Missing/bad secret must return 401.
 ```
 
 The JSON response reports `events` in window, `fired` phase-reminders attempted,

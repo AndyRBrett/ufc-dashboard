@@ -35,57 +35,55 @@ back to the old path (`send-push` still dedups; only the invocation saving lost)
 
 ## Auth / config
 
-- **Inbound** (the cron → this function): gated by `CRON_SECRET`. Requests must
-  send `Authorization: Bearer <CRON_SECRET>`; anything else gets 401.
-- **Outbound** (this function → `send-push` and `picks`): uses the public anon
-  key `SB_ANON_KEY`, exactly like the web client. `send-push` is left unchanged.
+Deployed with `--no-verify-jwt` (see `deploy-functions.yml`) so the Supabase
+gateway doesn't reject the cron's non-JWT bearer before the function runs.
+Inbound auth is enforced here via `CRON_SECRET`, accepted **either** way:
+
+- `Authorization: Bearer <CRON_SECRET>` header (used by GitHub Actions), **or**
+- a `?key=<CRON_SECRET>` query param (used by cron-job.org — no custom headers).
+
+Anything else → 401. Outbound (this function → `send-push` and `picks`) uses the
+public anon key `SB_ANON_KEY`, exactly like the web client. `send-push` is
+unchanged.
 
 | Secret               | Purpose                                                  |
 | -------------------- | -------------------------------------------------------- |
-| `CRON_SECRET`        | Authenticates the inbound cron trigger (new).            |
+| `CRON_SECRET`        | Authenticates the inbound cron trigger (shared with send-reminders). |
 | `SB_ANON_KEY`        | Calls `send-push` + reads `picks` (already exists).      |
 | `SB_SERVICE_ROLE_KEY`| Reads `notif_log` for per-run dedup (already exists).    |
 | `SUPABASE_URL`       | Auto-provided by the Edge runtime.                       |
 
 ## Deploy & schedule (owner steps)
 
-```bash
-# 1. Deploy
-supabase functions deploy check-results
+**Deploy** is automatic: `deploy-functions.yml` deploys this (with
+`--no-verify-jwt`) on every push to `main` that touches `supabase/functions/**`.
 
-# 2. Set the cron secret (SB_ANON_KEY / SUPABASE_URL already exist project-wide)
-supabase secrets set CRON_SECRET="$(openssl rand -hex 24)"
-```
+**Scheduling** is external, not pg_cron — the project's `pg_net` fails to queue
+requests ("Quote command returned error") and `pgaudit` blocks updating it, so
+in-database cron is dead here. Two redundant triggers drive it instead (plus the
+client live-poll and `scrape.py`); `notif_log` dedup means only one push per
+fight goes out regardless of how many triggers fire:
 
-Enable the `pg_cron` and `pg_net` extensions (Supabase → Database → Extensions),
-then schedule it (Database → Cron, or SQL). Every 2 min matches the client
-cadence; on days with no in-window events the function returns cheaply.
+1. **cron-job.org (primary)** — one job, every 2 min, **no headers**, just the
+   URL with the secret in the query string:
+   ```
+   https://<project-ref>.supabase.co/functions/v1/check-results?key=<CRON_SECRET>
+   ```
+2. **GitHub Actions (backup)** — `.github/workflows/scheduled-push.yml`, every
+   5 min, POSTs with the `Authorization: Bearer` header (repo secret
+   `CRON_SECRET`).
 
-```sql
-select cron.schedule('check-results-2m', '*/2 * * * *', $$
-  select net.http_post(
-    url     := 'https://<project-ref>.supabase.co/functions/v1/check-results',
-    headers := jsonb_build_object(
-      'Content-Type','application/json',
-      'Authorization','Bearer <CRON_SECRET>')
-  );
-$$);
-```
-
-To unschedule: `select cron.unschedule('check-results-2m');`
-
-**External-cron fallback:** if you'd rather not enable pg_cron/pg_net, point
-cron-job.org or a Cloudflare Worker cron at the same URL with the same
-`Authorization: Bearer <CRON_SECRET>` header.
+> See [`/NOTIFICATIONS.md`](../../../NOTIFICATIONS.md) for the full notification
+> topography (all triggers, auth, and delivery paths).
 
 ## Local smoke test
 
 ```bash
 supabase functions serve check-results
-# With a recent event present in `picks`:
-curl -XPOST localhost:54321/functions/v1/check-results \
-  -H "Authorization: Bearer <CRON_SECRET>"
-# Missing/bad bearer must return 401.
+# With a recent event present in `picks`; either auth form works:
+curl -XPOST "localhost:54321/functions/v1/check-results?key=<CRON_SECRET>"
+curl -XPOST localhost:54321/functions/v1/check-results -H "Authorization: Bearer <CRON_SECRET>"
+# Missing/bad secret must return 401.
 ```
 
 The JSON response reports `events` scanned, `parsed` results, `pushed` count,
