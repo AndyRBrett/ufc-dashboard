@@ -1,9 +1,69 @@
 {
-  "generated_at": "2026-06-20T01:23:15Z",
-  "last_data_at": "2026-06-20T01:23:15Z",
-  "odds_fingerprint": "76027cbd27dea50d78af68d1d6cbc569c58750088003910deb3360ee37639702",
-  "data_stale": false,
-  "stale_threshold_hours": 24,
+  "generated_at": "2026-06-20T01:35:43Z",
   "events_tracked": 10,
+  "stale_events": 0,
+  "stale_threshold_hours": 48,
+  "events": [
+    {
+      "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
+      "last_changed_at": "2026-06-20T01:35:43Z",
+      "is_stale": false,
+      "fingerprint": "640ebcc0af3c07df421b78a41e728218355eac9f878a31c4cb1800b4e35f5a5e"
+    },
+    {
+      "event_id": "2026-06-06:ufc-fight-night-muhammad-vs-bonfim",
+      "last_changed_at": "2026-06-20T01:35:43Z",
+      "is_stale": false,
+      "fingerprint": "83dc22fd3eb4a7891acd33412806e6772bde3324e774466edbc95fbf34be34d6"
+    },
+    {
+      "event_id": "2026-06-14:ufc-freedom-250",
+      "last_changed_at": "2026-06-20T01:35:43Z",
+      "is_stale": false,
+      "fingerprint": "60182278f89e02c56be6048f973d73bc11ea509d8185994f231619f3d342fa18"
+    },
+    {
+      "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
+      "last_changed_at": "2026-06-20T01:35:43Z",
+      "is_stale": false,
+      "fingerprint": "4fc20eddc192b56092d057ceffcbda9419e9dc2b21cb3b80350646db7ce0ae6e"
+    },
+    {
+      "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
+      "last_changed_at": "2026-06-20T01:35:43Z",
+      "is_stale": false,
+      "fingerprint": "f972ca013561d3ead0be26517efe28ebdcc2bc76b5c5387e9d7d43c6a1d55a78"
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "last_changed_at": "2026-06-20T01:35:43Z",
+      "is_stale": false,
+      "fingerprint": "d319ffbe44c05674442efe1c717c3d298fee3c0d1141c4891a7bc4271cb6f727"
+    },
+    {
+      "event_id": "2026-07-18:ufc-fight-night-281",
+      "last_changed_at": "2026-06-20T01:35:43Z",
+      "is_stale": false,
+      "fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-rountree-jr",
+      "last_changed_at": "2026-06-20T01:35:43Z",
+      "is_stale": false,
+      "fingerprint": "3ad3dcdf90ba535bbe51d05960a93d47a6da5bcf2eb9cae1b000c24e54a74be3"
+    },
+    {
+      "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+      "last_changed_at": "2026-06-20T01:35:43Z",
+      "is_stale": false,
+      "fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
+      "last_changed_at": "2026-06-20T01:35:43Z",
+      "is_stale": false,
+      "fingerprint": "8d897a008bbe3cf0f2bcb6c5c1ef560d5f702a0e0231917d245dd6b9a3fa083b"
+    }
+  ],
   "errors": []
 }
