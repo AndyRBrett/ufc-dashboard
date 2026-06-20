@@ -1,4 +1,5 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// Uses the runtime's built-in Deno.serve — no deno.land/std import, so deploys
+// don't depend on deno.land being up.
 
 const CLAUDE_API_URL = "https://api.anthropic.com/v1/messages";
 // Overridable so the model can be upgraded without redeploying code.
@@ -128,7 +129,7 @@ CARD (fighter vs fighter | odds | weight class):
 ${d.card}`;
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   const CORS = corsHeaders(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: CORS });

@@ -1,4 +1,5 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// Uses the runtime's built-in Deno.serve — no deno.land/std import, so deploys
+// don't depend on deno.land being up.
 // Always-on server-side fight-reminder sender.
 //
 // The "Main Card / Prelims starting in under 1 hour" reminders were fired by
@@ -69,7 +70,7 @@ function parseEvents(js: string): Ev[] {
   return out;
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 204 });
   if (req.method !== "POST" && req.method !== "GET") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: { "Content-Type": "application/json" } });

@@ -1,4 +1,5 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// Uses the runtime's built-in Deno.serve — no deno.land/std import, so deploys
+// don't depend on deno.land being up.
 import webpush from "npm:web-push";
 // v3 — spoiler-free by default: safe_title/safe_body go to everyone except
 // subscribers with live_results = true (also supports include_user_ids targeting)
@@ -81,7 +82,7 @@ interface ReqBody {
   live_results?: boolean;
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   const CORS = corsHeaders(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: CORS });
