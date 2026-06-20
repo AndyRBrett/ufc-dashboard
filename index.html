@@ -4966,12 +4966,22 @@ function sendNudge(ev,u,chipEl){
       toast("Nudge limit reached for today (3 max)");
       markDone();return;
     }
-    _triggerPush(_todayStr(),"nudge-"+u.user_id+"-"+(USER_ID||"anon")+"-"+n,"⏰ Card locks soon!",
+    // The dedup type must stay short: send-push writes it into notif_log.type
+    // BEFORE sending, and bails silently if that insert fails. Two full UUIDs
+    // (~81 chars) overflowed a bounded column, so the insert failed and the
+    // nudge never sent — every other type embeds at most one id (~46 chars).
+    // 8-char id prefixes keep the (target,sender,slot) key unique within a
+    // friend group while staying well under any reasonable column limit.
+    var nudgeType="nudge-"+(u.user_id||"").slice(0,8)+"-"+(USER_ID||"anon").slice(0,8)+"-"+n;
+    _triggerPush(_todayStr(),nudgeType,"⏰ Card locks soon!",
       nudgeMsg,USER_ID,{includeIds:[u.user_id]})
     .then(function(res){
       if(!res){toast("Could not send — check connection");return;}
       if(res.skipped){fire(n+1);return;}     // slot already used — try the next one
       _setNudgeCount(u.user_id,n);
+      // sent:0 means the target has no active push subscription — don't claim
+      // success (and stop offering futile re-nudges that just burn slots).
+      if(res.sent===0){toast(_displayBase(u.name)+" hasn't turned on notifications yet");markDone();return;}
       var left=MAX_NUDGES_PER_DAY-n;
       toast(left>0?"Nudge sent 👀 ("+left+" left today)":"Nudge sent 👀 (last one today)");
       if(left<=0)markDone();
