@@ -10,20 +10,22 @@ alongside run success.
 
 Freshness is tracked PER EVENT, not as one global fingerprint: during fight week
 some events move hourly while others sit static, so a single global hash hides
-one event whose feed has frozen behind the others that are still updating. For
-each event we carry a `last_changed_at` forward across runs (reset whenever its
-odds change) and flag `is_stale` once an upcoming event's lines have sat
-unchanged past STALE_THRESHOLD_HOURS.
+one event whose feed has frozen behind the others that are still updating. Each
+event's `last_changed_at` is reconstructed from the snapshot history (the most
+recent run of unchanged odds), and `is_stale` flags an upcoming event whose lines
+have sat unchanged past STALE_THRESHOLD_HOURS.
 
-Odds snapshots are appended (never overwritten) to odds-snapshots.jsonl, and the
-opening line per bout is read back from that log so each event publishes
-`open_odds`, `current_odds`, and `line_movement` (current minus open) — turning
-the freshness checker into an actual odds tracker. Implements #15.
+The full per-bout odds time-series — the product data that line-movement charts
+are built from — lives in the append-only odds-snapshots.jsonl log. Implements
+#15. overseer-status.json is deliberately LEAN: the Project Overseer reads it
+into context every weekly run, so per event it reports only freshness fields plus
+a single representative `line_movement` (the main-event line's drift, current
+minus open) — not the full per-bout arrays.
 
 A successfully-fetched-but-empty page parses to zero bouts, whose odds
 fingerprint is the SHA-256 of the empty string (e3b0c442...). Such events carry
-`has_data: false` and are excluded from the `fresh_events` health count so an
-empty extraction never reads as up-to-date. Fixes #14.
+`has_data: false`, are surfaced in `errors`, and never count toward `stale_events`
+or any health signal, so an empty extraction cannot read as up-to-date. Fixes #14.
 
 Run after scrape.py in the same workflow; overseer-status.json is committed each
 run so `generated_at` itself doubles as a liveness heartbeat.
@@ -139,27 +141,16 @@ def delta(open_fight, cur_fight):
     }
 
 
-def load_prev_events():
-    """Map event_id -> previous status entry, tolerating older schemas."""
-    if not STATUS_PATH.exists():
-        return {}, None
-    try:
-        prev = json.loads(STATUS_PATH.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError) as e:
-        return {}, str(e)
-    return {e["event_id"]: e for e in prev.get("events", [])}, None
+def load_snapshot_history():
+    """Per-event ordered odds history from the append-only snapshot log.
 
-
-def load_open_odds():
-    """Opening line per event per matchup from the append-only snapshot log.
-
-    The first time a bout appears is its opening line; later snapshots are
-    ignored so `open_odds` stays anchored to where the market started.
-    Returns {event_id: {matchup_key: fight_dict}}.
+    Returns {event_id: [(at, fights), ...]} oldest->newest. This is the single
+    source of truth for both the opening line and `last_changed_at`, so the lean
+    status file needn't store a per-event fingerprint to track change over runs.
     """
-    opens = {}
+    history = {}
     if not SNAPSHOT_PATH.exists():
-        return opens
+        return history
     with SNAPSHOT_PATH.open(encoding="utf-8") as fh:
         for line in fh:
             line = line.strip()
@@ -169,11 +160,37 @@ def load_open_odds():
                 snap = json.loads(line)
             except json.JSONDecodeError:
                 continue
+            at = snap.get("at")
             for ev in snap.get("events", []):
-                bucket = opens.setdefault(ev["event_id"], {})
-                for f in ev.get("fights", []):
-                    bucket.setdefault(matchup_key(f), f)
+                history.setdefault(ev["event_id"], []).append((at, ev.get("fights", [])))
+    return history
+
+
+def open_fights(event_history):
+    """Opening line per matchup: the first time each bout appears in the log."""
+    opens = {}
+    for _at, fights in event_history:
+        for f in fights:
+            opens.setdefault(matchup_key(f), f)
     return opens
+
+
+def last_changed_at(event_history, cur_fights, now_iso):
+    """Reconstruct when the event's odds last changed, from snapshot history.
+
+    Walks newest->oldest while each snapshot still matches the current odds and
+    returns the oldest such match — i.e. when the current line first appeared.
+    Falls back to now when the latest snapshot already differs (the odds moved
+    this run) or the event has no recorded history yet.
+    """
+    cur_fp = fingerprint(cur_fights)
+    changed = now_iso
+    for at, fights in reversed(event_history):
+        if at and fingerprint(fights) == cur_fp:
+            changed = at
+        else:
+            break
+    return changed
 
 
 def last_snapshot_fp():
@@ -209,78 +226,59 @@ def main():
     if events and not any(e["fights"] for e in events):
         errors.append("no odds found in data.js")
 
-    prev_by_id, prev_err = load_prev_events()
-    if prev_err:
-        errors.append(f"could not read previous status: {prev_err}")
-    open_by_id = load_open_odds()
+    history = load_snapshot_history()
 
-    out_events       = []
-    stale_events     = 0
-    fresh_events     = 0
-    events_with_data = 0
-    empty_payload    = 0
+    out_events   = []
+    stale_events = 0
     for ev in events:
-        fp      = fingerprint(ev["fights"])
-        data_ok = has_data(ev["fights"]) and fp != EMPTY_SHA
-        prev    = prev_by_id.get(ev["event_id"])
-        # Carry last_changed_at forward only if the odds fingerprint is unchanged;
-        # that is what lets per-event staleness accumulate across runs.
-        if prev and prev.get("fingerprint") == fp and prev.get("last_changed_at"):
-            last_changed_at = prev["last_changed_at"]
-        else:
-            last_changed_at = now_iso
+        fp       = fingerprint(ev["fights"])
+        data_ok  = has_data(ev["fights"]) and fp != EMPTY_SHA
+        ev_hist  = history.get(ev["event_id"], [])
+        changed  = last_changed_at(ev_hist, ev["fights"], now_iso)
 
         try:
-            age_h = (now - datetime.strptime(last_changed_at, "%Y-%m-%dT%H:%M:%SZ")
+            age_h = (now - datetime.strptime(changed, "%Y-%m-%dT%H:%M:%SZ")
                      .replace(tzinfo=timezone.utc)).total_seconds() / 3600
         except ValueError:
             age_h = 0.0
 
         # Only upcoming events with tracked odds can be "stale" — concluded events
         # have permanently final lines, and an event with no odds has nothing to
-        # freeze. Both are legitimately static, not degraded.
+        # freeze. Both are legitimately static, not degraded. Empty-payload events
+        # are excluded here too, so a silent extraction never inflates the health
+        # signal (#14).
         upcoming = ev["date"] >= today and data_ok
         is_stale = upcoming and age_h > STALE_THRESHOLD_HOURS
         if is_stale:
             stale_events += 1
 
-        # Empty-payload events are excluded from the fresh/health count entirely so
-        # a silent extraction failure never reads as up-to-date (#14).
-        if data_ok:
-            events_with_data += 1
-            if not is_stale:
-                fresh_events += 1
-        else:
-            empty_payload += 1
+        # One representative signal for the monitoring file: the headliner's line
+        # drift (current minus open). Full per-bout movement stays in the snapshots.
+        opens = open_fights(ev_hist)
+        main  = ev["fights"][0] if ev["fights"] else None
+        movement = delta(opens.get(matchup_key(main)), main)["f1_odds"] if main else 0
 
-        opens = open_by_id.get(ev["event_id"], {})
         out_events.append({
             "event_id":        ev["event_id"],
-            "last_changed_at": last_changed_at,
+            "last_changed_at": changed,
             "is_stale":        is_stale,
             "has_data":        data_ok,
-            "open_odds":       [realign(opens.get(matchup_key(f)), f) for f in ev["fights"]],
-            "current_odds":    ev["fights"],
-            "line_movement":   [delta(opens.get(matchup_key(f)), f) for f in ev["fights"]],
-            "fingerprint":     fp,
+            "line_movement":   movement,
         })
 
-    # Surface empty extractions in errors too, so the run cannot look clean while
+    # Surface empty extractions in errors, so the run cannot look clean while
     # carrying events with no parsed bouts.
     empty_ids = [e["event_id"] for e in out_events if not e["has_data"]]
     if empty_ids:
         errors.append("empty payload (no bouts parsed): " + ", ".join(empty_ids))
 
     status = {
-        "generated_at":              now_iso,
-        "events_tracked":            len(out_events),
-        "events_with_data":          events_with_data,
-        "events_with_empty_payload": empty_payload,
-        "fresh_events":              fresh_events,
-        "stale_events":              stale_events,
-        "stale_threshold_hours":     STALE_THRESHOLD_HOURS,
-        "events":                    out_events,
-        "errors":                    errors,
+        "generated_at":          now_iso,
+        "events_tracked":        len(out_events),
+        "stale_events":          stale_events,
+        "stale_threshold_hours": STALE_THRESHOLD_HOURS,
+        "events":                out_events,
+        "errors":                errors,
     }
     STATUS_PATH.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
 

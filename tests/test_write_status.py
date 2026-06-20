@@ -58,3 +58,37 @@ def test_delta_is_zero_when_no_opener_recorded_yet():
 def test_realign_falls_back_to_current_when_no_opener():
     cur = {"f1": "A", "f2": "B", "f1_odds": -150, "f2_odds": 130}
     assert ws.realign(None, cur) == cur
+
+
+# --- opening line & last-changed reconstructed from snapshot history --------
+
+def _fight(o1, o2):
+    return {"f1": "Manel Kape", "f2": "Kyoji Horiguchi", "f1_odds": o1, "f2_odds": o2}
+
+
+def test_open_fights_takes_the_first_time_a_bout_appears():
+    history = [("t1", [_fight(-157, 131)]), ("t2", [_fight(-150, 127)])]
+    opens = ws.open_fights(history)
+    assert opens[ws.matchup_key(_fight(0, 0))]["f1_odds"] == -157
+
+
+def test_last_changed_at_is_when_current_odds_first_appeared():
+    # Odds moved at t2 and have held since; last change is t2, not t1 or now.
+    history = [("t1", [_fight(-157, 131)]), ("t2", [_fight(-150, 127)])]
+    assert ws.last_changed_at(history, [_fight(-150, 127)], "now") == "t2"
+
+
+def test_last_changed_at_walks_back_through_unchanged_runs():
+    # Same line across every snapshot — last change is the oldest, not the newest.
+    history = [("t1", [_fight(-150, 127)]), ("t2", [_fight(-150, 127)])]
+    assert ws.last_changed_at(history, [_fight(-150, 127)], "now") == "t1"
+
+
+def test_last_changed_at_is_now_when_latest_snapshot_differs():
+    # Current odds differ from the newest snapshot → moved this run.
+    history = [("t1", [_fight(-157, 131)])]
+    assert ws.last_changed_at(history, [_fight(-150, 127)], "now") == "now"
+
+
+def test_last_changed_at_is_now_without_history():
+    assert ws.last_changed_at([], [_fight(-150, 127)], "now") == "now"
