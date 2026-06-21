@@ -10,13 +10,13 @@ itself is shipped and live (nudge dedup fix, closed-app self-healing
 subscriptions, `send-reminders`, `kick-scraper`, cron-job.org scheduling with a
 GitHub-Actions backup). Full map in **`NOTIFICATIONS.md`**. Remaining:
 
-1. **Credential expiry — one left to clear.** `GH_DISPATCH_TOKEN` is now a classic
-   PAT with **no expiration** (done 2026-06-21). **But** the Supabase access token
-   named **"GitHub Actions"** (= `SUPABASE_ACCESS_TOKEN`, used by
-   `deploy-functions.yml`) **expires 31 Aug 2026** — reissue it with *Expires:
-   Never*, update the GitHub repo secret, and revoke the old one. After that, no
-   credential in the chain expires. (Correction: Supabase tokens *can* carry an
-   expiry; an earlier note here wrongly said they couldn't.)
+1. **Credential expiry — ✅ resolved 2026-06-21.** Nothing in the chain expires:
+   `GH_DISPATCH_TOKEN` is a classic PAT with no expiration, and
+   `SUPABASE_ACCESS_TOKEN` (the Supabase token named "GitHub Actions") was
+   reissued with *Expires: Never* and re-verified by a successful "Deploy
+   Supabase Functions" run. (Note for the future: Supabase access tokens *can*
+   carry an expiry — the prior one was dated 31 Aug 2026.) Documented in
+   `NOTIFICATIONS.md`.
 2. **Expiry watchdog — not needed at current config.** Was going to warn before a
    PAT lapse, but the PAT no longer expires. Only revisit if you switch
    `GH_DISPATCH_TOKEN` back to a fine-grained/expiring token.
