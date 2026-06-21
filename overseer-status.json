@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-21T03:56:06Z",
+  "generated_at": "2026-06-21T06:09:27Z",
   "events_tracked": 10,
   "stale_events": 0,
   "stale_threshold_hours": 48,
@@ -27,17 +27,17 @@
     },
     {
       "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
-      "last_changed_at": "2026-06-20T20:15:59Z",
+      "last_changed_at": "2026-06-21T06:09:27Z",
       "is_stale": false,
       "has_data": true,
       "line_movement": -3
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
-      "last_changed_at": "2026-06-20T20:15:59Z",
+      "last_changed_at": "2026-06-21T06:09:27Z",
       "is_stale": false,
       "has_data": true,
-      "line_movement": -4
+      "line_movement": -6
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
@@ -48,7 +48,7 @@
     },
     {
       "event_id": "2026-07-18:ufc-fight-night-281",
-      "last_changed_at": "2026-06-21T03:56:06Z",
+      "last_changed_at": "2026-06-21T06:09:27Z",
       "is_stale": false,
       "has_data": false,
       "line_movement": 0
@@ -62,14 +62,14 @@
     },
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
-      "last_changed_at": "2026-06-21T03:56:06Z",
+      "last_changed_at": "2026-06-21T06:09:27Z",
       "is_stale": false,
       "has_data": false,
       "line_movement": 0
     },
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
-      "last_changed_at": "2026-06-20T20:15:59Z",
+      "last_changed_at": "2026-06-21T06:09:27Z",
       "is_stale": false,
       "has_data": true,
       "line_movement": -11
