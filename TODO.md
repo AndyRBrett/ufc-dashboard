@@ -1,9 +1,57 @@
 # TODO
 
-## Always-on server-side result-push backup (Supabase pg_cron) — needs DB changes
+## Notification / scraper credential reminders & migrations
 
-**Status:** open · **Added:** 2026-06-15 · **Severity:** medium (resilience) ·
-**Owner action:** Andy will make the DB/Supabase changes after the event.
+**Status:** open · **Added:** 2026-06-21 · **Severity:** medium (silent-breakage risk) ·
+**Owner action:** Andy — supply expiry dates / decide on watchdog.
+
+Follow-ups from the 2026-06-21 notifications + scraper overhaul. The system
+itself is shipped and live (nudge dedup fix, closed-app self-healing
+subscriptions, `send-reminders`, `kick-scraper`, cron-job.org scheduling with a
+GitHub-Actions backup). Full map in **`NOTIFICATIONS.md`**. Remaining:
+
+1. **Record credential expiry dates.** Some keys expire (fine-grained GitHub
+   PATs default to 90 days). Andy to supply the exact date(s) — at minimum for
+   `GH_DISPATCH_TOKEN` (created 2026-06-21; ≈ **2026-09-19** if the 90-day option
+   was chosen) — to be written into `NOTIFICATIONS.md`. Also confirm whether
+   `SUPABASE_ACCESS_TOKEN` (GitHub deploy secret) has an expiry.
+2. **Expiry watchdog (optional, not built yet).** A weekly GitHub Actions job
+   that opens an issue ≤7 days before a key expires. Pending Andy's choice:
+   *self-maintaining* (also store the PAT as a GH Actions secret; the job reads
+   the real `…-Token-Expiration` header and auto-tracks renewals) vs *simple*
+   (hardcode the date, bump on renewal) vs *none*.
+   **Tell-tale symptom of an expired `GH_DISPATCH_TOKEN`:** push notifications
+   keep working but the app's fight cards stop refreshing; testing
+   `…/functions/v1/kick-scraper?key=<CRON_SECRET>&force=1` returns
+   `{"ok":false,"status":401/403}`. (See the credential-expiry table in
+   `NOTIFICATIONS.md`.)
+3. **Legacy Supabase API-key migration.** `SUPABASE_ANON_KEY` /
+   `SUPABASE_SERVICE_ROLE_KEY` (and the client anon key + the `SB_*` function
+   secrets) are deprecated in favour of publishable/secret keys. They still work;
+   migrate when Supabase announces an end date. One-time value swap into
+   `index.html` + the `SB_*` secrets, no logic change.
+4. **Open a PR (optional).** All 2026-06-21 work went straight to `main`; no PR
+   was opened for the record.
+
+---
+
+## Always-on server-side result-push backup — ✅ RESOLVED 2026-06-21 (shipped via external cron, not pg_cron)
+
+**Status:** ✅ resolved 2026-06-21 · **Added:** 2026-06-15 · **Severity:** medium (resilience)
+
+**Outcome:** Shipped, but **not** via `pg_cron` — the project's `pg_net` fails to
+queue requests ("Quote command returned error") and `pgaudit` blocks updating
+the extension. Instead: `check-results` + `send-reminders` edge functions are
+driven by **cron-job.org** (every 2 min, header-free `?key=` auth) with a
+**GitHub Actions** backup (`scheduled-push.yml`, 5 min); both deploy with
+`--no-verify-jwt`. A `kick-scraper` function was also added to beat GitHub's
+`schedule:` throttling on the data scraper (the original gap noted below). The
+dead `pg_cron` jobs were removed. Full details in `NOTIFICATIONS.md` and the
+per-function READMEs. *Original 2026-06-15 write-up kept below for history.*
+
+**Original plan (Supabase pg_cron) — superseded:**
+
+**Owner action (historical):** Andy will make the DB/Supabase changes after the event.
 
 ### Why
 Result push notifications currently come from two places, both with gaps:
