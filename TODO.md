@@ -10,20 +10,17 @@ itself is shipped and live (nudge dedup fix, closed-app self-healing
 subscriptions, `send-reminders`, `kick-scraper`, cron-job.org scheduling with a
 GitHub-Actions backup). Full map in **`NOTIFICATIONS.md`**. Remaining:
 
-1. **Record credential expiry dates.** Some keys expire (fine-grained GitHub
-   PATs default to 90 days). Andy to supply the exact date(s) — at minimum for
-   `GH_DISPATCH_TOKEN` (created 2026-06-21; ≈ **2026-09-19** if the 90-day option
-   was chosen) — to be written into `NOTIFICATIONS.md`. Also confirm whether
-   `SUPABASE_ACCESS_TOKEN` (GitHub deploy secret) has an expiry.
-2. **Expiry watchdog (optional, not built yet).** A weekly GitHub Actions job
-   that opens an issue ≤7 days before a key expires. Pending Andy's choice:
-   *self-maintaining* (also store the PAT as a GH Actions secret; the job reads
-   the real `…-Token-Expiration` header and auto-tracks renewals) vs *simple*
-   (hardcode the date, bump on renewal) vs *none*.
-   **Tell-tale symptom of an expired `GH_DISPATCH_TOKEN`:** push notifications
-   keep working but the app's fight cards stop refreshing; testing
+1. **Credential expiry — ✅ resolved 2026-06-21.** No credential in the chain has
+   a time-expiry now: `GH_DISPATCH_TOKEN` was set to a **classic PAT with no
+   expiration**, and Supabase access tokens have no expiry option. Nothing to
+   track. (Documented in `NOTIFICATIONS.md`.)
+2. **Expiry watchdog — not needed at current config.** Was going to warn before a
+   PAT lapse, but the PAT no longer expires. Only revisit if you switch
+   `GH_DISPATCH_TOKEN` back to a fine-grained/expiring token.
+   **Tell-tale symptom if the PAT is ever revoked:** push notifications keep
+   working but the app's fight cards stop refreshing; testing
    `…/functions/v1/kick-scraper?key=<CRON_SECRET>&force=1` returns
-   `{"ok":false,"status":401/403}`. (See the credential-expiry table in
+   `{"ok":false,"status":401/403}`. (See the credential table in
    `NOTIFICATIONS.md`.)
 3. **Legacy Supabase API-key migration.** `SUPABASE_ANON_KEY` /
    `SUPABASE_SERVICE_ROLE_KEY` (and the client anon key + the `SB_*` function

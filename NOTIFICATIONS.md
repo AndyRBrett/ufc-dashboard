@@ -153,34 +153,38 @@ deploys don't depend on `deno.land` uptime.
 - Supabase secret `CRON_SECRET` (must match the cron-job.org URL key and the
   GitHub repo secret `CRON_SECRET`).
 - cron-job.org jobs for `check-results`, `send-reminders`, and `kick-scraper`.
-- Supabase secret `GH_DISPATCH_TOKEN` (fine-grained GitHub PAT for `kick-scraper`).
+- Supabase secret `GH_DISPATCH_TOKEN` (GitHub PAT for `kick-scraper` — **classic,
+  no expiration**, set 2026-06-21).
 - VAPID keys + `SB_ANON_KEY` / `SB_SERVICE_ROLE_KEY` (pre-existing `send-push`
   secrets).
 
 ## ⚠️ Credential expiry & troubleshooting — READ THIS IF PUSH OR THE APP CARD SUDDENLY BREAKS
 
-Some credentials **expire** (notably fine-grained GitHub PATs, often set to
-90 days). When one lapses, the symptom is usually a *partial* failure that's
-easy to misdiagnose. Match the symptom to the cause here first:
+As of 2026-06-21 **no credential in the chain has a time-expiry** — the
+`GH_DISPATCH_TOKEN` PAT was set to *never expire* and the Supabase access token
+has no expiry option. So a sudden break is most likely a *revocation*, a
+`CRON_SECRET` mismatch, or the legacy-key deprecation (below) — not a lapse.
+Symptoms are usually *partial* and easy to misdiagnose; match here first:
 
 | Symptom | Likely cause | Where it's set | Fix |
 | --- | --- | --- | --- |
-| **App fight cards stop updating** (results show in notifications but not on the card); `kick-scraper` test returns `{"ok":false,"status":401/403}` | **`GH_DISPATCH_TOKEN` PAT expired** (⏰ ~90-day default) | Supabase → Edge Functions → Secrets | Regenerate the fine-grained PAT (repo `ufc-dashboard`, **Actions: R/W**) and overwrite `GH_DISPATCH_TOKEN`. See `supabase/functions/kick-scraper/README.md`. |
-| **Function deploys fail** in GitHub Actions ("Deploy Supabase Functions" job, auth error) | **`SUPABASE_ACCESS_TOKEN` expired** (if you set an expiry) | GitHub repo → Settings → Secrets → Actions | Regenerate the Supabase access token, update the repo secret. |
+| **App fight cards stop updating** (results show in notifications but not on the card); `kick-scraper` test returns `{"ok":false,"status":401/403}` | **`GH_DISPATCH_TOKEN` revoked / scope changed** (no longer expires) | Supabase → Edge Functions → Secrets | Recreate the GitHub PAT (classic no-expiry + `repo`/`workflow`, or fine-grained repo `ufc-dashboard` **Actions: R/W**) and overwrite `GH_DISPATCH_TOKEN`. See `supabase/functions/kick-scraper/README.md`. |
+| **Function deploys fail** in GitHub Actions ("Deploy Supabase Functions" job, auth error) | **`SUPABASE_ACCESS_TOKEN` revoked** (Supabase tokens don't expire) | GitHub repo → Settings → Secrets → Actions | Regenerate the Supabase access token, update the repo secret. |
 | **All cron functions return `401 {"error":"Unauthorized"}`** | `CRON_SECRET` mismatch (rotated in one place, not the others) | Supabase secret **and** cron-job.org URLs **and** GitHub repo secret — all three must match | Re-sync the same value across all three. |
 | **`check-results` test returns `UNAUTHORIZED_INVALID_JWT_FORMAT`** | function lost its `--no-verify-jwt` (e.g. redeployed without the flag) | `deploy-functions.yml` | Redeploy with `--no-verify-jwt` (already in the workflow). |
 | **Result pushes stop entirely / `send-push` 401s** | legacy `SB_ANON_KEY` / `SB_SERVICE_ROLE_KEY` revoked or rotated | Supabase secrets + `index.html` client key | Reissue keys and update (see legacy-key note below). |
 | **Scraper `update.yml` fails the odds step** | `ODDS_API_KEY` quota exhausted or key expired | GitHub repo secret | Top up / reissue the odds API key. |
 
 **Fast triage:** notifications working but the **app card** stale → it's almost
-always the **`GH_DISPATCH_TOKEN` PAT** (the only short-lived, expiry-prone
-credential in the chain). Test it with:
+always the **`GH_DISPATCH_TOKEN`** (it gates only the scraper relay, not the push
+path). Test it with:
 `…/functions/v1/kick-scraper?key=<CRON_SECRET>&force=1` → a `4xx` in `status`
-means the PAT is dead.
+means the token is dead (revoked/scope-changed, since it no longer expires).
 
-> **Keep a note of each credential's expiry date.** Fine-grained PATs can't be
-> viewed after creation, only regenerated — so a calendar reminder a few days
-> before the 90-day mark avoids a silent break.
+> **No active expiry reminders are needed** at the current config — the PAT is
+> no-expiry and the Supabase token doesn't expire. If you ever switch the PAT
+> back to a fine-grained/expiring one, re-add a calendar reminder: PATs can't be
+> viewed after creation, only regenerated.
 
 ## Future migration: legacy Supabase API keys (deprecated, not yet removed)
 

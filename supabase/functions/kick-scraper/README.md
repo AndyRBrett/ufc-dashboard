@@ -45,11 +45,13 @@ Deployed with `--no-verify-jwt` by `deploy-functions.yml`.
 1. **Create the token:** GitHub → Settings → Developer settings → Fine-grained
    tokens → only `AndyRBrett/ufc-dashboard`, Permissions → **Actions: Read and
    write**. Copy it.
-   > ⏰ **Expiry:** fine-grained PATs expire (90-day default). When it lapses,
-   > `kick-scraper` returns `{"ok":false,"status":401/403}` and the app's fight
-   > cards stop refreshing **while notifications keep working** — that exact
-   > symptom = expired PAT. Regenerate it and overwrite `GH_DISPATCH_TOKEN`. See
-   > the credential-expiry table in `/NOTIFICATIONS.md`.
+   > 🔑 **Current token (set 2026-06-21) is a classic PAT with _no expiration_,**
+   > so it won't lapse. If `kick-scraper` ever returns
+   > `{"ok":false,"status":401/403}` — app fight cards stop refreshing **while
+   > notifications keep working** — the token was revoked or its scope changed;
+   > recreate it and overwrite `GH_DISPATCH_TOKEN`. (Fine-grained PATs expire,
+   > 90-day default, if you switch back to one.) See the credential table in
+   > `/NOTIFICATIONS.md`.
 2. **Store it:** `supabase secrets set GH_DISPATCH_TOKEN=<paste>` (or dashboard →
    Edge Functions → Secrets).
 3. **Schedule it on cron-job.org:** one job, every 5 min, no headers:
