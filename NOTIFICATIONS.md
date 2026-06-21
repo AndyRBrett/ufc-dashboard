@@ -52,6 +52,7 @@ triggers ─────┼─ check-results   (results)      ┐
 | `send-push` | Fan-out + `notif_log` dedup + `push_subs` registration | **verified** | anon key (a valid JWT) |
 | `check-results` | Detect final fights from Wikipedia, push results | **`--no-verify-jwt`** | `CRON_SECRET` |
 | `send-reminders` | Compute event start times, push reminders | **`--no-verify-jwt`** | `CRON_SECRET` |
+| `kick-scraper` | Dispatches `update.yml` so the app's `data.js` stays fresh | **`--no-verify-jwt`** | `CRON_SECRET` |
 | `ai-breakdown` | AI fight breakdowns (not a notification path) | verified | anon key |
 
 `CRON_SECRET` is accepted **either** as `Authorization: Bearer <CRON_SECRET>`
@@ -74,6 +75,23 @@ extension. Scheduling is external, with redundancy:
 Both can run at once safely — `notif_log` dedup collapses the overlap. This
 removes any single dependency on GitHub Actions' scheduler (which throttles).
 Reminders also have a **60-minute lead window**, so they tolerate a stalled run.
+
+## App data freshness vs. notifications (two clocks)
+
+A result has **two independent delivery paths**, and they run on different clocks:
+
+- **Notification** — `check-results` (every 2 min via cron-job.org) → `send-push`.
+  Fast; arrives ~2 min after Wikipedia posts the result.
+- **App fight card** — comes only from `data.js`, which is written by the
+  `scrape.py` scraper in `update.yml`. That workflow's `schedule:` cron is
+  throttled by GitHub (most runs dropped), so the card used to lag ~80 min.
+  **`kick-scraper`** fixes this: cron-job.org pings it every 5 min and it
+  dispatches `update.yml` via the (un-throttled) `workflow_dispatch` API during
+  live cards, so `data.js` refreshes every ~5 min.
+
+So a notification can legitimately arrive before the app card flips — the card
+catches up on the next scrape. (While the app is open, the client live-poll also
+patches results in-app every ~2 min independent of `data.js`.)
 
 ## Subscriptions (closed-app reliability)
 
