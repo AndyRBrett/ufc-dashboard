@@ -160,16 +160,21 @@ deploys don't depend on `deno.land` uptime.
 
 ## ⚠️ Credential expiry & troubleshooting — READ THIS IF PUSH OR THE APP CARD SUDDENLY BREAKS
 
-As of 2026-06-21 **no credential in the chain has a time-expiry** — the
-`GH_DISPATCH_TOKEN` PAT was set to *never expire* and the Supabase access token
-has no expiry option. So a sudden break is most likely a *revocation*, a
-`CRON_SECRET` mismatch, or the legacy-key deprecation (below) — not a lapse.
+Expiry status (2026-06-21):
+- `GH_DISPATCH_TOKEN` (GitHub PAT) — **no expiration** (classic PAT).
+- `SUPABASE_ACCESS_TOKEN` (the Supabase token named **"GitHub Actions"**) —
+  ⏰ **expires 31 Aug 2026** unless reissued with *Expires: Never*. Supabase
+  access tokens **can** carry an expiry (set at creation). Until reissued, this
+  is the one real time-bomb — when it lapses, deploys fail (the live functions
+  keep running).
+- Everything else (`CRON_SECRET`, VAPID, legacy `SB_*`) has no time-expiry.
+
 Symptoms are usually *partial* and easy to misdiagnose; match here first:
 
 | Symptom | Likely cause | Where it's set | Fix |
 | --- | --- | --- | --- |
 | **App fight cards stop updating** (results show in notifications but not on the card); `kick-scraper` test returns `{"ok":false,"status":401/403}` | **`GH_DISPATCH_TOKEN` revoked / scope changed** (no longer expires) | Supabase → Edge Functions → Secrets | Recreate the GitHub PAT (classic no-expiry + `repo`/`workflow`, or fine-grained repo `ufc-dashboard` **Actions: R/W**) and overwrite `GH_DISPATCH_TOKEN`. See `supabase/functions/kick-scraper/README.md`. |
-| **Function deploys fail** in GitHub Actions ("Deploy Supabase Functions" job, auth error) | **`SUPABASE_ACCESS_TOKEN` revoked** (Supabase tokens don't expire) | GitHub repo → Settings → Secrets → Actions | Regenerate the Supabase access token, update the repo secret. |
+| **Function deploys fail** in GitHub Actions ("Deploy Supabase Functions" job, auth error) | **`SUPABASE_ACCESS_TOKEN` expired (31 Aug 2026)** or revoked | Supabase → Account → Access Tokens (named "GitHub Actions") → GitHub repo secret | Generate a new Supabase token with *Expires: Never*, update the `SUPABASE_ACCESS_TOKEN` repo secret, revoke the old one. |
 | **All cron functions return `401 {"error":"Unauthorized"}`** | `CRON_SECRET` mismatch (rotated in one place, not the others) | Supabase secret **and** cron-job.org URLs **and** GitHub repo secret — all three must match | Re-sync the same value across all three. |
 | **`check-results` test returns `UNAUTHORIZED_INVALID_JWT_FORMAT`** | function lost its `--no-verify-jwt` (e.g. redeployed without the flag) | `deploy-functions.yml` | Redeploy with `--no-verify-jwt` (already in the workflow). |
 | **Result pushes stop entirely / `send-push` 401s** | legacy `SB_ANON_KEY` / `SB_SERVICE_ROLE_KEY` revoked or rotated | Supabase secrets + `index.html` client key | Reissue keys and update (see legacy-key note below). |
@@ -181,10 +186,10 @@ path). Test it with:
 `…/functions/v1/kick-scraper?key=<CRON_SECRET>&force=1` → a `4xx` in `status`
 means the token is dead (revoked/scope-changed, since it no longer expires).
 
-> **No active expiry reminders are needed** at the current config — the PAT is
-> no-expiry and the Supabase token doesn't expire. If you ever switch the PAT
-> back to a fine-grained/expiring one, re-add a calendar reminder: PATs can't be
-> viewed after creation, only regenerated.
+> **One expiry to clear:** the `SUPABASE_ACCESS_TOKEN` ("GitHub Actions" token)
+> expires **31 Aug 2026** — reissue it with *Expires: Never* and the whole chain
+> becomes expiry-free. The `GH_DISPATCH_TOKEN` PAT is already no-expiry. Tokens
+> can't be viewed after creation, only regenerated.
 
 ## Future migration: legacy Supabase API keys (deprecated, not yet removed)
 
