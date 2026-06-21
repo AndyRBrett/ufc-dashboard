@@ -76,6 +76,43 @@ Both can run at once safely — `notif_log` dedup collapses the overlap. This
 removes any single dependency on GitHub Actions' scheduler (which throttles).
 Reminders also have a **60-minute lead window**, so they tolerate a stalled run.
 
+## Quotas & usage estimates (as of 2026-06-21)
+
+Rough capacity check for the current cadence — recompute if intervals change.
+
+**cron-job.org (free tier):** 3 jobs.
+
+| Job | Interval | Runs/day |
+| --- | --- | --- |
+| check-results | 2 min | 720 |
+| send-reminders | 2 min | 720 |
+| kick-scraper | 5 min | 288 |
+| **Total** | | **~1,730/day (~52k/mo)** |
+
+Free tier allows 1-min intervals and far more than 3 jobs; each call finishes in
+<7 s (worst seen: check-results ~6.7 s), well under the free ~30 s per-request
+timeout. **Not near any cron-job.org limit.**
+
+**Supabase Edge Functions (free tier = 500,000 invocations/mo):** the real
+ceiling to watch. Tally of everything that hits a function:
+- cron-job.org pings: ~1,730/day
+- GitHub Actions backup (`scheduled-push.yml`, check-results + send-reminders
+  every 5 min): ~575/day
+- occasional `send-push` calls during live events
+
+≈ **~2,300/day ≈ ~70k/mo ≈ 14% of the 500k free allotment** — comfortable
+headroom.
+
+**GitHub Actions minutes:** repo is public → runs are **free/unlimited**.
+
+**GitHub API (`workflow_dispatch` via the PAT in `kick-scraper`):** 5,000
+req/hr authenticated; `kick-scraper` fires ≤12/hr and only during live cards.
+Negligible.
+
+**If you ever need to trim** (you don't, at current usage): the two 2-min jobs
+can go to 3–5 min — reminders are unaffected (60-min window); result-notification
+latency rises a couple minutes.
+
 ## App data freshness vs. notifications (two clocks)
 
 A result has **two independent delivery paths**, and they run on different clocks:
