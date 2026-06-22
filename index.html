@@ -1349,6 +1349,19 @@ function fmtUpdated(s){
 function fmtOdds(n){return n>0?"+"+n:""+n;}
 function pk(ev,fight){return ev.date+"|"+fight.f1.n+"|"+fight.f2.n;}
 function stOf(f){return f.s||(FIGHTER_STATS[f.n]||null);}
+// Whole-years age from a scraped DOB string. Returns null when the DOB is
+// missing/unparseable or lands outside a plausible fighter range (guards
+// against bad scrapes). Shared by the fighter card and the compare sheet.
+function _ageFromDob(dob){
+  if(!dob)return null;
+  try{
+    var bd=new Date(dob),n=new Date();
+    if(isNaN(bd.getTime()))return null;
+    var ag=n.getFullYear()-bd.getFullYear();
+    if(n.getMonth()<bd.getMonth()||(n.getMonth()===bd.getMonth()&&n.getDate()<bd.getDate()))ag--;
+    return (ag>18&&ag<55)?ag:null;
+  }catch(e){return null;}
+}
 function _saveJSON(key,obj){try{localStorage.setItem(key,JSON.stringify(obj));}catch(e){}}
 function save(){_saveJSON("ufc_preds",preds);}
 function saveMethod(){_saveJSON("ufc_method",preds_method);}
@@ -1847,7 +1860,7 @@ function openStats(idx,side){
   if(s.ht){grid.appendChild(ms(s.ht,"Height"));}
   if(s.rch){grid.appendChild(ms(s.rch,"Reach"));}
   if(s.stn){grid.appendChild(ms(s.stn,"Stance"));}
-  if(s.dob){try{var _bd=new Date(s.dob);var _n=new Date();var _ag=_n.getFullYear()-_bd.getFullYear();if(_n.getMonth()<_bd.getMonth()||(_n.getMonth()===_bd.getMonth()&&_n.getDate()<_bd.getDate()))_ag--;if(_ag>18&&_ag<55)grid.appendChild(ms(_ag,"Age"));}catch(e){}}
+  var _ag=_ageFromDob(s.dob);if(_ag!=null)grid.appendChild(ms(_ag,"Age"));
   var bars=document.getElementById("mBars");bars.innerHTML="";
   function mbar(lbl,pct){
     var p=pct||0;
@@ -2593,11 +2606,13 @@ function openCmp(f1,f2){
     el.appendChild(cmpRow("KO/TKO Wins",s1.ko,s2.ko,true));
     el.appendChild(cmpRow("Sub Wins",s1.sub,s2.sub,true));
   }
-  var hasPhysical=(s1&&(s1.ht||s1.rch||s1.stn))||(s2&&(s2.ht||s2.rch||s2.stn));
+  var a1=_ageFromDob(s1&&s1.dob),a2=_ageFromDob(s2&&s2.dob);
+  var hasPhysical=(s1&&(s1.ht||s1.rch||s1.stn))||(s2&&(s2.ht||s2.rch||s2.stn))||a1!=null||a2!=null;
   if(hasPhysical){
     var tapHdr=document.createElement("div");tapHdr.style.cssText="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:12px 0 8px;border-top:1px solid var(--border)";tapHdr.textContent="Tale of the Tape";el.appendChild(tapHdr);
     function tapeRow(lb2,v1,v2){var tr2=document.createElement("div");tr2.style.cssText="display:flex;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px";var tl2=document.createElement("span");tl2.style.cssText="font-weight:600;color:#e8192c;width:80px;flex-shrink:0";tl2.textContent=v1||"—";var ts2=document.createElement("span");ts2.style.cssText="flex:1;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;text-align:center";ts2.textContent=lb2;var tv2=document.createElement("span");tv2.style.cssText="font-weight:600;color:#c9a84c;width:80px;flex-shrink:0;text-align:right";tv2.textContent=v2||"—";tr2.appendChild(tl2);tr2.appendChild(ts2);tr2.appendChild(tv2);return tr2;}
     if((s1&&s1.ht)||(s2&&s2.ht))el.appendChild(tapeRow("Height",(s1&&s1.ht)||"—",(s2&&s2.ht)||"—"));
+    if(a1!=null||a2!=null)el.appendChild(tapeRow("Age",a1!=null?a1+" yrs":"—",a2!=null?a2+" yrs":"—"));
     if((s1&&s1.rch)||(s2&&s2.rch))el.appendChild(tapeRow("Reach",(s1&&s1.rch)||"—",(s2&&s2.rch)||"—"));
     if((s1&&s1.stn)||(s2&&s2.stn))el.appendChild(tapeRow("Stance",(s1&&s1.stn)||"—",(s2&&s2.stn)||"—"));
   }
