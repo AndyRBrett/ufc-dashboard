@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-22T02:18:30Z",
+  "generated_at": "2026-06-22T04:14:14Z",
   "events_tracked": 10,
   "stale_events": 1,
   "stale_threshold_hours": 48,
@@ -35,7 +35,7 @@
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
-      "last_changed_at": "2026-06-21T23:49:34Z",
+      "last_changed_at": "2026-06-22T04:14:14Z",
       "is_stale": false,
       "has_data": true,
       "line_movement": -1
@@ -63,7 +63,7 @@
     },
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
-      "last_changed_at": "2026-06-22T02:18:30Z",
+      "last_changed_at": "2026-06-22T04:14:14Z",
       "is_stale": false,
       "has_data": false,
       "line_movement": 0
@@ -202,6 +202,15 @@
       "f2_movement": 9,
       "magnitude": 11,
       "main_event": true
+    },
+    {
+      "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
+      "f1": "Sharabutdin Magomedov",
+      "f2": "Michel Pereira",
+      "f1_movement": 4,
+      "f2_movement": -10,
+      "magnitude": 10,
+      "main_event": false
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
