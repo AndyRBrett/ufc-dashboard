@@ -246,3 +246,91 @@ def test_search_ufcstats_single_match_unchanged(monkeypatch):
     monkeypatch.setattr(scrape, "_load_ufcstats_letter", lambda letter: rows)
     assert scrape._search_ufcstats("Steve Garcia") == (
         "http://ufcstats.com/fighter-details/ccc", "19-5-0")
+
+
+# --- ESPN start times ------------------------------------------------------
+
+def test_event_surnames_parses_headliners():
+    assert scrape._event_surnames("UFC Fight Night: Fiziev vs. Torres") == ("fiziev", "torres")
+    assert scrape._event_surnames("UFC 330: Jones vs Aspinall") == ("jones", "aspinall")
+    assert scrape._event_surnames("UFC 999") is None  # not yet titled
+
+
+def test_utc_iso_to_et_handles_z_suffix_and_dst():
+    # 19:00 UTC on a summer date is 15:00 EDT (UTC-4).
+    assert scrape._utc_iso_to_et("2026-06-27T19:00Z").strftime("%H:%M") == "15:00"
+    # Same clock time in winter is 14:00 EST (UTC-5) — DST handled by zoneinfo.
+    assert scrape._utc_iso_to_et("2026-01-15T19:00Z").strftime("%H:%M") == "14:00"
+    assert scrape._utc_iso_to_et("") is None
+    assert scrape._utc_iso_to_et("not-a-date") is None
+
+
+def test_parse_espn_times_baku_converts_utc_to_et():
+    # The Baku card that motivated this: main card 19:00 UTC -> 15:00 ET, with
+    # prelims derived 3h earlier (Fight Night offset).
+    payload = {"events": [{
+        "date": "2026-06-27T19:00Z",
+        "name": "UFC Fight Night: Fiziev vs. Torres",
+        "shortName": "Fiziev vs. Torres",
+    }]}
+    assert scrape.parse_espn_times(
+        payload, "UFC Fight Night: Fiziev vs. Torres", "2026-06-27") == ("15:00", "12:00")
+
+
+def test_parse_espn_times_ppv_uses_two_hour_prelim_offset():
+    payload = {"events": [{
+        "date": "2026-06-27T23:00Z",  # 19:00 ET main card
+        "name": "UFC 330: Jones vs. Aspinall",
+        "shortName": "Jones vs. Aspinall",
+    }]}
+    assert scrape.parse_espn_times(
+        payload, "UFC 330: Jones vs. Aspinall", "2026-06-27") == ("19:00", "17:00")
+
+
+def test_parse_espn_times_late_us_card_matches_on_et_date():
+    # A 02:00 UTC start (next UTC day) is still "tonight" 22:00 ET on the event
+    # date — matching must compare the ET calendar date, not the UTC one.
+    payload = {"events": [{
+        "date": "2026-06-28T02:00Z",
+        "name": "UFC Fight Night: Smith vs. Jones",
+        "shortName": "Smith vs. Jones",
+    }]}
+    assert scrape.parse_espn_times(
+        payload, "UFC Fight Night: Smith vs. Jones", "2026-06-27") == ("22:00", "19:00")
+
+
+def test_parse_espn_times_no_match_returns_none():
+    payload = {"events": [{
+        "date": "2026-06-27T19:00Z",
+        "name": "UFC Fight Night: Fiziev vs. Torres",
+        "shortName": "Fiziev vs. Torres",
+    }]}
+    # Wrong fighters -> no match.
+    assert scrape.parse_espn_times(
+        payload, "UFC Fight Night: Adesanya vs. Pereira", "2026-06-27") == (None, None)
+    # Right fighters, wrong date -> no match.
+    assert scrape.parse_espn_times(
+        payload, "UFC Fight Night: Fiziev vs. Torres", "2026-07-04") == (None, None)
+    # Empty payload -> no match.
+    assert scrape.parse_espn_times({}, "UFC Fight Night: Fiziev vs. Torres", "2026-06-27") == (None, None)
+
+
+def test_resolve_event_times_overrides_skip_espn(monkeypatch):
+    # A manual override is authoritative and must not trigger an ESPN lookup.
+    monkeypatch.setattr(scrape, "_TIME_OVERRIDES", {"UFC Freedom 250": ("20:00", "")})
+    def boom(*a, **k):
+        raise AssertionError("ESPN must not be consulted for an overridden card")
+    monkeypatch.setattr(scrape, "fetch_espn_times", boom)
+    assert scrape.resolve_event_times("UFC Freedom 250", "2026-07-04", "20:00", "") == ("20:00", "")
+
+
+def test_resolve_event_times_falls_back_to_default_when_espn_misses(monkeypatch):
+    monkeypatch.setattr(scrape, "fetch_espn_times", lambda n, d: (None, None))
+    assert scrape.resolve_event_times(
+        "UFC Fight Night: Foo vs. Bar", "2026-06-27", "TBD", "TBD") == ("TBD", "TBD")
+
+
+def test_resolve_event_times_prefers_espn_over_default(monkeypatch):
+    monkeypatch.setattr(scrape, "fetch_espn_times", lambda n, d: ("15:00", "12:00"))
+    assert scrape.resolve_event_times(
+        "UFC Fight Night: Fiziev vs. Torres", "2026-06-27", "TBD", "TBD") == ("15:00", "12:00")
