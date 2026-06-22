@@ -331,6 +331,7 @@ def test_resolve_event_times_falls_back_to_default_when_espn_misses(monkeypatch)
 
 
 def test_resolve_event_times_prefers_espn_over_default(monkeypatch):
+    # Use an event with no manual override so the ESPN branch is exercised.
     monkeypatch.setattr(scrape, "fetch_espn_times", lambda n, d: ("15:00", "12:00"))
     assert scrape.resolve_event_times(
-        "UFC Fight Night: Fiziev vs. Torres", "2026-06-27", "TBD", "TBD") == ("15:00", "12:00")
+        "UFC Fight Night: Foo vs. Bar", "2026-06-27", "TBD", "TBD") == ("15:00", "12:00")

@@ -97,8 +97,8 @@ var EVENTS=[
     venue:"National Gymnastics Arena",
     loc:"Baku",
     tv:"Paramount+",
-    time:"TBD",
-    prelimTime:"TBD",
+    time:"15:00",
+    prelimTime:"12:00",
     fights:[
       {lbl:"Main Event",wc:"Lightweight",title:false,rematch:false,odds:{f1:-120,f2:-36},winner:"",method:"",round:null,state:"pre",f1:{n:"Rafael Fiziev",r:"13-5-0",rk:"",s:null},f2:{n:"Manuel Torres",r:"17-3-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Middleweight",title:false,rematch:false,odds:{f1:-338,f2:265},winner:"",method:"",round:null,state:"pre",f1:{n:"Sharabutdin Magomedov",r:"16-1-0",rk:"",s:null},f2:{n:"Michel Pereira",r:"32-14-0",rk:"",s:null}},
