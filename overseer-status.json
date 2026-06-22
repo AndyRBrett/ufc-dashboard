@@ -1,78 +1,100 @@
 {
-  "generated_at": "2026-06-22T14:58:15Z",
+  "generated_at": "2026-06-22T22:20:03Z",
   "events_tracked": 10,
   "stale_events": 1,
+  "parse_failure_events": 0,
+  "awaiting_card_events": 1,
   "stale_threshold_hours": 48,
   "movement_alert_threshold": 10,
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
+      "status": "ok",
       "last_changed_at": "2026-06-20T01:35:43Z",
       "is_stale": false,
       "has_data": true,
+      "bout_count": 13,
       "line_movement": 0
     },
     {
       "event_id": "2026-06-06:ufc-fight-night-muhammad-vs-bonfim",
+      "status": "ok",
       "last_changed_at": "2026-06-20T01:35:43Z",
       "is_stale": false,
       "has_data": true,
+      "bout_count": 12,
       "line_movement": 0
     },
     {
       "event_id": "2026-06-14:ufc-freedom-250",
+      "status": "ok",
       "last_changed_at": "2026-06-20T01:35:43Z",
       "is_stale": false,
       "has_data": true,
+      "bout_count": 7,
       "line_movement": 0
     },
     {
       "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
+      "status": "ok",
       "last_changed_at": "2026-06-21T06:09:27Z",
       "is_stale": false,
       "has_data": true,
+      "bout_count": 12,
       "line_movement": -3
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
+      "status": "ok",
       "last_changed_at": "2026-06-22T14:58:15Z",
       "is_stale": false,
       "has_data": true,
+      "bout_count": 13,
       "line_movement": -3
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "status": "ok",
       "last_changed_at": "2026-06-22T14:58:15Z",
       "is_stale": false,
       "has_data": true,
+      "bout_count": 12,
       "line_movement": -25
     },
     {
       "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
+      "status": "ok",
       "last_changed_at": "2026-06-21T20:53:55Z",
       "is_stale": false,
       "has_data": true,
+      "bout_count": 7,
       "line_movement": 0
     },
     {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-rountree-jr",
+      "status": "ok",
       "last_changed_at": "2026-06-20T01:35:43Z",
       "is_stale": true,
       "has_data": true,
+      "bout_count": 9,
       "line_movement": 0
     },
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
-      "last_changed_at": "2026-06-22T14:58:15Z",
+      "status": "awaiting-card",
+      "last_changed_at": "2026-06-22T22:20:03Z",
       "is_stale": false,
       "has_data": false,
+      "bout_count": 11,
       "line_movement": 0
     },
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
+      "status": "ok",
       "last_changed_at": "2026-06-21T06:09:27Z",
       "is_stale": false,
       "has_data": true,
+      "bout_count": 4,
       "line_movement": -11
     }
   ],
@@ -231,7 +253,5 @@
       "main_event": false
     }
   ],
-  "errors": [
-    "empty payload (no bouts parsed): 2026-08-01:ufc-fight-night-medic-vs-rodriguez"
-  ]
+  "errors": []
 }

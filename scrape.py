@@ -243,6 +243,41 @@ def patch_js_var(data, name, value):
 # Supabase
 # ---------------------------------------------------------------------------
 
+def get_with_retry(url, *, label="", retries=3, backoff=2, **kwargs):
+    """requests.get with exponential-backoff retry on transient failures.
+
+    A single transient blip — a connection reset, a timeout, a 429/5xx from
+    Wikipedia or the Odds API — is the documented cause of the "successfully
+    fetched but empty" runs behind #14: the request appears to complete, the page
+    parses to zero bouts, and the empty payload gets written as if it were real.
+    Retrying these reads (sleeping backoff * 2**attempt seconds between attempts)
+    turns most of those one-off blips into a successful fetch instead of a silent
+    empty.
+
+    Retries on any request exception and on retryable HTTP statuses (429 and 5xx).
+    Returns the final Response — which may still be non-2xx, so callers keep their
+    own status checks — or None when every attempt raised.
+    """
+    last = None
+    for attempt in range(retries):
+        try:
+            r = requests.get(url, **kwargs)
+        except Exception as e:
+            print(f"  request error [{label}] {attempt + 1}/{retries}: {e}", file=sys.stderr)
+        else:
+            if r.status_code != 429 and r.status_code < 500:
+                return r
+            last = r
+            print(
+                f"  retryable status [{label}] {r.status_code} "
+                f"{attempt + 1}/{retries}",
+                file=sys.stderr,
+            )
+        if attempt < retries - 1:
+            time.sleep(backoff * (2 ** attempt))
+    return last
+
+
 def sb_get(path):
     """GET a Supabase REST API endpoint. Returns a list, or [] on error."""
     if not SUPABASE_ANON:
@@ -272,7 +307,10 @@ def fetch_wikitext(slug):
     ]
     for method, url, params in sources:
         try:
-            r = requests.get(url, headers=WIKI_HDR, params=params, timeout=15)
+            r = get_with_retry(
+                url, label=f"wiki {method}", headers=WIKI_HDR, params=params, timeout=15)
+            if r is None:
+                continue
             print(f"  Wiki {method} [{slug[:40]}]: {r.status_code}", file=sys.stderr)
             if r.status_code == 200:
                 wt = (
@@ -820,8 +858,9 @@ def _fetch_odds_api(regions, source):
     if not ODDS_API_KEY or not regions:
         return {}
     try:
-        r = requests.get(
+        r = get_with_retry(
             ODDS_API_URL,
+            label=f"odds {source}",
             params={
                 "apiKey": ODDS_API_KEY,
                 "regions": regions,
@@ -830,6 +869,8 @@ def _fetch_odds_api(regions, source):
             },
             timeout=15,
         )
+        if r is None:
+            return {}
         print(
             f"Odds API [{source}]: {r.status_code} | "
             f"remaining: {r.headers.get('x-requests-remaining', '?')}",

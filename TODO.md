@@ -35,6 +35,35 @@ GitHub-Actions backup). Full map in **`NOTIFICATIONS.md`**. Remaining:
 
 ---
 
+## Empty-payload status disambiguation + per-fighter odds series — ✅ RESOLVED 2026-06-22
+
+**Status:** ✅ resolved 2026-06-22 · **Added:** 2026-06-20 · **Severity:** medium · **Fixes:** #14
+
+**Problem (#14).** An event whose card is announced but whose sportsbook lines
+aren't posted yet (e.g. `medic-vs-rodriguez`, ~6 weeks out) parses to zero
+odds-bearing bouts. The old code lumped that in with a true extraction failure:
+`has_data:false` + dumped into `errors`, so a legitimately-unpriced future card
+read as broken and polluted the status list — while still showing `is_stale:false`.
+
+**Fix.**
+- `write_status.py` now classifies each event `status` = **ok** /
+  **awaiting-card** / **parse-failure** (see `classify_event`). Only
+  parse-failures (lines expected and missing — imminent event, or odds that were
+  present and vanished) hit `errors`; awaiting-card events don't. New per-event
+  `bout_count` (announced bouts, odds or not) and top-level
+  `parse_failure_events` / `awaiting_card_events` counts. Window is
+  `ODDS_EXPECTED_WITHIN_DAYS` (default 14, env-tunable).
+- `scrape.py` gained `get_with_retry` (exponential backoff) around the Odds API
+  and Wikipedia reads, so a transient blip stops producing a silent empty payload.
+- **Per-fighter odds time-series + closing-line value** (`odds_series.py` →
+  `odds-series.json`, wired into `update.yml`): rebuilds the snapshot log into
+  per-bout, fighter-aligned movement series + a per-fighter index, and freezes
+  each bout's open/close/**clv** once the event concludes — the benchmark for
+  backtesting a pick's entry odds. Builds on the snapshot log, which only ever
+  holds `has_data` events, so empty payloads are never charted.
+
+---
+
 ## Always-on server-side result-push backup — ✅ RESOLVED 2026-06-21 (shipped via external cron, not pg_cron)
 
 **Status:** ✅ resolved 2026-06-21 · **Added:** 2026-06-15 · **Severity:** medium (resilience)

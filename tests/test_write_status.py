@@ -24,6 +24,58 @@ def test_has_data_false_for_empty_payload():
     assert ws.has_data([{"f1": "A", "f2": "B", "f1_odds": -150, "f2_odds": 130}]) is True
 
 
+# --- status disambiguation: awaiting-card vs parse-failure (#14) ------------
+
+def _empty_event(date):
+    # An announced card with fighters but no odds parses to zero odds-bearing
+    # fights — exactly the medic-vs-rodriguez shape behind #14.
+    return {"date": date, "bout_count": 9, "fights": []}
+
+
+def test_classify_ok_when_odds_present():
+    ev = {"date": "2026-08-01", "bout_count": 9,
+          "fights": [{"f1": "A", "f2": "B", "f1_odds": -150, "f2_odds": 130}]}
+    assert ws.classify_event(ev, [], "2026-06-22") == "ok"
+
+
+def test_classify_awaiting_card_for_far_out_unpriced_event():
+    # 40 days out, never carried odds → legitimately not priced yet, not an error.
+    assert ws.classify_event(_empty_event("2026-08-01"), [], "2026-06-22") == "awaiting-card"
+
+
+def test_classify_parse_failure_when_odds_expected_soon():
+    # Inside the window books should already have priced → real failure.
+    assert ws.classify_event(_empty_event("2026-06-28"), [], "2026-06-22") == "parse-failure"
+
+
+def test_classify_parse_failure_on_regression():
+    # Odds were present in history and have now vanished → regression, any date.
+    hist = [("t1", [{"f1": "A", "f2": "B", "f1_odds": -150, "f2_odds": 130}])]
+    assert ws.classify_event(_empty_event("2026-08-01"), hist, "2026-06-22") == "parse-failure"
+
+
+def test_classify_awaiting_card_for_past_unpriced_event():
+    # A past event that never carried odds won't be priced retroactively — benign.
+    assert ws.classify_event(_empty_event("2026-06-01"), [], "2026-06-22") == "awaiting-card"
+
+
+def test_parse_events_counts_announced_bouts_without_odds():
+    # Two bouts, neither with odds (odds:null) → zero odds-fights but bout_count 2,
+    # so the event reads as awaiting-card rather than a zero-bout parse failure.
+    data = (
+        'var EVENTS=[\n'
+        '  {\n    name:"UFC Fight Night: Test",\n    date:"2026-09-01",\n'
+        '    fights:[\n'
+        '      {lbl:"Main Event",odds:null,winner:"",f1:{n:"Alice Aaa",r:""},f2:{n:"Bob Bbb",r:""}},\n'
+        '      {lbl:"Co-Main",odds:null,winner:"",f1:{n:"Cara Ccc",r:""},f2:{n:"Dana Ddd",r:""}}\n'
+        '    ]\n  }\n]\n'
+    )
+    evs = ws.parse_events(data)
+    assert len(evs) == 1
+    assert evs[0]["fights"] == []
+    assert evs[0]["bout_count"] == 2
+
+
 # --- matchup keying --------------------------------------------------------
 
 def test_matchup_key_is_order_independent():

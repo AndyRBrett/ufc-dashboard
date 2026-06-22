@@ -27,10 +27,18 @@ snapshot log: any bout whose line has drifted at least MOVEMENT_ALERT_THRESHOLD
 points from its opener (across the whole card, not just the headliner) is emitted
 in an `alerts` array, and optionally POSTed to ALERT_WEBHOOK_URL. Implements #17.
 
-A successfully-fetched-but-empty page parses to zero bouts, whose odds
-fingerprint is the SHA-256 of the empty string (e3b0c442...). Such events carry
-`has_data: false`, are surfaced in `errors`, and never count toward `stale_events`
-or any health signal, so an empty extraction cannot read as up-to-date. Fixes #14.
+A successfully-fetched-but-empty page parses to zero odds-bearing bouts, whose
+fingerprint is the SHA-256 of the empty string (e3b0c442...). But "zero odds" has
+two very different causes that the old code conflated into a single `has_data:
+false` that always read as an error: a card whose bouts are announced but whose
+sportsbook lines simply aren't posted yet (an event weeks out — legitimately
+empty), versus an event we *expected* lines for and got none (imminent, or odds
+that were present and then vanished — a real failure). Each event now carries a
+`status` of "ok", "awaiting-card", or "parse-failure" (see classify_event), and
+ONLY parse-failures are surfaced in `errors`, so a far-out card that hasn't been
+priced no longer pollutes the error/status list. Empty events of either kind
+never count toward `stale_events` or any health signal, so an empty extraction
+cannot read as up-to-date. Fixes #14.
 
 Run after scrape.py in the same workflow; overseer-status.json is committed each
 run so `generated_at` itself doubles as a liveness heartbeat.
@@ -74,6 +82,13 @@ EMPTY_SHA = hashlib.sha256(b"").hexdigest()
 # (or near-empty) payload.
 MIN_BOUTS = 1
 
+# Sportsbooks post UFC moneylines roughly two weeks out, and the daily rebuild
+# pulls them in as soon as they exist. So an upcoming event with announced bouts
+# but no odds within this window is a "parse-failure" — we expected lines and got
+# none — whereas one further out is just "awaiting-card" (priced later, not
+# broken). Tunable without a code change. Fixes #14's core conflation.
+ODDS_EXPECTED_WITHIN_DAYS = int(os.environ.get("ODDS_EXPECTED_WITHIN_DAYS", "14"))
+
 # A single serialised fight: odds literal followed by both fighters' names.
 # Matches scrape.fight_js output, which emits each fight on one line.
 FIGHT_RE = re.compile(
@@ -81,6 +96,10 @@ FIGHT_RE = re.compile(
     r'winner:"[^"]*",method:"[^"]*",round:[^,]*,state:"[^"]*",'
     r'f1:\{n:"([^"]+)"[^}]*\},f2:\{n:"([^"]+)"'
 )
+# Any serialised bout, whether or not it carries odds (odds:null bouts don't
+# match FIGHT_RE). Counts the announced card so an event with fighters but no
+# posted lines reads as "awaiting-card", not a zero-bout parse failure (#14).
+BOUT_RE = re.compile(r'f1:\{n:"[^"]+"[^}]*\},f2:\{n:"[^"]+"')
 # Event header — name immediately followed by date, as serialised by events_js.
 EVENT_RE = re.compile(r'name:"([^"]+)",\s*\n\s*date:"(\d{4}-\d{2}-\d{2})"')
 
@@ -98,8 +117,12 @@ def slug(s):
 def parse_events(data):
     """Slice the `var EVENTS=` block into per-event dicts.
 
-    Returns [{event_id, date, fights:[{f1, f2, f1_odds, f2_odds}]}], scoped to the
-    EVENTS block so RESULTS_ARCHIVE never contaminates the counts.
+    Returns [{event_id, date, bout_count, fights:[{f1, f2, f1_odds, f2_odds}]}],
+    scoped to the EVENTS block so RESULTS_ARCHIVE never contaminates the counts.
+    `fights` holds only odds-bearing bouts (what the time-series tracks);
+    `bout_count` is the full announced card (odds-bearing or not), which lets an
+    event with fighters but no posted lines be told apart from a true zero-bout
+    parse failure (#14).
     """
     i = data.find("var EVENTS=")
     block = data[i:] if i != -1 else data
@@ -109,11 +132,17 @@ def parse_events(data):
     for n, m in enumerate(heads):
         name, date = m.group(1), m.group(2)
         end = heads[n + 1].start() if n + 1 < len(heads) else len(block)
+        seg = block[m.start():end]
         fights = [
             {"f1": f1n, "f2": f2n, "f1_odds": int(f1o), "f2_odds": int(f2o)}
-            for f1o, f2o, f1n, f2n in FIGHT_RE.findall(block[m.start():end])
+            for f1o, f2o, f1n, f2n in FIGHT_RE.findall(seg)
         ]
-        events.append({"event_id": f"{date}:{slug(name)}", "date": date, "fights": fights})
+        events.append({
+            "event_id": f"{date}:{slug(name)}",
+            "date": date,
+            "bout_count": len(BOUT_RE.findall(seg)),
+            "fights": fights,
+        })
     return events
 
 
@@ -126,6 +155,49 @@ def fingerprint(fights):
 def has_data(fights):
     """True when the event holds a real extraction, not an empty/near-empty page."""
     return len(fights) >= MIN_BOUTS
+
+
+def classify_event(ev, ev_hist, today):
+    """Disambiguate an event's extraction state into one of three statuses (#14).
+
+    - "ok":            at least one odds-bearing bout parsed — a real extraction.
+    - "parse-failure": we expected lines and got none. Either the odds were
+                       present in this event's snapshot history and have since
+                       vanished (a regression), or the event is close enough that
+                       books should already be pricing it (within
+                       ODDS_EXPECTED_WITHIN_DAYS).
+    - "awaiting-card": no odds yet, but legitimately so — an upcoming event still
+                       far enough out that sportsbooks haven't posted lines, or a
+                       past event that simply never carried odds. Not actionable,
+                       so it must NOT pollute the error list.
+
+    `today` is a YYYY-MM-DD string; `ev_hist` is this event's snapshot history as
+    returned by load_snapshot_history (a list of (at, fights)).
+    """
+    if has_data(ev["fights"]):
+        return "ok"
+
+    # Odds present before and gone now ⇒ a real regression, whatever the date.
+    if any(fights for _at, fights in ev_hist):
+        return "parse-failure"
+
+    try:
+        days_out = (datetime.strptime(ev["date"], "%Y-%m-%d").date()
+                    - datetime.strptime(today, "%Y-%m-%d").date()).days
+    except ValueError:
+        days_out = None
+
+    # Past events never priced (e.g. results-only archive rows) aren't broken and
+    # will never be priced retroactively — benign, not a failure.
+    if days_out is None or days_out < 0:
+        return "awaiting-card"
+
+    # Imminent and still unpriced ⇒ lines were expected by now. An announced card
+    # (fighters but no odds) makes this an unambiguous odds parse failure.
+    if days_out <= ODDS_EXPECTED_WITHIN_DAYS:
+        return "parse-failure"
+
+    return "awaiting-card"
 
 
 def matchup_key(fight):
@@ -296,6 +368,7 @@ def main():
         fp       = fingerprint(ev["fights"])
         data_ok  = has_data(ev["fights"]) and fp != EMPTY_SHA
         ev_hist  = history.get(ev["event_id"], [])
+        status_  = classify_event(ev, ev_hist, today)
         changed  = last_changed_at(ev_hist, ev["fights"], now_iso)
 
         try:
@@ -329,17 +402,22 @@ def main():
 
         out_events.append({
             "event_id":        ev["event_id"],
+            "status":          status_,
             "last_changed_at": changed,
             "is_stale":        is_stale,
             "has_data":        data_ok,
+            "bout_count":      ev["bout_count"],
             "line_movement":   movement,
         })
 
-    # Surface empty extractions in errors, so the run cannot look clean while
-    # carrying events with no parsed bouts.
-    empty_ids = [e["event_id"] for e in out_events if not e["has_data"]]
-    if empty_ids:
-        errors.append("empty payload (no bouts parsed): " + ", ".join(empty_ids))
+    # Surface only genuine parse failures in errors — events we expected lines for
+    # and got none, or whose lines vanished. Awaiting-card events (an upcoming card
+    # books simply haven't priced yet) are legitimately empty and must NOT pollute
+    # the error/status list, which is exactly the false-error #14 was filing.
+    failure_ids  = [e["event_id"] for e in out_events if e["status"] == "parse-failure"]
+    awaiting_ids = [e["event_id"] for e in out_events if e["status"] == "awaiting-card"]
+    if failure_ids:
+        errors.append("parse failure (expected bouts, got none): " + ", ".join(failure_ids))
 
     # Loudest movers first, so the most actionable steam tops the list.
     alerts.sort(key=lambda a: a["magnitude"], reverse=True)
@@ -348,6 +426,8 @@ def main():
         "generated_at":             now_iso,
         "events_tracked":           len(out_events),
         "stale_events":             stale_events,
+        "parse_failure_events":     len(failure_ids),
+        "awaiting_card_events":     len(awaiting_ids),
         "stale_threshold_hours":    STALE_THRESHOLD_HOURS,
         "movement_alert_threshold": MOVEMENT_ALERT_THRESHOLD,
         "events":                   out_events,
