@@ -92,3 +92,52 @@ def test_last_changed_at_is_now_when_latest_snapshot_differs():
 
 def test_last_changed_at_is_now_without_history():
     assert ws.last_changed_at([], [_fight(-150, 127)], "now") == "now"
+
+
+# --- line-movement alerts (#17) --------------------------------------------
+
+def test_event_movers_flags_bout_past_threshold():
+    # Headliner drifted -22 from open (-157 -> -179); a 10-point threshold trips.
+    opens  = {ws.matchup_key(_fight(-157, 131)): _fight(-157, 131)}
+    movers = ws.event_movers([_fight(-179, 150)], opens, 10)
+    assert len(movers) == 1
+    m = movers[0]
+    assert m["f1_movement"] == -22 and m["magnitude"] == 22 and m["main_event"] is True
+
+
+def test_event_movers_ignores_bouts_under_threshold():
+    opens = {ws.matchup_key(_fight(-157, 131)): _fight(-157, 131)}
+    # Only a 3-point drift on each side — below a 10-point threshold.
+    assert ws.event_movers([_fight(-160, 134)], opens, 10) == []
+
+
+def test_event_movers_alerts_when_only_underdog_side_moves():
+    # f1 barely moves but the f2 side blows out past threshold — still a steam move.
+    opens  = {ws.matchup_key(_fight(-157, 131)): _fight(-157, 131)}
+    movers = ws.event_movers([_fight(-159, 175)], opens, 10)
+    assert len(movers) == 1 and movers[0]["f2_movement"] == 44
+
+
+def test_event_movers_no_alert_without_opener():
+    # First time a bout is seen there's no opener, so movement is zero, no alert.
+    assert ws.event_movers([_fight(-300, 240)], {}, 10) == []
+
+
+def test_event_movers_marks_only_first_bout_as_main_event():
+    a = _fight(-179, 150)
+    b = {"f1": "X", "f2": "Y", "f1_odds": 200, "f2_odds": -250}
+    opens = {
+        ws.matchup_key(_fight(-157, 131)): _fight(-157, 131),
+        ws.matchup_key(b): {"f1": "X", "f2": "Y", "f1_odds": 100, "f2_odds": -120},
+    }
+    movers = ws.event_movers([a, b], opens, 10)
+    assert [m["main_event"] for m in movers] == [True, False]
+
+
+def test_post_alerts_noop_without_webhook(monkeypatch):
+    # No webhook configured → never touches the network.
+    monkeypatch.setattr(ws, "ALERT_WEBHOOK_URL", "")
+    called = []
+    monkeypatch.setattr(ws.urllib.request, "urlopen", lambda *a, **k: called.append(1))
+    ws.post_alerts([{"event_id": "e", "magnitude": 22}])
+    assert called == []

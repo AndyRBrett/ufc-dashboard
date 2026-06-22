@@ -137,6 +137,78 @@ def test_get_odds_key_sorted_opposite_to_home_away():
     assert scrape.get_odds(idx, "Aiemann Zahabi", "Sean O'Malley") == {"f1": 350, "f2": -460}
 
 
+# --- secondary odds source + fallback chain (#18) --------------------------
+
+def _entry(name1, name2, o1, o2, source):
+    return {tuple(sorted([name1.lower(), name2.lower()])): {
+        "f1_name": name1, "f2_name": name2, "f1_odds": o1, "f2_odds": o2,
+        "source": source}}
+
+
+def test_fetch_odds_primary_wins_over_secondary_for_same_bout():
+    # Both sources cover the same fight; the higher-priority source's line is kept.
+    primary   = lambda: _entry("Max Holloway", "Justin Gaethje", -150, 130, "primary")
+    secondary = lambda: _entry("Max Holloway", "Justin Gaethje", -200, 170, "secondary")
+    idx = scrape.fetch_odds(sources=[primary, secondary])
+    assert scrape.get_odds(idx, "Max Holloway", "Justin Gaethje") == {"f1": -150, "f2": 130}
+    assert scrape.odds_source(idx, "Max Holloway", "Justin Gaethje") == "primary"
+
+
+def test_fetch_odds_falls_back_to_secondary_when_primary_empty():
+    # Primary parsed zero bouts (the empty-payload failure from #14) — the
+    # secondary backfills the line instead of leaving the card with no odds.
+    primary   = lambda: {}
+    secondary = lambda: _entry("Islam Makhachev", "Ian Garry", -300, 250, "secondary")
+    idx = scrape.fetch_odds(sources=[primary, secondary])
+    assert scrape.get_odds(idx, "Islam Makhachev", "Ian Garry") == {"f1": -300, "f2": 250}
+    assert scrape.odds_source(idx, "Islam Makhachev", "Ian Garry") == "secondary"
+
+
+def test_fetch_odds_merges_cross_book_coverage():
+    # Each source covers a different fight; both end up in the combined index.
+    primary   = lambda: _entry("Jon Jones", "Stipe Miocic", -110, -110, "primary")
+    secondary = lambda: _entry("Alex Pereira", "Magomed Ankalaev", 120, -140, "secondary")
+    idx = scrape.fetch_odds(sources=[primary, secondary])
+    assert len(idx) == 2
+    assert scrape.odds_source(idx, "Jon Jones", "Stipe Miocic") == "primary"
+    assert scrape.odds_source(idx, "Alex Pereira", "Magomed Ankalaev") == "secondary"
+
+
+def test_fetch_odds_skips_a_failing_source():
+    # A source that raises must not abort the chain — later sources still run.
+    def boom():
+        raise RuntimeError("network down")
+    secondary = lambda: _entry("Sean Strickland", "Dricus du Plessis", -125, 105, "secondary")
+    idx = scrape.fetch_odds(sources=[boom, secondary])
+    assert scrape.odds_source(idx, "Sean Strickland", "Dricus du Plessis") == "secondary"
+
+
+def test_odds_source_none_when_no_match():
+    idx = _entry("Jon Jones", "Stipe Miocic", -110, -110, "primary")
+    assert scrape.odds_source(idx, "Conor McGregor", "Michael Chandler") is None
+
+
+def test_index_odds_api_tags_source_and_averages_books():
+    payload = [{
+        "home_team": "Max Holloway", "away_team": "Justin Gaethje",
+        "bookmakers": [
+            {"key": "fanduel", "markets": [{"key": "h2h", "outcomes": [
+                {"name": "Max Holloway", "price": -150},
+                {"name": "Justin Gaethje", "price": 130}]}]},
+            {"key": "draftkings", "markets": [{"key": "h2h", "outcomes": [
+                {"name": "Max Holloway", "price": -170},
+                {"name": "Justin Gaethje", "price": 150}]}]},
+        ],
+    }]
+    idx = scrape._index_odds_api(payload, "the-odds-api:us")
+    assert scrape.get_odds(idx, "Max Holloway", "Justin Gaethje") == {"f1": -160, "f2": 140}
+    assert scrape.odds_source(idx, "Max Holloway", "Justin Gaethje") == "the-odds-api:us"
+
+
+def test_index_odds_api_empty_payload_yields_empty_index():
+    assert scrape._index_odds_api([], "the-odds-api:us") == {}
+
+
 # --- hoisted regexes -------------------------------------------------------
 
 def test_rankings_regex_extracts_rank_and_name():

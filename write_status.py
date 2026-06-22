@@ -22,6 +22,11 @@ into context every weekly run, so per event it reports only freshness fields plu
 a single representative `line_movement` (the main-event line's drift, current
 minus open) — not the full per-bout arrays.
 
+Steam moves are surfaced as actionable signals rather than left buried in the
+snapshot log: any bout whose line has drifted at least MOVEMENT_ALERT_THRESHOLD
+points from its opener (across the whole card, not just the headliner) is emitted
+in an `alerts` array, and optionally POSTed to ALERT_WEBHOOK_URL. Implements #17.
+
 A successfully-fetched-but-empty page parses to zero bouts, whose odds
 fingerprint is the SHA-256 of the empty string (e3b0c442...). Such events carry
 `has_data: false`, are surfaced in `errors`, and never count toward `stale_events`
@@ -33,14 +38,27 @@ run so `generated_at` itself doubles as a liveness heartbeat.
 
 import hashlib
 import json
+import os
 import re
 import sys
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
 DATA_PATH     = Path("data.js")
 STATUS_PATH   = Path("overseer-status.json")
 SNAPSHOT_PATH = Path("odds-snapshots.jsonl")
+
+# A bout whose moneyline has drifted at least this many points from its opening
+# line is a "steam move" worth flagging — the sharpest signal this tracker
+# captures (#17). Configurable so it can be tuned without a code change; the
+# headliner line_movement was already computed but only the lean single value
+# surfaced, so undercard steam stayed buried in the snapshot log.
+MOVEMENT_ALERT_THRESHOLD = int(os.environ.get("MOVEMENT_ALERT_THRESHOLD", "10"))
+
+# Optional outbound notification. When set, the alerts array is POSTed as JSON to
+# this URL each run that produces movers (Slack/Discord/webhook). Unset = no-op.
+ALERT_WEBHOOK_URL = os.environ.get("ALERT_WEBHOOK_URL", "")
 
 # Upcoming-event odds refresh at most once per day (the 09:00 UTC rebuild), so a
 # single day's gap is normal. 48h flags an event whose lines have sat unchanged
@@ -141,6 +159,49 @@ def delta(open_fight, cur_fight):
     }
 
 
+def event_movers(fights, opens, threshold):
+    """Bouts whose line has moved at least `threshold` points from its opener.
+
+    A steam move on either fighter trips the alert (American odds aren't
+    symmetric, so each side's drift is reported independently). Returns one entry
+    per qualifying bout, ordered as the card is, each tagged with the larger of
+    the two absolute drifts so callers can sort by severity. Bouts with no
+    recorded opener yet have zero movement and never alert.
+    """
+    movers = []
+    for i, f in enumerate(fights):
+        d = delta(opens.get(matchup_key(f)), f)
+        magnitude = max(abs(d["f1_odds"]), abs(d["f2_odds"]))
+        if magnitude >= threshold:
+            movers.append({
+                "f1": f["f1"], "f2": f["f2"],
+                "f1_movement": d["f1_odds"], "f2_movement": d["f2_odds"],
+                "magnitude": magnitude,
+                "main_event": i == 0,
+            })
+    return movers
+
+
+def post_alerts(alerts):
+    """Best-effort POST of the alerts payload to ALERT_WEBHOOK_URL.
+
+    Never raises: a notification failure must not fail the status run, which is
+    also a liveness heartbeat. No-op when the URL is unset or there's nothing to
+    send.
+    """
+    if not ALERT_WEBHOOK_URL or not alerts:
+        return
+    body = json.dumps({"alerts": alerts}).encode("utf-8")
+    req  = urllib.request.Request(
+        ALERT_WEBHOOK_URL, data=body, headers={"Content-Type": "application/json"}
+    )
+    try:
+        urllib.request.urlopen(req, timeout=10)
+        print(f"Posted {len(alerts)} line-movement alert(s) to webhook", file=sys.stderr)
+    except Exception as e:
+        print(f"Alert webhook failed: {e}", file=sys.stderr)
+
+
 def load_snapshot_history():
     """Per-event ordered odds history from the append-only snapshot log.
 
@@ -230,6 +291,7 @@ def main():
 
     out_events   = []
     stale_events = 0
+    alerts       = []
     for ev in events:
         fp       = fingerprint(ev["fights"])
         data_ok  = has_data(ev["fights"]) and fp != EMPTY_SHA
@@ -258,6 +320,13 @@ def main():
         main  = ev["fights"][0] if ev["fights"] else None
         movement = delta(opens.get(matchup_key(main)), main)["f1_odds"] if main else 0
 
+        # Steam-move alerts: surface every bout past the threshold, not just the
+        # headliner's single line_movement. Empty-payload events have no real
+        # lines to move, so they're skipped (#17).
+        if data_ok:
+            for mover in event_movers(ev["fights"], opens, MOVEMENT_ALERT_THRESHOLD):
+                alerts.append({"event_id": ev["event_id"], **mover})
+
         out_events.append({
             "event_id":        ev["event_id"],
             "last_changed_at": changed,
@@ -272,15 +341,23 @@ def main():
     if empty_ids:
         errors.append("empty payload (no bouts parsed): " + ", ".join(empty_ids))
 
+    # Loudest movers first, so the most actionable steam tops the list.
+    alerts.sort(key=lambda a: a["magnitude"], reverse=True)
+
     status = {
-        "generated_at":          now_iso,
-        "events_tracked":        len(out_events),
-        "stale_events":          stale_events,
-        "stale_threshold_hours": STALE_THRESHOLD_HOURS,
-        "events":                out_events,
-        "errors":                errors,
+        "generated_at":             now_iso,
+        "events_tracked":           len(out_events),
+        "stale_events":             stale_events,
+        "stale_threshold_hours":    STALE_THRESHOLD_HOURS,
+        "movement_alert_threshold": MOVEMENT_ALERT_THRESHOLD,
+        "events":                   out_events,
+        "alerts":                   alerts,
+        "errors":                   errors,
     }
     STATUS_PATH.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
+
+    # Optional push: notify a webhook when steam moves appear. Best-effort.
+    post_alerts(alerts)
 
     # Append a timestamped odds snapshot for line-movement history, but only when
     # the odds actually changed since the last one — keeps the append-only log from

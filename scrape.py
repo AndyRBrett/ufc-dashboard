@@ -29,6 +29,14 @@ from bs4 import BeautifulSoup
 
 ODDS_API_KEY = os.environ.get("ODDS_API_KEY", "")
 ODDS_API_URL = "https://api.the-odds-api.com/v4/sports/mma_mixed_martial_arts/odds"
+# Odds are pulled through an ordered chain of source adapters (see fetch_odds).
+# The primary covers US books; the secondary covers a different set of books so
+# that when the primary parses zero bouts for a freshly-announced card — the
+# empty-payload failure behind #14/#18 — the chain still fills the lines and we
+# gain cross-book coverage. Either region set can be overridden (or the secondary
+# disabled with an empty string) via the environment.
+ODDS_API_REGIONS_PRIMARY   = os.environ.get("ODDS_API_REGIONS_PRIMARY", "us")
+ODDS_API_REGIONS_SECONDARY = os.environ.get("ODDS_API_REGIONS_SECONDARY", "us2,uk,eu,au")
 WIKI_API     = "https://en.wikipedia.org/w/api.php"
 WIKI_HDR     = {
     "User-Agent": (
@@ -655,33 +663,11 @@ def _flush_wikitable_row(row):
 # Odds API
 # ---------------------------------------------------------------------------
 
-def fetch_odds():
-    """Fetch current MMA moneylines from The Odds API. Returns a fighter-pair index."""
-    if not ODDS_API_KEY:
-        print("No ODDS_API_KEY", file=sys.stderr)
-        return {}
-    try:
-        r = requests.get(
-            ODDS_API_URL,
-            params={
-                "apiKey": ODDS_API_KEY,
-                "regions": "us",
-                "markets": "h2h",
-                "oddsFormat": "american",
-            },
-            timeout=15,
-        )
-        print(
-            f"Odds API: {r.status_code} | remaining: {r.headers.get('x-requests-remaining', '?')}",
-            file=sys.stderr,
-        )
-        if r.status_code != 200:
-            return {}
-        data = r.json()
-    except Exception as e:
-        print(f"Odds API error: {e}", file=sys.stderr)
-        return {}
+def _index_odds_api(data, source):
+    """Turn one Odds API payload into a fighter-pair index tagged with `source`.
 
+    Pure (no network), so the parsing is unit-testable independent of the request.
+    """
     preferred  = ["fanduel", "draftkings", "betrivers", "bovada", "betonlineag", "betus"]
     odds_index = {}
     for fight in data:
@@ -711,13 +697,105 @@ def fetch_odds():
                 "f2_name": a,
                 "f1_odds": round(sum(p1) / len(p1)),
                 "f2_odds": round(sum(p2) / len(p2)),
+                "source":  source,
             }
-    print(f"Odds indexed: {len(odds_index)} fights", file=sys.stderr)
     return odds_index
 
 
-def get_odds(odds_index, f1_name, f2_name):
-    """Look up odds for a fight by fuzzy name matching. Returns {f1, f2} or None.
+def _fetch_odds_api(regions, source):
+    """One Odds API source adapter: fetch `regions` and return a tagged index.
+
+    Returns an empty dict on a missing key, a non-200, a request error, or an
+    empty payload — all of which the fallback chain treats the same way (the next
+    source gets a chance to cover the bout).
+    """
+    if not ODDS_API_KEY or not regions:
+        return {}
+    try:
+        r = requests.get(
+            ODDS_API_URL,
+            params={
+                "apiKey": ODDS_API_KEY,
+                "regions": regions,
+                "markets": "h2h",
+                "oddsFormat": "american",
+            },
+            timeout=15,
+        )
+        print(
+            f"Odds API [{source}]: {r.status_code} | "
+            f"remaining: {r.headers.get('x-requests-remaining', '?')}",
+            file=sys.stderr,
+        )
+        if r.status_code != 200:
+            return {}
+        data = r.json()
+    except Exception as e:
+        print(f"Odds API [{source}] error: {e}", file=sys.stderr)
+        return {}
+    return _index_odds_api(data, source)
+
+
+def fetch_odds_primary():
+    """Primary source: US sportsbooks via The Odds API."""
+    return _fetch_odds_api(ODDS_API_REGIONS_PRIMARY, f"the-odds-api:{ODDS_API_REGIONS_PRIMARY}")
+
+
+def fetch_odds_secondary():
+    """Secondary source: a different book set (us2/uk/eu/au) via The Odds API.
+
+    Distinct coverage from the primary, so it both backstops an empty primary
+    payload and adds cross-book lines for fights the US books haven't posted yet.
+    """
+    return _fetch_odds_api(
+        ODDS_API_REGIONS_SECONDARY, f"the-odds-api:{ODDS_API_REGIONS_SECONDARY}"
+    )
+
+
+# Ordered fallback chain. Higher-priority sources win; later ones only fill the
+# fighter-pairs nobody above them covered (see fetch_odds). Swap or extend this
+# list to register additional sportsbooks/APIs.
+ODDS_SOURCES = [fetch_odds_primary, fetch_odds_secondary]
+
+
+def fetch_odds(sources=None):
+    """Build the combined fighter-pair odds index by querying each source in
+    priority order.
+
+    Each source returns its own tagged index; entries are merged so the first
+    source to cover a fighter-pair wins and later sources only fill the gaps. A
+    source that fails or parses zero bouts contributes nothing, so the chain
+    degrades gracefully instead of leaving a card with no lines (#14/#18). Every
+    entry keeps a `source` attribution (see odds_source).
+    """
+    sources  = ODDS_SOURCES if sources is None else sources
+    combined = {}
+    for src in sources:
+        label = getattr(src, "__name__", str(src))
+        try:
+            idx = src()
+        except Exception as e:
+            print(f"Odds source {label} error: {e}", file=sys.stderr)
+            continue
+        added = 0
+        for pair, o in idx.items():
+            if pair not in combined:
+                combined[pair] = o
+                added += 1
+        print(
+            f"Odds source {label}: +{added} new fights ({len(combined)} total)",
+            file=sys.stderr,
+        )
+    if not combined:
+        print("No odds from any source", file=sys.stderr)
+    return combined
+
+
+def _match_odds(odds_index, f1_name, f2_name):
+    """Find the index entry for a bout by fuzzy name matching.
+
+    Returns (entry, swapped) or (None, False). `swapped` is True when the entry's
+    f1/f2 are reversed relative to the queried order.
 
     Orientation must come from the stored home/away names (f1_name aligns with
     f1_odds, f2_name with f2_odds) — NOT from the index key, which is sorted
@@ -736,10 +814,26 @@ def get_odds(odds_index, f1_name, f2_name):
         match_swap1 = f1last in n2 or n2 in f1l or f1l in n2
         match_swap2 = f2last in n1 or n1 in f2l or f2l in n1
         if match_f1 and match_f2:
-            return {"f1": o["f1_odds"], "f2": o["f2_odds"]}
+            return o, False
         if match_swap1 and match_swap2:
-            return {"f1": o["f2_odds"], "f2": o["f1_odds"]}
-    return None
+            return o, True
+    return None, False
+
+
+def get_odds(odds_index, f1_name, f2_name):
+    """Look up odds for a fight by fuzzy name matching. Returns {f1, f2} or None."""
+    o, swapped = _match_odds(odds_index, f1_name, f2_name)
+    if not o:
+        return None
+    if swapped:
+        return {"f1": o["f2_odds"], "f2": o["f1_odds"]}
+    return {"f1": o["f1_odds"], "f2": o["f2_odds"]}
+
+
+def odds_source(odds_index, f1_name, f2_name):
+    """Which registered source supplied this bout's odds, for per-event attribution."""
+    o, _ = _match_odds(odds_index, f1_name, f2_name)
+    return o.get("source") if o else None
 
 
 def extract_existing_odds(html):
@@ -1454,6 +1548,13 @@ def step_build_events(data, now):
             })
         if not card:
             continue
+        # Per-event source attribution: count which adapter covered each bout's
+        # line, so a card filled by the secondary fallback is visible in the logs.
+        src_counts = {}
+        for wf in wiki_fights[:len(card)]:
+            src = odds_source(odds_index, wf["f1"], wf["f2"]) or "none"
+            src_counts[src] = src_counts.get(src, 0) + 1
+        print(f"  Odds sources for {ev_name}: {src_counts}", file=sys.stderr)
         new_events.append({
             "name":        ev_name,
             "date":        ev_date,
