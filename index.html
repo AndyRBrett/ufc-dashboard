@@ -206,7 +206,8 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-wheel-row-label{flex:1;font-size:14px;font-weight:600;color:var(--text);line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lb-wheel-pill{font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;background:var(--card2);border:1px solid var(--border2);color:var(--muted);cursor:pointer;font-family:inherit;flex-shrink:0;min-width:42px}
 .lb-wheel-pill.selected{background:var(--red);border-color:var(--red);color:var(--on-accent)}
-.lb-wheel-del{background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0}
+.lb-wheel-del{background:none;border:1px solid transparent;color:var(--muted);font-size:14px;cursor:pointer;padding:5px 8px;line-height:1;flex-shrink:0;margin-left:10px;border-radius:8px;font-family:inherit}
+.lb-wheel-del.armed{background:var(--red);border-color:var(--red);color:var(--on-accent);font-size:11px;font-weight:700;padding:5px 10px}
 .lb-wheel-add{display:flex;gap:6px;margin-bottom:10px}
 .lb-wheel-emoji-input{width:46px;text-align:center;background:var(--card2);border:1px solid var(--border2);color:var(--text);padding:9px 4px;border-radius:9px;font:500 16px Inter,sans-serif;flex-shrink:0}
 .lb-wheel-label-input{flex:1}
@@ -3703,6 +3704,12 @@ function updateSpinAvailability(){
   if(btn){btn.disabled=!enough||_wheelSpinning;if(!_wheelSpinning)btn.textContent=btn.dataset.spun?"Spin Again 🎡":"Spin 🎡";}
   if(hint)hint.style.display=enough?"none":"block";
 }
+// Delete needs a confirm tap so a mis-aimed thumb on the On/Off toggle can't
+// nuke a challenge: first tap "arms" the ✕ (turns it into a red "Delete?"),
+// second tap within a few seconds actually removes it. Auto-disarms on a timer
+// and whenever anything else in the list is touched.
+var _wheelDelArmed=-1,_wheelDelTimer=null;
+function _disarmDel(){if(_wheelDelTimer){clearTimeout(_wheelDelTimer);_wheelDelTimer=null;}_wheelDelArmed=-1;}
 function renderChallengeList(){
   var list=document.getElementById("wheelList");
   if(!list)return;
@@ -3717,19 +3724,30 @@ function renderChallengeList(){
     var label=document.createElement("div");
     label.className="lb-wheel-row-label";
     label.textContent=(c.emoji?c.emoji+" ":"")+c.label;
+    var armed=(_wheelDelArmed===i);
     var del=document.createElement("button");
-    del.className="lb-wheel-del";del.textContent="✕";del.title="Remove";
-    del.onclick=function(){deleteChallenge(i);};
+    del.className="lb-wheel-del"+(armed?" armed":"");
+    del.textContent=armed?"Delete?":"✕";
+    del.title=armed?"Tap again to remove":"Remove";
+    del.onclick=function(){
+      if(_wheelDelArmed===i){_disarmDel();deleteChallenge(i);return;}
+      _disarmDel();
+      _wheelDelArmed=i;
+      _wheelDelTimer=setTimeout(function(){_disarmDel();renderChallengeList();},3000);
+      renderChallengeList();
+    };
     row.appendChild(label);row.appendChild(pill);row.appendChild(del);
     list.appendChild(row);
   });
 }
 function toggleChallenge(i){
   if(!_wheelChallenges[i])return;
+  _disarmDel();
   _wheelChallenges[i].on=!_wheelChallenges[i].on;
   saveWheelChallenges();renderChallengeList();
 }
 function deleteChallenge(i){
+  _disarmDel();
   _wheelChallenges.splice(i,1);
   saveWheelChallenges();renderChallengeList();
 }
