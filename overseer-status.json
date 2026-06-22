@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-22T10:03:12Z",
+  "generated_at": "2026-06-22T14:58:15Z",
   "events_tracked": 10,
   "stale_events": 1,
   "stale_threshold_hours": 48,
@@ -35,17 +35,17 @@
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
-      "last_changed_at": "2026-06-22T10:03:12Z",
+      "last_changed_at": "2026-06-22T14:58:15Z",
       "is_stale": false,
       "has_data": true,
       "line_movement": -3
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "last_changed_at": "2026-06-21T20:53:55Z",
+      "last_changed_at": "2026-06-22T14:58:15Z",
       "is_stale": false,
       "has_data": true,
-      "line_movement": -22
+      "line_movement": -25
     },
     {
       "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
@@ -63,7 +63,7 @@
     },
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
-      "last_changed_at": "2026-06-22T10:03:12Z",
+      "last_changed_at": "2026-06-22T14:58:15Z",
       "is_stale": false,
       "has_data": false,
       "line_movement": 0
@@ -81,9 +81,9 @@
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "f1": "Abdul-Rakhman Yakhyaev",
       "f2": "Julius Walker",
-      "f1_movement": -164,
-      "f2_movement": 85,
-      "magnitude": 164,
+      "f1_movement": -152,
+      "f2_movement": 78,
+      "magnitude": 152,
       "main_event": false
     },
     {
@@ -114,6 +114,15 @@
       "main_event": false
     },
     {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Conor McGregor",
+      "f2": "Max Holloway",
+      "f1_movement": -25,
+      "f2_movement": 35,
+      "magnitude": 35,
+      "main_event": true
+    },
+    {
       "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
       "f1": "Beatriz Mesquita",
       "f2": "Melissa Mullins",
@@ -121,15 +130,6 @@
       "f2_movement": 18,
       "magnitude": 34,
       "main_event": false
-    },
-    {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Conor McGregor",
-      "f2": "Max Holloway",
-      "f1_movement": -22,
-      "f2_movement": 30,
-      "magnitude": 30,
-      "main_event": true
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
@@ -144,9 +144,9 @@
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "f1": "Nazim Sadykhov",
       "f2": "Matheus Camilo",
-      "f1_movement": -21,
-      "f2_movement": 10,
-      "magnitude": 21,
+      "f1_movement": -24,
+      "f2_movement": 13,
+      "magnitude": 24,
       "main_event": false
     },
     {
