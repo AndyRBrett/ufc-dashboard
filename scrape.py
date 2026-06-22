@@ -19,6 +19,7 @@ import time
 import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import requests
 from bs4 import BeautifulSoup
@@ -338,6 +339,110 @@ def _event_times(ev_name, loc):
     if ev_name in _TIME_OVERRIDES:
         return _TIME_OVERRIDES[ev_name]
     return _default_main_time(loc, ev_name), _default_prelim_time(loc, ev_name)
+
+
+# ---------------------------------------------------------------------------
+# ESPN start times
+#
+# The location-based defaults above only know US/Canada cards (anchored to a
+# fixed ET broadcast slot); everything else fell back to "TBD". ESPN's MMA
+# scoreboard publishes each event's broadcast start as an absolute UTC instant,
+# so the ET wall-clock is an exact, DST-correct conversion — no venue-timezone
+# guesswork — and it covers international cards (Baku, Abu Dhabi, Perth, ...)
+# that have no clean ET rule. ESPN is preferred when it returns a confident
+# match; any miss or parse failure falls back to the location default, so a
+# bad/empty ESPN response can never regress the cards that already work.
+# ---------------------------------------------------------------------------
+
+ESPN_SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard"
+_ET = ZoneInfo("America/New_York")
+_espn_cache = {}
+
+
+def _prelim_offset_hours(ev_name):
+    """Prelims precede the main card by 2h for a numbered PPV, else 3h —
+    matching the spread between the location-based main/prelim defaults."""
+    return 2 if _is_ppv(ev_name) else 3
+
+
+def _event_surnames(ev_name):
+    """Lowercase surnames of the two headliners parsed from 'X vs. Y', or None."""
+    tail = ev_name.split(":", 1)[-1]
+    m = re.search(r"(.+?)\s+vs\.?\s+(.+)", tail, re.IGNORECASE)
+    if not m:
+        return None
+    a, b = last_name(m.group(1)), last_name(m.group(2))
+    return (a, b) if a and b else None
+
+
+def _utc_iso_to_et(iso):
+    """Parse an ISO-8601 UTC timestamp into a timezone-aware ET datetime, or None."""
+    if not iso:
+        return None
+    try:
+        dt = datetime.fromisoformat(iso.replace("Z", "+00:00"))
+    except (ValueError, TypeError):
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(_ET)
+
+
+def parse_espn_times(payload, ev_name, ev_date):
+    """
+    Pure: resolve (main_time, prelim_time) in 24h ET for the event matching
+    *ev_name* on *ev_date* from an ESPN scoreboard payload, or (None, None).
+
+    Matches on the event's ET calendar date plus both headliner surnames — a
+    late US card crosses midnight UTC but is still "tonight" in ET, which is why
+    the date check is done after converting to ET. The prelim start is derived
+    from the published main-card start by the standard offset.
+    """
+    want = _event_surnames(ev_name)
+    if not want:
+        return None, None
+    for ev in payload.get("events", []):
+        et = _utc_iso_to_et(ev.get("date"))
+        if et is None or et.strftime("%Y-%m-%d") != ev_date:
+            continue
+        names = (ev.get("name", "") + " " + ev.get("shortName", "")).lower()
+        if not (want[0] in names and want[1] in names):
+            continue
+        prelim = et - timedelta(hours=_prelim_offset_hours(ev_name))
+        return et.strftime("%H:%M"), prelim.strftime("%H:%M")
+    return None, None
+
+
+def fetch_espn_times(ev_name, ev_date):
+    """Network: fetch the ESPN scoreboard for *ev_date* (cached) and resolve ET
+    times. Returns (None, None) on any network/parse failure."""
+    key = ev_date.replace("-", "")
+    if key not in _espn_cache:
+        payload = {}
+        try:
+            r = requests.get(ESPN_SCOREBOARD, params={"dates": key},
+                             headers=WIKI_HDR, timeout=15)
+            if r.status_code == 200:
+                payload = r.json()
+            else:
+                print(f"  ESPN scoreboard [{key}]: HTTP {r.status_code}", file=sys.stderr)
+        except Exception as e:
+            print(f"  ESPN error: {e}", file=sys.stderr)
+        _espn_cache[key] = payload
+    return parse_espn_times(_espn_cache[key], ev_name, ev_date)
+
+
+def resolve_event_times(ev_name, ev_date, default_main, default_prelim):
+    """Prefer ESPN's published start time; fall back to the location default.
+    Manual _TIME_OVERRIDES are authoritative and skip ESPN entirely."""
+    if ev_name in _TIME_OVERRIDES:
+        return default_main, default_prelim
+    main, prelim = fetch_espn_times(ev_name, ev_date)
+    if main:
+        print(f"  ESPN times for {ev_name}: main {main} ET / prelim {prelim} ET",
+              file=sys.stderr)
+        return main, prelim
+    return default_main, default_prelim
 
 
 def _infer_venue_loc_from_row(row, after_pos):
@@ -1504,6 +1609,8 @@ def step_build_events(data, now):
         if ed < now - timedelta(days=30) or ed > now + timedelta(days=90):
             continue
         print(f"Fetching: {ev_name}", file=sys.stderr)
+        main_time, prelim_time = resolve_event_times(
+            ev_name, ev_date, main_time, prelim_time)
         wt          = fetch_wikitext(slug)
         wiki_fights = parse_upcoming_card(wt) if wt else []
         print(f"  Wiki fights found: {len(wiki_fights)}", file=sys.stderr)
