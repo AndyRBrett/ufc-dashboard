@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-23T12:21:57Z",
+  "generated_at": "2026-06-24T12:01:13Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -1221,7 +1221,7 @@
         {
           "f1": "Rafael Fiziev",
           "f2": "Manuel Torres",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1257,6 +1257,11 @@
               "at": "2026-06-23T12:21:56Z",
               "f1_odds": -119,
               "f2_odds": -37
+            },
+            {
+              "at": "2026-06-24T12:01:13Z",
+              "f1_odds": -112,
+              "f2_odds": -109
             }
           ],
           "open": {
@@ -1324,7 +1329,7 @@
         {
           "f1": "Nazim Sadykhov",
           "f2": "Matheus Camilo",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1350,6 +1355,11 @@
               "at": "2026-06-22T14:58:15Z",
               "f1_odds": -250,
               "f2_odds": 200
+            },
+            {
+              "at": "2026-06-24T12:01:13Z",
+              "f1_odds": -244,
+              "f2_odds": 195
             }
           ],
           "open": {
@@ -1363,7 +1373,7 @@
         {
           "f1": "Ikram Aliskerov",
           "f2": "Brunno Ferreira",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1414,6 +1424,11 @@
               "at": "2026-06-23T12:21:56Z",
               "f1_odds": -294,
               "f2_odds": 233
+            },
+            {
+              "at": "2026-06-24T12:01:13Z",
+              "f1_odds": -283,
+              "f2_odds": 225
             }
           ],
           "open": {
@@ -1427,7 +1442,7 @@
         {
           "f1": "Abusupiyan Magomedov",
           "f2": "Micha Oleksiejczuk",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1468,6 +1483,11 @@
               "at": "2026-06-23T12:21:56Z",
               "f1_odds": -141,
               "f2_odds": 117
+            },
+            {
+              "at": "2026-06-24T12:01:13Z",
+              "f1_odds": -124,
+              "f2_odds": 101
             }
           ],
           "open": {
@@ -1481,7 +1501,7 @@
         {
           "f1": "Farman Hasanov",
           "f2": "Eric Nolan",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1517,6 +1537,11 @@
               "at": "2026-06-23T12:21:56Z",
               "f1_odds": -180,
               "f2_odds": 147
+            },
+            {
+              "at": "2026-06-24T12:01:13Z",
+              "f1_odds": -181,
+              "f2_odds": 149
             }
           ],
           "open": {
@@ -1530,7 +1555,7 @@
         {
           "f1": "Abdul-Rakhman Yakhyaev",
           "f2": "Julius Walker",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1576,6 +1601,11 @@
               "at": "2026-06-23T12:21:56Z",
               "f1_odds": -548,
               "f2_odds": 395
+            },
+            {
+              "at": "2026-06-24T12:01:13Z",
+              "f1_odds": -557,
+              "f2_odds": 403
             }
           ],
           "open": {
@@ -1628,7 +1658,7 @@
         {
           "f1": "Kaan Ofli",
           "f2": "Javier Reyes",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1654,6 +1684,11 @@
               "at": "2026-06-23T12:21:56Z",
               "f1_odds": 137,
               "f2_odds": -166
+            },
+            {
+              "at": "2026-06-24T12:01:13Z",
+              "f1_odds": 140,
+              "f2_odds": -170
             }
           ],
           "open": {
@@ -1667,7 +1702,7 @@
         {
           "f1": "Bekzat Almakhan",
           "f2": "Jean Matsumoto",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1688,6 +1723,11 @@
               "at": "2026-06-21T11:57:50Z",
               "f1_odds": 132,
               "f2_odds": -161
+            },
+            {
+              "at": "2026-06-24T12:01:13Z",
+              "f1_odds": 130,
+              "f2_odds": -157
             }
           ],
           "open": {
@@ -1728,6 +1768,25 @@
             "at": "2026-06-21T06:09:27Z",
             "f1_odds": -507,
             "f2_odds": 370
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Tahir Abdullayev",
+          "f2": "Jefferson Nascimento",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-06-24T12:01:13Z",
+              "f1_odds": -120,
+              "f2_odds": 100
+            }
+          ],
+          "open": {
+            "at": "2026-06-24T12:01:13Z",
+            "f1_odds": -120,
+            "f2_odds": 100
           },
           "close": null,
           "clv": null
@@ -1887,12 +1946,17 @@
         {
           "f1": "Dricus du Plessis",
           "f2": "Kamaru Usman",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-06-21T20:53:55Z",
               "f1_odds": -345,
               "f2_odds": 278
+            },
+            {
+              "at": "2026-06-24T12:01:13Z",
+              "f1_odds": -355,
+              "f2_odds": 272
             }
           ],
           "open": {
@@ -1937,7 +2001,7 @@
         {
           "f1": "Islam Makhachev",
           "f2": "Ian Machado Garry",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1948,6 +2012,11 @@
               "at": "2026-06-20T11:32:15Z",
               "f1_odds": -366,
               "f2_odds": 285
+            },
+            {
+              "at": "2026-06-24T12:01:13Z",
+              "f1_odds": -367,
+              "f2_odds": 282
             }
           ],
           "open": {
@@ -1961,7 +2030,7 @@
         {
           "f1": "Mackenzie Dern",
           "f2": "Gillian Robertson",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1976,6 +2045,11 @@
             {
               "at": "2026-06-21T06:09:27Z",
               "f1_odds": -194,
+              "f2_odds": 160
+            },
+            {
+              "at": "2026-06-24T12:01:13Z",
+              "f1_odds": -196,
               "f2_odds": 160
             }
           ],
@@ -2854,7 +2928,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Manuel Torres",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -117,
         "close": null,
         "clv": null
@@ -2865,7 +2939,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Rafael Fiziev",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": -37,
         "close": null,
         "clv": null
@@ -2898,7 +2972,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Matheus Camilo",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -226,
         "close": null,
         "clv": null
@@ -2909,7 +2983,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Nazim Sadykhov",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 187,
         "close": null,
         "clv": null
@@ -2920,7 +2994,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Brunno Ferreira",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -222,
         "close": null,
         "clv": null
@@ -2931,7 +3005,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Ikram Aliskerov",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 184,
         "close": null,
         "clv": null
@@ -2942,7 +3016,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Micha Oleksiejczuk",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -123,
         "close": null,
         "clv": null
@@ -2953,7 +3027,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Abusupiyan Magomedov",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 103,
         "close": null,
         "clv": null
@@ -2964,7 +3038,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Eric Nolan",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -155,
         "close": null,
         "clv": null
@@ -2975,7 +3049,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Farman Hasanov",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 132,
         "close": null,
         "clv": null
@@ -2986,7 +3060,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Julius Walker",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -403,
         "close": null,
         "clv": null
@@ -2997,7 +3071,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Abdul-Rakhman Yakhyaev",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 320,
         "close": null,
         "clv": null
@@ -3030,7 +3104,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Javier Reyes",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": 129,
         "close": null,
         "clv": null
@@ -3041,7 +3115,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Kaan Ofli",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": -152,
         "close": null,
         "clv": null
@@ -3052,7 +3126,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Jean Matsumoto",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 129,
         "close": null,
         "clv": null
@@ -3063,7 +3137,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Bekzat Almakhan",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -152,
         "close": null,
         "clv": null
@@ -3087,6 +3161,28 @@
         "side": "f2",
         "points": 4,
         "open": 370,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Tahir Abdullayev": [
+      {
+        "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
+        "opponent": "Jefferson Nascimento",
+        "side": "f1",
+        "points": 1,
+        "open": -120,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Jefferson Nascimento": [
+      {
+        "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
+        "opponent": "Tahir Abdullayev",
+        "side": "f2",
+        "points": 1,
+        "open": 100,
         "close": null,
         "clv": null
       }
@@ -3206,7 +3302,7 @@
         "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
         "opponent": "Kamaru Usman",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -345,
         "close": null,
         "clv": null
@@ -3217,7 +3313,7 @@
         "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
         "opponent": "Dricus du Plessis",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 278,
         "close": null,
         "clv": null
@@ -3250,7 +3346,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Ian Machado Garry",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -355,
         "close": null,
         "clv": null
@@ -3261,7 +3357,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Islam Makhachev",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 276,
         "close": null,
         "clv": null
@@ -3272,7 +3368,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Gillian Robertson",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -189,
         "close": null,
         "clv": null
@@ -3283,7 +3379,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Mackenzie Dern",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 155,
         "close": null,
         "clv": null
