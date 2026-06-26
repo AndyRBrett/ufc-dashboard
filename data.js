@@ -105,14 +105,14 @@ var EVENTS=[
       {lbl:"Main Card",wc:"Lightweight",title:false,rematch:false,odds:{f1:-244,f2:195},winner:"",method:"",round:null,state:"pre",f1:{n:"Nazim Sadykhov",r:"11-2-1",rk:"",s:null},f2:{n:"Matheus Camilo",r:"10-3-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Flyweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Asu Almabayev",r:"23-3-0",rk:"",s:null},f2:{n:"Charles Johnson",r:"6-2-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Middleweight",title:false,rematch:false,odds:{f1:-299,f2:235},winner:"",method:"",round:null,state:"pre",f1:{n:"Ikram Aliskerov",r:"17-2-0",rk:"",s:null},f2:{n:"Brunno Ferreira",r:"15-3-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Middleweight",title:false,rematch:false,odds:{f1:-120,f2:-36},winner:"",method:"",round:null,state:"pre",f1:{n:"Abusupiyan Magomedov",r:"28-7-1",rk:"",s:null},f2:{n:"Micha Oleksiejczuk",r:"22-9-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Middleweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Abusupiyan Magomedov",r:"28-7-1",rk:"",s:null},f2:{n:"Micha Oleksiejczuk",r:"22-9-0",rk:"",s:null}},
       {lbl:"Prelim",wc:"Welterweight",title:false,rematch:false,odds:{f1:-180,f2:147},winner:"",method:"",round:null,state:"pre",f1:{n:"Farman Hasanov",r:"5-0-0",rk:"",s:null},f2:{n:"Eric Nolan",r:"8-4-0",rk:"",s:null}},
       {lbl:"Prelim",wc:"Light Heavyweight",title:false,rematch:false,odds:{f1:-613,f2:435},winner:"",method:"",round:null,state:"pre",f1:{n:"Abdul-Rakhman Yakhyaev",r:"9-0-0",rk:"",s:null},f2:{n:"Julius Walker",r:"7-2-0",rk:"",s:null}},
       {lbl:"Prelim",wc:"Middleweight",title:false,rematch:false,odds:{f1:-235,f2:188},winner:"",method:"",round:null,state:"pre",f1:{n:"Nursulton Ruziboev",r:"36-9-2",rk:"",s:null},f2:{n:"Andrey Pulyaev",r:"10-4-0",rk:"",s:null}},
       {lbl:"Prelim",wc:"Featherweight",title:false,rematch:false,odds:{f1:145,f2:-176},winner:"",method:"",round:null,state:"pre",f1:{n:"Kaan Ofli",r:"",rk:"",s:null},f2:{n:"Javier Reyes",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Welterweight",title:false,rematch:false,odds:{f1:-513,f2:378},winner:"",method:"",round:null,state:"pre",f1:{n:"Daniil Donchenko",r:"14-2-0",rk:"",s:null},f2:{n:"Theodor Berggren",r:"",rk:"",s:null}},
       {lbl:"Prelim",wc:"Bantamweight",title:false,rematch:false,odds:{f1:130,f2:-158},winner:"",method:"",round:null,state:"pre",f1:{n:"Bekzat Almakhan",r:"12-3-0",rk:"",s:null},f2:{n:"Jean Matsumoto",r:"17-2-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Welterweight",title:false,rematch:false,odds:{f1:-117,f2:-39},winner:"",method:"",round:null,state:"pre",f1:{n:"Tahir Abdullayev",r:"",rk:"",s:null},f2:{n:"Jefferson Nascimento",r:"",rk:"",s:null}}
+      {lbl:"Prelim",wc:"Welterweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Tahir Abdullayev",r:"",rk:"",s:null},f2:{n:"Jefferson Nascimento",r:"",rk:"",s:null}}
     ]
   },
   {

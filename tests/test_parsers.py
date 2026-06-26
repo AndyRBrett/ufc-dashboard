@@ -209,6 +209,71 @@ def test_index_odds_api_empty_payload_yields_empty_index():
     assert scrape._index_odds_api([], "the-odds-api:us") == {}
 
 
+# --- odds sanity validation (_valid_odds / _index_odds_api rejection) -------
+
+def test_valid_odds_accepts_standard_lines():
+    assert scrape._valid_odds(-150, 130)    # clear favourite
+    assert scrape._valid_odds(-110, -110)   # coin-flip, both negative
+    assert scrape._valid_odds(-613, 435)    # heavy favourite
+
+
+def test_valid_odds_rejects_impossible_lines():
+    # These are the exact corrupted values seen in the June 25 scrape.
+    assert not scrape._valid_odds(-120, -36)
+    assert not scrape._valid_odds(-117, -39)
+    assert not scrape._valid_odds(-118, -38)
+
+
+def test_index_odds_api_drops_corrupt_line():
+    # A payload where the away fighter's price produces an implied probability
+    # below 100% total — the fight must be silently dropped, not indexed.
+    payload = [{
+        "home_team": "Abusupiyan Magomedov", "away_team": "Micha Oleksiejczuk",
+        "bookmakers": [
+            {"key": "somebook", "markets": [{"key": "h2h", "outcomes": [
+                {"name": "Abusupiyan Magomedov", "price": -120},
+                {"name": "Micha Oleksiejczuk",   "price": -36}]}]},
+        ],
+    }]
+    idx = scrape._index_odds_api(payload, "the-odds-api:eu")
+    assert idx == {}
+
+
+def test_index_odds_api_accepts_near_even_both_negative():
+    # -110/-112 is a legitimate near-coin-flip; both negative but total > 100%.
+    payload = [{
+        "home_team": "Rafael Fiziev", "away_team": "Manuel Torres",
+        "bookmakers": [
+            {"key": "fanduel", "markets": [{"key": "h2h", "outcomes": [
+                {"name": "Rafael Fiziev",  "price": -110},
+                {"name": "Manuel Torres", "price": -112}]}]},
+        ],
+    }]
+    idx = scrape._index_odds_api(payload, "the-odds-api:us")
+    assert scrape.get_odds(idx, "Rafael Fiziev", "Manuel Torres") == {"f1": -110, "f2": -112}
+
+
+def _make_existing(f1n, f2n, o1, o2):
+    import scrape as s
+    key = frozenset([s.last_name(f1n), s.last_name(f2n)])
+    return {key: {"f1_name": f1n, "f2_name": f2n, "f1_odds": o1, "f2_odds": o2}}
+
+
+def test_get_odds_with_fallback_rejects_corrupt_existing_odds():
+    # Live API returns nothing; existing odds in data.js are corrupted.
+    # The fallback must return None rather than surfacing the bad values.
+    existing = _make_existing("Abusupiyan Magomedov", "Micha Oleksiejczuk", -120, -36)
+    result = scrape.get_odds_with_fallback({}, existing, "Abusupiyan Magomedov", "Micha Oleksiejczuk")
+    assert result is None
+
+
+def test_get_odds_with_fallback_accepts_valid_existing_odds():
+    # Live API returns nothing but existing odds are legitimate — preserve them.
+    existing = _make_existing("Abusupiyan Magomedov", "Micha Oleksiejczuk", -124, 101)
+    result = scrape.get_odds_with_fallback({}, existing, "Abusupiyan Magomedov", "Micha Oleksiejczuk")
+    assert result == {"f1": -124, "f2": 101}
+
+
 # --- hoisted regexes -------------------------------------------------------
 
 def test_rankings_regex_extracts_rank_and_name():

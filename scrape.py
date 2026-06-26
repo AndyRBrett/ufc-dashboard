@@ -809,6 +809,22 @@ def _flush_wikitable_row(row):
 # Odds API
 # ---------------------------------------------------------------------------
 
+def _implied_prob(o):
+    """Implied win probability for an American moneyline integer."""
+    return abs(o) / (abs(o) + 100)
+
+
+def _valid_odds(f1_odds, f2_odds):
+    """Return True iff the moneyline pair is mathematically sane.
+
+    A valid sportsbook line always has a total implied probability >= 100% (the
+    house edge). Any pair that sums below 100% is a corrupt or malformed price —
+    typically a small-magnitude negative value from a non-US book that the Odds
+    API didn't convert cleanly to American format.
+    """
+    return _implied_prob(f1_odds) + _implied_prob(f2_odds) >= 1.0
+
+
 def _index_odds_api(data, source):
     """Turn one Odds API payload into a fighter-pair index tagged with `source`.
 
@@ -837,12 +853,22 @@ def _index_odds_api(data, source):
                     elif a.lower() in nl or nl in a.lower():
                         p2.append(o["price"])
         if p1 and p2:
+            f1_odds = round(sum(p1) / len(p1))
+            f2_odds = round(sum(p2) / len(p2))
+            if not _valid_odds(f1_odds, f2_odds):
+                print(
+                    f"Odds rejected ({h} vs {a}): f1={f1_odds} f2={f2_odds} "
+                    f"implied={_implied_prob(f1_odds)+_implied_prob(f2_odds):.1%} — "
+                    f"source={source}",
+                    file=sys.stderr,
+                )
+                continue
             pair = tuple(sorted([h.lower(), a.lower()]))
             odds_index[pair] = {
                 "f1_name": h,
                 "f2_name": a,
-                "f1_odds": round(sum(p1) / len(p1)),
-                "f2_odds": round(sum(p2) / len(p2)),
+                "f1_odds": f1_odds,
+                "f2_odds": f2_odds,
                 "source":  source,
             }
     return odds_index
@@ -1093,17 +1119,24 @@ def update_results_archive(data, now):
 
 
 def get_odds_with_fallback(odds_index, existing_odds, f1_name, f2_name):
-    """Return live odds, falling back to the odds already embedded in the HTML."""
+    """Return live odds, falling back to the odds already embedded in the HTML.
+
+    Both the live and fallback result are validated through _valid_odds before
+    being returned — a corrupted value already in data.js must not survive into
+    the next write just because the live API also returned bad data.
+    """
     result = get_odds(odds_index, f1_name, f2_name)
-    if result:
+    if result and _valid_odds(result["f1"], result["f2"]):
         return result
     key = frozenset([last_name(f1_name), last_name(f2_name)])
     o   = existing_odds.get(key)
     if not o:
         return None
     if last_name(f1_name) == last_name(o["f1_name"]):
-        return {"f1": o["f1_odds"], "f2": o["f2_odds"]}
-    return {"f1": o["f2_odds"], "f2": o["f1_odds"]}
+        candidate = {"f1": o["f1_odds"], "f2": o["f2_odds"]}
+    else:
+        candidate = {"f1": o["f2_odds"], "f2": o["f1_odds"]}
+    return candidate if _valid_odds(candidate["f1"], candidate["f2"]) else None
 
 # ---------------------------------------------------------------------------
 # Fighter stats  (UFCStats)
