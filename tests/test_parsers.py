@@ -348,15 +348,15 @@ def test_utc_iso_to_et_handles_z_suffix_and_dst():
 
 
 def test_parse_espn_times_baku_converts_utc_to_et():
-    # The Baku card that motivated this: main card 19:00 UTC -> 15:00 ET, with
-    # prelims derived 3h earlier (Fight Night offset).
+    # Baku card (UTC+4): 7pm local = 15:00 UTC = 11:00 ET main card.
+    # Prelims are derived 3h earlier (Fight Night offset) -> 08:00 ET.
     payload = {"events": [{
-        "date": "2026-06-27T19:00Z",
+        "date": "2026-06-27T15:00Z",
         "name": "UFC Fight Night: Fiziev vs. Torres",
         "shortName": "Fiziev vs. Torres",
     }]}
     assert scrape.parse_espn_times(
-        payload, "UFC Fight Night: Fiziev vs. Torres", "2026-06-27") == ("15:00", "12:00")
+        payload, "UFC Fight Night: Fiziev vs. Torres", "2026-06-27") == ("11:00", "08:00")
 
 
 def test_parse_espn_times_ppv_uses_two_hour_prelim_offset():
