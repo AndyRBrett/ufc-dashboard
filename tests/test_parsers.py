@@ -222,6 +222,9 @@ def test_valid_odds_rejects_impossible_lines():
     assert not scrape._valid_odds(-120, -36)
     assert not scrape._valid_odds(-117, -39)
     assert not scrape._valid_odds(-118, -38)
+    # "drop leading digit" positive-odds corruption (June 26 scrape: +29 for +129).
+    assert not scrape._valid_odds(29, -116)
+    assert not scrape._valid_odds(-116, 29)
 
 
 def test_index_odds_api_drops_corrupt_line():
@@ -233,6 +236,20 @@ def test_index_odds_api_drops_corrupt_line():
             {"key": "somebook", "markets": [{"key": "h2h", "outcomes": [
                 {"name": "Abusupiyan Magomedov", "price": -120},
                 {"name": "Micha Oleksiejczuk",   "price": -36}]}]},
+        ],
+    }]
+    idx = scrape._index_odds_api(payload, "the-odds-api:eu")
+    assert idx == {}
+
+
+def test_index_odds_api_drops_positive_drop_leading_digit():
+    # +29 is the "drop leading digit" form of +129 — must be rejected.
+    payload = [{
+        "home_team": "Serhii Sidey", "away_team": "Kaio Borralho",
+        "bookmakers": [
+            {"key": "somebook", "markets": [{"key": "h2h", "outcomes": [
+                {"name": "Serhii Sidey",   "price": 29},
+                {"name": "Kaio Borralho",  "price": -116}]}]},
         ],
     }]
     idx = scrape._index_odds_api(payload, "the-odds-api:eu")

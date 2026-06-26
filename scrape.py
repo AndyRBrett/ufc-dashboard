@@ -811,7 +811,10 @@ def _flush_wikitable_row(row):
 
 def _implied_prob(o):
     """Implied win probability for an American moneyline integer."""
-    return abs(o) / (abs(o) + 100)
+    if o < 0:
+        return abs(o) / (abs(o) + 100)
+    else:
+        return 100 / (o + 100)
 
 
 def _valid_odds(f1_odds, f2_odds):
@@ -821,7 +824,12 @@ def _valid_odds(f1_odds, f2_odds):
     house edge). Any pair that sums below 100% is a corrupt or malformed price —
     typically a small-magnitude negative value from a non-US book that the Odds
     API didn't convert cleanly to American format.
+
+    Additionally, no legitimate book posts |odds| < 100 in American format.
+    Values like +29 or -36 are the "drop leading digit" corruption class.
     """
+    if abs(f1_odds) < 100 or abs(f2_odds) < 100:
+        return False
     return _implied_prob(f1_odds) + _implied_prob(f2_odds) >= 1.0
 
 
