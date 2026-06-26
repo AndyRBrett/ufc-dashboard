@@ -417,3 +417,28 @@ def test_resolve_event_times_prefers_espn_over_default(monkeypatch):
     monkeypatch.setattr(scrape, "fetch_espn_times", lambda n, d: ("15:00", "12:00"))
     assert scrape.resolve_event_times(
         "UFC Fight Night: Foo vs. Bar", "2026-06-27", "TBD", "TBD") == ("15:00", "12:00")
+
+
+# --- _warn_if_implausible_time -----------------------------------------------
+
+def test_warn_implausible_fires_for_late_international(capsys):
+    # An international card resolving to 19:00 ET implies a midnight+ local start.
+    scrape._warn_if_implausible_time("UFC Fight Night: Foo vs. Bar", "London", "19:00")
+    assert "WARNING" in capsys.readouterr().err
+
+
+def test_warn_implausible_silent_for_us_card(capsys):
+    # US cards routinely start at 8pm ET — no warning expected.
+    scrape._warn_if_implausible_time("UFC Fight Night: Foo vs. Bar", "Las Vegas", "20:00")
+    assert capsys.readouterr().err == ""
+
+
+def test_warn_implausible_silent_for_reasonable_international(capsys):
+    # 11am ET for Baku (UTC+4) is 3pm UTC = 7pm local — fine.
+    scrape._warn_if_implausible_time("UFC Fight Night: Fiziev vs. Torres", "Baku", "11:00")
+    assert capsys.readouterr().err == ""
+
+
+def test_warn_implausible_silent_for_tbd(capsys):
+    scrape._warn_if_implausible_time("UFC Fight Night: Foo vs. Bar", "London", "TBD")
+    assert capsys.readouterr().err == ""

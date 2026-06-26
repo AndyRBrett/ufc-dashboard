@@ -356,16 +356,18 @@ def _default_prelim_time(loc, ev_name=""):
     return "19:00" if _is_ppv(ev_name) else "17:00"
 
 
-# Outlier cards whose published start times differ from the location-based
-# default. Keyed by exact event name -> (main_time, prelim_time) in 24h ET.
-# An empty prelim_time means the card has no preliminary bouts (every fight is
-# on the main card), so no prelim start time is published.
+# STRUCTURAL time overrides only — for cards where the broadcast format is
+# unusual (e.g. no prelims, atypical slot). DO NOT add entries here just to
+# "correct" a time: if ESPN has the wrong time, fix the ESPN fetch or wait for
+# ESPN to update. Hardcoded ET values here bypass ESPN entirely and are the
+# #1 source of wrong times on the dashboard.
+#
+# Format: event name -> (main_time, prelim_time) in 24h ET.
+# Always include the UTC equivalent in the comment so it can be verified.
+# An empty prelim_time means no preliminary bouts.
 _TIME_OVERRIDES = {
-    # White House: single seven-fight main card at 8pm ET, no prelims.
+    # White House: single seven-fight main card at 8pm ET (00:00 UTC next day), no prelims.
     "UFC Freedom 250": ("20:00", ""),
-    # Baku (National Gymnastics Arena): 7pm local (UTC+4) = 15:00 UTC = 11am ET.
-    # Prelims 3h earlier: 8am ET.
-    "UFC Fight Night: Fiziev vs. Torres": ("11:00", "08:00"),
 }
 
 # Cards with no preliminary bouts -- every fight is treated as a main-card fight
@@ -471,6 +473,31 @@ def fetch_espn_times(ev_name, ev_date):
             print(f"  ESPN error: {e}", file=sys.stderr)
         _espn_cache[key] = payload
     return parse_espn_times(_espn_cache[key], ev_name, ev_date)
+
+
+def _warn_if_implausible_time(ev_name, loc, main_et):
+    """Warn when a resolved ET start time implies a local start past midnight.
+
+    International cards (non-US) that show up with an ET start time later than
+    17:00 almost certainly have a data error: 17:00 ET = 21:00 UTC, and with
+    any eastward UTC offset the local time would be after midnight.
+    """
+    if not main_et or main_et == "TBD":
+        return
+    if _US_REGIONS.search(loc or ""):
+        return
+    try:
+        h = int(main_et.split(":")[0])
+    except (ValueError, IndexError):
+        return
+    if h >= 17:
+        print(
+            f"WARNING: {ev_name} (loc={loc!r}) resolved to {main_et} ET — "
+            f"that implies a local start time past midnight. Check ESPN or "
+            f"add a _TIME_OVERRIDES entry with the correct ET time (and its "
+            f"UTC equivalent in the comment).",
+            file=sys.stderr,
+        )
 
 
 def resolve_event_times(ev_name, ev_date, default_main, default_prelim):
@@ -1696,6 +1723,7 @@ def step_build_events(data, now):
         print(f"Fetching: {ev_name}", file=sys.stderr)
         main_time, prelim_time = resolve_event_times(
             ev_name, ev_date, main_time, prelim_time)
+        _warn_if_implausible_time(ev_name, loc, main_time)
         wt          = fetch_wikitext(slug)
         wiki_fights = parse_upcoming_card(wt) if wt else []
         print(f"  Wiki fights found: {len(wiki_fights)}", file=sys.stderr)
