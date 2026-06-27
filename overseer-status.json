@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-06-26T11:59:09Z",
+  "generated_at": "2026-06-27T00:11:10Z",
   "events_tracked": 10,
-  "stale_events": 1,
+  "stale_events": 2,
   "parse_failure_events": 0,
   "awaiting_card_events": 1,
   "stale_threshold_hours": 48,
@@ -19,7 +19,7 @@
     {
       "event_id": "2026-06-06:ufc-fight-night-muhammad-vs-bonfim",
       "status": "ok",
-      "last_changed_at": "2026-06-20T01:35:43Z",
+      "last_changed_at": "2026-06-27T00:11:10Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -46,11 +46,11 @@
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "status": "ok",
-      "last_changed_at": "2026-06-26T11:59:09Z",
+      "last_changed_at": "2026-06-27T00:11:10Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": 8
+      "line_movement": 6
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
@@ -64,11 +64,11 @@
     {
       "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
       "status": "ok",
-      "last_changed_at": "2026-06-24T12:01:13Z",
+      "last_changed_at": "2026-06-27T00:11:10Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 11,
-      "line_movement": -10
+      "line_movement": 0
     },
     {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-rountree-jr",
@@ -82,7 +82,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-06-26T11:59:09Z",
+      "last_changed_at": "2026-06-27T00:11:10Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -92,7 +92,7 @@
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
       "status": "ok",
       "last_changed_at": "2026-06-24T12:01:13Z",
-      "is_stale": false,
+      "is_stale": true,
       "has_data": true,
       "bout_count": 4,
       "line_movement": -12
@@ -101,20 +101,20 @@
   "alerts": [
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
-      "f1": "Abusupiyan Magomedov",
-      "f2": "Micha Oleksiejczuk",
-      "f1_movement": 16,
-      "f2_movement": -216,
-      "magnitude": 216,
+      "f1": "Tahir Abdullayev",
+      "f2": "Jefferson Nascimento",
+      "f1_movement": 234,
+      "f2_movement": -234,
+      "magnitude": 234,
       "main_event": false
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
-      "f1": "Tahir Abdullayev",
-      "f2": "Jefferson Nascimento",
-      "f1_movement": 149,
-      "f2_movement": -216,
-      "magnitude": 216,
+      "f1": "Abusupiyan Magomedov",
+      "f2": "Micha Oleksiejczuk",
+      "f1_movement": 14,
+      "f2_movement": -221,
+      "magnitude": 221,
       "main_event": false
     },
     {
@@ -122,7 +122,7 @@
       "f1": "Abdul-Rakhman Yakhyaev",
       "f2": "Julius Walker",
       "f1_movement": -205,
-      "f2_movement": 115,
+      "f2_movement": 122,
       "magnitude": 205,
       "main_event": false
     },
@@ -130,37 +130,28 @@
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "f1": "Ikram Aliskerov",
       "f2": "Brunno Ferreira",
-      "f1_movement": -81,
-      "f2_movement": 61,
-      "magnitude": 81,
+      "f1_movement": -80,
+      "f2_movement": 63,
+      "magnitude": 80,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
+      "f1": "Kaan Ofli",
+      "f2": "Javier Reyes",
+      "f1_movement": 59,
+      "f2_movement": -76,
+      "magnitude": 76,
       "main_event": false
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "f1": "Rafael Fiziev",
       "f2": "Manuel Torres",
-      "f1_movement": 8,
-      "f2_movement": -74,
-      "magnitude": 74,
+      "f1_movement": 6,
+      "f2_movement": -71,
+      "magnitude": 71,
       "main_event": true
-    },
-    {
-      "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
-      "f1": "Kaan Ofli",
-      "f2": "Javier Reyes",
-      "f1_movement": 52,
-      "f2_movement": -70,
-      "magnitude": 70,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
-      "f1": "Sharabutdin Magomedov",
-      "f2": "Michel Pereira",
-      "f1_movement": -46,
-      "f2_movement": 27,
-      "magnitude": 46,
-      "main_event": false
     },
     {
       "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
@@ -169,6 +160,15 @@
       "f1_movement": -45,
       "f2_movement": 31,
       "magnitude": 45,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
+      "f1": "Sharabutdin Magomedov",
+      "f2": "Michel Pereira",
+      "f1_movement": -40,
+      "f2_movement": 27,
+      "magnitude": 40,
       "main_event": false
     },
     {
@@ -202,26 +202,26 @@
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "f1": "Nazim Sadykhov",
       "f2": "Matheus Camilo",
-      "f1_movement": 21,
+      "f1_movement": 24,
       "f2_movement": -18,
-      "magnitude": 21,
+      "magnitude": 24,
       "main_event": false
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "f1": "Daniil Donchenko",
       "f2": "Theodor Berggren",
-      "f1_movement": -20,
-      "f2_movement": 18,
-      "magnitude": 20,
+      "f1_movement": -10,
+      "f2_movement": 22,
+      "magnitude": 22,
       "main_event": false
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
-      "f1": "Farman Hasanov",
-      "f2": "Eric Nolan",
-      "f1_movement": -18,
-      "f2_movement": 12,
+      "f1": "Bekzat Almakhan",
+      "f2": "Jean Matsumoto",
+      "f1_movement": 14,
+      "f2_movement": -18,
       "magnitude": 18,
       "main_event": false
     },
@@ -232,6 +232,15 @@
       "f1_movement": -15,
       "f2_movement": 11,
       "magnitude": 15,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
+      "f1": "Farman Hasanov",
+      "f2": "Eric Nolan",
+      "f1_movement": -14,
+      "f2_movement": 10,
+      "magnitude": 14,
       "main_event": false
     },
     {
@@ -269,24 +278,6 @@
       "f2_movement": 11,
       "magnitude": 11,
       "main_event": false
-    },
-    {
-      "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
-      "f1": "Bekzat Almakhan",
-      "f2": "Jean Matsumoto",
-      "f1_movement": 7,
-      "f2_movement": -11,
-      "magnitude": 11,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
-      "f1": "Dricus du Plessis",
-      "f2": "Kamaru Usman",
-      "f1_movement": -10,
-      "f2_movement": -6,
-      "magnitude": 10,
-      "main_event": true
     }
   ],
   "errors": []
