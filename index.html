@@ -2237,7 +2237,7 @@ function togglePush(){
 
 function pick(idx,side){
   var item=FIGHTS[idx];if(!item)return;
-  if(picksLocked(item.ev)){toast("Picks are locked — event has started");return;}
+  if(fightLocked(item.ev,item.fight)){toast("Picks are locked — event has started");return;}
   var f=side===0?item.fight.f1:item.fight.f2;
   checkName(function(){
     var key=pk(item.ev,item.fight);
@@ -2249,7 +2249,7 @@ function pick(idx,side){
 }
 
 function undoPick(ev,fight){
-  if(picksLocked(ev)){toast("Picks are locked — event has started");return;}
+  if(fightLocked(ev,fight)){toast("Picks are locked — event has started");return;}
   var old=preds[pk(ev,fight)]||null;
   deleteSbPick(ev,fight);delete preds[pk(ev,fight)];
   _cpDelta(ev,fight,old,null);
@@ -2320,7 +2320,7 @@ function fnNav(dir){fnIdx=Math.max(0,Math.min(fnFights.length-1,fnIdx+dir));upda
 function fnPick(side){
   if(!fnFights.length)return;
   var f=fnFights[fnIdx];if(f.winner)return;
-  if(fnEv&&picksLocked(fnEv)){toast("Picks are locked — event has started");return;}
+  if(fnEv&&fightLocked(fnEv,f)){toast("Picks are locked — event has started");return;}
   checkName(function(){
     preds[pk(fnEv,f)]=side===0?f.f1.n:f.f2.n;
     save();syncPick(fnEv,f,true);fnPickedAny=true;updateFN();
@@ -2344,7 +2344,7 @@ function updateFNPre(){
   var myPick=fnEv?preds[pk(fnEv,f)]:"";
   var w1=document.getElementById("fn-f1-wrap"),w2=document.getElementById("fn-f2-wrap");
   var hint=document.getElementById("fn-pick-hint"),lbl=document.getElementById("fn-picked-lbl");
-  var fnLocked=fnEv&&picksLocked(fnEv)&&!f.winner;
+  var fnLocked=fnEv&&fightLocked(fnEv,f)&&!f.winner;
   if(myPick){
     w1.className="fn-ft"+(myPick===f.f1.n?" fn-picked":" fn-not-picked");
     w2.className="fn-ft fnr"+(myPick===f.f2.n?" fn-picked":" fn-not-picked");
@@ -2812,6 +2812,14 @@ function picksLocked(ev){
   var t=ev.prelimTime||ev.time;var pp=t.split(":");
   return now>=Date.UTC(+dp[0],+dp[1]-1,+dp[2],+pp[0]+eto,+(pp[1]||0),0);
 }
+function fightLocked(ev,fight){
+  var now=Date.now(),eto=etOffset();
+  var dp=ev.date.split("-");
+  var isPrelim=fight&&fight.lbl==="Prelim";
+  var t=isPrelim?(ev.prelimTime||ev.time):ev.time;
+  var pp=t.split(":");
+  return now>=Date.UTC(+dp[0],+dp[1]-1,+dp[2],+pp[0]+eto,+(pp[1]||0),0);
+}
 // opts: {includeIds:[uid,…] target specific users, url:"./?…" tap deep-link,
 // kind:"challenge"|… SW tap routing}. Resolves to the server's JSON ({sent}
 // or {skipped:true} when the event_date+type pair was already sent).
@@ -3026,7 +3034,7 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
   }
   if(showPick){
     var key=pk(EVENTS[ei],fight);var myPick=preds[key]||"";var fw=fight.winner||"";
-    var locked=!fw&&picksLocked(EVENTS[ei]);
+    var locked=!fw&&fightLocked(EVENTS[ei],fight);
     var pr=document.createElement("div");pr.className="pick-row";
     var pl=document.createElement("span");pl.className="pick-lbl";
     if(locked){pl.innerHTML="&#x1F512;";pl.title="Picks locked";}else{pl.textContent="Pick:";}
