@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T02:11:00Z",
+  "generated_at": "2026-06-27T02:25:42Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -1423,7 +1423,7 @@
         {
           "f1": "Ikram Aliskerov",
           "f2": "Brunno Ferreira",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1494,6 +1494,11 @@
               "at": "2026-06-27T00:11:10Z",
               "f1_odds": -302,
               "f2_odds": 247
+            },
+            {
+              "at": "2026-06-27T02:25:42Z",
+              "f1_odds": -298,
+              "f2_odds": 243
             }
           ],
           "open": {
@@ -3234,7 +3239,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Brunno Ferreira",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -222,
         "close": null,
         "clv": null
@@ -3245,7 +3250,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Ikram Aliskerov",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 184,
         "close": null,
         "clv": null
