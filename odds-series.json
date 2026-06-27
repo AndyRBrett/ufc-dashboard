@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T00:41:49Z",
+  "generated_at": "2026-06-27T00:56:08Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -1502,7 +1502,7 @@
         {
           "f1": "Abusupiyan Magomedov",
           "f2": "Micha Oleksiejczuk",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1563,6 +1563,11 @@
               "at": "2026-06-27T00:11:10Z",
               "f1_odds": -109,
               "f2_odds": -118
+            },
+            {
+              "at": "2026-06-27T00:56:08Z",
+              "f1_odds": -109,
+              "f2_odds": -117
             }
           ],
           "open": {
@@ -1891,7 +1896,7 @@
         {
           "f1": "Daniil Donchenko",
           "f2": "Theodor Berggren",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-06-21T06:09:27Z",
@@ -1927,6 +1932,11 @@
               "at": "2026-06-27T00:11:10Z",
               "f1_odds": -517,
               "f2_odds": 392
+            },
+            {
+              "at": "2026-06-27T00:56:08Z",
+              "f1_odds": -510,
+              "f2_odds": 388
             }
           ],
           "open": {
@@ -3226,7 +3236,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Micha Oleksiejczuk",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -123,
         "close": null,
         "clv": null
@@ -3237,7 +3247,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Abusupiyan Magomedov",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 103,
         "close": null,
         "clv": null
@@ -3358,7 +3368,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Theodor Berggren",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -507,
         "close": null,
         "clv": null
@@ -3369,7 +3379,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Daniil Donchenko",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 370,
         "close": null,
         "clv": null
