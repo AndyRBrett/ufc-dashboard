@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T03:55:47Z",
+  "generated_at": "2026-06-27T04:11:06Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -1295,7 +1295,7 @@
         {
           "f1": "Sharabutdin Magomedov",
           "f2": "Michel Pereira",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1356,6 +1356,11 @@
               "at": "2026-06-27T03:55:47Z",
               "f1_odds": -378,
               "f2_odds": 300
+            },
+            {
+              "at": "2026-06-27T04:11:06Z",
+              "f1_odds": -390,
+              "f2_odds": 307
             }
           ],
           "open": {
@@ -1369,7 +1374,7 @@
         {
           "f1": "Nazim Sadykhov",
           "f2": "Matheus Camilo",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1415,6 +1420,11 @@
               "at": "2026-06-27T01:11:07Z",
               "f1_odds": -200,
               "f2_odds": 168
+            },
+            {
+              "at": "2026-06-27T04:11:06Z",
+              "f1_odds": -198,
+              "f2_odds": 166
             }
           ],
           "open": {
@@ -1769,7 +1779,7 @@
         {
           "f1": "Nursulton Ruziboev",
           "f2": "Andrey Pulyaev",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1825,6 +1835,11 @@
               "at": "2026-06-27T03:55:47Z",
               "f1_odds": -218,
               "f2_odds": 181
+            },
+            {
+              "at": "2026-06-27T04:11:06Z",
+              "f1_odds": -213,
+              "f2_odds": 178
             }
           ],
           "open": {
@@ -3225,7 +3240,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Michel Pereira",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -342,
         "close": null,
         "clv": null
@@ -3236,7 +3251,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Sharabutdin Magomedov",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 275,
         "close": null,
         "clv": null
@@ -3247,7 +3262,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Matheus Camilo",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -226,
         "close": null,
         "clv": null
@@ -3258,7 +3273,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Nazim Sadykhov",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 187,
         "close": null,
         "clv": null
@@ -3357,7 +3372,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Andrey Pulyaev",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -225,
         "close": null,
         "clv": null
@@ -3368,7 +3383,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Nursulton Ruziboev",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 187,
         "close": null,
         "clv": null
