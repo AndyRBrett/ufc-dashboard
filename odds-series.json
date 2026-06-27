@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T00:56:08Z",
+  "generated_at": "2026-06-27T01:11:07Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -1364,7 +1364,7 @@
         {
           "f1": "Nazim Sadykhov",
           "f2": "Matheus Camilo",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1405,6 +1405,11 @@
               "at": "2026-06-27T00:11:10Z",
               "f1_odds": -202,
               "f2_odds": 169
+            },
+            {
+              "at": "2026-06-27T01:11:07Z",
+              "f1_odds": -200,
+              "f2_odds": 168
             }
           ],
           "open": {
@@ -1729,7 +1734,7 @@
         {
           "f1": "Nursulton Ruziboev",
           "f2": "Andrey Pulyaev",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1770,6 +1775,11 @@
               "at": "2026-06-27T00:11:10Z",
               "f1_odds": -223,
               "f2_odds": 185
+            },
+            {
+              "at": "2026-06-27T01:11:07Z",
+              "f1_odds": -221,
+              "f2_odds": 183
             }
           ],
           "open": {
@@ -3192,7 +3202,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Matheus Camilo",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -226,
         "close": null,
         "clv": null
@@ -3203,7 +3213,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Nazim Sadykhov",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 187,
         "close": null,
         "clv": null
@@ -3302,7 +3312,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Andrey Pulyaev",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -225,
         "close": null,
         "clv": null
@@ -3313,7 +3323,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Nursulton Ruziboev",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 187,
         "close": null,
         "clv": null
