@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T04:55:47Z",
+  "generated_at": "2026-06-27T05:11:05Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -1853,7 +1853,7 @@
         {
           "f1": "Kaan Ofli",
           "f2": "Javier Reyes",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1904,6 +1904,11 @@
               "at": "2026-06-27T04:55:47Z",
               "f1_odds": 190,
               "f2_odds": -230
+            },
+            {
+              "at": "2026-06-27T05:11:05Z",
+              "f1_odds": 192,
+              "f2_odds": -232
             }
           ],
           "open": {
@@ -3404,7 +3409,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Javier Reyes",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": 129,
         "close": null,
         "clv": null
@@ -3415,7 +3420,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Kaan Ofli",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": -152,
         "close": null,
         "clv": null
