@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T00:11:10Z",
+  "generated_at": "2026-06-27T00:26:08Z",
   "events_tracked": 10,
   "stale_events": 2,
   "parse_failure_events": 0,
@@ -46,7 +46,7 @@
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "status": "ok",
-      "last_changed_at": "2026-06-27T00:11:10Z",
+      "last_changed_at": "2026-06-27T00:26:08Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -82,7 +82,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-06-27T00:11:10Z",
+      "last_changed_at": "2026-06-27T00:26:08Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -103,9 +103,9 @@
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "f1": "Tahir Abdullayev",
       "f2": "Jefferson Nascimento",
-      "f1_movement": 234,
-      "f2_movement": -234,
-      "magnitude": 234,
+      "f1_movement": 240,
+      "f2_movement": -241,
+      "magnitude": 241,
       "main_event": false
     },
     {
