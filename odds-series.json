@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T02:41:03Z",
+  "generated_at": "2026-06-27T02:56:07Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -1517,7 +1517,7 @@
         {
           "f1": "Abusupiyan Magomedov",
           "f2": "Micha Oleksiejczuk",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1583,6 +1583,11 @@
               "at": "2026-06-27T00:56:08Z",
               "f1_odds": -109,
               "f2_odds": -117
+            },
+            {
+              "at": "2026-06-27T02:56:07Z",
+              "f1_odds": -109,
+              "f2_odds": -118
             }
           ],
           "open": {
@@ -3266,7 +3271,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Micha Oleksiejczuk",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -123,
         "close": null,
         "clv": null
@@ -3277,7 +3282,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Abusupiyan Magomedov",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 103,
         "close": null,
         "clv": null
