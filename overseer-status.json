@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T14:07:27Z",
+  "generated_at": "2026-06-27T14:21:31Z",
   "events_tracked": 10,
   "stale_events": 2,
   "parse_failure_events": 0,
@@ -46,7 +46,7 @@
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "status": "ok",
-      "last_changed_at": "2026-06-27T06:56:03Z",
+      "last_changed_at": "2026-06-27T14:21:31Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -82,7 +82,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-06-27T14:07:27Z",
+      "last_changed_at": "2026-06-27T14:21:31Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -209,10 +209,10 @@
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
-      "f1": "Bekzat Almakhan",
-      "f2": "Jean Matsumoto",
-      "f1_movement": 13,
-      "f2_movement": -16,
+      "f1": "Jean Matsumoto",
+      "f2": "Bekzat Almakhan",
+      "f1_movement": -16,
+      "f2_movement": 13,
       "magnitude": 16,
       "main_event": false
     },
