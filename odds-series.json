@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T01:40:49Z",
+  "generated_at": "2026-06-27T01:56:03Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -1655,7 +1655,7 @@
         {
           "f1": "Abdul-Rakhman Yakhyaev",
           "f2": "Julius Walker",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1720,6 +1720,11 @@
             {
               "at": "2026-06-27T00:11:10Z",
               "f1_odds": -608,
+              "f2_odds": 442
+            },
+            {
+              "at": "2026-06-27T01:56:02Z",
+              "f1_odds": -600,
               "f2_odds": 442
             }
           ],
@@ -3295,7 +3300,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Julius Walker",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -403,
         "close": null,
         "clv": null
@@ -3306,7 +3311,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Abdul-Rakhman Yakhyaev",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 320,
         "close": null,
         "clv": null
