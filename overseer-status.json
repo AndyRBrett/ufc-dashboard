@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T02:25:42Z",
+  "generated_at": "2026-06-27T02:41:03Z",
   "events_tracked": 10,
   "stale_events": 2,
   "parse_failure_events": 0,
@@ -46,7 +46,7 @@
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "status": "ok",
-      "last_changed_at": "2026-06-27T02:25:42Z",
+      "last_changed_at": "2026-06-27T02:41:03Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -82,7 +82,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-06-27T02:25:42Z",
+      "last_changed_at": "2026-06-27T02:41:03Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -128,15 +128,6 @@
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
-      "f1": "Ikram Aliskerov",
-      "f2": "Brunno Ferreira",
-      "f1_movement": -76,
-      "f2_movement": 59,
-      "magnitude": 76,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "f1": "Kaan Ofli",
       "f2": "Javier Reyes",
       "f1_movement": 59,
@@ -152,6 +143,15 @@
       "f2_movement": -72,
       "magnitude": 72,
       "main_event": true
+    },
+    {
+      "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
+      "f1": "Ikram Aliskerov",
+      "f2": "Brunno Ferreira",
+      "f1_movement": -70,
+      "f2_movement": 54,
+      "magnitude": 70,
+      "main_event": false
     },
     {
       "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
