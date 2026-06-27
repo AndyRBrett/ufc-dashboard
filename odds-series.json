@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T00:26:08Z",
+  "generated_at": "2026-06-27T00:41:49Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -1221,7 +1221,7 @@
         {
           "f1": "Rafael Fiziev",
           "f2": "Manuel Torres",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1277,6 +1277,11 @@
               "at": "2026-06-27T00:11:10Z",
               "f1_odds": -111,
               "f2_odds": -108
+            },
+            {
+              "at": "2026-06-27T00:41:49Z",
+              "f1_odds": -109,
+              "f2_odds": -109
             }
           ],
           "open": {
@@ -3133,7 +3138,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Manuel Torres",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -117,
         "close": null,
         "clv": null
@@ -3144,7 +3149,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Rafael Fiziev",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -37,
         "close": null,
         "clv": null
