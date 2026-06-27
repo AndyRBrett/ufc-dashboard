@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T01:11:07Z",
+  "generated_at": "2026-06-27T01:25:43Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -1734,7 +1734,7 @@
         {
           "f1": "Nursulton Ruziboev",
           "f2": "Andrey Pulyaev",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -1780,6 +1780,11 @@
               "at": "2026-06-27T01:11:07Z",
               "f1_odds": -221,
               "f2_odds": 183
+            },
+            {
+              "at": "2026-06-27T01:25:43Z",
+              "f1_odds": -216,
+              "f2_odds": 180
             }
           ],
           "open": {
@@ -3312,7 +3317,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Andrey Pulyaev",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -225,
         "close": null,
         "clv": null
@@ -3323,7 +3328,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Nursulton Ruziboev",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 187,
         "close": null,
         "clv": null
