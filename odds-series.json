@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T05:11:05Z",
+  "generated_at": "2026-06-27T05:25:46Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2035,7 +2035,7 @@
         {
           "f1": "Tahir Abdullayev",
           "f2": "Jefferson Nascimento",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-06-24T12:01:13Z",
@@ -2061,6 +2061,11 @@
               "at": "2026-06-27T00:26:08Z",
               "f1_odds": 120,
               "f2_odds": -141
+            },
+            {
+              "at": "2026-06-27T05:25:46Z",
+              "f1_odds": 120,
+              "f2_odds": -142
             }
           ],
           "open": {
@@ -3475,7 +3480,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Jefferson Nascimento",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -120,
         "close": null,
         "clv": null
@@ -3486,7 +3491,7 @@
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
         "opponent": "Tahir Abdullayev",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 100,
         "close": null,
         "clv": null
