@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T19:00:47Z",
+  "generated_at": "2026-06-27T19:53:52Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2080,6 +2080,25 @@
           },
           "close": null,
           "clv": null
+        },
+        {
+          "f1": "Abus Magomedov",
+          "f2": "Micha Oleksiejczuk",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-06-27T19:53:52Z",
+              "f1_odds": -108,
+              "f2_odds": -119
+            }
+          ],
+          "open": {
+            "at": "2026-06-27T19:53:52Z",
+            "f1_odds": -108,
+            "f2_odds": -119
+          },
+          "close": null,
+          "clv": null
         }
       ]
     },
@@ -3346,6 +3365,15 @@
         "open": 103,
         "close": null,
         "clv": null
+      },
+      {
+        "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
+        "opponent": "Abus Magomedov",
+        "side": "f2",
+        "points": 1,
+        "open": -119,
+        "close": null,
+        "clv": null
       }
     ],
     "Farman Hasanov": [
@@ -3498,6 +3526,17 @@
         "side": "f2",
         "points": 6,
         "open": 100,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Abus Magomedov": [
+      {
+        "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
+        "opponent": "Micha Oleksiejczuk",
+        "side": "f1",
+        "points": 1,
+        "open": -108,
         "close": null,
         "clv": null
       }
