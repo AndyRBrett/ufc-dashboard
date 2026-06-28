@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T23:52:47Z",
+  "generated_at": "2026-06-28T02:02:15Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -1216,7 +1216,7 @@
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Rafael Fiziev",
@@ -1289,8 +1289,15 @@
             "f1_odds": -117,
             "f2_odds": -37
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-06-27T00:41:49Z",
+            "f1_odds": -109,
+            "f2_odds": -109
+          },
+          "clv": {
+            "f1_odds": 8,
+            "f2_odds": -72
+          }
         },
         {
           "f1": "Sharabutdin Magomedov",
@@ -1368,8 +1375,15 @@
             "f1_odds": -342,
             "f2_odds": 275
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-06-27T04:11:06Z",
+            "f1_odds": -390,
+            "f2_odds": 307
+          },
+          "clv": {
+            "f1_odds": -48,
+            "f2_odds": 32
+          }
         },
         {
           "f1": "Nazim Sadykhov",
@@ -1432,8 +1446,15 @@
             "f1_odds": -226,
             "f2_odds": 187
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-06-27T04:11:06Z",
+            "f1_odds": -198,
+            "f2_odds": 166
+          },
+          "clv": {
+            "f1_odds": 28,
+            "f2_odds": -21
+          }
         },
         {
           "f1": "Ikram Aliskerov",
@@ -1531,8 +1552,15 @@
             "f1_odds": -222,
             "f2_odds": 184
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-06-27T03:25:47Z",
+            "f1_odds": -300,
+            "f2_odds": 245
+          },
+          "clv": {
+            "f1_odds": -78,
+            "f2_odds": 61
+          }
         },
         {
           "f1": "Abusupiyan Magomedov",
@@ -1620,8 +1648,15 @@
             "f1_odds": -123,
             "f2_odds": 103
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-06-27T03:11:11Z",
+            "f1_odds": -108,
+            "f2_odds": -119
+          },
+          "clv": {
+            "f1_odds": 15,
+            "f2_odds": -222
+          }
         },
         {
           "f1": "Farman Hasanov",
@@ -1689,8 +1724,15 @@
             "f1_odds": -155,
             "f2_odds": 132
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-06-27T00:11:10Z",
+            "f1_odds": -169,
+            "f2_odds": 142
+          },
+          "clv": {
+            "f1_odds": -14,
+            "f2_odds": 10
+          }
         },
         {
           "f1": "Abdul-Rakhman Yakhyaev",
@@ -1773,8 +1815,15 @@
             "f1_odds": -403,
             "f2_odds": 320
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-06-27T01:56:02Z",
+            "f1_odds": -600,
+            "f2_odds": 442
+          },
+          "clv": {
+            "f1_odds": -197,
+            "f2_odds": 122
+          }
         },
         {
           "f1": "Nursulton Ruziboev",
@@ -1847,8 +1896,15 @@
             "f1_odds": -225,
             "f2_odds": 187
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-06-27T04:11:06Z",
+            "f1_odds": -213,
+            "f2_odds": 178
+          },
+          "clv": {
+            "f1_odds": 12,
+            "f2_odds": -9
+          }
         },
         {
           "f1": "Kaan Ofli",
@@ -1916,8 +1972,15 @@
             "f1_odds": 129,
             "f2_odds": -152
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-06-27T05:11:05Z",
+            "f1_odds": 192,
+            "f2_odds": -232
+          },
+          "clv": {
+            "f1_odds": 63,
+            "f2_odds": -80
+          }
         },
         {
           "f1": "Bekzat Almakhan",
@@ -1975,8 +2038,15 @@
             "f1_odds": 129,
             "f2_odds": -152
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-06-27T06:56:03Z",
+            "f1_odds": 142,
+            "f2_odds": -168
+          },
+          "clv": {
+            "f1_odds": 13,
+            "f2_odds": -16
+          }
         },
         {
           "f1": "Daniil Donchenko",
@@ -2034,8 +2104,15 @@
             "f1_odds": -507,
             "f2_odds": 370
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-06-27T04:55:47Z",
+            "f1_odds": -500,
+            "f2_odds": 382
+          },
+          "clv": {
+            "f1_odds": 7,
+            "f2_odds": 12
+          }
         },
         {
           "f1": "Tahir Abdullayev",
@@ -2078,8 +2155,15 @@
             "f1_odds": -120,
             "f2_odds": 100
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-06-27T05:25:46Z",
+            "f1_odds": 120,
+            "f2_odds": -142
+          },
+          "clv": {
+            "f1_odds": 240,
+            "f2_odds": -242
+          }
         },
         {
           "f1": "Abus Magomedov",
@@ -2097,8 +2181,15 @@
             "f1_odds": -108,
             "f2_odds": -119
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-06-27T19:53:52Z",
+            "f1_odds": -108,
+            "f2_odds": -119
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         }
       ]
     },
@@ -3264,8 +3355,8 @@
         "side": "f1",
         "points": 12,
         "open": -117,
-        "close": null,
-        "clv": null
+        "close": -109,
+        "clv": 8
       }
     ],
     "Manuel Torres": [
@@ -3275,8 +3366,8 @@
         "side": "f2",
         "points": 12,
         "open": -37,
-        "close": null,
-        "clv": null
+        "close": -109,
+        "clv": -72
       }
     ],
     "Sharabutdin Magomedov": [
@@ -3286,8 +3377,8 @@
         "side": "f1",
         "points": 13,
         "open": -342,
-        "close": null,
-        "clv": null
+        "close": -390,
+        "clv": -48
       }
     ],
     "Michel Pereira": [
@@ -3297,8 +3388,8 @@
         "side": "f2",
         "points": 13,
         "open": 275,
-        "close": null,
-        "clv": null
+        "close": 307,
+        "clv": 32
       }
     ],
     "Nazim Sadykhov": [
@@ -3308,8 +3399,8 @@
         "side": "f1",
         "points": 10,
         "open": -226,
-        "close": null,
-        "clv": null
+        "close": -198,
+        "clv": 28
       }
     ],
     "Matheus Camilo": [
@@ -3319,8 +3410,8 @@
         "side": "f2",
         "points": 10,
         "open": 187,
-        "close": null,
-        "clv": null
+        "close": 166,
+        "clv": -21
       }
     ],
     "Ikram Aliskerov": [
@@ -3330,8 +3421,8 @@
         "side": "f1",
         "points": 17,
         "open": -222,
-        "close": null,
-        "clv": null
+        "close": -300,
+        "clv": -78
       }
     ],
     "Brunno Ferreira": [
@@ -3341,8 +3432,8 @@
         "side": "f2",
         "points": 17,
         "open": 184,
-        "close": null,
-        "clv": null
+        "close": 245,
+        "clv": 61
       }
     ],
     "Abusupiyan Magomedov": [
@@ -3352,8 +3443,8 @@
         "side": "f1",
         "points": 15,
         "open": -123,
-        "close": null,
-        "clv": null
+        "close": -108,
+        "clv": 15
       }
     ],
     "Micha Oleksiejczuk": [
@@ -3363,8 +3454,8 @@
         "side": "f2",
         "points": 15,
         "open": 103,
-        "close": null,
-        "clv": null
+        "close": -119,
+        "clv": -222
       },
       {
         "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
@@ -3372,8 +3463,8 @@
         "side": "f2",
         "points": 1,
         "open": -119,
-        "close": null,
-        "clv": null
+        "close": -119,
+        "clv": 0
       }
     ],
     "Farman Hasanov": [
@@ -3383,8 +3474,8 @@
         "side": "f1",
         "points": 11,
         "open": -155,
-        "close": null,
-        "clv": null
+        "close": -169,
+        "clv": -14
       }
     ],
     "Eric Nolan": [
@@ -3394,8 +3485,8 @@
         "side": "f2",
         "points": 11,
         "open": 132,
-        "close": null,
-        "clv": null
+        "close": 142,
+        "clv": 10
       }
     ],
     "Abdul-Rakhman Yakhyaev": [
@@ -3405,8 +3496,8 @@
         "side": "f1",
         "points": 14,
         "open": -403,
-        "close": null,
-        "clv": null
+        "close": -600,
+        "clv": -197
       }
     ],
     "Julius Walker": [
@@ -3416,8 +3507,8 @@
         "side": "f2",
         "points": 14,
         "open": 320,
-        "close": null,
-        "clv": null
+        "close": 442,
+        "clv": 122
       }
     ],
     "Nursulton Ruziboev": [
@@ -3427,8 +3518,8 @@
         "side": "f1",
         "points": 12,
         "open": -225,
-        "close": null,
-        "clv": null
+        "close": -213,
+        "clv": 12
       }
     ],
     "Andrey Pulyaev": [
@@ -3438,8 +3529,8 @@
         "side": "f2",
         "points": 12,
         "open": 187,
-        "close": null,
-        "clv": null
+        "close": 178,
+        "clv": -9
       }
     ],
     "Kaan Ofli": [
@@ -3449,8 +3540,8 @@
         "side": "f1",
         "points": 11,
         "open": 129,
-        "close": null,
-        "clv": null
+        "close": 192,
+        "clv": 63
       }
     ],
     "Javier Reyes": [
@@ -3460,8 +3551,8 @@
         "side": "f2",
         "points": 11,
         "open": -152,
-        "close": null,
-        "clv": null
+        "close": -232,
+        "clv": -80
       }
     ],
     "Bekzat Almakhan": [
@@ -3471,8 +3562,8 @@
         "side": "f1",
         "points": 9,
         "open": 129,
-        "close": null,
-        "clv": null
+        "close": 142,
+        "clv": 13
       }
     ],
     "Jean Matsumoto": [
@@ -3482,8 +3573,8 @@
         "side": "f2",
         "points": 9,
         "open": -152,
-        "close": null,
-        "clv": null
+        "close": -168,
+        "clv": -16
       }
     ],
     "Daniil Donchenko": [
@@ -3493,8 +3584,8 @@
         "side": "f1",
         "points": 9,
         "open": -507,
-        "close": null,
-        "clv": null
+        "close": -500,
+        "clv": 7
       }
     ],
     "Theodor Berggren": [
@@ -3504,8 +3595,8 @@
         "side": "f2",
         "points": 9,
         "open": 370,
-        "close": null,
-        "clv": null
+        "close": 382,
+        "clv": 12
       }
     ],
     "Tahir Abdullayev": [
@@ -3515,8 +3606,8 @@
         "side": "f1",
         "points": 6,
         "open": -120,
-        "close": null,
-        "clv": null
+        "close": 120,
+        "clv": 240
       }
     ],
     "Jefferson Nascimento": [
@@ -3526,8 +3617,8 @@
         "side": "f2",
         "points": 6,
         "open": 100,
-        "close": null,
-        "clv": null
+        "close": -142,
+        "clv": -242
       }
     ],
     "Abus Magomedov": [
@@ -3537,8 +3628,8 @@
         "side": "f1",
         "points": 1,
         "open": -108,
-        "close": null,
-        "clv": null
+        "close": -108,
+        "clv": 0
       }
     ],
     "Conor McGregor": [
