@@ -24,6 +24,18 @@ function corsHeaders(req: Request): Record<string, string> {
   };
 }
 
+// Best-effort client IP for rate limiting. X-Forwarded-For is a hop-by-hop list
+// where each proxy *appends* the address it received the request from, so the
+// left-most entry is whatever the caller itself claims (trivially spoofable —
+// a caller can send a fresh fake value on every request to dodge the per-IP
+// limiter entirely). The right-most entry is the one appended by the hop
+// closest to us (Supabase's own edge gateway), which the caller cannot forge.
+function clientIp(req: Request): string {
+  const parts = (req.headers.get("x-forwarded-for") ?? "")
+    .split(",").map((p) => p.trim()).filter(Boolean);
+  return parts.length ? parts[parts.length - 1] : "unknown";
+}
+
 // Lightweight per-IP rate limit to cap Claude cost from runaway/abusive callers.
 // In-memory and per-instance (resets on cold start) — a cheap guard, not a hard global quota.
 const RATE_LIMIT = Number(Deno.env.get("RATE_LIMIT") ?? "20");          // requests...
@@ -40,6 +52,37 @@ function rateLimited(ip: string): boolean {
     }
   }
   return recent.length > RATE_LIMIT;
+}
+
+// Global backstop, independent of the (spoofable) per-IP key above — caps total
+// Claude spend even if every request claims a different IP. Deliberately loose;
+// it exists purely to put a ceiling on worst-case cost, not to police normal use.
+const GLOBAL_RATE_LIMIT = Number(Deno.env.get("GLOBAL_RATE_LIMIT") ?? "200");
+const GLOBAL_RATE_WINDOW_MS = Number(Deno.env.get("GLOBAL_RATE_WINDOW_MS") ?? "60000");
+let _globalHits: number[] = [];
+function globalRateLimited(): boolean {
+  const now = Date.now();
+  _globalHits = _globalHits.filter((t) => now - t < GLOBAL_RATE_WINDOW_MS);
+  _globalHits.push(now);
+  return _globalHits.length > GLOBAL_RATE_LIMIT;
+}
+
+// Per-request input caps — max_tokens only bounds Claude's *output*; without a
+// cap here a caller can inflate *input* tokens (and therefore cost) arbitrarily
+// even while staying under the request-count rate limits above.
+const MAX_QUESTION = 400, MAX_CARD = 4000, MAX_USER_PICKS = 2000;
+const MAX_PERSONA = 100, MAX_NICKNAME = 60, MAX_OPPONENTS = 20;
+function inputTooLarge(d: ReqBody): boolean {
+  if ((d.question ?? "").length > MAX_QUESTION) return true;
+  if ((d.card ?? "").length > MAX_CARD) return true;
+  if ((d.userPicks ?? "").length > MAX_USER_PICKS) return true;
+  if ((d.persona ?? "").length > MAX_PERSONA) return true;
+  if ((d.myNickname ?? "").length > MAX_NICKNAME) return true;
+  if (d.opponents) {
+    if (d.opponents.length > MAX_OPPONENTS) return true;
+    if (d.opponents.some((o) => (o.nickname ?? "").length > MAX_NICKNAME)) return true;
+  }
+  return false;
 }
 
 interface Fighter { n: string; rec: string; rk: string; }
@@ -144,8 +187,8 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: CORS });
   }
 
-  const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
-  if (rateLimited(ip)) {
+  const ip = clientIp(req);
+  if (rateLimited(ip) || globalRateLimited()) {
     return new Response(JSON.stringify({ error: "Rate limit exceeded. Slow down." }), { status: 429, headers: CORS });
   }
 
@@ -154,6 +197,10 @@ Deno.serve(async (req) => {
     body = await req.json();
   } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON" }), { status: 400, headers: CORS });
+  }
+
+  if (inputTooLarge(body)) {
+    return new Response(JSON.stringify({ error: "Input too long" }), { status: 400, headers: CORS });
   }
 
   const apiKey = Deno.env.get("ANTHROPIC_API_KEY");

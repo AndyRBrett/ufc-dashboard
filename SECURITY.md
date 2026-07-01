@@ -61,8 +61,16 @@ for the authoritative policy definitions. Keep RLS in version control: run
   inline-JS file on a static host; externalizing the JS to drop `'unsafe-inline'`
   is a future improvement. Note: `frame-ancestors` (clickjacking) can't be set via
   a `<meta>` tag — it requires an HTTP header, which GitHub Pages doesn't allow.
-- **Edge functions:** CORS allowlist, per-IP rate limiting (both functions), and
-  an anon-key bearer check on both functions. `send-push` additionally enforces
+- **Edge functions:** CORS allowlist, per-IP + global rate limiting (both
+  functions), and an anon-key bearer check on both functions. The per-IP key is
+  read from the right-most (gateway-appended) entry of `X-Forwarded-For`, not
+  the left-most caller-supplied one, so a caller can't dodge the limiter by
+  spoofing a fresh fake IP on every request; the global limit is a backstop
+  that caps total volume even if IP identification is defeated some other way.
+  `ai-breakdown` also caps the length of caller-supplied prompt fields
+  (question/card/persona/nicknames), since `max_tokens` only bounds Claude's
+  output, not the input tokens a caller could otherwise inflate for free.
+  `send-push` additionally enforces
   a notification-type allowlist, title/body length caps, and only forwards
   relative same-app `url` values into push payloads. ⚠️ Remaining gap: the anon
   key is public, so anyone can still invoke `send-push` with crafted content for
