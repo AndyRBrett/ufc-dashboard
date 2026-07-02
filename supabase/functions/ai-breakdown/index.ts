@@ -71,16 +71,20 @@ function globalRateLimited(): boolean {
 // cap here a caller can inflate *input* tokens (and therefore cost) arbitrarily
 // even while staying under the request-count rate limits above.
 const MAX_QUESTION = 400, MAX_CARD = 4000, MAX_USER_PICKS = 2000;
-const MAX_PERSONA = 100, MAX_NICKNAME = 60, MAX_OPPONENTS = 20;
+const MAX_PERSONA = 100, MAX_NICKNAME = 60, MAX_TARGETS = 20;
+const MAX_HINT = 160, MAX_RECORD = 200, MAX_EVNAME = 120;
 function inputTooLarge(d: ReqBody): boolean {
   if ((d.question ?? "").length > MAX_QUESTION) return true;
   if ((d.card ?? "").length > MAX_CARD) return true;
   if ((d.userPicks ?? "").length > MAX_USER_PICKS) return true;
   if ((d.persona ?? "").length > MAX_PERSONA) return true;
   if ((d.myNickname ?? "").length > MAX_NICKNAME) return true;
-  if (d.opponents) {
-    if (d.opponents.length > MAX_OPPONENTS) return true;
-    if (d.opponents.some((o) => (o.nickname ?? "").length > MAX_NICKNAME)) return true;
+  if ((d.hint ?? "").length > MAX_HINT) return true;
+  if ((d.myRecord ?? "").length > MAX_RECORD) return true;
+  if ((d.evName ?? "").length > MAX_EVNAME) return true;
+  if (d.targets) {
+    if (d.targets.length > MAX_TARGETS) return true;
+    if (d.targets.some((t) => (t ?? "").length > MAX_NICKNAME)) return true;
   }
   return false;
 }
@@ -88,7 +92,6 @@ function inputTooLarge(d: ReqBody): boolean {
 interface Fighter { n: string; rec: string; rk: string; }
 interface Stats { slpm: number; acc: number; td: number; tdd: number; ko: number; sub: number; stn: string; }
 interface FormEntry { r: string; m: string; }
-interface TrashTalkOpponent { nickname: string; rank: number; points: number; accuracy: number | null; streak: number; }
 interface ReqBody {
   action?: string;
   // breakdown fields
@@ -99,12 +102,15 @@ interface ReqBody {
   form1?: FormEntry[]; form2?: FormEntry[];
   // chat fields
   card?: string; userPicks?: string; question?: string;
-  // trash-talk fields
+  // trash-talk fields — only the short variable parts; the prompt scaffolding
+  // (board framing, roast angles, structure rules) is assembled server-side in
+  // buildTrashTalkPrompt so the per-field input caps above can stay tight.
   persona?: string;
-  myNickname?: string; myRank?: number; myPoints?: number;
-  myAccuracy?: number | null; myStreak?: number;
-  myCorrect?: number; myTotal?: number;
-  opponents?: TrashTalkOpponent[];
+  myNickname?: string; myRank?: number; myRecord?: string;
+  targets?: string[];               // nicknames of whoever's being roasted
+  lbMode?: string;                  // "current" (this week's event) or all-time
+  evName?: string | null;           // event name when lbMode === "current"
+  hint?: string;                    // optional user-supplied angle
 }
 
 function buildBreakdownPrompt(d: ReqBody): string {
@@ -140,21 +146,59 @@ QUESTION: ${d.question}
 Answer only the question — no preamble, no sign-off.`;
 }
 
+// Assembles the full roast prompt from the short variable parts the client
+// sends. The scaffolding used to live client-side inlined into `question`,
+// which put every trash-talk request ~3x over MAX_QUESTION once input caps
+// landed; building it here keeps the caps tight without breaking the feature.
+// The assembled text is wrapped in the same chat template the client used to
+// route through (action:"chat"), so the prompt Claude sees is unchanged.
 function buildTrashTalkPrompt(d: ReqBody): string {
-  const me = `${d.myNickname} — Rank #${d.myRank} | ${d.myPoints} pts | ${d.myAccuracy != null ? d.myAccuracy + "% accuracy" : "unstoppable accuracy"} | ${d.myStreak}-pick win streak | ${d.myCorrect}/${d.myTotal} correct`;
-  const chumps = (d.opponents ?? []).map(o =>
-    `  #${o.rank} ${o.nickname} — ${o.points} pts, ${o.accuracy != null ? o.accuracy + "% accuracy" : "unknown accuracy"}, ${o.streak}-streak`
-  ).join("\n") || "  (No competition — absolute dominance)";
-  return `You are ${d.persona}. You've been hired to trash talk on behalf of ${d.myNickname} in a UFC fight picks leaderboard competition. You absolutely love ${d.myNickname} and think they're the GOAT.
-
-Write 2-3 sentences of savage, funny trash talk obliterating the competition. Speak in ${d.persona}'s exact voice and style. Be hyper-specific about names and numbers. Even if ${d.myNickname} isn't #1, spin it — maybe they're playing the long game, maybe the others got lucky, maybe ${d.myNickname} is sandbagging. Never hedge. End with "— ${d.persona}".
-
-DEFENDING CHAMPION: ${me}
-
-THE CHUMPS:
-${chumps}
-
-No preamble. Just the trash talk + signature.`;
+  const persona = d.persona || "A Famous Friend";
+  const myName = d.myNickname || "The Champ";
+  const targets = (d.targets ?? []).filter(Boolean);
+  const solo = targets.length === 1;
+  const opponentNames = targets.join(", ") || "nobody worth mentioning";
+  // Ground the smack talk in whichever leaderboard is actually on screen —
+  // this week's event standings vs all-time career records read very differently.
+  const boardName = d.lbMode === "current"
+    ? `this week's ${d.evName || "event"} leaderboard (picks for this event only)`
+    : "the ALL-TIME leaderboard (career records across every event)";
+  const boardAngle = d.lbMode === "current"
+    ? `The rankings are about ${d.evName || "this week's card"} — work that event into the smack talk.`
+    : "This is about all-time, career-long bragging rights — make the history sting.";
+  // A randomised hook + a freshness token so the same persona on the same board
+  // doesn't keep producing the same line — fresh marching orders on every tap.
+  // Each angle bakes in the structure the user wants: lead rude + generic, THEN
+  // twist the knife with one concrete stat/pick. Branch on solo vs group so the
+  // hook actually fits who's being roasted.
+  const angles = solo ? [
+    "Open by writing them off as a clueless nobody, THEN twist the knife with the one fight they blew — name the fighter.",
+    "Trash how they pick fights in general, THEN back it with a specific bad call from the dossier.",
+    "Tell them to find a new hobby, THEN cite the cold streak or whiffed pick that proves it.",
+    `Treat them as beneath ${myName}, THEN drop the head-to-head clash where they ate it.`,
+    "Question whether they've ever watched a fight, THEN name the fighter they backed that exposes it."
+  ] : [
+    "Write the whole group off as clowns, THEN single out the one who blew the biggest pick by name.",
+    "Mock them all for fading the same fighter, THEN name who got buried worst.",
+    "Dismiss the entire board as tourists, THEN twist the knife with one specific blown call.",
+    `Crown ${myName} and bury the rest, THEN drop a real head-to-head clash someone lost.`,
+    "Tell them collectively to quit, THEN back it with the coldest streak on the board."
+  ];
+  const angleHint = angles[Math.floor(Math.random() * angles.length)];
+  const seed = Math.random().toString(36).slice(2, 7);
+  // Rude and generic FIRST, the stat as a follow-up kicker — and never percentages.
+  const baseRules = `STRUCTURE THE ROAST: open with a blunt, generic, genuinely RUDE insult in ${persona}'s voice — pure attitude, NO numbers or stats up front. THEN follow up with ONE specific dig pulled from the CARD (a fight they blew, a fighter they backed, a cold streak). FACTS ARE STRICT: only mock the target for picks explicitly attributed to THEM in the CARD; NEVER claim they backed a fighter that isn't listed under their name, and never blame them for a fight they actually won — if there's nothing real to mock, lean on pure persona attitude instead of inventing anything. Never quote percentages — they don't land in trash talk. Don't open on a rank or username, skip the emoji crutch, speak purely in ${persona}'s unmistakable voice. End with '— ${persona}'. No preamble. 2-3 sentences. (variety token, do not print: ${seed})`;
+  const who = solo ? `ripping into ${opponentNames}` : `burying ${opponentNames}`;
+  const hint = (d.hint ?? "").trim();
+  const question = hint
+    ? `You ARE ${persona}. Trash talk on behalf of ${myName} ${who} on ${boardName}. ${boardAngle} Build the bit around this angle: "${hint}". ${baseRules}`
+    : `You ARE ${persona}. Trash talk on behalf of ${myName} ${who} on ${boardName}. ${boardAngle} ${angleHint} ${baseRules}`;
+  return buildChatPrompt({
+    event: `UFC Picks Leaderboard — ${boardName}`,
+    card: d.card,
+    userPicks: myName + (d.myRank ? ` — Rank #${d.myRank}, ${d.myRecord || ""}` : ""),
+    question,
+  });
 }
 
 function buildParlayPrompt(d: ReqBody): string {
@@ -219,7 +263,9 @@ Deno.serve(async (req) => {
     maxTokens = 300;
   } else if (action === "trash-talk") {
     prompt = buildTrashTalkPrompt(body);
-    maxTokens = 200;
+    // Same budget as the chat path the client used to route roasts through —
+    // send-push's body-length cap is sized around this output.
+    maxTokens = 180;
   } else {
     // breakdown needs both fighters — guard before the non-null assertions in buildBreakdownPrompt
     if (!body.f1?.n || !body.f2?.n) {

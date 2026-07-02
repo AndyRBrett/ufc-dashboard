@@ -68,8 +68,12 @@ for the authoritative policy definitions. Keep RLS in version control: run
   spoofing a fresh fake IP on every request; the global limit is a backstop
   that caps total volume even if IP identification is defeated some other way.
   `ai-breakdown` also caps the length of caller-supplied prompt fields
-  (question/card/persona/nicknames), since `max_tokens` only bounds Claude's
-  output, not the input tokens a caller could otherwise inflate for free.
+  (question/card/persona/nicknames/hint), since `max_tokens` only bounds Claude's
+  output, not the input tokens a caller could otherwise inflate for free. To keep
+  those caps tight, the trash-talk feature's prompt scaffolding (board framing,
+  roast angles, structure rules) is assembled server-side in `ai-breakdown`'s
+  `trash-talk` action — the client only sends short variable fields, never a
+  pre-built prompt.
   `send-push` additionally enforces
   a notification-type allowlist, title/body length caps, and only forwards
   relative same-app `url` values into push payloads. ⚠️ Remaining gap: the anon
