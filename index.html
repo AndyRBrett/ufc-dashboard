@@ -4049,7 +4049,6 @@ function generateTrashTalk(){
     ?opponents
     :opponents.filter(function(o){return _selectedTargets.has(o.user_id);});
   if(!targets.length)targets=opponents;
-  var solo=targets.length===1;
   _trashGenerating=true;
   var genBtn=document.querySelector(".lb-trash-gen");if(genBtn)genBtn.disabled=true;
   document.getElementById("trashHintSection").style.display="none";
@@ -4057,53 +4056,19 @@ function generateTrashTalk(){
   document.getElementById("trashSendSection").style.display="none";
   document.getElementById("trashSent").style.display="none";
   var myName=me.nickname||"The Champ";
-  var opponentNames=targets.map(function(o){return o.nickname;}).join(", ")||"nobody worth mentioning";
   // The real anti-repetition lever: hand the model concrete, varied material
   // (actual fighters picked, the fights you clashed on, who blew which call,
   // who's hot or cold) instead of just names + ranks, which is all it had before.
   var facts=_trashFacts(me,targets);
   var myRecord=_trashRecord(me);
-  // Ground the smack talk in whichever leaderboard is actually on screen —
-  // this week's event standings vs all-time career records read very differently.
-  var boardName=_trashLbMode==="current"
-    ?"this week's "+(_trashLbEvName||"event")+" leaderboard (picks for this event only)"
-    :"the ALL-TIME leaderboard (career records across every event)";
-  var boardAngle=_trashLbMode==="current"
-    ?"The rankings are about "+(_trashLbEvName||"this week's card")+" — work that event into the smack talk."
-    :"This is about all-time, career-long bragging rights — make the history sting.";
-  // A randomised hook + a freshness token so the same persona on the same board
-  // doesn't keep producing the same line — fresh marching orders on every tap.
-  // Each angle bakes in the structure the user wants: lead rude + generic, THEN
-  // twist the knife with one concrete stat/pick. Branch on solo vs group so the
-  // hook actually fits who's being roasted.
-  var angles=solo?[
-    "Open by writing them off as a clueless nobody, THEN twist the knife with the one fight they blew — name the fighter.",
-    "Trash how they pick fights in general, THEN back it with a specific bad call from the dossier.",
-    "Tell them to find a new hobby, THEN cite the cold streak or whiffed pick that proves it.",
-    "Treat them as beneath "+myName+", THEN drop the head-to-head clash where they ate it.",
-    "Question whether they've ever watched a fight, THEN name the fighter they backed that exposes it."
-  ]:[
-    "Write the whole group off as clowns, THEN single out the one who blew the biggest pick by name.",
-    "Mock them all for fading the same fighter, THEN name who got buried worst.",
-    "Dismiss the entire board as tourists, THEN twist the knife with one specific blown call.",
-    "Crown "+myName+" and bury the rest, THEN drop a real head-to-head clash someone lost.",
-    "Tell them collectively to quit, THEN back it with the coldest streak on the board."
-  ];
-  var angleHint=angles[Math.floor(Math.random()*angles.length)];
-  var seed=Math.random().toString(36).slice(2,7);
-  // Rude and generic FIRST, the stat as a follow-up kicker — and never percentages.
-  var baseRules="STRUCTURE THE ROAST: open with a blunt, generic, genuinely RUDE insult in "+persona+"'s voice — pure attitude, NO numbers or stats up front. THEN follow up with ONE specific dig pulled from the CARD (a fight they blew, a fighter they backed, a cold streak). FACTS ARE STRICT: only mock the target for picks explicitly attributed to THEM in the CARD; NEVER claim they backed a fighter that isn't listed under their name, and never blame them for a fight they actually won — if there's nothing real to mock, lean on pure persona attitude instead of inventing anything. Never quote percentages — they don't land in trash talk. Don't open on a rank or username, skip the emoji crutch, speak purely in "+persona+"'s unmistakable voice. End with '— "+persona+"'. No preamble. 2-3 sentences. (variety token, do not print: "+seed+")";
-  var who=solo?("ripping into "+opponentNames):("burying "+opponentNames);
-  var question;
-  if(hint){
-    question="You ARE "+persona+". Trash talk on behalf of "+myName+" "+who+" on "+boardName+". "+boardAngle+" Build the bit around this angle: \""+hint+"\". "+baseRules;
-  } else {
-    question="You ARE "+persona+". Trash talk on behalf of "+myName+" "+who+" on "+boardName+". "+boardAngle+" "+angleHint+" "+baseRules;
-  }
+  // The roast prompt scaffolding (board framing, randomised angles, structure
+  // rules) is assembled server-side by ai-breakdown's trash-talk action — the
+  // edge function caps caller-supplied text tightly, so the client only ships
+  // the short variable parts.
   fetch(AI_BREAKDOWN_URL,{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-    body:JSON.stringify({action:"chat",event:"UFC Picks Leaderboard — "+boardName,card:facts,userPicks:myName+(myRank?" — Rank #"+myRank+", "+myRecord:""),question:question})
+    body:JSON.stringify({action:"trash-talk",persona:persona,myNickname:myName,myRank:myRank,myRecord:myRecord,targets:targets.slice(0,20).map(function(o){return o.nickname;}),lbMode:_trashLbMode,evName:_trashLbEvName,card:facts,hint:hint})
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(data){
     _trashText=data.breakdown||"No trash talk generated.";
     document.getElementById("trashText").textContent=_trashText;
