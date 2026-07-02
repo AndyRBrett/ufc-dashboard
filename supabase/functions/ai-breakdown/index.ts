@@ -187,7 +187,7 @@ function buildTrashTalkPrompt(d: ReqBody): string {
   const angleHint = angles[Math.floor(Math.random() * angles.length)];
   const seed = Math.random().toString(36).slice(2, 7);
   // Rude and generic FIRST, the stat as a follow-up kicker — and never percentages.
-  const baseRules = `STRUCTURE THE ROAST: open with a blunt, generic, genuinely RUDE insult in ${persona}'s voice — pure attitude, NO numbers or stats up front. THEN follow up with ONE specific dig pulled from the CARD (a fight they blew, a fighter they backed, a cold streak). FACTS ARE STRICT: only mock the target for picks explicitly attributed to THEM in the CARD; NEVER claim they backed a fighter that isn't listed under their name, and never blame them for a fight they actually won — if there's nothing real to mock, lean on pure persona attitude instead of inventing anything. Never quote percentages — they don't land in trash talk. Don't open on a rank or username, skip the emoji crutch, speak purely in ${persona}'s unmistakable voice. End with '— ${persona}'. No preamble. 2-3 sentences. (variety token, do not print: ${seed})`;
+  const baseRules = `STRUCTURE THE ROAST: open with a blunt, generic, genuinely RUDE insult in ${persona}'s voice — pure attitude, NO numbers or stats up front. THEN follow up with ONE specific dig pulled from the CARD (a fight they blew, a fighter they backed, a cold streak). FACTS ARE STRICT: only mock the target for picks explicitly attributed to THEM in the CARD; NEVER claim they backed a fighter that isn't listed under their name, and never blame them for a fight they actually won — if there's nothing real to mock, lean on pure persona attitude instead of inventing anything. Never quote percentages — they don't land in trash talk. Don't open on a rank or username, skip the emoji crutch, speak purely in ${persona}'s unmistakable voice. End with '— ${persona}' — sign the FULL name exactly as written, never shortened. No preamble. 2-3 sentences. (variety token, do not print: ${seed})`;
   const who = solo ? `ripping into ${opponentNames}` : `burying ${opponentNames}`;
   const hint = (d.hint ?? "").trim();
   const question = hint
@@ -199,6 +199,29 @@ function buildTrashTalkPrompt(d: ReqBody): string {
     userPicks: myName + (d.myRank ? ` — Rank #${d.myRank}, ${d.myRecord || ""}` : ""),
     question,
   });
+}
+
+// The client recovers the persona from the roast's trailing "— X" signature
+// (the receiver's sheet header and the notification fallback both parse it),
+// so the FULL persona name must survive verbatim. Models speaking in-voice
+// love to shorten names ("— Dustin" for Dustin Poirier), which then truncates
+// the header everywhere — rewrite the signature with the full name instead of
+// trusting the prompt instruction to hold.
+function enforceSignature(text: string, persona: string): string {
+  const t = text.trim();
+  const i = t.lastIndexOf("—");
+  if (i > 0) {
+    // The roast body is full of em-dashes, so only treat the final chunk as a
+    // signature when it reads as (part of) the persona's name.
+    const tail = t.slice(i + 1).trim().replace(/[.!?"']+$/, "");
+    const a = tail.toLowerCase(), b = persona.toLowerCase();
+    if (a && (b.includes(a) || a.includes(b))) {
+      return t.slice(0, i).trimEnd() + " — " + persona;
+    }
+  }
+  // No recognizable signature (model skipped it or signed with a nickname) —
+  // append the canonical one; the client parses the LAST "—", so this wins.
+  return t + " — " + persona;
 }
 
 function buildParlayPrompt(d: ReqBody): string {
@@ -309,6 +332,9 @@ Deno.serve(async (req) => {
   }
 
   const data = await claudeRes!.json();
-  const text: string = data?.content?.[0]?.text ?? "";
+  let text: string = data?.content?.[0]?.text ?? "";
+  if (action === "trash-talk" && text) {
+    text = enforceSignature(text, body.persona || "A Famous Friend");
+  }
   return new Response(JSON.stringify({ breakdown: text }), { status: 200, headers: CORS });
 });
