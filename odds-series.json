@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T18:09:42Z",
+  "generated_at": "2026-07-04T19:21:33Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2269,7 +2269,7 @@
         {
           "f1": "Benoit Saint Denis",
           "f2": "Paddy Pimblett",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2325,6 +2325,11 @@
               "at": "2026-07-04T17:07:05Z",
               "f1_odds": -150,
               "f2_odds": 124
+            },
+            {
+              "at": "2026-07-04T19:21:33Z",
+              "f1_odds": -151,
+              "f2_odds": 125
             }
           ],
           "open": {
@@ -2411,7 +2416,7 @@
         {
           "f1": "Gable Steveson",
           "f2": "Elisha Ellison",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2432,6 +2437,11 @@
               "at": "2026-07-04T11:10:06Z",
               "f1_odds": -2500,
               "f2_odds": 1100
+            },
+            {
+              "at": "2026-07-04T19:21:33Z",
+              "f1_odds": -2700,
+              "f2_odds": 1133
             }
           ],
           "open": {
@@ -2474,7 +2484,7 @@
         {
           "f1": "Robert Whittaker",
           "f2": "Nikita Krylov",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2494,6 +2504,11 @@
             {
               "at": "2026-07-04T17:07:05Z",
               "f1_odds": -184,
+              "f2_odds": 150
+            },
+            {
+              "at": "2026-07-04T19:21:33Z",
+              "f1_odds": -183,
               "f2_odds": 150
             }
           ],
@@ -2595,7 +2610,7 @@
         {
           "f1": "Damian Pinas",
           "f2": "Cesar Almeida",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2616,6 +2631,11 @@
               "at": "2026-07-04T11:10:06Z",
               "f1_odds": -216,
               "f2_odds": 175
+            },
+            {
+              "at": "2026-07-04T19:21:33Z",
+              "f1_odds": -219,
+              "f2_odds": 176
             }
           ],
           "open": {
@@ -2629,7 +2649,7 @@
         {
           "f1": "Ryan Gandra",
           "f2": "Zachary Reese",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2650,6 +2670,11 @@
               "at": "2026-07-04T11:10:06Z",
               "f1_odds": -157,
               "f2_odds": 130
+            },
+            {
+              "at": "2026-07-04T19:21:33Z",
+              "f1_odds": -156,
+              "f2_odds": 129
             }
           ],
           "open": {
@@ -4055,7 +4080,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Paddy Pimblett",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -172,
         "close": null,
         "clv": null
@@ -4066,7 +4091,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Benoit Saint Denis",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 141,
         "close": null,
         "clv": null
@@ -4121,7 +4146,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Elisha Ellison",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -2833,
         "close": null,
         "clv": null
@@ -4132,7 +4157,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Gable Steveson",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 1200,
         "close": null,
         "clv": null
@@ -4165,7 +4190,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Nikita Krylov",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -208,
         "close": null,
         "clv": null
@@ -4176,7 +4201,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Robert Whittaker",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 169,
         "close": null,
         "clv": null
@@ -4253,7 +4278,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Cesar Almeida",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -206,
         "close": null,
         "clv": null
@@ -4264,7 +4289,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Damian Pinas",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 167,
         "close": null,
         "clv": null
@@ -4275,7 +4300,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Zachary Reese",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -196,
         "close": null,
         "clv": null
@@ -4286,7 +4311,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Ryan Gandra",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 160,
         "close": null,
         "clv": null
