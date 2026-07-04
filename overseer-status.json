@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T21:26:31Z",
+  "generated_at": "2026-07-04T22:24:14Z",
   "events_tracked": 11,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -46,7 +46,7 @@
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "status": "ok",
-      "last_changed_at": "2026-07-04T21:26:31Z",
+      "last_changed_at": "2026-07-04T22:24:14Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -73,7 +73,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-04T21:26:31Z",
+      "last_changed_at": "2026-07-04T22:24:14Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -82,7 +82,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-04T21:26:31Z",
+      "last_changed_at": "2026-07-04T22:24:14Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -100,7 +100,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-04T21:26:31Z",
+      "last_changed_at": "2026-07-04T22:24:14Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -130,9 +130,9 @@
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Tracy Cortez",
       "f2": "Wang Cong",
-      "f1_movement": -211,
-      "f2_movement": 11,
-      "magnitude": 211,
+      "f1_movement": -209,
+      "f2_movement": 9,
+      "magnitude": 209,
       "main_event": false
     },
     {
@@ -265,9 +265,9 @@
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Benoit Saint Denis",
       "f2": "Paddy Pimblett",
-      "f1_movement": 21,
-      "f2_movement": -16,
-      "magnitude": 21,
+      "f1_movement": 19,
+      "f2_movement": -14,
+      "magnitude": 19,
       "main_event": false
     },
     {

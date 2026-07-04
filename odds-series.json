@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T21:26:31Z",
+  "generated_at": "2026-07-04T22:24:14Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2274,7 +2274,7 @@
         {
           "f1": "Benoit Saint Denis",
           "f2": "Paddy Pimblett",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2335,6 +2335,11 @@
               "at": "2026-07-04T19:21:33Z",
               "f1_odds": -151,
               "f2_odds": 125
+            },
+            {
+              "at": "2026-07-04T22:24:14Z",
+              "f1_odds": -153,
+              "f2_odds": 127
             }
           ],
           "open": {
@@ -2586,7 +2591,7 @@
         {
           "f1": "Tracy Cortez",
           "f2": "Wang Cong",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2602,6 +2607,11 @@
               "at": "2026-07-04T11:10:06Z",
               "f1_odds": -106,
               "f2_odds": -116
+            },
+            {
+              "at": "2026-07-04T22:24:14Z",
+              "f1_odds": -104,
+              "f2_odds": -118
             }
           ],
           "open": {
@@ -4085,7 +4095,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Paddy Pimblett",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -172,
         "close": null,
         "clv": null
@@ -4096,7 +4106,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Benoit Saint Denis",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 141,
         "close": null,
         "clv": null
@@ -4261,7 +4271,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Wang Cong",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": 105,
         "close": null,
         "clv": null
@@ -4272,7 +4282,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Tracy Cortez",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -127,
         "close": null,
         "clv": null
