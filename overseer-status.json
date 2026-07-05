@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T23:24:39Z",
+  "generated_at": "2026-07-05T00:25:46Z",
   "events_tracked": 11,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -46,7 +46,7 @@
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "status": "ok",
-      "last_changed_at": "2026-07-04T22:24:14Z",
+      "last_changed_at": "2026-07-05T00:25:46Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -73,7 +73,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-04T23:24:39Z",
+      "last_changed_at": "2026-07-05T00:25:46Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -82,7 +82,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-04T23:24:39Z",
+      "last_changed_at": "2026-07-05T00:25:46Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -100,7 +100,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-04T23:24:39Z",
+      "last_changed_at": "2026-07-05T00:25:46Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -203,7 +203,7 @@
       "f1": "Ryan Gandra",
       "f2": "Zachary Reese",
       "f1_movement": 40,
-      "f2_movement": -31,
+      "f2_movement": -32,
       "magnitude": 40,
       "main_event": false
     },
@@ -265,9 +265,9 @@
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Benoit Saint Denis",
       "f2": "Paddy Pimblett",
-      "f1_movement": 19,
-      "f2_movement": -14,
-      "magnitude": 19,
+      "f1_movement": 20,
+      "f2_movement": -15,
+      "magnitude": 20,
       "main_event": false
     },
     {
@@ -298,15 +298,6 @@
       "main_event": false
     },
     {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Damian Pinas",
-      "f2": "Cesar Almeida",
-      "f1_movement": -13,
-      "f2_movement": 9,
-      "magnitude": 13,
-      "main_event": false
-    },
-    {
       "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
       "f1": "Vinicius Oliveira",
       "f2": "Andre Fili",
@@ -330,6 +321,15 @@
       "f2": "Theodor Berggren",
       "f1_movement": 7,
       "f2_movement": 12,
+      "magnitude": 12,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Damian Pinas",
+      "f2": "Cesar Almeida",
+      "f1_movement": -12,
+      "f2_movement": 9,
       "magnitude": 12,
       "main_event": false
     },
