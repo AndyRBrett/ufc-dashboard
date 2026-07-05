@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T21:55:10Z",
+  "generated_at": "2026-07-05T22:54:04Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2769,7 +2769,7 @@
         {
           "f1": "Ryan Gandra",
           "f2": "Zachary Reese",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2815,6 +2815,11 @@
               "at": "2026-07-05T21:55:10Z",
               "f1_odds": -139,
               "f2_odds": 115
+            },
+            {
+              "at": "2026-07-05T22:54:04Z",
+              "f1_odds": -138,
+              "f2_odds": 114
             }
           ],
           "open": {
@@ -4450,7 +4455,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Zachary Reese",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -196,
         "close": null,
         "clv": null
@@ -4461,7 +4466,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Ryan Gandra",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 160,
         "close": null,
         "clv": null
