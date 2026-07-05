@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T06:39:05Z",
+  "generated_at": "2026-07-05T11:21:09Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2200,7 +2200,7 @@
         {
           "f1": "Conor McGregor",
           "f2": "Max Holloway",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2266,6 +2266,11 @@
               "at": "2026-07-05T06:39:05Z",
               "f1_odds": 182,
               "f2_odds": -227
+            },
+            {
+              "at": "2026-07-05T11:21:09Z",
+              "f1_odds": 184,
+              "f2_odds": -228
             }
           ],
           "open": {
@@ -2368,7 +2373,7 @@
         {
           "f1": "Cory Sandhagen",
           "f2": "Mario Bautista",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2399,6 +2404,11 @@
               "at": "2026-07-05T06:39:05Z",
               "f1_odds": -152,
               "f2_odds": 126
+            },
+            {
+              "at": "2026-07-05T11:21:09Z",
+              "f1_odds": -153,
+              "f2_odds": 127
             }
           ],
           "open": {
@@ -2529,7 +2539,7 @@
         {
           "f1": "Robert Whittaker",
           "f2": "Nikita Krylov",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2565,6 +2575,11 @@
               "at": "2026-07-05T06:39:05Z",
               "f1_odds": -161,
               "f2_odds": 133
+            },
+            {
+              "at": "2026-07-05T11:21:09Z",
+              "f1_odds": -164,
+              "f2_odds": 135
             }
           ],
           "open": {
@@ -2724,7 +2739,7 @@
         {
           "f1": "Ryan Gandra",
           "f2": "Zachary Reese",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2760,6 +2775,11 @@
               "at": "2026-07-05T03:01:32Z",
               "f1_odds": -150,
               "f2_odds": 124
+            },
+            {
+              "at": "2026-07-05T11:21:09Z",
+              "f1_odds": -148,
+              "f2_odds": 123
             }
           ],
           "open": {
@@ -4143,7 +4163,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Max Holloway",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 225,
         "close": null,
         "clv": null
@@ -4154,7 +4174,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Conor McGregor",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -285,
         "close": null,
         "clv": null
@@ -4187,7 +4207,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Mario Bautista",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -152,
         "close": null,
         "clv": null
@@ -4198,7 +4218,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Cory Sandhagen",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 126,
         "close": null,
         "clv": null
@@ -4275,7 +4295,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Nikita Krylov",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -208,
         "close": null,
         "clv": null
@@ -4286,7 +4306,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Robert Whittaker",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 169,
         "close": null,
         "clv": null
@@ -4385,7 +4405,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Zachary Reese",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -196,
         "close": null,
         "clv": null
@@ -4396,7 +4416,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Ryan Gandra",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 160,
         "close": null,
         "clv": null
