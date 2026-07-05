@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T00:25:46Z",
+  "generated_at": "2026-07-05T03:01:32Z",
   "events_tracked": 11,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -46,7 +46,7 @@
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "status": "ok",
-      "last_changed_at": "2026-07-05T00:25:46Z",
+      "last_changed_at": "2026-07-05T03:01:32Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -73,7 +73,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-05T00:25:46Z",
+      "last_changed_at": "2026-07-05T03:01:32Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -82,7 +82,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-05T00:25:46Z",
+      "last_changed_at": "2026-07-05T03:01:32Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -100,7 +100,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-05T00:25:46Z",
+      "last_changed_at": "2026-07-05T03:01:32Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -181,6 +181,15 @@
       "main_event": true
     },
     {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Ryan Gandra",
+      "f2": "Zachary Reese",
+      "f1_movement": 46,
+      "f2_movement": -36,
+      "magnitude": 46,
+      "main_event": false
+    },
+    {
       "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
       "f1": "Murtazali Magomedov",
       "f2": "Melsik Baghdasaryan",
@@ -197,15 +206,6 @@
       "f2_movement": -38,
       "magnitude": 42,
       "main_event": true
-    },
-    {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Ryan Gandra",
-      "f2": "Zachary Reese",
-      "f1_movement": 40,
-      "f2_movement": -32,
-      "magnitude": 40,
-      "main_event": false
     },
     {
       "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
@@ -235,21 +235,21 @@
       "main_event": false
     },
     {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Robert Whittaker",
+      "f2": "Nikita Krylov",
+      "f1_movement": 33,
+      "f2_movement": -26,
+      "magnitude": 33,
+      "main_event": false
+    },
+    {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "f1": "Matheus Camilo",
       "f2": "Nazim Sadykhov",
       "f1_movement": -21,
       "f2_movement": 28,
       "magnitude": 28,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Robert Whittaker",
-      "f2": "Nikita Krylov",
-      "f1_movement": 25,
-      "f2_movement": -19,
-      "magnitude": 25,
       "main_event": false
     },
     {
@@ -265,9 +265,9 @@
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Benoit Saint Denis",
       "f2": "Paddy Pimblett",
-      "f1_movement": 20,
-      "f2_movement": -15,
-      "magnitude": 20,
+      "f1_movement": 22,
+      "f2_movement": -17,
+      "magnitude": 22,
       "main_event": false
     },
     {
@@ -326,6 +326,15 @@
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Luke Riley",
+      "f2": "Kai Kamaka III",
+      "f1_movement": 12,
+      "f2_movement": -8,
+      "magnitude": 12,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Damian Pinas",
       "f2": "Cesar Almeida",
       "f1_movement": -12,
@@ -349,15 +358,6 @@
       "f1_movement": -11,
       "f2_movement": 11,
       "magnitude": 11,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Luke Riley",
-      "f2": "Kai Kamaka III",
-      "f1_movement": 10,
-      "f2_movement": -6,
-      "magnitude": 10,
       "main_event": false
     }
   ],
