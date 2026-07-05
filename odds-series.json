@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T03:01:32Z",
+  "generated_at": "2026-07-05T06:39:05Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2200,7 +2200,7 @@
         {
           "f1": "Conor McGregor",
           "f2": "Max Holloway",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2261,6 +2261,11 @@
               "at": "2026-07-04T21:26:31Z",
               "f1_odds": 184,
               "f2_odds": -228
+            },
+            {
+              "at": "2026-07-05T06:39:05Z",
+              "f1_odds": 182,
+              "f2_odds": -227
             }
           ],
           "open": {
@@ -2363,7 +2368,7 @@
         {
           "f1": "Cory Sandhagen",
           "f2": "Mario Bautista",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2389,6 +2394,11 @@
               "at": "2026-07-05T00:25:46Z",
               "f1_odds": -155,
               "f2_odds": 128
+            },
+            {
+              "at": "2026-07-05T06:39:05Z",
+              "f1_odds": -152,
+              "f2_odds": 126
             }
           ],
           "open": {
@@ -2519,7 +2529,7 @@
         {
           "f1": "Robert Whittaker",
           "f2": "Nikita Krylov",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2550,6 +2560,11 @@
               "at": "2026-07-05T03:01:32Z",
               "f1_odds": -175,
               "f2_odds": 143
+            },
+            {
+              "at": "2026-07-05T06:39:05Z",
+              "f1_odds": -161,
+              "f2_odds": 133
             }
           ],
           "open": {
@@ -4128,7 +4143,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Max Holloway",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": 225,
         "close": null,
         "clv": null
@@ -4139,7 +4154,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Conor McGregor",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -285,
         "close": null,
         "clv": null
@@ -4172,7 +4187,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Mario Bautista",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -152,
         "close": null,
         "clv": null
@@ -4183,7 +4198,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Cory Sandhagen",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 126,
         "close": null,
         "clv": null
@@ -4260,7 +4275,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Nikita Krylov",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -208,
         "close": null,
         "clv": null
@@ -4271,7 +4286,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Robert Whittaker",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 169,
         "close": null,
         "clv": null
