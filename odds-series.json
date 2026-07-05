@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T19:58:21Z",
+  "generated_at": "2026-07-05T20:54:35Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2200,7 +2200,7 @@
         {
           "f1": "Conor McGregor",
           "f2": "Max Holloway",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2276,6 +2276,11 @@
               "at": "2026-07-05T18:27:23Z",
               "f1_odds": 185,
               "f2_odds": -230
+            },
+            {
+              "at": "2026-07-05T20:54:35Z",
+              "f1_odds": 184,
+              "f2_odds": -228
             }
           ],
           "open": {
@@ -4198,7 +4203,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Max Holloway",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": 225,
         "close": null,
         "clv": null
@@ -4209,7 +4214,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Conor McGregor",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": -285,
         "close": null,
         "clv": null
