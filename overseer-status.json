@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T11:21:09Z",
+  "generated_at": "2026-07-05T17:22:09Z",
   "events_tracked": 11,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -46,7 +46,7 @@
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "status": "ok",
-      "last_changed_at": "2026-07-05T11:21:09Z",
+      "last_changed_at": "2026-07-05T17:22:09Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -73,7 +73,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-05T11:21:09Z",
+      "last_changed_at": "2026-07-05T17:22:09Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -82,7 +82,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-05T11:21:09Z",
+      "last_changed_at": "2026-07-05T17:22:09Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -91,7 +91,7 @@
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
       "status": "ok",
-      "last_changed_at": "2026-07-04T11:10:06Z",
+      "last_changed_at": "2026-07-05T17:22:09Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 10,
@@ -100,7 +100,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-05T11:21:09Z",
+      "last_changed_at": "2026-07-05T17:22:09Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -190,21 +190,21 @@
       "main_event": false
     },
     {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Robert Whittaker",
+      "f2": "Nikita Krylov",
+      "f1_movement": 47,
+      "f2_movement": -36,
+      "magnitude": 47,
+      "main_event": false
+    },
+    {
       "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
       "f1": "Murtazali Magomedov",
       "f2": "Melsik Baghdasaryan",
       "f1_movement": -45,
       "f2_movement": 31,
       "magnitude": 45,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Robert Whittaker",
-      "f2": "Nikita Krylov",
-      "f1_movement": 44,
-      "f2_movement": -34,
-      "magnitude": 44,
       "main_event": false
     },
     {
@@ -253,15 +253,6 @@
       "main_event": false
     },
     {
-      "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
-      "f1": "Mackenzie Dern",
-      "f2": "Gillian Robertson",
-      "f1_movement": -23,
-      "f2_movement": 17,
-      "magnitude": 23,
-      "main_event": false
-    },
-    {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Benoit Saint Denis",
       "f2": "Paddy Pimblett",
@@ -280,11 +271,29 @@
       "main_event": false
     },
     {
+      "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
+      "f1": "Mackenzie Dern",
+      "f2": "Gillian Robertson",
+      "f1_movement": -16,
+      "f2_movement": 12,
+      "magnitude": 16,
+      "main_event": false
+    },
+    {
       "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
       "f1": "Levan Chokheli",
       "f2": "Leon Shahbazyan",
       "f1_movement": -15,
       "f2_movement": 11,
+      "magnitude": 15,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Luke Riley",
+      "f2": "Kai Kamaka III",
+      "f1_movement": 15,
+      "f2_movement": -10,
       "magnitude": 15,
       "main_event": false
     },
@@ -321,15 +330,6 @@
       "f2": "Theodor Berggren",
       "f1_movement": 7,
       "f2_movement": 12,
-      "magnitude": 12,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Luke Riley",
-      "f2": "Kai Kamaka III",
-      "f1_movement": 12,
-      "f2_movement": -8,
       "magnitude": 12,
       "main_event": false
     },

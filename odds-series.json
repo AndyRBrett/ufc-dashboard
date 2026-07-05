@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T11:21:09Z",
+  "generated_at": "2026-07-05T17:22:09Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2500,7 +2500,7 @@
         {
           "f1": "King Green",
           "f2": "Terrance McKinney",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2526,6 +2526,11 @@
               "at": "2026-07-05T03:01:32Z",
               "f1_odds": 128,
               "f2_odds": -155
+            },
+            {
+              "at": "2026-07-05T17:22:09Z",
+              "f1_odds": 127,
+              "f2_odds": -153
             }
           ],
           "open": {
@@ -2539,7 +2544,7 @@
         {
           "f1": "Robert Whittaker",
           "f2": "Nikita Krylov",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2580,6 +2585,11 @@
               "at": "2026-07-05T11:21:09Z",
               "f1_odds": -164,
               "f2_odds": 135
+            },
+            {
+              "at": "2026-07-05T17:22:09Z",
+              "f1_odds": -161,
+              "f2_odds": 133
             }
           ],
           "open": {
@@ -2627,7 +2637,7 @@
         {
           "f1": "Luke Riley",
           "f2": "Kai Kamaka III",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2648,6 +2658,11 @@
               "at": "2026-07-05T03:01:32Z",
               "f1_odds": -318,
               "f2_odds": 250
+            },
+            {
+              "at": "2026-07-05T17:22:09Z",
+              "f1_odds": -315,
+              "f2_odds": 248
             }
           ],
           "open": {
@@ -2957,7 +2972,7 @@
         {
           "f1": "Mackenzie Dern",
           "f2": "Gillian Robertson",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2993,6 +3008,11 @@
               "at": "2026-07-04T11:10:06Z",
               "f1_odds": -212,
               "f2_odds": 172
+            },
+            {
+              "at": "2026-07-05T17:22:09Z",
+              "f1_odds": -205,
+              "f2_odds": 167
             }
           ],
           "open": {
@@ -4273,7 +4293,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Terrance McKinney",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": 132,
         "close": null,
         "clv": null
@@ -4284,7 +4304,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "King Green",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": -161,
         "close": null,
         "clv": null
@@ -4295,7 +4315,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Nikita Krylov",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -208,
         "close": null,
         "clv": null
@@ -4306,7 +4326,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Robert Whittaker",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 169,
         "close": null,
         "clv": null
@@ -4339,7 +4359,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Kai Kamaka III",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -330,
         "close": null,
         "clv": null
@@ -4350,7 +4370,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Luke Riley",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 258,
         "close": null,
         "clv": null
@@ -4504,7 +4524,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Gillian Robertson",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -189,
         "close": null,
         "clv": null
@@ -4515,7 +4535,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Mackenzie Dern",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 155,
         "close": null,
         "clv": null
