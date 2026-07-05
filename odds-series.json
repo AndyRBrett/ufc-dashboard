@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T17:22:09Z",
+  "generated_at": "2026-07-05T18:27:23Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2200,7 +2200,7 @@
         {
           "f1": "Conor McGregor",
           "f2": "Max Holloway",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2271,6 +2271,11 @@
               "at": "2026-07-05T11:21:09Z",
               "f1_odds": 184,
               "f2_odds": -228
+            },
+            {
+              "at": "2026-07-05T18:27:23Z",
+              "f1_odds": 185,
+              "f2_odds": -230
             }
           ],
           "open": {
@@ -2544,7 +2549,7 @@
         {
           "f1": "Robert Whittaker",
           "f2": "Nikita Krylov",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2590,6 +2595,11 @@
               "at": "2026-07-05T17:22:09Z",
               "f1_odds": -161,
               "f2_odds": 133
+            },
+            {
+              "at": "2026-07-05T18:27:23Z",
+              "f1_odds": -162,
+              "f2_odds": 134
             }
           ],
           "open": {
@@ -2843,7 +2853,7 @@
         {
           "f1": "Dricus du Plessis",
           "f2": "Kamaru Usman",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-06-21T20:53:55Z",
@@ -2874,6 +2884,11 @@
               "at": "2026-07-04T11:10:06Z",
               "f1_odds": -303,
               "f2_odds": 240
+            },
+            {
+              "at": "2026-07-05T18:27:23Z",
+              "f1_odds": -286,
+              "f2_odds": 227
             }
           ],
           "open": {
@@ -4183,7 +4198,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Max Holloway",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": 225,
         "close": null,
         "clv": null
@@ -4194,7 +4209,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Conor McGregor",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -285,
         "close": null,
         "clv": null
@@ -4315,7 +4330,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Nikita Krylov",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -208,
         "close": null,
         "clv": null
@@ -4326,7 +4341,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Robert Whittaker",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 169,
         "close": null,
         "clv": null
@@ -4458,7 +4473,7 @@
         "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
         "opponent": "Kamaru Usman",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -345,
         "close": null,
         "clv": null
@@ -4469,7 +4484,7 @@
         "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
         "opponent": "Dricus du Plessis",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 278,
         "close": null,
         "clv": null
