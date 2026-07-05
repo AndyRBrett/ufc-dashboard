@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T22:54:04Z",
+  "generated_at": "2026-07-05T23:57:38Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2725,7 +2725,7 @@
         {
           "f1": "Damian Pinas",
           "f2": "Cesar Almeida",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2756,6 +2756,11 @@
               "at": "2026-07-05T00:25:46Z",
               "f1_odds": -218,
               "f2_odds": 176
+            },
+            {
+              "at": "2026-07-05T23:57:38Z",
+              "f1_odds": -222,
+              "f2_odds": 178
             }
           ],
           "open": {
@@ -4433,7 +4438,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Cesar Almeida",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -206,
         "close": null,
         "clv": null
@@ -4444,7 +4449,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Damian Pinas",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 167,
         "close": null,
         "clv": null
