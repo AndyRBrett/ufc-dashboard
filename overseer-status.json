@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T03:34:38Z",
+  "generated_at": "2026-07-06T08:11:32Z",
   "events_tracked": 10,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -37,7 +37,7 @@
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "status": "ok",
-      "last_changed_at": "2026-07-05T23:57:38Z",
+      "last_changed_at": "2026-07-06T08:11:32Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -64,7 +64,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-06T03:34:38Z",
+      "last_changed_at": "2026-07-06T08:11:32Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -73,7 +73,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-06T03:34:38Z",
+      "last_changed_at": "2026-07-06T08:11:32Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -91,7 +91,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-06T03:34:38Z",
+      "last_changed_at": "2026-07-06T08:11:32Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -181,6 +181,15 @@
       "main_event": true
     },
     {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Robert Whittaker",
+      "f2": "Nikita Krylov",
+      "f1_movement": 49,
+      "f2_movement": -38,
+      "magnitude": 49,
+      "main_event": false
+    },
+    {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "f1": "Sharabutdin Magomedov",
       "f2": "Michel Pereira",
@@ -188,15 +197,6 @@
       "f2_movement": 32,
       "magnitude": 48,
       "main_event": true
-    },
-    {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Robert Whittaker",
-      "f2": "Nikita Krylov",
-      "f1_movement": 46,
-      "f2_movement": -35,
-      "magnitude": 46,
-      "main_event": false
     },
     {
       "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",

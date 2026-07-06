@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T03:34:38Z",
+  "generated_at": "2026-07-06T08:11:32Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2383,7 +2383,7 @@
         {
           "f1": "Cory Sandhagen",
           "f2": "Mario Bautista",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2419,6 +2419,11 @@
               "at": "2026-07-05T11:21:09Z",
               "f1_odds": -153,
               "f2_odds": 127
+            },
+            {
+              "at": "2026-07-06T08:11:32Z",
+              "f1_odds": -152,
+              "f2_odds": 126
             }
           ],
           "open": {
@@ -2554,7 +2559,7 @@
         {
           "f1": "Robert Whittaker",
           "f2": "Nikita Krylov",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2605,6 +2610,11 @@
               "at": "2026-07-05T18:27:23Z",
               "f1_odds": -162,
               "f2_odds": 134
+            },
+            {
+              "at": "2026-07-06T08:11:32Z",
+              "f1_odds": -159,
+              "f2_odds": 131
             }
           ],
           "open": {
@@ -4262,7 +4272,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Mario Bautista",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -152,
         "close": null,
         "clv": null
@@ -4273,7 +4283,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Cory Sandhagen",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 126,
         "close": null,
         "clv": null
@@ -4350,7 +4360,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Nikita Krylov",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -208,
         "close": null,
         "clv": null
@@ -4361,7 +4371,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Robert Whittaker",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 169,
         "close": null,
         "clv": null
