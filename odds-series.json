@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T08:11:32Z",
+  "generated_at": "2026-07-06T13:07:54Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2200,7 +2200,7 @@
         {
           "f1": "Conor McGregor",
           "f2": "Max Holloway",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2281,6 +2281,11 @@
               "at": "2026-07-05T20:54:35Z",
               "f1_odds": 184,
               "f2_odds": -228
+            },
+            {
+              "at": "2026-07-06T13:07:54Z",
+              "f1_odds": 180,
+              "f2_odds": -224
             }
           ],
           "open": {
@@ -2294,7 +2299,7 @@
         {
           "f1": "Benoit Saint Denis",
           "f2": "Paddy Pimblett",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2370,6 +2375,11 @@
               "at": "2026-07-05T03:01:32Z",
               "f1_odds": -150,
               "f2_odds": 124
+            },
+            {
+              "at": "2026-07-06T13:07:54Z",
+              "f1_odds": -144,
+              "f2_odds": 120
             }
           ],
           "open": {
@@ -2437,7 +2447,7 @@
         {
           "f1": "Brandon Royval",
           "f2": "Lone'er Kavanagh",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2463,6 +2473,11 @@
               "at": "2026-07-04T11:10:06Z",
               "f1_odds": 184,
               "f2_odds": -228
+            },
+            {
+              "at": "2026-07-06T13:07:54Z",
+              "f1_odds": 185,
+              "f2_odds": -230
             }
           ],
           "open": {
@@ -2701,7 +2716,7 @@
         {
           "f1": "Tracy Cortez",
           "f2": "Wang Cong",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2722,6 +2737,11 @@
               "at": "2026-07-04T22:24:14Z",
               "f1_odds": -104,
               "f2_odds": -118
+            },
+            {
+              "at": "2026-07-06T13:07:54Z",
+              "f1_odds": -106,
+              "f2_odds": -116
             }
           ],
           "open": {
@@ -4228,7 +4248,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Max Holloway",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": 225,
         "close": null,
         "clv": null
@@ -4239,7 +4259,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Conor McGregor",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": -285,
         "close": null,
         "clv": null
@@ -4250,7 +4270,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Paddy Pimblett",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -172,
         "close": null,
         "clv": null
@@ -4261,7 +4281,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Benoit Saint Denis",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 141,
         "close": null,
         "clv": null
@@ -4294,7 +4314,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Lone'er Kavanagh",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": 158,
         "close": null,
         "clv": null
@@ -4305,7 +4325,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Brandon Royval",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": -193,
         "close": null,
         "clv": null
@@ -4426,7 +4446,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Wang Cong",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 105,
         "close": null,
         "clv": null
@@ -4437,7 +4457,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Tracy Cortez",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -127,
         "close": null,
         "clv": null
