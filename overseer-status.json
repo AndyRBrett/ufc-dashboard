@@ -1,21 +1,12 @@
 {
-  "generated_at": "2026-07-05T23:57:38Z",
-  "events_tracked": 11,
+  "generated_at": "2026-07-06T01:39:27Z",
+  "events_tracked": 10,
   "stale_events": 0,
   "parse_failure_events": 0,
   "awaiting_card_events": 3,
   "stale_threshold_hours": 48,
   "movement_alert_threshold": 10,
   "events": [
-    {
-      "event_id": "2026-06-06:ufc-fight-night-muhammad-vs-bonfim",
-      "status": "ok",
-      "last_changed_at": "2026-06-27T00:11:10Z",
-      "is_stale": false,
-      "has_data": true,
-      "bout_count": 12,
-      "line_movement": 0
-    },
     {
       "event_id": "2026-06-14:ufc-freedom-250",
       "status": "ok",
@@ -73,7 +64,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-05T23:57:38Z",
+      "last_changed_at": "2026-07-06T01:39:27Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -82,7 +73,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-05T23:57:38Z",
+      "last_changed_at": "2026-07-06T01:39:27Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -100,7 +91,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-05T23:57:38Z",
+      "last_changed_at": "2026-07-06T01:39:27Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
