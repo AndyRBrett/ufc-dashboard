@@ -1,0 +1,94 @@
+# Deploys the dashboard to GitHub Pages via Actions, replacing the GitHub-managed
+# "pages build and deployment" branch workflow.
+#
+# Why: the managed workflow's deploy step (actions/deploy-pages) intermittently
+# fails with "Deployment failed, try again later." — a transient Pages backend
+# error it never retries (issue #25; 7-day success rate dropped to 86%). Owning
+# the deploy lets us retry the transient failure instead of dropping the update.
+#
+# Triggered three ways:
+#   - workflow_call from update.yml after it pushes fresh data (pushes made with
+#     GITHUB_TOKEN never fire `on: push` workflows, so the explicit call is required)
+#   - push to main (human commits / PR merges)
+#   - workflow_dispatch (manual redeploy)
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Queue deploys instead of overlapping; never cancel an in-flight production deploy.
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url || steps.deploy3.outputs.page_url }}
+    steps:
+      # Always deploy the tip of main: when called from update.yml, the run's own
+      # SHA predates the auto-update commit that job just pushed.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Ensure Pages publishing source is "GitHub Actions"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          build_type=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq .build_type || echo unknown)
+          if [ "$build_type" = "workflow" ]; then
+            exit 0
+          fi
+          if gh api --method PUT "repos/$GITHUB_REPOSITORY/pages" -f build_type=workflow; then
+            echo "Switched Pages publishing source from '$build_type' to GitHub Actions."
+          else
+            echo "::warning::Could not switch the Pages publishing source automatically. If the deploy step below fails, set Settings → Pages → Source to 'GitHub Actions' once, manually."
+          fi
+
+      - uses: actions/configure-pages@v5
+
+      # The site is served raw from the repo root (build.mjs is optional and unused
+      # by the deploy), so upload the checkout as-is. upload-pages-artifact already
+      # excludes .git and .github.
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      # "Deployment failed, try again later." is terminal for a single deploy-pages
+      # invocation (its internal error_count only retries status-poll errors), so
+      # retry the whole action with backoff.
+      - name: Deploy to GitHub Pages
+        id: deploy1
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+
+      - name: Wait 30s before retry
+        if: steps.deploy1.outcome == 'failure'
+        run: sleep 30
+      - name: Deploy to GitHub Pages (retry 1)
+        id: deploy2
+        if: steps.deploy1.outcome == 'failure'
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+
+      - name: Wait 60s before final retry
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        run: sleep 60
+      - name: Deploy to GitHub Pages (retry 2)
+        id: deploy3
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        uses: actions/deploy-pages@v5
+
+      - name: Flag that the deploy only succeeded on a retry
+        if: steps.deploy1.outcome == 'failure' && (steps.deploy2.outcome == 'success' || steps.deploy3.outcome == 'success')
+        run: echo "::warning::Pages deploy succeeded only after retrying a transient 'Deployment failed, try again later.' error."
