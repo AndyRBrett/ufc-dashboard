@@ -1,4 +1,4 @@
-name: Diagnose Wikipedia Access
+name: Diagnose UFCStats Access
 
 on:
   workflow_dispatch:
@@ -12,39 +12,43 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install requests beautifulsoup4
-      - name: Dump raw Wikipedia wikitext
+      - name: Probe UFCStats fighter listing under different clients
         run: |
           python3 << 'PYEOF'
-          import requests, json
+          import requests, re
+          from bs4 import BeautifulSoup
 
-          AGENT = "UFC-Dashboard/1.0 (https://github.com/AndyRBrett/ufc-dashboard; andyrbrett@gmail.com)"
+          PLAIN   = "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)"
+          BROWSER = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                     "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
 
-          r = requests.get(
-              "https://en.wikipedia.org/w/api.php",
-              params={"action":"parse","page":"UFC_328","prop":"wikitext","format":"json"},
-              headers={"User-Agent": AGENT},
-              timeout=15
-          )
-          print("Status:", r.status_code)
-          wt = r.json().get("parse",{}).get("wikitext",{}).get("*","")
-          print("Length:", len(wt))
+          def probe(label, url, ua):
+              print("=" * 70)
+              print(f"{label}\n  URL: {url}\n  UA : {ua[:40]}...")
+              try:
+                  r = requests.get(url, params={"char": "w", "page": "all"},
+                                   headers={"User-Agent": ua,
+                                            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                                            "Accept-Language": "en-US,en;q=0.9"},
+                                   timeout=20)
+              except Exception as e:
+                  print(f"  EXCEPTION: {type(e).__name__}: {e}")
+                  return
+              soup = BeautifulSoup(r.text, "html.parser")
+              print(f"  status      : {r.status_code}")
+              print(f"  final_url   : {r.url}")
+              print(f"  bytes       : {len(r.text)}")
+              print(f"  server hdr  : {r.headers.get('Server')!r}")
+              print(f"  cf-ray      : {r.headers.get('CF-Ray')!r}")
+              print(f"  content-type: {r.headers.get('Content-Type')!r}")
+              print(f"  tables      : {len(soup.find_all('table'))}")
+              print(f"  has table cls b-statistics__table: {'b-statistics__table' in r.text}")
+              print(f"  title       : {(soup.title.get_text(strip=True) if soup.title else '')!r}")
+              body = re.sub(r'\s+', ' ', soup.get_text(' ', strip=True))[:600]
+              print(f"  body[:600]  : {body!r}")
 
-          # Write full wikitext to file for artifact
-          with open("wikitext_dump.txt", "w", encoding="utf-8") as f:
-              f.write(wt)
-
-          # Print the results section only
-          # Find anything that looks like fight results
-          import re
-          for keyword in ["fight results", "wikitable", "def.", "Decision", "TKO", "Submission"]:
-              idx = wt.find(keyword)
-              if idx > -1:
-                  print(f"\nFound '{keyword}' at pos {idx}:")
-                  print(repr(wt[max(0,idx-100):idx+400]))
-                  break
+          probe("1) http  + plain UA",   "http://www.ufcstats.com/statistics/fighters",  PLAIN)
+          probe("2) http  + browser UA", "http://www.ufcstats.com/statistics/fighters",  BROWSER)
+          probe("3) https + browser UA", "https://www.ufcstats.com/statistics/fighters", BROWSER)
+          probe("4) https + browser UA (apex host)", "https://ufcstats.com/statistics/fighters", BROWSER)
           PYEOF
-      - name: Upload wikitext dump
-        uses: actions/upload-artifact@v4
-        with:
-          name: wikitext-dump
-          path: wikitext_dump.txt

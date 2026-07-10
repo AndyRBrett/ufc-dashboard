@@ -1229,14 +1229,18 @@ def _load_ufcstats_letter(letter):
             entries.append((first, last, href, w, l, d))
         if not entries:
             # Capture enough to diagnose a structure/anti-bot change from the CI logs
-            # without another round-trip: page size, table classes present, row count.
+            # without another round-trip: page size, tables, plus the page title and a
+            # body preview so a challenge/redirect/error stub is identifiable on sight.
             tables = soup.find_all("table")
             classes = sorted({c for t in tables for c in (t.get("class") or [])})
+            title = (soup.title.get_text(strip=True) if soup.title else "")
+            preview = re.sub(r"\s+", " ", soup.get_text(" ", strip=True))[:300]
             print(
                 f"  UFCStats letter page ({letter}): 0 rows parsed — "
-                f"bytes={len(r.text)}, tables={len(tables)}, table_classes={classes}, "
+                f"HTTP {r.status_code}, final_url={r.url}, bytes={len(r.text)}, "
+                f"tables={len(tables)}, table_classes={classes}, "
                 f"has_b-statistics__table={'b-statistics__table' in r.text}, "
-                f"rows_in_first_table={len(tables[0].select('tr')) if tables else 0}",
+                f"title={title!r}, body={preview!r}",
                 file=sys.stderr,
             )
         _ufcstats_letter_cache[letter] = entries
