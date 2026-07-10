@@ -1618,6 +1618,22 @@ def extract_stats_cache(html):
     except json.JSONDecodeError:
         return {}
 
+
+def extract_card_records(html):
+    """Map each fighter name to their last-known record from the existing card data.
+
+    A full rebuild reconstructs every fight with an empty record and refills only
+    what UFCStats/Wikipedia can currently resolve. Names UFCStats can't match
+    (particle surnames like "du Plessis"/"de Ridder", "Jr."/"III" suffixes,
+    romanised names) would otherwise be blanked on every run. This lets the
+    rebuild fall back to the record already on the page — better stale than empty.
+    """
+    records = {}
+    for name, rec in re.findall(r'\{n:"([^"]+)",r:"([^"]*)"', html):
+        if rec and name not in records:
+            records[name] = rec
+    return records
+
 # ---------------------------------------------------------------------------
 # Push notifications
 # ---------------------------------------------------------------------------
@@ -2022,7 +2038,10 @@ def step_build_events(data, now):
         time.sleep(1)
     print(f"Stats cache: {len(stats_cache)} fighters", file=sys.stderr)
 
-    # Back-fill fighter records from stats cache
+    # Back-fill fighter records: prefer the freshly-fetched UFCStats record, but
+    # fall back to the last-known record already on the card so a rebuild never
+    # blanks a fighter UFCStats/Wikipedia couldn't resolve this run.
+    prev_records = extract_card_records(data)
     for ev in new_events:
         for fight in ev["fights"]:
             for side in (fight["f1"], fight["f2"]):
@@ -2030,6 +2049,8 @@ def step_build_events(data, now):
                     cached = stats_cache.get(side["name"], {})
                     if cached.get("rec"):
                         side["record"] = cached["rec"]
+                    elif prev_records.get(side["name"]):
+                        side["record"] = prev_records[side["name"]]
 
     # Rematch detection via UFCStats opponent history.
     # Normalise each fighter's opponent list once into a set (cached per fighter,

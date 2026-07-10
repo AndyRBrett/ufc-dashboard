@@ -469,6 +469,26 @@ def test_solve_ufcstats_pow_is_minimal():
         assert not hashlib.sha256(f"eecec3fc625fd3ce:{k}".encode()).hexdigest().startswith("00")
 
 
+# --- last-known record preservation (extract_card_records) -----------------
+
+def test_extract_card_records_maps_names_to_records():
+    html = ('...f1:{n:"Dricus du Plessis",r:"23-3-0",rk:"",s:null},'
+            'f2:{n:"Kamaru Usman",r:"20-4-0",rk:"",s:null}...')
+    got = scrape.extract_card_records(html)
+    assert got == {"Dricus du Plessis": "23-3-0", "Kamaru Usman": "20-4-0"}
+
+
+def test_extract_card_records_skips_blank_and_keeps_first():
+    # Blank records are ignored, and a fighter appearing twice keeps the first
+    # non-empty value (so a later blank can't override a known record).
+    html = ('f1:{n:"Benoit Saint Denis",r:"17-3-0",rk:"",s:null},'
+            'f2:{n:"Blank Guy",r:"",rk:"",s:null},'
+            'f1:{n:"Benoit Saint Denis",r:"",rk:"",s:null}')
+    got = scrape.extract_card_records(html)
+    assert got == {"Benoit Saint Denis": "17-3-0"}
+    assert "Blank Guy" not in got
+
+
 # --- ESPN start times ------------------------------------------------------
 
 def test_event_surnames_parses_headliners():
