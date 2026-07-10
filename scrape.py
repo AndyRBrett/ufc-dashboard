@@ -340,9 +340,18 @@ def fetch_wikitext(slug):
 
 
 _US_REGIONS = re.compile(
-    r"\b(Nevada|Texas|Florida|New York|New Jersey|Arizona|California|"
-    r"Las Vegas|Houston|Newark|Inglewood|Sacramento|"
-    r"Washington|Canada|Vancouver|Toronto)\b",
+    r"\b(United States|USA|"
+    # States that host UFC cards
+    r"Nevada|Texas|Florida|New York|New Jersey|Arizona|California|Washington|"
+    r"Oklahoma|Pennsylvania|Georgia|Colorado|Illinois|Tennessee|Utah|Ohio|"
+    r"North Carolina|Massachusetts|Michigan|Minnesota|Louisiana|Missouri|"
+    r"Kansas|Virginia|Connecticut|"
+    # Notable host cities not implied by a state name above
+    r"Las Vegas|Houston|Newark|Inglewood|Sacramento|Oklahoma City|Philadelphia|"
+    r"Atlanta|Denver|Chicago|Nashville|Salt Lake City|Charlotte|Anaheim|"
+    r"Kansas City|Boston|Detroit|Minneapolis|New Orleans|St\.? Louis|"
+    # Canada uses the same fixed-ET broadcast slots
+    r"Canada|Vancouver|Toronto|Montreal)\b",
     re.IGNORECASE,
 )
 
@@ -513,9 +522,19 @@ def _warn_if_implausible_time(ev_name, loc, main_et):
 
 
 def resolve_event_times(ev_name, ev_date, default_main, default_prelim):
-    """Prefer ESPN's published start time; fall back to the location default.
-    Manual _TIME_OVERRIDES are authoritative and skip ESPN entirely."""
+    """Resolve (main, prelim) ET times for an event.
+
+    Manual _TIME_OVERRIDES win outright. For US/Canada cards the location
+    default is a fixed, known broadcast slot (PPV 21:00/19:00, Fight Night
+    20:00/17:00 ET) and is authoritative — ESPN's scoreboard ``date`` is the
+    event's first-segment (early-prelim) start rather than the main-card start,
+    so preferring it made every US main-card time hours too early. ESPN is only
+    consulted for international cards, where there's no clean ET rule and it's
+    the sole available source.
+    """
     if ev_name in _TIME_OVERRIDES:
+        return default_main, default_prelim
+    if default_main != "TBD":            # US/Canada card → fixed ET slot is authoritative
         return default_main, default_prelim
     main, prelim = fetch_espn_times(ev_name, ev_date)
     if main:
