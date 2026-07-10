@@ -324,6 +324,45 @@ def test_search_ufcstats_prefers_most_experienced_namesake(monkeypatch):
         "http://ufcstats.com/fighter-details/bbb", "27-8-0")
 
 
+def test_name_tokens_match_regressions_still_hold():
+    m = scrape._name_tokens_match
+    # Plain names, namesakes, first-name abbreviations, accents, name order.
+    assert m("Conor", "McGregor", "Conor McGregor")
+    assert m("Diego", "Lopes", "Diego Lopes")
+    assert m("Steve", "Garcia", "Steve Garcia")
+    assert m("Jonathan", "Jones", "Jon Jones")              # first-name variant
+    assert m("Khabib", "Nurmagomedov", "Khabib Nurmagomedov (c)")  # champ marker
+    assert m("Jose", "Aldo", "José Aldo")                    # accent fold
+    assert m("Weili", "Zhang", "Zhang Weili")                # reversed order
+
+
+def test_name_tokens_match_fixes_particle_suffix_names():
+    m = scrape._name_tokens_match
+    assert m("Dricus", "Du Plessis", "Dricus du Plessis")
+    assert m("Reinier", "De Ridder", "Reinier de Ridder")
+    assert m("Ian", "Machado Garry", "Ian Machado Garry")
+    assert m("Ian", "Garry", "Ian Machado Garry")            # UFCStats drops middle
+    assert m("Khalil", "Rountree Jr.", "Khalil Rountree Jr.")
+    assert m("Benoit", "Saint Denis", "Benoit Saint Denis")
+    assert m("Benoit", "St. Denis", "Benoit Saint Denis")    # Saint/St. abbreviation
+
+
+def test_name_tokens_match_still_rejects_distinct_fighters():
+    m = scrape._name_tokens_match
+    assert not m("Stipe", "Miocic", "Jon Jones")             # unrelated
+    assert not m("Michael", "Jones", "Michael Johnson")      # surname mismatch
+    assert not m("Jane", "Smith", "John Smith")              # first-name mismatch
+    assert not m("Islam", "Makhachev", "Ian Machado Garry")  # no shared surname
+
+
+def test_search_ufcstats_matches_particle_surname(monkeypatch):
+    # "De Ridder" is filed under D on UFCStats; the search must look under the
+    # particle's initial, not just the card's last token ("Ridder" → R).
+    rows = {"d": [("Reinier", "De Ridder", "http://x/rdr", 21, 4, 0)]}
+    monkeypatch.setattr(scrape, "_load_ufcstats_letter", lambda letter: rows.get(letter, []))
+    assert scrape._search_ufcstats("Reinier de Ridder") == ("http://x/rdr", "21-4-0")
+
+
 def test_search_ufcstats_single_match_unchanged(monkeypatch):
     # A unique name must still resolve to its one row (no behavior change).
     rows = [("Steve", "Garcia", "http://ufcstats.com/fighter-details/ccc", 19, 5, 0)]
