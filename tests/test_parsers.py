@@ -497,6 +497,18 @@ def test_resolve_times_uses_espn_only_for_international(monkeypatch):
         "UFC Fight Night: X vs. Y", "2026-07-25", "TBD", "TBD") == ("09:00", "06:00")
 
 
+def test_time_override_pins_international_card_and_skips_espn(monkeypatch):
+    # A verified _TIME_OVERRIDES entry is authoritative even for an international
+    # card, and ESPN must not be consulted.
+    def boom(*a, **k):
+        raise AssertionError("ESPN must not be consulted for an overridden card")
+    monkeypatch.setattr(scrape, "fetch_espn_times", boom)
+    dm, dp = scrape._event_times("UFC Fight Night: Ankalaev vs. Rountree Jr.", "Abu Dhabi")
+    assert (dm, dp) == ("15:00", "12:00")
+    assert scrape.resolve_event_times(
+        "UFC Fight Night: Ankalaev vs. Rountree Jr.", "2026-07-25", dm, dp) == ("15:00", "12:00")
+
+
 # --- UFCStats proof-of-work interstitial (_parse/_solve) -------------------
 
 # A trimmed copy of the real interstitial served by UFCStats (2026-07-10).
