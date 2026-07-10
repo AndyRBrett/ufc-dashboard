@@ -1311,21 +1311,46 @@ def _load_ufcstats_letter(letter):
         return []
 
 
+_NAME_SUFFIXES = {"jr", "sr", "ii", "iii", "iv", "v"}
+
+
+def _name_tokens(name):
+    """Clean → accent-fold → split on spaces/hyphens/dots → drop generational
+    suffixes. The normalised token list used to align card names with UFCStats."""
+    s = clean(name).lower().replace(".", " ").replace("-", " ")
+    return [t for t in s.split() if t and t not in _NAME_SUFFIXES]
+
+
 def _name_tokens_match(row_first, row_last, target_name):
-    """Require last-name equality and at least one first-name token match."""
-    target_parts  = clean(target_name).lower().split()
-    if not target_parts:
+    """Match a UFCStats (first, last) row against a card name.
+
+    UFCStats stores first/last separately and files particle surnames under the
+    particle ("Du Plessis", "De Ridder"), keeps generational suffixes, and lists
+    some names in the opposite order. The old rule (row last-name == the card's
+    *last token*) silently missed all of those. Here both sides are reduced to a
+    normalised token list and matched order-independently, while still requiring
+    the surname to line up so distinct fighters aren't conflated.
+    """
+    t   = _name_tokens(target_name)
+    row = _name_tokens(row_first) + _name_tokens(row_last)
+    if not t or not row:
         return False
-    row_f         = clean(row_first).lower()
-    row_l         = clean(row_last).lower()
-    target_last   = target_parts[-1]
-    target_firsts = set(target_parts[:-1])
-    for tl, tf in ((row_l, row_f), (row_f, row_l)):   # also handles Asian name order
-        if tl == target_last:
-            if not target_firsts:
-                return True
-            return any(t == tf or tf.startswith(t[:2]) for t in target_firsts if len(t) >= 2)
-    return False
+    # Exact token set (any order): particle surnames, suffixes, reversed order.
+    if set(t) == set(row):
+        return True
+    # Otherwise the surname must appear and the first name must be compatible
+    # (Jon/Jonathan, Saint/St.); middle tokens are ignored so a dropped middle
+    # name (UFCStats "Ian Garry" vs card "Ian Machado Garry") still matches.
+    surname = t[-1]
+    if surname not in row:
+        return False
+    if len(t) == 1:
+        return True
+    first = t[0]
+    return any(
+        first == b or first.startswith(b[:2]) or b.startswith(first[:2])
+        for b in row if b != surname
+    )
 
 
 def _search_ufcstats(name):
@@ -1337,13 +1362,16 @@ def _search_ufcstats(name):
     tokens, prefer the most-experienced (most total fights) — that's the active
     UFC roster member a current card refers to.
     """
-    parts = clean(name).split()
-    if not parts:
+    toks = _name_tokens(name)
+    if not toks:
         return None
-    last = parts[-1]
-    letters = [last[0].lower()]
-    if len(parts) >= 2 and parts[0][0].lower() != last[0].lower():
-        letters.append(parts[0][0].lower())   # fallback for Asian name ordering
+    # Search the initial of every name token: a particle surname is filed under
+    # the particle ("De Ridder" → D), and reversed name order or a compound
+    # surname can put the fighter under any of their tokens' letters.
+    letters = []
+    for tok in toks:
+        if tok[0] not in letters:
+            letters.append(tok[0])
     for attempt in range(2):  # one retry on empty result
         for letter in letters:
             rows = _load_ufcstats_letter(letter)
