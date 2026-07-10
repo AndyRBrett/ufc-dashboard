@@ -7,6 +7,8 @@ fast in CI and act as a safety net before the scraper can overwrite data.js.
 
 Run with:  python -m pytest -q
 """
+import hashlib
+
 import scrape
 
 
@@ -427,6 +429,44 @@ def test_wiki_record_returns_empty_without_fields():
     assert scrape._wiki_record("just some prose, no infobox") == ""
     assert scrape._wiki_record("{{Infobox martial artist\n| wins = 5\n}}") == ""  # no losses
     assert scrape._wiki_record("") == ""
+
+
+# --- UFCStats proof-of-work interstitial (_parse/_solve) -------------------
+
+# A trimmed copy of the real interstitial served by UFCStats (2026-07-10).
+_INTERSTITIAL = (
+    "<html><body><script>(function(){"
+    "function sha256(msg){/* ... */}"
+    'var nonce="eecec3fc625fd3ce",\n'
+    "    target=new Array(2+1).join('0');"
+    "var n=0;while(sha256(nonce+':'+n).slice(0,target.length)!==target){n++;}"
+    "var xhr=new XMLHttpRequest();xhr.open('POST',\"/__c\",true);"
+    "xhr.send('nonce='+encodeURIComponent(nonce)+'&n='+n);})();</script></body></html>"
+)
+
+
+def test_parse_ufcstats_challenge_extracts_nonce_difficulty_path():
+    assert scrape._parse_ufcstats_challenge(_INTERSTITIAL) == ("eecec3fc625fd3ce", 2, "/__c")
+
+
+def test_parse_ufcstats_challenge_none_on_real_page():
+    assert scrape._parse_ufcstats_challenge(
+        '<table class="b-statistics__table"><tr><td>Jon</td></tr></table>') is None
+    assert scrape._parse_ufcstats_challenge("") is None
+
+
+def test_solve_ufcstats_pow_matches_browser_solution():
+    # The real challenge above was solved by the site's own JS at n=293.
+    n = scrape._solve_ufcstats_pow("eecec3fc625fd3ce", 2)
+    assert n == 293
+    # And the solution genuinely satisfies the difficulty target.
+    assert hashlib.sha256(f"eecec3fc625fd3ce:{n}".encode()).hexdigest().startswith("00")
+
+
+def test_solve_ufcstats_pow_is_minimal():
+    # No earlier n may satisfy the target (the site expects the smallest solution).
+    for k in range(293):
+        assert not hashlib.sha256(f"eecec3fc625fd3ce:{k}".encode()).hexdigest().startswith("00")
 
 
 # --- ESPN start times ------------------------------------------------------

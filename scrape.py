@@ -11,6 +11,7 @@ Data sources:
   Supabase   — pick data for push notifications
 """
 
+import hashlib
 import json
 import os
 import re
@@ -1190,6 +1191,65 @@ def get_odds_with_fallback(odds_index, existing_odds, f1_name, f2_name):
 
 _ufcstats_letter_cache = {}
 
+# UFCStats gates its pages behind a SHA-256 proof-of-work interstitial: the page
+# ships a `nonce` and a difficulty, the client finds an `n` whose
+# sha256("nonce:n") begins with that many hex zeros, POSTs it to /__c, and is
+# handed a `_fmc` cookie (valid ~7 days) that unlocks the real content. It is a
+# hashcash challenge, not a browser check, so it replays cleanly in requests —
+# solved once per run and reused across every fighter fetch via a shared session.
+_ufcstats_session = None
+
+
+def _get_ufcstats_session():
+    global _ufcstats_session
+    if _ufcstats_session is None:
+        _ufcstats_session = requests.Session()
+        _ufcstats_session.headers.update(UFCSTATS_HDR)
+    return _ufcstats_session
+
+
+def _parse_ufcstats_challenge(html):
+    """Parse the PoW interstitial. Returns (nonce, difficulty, post_path) or None."""
+    m_nonce = re.search(r'nonce\s*=\s*"([0-9a-fA-F]+)"', html)
+    m_diff  = re.search(r"new Array\(\s*(\d+)\s*\+\s*1\s*\)\.join\(", html)
+    if not (m_nonce and m_diff):
+        return None
+    m_path = re.search(r"""open\(\s*['"]POST['"]\s*,\s*['"]([^'"]+)['"]""", html)
+    return m_nonce.group(1), int(m_diff.group(1)), (m_path.group(1) if m_path else "/__c")
+
+
+def _solve_ufcstats_pow(nonce, difficulty, _cap=20_000_000):
+    """Smallest n where sha256('nonce:n') has `difficulty` leading hex zeros."""
+    target = "0" * difficulty
+    for n in range(_cap):
+        if hashlib.sha256(f"{nonce}:{n}".encode()).hexdigest()[:difficulty] == target:
+            return n
+    raise RuntimeError(f"UFCStats PoW unsolved within {_cap} (difficulty {difficulty})")
+
+
+def _ufcstats_get(url, params=None, timeout=20):
+    """GET a UFCStats URL, transparently clearing the proof-of-work interstitial."""
+    sess = _get_ufcstats_session()
+    r = sess.get(url, params=params, timeout=timeout)
+    for _ in range(2):  # normally one solve unlocks the whole session for ~7 days
+        ch = _parse_ufcstats_challenge(r.text) if r.status_code == 200 else None
+        if not ch:
+            break
+        nonce, difficulty, post_path = ch
+        try:
+            n = _solve_ufcstats_pow(nonce, difficulty)
+            sess.post(
+                requests.compat.urljoin(r.url, post_path),
+                data=f"nonce={nonce}&n={n}",
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+                timeout=timeout,
+            )
+        except (requests.RequestException, RuntimeError) as e:
+            print(f"  UFCStats challenge solve failed: {e}", file=sys.stderr)
+            break
+        r = sess.get(url, params=params, timeout=timeout)
+    return r
+
 
 def _load_ufcstats_letter(letter):
     """Fetch all fighters whose last name starts with *letter* from UFCStats. Cached."""
@@ -1197,11 +1257,10 @@ def _load_ufcstats_letter(letter):
     if letter in _ufcstats_letter_cache:
         return _ufcstats_letter_cache[letter]
     try:
-        r = requests.get(
+        r = _ufcstats_get(
             "http://www.ufcstats.com/statistics/fighters",
             params={"char": letter, "page": "all"},
             timeout=20,
-            headers=UFCSTATS_HDR,
         )
         if r.status_code != 200:
             print(f"  UFCStats letter page ({letter}): HTTP {r.status_code}", file=sys.stderr)
@@ -1474,7 +1533,7 @@ def fetch_fighter_stats(name, cached_url=None):
     opponents = []
     time.sleep(0.5)
     try:
-        dr = requests.get(detail_url, timeout=15, headers=UFCSTATS_HDR)
+        dr = _ufcstats_get(detail_url, timeout=15)
         if dr.status_code == 200:
             dsoup = BeautifulSoup(dr.text, "html.parser")
             for li in dsoup.select("li.b-list__box-list-item"):
