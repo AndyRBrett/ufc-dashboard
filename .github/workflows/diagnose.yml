@@ -46,6 +46,12 @@ jobs:
               print(f"  title       : {(soup.title.get_text(strip=True) if soup.title else '')!r}")
               body = re.sub(r'\s+', ' ', soup.get_text(' ', strip=True))[:600]
               print(f"  body[:600]  : {body!r}")
+              print(f"  set-cookie  : {r.headers.get('Set-Cookie')!r}")
+              print(f"  refresh hdr : {r.headers.get('Refresh')!r}")
+              # The interstitial is tiny — dump it whole so the challenge JS is visible.
+              # If it just sets a cookie + reloads, the scraper fix is a few lines;
+              # if it is real bot-detection, it needs a headless browser.
+              print(f"  RAW HTML    :\n{r.text[:2900]}")
 
           probe("1) http  + plain UA",   "http://www.ufcstats.com/statistics/fighters",  PLAIN)
           probe("2) http  + browser UA", "http://www.ufcstats.com/statistics/fighters",  BROWSER)
