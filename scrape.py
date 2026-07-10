@@ -1356,6 +1356,52 @@ def _fighter_wiki_past_fight(wikitext, opp_name):
     return False
 
 
+# How often a cached fighter is re-validated from UFCStats, and how long we wait
+# before retrying one whose fetch failed. The record and opponent list are the
+# only fields that silently go wrong (a stale/incorrect record freezes forever,
+# an empty opponent list breaks rematch detection), so entries are refreshed on
+# a cadence rather than cached once and trusted indefinitely.
+STATS_REFRESH_DAYS = 14   # re-validate a cached fighter (record + opponents) this often
+STATS_RETRY_DAYS   = 3    # cooldown before retrying a fighter whose fetch failed
+
+
+def _parse_ts(s):
+    """Parse an ISO timestamp; treat anything unparseable as long-stale.
+
+    A naive value is assumed to be UTC so the caller's tz-aware arithmetic never
+    raises — a single bad timestamp must not abort the whole scrape.
+    """
+    try:
+        dt = datetime.fromisoformat(s)
+    except (TypeError, ValueError):
+        return datetime.min.replace(tzinfo=timezone.utc)
+    return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+
+
+def _needs_stats_fetch(entry, now):
+    """Decide whether a fighter's cached stats should be (re)fetched this run.
+
+    Returns (fetch: bool, force_search: bool). ``force_search`` requests the
+    authoritative UFCStats *search* path (which re-derives the win-loss record)
+    rather than a cheap re-hit of the cached detail URL.
+
+    Legacy entries written before this cadence existed carry no ``fetched_at``
+    stamp, so they are treated as stale and re-validated once — which is what
+    repairs a frozen wrong record or an opponent list emptied by a past failure.
+    """
+    if not entry:
+        return True, True                       # brand new → full search fetch
+    failed = entry.get("fetch_failed")
+    if failed and now - _parse_ts(failed) < timedelta(days=STATS_RETRY_DAYS):
+        return False, False                     # failed recently → cooldown, skip
+    if "form" not in entry or "opp" not in entry:
+        return True, False                      # incomplete → cheap cached-URL refetch
+    fetched = entry.get("fetched_at")
+    if not fetched or now - _parse_ts(fetched) >= timedelta(days=STATS_REFRESH_DAYS):
+        return True, True                       # stale/legacy → re-validate via search
+    return False, False
+
+
 def fetch_fighter_stats(name, cached_url=None):
     """Fetch career stats for one fighter from UFCStats. Returns a dict or None."""
     if cached_url:
@@ -1747,8 +1793,10 @@ def step_build_events(data, now):
                 print(f"  Rematch (wiki): {f1} vs {f2}", file=sys.stderr)
             # Layer 4: BOTH fighters' Wikipedia fight records must confirm the past bout.
             # Requiring cross-confirmation eliminates false positives from common surnames
-            # or upcoming fights inadvertently appearing in one fighter's record.
-            if not wiki_rematch and i < 2:
+            # or upcoming fights inadvertently appearing in one fighter's record. Runs for
+            # every bout, not just the headliners — mid-card rematches (e.g. Sandhagen vs
+            # Bautista II) were being missed when the event page didn't spell out "rematch".
+            if not wiki_rematch:
                 fw1 = fetch_wikitext(f1.replace(" ", "_"))
                 if _fighter_wiki_past_fight(fw1, f2):
                     time.sleep(0.5)
@@ -1826,38 +1874,34 @@ def step_build_events(data, now):
         for side in (fight["f1"], fight["f2"])
         if side.get("name") and side["name"] != "TBD"
     }
-    card_records = {
-        side["name"]: side["record"]
-        for ev in new_events
-        for fight in ev["fights"]
-        for side in (fight["f1"], fight["f2"])
-        if side.get("name") and side.get("record")
-    }
-    to_fetch = sorted(
-        n for n in all_fighters
-        if (
-            n not in stats_cache
-            or "form" not in stats_cache[n]
-            or "opp" not in stats_cache[n]
-            or (card_records.get(n) and card_records[n] != stats_cache[n].get("rec", ""))
-        )
-    )
+    to_fetch = []
+    for n in sorted(all_fighters):
+        fetch, force_search = _needs_stats_fetch(stats_cache.get(n), now)
+        if fetch:
+            to_fetch.append((n, force_search))
     print(
         f"Fetching stats for {len(to_fetch)} fighters "
-        f"({sum(1 for n in to_fetch if n not in stats_cache)} new)...",
+        f"({sum(1 for n, _ in to_fetch if n not in stats_cache)} new)...",
         file=sys.stderr,
     )
-    for fname in to_fetch:
-        cached_url = stats_cache.get(fname, {}).get("url")
+    for fname, force_search in to_fetch:
+        # force_search bypasses the cached detail URL so the record is re-derived
+        # from the UFCStats search page — the only source that carries it.
+        cached_url = None if force_search else stats_cache.get(fname, {}).get("url")
+        prev_rec = stats_cache.get(fname, {}).get("rec", "")
         s = fetch_fighter_stats(fname, cached_url=cached_url)
         if s:
-            stats_cache[fname] = s
+            if not s.get("rec"):
+                s["rec"] = prev_rec          # a cached-URL hit carries no record — keep the known one
+            elif prev_rec and s["rec"] != prev_rec:
+                print(f"  Record change [{fname}]: {prev_rec} -> {s['rec']}", file=sys.stderr)
+            s["fetched_at"] = now.isoformat()
+            stats_cache[fname] = s            # replace wholesale → clears any prior fetch_failed
         else:
-            # Stamp opp:[] on any failure so this fighter isn't retried every run.
-            # Works whether the fighter is already cached or brand-new.
-            if fname not in stats_cache:
-                stats_cache[fname] = {}
-            stats_cache[fname].setdefault("opp", [])
+            # Record the failure for a bounded retry, but never fabricate an empty
+            # opponent list: doing so used to permanently poison rematch detection.
+            entry = stats_cache.setdefault(fname, {})
+            entry["fetch_failed"] = now.isoformat()
         time.sleep(1)
     print(f"Stats cache: {len(stats_cache)} fighters", file=sys.stderr)
 
