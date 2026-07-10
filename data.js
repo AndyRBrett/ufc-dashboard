@@ -27,8 +27,8 @@ var EVENTS=[
     venue:"Meta Apex",
     loc:"Las Vegas",
     tv:"Paramount+",
-    time:"17:00",
-    prelimTime:"14:00",
+    time:"20:00",
+    prelimTime:"17:00",
     fights:[
       {lbl:"Main Event",wc:"Flyweight",title:false,rematch:true,odds:{f1:-160,f2:135},winner:"Manel Kape",method:"KO/TKO",round:3,state:"post",f1:{n:"Manel Kape",r:"23-7-0",rk:"",s:null},f2:{n:"Kyoji Horiguchi",r:"36-6-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Light Heavyweight",title:false,rematch:true,odds:{f1:-333,f2:268},winner:"Navajo Stirling",method:"KO/TKO",round:2,state:"post",f1:{n:"Navajo Stirling",r:"10-0-0",rk:"",s:null},f2:{n:"Ion Cutelaba",r:"20-12-1",rk:"",s:null}},
@@ -74,8 +74,8 @@ var EVENTS=[
     venue:"T-Mobile Arena",
     loc:"Las Vegas",
     tv:"Paramount+",
-    time:"17:00",
-    prelimTime:"15:00",
+    time:"21:00",
+    prelimTime:"19:00",
     fights:[
       {lbl:"Main Event",wc:"Welterweight",title:false,rematch:true,odds:{f1:190,f2:-238},winner:"",method:"",round:null,state:"pre",f1:{n:"Conor McGregor",r:"22-6-0",rk:"",s:null},f2:{n:"Max Holloway",r:"27-9-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Lightweight",title:false,rematch:true,odds:{f1:-155,f2:127},winner:"",method:"",round:null,state:"pre",f1:{n:"Benoit Saint Denis",r:"17-3-0",rk:"",s:null},f2:{n:"Paddy Pimblett",r:"23-4-0",rk:"",s:null}},
@@ -99,8 +99,8 @@ var EVENTS=[
     venue:"Paycom Center",
     loc:"Oklahoma City",
     tv:"Paramount+",
-    time:"17:00",
-    prelimTime:"14:00",
+    time:"20:00",
+    prelimTime:"17:00",
     fights:[
       {lbl:"Main Event",wc:"Middleweight",title:false,rematch:true,odds:{f1:-298,f2:228},winner:"",method:"",round:null,state:"pre",f1:{n:"Dricus du Plessis",r:"23-3-0",rk:"",s:null},f2:{n:"Kamaru Usman",r:"21-4-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Middleweight",title:false,rematch:true,odds:{f1:255,f2:-323},winner:"",method:"",round:null,state:"pre",f1:{n:"Jared Cannonier",r:"18-9-0",rk:"",s:null},f2:{n:"Christian Leroy Duncan",r:"15-3-0",rk:"",s:null}},
@@ -161,8 +161,8 @@ var EVENTS=[
     venue:"Meta Apex",
     loc:"Las Vegas",
     tv:"Paramount+",
-    time:"14:00",
-    prelimTime:"11:00",
+    time:"20:00",
+    prelimTime:"17:00",
     fights:[
       {lbl:"Main Event",wc:"Lightweight",title:false,rematch:true,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Mateusz Gamrot",r:"26-4-0",rk:"",s:null},f2:{n:"Quillan Salkilld",r:"12-1-0",rk:"",s:null}}
     ]
@@ -173,8 +173,8 @@ var EVENTS=[
     venue:"Xfinity Mobile Arena",
     loc:"Philadelphia",
     tv:"Paramount+",
-    time:"17:00",
-    prelimTime:"15:00",
+    time:"21:00",
+    prelimTime:"19:00",
     fights:[
       {lbl:"Main Event",wc:"Welterweight",title:true,rematch:true,odds:{f1:-373,f2:283},winner:"",method:"",round:null,state:"pre",f1:{n:"Islam Makhachev",r:"28-1-0",rk:"C",s:null},f2:{n:"Ian Machado Garry",r:"17-1-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Women's Strawweight",title:true,rematch:true,odds:{f1:-221,f2:175},winner:"",method:"",round:null,state:"pre",f1:{n:"Mackenzie Dern",r:"16-5-0",rk:"C",s:null},f2:{n:"Gillian Robertson",r:"17-8-0",rk:"",s:null}},
@@ -194,8 +194,8 @@ var EVENTS=[
     venue:"Golden 1 Center",
     loc:"Sacramento",
     tv:"Paramount+",
-    time:"17:00",
-    prelimTime:"14:00",
+    time:"20:00",
+    prelimTime:"17:00",
     fights:[
       {lbl:"Main Event",wc:"Middleweight",title:false,rematch:true,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Anthony Hernandez",r:"15-3-0",rk:"",s:null},f2:{n:"Gregory Rodrigues",r:"19-6-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Light Heavyweight",title:false,rematch:true,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Roman Dolidze",r:"15-5-0",rk:"",s:null},f2:{n:"Reinier de Ridder",r:"21-4-0",rk:"",s:null}},

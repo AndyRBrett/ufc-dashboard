@@ -470,6 +470,33 @@ def test_wiki_record_returns_empty_without_fields():
     assert scrape._wiki_record("") == ""
 
 
+# --- event start times (US default authoritative over ESPN) ----------------
+
+def test_us_regions_now_cover_oklahoma_city_and_philadelphia():
+    # Previously mis-classified as international → TBD + false past-midnight warns.
+    assert scrape._default_main_time("Oklahoma City", "UFC Fight Night: A vs. B") == "20:00"
+    assert scrape._default_prelim_time("Oklahoma City", "UFC Fight Night: A vs. B") == "17:00"
+    assert scrape._default_main_time("Philadelphia", "UFC 330: A vs. B") == "21:00"
+    assert scrape._default_prelim_time("Philadelphia", "UFC 330: A vs. B") == "19:00"
+
+
+def test_resolve_times_us_default_beats_espn(monkeypatch):
+    # A US card has a fixed, known ET slot; ESPN (whose 'date' is the early-prelim
+    # start) must NOT override it — and must not even be consulted.
+    def boom(*a, **k):
+        raise AssertionError("ESPN must not be consulted for a US card with a fixed slot")
+    monkeypatch.setattr(scrape, "fetch_espn_times", boom)
+    assert scrape.resolve_event_times(
+        "UFC 329: McGregor vs. Holloway 2", "2026-07-11", "21:00", "19:00") == ("21:00", "19:00")
+
+
+def test_resolve_times_uses_espn_only_for_international(monkeypatch):
+    # International cards have no ET default (TBD) → ESPN is the sole source.
+    monkeypatch.setattr(scrape, "fetch_espn_times", lambda n, d: ("09:00", "06:00"))
+    assert scrape.resolve_event_times(
+        "UFC Fight Night: X vs. Y", "2026-07-25", "TBD", "TBD") == ("09:00", "06:00")
+
+
 # --- UFCStats proof-of-work interstitial (_parse/_solve) -------------------
 
 # A trimmed copy of the real interstitial served by UFCStats (2026-07-10).
