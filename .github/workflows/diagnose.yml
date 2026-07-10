@@ -12,49 +12,72 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install requests beautifulsoup4
-      - name: Probe UFCStats fighter listing under different clients
+      - name: Solve the UFCStats proof-of-work interstitial end to end
         run: |
           python3 << 'PYEOF'
-          import requests, re
-          from bs4 import BeautifulSoup
+          import requests, re, hashlib, time
 
-          PLAIN   = "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)"
+          BASE = "http://www.ufcstats.com/statistics/fighters"
+          PARAMS = {"char": "w", "page": "all"}
           BROWSER = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                      "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
 
-          def probe(label, url, ua):
-              print("=" * 70)
-              print(f"{label}\n  URL: {url}\n  UA : {ua[:40]}...")
-              try:
-                  r = requests.get(url, params={"char": "w", "page": "all"},
-                                   headers={"User-Agent": ua,
-                                            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                                            "Accept-Language": "en-US,en;q=0.9"},
-                                   timeout=20)
-              except Exception as e:
-                  print(f"  EXCEPTION: {type(e).__name__}: {e}")
-                  return
-              soup = BeautifulSoup(r.text, "html.parser")
-              print(f"  status      : {r.status_code}")
-              print(f"  final_url   : {r.url}")
-              print(f"  bytes       : {len(r.text)}")
-              print(f"  server hdr  : {r.headers.get('Server')!r}")
-              print(f"  cf-ray      : {r.headers.get('CF-Ray')!r}")
-              print(f"  content-type: {r.headers.get('Content-Type')!r}")
-              print(f"  tables      : {len(soup.find_all('table'))}")
-              print(f"  has table cls b-statistics__table: {'b-statistics__table' in r.text}")
-              print(f"  title       : {(soup.title.get_text(strip=True) if soup.title else '')!r}")
-              body = re.sub(r'\s+', ' ', soup.get_text(' ', strip=True))[:600]
-              print(f"  body[:600]  : {body!r}")
-              print(f"  set-cookie  : {r.headers.get('Set-Cookie')!r}")
-              print(f"  refresh hdr : {r.headers.get('Refresh')!r}")
-              # The interstitial is tiny — dump it whole so the challenge JS is visible.
-              # If it just sets a cookie + reloads, the scraper fix is a few lines;
-              # if it is real bot-detection, it needs a headless browser.
-              print(f"  RAW HTML    :\n{r.text[:2900]}")
+          s = requests.Session()
+          s.headers.update({
+              "User-Agent": BROWSER,
+              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+              "Accept-Language": "en-US,en;q=0.9",
+          })
 
-          probe("1) http  + plain UA",   "http://www.ufcstats.com/statistics/fighters",  PLAIN)
-          probe("2) http  + browser UA", "http://www.ufcstats.com/statistics/fighters",  BROWSER)
-          probe("3) https + browser UA", "https://www.ufcstats.com/statistics/fighters", BROWSER)
-          probe("4) https + browser UA (apex host)", "https://ufcstats.com/statistics/fighters", BROWSER)
+          r = s.get(BASE, params=PARAMS, timeout=20)
+          print("initial GET :", r.status_code, "bytes", len(r.text))
+          print("set-cookie  :", r.headers.get("Set-Cookie"))
+          print("cookies     :", s.cookies.get_dict())
+          print("has table   :", "b-statistics__table" in r.text)
+          print("----- FULL INTERSTITIAL HTML -----")
+          print(r.text)
+          print("----- END HTML -----")
+
+          m_nonce = re.search(r'nonce\s*=\s*"([0-9a-fA-F]+)"', r.text)
+          m_diff  = re.search(r'new Array\(\s*(\d+)\s*\+\s*1\s*\)\.join\(', r.text)
+          m_path  = re.search(r"""\.open\(\s*['"]POST['"]\s*,\s*['"]([^'"]+)['"]""", r.text)
+          m_send  = re.search(r'\.send\(([^;]*)\)', r.text)
+          print("parsed nonce:", m_nonce and m_nonce.group(1))
+          print("parsed diff :", m_diff and m_diff.group(1))
+          print("post path   :", m_path and m_path.group(1))
+          print("send expr   :", m_send and m_send.group(1))
+
+          if not (m_nonce and m_diff):
+              print("could not parse challenge — see HTML above")
+              raise SystemExit(0)
+
+          nonce = m_nonce.group(1)
+          diff  = int(m_diff.group(1))
+          target = "0" * diff
+          t0 = time.time()
+          n = 0
+          while hashlib.sha256(f"{nonce}:{n}".encode()).hexdigest()[:diff] != target:
+              n += 1
+          print(f"solved n={n} in {time.time()-t0:.2f}s  "
+                f"hash={hashlib.sha256(f'{nonce}:{n}'.encode()).hexdigest()}")
+
+          post_path = (m_path.group(1) if m_path else "/__c")
+          post_url = requests.compat.urljoin("http://www.ufcstats.com", post_path)
+          # Try the likely form-encoded body shapes; stop at the first that unlocks the table.
+          for body in (f"nonce={nonce}&n={n}", f"n={n}", f"nonce={nonce}&answer={n}",
+                       f"answer={n}", f"nonce={nonce}&solution={n}"):
+              try:
+                  pr = s.post(post_url, data=body, timeout=20,
+                              headers={"Content-Type": "application/x-www-form-urlencoded"})
+              except Exception as e:
+                  print(f"POST body={body!r} -> ERROR {e}")
+                  continue
+              r2 = s.get(BASE, params=PARAMS, timeout=20)
+              ok = "b-statistics__table" in r2.text
+              print(f"POST body={body!r} -> {pr.status_code}, "
+                    f"set-cookie={pr.headers.get('Set-Cookie')!r}, "
+                    f"cookies={s.cookies.get_dict()}, refetch_bytes={len(r2.text)}, has_table={ok}")
+              if ok:
+                  print(f"*** SUCCESS with body={body!r} — UFCStats is solvable in requests")
+                  break
           PYEOF
