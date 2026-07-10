@@ -389,6 +389,13 @@ def _default_prelim_time(loc, ev_name=""):
 _TIME_OVERRIDES = {
     # White House: single seven-fight main card at 8pm ET (00:00 UTC next day), no prelims.
     "UFC Freedom 250": ("20:00", ""),
+    # International cards where ESPN's scoreboard 'date' is not the main-card start
+    # (its meaning is inconsistent across these events), so pin the published
+    # Paramount+ times. UTC/local equivalents given for verification.
+    # Baku (UTC+4): main 12:00 ET = 16:00 UTC = 20:00 local; prelims 09:00 ET.
+    "UFC Fight Night: Fiziev vs. Torres": ("12:00", "09:00"),
+    # Abu Dhabi (UTC+4): main 15:00 ET = 19:00 UTC = 23:00 local; prelims 12:00 ET.
+    "UFC Fight Night: Ankalaev vs. Rountree Jr.": ("15:00", "12:00"),
 }
 
 # Cards with no preliminary bouts -- every fight is treated as a main-card fight

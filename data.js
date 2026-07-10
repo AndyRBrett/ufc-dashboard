@@ -50,8 +50,8 @@ var EVENTS=[
     venue:"National Gymnastics Arena",
     loc:"Baku",
     tv:"Paramount+",
-    time:"09:00",
-    prelimTime:"06:00",
+    time:"12:00",
+    prelimTime:"09:00",
     fights:[
       {lbl:"Main Event",wc:"Lightweight",title:false,rematch:true,odds:null,winner:"Rafael Fiziev",method:"KO/TKO",round:2,state:"post",f1:{n:"Rafael Fiziev",r:"14-5-0",rk:"",s:null},f2:{n:"Manuel Torres",r:"17-4-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Middleweight",title:false,rematch:true,odds:{f1:-390,f2:307},winner:"Sharabutdin Magomedov",method:"Decision (Unanimous)",round:3,state:"post",f1:{n:"Sharabutdin Magomedov",r:"17-1-0",rk:"",s:null},f2:{n:"Michel Pereira",r:"32-15-0",rk:"",s:null}},
@@ -119,8 +119,8 @@ var EVENTS=[
     venue:"Etihad Arena",
     loc:"Abu Dhabi",
     tv:"Paramount+",
-    time:"09:00",
-    prelimTime:"06:00",
+    time:"15:00",
+    prelimTime:"12:00",
     fights:[
       {lbl:"Main Event",wc:"Light Heavyweight",title:false,rematch:true,odds:{f1:-325,f2:245},winner:"",method:"",round:null,state:"pre",f1:{n:"Magomed Ankalaev",r:"21-2-1",rk:"",s:null},f2:{n:"Khalil Rountree Jr.",r:"15-7-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Flyweight",title:false,rematch:true,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Steve Erceg",r:"14-4-0",rk:"",s:null},f2:{n:"Ramazan Temirov",r:"19-3-0",rk:"",s:null}},
