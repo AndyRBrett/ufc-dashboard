@@ -403,6 +403,32 @@ def test_parse_ts_naive_value_is_normalised_to_utc():
     assert (_NOW - parsed).days == 9
 
 
+# --- Wikipedia record fallback (_wiki_record) ------------------------------
+
+def test_wiki_record_reads_infobox_fields():
+    wt = ("{{Infobox martial artist\n| name = Robert Whittaker\n"
+          "| wins = 26\n| losses = 9\n| draws = 0\n| ko = 6\n}}")
+    assert scrape._wiki_record(wt) == "26-9-0"
+
+
+def test_wiki_record_defaults_draws_to_zero():
+    wt = "{{Infobox martial artist\n| wins = 27\n| losses = 9\n}}"
+    assert scrape._wiki_record(wt) == "27-9-0"
+
+
+def test_wiki_record_ignores_qualified_win_fields():
+    # 'amateur wins' / 'ko' must not be mistaken for the pro win/loss totals.
+    wt = ("{{Infobox martial artist\n| amateur wins = 3\n| amateur losses = 1\n"
+          "| wins = 23\n| losses = 4\n| draws = 0\n| ko = 7\n}}")
+    assert scrape._wiki_record(wt) == "23-4-0"
+
+
+def test_wiki_record_returns_empty_without_fields():
+    assert scrape._wiki_record("just some prose, no infobox") == ""
+    assert scrape._wiki_record("{{Infobox martial artist\n| wins = 5\n}}") == ""  # no losses
+    assert scrape._wiki_record("") == ""
+
+
 # --- ESPN start times ------------------------------------------------------
 
 def test_event_surnames_parses_headliners():

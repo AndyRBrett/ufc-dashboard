@@ -45,6 +45,17 @@ WIKI_HDR     = {
         "(https://github.com/AndyRBrett/ufc-dashboard; andyrbrett@gmail.com)"
     )
 }
+# UFCStats returns a 200 with an empty results table when it doesn't like the
+# client (a plain library User-Agent is a common trigger), so identify as a real
+# browser for those requests specifically.
+UFCSTATS_HDR = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+}
 SUPABASE_URL  = os.environ.get("SUPABASE_URL", "https://gkccophrdqtqcowmblre.supabase.co")
 # Supplied via the SUPABASE_ANON env var (set as a GitHub Actions secret). The anon
 # key is public by design — it ships in index.html for the browser — but we read it
@@ -1190,16 +1201,15 @@ def _load_ufcstats_letter(letter):
             "http://www.ufcstats.com/statistics/fighters",
             params={"char": letter, "page": "all"},
             timeout=20,
-            headers={"User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)"},
+            headers=UFCSTATS_HDR,
         )
         if r.status_code != 200:
             print(f"  UFCStats letter page ({letter}): HTTP {r.status_code}", file=sys.stderr)
             _ufcstats_letter_cache[letter] = []
             return []
+        soup = BeautifulSoup(r.text, "html.parser")
         entries = []
-        for row in BeautifulSoup(r.text, "html.parser").select(
-            "table.b-statistics__table tbody tr"
-        ):
+        for row in soup.select("table.b-statistics__table tbody tr"):
             cells = row.select("td")
             if len(cells) < 10:
                 continue
@@ -1218,7 +1228,17 @@ def _load_ufcstats_letter(letter):
                 w = l = d = 0
             entries.append((first, last, href, w, l, d))
         if not entries:
-            print(f"  UFCStats letter page ({letter}): 0 rows parsed — possible structure change", file=sys.stderr)
+            # Capture enough to diagnose a structure/anti-bot change from the CI logs
+            # without another round-trip: page size, table classes present, row count.
+            tables = soup.find_all("table")
+            classes = sorted({c for t in tables for c in (t.get("class") or [])})
+            print(
+                f"  UFCStats letter page ({letter}): 0 rows parsed — "
+                f"bytes={len(r.text)}, tables={len(tables)}, table_classes={classes}, "
+                f"has_b-statistics__table={'b-statistics__table' in r.text}, "
+                f"rows_in_first_table={len(tables[0].select('tr')) if tables else 0}",
+                file=sys.stderr,
+            )
         _ufcstats_letter_cache[letter] = entries
         time.sleep(0.5)
         return entries
@@ -1356,6 +1376,31 @@ def _fighter_wiki_past_fight(wikitext, opp_name):
     return False
 
 
+def _wiki_record(wikitext):
+    """Derive a 'W-L-D' record from a fighter's Wikipedia infobox.
+
+    {{Infobox martial artist}} carries ``wins`` / ``losses`` / ``draws`` fields,
+    which is a far more stable source than scraping a rendered stats table — and
+    the fallback that keeps records fresh when UFCStats is unavailable. Returns ''
+    when the fields can't be found (no infobox, or a non-fighter page).
+    """
+    if not wikitext:
+        return ""
+    def field(name):
+        # Anchor on the '|' so 'wins' doesn't also match 'amateur wins' / 'ko wins'.
+        m = re.search(r'\|\s*' + name + r'\s*=\s*(\d+)', wikitext, re.IGNORECASE)
+        return m.group(1) if m else None
+    w, l = field("wins"), field("losses")
+    if w is None or l is None:
+        return ""
+    return f"{w}-{l}-{field('draws') or '0'}"
+
+
+def fetch_wiki_record(name):
+    """Fetch a fighter's Wikipedia page and return their 'W-L-D' record (or '')."""
+    return _wiki_record(fetch_wikitext(name.replace(" ", "_")))
+
+
 # How often a cached fighter is re-validated from UFCStats, and how long we wait
 # before retrying one whose fetch failed. The record and opponent list are the
 # only fields that silently go wrong (a stale/incorrect record freezes forever,
@@ -1425,7 +1470,7 @@ def fetch_fighter_stats(name, cached_url=None):
     opponents = []
     time.sleep(0.5)
     try:
-        dr = requests.get(detail_url, timeout=15, headers={"User-Agent": "UFC-Dashboard/1.0"})
+        dr = requests.get(detail_url, timeout=15, headers=UFCSTATS_HDR)
         if dr.status_code == 200:
             dsoup = BeautifulSoup(dr.text, "html.parser")
             for li in dsoup.select("li.b-list__box-list-item"):
@@ -1892,15 +1937,24 @@ def step_build_events(data, now):
         s = fetch_fighter_stats(fname, cached_url=cached_url)
         if s:
             if not s.get("rec"):
-                s["rec"] = prev_rec          # a cached-URL hit carries no record — keep the known one
+                # A cached-URL hit carries no record; if UFCStats search also had
+                # none, fall back to Wikipedia rather than blanking a known record.
+                s["rec"] = prev_rec or fetch_wiki_record(fname)
             elif prev_rec and s["rec"] != prev_rec:
                 print(f"  Record change [{fname}]: {prev_rec} -> {s['rec']}", file=sys.stderr)
             s["fetched_at"] = now.isoformat()
             stats_cache[fname] = s            # replace wholesale → clears any prior fetch_failed
         else:
-            # Record the failure for a bounded retry, but never fabricate an empty
-            # opponent list: doing so used to permanently poison rematch detection.
+            # UFCStats is unavailable for this fighter. Never fabricate an empty
+            # opponent list (that used to poison rematch detection); mark the
+            # failure for a bounded retry, but still refresh the record from
+            # Wikipedia so a UFCStats outage can't freeze it.
             entry = stats_cache.setdefault(fname, {})
+            wrec = fetch_wiki_record(fname)
+            if wrec and wrec != entry.get("rec"):
+                if entry.get("rec"):
+                    print(f"  Record change [{fname}] (wiki): {entry['rec']} -> {wrec}", file=sys.stderr)
+                entry["rec"] = wrec
             entry["fetch_failed"] = now.isoformat()
         time.sleep(1)
     print(f"Stats cache: {len(stats_cache)} fighters", file=sys.stderr)
