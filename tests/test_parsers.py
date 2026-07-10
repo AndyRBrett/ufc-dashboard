@@ -330,6 +330,79 @@ def test_search_ufcstats_single_match_unchanged(monkeypatch):
         "http://ufcstats.com/fighter-details/ccc", "19-5-0")
 
 
+# --- fighter-stats fetch cadence (_needs_stats_fetch) ----------------------
+
+from datetime import datetime, timedelta, timezone
+
+_NOW = datetime(2026, 7, 10, tzinfo=timezone.utc)
+
+
+def _iso(days_ago):
+    return (_NOW - timedelta(days=days_ago)).isoformat()
+
+
+def _complete(**over):
+    # A fully-populated, freshly-fetched cache entry.
+    e = {"rec": "20-1-0", "form": [{"r": "W", "m": "KO"}], "opp": ["Some Guy"],
+         "url": "http://ufcstats.com/x", "fetched_at": _iso(1)}
+    e.update(over)
+    return e
+
+
+def test_needs_fetch_brand_new_forces_search():
+    # No cache entry at all → fetch via the search path (which carries the record).
+    assert scrape._needs_stats_fetch(None, _NOW) == (True, True)
+    assert scrape._needs_stats_fetch({}, _NOW) == (True, True)
+
+
+def test_needs_fetch_recent_failure_is_skipped():
+    # A fetch that failed inside the cooldown window must not be retried yet.
+    entry = _complete(fetch_failed=_iso(1))
+    assert scrape._needs_stats_fetch(entry, _NOW) == (False, False)
+
+
+def test_needs_fetch_stale_failure_retries():
+    # Past the cooldown, a previously-failed fighter is retried.
+    entry = {"fetch_failed": _iso(scrape.STATS_RETRY_DAYS + 1)}
+    assert scrape._needs_stats_fetch(entry, _NOW)[0] is True
+
+
+def test_needs_fetch_incomplete_uses_cheap_cached_url():
+    # Missing form/opp → refetch, but not via the (costly) search path.
+    assert scrape._needs_stats_fetch({"rec": "5-0-0", "opp": []}, _NOW) == (True, False)
+    assert scrape._needs_stats_fetch({"rec": "5-0-0", "form": []}, _NOW) == (True, False)
+
+
+def test_needs_fetch_legacy_entry_without_timestamp_revalidates():
+    # Entries written before the cadence existed carry no fetched_at — the case
+    # that repairs a frozen wrong record or a failure-emptied opponent list.
+    legacy = {"rec": "27-9-0", "form": [], "opp": []}   # no fetched_at
+    assert scrape._needs_stats_fetch(legacy, _NOW) == (True, True)
+
+
+def test_needs_fetch_stale_entry_revalidates_via_search():
+    entry = _complete(fetched_at=_iso(scrape.STATS_REFRESH_DAYS + 1))
+    assert scrape._needs_stats_fetch(entry, _NOW) == (True, True)
+
+
+def test_needs_fetch_fresh_complete_entry_is_skipped():
+    assert scrape._needs_stats_fetch(_complete(), _NOW) == (False, False)
+
+
+def test_parse_ts_bad_value_is_long_stale():
+    # Unparseable timestamps must read as stale so the entry gets refreshed,
+    # never as "just fetched" (which would freeze a bad record forever).
+    assert scrape._parse_ts("not-a-date") < _NOW - timedelta(days=3650)
+    assert scrape._parse_ts(None) < _NOW - timedelta(days=3650)
+
+
+def test_parse_ts_naive_value_is_normalised_to_utc():
+    # A naive timestamp must not raise when subtracted from tz-aware now.
+    parsed = scrape._parse_ts("2026-07-01T00:00:00")
+    assert parsed.tzinfo is not None
+    assert (_NOW - parsed).days == 9
+
+
 # --- ESPN start times ------------------------------------------------------
 
 def test_event_surnames_parses_headliners():
