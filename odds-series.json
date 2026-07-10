@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T19:25:10Z",
+  "generated_at": "2026-07-10T21:01:30Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2200,7 +2200,7 @@
         {
           "f1": "Conor McGregor",
           "f2": "Max Holloway",
-          "points": 23,
+          "points": 24,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2316,6 +2316,11 @@
               "at": "2026-07-10T19:25:10Z",
               "f1_odds": 188,
               "f2_odds": -235
+            },
+            {
+              "at": "2026-07-10T21:01:30Z",
+              "f1_odds": 190,
+              "f2_odds": -238
             }
           ],
           "open": {
@@ -2601,7 +2606,7 @@
         {
           "f1": "Gable Steveson",
           "f2": "Elisha Ellison",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2657,6 +2662,11 @@
               "at": "2026-07-10T19:25:10Z",
               "f1_odds": -2317,
               "f2_odds": 1057
+            },
+            {
+              "at": "2026-07-10T21:01:30Z",
+              "f1_odds": -2367,
+              "f2_odds": 1073
             }
           ],
           "open": {
@@ -2670,7 +2680,7 @@
         {
           "f1": "King Green",
           "f2": "Terrance McKinney",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2726,6 +2736,11 @@
               "at": "2026-07-10T14:57:48Z",
               "f1_odds": 109,
               "f2_odds": -133
+            },
+            {
+              "at": "2026-07-10T21:01:30Z",
+              "f1_odds": -111,
+              "f2_odds": -110
             }
           ],
           "open": {
@@ -2887,7 +2902,7 @@
         {
           "f1": "Luke Riley",
           "f2": "Kai Kamaka III",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2943,6 +2958,11 @@
               "at": "2026-07-10T19:25:10Z",
               "f1_odds": -228,
               "f2_odds": 182
+            },
+            {
+              "at": "2026-07-10T21:01:30Z",
+              "f1_odds": -230,
+              "f2_odds": 184
             }
           ],
           "open": {
@@ -3173,7 +3193,7 @@
         {
           "f1": "Alessandro Costa",
           "f2": "Cody Durden",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-07-02T11:51:55Z",
@@ -3219,6 +3239,11 @@
               "at": "2026-07-10T19:25:10Z",
               "f1_odds": -237,
               "f2_odds": 189
+            },
+            {
+              "at": "2026-07-10T21:01:30Z",
+              "f1_odds": -233,
+              "f2_odds": 187
             }
           ],
           "open": {
@@ -3232,7 +3257,7 @@
         {
           "f1": "Farid Basharat",
           "f2": "John Garza",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-07-08T11:22:57Z",
@@ -3253,6 +3278,11 @@
               "at": "2026-07-10T14:57:48Z",
               "f1_odds": -625,
               "f2_odds": 443
+            },
+            {
+              "at": "2026-07-10T21:01:30Z",
+              "f1_odds": -650,
+              "f2_odds": 460
             }
           ],
           "open": {
@@ -3331,7 +3361,7 @@
         {
           "f1": "Jared Cannonier",
           "f2": "Christian Leroy Duncan",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-07-08T11:22:57Z",
@@ -3357,6 +3387,11 @@
               "at": "2026-07-10T19:25:10Z",
               "f1_odds": 232,
               "f2_odds": -288
+            },
+            {
+              "at": "2026-07-10T21:01:30Z",
+              "f1_odds": 255,
+              "f2_odds": -323
             }
           ],
           "open": {
@@ -4104,7 +4139,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Cody Durden",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -258,
         "close": null,
         "clv": null
@@ -4938,7 +4973,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Max Holloway",
         "side": "f1",
-        "points": 23,
+        "points": 24,
         "open": 225,
         "close": null,
         "clv": null
@@ -4949,7 +4984,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Conor McGregor",
         "side": "f2",
-        "points": 23,
+        "points": 24,
         "open": -285,
         "close": null,
         "clv": null
@@ -5026,7 +5061,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Elisha Ellison",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -2833,
         "close": null,
         "clv": null
@@ -5037,7 +5072,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Gable Steveson",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 1200,
         "close": null,
         "clv": null
@@ -5048,7 +5083,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Terrance McKinney",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": 132,
         "close": null,
         "clv": null
@@ -5059,7 +5094,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "King Green",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -161,
         "close": null,
         "clv": null
@@ -5114,7 +5149,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Kai Kamaka III",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -330,
         "close": null,
         "clv": null
@@ -5125,7 +5160,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Luke Riley",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 258,
         "close": null,
         "clv": null
@@ -5202,7 +5237,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Alessandro Costa",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 208,
         "close": null,
         "clv": null
@@ -5213,7 +5248,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "John Garza",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -632,
         "close": null,
         "clv": null
@@ -5224,7 +5259,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Farid Basharat",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 445,
         "close": null,
         "clv": null
@@ -5257,7 +5292,7 @@
         "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
         "opponent": "Christian Leroy Duncan",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": 250,
         "close": null,
         "clv": null
@@ -5268,7 +5303,7 @@
         "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
         "opponent": "Jared Cannonier",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": -300,
         "close": null,
         "clv": null
