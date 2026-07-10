@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-07-10T12:27:58Z",
+  "generated_at": "2026-07-10T14:57:48Z",
   "events_tracked": 11,
-  "stale_events": 2,
+  "stale_events": 0,
   "parse_failure_events": 0,
   "awaiting_card_events": 3,
   "stale_threshold_hours": 48,
@@ -37,34 +37,34 @@
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "status": "ok",
-      "last_changed_at": "2026-07-10T12:27:58Z",
+      "last_changed_at": "2026-07-10T14:57:48Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
-      "line_movement": -45
+      "line_movement": -47
     },
     {
       "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
       "status": "ok",
-      "last_changed_at": "2026-07-10T12:27:58Z",
+      "last_changed_at": "2026-07-10T14:57:48Z",
       "is_stale": false,
       "has_data": true,
-      "bout_count": 8,
-      "line_movement": 57
+      "bout_count": 9,
+      "line_movement": 47
     },
     {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-rountree-jr",
       "status": "ok",
-      "last_changed_at": "2026-07-04T11:10:06Z",
-      "is_stale": true,
+      "last_changed_at": "2026-07-10T14:57:48Z",
+      "is_stale": false,
       "has_data": true,
       "bout_count": 9,
-      "line_movement": -7
+      "line_movement": -15
     },
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-10T12:27:58Z",
+      "last_changed_at": "2026-07-10T14:57:48Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -73,7 +73,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-10T12:27:58Z",
+      "last_changed_at": "2026-07-10T14:57:48Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -82,16 +82,16 @@
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
       "status": "ok",
-      "last_changed_at": "2026-07-08T11:22:57Z",
-      "is_stale": true,
+      "last_changed_at": "2026-07-10T14:57:48Z",
+      "is_stale": false,
       "has_data": true,
       "bout_count": 10,
-      "line_movement": -7
+      "line_movement": -18
     },
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-10T12:27:58Z",
+      "last_changed_at": "2026-07-10T14:57:48Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 7,
@@ -112,9 +112,9 @@
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Gable Steveson",
       "f2": "Elisha Ellison",
-      "f1_movement": 500,
-      "f2_movement": -127,
-      "magnitude": 500,
+      "f1_movement": 400,
+      "f2_movement": -93,
+      "magnitude": 400,
       "main_event": false
     },
     {
@@ -139,9 +139,9 @@
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Tracy Cortez",
       "f2": "Wang Cong",
-      "f1_movement": -214,
+      "f1_movement": -213,
       "f2_movement": 14,
-      "magnitude": 214,
+      "magnitude": 213,
       "main_event": false
     },
     {
@@ -158,7 +158,7 @@
       "f1": "Robert Whittaker",
       "f2": "Nikita Krylov",
       "f1_movement": 80,
-      "f2_movement": -63,
+      "f2_movement": -64,
       "magnitude": 80,
       "main_event": false
     },
@@ -172,39 +172,57 @@
       "main_event": false
     },
     {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Conor McGregor",
-      "f2": "Max Holloway",
-      "f1_movement": -45,
-      "f2_movement": 66,
-      "magnitude": 66,
-      "main_event": true
+      "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
+      "f1": "Alden Coria",
+      "f2": "Stewart Nicoll",
+      "f1_movement": -67,
+      "f2_movement": -32,
+      "magnitude": 67,
+      "main_event": false
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Luke Riley",
       "f2": "Kai Kamaka III",
-      "f1_movement": 63,
-      "f2_movement": -43,
-      "magnitude": 63,
+      "f1_movement": 65,
+      "f2_movement": -48,
+      "magnitude": 65,
       "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Conor McGregor",
+      "f2": "Max Holloway",
+      "f1_movement": -47,
+      "f2_movement": 63,
+      "magnitude": 63,
+      "main_event": true
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Ryan Gandra",
       "f2": "Zachary Reese",
       "f1_movement": 60,
-      "f2_movement": -46,
+      "f2_movement": -48,
       "magnitude": 60,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Damian Pinas",
+      "f2": "Cesar Almeida",
+      "f1_movement": -55,
+      "f2_movement": 40,
+      "magnitude": 55,
       "main_event": false
     },
     {
       "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
       "f1": "Dricus du Plessis",
       "f2": "Kamaru Usman",
-      "f1_movement": 57,
+      "f1_movement": 47,
       "f2_movement": -50,
-      "magnitude": 57,
+      "magnitude": 50,
       "main_event": true
     },
     {
@@ -226,12 +244,12 @@
       "main_event": false
     },
     {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Damian Pinas",
-      "f2": "Cesar Almeida",
-      "f1_movement": -43,
-      "f2_movement": 36,
-      "magnitude": 43,
+      "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
+      "f1": "Tabatha Ricci",
+      "f2": "Fatima Kline",
+      "f1_movement": -28,
+      "f2_movement": 42,
+      "magnitude": 42,
       "main_event": false
     },
     {
@@ -256,9 +274,9 @@
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
       "f1": "Mackenzie Dern",
       "f2": "Gillian Robertson",
-      "f1_movement": -29,
-      "f2_movement": 22,
-      "magnitude": 29,
+      "f1_movement": -32,
+      "f2_movement": 20,
+      "magnitude": 32,
       "main_event": false
     },
     {
@@ -274,45 +292,18 @@
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "King Green",
       "f2": "Terrance McKinney",
-      "f1_movement": -20,
-      "f2_movement": 27,
-      "magnitude": 27,
+      "f1_movement": -23,
+      "f2_movement": 28,
+      "magnitude": 28,
       "main_event": false
     },
     {
       "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
       "f1": "Jared Cannonier",
       "f2": "Christian Leroy Duncan",
-      "f1_movement": -24,
-      "f2_movement": 27,
-      "magnitude": 27,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
-      "f1": "Tabatha Ricci",
-      "f2": "Fatima Kline",
-      "f1_movement": -10,
-      "f2_movement": 25,
+      "f1_movement": -25,
+      "f2_movement": 19,
       "magnitude": 25,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
-      "f1": "Alden Coria",
-      "f2": "Stewart Nicoll",
-      "f1_movement": 0,
-      "f2_movement": -25,
-      "magnitude": 25,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Benoit Saint Denis",
-      "f2": "Paddy Pimblett",
-      "f1_movement": 23,
-      "f2_movement": -16,
-      "magnitude": 23,
       "main_event": false
     },
     {
@@ -320,17 +311,44 @@
       "f1": "Tommy McMillen",
       "f2": "Alberto Montes",
       "f1_movement": -20,
-      "f2_movement": 20,
+      "f2_movement": 14,
       "magnitude": 20,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
+      "f1": "Islam Makhachev",
+      "f2": "Ian Machado Garry",
+      "f1_movement": -18,
+      "f2_movement": 7,
+      "magnitude": 18,
+      "main_event": true
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Benoit Saint Denis",
+      "f2": "Paddy Pimblett",
+      "f1_movement": 17,
+      "f2_movement": -14,
+      "magnitude": 17,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Cory Sandhagen",
+      "f2": "Mario Bautista",
+      "f1_movement": 17,
+      "f2_movement": -15,
+      "magnitude": 17,
       "main_event": false
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Brandon Royval",
       "f2": "Lone'er Kavanagh",
-      "f1_movement": 16,
-      "f2_movement": -19,
-      "magnitude": 19,
+      "f1_movement": 12,
+      "f2_movement": -17,
+      "magnitude": 17,
       "main_event": false
     },
     {
@@ -344,19 +362,10 @@
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Cory Sandhagen",
-      "f2": "Mario Bautista",
-      "f1_movement": 16,
-      "f2_movement": -12,
-      "magnitude": 16,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Alessandro Costa",
       "f2": "Cody Durden",
       "f1_movement": 16,
-      "f2_movement": -11,
+      "f2_movement": -15,
       "magnitude": 16,
       "main_event": false
     },
@@ -370,13 +379,22 @@
       "main_event": false
     },
     {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Cody Garbrandt",
-      "f2": "Adrian Yanez",
-      "f1_movement": 15,
-      "f2_movement": -13,
+      "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
+      "f1": "Chase Hooper",
+      "f2": "Mitch Ramirez",
+      "f1_movement": -15,
+      "f2_movement": -2,
       "magnitude": 15,
       "main_event": false
+    },
+    {
+      "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-rountree-jr",
+      "f1": "Magomed Ankalaev",
+      "f2": "Khalil Rountree Jr.",
+      "f1_movement": -15,
+      "f2_movement": -10,
+      "magnitude": 15,
+      "main_event": true
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
