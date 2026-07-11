@@ -470,6 +470,27 @@ def test_wiki_record_returns_empty_without_fields():
     assert scrape._wiki_record("") == ""
 
 
+# --- event de-duplication (stub must not shadow the real card) -------------
+
+def test_dedupe_events_keeps_richest_card():
+    stub = {"name": "UFC 329: McGregor vs. Holloway 2", "date": "2026-07-11",
+            "fights": [{"lbl": "Main Event"}]}
+    full = {"name": "UFC 329: McGregor vs. Holloway 2", "date": "2026-07-11",
+            "fights": [{"lbl": "Main Event"}] + [{"lbl": "Prelim"}] * 13}
+    other = {"name": "UFC 330: X vs. Y", "date": "2026-08-15", "fights": [{"lbl": "Main Event"}]}
+    # Stub appears first; the 14-fight card must win, and order is preserved.
+    out = scrape._dedupe_events([stub, other, full])
+    assert len(out) == 2
+    names = [(e["name"], len(e["fights"])) for e in out]
+    assert names == [("UFC 329: McGregor vs. Holloway 2", 14), ("UFC 330: X vs. Y", 1)]
+
+
+def test_dedupe_events_noop_when_unique():
+    evs = [{"name": "A", "date": "d1", "fights": []},
+           {"name": "B", "date": "d2", "fights": []}]
+    assert scrape._dedupe_events(evs) == evs
+
+
 # --- event start times (US default authoritative over ESPN) ----------------
 
 def test_us_regions_now_cover_oklahoma_city_and_philadelphia():

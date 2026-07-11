@@ -1842,6 +1842,32 @@ def fight_js(f, comma=""):
     )
 
 
+def _dedupe_events(events):
+    """Collapse events that share a (name, date) to a single richest entry.
+
+    Discovery keys de-duplication on the Wikipedia slug, so the same event can be
+    built twice under different slugs — most damagingly a title-fallback stub
+    (one TBD bout derived from the event name) colliding with the fully-parsed
+    card preserved from existing data. Keep the version with the most fights, in
+    first-seen order, so a stub can never shadow or duplicate the real card.
+    """
+    best = {}
+    for ev in events:
+        key = (ev.get("name"), ev.get("date"))
+        if key not in best or len(ev.get("fights", [])) > len(best[key].get("fights", [])):
+            best[key] = ev
+    seen, out = set(), []
+    for ev in events:
+        key = (ev.get("name"), ev.get("date"))
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(best[key])
+    if len(out) != len(events):
+        print(f"Deduped events: {len(events)} -> {len(out)}", file=sys.stderr)
+    return out
+
+
 def events_js(evs):
     """Serialise the events list to a JS array literal (value only, no var declaration)."""
     lines = ["["]
@@ -2126,6 +2152,8 @@ def step_build_events(data, now):
                     _norm_name(f1n) in _norm_opp_set(f2n)):
                 fight["rematch"] = True
                 print(f"  Rematch detected: {f1n} vs {f2n}", file=sys.stderr)
+
+    new_events = _dedupe_events(new_events)
 
     data = patch_js_var(data, "EVENTS", events_js(new_events))
     data = patch_js_var(
