@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T02:17:54Z",
+  "generated_at": "2026-07-11T02:22:50Z",
   "events_tracked": 11,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -37,7 +37,7 @@
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "status": "ok",
-      "last_changed_at": "2026-07-11T01:53:11Z",
+      "last_changed_at": "2026-07-11T02:22:50Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -64,7 +64,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T02:17:54Z",
+      "last_changed_at": "2026-07-11T02:22:50Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -73,7 +73,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T02:17:54Z",
+      "last_changed_at": "2026-07-11T02:22:50Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -91,7 +91,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T02:17:54Z",
+      "last_changed_at": "2026-07-11T02:22:50Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 7,
@@ -434,6 +434,15 @@
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Cory Sandhagen",
+      "f2": "Mario Bautista",
+      "f1_movement": 12,
+      "f2_movement": -9,
+      "magnitude": 12,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Cody Garbrandt",
       "f2": "Adrian Yanez",
       "f1_movement": 12,
@@ -457,15 +466,6 @@
       "f1_movement": -11,
       "f2_movement": 11,
       "magnitude": 11,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Cory Sandhagen",
-      "f2": "Mario Bautista",
-      "f1_movement": 10,
-      "f2_movement": -9,
-      "magnitude": 10,
       "main_event": false
     }
   ],
