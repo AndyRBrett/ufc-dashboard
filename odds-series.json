@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T01:17:47Z",
+  "generated_at": "2026-07-11T01:22:51Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2715,7 +2715,7 @@
         {
           "f1": "King Green",
           "f2": "Terrance McKinney",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2781,6 +2781,11 @@
               "at": "2026-07-11T00:47:44Z",
               "f1_odds": -113,
               "f2_odds": -108
+            },
+            {
+              "at": "2026-07-11T01:22:50Z",
+              "f1_odds": -113,
+              "f2_odds": -107
             }
           ],
           "open": {
@@ -5197,7 +5202,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Terrance McKinney",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 132,
         "close": null,
         "clv": null
@@ -5208,7 +5213,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "King Green",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -161,
         "close": null,
         "clv": null
