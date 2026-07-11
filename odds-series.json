@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T00:27:38Z",
+  "generated_at": "2026-07-11T00:33:23Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2468,7 +2468,7 @@
         {
           "f1": "Cory Sandhagen",
           "f2": "Mario Bautista",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2539,6 +2539,11 @@
               "at": "2026-07-10T19:25:10Z",
               "f1_odds": -136,
               "f2_odds": 112
+            },
+            {
+              "at": "2026-07-11T00:33:23Z",
+              "f1_odds": -142,
+              "f2_odds": 117
             }
           ],
           "open": {
@@ -5106,7 +5111,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Mario Bautista",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -152,
         "close": null,
         "clv": null
@@ -5117,7 +5122,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Cory Sandhagen",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 126,
         "close": null,
         "clv": null
