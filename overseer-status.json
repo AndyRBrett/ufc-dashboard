@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T00:43:22Z",
+  "generated_at": "2026-07-11T00:47:44Z",
   "events_tracked": 11,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -37,7 +37,7 @@
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "status": "ok",
-      "last_changed_at": "2026-07-11T00:43:22Z",
+      "last_changed_at": "2026-07-11T00:47:44Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -64,7 +64,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T00:43:22Z",
+      "last_changed_at": "2026-07-11T00:47:44Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -73,7 +73,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T00:43:22Z",
+      "last_changed_at": "2026-07-11T00:47:44Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -91,7 +91,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T00:43:22Z",
+      "last_changed_at": "2026-07-11T00:47:44Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 7,
@@ -112,18 +112,18 @@
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Gable Steveson",
       "f2": "Elisha Ellison",
-      "f1_movement": 683,
-      "f2_movement": -117,
-      "magnitude": 683,
+      "f1_movement": 633,
+      "f2_movement": -100,
+      "magnitude": 633,
       "main_event": false
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "King Green",
       "f2": "Terrance McKinney",
-      "f1_movement": -243,
-      "f2_movement": 51,
-      "magnitude": 243,
+      "f1_movement": -245,
+      "f2_movement": 53,
+      "magnitude": 245,
       "main_event": false
     },
     {
@@ -166,9 +166,9 @@
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Luke Riley",
       "f2": "Kai Kamaka III",
-      "f1_movement": 100,
-      "f2_movement": -71,
-      "magnitude": 100,
+      "f1_movement": 104,
+      "f2_movement": -75,
+      "magnitude": 104,
       "main_event": false
     },
     {
