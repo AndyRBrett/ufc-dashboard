@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T04:42:46Z",
+  "generated_at": "2026-07-11T04:47:45Z",
   "events_tracked": 11,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -37,7 +37,7 @@
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "status": "ok",
-      "last_changed_at": "2026-07-11T04:32:58Z",
+      "last_changed_at": "2026-07-11T04:47:45Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -64,7 +64,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T04:42:46Z",
+      "last_changed_at": "2026-07-11T04:47:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -73,7 +73,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T04:42:46Z",
+      "last_changed_at": "2026-07-11T04:47:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -91,7 +91,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T04:42:46Z",
+      "last_changed_at": "2026-07-11T04:47:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 7,
@@ -317,15 +317,6 @@
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Farid Basharat",
-      "f2": "John Garza",
-      "f1_movement": -8,
-      "f2_movement": 22,
-      "magnitude": 22,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Brandon Royval",
       "f2": "Lone'er Kavanagh",
       "f1_movement": 16,
@@ -366,6 +357,15 @@
       "f2": "Leon Shahbazyan",
       "f1_movement": -15,
       "f2_movement": 11,
+      "magnitude": 15,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Farid Basharat",
+      "f2": "John Garza",
+      "f1_movement": 0,
+      "f2_movement": 15,
       "magnitude": 15,
       "main_event": false
     },

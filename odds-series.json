@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T04:42:46Z",
+  "generated_at": "2026-07-11T04:47:45Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -3392,7 +3392,7 @@
         {
           "f1": "Farid Basharat",
           "f2": "John Garza",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-07-08T11:22:57Z",
@@ -3423,6 +3423,11 @@
               "at": "2026-07-11T00:04:21Z",
               "f1_odds": -640,
               "f2_odds": 467
+            },
+            {
+              "at": "2026-07-11T04:47:45Z",
+              "f1_odds": -632,
+              "f2_odds": 460
             }
           ],
           "open": {
@@ -5427,7 +5432,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "John Garza",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -632,
         "close": null,
         "clv": null
@@ -5438,7 +5443,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Farid Basharat",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 445,
         "close": null,
         "clv": null
