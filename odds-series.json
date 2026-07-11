@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T03:57:45Z",
+  "generated_at": "2026-07-11T04:03:09Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2354,7 +2354,7 @@
         {
           "f1": "Benoit Saint Denis",
           "f2": "Paddy Pimblett",
-          "points": 24,
+          "points": 25,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2475,6 +2475,11 @@
               "at": "2026-07-11T02:52:48Z",
               "f1_odds": -148,
               "f2_odds": 122
+            },
+            {
+              "at": "2026-07-11T04:03:08Z",
+              "f1_odds": -150,
+              "f2_odds": 124
             }
           ],
           "open": {
@@ -3510,7 +3515,7 @@
         {
           "f1": "Jared Cannonier",
           "f2": "Christian Leroy Duncan",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-07-08T11:22:57Z",
@@ -3541,6 +3546,11 @@
               "at": "2026-07-10T21:01:30Z",
               "f1_odds": 255,
               "f2_odds": -323
+            },
+            {
+              "at": "2026-07-11T04:03:08Z",
+              "f1_odds": 247,
+              "f2_odds": -312
             }
           ],
           "open": {
@@ -5149,7 +5159,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Paddy Pimblett",
         "side": "f1",
-        "points": 24,
+        "points": 25,
         "open": -172,
         "close": null,
         "clv": null
@@ -5160,7 +5170,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Benoit Saint Denis",
         "side": "f2",
-        "points": 24,
+        "points": 25,
         "open": 141,
         "close": null,
         "clv": null
@@ -5468,7 +5478,7 @@
         "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
         "opponent": "Christian Leroy Duncan",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": 250,
         "close": null,
         "clv": null
@@ -5479,7 +5489,7 @@
         "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
         "opponent": "Jared Cannonier",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": -300,
         "close": null,
         "clv": null
