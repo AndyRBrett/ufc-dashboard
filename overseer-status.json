@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T15:37:54Z",
+  "generated_at": "2026-07-11T15:42:51Z",
   "events_tracked": 11,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -37,11 +37,11 @@
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "status": "ok",
-      "last_changed_at": "2026-07-11T05:12:57Z",
+      "last_changed_at": "2026-07-11T15:42:51Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
-      "line_movement": -26
+      "line_movement": 22
     },
     {
       "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
@@ -64,7 +64,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T15:37:54Z",
+      "last_changed_at": "2026-07-11T15:42:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -73,7 +73,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T15:37:54Z",
+      "last_changed_at": "2026-07-11T15:42:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -91,7 +91,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T15:37:54Z",
+      "last_changed_at": "2026-07-11T15:42:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 7,
@@ -262,15 +262,6 @@
       "main_event": false
     },
     {
-      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "f1": "Conor McGregor",
-      "f2": "Max Holloway",
-      "f1_movement": -26,
-      "f2_movement": 38,
-      "magnitude": 38,
-      "main_event": true
-    },
-    {
       "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
       "f1": "Beatriz Mesquita",
       "f2": "Melissa Mullins",
@@ -313,7 +304,7 @@
       "f1_movement": 22,
       "f2_movement": -17,
       "magnitude": 22,
-      "main_event": false
+      "main_event": true
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
