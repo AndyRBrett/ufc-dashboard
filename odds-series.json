@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T00:37:40Z",
+  "generated_at": "2026-07-11T00:43:22Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2784,7 +2784,7 @@
         {
           "f1": "Robert Whittaker",
           "f2": "Nikita Krylov",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -2865,6 +2865,11 @@
               "at": "2026-07-10T14:57:48Z",
               "f1_odds": -128,
               "f2_odds": 105
+            },
+            {
+              "at": "2026-07-11T00:43:22Z",
+              "f1_odds": -128,
+              "f2_odds": 106
             }
           ],
           "open": {
@@ -5199,7 +5204,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Nikita Krylov",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -208,
         "close": null,
         "clv": null
@@ -5210,7 +5215,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Robert Whittaker",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 169,
         "close": null,
         "clv": null

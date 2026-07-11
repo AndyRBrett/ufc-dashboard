@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T00:37:40Z",
+  "generated_at": "2026-07-11T00:43:22Z",
   "events_tracked": 11,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -37,7 +37,7 @@
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "status": "ok",
-      "last_changed_at": "2026-07-11T00:33:23Z",
+      "last_changed_at": "2026-07-11T00:43:22Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -64,7 +64,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T00:37:40Z",
+      "last_changed_at": "2026-07-11T00:43:22Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -73,7 +73,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T00:37:40Z",
+      "last_changed_at": "2026-07-11T00:43:22Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -91,7 +91,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-11T00:37:40Z",
+      "last_changed_at": "2026-07-11T00:43:22Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 7,
@@ -176,7 +176,7 @@
       "f1": "Robert Whittaker",
       "f2": "Nikita Krylov",
       "f1_movement": 80,
-      "f2_movement": -64,
+      "f2_movement": -63,
       "magnitude": 80,
       "main_event": false
     },
