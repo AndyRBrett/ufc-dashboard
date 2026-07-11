@@ -5258,7 +5258,14 @@ document.addEventListener("DOMContentLoaded",function(){
   }
 
   function _deriveSlug(evName){
-    return evName.replace(/[^a-zA-Z0-9 :._-]/g,"").replace(/ /g,"_");
+    // A numbered PPV's Wikipedia article is just "UFC 329"; the full subtitled
+    // title is only a redirect whose stub carries no results table, so the live
+    // poll saw zero results and never updated the open UI. Fight Night articles
+    // ARE the full "UFC Fight Night: A vs. B" title. Mirrors _wiki_event_slug
+    // in scrape.py.
+    var m=evName.match(/^UFC\s+\d+/);
+    var base=m?m[0]:evName;
+    return base.replace(/[^a-zA-Z0-9 :._-]/g,"").replace(/ /g,"_");
   }
 
   function _activeEvents(){
