@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T04:03:09Z",
+  "generated_at": "2026-07-11T04:07:38Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -3515,7 +3515,7 @@
         {
           "f1": "Jared Cannonier",
           "f2": "Christian Leroy Duncan",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-07-08T11:22:57Z",
@@ -3551,6 +3551,11 @@
               "at": "2026-07-11T04:03:08Z",
               "f1_odds": 247,
               "f2_odds": -312
+            },
+            {
+              "at": "2026-07-11T04:07:38Z",
+              "f1_odds": 238,
+              "f2_odds": -300
             }
           ],
           "open": {
@@ -5478,7 +5483,7 @@
         "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
         "opponent": "Christian Leroy Duncan",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": 250,
         "close": null,
         "clv": null
@@ -5489,7 +5494,7 @@
         "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
         "opponent": "Jared Cannonier",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": -300,
         "close": null,
         "clv": null
