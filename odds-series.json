@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T00:07:55Z",
+  "generated_at": "2026-07-11T00:13:10Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2339,7 +2339,7 @@
         {
           "f1": "Benoit Saint Denis",
           "f2": "Paddy Pimblett",
-          "points": 22,
+          "points": 23,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2450,6 +2450,11 @@
               "at": "2026-07-11T00:04:21Z",
               "f1_odds": -150,
               "f2_odds": 123
+            },
+            {
+              "at": "2026-07-11T00:13:10Z",
+              "f1_odds": -149,
+              "f2_odds": 122
             }
           ],
           "open": {
@@ -5074,7 +5079,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Paddy Pimblett",
         "side": "f1",
-        "points": 22,
+        "points": 23,
         "open": -172,
         "close": null,
         "clv": null
@@ -5085,7 +5090,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Benoit Saint Denis",
         "side": "f2",
-        "points": 22,
+        "points": 23,
         "open": 141,
         "close": null,
         "clv": null
