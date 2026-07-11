@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T00:13:10Z",
+  "generated_at": "2026-07-11T00:17:50Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2621,7 +2621,7 @@
         {
           "f1": "Gable Steveson",
           "f2": "Elisha Ellison",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2687,6 +2687,11 @@
               "at": "2026-07-11T00:04:21Z",
               "f1_odds": -2317,
               "f2_odds": 1057
+            },
+            {
+              "at": "2026-07-11T00:17:50Z",
+              "f1_odds": -2150,
+              "f2_odds": 1083
             }
           ],
           "open": {
@@ -5145,7 +5150,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Elisha Ellison",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -2833,
         "close": null,
         "clv": null
@@ -5156,7 +5161,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Gable Steveson",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 1200,
         "close": null,
         "clv": null
