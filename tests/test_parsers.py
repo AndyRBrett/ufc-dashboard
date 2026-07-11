@@ -470,6 +470,17 @@ def test_wiki_record_returns_empty_without_fields():
     assert scrape._wiki_record("") == ""
 
 
+# --- full-name normalisation for rematch matching --------------------------
+
+def test_norm_full_distinguishes_shared_surnames():
+    # Full-name normalisation is what stops two different fighters who share a
+    # surname (the old last-name match) from being read as a rematch.
+    assert scrape._norm_full("José Aldo") == "jose aldo"
+    assert scrape._norm_full("  Max   Holloway ") == "max holloway"
+    assert scrape._norm_full("Dricus du Plessis") != scrape._norm_full("Anderson du Plessis")
+    assert scrape._norm_full("Jon Jones") != scrape._norm_full("Dustin Jones")
+
+
 # --- event de-duplication (stub must not shadow the real card) -------------
 
 def test_dedupe_events_keeps_richest_card():

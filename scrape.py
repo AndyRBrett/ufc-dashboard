@@ -1431,6 +1431,15 @@ def _norm_name(n):
     return parts[-1].lower() if parts else ""
 
 
+def _norm_full(n):
+    """Full name, lowercased, accents stripped, whitespace-collapsed. Used for
+    opponent-history rematch matching, where last-name-only comparison conflates
+    distinct fighters who happen to share a surname."""
+    n = unicodedata.normalize("NFD", n)
+    n = "".join(c for c in n if unicodedata.category(c) != "Mn")
+    return " ".join(n.lower().split())
+
+
 def _wiki_rematch(wikitext, f1_name, f2_name):
     """Return True if the wikitext mentions a rematch between both fighters."""
     if not wikitext:
@@ -1638,12 +1647,16 @@ def fetch_fighter_stats(name, cached_url=None):
                     elif "dq" in ml:   ms_str = "DQ"
                     else:              ms_str = method_txt.strip()[:3]
                     form.append({"r": r_char, "m": ms_str})
-                # Opponent name: cells_d[1] has two <a> tags — self then opponent
-                opp_links = cells_d[1].select("a")
-                if len(opp_links) >= 2:
-                    opp_name = opp_links[1].get_text(strip=True)
-                    if opp_name:
-                        opponents.append(opp_name)
+                # Opponent name: cells_d[1] has two <a> tags — self then opponent.
+                # Only record COMPLETED bouts: UFCStats lists a fighter's next
+                # scheduled fight as a "next" row, and counting that upcoming
+                # opponent made the rematch check fire for every booked bout.
+                if result_txt in ("win", "loss", "draw"):
+                    opp_links = cells_d[1].select("a")
+                    if len(opp_links) >= 2:
+                        opp_name = opp_links[1].get_text(strip=True)
+                        if opp_name:
+                            opponents.append(opp_name)
     except Exception as e:
         print(f"  UFCStats detail error: {e}", file=sys.stderr)
 
@@ -2132,15 +2145,17 @@ def step_build_events(data, now):
                     elif prev_records.get(side["name"]):
                         side["record"] = prev_records[side["name"]]
 
-    # Rematch detection via UFCStats opponent history.
-    # Normalise each fighter's opponent list once into a set (cached per fighter,
-    # since fighters recur across the card) so each check is an O(1) lookup.
-    _norm_opp_cache = {}
-    def _norm_opp_set(name):
-        if name not in _norm_opp_cache:
-            opps = stats_cache.get(name, {}).get("opp", [])
-            _norm_opp_cache[name] = {_norm_name(o) for o in opps}
-        return _norm_opp_cache[name]
+    # Rematch detection via UFCStats opponent history. Opponent lists hold only
+    # COMPLETED bouts (the upcoming fight is excluded at fetch time), matched on
+    # full name so distinct fighters sharing a surname aren't conflated. A bout
+    # already concluded this card sits in both histories, so it counts as a
+    # rematch only when they ALSO met before it (require 2 meetings for a
+    # concluded bout, 1 for an upcoming one).
+    _opp_full_cache = {}
+    def _opp_fulls(name):
+        if name not in _opp_full_cache:
+            _opp_full_cache[name] = [_norm_full(o) for o in stats_cache.get(name, {}).get("opp", [])]
+        return _opp_full_cache[name]
 
     for ev in new_events:
         for fight in ev["fights"]:
@@ -2148,8 +2163,10 @@ def step_build_events(data, now):
                 continue  # already flagged by Wikipedia
             f1n = fight["f1"]["name"]
             f2n = fight["f2"]["name"]
-            if (_norm_name(f2n) in _norm_opp_set(f1n) or
-                    _norm_name(f1n) in _norm_opp_set(f2n)):
+            need = 2 if fight.get("state") == "post" else 1
+            met = max(_opp_fulls(f1n).count(_norm_full(f2n)),
+                      _opp_fulls(f2n).count(_norm_full(f1n)))
+            if met >= need:
                 fight["rematch"] = True
                 print(f"  Rematch detected: {f1n} vs {f2n}", file=sys.stderr)
 
