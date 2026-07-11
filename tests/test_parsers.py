@@ -470,6 +470,18 @@ def test_wiki_record_returns_empty_without_fields():
     assert scrape._wiki_record("") == ""
 
 
+# --- Wikipedia results slug (PPV subtitle must be stripped) -----------------
+
+def test_wiki_event_slug_strips_ppv_subtitle():
+    assert scrape._wiki_event_slug("UFC 329: McGregor vs. Holloway 2") == "UFC_329"
+    assert scrape._wiki_event_slug("UFC 330: Makhachev vs. Machado Garry") == "UFC_330"
+
+
+def test_wiki_event_slug_keeps_fight_night_title():
+    assert scrape._wiki_event_slug(
+        "UFC Fight Night: Kape vs. Horiguchi") == "UFC_Fight_Night:_Kape_vs._Horiguchi"
+
+
 # --- full-name normalisation for rematch matching --------------------------
 
 def test_norm_full_distinguishes_shared_surnames():

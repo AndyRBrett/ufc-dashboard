@@ -1909,6 +1909,19 @@ def events_js(evs):
 # Pipeline steps
 # ---------------------------------------------------------------------------
 
+def _wiki_event_slug(ev_name):
+    """Wikipedia article slug for an event name.
+
+    A numbered PPV's article is titled just "UFC 329" — the full
+    "UFC 329: McGregor vs. Holloway 2" is only a redirect, whose short stub the
+    fetcher discards, so results were never read. A Fight Night's article IS the
+    full "UFC Fight Night: A vs. B" title, so keep that as-is.
+    """
+    m = re.match(r"UFC\s+\d+", ev_name)
+    base = m.group(0) if m else ev_name
+    return re.sub(r"[^a-zA-Z0-9 :._-]", "", base).replace(" ", "_")
+
+
 def step_inject_results(data, now):
     """
     Check Wikipedia for results from events in the past 2 days and inject them
@@ -1930,7 +1943,7 @@ def step_inject_results(data, now):
         if ed < now - timedelta(days=4) or ed > now + timedelta(hours=6):
             continue
         print(f"Checking results: {ev_name}", file=sys.stderr)
-        slug = re.sub(r"[^a-zA-Z0-9 :._-]", "", ev_name).replace(" ", "_")
+        slug = _wiki_event_slug(ev_name)
         wt   = fetch_wikitext(slug)
         if not wt:
             continue
