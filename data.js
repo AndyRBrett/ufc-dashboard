@@ -94,18 +94,6 @@ var EVENTS=[
     ]
   },
   {
-    name:"UFC 329: McGregor vs. Holloway 2",
-    date:"2026-07-11",
-    venue:"T-Mobile Arena",
-    loc:"Las Vegas",
-    tv:"Paramount+",
-    time:"21:00",
-    prelimTime:"19:00",
-    fights:[
-      {lbl:"Main Event",wc:"TBD",title:false,rematch:true,odds:{f1:193,f2:-242},winner:"",method:"",round:null,state:"pre",f1:{n:"McGregor",r:"22-6-0",rk:"",s:null},f2:{n:"Holloway",r:"27-9-0",rk:"",s:null}}
-    ]
-  },
-  {
     name:"UFC Fight Night: du Plessis vs. Usman",
     date:"2026-07-18",
     venue:"Paycom Center",
