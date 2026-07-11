@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T01:47:36Z",
+  "generated_at": "2026-07-11T01:53:11Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2557,7 +2557,7 @@
         {
           "f1": "Brandon Royval",
           "f2": "Lone'er Kavanagh",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -2613,6 +2613,11 @@
               "at": "2026-07-10T19:25:10Z",
               "f1_odds": 173,
               "f2_odds": -214
+            },
+            {
+              "at": "2026-07-11T01:53:11Z",
+              "f1_odds": 174,
+              "f2_odds": -213
             }
           ],
           "open": {
@@ -5158,7 +5163,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Lone'er Kavanagh",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": 158,
         "close": null,
         "clv": null
@@ -5169,7 +5174,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Brandon Royval",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -193,
         "close": null,
         "clv": null
