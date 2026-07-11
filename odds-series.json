@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T03:43:14Z",
+  "generated_at": "2026-07-11T03:47:32Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2987,7 +2987,7 @@
         {
           "f1": "Luke Riley",
           "f2": "Kai Kamaka III",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-07-01T12:24:07Z",
@@ -3058,6 +3058,11 @@
               "at": "2026-07-11T00:47:44Z",
               "f1_odds": -226,
               "f2_odds": 183
+            },
+            {
+              "at": "2026-07-11T03:47:32Z",
+              "f1_odds": -228,
+              "f2_odds": 185
             }
           ],
           "open": {
@@ -5298,7 +5303,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Kai Kamaka III",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -330,
         "close": null,
         "clv": null
@@ -5309,7 +5314,7 @@
         "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
         "opponent": "Luke Riley",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 258,
         "close": null,
         "clv": null
