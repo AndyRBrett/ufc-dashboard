@@ -70,11 +70,11 @@ function globalRateLimited(): boolean {
 // the public anon key can't be used to mint arbitrary notification streams.
 const TYPE_RE = /^(main|prelim|register|result:.+|pick-(first|done)-.+|trash-talk-\d+|chal(-resp)?-[\w-]+|nudge-[\w-]+)$/;
 // MAX_BODY must comfortably exceed the longest message any client can send.
-// The AI trash-talk roast is generated with up to ~180-200 tokens (~700-800
-// chars of English), so a 600-char cap silently 400'd longer roasts. 1000
+// The AI trash-talk roast is generated with up to ~320 tokens (~1300 chars of
+// English), so a 1000-char cap could silently 400 a long group roast. 1600
 // fits the model's token ceiling with headroom and stays well under the
 // ~4KB encrypted web-push payload limit.
-const MAX_TITLE = 120, MAX_BODY = 1000;
+const MAX_TITLE = 120, MAX_BODY = 1600;
 
 interface ReqBody {
   event_date?: string;

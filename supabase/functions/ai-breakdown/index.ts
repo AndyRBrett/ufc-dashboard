@@ -172,22 +172,23 @@ function buildTrashTalkPrompt(d: ReqBody): string {
   // twist the knife with one concrete stat/pick. Branch on solo vs group so the
   // hook actually fits who's being roasted.
   const angles = solo ? [
-    "Open by writing them off as a clueless nobody, THEN twist the knife with the one fight they blew — name the fighter.",
-    "Trash how they pick fights in general, THEN back it with a specific bad call from the dossier.",
-    "Tell them to find a new hobby, THEN cite the cold streak or whiffed pick that proves it.",
-    `Treat them as beneath ${myName}, THEN drop the head-to-head clash where they ate it.`,
-    "Question whether they've ever watched a fight, THEN name the fighter they backed that exposes it."
+    "Write them off as a clueless nobody with no business talking picks.",
+    "Trash their whole vibe — they pick like they've never watched a fight.",
+    "Tell them to find a new hobby; this one clearly isn't for them.",
+    `Make it clear they're beneath ${myName} and always will be.`,
+    "Question whether they even understand how the sport works."
   ] : [
-    "Write the whole group off as clowns, THEN single out the one who blew the biggest pick by name.",
-    "Mock them all for fading the same fighter, THEN name who got buried worst.",
-    "Dismiss the entire board as tourists, THEN twist the knife with one specific blown call.",
-    `Crown ${myName} and bury the rest, THEN drop a real head-to-head clash someone lost.`,
-    "Tell them collectively to quit, THEN back it with the coldest streak on the board."
+    "Write the whole group off as clowns cosplaying as fight fans.",
+    "Dismiss the entire board as tourists who got lucky once.",
+    `Crown ${myName} and bury the rest in a single breath.`,
+    "Tell them collectively to quit while they're behind.",
+    `Mock the lot of them for thinking they're on ${myName}'s level.`
   ];
   const angleHint = angles[Math.floor(Math.random() * angles.length)];
   const seed = Math.random().toString(36).slice(2, 7);
-  // Rude and generic FIRST, the stat as a follow-up kicker — and never percentages.
-  const baseRules = `STRUCTURE THE ROAST: open with a blunt, generic, genuinely RUDE insult in ${persona}'s voice — pure attitude, NO numbers or stats up front. THEN follow up with ONE specific dig pulled from the CARD (a fight they blew, a fighter they backed, a cold streak). FACTS ARE STRICT: only mock the target for picks explicitly attributed to THEM in the CARD; NEVER claim they backed a fighter that isn't listed under their name, and never blame them for a fight they actually won — if there's nothing real to mock, lean on pure persona attitude instead of inventing anything. Never quote percentages — they don't land in trash talk. Don't open on a rank or username, skip the emoji crutch, speak purely in ${persona}'s unmistakable voice. End with '— ${persona}' — sign the FULL name exactly as written, never shortened. No preamble. 2-3 sentences. (variety token, do not print: ${seed})`;
+  // Attitude first and almost all the way through; a card reference is optional
+  // seasoning, never the main course. A stat dump kills the burn.
+  const baseRules = `This is PURE TRASH TALK in ${persona}'s voice — lead with swagger, bravado, and blunt, genuinely RUDE smack, and keep it that way. Make it general: mostly ${persona}'s personality and put-downs, not a rundown of anyone's picks. You MAY work in ONE quick jab from the CARD only if it lands naturally — but do NOT recite picks, records, or go fighter-by-fighter, and never string together multiple stats. When in doubt, drop the stat and just talk shit. FACTS ARE STRICT: if you do reference the CARD, only mock a target for picks explicitly attributed to THEM; never invent a pick they didn't make and never blame them for a fight they won. Never quote percentages or numbers. Don't open on a rank or username, skip the emoji crutch, speak purely in ${persona}'s unmistakable voice. End with '— ${persona}' — sign the FULL name exactly as written, never shortened. No preamble. Keep it SHORT and punchy: 2-3 sentences, and when burying a group land ONE collective burn — do not roast each person in turn. (variety token, do not print: ${seed})`;
   const who = solo ? `ripping into ${opponentNames}` : `burying ${opponentNames}`;
   const hint = (d.hint ?? "").trim();
   const question = hint
@@ -286,9 +287,11 @@ Deno.serve(async (req) => {
     maxTokens = 300;
   } else if (action === "trash-talk") {
     prompt = buildTrashTalkPrompt(body);
-    // Same budget as the chat path the client used to route roasts through —
-    // send-push's body-length cap is sized around this output.
-    maxTokens = 180;
+    // Headroom so a punchy roast finishes its thought instead of getting cut off
+    // mid-sentence (the old 180 truncated group roasts). The prompt still asks for
+    // 2-3 short sentences; this just guarantees the last one lands. send-push's
+    // MAX_BODY is sized above the longest output this can produce.
+    maxTokens = 320;
   } else {
     // breakdown needs both fighters — guard before the non-null assertions in buildBreakdownPrompt
     if (!body.f1?.n || !body.f2?.n) {
