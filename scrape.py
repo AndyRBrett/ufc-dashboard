@@ -1881,6 +1881,70 @@ def _dedupe_events(events):
     return out
 
 
+_EXIST_FIGHT_PAT = re.compile(
+    r'\{lbl:(?P<lbl>"[^"]*"|null),wc:(?P<wc>"[^"]*"|null),'
+    r'title:(?P<title>true|false),rematch:(?P<rematch>true|false),'
+    r'odds:(?P<odds>\{f1:[^,}]+,f2:[^}]+\}|null),'
+    r'winner:(?P<winner>"[^"]*"),method:(?P<method>"[^"]*"),'
+    r'round:(?P<round>\d+|null),state:(?P<state>"[^"]*"),'
+    r'f1:\{n:"(?P<f1n>[^"]+)",r:"(?P<f1r>[^"]*)",rk:"(?P<f1rk>[^"]*)",s:[^}]*\},'
+    r'f2:\{n:"(?P<f2n>[^"]+)",r:"(?P<f2r>[^"]*)",rk:"(?P<f2rk>[^"]*)",s:[^}]*\}\}'
+)
+
+
+def _extract_existing_cards(data):
+    """Parse the fight card already serialised in data.js, keyed by (name, date).
+
+    A full rebuild re-scrapes each event from Wikipedia. Once an event is over,
+    Wikipedia rewrites its page from an announced-bouts table into a results
+    table that parse_upcoming_card can't read, so the parse returns nothing and
+    the title-regex fallback synthesises a one-bout stub from the event name —
+    which then overwrites the real card AND drops every result already injected.
+    Reading the existing card back lets step_build_events refuse to shrink a card
+    (see the regression guard), so a bad parse can never destroy good data.
+    """
+    cards = {}
+    hdr = re.compile(r'name:"([^"]+)",\s*\n\s*date:"(\d{4}-\d{2}-\d{2})",')
+    heads = list(hdr.finditer(data))
+    for i, h in enumerate(heads):
+        name, date = h.group(1), h.group(2)
+        end = heads[i + 1].start() if i + 1 < len(heads) else len(data)
+        chunk = data[h.end():end]
+        fights = []
+        for fm in _EXIST_FIGHT_PAT.finditer(chunk):
+            odds = None
+            om = re.match(r'\{f1:([^,}]+),f2:([^}]+)\}', fm.group("odds"))
+            if om:
+                def _num(x):
+                    x = x.strip()
+                    try:
+                        return int(x)
+                    except ValueError:
+                        try:
+                            return float(x)
+                        except ValueError:
+                            return x
+                odds = {"f1": _num(om.group(1)), "f2": _num(om.group(2))}
+            lbl = json.loads(fm.group("lbl")) if fm.group("lbl") != "null" else ""
+            wc  = json.loads(fm.group("wc")) if fm.group("wc") != "null" else "TBD"
+            fights.append({
+                "label":   lbl,
+                "wc":      wc,
+                "title":   fm.group("title") == "true",
+                "rematch": fm.group("rematch") == "true",
+                "odds":    odds,
+                "winner":  json.loads(fm.group("winner")),
+                "method":  json.loads(fm.group("method")),
+                "round":   None if fm.group("round") == "null" else int(fm.group("round")),
+                "state":   json.loads(fm.group("state")),
+                "f1": {"name": fm.group("f1n"), "record": fm.group("f1r"), "ranking": fm.group("f1rk")},
+                "f2": {"name": fm.group("f2n"), "record": fm.group("f2r"), "ranking": fm.group("f2rk")},
+            })
+        if fights:
+            cards[(name, date)] = fights
+    return cards
+
+
 def events_js(evs):
     """Serialise the events list to a JS array literal (value only, no var declaration)."""
     lines = ["["]
@@ -1970,8 +2034,9 @@ def step_build_events(data, now):
     stats, and update rankings. Returns the updated data.js string.
     """
     print("Fetching odds...", file=sys.stderr)
-    existing_odds = extract_existing_odds(data)
-    odds_index    = fetch_odds()
+    existing_odds  = extract_existing_odds(data)
+    existing_cards = _extract_existing_cards(data)
+    odds_index     = fetch_odds()
 
     print("Building events from Wikipedia...", file=sys.stderr)
     discovered = discover_upcoming_events(now)
@@ -2044,6 +2109,17 @@ def step_build_events(data, now):
                 "f1":     {"name": f1, "record": "", "ranking": wf.get("f1_rk", "")},
                 "f2":     {"name": f2, "record": "", "ranking": wf.get("f2_rk", "")},
             })
+        # Regression guard: never let a bad/partial parse shrink a card that we
+        # already have. Once an event is over, Wikipedia's page flips to a results
+        # table parse_upcoming_card can't read, so the parse returns nothing and the
+        # title-regex fallback above builds a one-bout stub from the event name. That
+        # stub (or any partial parse) must not replace the fuller card — with all its
+        # injected results — already in data.js. Keep whichever card has more fights.
+        prev = existing_cards.get((ev_name, ev_date))
+        if prev and len(prev) > len(card):
+            print(f"  Card regression guard: parse gave {len(card)} fight(s) for "
+                  f"{ev_name}; keeping existing {len(prev)}-fight card", file=sys.stderr)
+            card = prev
         if not card:
             continue
         # Per-event source attribution: count which adapter covered each bout's

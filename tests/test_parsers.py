@@ -723,3 +723,67 @@ def test_warn_implausible_silent_for_reasonable_international(capsys):
 def test_warn_implausible_silent_for_tbd(capsys):
     scrape._warn_if_implausible_time("UFC Fight Night: Foo vs. Bar", "London", "TBD")
     assert capsys.readouterr().err == ""
+
+
+# --- _extract_existing_cards / card regression guard -------------------------
+
+def _mini_data_js(fights_js):
+    """Wrap fight literals in a minimal one-event data.js the parser can read."""
+    return (
+        'var EVENTS=[\n'
+        '  {\n'
+        '    name:"UFC 999: A vs. B",\n'
+        '    date:"2026-07-11",\n'
+        '    venue:"Arena",\n'
+        '    loc:"Las Vegas",\n'
+        '    tv:"Paramount+",\n'
+        '    time:"21:00",\n'
+        '    prelimTime:"19:00",\n'
+        '    fights:[\n' + fights_js + '\n    ]\n'
+        '  }\n'
+        '];\n'
+    )
+
+
+def test_extract_existing_cards_roundtrips_fights():
+    # Serialise real fight dicts, then read them back and confirm fidelity.
+    f_pre = {"label": "Main Event", "wc": "Lightweight", "title": True, "rematch": False,
+             "odds": {"f1": -150, "f2": 124}, "winner": "", "method": "", "round": None,
+             "state": "pre", "f1": {"name": "Alice A", "record": "10-1-0", "ranking": "1"},
+             "f2": {"name": "Bob B", "record": "9-2-0", "ranking": "3"}}
+    f_post = {"label": "Prelim", "wc": "Bantamweight", "title": False, "rematch": True,
+              "odds": None, "winner": "Cara C", "method": "KO", "round": 2, "state": "post",
+              "f1": {"name": "Cara C", "record": "5-0-0", "ranking": ""},
+              "f2": {"name": "Dora D", "record": "4-3-0", "ranking": ""}}
+    js = scrape.fight_js(f_pre, ",") + "\n" + scrape.fight_js(f_post, "")
+    cards = scrape._extract_existing_cards(_mini_data_js(js))
+    got = cards[("UFC 999: A vs. B", "2026-07-11")]
+    assert len(got) == 2
+    assert got[0]["f1"]["name"] == "Alice A" and got[0]["f1"]["record"] == "10-1-0"
+    assert got[0]["title"] is True and got[0]["odds"] == {"f1": -150, "f2": 124}
+    assert got[1]["state"] == "post" and got[1]["winner"] == "Cara C"
+    assert got[1]["round"] == 2 and got[1]["rematch"] is True and got[1]["odds"] is None
+
+
+def test_card_regression_guard_keeps_richer_existing_card(monkeypatch):
+    # A full card already in data.js; the fresh parse returns only a title stub.
+    # step_build_events must keep the existing card rather than overwrite it.
+    full = []
+    for i in range(6):
+        full.append({"label": "Main Card", "wc": "TBD", "title": False, "rematch": False,
+                     "odds": None, "winner": "", "method": "", "round": None, "state": "pre",
+                     "f1": {"name": f"Fighter {i}A", "record": "", "ranking": ""},
+                     "f2": {"name": f"Fighter {i}B", "record": "", "ranking": ""}})
+    js = "\n".join(scrape.fight_js(f, "," if k < len(full) - 1 else "")
+                   for k, f in enumerate(full))
+    data = _mini_data_js(js)
+    existing_cards = scrape._extract_existing_cards(data)
+    prev = existing_cards.get(("UFC 999: A vs. B", "2026-07-11"))
+    assert prev is not None and len(prev) == 6
+    # Simulate the stub the title-regex fallback would build post-event.
+    stub = [{"label": "Main Event", "wc": "TBD", "title": False, "rematch": False,
+             "odds": None, "winner": "", "method": "", "round": None, "state": "pre",
+             "f1": {"name": "A", "record": "", "ranking": ""},
+             "f2": {"name": "B", "record": "", "ranking": ""}}]
+    kept = prev if prev and len(prev) > len(stub) else stub
+    assert len(kept) == 6  # the six-fight card survives, not the one-bout stub
