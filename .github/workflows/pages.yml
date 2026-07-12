@@ -25,7 +25,19 @@ permissions:
   id-token: write
 
 jobs:
+  # Gate: the app must boot and all web assets must be valid before we publish.
+  # deploy `needs:` this, so a syntax typo or a non-booting build is blocked from
+  # production instead of white-paging everyone (including on the automated
+  # data-update path, which reaches this workflow via workflow_call).
+  validate:
+    uses: ./.github/workflows/validate-web.yml
+    # Validate the exact tip we deploy — deploy checks out main, and on the
+    # data-update path the run's own SHA predates that auto-pushed commit.
+    with:
+      ref: main
+
   deploy:
+    needs: validate
     runs-on: ubuntu-latest
     # Queue deploys instead of overlapping; never cancel an in-flight production deploy.
     concurrency:

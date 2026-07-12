@@ -17,3 +17,9 @@ jobs:
         run: python -m py_compile scrape.py make_icons.py
       - name: Unit tests
         run: python -m pytest -q
+
+  # Frontend + edge-function validation (boot smoke test, syntax, data shape).
+  # Same job pages.yml gates its deploy on, so CI shows the exact check that
+  # would block a broken release.
+  web:
+    uses: ./.github/workflows/validate-web.yml

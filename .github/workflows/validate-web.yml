@@ -1,0 +1,45 @@
+# Reusable validation for the browser-facing app + edge functions.
+#
+# Called by ci.yml (every push / PR, for a visible status) and — crucially — by
+# pages.yml as a `needs:` gate so a build that fails to boot can NEVER reach
+# production. This is the guard that was missing when a broken edit white-paged
+# the app mid-card.
+#
+#   check:web       — inline <script> + sw.js + data.js compile; EVENTS is usable
+#   check:functions — every Supabase edge function parses (incl. the paid one)
+#   smoke           — the app actually boots headlessly and the leaderboard opens
+name: Validate Web
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: "Git ref to validate. Empty = the SHA that triggered the run (correct for CI/PRs). pages.yml passes 'main' so it validates the exact tip it ships, including data auto-pushed just before deploy."
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - name: Static checks (syntax + data + functions)
+        run: |
+          npm run check:web
+          npm run check:functions
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Boot smoke test
+        run: npm run smoke

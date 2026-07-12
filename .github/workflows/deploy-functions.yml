@@ -8,7 +8,24 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Gate: every edge function must parse before any of them deploy. Catches a
+  # typo in the paid ai-breakdown function before it reaches production, with a
+  # precise error instead of an opaque `supabase deploy` failure.
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - name: Syntax-check edge functions
+        run: npm run check:functions
+
   deploy:
+    needs: validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
