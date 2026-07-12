@@ -166,29 +166,49 @@ function buildTrashTalkPrompt(d: ReqBody): string {
   const boardAngle = d.lbMode === "current"
     ? `The rankings are about ${d.evName || "this week's card"} — work that event into the smack talk.`
     : "This is about all-time, career-long bragging rights — make the history sting.";
-  // A randomised hook + a freshness token so the same persona on the same board
-  // doesn't keep producing the same line — fresh marching orders on every tap.
-  // Each angle bakes in the structure the user wants: lead rude + generic, THEN
-  // twist the knife with one concrete stat/pick. Branch on solo vs group so the
-  // hook actually fits who's being roasted.
+  // Two INDEPENDENT random dimensions so no two roasts share a skeleton: WHAT the
+  // burn is about (angle) and the SHAPE it takes (form). Rotating only the angle
+  // still produced the same intro→diss-the-picks→signed-outro cadence every time;
+  // varying the form is what makes it read like a real person riffing instead of a
+  // template being filled in. A freshness token stops verbatim repeats.
   const angles = solo ? [
     "Write them off as a clueless nobody with no business talking picks.",
     "Trash their whole vibe — they pick like they've never watched a fight.",
     "Tell them to find a new hobby; this one clearly isn't for them.",
     `Make it clear they're beneath ${myName} and always will be.`,
-    "Question whether they even understand how the sport works."
+    "Question whether they even understand how the sport works.",
+    "Act like you can barely remember their name, they matter that little.",
+    "Treat their confidence as the funniest part of how bad they are.",
+    "Pity them — they tried their best and it still wasn't close."
   ] : [
     "Write the whole group off as clowns cosplaying as fight fans.",
     "Dismiss the entire board as tourists who got lucky once.",
     `Crown ${myName} and bury the rest in a single breath.`,
     "Tell them collectively to quit while they're behind.",
-    `Mock the lot of them for thinking they're on ${myName}'s level.`
+    `Mock the lot of them for thinking they're on ${myName}'s level.`,
+    "Treat the whole leaderboard like it's beneath your attention.",
+    "Act amazed this many people could be this wrong at once."
+  ];
+  // Rhetorical shapes — the real fix for the monotony. Each one breaks the
+  // opener/jab/outro mold in a different direction.
+  const forms = [
+    "one savage run-on breath — no full stops until the very end",
+    "open mid-thought, like you're already three insults deep and just got louder",
+    "a fake compliment that curdles into a gut-punch by the last word",
+    "a rhetorical question you never let them answer",
+    "a single devastating one-liner and nothing else",
+    "a mock pep-talk that's actually a burial",
+    "a cold quiet threat delivered like a calm promise",
+    "one absurd comparison, stretched until it's humiliating",
+    "start almost bored, then snap into contempt"
   ];
   const angleHint = angles[Math.floor(Math.random() * angles.length)];
+  const formHint = forms[Math.floor(Math.random() * forms.length)];
   const seed = Math.random().toString(36).slice(2, 7);
   // Attitude first and almost all the way through; a card reference is optional
-  // seasoning, never the main course. A stat dump kills the burn.
-  const baseRules = `This is PURE TRASH TALK in ${persona}'s voice — lead with swagger, bravado, and blunt, genuinely RUDE smack, and keep it that way. Make it general: mostly ${persona}'s personality and put-downs, not a rundown of anyone's picks. You MAY work in ONE quick jab from the CARD only if it lands naturally — but do NOT recite picks, records, or go fighter-by-fighter, and never string together multiple stats. When in doubt, drop the stat and just talk shit. FACTS ARE STRICT: if you do reference the CARD, only mock a target for picks explicitly attributed to THEM; never invent a pick they didn't make and never blame them for a fight they won. Never quote percentages or numbers. Don't open on a rank or username, skip the emoji crutch, speak purely in ${persona}'s unmistakable voice. End with '— ${persona}' — sign the FULL name exactly as written, never shortened. No preamble. Keep it SHORT and punchy: 2-3 sentences, and when burying a group land ONE collective burn — do not roast each person in turn. (variety token, do not print: ${seed})`;
+  // seasoning, never the main course. A stat dump kills the burn, and — the whole
+  // point of this rewrite — so does a predictable structure.
+  const baseRules = `Speak PURELY as ${persona} — their cadence, their swagger, their exact way of talking shit. This is raw trash talk, rude and personal, NOT a scouting report. Do NOT follow a formula: no throat-clearing opener, no obligatory middle jab about their picks, no tidy mic-drop to close — just talk the way ${persona} actually would and let it land however it lands. Shape THIS one like: ${formHint}. You MAY glance at the CARD for ONE detail, and only if it genuinely makes the burn funnier — most roasts should skip the card entirely and run on pure personality and disrespect. FACTS ARE STRICT: only tie a target to a pick explicitly attributed to THEM, never invent one, never blame them for a fight they won, never quote percentages or numbers. Don't lead with a rank, a username, or "hey" — drop straight into the voice, no emojis. Length is whatever hits hardest: sometimes one brutal line, sometimes up to three — never padded, never more than three. When burying a group, land ONE collective burn — do not go person by person. Sign off with '— ${persona}' using the FULL name exactly as written, and even that should feel in-character. No preamble. (variety token, do not print: ${seed})`;
   const who = solo ? `ripping into ${opponentNames}` : `burying ${opponentNames}`;
   const hint = (d.hint ?? "").trim();
   const question = hint
