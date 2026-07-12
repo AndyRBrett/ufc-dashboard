@@ -2812,6 +2812,15 @@ function picksLocked(ev){
   var t=ev.prelimTime||ev.time;var pp=t.split(":");
   return now>=Date.UTC(+dp[0],+dp[1]-1,+dp[2],+pp[0]+eto,+(pp[1]||0),0);
 }
+// Challenges only ever target main-card fights, so they stay open until the MAIN
+// CARD starts (ev.time) — not the prelim start that locks whole-card picks. That
+// let the prelims lock out challenges for a main card that hadn't begun.
+function mainCardLocked(ev){
+  var t=ev&&ev.time;
+  if(!t||t==="TBD")return picksLocked(ev);  // no known main-card time → fall back
+  var now=Date.now(),eto=etOffset(),dp=ev.date.split("-"),pp=t.split(":");
+  return now>=Date.UTC(+dp[0],+dp[1]-1,+dp[2],+pp[0]+eto,+(pp[1]||0),0);
+}
 // opts: {includeIds:[uid,…] target specific users, url:"./?…" tap deep-link,
 // kind:"challenge"|… SW tap routing}. Resolves to the server's JSON ({sent}
 // or {skipped:true} when the event_date+type pair was already sent).
@@ -4615,7 +4624,9 @@ function _isMyChal(c){
 function _chalIncoming(c){return c.target_id===USER_ID||(_lbBaseName(userName)&&_lbBaseName(c.target_name)===_lbBaseName(userName));}
 function _chalFightLbl(c){return c.f1&&c.f2?c.f1.split(" ").pop()+" vs "+c.f2.split(" ").pop():"Whole card";}
 function _chalEvLocked(c){
-  for(var i=0;i<EVENTS.length;i++)if(EVENTS[i].date===c.event_date)return picksLocked(EVENTS[i]);
+  // Challenges are main-card only, so they lock at the main-card start, not at
+  // the prelim lock that governs whole-card picks.
+  for(var i=0;i<EVENTS.length;i++)if(EVENTS[i].date===c.event_date)return mainCardLocked(EVENTS[i]);
   return new Date(c.event_date).getTime()<Date.now();   // aged out ⇒ long past
 }
 // Latest pick a user (by base name) made on a specific fight. _lbRows is
@@ -4756,7 +4767,7 @@ function openChallengeCompose(u){
   // false — guard on date and finished-ness too so a month-old card can never
   // be selected as the challenge battleground.
   var ev=EVENTS.filter(function(e){
-    return !_eventFinished(e.date)&&!picksLocked(e)&&new Date(e.date).getTime()>Date.now()-DAY_MS;
+    return !_eventFinished(e.date)&&!mainCardLocked(e)&&new Date(e.date).getTime()>Date.now()-DAY_MS;
   }).sort(function(a,b){return a.date<b.date?-1:1;})[0];
   if(!ev){toast("No upcoming card to challenge on");return;}
   _chalTarget=u;_chalEvent=ev;_chalFightSel=null;_chalStake=CHAL_STAKES[0];
