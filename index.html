@@ -93,14 +93,17 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-row.lb-me{border-color:var(--gold);background:var(--gold-dim)}
 .lb-medal{font-size:20px;width:28px;text-align:center;flex-shrink:0}
 .lb-rank{font-family:Bebas Neue,sans-serif;font-size:18px;color:var(--muted);width:28px;text-align:center;flex-shrink:0}
-.lb-name{font-weight:600;font-size:14px;flex:1;min-width:0;display:flex;align-items:center;gap:4px;overflow:hidden}
-.lb-name-txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.lb-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.lb-nameline{display:flex;align-items:center;gap:6px;min-width:0}
+.lb-metaline{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;min-width:0}
+.lb-metaline:empty{display:none}
+.lb-name-txt{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
 .lb-you{font-size:9px;font-weight:700;background:var(--gold);color:var(--on-gold);border-radius:3px;padding:1px 4px;vertical-align:middle;letter-spacing:.04em;flex-shrink:0}
 .lb-edit-btn{background:none;border:none;cursor:pointer;padding:0 2px;font-size:13px;flex-shrink:0;color:var(--muted);line-height:1;border-radius:4px;transition:background .15s}
 .lb-edit-btn:hover{background:var(--btn-bg)}
 .lb-right{text-align:right;flex-shrink:0}
 .lb-pts{font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--gold);line-height:1}
-.lb-detail{font-size:10px;color:var(--muted);margin-top:1px}
+.lb-detail{font-size:11px;color:var(--muted)}
 .lb-empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:14px}
 .lb-loading{text-align:center;padding:48px 20px;color:var(--muted);font-size:14px}
 .lb-info-btn{background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -4483,31 +4486,38 @@ function loadLeaderboard(isLive){
       if(rank<=3&&!tied){med.className="lb-medal";med.textContent=medals[rank-1];}
       else{med.className="lb-rank";med.textContent=(tied?"T":"")+rank;}
       row.appendChild(med);
-      var nameDiv=document.createElement("div");nameDiv.className="lb-name";
+      // Main column: name line on top, meta line (stats) below. Keeping the badges
+      // off the name line stops the belt chip / YOU pill from crushing the name to
+      // an unreadable sliver on a champion's row.
+      var main=document.createElement("div");main.className="lb-main";
+      var nameLine=document.createElement("div");nameLine.className="lb-nameline";
       var nameTxt=document.createElement("span");nameTxt.className="lb-name-txt";
       nameTxt.textContent=(u.nickname&&u.nickname.trim())?u.nickname:(u.user_id?"🥊 "+u.user_id.slice(0,4):"Anon");
-      nameDiv.appendChild(nameTxt);
+      nameLine.appendChild(nameTxt);
       if(belt&&belt.holderBase&&_lbBaseName(u.nickname)===belt.holderBase){
         var beltChip=document.createElement("span");beltChip.className="lb-belt-chip";
         beltChip.title="Lineal champion — outscore them on a card to take the belt";
         beltChip.textContent="🏆"+(belt.defenses>0?" "+belt.defenses+" DEF":"");
-        nameDiv.appendChild(beltChip);
+        nameLine.appendChild(beltChip);
       }
-      if(u.isMe){var you=document.createElement("span");you.className="lb-you";you.textContent="YOU";nameDiv.appendChild(you);}
-      row.appendChild(nameDiv);
-      // Stats: accuracy + streak
-      if(anyResolved&&u.accuracy!==null){var accDiv=document.createElement("div");accDiv.className="lb-acc";accDiv.textContent=u.accuracy+"%";row.appendChild(accDiv);}
+      if(u.isMe){var you=document.createElement("span");you.className="lb-you";you.textContent="YOU";nameLine.appendChild(you);}
+      main.appendChild(nameLine);
+      // Meta line: accuracy · streak · correct/method breakdown
+      var metaLine=document.createElement("div");metaLine.className="lb-metaline";
+      if(anyResolved&&u.accuracy!==null){var accDiv=document.createElement("div");accDiv.className="lb-acc";accDiv.textContent=u.accuracy+"%";metaLine.appendChild(accDiv);}
       var streakDiv=document.createElement("div");streakDiv.className="lb-streak"+(u.currentStreak===0?" lb-streak-0":"");
       streakDiv.title="Best streak: "+u.bestStreak;
       streakDiv.textContent=u.currentStreak>0?"🔥 "+u.currentStreak:"–";
-      row.appendChild(streakDiv);
+      metaLine.appendChild(streakDiv);
+      var det=document.createElement("div");det.className="lb-detail";
+      det.textContent=anyResolved?(u.correct+"/"+u.total+" correct"+(u.methods?" · +"+u.methods+" method":"")+(u.fotn?" · +"+u.fotn+" bonus":"")):pending+" pending";
+      metaLine.appendChild(det);
+      main.appendChild(metaLine);
+      row.appendChild(main);
       var right=document.createElement("div");right.className="lb-right";
       var ptsDiv=document.createElement("div");ptsDiv.className="lb-pts";
       ptsDiv.textContent=anyResolved?(pts%1===0?pts+" pts":pts.toFixed(1)+" pts"):u.total+(u.total===1?" pick":" picks");
       right.appendChild(ptsDiv);
-      var det=document.createElement("div");det.className="lb-detail";
-      det.textContent=anyResolved?(u.correct+"/"+u.total+" correct"+(u.methods?" · +"+u.methods+" method":"")+(u.fotn?" · +"+u.fotn+" bonus":"")):pending+" pending";
-      right.appendChild(det);
       row.appendChild(right);
       if(!u.isMe&&u.user_id){
         var cbtn=document.createElement("button");cbtn.className="lb-chal-btn";cbtn.textContent="⚔️";
