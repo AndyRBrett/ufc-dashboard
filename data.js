@@ -77,7 +77,20 @@ var EVENTS=[
     time:"21:00",
     prelimTime:"19:00",
     fights:[
-      {lbl:"Main Event",wc:"TBD",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"McGregor",r:"22-6-0",rk:"",s:null},f2:{n:"Holloway",r:"27-9-0",rk:"",s:null}}
+      {lbl:"Main Event",wc:"Welterweight",title:false,rematch:true,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Conor McGregor",r:"22-6-0",rk:"",s:null},f2:{n:"Max Holloway",r:"27-9-0",rk:"",s:null}},
+      {lbl:"Co-Main",wc:"Lightweight",title:false,rematch:false,odds:{f1:-150,f2:124},winner:"",method:"",round:null,state:"pre",f1:{n:"Benoit Saint Denis",r:"17-3-0",rk:"",s:null},f2:{n:"Paddy Pimblett",r:"23-4-0",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Bantamweight",title:false,rematch:true,odds:{f1:-140,f2:117},winner:"",method:"",round:null,state:"pre",f1:{n:"Cory Sandhagen",r:"18-6-0",rk:"",s:null},f2:{n:"Mario Bautista",r:"17-3-0",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Flyweight",title:false,rematch:false,odds:{f1:174,f2:-213},winner:"",method:"",round:null,state:"pre",f1:{n:"Brandon Royval",r:"17-9-0",rk:"",s:null},f2:{n:"Lone'er Kavanagh",r:"10-1-0",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Lightweight",title:false,rematch:false,odds:{f1:-113,f2:-107},winner:"",method:"",round:null,state:"pre",f1:{n:"King Green",r:"35-17-1",rk:"",s:null},f2:{n:"Terrance McKinney",r:"18-8-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Light Heavyweight",title:false,rematch:false,odds:{f1:-128,f2:106},winner:"",method:"",round:null,state:"pre",f1:{n:"Robert Whittaker",r:"27-9-0",rk:"",s:null},f2:{n:"Nikita Krylov",r:"31-11-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Heavyweight",title:false,rematch:false,odds:{f1:-1850,f2:983},winner:"",method:"",round:null,state:"pre",f1:{n:"Gable Steveson",r:"3-0-0",rk:"",s:null},f2:{n:"Elisha Ellison",r:"5-2-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Bantamweight",title:false,rematch:false,odds:{f1:-425,f2:327},winner:"Adrian Yanez",method:"KO/TKO",round:1,state:"post",f1:{n:"Adrian Yanez",r:"17-6-1",rk:"",s:null},f2:{n:"Cody Garbrandt",r:"15-7-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Featherweight",title:false,rematch:false,odds:{f1:-228,f2:185},winner:"Luke Riley",method:"KO/TKO",round:1,state:"post",f1:{n:"Luke Riley",r:"13-0-0",rk:"",s:null},f2:{n:"Kai Kamaka III",r:"18-7-1",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Women's Flyweight",title:false,rematch:true,odds:{f1:-115,f2:-105},winner:"Wang Cong",method:"Decision (Unanimous)",round:3,state:"post",f1:{n:"Wang Cong",r:"9-1-0",rk:"",s:null},f2:{n:"Tracy Cortez",r:"12-3-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Middleweight",title:false,rematch:false,odds:{f1:-259,f2:208},winner:"Damian Pinas",method:"KO/TKO",round:1,state:"post",f1:{n:"Damian Pinas",r:"9-1-0",rk:"",s:null},f2:{n:"Cesar Almeida",r:"7-2-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Bantamweight",title:false,rematch:false,odds:{f1:-632,f2:460},winner:"Farid Basharat",method:"Decision (Unanimous)",round:3,state:"post",f1:{n:"Farid Basharat",r:"15-0-0",rk:"",s:null},f2:{n:"John Garza",r:"6-1-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Middleweight",title:false,rematch:false,odds:{f1:-135,f2:113},winner:"Ryan Gandra",method:"KO/TKO",round:1,state:"post",f1:{n:"Ryan Gandra",r:"9-1-0",rk:"",s:null},f2:{n:"Zachary Reese",r:"10-3-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Flyweight",title:false,rematch:false,odds:{f1:-230,f2:187},winner:"Alessandro Costa",method:"Submission",round:2,state:"post",f1:{n:"Alessandro Costa",r:"16-5-0",rk:"",s:null},f2:{n:"Cody Durden",r:"18-10-1",rk:"",s:null}}
     ]
   },
   {
