@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-12T01:22:46Z",
+  "generated_at": "2026-07-12T01:25:26Z",
   "events_tracked": 11,
   "stale_events": 1,
-  "parse_failure_events": 1,
+  "parse_failure_events": 0,
   "awaiting_card_events": 3,
   "stale_threshold_hours": 48,
   "movement_alert_threshold": 10,
@@ -36,12 +36,12 @@
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "status": "parse-failure",
-      "last_changed_at": "2026-07-12T01:22:46Z",
+      "status": "ok",
+      "last_changed_at": "2026-07-11T23:57:38Z",
       "is_stale": false,
-      "has_data": false,
-      "bout_count": 1,
-      "line_movement": 0
+      "has_data": true,
+      "bout_count": 14,
+      "line_movement": 22
     },
     {
       "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
@@ -64,7 +64,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-12T01:22:46Z",
+      "last_changed_at": "2026-07-12T01:25:26Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -73,7 +73,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-12T01:22:46Z",
+      "last_changed_at": "2026-07-12T01:25:26Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -91,7 +91,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-12T01:22:46Z",
+      "last_changed_at": "2026-07-12T01:25:26Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 7,
@@ -108,6 +108,24 @@
     }
   ],
   "alerts": [
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Gable Steveson",
+      "f2": "Elisha Ellison",
+      "f1_movement": 983,
+      "f2_movement": -217,
+      "magnitude": 983,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "King Green",
+      "f2": "Terrance McKinney",
+      "f1_movement": -245,
+      "f2_movement": 54,
+      "magnitude": 245,
+      "main_event": false
+    },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "f1": "Tahir Abdullayev",
@@ -127,12 +145,39 @@
       "main_event": false
     },
     {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Wang Cong",
+      "f2": "Tracy Cortez",
+      "f1_movement": 12,
+      "f2_movement": -210,
+      "magnitude": 210,
+      "main_event": false
+    },
+    {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "f1": "Abdul-Rakhman Yakhyaev",
       "f2": "Julius Walker",
       "f1_movement": -197,
       "f2_movement": 122,
       "magnitude": 197,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Luke Riley",
+      "f2": "Kai Kamaka III",
+      "f1_movement": 102,
+      "f2_movement": -73,
+      "magnitude": 102,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Robert Whittaker",
+      "f2": "Nikita Krylov",
+      "f1_movement": 80,
+      "f2_movement": -63,
+      "magnitude": 80,
       "main_event": false
     },
     {
@@ -161,6 +206,24 @@
       "f2_movement": -61,
       "magnitude": 64,
       "main_event": true
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Ryan Gandra",
+      "f2": "Zachary Reese",
+      "f1_movement": 61,
+      "f2_movement": -47,
+      "magnitude": 61,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Damian Pinas",
+      "f2": "Cesar Almeida",
+      "f1_movement": -53,
+      "f2_movement": 41,
+      "magnitude": 53,
+      "main_event": false
     },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
@@ -226,6 +289,33 @@
       "main_event": false
     },
     {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Alessandro Costa",
+      "f2": "Cody Durden",
+      "f1_movement": 28,
+      "f2_movement": -21,
+      "magnitude": 28,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Benoit Saint Denis",
+      "f2": "Paddy Pimblett",
+      "f1_movement": 22,
+      "f2_movement": -17,
+      "magnitude": 22,
+      "main_event": true
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Brandon Royval",
+      "f2": "Lone'er Kavanagh",
+      "f1_movement": 16,
+      "f2_movement": -20,
+      "magnitude": 20,
+      "main_event": false
+    },
+    {
       "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
       "f1": "Tommy McMillen",
       "f2": "Alberto Montes",
@@ -258,6 +348,15 @@
       "f2": "Leon Shahbazyan",
       "f1_movement": -15,
       "f2_movement": 11,
+      "magnitude": 15,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Farid Basharat",
+      "f2": "John Garza",
+      "f1_movement": 0,
+      "f2_movement": 15,
       "magnitude": 15,
       "main_event": false
     },
@@ -316,6 +415,24 @@
       "main_event": false
     },
     {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Cory Sandhagen",
+      "f2": "Mario Bautista",
+      "f1_movement": 12,
+      "f2_movement": -9,
+      "magnitude": 12,
+      "main_event": false
+    },
+    {
+      "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
+      "f1": "Adrian Yanez",
+      "f2": "Cody Garbrandt",
+      "f1_movement": -8,
+      "f2_movement": 12,
+      "magnitude": 12,
+      "main_event": false
+    },
+    {
       "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
       "f1": "Jared Cannonier",
       "f2": "Christian Leroy Duncan",
@@ -343,7 +460,5 @@
       "main_event": false
     }
   ],
-  "errors": [
-    "parse failure (expected bouts, got none): 2026-07-11:ufc-329-mcgregor-vs-holloway-2"
-  ]
+  "errors": []
 }
