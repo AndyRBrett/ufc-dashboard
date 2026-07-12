@@ -2840,6 +2840,15 @@ function mainCardLocked(ev){
   var now=Date.now(),eto=etOffset(),dp=ev.date.split("-"),pp=t.split(":");
   return now>=Date.UTC(+dp[0],+dp[1]-1,+dp[2],+pp[0]+eto,+(pp[1]||0),0);
 }
+// A challenge rides on specific main-card fights, so it stays available as long as
+// any main-card bout is still undecided — the 9pm main-card clock passing does not
+// nuke the slate while its fights are pending (a decided bout can't be wagered on).
+function mainCardChallengeOpen(ev){
+  if(!ev||!ev.fights)return false;
+  return ev.fights.some(function(f){
+    return (f.lbl==="Main Event"||f.lbl==="Co-Main"||f.lbl==="Main Card")&&f.state!=="post";
+  });
+}
 // opts: {includeIds:[uid,…] target specific users, url:"./?…" tap deep-link,
 // kind:"challenge"|… SW tap routing}. Resolves to the server's JSON ({sent}
 // or {skipped:true} when the event_date+type pair was already sent).
@@ -4320,7 +4329,11 @@ function loadLeaderboard(isLive){
     rows.forEach(function(p){
       if(lbMode==="current"&&p.event_date!==nextEv.date)return;
       var uid=p.user_id||p.nickname||"unknown";
-      if(!users[uid])users[uid]={nickname:p.nickname,user_id:p.user_id||null,correct:0,total:0,methods:0,fotn:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
+      if(!users[uid])users[uid]={nickname:p.nickname||"",user_id:p.user_id||null,correct:0,total:0,methods:0,fotn:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
+      // Rows are newest-first, but the freshest row can carry a blank nickname (a
+      // pick synced before the name was set), which would render an empty row.
+      // Backfill from any row of the same user that does have a name.
+      else if(!String(users[uid].nickname||"").trim()&&p.nickname&&String(p.nickname).trim())users[uid].nickname=p.nickname;
       var fight=null;
       for(var i=0;i<EVENTS.length;i++){
         if(EVENTS[i].date===p.event_date){
@@ -4471,7 +4484,9 @@ function loadLeaderboard(isLive){
       else{med.className="lb-rank";med.textContent=(tied?"T":"")+rank;}
       row.appendChild(med);
       var nameDiv=document.createElement("div");nameDiv.className="lb-name";
-      var nameTxt=document.createElement("span");nameTxt.className="lb-name-txt";nameTxt.textContent=u.nickname;nameDiv.appendChild(nameTxt);
+      var nameTxt=document.createElement("span");nameTxt.className="lb-name-txt";
+      nameTxt.textContent=(u.nickname&&u.nickname.trim())?u.nickname:(u.user_id?"🥊 "+u.user_id.slice(0,4):"Anon");
+      nameDiv.appendChild(nameTxt);
       if(belt&&belt.holderBase&&_lbBaseName(u.nickname)===belt.holderBase){
         var beltChip=document.createElement("span");beltChip.className="lb-belt-chip";
         beltChip.title="Lineal champion — outscore them on a card to take the belt";
@@ -4643,9 +4658,22 @@ function _isMyChal(c){
 function _chalIncoming(c){return c.target_id===USER_ID||(_lbBaseName(userName)&&_lbBaseName(c.target_name)===_lbBaseName(userName));}
 function _chalFightLbl(c){return c.f1&&c.f2?c.f1.split(" ").pop()+" vs "+c.f2.split(" ").pop():"Whole card";}
 function _chalEvLocked(c){
-  // Challenges are main-card only, so they lock at the main-card start, not at
-  // the prelim lock that governs whole-card picks.
-  for(var i=0;i<EVENTS.length;i++)if(EVENTS[i].date===c.event_date)return mainCardLocked(EVENTS[i]);
+  // A challenge locks only once the fight(s) it rides on are actually decided —
+  // not when the 9pm main-card clock strikes. A specific-fight challenge locks
+  // when that bout is final; a whole-card challenge locks when no main-card fight
+  // is still pending. This mirrors when a challenge can be composed or accepted.
+  for(var i=0;i<EVENTS.length;i++){
+    if(EVENTS[i].date!==c.event_date)continue;
+    var ev=EVENTS[i];
+    if(c.f1&&c.f2){
+      for(var j=0;j<ev.fights.length;j++){
+        var f=ev.fights[j];
+        if((f.f1.n===c.f1&&f.f2.n===c.f2)||(f.f1.n===c.f2&&f.f2.n===c.f1))return f.state==="post";
+      }
+      // target bout not on the card (cancelled/renamed) → fall back to card-level
+    }
+    return !mainCardChallengeOpen(ev);
+  }
   return new Date(c.event_date).getTime()<Date.now();   // aged out ⇒ long past
 }
 // Latest pick a user (by base name) made on a specific fight. _lbRows is
@@ -4786,7 +4814,7 @@ function openChallengeCompose(u){
   // false — guard on date and finished-ness too so a month-old card can never
   // be selected as the challenge battleground.
   var ev=EVENTS.filter(function(e){
-    return !_eventFinished(e.date)&&!mainCardLocked(e)&&new Date(e.date).getTime()>Date.now()-DAY_MS;
+    return !_eventFinished(e.date)&&mainCardChallengeOpen(e)&&new Date(e.date).getTime()>Date.now()-2*DAY_MS;
   }).sort(function(a,b){return a.date<b.date?-1:1;})[0];
   if(!ev){toast("No upcoming card to challenge on");return;}
   _chalTarget=u;_chalEvent=ev;_chalFightSel=null;_chalStake=CHAL_STAKES[0];
@@ -4805,6 +4833,7 @@ function openChallengeCompose(u){
     fc.appendChild(chip("Whole card",!_chalFightSel,function(){_chalFightSel=null;}));
     ev.fights.forEach(function(f){
       if(f.lbl!=="Main Event"&&f.lbl!=="Co-Main"&&f.lbl!=="Main Card")return;
+      if(f.state==="post")return;  // already decided — can't wager on it
       fc.appendChild(chip(f.f1.n.split(" ").pop()+" vs "+f.f2.n.split(" ").pop(),_chalFightSel===f,function(){_chalFightSel=f;}));
     });
     var sc=document.getElementById("chalStakeChips");sc.innerHTML="";
