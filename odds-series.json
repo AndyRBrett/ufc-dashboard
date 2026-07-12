@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T23:57:38Z",
+  "generated_at": "2026-07-12T00:03:24Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -2195,7 +2195,7 @@
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Conor McGregor",
@@ -2348,8 +2348,15 @@
             "f1_odds": 225,
             "f2_odds": -285
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T03:37:43Z",
+            "f1_odds": 199,
+            "f2_odds": -247
+          },
+          "clv": {
+            "f1_odds": -26,
+            "f2_odds": 38
+          }
         },
         {
           "f1": "Benoit Saint Denis",
@@ -2487,8 +2494,15 @@
             "f1_odds": -172,
             "f2_odds": 141
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T04:03:08Z",
+            "f1_odds": -150,
+            "f2_odds": 124
+          },
+          "clv": {
+            "f1_odds": 22,
+            "f2_odds": -17
+          }
         },
         {
           "f1": "Cory Sandhagen",
@@ -2581,8 +2595,15 @@
             "f1_odds": -152,
             "f2_odds": 126
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T02:22:50Z",
+            "f1_odds": -140,
+            "f2_odds": 117
+          },
+          "clv": {
+            "f1_odds": 12,
+            "f2_odds": -9
+          }
         },
         {
           "f1": "Brandon Royval",
@@ -2655,8 +2676,15 @@
             "f1_odds": 158,
             "f2_odds": -193
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T01:53:11Z",
+            "f1_odds": 174,
+            "f2_odds": -213
+          },
+          "clv": {
+            "f1_odds": 16,
+            "f2_odds": -20
+          }
         },
         {
           "f1": "Gable Steveson",
@@ -2759,8 +2787,15 @@
             "f1_odds": -2833,
             "f2_odds": 1200
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T05:12:57Z",
+            "f1_odds": -1850,
+            "f2_odds": 983
+          },
+          "clv": {
+            "f1_odds": 983,
+            "f2_odds": -217
+          }
         },
         {
           "f1": "King Green",
@@ -2843,8 +2878,15 @@
             "f1_odds": 132,
             "f2_odds": -161
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T01:22:50Z",
+            "f1_odds": -113,
+            "f2_odds": -107
+          },
+          "clv": {
+            "f1_odds": -245,
+            "f2_odds": 54
+          }
         },
         {
           "f1": "Robert Whittaker",
@@ -2942,8 +2984,15 @@
             "f1_odds": -208,
             "f2_odds": 169
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T00:43:22Z",
+            "f1_odds": -128,
+            "f2_odds": 106
+          },
+          "clv": {
+            "f1_odds": 80,
+            "f2_odds": -63
+          }
         },
         {
           "f1": "Cody Garbrandt",
@@ -3001,8 +3050,15 @@
             "f1_odds": 315,
             "f2_odds": -417
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T00:04:21Z",
+            "f1_odds": 327,
+            "f2_odds": -425
+          },
+          "clv": {
+            "f1_odds": 12,
+            "f2_odds": -8
+          }
         },
         {
           "f1": "Luke Riley",
@@ -3090,8 +3146,15 @@
             "f1_odds": -330,
             "f2_odds": 258
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T03:47:32Z",
+            "f1_odds": -228,
+            "f2_odds": 185
+          },
+          "clv": {
+            "f1_odds": 102,
+            "f2_odds": -73
+          }
         },
         {
           "f1": "Tracy Cortez",
@@ -3154,8 +3217,15 @@
             "f1_odds": 105,
             "f2_odds": -127
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T00:04:21Z",
+            "f1_odds": -105,
+            "f2_odds": -115
+          },
+          "clv": {
+            "f1_odds": -210,
+            "f2_odds": 12
+          }
         },
         {
           "f1": "Damian Pinas",
@@ -3233,8 +3303,15 @@
             "f1_odds": -206,
             "f2_odds": 167
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T00:04:21Z",
+            "f1_odds": -259,
+            "f2_odds": 208
+          },
+          "clv": {
+            "f1_odds": -53,
+            "f2_odds": 41
+          }
         },
         {
           "f1": "Ryan Gandra",
@@ -3322,8 +3399,15 @@
             "f1_odds": -196,
             "f2_odds": 160
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T00:04:21Z",
+            "f1_odds": -135,
+            "f2_odds": 113
+          },
+          "clv": {
+            "f1_odds": 61,
+            "f2_odds": -47
+          }
         },
         {
           "f1": "Alessandro Costa",
@@ -3391,8 +3475,15 @@
             "f1_odds": -258,
             "f2_odds": 208
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T00:04:21Z",
+            "f1_odds": -230,
+            "f2_odds": 187
+          },
+          "clv": {
+            "f1_odds": 28,
+            "f2_odds": -21
+          }
         },
         {
           "f1": "Farid Basharat",
@@ -3440,8 +3531,15 @@
             "f1_odds": -632,
             "f2_odds": 445
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T04:47:45Z",
+            "f1_odds": -632,
+            "f2_odds": 460
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 15
+          }
         },
         {
           "f1": "McGregor",
@@ -3459,8 +3557,15 @@
             "f1_odds": 193,
             "f2_odds": -242
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T00:04:21Z",
+            "f1_odds": 193,
+            "f2_odds": -242
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         }
       ]
     },
@@ -4330,8 +4435,8 @@
         "side": "f1",
         "points": 11,
         "open": -258,
-        "close": null,
-        "clv": null
+        "close": -230,
+        "clv": 28
       }
     ],
     "Matt Schnell": [
@@ -5164,8 +5269,8 @@
         "side": "f1",
         "points": 28,
         "open": 225,
-        "close": null,
-        "clv": null
+        "close": 199,
+        "clv": -26
       }
     ],
     "Max Holloway": [
@@ -5175,8 +5280,8 @@
         "side": "f2",
         "points": 28,
         "open": -285,
-        "close": null,
-        "clv": null
+        "close": -247,
+        "clv": 38
       }
     ],
     "Benoit Saint Denis": [
@@ -5186,8 +5291,8 @@
         "side": "f1",
         "points": 25,
         "open": -172,
-        "close": null,
-        "clv": null
+        "close": -150,
+        "clv": 22
       }
     ],
     "Paddy Pimblett": [
@@ -5197,8 +5302,8 @@
         "side": "f2",
         "points": 25,
         "open": 141,
-        "close": null,
-        "clv": null
+        "close": 124,
+        "clv": -17
       }
     ],
     "Cory Sandhagen": [
@@ -5208,8 +5313,8 @@
         "side": "f1",
         "points": 16,
         "open": -152,
-        "close": null,
-        "clv": null
+        "close": -140,
+        "clv": 12
       }
     ],
     "Mario Bautista": [
@@ -5219,8 +5324,8 @@
         "side": "f2",
         "points": 16,
         "open": 126,
-        "close": null,
-        "clv": null
+        "close": 117,
+        "clv": -9
       }
     ],
     "Brandon Royval": [
@@ -5230,8 +5335,8 @@
         "side": "f1",
         "points": 12,
         "open": 158,
-        "close": null,
-        "clv": null
+        "close": 174,
+        "clv": 16
       }
     ],
     "Lone'er Kavanagh": [
@@ -5241,8 +5346,8 @@
         "side": "f2",
         "points": 12,
         "open": -193,
-        "close": null,
-        "clv": null
+        "close": -213,
+        "clv": -20
       }
     ],
     "Gable Steveson": [
@@ -5252,8 +5357,8 @@
         "side": "f1",
         "points": 18,
         "open": -2833,
-        "close": null,
-        "clv": null
+        "close": -1850,
+        "clv": 983
       }
     ],
     "Elisha Ellison": [
@@ -5263,8 +5368,8 @@
         "side": "f2",
         "points": 18,
         "open": 1200,
-        "close": null,
-        "clv": null
+        "close": 983,
+        "clv": -217
       }
     ],
     "King Green": [
@@ -5274,8 +5379,8 @@
         "side": "f1",
         "points": 14,
         "open": 132,
-        "close": null,
-        "clv": null
+        "close": -113,
+        "clv": -245
       }
     ],
     "Terrance McKinney": [
@@ -5285,8 +5390,8 @@
         "side": "f2",
         "points": 14,
         "open": -161,
-        "close": null,
-        "clv": null
+        "close": -107,
+        "clv": 54
       }
     ],
     "Robert Whittaker": [
@@ -5296,8 +5401,8 @@
         "side": "f1",
         "points": 17,
         "open": -208,
-        "close": null,
-        "clv": null
+        "close": -128,
+        "clv": 80
       }
     ],
     "Nikita Krylov": [
@@ -5307,8 +5412,8 @@
         "side": "f2",
         "points": 17,
         "open": 169,
-        "close": null,
-        "clv": null
+        "close": 106,
+        "clv": -63
       }
     ],
     "Cody Garbrandt": [
@@ -5318,8 +5423,8 @@
         "side": "f1",
         "points": 9,
         "open": 315,
-        "close": null,
-        "clv": null
+        "close": 327,
+        "clv": 12
       }
     ],
     "Adrian Yanez": [
@@ -5329,8 +5434,8 @@
         "side": "f2",
         "points": 9,
         "open": -417,
-        "close": null,
-        "clv": null
+        "close": -425,
+        "clv": -8
       }
     ],
     "Luke Riley": [
@@ -5340,8 +5445,8 @@
         "side": "f1",
         "points": 15,
         "open": -330,
-        "close": null,
-        "clv": null
+        "close": -228,
+        "clv": 102
       }
     ],
     "Kai Kamaka III": [
@@ -5351,8 +5456,8 @@
         "side": "f2",
         "points": 15,
         "open": 258,
-        "close": null,
-        "clv": null
+        "close": 185,
+        "clv": -73
       }
     ],
     "Tracy Cortez": [
@@ -5362,8 +5467,8 @@
         "side": "f1",
         "points": 10,
         "open": 105,
-        "close": null,
-        "clv": null
+        "close": -105,
+        "clv": -210
       }
     ],
     "Wang Cong": [
@@ -5373,8 +5478,8 @@
         "side": "f2",
         "points": 10,
         "open": -127,
-        "close": null,
-        "clv": null
+        "close": -115,
+        "clv": 12
       }
     ],
     "Damian Pinas": [
@@ -5384,8 +5489,8 @@
         "side": "f1",
         "points": 13,
         "open": -206,
-        "close": null,
-        "clv": null
+        "close": -259,
+        "clv": -53
       }
     ],
     "Cesar Almeida": [
@@ -5395,8 +5500,8 @@
         "side": "f2",
         "points": 13,
         "open": 167,
-        "close": null,
-        "clv": null
+        "close": 208,
+        "clv": 41
       }
     ],
     "Ryan Gandra": [
@@ -5406,8 +5511,8 @@
         "side": "f1",
         "points": 15,
         "open": -196,
-        "close": null,
-        "clv": null
+        "close": -135,
+        "clv": 61
       }
     ],
     "Zachary Reese": [
@@ -5417,8 +5522,8 @@
         "side": "f2",
         "points": 15,
         "open": 160,
-        "close": null,
-        "clv": null
+        "close": 113,
+        "clv": -47
       }
     ],
     "Cody Durden": [
@@ -5428,8 +5533,8 @@
         "side": "f2",
         "points": 11,
         "open": 208,
-        "close": null,
-        "clv": null
+        "close": 187,
+        "clv": -21
       }
     ],
     "Farid Basharat": [
@@ -5439,8 +5544,8 @@
         "side": "f1",
         "points": 7,
         "open": -632,
-        "close": null,
-        "clv": null
+        "close": -632,
+        "clv": 0
       }
     ],
     "John Garza": [
@@ -5450,8 +5555,8 @@
         "side": "f2",
         "points": 7,
         "open": 445,
-        "close": null,
-        "clv": null
+        "close": 460,
+        "clv": 15
       }
     ],
     "McGregor": [
@@ -5461,8 +5566,8 @@
         "side": "f1",
         "points": 1,
         "open": 193,
-        "close": null,
-        "clv": null
+        "close": 193,
+        "clv": 0
       }
     ],
     "Holloway": [
@@ -5472,8 +5577,8 @@
         "side": "f2",
         "points": 1,
         "open": -242,
-        "close": null,
-        "clv": null
+        "close": -242,
+        "clv": 0
       }
     ],
     "Dricus du Plessis": [
