@@ -985,6 +985,25 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
 <div id="app"></div>
 <script src="data.js"></script>
 <script>
+// data.js loads synchronously above; by here it has fully run (or failed). If it
+// failed to load — a stale/corrupt service-worker cache is the usual cause —
+// EVENTS is undefined and the whole app throws at load, leaving a dead page. A
+// plain refresh re-serves the same bad cache, so self-heal once: purge caches +
+// unregister the SW, then reload. The sessionStorage guard makes this fire at most
+// once per session, so it cannot loop.
+if(typeof EVENTS==="undefined"){
+  (function(){
+    try{if(sessionStorage.getItem("_selfHealed"))return;sessionStorage.setItem("_selfHealed","1");}catch(_){}
+    var done=function(){location.reload();};
+    try{
+      var jobs=[];
+      if(window.caches&&caches.keys)jobs.push(caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.delete(k);}));}));
+      if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations)jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister();}));}));
+      Promise.all(jobs).then(done,done);
+      setTimeout(done,3000); // reload even if the purge hangs
+    }catch(_){done();}
+  })();
+}
 var SUPABASE_URL="https://gkccophrdqtqcowmblre.supabase.co";
 var SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrY2NvcGhyZHF0cWNvd21ibHJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAyMTAsImV4cCI6MjA5NTA0NjIxMH0.zSi-PcQL_ti5KXRq3YRQX4RbsP6HhQ5bAqh5x5kKkbE";
 // Supabase anonymous auth. Each visitor gets a real auth.uid() so RLS policies
@@ -5098,6 +5117,23 @@ document.addEventListener("DOMContentLoaded",function(){
   try{render();}
   catch(e){
     console.error("render() failed:",e);
+    // A thrown render almost always means data.js didn't load (EVENTS undefined),
+    // i.e. a stale/corrupt service-worker cache. A plain refresh re-serves the same
+    // bad copy, so self-heal instead: purge caches + unregister the SW, then reload
+    // once. The sessionStorage guard makes this fire at most once per session, so it
+    // cannot loop — if a fresh load still fails, fall through to the static message.
+    if(typeof EVENTS==="undefined"&&!sessionStorage.getItem("_selfHealed")){
+      try{sessionStorage.setItem("_selfHealed","1");}catch(_){}
+      var _bust=function(){location.reload();};
+      try{
+        var jobs=[];
+        if(window.caches&&caches.keys)jobs.push(caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.delete(k);}));}));
+        if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations)jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister();}));}));
+        Promise.all(jobs).then(_bust,_bust);
+        setTimeout(_bust,3000); // reload even if the purge hangs
+      }catch(_){_bust();}
+      return;
+    }
     var app=document.getElementById("app");
     if(app){
       app.style.cssText="padding:20px;color:#ff6666;font-family:Inter,sans-serif;font-size:14px;text-align:center;padding-top:60px";
