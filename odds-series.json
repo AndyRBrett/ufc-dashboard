@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T12:17:07Z",
+  "generated_at": "2026-07-14T10:55:21Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -4076,6 +4076,31 @@
       ]
     },
     {
+      "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Umar Nurmagomedov",
+          "f2": "Song Yadong",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-07-14T10:55:21Z",
+              "f1_odds": -423,
+              "f2_odds": 323
+            }
+          ],
+          "open": {
+            "at": "2026-07-14T10:55:21Z",
+            "f1_odds": -423,
+            "f2_odds": 323
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
       "event_id": "2026-08-30:ufc-fight-night-nurmagomedov-vs-song",
       "concluded": false,
       "bouts": [
@@ -4111,6 +4136,15 @@
         "open": 423,
         "close": 423,
         "clv": 0
+      },
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Umar Nurmagomedov",
+        "side": "f2",
+        "points": 1,
+        "open": 323,
+        "close": null,
+        "clv": null
       },
       {
         "event_id": "2026-08-30:ufc-fight-night-nurmagomedov-vs-song",
@@ -5846,6 +5880,15 @@
       }
     ],
     "Umar Nurmagomedov": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Song Yadong",
+        "side": "f1",
+        "points": 1,
+        "open": -423,
+        "close": null,
+        "clv": null
+      },
       {
         "event_id": "2026-08-30:ufc-fight-night-nurmagomedov-vs-song",
         "opponent": "Song Yadong",
