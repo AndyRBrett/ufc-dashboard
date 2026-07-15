@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-14T10:55:21Z",
+  "generated_at": "2026-07-15T11:01:19Z",
   "events_tracked": 10,
   "stale_events": 2,
   "parse_failure_events": 1,
@@ -46,7 +46,7 @@
     {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-guskov",
       "status": "parse-failure",
-      "last_changed_at": "2026-07-14T10:55:21Z",
+      "last_changed_at": "2026-07-15T11:01:19Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 10,
@@ -55,7 +55,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-14T10:55:21Z",
+      "last_changed_at": "2026-07-15T11:01:19Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -64,7 +64,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-14T10:55:21Z",
+      "last_changed_at": "2026-07-15T11:01:19Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -82,7 +82,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-14T10:55:21Z",
+      "last_changed_at": "2026-07-15T11:01:19Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 8,
