@@ -86,7 +86,7 @@ var EVENTS=[
     prelimTime:"17:00",
     fights:[
       {lbl:"Main Event",wc:"Middleweight",title:false,rematch:false,odds:{f1:-281,f2:217},winner:"",method:"",round:null,state:"pre",f1:{n:"Dricus du Plessis",r:"23-3-0",rk:"",s:null},f2:{n:"Kamaru Usman",r:"21-4-0",rk:"",s:null}},
-      {lbl:"Co-Main",wc:"Middleweight",title:false,rematch:false,odds:{f1:238,f2:-300},winner:"",method:"",round:null,state:"pre",f1:{n:"Jared Cannonier",r:"18-9-0",rk:"",s:null},f2:{n:"Christian Leroy Duncan",r:"15-3-0",rk:"",s:null}},
+      {lbl:"Co-Main",wc:"Middleweight",title:false,rematch:false,odds:{f1:238,f2:-300},winner:"",method:"",round:null,state:"pre",f1:{n:"Jared Cannonier",r:"18-9-0",rk:"",s:null},f2:{n:"Christian Leroy Duncan",r:"14-2-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Lightweight",title:false,rematch:false,odds:{f1:-315,f2:248},winner:"",method:"",round:null,state:"pre",f1:{n:"Chase Hooper",r:"16-5-1",rk:"",s:null},f2:{n:"Mitch Ramirez",r:"8-3-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Women's Strawweight",title:false,rematch:false,odds:{f1:272,f2:-358},winner:"",method:"",round:null,state:"pre",f1:{n:"Tabatha Ricci",r:"12-4-0",rk:"",s:null},f2:{n:"Fatima Kline",r:"9-1-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Featherweight",title:false,rematch:false,odds:{f1:100,f2:-126},winner:"",method:"",round:null,state:"pre",f1:{n:"Tommy McMillen",r:"10-0-0",rk:"",s:null},f2:{n:"Alberto Montes",r:"12-1-0",rk:"",s:null}},
@@ -95,7 +95,8 @@ var EVENTS=[
       {lbl:"Prelim",wc:"Light Heavyweight",title:false,rematch:false,odds:{f1:-190,f2:156},winner:"",method:"",round:null,state:"pre",f1:{n:"Levi Rodrigues Jr.",r:"5-0-0",rk:"",s:null},f2:{n:"Felipe Franco",r:"10-2-0",rk:"",s:null}},
       {lbl:"Prelim",wc:"Flyweight",title:false,rematch:false,odds:{f1:-1067,f2:643},winner:"",method:"",round:null,state:"pre",f1:{n:"Alden Coria",r:"12-3-0",rk:"",s:null},f2:{n:"Stewart Nicoll",r:"8-3-0",rk:"",s:null}},
       {lbl:"Prelim",wc:"Heavyweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"RJ Harris",r:"5-0-0",rk:"",s:null},f2:{n:"Alvin Hines",r:"7-1-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Women's Flyweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Anna Melisano",r:"6-1-0",rk:"",s:null},f2:{n:"Dione Barbosa",r:"9-4-0",rk:"",s:null}}
+      {lbl:"Prelim",wc:"Women's Flyweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Anna Melisano",r:"6-1-0",rk:"",s:null},f2:{n:"Dione Barbosa",r:"9-4-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Featherweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Damien Anderson",r:"5-0-0",rk:"",s:null},f2:{n:"Ezra Elliott",r:"7-0-0",rk:"",s:null}}
     ]
   },
   {
