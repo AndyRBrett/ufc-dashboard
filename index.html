@@ -5678,12 +5678,37 @@ if('serviceWorker'in navigator){
   window.addEventListener('online',hide);
   if(navigator.onLine===false)show();
 })();
-// If opened via notification tap when app was closed, check URL params
+// If opened via notification tap when app was closed, the SW hands the tap
+// payload over through the 'ufc-tap' cache (consumed once here); URL params are
+// the legacy fallback for an old SW or a payload that fit in the URL. Note
+// params.get() already decodes — running decodeURIComponent on it again threw
+// URIError on any message containing '%' and the message never appeared.
 (function(){
   var params=new URLSearchParams(window.location.search);
-  var msg=params.get('trash');
-  if(msg){var from=params.get('from');history.replaceState(null,'',window.location.pathname);setTimeout(function(){showIncomingTrashTalk(decodeURIComponent(msg),from?decodeURIComponent(from):"");},800);}
-  if(params.get('inbox')){history.replaceState(null,'',window.location.pathname);setTimeout(function(){openChallengeInbox();},800);}
+  var pTrash=params.get('trash'),pFrom=params.get('from'),pInbox=params.get('inbox');
+  if(pTrash||pInbox)history.replaceState(null,'',window.location.pathname);
+  var route=function(kind,msg,sender){
+    setTimeout(function(){
+      if(kind==='challenge')openChallengeInbox();
+      else if(msg)showIncomingTrashTalk(msg,sender||"");
+    },800);
+  };
+  var fromParams=function(){
+    if(pTrash)route('',pTrash,pFrom);
+    else if(pInbox)route('challenge');
+  };
+  if(!window.caches){fromParams();return;}
+  caches.open('ufc-tap').then(function(c){
+    return c.match('/__pending_tap').then(function(res){
+      if(!res)return null;
+      return c.delete('/__pending_tap').then(function(){return res.json();});
+    });
+  }).then(function(tap){
+    // Stale-tap guard: a stash that never got opened (e.g. openWindow failed)
+    // shouldn't pop up days later on a normal launch.
+    if(tap&&Date.now()-(tap.ts||0)<300000)route(tap.kind,tap.fullMessage,tap.sender);
+    else fromParams();
+  }).catch(fromParams);
 })();
 </script>
 </body>
