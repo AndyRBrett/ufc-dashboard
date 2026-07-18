@@ -2,8 +2,12 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = '2026-07-16-1';
+const SW_VERSION = '2026-07-18-1';
 const CACHE = 'ufc-' + SW_VERSION;
+// Handoff caches that must survive SW upgrades: 'ufc-push-id' carries the push
+// identity used by pushsubscriptionchange while the app is closed, 'ufc-tap'
+// carries a pending notification-tap payload to the page it opens.
+const KEEP_CACHES = ['ufc-push-id', 'ufc-tap'];
 
 self.addEventListener('install', function(e) {
   self.skipWaiting();
@@ -20,7 +24,7 @@ self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys()
       .then(function(keys) {
-        return Promise.all(keys.filter(function(k) { return k !== CACHE; })
+        return Promise.all(keys.filter(function(k) { return k !== CACHE && KEEP_CACHES.indexOf(k) < 0; })
           .map(function(k) { return caches.delete(k); }));
       })
       .then(function() { return self.clients.claim(); })
@@ -163,23 +167,48 @@ self.addEventListener('notificationclick', function(e) {
   var senderMatch = (e.notification.title || '').match(/\(via\s+(.+?)\)\s*$/);
   var sender = senderMatch ? senderMatch[1] : '';
 
-  e.waitUntil(clients.matchAll({ type: 'window' }).then(function(cs) {
-    // App is already open — focus it and route the tap by kind
-    for (var i = 0; i < cs.length; i++) {
-      if (cs[i].url && 'focus' in cs[i]) {
-        cs[i].focus();
-        if (kind) cs[i].postMessage({ type: kind, fullMessage: fullMessage });
-        else if (fullMessage) cs[i].postMessage({ type: 'trash-talk', fullMessage: fullMessage, sender: sender });
-        return;
+  // App closed (or focusing failed) — open a window. The tap payload is handed
+  // over through the 'ufc-tap' cache, which the page consumes on load: roasts
+  // can now run ~1300 chars, too long to trust to a URL. The legacy ?trash=
+  // param is still added when it fits, so a stale cached page paired with this
+  // SW keeps working.
+  function openFresh() {
+    return caches.open('ufc-tap').then(function(c) {
+      return c.put('/__pending_tap', new Response(
+        JSON.stringify({ kind: kind, fullMessage: fullMessage, sender: sender, ts: Date.now() }),
+        { headers: { 'Content-Type': 'application/json' } }
+      ));
+    }).catch(function() {}).then(function() {
+      var url = baseUrl;
+      if (!kind && fullMessage) {
+        var enc = encodeURIComponent(fullMessage);
+        if (enc.length <= 1800) {
+          url += (url.indexOf('?') >= 0 ? '&' : '?') + 'trash=' + enc;
+          if (sender) url += '&from=' + encodeURIComponent(sender);
+        }
       }
-    }
-    // App is closed — the routed URL (e.g. ./?inbox=1) carries the destination;
-    // legacy trash talk encodes the full message in a URL param instead
-    var url = baseUrl;
-    if (!kind && fullMessage) {
-      url += (url.indexOf('?') >= 0 ? '&' : '?') + 'trash=' + encodeURIComponent(fullMessage);
-      if (sender) url += '&from=' + encodeURIComponent(sender);
-    }
-    if (clients.openWindow) return clients.openWindow(url);
+      if (clients.openWindow) return clients.openWindow(url);
+    });
+  }
+
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(cs) {
+    // App is already open — focus it and route the tap by kind. Prefer a
+    // visible client, and only trust the postMessage delivery once focus()
+    // has actually resolved: iOS can keep listing a window client for a PWA
+    // the OS already killed, and a message posted to it vanishes — that tap
+    // must fall through to openFresh() instead of doing nothing.
+    var candidates = cs.filter(function(c) { return 'focus' in c; });
+    candidates.sort(function(a, b) {
+      return (b.visibilityState === 'visible' ? 1 : 0) - (a.visibilityState === 'visible' ? 1 : 0);
+    });
+    var target = candidates[0];
+    if (!target) return openFresh();
+    return Promise.resolve()
+      .then(function() { return target.focus(); })
+      .then(function() {
+        if (kind) target.postMessage({ type: kind, fullMessage: fullMessage });
+        else if (fullMessage) target.postMessage({ type: 'trash-talk', fullMessage: fullMessage, sender: sender });
+      })
+      .catch(openFresh);
   }));
 });
