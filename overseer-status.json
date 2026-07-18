@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-17T10:56:43Z",
+  "generated_at": "2026-07-18T00:03:05Z",
   "events_tracked": 11,
   "stale_events": 3,
-  "parse_failure_events": 1,
-  "awaiting_card_events": 4,
+  "parse_failure_events": 2,
+  "awaiting_card_events": 3,
   "stale_threshold_hours": 48,
   "movement_alert_threshold": 10,
   "events": [
@@ -46,7 +46,7 @@
     {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-guskov",
       "status": "parse-failure",
-      "last_changed_at": "2026-07-17T10:56:43Z",
+      "last_changed_at": "2026-07-18T00:03:05Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 10,
@@ -54,17 +54,17 @@
     },
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
-      "status": "awaiting-card",
-      "last_changed_at": "2026-07-17T10:56:43Z",
+      "status": "parse-failure",
+      "last_changed_at": "2026-07-18T00:03:05Z",
       "is_stale": false,
       "has_data": false,
-      "bout_count": 11,
+      "bout_count": 12,
       "line_movement": 0
     },
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-17T10:56:43Z",
+      "last_changed_at": "2026-07-18T00:03:05Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -82,7 +82,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-17T10:56:43Z",
+      "last_changed_at": "2026-07-18T00:03:05Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 8,
@@ -100,7 +100,7 @@
     {
       "event_id": "2026-09-05:ufc-fight-night-287",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-17T10:56:43Z",
+      "last_changed_at": "2026-07-18T00:03:05Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -452,6 +452,6 @@
     }
   ],
   "errors": [
-    "parse failure (expected bouts, got none): 2026-07-25:ufc-fight-night-ankalaev-vs-guskov"
+    "parse failure (expected bouts, got none): 2026-07-25:ufc-fight-night-ankalaev-vs-guskov, 2026-08-01:ufc-fight-night-medic-vs-rodriguez"
   ]
 }
