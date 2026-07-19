@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-18T23:57:46Z",
+  "generated_at": "2026-07-19T00:03:04Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -3571,7 +3571,7 @@
     },
     {
       "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Dricus du Plessis",
@@ -3634,8 +3634,15 @@
             "f1_odds": -345,
             "f2_odds": 278
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T00:04:21Z",
+            "f1_odds": -281,
+            "f2_odds": 217
+          },
+          "clv": {
+            "f1_odds": 64,
+            "f2_odds": -61
+          }
         },
         {
           "f1": "Jared Cannonier",
@@ -3688,8 +3695,15 @@
             "f1_odds": 250,
             "f2_odds": -300
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T04:07:38Z",
+            "f1_odds": 238,
+            "f2_odds": -300
+          },
+          "clv": {
+            "f1_odds": -12,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Kevin Holland",
@@ -3712,8 +3726,15 @@
             "f1_odds": 250,
             "f2_odds": -300
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-09T12:25:51Z",
+            "f1_odds": 205,
+            "f2_odds": -245
+          },
+          "clv": {
+            "f1_odds": -45,
+            "f2_odds": 55
+          }
         },
         {
           "f1": "Chase Hooper",
@@ -3746,8 +3767,15 @@
             "f1_odds": -300,
             "f2_odds": 250
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-10T14:57:48Z",
+            "f1_odds": -315,
+            "f2_odds": 248
+          },
+          "clv": {
+            "f1_odds": -15,
+            "f2_odds": -2
+          }
         },
         {
           "f1": "Tabatha Ricci",
@@ -3780,8 +3808,15 @@
             "f1_odds": 300,
             "f2_odds": -400
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-10T14:57:48Z",
+            "f1_odds": 272,
+            "f2_odds": -358
+          },
+          "clv": {
+            "f1_odds": -28,
+            "f2_odds": 42
+          }
         },
         {
           "f1": "Tommy McMillen",
@@ -3814,8 +3849,15 @@
             "f1_odds": 120,
             "f2_odds": -140
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-10T14:57:48Z",
+            "f1_odds": 100,
+            "f2_odds": -126
+          },
+          "clv": {
+            "f1_odds": -20,
+            "f2_odds": 14
+          }
         },
         {
           "f1": "Levi Rodrigues Jr.",
@@ -3843,8 +3885,15 @@
             "f1_odds": -185,
             "f2_odds": 160
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-10T14:57:48Z",
+            "f1_odds": -190,
+            "f2_odds": 156
+          },
+          "clv": {
+            "f1_odds": -5,
+            "f2_odds": -4
+          }
         },
         {
           "f1": "Alden Coria",
@@ -3872,8 +3921,15 @@
             "f1_odds": -1000,
             "f2_odds": 675
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-10T14:57:48Z",
+            "f1_odds": -1067,
+            "f2_odds": 643
+          },
+          "clv": {
+            "f1_odds": -67,
+            "f2_odds": -32
+          }
         },
         {
           "f1": "Austin Bashi",
@@ -3901,8 +3957,15 @@
             "f1_odds": -110,
             "f2_odds": -110
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-11T00:04:21Z",
+            "f1_odds": -109,
+            "f2_odds": -113
+          },
+          "clv": {
+            "f1_odds": 1,
+            "f2_odds": -3
+          }
         }
       ]
     },
@@ -5622,8 +5685,8 @@
         "side": "f1",
         "points": 10,
         "open": -345,
-        "close": null,
-        "clv": null
+        "close": -281,
+        "clv": 64
       }
     ],
     "Kamaru Usman": [
@@ -5633,8 +5696,8 @@
         "side": "f2",
         "points": 10,
         "open": 278,
-        "close": null,
-        "clv": null
+        "close": 217,
+        "clv": -61
       }
     ],
     "Jared Cannonier": [
@@ -5644,8 +5707,8 @@
         "side": "f1",
         "points": 8,
         "open": 250,
-        "close": null,
-        "clv": null
+        "close": 238,
+        "clv": -12
       }
     ],
     "Christian Leroy Duncan": [
@@ -5655,8 +5718,8 @@
         "side": "f2",
         "points": 8,
         "open": -300,
-        "close": null,
-        "clv": null
+        "close": -300,
+        "clv": 0
       }
     ],
     "Kevin Holland": [
@@ -5666,8 +5729,8 @@
         "side": "f1",
         "points": 2,
         "open": 250,
-        "close": null,
-        "clv": null
+        "close": 205,
+        "clv": -45
       }
     ],
     "Jacobe Smith": [
@@ -5677,8 +5740,8 @@
         "side": "f2",
         "points": 2,
         "open": -300,
-        "close": null,
-        "clv": null
+        "close": -245,
+        "clv": 55
       }
     ],
     "Chase Hooper": [
@@ -5688,8 +5751,8 @@
         "side": "f1",
         "points": 4,
         "open": -300,
-        "close": null,
-        "clv": null
+        "close": -315,
+        "clv": -15
       }
     ],
     "Mitch Ramirez": [
@@ -5699,8 +5762,8 @@
         "side": "f2",
         "points": 4,
         "open": 250,
-        "close": null,
-        "clv": null
+        "close": 248,
+        "clv": -2
       }
     ],
     "Tabatha Ricci": [
@@ -5710,8 +5773,8 @@
         "side": "f1",
         "points": 4,
         "open": 300,
-        "close": null,
-        "clv": null
+        "close": 272,
+        "clv": -28
       }
     ],
     "Fatima Kline": [
@@ -5721,8 +5784,8 @@
         "side": "f2",
         "points": 4,
         "open": -400,
-        "close": null,
-        "clv": null
+        "close": -358,
+        "clv": 42
       }
     ],
     "Tommy McMillen": [
@@ -5732,8 +5795,8 @@
         "side": "f1",
         "points": 4,
         "open": 120,
-        "close": null,
-        "clv": null
+        "close": 100,
+        "clv": -20
       }
     ],
     "Alberto Montes": [
@@ -5743,8 +5806,8 @@
         "side": "f2",
         "points": 4,
         "open": -140,
-        "close": null,
-        "clv": null
+        "close": -126,
+        "clv": 14
       }
     ],
     "Levi Rodrigues Jr.": [
@@ -5754,8 +5817,8 @@
         "side": "f1",
         "points": 3,
         "open": -185,
-        "close": null,
-        "clv": null
+        "close": -190,
+        "clv": -5
       }
     ],
     "Felipe Franco": [
@@ -5765,8 +5828,8 @@
         "side": "f2",
         "points": 3,
         "open": 160,
-        "close": null,
-        "clv": null
+        "close": 156,
+        "clv": -4
       }
     ],
     "Alden Coria": [
@@ -5776,8 +5839,8 @@
         "side": "f1",
         "points": 3,
         "open": -1000,
-        "close": null,
-        "clv": null
+        "close": -1067,
+        "clv": -67
       }
     ],
     "Stewart Nicoll": [
@@ -5787,8 +5850,8 @@
         "side": "f2",
         "points": 3,
         "open": 675,
-        "close": null,
-        "clv": null
+        "close": 643,
+        "clv": -32
       }
     ],
     "Austin Bashi": [
@@ -5798,8 +5861,8 @@
         "side": "f1",
         "points": 3,
         "open": -110,
-        "close": null,
-        "clv": null
+        "close": -109,
+        "clv": 1
       }
     ],
     "Jose Miguel Delgado": [
@@ -5809,8 +5872,8 @@
         "side": "f2",
         "points": 3,
         "open": -110,
-        "close": null,
-        "clv": null
+        "close": -113,
+        "clv": -3
       }
     ],
     "Magomed Ankalaev": [
