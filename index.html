@@ -227,8 +227,14 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .logo-eagle{background:none;border:none;font-size:32px;line-height:1;cursor:pointer;padding:0;display:none}
 body[data-theme="usa"] .logo-oct{display:none}
 body[data-theme="usa"] .logo-eagle{display:block}
+/* TOM (Toonami's robot host) replaces the octagon in the Toonami theme, like the
+   eagle does for USA. Eyes glow via the shared eagleBreathe drop-shadow pulse. */
+.logo-tom{display:none;width:36px;height:36px}
+.logo-tom svg{width:100%;height:100%;display:block}
+body[data-theme="toonami"] .logo-oct{display:none}
+body[data-theme="toonami"] .logo-tom{display:block;animation:eagleBreathe 3.6s ease-in-out infinite}
 .logo-text{font-family:Bebas Neue,sans-serif;font-size:25px;letter-spacing:.08em;white-space:nowrap}
-@media (max-width:350px){.hdr{padding:0 12px}.logo{gap:6px}.logo-oct{width:32px;height:32px;font-size:14px}.logo-eagle{font-size:28px}.logo-text{font-size:18px}.hdr-right{gap:6px}.btn-icon{min-width:44px;padding:0 6px}}
+@media (max-width:350px){.hdr{padding:0 12px}.logo{gap:6px}.logo-oct{width:32px;height:32px;font-size:14px}.logo-eagle{font-size:28px}.logo-tom{width:32px;height:32px}.logo-text{font-size:18px}.hdr-right{gap:6px}.btn-icon{min-width:44px;padding:0 6px}}
 .logo-text span{color:var(--red)}
 .hdr-right{display:flex;align-items:center;gap:8px}
 .btn-icon{background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted2);min-width:54px;height:50px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 9px;transition:color .15s,background .15s}
@@ -867,7 +873,7 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
 <div class="toast" id="toast"></div>
 <div class="fn-banner" id="fnBanner"><div class="fn-banner-dot"></div><div class="fn-banner-text" id="fnBannerText">FIGHT NIGHT</div><div class="fn-banner-dot"></div><div id="fnLastChecked" style="font-size:10px;opacity:.6;margin-left:8px;font-family:Inter,sans-serif;letter-spacing:.04em"></div></div>
 <header class="hdr">
-  <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><span class="logo-text">FIGHT <span>CARDS</span></span></div>
+  <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><span class="logo-tom" title="TOM" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="2" y="23" width="9" height="19" rx="4.5" fill="#93a0b4"/><rect x="53" y="23" width="9" height="19" rx="4.5" fill="#93a0b4"/><path d="M32 3C17.5 3 9 14 9 28c0 15 9.5 27 23 30 13.5-3 23-15 23-30C55 14 46.5 3 32 3Z" fill="#dde3ec"/><path d="M32 12.5c-10 0-17 7-17 16 0 10 7 17.5 17 19.5 10-2 17-9.5 17-19.5 0-9-7-16-17-16Z" fill="#080c13"/><ellipse cx="24.5" cy="31.5" rx="4.6" ry="6.6" fill="#8dff5a" transform="rotate(14 24.5 31.5)"/><ellipse cx="39.5" cy="31.5" rx="4.6" ry="6.6" fill="#8dff5a" transform="rotate(-14 39.5 31.5)"/></svg></span><span class="logo-text">FIGHT <span>CARDS</span></span></div>
   <div class="hdr-right">
     <!-- Leaderboard -->
     <button class="btn-icon" onclick="openLeaderboard()" title="Leaderboard">
