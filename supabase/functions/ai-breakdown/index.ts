@@ -190,17 +190,19 @@ function buildTrashTalkPrompt(d: ReqBody): string {
     "Act amazed this many people could be this wrong at once."
   ];
   // Rhetorical shapes — the real fix for the monotony. Each one breaks the
-  // opener/jab/outro mold in a different direction.
+  // opener/jab/outro mold in a different direction. Every shape must be
+  // deliverable in one or two short sentences: the run-on-breath and
+  // mock-pep-talk shapes were cut because they invited the model to sprawl
+  // past what anyone reads in a push notification.
   const forms = [
-    "one savage run-on breath — no full stops until the very end",
-    "open mid-thought, like you're already three insults deep and just got louder",
+    "one clipped, dismissive line — they weren't worth a full effort",
+    "open mid-thought, like you're already three insults deep",
     "a fake compliment that curdles into a gut-punch by the last word",
     "a rhetorical question you never let them answer",
     "a single devastating one-liner and nothing else",
-    "a mock pep-talk that's actually a burial",
     "a cold quiet threat delivered like a calm promise",
-    "one absurd comparison, stretched until it's humiliating",
-    "start almost bored, then snap into contempt"
+    "one absurd comparison, done in a single line",
+    "start bored, snap into contempt by the end"
   ];
   const angleHint = angles[Math.floor(Math.random() * angles.length)];
   const formHint = forms[Math.floor(Math.random() * forms.length)];
@@ -208,7 +210,7 @@ function buildTrashTalkPrompt(d: ReqBody): string {
   // Attitude first and almost all the way through; a card reference is optional
   // seasoning, never the main course. A stat dump kills the burn, and — the whole
   // point of this rewrite — so does a predictable structure.
-  const baseRules = `Speak PURELY as ${persona} — their cadence, their swagger, their exact way of talking shit. This is raw trash talk, rude and personal, NOT a scouting report. Do NOT follow a formula: no throat-clearing opener, no obligatory middle jab about their picks, no tidy mic-drop to close — just talk the way ${persona} actually would and let it land however it lands. Shape THIS one like: ${formHint}. You MAY glance at the CARD for ONE detail, and only if it genuinely makes the burn funnier — most roasts should skip the card entirely and run on pure personality and disrespect. FACTS ARE STRICT: only tie a target to a pick explicitly attributed to THEM, never invent one, never blame them for a fight they won, never quote percentages or numbers. Don't lead with a rank, a username, or "hey" — drop straight into the voice, no emojis. Length is whatever hits hardest: sometimes one brutal line, sometimes up to three — never padded, never more than three. When burying a group, land ONE collective burn — do not go person by person. Sign off with '— ${persona}' using the FULL name exactly as written, and even that should feel in-character. No preamble. (variety token, do not print: ${seed})`;
+  const baseRules = `Speak PURELY as ${persona} — their cadence, their swagger, their exact way of talking shit. This is raw trash talk, rude and personal, NOT a scouting report. Do NOT follow a formula: no throat-clearing opener, no obligatory middle jab about their picks, no tidy mic-drop to close — just talk the way ${persona} actually would and let it land however it lands. Shape THIS one like: ${formHint}. You MAY glance at the CARD for ONE detail, and only if it genuinely makes the burn funnier — most roasts should skip the card entirely and run on pure personality and disrespect. FACTS ARE STRICT: only tie a target to a pick explicitly attributed to THEM, never invent one, never blame them for a fight they won, never quote percentages or numbers. Don't lead with a rank, a username, or "hey" — drop straight into the voice, no emojis. LENGTH IS A HARD CAP: this lands as a push notification read on a phone — ONE short sentence is the default, TWO short sentences is the absolute maximum, and the whole roast stays under 30 words before the signature. If it needs more room it isn't funny enough yet; cut, don't explain the joke. Brevity IS the disrespect. When burying a group, land ONE collective burn — do not go person by person. Sign off with '— ${persona}' using the FULL name exactly as written, and even that should feel in-character. No preamble. (variety token, do not print: ${seed})`;
   const who = solo ? `ripping into ${opponentNames}` : `burying ${opponentNames}`;
   const hint = (d.hint ?? "").trim();
   const question = hint
@@ -307,11 +309,12 @@ Deno.serve(async (req) => {
     maxTokens = 300;
   } else if (action === "trash-talk") {
     prompt = buildTrashTalkPrompt(body);
-    // Headroom so a punchy roast finishes its thought instead of getting cut off
-    // mid-sentence (the old 180 truncated group roasts). The prompt still asks for
-    // 2-3 short sentences; this just guarantees the last one lands. send-push's
-    // MAX_BODY is sized above the longest output this can produce.
-    maxTokens = 320;
+    // The prompt hard-caps roasts at ~30 words / two sentences (people stopped
+    // reading the long ones). 120 tokens is ~3x that budget, so the signature
+    // always lands even when the model runs a little over, while still bounding
+    // output if it ignores the cap entirely. send-push's MAX_BODY is sized
+    // above the longest output this can produce.
+    maxTokens = 120;
   } else {
     // breakdown needs both fighters — guard before the non-null assertions in buildBreakdownPrompt
     if (!body.f1?.n || !body.f2?.n) {
