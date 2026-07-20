@@ -34,11 +34,28 @@
 body[data-theme="fire"]{--bg:#0a0705;--card:#141009;--card2:#1d160d;--surface:#1d160d;--future-bg:#0d0a07;--future-border:rgba(255,106,26,.12);--text:#f5ede4;--muted:#9a8b7c;--muted2:#cabba9;--border:rgba(255,106,26,.12);--border2:rgba(255,106,26,.22);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(255,106,26,.08);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:rgba(10,7,5,.96);--red:#ff6a1a;--red-dim:rgba(255,106,26,.12);--red-border:rgba(255,106,26,.38);--gold:#ffc63d;--gold-dim:rgba(255,198,61,.12);--gold-border:rgba(255,198,61,.32);--green:#3ecf6e;--green-dim:rgba(62,207,110,.12);--green-border:rgba(62,207,110,.3);--loss:#ff5d6e;--loss-dim:rgba(255,93,110,.12);--loss-border:rgba(255,93,110,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5),0 0 24px rgba(255,106,26,.04);--shadow-el:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(255,106,26,.06);--on-accent:#2b1000;--on-gold:#2b1c00;--accent-glow:rgba(255,106,26,.4);--gold-glow:rgba(255,198,61,.45);--banner-edge:#8f2f00;--fn-tint:rgba(255,106,26,.14)}
 /* ===== THEME: TOONAMI '97 — midnight broadcast blue, electric blue & logo red-orange ===== */
 body[data-theme="toonami"]{--bg:#04070f;--card:#0a1120;--card2:#111a2e;--surface:#111a2e;--future-bg:#070c17;--future-border:rgba(58,155,255,.12);--text:#e9f1fb;--muted:#7f8ca3;--muted2:#b3c2d9;--border:rgba(58,155,255,.12);--border2:rgba(58,155,255,.22);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(58,155,255,.08);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:rgba(4,7,15,.96);--red:#3a9bff;--red-dim:rgba(58,155,255,.12);--red-border:rgba(58,155,255,.38);--gold:#ff5a24;--gold-dim:rgba(255,90,36,.12);--gold-border:rgba(255,90,36,.32);--green:#3ecf6e;--green-dim:rgba(62,207,110,.12);--green-border:rgba(62,207,110,.3);--loss:#ff5d6e;--loss-dim:rgba(255,93,110,.12);--loss-border:rgba(255,93,110,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5),0 0 24px rgba(58,155,255,.05);--shadow-el:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(58,155,255,.08);--on-accent:#03142b;--on-gold:#2b0d00;--accent-glow:rgba(58,155,255,.45);--gold-glow:rgba(255,90,36,.45);--banner-edge:#0d4a9e;--fn-tint:rgba(58,155,255,.14)}
-/* Toonami flourish: CRT scanlines + blue broadcast glow on the hero, like an
-   after-school block bumper on an old tube TV. */
+/* Toonami space treatment. The block's identity is deep space seen from the
+   Absolution: a starfield over near-black cobalt, CRT scanlines, anime speed
+   lines, and industrial blue lighting with the red-orange logo as the one warm
+   accent. Star layers reuse the .usa-stars/.usa-stars-lb overlay divs (always
+   in the DOM, shown per-theme); the shared shooting-star spawner is re-tinted
+   electric blue via the .usa-shooting override below. */
+body[data-theme="toonami"]{position:relative;--star-tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cg%3E%3Ccircle cx='24' cy='38' r='1.3' fill='%23ffffff' opacity='.14'/%3E%3Ccircle cx='118' cy='20' r='1' fill='%239ec8ff' opacity='.12'/%3E%3Ccircle cx='206' cy='54' r='1.5' fill='%23ffffff' opacity='.1'/%3E%3Ccircle cx='66' cy='96' r='1' fill='%23ffffff' opacity='.08'/%3E%3Ccircle cx='166' cy='118' r='1.2' fill='%239ec8ff' opacity='.13'/%3E%3Ccircle cx='238' cy='150' r='1' fill='%23ffffff' opacity='.07'/%3E%3Ccircle cx='34' cy='168' r='1.4' fill='%239ec8ff' opacity='.1'/%3E%3Ccircle cx='130' cy='200' r='1' fill='%23ffffff' opacity='.12'/%3E%3Ccircle cx='210' cy='232' r='1.3' fill='%23ffffff' opacity='.09'/%3E%3Ccircle cx='84' cy='244' r='1' fill='%239ec8ff' opacity='.08'/%3E%3Cpath d='M150 60l1.6 6.4 6.4 1.6-6.4 1.6-1.6 6.4-1.6-6.4-6.4-1.6 6.4-1.6z' fill='%23cfe4ff' opacity='.16'/%3E%3Cpath d='M52 208l1.2 4.8 4.8 1.2-4.8 1.2-1.2 4.8-1.2-4.8-4.8-1.2 4.8-1.2z' fill='%23ffffff' opacity='.11'/%3E%3C/g%3E%3C/svg%3E")}
+body[data-theme="toonami"] .usa-stars{display:block;position:absolute;inset:0;pointer-events:none;z-index:5;background:var(--star-tile)}
+body[data-theme="toonami"] .usa-stars-lb{display:block;position:absolute;inset:0;pointer-events:none;z-index:5}
+body[data-theme="toonami"] .lb-body{background-image:var(--star-tile);background-attachment:local}
+body[data-theme="toonami"] .lb-hdr{position:relative}
+body[data-theme="toonami"] .usa-shooting{background:linear-gradient(90deg,rgba(158,200,255,.9),rgba(58,155,255,0))}
+/* Hero = bumper frame: scanlines, faint diagonal speed lines, and a planet-rise
+   glow breaking the bottom edge like the Absolution coming over a horizon. */
 body[data-theme="toonami"] .hero{background:
   repeating-linear-gradient(180deg,rgba(58,155,255,.05) 0 2px,transparent 2px 5px),
-  linear-gradient(180deg,rgba(58,155,255,.1) 0%,transparent 100%)}
+  repeating-linear-gradient(112deg,rgba(255,255,255,.03) 0 2px,transparent 2px 84px),
+  radial-gradient(140% 72% at 50% 126%,rgba(58,155,255,.3) 0%,rgba(13,74,158,.16) 46%,transparent 68%),
+  linear-gradient(180deg,rgba(58,155,255,.08) 0%,transparent 100%)}
+/* Cobalt tech stripe under the header with a red-orange logo notch and a chrome
+   tick — the Absolution corridor light bar. */
+body[data-theme="toonami"] .hdr::after,body[data-theme="toonami"] .lb-hdr::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:linear-gradient(90deg,#ff5a24 0 34px,#dde3ec 34px 40px,#3a9bff 40px 60%,rgba(58,155,255,.22) 60% 100%)}
 /* ===== THEME: CHAMPIONSHIP GOLD — black & gold, title-belt vibes ===== */
 body[data-theme="gold"]{--bg:#0a0908;--card:#14120e;--card2:#1d1a14;--surface:#1d1a14;--future-bg:#0e0d0a;--future-border:rgba(212,175,55,.12);--text:#f2e9d8;--muted:#9a8f7a;--muted2:#c9bda2;--border:rgba(212,175,55,.12);--border2:rgba(212,175,55,.22);--sep:rgba(212,175,55,.15);--stripe-border:rgba(212,175,55,.08);--btn-bg:rgba(212,175,55,.08);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:rgba(10,9,8,.96);--red:#d4af37;--red-dim:rgba(212,175,55,.1);--red-border:rgba(212,175,55,.38);--gold:#f0d78c;--gold-dim:rgba(240,215,140,.1);--gold-border:rgba(240,215,140,.32);--green:#37c878;--green-dim:rgba(55,200,120,.12);--green-border:rgba(55,200,120,.28);--loss:#d2705e;--loss-dim:rgba(210,112,94,.12);--loss-border:rgba(210,112,94,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5);--shadow-el:0 8px 32px rgba(0,0,0,.65);--on-accent:#1a1407;--on-gold:#1a1407;--accent-glow:rgba(212,175,55,.3);--gold-glow:rgba(240,215,140,.4);--banner-edge:#6b520f;--fn-tint:rgba(212,175,55,.12)}
 /* ===== THEME: STARS & STRIPES — midnight navy, Old Glory red, white & blue ===== */
@@ -873,7 +890,7 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
 <div class="toast" id="toast"></div>
 <div class="fn-banner" id="fnBanner"><div class="fn-banner-dot"></div><div class="fn-banner-text" id="fnBannerText">FIGHT NIGHT</div><div class="fn-banner-dot"></div><div id="fnLastChecked" style="font-size:10px;opacity:.6;margin-left:8px;font-family:Inter,sans-serif;letter-spacing:.04em"></div></div>
 <header class="hdr">
-  <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><span class="logo-tom" title="TOM" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="2" y="23" width="9" height="19" rx="4.5" fill="#93a0b4"/><rect x="53" y="23" width="9" height="19" rx="4.5" fill="#93a0b4"/><path d="M32 3C17.5 3 9 14 9 28c0 15 9.5 27 23 30 13.5-3 23-15 23-30C55 14 46.5 3 32 3Z" fill="#dde3ec"/><path d="M32 12.5c-10 0-17 7-17 16 0 10 7 17.5 17 19.5 10-2 17-9.5 17-19.5 0-9-7-16-17-16Z" fill="#080c13"/><ellipse cx="24.5" cy="31.5" rx="4.6" ry="6.6" fill="#8dff5a" transform="rotate(14 24.5 31.5)"/><ellipse cx="39.5" cy="31.5" rx="4.6" ry="6.6" fill="#8dff5a" transform="rotate(-14 39.5 31.5)"/></svg></span><span class="logo-text">FIGHT <span>CARDS</span></span></div>
+  <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><span class="logo-tom" title="TOM" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="1" y="25" width="8" height="17" rx="4" fill="#2f7cff"/><rect x="55" y="25" width="8" height="17" rx="4" fill="#2f7cff"/><rect x="12.5" y="3" width="5.5" height="13" rx="2.7" fill="#9fb0c6"/><circle cx="15.2" cy="5.4" r="2.3" fill="#8dff5a"/><path d="M32 5C18.5 5 9 14 9 27c0 13.5 9 24.5 23 27.5C46 51.5 55 40.5 55 27 55 14 45.5 5 32 5Z" fill="#e8edf5"/><path d="M29.4 5.3h5.2l-.9 7.5h-3.4z" fill="#2f7cff"/><path d="M23 17.5c-5.2 0-9.5 3.5-9.5 9V30c0 6.8 5.5 11.5 12 11.5h13c6.5 0 12-4.7 12-11.5v-3.5c0-5.5-4.3-9-9.5-9Z" fill="#080c13"/><ellipse cx="24.3" cy="29.5" rx="4.2" ry="5.8" fill="#8dff5a" transform="rotate(15 24.3 29.5)"/><ellipse cx="39.7" cy="29.5" rx="4.2" ry="5.8" fill="#8dff5a" transform="rotate(-15 39.7 29.5)"/><path d="M25 46.5h14c-2.2 3.6-4.6 5.6-7 6.2-2.4-.6-4.8-2.6-7-6.2Z" fill="#b9c6d9"/></svg></span><span class="logo-text">FIGHT <span>CARDS</span></span></div>
   <div class="hdr-right">
     <!-- Leaderboard -->
     <button class="btn-icon" onclick="openLeaderboard()" title="Leaderboard">
@@ -1762,9 +1779,11 @@ function _eagleSynth(){
     o.start(t);vib.start(t);o.stop(t+dur);vib.stop(t+dur);
   }catch(e){}
 }
-// Random shooting stars across the page while the USA theme is active.
+// Random shooting stars across the page while a starfield theme (USA, Toonami)
+// is active; per-theme streak color comes from the .usa-shooting CSS overrides.
 setInterval(function(){
-  if(document.hidden||document.body.getAttribute("data-theme")!=="usa")return;
+  var _sth=document.body.getAttribute("data-theme");
+  if(document.hidden||(_sth!=="usa"&&_sth!=="toonami"))return;
   if(Math.random()<.55)return;
   // streak across the leaderboard when it's open (it covers the page), else the main page
   var lbOpen=document.getElementById("lbPanel").classList.contains("open");
