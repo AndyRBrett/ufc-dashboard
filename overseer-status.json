@@ -1,21 +1,12 @@
 {
-  "generated_at": "2026-07-19T23:11:31Z",
-  "events_tracked": 11,
+  "generated_at": "2026-07-20T00:13:34Z",
+  "events_tracked": 10,
   "stale_events": 2,
   "parse_failure_events": 2,
   "awaiting_card_events": 3,
   "stale_threshold_hours": 48,
   "movement_alert_threshold": 10,
   "events": [
-    {
-      "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
-      "status": "ok",
-      "last_changed_at": "2026-06-21T06:09:27Z",
-      "is_stale": false,
-      "has_data": true,
-      "bout_count": 12,
-      "line_movement": -3
-    },
     {
       "event_id": "2026-06-27:ufc-fight-night-fiziev-vs-torres",
       "status": "ok",
@@ -46,7 +37,7 @@
     {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-guskov",
       "status": "parse-failure",
-      "last_changed_at": "2026-07-19T23:11:31Z",
+      "last_changed_at": "2026-07-20T00:13:34Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 10,
@@ -55,7 +46,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "parse-failure",
-      "last_changed_at": "2026-07-19T23:11:31Z",
+      "last_changed_at": "2026-07-20T00:13:34Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -64,7 +55,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-19T23:11:31Z",
+      "last_changed_at": "2026-07-20T00:13:34Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 6,
@@ -82,7 +73,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-19T23:11:31Z",
+      "last_changed_at": "2026-07-20T00:13:34Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 8,
@@ -100,7 +91,7 @@
     {
       "event_id": "2026-09-05:ufc-fight-night-287",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-19T23:11:31Z",
+      "last_changed_at": "2026-07-20T00:13:34Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -235,39 +226,12 @@
       "main_event": true
     },
     {
-      "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
-      "f1": "Murtazali Magomedov",
-      "f2": "Melsik Baghdasaryan",
-      "f1_movement": -45,
-      "f2_movement": 31,
-      "magnitude": 45,
-      "main_event": false
-    },
-    {
       "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
       "f1": "Fatima Kline",
       "f2": "Tabatha Ricci",
       "f1_movement": 42,
       "f2_movement": -28,
       "magnitude": 42,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
-      "f1": "Gaston Bolanos",
-      "f2": "Michael Aswell Jr.",
-      "f1_movement": -27,
-      "f2_movement": 38,
-      "magnitude": 38,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
-      "f1": "Beatriz Mesquita",
-      "f2": "Melissa Mullins",
-      "f1_movement": -34,
-      "f2_movement": 18,
-      "magnitude": 34,
       "main_event": false
     },
     {
@@ -343,15 +307,6 @@
       "main_event": false
     },
     {
-      "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
-      "f1": "Levan Chokheli",
-      "f2": "Leon Shahbazyan",
-      "f1_movement": -15,
-      "f2_movement": 11,
-      "magnitude": 15,
-      "main_event": false
-    },
-    {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
       "f1": "Farid Basharat",
       "f2": "John Garza",
@@ -376,15 +331,6 @@
       "f1_movement": -14,
       "f2_movement": 10,
       "magnitude": 14,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
-      "f1": "Vinicius Oliveira",
-      "f2": "Andre Fili",
-      "f1_movement": 12,
-      "f2_movement": -10,
-      "magnitude": 12,
       "main_event": false
     },
     {
@@ -430,24 +376,6 @@
       "f1_movement": 0,
       "f2_movement": -12,
       "magnitude": 12,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
-      "f1": "Navajo Stirling",
-      "f2": "Ion Cutelaba",
-      "f1_movement": -10,
-      "f2_movement": 11,
-      "magnitude": 11,
-      "main_event": false
-    },
-    {
-      "event_id": "2026-06-20:ufc-fight-night-kape-vs-horiguchi",
-      "f1": "Christian Rodriguez",
-      "f2": "Hyder Amil",
-      "f1_movement": -11,
-      "f2_movement": 11,
-      "magnitude": 11,
       "main_event": false
     }
   ],
