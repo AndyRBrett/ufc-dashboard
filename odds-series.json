@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-25T19:00:45Z",
+  "generated_at": "2026-07-26T14:03:16Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -3971,7 +3971,7 @@
     },
     {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-rountree-jr",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Magomed Ankalaev",
@@ -4009,8 +4009,15 @@
             "f1_odds": -310,
             "f2_odds": 255
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-10T14:57:48Z",
+            "f1_odds": -325,
+            "f2_odds": 245
+          },
+          "clv": {
+            "f1_odds": -15,
+            "f2_odds": -10
+          }
         }
       ]
     },
@@ -5883,8 +5890,8 @@
         "side": "f1",
         "points": 5,
         "open": -310,
-        "close": null,
-        "clv": null
+        "close": -325,
+        "clv": -15
       }
     ],
     "Khalil Rountree Jr.": [
@@ -5894,8 +5901,8 @@
         "side": "f2",
         "points": 5,
         "open": 255,
-        "close": null,
-        "clv": null
+        "close": 245,
+        "clv": -10
       }
     ],
     "Islam Makhachev": [
