@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-30T11:18:48Z",
+  "generated_at": "2026-07-31T11:35:37Z",
   "events_tracked": 11,
   "stale_events": 2,
   "parse_failure_events": 2,
@@ -28,7 +28,7 @@
     {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-guskov",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-30T11:18:48Z",
+      "last_changed_at": "2026-07-31T11:35:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -37,7 +37,7 @@
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "status": "parse-failure",
-      "last_changed_at": "2026-07-30T11:18:48Z",
+      "last_changed_at": "2026-07-31T11:35:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 14,
@@ -46,7 +46,7 @@
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
       "status": "parse-failure",
-      "last_changed_at": "2026-07-30T11:18:48Z",
+      "last_changed_at": "2026-07-31T11:35:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -64,7 +64,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-30T11:18:48Z",
+      "last_changed_at": "2026-07-31T11:35:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 8,
@@ -76,13 +76,13 @@
       "last_changed_at": "2026-07-14T10:55:21Z",
       "is_stale": true,
       "has_data": true,
-      "bout_count": 5,
+      "bout_count": 6,
       "line_movement": 0
     },
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-30T11:18:48Z",
+      "last_changed_at": "2026-07-31T11:35:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 4,
@@ -91,7 +91,7 @@
     {
       "event_id": "2026-09-12:ufc-fight-night-288",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-30T11:18:48Z",
+      "last_changed_at": "2026-07-31T11:35:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 6,
@@ -100,7 +100,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-07-30T11:18:48Z",
+      "last_changed_at": "2026-07-31T11:35:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
