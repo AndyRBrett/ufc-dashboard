@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-01T04:22:23Z",
+  "generated_at": "2026-08-01T04:27:26Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -4231,7 +4231,7 @@
         {
           "f1": "Mateusz Rebecki",
           "f2": "Kyle Prepolec",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-08-01T00:07:29Z",
@@ -4247,6 +4247,11 @@
               "at": "2026-08-01T03:47:34Z",
               "f1_odds": -722,
               "f2_odds": 503
+            },
+            {
+              "at": "2026-08-01T04:27:26Z",
+              "f1_odds": -712,
+              "f2_odds": 500
             }
           ],
           "open": {
@@ -6494,7 +6499,7 @@
         "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
         "opponent": "Kyle Prepolec",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -722,
         "close": null,
         "clv": null
@@ -6505,7 +6510,7 @@
         "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
         "opponent": "Mateusz Rebecki",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 503,
         "close": null,
         "clv": null
