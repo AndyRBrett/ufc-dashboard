@@ -82,8 +82,8 @@ var EVENTS=[
     venue:"Belgrade Arena",
     loc:"Belgrade",
     tv:"Paramount+",
-    time:"TBD",
-    prelimTime:"TBD",
+    time:"15:00",
+    prelimTime:"12:00",
     fights:[
       {lbl:"Main Event",wc:"Welterweight",title:false,rematch:true,odds:{f1:-390,f2:307},winner:"Uros Medic",method:"KO/TKO",round:1,state:"post",f1:{n:"Uros Medic",r:"13-3-0",rk:"",s:null},f2:{n:"Daniel Rodriguez",r:"20-5-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Light Heavyweight",title:false,rematch:false,odds:null,winner:"Navajo Stirling",method:"KO/TKO",round:1,state:"post",f1:{n:"Jan Bachowicz",r:"",rk:"",s:null},f2:{n:"Navajo Stirling",r:"10-0-0",rk:"",s:null}},
