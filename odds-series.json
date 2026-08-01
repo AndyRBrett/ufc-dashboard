@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-01T06:12:26Z",
+  "generated_at": "2026-08-01T06:17:28Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -4115,7 +4115,7 @@
         {
           "f1": "Vlasto Cepo",
           "f2": "Gilbert Urbina",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-08-01T00:07:29Z",
@@ -4130,6 +4130,11 @@
             {
               "at": "2026-08-01T03:47:34Z",
               "f1_odds": -358,
+              "f2_odds": 277
+            },
+            {
+              "at": "2026-08-01T06:17:28Z",
+              "f1_odds": -357,
               "f2_odds": 277
             }
           ],
@@ -6411,7 +6416,7 @@
         "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
         "opponent": "Gilbert Urbina",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -358,
         "close": null,
         "clv": null
@@ -6422,7 +6427,7 @@
         "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
         "opponent": "Vlasto Cepo",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 277,
         "close": null,
         "clv": null
