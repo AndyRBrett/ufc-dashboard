@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-01T06:52:39Z",
+  "generated_at": "2026-08-01T06:57:31Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -4178,7 +4178,7 @@
         {
           "f1": "Oban Elliott",
           "f2": "Michael Oliveira",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-08-01T00:07:29Z",
@@ -4194,6 +4194,11 @@
               "at": "2026-08-01T03:47:34Z",
               "f1_odds": 282,
               "f2_odds": -362
+            },
+            {
+              "at": "2026-08-01T06:57:31Z",
+              "f1_odds": 292,
+              "f2_odds": -375
             }
           ],
           "open": {
@@ -6460,7 +6465,7 @@
         "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
         "opponent": "Michael Oliveira",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": 282,
         "close": null,
         "clv": null
@@ -6471,7 +6476,7 @@
         "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
         "opponent": "Oban Elliott",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -362,
         "close": null,
         "clv": null
