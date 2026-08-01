@@ -399,6 +399,32 @@ def search_event_slug(ev_name):
     return slug
 
 
+def _event_slug_map(data):
+    """Map (event name, date) -> stored Wikipedia slug from the data.js text.
+
+    Slugs are written by events_js as JSON string literals (non-ASCII escaped,
+    e.g. Medi\\u0107), so decode each one before use. Events written before
+    slug persistence existed simply won't appear in the map.
+    """
+    pat = re.compile(
+        r'name:"([^"]+)",\s*\n\s*'
+        r'date:"(\d{4}-\d{2}-\d{2})",\s*\n\s*'
+        r'venue:"[^"]*",\s*\n\s*'
+        r'loc:"[^"]*",\s*\n\s*'
+        r'slug:"([^"]*)"'
+    )
+    out = {}
+    for m in pat.finditer(data):
+        name, date, raw = m.groups()
+        try:
+            slug = json.loads(f'"{raw}"')
+        except ValueError:
+            continue
+        if slug:
+            out[(name, date)] = slug
+    return out
+
+
 def fetch_event_wikitext(ev_name, slug):
     """Fetch an event page's wikitext, falling back to a title search.
 
@@ -1183,6 +1209,7 @@ def extract_recent_past_events(html, now, seen):
     results = []
     cutoff  = now - timedelta(days=30)
     # Match event-level fields as written by events_js (name before date)
+    stored_slugs = _event_slug_map(html)
     pat = re.compile(
         r'name:"([^"]+)",\s*\n\s*'
         r'date:"(\d{4}-\d{2}-\d{2})",\s*\n\s*'
@@ -1191,8 +1218,9 @@ def extract_recent_past_events(html, now, seen):
     )
     for m in pat.finditer(html):
         ev_name, ev_date, venue, loc = m.groups()
-        # Derive the Wikipedia slug from the event name
-        slug = ev_name.replace(" ", "_")
+        # Prefer the slug persisted at discovery time (keeps diacritics the
+        # ASCII-folded name has lost); fall back to deriving it from the name.
+        slug = stored_slugs.get((ev_name, ev_date)) or ev_name.replace(" ", "_")
         if slug in seen:
             continue
         try:
@@ -2033,6 +2061,14 @@ def events_js(evs):
             f"    date:{json.dumps(ev['date'])},",
             f"    venue:{json.dumps(ev.get('venue', ''))},",
             f"    loc:{json.dumps(ev.get('loc', ''))},",
+        ]
+        # Persist the article slug so later runs never have to rebuild it from
+        # the ASCII-folded name (which loses diacritics — Medić → Medic — and
+        # then points at a title that doesn't exist). Written after loc: so the
+        # name/date/venue/loc adjacency other regexes rely on stays intact.
+        if ev.get("slug"):
+            lines.append(f"    slug:{json.dumps(ev['slug'])},")
+        lines += [
             f"    tv:{json.dumps(ev.get('tv', 'Paramount+'))},",
             f"    time:{json.dumps(ev.get('time', 'TBD'))},",
         ]
@@ -2071,6 +2107,7 @@ def step_inject_results(data, now):
     """
     ex_names = re.findall(r'name:"([^"]+)"', data)
     ex_dates = re.findall(r'date:"(\d{4}-\d{2}-\d{2})"', data)
+    ex_slugs = _event_slug_map(data)
 
     js             = data
     total_injected = 0
@@ -2084,9 +2121,12 @@ def step_inject_results(data, now):
         if ed < now - timedelta(days=4) or ed > now + timedelta(hours=6):
             continue
         print(f"Checking results: {ev_name}", file=sys.stderr)
-        slug = _wiki_event_slug(ev_name)
+        slug = ex_slugs.get((ev_name, ev_date)) or _wiki_event_slug(ev_name)
         wt   = fetch_event_wikitext(ev_name, slug)
         if not wt:
+            print(f"WARNING: no results page reachable for {ev_name} "
+                  f"({ev_date}) — tried slug '{slug}' and title search; "
+                  "results cannot update until this resolves", file=sys.stderr)
             continue
         results = parse_results(wt)
         if results:
@@ -2143,6 +2183,9 @@ def step_build_events(data, now):
             ev_name, ev_date, main_time, prelim_time)
         _warn_if_implausible_time(ev_name, loc, main_time)
         wt          = fetch_event_wikitext(ev_name, slug)
+        # If the direct slug missed and the title search found the real
+        # article, persist the resolved slug rather than the broken one.
+        slug        = _event_slug_cache.get(ev_name) or slug
         wiki_fights = parse_upcoming_card(wt) if wt else []
         print(f"  Wiki fights found: {len(wiki_fights)}", file=sys.stderr)
 
@@ -2211,6 +2254,7 @@ def step_build_events(data, now):
             "date":        ev_date,
             "venue":       venue,
             "loc":         loc,
+            "slug":        slug,
             "tv":          "Paramount+",
             "time":        main_time,
             "prelimTime":  prelim_time,
