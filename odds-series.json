@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-01T00:02:31Z",
+  "generated_at": "2026-08-01T00:07:29Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -4022,6 +4022,341 @@
       ]
     },
     {
+      "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Uros Medic",
+          "f2": "Daniel Rodriguez",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": -390,
+              "f2_odds": 307
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -390,
+            "f2_odds": 307
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Aleksandar Rakic",
+          "f2": "Marcin Tybura",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": -370,
+              "f2_odds": 288
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -370,
+            "f2_odds": 288
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Dusko Todorovic",
+          "f2": "Robert Valentin",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": 132,
+              "f2_odds": -159
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": 132,
+            "f2_odds": -159
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Vlasto Cepo",
+          "f2": "Gilbert Urbina",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": -358,
+              "f2_odds": 277
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -358,
+            "f2_odds": 277
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Ludovit Klein",
+          "f2": "Tofiq Musayev",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": -263,
+              "f2_odds": 212
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -263,
+            "f2_odds": 212
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Oban Elliott",
+          "f2": "Michael Oliveira",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": 282,
+              "f2_odds": -362
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": 282,
+            "f2_odds": -362
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Dennis Buzukja",
+          "f2": "Bogdan Grad",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": 161,
+              "f2_odds": -196
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": 161,
+            "f2_odds": -196
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Mateusz Rebecki",
+          "f2": "Kyle Prepolec",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": -722,
+              "f2_odds": 503
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -722,
+            "f2_odds": 503
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Jovan Leka",
+          "f2": "Alexander Poppeck",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": -271,
+              "f2_odds": 215
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -271,
+            "f2_odds": 215
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
+      "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Mateusz Gamrot",
+          "f2": "Quillan Salkilld",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": 112,
+              "f2_odds": -132
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": 112,
+            "f2_odds": -132
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Ty Miller",
+          "f2": "Billy Ray Goff",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": -285,
+              "f2_odds": 233
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -285,
+            "f2_odds": 233
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Diyar Nurgozhay",
+          "f2": "Bruno Lopes",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": -161,
+              "f2_odds": 137
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -161,
+            "f2_odds": 137
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Carlos Diego Ferreira",
+          "f2": "Billy Quarantillo",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": -164,
+              "f2_odds": 140
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -164,
+            "f2_odds": 140
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Darren Elkins",
+          "f2": "Yadier del Valle",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": 492,
+              "f2_odds": -700
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": 492,
+            "f2_odds": -700
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Steven Asplund",
+          "f2": "Guilherme Pat",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": -230,
+              "f2_odds": 191
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -230,
+            "f2_odds": 191
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Juliana Miller",
+          "f2": "Ravena Oliveira",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": -236,
+              "f2_odds": 195
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -236,
+            "f2_odds": 195
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Amanda Lemos",
+          "f2": "Alexia Thainara",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": 195,
+              "f2_odds": -236
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": 195,
+            "f2_odds": -236
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
       "concluded": false,
       "bouts": [
@@ -4152,12 +4487,17 @@
         {
           "f1": "Umar Nurmagomedov",
           "f2": "Song Yadong",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-07-14T10:55:21Z",
               "f1_odds": -423,
               "f2_odds": 323
+            },
+            {
+              "at": "2026-08-01T00:07:29Z",
+              "f1_odds": -480,
+              "f2_odds": 353
             }
           ],
           "open": {
@@ -4211,7 +4551,7 @@
         "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
         "opponent": "Umar Nurmagomedov",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 323,
         "close": null,
         "clv": null
@@ -5905,6 +6245,380 @@
         "clv": -10
       }
     ],
+    "Uros Medic": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Daniel Rodriguez",
+        "side": "f1",
+        "points": 1,
+        "open": -390,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Daniel Rodriguez": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Uros Medic",
+        "side": "f2",
+        "points": 1,
+        "open": 307,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Aleksandar Rakic": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Marcin Tybura",
+        "side": "f1",
+        "points": 1,
+        "open": -370,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Marcin Tybura": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Aleksandar Rakic",
+        "side": "f2",
+        "points": 1,
+        "open": 288,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Dusko Todorovic": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Robert Valentin",
+        "side": "f1",
+        "points": 1,
+        "open": 132,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Robert Valentin": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Dusko Todorovic",
+        "side": "f2",
+        "points": 1,
+        "open": -159,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Vlasto Cepo": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Gilbert Urbina",
+        "side": "f1",
+        "points": 1,
+        "open": -358,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Gilbert Urbina": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Vlasto Cepo",
+        "side": "f2",
+        "points": 1,
+        "open": 277,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Ludovit Klein": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Tofiq Musayev",
+        "side": "f1",
+        "points": 1,
+        "open": -263,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Tofiq Musayev": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Ludovit Klein",
+        "side": "f2",
+        "points": 1,
+        "open": 212,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Oban Elliott": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Michael Oliveira",
+        "side": "f1",
+        "points": 1,
+        "open": 282,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Michael Oliveira": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Oban Elliott",
+        "side": "f2",
+        "points": 1,
+        "open": -362,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Dennis Buzukja": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Bogdan Grad",
+        "side": "f1",
+        "points": 1,
+        "open": 161,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Bogdan Grad": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Dennis Buzukja",
+        "side": "f2",
+        "points": 1,
+        "open": -196,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Mateusz Rebecki": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Kyle Prepolec",
+        "side": "f1",
+        "points": 1,
+        "open": -722,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Kyle Prepolec": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Mateusz Rebecki",
+        "side": "f2",
+        "points": 1,
+        "open": 503,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Jovan Leka": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Alexander Poppeck",
+        "side": "f1",
+        "points": 1,
+        "open": -271,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Alexander Poppeck": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Jovan Leka",
+        "side": "f2",
+        "points": 1,
+        "open": 215,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Mateusz Gamrot": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Quillan Salkilld",
+        "side": "f1",
+        "points": 1,
+        "open": 112,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Quillan Salkilld": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Mateusz Gamrot",
+        "side": "f2",
+        "points": 1,
+        "open": -132,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Ty Miller": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Billy Ray Goff",
+        "side": "f1",
+        "points": 1,
+        "open": -285,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Billy Ray Goff": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Ty Miller",
+        "side": "f2",
+        "points": 1,
+        "open": 233,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Diyar Nurgozhay": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Bruno Lopes",
+        "side": "f1",
+        "points": 1,
+        "open": -161,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Bruno Lopes": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Diyar Nurgozhay",
+        "side": "f2",
+        "points": 1,
+        "open": 137,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Carlos Diego Ferreira": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Billy Quarantillo",
+        "side": "f1",
+        "points": 1,
+        "open": -164,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Billy Quarantillo": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Carlos Diego Ferreira",
+        "side": "f2",
+        "points": 1,
+        "open": 140,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Darren Elkins": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Yadier del Valle",
+        "side": "f1",
+        "points": 1,
+        "open": 492,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Yadier del Valle": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Darren Elkins",
+        "side": "f2",
+        "points": 1,
+        "open": -700,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Steven Asplund": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Guilherme Pat",
+        "side": "f1",
+        "points": 1,
+        "open": -230,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Guilherme Pat": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Steven Asplund",
+        "side": "f2",
+        "points": 1,
+        "open": 191,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Juliana Miller": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Ravena Oliveira",
+        "side": "f1",
+        "points": 1,
+        "open": -236,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Ravena Oliveira": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Juliana Miller",
+        "side": "f2",
+        "points": 1,
+        "open": 195,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Amanda Lemos": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Alexia Thainara",
+        "side": "f1",
+        "points": 1,
+        "open": 195,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Alexia Thainara": [
+      {
+        "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
+        "opponent": "Amanda Lemos",
+        "side": "f2",
+        "points": 1,
+        "open": -236,
+        "close": null,
+        "clv": null
+      }
+    ],
     "Islam Makhachev": [
       {
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
@@ -5954,7 +6668,7 @@
         "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
         "opponent": "Song Yadong",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -423,
         "close": null,
         "clv": null

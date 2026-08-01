@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-01T00:02:31Z",
+  "generated_at": "2026-08-01T00:07:29Z",
   "events_tracked": 11,
-  "stale_events": 2,
-  "parse_failure_events": 2,
+  "stale_events": 1,
+  "parse_failure_events": 0,
   "awaiting_card_events": 5,
   "stale_threshold_hours": 48,
   "movement_alert_threshold": 10,
@@ -28,7 +28,7 @@
     {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-guskov",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-01T00:02:31Z",
+      "last_changed_at": "2026-08-01T00:07:29Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -36,19 +36,19 @@
     },
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
-      "status": "parse-failure",
-      "last_changed_at": "2026-08-01T00:02:31Z",
+      "status": "ok",
+      "last_changed_at": "2026-08-01T00:07:29Z",
       "is_stale": false,
-      "has_data": false,
+      "has_data": true,
       "bout_count": 14,
       "line_movement": 0
     },
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
-      "status": "parse-failure",
-      "last_changed_at": "2026-08-01T00:02:31Z",
+      "status": "ok",
+      "last_changed_at": "2026-08-01T00:07:29Z",
       "is_stale": false,
-      "has_data": false,
+      "has_data": true,
       "bout_count": 9,
       "line_movement": 0
     },
@@ -64,7 +64,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-01T00:02:31Z",
+      "last_changed_at": "2026-08-01T00:07:29Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 8,
@@ -73,16 +73,16 @@
     {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
       "status": "ok",
-      "last_changed_at": "2026-07-14T10:55:21Z",
-      "is_stale": true,
+      "last_changed_at": "2026-08-01T00:07:29Z",
+      "is_stale": false,
       "has_data": true,
       "bout_count": 6,
-      "line_movement": 0
+      "line_movement": -57
     },
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-01T00:02:31Z",
+      "last_changed_at": "2026-08-01T00:07:29Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 4,
@@ -91,7 +91,7 @@
     {
       "event_id": "2026-09-12:ufc-fight-night-288",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-01T00:02:31Z",
+      "last_changed_at": "2026-08-01T00:07:29Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 6,
@@ -100,7 +100,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-01T00:02:31Z",
+      "last_changed_at": "2026-08-01T00:07:29Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -179,6 +179,15 @@
       "f2_movement": -47,
       "magnitude": 61,
       "main_event": false
+    },
+    {
+      "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+      "f1": "Umar Nurmagomedov",
+      "f2": "Song Yadong",
+      "f1_movement": -57,
+      "f2_movement": 30,
+      "magnitude": 57,
+      "main_event": true
     },
     {
       "event_id": "2026-07-11:ufc-329-mcgregor-vs-holloway-2",
@@ -298,7 +307,5 @@
       "main_event": false
     }
   ],
-  "errors": [
-    "parse failure (expected bouts, got none): 2026-08-01:ufc-fight-night-medic-vs-rodriguez, 2026-08-08:ufc-fight-night-gamrot-vs-salkilld"
-  ]
+  "errors": []
 }
