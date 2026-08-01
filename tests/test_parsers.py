@@ -923,3 +923,55 @@ def test_slug_line_does_not_break_existing_card_extraction():
     cards = scrape._extract_existing_cards(js)
     key = ("UFC Fight Night: Medic vs. Rodriguez", "2026-08-01")
     assert key in cards and len(cards[key]) == 1
+
+
+# --- regional fallback start times (international cards, ESPN miss) ---------
+
+def test_missing_north_american_cities_get_fixed_slots():
+    # Glendale (AZ) and Edmonton were mis-classified as international, leaving
+    # Glendale at TBD and letting a bogus ESPN time through for Edmonton.
+    assert scrape._default_main_time("Glendale", "UFC Fight Night 288") == "20:00"
+    assert scrape._default_main_time("Edmonton", "UFC Fight Night: B vs. M") == "20:00"
+    assert scrape._default_prelim_time("Edmonton", "UFC Fight Night: B vs. M") == "17:00"
+
+
+def test_regional_default_times_by_region():
+    assert scrape._regional_default_times("Belgrade") == ("europe", "15:00", "12:00")
+    assert scrape._regional_default_times("Abu Dhabi") == ("mideast", "14:00", "11:00")
+    assert scrape._regional_default_times("Shanghai") == ("asia", "06:00", "03:00")
+    assert scrape._regional_default_times("Perth") == ("oceania", "22:00", "19:00")
+    assert scrape._regional_default_times("Rio de Janeiro") == ("latam", "20:00", "17:00")
+    assert scrape._regional_default_times("Atlantis") == ("", "TBD", "TBD")
+
+
+def test_resolve_times_regional_fallback_when_espn_misses(monkeypatch):
+    # The Belgrade case: international card, ESPN has nothing -> regional slot,
+    # never TBD.
+    monkeypatch.setattr(scrape, "fetch_espn_times", lambda n, d: (None, None))
+    assert scrape.resolve_event_times(
+        "UFC Fight Night: Medic vs. Rodriguez", "2026-08-01",
+        "TBD", "TBD", loc="Belgrade") == ("15:00", "12:00")
+
+
+def test_resolve_times_espn_still_beats_regional_default(monkeypatch):
+    monkeypatch.setattr(scrape, "fetch_espn_times", lambda n, d: ("12:00", "09:00"))
+    assert scrape.resolve_event_times(
+        "UFC Fight Night: Medic vs. Rodriguez", "2026-08-01",
+        "TBD", "TBD", loc="Belgrade") == ("12:00", "09:00")
+
+
+def test_resolve_times_unknown_international_loc_stays_tbd(monkeypatch):
+    monkeypatch.setattr(scrape, "fetch_espn_times", lambda n, d: (None, None))
+    assert scrape.resolve_event_times(
+        "UFC Fight Night: Foo vs. Bar", "2026-06-27",
+        "TBD", "TBD", loc="Atlantis") == ("TBD", "TBD")
+
+
+def test_implausible_time_warning_skips_oceania_and_latam(capsys):
+    # Sat 22:00 ET is Sunday morning local in Perth — expected, not an error.
+    scrape._warn_if_implausible_time("UFC Fight Night: A vs. B", "Perth", "22:00")
+    scrape._warn_if_implausible_time("UFC Fight Night: C vs. D", "Rio de Janeiro", "20:00")
+    assert "WARNING" not in capsys.readouterr().err
+    # An eastward region at 17:00+ ET still warns.
+    scrape._warn_if_implausible_time("UFC Fight Night: E vs. F", "Belgrade", "18:00")
+    assert "WARNING" in capsys.readouterr().err

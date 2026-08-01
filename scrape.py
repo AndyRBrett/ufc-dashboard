@@ -453,8 +453,14 @@ _US_REGIONS = re.compile(
     r"Las Vegas|Houston|Newark|Inglewood|Sacramento|Oklahoma City|Philadelphia|"
     r"Atlanta|Denver|Chicago|Nashville|Salt Lake City|Charlotte|Anaheim|"
     r"Kansas City|Boston|Detroit|Minneapolis|New Orleans|St\.? Louis|"
+    r"Glendale|Phoenix|Tucson|Austin|San Antonio|Miami|Tampa|Orlando|"
+    r"Jacksonville|Brooklyn|Buffalo|Baltimore|Pittsburgh|Columbus|Cincinnati|"
+    r"Cleveland|Milwaukee|Des Moines|Louisville|Memphis|Albuquerque|Portland|"
+    r"Seattle|San Diego|San Jose|San Francisco|Oakland|Fresno|Long Beach|"
+    r"Rosemont|Elmont|Uniondale|Sioux Falls|Omaha|Boise|Honolulu|"
     # Canada uses the same fixed-ET broadcast slots
-    r"Canada|Vancouver|Toronto|Montreal)\b",
+    r"Canada|Vancouver|Toronto|Montreal|Edmonton|Calgary|Ottawa|Winnipeg|"
+    r"Quebec City|Halifax|Saskatoon|Ontario)\b",
     re.IGNORECASE,
 )
 
@@ -506,6 +512,58 @@ _TIME_OVERRIDES = {
 _NO_PRELIM_CARDS = {
     "UFC Freedom 250",
 }
+
+# Regional fallback broadcast slots for international cards, used only when
+# ESPN has no time for the event (so a card can never sit at "TBD" just
+# because ESPN hasn't listed it yet). Values are 24h ET, picked so the local
+# main-card start lands in the venue's typical UFC window: evening prime time
+# for Europe / Middle East / Latin America, and the Sunday morning/noon local
+# starts Asia-Pacific cards use so they air Saturday night in the US. These
+# are estimates by design — ESPN (exact, DST-correct) always wins when it has
+# the event, and true outliers still belong in _TIME_OVERRIDES.
+_INTL_REGION_SLOTS = [
+    # (label, location regex, (main_et, prelim_et))
+    ("europe", re.compile(
+        r"\b(England|London|Manchester|Scotland|Glasgow|Ireland|Dublin|"
+        r"France|Paris|Germany|Berlin|Hamburg|Cologne|Spain|Madrid|Barcelona|"
+        r"Italy|Rome|Milan|Poland|Warsaw|Gdansk|Krakow|Sweden|Stockholm|"
+        r"Norway|Oslo|Denmark|Copenhagen|Netherlands|Amsterdam|Rotterdam|"
+        r"Belgium|Brussels|Austria|Vienna|Czech|Prague|Serbia|Belgrade|"
+        r"Croatia|Zagreb|Hungary|Budapest|Romania|Bucharest|Bulgaria|Sofia|"
+        r"Greece|Athens|Portugal|Lisbon|Finland|Helsinki|Slovakia|Bratislava|"
+        r"Tbilisi)\b", re.IGNORECASE),
+     ("15:00", "12:00")),   # main 19:00 UTC (DST) → ~21:00 CEST
+    ("mideast", re.compile(
+        r"\b(Abu Dhabi|UAE|United Arab Emirates|Dubai|Qatar|Doha|"
+        r"Saudi Arabia|Riyadh|Jeddah|Bahrain|Manama|Kuwait|Baku|Azerbaijan|"
+        r"Istanbul|Turkey)\b", re.IGNORECASE),
+     ("14:00", "11:00")),   # main 18:00 UTC → 22:00 GST
+    ("asia", re.compile(
+        r"\b(China|Shanghai|Beijing|Macau|Japan|Tokyo|Saitama|Osaka|"
+        r"Singapore|South Korea|Seoul|India|Mumbai|Delhi|Thailand|Bangkok|"
+        r"Philippines|Manila|Hong Kong|Indonesia|Jakarta|Malaysia|"
+        r"Kuala Lumpur|Kazakhstan|Almaty|Astana|Uzbekistan|Tashkent)\b",
+        re.IGNORECASE),
+     ("06:00", "03:00")),   # main 10:00 UTC → 18:00 CST (Sunday-evening local)
+    ("oceania", re.compile(
+        r"\b(Australia|Perth|Sydney|Melbourne|Brisbane|Adelaide|"
+        r"New Zealand|Auckland)\b", re.IGNORECASE),
+     ("22:00", "19:00")),   # Sat 22:00 ET → Sun ~10:00 AWST / ~12:00 AEST
+    ("latam", re.compile(
+        r"\b(Mexico|Guadalajara|Monterrey|Brazil|Rio de Janeiro|Sao Paulo|"
+        r"Curitiba|Fortaleza|Brasilia|Argentina|Buenos Aires|Chile|Santiago|"
+        r"Peru|Lima|Colombia|Bogota)\b", re.IGNORECASE),
+     ("20:00", "17:00")),   # same-hemisphere cards use the US-style evening slot
+]
+
+
+def _regional_default_times(loc):
+    """(region_label, main_et, prelim_et) for an international location, or
+    ("", "TBD", "TBD") when the location matches no known region."""
+    for label, rx, (main, prelim) in _INTL_REGION_SLOTS:
+        if rx.search(loc or ""):
+            return label, main, prelim
+    return "", "TBD", "TBD"
 
 
 def _event_times(ev_name, loc):
@@ -617,6 +675,12 @@ def _warn_if_implausible_time(ev_name, loc, main_et):
         return
     if _US_REGIONS.search(loc or ""):
         return
+    # Oceania cards legitimately start late ET (Sunday morning/noon local),
+    # and Latin America shares the US evening slot — a late ET time there is
+    # expected, not evidence of a bad conversion.
+    region, _, _ = _regional_default_times(loc)
+    if region in ("oceania", "latam"):
+        return
     try:
         h = int(main_et.split(":")[0])
     except (ValueError, IndexError):
@@ -631,7 +695,7 @@ def _warn_if_implausible_time(ev_name, loc, main_et):
         )
 
 
-def resolve_event_times(ev_name, ev_date, default_main, default_prelim):
+def resolve_event_times(ev_name, ev_date, default_main, default_prelim, loc=""):
     """Resolve (main, prelim) ET times for an event.
 
     Manual _TIME_OVERRIDES win outright. For US/Canada cards the location
@@ -640,7 +704,8 @@ def resolve_event_times(ev_name, ev_date, default_main, default_prelim):
     event's first-segment (early-prelim) start rather than the main-card start,
     so preferring it made every US main-card time hours too early. ESPN is only
     consulted for international cards, where there's no clean ET rule and it's
-    the sole available source.
+    the primary source; when ESPN also has nothing, the regional fallback slot
+    for the venue's part of the world is used so the card never shows "TBD".
     """
     if ev_name in _TIME_OVERRIDES:
         return default_main, default_prelim
@@ -651,6 +716,11 @@ def resolve_event_times(ev_name, ev_date, default_main, default_prelim):
         print(f"  ESPN times for {ev_name}: main {main} ET / prelim {prelim} ET",
               file=sys.stderr)
         return main, prelim
+    region, rmain, rprelim = _regional_default_times(loc)
+    if rmain != "TBD":
+        print(f"  Regional default times for {ev_name} ({region}): "
+              f"main {rmain} ET / prelim {rprelim} ET", file=sys.stderr)
+        return rmain, rprelim
     return default_main, default_prelim
 
 
@@ -2180,7 +2250,7 @@ def step_build_events(data, now):
             continue
         print(f"Fetching: {ev_name}", file=sys.stderr)
         main_time, prelim_time = resolve_event_times(
-            ev_name, ev_date, main_time, prelim_time)
+            ev_name, ev_date, main_time, prelim_time, loc)
         _warn_if_implausible_time(ev_name, loc, main_time)
         wt          = fetch_event_wikitext(ev_name, slug)
         # If the direct slug missed and the title search found the real
