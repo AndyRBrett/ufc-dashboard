@@ -787,3 +787,79 @@ def test_card_regression_guard_keeps_richer_existing_card(monkeypatch):
              "f2": {"name": "B", "record": "", "ranking": ""}}]
     kept = prev if prev and len(prev) > len(stub) else stub
     assert len(kept) == 6  # the six-fight card survives, not the one-bout stub
+
+
+# --- event slug resolution (diacritic titles) ------------------------------
+
+def test_fold_title_ignores_case_diacritics_punctuation():
+    assert (scrape._fold_title("UFC Fight Night: Medić vs. Rodriguez")
+            == scrape._fold_title("UFC Fight Night: Medic vs. Rodriguez"))
+    assert scrape._fold_title("UFC 329") != scrape._fold_title("UFC 330")
+
+
+def test_pick_search_title_matches_only_the_same_event():
+    titles = ["UFC Fight Night: Medić vs. Rodriguez",
+              "UFC Fight Night: Ankalaev vs. Guskov",
+              "Uroš Medić"]
+    assert (scrape._pick_search_title("UFC Fight Night: Medic vs. Rodriguez", titles)
+            == "UFC Fight Night: Medić vs. Rodriguez")
+    assert scrape._pick_search_title("UFC Fight Night: Gamrot vs. Salkilld", titles) == ""
+
+
+def test_fetch_event_wikitext_falls_back_to_searched_slug(monkeypatch):
+    # Direct (ASCII-derived) slug misses; the search-resolved slug must be fetched.
+    fetched = []
+
+    def fake_fetch(slug):
+        fetched.append(slug)
+        return "{{MMAevent}}" * 30 if "Medić" in slug else ""
+
+    monkeypatch.setattr(scrape, "fetch_wikitext", fake_fetch)
+    monkeypatch.setattr(scrape, "search_event_slug",
+                        lambda name: "UFC_Fight_Night:_Medić_vs._Rodriguez")
+    wt = scrape.fetch_event_wikitext(
+        "UFC Fight Night: Medic vs. Rodriguez",
+        "UFC_Fight_Night:_Medic_vs._Rodriguez")
+    assert wt
+    assert fetched == ["UFC_Fight_Night:_Medic_vs._Rodriguez",
+                       "UFC_Fight_Night:_Medić_vs._Rodriguez"]
+
+
+def test_fetch_event_wikitext_skips_search_when_direct_slug_works(monkeypatch):
+    monkeypatch.setattr(scrape, "fetch_wikitext", lambda slug: "x" * 300)
+
+    def boom(name):
+        raise AssertionError("search should not run when the direct fetch works")
+
+    monkeypatch.setattr(scrape, "search_event_slug", boom)
+    assert scrape.fetch_event_wikitext("UFC 330", "UFC_330")
+
+
+def test_search_event_slug_parses_both_api_shapes(monkeypatch):
+    class FakeResp:
+        status_code = 200
+        def __init__(self, payload):
+            self._payload = payload
+        def json(self):
+            return self._payload
+
+    # opensearch finds nothing useful; full-text search has the real title.
+    def fake_get(url, label="", headers=None, params=None, timeout=0, **kw):
+        if params.get("action") == "opensearch":
+            return FakeResp([params["search"], [], [], []])
+        return FakeResp({"query": {"search": [
+            {"title": "Uroš Medić"},
+            {"title": "UFC Fight Night: Medić vs. Rodriguez"},
+        ]}})
+
+    monkeypatch.setattr(scrape, "get_with_retry", fake_get)
+    monkeypatch.setattr(scrape.time, "sleep", lambda s: None)
+    scrape._event_slug_cache.clear()
+    assert (scrape.search_event_slug("UFC Fight Night: Medic vs. Rodriguez")
+            == "UFC_Fight_Night:_Medić_vs._Rodriguez")
+    # Result is cached — a second call must not re-hit the network.
+    monkeypatch.setattr(scrape, "get_with_retry",
+                        lambda *a, **k: (_ for _ in ()).throw(AssertionError("cached")))
+    assert (scrape.search_event_slug("UFC Fight Night: Medic vs. Rodriguez")
+            == "UFC_Fight_Night:_Medić_vs._Rodriguez")
+    scrape._event_slug_cache.clear()

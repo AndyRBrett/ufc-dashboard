@@ -339,6 +339,83 @@ def fetch_wikitext(slug):
     return ""
 
 
+_event_slug_cache = {}
+
+
+def _fold_title(s):
+    """Case/diacritic/punctuation-insensitive key for comparing article titles."""
+    return re.sub(r"[^a-z0-9]", "", asc(s).lower())
+
+
+def _pick_search_title(ev_name, titles):
+    """Return the search-result title that is the same event as ev_name."""
+    want = _fold_title(ev_name)
+    for t in titles:
+        if _fold_title(t) == want:
+            return t
+    return ""
+
+
+def search_event_slug(ev_name):
+    """Resolve an event's true article slug via the Wikipedia search API.
+
+    Event names stored in data.js are ASCII-folded (Medić → Medic), so a slug
+    rebuilt from a stored name can point at a title that doesn't exist even as
+    a redirect. Wikipedia's search is diacritic-insensitive, so it finds the
+    real title; _pick_search_title then guards against grabbing a different
+    event. Cached per run (empty string = search already failed).
+    """
+    if ev_name in _event_slug_cache:
+        return _event_slug_cache[ev_name]
+    slug = ""
+    attempts = [
+        ("opensearch",
+         {"action": "opensearch", "search": ev_name, "limit": "5",
+          "namespace": "0", "format": "json"},
+         lambda j: j[1]),
+        # Full-text search as a backstop — opensearch is prefix-based and can
+        # miss when the stored name and article title diverge mid-string.
+        ("srsearch",
+         {"action": "query", "list": "search", "srsearch": ev_name,
+          "srlimit": "5", "format": "json"},
+         lambda j: [h["title"] for h in j.get("query", {}).get("search", [])]),
+    ]
+    for label, params, extract in attempts:
+        try:
+            r = get_with_retry(WIKI_API, label=f"wiki {label}",
+                               headers=WIKI_HDR, params=params, timeout=15)
+            if r is None or r.status_code != 200:
+                continue
+            title = _pick_search_title(ev_name, extract(r.json()))
+            if title:
+                slug = title.replace(" ", "_")
+                print(f"  Wiki {label} resolved [{ev_name[:40]}] -> {slug}",
+                      file=sys.stderr)
+                break
+        except Exception as e:
+            print(f"  Wiki {label} error [{ev_name[:40]}]: {e}", file=sys.stderr)
+        time.sleep(1)
+    _event_slug_cache[ev_name] = slug
+    return slug
+
+
+def fetch_event_wikitext(ev_name, slug):
+    """Fetch an event page's wikitext, falling back to a title search.
+
+    The direct slug works while it comes from a wiki link (discovery keeps
+    diacritics intact), but slugs rebuilt from ASCII-folded stored names miss
+    articles with accented titles — exactly when an event drops off the
+    Scheduled list on fight day and live results need injecting.
+    """
+    wt = fetch_wikitext(slug)
+    if wt:
+        return wt
+    alt = search_event_slug(ev_name)
+    if alt and alt != slug:
+        return fetch_wikitext(alt)
+    return ""
+
+
 _US_REGIONS = re.compile(
     r"\b(United States|USA|"
     # States that host UFC cards
@@ -2008,7 +2085,7 @@ def step_inject_results(data, now):
             continue
         print(f"Checking results: {ev_name}", file=sys.stderr)
         slug = _wiki_event_slug(ev_name)
-        wt   = fetch_wikitext(slug)
+        wt   = fetch_event_wikitext(ev_name, slug)
         if not wt:
             continue
         results = parse_results(wt)
@@ -2065,7 +2142,7 @@ def step_build_events(data, now):
         main_time, prelim_time = resolve_event_times(
             ev_name, ev_date, main_time, prelim_time)
         _warn_if_implausible_time(ev_name, loc, main_time)
-        wt          = fetch_wikitext(slug)
+        wt          = fetch_event_wikitext(ev_name, slug)
         wiki_fights = parse_upcoming_card(wt) if wt else []
         print(f"  Wiki fights found: {len(wiki_fights)}", file=sys.stderr)
 
