@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-01T15:37:24Z",
+  "generated_at": "2026-08-01T15:42:24Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -4300,6 +4300,25 @@
           },
           "close": null,
           "clv": null
+        },
+        {
+          "f1": "Bodgan Grad",
+          "f2": "Dennis Buzukja",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-01T15:42:24Z",
+              "f1_odds": -196,
+              "f2_odds": 161
+            }
+          ],
+          "open": {
+            "at": "2026-08-01T15:42:24Z",
+            "f1_odds": -196,
+            "f2_odds": 161
+          },
+          "close": null,
+          "clv": null
         }
       ]
     },
@@ -6491,6 +6510,15 @@
         "open": 161,
         "close": null,
         "clv": null
+      },
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Bodgan Grad",
+        "side": "f2",
+        "points": 1,
+        "open": 161,
+        "close": null,
+        "clv": null
       }
     ],
     "Bogdan Grad": [
@@ -6544,6 +6572,17 @@
         "side": "f2",
         "points": 3,
         "open": 215,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Bodgan Grad": [
+      {
+        "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
+        "opponent": "Dennis Buzukja",
+        "side": "f1",
+        "points": 1,
+        "open": -196,
         "close": null,
         "clv": null
       }
