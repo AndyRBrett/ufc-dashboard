@@ -1812,15 +1812,35 @@ setInterval(function(){
 },2600);
 function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
 
+// An event is over when its MAIN EVENT has a winner (fights[0] — cards are
+// main-event-first). Results are authoritative over the clock: start times for
+// international cards are estimates, so "now is inside the live window" must
+// never outvote a full set of results. (Checking only the main event — not
+// every bout — means a cancelled undercard fight can't hold an event "live"
+// forever.)
+function evConcluded(e){return !!(e&&e.fights&&e.fights.length&&e.fights[0].winner);}
+function _evStartUtc(e){
+  var dp=e.date.split("-");var p=(e.time||"0:0").split(":");
+  return Date.UTC(parseInt(dp[0],10),parseInt(dp[1],10)-1,parseInt(dp[2],10),parseInt(p[0],10)+4,parseInt(p[1]||"0",10),0);
+}
+// The single "current card" for the countdown, fight-night banner, and share
+// image: the first event (events stay listed 2 days past their date) that
+// isn't concluded and didn't start >6h ago. NaN start (time TBD) never counts
+// as stale. Falls back to the last candidate so callers always get the most
+// recent card rather than nothing.
+function currentEvent(now){
+  var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-2*DAY_MS;});
+  var idx=0;
+  while(idx<upcoming.length-1){
+    var t0=_evStartUtc(upcoming[idx]);
+    if(evConcluded(upcoming[idx])||(!isNaN(t0)&&now-t0>6*HOUR_MS))idx++;else break;
+  }
+  return upcoming[idx]||null;
+}
 function updateCountdown(){
   var now=Date.now();
-  var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-2*DAY_MS;});
-  if(!upcoming.length)return;
-  // Skip events that ended more than 6 hours ago (main card ~4hrs, buffer)
-  var ev=upcoming[0];
-  var dp0=ev.date.split("-");var p0=(ev.time||"0:0").split(":");
-  var t0=Date.UTC(parseInt(dp0[0],10),parseInt(dp0[1],10)-1,parseInt(dp0[2],10),parseInt(p0[0],10)+4,parseInt(p0[1]||"0",10),0);
-  if(now-t0>6*HOUR_MS&&upcoming.length>1){ev=upcoming[1];}
+  var ev=currentEvent(now);
+  if(!ev)return;
   var p=ev.time.split(":");var h=parseInt(p[0],10);var m=parseInt(p[1]||"0",10);
   var dp=ev.date.split("-");
   var target=Date.UTC(parseInt(dp[0],10),parseInt(dp[1],10)-1,parseInt(dp[2],10),h+4,m,0);
@@ -1841,7 +1861,16 @@ function updateCountdown(){
   }
   if(diff<=0){
     timer.innerHTML="";_cdSig="";
-    var live=document.createElement("span");live.className="cd-live";live.textContent="MAIN CARD LIVE NOW";timer.appendChild(live);return;
+    var live=document.createElement("span");live.className="cd-live";
+    if(evConcluded(ev)){
+      // Results are in — never claim a finished card is live (only reachable
+      // when this is the newest card; otherwise currentEvent already advanced).
+      live.style.cssText="background:var(--card2);color:var(--muted);border-color:var(--border2)";
+      live.textContent="EVENT COMPLETE";
+    }else{
+      live.textContent="MAIN CARD LIVE NOW";
+    }
+    timer.appendChild(live);return;
   }
   var days=Math.floor(diff/DAY_MS);var hours=Math.floor((diff%DAY_MS)/HOUR_MS);
   var mins=Math.floor((diff%HOUR_MS)/MIN_MS);var secs=Math.floor((diff%MIN_MS)/1e3);
@@ -2687,13 +2716,7 @@ function _evHasPicks(ev){return ev.fights.some(function(f){return preds[pk(ev,f)
 function shareEvent(){
   var now=Date.now();
   var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-2*DAY_MS;});
-  var cur=null;
-  if(upcoming.length){
-    cur=upcoming[0];
-    var dp0=cur.date.split("-");var p0=(cur.time||"0:0").split(":");
-    var t0=Date.UTC(parseInt(dp0[0],10),parseInt(dp0[1],10)-1,parseInt(dp0[2],10),(parseInt(p0[0],10)||0)+4,parseInt(p0[1]||"0",10),0);
-    if(now-t0>6*HOUR_MS&&upcoming.length>1)cur=upcoming[1];
-  }
+  var cur=currentEvent(now);
   if(cur&&_evHasPicks(cur))return cur;
   for(var i=0;i<upcoming.length;i++)if(_evHasPicks(upcoming[i]))return upcoming[i];
   for(var j=EVENTS.length-1;j>=0;j--)if(_evHasPicks(EVENTS[j]))return EVENTS[j];
@@ -2941,12 +2964,12 @@ try{if(localStorage.getItem("ufc_notif")==="1"&&Notification.permission==="grant
 
 function checkFightNight(){
   var now=Date.now();
-  var upcoming=EVENTS.filter(function(e){return new Date(e.date)>=now-2*DAY_MS;});
   var banner=document.getElementById("fnBanner");
-  if(!upcoming.length||!banner)return;
-  var next=upcoming[0];
+  if(!banner)return;
+  var next=currentEvent(now);
+  if(!next){banner.classList.remove("show");return;}
   var today=new Date();today.setHours(0,0,0,0);var du=Math.round((new Date(next.date+"T00:00:00")-today)/DAY_MS);
-  if(du<=0){banner.classList.add("show");document.getElementById("fnBannerText").textContent=next.name.split(":")[0]+" - LIVE AUTO-UPDATING";}
+  if(du<=0&&!evConcluded(next)){banner.classList.add("show");document.getElementById("fnBannerText").textContent=next.name.split(":")[0]+" - LIVE AUTO-UPDATING";}
   else if(du===1){banner.classList.add("show");document.getElementById("fnBannerText").textContent="FIGHT NIGHT TOMORROW - "+next.name.split(":")[0];}
   else{banner.classList.remove("show");}
 }
