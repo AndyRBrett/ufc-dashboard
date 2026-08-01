@@ -863,3 +863,63 @@ def test_search_event_slug_parses_both_api_shapes(monkeypatch):
     assert (scrape.search_event_slug("UFC Fight Night: Medic vs. Rodriguez")
             == "UFC_Fight_Night:_Medić_vs._Rodriguez")
     scrape._event_slug_cache.clear()
+
+
+# --- slug persistence (data.js round-trip) ----------------------------------
+
+def _one_event(slug=None):
+    ev = {"name": "UFC Fight Night: Medic vs. Rodriguez", "date": "2026-08-01",
+          "venue": "Belgrade Arena", "loc": "Belgrade", "tv": "Paramount+",
+          "time": "14:00", "prelimTime": "11:00", "fights": []}
+    if slug:
+        ev["slug"] = slug
+    return ev
+
+
+def test_events_js_slug_roundtrips_through_slug_map():
+    js = "var EVENTS=" + scrape.events_js(
+        [_one_event(slug="UFC_Fight_Night:_Medić_vs._Rodriguez")]) + ";\n"
+    # Written form must be pure ASCII (json.dumps escapes the ć)...
+    assert js == js.encode("ascii", "ignore").decode()
+    # ...and the reader must decode it back to the real title.
+    got = scrape._event_slug_map(js)
+    assert got[("UFC Fight Night: Medic vs. Rodriguez", "2026-08-01")] \
+        == "UFC_Fight_Night:_Medić_vs._Rodriguez"
+
+
+def test_events_js_without_slug_yields_empty_map():
+    js = "var EVENTS=" + scrape.events_js([_one_event()]) + ";\n"
+    assert scrape._event_slug_map(js) == {}
+
+
+def test_extract_recent_past_events_prefers_stored_slug():
+    now = datetime(2026, 8, 1, 20, 0, tzinfo=timezone.utc)
+    js = "var EVENTS=" + scrape.events_js(
+        [_one_event(slug="UFC_Fight_Night:_Medić_vs._Rodriguez")]) + ";\n"
+    got = scrape.extract_recent_past_events(js, now, set())
+    assert len(got) == 1
+    ev_date, slug, ev_name, venue, loc = got[0]
+    assert slug == "UFC_Fight_Night:_Medić_vs._Rodriguez"
+    assert (ev_date, ev_name, venue, loc) \
+        == ("2026-08-01", "UFC Fight Night: Medic vs. Rodriguez",
+            "Belgrade Arena", "Belgrade")
+
+
+def test_extract_recent_past_events_falls_back_to_name_slug():
+    now = datetime(2026, 8, 1, 20, 0, tzinfo=timezone.utc)
+    js = "var EVENTS=" + scrape.events_js([_one_event()]) + ";\n"
+    got = scrape.extract_recent_past_events(js, now, set())
+    assert got[0][1] == "UFC_Fight_Night:_Medic_vs._Rodriguez"
+
+
+def test_slug_line_does_not_break_existing_card_extraction():
+    ev = _one_event(slug="UFC_Fight_Night:_Medić_vs._Rodriguez")
+    ev["fights"] = [{"label": "Main Event", "wc": "Welterweight", "title": False,
+                     "rematch": False, "odds": None, "winner": "", "method": "",
+                     "round": None, "state": "pre",
+                     "f1": {"name": "Uros Medic", "record": "", "ranking": ""},
+                     "f2": {"name": "Daniel Rodriguez", "record": "", "ranking": ""}}]
+    js = "var EVENTS=" + scrape.events_js([ev]) + ";\n"
+    cards = scrape._extract_existing_cards(js)
+    key = ("UFC Fight Night: Medic vs. Rodriguez", "2026-08-01")
+    assert key in cards and len(cards[key]) == 1
