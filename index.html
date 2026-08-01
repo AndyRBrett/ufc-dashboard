@@ -39,14 +39,32 @@ body[data-theme="toonami"]{--bg:#04070f;--card:#0a1120;--card2:#111a2e;--surface
    lighting, and the red-orange logo as the one warm accent. Star layers reuse
    the .usa-stars/.usa-stars-lb overlay divs (always in the DOM, shown
    per-theme); no shooting stars here — those stay a Stars & Stripes thing. */
-body[data-theme="toonami"]{position:relative;--star-tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cg%3E%3Ccircle cx='24' cy='38' r='1.2' fill='%23ffffff' opacity='.16'/%3E%3Ccircle cx='118' cy='20' r='.9' fill='%239ec8ff' opacity='.14'/%3E%3Ccircle cx='206' cy='54' r='1.4' fill='%23ffffff' opacity='.11'/%3E%3Ccircle cx='66' cy='96' r='.9' fill='%23ffffff' opacity='.09'/%3E%3Ccircle cx='166' cy='118' r='1.1' fill='%239ec8ff' opacity='.15'/%3E%3Ccircle cx='238' cy='150' r='.9' fill='%23ffffff' opacity='.08'/%3E%3Ccircle cx='34' cy='168' r='1.3' fill='%239ec8ff' opacity='.11'/%3E%3Ccircle cx='130' cy='200' r='.9' fill='%23ffffff' opacity='.13'/%3E%3Ccircle cx='210' cy='232' r='1.2' fill='%23ffffff' opacity='.1'/%3E%3Ccircle cx='84' cy='244' r='.9' fill='%239ec8ff' opacity='.09'/%3E%3Ccircle cx='96' cy='58' r='.8' fill='%23ffffff' opacity='.07'/%3E%3Ccircle cx='188' cy='14' r='.8' fill='%239ec8ff' opacity='.08'/%3E%3Ccircle cx='14' cy='118' r='.8' fill='%23ffffff' opacity='.06'/%3E%3Ccircle cx='108' cy='142' r='.8' fill='%23ffffff' opacity='.08'/%3E%3Ccircle cx='246' cy='196' r='.8' fill='%239ec8ff' opacity='.07'/%3E%3Ccircle cx='176' cy='250' r='.8' fill='%23ffffff' opacity='.06'/%3E%3Cpath d='M150 60l1.6 6.4 6.4 1.6-6.4 1.6-1.6 6.4-1.6-6.4-6.4-1.6 6.4-1.6z' fill='%23cfe4ff' opacity='.18'/%3E%3Cpath d='M52 208l1.2 4.8 4.8 1.2-4.8 1.2-1.2 4.8-1.2-4.8-4.8-1.2 4.8-1.2z' fill='%23ffffff' opacity='.12'/%3E%3Cpath d='M228 104l.9 3.6 3.6.9-3.6.9-.9 3.6-.9-3.6-3.6-.9 3.6-.9z' fill='%239ec8ff' opacity='.1'/%3E%3C/g%3E%3C/svg%3E")}
-body[data-theme="toonami"] .usa-stars{display:block;position:absolute;inset:0;pointer-events:none;z-index:5;background:var(--star-tile)}
+body[data-theme="toonami"]{position:relative;--star-tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cg%3E%3Ccircle cx='24' cy='38' r='1.2' fill='%23ffffff' opacity='.16'/%3E%3Ccircle cx='118' cy='20' r='.9' fill='%239ec8ff' opacity='.14'/%3E%3Ccircle cx='206' cy='54' r='1.4' fill='%23ffffff' opacity='.11'/%3E%3Ccircle cx='66' cy='96' r='.9' fill='%23ffffff' opacity='.09'/%3E%3Ccircle cx='166' cy='118' r='1.1' fill='%239ec8ff' opacity='.15'/%3E%3Ccircle cx='238' cy='150' r='.9' fill='%23ffffff' opacity='.08'/%3E%3Ccircle cx='34' cy='168' r='1.3' fill='%239ec8ff' opacity='.11'/%3E%3Ccircle cx='130' cy='200' r='.9' fill='%23ffffff' opacity='.13'/%3E%3Ccircle cx='210' cy='232' r='1.2' fill='%23ffffff' opacity='.1'/%3E%3Ccircle cx='84' cy='244' r='.9' fill='%239ec8ff' opacity='.09'/%3E%3Ccircle cx='96' cy='58' r='.8' fill='%23ffffff' opacity='.07'/%3E%3Ccircle cx='188' cy='14' r='.8' fill='%239ec8ff' opacity='.08'/%3E%3Ccircle cx='14' cy='118' r='.8' fill='%23ffffff' opacity='.06'/%3E%3Ccircle cx='108' cy='142' r='.8' fill='%23ffffff' opacity='.08'/%3E%3Ccircle cx='246' cy='196' r='.8' fill='%239ec8ff' opacity='.07'/%3E%3Ccircle cx='176' cy='250' r='.8' fill='%23ffffff' opacity='.06'/%3E%3Cpath d='M150 60l1.6 6.4 6.4 1.6-6.4 1.6-1.6 6.4-1.6-6.4-6.4-1.6 6.4-1.6z' fill='%23cfe4ff' opacity='.18'/%3E%3Cpath d='M52 208l1.2 4.8 4.8 1.2-4.8 1.2-1.2 4.8-1.2-4.8-4.8-1.2 4.8-1.2z' fill='%23ffffff' opacity='.12'/%3E%3Cpath d='M228 104l.9 3.6 3.6.9-3.6.9-.9 3.6-.9-3.6-3.6-.9 3.6-.9z' fill='%239ec8ff' opacity='.1'/%3E%3C/g%3E%3C/svg%3E");
+  /* Comic-page tile: inked panel gutters, a panel of action lines, and a burst —
+     the printed half of the look, sitting behind everything on the body. */
+  --comic-tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='340'%3E%3Cg fill='none' stroke='%233a9bff' stroke-width='2' opacity='.18'%3E%3Crect x='14' y='16' width='118' height='76' rx='2'/%3E%3Crect x='146' y='16' width='86' height='76' rx='2'/%3E%3Crect x='246' y='16' width='80' height='118' rx='2'/%3E%3Crect x='14' y='106' width='92' height='94' rx='2'/%3E%3Crect x='120' y='106' width='112' height='94' rx='2'/%3E%3Crect x='246' y='148' width='80' height='52' rx='2'/%3E%3Crect x='14' y='214' width='138' height='98' rx='2'/%3E%3Crect x='166' y='214' width='160' height='98' rx='2'/%3E%3C/g%3E%3Cg stroke='%239ec8ff' stroke-width='1.4' opacity='.13' fill='none'%3E%3Cpath d='M158 34h62M158 46h62M158 58h50'/%3E%3Cpath d='M28 232h58M28 244h78M28 256h48'/%3E%3C/g%3E%3Cpath d='M292 66l3.4-11 2.6 8.4 7-6-3.4 9.6 10.4-1.2-9 4.8 8 5.6-9-2 1.2 9.4-5.6-7-4.6 8-1.2-9.4-8 3.4 5.6-7-9-1.2 9-3.4z' fill='%23ff5a24' opacity='.16'/%3E%3C/svg%3E");
+  /* Ben-Day halftone: a blue dot screen with a red-orange screen knocked 3px
+     out of register, the way cheap 90s four-colour printing misaligned. This
+     rides the whole page — it's uniform and low-contrast, so it reads as
+     newsprint texture behind copy. The panel art (--comic-tile) is deliberately
+     NOT here: the cards are transparent, so panel rules and bursts would cut
+     straight through fight text. It goes on the decorative bands instead. */
+  background-image:
+    radial-gradient(rgba(58,155,255,.17) 1px,transparent 1.6px),
+    radial-gradient(rgba(255,90,36,.1) 1px,transparent 1.6px);
+  background-size:7px 7px,7px 7px;
+  background-position:0 0,3px 2px}
+/* The star overlay also carries a whisper of halftone so the dot screen grazes
+   the cards too, tying the printed layer across the whole page. */
+body[data-theme="toonami"] .usa-stars{display:block;position:absolute;inset:0;pointer-events:none;z-index:5;background-image:radial-gradient(rgba(158,200,255,.055) 1px,transparent 1.6px),var(--star-tile);background-size:7px 7px,260px 260px}
 body[data-theme="toonami"] .usa-stars-lb{display:block;position:absolute;inset:0;pointer-events:none;z-index:5}
-body[data-theme="toonami"] .lb-body{background-image:var(--star-tile);background-attachment:local}
+body[data-theme="toonami"] .lb-body{background-image:radial-gradient(rgba(58,155,255,.14) 1px,transparent 1.6px),var(--star-tile);background-size:7px 7px,260px 260px;background-attachment:local}
 body[data-theme="toonami"] .lb-hdr{position:relative}
 /* Hero = bumper frame: scanlines, faint diagonal speed lines, a planet-rise
    glow breaking the bottom edge, and a ringed gas giant drifting at the left. */
 body[data-theme="toonami"] .hero{position:relative;overflow:hidden;background:
+  repeating-conic-gradient(from 0deg at 50% 122%,transparent 0 2.4deg,rgba(255,255,255,.05) 2.4deg 4.8deg),
+  var(--comic-tile),
   repeating-linear-gradient(180deg,rgba(58,155,255,.05) 0 2px,transparent 2px 5px),
   repeating-linear-gradient(112deg,rgba(255,255,255,.03) 0 2px,transparent 2px 84px),
   radial-gradient(140% 72% at 50% 126%,rgba(58,155,255,.3) 0%,rgba(13,74,158,.16) 46%,transparent 68%),
@@ -59,7 +77,7 @@ body[data-theme="toonami"] .hdr::after,body[data-theme="toonami"] .lb-hdr::after
    vector homage to the little '99 robot) plus a rotating era catchphrase, like
    a mid-break bumper card. Hidden on every other theme. */
 .toon-bumper{display:none}
-body[data-theme="toonami"] .toon-bumper{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;background:linear-gradient(180deg,#000 0%,#02040a 100%);border-bottom:1px solid var(--border2);padding:6px 14px 0 12px;position:relative;overflow:hidden}
+body[data-theme="toonami"] .toon-bumper{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;background:radial-gradient(rgba(58,155,255,.15) 1px,transparent 1.6px) 0 0/7px 7px,repeating-conic-gradient(from 0deg at 22% 118%,transparent 0 3deg,rgba(255,255,255,.045) 3deg 6deg),var(--comic-tile) 40% 30%,linear-gradient(180deg,#000 0%,#02040a 100%);border-bottom:1px solid var(--border2);padding:6px 14px 0 12px;position:relative;overflow:hidden}
 body[data-theme="toonami"] .toon-bumper::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(180deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px)}
 .toon-bumper svg{width:46px;height:69px;flex-shrink:0;display:block;filter:drop-shadow(0 0 7px rgba(58,155,255,.4))}
 .toon-bumper-txt{font-family:Bebas Neue,sans-serif;font-style:italic;font-size:21px;letter-spacing:.14em;color:#e9f1fb;transform:skewX(-6deg);padding-bottom:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 0 12px rgba(58,155,255,.5)}
