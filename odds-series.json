@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-01T23:34:11Z",
+  "generated_at": "2026-08-02T01:11:03Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -4023,7 +4023,7 @@
     },
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Uros Medic",
@@ -4051,8 +4051,15 @@
             "f1_odds": -390,
             "f2_odds": 307
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T03:47:34Z",
+            "f1_odds": -390,
+            "f2_odds": 307
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Aleksandar Rakic",
@@ -4080,8 +4087,15 @@
             "f1_odds": -370,
             "f2_odds": 288
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T03:47:34Z",
+            "f1_odds": -370,
+            "f2_odds": 288
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Dusko Todorovic",
@@ -4109,8 +4123,15 @@
             "f1_odds": 132,
             "f2_odds": -159
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T03:47:34Z",
+            "f1_odds": 132,
+            "f2_odds": -159
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Vlasto Cepo",
@@ -4143,8 +4164,15 @@
             "f1_odds": -358,
             "f2_odds": 277
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T06:17:28Z",
+            "f1_odds": -357,
+            "f2_odds": 277
+          },
+          "clv": {
+            "f1_odds": 1,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Ludovit Klein",
@@ -4172,8 +4200,15 @@
             "f1_odds": -263,
             "f2_odds": 212
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T03:47:34Z",
+            "f1_odds": -263,
+            "f2_odds": 212
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Oban Elliott",
@@ -4206,8 +4241,15 @@
             "f1_odds": 282,
             "f2_odds": -362
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T06:57:31Z",
+            "f1_odds": 292,
+            "f2_odds": -375
+          },
+          "clv": {
+            "f1_odds": 10,
+            "f2_odds": -13
+          }
         },
         {
           "f1": "Dennis Buzukja",
@@ -4235,8 +4277,15 @@
             "f1_odds": 161,
             "f2_odds": -196
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T03:47:34Z",
+            "f1_odds": 161,
+            "f2_odds": -196
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Mateusz Rebecki",
@@ -4269,8 +4318,15 @@
             "f1_odds": -722,
             "f2_odds": 503
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T04:27:26Z",
+            "f1_odds": -712,
+            "f2_odds": 500
+          },
+          "clv": {
+            "f1_odds": 10,
+            "f2_odds": -3
+          }
         },
         {
           "f1": "Jovan Leka",
@@ -4298,8 +4354,15 @@
             "f1_odds": -271,
             "f2_odds": 215
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T03:47:34Z",
+            "f1_odds": -271,
+            "f2_odds": 215
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Bodgan Grad",
@@ -4317,8 +4380,15 @@
             "f1_odds": -196,
             "f2_odds": 161
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T15:42:24Z",
+            "f1_odds": -196,
+            "f2_odds": 161
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         }
       ]
     },
@@ -6376,8 +6446,8 @@
         "side": "f1",
         "points": 3,
         "open": -390,
-        "close": null,
-        "clv": null
+        "close": -390,
+        "clv": 0
       }
     ],
     "Daniel Rodriguez": [
@@ -6387,8 +6457,8 @@
         "side": "f2",
         "points": 3,
         "open": 307,
-        "close": null,
-        "clv": null
+        "close": 307,
+        "clv": 0
       }
     ],
     "Aleksandar Rakic": [
@@ -6398,8 +6468,8 @@
         "side": "f1",
         "points": 3,
         "open": -370,
-        "close": null,
-        "clv": null
+        "close": -370,
+        "clv": 0
       }
     ],
     "Marcin Tybura": [
@@ -6409,8 +6479,8 @@
         "side": "f2",
         "points": 3,
         "open": 288,
-        "close": null,
-        "clv": null
+        "close": 288,
+        "clv": 0
       }
     ],
     "Dusko Todorovic": [
@@ -6420,8 +6490,8 @@
         "side": "f1",
         "points": 3,
         "open": 132,
-        "close": null,
-        "clv": null
+        "close": 132,
+        "clv": 0
       }
     ],
     "Robert Valentin": [
@@ -6431,8 +6501,8 @@
         "side": "f2",
         "points": 3,
         "open": -159,
-        "close": null,
-        "clv": null
+        "close": -159,
+        "clv": 0
       }
     ],
     "Vlasto Cepo": [
@@ -6442,8 +6512,8 @@
         "side": "f1",
         "points": 4,
         "open": -358,
-        "close": null,
-        "clv": null
+        "close": -357,
+        "clv": 1
       }
     ],
     "Gilbert Urbina": [
@@ -6453,8 +6523,8 @@
         "side": "f2",
         "points": 4,
         "open": 277,
-        "close": null,
-        "clv": null
+        "close": 277,
+        "clv": 0
       }
     ],
     "Ludovit Klein": [
@@ -6464,8 +6534,8 @@
         "side": "f1",
         "points": 3,
         "open": -263,
-        "close": null,
-        "clv": null
+        "close": -263,
+        "clv": 0
       }
     ],
     "Tofiq Musayev": [
@@ -6475,8 +6545,8 @@
         "side": "f2",
         "points": 3,
         "open": 212,
-        "close": null,
-        "clv": null
+        "close": 212,
+        "clv": 0
       }
     ],
     "Oban Elliott": [
@@ -6486,8 +6556,8 @@
         "side": "f1",
         "points": 4,
         "open": 282,
-        "close": null,
-        "clv": null
+        "close": 292,
+        "clv": 10
       }
     ],
     "Michael Oliveira": [
@@ -6497,8 +6567,8 @@
         "side": "f2",
         "points": 4,
         "open": -362,
-        "close": null,
-        "clv": null
+        "close": -375,
+        "clv": -13
       }
     ],
     "Dennis Buzukja": [
@@ -6508,8 +6578,8 @@
         "side": "f1",
         "points": 3,
         "open": 161,
-        "close": null,
-        "clv": null
+        "close": 161,
+        "clv": 0
       },
       {
         "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
@@ -6517,8 +6587,8 @@
         "side": "f2",
         "points": 1,
         "open": 161,
-        "close": null,
-        "clv": null
+        "close": 161,
+        "clv": 0
       }
     ],
     "Bogdan Grad": [
@@ -6528,8 +6598,8 @@
         "side": "f2",
         "points": 3,
         "open": -196,
-        "close": null,
-        "clv": null
+        "close": -196,
+        "clv": 0
       }
     ],
     "Mateusz Rebecki": [
@@ -6539,8 +6609,8 @@
         "side": "f1",
         "points": 4,
         "open": -722,
-        "close": null,
-        "clv": null
+        "close": -712,
+        "clv": 10
       }
     ],
     "Kyle Prepolec": [
@@ -6550,8 +6620,8 @@
         "side": "f2",
         "points": 4,
         "open": 503,
-        "close": null,
-        "clv": null
+        "close": 500,
+        "clv": -3
       }
     ],
     "Jovan Leka": [
@@ -6561,8 +6631,8 @@
         "side": "f1",
         "points": 3,
         "open": -271,
-        "close": null,
-        "clv": null
+        "close": -271,
+        "clv": 0
       }
     ],
     "Alexander Poppeck": [
@@ -6572,8 +6642,8 @@
         "side": "f2",
         "points": 3,
         "open": 215,
-        "close": null,
-        "clv": null
+        "close": 215,
+        "clv": 0
       }
     ],
     "Bodgan Grad": [
@@ -6583,8 +6653,8 @@
         "side": "f1",
         "points": 1,
         "open": -196,
-        "close": null,
-        "clv": null
+        "close": -196,
+        "clv": 0
       }
     ],
     "Mateusz Gamrot": [
