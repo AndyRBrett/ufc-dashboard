@@ -53,6 +53,14 @@ jobs:
         with:
           ref: main
 
+      # deploy-pages labels the deployment with $GITHUB_SHA, which on the
+      # workflow_call path is the caller's *starting* SHA — one commit behind the
+      # tip we just checked out. Capture the real tip and hand it to the deploy
+      # steps below so the Pages environment names the commit it actually serves.
+      - name: Record the commit being published
+        id: head
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Ensure Pages publishing source is "GitHub Actions"
         env:
           GH_TOKEN: ${{ github.token }}
@@ -76,13 +84,28 @@ jobs:
         with:
           path: .
 
-      # "Deployment failed, try again later." is terminal for a single deploy-pages
-      # invocation (its internal error_count only retries status-poll errors), so
-      # retry the whole action with backoff.
+      # Two distinct transient failures have to be survived here:
+      #
+      #   1. "Deployment failed, try again later." — terminal for a single
+      #      deploy-pages invocation (its internal error_count only retries
+      #      status-poll errors), so the whole action is retried with backoff.
+      #   2. The deployment sitting in `deployment_queued` past the action's
+      #      timeout, which is what broke run 31097418363 (10 min was not enough
+      #      for a backed-up Pages queue). Hence the 20-minute first attempt.
+      #
+      # The timeout path also *cancels* the deployment on its way out, and a
+      # deployment is keyed by build version (deploy-pages sends $GITHUB_SHA as
+      # pages_build_version). Re-submitting the same version after a cancel is
+      # dead on arrival — that is why both retries failed instantly in that run.
+      # Each attempt therefore gets its own version string.
       - name: Deploy to GitHub Pages
         id: deploy1
         uses: actions/deploy-pages@v5
         continue-on-error: true
+        env:
+          GITHUB_SHA: ${{ steps.head.outputs.sha }}
+        with:
+          timeout: 1200000
 
       - name: Wait 30s before retry
         if: steps.deploy1.outcome == 'failure'
@@ -92,6 +115,8 @@ jobs:
         if: steps.deploy1.outcome == 'failure'
         uses: actions/deploy-pages@v5
         continue-on-error: true
+        env:
+          GITHUB_SHA: ${{ steps.head.outputs.sha }}-retry1
 
       - name: Wait 60s before final retry
         if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
@@ -100,6 +125,8 @@ jobs:
         id: deploy3
         if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
         uses: actions/deploy-pages@v5
+        env:
+          GITHUB_SHA: ${{ steps.head.outputs.sha }}-retry2
 
       - name: Flag that the deploy only succeeded on a retry
         if: steps.deploy1.outcome == 'failure' && (steps.deploy2.outcome == 'success' || steps.deploy3.outcome == 'success')
