@@ -4,6 +4,11 @@ on:
   schedule:
     # Daily 9am UTC - card structure + odds update
     - cron: "0 9 * * *"
+    # Every 4h Thu/Fri/Sat — the run-up to a typical Saturday card, when late
+    # replacements land. A once-a-day pull missed the Jessie Rosas withdrawal
+    # (announced after the 09:00 run, fighting the next day). Odds calls are
+    # budget-gated inside scrape.py, so extra runs cost no API quota.
+    - cron: "0 */4 * * 4,5,6"
     # Every 5 min during US prime-time fight windows - live results + push.
     # Covers BOTH Saturday-night and Sunday-night (ET) cards. ET start of each
     # window maps to UTC the same day 16:00 → next day 04:59.
@@ -25,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write        # the data-health tracking issue
     outputs:
       pushed: ${{ steps.push.outputs.pushed }}
     steps:
@@ -38,19 +44,54 @@ jobs:
           pip install pytest
           python -m py_compile scrape.py
           python -m pytest -q
+      - name: Snapshot the published data.js so the gate can diff against it
+        run: cp data.js /tmp/data-before.js
       - run: python scrape.py
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           SUPABASE_ANON: ${{ secrets.SUPABASE_ANON }}
+      # The gate between a degraded scrape and a published card. Fails the job on
+      # structural breakage (unparseable data, empty EVENTS, a card that lost
+      # bouts) so the last-good data.js stays live and GitHub emails the failure.
+      # Data gaps only warn — blocking those would also block live results.
+      - name: Gate — refuse to publish structurally broken data
+        run: python health.py --gate --baseline /tmp/data-before.js
       - name: Write per-event freshness status + odds snapshots for the Project Overseer
         run: python write_status.py
+        env:
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
       - name: Rebuild per-fighter odds time-series + closing-line value
         run: python odds_series.py
+      # Warnings don't block the publish, so they need somewhere to land that
+      # isn't a workflow log nobody opens. One long-lived issue, rewritten in
+      # place each run: GitHub emails when it opens, the body is always current
+      # instead of a comment thread, and it auto-closes when the card is clean.
+      - name: Report data gaps as a single tracking issue
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: "Data health: gaps on an imminent card"
+        run: |
+          test -f health-report.json || exit 0
+          warn=$(jq '.summary.warn' health-report.json)
+          num=$(gh issue list --state open --search "$TITLE in:title" --json number,title \
+                --jq "[.[]|select(.title==env.TITLE)][0].number" 2>/dev/null || echo "")
+          if [ "$warn" -gt 0 ]; then
+            if [ -n "$num" ]; then
+              gh issue edit "$num" --body-file health-report.md
+            else
+              gh issue create --title "$TITLE" --body-file health-report.md
+            fi
+          elif [ -n "$num" ]; then
+            gh issue close "$num" --comment "Data health clean as of $(date -u +'%Y-%m-%d %H:%M UTC')."
+          fi
       - id: push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data.js overseer-status.json odds-snapshots.jsonl odds-series.json
+          git add data.js overseer-status.json odds-snapshots.jsonl odds-series.json \
+                  odds-state.json health-report.json
           if git diff --staged --quiet; then
             echo "pushed=false" >> "$GITHUB_OUTPUT"
           else

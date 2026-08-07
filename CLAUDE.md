@@ -44,6 +44,38 @@ Pushing to `main` deploys automatically, so the gates also run in CI and
 CI is a backstop, not a substitute: run `verify` locally first so you never
 spend a debug cycle discovering a break in CI (or worse, in prod).
 
+## The data pipeline fails loudly now — don't re-add silent fallbacks
+
+`scrape.py` degrades gracefully everywhere (a failed source keeps the previous
+value). That keeps the site up, but it used to mean a broken pull and a good pull
+were indistinguishable — the commit landed either way. Three pieces fix that:
+
+| piece | what it does |
+| ----- | ------------ |
+| `health.py` | reads the built `data.js` and reports what's wrong, weighted by how close the card is |
+| `odds-state.json` | last Odds API pull time, HTTP status, and remaining quota |
+| `health-report.json` / `.md` | findings for the run; the `.md` is the tracking-issue body |
+
+`update.yml` runs `python health.py --gate --baseline /tmp/data-before.js`
+**between the scrape and the commit**. The severity split is load-bearing:
+
+- **BLOCK** — structural breakage (unparseable data, empty `EVENTS`, a card that
+  *lost* bouts). The job fails, nothing is committed, the last-good `data.js`
+  stays live, and GitHub emails the failure.
+- **WARN** — data gaps (blank record, missing line, TBD fighter). Reported to a
+  single auto-updating GitHub issue, but **never blocks** — a blocked commit
+  during a card also blocks the live results everyone is watching.
+
+Two budgets to respect when changing cadence:
+
+- **Odds API calls are quota-metered.** `should_fetch_odds` gates them on elapsed
+  time (3h–24h depending on how near the next card is). Do not call `fetch_odds`
+  unconditionally — the 5-minute fight-window cadence used to, which burned
+  ~1,200 calls/month against a 500/month tier and froze every line for six days.
+- **Fighters on a card within `STATS_URGENT_DAYS` bypass the failure cooldown**
+  (`_needs_stats_fetch(..., urgent=True)`). The flat 3-day cooldown guaranteed a
+  blank record through any card that landed inside it.
+
 ## Other conventions
 
 - **Bump `SW_VERSION` in `sw.js`** whenever you change `index.html` / `data.js`

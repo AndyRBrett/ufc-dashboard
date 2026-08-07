@@ -1006,3 +1006,87 @@ def test_implausible_time_warning_skips_oceania_and_latam(capsys):
     # An eastward region at 17:00+ ET still warns.
     scrape._warn_if_implausible_time("UFC Fight Night: E vs. F", "Belgrade", "18:00")
     assert "WARNING" in capsys.readouterr().err
+
+
+# --- Odds API budget (should_fetch_odds) -----------------------------------
+#
+# The 5-minute fight-window cadence used to pull odds on every invocation, which
+# burned ~1,200 API calls/month against a 500/month quota. Once the quota died,
+# every call returned non-200 and get_odds_with_fallback silently reused the last
+# good lines — the Aug 8 card showed Aug 1 odds for six days.
+
+def test_odds_interval_tightens_as_the_card_approaches():
+    f = scrape.odds_min_interval_hours
+    assert f(0) == 3        # card today — lines all but closed
+    assert f(1) == 2
+    assert f(2) == 2
+    assert f(5) == 6
+    assert f(7) == 6
+    assert f(20) == 24
+
+
+def test_odds_not_pulled_for_cards_out_of_range():
+    f = scrape.odds_min_interval_hours
+    assert f(None) is None
+    assert f(-1) is None                       # everything already past
+    assert f(scrape.ODDS_PULL_MAX_DAYS_OUT + 1) is None
+
+
+def test_should_fetch_odds_respects_the_interval():
+    now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
+    # 1 day out → 2h interval.
+    assert scrape.should_fetch_odds(now, "2026-08-07T11:59:00+00:00", 1) is False
+    assert scrape.should_fetch_odds(now, "2026-08-07T09:00:00+00:00", 1) is True
+    # A first-ever run has no previous pull to wait on.
+    assert scrape.should_fetch_odds(now, None, 1) is True
+    # No card in range → never spend a call.
+    assert scrape.should_fetch_odds(now, None, 400) is False
+
+
+def test_should_fetch_odds_suppresses_the_five_minute_cadence():
+    # The exact regression: consecutive 5-minute fight-window runs must not each
+    # spend two API calls.
+    now = datetime(2026, 8, 8, 20, 0, tzinfo=timezone.utc)
+    last = "2026-08-08T19:55:00+00:00"
+    assert scrape.should_fetch_odds(now, last, 0) is False
+
+
+def test_odds_force_env_overrides_the_budget(monkeypatch):
+    monkeypatch.setenv("ODDS_FORCE", "1")
+    now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
+    assert scrape.should_fetch_odds(now, "2026-08-07T11:59:00+00:00", 1) is True
+
+
+def test_next_event_days_out_picks_the_soonest_future_card():
+    now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
+    data = 'date:"2026-07-11" date:"2026-08-08" date:"2026-09-19"'
+    assert scrape._next_event_days_out(data, now) == 1
+    assert scrape._next_event_days_out('date:"2026-07-11"', now) is None
+    assert scrape._next_event_days_out("no dates here", now) is None
+
+
+# --- urgent stats refetch --------------------------------------------------
+
+def test_failed_lookup_retries_immediately_for_an_imminent_card():
+    # Ferreira and Jose Luiz both failed on Aug 6 for an Aug 8 card. The flat
+    # 3-day cooldown ran to Aug 9, so a blank record was guaranteed through the
+    # event. Proximity has to beat the cooldown.
+    now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
+    entry = {"fetch_failed": "2026-08-06T11:00:00+00:00"}
+    assert scrape._needs_stats_fetch(entry, now) == (False, False)          # far card
+    assert scrape._needs_stats_fetch(entry, now, urgent=True) == (True, True)
+
+
+def test_urgent_refetch_also_repairs_a_blank_record():
+    now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
+    entry = {"rec": "", "form": [], "opp": [], "fetched_at": "2026-08-07T00:00:00+00:00"}
+    assert scrape._needs_stats_fetch(entry, now) == (False, False)
+    assert scrape._needs_stats_fetch(entry, now, urgent=True) == (True, True)
+
+
+def test_urgent_does_not_refetch_a_complete_fresh_entry():
+    # Urgency must not turn every run into a full re-scrape of the whole card.
+    now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
+    entry = {"rec": "10-0-0", "form": [{"r": "W"}], "opp": ["X"],
+             "fetched_at": "2026-08-07T00:00:00+00:00"}
+    assert scrape._needs_stats_fetch(entry, now, urgent=True) == (False, False)
