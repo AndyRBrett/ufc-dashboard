@@ -1441,6 +1441,20 @@ function fmtUpdated(s){
 function fmtOdds(n){return n>0?"+"+n:""+n;}
 function pk(ev,fight){return ev.date+"|"+fight.f1.n+"|"+fight.f2.n;}
 function stOf(f){return f.s||(FIGHTER_STATS[f.n]||null);}
+// True when UFCStats has a page for the fighter but no fight data behind it —
+// every UFC debutant on a card looks like this. Their striking/grappling numbers
+// and KO/Sub counts are all derived from the fight table, so with no rows they
+// come back 0. Rendering that 0 as a value claims the fighter lands no strikes
+// and has stopped nobody, which is a statement the data doesn't support; these
+// surfaces must show "—" instead. Physicals (height/reach/stance/DOB) are on the
+// profile itself, so they stay valid and are rendered normally.
+function noFightData(s){
+  if(!s)return false;                       // no stats object at all — callers handle that
+  if(s.form&&s.form.length)return false;
+  return !(parseFloat(s.slpm)||parseFloat(s.acc)||parseFloat(s.td)||parseFloat(s.tdd));
+}
+// Stat value for display: "—" when the fighter has no fight data to derive it from.
+function statVal(s,v,suffix){return noFightData(s)?"—":(v||0)+(suffix||"");}
 // Whole-years age from a scraped DOB string. Returns null when the DOB is
 // missing/unparseable or lands outside a plausible fighter range (guards
 // against bad scrapes). Shared by the fighter card and the compare sheet.
@@ -1978,8 +1992,9 @@ function openStats(idx,side){
     }).catch(function(){});
   var grid=document.getElementById("mGrid");grid.innerHTML="";
   function ms(val,lbl){var d=document.createElement("div");d.className="ms";var v=document.createElement("div");v.className="ms-val";v.textContent=val!=null?val:"—";var l=document.createElement("div");l.className="ms-lbl";l.textContent=lbl;d.appendChild(v);d.appendChild(l);return d;}
-  grid.appendChild(ms(s.ko,"KO/TKO Wins"));grid.appendChild(ms(s.sub,"Sub Wins"));
-  grid.appendChild(ms(s.slpm,"Sig Str/Min"));grid.appendChild(ms(s.td,"TD Avg/15"));
+  var _nd=noFightData(s);
+  grid.appendChild(ms(_nd?"—":s.ko,"KO/TKO Wins"));grid.appendChild(ms(_nd?"—":s.sub,"Sub Wins"));
+  grid.appendChild(ms(_nd?"—":s.slpm,"Sig Str/Min"));grid.appendChild(ms(_nd?"—":s.td,"TD Avg/15"));
   if(s.ht){grid.appendChild(ms(s.ht,"Height"));}
   if(s.rch){grid.appendChild(ms(s.rch,"Reach"));}
   if(s.stn){grid.appendChild(ms(s.stn,"Stance"));}
@@ -1996,8 +2011,17 @@ function openStats(idx,side){
     var bf=document.createElement("div");bf.className="mbar-fill";
     bf.style.width=p+"%";b.appendChild(bf);w.appendChild(b);return w;
   }
-  bars.appendChild(mbar("Striking Accuracy",s.acc));
-  bars.appendChild(mbar("Takedown Defense",s.tdd));
+  if(_nd){
+    // No fight table to derive percentages from — say so instead of drawing two
+    // empty 0% bars, which read as measured weaknesses rather than missing data.
+    var nb=document.createElement("div");
+    nb.style.cssText="background:var(--card2);border-radius:8px;padding:12px;border:1px solid var(--border);font-size:12px;color:var(--muted);text-align:center";
+    nb.textContent="No UFC fight data yet — striking and grappling numbers appear after their first bout.";
+    bars.appendChild(nb);
+  }else{
+    bars.appendChild(mbar("Striking Accuracy",s.acc));
+    bars.appendChild(mbar("Takedown Defense",s.tdd));
+  }
   var _mwins=parseInt((s.rec||"0-0-0").split("-")[0])||0;
   if(_mwins>0&&(s.ko||s.sub)){
     var finsec=document.createElement("div");finsec.style.cssText="margin-top:10px;background:var(--card2);border-radius:8px;padding:10px 12px;border:1px solid var(--border)";
@@ -2582,12 +2606,13 @@ function fnRenderTape(f){
   if(s1.ht||s2.ht)rows.push(["Height",s1.ht||"—",s2.ht||"—"]);
   if(s1.rch||s2.rch)rows.push(["Reach",s1.rch||"—",s2.rch||"—"]);
   if(s1.stn||s2.stn)rows.push(["Stance",s1.stn||"—",s2.stn||"—"]);
-  if(num(s1.slpm)||num(s2.slpm))rows.push(["Str / Min",""+(s1.slpm||0),""+(s2.slpm||0)]);
-  if(num(s1.acc)||num(s2.acc))rows.push(["Str Acc",(s1.acc||0)+"%",(s2.acc||0)+"%"]);
-  if(num(s1.td)||num(s2.td))rows.push(["TD / 15",""+(s1.td||0),""+(s2.td||0)]);
-  if(num(s1.tdd)||num(s2.tdd))rows.push(["TD Def",(s1.tdd||0)+"%",(s2.tdd||0)+"%"]);
-  if(num(s1.ko)||num(s2.ko))rows.push(["KO Wins",""+(s1.ko||0),""+(s2.ko||0)]);
-  if(num(s1.sub)||num(s2.sub))rows.push(["Sub Wins",""+(s1.sub||0),""+(s2.sub||0)]);
+  // A side with no fight data renders "—", not 0 — see noFightData.
+  if(num(s1.slpm)||num(s2.slpm))rows.push(["Str / Min",statVal(s1,s1.slpm),statVal(s2,s2.slpm)]);
+  if(num(s1.acc)||num(s2.acc))rows.push(["Str Acc",statVal(s1,s1.acc,"%"),statVal(s2,s2.acc,"%")]);
+  if(num(s1.td)||num(s2.td))rows.push(["TD / 15",statVal(s1,s1.td),statVal(s2,s2.td)]);
+  if(num(s1.tdd)||num(s2.tdd))rows.push(["TD Def",statVal(s1,s1.tdd,"%"),statVal(s2,s2.tdd,"%")]);
+  if(num(s1.ko)||num(s2.ko))rows.push(["KO Wins",statVal(s1,s1.ko),statVal(s2,s2.ko)]);
+  if(num(s1.sub)||num(s2.sub))rows.push(["Sub Wins",statVal(s1,s1.sub),statVal(s2,s2.sub)]);
   if(!rows.length){el.style.display="none";return;}
   el.style.display="";
   var hdr=document.createElement("div");hdr.className="fnl-tape-hdr";hdr.textContent="Tale of the Tape";el.appendChild(hdr);
@@ -2706,15 +2731,23 @@ function openCmp(f1,f2){
   var n2r=document.createElement("div");n2r.className="cmp-rec";n2r.textContent=f2.r||(s2&&s2.rec)||"";n2.appendChild(n2r);
   names.appendChild(n1);names.appendChild(vs);names.appendChild(n2);el.appendChild(names);
   if(s1&&s2){
+    // nd1/nd2: this side has no fight data, so its numbers are unknown, not zero.
+    // Such a row shows "—" and is left unscored — highlighting a "winner" or
+    // splitting the bar against a missing value invents a comparison.
+    var nd1=noFightData(s1),nd2=noFightData(s2);
     function cmpRow(lbl,v1,v2,higher){
+      var unknown=nd1||nd2;
+      if(nd1)v1="—";
+      if(nd2)v2="—";
       var n1=parseFloat(v1)||0,n2=parseFloat(v2)||0;
-      var f1w=higher?n1>=n2:n1<=n2;
-      var pct1=Math.max(n1,n2)>0?Math.round(n1/(n1+n2)*100):50,pct2=100-pct1;
+      var f1w=!unknown&&(higher?n1>=n2:n1<=n2);
+      var f2w=!unknown&&!f1w;
+      var pct1=unknown?50:(Math.max(n1,n2)>0?Math.round(n1/(n1+n2)*100):50),pct2=100-pct1;
       var row=document.createElement("div");row.className="cmp-row";
       var vals=document.createElement("div");vals.className="cmp-vals";
       var vl=document.createElement("div");vl.className="cmp-val"+(f1w?" win":"");vl.style.textAlign="left";vl.textContent=v1;
       var sl=document.createElement("div");sl.className="cmp-stat-lbl";sl.textContent=lbl;
-      var vr=document.createElement("div");vr.className="cmp-val cvr"+(!f1w?" win":"");vr.textContent=v2;
+      var vr=document.createElement("div");vr.className="cmp-val cvr"+(f2w?" win":"");vr.textContent=v2;
       vals.appendChild(vl);vals.appendChild(sl);vals.appendChild(vr);row.appendChild(vals);
       var bw=document.createElement("div");bw.className="cmp-bar-wrap";
       var bl=document.createElement("div");bl.className="cmp-bar-l";bl.style.width=pct1+"%";
@@ -2728,6 +2761,12 @@ function openCmp(f1,f2){
     el.appendChild(cmpRow("TD Avg / 15",s1.td,s2.td,true));
     el.appendChild(cmpRow("KO/TKO Wins",s1.ko,s2.ko,true));
     el.appendChild(cmpRow("Sub Wins",s1.sub,s2.sub,true));
+    if(nd1||nd2){
+      var cn=document.createElement("div");
+      cn.style.cssText="font-size:11px;color:var(--muted);text-align:center;padding:8px 0 2px";
+      cn.textContent=(nd1&&nd2?"Neither fighter has":(nd1?f1.n:f2.n)+" has no")+" UFC fight data yet — these rows can't be compared.";
+      el.appendChild(cn);
+    }
   }
   var a1=_ageFromDob(s1&&s1.dob),a2=_ageFromDob(s2&&s2.dob);
   var hasPhysical=(s1&&(s1.ht||s1.rch||s1.stn))||(s2&&(s2.ht||s2.rch||s2.stn))||a1!=null||a2!=null;
