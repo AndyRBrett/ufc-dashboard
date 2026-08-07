@@ -5734,11 +5734,19 @@ function _ensureAppVer(){
   }).catch(function(){});
 }
 if('serviceWorker'in navigator){
+  // Was this page already under a service worker when it loaded? If not, this is
+  // a first-ever visit (or a hard reload): sw.js calls skipWaiting()+clients.claim(),
+  // so the brand-new SW takes control of THIS page moments after load, firing
+  // 'updatefound' and 'controllerchange' even though nothing was updated. Treating
+  // that initial claim as an update reloaded every new visitor's first page view
+  // (and popped an "Update ready" banner at them). Only an SW that replaces an
+  // existing controller is a real update.
+  var _hadSW=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.register('sw.js').then(function(reg){
     reg.addEventListener('updatefound',function(){
       var newSW=reg.installing;
       newSW.addEventListener('statechange',function(){
-        if(newSW.state==='activated'){
+        if(newSW.state==='activated'&&_hadSW){
           // New SW just took over — show tap-to-refresh banner
           var b=document.createElement('div');
           b.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;font-weight:600;z-index:9999;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4);white-space:nowrap';
@@ -5749,8 +5757,9 @@ if('serviceWorker'in navigator){
       });
     });
   }).catch(function(){});
-  // Also catch SW controller change (activated from waiting)
-  navigator.serviceWorker.addEventListener('controllerchange',function(){window.location.reload();});
+  // Also catch SW controller change (activated from waiting) — but only when a
+  // previous controller is being replaced, never on the initial claim (see _hadSW).
+  navigator.serviceWorker.addEventListener('controllerchange',function(){if(_hadSW)window.location.reload();});
   // Receive routed notification taps from the service worker
   navigator.serviceWorker.addEventListener('message',function(e){
     if(e.data&&e.data.type==='trash-talk'&&e.data.fullMessage)showIncomingTrashTalk(e.data.fullMessage,e.data.sender);

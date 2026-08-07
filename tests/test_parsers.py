@@ -347,12 +347,43 @@ def test_name_tokens_match_fixes_particle_suffix_names():
     assert m("Benoit", "St. Denis", "Benoit Saint Denis")    # Saint/St. abbreviation
 
 
+def test_name_tokens_match_fixes_dropped_leading_given_name():
+    # UFCStats keeps only part of a multi-part given name, and not always the
+    # leading one. Matching against the card's FIRST token only ("Carlos") meant
+    # the row "Diego Ferreira" never matched "Carlos Diego Ferreira", so his
+    # record rendered blank on the card he was actually fighting on.
+    m = scrape._name_tokens_match
+    assert m("Diego", "Ferreira", "Carlos Diego Ferreira")
+    assert m("Carlos", "Ferreira", "Carlos Diego Ferreira")
+    assert m("Carlos Diego", "Ferreira", "Carlos Diego Ferreira")
+    # The reverse direction too: card carries the short name, UFCStats the long.
+    assert m("Carlos Diego", "Ferreira", "Diego Ferreira")
+
+
 def test_name_tokens_match_still_rejects_distinct_fighters():
     m = scrape._name_tokens_match
     assert not m("Stipe", "Miocic", "Jon Jones")             # unrelated
     assert not m("Michael", "Jones", "Michael Johnson")      # surname mismatch
     assert not m("Jane", "Smith", "John Smith")              # first-name mismatch
     assert not m("Islam", "Makhachev", "Ian Machado Garry")  # no shared surname
+    # Widening the given-name comparison to a set must not conflate namesakes:
+    # a shared surname alone is still not a match.
+    assert not m("Anthony", "Johnson", "Michael Johnson")
+    assert not m("Gilbert", "Burns", "Kevin Burns")
+
+
+def test_search_ufcstats_applies_name_alias(monkeypatch):
+    # A fighter whose UFCStats surname is a different word entirely (nickname
+    # promoted to surname) shares no surname with the card name, so no token
+    # matcher can bridge it — that's what the alias table is for.
+    # Every letter returns a non-empty page so the empty-page retry (which
+    # sleeps) never triggers — only the name matching is under test here.
+    other = [("Someone", "Else", "http://x/else", 1, 1, 0)]
+    rows = {"m": [("Jose", "Montanha", "http://x/mnt", 6, 1, 0)]}
+    monkeypatch.setattr(scrape, "_load_ufcstats_letter", lambda letter: rows.get(letter, other))
+    assert scrape._search_ufcstats("Jose Luiz") == ("http://x/mnt", "6-1-0")
+    # Unaliased names are untouched by the lookup.
+    assert scrape._search_ufcstats("Jose Aldo") is None
 
 
 def test_search_ufcstats_matches_particle_surname(monkeypatch):

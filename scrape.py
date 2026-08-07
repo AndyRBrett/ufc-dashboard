@@ -1539,19 +1539,43 @@ def _name_tokens_match(row_first, row_last, target_name):
     # Exact token set (any order): particle surnames, suffixes, reversed order.
     if set(t) == set(row):
         return True
-    # Otherwise the surname must appear and the first name must be compatible
-    # (Jon/Jonathan, Saint/St.); middle tokens are ignored so a dropped middle
-    # name (UFCStats "Ian Garry" vs card "Ian Machado Garry") still matches.
+    # Otherwise the surname must appear and a given name must be compatible
+    # (Jon/Jonathan, Saint/St.); extra given names are ignored so a dropped one
+    # (UFCStats "Ian Garry" vs card "Ian Machado Garry") still matches.
+    #
+    # Given names are compared as sets, not first-token-to-anything: UFCStats
+    # keeps only part of a multi-part given name, and the part it keeps is not
+    # always the leading one. Pinning the comparison to t[0] matched a dropped
+    # *middle* name but silently missed a dropped *leading* one — UFCStats
+    # "Diego Ferreira" never matched the card's "Carlos Diego Ferreira", so that
+    # fighter's record stayed blank on the card. The surname check above still
+    # pins identity, so widening this cannot conflate different fighters.
     surname = t[-1]
     if surname not in row:
         return False
     if len(t) == 1:
         return True
-    first = t[0]
+    givens_t   = [x for x in t   if x != surname]
+    givens_row = [x for x in row if x != surname]
     return any(
-        first == b or first.startswith(b[:2]) or b.startswith(first[:2])
-        for b in row if b != surname
+        a == b or a.startswith(b[:2]) or b.startswith(a[:2])
+        for a in givens_t
+        for b in givens_row
     )
+
+
+# Card name → the name UFCStats files the fighter under. Last resort, for the
+# handful of fighters whose UFCStats surname is a different word entirely (a
+# nickname promoted to surname, or a dropped family name) — no token matcher can
+# bridge that, because there is no shared surname to pin identity on. Everything
+# that IS bridgeable (particles, suffixes, dropped given names, reversed order)
+# belongs in _name_tokens_match, not here. Keys are clean()ed + lowercased.
+_UFCSTATS_NAME_ALIASES = {
+    # Wikipedia/Sherdog list him as Jose "Montanha" Luiz; UFCStats and the UFC
+    # both file him under Montanha, so the card name shares no surname with the
+    # UFCStats row and his record rendered blank.
+    "jose luiz": "Jose Montanha",
+}
 
 
 def _search_ufcstats(name):
@@ -1563,6 +1587,7 @@ def _search_ufcstats(name):
     tokens, prefer the most-experienced (most total fights) — that's the active
     UFC roster member a current card refers to.
     """
+    name = _UFCSTATS_NAME_ALIASES.get(clean(name).lower(), name)
     toks = _name_tokens(name)
     if not toks:
         return None
