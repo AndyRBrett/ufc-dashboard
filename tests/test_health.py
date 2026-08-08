@@ -144,11 +144,29 @@ def test_tbd_fighter_blocks_only_inside_the_critical_window():
 
 # --- odds pipeline health --------------------------------------------------
 
-def test_exhausted_odds_quota_blocks():
-    # This is the failure that froze the Aug 8 card's lines for six days.
+def test_exhausted_odds_quota_warns_but_never_blocks():
+    # Shipped as a BLOCK and immediately froze the live card: the quota was
+    # already at 0, so the gate refused to publish a build that carried fresh
+    # fight results. An exhausted quota does not make the data worse — nothing
+    # about it justifies withholding the build.
     text = data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])])
-    findings, _ = health.check(text, now=NOW, odds_state={"requests_remaining": 0})
-    assert "odds-quota" in kinds(findings, "BLOCK")
+    findings, summary = health.check(text, now=NOW,
+                                     odds_state={"requests_remaining": 0})
+    assert "odds-quota" in kinds(findings, "WARN")
+    assert summary["block"] == 0
+
+
+def test_nothing_about_the_odds_pipeline_can_block_a_publish():
+    # Belt and braces over the whole odds-state surface: every one of these is an
+    # upstream/ops condition, and none of them is a reason to stop publishing.
+    text = data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])])
+    for state in ({"requests_remaining": 0},
+                  {"requests_remaining": -5},
+                  {"last_status": 401},
+                  {"last_status": 429},
+                  {"last_fetch_at": "2026-07-01T00:00:00+00:00"}):
+        _, summary = health.check(text, now=NOW, odds_state=state)
+        assert summary["block"] == 0, f"odds_state {state} must not block"
 
 
 def test_low_odds_quota_warns():

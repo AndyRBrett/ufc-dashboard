@@ -225,10 +225,16 @@ def check(text, baseline_text=None, now=None, odds_state=None):
                 f"at their previous values")
         rem = odds_state.get("requests_remaining")
         if rem is not None and rem <= ODDS_QUOTA_WARN:
-            sev = "WARN" if rem > 0 else "BLOCK"
-            add(sev, "odds-quota",
-                f"Odds API quota down to {rem} requests — lines will freeze "
-                f"silently when it hits zero")
+            # WARN, never BLOCK. An exhausted quota is an ops problem, not a
+            # reason to withhold the build: the data being published is not made
+            # worse by it — it still carries fresh results — and blocking mid-card
+            # stops those results reaching anyone. This shipped as a BLOCK and
+            # promptly froze the live card's results, which is precisely the
+            # failure the severity split exists to prevent.
+            tail = ("lines are frozen until the quota resets" if rem <= 0
+                    else "lines will freeze silently when it hits zero")
+            add("WARN", "odds-quota",
+                f"Odds API quota down to {rem} requests — {tail}")
 
     return findings, _summarise(findings, len(events))
 
