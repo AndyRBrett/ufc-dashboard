@@ -140,7 +140,13 @@ def check(text, baseline_text=None, now=None, odds_state=None):
         add("BLOCK", "events-empty", "data.js parsed to zero events")
         return findings, _summarise(findings, 0)
 
-    upcoming = [e for e in events if (days_out(e["date"], today) or -1) >= 0]
+    # `days_out(...) or -1` would be wrong here: a card happening TODAY is 0 days
+    # out, 0 is falsy, and the gate would go blind on the one day it matters most.
+    upcoming = []
+    for e in events:
+        d = days_out(e["date"], today)
+        if d is not None and d >= 0:
+            upcoming.append(e)
     if not upcoming:
         add("BLOCK", "no-upcoming", "data.js lists no future event")
 

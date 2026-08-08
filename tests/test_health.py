@@ -178,3 +178,20 @@ def test_healthy_card_produces_no_findings():
     findings, summary = health.check(text, now=NOW)
     assert findings == []
     assert summary == {"events": 1, "block": 0, "warn": 0}
+
+
+def test_card_happening_today_is_still_checked():
+    # 0 days out is falsy. An `or -1` fallback in the upcoming filter made the
+    # gate skip the card on the day it runs — blind exactly when it matters.
+    text = data_js([("UFC Fight Night: A vs. B", "2026-08-07",
+                     [fight("A", "B", f1r="", odds="null")])])
+    findings, summary = health.check(text, now=NOW)
+    assert summary["warn"] > 0
+    assert "record-blank" in kinds(findings, "WARN")
+
+
+def test_yesterdays_card_is_not_checked():
+    text = data_js([("UFC Fight Night: A vs. B", "2026-08-06",
+                     [fight("A", "B", f1r="", odds="null")])])
+    findings, summary = health.check(text, now=NOW)
+    assert summary["warn"] == 0
