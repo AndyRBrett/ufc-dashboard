@@ -90,8 +90,17 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data.js overseer-status.json odds-snapshots.jsonl odds-series.json \
-                  odds-state.json health-report.json
+          # Stage only what this run actually produced. `git add` on a missing
+          # path exits 128 and, under bash -e, kills the step — so listing an
+          # optional artifact inline would break the push. odds-state.json is
+          # exactly that: it is written only when the odds budget allows a pull,
+          # and a run that injects results exits before ever reaching that step.
+          # A card night is mostly those runs, so this would have started failing
+          # every 5 minutes mid-event and stopped results from publishing.
+          for f in data.js overseer-status.json odds-snapshots.jsonl \
+                   odds-series.json odds-state.json health-report.json; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
           if git diff --staged --quiet; then
             echo "pushed=false" >> "$GITHUB_OUTPUT"
           else

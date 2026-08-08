@@ -11,3 +11,7 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Transient render of health-report.json, regenerated every run purely as the
+# body for the data-health tracking issue. The JSON is the artifact worth keeping.
+health-report.md
