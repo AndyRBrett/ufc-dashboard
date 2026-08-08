@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-08T11:37:49Z",
+  "generated_at": "2026-08-08T11:43:04Z",
   "events_tracked": 12,
   "stale_events": 3,
   "parse_failure_events": 1,
@@ -28,7 +28,7 @@
     {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-guskov",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-08T11:37:49Z",
+      "last_changed_at": "2026-08-08T11:43:04Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -64,7 +64,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "parse-failure",
-      "last_changed_at": "2026-08-08T11:37:49Z",
+      "last_changed_at": "2026-08-08T11:43:04Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 8,
@@ -82,7 +82,7 @@
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-08T11:37:49Z",
+      "last_changed_at": "2026-08-08T11:43:04Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 7,
@@ -91,7 +91,7 @@
     {
       "event_id": "2026-09-12:ufc-fight-night-rodriguez-vs-silva",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-08T11:37:49Z",
+      "last_changed_at": "2026-08-08T11:43:04Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -100,7 +100,7 @@
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-08T11:37:49Z",
+      "last_changed_at": "2026-08-08T11:43:04Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -109,7 +109,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-08T11:37:49Z",
+      "last_changed_at": "2026-08-08T11:43:04Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 2,
