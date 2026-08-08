@@ -1120,6 +1120,10 @@ def _index_odds_api(data, source):
     return odds_index
 
 
+_odds_requests_remaining = None   # last x-requests-remaining seen from the Odds API
+_odds_last_status = None          # last HTTP status seen from the Odds API
+
+
 def _fetch_odds_api(regions, source):
     """One Odds API source adapter: fetch `regions` and return a tagged index.
 
@@ -1143,11 +1147,20 @@ def _fetch_odds_api(regions, source):
         )
         if r is None:
             return {}
+        remaining = r.headers.get("x-requests-remaining")
         print(
-            f"Odds API [{source}]: {r.status_code} | "
-            f"remaining: {r.headers.get('x-requests-remaining', '?')}",
+            f"Odds API [{source}]: {r.status_code} | remaining: {remaining or '?'}",
             file=sys.stderr,
         )
+        # Surface the quota so exhaustion is visible in the health report instead
+        # of silently degrading into stale lines for weeks.
+        global _odds_requests_remaining, _odds_last_status
+        _odds_last_status = r.status_code
+        if remaining is not None:
+            try:
+                _odds_requests_remaining = int(remaining)
+            except ValueError:
+                pass
         if r.status_code != 200:
             return {}
         data = r.json()
@@ -1155,6 +1168,97 @@ def _fetch_odds_api(regions, source):
         print(f"Odds API [{source}] error: {e}", file=sys.stderr)
         return {}
     return _index_odds_api(data, source)
+
+
+# --- Odds API budget -------------------------------------------------------
+#
+# The Odds API is quota-metered per month. The scraper runs every 5 minutes
+# during fight windows (see update.yml) and every run that injects no result
+# falls through to a full rebuild, which called fetch_odds() unconditionally —
+# ~144 fall-through runs per event weekend, two sources each. That is ~1,200
+# calls/month against a 500/month tier: the quota died mid-July, every call
+# after it returned non-200, and get_odds_with_fallback quietly reused the last
+# good lines. That is how the Aug 8 card ended up showing Aug 1 odds for six
+# days with four bouts never priced at all.
+#
+# Odds only need refreshing as a card approaches, and not at all once it starts
+# (lines close; those runs only exist to pull results). Gate the pull on elapsed
+# time instead of firing on every invocation.
+ODDS_STATE_PATH = Path("odds-state.json")
+# (days until the next card, minimum hours between pulls). First match wins.
+ODDS_PULL_INTERVALS = (
+    (0,   3),    # card is today      → lines all but closed, 3h is plenty
+    (2,   2),    # card within 2 days → tightest cadence, replacements land here
+    (7,   6),
+    (30, 24),
+)
+ODDS_PULL_MAX_DAYS_OUT = 30   # nothing beyond this is priced yet — don't spend a call
+
+
+def odds_min_interval_hours(days_out):
+    """Minimum hours between Odds API pulls given the next card's distance.
+
+    None means "don't pull at all": no card in range to price.
+    """
+    if days_out is None or days_out < 0 or days_out > ODDS_PULL_MAX_DAYS_OUT:
+        return None
+    for limit, hours in ODDS_PULL_INTERVALS:
+        if days_out <= limit:
+            return hours
+    return None
+
+
+def should_fetch_odds(now, last_at, days_out):
+    """True when enough time has passed to spend another Odds API call.
+
+    A skipped pull is safe by construction: fetch_odds returns an empty index and
+    get_odds_with_fallback keeps the lines already in data.js.
+    """
+    if os.environ.get("ODDS_FORCE") == "1":
+        return True
+    interval = odds_min_interval_hours(days_out)
+    if interval is None:
+        return False
+    if not last_at:
+        return True
+    prev = _parse_ts(last_at)
+    if not prev:
+        return True
+    return (now - prev) >= timedelta(hours=interval)
+
+
+def _next_event_days_out(data, now):
+    """Whole days from today until the soonest event in data.js that isn't past.
+
+    None when data.js lists no future event.
+    """
+    today = now.date()
+    best  = None
+    for ds in re.findall(r'date:"(\d{4}-\d{2}-\d{2})"', data):
+        try:
+            d = datetime.strptime(ds, "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        if d < today:
+            continue
+        if best is None or d < best:
+            best = d
+    return None if best is None else (best - today).days
+
+
+def load_odds_state():
+    try:
+        return json.loads(ODDS_STATE_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def save_odds_state(state):
+    try:
+        ODDS_STATE_PATH.write_text(
+            json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    except Exception as e:
+        print(f"Could not write {ODDS_STATE_PATH}: {e}", file=sys.stderr)
 
 
 def fetch_odds_primary():
@@ -1539,19 +1643,43 @@ def _name_tokens_match(row_first, row_last, target_name):
     # Exact token set (any order): particle surnames, suffixes, reversed order.
     if set(t) == set(row):
         return True
-    # Otherwise the surname must appear and the first name must be compatible
-    # (Jon/Jonathan, Saint/St.); middle tokens are ignored so a dropped middle
-    # name (UFCStats "Ian Garry" vs card "Ian Machado Garry") still matches.
+    # Otherwise the surname must appear and a given name must be compatible
+    # (Jon/Jonathan, Saint/St.); extra given names are ignored so a dropped one
+    # (UFCStats "Ian Garry" vs card "Ian Machado Garry") still matches.
+    #
+    # Given names are compared as sets, not first-token-to-anything: UFCStats
+    # keeps only part of a multi-part given name, and the part it keeps is not
+    # always the leading one. Pinning the comparison to t[0] matched a dropped
+    # *middle* name but silently missed a dropped *leading* one — UFCStats
+    # "Diego Ferreira" never matched the card's "Carlos Diego Ferreira", so that
+    # fighter's record stayed blank on the card. The surname check above still
+    # pins identity, so widening this cannot conflate different fighters.
     surname = t[-1]
     if surname not in row:
         return False
     if len(t) == 1:
         return True
-    first = t[0]
+    givens_t   = [x for x in t   if x != surname]
+    givens_row = [x for x in row if x != surname]
     return any(
-        first == b or first.startswith(b[:2]) or b.startswith(first[:2])
-        for b in row if b != surname
+        a == b or a.startswith(b[:2]) or b.startswith(a[:2])
+        for a in givens_t
+        for b in givens_row
     )
+
+
+# Card name → the name UFCStats files the fighter under. Last resort, for the
+# handful of fighters whose UFCStats surname is a different word entirely (a
+# nickname promoted to surname, or a dropped family name) — no token matcher can
+# bridge that, because there is no shared surname to pin identity on. Everything
+# that IS bridgeable (particles, suffixes, dropped given names, reversed order)
+# belongs in _name_tokens_match, not here. Keys are clean()ed + lowercased.
+_UFCSTATS_NAME_ALIASES = {
+    # Wikipedia/Sherdog list him as Jose "Montanha" Luiz; UFCStats and the UFC
+    # both file him under Montanha, so the card name shares no surname with the
+    # UFCStats row and his record rendered blank.
+    "jose luiz": "Jose Montanha",
+}
 
 
 def _search_ufcstats(name):
@@ -1563,6 +1691,7 @@ def _search_ufcstats(name):
     tokens, prefer the most-experienced (most total fights) — that's the active
     UFC roster member a current card refers to.
     """
+    name = _UFCSTATS_NAME_ALIASES.get(clean(name).lower(), name)
     toks = _name_tokens(name)
     if not toks:
         return None
@@ -1709,6 +1838,13 @@ def fetch_wiki_record(name):
 # a cadence rather than cached once and trusted indefinitely.
 STATS_REFRESH_DAYS = 14   # re-validate a cached fighter (record + opponents) this often
 STATS_RETRY_DAYS   = 3    # cooldown before retrying a fighter whose fetch failed
+# ...except for fighters on an imminent card, who are retried every run. The flat
+# 3-day cooldown was silently fatal: Carlos Diego Ferreira and Jose Luiz both
+# failed their lookup on Aug 6 for a card on Aug 8, so the cooldown ran to Aug 9
+# and they were structurally guaranteed to show a blank record right through the
+# event. Close to a card, a wasted retry costs one request; a blank record costs
+# the card.
+STATS_URGENT_DAYS  = 7    # a card this close retries failures + refreshes every run
 
 
 def _parse_ts(s):
@@ -1724,12 +1860,16 @@ def _parse_ts(s):
     return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
 
 
-def _needs_stats_fetch(entry, now):
+def _needs_stats_fetch(entry, now, urgent=False):
     """Decide whether a fighter's cached stats should be (re)fetched this run.
 
     Returns (fetch: bool, force_search: bool). ``force_search`` requests the
     authoritative UFCStats *search* path (which re-derives the win-loss record)
     rather than a cheap re-hit of the cached detail URL.
+
+    ``urgent`` marks a fighter booked on a card inside STATS_URGENT_DAYS: the
+    failure cooldown and the refresh window are both bypassed, because a gap that
+    persists until the card is a gap the user sees.
 
     Legacy entries written before this cadence existed carry no ``fetched_at``
     stamp, so they are treated as stale and re-validated once — which is what
@@ -1737,6 +1877,8 @@ def _needs_stats_fetch(entry, now):
     """
     if not entry:
         return True, True                       # brand new → full search fetch
+    if urgent and (entry.get("fetch_failed") or not entry.get("rec")):
+        return True, True                       # imminent card + known gap → retry now
     failed = entry.get("fetch_failed")
     if failed and now - _parse_ts(failed) < timedelta(days=STATS_RETRY_DAYS):
         return False, False                     # failed recently → cooldown, skip
@@ -2220,10 +2362,31 @@ def step_build_events(data, now):
     Rebuild the EVENTS block from Wikipedia and The Odds API, refresh fighter
     stats, and update rankings. Returns the updated data.js string.
     """
-    print("Fetching odds...", file=sys.stderr)
     existing_odds  = extract_existing_odds(data)
     existing_cards = _extract_existing_cards(data)
-    odds_index     = fetch_odds()
+
+    # Odds are quota-metered; pull only when the cadence allows (see
+    # should_fetch_odds). Skipping is safe — the empty index falls through to the
+    # lines already in data.js.
+    odds_state = load_odds_state()
+    days_out   = _next_event_days_out(data, now)
+    if should_fetch_odds(now, odds_state.get("last_fetch_at"), days_out):
+        print(f"Fetching odds (next card {days_out}d out)...", file=sys.stderr)
+        odds_index = fetch_odds()
+        odds_state["last_fetch_at"] = now.isoformat()
+        odds_state["last_status"]   = _odds_last_status
+        if _odds_requests_remaining is not None:
+            odds_state["requests_remaining"] = _odds_requests_remaining
+        odds_state["next_event_days_out"] = days_out
+        save_odds_state(odds_state)
+    else:
+        odds_index = {}
+        iv = odds_min_interval_hours(days_out)
+        print(
+            f"Skipping odds pull — next card {days_out}d out, "
+            f"min interval {iv}h, last pull {odds_state.get('last_fetch_at')}",
+            file=sys.stderr,
+        )
 
     print("Building events from Wikipedia...", file=sys.stderr)
     discovered = discover_upcoming_events(now)
@@ -2362,18 +2525,27 @@ def step_build_events(data, now):
                     fight.update({"winner": r["winner"], "method": r["method"],
                                   "round": r["round"], "state": r["state"]})
 
-    # Fighter stats — fetch new, backfill missing form, refresh changed records
+    # Fighter stats — fetch new, backfill missing form, refresh changed records.
+    # Fighters booked inside STATS_URGENT_DAYS are marked urgent so a previously
+    # failed lookup is retried immediately rather than waiting out its cooldown.
     stats_cache  = extract_stats_cache(data)
-    all_fighters = {
-        side["name"]
-        for ev in new_events
-        for fight in ev["fights"]
-        for side in (fight["f1"], fight["f2"])
-        if side.get("name") and side["name"] != "TBD"
-    }
+    all_fighters = {}
+    for ev in new_events:
+        try:
+            ed = datetime.strptime(ev["date"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            days_out = (ed - now).days
+        except (ValueError, KeyError):
+            days_out = 999
+        urgent = 0 <= days_out <= STATS_URGENT_DAYS
+        for fight in ev["fights"]:
+            for side in (fight["f1"], fight["f2"]):
+                n = side.get("name")
+                if n and n != "TBD":
+                    all_fighters[n] = all_fighters.get(n, False) or urgent
     to_fetch = []
     for n in sorted(all_fighters):
-        fetch, force_search = _needs_stats_fetch(stats_cache.get(n), now)
+        fetch, force_search = _needs_stats_fetch(
+            stats_cache.get(n), now, urgent=all_fighters[n])
         if fetch:
             to_fetch.append((n, force_search))
     print(

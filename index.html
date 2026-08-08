@@ -1441,6 +1441,20 @@ function fmtUpdated(s){
 function fmtOdds(n){return n>0?"+"+n:""+n;}
 function pk(ev,fight){return ev.date+"|"+fight.f1.n+"|"+fight.f2.n;}
 function stOf(f){return f.s||(FIGHTER_STATS[f.n]||null);}
+// True when UFCStats has a page for the fighter but no fight data behind it —
+// every UFC debutant on a card looks like this. Their striking/grappling numbers
+// and KO/Sub counts are all derived from the fight table, so with no rows they
+// come back 0. Rendering that 0 as a value claims the fighter lands no strikes
+// and has stopped nobody, which is a statement the data doesn't support; these
+// surfaces must show "—" instead. Physicals (height/reach/stance/DOB) are on the
+// profile itself, so they stay valid and are rendered normally.
+function noFightData(s){
+  if(!s)return false;                       // no stats object at all — callers handle that
+  if(s.form&&s.form.length)return false;
+  return !(parseFloat(s.slpm)||parseFloat(s.acc)||parseFloat(s.td)||parseFloat(s.tdd));
+}
+// Stat value for display: "—" when the fighter has no fight data to derive it from.
+function statVal(s,v,suffix){return noFightData(s)?"—":(v||0)+(suffix||"");}
 // Whole-years age from a scraped DOB string. Returns null when the DOB is
 // missing/unparseable or lands outside a plausible fighter range (guards
 // against bad scrapes). Shared by the fighter card and the compare sheet.
@@ -1880,7 +1894,10 @@ function updateCountdown(){
   if(!ev)return;
   var p=ev.time.split(":");var h=parseInt(p[0],10);var m=parseInt(p[1]||"0",10);
   var dp=ev.date.split("-");
-  var target=Date.UTC(parseInt(dp[0],10),parseInt(dp[1],10)-1,parseInt(dp[2],10),h+4,m,0);
+  // etOffset(), not a hardcoded 4: ET is UTC-5 from November to March, so a
+  // literal +4 puts every countdown an hour off for a third of the season —
+  // including disagreeing with picksLocked(), which does use etOffset().
+  var target=Date.UTC(parseInt(dp[0],10),parseInt(dp[1],10)-1,parseInt(dp[2],10),h+etOffset(),m,0);
   var diff=target-now;
   var wrap=document.getElementById("cd-wrap");
   if(!wrap)return;
@@ -1978,8 +1995,9 @@ function openStats(idx,side){
     }).catch(function(){});
   var grid=document.getElementById("mGrid");grid.innerHTML="";
   function ms(val,lbl){var d=document.createElement("div");d.className="ms";var v=document.createElement("div");v.className="ms-val";v.textContent=val!=null?val:"—";var l=document.createElement("div");l.className="ms-lbl";l.textContent=lbl;d.appendChild(v);d.appendChild(l);return d;}
-  grid.appendChild(ms(s.ko,"KO/TKO Wins"));grid.appendChild(ms(s.sub,"Sub Wins"));
-  grid.appendChild(ms(s.slpm,"Sig Str/Min"));grid.appendChild(ms(s.td,"TD Avg/15"));
+  var _nd=noFightData(s);
+  grid.appendChild(ms(_nd?"—":s.ko,"KO/TKO Wins"));grid.appendChild(ms(_nd?"—":s.sub,"Sub Wins"));
+  grid.appendChild(ms(_nd?"—":s.slpm,"Sig Str/Min"));grid.appendChild(ms(_nd?"—":s.td,"TD Avg/15"));
   if(s.ht){grid.appendChild(ms(s.ht,"Height"));}
   if(s.rch){grid.appendChild(ms(s.rch,"Reach"));}
   if(s.stn){grid.appendChild(ms(s.stn,"Stance"));}
@@ -1996,8 +2014,17 @@ function openStats(idx,side){
     var bf=document.createElement("div");bf.className="mbar-fill";
     bf.style.width=p+"%";b.appendChild(bf);w.appendChild(b);return w;
   }
-  bars.appendChild(mbar("Striking Accuracy",s.acc));
-  bars.appendChild(mbar("Takedown Defense",s.tdd));
+  if(_nd){
+    // No fight table to derive percentages from — say so instead of drawing two
+    // empty 0% bars, which read as measured weaknesses rather than missing data.
+    var nb=document.createElement("div");
+    nb.style.cssText="background:var(--card2);border-radius:8px;padding:12px;border:1px solid var(--border);font-size:12px;color:var(--muted);text-align:center";
+    nb.textContent="No UFC fight data yet — striking and grappling numbers appear after their first bout.";
+    bars.appendChild(nb);
+  }else{
+    bars.appendChild(mbar("Striking Accuracy",s.acc));
+    bars.appendChild(mbar("Takedown Defense",s.tdd));
+  }
   var _mwins=parseInt((s.rec||"0-0-0").split("-")[0])||0;
   if(_mwins>0&&(s.ko||s.sub)){
     var finsec=document.createElement("div");finsec.style.cssText="margin-top:10px;background:var(--card2);border-radius:8px;padding:10px 12px;border:1px solid var(--border)";
@@ -2360,7 +2387,7 @@ function togglePush(){
 
 function pick(idx,side){
   var item=FIGHTS[idx];if(!item)return;
-  if(picksLocked(item.ev)){toast("Picks are locked — event has started");return;}
+  if(fightLocked(item.ev,item.fight)){toast(lockReason(item.fight));return;}
   var f=side===0?item.fight.f1:item.fight.f2;
   checkName(function(){
     var key=pk(item.ev,item.fight);
@@ -2372,7 +2399,7 @@ function pick(idx,side){
 }
 
 function undoPick(ev,fight){
-  if(picksLocked(ev)){toast("Picks are locked — event has started");return;}
+  if(fightLocked(ev,fight)){toast(lockReason(fight));return;}
   var old=preds[pk(ev,fight)]||null;
   deleteSbPick(ev,fight);delete preds[pk(ev,fight)];
   _cpDelta(ev,fight,old,null);
@@ -2443,7 +2470,7 @@ function fnNav(dir){fnIdx=Math.max(0,Math.min(fnFights.length-1,fnIdx+dir));upda
 function fnPick(side){
   if(!fnFights.length)return;
   var f=fnFights[fnIdx];if(f.winner)return;
-  if(fnEv&&picksLocked(fnEv)){toast("Picks are locked — event has started");return;}
+  if(fightLocked(fnEv,f)){toast(lockReason(f));return;}
   checkName(function(){
     preds[pk(fnEv,f)]=side===0?f.f1.n:f.f2.n;
     save();syncPick(fnEv,f,true);fnPickedAny=true;updateFN();
@@ -2467,7 +2494,7 @@ function updateFNPre(){
   var myPick=fnEv?preds[pk(fnEv,f)]:"";
   var w1=document.getElementById("fn-f1-wrap"),w2=document.getElementById("fn-f2-wrap");
   var hint=document.getElementById("fn-pick-hint"),lbl=document.getElementById("fn-picked-lbl");
-  var fnLocked=fnEv&&picksLocked(fnEv)&&!f.winner;
+  var fnLocked=fightLocked(fnEv,f)&&!f.winner;
   if(myPick){
     w1.className="fn-ft"+(myPick===f.f1.n?" fn-picked":" fn-not-picked");
     w2.className="fn-ft fnr"+(myPick===f.f2.n?" fn-picked":" fn-not-picked");
@@ -2582,12 +2609,13 @@ function fnRenderTape(f){
   if(s1.ht||s2.ht)rows.push(["Height",s1.ht||"—",s2.ht||"—"]);
   if(s1.rch||s2.rch)rows.push(["Reach",s1.rch||"—",s2.rch||"—"]);
   if(s1.stn||s2.stn)rows.push(["Stance",s1.stn||"—",s2.stn||"—"]);
-  if(num(s1.slpm)||num(s2.slpm))rows.push(["Str / Min",""+(s1.slpm||0),""+(s2.slpm||0)]);
-  if(num(s1.acc)||num(s2.acc))rows.push(["Str Acc",(s1.acc||0)+"%",(s2.acc||0)+"%"]);
-  if(num(s1.td)||num(s2.td))rows.push(["TD / 15",""+(s1.td||0),""+(s2.td||0)]);
-  if(num(s1.tdd)||num(s2.tdd))rows.push(["TD Def",(s1.tdd||0)+"%",(s2.tdd||0)+"%"]);
-  if(num(s1.ko)||num(s2.ko))rows.push(["KO Wins",""+(s1.ko||0),""+(s2.ko||0)]);
-  if(num(s1.sub)||num(s2.sub))rows.push(["Sub Wins",""+(s1.sub||0),""+(s2.sub||0)]);
+  // A side with no fight data renders "—", not 0 — see noFightData.
+  if(num(s1.slpm)||num(s2.slpm))rows.push(["Str / Min",statVal(s1,s1.slpm),statVal(s2,s2.slpm)]);
+  if(num(s1.acc)||num(s2.acc))rows.push(["Str Acc",statVal(s1,s1.acc,"%"),statVal(s2,s2.acc,"%")]);
+  if(num(s1.td)||num(s2.td))rows.push(["TD / 15",statVal(s1,s1.td),statVal(s2,s2.td)]);
+  if(num(s1.tdd)||num(s2.tdd))rows.push(["TD Def",statVal(s1,s1.tdd,"%"),statVal(s2,s2.tdd,"%")]);
+  if(num(s1.ko)||num(s2.ko))rows.push(["KO Wins",statVal(s1,s1.ko),statVal(s2,s2.ko)]);
+  if(num(s1.sub)||num(s2.sub))rows.push(["Sub Wins",statVal(s1,s1.sub),statVal(s2,s2.sub)]);
   if(!rows.length){el.style.display="none";return;}
   el.style.display="";
   var hdr=document.createElement("div");hdr.className="fnl-tape-hdr";hdr.textContent="Tale of the Tape";el.appendChild(hdr);
@@ -2616,7 +2644,7 @@ function updateFNLive(){
   fnRenderFans(f);
   var res=document.getElementById("fnl-result");
   if(f.winner){res.textContent="";var wb=document.createElement("b");wb.textContent=_fnNameShort(f.winner);res.appendChild(wb);res.appendChild(document.createTextNode(" def. "+_fnNameShort(f.winner===f.f1.n?f.f2.n:f.f1.n)+(f.method?" · "+f.method:"")+(f.round?" · R"+f.round:"")));}
-  else{res.textContent=picksLocked(fnEv)?"In progress — waiting on result…":"Up next";}
+  else{res.textContent=fightLocked(fnEv,f)?"In progress — waiting on result…":"Up next";}
   // Jump-to-live pill visible only when user has navigated off the live fight
   var liveIdx=_liveFightIdx(fnFights);
   var jump=document.getElementById("fnl-jump");
@@ -2706,15 +2734,23 @@ function openCmp(f1,f2){
   var n2r=document.createElement("div");n2r.className="cmp-rec";n2r.textContent=f2.r||(s2&&s2.rec)||"";n2.appendChild(n2r);
   names.appendChild(n1);names.appendChild(vs);names.appendChild(n2);el.appendChild(names);
   if(s1&&s2){
+    // nd1/nd2: this side has no fight data, so its numbers are unknown, not zero.
+    // Such a row shows "—" and is left unscored — highlighting a "winner" or
+    // splitting the bar against a missing value invents a comparison.
+    var nd1=noFightData(s1),nd2=noFightData(s2);
     function cmpRow(lbl,v1,v2,higher){
+      var unknown=nd1||nd2;
+      if(nd1)v1="—";
+      if(nd2)v2="—";
       var n1=parseFloat(v1)||0,n2=parseFloat(v2)||0;
-      var f1w=higher?n1>=n2:n1<=n2;
-      var pct1=Math.max(n1,n2)>0?Math.round(n1/(n1+n2)*100):50,pct2=100-pct1;
+      var f1w=!unknown&&(higher?n1>=n2:n1<=n2);
+      var f2w=!unknown&&!f1w;
+      var pct1=unknown?50:(Math.max(n1,n2)>0?Math.round(n1/(n1+n2)*100):50),pct2=100-pct1;
       var row=document.createElement("div");row.className="cmp-row";
       var vals=document.createElement("div");vals.className="cmp-vals";
       var vl=document.createElement("div");vl.className="cmp-val"+(f1w?" win":"");vl.style.textAlign="left";vl.textContent=v1;
       var sl=document.createElement("div");sl.className="cmp-stat-lbl";sl.textContent=lbl;
-      var vr=document.createElement("div");vr.className="cmp-val cvr"+(!f1w?" win":"");vr.textContent=v2;
+      var vr=document.createElement("div");vr.className="cmp-val cvr"+(f2w?" win":"");vr.textContent=v2;
       vals.appendChild(vl);vals.appendChild(sl);vals.appendChild(vr);row.appendChild(vals);
       var bw=document.createElement("div");bw.className="cmp-bar-wrap";
       var bl=document.createElement("div");bl.className="cmp-bar-l";bl.style.width=pct1+"%";
@@ -2728,6 +2764,12 @@ function openCmp(f1,f2){
     el.appendChild(cmpRow("TD Avg / 15",s1.td,s2.td,true));
     el.appendChild(cmpRow("KO/TKO Wins",s1.ko,s2.ko,true));
     el.appendChild(cmpRow("Sub Wins",s1.sub,s2.sub,true));
+    if(nd1||nd2){
+      var cn=document.createElement("div");
+      cn.style.cssText="font-size:11px;color:var(--muted);text-align:center;padding:8px 0 2px";
+      cn.textContent=(nd1&&nd2?"Neither fighter has":(nd1?f1.n:f2.n)+" has no")+" UFC fight data yet — these rows can't be compared.";
+      el.appendChild(cn);
+    }
   }
   var a1=_ageFromDob(s1&&s1.dob),a2=_ageFromDob(s2&&s2.dob);
   var hasPhysical=(s1&&(s1.ht||s1.rch||s1.stn))||(s2&&(s2.ht||s2.rch||s2.stn))||a1!=null||a2!=null;
@@ -2937,6 +2979,31 @@ function mainCardLocked(ev){
   if(!t||t==="TBD")return picksLocked(ev);  // no known main-card time → fall back
   var now=Date.now(),eto=etOffset(),dp=ev.date.split("-"),pp=t.split(":");
   return now>=Date.UTC(+dp[0],+dp[1]-1,+dp[2],+pp[0]+eto,+(pp[1]||0),0);
+}
+// Which clock locks a given bout.
+//
+// picksLocked() is an EVENT-level question ("has the card started?") and answers
+// it with the prelim clock. Using it to gate individual picks closed every bout
+// on the card the moment the first prelim began — so the main event was
+// unpickable three hours before it ran, while the countdown alongside it was
+// still counting down to the main card. Two clocks, two answers, same screen.
+//
+// A bout locks when ITS OWN segment starts: prelims at ev.prelimTime, anything
+// on the main card at ev.time. A decided bout is locked regardless of the clock.
+function isMainCardBout(f){
+  var l=f&&f.lbl;
+  return l==="Main Event"||l==="Co-Main"||l==="Main Card";
+}
+function fightLocked(ev,f){
+  if(!ev)return false;
+  if(f&&f.winner)return true;
+  return isMainCardBout(f)?mainCardLocked(ev):picksLocked(ev);
+}
+// Why a bout is locked, for the toast — "the event has started" is not a useful
+// thing to be told when the segment you're trying to pick hasn't.
+function lockReason(f){
+  return isMainCardBout(f)?"Picks are locked — the main card has started"
+                         :"Picks are locked — the prelims have started";
 }
 // A challenge rides on specific main-card fights, so it stays available as long as
 // any main-card bout is still undecided — the 9pm main-card clock passing does not
@@ -3161,7 +3228,7 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
   }
   if(showPick){
     var key=pk(EVENTS[ei],fight);var myPick=preds[key]||"";var fw=fight.winner||"";
-    var locked=!fw&&picksLocked(EVENTS[ei]);
+    var locked=!fw&&fightLocked(EVENTS[ei],fight);
     var pr=document.createElement("div");pr.className="pick-row";
     var pl=document.createElement("span");pl.className="pick-lbl";
     if(locked){pl.innerHTML="&#x1F512;";pl.title="Picks locked";}else{pl.textContent="Pick:";}
@@ -4535,8 +4602,11 @@ function loadLeaderboard(isLive){
       var _hdrLbl=_allPre?"Next up":_allPost?"Latest":"Live";
       evHdr.textContent=_hdrLbl+": "+nextEv.name.replace("UFC Fight Night: ","").replace("UFC ","UFC ");
       body.appendChild(evHdr);
-      // Slacker nudges — call out anyone who hasn't picked before lock-in
-      if(_allPre&&!picksLocked(nextEv)){
+      // Slacker nudges — call out anyone who hasn't picked before lock-in.
+      // Keyed to the main-card clock, not the prelim one: main-card picks stay
+      // open through the prelims, so the nudge has to as well or it vanishes
+      // while there's still something to nudge about.
+      if(_allPre&&!mainCardLocked(nextEv)){
         var slackers=_slackersFor(nextEv,rows).filter(function(u){return u.user_id;});
         if(slackers.length){
           var nr=document.createElement("div");
@@ -5074,7 +5144,7 @@ function renderActivityFeed(){
   items.sort(function(a,b){return b.t-a.t;});
   items=items.slice(0,8);
   // Pinned: who still owes picks for the next card (deep-links to the leaderboard)
-  if(nextEv&&!picksLocked(nextEv)){
+  if(nextEv&&!mainCardLocked(nextEv)){
     var slk=_slackersFor(nextEv,_commRows);
     if(slk.length)items.unshift({t:0,emoji:"⏰",link:"lb",
       txt:slk.length+(slk.length===1?" friend hasn't":" friends haven't")+" finished picks for "+nextEv.name.replace("UFC Fight Night: ","")+" — nudge them"});
@@ -5734,11 +5804,19 @@ function _ensureAppVer(){
   }).catch(function(){});
 }
 if('serviceWorker'in navigator){
+  // Was this page already under a service worker when it loaded? If not, this is
+  // a first-ever visit (or a hard reload): sw.js calls skipWaiting()+clients.claim(),
+  // so the brand-new SW takes control of THIS page moments after load, firing
+  // 'updatefound' and 'controllerchange' even though nothing was updated. Treating
+  // that initial claim as an update reloaded every new visitor's first page view
+  // (and popped an "Update ready" banner at them). Only an SW that replaces an
+  // existing controller is a real update.
+  var _hadSW=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.register('sw.js').then(function(reg){
     reg.addEventListener('updatefound',function(){
       var newSW=reg.installing;
       newSW.addEventListener('statechange',function(){
-        if(newSW.state==='activated'){
+        if(newSW.state==='activated'&&_hadSW){
           // New SW just took over — show tap-to-refresh banner
           var b=document.createElement('div');
           b.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;font-weight:600;z-index:9999;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4);white-space:nowrap';
@@ -5749,8 +5827,9 @@ if('serviceWorker'in navigator){
       });
     });
   }).catch(function(){});
-  // Also catch SW controller change (activated from waiting)
-  navigator.serviceWorker.addEventListener('controllerchange',function(){window.location.reload();});
+  // Also catch SW controller change (activated from waiting) — but only when a
+  // previous controller is being replaced, never on the initial claim (see _hadSW).
+  navigator.serviceWorker.addEventListener('controllerchange',function(){if(_hadSW)window.location.reload();});
   // Receive routed notification taps from the service worker
   navigator.serviceWorker.addEventListener('message',function(e){
     if(e.data&&e.data.type==='trash-talk'&&e.data.fullMessage)showIncomingTrashTalk(e.data.fullMessage,e.data.sender);

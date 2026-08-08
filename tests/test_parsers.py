@@ -347,12 +347,43 @@ def test_name_tokens_match_fixes_particle_suffix_names():
     assert m("Benoit", "St. Denis", "Benoit Saint Denis")    # Saint/St. abbreviation
 
 
+def test_name_tokens_match_fixes_dropped_leading_given_name():
+    # UFCStats keeps only part of a multi-part given name, and not always the
+    # leading one. Matching against the card's FIRST token only ("Carlos") meant
+    # the row "Diego Ferreira" never matched "Carlos Diego Ferreira", so his
+    # record rendered blank on the card he was actually fighting on.
+    m = scrape._name_tokens_match
+    assert m("Diego", "Ferreira", "Carlos Diego Ferreira")
+    assert m("Carlos", "Ferreira", "Carlos Diego Ferreira")
+    assert m("Carlos Diego", "Ferreira", "Carlos Diego Ferreira")
+    # The reverse direction too: card carries the short name, UFCStats the long.
+    assert m("Carlos Diego", "Ferreira", "Diego Ferreira")
+
+
 def test_name_tokens_match_still_rejects_distinct_fighters():
     m = scrape._name_tokens_match
     assert not m("Stipe", "Miocic", "Jon Jones")             # unrelated
     assert not m("Michael", "Jones", "Michael Johnson")      # surname mismatch
     assert not m("Jane", "Smith", "John Smith")              # first-name mismatch
     assert not m("Islam", "Makhachev", "Ian Machado Garry")  # no shared surname
+    # Widening the given-name comparison to a set must not conflate namesakes:
+    # a shared surname alone is still not a match.
+    assert not m("Anthony", "Johnson", "Michael Johnson")
+    assert not m("Gilbert", "Burns", "Kevin Burns")
+
+
+def test_search_ufcstats_applies_name_alias(monkeypatch):
+    # A fighter whose UFCStats surname is a different word entirely (nickname
+    # promoted to surname) shares no surname with the card name, so no token
+    # matcher can bridge it — that's what the alias table is for.
+    # Every letter returns a non-empty page so the empty-page retry (which
+    # sleeps) never triggers — only the name matching is under test here.
+    other = [("Someone", "Else", "http://x/else", 1, 1, 0)]
+    rows = {"m": [("Jose", "Montanha", "http://x/mnt", 6, 1, 0)]}
+    monkeypatch.setattr(scrape, "_load_ufcstats_letter", lambda letter: rows.get(letter, other))
+    assert scrape._search_ufcstats("Jose Luiz") == ("http://x/mnt", "6-1-0")
+    # Unaliased names are untouched by the lookup.
+    assert scrape._search_ufcstats("Jose Aldo") is None
 
 
 def test_search_ufcstats_matches_particle_surname(monkeypatch):
@@ -975,3 +1006,87 @@ def test_implausible_time_warning_skips_oceania_and_latam(capsys):
     # An eastward region at 17:00+ ET still warns.
     scrape._warn_if_implausible_time("UFC Fight Night: E vs. F", "Belgrade", "18:00")
     assert "WARNING" in capsys.readouterr().err
+
+
+# --- Odds API budget (should_fetch_odds) -----------------------------------
+#
+# The 5-minute fight-window cadence used to pull odds on every invocation, which
+# burned ~1,200 API calls/month against a 500/month quota. Once the quota died,
+# every call returned non-200 and get_odds_with_fallback silently reused the last
+# good lines — the Aug 8 card showed Aug 1 odds for six days.
+
+def test_odds_interval_tightens_as_the_card_approaches():
+    f = scrape.odds_min_interval_hours
+    assert f(0) == 3        # card today — lines all but closed
+    assert f(1) == 2
+    assert f(2) == 2
+    assert f(5) == 6
+    assert f(7) == 6
+    assert f(20) == 24
+
+
+def test_odds_not_pulled_for_cards_out_of_range():
+    f = scrape.odds_min_interval_hours
+    assert f(None) is None
+    assert f(-1) is None                       # everything already past
+    assert f(scrape.ODDS_PULL_MAX_DAYS_OUT + 1) is None
+
+
+def test_should_fetch_odds_respects_the_interval():
+    now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
+    # 1 day out → 2h interval.
+    assert scrape.should_fetch_odds(now, "2026-08-07T11:59:00+00:00", 1) is False
+    assert scrape.should_fetch_odds(now, "2026-08-07T09:00:00+00:00", 1) is True
+    # A first-ever run has no previous pull to wait on.
+    assert scrape.should_fetch_odds(now, None, 1) is True
+    # No card in range → never spend a call.
+    assert scrape.should_fetch_odds(now, None, 400) is False
+
+
+def test_should_fetch_odds_suppresses_the_five_minute_cadence():
+    # The exact regression: consecutive 5-minute fight-window runs must not each
+    # spend two API calls.
+    now = datetime(2026, 8, 8, 20, 0, tzinfo=timezone.utc)
+    last = "2026-08-08T19:55:00+00:00"
+    assert scrape.should_fetch_odds(now, last, 0) is False
+
+
+def test_odds_force_env_overrides_the_budget(monkeypatch):
+    monkeypatch.setenv("ODDS_FORCE", "1")
+    now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
+    assert scrape.should_fetch_odds(now, "2026-08-07T11:59:00+00:00", 1) is True
+
+
+def test_next_event_days_out_picks_the_soonest_future_card():
+    now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
+    data = 'date:"2026-07-11" date:"2026-08-08" date:"2026-09-19"'
+    assert scrape._next_event_days_out(data, now) == 1
+    assert scrape._next_event_days_out('date:"2026-07-11"', now) is None
+    assert scrape._next_event_days_out("no dates here", now) is None
+
+
+# --- urgent stats refetch --------------------------------------------------
+
+def test_failed_lookup_retries_immediately_for_an_imminent_card():
+    # Ferreira and Jose Luiz both failed on Aug 6 for an Aug 8 card. The flat
+    # 3-day cooldown ran to Aug 9, so a blank record was guaranteed through the
+    # event. Proximity has to beat the cooldown.
+    now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
+    entry = {"fetch_failed": "2026-08-06T11:00:00+00:00"}
+    assert scrape._needs_stats_fetch(entry, now) == (False, False)          # far card
+    assert scrape._needs_stats_fetch(entry, now, urgent=True) == (True, True)
+
+
+def test_urgent_refetch_also_repairs_a_blank_record():
+    now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
+    entry = {"rec": "", "form": [], "opp": [], "fetched_at": "2026-08-07T00:00:00+00:00"}
+    assert scrape._needs_stats_fetch(entry, now) == (False, False)
+    assert scrape._needs_stats_fetch(entry, now, urgent=True) == (True, True)
+
+
+def test_urgent_does_not_refetch_a_complete_fresh_entry():
+    # Urgency must not turn every run into a full re-scrape of the whole card.
+    now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
+    entry = {"rec": "10-0-0", "form": [{"r": "W"}], "opp": ["X"],
+             "fetched_at": "2026-08-07T00:00:00+00:00"}
+    assert scrape._needs_stats_fetch(entry, now, urgent=True) == (False, False)
