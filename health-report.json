@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-08T21:55:18Z",
+  "generated_at": "2026-08-08T22:03:15Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 4
+    "warn": 6
   },
   "findings": [
     {
@@ -39,6 +39,16 @@
       "event": "UFC 330: Makhachev vs. Machado Garry",
       "date": "2026-08-15",
       "days_out": 7
+    },
+    {
+      "severity": "WARN",
+      "check": "odds-api-error",
+      "message": "last Odds API call returned HTTP 401 \u2014 lines are frozen at their previous values"
+    },
+    {
+      "severity": "WARN",
+      "check": "odds-quota",
+      "message": "Odds API quota down to 0 requests \u2014 lines are frozen until the quota resets"
     }
   ]
 }
