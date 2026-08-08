@@ -4603,10 +4603,17 @@ function loadLeaderboard(isLive){
       evHdr.textContent=_hdrLbl+": "+nextEv.name.replace("UFC Fight Night: ","").replace("UFC ","UFC ");
       body.appendChild(evHdr);
       // Slacker nudges — call out anyone who hasn't picked before lock-in.
-      // Keyed to the main-card clock, not the prelim one: main-card picks stay
-      // open through the prelims, so the nudge has to as well or it vanishes
-      // while there's still something to nudge about.
-      if(_allPre&&!mainCardLocked(nextEv)){
+      // Gated ONLY on the main-card clock. _slackersFor counts main-card bouts
+      // and nothing else, so the window that matters is "can these picks still
+      // be made", which runs until ev.time.
+      //
+      // This used to also require _allPre — every bout on the card still
+      // upcoming — which is a label helper for the "Next up / Live / Latest"
+      // header, not a statement about picks. One prelim finishing flipped it
+      // false and deleted the nudge chips for the rest of the night, while
+      // main-card picks stayed open for hours. The activity feed kept pointing
+      // at a leaderboard that no longer had any nudge buttons on it.
+      if(!mainCardLocked(nextEv)){
         var slackers=_slackersFor(nextEv,rows).filter(function(u){return u.user_id;});
         if(slackers.length){
           var nr=document.createElement("div");
