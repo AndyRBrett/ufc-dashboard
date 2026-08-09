@@ -4408,6 +4408,11 @@ function computeBeltLineage(rows){
       reigns[reigns.length-1].defenses++;
       return;
     }
+    // How the belt was won, recorded so the title history can SAY so. A reign
+    // that started on a tiebreak is indistinguishable from an outright win
+    // otherwise, which makes a legitimate result look arbitrary to whoever
+    // didn't get it.
+    var wonVia=null;
     if(tiedTop.length>1){
       tiedTop.sort(function(a,b){
         var ca=cum[a.base],cb=cum[b.base];
@@ -4416,15 +4421,20 @@ function computeBeltLineage(rows){
         return cb.total-ca.total;
       });
       var c0=cum[tiedTop[0].base],c1=cum[tiedTop[1].base];
-      if((c0.total?c0.correct/c0.total:0)===(c1.total?c1.correct/c1.total:0)&&c0.total===c1.total){
+      var a0=c0.total?c0.correct/c0.total:0,a1=c1.total?c1.correct/c1.total:0;
+      if(a0===a1&&c0.total===c1.total){
         if(holder){reigns[reigns.length-1].end={evName:evNames[date],vacated:true};holder=null;}
         return;                                             // dead heat — belt goes vacant
       }
+      wonVia=(a0!==a1)
+        ? {tied:tiedTop.length,by:"accuracy",val:Math.round(a0*100)+"%"}
+        : {tied:tiedTop.length,by:"picks",val:c0.total+" picks"};
     }
     var wn=tiedTop[0];
     if(holder)reigns[reigns.length-1].end={evName:evNames[date],takenBy:wn.name};
     holder={base:wn.base,name:wn.name};
-    reigns.push({base:wn.base,name:wn.name,evName:evNames[date],date:date,defenses:0,end:null});
+    reigns.push({base:wn.base,name:wn.name,evName:evNames[date],date:date,defenses:0,end:null,
+                 pts:wn.pts,via:wonVia});
   });
   if(!reigns.length)return null;
   var cur=reigns[reigns.length-1];
@@ -4807,6 +4817,10 @@ function loadLeaderboard(isLive){
         var who=document.createElement("span");who.style.cssText="font-weight:600;flex-shrink:0";who.textContent=(r.end?"":"🏆 ")+r.name;rr.appendChild(who);
         var det2=document.createElement("span");det2.style.cssText="color:var(--muted);font-size:11px;flex:1;min-width:0";
         var s="won at "+_shortEv(r.evName);
+        // Say how, when it wasn't an outright win — otherwise a tiebreak result
+        // reads as the app picking a name at random.
+        if(r.via)s+=" · "+r.via.tied+"-way tie, took it on "+r.via.val+
+                    (r.via.by==="accuracy"?" accuracy":" made");
         if(r.defenses>0)s+=" · "+r.defenses+" defense"+(r.defenses>1?"s":"");
         if(r.end)s+=r.end.vacated?" · vacated":" · lost to "+r.end.takenBy+" at "+_shortEv(r.end.evName);
         det2.textContent=s;rr.appendChild(det2);
@@ -5687,7 +5701,7 @@ document.addEventListener("DOMContentLoaded",function(){
     <div class="lb-info-row"><span>Bonus pick (POTN/FOTN)</span><span class="lb-info-pts">+1 pt</span></div>
     <div style="font-size:11px;color:var(--muted);margin-top:10px">Methods: KO/TKO · Submission · Decision</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">🏆 The Belt</div>
-    <div style="font-size:11px;color:var(--muted)">Top scorer of each card takes the belt. The champ defends every event — skip a card and anyone who scores can steal it. Ties go to the champion. Tap Title History at the bottom of the board for the full lineage.</div>
+    <div style="font-size:11px;color:var(--muted)">Top scorer of each card takes the belt. The champ defends every event — skip a card and anyone who scores can steal it. A challenger has to <b>beat</b> the champ's score, not match it: a tie involving the champ is a successful defence.<br><br>If the champ is out of it and challengers finish level, the belt goes to the highest <b>career accuracy</b> (the % on your row), then to whoever has made the most picks. If two are identical on both, the belt is vacated. Tap Title History at the bottom of the board for the full lineage — a belt won on a tiebreak says so.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">⚔️ Challenges</div>
     <div style="font-size:11px;color:var(--muted)">Tap ⚔️ on a rival's row to call them out on one fight or the whole card, with stakes (wheel spin, $5, or your own). They accept or decline; results settle automatically when fights finish. No pick on the contested fight = forfeit. Tie = push, nobody pays. Losers of wheel stakes get a "spin now" button in the inbox.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">⏰ Nudges</div>
