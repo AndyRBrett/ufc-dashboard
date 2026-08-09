@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-08T23:52:59Z",
+  "generated_at": "2026-08-09T00:02:53Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -4394,7 +4394,7 @@
     },
     {
       "event_id": "2026-08-08:ufc-fight-night-gamrot-vs-salkilld",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Mateusz Gamrot",
@@ -4412,8 +4412,15 @@
             "f1_odds": 112,
             "f2_odds": -132
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": 112,
+            "f2_odds": -132
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Ty Miller",
@@ -4431,8 +4438,15 @@
             "f1_odds": -285,
             "f2_odds": 233
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -285,
+            "f2_odds": 233
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Diyar Nurgozhay",
@@ -4450,8 +4464,15 @@
             "f1_odds": -161,
             "f2_odds": 137
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -161,
+            "f2_odds": 137
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Carlos Diego Ferreira",
@@ -4469,8 +4490,15 @@
             "f1_odds": -164,
             "f2_odds": 140
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -164,
+            "f2_odds": 140
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Darren Elkins",
@@ -4488,8 +4516,15 @@
             "f1_odds": 492,
             "f2_odds": -700
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": 492,
+            "f2_odds": -700
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Steven Asplund",
@@ -4507,8 +4542,15 @@
             "f1_odds": -230,
             "f2_odds": 191
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -230,
+            "f2_odds": 191
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Juliana Miller",
@@ -4526,8 +4568,15 @@
             "f1_odds": -236,
             "f2_odds": 195
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": -236,
+            "f2_odds": 195
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Amanda Lemos",
@@ -4545,8 +4594,15 @@
             "f1_odds": 195,
             "f2_odds": -236
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-01T00:07:29Z",
+            "f1_odds": 195,
+            "f2_odds": -236
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         }
       ]
     },
@@ -6664,8 +6720,8 @@
         "side": "f1",
         "points": 1,
         "open": 112,
-        "close": null,
-        "clv": null
+        "close": 112,
+        "clv": 0
       }
     ],
     "Quillan Salkilld": [
@@ -6675,8 +6731,8 @@
         "side": "f2",
         "points": 1,
         "open": -132,
-        "close": null,
-        "clv": null
+        "close": -132,
+        "clv": 0
       }
     ],
     "Ty Miller": [
@@ -6686,8 +6742,8 @@
         "side": "f1",
         "points": 1,
         "open": -285,
-        "close": null,
-        "clv": null
+        "close": -285,
+        "clv": 0
       }
     ],
     "Billy Ray Goff": [
@@ -6697,8 +6753,8 @@
         "side": "f2",
         "points": 1,
         "open": 233,
-        "close": null,
-        "clv": null
+        "close": 233,
+        "clv": 0
       }
     ],
     "Diyar Nurgozhay": [
@@ -6708,8 +6764,8 @@
         "side": "f1",
         "points": 1,
         "open": -161,
-        "close": null,
-        "clv": null
+        "close": -161,
+        "clv": 0
       }
     ],
     "Bruno Lopes": [
@@ -6719,8 +6775,8 @@
         "side": "f2",
         "points": 1,
         "open": 137,
-        "close": null,
-        "clv": null
+        "close": 137,
+        "clv": 0
       }
     ],
     "Carlos Diego Ferreira": [
@@ -6730,8 +6786,8 @@
         "side": "f1",
         "points": 1,
         "open": -164,
-        "close": null,
-        "clv": null
+        "close": -164,
+        "clv": 0
       }
     ],
     "Billy Quarantillo": [
@@ -6741,8 +6797,8 @@
         "side": "f2",
         "points": 1,
         "open": 140,
-        "close": null,
-        "clv": null
+        "close": 140,
+        "clv": 0
       }
     ],
     "Darren Elkins": [
@@ -6752,8 +6808,8 @@
         "side": "f1",
         "points": 1,
         "open": 492,
-        "close": null,
-        "clv": null
+        "close": 492,
+        "clv": 0
       }
     ],
     "Yadier del Valle": [
@@ -6763,8 +6819,8 @@
         "side": "f2",
         "points": 1,
         "open": -700,
-        "close": null,
-        "clv": null
+        "close": -700,
+        "clv": 0
       }
     ],
     "Steven Asplund": [
@@ -6774,8 +6830,8 @@
         "side": "f1",
         "points": 1,
         "open": -230,
-        "close": null,
-        "clv": null
+        "close": -230,
+        "clv": 0
       }
     ],
     "Guilherme Pat": [
@@ -6785,8 +6841,8 @@
         "side": "f2",
         "points": 1,
         "open": 191,
-        "close": null,
-        "clv": null
+        "close": 191,
+        "clv": 0
       }
     ],
     "Juliana Miller": [
@@ -6796,8 +6852,8 @@
         "side": "f1",
         "points": 1,
         "open": -236,
-        "close": null,
-        "clv": null
+        "close": -236,
+        "clv": 0
       }
     ],
     "Ravena Oliveira": [
@@ -6807,8 +6863,8 @@
         "side": "f2",
         "points": 1,
         "open": 195,
-        "close": null,
-        "clv": null
+        "close": 195,
+        "clv": 0
       }
     ],
     "Amanda Lemos": [
@@ -6818,8 +6874,8 @@
         "side": "f1",
         "points": 1,
         "open": 195,
-        "close": null,
-        "clv": null
+        "close": 195,
+        "clv": 0
       }
     ],
     "Alexia Thainara": [
@@ -6829,8 +6885,8 @@
         "side": "f2",
         "points": 1,
         "open": -236,
-        "close": null,
-        "clv": null
+        "close": -236,
+        "clv": 0
       }
     ],
     "Islam Makhachev": [
