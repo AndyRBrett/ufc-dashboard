@@ -4382,8 +4382,17 @@ function computeBeltLineage(rows){
   EVENTS.forEach(function(ev){
     if(_eventFinished(ev.date)){dates.push(ev.date);evNames[ev.date]=ev.name;}
   });
+  // The archive is re-snapshotted on every scrape while an event is still in
+  // EVENTS, so a card that is HALFWAY THROUGH already has an archive entry
+  // holding only the bouts decided so far. The EVENTS loop above screens those
+  // out with _eventFinished; this loop had no such check and added them anyway,
+  // which crowned a champion off a partial card — the belt changed hands on
+  // Gamrot vs. Salkilld while the main event and co-main were still to come.
+  // Only fall back to the archive for dates EVENTS no longer carries at all.
+  var liveDates={};
+  EVENTS.forEach(function(ev){if(!_eventFinished(ev.date))liveDates[ev.date]=true;});
   Object.keys(RESULTS_ARCHIVE).forEach(function(d){
-    if(!evNames[d]){dates.push(d);evNames[d]=RESULTS_ARCHIVE[d].name;}
+    if(!evNames[d]&&!liveDates[d]){dates.push(d);evNames[d]=RESULTS_ARCHIVE[d].name;}
   });
   dates.sort();
   var holder=null,reigns=[],cum={};   // cum accuracy per base for tiebreaks
