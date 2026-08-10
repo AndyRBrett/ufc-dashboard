@@ -4020,31 +4020,41 @@ function spinWheel(){
 }
 function toggleTrashTarget(chip){
   var uid=chip.dataset.uid;
-  var allChip=document.querySelector(".lb-trash-chip[data-uid='__all__']");
+  // Every lookup here is scoped to the target picker. .lb-trash-chip is not
+  // unique to this sheet — the slacker-nudge chips in the leaderboard body use
+  // the same class, and they carry no data-label. A document-wide query
+  // rewrote those to "✓ undefined" the moment you tapped "Everyone", and
+  // counted them toward "roast N people" below.
+  var box=document.getElementById("trashChips");
+  var allChip=box.querySelector(".lb-trash-chip[data-uid='__all__']");
   if(uid==="__all__"){
     if(_selectedTargets.has("__all__")){
       _selectedTargets.clear();
-      document.querySelectorAll(".lb-trash-chip").forEach(function(c){c.classList.remove("selected");c.textContent=c.dataset.label;});
+      box.querySelectorAll(".lb-trash-chip").forEach(function(c){c.classList.remove("selected");c.textContent=c.dataset.label;});
     }else{
       _selectedTargets.clear();_selectedTargets.add("__all__");
-      document.querySelectorAll(".lb-trash-chip").forEach(function(c){c.classList.add("selected");c.textContent="✓ "+c.dataset.label;});
+      box.querySelectorAll(".lb-trash-chip").forEach(function(c){c.classList.add("selected");c.textContent="✓ "+c.dataset.label;});
     }
   }else{
     _selectedTargets.delete("__all__");
-    allChip.classList.remove("selected");allChip.textContent=allChip.dataset.label;
+    // renderTrashTargets only builds the "Everyone" chip when there is more than
+    // one opponent, so with a single opponent this is null. Dereferencing it
+    // threw before the selection could be applied, which made the one chip on
+    // screen impossible to select at all.
+    if(allChip){allChip.classList.remove("selected");allChip.textContent=allChip.dataset.label;}
     if(_selectedTargets.has(uid)){
       _selectedTargets.delete(uid);chip.classList.remove("selected");chip.textContent=chip.dataset.label;
     }else{
       _selectedTargets.add(uid);chip.classList.add("selected");chip.textContent="✓ "+chip.dataset.label;
     }
-    var all=document.querySelectorAll(".lb-trash-chip:not([data-uid='__all__'])");
-    if(all.length&&Array.from(all).every(function(c){return c.classList.contains("selected");})){
+    var all=box.querySelectorAll(".lb-trash-chip:not([data-uid='__all__'])");
+    if(allChip&&all.length&&Array.from(all).every(function(c){return c.classList.contains("selected");})){
       _selectedTargets.add("__all__");allChip.classList.add("selected");allChip.textContent="✓ "+allChip.dataset.label;
     }
   }
   // Targets are chosen before generation now, so a selection change gates the
   // Generate step and throws away any roast written about the previous targets.
-  var individualChips=document.querySelectorAll(".lb-trash-chip:not([data-uid='__all__'])");
+  var individualChips=box.querySelectorAll(".lb-trash-chip:not([data-uid='__all__'])");
   var n=_selectedTargets.has("__all__")?individualChips.length:_selectedTargets.size;
   _trashText="";
   document.getElementById("trashText").style.display="none";
@@ -4756,7 +4766,10 @@ function loadLeaderboard(isLive){
         var evLbl=document.createElement("div");
         evLbl.style.cssText="font-size:10px;font-weight:600;color:var(--muted);padding:8px 14px 4px;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;display:flex;align-items:center;user-select:none";
         var evLblText=document.createElement("span");evLblText.style.flex="1";
-        evLblText.textContent=evName.replace("UFC Fight Night: ","").replace("UFC ","");
+        // A pick row synced without an event_name would land here as undefined and
+        // throw, and this runs inside the leaderboard render — one bad row took
+        // out the whole board with "Could not load leaderboard".
+        evLblText.textContent=String(evName||"Other picks").replace("UFC Fight Night: ","").replace("UFC ","");
         evLbl.appendChild(evLblText);
         var evArrow=document.createElement("span");evArrow.style.cssText="font-size:9px;color:var(--muted);transition:transform .15s;padding-right:2px";evArrow.textContent="▼";
         evLbl.appendChild(evArrow);
