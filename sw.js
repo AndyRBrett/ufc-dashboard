@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = '2026-08-09-1';
+const SW_VERSION = '2026-08-09-2';
 const CACHE = 'ufc-' + SW_VERSION;
 // Handoff caches that must survive SW upgrades: 'ufc-push-id' carries the push
 // identity used by pushsubscriptionchange while the app is closed, 'ufc-tap'
@@ -167,18 +167,30 @@ self.addEventListener('notificationclick', function(e) {
   var senderMatch = (e.notification.title || '').match(/\(via\s+(.+?)\)\s*$/);
   var sender = senderMatch ? senderMatch[1] : '';
 
-  // App closed (or focusing failed) — open a window. The tap payload is handed
-  // over through the 'ufc-tap' cache, which the page consumes on load: roasts
-  // can now run ~1300 chars, too long to trust to a URL. The legacy ?trash=
-  // param is still added when it fits, so a stale cached page paired with this
-  // SW keeps working.
-  function openFresh() {
+  // The tap payload is handed over through the 'ufc-tap' cache, which the page
+  // consumes on load: roasts can run ~1300 chars, too long to trust to a URL.
+  //
+  // This is written on EVERY tap, before any routing decision, because a
+  // postMessage to a focused client is not a delivery guarantee — see the
+  // matchAll block below. If the message lands, the live page clears the stash
+  // (see the 'message' handler in index.html) so it can't resurface later; if
+  // it vanished into a dead client, the relaunched page finds it and the roast
+  // still shows. Cheap either way, and it removes the only path where a tap
+  // could produce nothing at all.
+  function stashTap() {
     return caches.open('ufc-tap').then(function(c) {
       return c.put('/__pending_tap', new Response(
         JSON.stringify({ kind: kind, fullMessage: fullMessage, sender: sender, ts: Date.now() }),
         { headers: { 'Content-Type': 'application/json' } }
       ));
-    }).catch(function() {}).then(function() {
+    }).catch(function() {});
+  }
+
+  // App closed (or focusing failed) — open a window. The legacy ?trash= param
+  // is still added when it fits, so a stale cached page paired with this SW
+  // keeps working.
+  function openFresh() {
+    return Promise.resolve().then(function() {
       var url = baseUrl;
       if (!kind && fullMessage) {
         var enc = encodeURIComponent(fullMessage);
@@ -191,12 +203,18 @@ self.addEventListener('notificationclick', function(e) {
     });
   }
 
-  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(cs) {
+  e.waitUntil(stashTap().then(function() {
+    return clients.matchAll({ type: 'window', includeUncontrolled: true });
+  }).then(function(cs) {
     // App is already open — focus it and route the tap by kind. Prefer a
-    // visible client, and only trust the postMessage delivery once focus()
-    // has actually resolved: iOS can keep listing a window client for a PWA
-    // the OS already killed, and a message posted to it vanishes — that tap
-    // must fall through to openFresh() instead of doing nothing.
+    // visible client. Note that neither focus() resolving NOR postMessage
+    // returning tells us the page actually received anything: iOS keeps
+    // listing a window client for a PWA the OS already killed, focus() on it
+    // resolves happily, and the message vanishes. Guarding on focus()
+    // rejecting — which is what this used to do — never fires for that case,
+    // so the tap silently did nothing and the app opened on the home screen.
+    // stashTap() above is what makes this safe: the relaunched page picks the
+    // payload up regardless of what happened to the message.
     var candidates = cs.filter(function(c) { return 'focus' in c; });
     candidates.sort(function(a, b) {
       return (b.visibilityState === 'visible' ? 1 : 0) - (a.visibilityState === 'visible' ? 1 : 0);
@@ -206,7 +224,7 @@ self.addEventListener('notificationclick', function(e) {
     return Promise.resolve()
       .then(function() { return target.focus(); })
       .then(function() {
-        if (kind) target.postMessage({ type: kind, fullMessage: fullMessage });
+        if (kind) target.postMessage({ type: kind, fullMessage: fullMessage, sender: sender });
         else if (fullMessage) target.postMessage({ type: 'trash-talk', fullMessage: fullMessage, sender: sender });
       })
       .catch(openFresh);

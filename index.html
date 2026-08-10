@@ -5862,8 +5862,12 @@ if('serviceWorker'in navigator){
   navigator.serviceWorker.addEventListener('controllerchange',function(){if(_hadSW)window.location.reload();});
   // Receive routed notification taps from the service worker
   navigator.serviceWorker.addEventListener('message',function(e){
-    if(e.data&&e.data.type==='trash-talk'&&e.data.fullMessage)showIncomingTrashTalk(e.data.fullMessage,e.data.sender);
-    if(e.data&&e.data.type==='challenge')openChallengeInbox();
+    // sw.js stashes every tap in the 'ufc-tap' cache before routing it, because
+    // a postMessage to a focused client can vanish (see notificationclick).
+    // When the message DOES arrive we consumed the tap here, so drop the stash
+    // or the next launch would replay the same roast.
+    if(e.data&&e.data.type==='trash-talk'&&e.data.fullMessage){showIncomingTrashTalk(e.data.fullMessage,e.data.sender);clearPendingTap();}
+    if(e.data&&e.data.type==='challenge'){openChallengeInbox();clearPendingTap();}
   });
 }
 // Persistent offline banner — make it obvious when the network drops and the app is
@@ -5887,6 +5891,12 @@ if('serviceWorker'in navigator){
 // the legacy fallback for an old SW or a payload that fit in the URL. Note
 // params.get() already decodes — running decodeURIComponent on it again threw
 // URIError on any message containing '%' and the message never appeared.
+// Drop the service worker's tap stash. Called both when the page consumes it on
+// load and when a postMessage delivered the same tap to an already-open page.
+function clearPendingTap(){
+  if(!window.caches)return;
+  caches.open('ufc-tap').then(function(c){return c.delete('/__pending_tap');}).catch(function(){});
+}
 (function(){
   var params=new URLSearchParams(window.location.search);
   var pTrash=params.get('trash'),pFrom=params.get('from'),pInbox=params.get('inbox');
