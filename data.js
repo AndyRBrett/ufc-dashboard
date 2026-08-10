@@ -113,17 +113,17 @@ var EVENTS=[
     time:"21:00",
     prelimTime:"19:00",
     fights:[
-      {lbl:"Main Event",wc:"Welterweight",title:true,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Islam Makhachev",r:"28-1-0",rk:"C",s:null},f2:{n:"Ian Machado Garry",r:"17-1-0",rk:"",s:null}},
+      {lbl:"Main Event",wc:"Welterweight",title:true,rematch:false,odds:{f1:-340,f2:270},winner:"",method:"",round:null,state:"pre",f1:{n:"Islam Makhachev",r:"28-1-0",rk:"C",s:null},f2:{n:"Ian Machado Garry",r:"17-1-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Women's Strawweight",title:true,rematch:false,odds:{f1:-221,f2:175},winner:"",method:"",round:null,state:"pre",f1:{n:"Mackenzie Dern",r:"16-5-0",rk:"C",s:null},f2:{n:"Gillian Robertson",r:"17-8-0",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Middleweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Mansur Abdul-Malik",r:"9-1-1",rk:"",s:null},f2:{n:"Dustin Stoltzfus",r:"16-8-0",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Lightweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Edson Barboza",r:"24-14-0",rk:"",s:null},f2:{n:"Esteban Ribovics",r:"15-3-0",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Welterweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Chidi Njokuani",r:"25-12-0",rk:"",s:null},f2:{n:"Joel Alvarez",r:"23-4-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Lightweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Jalin Turner",r:"15-9-0",rk:"",s:null},f2:{n:"Kaue Fernandes",r:"11-2-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Middleweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Donte Johnson",r:"8-0-0",rk:"",s:null},f2:{n:"Eric McConico",r:"11-4-1",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Middleweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Vicente Luque",r:"24-12-1",rk:"",s:null},f2:{n:"Tresean Gore",r:"7-4-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Light Heavyweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Rafael Tobias",r:"14-2-0",rk:"",s:null},f2:{n:"Lucas Fernando",r:"13-3-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Welterweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Neil Magny",r:"31-15-0",rk:"",s:null},f2:{n:"Ramiz Brahimaj",r:"13-6-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Welterweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Jeremiah Wells",r:"13-4-1",rk:"",s:null},f2:{n:"Myktybek Orolbai",r:"16-2-1",rk:"",s:null}}
+      {lbl:"Main Card",wc:"Middleweight",title:false,rematch:false,odds:{f1:-550,f2:410},winner:"",method:"",round:null,state:"pre",f1:{n:"Mansur Abdul-Malik",r:"9-1-1",rk:"",s:null},f2:{n:"Dustin Stoltzfus",r:"16-8-0",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Lightweight",title:false,rematch:false,odds:{f1:360,f2:-470},winner:"",method:"",round:null,state:"pre",f1:{n:"Edson Barboza",r:"24-14-0",rk:"",s:null},f2:{n:"Esteban Ribovics",r:"15-3-0",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Welterweight",title:false,rematch:false,odds:{f1:245,f2:-300},winner:"",method:"",round:null,state:"pre",f1:{n:"Chidi Njokuani",r:"25-12-0",rk:"",s:null},f2:{n:"Joel Alvarez",r:"23-4-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Lightweight",title:false,rematch:false,odds:{f1:-170,f2:142},winner:"",method:"",round:null,state:"pre",f1:{n:"Jalin Turner",r:"15-9-0",rk:"",s:null},f2:{n:"Kaue Fernandes",r:"11-2-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Middleweight",title:false,rematch:false,odds:{f1:-350,f2:280},winner:"",method:"",round:null,state:"pre",f1:{n:"Donte Johnson",r:"8-0-0",rk:"",s:null},f2:{n:"Eric McConico",r:"11-4-1",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Middleweight",title:false,rematch:false,odds:{f1:120,f2:-142},winner:"",method:"",round:null,state:"pre",f1:{n:"Vicente Luque",r:"24-12-1",rk:"",s:null},f2:{n:"Tresean Gore",r:"7-4-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Light Heavyweight",title:false,rematch:false,odds:{f1:157,f2:-180},winner:"",method:"",round:null,state:"pre",f1:{n:"Rafael Tobias",r:"14-2-0",rk:"",s:null},f2:{n:"Lucas Fernando",r:"13-3-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Welterweight",title:false,rematch:false,odds:{f1:-102,f2:-118},winner:"",method:"",round:null,state:"pre",f1:{n:"Neil Magny",r:"31-15-0",rk:"",s:null},f2:{n:"Ramiz Brahimaj",r:"13-6-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Welterweight",title:false,rematch:false,odds:{f1:316,f2:-400},winner:"",method:"",round:null,state:"pre",f1:{n:"Jeremiah Wells",r:"13-4-1",rk:"",s:null},f2:{n:"Myktybek Orolbai",r:"16-2-1",rk:"",s:null}}
     ]
   },
   {
