@@ -1557,7 +1557,12 @@ function syncPick(ev,fight,notifyFriends){
           fetch(SUPABASE_URL+"/rest/v1/picks"+_rq,{method:"DELETE",headers:_sbHeaders()}).catch(function(){});
           if(notifyFriends&&daysOut(ev.date)>=0){
               var evShort=ev.name.replace("UFC Fight Night: ","").split(":")[0];
-              var displayName=userName.replace(/^.\s*/,"");
+              // splitNick, not /^.\s*/ — "." matches one UTF-16 CODE UNIT, and an
+              // emoji is a surrogate pair, so that regex stripped only the high
+              // surrogate and left the orphaned low surrogate at the front of the
+              // name. iOS renders a lone surrogate as a tofu box, which is what
+              // showed up in the push: "▯ Dereko is picking!".
+              var displayName=splitNick(userName).name;
               var mainFights=ev.fights.filter(function(f){return f.lbl==="Main Card"||f.lbl==="Main Event"||f.lbl==="Co-Main";});
               var pickedMainCount=mainFights.filter(function(f){return !!preds[pk(ev,f)];}).length;
               // First pick on the card
@@ -4501,10 +4506,15 @@ function _reconcileMyMethods(rows){
     mine[p.event_date+"|"+p.f2+"|"+p.f1]=p;   // stored f1/f2 orientation can vary
   });
   // Detect a split identity: existing picks under my name but a different user_id
-  var myBase=(userName||"").replace(/^.\s/,"").toLowerCase(),myIdRows=0,otherIdSameName=0;
+  // _lbBaseName, not /^.\s/ — that regex needs a single code unit followed by
+  // whitespace, which a surrogate-pair emoji never satisfies, so the emoji stayed
+  // in the key here while _lbBaseName (used everywhere else) stripped it. Both
+  // sides matched each other so the count still worked, but the two spellings of
+  // "same person" disagreed.
+  var myBase=_lbBaseName(userName),myIdRows=0,otherIdSameName=0;
   rows.forEach(function(p){
     if((p.user_id||null)===USER_ID)myIdRows++;
-    else if(((p.nickname||"").replace(/^.\s/,"").toLowerCase())===myBase)otherIdSameName++;
+    else if(_lbBaseName(p.nickname)===myBase)otherIdSameName++;
   });
   var syncs=[];
   Object.keys(preds).forEach(function(key){
