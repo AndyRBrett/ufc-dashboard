@@ -8,6 +8,8 @@ fast in CI and act as a safety net before the scraper can overwrite data.js.
 Run with:  python -m pytest -q
 """
 import hashlib
+import json
+import re
 
 import scrape
 
@@ -1090,3 +1092,57 @@ def test_urgent_does_not_refetch_a_complete_fresh_entry():
     entry = {"rec": "10-0-0", "form": [{"r": "W"}], "opp": ["X"],
              "fetched_at": "2026-08-07T00:00:00+00:00"}
     assert scrape._needs_stats_fetch(entry, now, urgent=True) == (False, False)
+
+
+# --- results archive carries bout labels -----------------------------------
+#
+# EVENTS only holds 30 days, so once a card ages out the archive is the only
+# record of it. Without the label the frontend cannot tell a main-card pick from
+# a prelim, which is what the leaderboard's main-card scope scores on.
+
+def _archive_of(js):
+    m = re.search(r"var RESULTS_ARCHIVE=(\{.*?\});", js, re.DOTALL)
+    return json.loads(m.group(1))
+
+
+def test_results_archive_records_the_bout_label():
+    data = (
+        'var RESULTS_ARCHIVE={};\n'
+        'var EVENTS=[\n'
+        '  {\n    name:"UFC Fight Night: A vs. B",\n    date:"2026-01-03",\n'
+        '    venue:"Apex",\n    loc:"Las Vegas",\n    fights:[\n'
+        '      {lbl:"Main Event",wc:"Lightweight",title:false,rematch:false,odds:null,'
+        'winner:"A",method:"KO/TKO",round:1,state:"post",'
+        'f1:{n:"A",r:"1-0-0",rk:"",s:null},f2:{n:"B",r:"0-1-0",rk:"",s:null}},\n'
+        '      {lbl:"Prelim",wc:"Lightweight",title:false,rematch:false,odds:null,'
+        'winner:"C",method:"Decision",round:3,state:"post",'
+        'f1:{n:"C",r:"1-0-0",rk:"",s:null},f2:{n:"D",r:"0-1-0",rk:"",s:null}}\n'
+        '    ]\n  }\n];\n'
+    )
+    out = scrape.update_results_archive(data, datetime(2026, 6, 1, tzinfo=timezone.utc))
+    fights = _archive_of(out)["2026-01-03"]["fights"]
+    assert [f["lbl"] for f in fights] == ["Main Event", "Prelim"]
+    # The existing fields must survive the regex change that added lbl.
+    assert fights[0] == {"f1": "A", "f2": "B", "winner": "A",
+                         "method": "KO/TKO", "lbl": "Main Event"}
+
+
+def test_results_archive_keeps_bouts_in_card_order():
+    # The frontend falls back to bout ORDER for entries written before labels
+    # existed (index < 5 == main card). That only holds if the archive preserves
+    # the main-event-first ordering of the EVENTS block.
+    bouts = []
+    for i, lbl in enumerate(["Main Event", "Co-Main", "Main Card", "Prelim"]):
+        bouts.append(
+            f'      {{lbl:"{lbl}",wc:"Lightweight",title:false,rematch:false,odds:null,'
+            f'winner:"W{i}",method:"Decision",round:3,state:"post",'
+            f'f1:{{n:"W{i}",r:"1-0-0",rk:"",s:null}},f2:{{n:"L{i}",r:"0-1-0",rk:"",s:null}}}}'
+        )
+    data = ('var RESULTS_ARCHIVE={};\nvar EVENTS=[\n'
+            '  {\n    name:"UFC 300: X vs. Y",\n    date:"2026-01-03",\n'
+            '    venue:"Apex",\n    loc:"Las Vegas",\n    fights:[\n'
+            + ",\n".join(bouts) + "\n    ]\n  }\n];\n")
+    out = scrape.update_results_archive(data, datetime(2026, 6, 1, tzinfo=timezone.utc))
+    fights = _archive_of(out)["2026-01-03"]["fights"]
+    assert [f["f1"] for f in fights] == ["W0", "W1", "W2", "W3"]
+    assert [f["lbl"] for f in fights] == ["Main Event", "Co-Main", "Main Card", "Prelim"]

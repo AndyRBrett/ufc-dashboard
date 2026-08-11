@@ -1435,7 +1435,13 @@ def update_results_archive(data, now):
         r'date:"(\d{4}-\d{2}-\d{2})",\s*\n\s*'
         r'venue:"[^"]*"'
     )
+    # `lbl` is captured so the archive can say which segment a bout belonged to.
+    # EVENTS only holds 30 days, so once a card ages out the archive is the only
+    # record of it — and without the label the frontend cannot tell a main-card
+    # pick from a prelim, which is what the leaderboard's main-card scope needs.
+    # Older entries predate this and fall back to bout order (see _pickInScope).
     fight_pat = re.compile(
+        r'\{lbl:"([^"]*)",wc:"[^"]*".*?'
         r'winner:"([^"]+)",method:"([^"]*)",round:(?:\d+|null),state:"post"'
         r'[^{]*f1:\{n:"([^"]+)"[^}]+\},f2:\{n:"([^"]+)"'
     )
@@ -1449,8 +1455,8 @@ def update_results_archive(data, now):
         end   = headers[i + 1].start() if i + 1 < len(headers) else len(data)
         chunk = data[hm.end():end]
         fights = [
-            {"f1": f1, "f2": f2, "winner": w, "method": meth}
-            for w, meth, f1, f2 in fight_pat.findall(chunk)
+            {"f1": f1, "f2": f2, "winner": w, "method": meth, "lbl": lbl}
+            for lbl, w, meth, f1, f2 in fight_pat.findall(chunk)
         ]
         if not fights:
             continue
