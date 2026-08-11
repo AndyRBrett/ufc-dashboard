@@ -1440,6 +1440,46 @@ function fmtUpdated(s){
 }
 function fmtOdds(n){return n>0?"+"+n:""+n;}
 function pk(ev,fight){return ev.date+"|"+fight.f1.n+"|"+fight.f2.n;}
+// Nicknames are stored as "<emoji> <name>" — but not reliably. Legacy rows carry
+// no emoji at all, and nothing stops an emoji with no space after it. Nine places
+// independently split on the FIRST SPACE, which meant:
+//   "Adam B"    → avatar "Adam", name "B"        (first word eaten as the emoji)
+//   "🦂JPeso"   → avatar 🥊, name "🦂JPeso"       (emoji rendered inside the name)
+// The second is worse than cosmetic: _lbBaseName is the identity key behind
+// leaderboard dedup, the belt lineage and challenge matching, so the emoji leaked
+// into it and the same person could key as two different users.
+//
+// Detect a leading emoji grapheme instead — pictographic code point plus any
+// variation selectors, skin-tone modifiers, ZWJ-joined parts and tag sequences.
+// No leading emoji means the whole string is the name.
+//
+// The regex is built at RUNTIME inside try/catch on purpose: \p{...} property
+// escapes are a parse-time SyntaxError on browsers that don't support them, and
+// a parse error in this inline script white-pages the entire app. The surrogate
+// -pair fallback covers the same ground well enough for older engines.
+var _EMOJI_HEAD=(function(){
+  var mods="(?:[\\u{1F3FB}-\\u{1F3FF}]|\\uFE0F|\\u{E0020}-\\u{E007F}|\\u200D\\p{Extended_Pictographic})*";
+  try{return new RegExp("^(\\p{Extended_Pictographic}"+mods+")\\s*","u");}
+  catch(e){
+    var pic="(?:[\\u203C-\\u3299]|[\\uD83C-\\uDBFF][\\uDC00-\\uDFFF])";
+    try{return new RegExp("^("+pic+"(?:[\\uD83C][\\uDFFB-\\uDFFF]|\\uFE0F|\\u200D"+pic+")*)\\s*");}
+    catch(e2){return null;}
+  }
+})();
+// → {emoji, name}. An emoji-only nickname keeps the emoji AS the name rather than
+// resolving to an empty string, which is what the old first-space split did and
+// what every caller (including the identity key) still expects.
+function splitNick(nick){
+  var s=String(nick==null?"":nick).trim();
+  if(_EMOJI_HEAD){
+    var m=_EMOJI_HEAD.exec(s);
+    if(m){
+      var rest=s.slice(m[0].length).trim();
+      if(rest)return{emoji:m[1],name:rest};
+    }
+  }
+  return{emoji:"",name:s};
+}
 function stOf(f){return f.s||(FIGHTER_STATS[f.n]||null);}
 // True when UFCStats has a page for the fighter but no fight data behind it —
 // every UFC debutant on a card looks like this. Their striking/grappling numbers
@@ -1674,8 +1714,7 @@ function fetchCommunityPicks(){
     // ascending, so the newest row for a name wins.
     var byVoter={};
     rows.forEach(function(p){
-      var nn=p.nickname||"";var sp=nn.indexOf(" ");
-      var base=(sp>=0?nn.slice(sp+1):nn).trim().toLowerCase()||"anon";
+      var base=splitNick(p.nickname).name.toLowerCase()||"anon";
       // Dedup per voter+fight order-agnostically: a scrape flip mustn't split one vote in two.
       var pair=[p.f1,p.f2].sort().join("|");
       byVoter[p.event_date+"|"+pair+"|"+base]=p;
@@ -2060,7 +2099,7 @@ function checkName(cb){if(userName){cb();return;}
   document.querySelectorAll(".nm-emoji-btn").forEach(function(b){b.classList.toggle("selected",b.dataset.e===userEmoji);});
   document.getElementById("nmBg").classList.add("open");document.getElementById("nmInput").focus();window._pp=cb;}
 function openEditName(){
-  var namePart=userName?userName.split(" ").slice(1).join(" "):"";
+  var namePart=userName?splitNick(userName).name:"";
   document.querySelectorAll(".nm-emoji-btn").forEach(function(b){b.classList.toggle("selected",b.dataset.e===userEmoji);});
   document.getElementById("nmInput").value=namePart;
   document.getElementById("nmErr").style.display="none";
@@ -2102,7 +2141,7 @@ function saveName(){
   var errEl=document.getElementById("nmErr");var btn=document.getElementById("nmBtn");
   var _btnLabel=window._nmEditMode?"Save Changes":"Let's go";
   // In edit mode, if the name text hasn't changed (only emoji changed), skip the uniqueness check
-  var currentNamePart=userName?userName.split(" ").slice(1).join(" "):"";
+  var currentNamePart=userName?splitNick(userName).name:"";
   if(window._nmEditMode&&v===currentNamePart){_commitName(emoji,v);return;}
   // Names previously used on this device are always reclaimable — renaming strands
   // the old name on rows from other devices/old IDs, and you shouldn't be locked
@@ -2133,7 +2172,7 @@ function saveName(){
 function _commitName(emoji,v){
   var wasEdit=window._nmEditMode;
   // Remember the outgoing name so it can be reclaimed later on this device
-  var oldBase=userName?userName.split(" ").slice(1).join(" ").trim().toLowerCase():"";
+  var oldBase=userName?_lbBaseName(userName):"";
   if(oldBase&&oldBase!==v.toLowerCase()){
     try{
       var pn=JSON.parse(localStorage.getItem("ufc_prev_names")||"[]");
@@ -2260,8 +2299,8 @@ function _postSignIn(prevId,email){
         if(rows&&rows[0]&&rows[0].nickname){
           userName=rows[0].nickname;
           try{localStorage.setItem("ufc_name",userName);}catch(e){}
-          var sp=userName.indexOf(" ");
-          if(sp>0){userEmoji=userName.slice(0,sp);try{localStorage.setItem("ufc_emoji",userEmoji);}catch(e){}}
+          var _e=splitNick(userName).emoji;
+          if(_e){userEmoji=_e;try{localStorage.setItem("ufc_emoji",userEmoji);}catch(e){}}
         }
         if(typeof render==="function")render();
         finish();
@@ -2506,8 +2545,8 @@ function updateFNPre(){
   }
 }
 // ---- Fight Night LIVE (watch-party) view ----
-function _fnNameShort(nick){var sp=nick.indexOf(" ");return sp>=0?nick.slice(sp+1):nick;}
-function _fnAvatar(nick){var sp=nick.indexOf(" ");return sp>0?nick.slice(0,sp):"🥊";}
+function _fnNameShort(nick){return splitNick(nick).name;}
+function _fnAvatar(nick){return splitNick(nick).emoji||"🥊";}
 function fnRenderFans(f){
   var buckets=_fnPicksByFight[pk(fnEv,f)]||{f1:[],f2:[]};
   [["fnl-fans1",buckets.f1,f.f1.n],["fnl-fans2",buckets.f2,f.f2.n]].forEach(function(spec){
@@ -4313,10 +4352,7 @@ function scoreMethod(userMethod, fightMethod){
 // Strip the leading emoji by taking everything after the first space — a regex
 // like /^.\s/ fails on emoji that are surrogate pairs (🐺,😀,…), which would
 // leave the emoji in the key and break matching when a user changes their emoji.
-function _lbBaseName(nick){
-  var nn=nick||"";var sp=nn.indexOf(" ");
-  return (sp>=0?nn.slice(sp+1):nn).trim().toLowerCase();
-}
+function _lbBaseName(nick){return splitNick(nick).name.toLowerCase();}
 // Challenge rows freeze challenger/target nicknames at creation time (and RLS
 // only lets the target touch status/responded_at), but a profile edit renames
 // every picks row. Resolve the freshest display name for the same base
@@ -5251,10 +5287,7 @@ function _slackersFor(nextEv,rows){
 }
 // Display form of a nickname: emoji stripped, full name preserved — last-word
 // truncation would mangle multi-word names ("Adam B" → "B").
-function _displayBase(nick){
-  var nn=nick||"";var sp=nn.indexOf(" ");
-  return (sp>=0?nn.slice(sp+1):nn).trim();
-}
+function _displayBase(nick){return splitNick(nick).name;}
 // Each sender may nudge a given target up to 3× per DAY. The notif_log dedup
 // is binary per (event_date, type), so each nudge claims a numbered daily
 // slot: (today, "nudge-<target>-<sender>-<n>") for n = 1..3. localStorage
