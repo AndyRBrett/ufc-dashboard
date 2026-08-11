@@ -4856,7 +4856,6 @@ function loadLeaderboard(isLive){
         // already matches both ways (see above), so the chips must too — otherwise an
         // order swap makes a real pick render as "?".
         u.picks.forEach(function(p){if(p.evDate===nextEv.date){var entry={pick:p.pick,method:p.method};var k1=p.f1+"|"+p.f2,k2=p.f2+"|"+p.f1;if(!nextMap[k1])nextMap[k1]=entry;if(!nextMap[k2])nextMap[k2]=entry;}});
-        var isMainCard={};["Main Event","Co-Main","Main Card"].forEach(function(l){isMainCard[l]=true;});
         nextMainFights.forEach(function(f){
           var fkey=pk(nextEv,f);
           var entry=nextMap[f.f1.n+"|"+f.f2.n];
@@ -4864,7 +4863,13 @@ function loadLeaderboard(isLive){
           // the (order-agnostic) server entry so a not-yet-reconciled order flip still renders.
           var picked=u.isMe?(preds[fkey]||(entry?entry.pick:null)):(entry?entry.pick:null);
           var chipMethod=u.isMe?(preds_method[fkey]||(entry?entry.method:"")):(entry?entry.method:"");
-          if(!picked&&!isMainCard[f.lbl])return;
+          // Main-card bouts always get a chip (unpicked ones render as "?"), and a
+          // prelim only earns one when it was actually picked — except under the
+          // main-card scope, where a prelim chip contradicts the scores above it:
+          // the totals exclude prelims, so showing the picks would not.
+          // isMainCardBout, not a local lookup table — this was a second copy of
+          // the same rule sitting a few hundred lines from the first.
+          if(!isMainCardBout(f)&&(lbScope==="main"||!picked))return;
           var chip=document.createElement("span");chip.className="lb-pick-chip";
           var nameSpan=document.createElement("span");nameSpan.textContent=picked?picked.split(" ").pop():"?";chip.appendChild(nameSpan);
           if(picked&&chipMethod){var ms=document.createElement("span");ms.className="lb-pick-method";var mAbbr=chipMethod==="KO/TKO"?"KO":chipMethod;ms.textContent=mAbbr;chip.appendChild(ms);}
