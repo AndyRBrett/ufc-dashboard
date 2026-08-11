@@ -348,8 +348,18 @@ body[data-theme="toonami"] .logo-tom{display:block;animation:eagleBreathe 3.6s e
 .ftab:hover{color:var(--muted2);border-color:var(--border2)}
 .ftab.active{background:var(--red);color:var(--on-accent);border-color:var(--red);box-shadow:0 2px 8px var(--accent-glow)}
 .lb-modebar{display:flex;gap:8px;justify-content:center;padding:10px 14px 4px;flex-shrink:0}
-.lb-scopebar{padding:6px 14px 4px}
-.lb-scopebar .ftab{font-size:11px;padding:5px 12px}
+/* One bar, two dimensions: the time tabs pick a period, the scope button is an
+   independent on/off filter. The divider keeps them from reading as one group of
+   four mutually-exclusive tabs. */
+.lb-bar-sep{width:1px;align-self:stretch;margin:3px 2px;background:var(--border2);opacity:.7;flex-shrink:0}
+.lb-modebar .ftab{white-space:nowrap}
+/* Outlined when on, rather than filled like a selected tab. Two solid red pills
+   side by side read as one group of four tabs where only one can be chosen —
+   this is an independent toggle layered on whichever period is active. */
+.lb-scope-btn::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;
+  background:currentColor;opacity:.3;margin-right:6px;vertical-align:middle}
+.lb-scope-btn.active{background:none;color:var(--red);border-color:var(--red);box-shadow:none}
+.lb-scope-btn.active::before{opacity:1}
 .picks-widget{background:var(--card);border-top:1px solid var(--border);margin:12px 12px;border-radius:14px;border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow-card)}
 .picks-toggle{width:100%;background:none;border:none;border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:Inter,sans-serif;transition:background .15s}
 .picks-toggle:hover{background:rgba(255,255,255,.02)}
@@ -2024,21 +2034,25 @@ function setLbMode(btn){
   syncLbModeBar();
   loadLeaderboard();
 }
-function setLbScope(btn){
-  lbScope=btn.getAttribute("data-lbscope")||"all";
+// Scope is a toggle, not a third tab — it's an independent filter on top of
+// whichever period is selected, and one button costs half the width of two.
+function toggleLbScope(){
+  lbScope=lbScope==="main"?"all":"main";
   try{localStorage.setItem("ufc_lb_scope",lbScope);}catch(e){}
   syncLbModeBar();
   loadLeaderboard();
 }
 function syncLbModeBar(){
-  // Scoped per bar: both rows use .ftab, so a single query would fight over the
-  // active class between the time filter and the scope filter.
-  document.querySelectorAll(".lb-modebar[data-bar='mode'] .ftab").forEach(function(t){
+  // Only the time tabs carry data-lbmode, so the scope button can share .ftab
+  // styling without joining their mutually-exclusive active state.
+  document.querySelectorAll(".lb-modebar .ftab[data-lbmode]").forEach(function(t){
     t.classList.toggle("active",t.getAttribute("data-lbmode")===lbMode);
   });
-  document.querySelectorAll(".lb-modebar[data-bar='scope'] .ftab").forEach(function(t){
-    t.classList.toggle("active",t.getAttribute("data-lbscope")===lbScope);
-  });
+  var sb=document.getElementById("lbScopeBtn");
+  if(sb){
+    sb.classList.toggle("active",lbScope==="main");
+    sb.setAttribute("aria-pressed",lbScope==="main"?"true":"false");
+  }
 }
 function matchFilter(f){
   if(curFilter!=="all"&&f.wc!==curFilter)return false;
@@ -4736,12 +4750,6 @@ function loadLeaderboard(isLive){
       note.textContent="Scores update after fights complete — tap any row to see picks";
       body.appendChild(note);
     }
-    if(lbScope==="main"){
-      var scopeNote=document.createElement("div");
-      scopeNote.style.cssText="text-align:center;font-size:11px;color:var(--muted);padding:0 2px 10px";
-      scopeNote.textContent="Main card only — prelims excluded from every score below";
-      body.appendChild(scopeNote);
-    }
     if(nextEv&&nextMainFights.length){
       var evHdr=document.createElement("div");
       evHdr.style.cssText="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;padding:2px 2px 10px";
@@ -5867,10 +5875,9 @@ document.addEventListener("DOMContentLoaded",function(){
   <div class="lb-modebar" data-bar="mode">
     <button class="ftab" data-lbmode="current" onclick="setLbMode(this)">This Event</button>
     <button class="ftab" data-lbmode="all" onclick="setLbMode(this)">All-Time</button>
-  </div>
-  <div class="lb-modebar lb-scopebar" data-bar="scope">
-    <button class="ftab" data-lbscope="all" onclick="setLbScope(this)">All Bouts</button>
-    <button class="ftab" data-lbscope="main" onclick="setLbScope(this)">Main Card Only</button>
+    <span class="lb-bar-sep" aria-hidden="true"></span>
+    <button class="ftab lb-scope-btn" id="lbScopeBtn" onclick="toggleLbScope()"
+            title="Score main-card bouts only">Main Card</button>
   </div>
   <div class="lb-body" id="lbBody"><div class="lb-loading">Loading picks...</div></div>
   <div class="lb-trash-sheet" id="trashSheet">
