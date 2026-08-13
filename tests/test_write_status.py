@@ -7,6 +7,7 @@ must not read as fresh (#14). No network or filesystem, so they run in CI.
 
 Run with:  python -m pytest -q
 """
+import pytest
 import hashlib
 
 import write_status as ws
@@ -291,3 +292,74 @@ def test_new_alerts_does_not_mutate_the_state_it_was_given():
     original = {}
     ws.new_alerts([_alert()], original)
     assert original == {}
+
+
+# --- implied probability + alert ranking (#26, #52) -------------------------
+
+def test_implied_prob_matches_the_standard_moneyline_formula():
+    assert ws.implied_prob(-150) == pytest.approx(0.6)
+    assert ws.implied_prob(100) == pytest.approx(0.5)
+    assert ws.implied_prob(300) == pytest.approx(0.25)
+    assert ws.implied_prob(None) is None
+
+
+def test_prob_shift_reveals_what_moneyline_points_hide():
+    # THE POINT OF #26. Both moves are 40 points of American odds, but the
+    # favourite's is more than twice the probability swing. Ranking on raw
+    # points treats them as equal, which they plainly are not.
+    fav = ws.prob_shift(-110, -150)
+    dog = ws.prob_shift(400, 340)
+    assert fav > 6 and dog < 4
+    assert fav > 2 * dog
+
+
+def test_prob_shift_is_none_without_both_sides():
+    assert ws.prob_shift(None, -150) is None
+    assert ws.prob_shift(-150, None) is None
+
+
+def test_main_event_outranks_a_louder_undercard_move():
+    # THE POINT OF #52. The headliner is what people actually have money on, so
+    # a smaller move on it can still be the more actionable alert.
+    main = {"magnitude": 20, "main_event": True}
+    prelim = {"magnitude": 40, "main_event": False}
+    assert ws.alert_priority(main, 2) > ws.alert_priority(prelim, 2)
+
+
+def test_main_event_weighting_has_a_deliberate_ceiling():
+    # The weight is 2.5x, not infinite: a genuinely enormous undercard swing
+    # should still beat a small headliner twitch. Pinning the crossover keeps
+    # that a design decision rather than an accident of tuning.
+    main = {"magnitude": 10, "main_event": True}
+    assert ws.alert_priority(main, 2) < ws.alert_priority(
+        {"magnitude": 26, "main_event": False}, 2)
+    assert ws.alert_priority(main, 2) > ws.alert_priority(
+        {"magnitude": 24, "main_event": False}, 2)
+
+
+def test_imminent_cards_outrank_distant_ones():
+    soon = {"magnitude": 20, "main_event": False}
+    far = {"magnitude": 20, "main_event": False}
+    assert ws.alert_priority(soon, 1) > ws.alert_priority(far, 30)
+
+
+def test_imminence_weight_boundaries():
+    assert ws.imminence_weight(2) == 2.0
+    assert ws.imminence_weight(3) == 1.4
+    assert ws.imminence_weight(30) == 1.0
+    assert ws.imminence_weight(None) == 1.0
+    assert ws.imminence_weight(-1) == 1.0
+
+
+def test_magnitude_still_breaks_ties_within_a_tier():
+    big = {"magnitude": 50, "main_event": False}
+    small = {"magnitude": 10, "main_event": False}
+    assert ws.alert_priority(big, 5) > ws.alert_priority(small, 5)
+
+
+def test_movers_carry_probability_shifts():
+    opens = {("A", "B"): {"f1": "A", "f2": "B", "f1_odds": -110, "f2_odds": -110}}
+    fights = [{"f1": "A", "f2": "B", "f1_odds": -150, "f2_odds": 130}]
+    mover = ws.event_movers(fights, opens, threshold=10)[0]
+    assert mover["f1_prob_shift"] > 0     # A shortened → more likely to win
+    assert mover["f2_prob_shift"] < 0

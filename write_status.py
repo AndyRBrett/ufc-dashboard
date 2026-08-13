@@ -265,6 +265,65 @@ def delta(open_fight, cur_fight):
     }
 
 
+def implied_prob(odds):
+    """Implied win probability for an American moneyline (#26).
+
+    Mirrors scrape._implied_prob. Duplicated rather than imported on purpose:
+    scrape.py pulls in bs4 and requests at import time, and write_status.py runs
+    in workflow steps that deliberately don't install them.
+    """
+    if odds is None:
+        return None
+    return abs(odds) / (abs(odds) + 100) if odds < 0 else 100 / (odds + 100)
+
+
+def prob_shift(open_odds, current_odds):
+    """Change in implied win probability, in percentage points (#26).
+
+    A move from -110 to -150 and one from +400 to +340 are both '40 points of
+    American odds', but the first is a ~7pt probability swing and the second
+    ~3pt. Points of moneyline are not a linear measure of what the market
+    actually changed its mind about; probability is, which is what makes this
+    worth carrying alongside the raw movement.
+    """
+    a, b = implied_prob(open_odds), implied_prob(current_odds)
+    if a is None or b is None:
+        return None
+    return round((b - a) * 100, 1)
+
+
+# Weightings for alert priority (#52). Magnitude alone buried a headliner move
+# under undercard noise — a 12-point swing on the main event is more actionable
+# than a 40-point swing on a prelim nobody is betting.
+MAIN_EVENT_WEIGHT = 2.5
+# Multiplier by days until the card. A move 2 days out is close to final and
+# worth acting on; the same move 3 weeks out will likely be retraced.
+IMMINENCE_WEIGHTS = ((2, 2.0), (7, 1.4), (14, 1.1))
+
+
+def imminence_weight(days_out):
+    if days_out is None or days_out < 0:
+        return 1.0
+    for limit, weight in IMMINENCE_WEIGHTS:
+        if days_out <= limit:
+            return weight
+    return 1.0
+
+
+def alert_priority(alert, days_out=None):
+    """Rank score for a line-movement alert (#52).
+
+    Magnitude scaled by who is fighting and how soon. Kept as an explicit score
+    on the payload rather than a sort-order side effect, so the dashboard can
+    show *why* an alert is ranked where it is instead of asking the reader to
+    trust an opaque ordering.
+    """
+    score = alert["magnitude"] * imminence_weight(days_out)
+    if alert.get("main_event"):
+        score *= MAIN_EVENT_WEIGHT
+    return round(score, 1)
+
+
 def event_movers(fights, opens, threshold):
     """Bouts whose line has moved at least `threshold` points from its opener.
 
@@ -279,12 +338,22 @@ def event_movers(fights, opens, threshold):
         d = delta(opens.get(matchup_key(f)), f)
         magnitude = max(abs(d["f1_odds"]), abs(d["f2_odds"]))
         if magnitude >= threshold:
-            movers.append({
+            opener = opens.get(matchup_key(f))
+            mover = {
                 "f1": f["f1"], "f2": f["f2"],
                 "f1_movement": d["f1_odds"], "f2_movement": d["f2_odds"],
                 "magnitude": magnitude,
                 "main_event": i == 0,
-            })
+            }
+            # How much the market actually changed its mind, in probability
+            # points rather than moneyline points (#26).
+            if opener:
+                aligned = realign(opener, f)
+                for side in ("f1", "f2"):
+                    shift = prob_shift(aligned[f"{side}_odds"], f[f"{side}_odds"])
+                    if shift is not None:
+                        mover[f"{side}_prob_shift"] = shift
+            movers.append(mover)
     return movers
 
 
@@ -509,8 +578,20 @@ def main():
     awaiting_ids = [e["event_id"] for e in out_events if e["status"] == "awaiting-card"]
     errors.extend(failure_errors(out_events))
 
-    # Loudest movers first, so the most actionable steam tops the list.
-    alerts.sort(key=lambda a: a["magnitude"], reverse=True)
+    # Most ACTIONABLE steam first, not merely the loudest (#52). Raw magnitude
+    # buried a headliner's move under undercard noise: a 12-point swing on the
+    # main event two days out matters more than a 40-point swing on a prelim
+    # three weeks away. The score is attached to each alert rather than applied
+    # as an invisible sort order, so the ranking can be explained.
+    for a in alerts:
+        event_date = (a["event_id"].split(":", 1)[0] if ":" in a["event_id"] else None)
+        try:
+            days = ((datetime.strptime(event_date, "%Y-%m-%d").date()
+                     - datetime.now(timezone.utc).date()).days) if event_date else None
+        except ValueError:
+            days = None
+        a["priority"] = alert_priority(a, days)
+    alerts.sort(key=lambda a: a["priority"], reverse=True)
 
     status = {
         "generated_at":             now_iso,
