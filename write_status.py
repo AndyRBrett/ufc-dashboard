@@ -200,6 +200,33 @@ def classify_event(ev, ev_hist, today):
     return "awaiting-card"
 
 
+def failure_errors(out_events):
+    """Error lines for parse-failure events, naming which half actually broke (#66).
+
+    The old single message — "parse failure (expected bouts, got none)" — was
+    simply wrong whenever the bouts HAD parsed and only the odds were missing,
+    which is the common case. 2026-08-22 Hernandez vs Rodrigues reported it with
+    `bout_count: 8` sitting right there in the same payload, and the contradiction
+    sent the investigation hunting a bout-parser bug that did not exist: all 8
+    bouts had parsed cleanly and every one carried `odds:null`.
+
+    Splitting them means the message names the real gap — a scraper/selector
+    problem in the first case, an odds-source or name-matching problem in the
+    second. Returns a list of error strings (empty when nothing failed).
+    """
+    no_bouts = [e["event_id"] for e in out_events
+                if e["status"] == "parse-failure" and not e.get("bout_count")]
+    no_odds = [e["event_id"] for e in out_events
+               if e["status"] == "parse-failure" and e.get("bout_count")]
+    out = []
+    if no_bouts:
+        out.append("parse failure (expected bouts, got none): " + ", ".join(no_bouts))
+    if no_odds:
+        out.append("odds missing on an announced card (bouts parsed, zero priced): "
+                   + ", ".join(no_odds))
+    return out
+
+
 def matchup_key(fight):
     """Order-independent key for a bout, so a fighter swap still matches its opener."""
     return tuple(sorted((fight["f1"], fight["f2"])))
@@ -416,8 +443,7 @@ def main():
     # the error/status list, which is exactly the false-error #14 was filing.
     failure_ids  = [e["event_id"] for e in out_events if e["status"] == "parse-failure"]
     awaiting_ids = [e["event_id"] for e in out_events if e["status"] == "awaiting-card"]
-    if failure_ids:
-        errors.append("parse failure (expected bouts, got none): " + ", ".join(failure_ids))
+    errors.extend(failure_errors(out_events))
 
     # Loudest movers first, so the most actionable steam tops the list.
     alerts.sort(key=lambda a: a["magnitude"], reverse=True)

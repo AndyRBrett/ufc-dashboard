@@ -193,3 +193,39 @@ def test_post_alerts_noop_without_webhook(monkeypatch):
     monkeypatch.setattr(ws.urllib.request, "urlopen", lambda *a, **k: called.append(1))
     ws.post_alerts([{"event_id": "e", "magnitude": 22}])
     assert called == []
+
+
+# --- error messages must name the real gap (#66) ---------------------------
+
+def _ev(event_id, status, bout_count):
+    return {"event_id": event_id, "status": status, "bout_count": bout_count}
+
+
+def test_odds_missing_is_not_reported_as_a_bout_parse_failure():
+    # THE REGRESSION TEST for #66. This is the real 2026-08-22 payload shape:
+    # 8 bouts parsed, every one unpriced. Reporting that as "expected bouts, got
+    # none" contradicts bout_count in the same file and sent the investigation
+    # after a bout-parser bug that did not exist.
+    errs = ws.failure_errors(
+        [_ev("2026-08-22:ufc-fight-night-hernandez-vs-rodrigues", "parse-failure", 8)])
+    assert len(errs) == 1
+    assert "odds missing" in errs[0]
+    assert "expected bouts, got none" not in errs[0]
+
+
+def test_true_zero_bout_failure_keeps_the_original_wording():
+    errs = ws.failure_errors([_ev("2026-08-22:x", "parse-failure", 0)])
+    assert len(errs) == 1
+    assert "expected bouts, got none" in errs[0]
+
+
+def test_both_failure_kinds_reported_separately():
+    errs = ws.failure_errors([_ev("a", "parse-failure", 0),
+                              _ev("b", "parse-failure", 5)])
+    assert len(errs) == 2
+    assert any("expected bouts" in e and "a" in e for e in errs)
+    assert any("odds missing" in e and "b" in e for e in errs)
+
+
+def test_healthy_and_awaiting_events_produce_no_errors():
+    assert ws.failure_errors([_ev("a", "ok", 12), _ev("b", "awaiting-card", 9)]) == []
