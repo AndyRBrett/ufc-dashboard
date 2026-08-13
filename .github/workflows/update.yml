@@ -97,8 +97,13 @@ jobs:
           # and a run that injects results exits before ever reaching that step.
           # A card night is mostly those runs, so this would have started failing
           # every 5 minutes mid-event and stopped results from publishing.
+          # odds-alert-state.json carries the alert dedup high-water marks (#67).
+          # It MUST be committed: the runner is ephemeral, so an uncommitted
+          # state file resets every run and every standing mover re-alerts —
+          # which is exactly the behaviour the dedup exists to stop.
           for f in data.js overseer-status.json odds-snapshots.jsonl \
-                   odds-series.json odds-state.json health-report.json; do
+                   odds-series.json odds-state.json odds-alert-state.json \
+                   health-report.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           if git diff --staged --quiet; then

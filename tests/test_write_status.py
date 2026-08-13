@@ -229,3 +229,65 @@ def test_both_failure_kinds_reported_separately():
 
 def test_healthy_and_awaiting_events_produce_no_errors():
     assert ws.failure_errors([_ev("a", "ok", 12), _ev("b", "awaiting-card", 9)]) == []
+
+
+# --- alert dedup (#67) ------------------------------------------------------
+
+def _alert(event_id="2026-08-22:e", f1="A", f2="B", magnitude=20):
+    return {"event_id": event_id, "f1": f1, "f2": f2, "magnitude": magnitude,
+            "f1_movement": magnitude, "f2_movement": -magnitude, "main_event": False}
+
+
+def test_first_sighting_of_a_mover_is_sent():
+    send, seen = ws.new_alerts([_alert()], {})
+    assert len(send) == 1
+    assert seen[ws.alert_key(_alert())] == 20
+
+
+def test_standing_mover_is_not_reannounced():
+    # THE POINT OF #67. A steam move doesn't un-happen, so every later run
+    # re-detects it. At the 5-minute card-night cadence that is ~288 posts a day
+    # for one move — which is how a useful alert becomes one you mute.
+    _, seen = ws.new_alerts([_alert()], {})
+    send, _ = ws.new_alerts([_alert()], seen)
+    assert send == []
+
+
+def test_a_move_that_keeps_steaming_is_news_again():
+    _, seen = ws.new_alerts([_alert(magnitude=20)], {})
+    send, _ = ws.new_alerts([_alert(magnitude=25)], seen)   # +25% → re-alert
+    assert len(send) == 1
+
+
+def test_marginal_growth_stays_quiet():
+    _, seen = ws.new_alerts([_alert(magnitude=20)], {})
+    send, _ = ws.new_alerts([_alert(magnitude=21)], seen)   # +5% → noise
+    assert send == []
+
+
+def test_oscillation_across_the_threshold_cannot_re_alert():
+    # A line drifting back down and up again must not re-fire: the high-water
+    # mark is kept, so only genuine new extension counts.
+    _, seen = ws.new_alerts([_alert(magnitude=30)], {})
+    _, seen = ws.new_alerts([_alert(magnitude=12)], seen)
+    send, _ = ws.new_alerts([_alert(magnitude=30)], seen)
+    assert send == []
+
+
+def test_alert_key_is_order_independent():
+    assert ws.alert_key(_alert(f1="A", f2="B")) == ws.alert_key(_alert(f1="B", f2="A"))
+
+
+def test_different_bouts_and_events_are_tracked_separately():
+    _, seen = ws.new_alerts([_alert(f1="A", f2="B")], {})
+    send, _ = ws.new_alerts([_alert(f1="C", f2="D"),
+                             _alert(event_id="2026-09-05:x", f1="A", f2="B")], seen)
+    assert len(send) == 2
+
+
+def test_new_alerts_does_not_mutate_the_state_it_was_given():
+    # The caller only persists on a successful post; mutating in place would
+    # mark an alert as sent even when the webhook failed.
+    original = {}
+    ws.new_alerts([_alert()], original)
+    assert original == {}

@@ -67,6 +67,13 @@ MOVEMENT_ALERT_THRESHOLD = int(os.environ.get("MOVEMENT_ALERT_THRESHOLD", "10"))
 # Optional outbound notification. When set, the alerts array is POSTed as JSON to
 # this URL each run that produces movers (Slack/Discord/webhook). Unset = no-op.
 ALERT_WEBHOOK_URL = os.environ.get("ALERT_WEBHOOK_URL", "")
+# Which alerts have already been announced, so a standing steam move isn't
+# re-posted every run (#67). Committed alongside the other state files.
+ALERT_STATE_PATH = Path("odds-alert-state.json")
+# An already-announced move must grow by this fraction to be news again. At 0.25
+# a 20-point move re-alerts at 25 points, not at 21 — enough headroom that
+# ordinary jitter around the threshold stays quiet.
+ALERT_REGRESS_PCT = float(os.environ.get("ALERT_REGRESS_PCT", "0.25"))
 
 # Upcoming-event odds refresh at most once per day (the 09:00 UTC rebuild), so a
 # single day's gap is normal. 48h flags an event whose lines have sat unchanged
@@ -281,6 +288,61 @@ def event_movers(fights, opens, threshold):
     return movers
 
 
+def alert_key(alert):
+    """Stable identity for a line-movement alert, independent of run order."""
+    return f"{alert['event_id']}|" + "|".join(sorted((alert["f1"], alert["f2"])))
+
+
+def new_alerts(alerts, seen, regress_pct=ALERT_REGRESS_PCT):
+    """Filter `alerts` down to the ones worth sending again (#67).
+
+    A steam move does not un-happen. Once a line has drifted past the threshold
+    it stays past it, so every subsequent run re-detects the same mover and — on
+    a card night, at a 5-minute cadence — re-posts it roughly 288 times a day.
+    That is how a genuinely useful alert becomes something you mute, which costs
+    you the next real one.
+
+    An alert re-fires only when the move has grown materially past what was last
+    announced (`regress_pct` beyond the previous magnitude). A line that keeps
+    steaming is news again; one merely sitting where it already was is not.
+
+    Returns (to_send, updated_seen) and never mutates `seen`, so a webhook
+    failure can leave the state untouched and retry on the next run rather than
+    swallowing the alert permanently.
+    """
+    to_send, updated = [], dict(seen)
+    for a in alerts:
+        key = alert_key(a)
+        prev = seen.get(key)
+        magnitude = a["magnitude"]
+        if prev is None or magnitude >= prev * (1 + regress_pct):
+            to_send.append(a)
+            updated[key] = magnitude
+        else:
+            # Keep the high-water mark so a line drifting back and forth across
+            # the threshold can't re-alert on every oscillation.
+            updated[key] = max(prev, magnitude)
+    return to_send, updated
+
+
+def load_alert_state():
+    """Previously-announced alert magnitudes, keyed by alert_key."""
+    if not ALERT_STATE_PATH.exists():
+        return {}
+    try:
+        data = json.loads(ALERT_STATE_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}          # corrupt state re-alerts once; it never blocks alerting
+    return data.get("sent", {}) if isinstance(data, dict) else {}
+
+
+def save_alert_state(sent):
+    ALERT_STATE_PATH.write_text(
+        json.dumps({"updated_at": iso_z(datetime.now(timezone.utc)), "sent": sent},
+                   indent=2, sort_keys=True) + "\n",
+        encoding="utf-8")
+
+
 def post_alerts(alerts):
     """Best-effort POST of the alerts payload to ALERT_WEBHOOK_URL.
 
@@ -289,7 +351,7 @@ def post_alerts(alerts):
     send.
     """
     if not ALERT_WEBHOOK_URL or not alerts:
-        return
+        return False
     body = json.dumps({"alerts": alerts}).encode("utf-8")
     req  = urllib.request.Request(
         ALERT_WEBHOOK_URL, data=body, headers={"Content-Type": "application/json"}
@@ -297,8 +359,10 @@ def post_alerts(alerts):
     try:
         urllib.request.urlopen(req, timeout=10)
         print(f"Posted {len(alerts)} line-movement alert(s) to webhook", file=sys.stderr)
+        return True
     except Exception as e:
         print(f"Alert webhook failed: {e}", file=sys.stderr)
+        return False
 
 
 def load_snapshot_history():
@@ -462,8 +526,18 @@ def main():
     }
     STATUS_PATH.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
 
-    # Optional push: notify a webhook when steam moves appear. Best-effort.
-    post_alerts(alerts)
+    # Optional push: notify a webhook when steam moves appear. Best-effort, and
+    # deduped so a standing mover isn't re-announced on every 5-minute run (#67).
+    # State advances only on a successful post, so a webhook outage retries next
+    # run instead of silently swallowing the alert.
+    fresh, updated_seen = new_alerts(alerts, load_alert_state())
+    if not ALERT_WEBHOOK_URL:
+        pass                       # nothing configured: don't burn the dedup state
+    elif not fresh:
+        if alerts:
+            print(f"Suppressed {len(alerts)} already-announced alert(s)", file=sys.stderr)
+    elif post_alerts(fresh):
+        save_alert_state(updated_seen)
 
     # Append a timestamped odds snapshot for line-movement history, but only when
     # the odds actually changed since the last one — keeps the append-only log from
