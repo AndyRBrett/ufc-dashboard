@@ -138,14 +138,23 @@ jobs:
             fi
           fi
 
-          # An Odds API auth failure is a dead credential, not a blip: it never
-          # self-heals and every subsequent run silently reuses the last good
-          # lines, so the card looks priced while the prices quietly rot. Quota
-          # exhaustion and 5xx stay warnings — those do recover on their own.
+          # The Odds API answers 401 for BOTH a bad key and an exhausted quota,
+          # and the two need opposite handling: a dead key never self-heals and
+          # needs a human, while an exhausted quota fixes itself at the monthly
+          # reset. Failing the run on the quota case would just paint the
+          # workflow red every 5 minutes until the 1st, which trains you to
+          # ignore it — and then the dead-key case goes unnoticed too.
+          #
+          # x-requests-remaining tells them apart: 0 means we spent the budget,
+          # anything else (or a 401 with quota left) means the key itself was
+          # rejected.
           if [ -f odds-state.json ]; then
             s=$(jq '.last_status // 200' odds-state.json)
-            if [ "$s" = "401" ] || [ "$s" = "403" ]; then
-              echo "::error::Odds API rejected our key (HTTP $s) — odds are frozen. Rotate ODDS_API_KEY."
+            rem=$(jq '.requests_remaining // -1' odds-state.json)
+            if { [ "$s" = "401" ] || [ "$s" = "403" ]; } && [ "$rem" = "0" ]; then
+              echo "::warning::Odds API quota exhausted for the month — lines are frozen until it resets. Not failing the run; this recovers on its own."
+            elif [ "$s" = "401" ] || [ "$s" = "403" ]; then
+              echo "::error::Odds API rejected our key (HTTP $s, quota remaining $rem) — odds are frozen. Rotate ODDS_API_KEY."
               fail=1
             fi
           fi
