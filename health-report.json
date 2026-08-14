@@ -1,23 +1,15 @@
 {
-  "generated_at": "2026-08-14T17:01:15Z",
+  "generated_at": "2026-08-14T17:27:59Z",
   "summary": {
     "events": 11,
     "block": 0,
-    "warn": 6
+    "warn": 5
   },
   "findings": [
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC 330: Makhachev vs. Machado Garry (1d out): 1 of 12 bouts have no odds",
-      "event": "UFC 330: Makhachev vs. Machado Garry",
-      "date": "2026-08-15",
-      "days_out": 1
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-missing-all",
-      "message": "UFC Fight Night: Hernandez vs. Rodrigues (8d out) has no odds on any of its 8 bouts",
+      "message": "UFC Fight Night: Hernandez vs. Rodrigues (8d out): 3 of 8 bouts have no odds",
       "event": "UFC Fight Night: Hernandez vs. Rodrigues",
       "date": "2026-08-22",
       "days_out": 8

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-14T17:01:16Z",
+  "generated_at": "2026-08-14T17:27:59Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -4667,7 +4667,7 @@
         {
           "f1": "Mackenzie Dern",
           "f2": "Gillian Robertson",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-06-20T01:35:43Z",
@@ -4723,6 +4723,11 @@
               "at": "2026-07-10T14:57:48Z",
               "f1_odds": -221,
               "f2_odds": 175
+            },
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": -213,
+              "f2_odds": 182
             }
           ],
           "open": {
@@ -4736,12 +4741,17 @@
         {
           "f1": "Mansur Abdul-Malik",
           "f2": "Dustin Stoltzfus",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-08-11T10:08:07Z",
               "f1_odds": -550,
               "f2_odds": 410
+            },
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": -650,
+              "f2_odds": 476
             }
           ],
           "open": {
@@ -4755,12 +4765,17 @@
         {
           "f1": "Edson Barboza",
           "f2": "Esteban Ribovics",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-08-11T10:08:07Z",
               "f1_odds": 360,
               "f2_odds": -470
+            },
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": 409,
+              "f2_odds": -540
             }
           ],
           "open": {
@@ -4774,12 +4789,17 @@
         {
           "f1": "Chidi Njokuani",
           "f2": "Joel Alvarez",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-08-11T10:08:07Z",
               "f1_odds": 245,
               "f2_odds": -300
+            },
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": 222,
+              "f2_odds": -270
             }
           ],
           "open": {
@@ -4793,12 +4813,17 @@
         {
           "f1": "Jalin Turner",
           "f2": "Kaue Fernandes",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-08-11T10:08:07Z",
               "f1_odds": -170,
               "f2_odds": 142
+            },
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": -158,
+              "f2_odds": 138
             }
           ],
           "open": {
@@ -4812,12 +4837,17 @@
         {
           "f1": "Donte Johnson",
           "f2": "Eric McConico",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-08-11T10:08:07Z",
               "f1_odds": -350,
               "f2_odds": 280
+            },
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": -240,
+              "f2_odds": 200
             }
           ],
           "open": {
@@ -4831,12 +4861,17 @@
         {
           "f1": "Vicente Luque",
           "f2": "Tresean Gore",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-08-11T10:08:07Z",
               "f1_odds": 120,
               "f2_odds": -142
+            },
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": -101,
+              "f2_odds": -119
             }
           ],
           "open": {
@@ -4850,12 +4885,17 @@
         {
           "f1": "Rafael Tobias",
           "f2": "Lucas Fernando",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-08-11T10:08:07Z",
               "f1_odds": 157,
               "f2_odds": -180
+            },
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": 230,
+              "f2_odds": -280
             }
           ],
           "open": {
@@ -4869,12 +4909,17 @@
         {
           "f1": "Neil Magny",
           "f2": "Ramiz Brahimaj",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-08-11T10:08:07Z",
               "f1_odds": -102,
               "f2_odds": -118
+            },
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": 105,
+              "f2_odds": -125
             }
           ],
           "open": {
@@ -4888,18 +4933,143 @@
         {
           "f1": "Jeremiah Wells",
           "f2": "Myktybek Orolbai",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-08-11T10:08:07Z",
               "f1_odds": 316,
               "f2_odds": -400
+            },
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": 525,
+              "f2_odds": -750
             }
           ],
           "open": {
             "at": "2026-08-11T10:08:07Z",
             "f1_odds": 316,
             "f2_odds": -400
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Charles Johnson",
+          "f2": "Eduardo Henrique",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": -122,
+              "f2_odds": -104
+            }
+          ],
+          "open": {
+            "at": "2026-08-14T17:27:59Z",
+            "f1_odds": -122,
+            "f2_odds": -104
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
+      "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Anthony Hernandez",
+          "f2": "Gregory Rodrigues",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": -155,
+              "f2_odds": 130
+            }
+          ],
+          "open": {
+            "at": "2026-08-14T17:27:59Z",
+            "f1_odds": -155,
+            "f2_odds": 130
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Serghei Spivac",
+          "f2": "Vitor Petrino",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": 135,
+              "f2_odds": -160
+            }
+          ],
+          "open": {
+            "at": "2026-08-14T17:27:59Z",
+            "f1_odds": 135,
+            "f2_odds": -160
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Reinier de Ridder",
+          "f2": "Roman Dolidze",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": 270,
+              "f2_odds": -340
+            }
+          ],
+          "open": {
+            "at": "2026-08-14T17:27:59Z",
+            "f1_odds": 270,
+            "f2_odds": -340
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Carli Judice",
+          "f2": "Jeisla Chaves",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": -450,
+              "f2_odds": 350
+            }
+          ],
+          "open": {
+            "at": "2026-08-14T17:27:59Z",
+            "f1_odds": -450,
+            "f2_odds": 350
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Kennedy Nzechukwu",
+          "f2": "Shamil Gaziev",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-14T17:27:59Z",
+              "f1_odds": 105,
+              "f2_odds": -125
+            }
+          ],
+          "open": {
+            "at": "2026-08-14T17:27:59Z",
+            "f1_odds": 105,
+            "f2_odds": -125
           },
           "close": null,
           "clv": null
@@ -5417,6 +5587,15 @@
         "open": -269,
         "close": -269,
         "clv": 0
+      },
+      {
+        "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
+        "opponent": "Carli Judice",
+        "side": "f2",
+        "points": 1,
+        "open": 350,
+        "close": null,
+        "clv": null
       }
     ],
     "Yuneisy Duben": [
@@ -7092,7 +7271,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Gillian Robertson",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -189,
         "close": null,
         "clv": null
@@ -7103,7 +7282,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Mackenzie Dern",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 155,
         "close": null,
         "clv": null
@@ -7114,7 +7293,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Dustin Stoltzfus",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -550,
         "close": null,
         "clv": null
@@ -7125,7 +7304,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Mansur Abdul-Malik",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 410,
         "close": null,
         "clv": null
@@ -7136,7 +7315,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Esteban Ribovics",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 360,
         "close": null,
         "clv": null
@@ -7147,7 +7326,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Edson Barboza",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -470,
         "close": null,
         "clv": null
@@ -7158,7 +7337,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Joel Alvarez",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 245,
         "close": null,
         "clv": null
@@ -7169,7 +7348,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Chidi Njokuani",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -300,
         "close": null,
         "clv": null
@@ -7180,7 +7359,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Kaue Fernandes",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -170,
         "close": null,
         "clv": null
@@ -7191,7 +7370,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Jalin Turner",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 142,
         "close": null,
         "clv": null
@@ -7202,7 +7381,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Eric McConico",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -350,
         "close": null,
         "clv": null
@@ -7213,7 +7392,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Donte Johnson",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 280,
         "close": null,
         "clv": null
@@ -7224,7 +7403,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Tresean Gore",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 120,
         "close": null,
         "clv": null
@@ -7235,7 +7414,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Vicente Luque",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -142,
         "close": null,
         "clv": null
@@ -7246,7 +7425,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Lucas Fernando",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 157,
         "close": null,
         "clv": null
@@ -7257,7 +7436,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Rafael Tobias",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -180,
         "close": null,
         "clv": null
@@ -7268,7 +7447,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Ramiz Brahimaj",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -102,
         "close": null,
         "clv": null
@@ -7279,7 +7458,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Neil Magny",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -118,
         "close": null,
         "clv": null
@@ -7290,7 +7469,7 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Myktybek Orolbai",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 316,
         "close": null,
         "clv": null
@@ -7301,8 +7480,129 @@
         "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
         "opponent": "Jeremiah Wells",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -400,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Charles Johnson": [
+      {
+        "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
+        "opponent": "Eduardo Henrique",
+        "side": "f1",
+        "points": 1,
+        "open": -122,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Eduardo Henrique": [
+      {
+        "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
+        "opponent": "Charles Johnson",
+        "side": "f2",
+        "points": 1,
+        "open": -104,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Anthony Hernandez": [
+      {
+        "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
+        "opponent": "Gregory Rodrigues",
+        "side": "f1",
+        "points": 1,
+        "open": -155,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Gregory Rodrigues": [
+      {
+        "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
+        "opponent": "Anthony Hernandez",
+        "side": "f2",
+        "points": 1,
+        "open": 130,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Serghei Spivac": [
+      {
+        "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
+        "opponent": "Vitor Petrino",
+        "side": "f1",
+        "points": 1,
+        "open": 135,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Vitor Petrino": [
+      {
+        "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
+        "opponent": "Serghei Spivac",
+        "side": "f2",
+        "points": 1,
+        "open": -160,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Reinier de Ridder": [
+      {
+        "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
+        "opponent": "Roman Dolidze",
+        "side": "f1",
+        "points": 1,
+        "open": 270,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Roman Dolidze": [
+      {
+        "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
+        "opponent": "Reinier de Ridder",
+        "side": "f2",
+        "points": 1,
+        "open": -340,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Carli Judice": [
+      {
+        "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
+        "opponent": "Jeisla Chaves",
+        "side": "f1",
+        "points": 1,
+        "open": -450,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Kennedy Nzechukwu": [
+      {
+        "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
+        "opponent": "Shamil Gaziev",
+        "side": "f1",
+        "points": 1,
+        "open": 105,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Shamil Gaziev": [
+      {
+        "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
+        "opponent": "Kennedy Nzechukwu",
+        "side": "f2",
+        "points": 1,
+        "open": -125,
         "close": null,
         "clv": null
       }
