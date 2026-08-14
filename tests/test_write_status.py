@@ -9,6 +9,7 @@ Run with:  python -m pytest -q
 """
 import pytest
 import hashlib
+import json
 
 import write_status as ws
 
@@ -58,6 +59,78 @@ def test_classify_parse_failure_on_regression():
 def test_classify_awaiting_card_for_past_unpriced_event():
     # A past event that never carried odds won't be priced retroactively — benign.
     assert ws.classify_event(_empty_event("2026-06-01"), [], "2026-06-22") == "awaiting-card"
+
+
+# --- exhausted odds budget is not a parse failure ---------------------------
+
+def test_classify_odds_unavailable_when_budget_is_spent():
+    # THE REGRESSION TEST for the 2026-08-14 red-every-5-minutes run. Same event
+    # shape as the parse-failure case above, but no request could be made, so
+    # there was nothing to parse and nothing is broken on our side.
+    assert ws.classify_event(
+        _empty_event("2026-06-28"), [], "2026-06-22", budget_exhausted=True
+    ) == "odds-unavailable"
+
+
+def test_classify_still_parse_failure_when_budget_is_healthy():
+    # The carve-out must be narrow: with budget available, an unpriced imminent
+    # card is still a real failure that has to turn the run red.
+    assert ws.classify_event(
+        _empty_event("2026-06-28"), [], "2026-06-22", budget_exhausted=False
+    ) == "parse-failure"
+
+
+def test_exhausted_budget_does_not_excuse_vanished_odds():
+    # A dead quota can't explain odds DISAPPEARING: get_odds_with_fallback keeps
+    # the lines already in data.js even when the API never answers. So this stays
+    # a regression that must fail the run.
+    hist = [("t1", [{"f1": "A", "f2": "B", "f1_odds": -150, "f2_odds": 130}])]
+    assert ws.classify_event(
+        _empty_event("2026-08-01"), hist, "2026-06-22", budget_exhausted=True
+    ) == "parse-failure"
+
+
+def test_exhausted_budget_does_not_reclassify_a_far_out_card():
+    # Still awaiting-card, not odds-unavailable — books haven't priced it yet
+    # either way, and mislabelling it would inflate the unpriced count.
+    assert ws.classify_event(
+        _empty_event("2026-08-01"), [], "2026-06-22", budget_exhausted=True
+    ) == "awaiting-card"
+
+
+def test_odds_unavailable_is_not_reported_as_an_error():
+    # The whole point: it must not reach failure_errors, which is what
+    # parse_failure_events (and the run's red/green) is computed from.
+    assert ws.failure_errors([_ev("a", "odds-unavailable", 8)]) == []
+
+
+# --- odds_budget_exhausted: quota spent vs key rejected ---------------------
+
+@pytest.mark.parametrize("state,expected", [
+    ({"last_status": 401, "requests_remaining": 0},    True),   # quota spent
+    ({"last_status": 403, "requests_remaining": 0},    True),
+    ({"last_status": 401, "requests_remaining": 480},  False),  # key rejected
+    ({"last_status": 401},                             False),  # unknown quota
+    ({"last_status": 200, "requests_remaining": 0},    False),
+    ({},                                               False),
+])
+def test_odds_budget_exhausted_distinguishes_quota_from_a_dead_key(
+        tmp_path, state, expected):
+    # A rejected key never self-heals and must keep failing the run; only the
+    # spent-quota case is excused. x-requests-remaining is the only thing that
+    # tells the two 401s apart.
+    p = tmp_path / "odds-state.json"
+    p.write_text(json.dumps(state), encoding="utf-8")
+    assert ws.odds_budget_exhausted(p) is expected
+
+
+def test_odds_budget_exhausted_is_false_when_state_is_missing_or_corrupt(tmp_path):
+    # Conservative default: with no readable state we can't prove the budget was
+    # spent, so genuine parse failures stay loud.
+    assert ws.odds_budget_exhausted(tmp_path / "nope.json") is False
+    bad = tmp_path / "bad.json"
+    bad.write_text("{not json", encoding="utf-8")
+    assert ws.odds_budget_exhausted(bad) is False
 
 
 def test_parse_events_counts_announced_bouts_without_odds():

@@ -136,6 +136,15 @@ jobs:
               jq -r '.errors[]? | "  - " + .' overseer-status.json
               fail=1
             fi
+
+            # Cards that could not be priced because the odds budget was spent.
+            # Not a failure — it is the same self-healing condition the quota
+            # check below warns about, and failing here would re-fail the run
+            # through the back door for a root cause we already excused.
+            u=$(jq '.odds_unavailable_events // 0' overseer-status.json)
+            if [ "$u" -gt 0 ]; then
+              echo "::warning::$u upcoming card(s) unpriced because the Odds API budget is spent — expected while the quota is exhausted, not a parse failure."
+            fi
           fi
 
           # The Odds API answers 401 for BOTH a bad key and an exhausted quota,
