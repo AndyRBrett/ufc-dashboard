@@ -109,6 +109,41 @@ def test_partial_odds_reported_separately():
     assert "odds-missing-some" in kinds(findings, "WARN")
 
 
+# --- the 7-to-14-day odds blind spot (#66) --------------------------------
+
+def test_unpriced_card_beyond_imminent_window_still_warns():
+    # THE REGRESSION TEST for #66. Reproduces 2026-08-22 Hernandez vs Rodrigues:
+    # an announced card 9 days out with every bout unpriced. write_status flags
+    # it "parse-failure" from 14 days out, but health.py used to stop looking at
+    # IMMINENT_DAYS (7), so this event produced no finding whatsoever and the run
+    # stayed green while overseer-status.json recorded an error nobody saw.
+    nine_days_out = "2026-08-16"          # NOW is 2026-08-07
+    text = data_js([("UFC Fight Night: Hernandez vs. Rodrigues", nine_days_out,
+                     [fight("Anthony Hernandez", "Gregory Rodrigues", odds="null"),
+                      fight("Serghei Spivac", "Vitor Petrino", odds="null")])])
+    findings, summary = health.check(text, now=NOW)
+    assert "odds-missing-all" in kinds(findings, "WARN"), \
+        "an unpriced card inside the odds-expected window must be reported"
+    # Still only a warning: a card with no lines is worth shipping for its
+    # fighters, records and results. It must not freeze the publish.
+    assert summary["block"] == 0
+
+
+def test_unpriced_card_beyond_odds_window_is_silent():
+    # The other side of the boundary: a card 30 days out has legitimately not
+    # been priced yet. Warning on it would be noise on every run.
+    findings, _ = health.check(
+        data_js([("UFC Fight Night: C vs. D", "2026-09-06",
+                  [fight("C", "D", odds="null")])]), now=NOW)
+    assert "odds-missing-all" not in kinds(findings, "WARN")
+
+
+def test_odds_window_is_wider_than_imminent_window():
+    # Guards the invariant the fix depends on. If someone narrows the odds window
+    # back to IMMINENT_DAYS, the blind spot silently reopens.
+    assert health.ODDS_EXPECTED_WITHIN_DAYS > health.IMMINENT_DAYS
+
+
 def test_failed_stats_lookup_warns():
     stats = '{"A":{"fetch_failed":"2026-08-06T11:00:00+00:00"}}'
     text = data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])],

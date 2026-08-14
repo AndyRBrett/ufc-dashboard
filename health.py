@@ -48,6 +48,17 @@ IMMINENT_DAYS = 7
 # Inside this window a TBD fighter or a missing card is no longer "not announced
 # yet", it is broken.
 CRITICAL_DAYS = 2
+# Odds coverage is judged over a WIDER window than the other data gaps (#66).
+#
+# This used to reuse IMMINENT_DAYS, which left a silent 7-to-14-day blind spot:
+# write_status.classify_event flags an unpriced announced card as "parse-failure"
+# from 14 days out, but health.py stopped looking at 7 — so an event in that band
+# was written into overseer-status.json's `errors` while health.py produced no
+# finding at all. No WARN, no tracking issue, green run. That is exactly how
+# 2026-08-22 Hernandez vs Rodrigues (9 days out, 8 announced bouts, zero odds)
+# stayed invisible behind a 100% run success rate. Keep this in step with
+# write_status.ODDS_EXPECTED_WITHIN_DAYS — the env var is shared on purpose.
+ODDS_EXPECTED_WITHIN_DAYS = int(os.environ.get("ODDS_EXPECTED_WITHIN_DAYS", "14"))
 # Odds older than this on an imminent card mean the odds pipeline has stalled.
 ODDS_STALE_HOURS = 36
 # Below this the Odds API quota is about to run out and lines will silently freeze.
@@ -161,6 +172,27 @@ def check(text, baseline_text=None, now=None, odds_state=None):
                     f"{len(ev['fights'])} — refusing to publish a shrunken card",
                     event=ev["name"], date=ev["date"])
 
+    # --- odds coverage, over the wider odds-expected window (#66) ----------
+    # Separate from the imminent-card loop below because odds are expected to
+    # exist well before the other gaps become alertable. Books price a card
+    # roughly two weeks out, so an announced card still carrying no lines inside
+    # that window is a real gap — and it must be reported at 9 days out, not
+    # first noticed at 7.
+    for ev in upcoming:
+        d = days_out(ev["date"], today)
+        if d is None or d > ODDS_EXPECTED_WITHIN_DAYS or not ev["fights"]:
+            continue
+        tag = {"event": ev["name"], "date": ev["date"], "days_out": d}
+        priced = sum(1 for f in ev["fights"] if f["odds"])
+        if priced == 0:
+            add("WARN", "odds-missing-all",
+                f"{ev['name']} ({d}d out) has no odds on any of its "
+                f"{len(ev['fights'])} bouts", **tag)
+        elif priced < len(ev["fights"]):
+            add("WARN", "odds-missing-some",
+                f"{ev['name']} ({d}d out): {len(ev['fights']) - priced} of "
+                f"{len(ev['fights'])} bouts have no odds", **tag)
+
     # --- data gaps on imminent cards --------------------------------------
     stats = parse_stats_cache(text)
     for ev in upcoming:
@@ -172,16 +204,6 @@ def check(text, baseline_text=None, now=None, odds_state=None):
             add("BLOCK", "card-empty",
                 f"{ev['name']} is {d}d out with zero bouts parsed", **tag)
             continue
-
-        priced = sum(1 for f in ev["fights"] if f["odds"])
-        if priced == 0:
-            add("WARN", "odds-missing-all",
-                f"{ev['name']} ({d}d out) has no odds on any of its "
-                f"{len(ev['fights'])} bouts", **tag)
-        elif priced < len(ev["fights"]):
-            add("WARN", "odds-missing-some",
-                f"{ev['name']} ({d}d out): {len(ev['fights']) - priced} of "
-                f"{len(ev['fights'])} bouts have no odds", **tag)
 
         for f in ev["fights"]:
             for side in ("f1", "f2"):

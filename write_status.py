@@ -67,6 +67,13 @@ MOVEMENT_ALERT_THRESHOLD = int(os.environ.get("MOVEMENT_ALERT_THRESHOLD", "10"))
 # Optional outbound notification. When set, the alerts array is POSTed as JSON to
 # this URL each run that produces movers (Slack/Discord/webhook). Unset = no-op.
 ALERT_WEBHOOK_URL = os.environ.get("ALERT_WEBHOOK_URL", "")
+# Which alerts have already been announced, so a standing steam move isn't
+# re-posted every run (#67). Committed alongside the other state files.
+ALERT_STATE_PATH = Path("odds-alert-state.json")
+# An already-announced move must grow by this fraction to be news again. At 0.25
+# a 20-point move re-alerts at 25 points, not at 21 — enough headroom that
+# ordinary jitter around the threshold stays quiet.
+ALERT_REGRESS_PCT = float(os.environ.get("ALERT_REGRESS_PCT", "0.25"))
 
 # Upcoming-event odds refresh at most once per day (the 09:00 UTC rebuild), so a
 # single day's gap is normal. 48h flags an event whose lines have sat unchanged
@@ -200,6 +207,33 @@ def classify_event(ev, ev_hist, today):
     return "awaiting-card"
 
 
+def failure_errors(out_events):
+    """Error lines for parse-failure events, naming which half actually broke (#66).
+
+    The old single message — "parse failure (expected bouts, got none)" — was
+    simply wrong whenever the bouts HAD parsed and only the odds were missing,
+    which is the common case. 2026-08-22 Hernandez vs Rodrigues reported it with
+    `bout_count: 8` sitting right there in the same payload, and the contradiction
+    sent the investigation hunting a bout-parser bug that did not exist: all 8
+    bouts had parsed cleanly and every one carried `odds:null`.
+
+    Splitting them means the message names the real gap — a scraper/selector
+    problem in the first case, an odds-source or name-matching problem in the
+    second. Returns a list of error strings (empty when nothing failed).
+    """
+    no_bouts = [e["event_id"] for e in out_events
+                if e["status"] == "parse-failure" and not e.get("bout_count")]
+    no_odds = [e["event_id"] for e in out_events
+               if e["status"] == "parse-failure" and e.get("bout_count")]
+    out = []
+    if no_bouts:
+        out.append("parse failure (expected bouts, got none): " + ", ".join(no_bouts))
+    if no_odds:
+        out.append("odds missing on an announced card (bouts parsed, zero priced): "
+                   + ", ".join(no_odds))
+    return out
+
+
 def matchup_key(fight):
     """Order-independent key for a bout, so a fighter swap still matches its opener."""
     return tuple(sorted((fight["f1"], fight["f2"])))
@@ -231,6 +265,65 @@ def delta(open_fight, cur_fight):
     }
 
 
+def implied_prob(odds):
+    """Implied win probability for an American moneyline (#26).
+
+    Mirrors scrape._implied_prob. Duplicated rather than imported on purpose:
+    scrape.py pulls in bs4 and requests at import time, and write_status.py runs
+    in workflow steps that deliberately don't install them.
+    """
+    if odds is None:
+        return None
+    return abs(odds) / (abs(odds) + 100) if odds < 0 else 100 / (odds + 100)
+
+
+def prob_shift(open_odds, current_odds):
+    """Change in implied win probability, in percentage points (#26).
+
+    A move from -110 to -150 and one from +400 to +340 are both '40 points of
+    American odds', but the first is a ~7pt probability swing and the second
+    ~3pt. Points of moneyline are not a linear measure of what the market
+    actually changed its mind about; probability is, which is what makes this
+    worth carrying alongside the raw movement.
+    """
+    a, b = implied_prob(open_odds), implied_prob(current_odds)
+    if a is None or b is None:
+        return None
+    return round((b - a) * 100, 1)
+
+
+# Weightings for alert priority (#52). Magnitude alone buried a headliner move
+# under undercard noise — a 12-point swing on the main event is more actionable
+# than a 40-point swing on a prelim nobody is betting.
+MAIN_EVENT_WEIGHT = 2.5
+# Multiplier by days until the card. A move 2 days out is close to final and
+# worth acting on; the same move 3 weeks out will likely be retraced.
+IMMINENCE_WEIGHTS = ((2, 2.0), (7, 1.4), (14, 1.1))
+
+
+def imminence_weight(days_out):
+    if days_out is None or days_out < 0:
+        return 1.0
+    for limit, weight in IMMINENCE_WEIGHTS:
+        if days_out <= limit:
+            return weight
+    return 1.0
+
+
+def alert_priority(alert, days_out=None):
+    """Rank score for a line-movement alert (#52).
+
+    Magnitude scaled by who is fighting and how soon. Kept as an explicit score
+    on the payload rather than a sort-order side effect, so the dashboard can
+    show *why* an alert is ranked where it is instead of asking the reader to
+    trust an opaque ordering.
+    """
+    score = alert["magnitude"] * imminence_weight(days_out)
+    if alert.get("main_event"):
+        score *= MAIN_EVENT_WEIGHT
+    return round(score, 1)
+
+
 def event_movers(fights, opens, threshold):
     """Bouts whose line has moved at least `threshold` points from its opener.
 
@@ -245,13 +338,78 @@ def event_movers(fights, opens, threshold):
         d = delta(opens.get(matchup_key(f)), f)
         magnitude = max(abs(d["f1_odds"]), abs(d["f2_odds"]))
         if magnitude >= threshold:
-            movers.append({
+            opener = opens.get(matchup_key(f))
+            mover = {
                 "f1": f["f1"], "f2": f["f2"],
                 "f1_movement": d["f1_odds"], "f2_movement": d["f2_odds"],
                 "magnitude": magnitude,
                 "main_event": i == 0,
-            })
+            }
+            # How much the market actually changed its mind, in probability
+            # points rather than moneyline points (#26).
+            if opener:
+                aligned = realign(opener, f)
+                for side in ("f1", "f2"):
+                    shift = prob_shift(aligned[f"{side}_odds"], f[f"{side}_odds"])
+                    if shift is not None:
+                        mover[f"{side}_prob_shift"] = shift
+            movers.append(mover)
     return movers
+
+
+def alert_key(alert):
+    """Stable identity for a line-movement alert, independent of run order."""
+    return f"{alert['event_id']}|" + "|".join(sorted((alert["f1"], alert["f2"])))
+
+
+def new_alerts(alerts, seen, regress_pct=ALERT_REGRESS_PCT):
+    """Filter `alerts` down to the ones worth sending again (#67).
+
+    A steam move does not un-happen. Once a line has drifted past the threshold
+    it stays past it, so every subsequent run re-detects the same mover and — on
+    a card night, at a 5-minute cadence — re-posts it roughly 288 times a day.
+    That is how a genuinely useful alert becomes something you mute, which costs
+    you the next real one.
+
+    An alert re-fires only when the move has grown materially past what was last
+    announced (`regress_pct` beyond the previous magnitude). A line that keeps
+    steaming is news again; one merely sitting where it already was is not.
+
+    Returns (to_send, updated_seen) and never mutates `seen`, so a webhook
+    failure can leave the state untouched and retry on the next run rather than
+    swallowing the alert permanently.
+    """
+    to_send, updated = [], dict(seen)
+    for a in alerts:
+        key = alert_key(a)
+        prev = seen.get(key)
+        magnitude = a["magnitude"]
+        if prev is None or magnitude >= prev * (1 + regress_pct):
+            to_send.append(a)
+            updated[key] = magnitude
+        else:
+            # Keep the high-water mark so a line drifting back and forth across
+            # the threshold can't re-alert on every oscillation.
+            updated[key] = max(prev, magnitude)
+    return to_send, updated
+
+
+def load_alert_state():
+    """Previously-announced alert magnitudes, keyed by alert_key."""
+    if not ALERT_STATE_PATH.exists():
+        return {}
+    try:
+        data = json.loads(ALERT_STATE_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}          # corrupt state re-alerts once; it never blocks alerting
+    return data.get("sent", {}) if isinstance(data, dict) else {}
+
+
+def save_alert_state(sent):
+    ALERT_STATE_PATH.write_text(
+        json.dumps({"updated_at": iso_z(datetime.now(timezone.utc)), "sent": sent},
+                   indent=2, sort_keys=True) + "\n",
+        encoding="utf-8")
 
 
 def post_alerts(alerts):
@@ -262,7 +420,7 @@ def post_alerts(alerts):
     send.
     """
     if not ALERT_WEBHOOK_URL or not alerts:
-        return
+        return False
     body = json.dumps({"alerts": alerts}).encode("utf-8")
     req  = urllib.request.Request(
         ALERT_WEBHOOK_URL, data=body, headers={"Content-Type": "application/json"}
@@ -270,8 +428,10 @@ def post_alerts(alerts):
     try:
         urllib.request.urlopen(req, timeout=10)
         print(f"Posted {len(alerts)} line-movement alert(s) to webhook", file=sys.stderr)
+        return True
     except Exception as e:
         print(f"Alert webhook failed: {e}", file=sys.stderr)
+        return False
 
 
 def load_snapshot_history():
@@ -416,11 +576,22 @@ def main():
     # the error/status list, which is exactly the false-error #14 was filing.
     failure_ids  = [e["event_id"] for e in out_events if e["status"] == "parse-failure"]
     awaiting_ids = [e["event_id"] for e in out_events if e["status"] == "awaiting-card"]
-    if failure_ids:
-        errors.append("parse failure (expected bouts, got none): " + ", ".join(failure_ids))
+    errors.extend(failure_errors(out_events))
 
-    # Loudest movers first, so the most actionable steam tops the list.
-    alerts.sort(key=lambda a: a["magnitude"], reverse=True)
+    # Most ACTIONABLE steam first, not merely the loudest (#52). Raw magnitude
+    # buried a headliner's move under undercard noise: a 12-point swing on the
+    # main event two days out matters more than a 40-point swing on a prelim
+    # three weeks away. The score is attached to each alert rather than applied
+    # as an invisible sort order, so the ranking can be explained.
+    for a in alerts:
+        event_date = (a["event_id"].split(":", 1)[0] if ":" in a["event_id"] else None)
+        try:
+            days = ((datetime.strptime(event_date, "%Y-%m-%d").date()
+                     - datetime.now(timezone.utc).date()).days) if event_date else None
+        except ValueError:
+            days = None
+        a["priority"] = alert_priority(a, days)
+    alerts.sort(key=lambda a: a["priority"], reverse=True)
 
     status = {
         "generated_at":             now_iso,
@@ -436,8 +607,18 @@ def main():
     }
     STATUS_PATH.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
 
-    # Optional push: notify a webhook when steam moves appear. Best-effort.
-    post_alerts(alerts)
+    # Optional push: notify a webhook when steam moves appear. Best-effort, and
+    # deduped so a standing mover isn't re-announced on every 5-minute run (#67).
+    # State advances only on a successful post, so a webhook outage retries next
+    # run instead of silently swallowing the alert.
+    fresh, updated_seen = new_alerts(alerts, load_alert_state())
+    if not ALERT_WEBHOOK_URL:
+        pass                       # nothing configured: don't burn the dedup state
+    elif not fresh:
+        if alerts:
+            print(f"Suppressed {len(alerts)} already-announced alert(s)", file=sys.stderr)
+    elif post_alerts(fresh):
+        save_alert_state(updated_seen)
 
     # Append a timestamped odds snapshot for line-movement history, but only when
     # the odds actually changed since the last one — keeps the append-only log from

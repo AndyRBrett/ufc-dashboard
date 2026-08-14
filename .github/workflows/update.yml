@@ -97,8 +97,13 @@ jobs:
           # and a run that injects results exits before ever reaching that step.
           # A card night is mostly those runs, so this would have started failing
           # every 5 minutes mid-event and stopped results from publishing.
+          # odds-alert-state.json carries the alert dedup high-water marks (#67).
+          # It MUST be committed: the runner is ephemeral, so an uncommitted
+          # state file resets every run and every standing mover re-alerts —
+          # which is exactly the behaviour the dedup exists to stop.
           for f in data.js overseer-status.json odds-snapshots.jsonl \
-                   odds-series.json odds-state.json health-report.json; do
+                   odds-series.json odds-state.json odds-alert-state.json \
+                   health-report.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           if git diff --staged --quiet; then
@@ -109,6 +114,52 @@ jobs:
             git push
             echo "pushed=true" >> "$GITHUB_OUTPUT"
           fi
+
+      # Event-level failures must reach the RUN's failure signal (#66).
+      #
+      # Deliberately the last step, after the publish: a card carrying no odds is
+      # still worth shipping (fighters, records and results are all there), so
+      # this must not gate the commit the way health.py --gate does. But it does
+      # need to turn the run red. Before this, write_status.py recorded the
+      # failure in overseer-status.json and nothing acted on it — the job exited
+      # 0, success_rate_7d stayed at 1.0, and the Project Overseer read a
+      # perfectly healthy scraper while an event silently carried no lines.
+      - name: Fail the run when an event-level parse failure was recorded
+        if: always()
+        run: |
+          fail=0
+
+          if [ -f overseer-status.json ]; then
+            n=$(jq '.parse_failure_events // 0' overseer-status.json)
+            if [ "$n" -gt 0 ]; then
+              echo "::error::$n event(s) failed to parse — see overseer-status.json errors:"
+              jq -r '.errors[]? | "  - " + .' overseer-status.json
+              fail=1
+            fi
+          fi
+
+          # The Odds API answers 401 for BOTH a bad key and an exhausted quota,
+          # and the two need opposite handling: a dead key never self-heals and
+          # needs a human, while an exhausted quota fixes itself at the monthly
+          # reset. Failing the run on the quota case would just paint the
+          # workflow red every 5 minutes until the 1st, which trains you to
+          # ignore it — and then the dead-key case goes unnoticed too.
+          #
+          # x-requests-remaining tells them apart: 0 means we spent the budget,
+          # anything else (or a 401 with quota left) means the key itself was
+          # rejected.
+          if [ -f odds-state.json ]; then
+            s=$(jq '.last_status // 200' odds-state.json)
+            rem=$(jq '.requests_remaining // -1' odds-state.json)
+            if { [ "$s" = "401" ] || [ "$s" = "403" ]; } && [ "$rem" = "0" ]; then
+              echo "::warning::Odds API quota exhausted for the month — lines are frozen until it resets. Not failing the run; this recovers on its own."
+            elif [ "$s" = "401" ] || [ "$s" = "403" ]; then
+              echo "::error::Odds API rejected our key (HTTP $s, quota remaining $rem) — odds are frozen. Rotate ODDS_API_KEY."
+              fail=1
+            fi
+          fi
+
+          [ "$fail" = "0" ] && echo "No event-level parse failures." || exit 1
 
   # GITHUB_TOKEN pushes never trigger `on: push` workflows, so the Pages deploy
   # must be chained here explicitly. Only runs when a commit was actually pushed

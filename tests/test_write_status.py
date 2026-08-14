@@ -7,6 +7,7 @@ must not read as fresh (#14). No network or filesystem, so they run in CI.
 
 Run with:  python -m pytest -q
 """
+import pytest
 import hashlib
 
 import write_status as ws
@@ -193,3 +194,172 @@ def test_post_alerts_noop_without_webhook(monkeypatch):
     monkeypatch.setattr(ws.urllib.request, "urlopen", lambda *a, **k: called.append(1))
     ws.post_alerts([{"event_id": "e", "magnitude": 22}])
     assert called == []
+
+
+# --- error messages must name the real gap (#66) ---------------------------
+
+def _ev(event_id, status, bout_count):
+    return {"event_id": event_id, "status": status, "bout_count": bout_count}
+
+
+def test_odds_missing_is_not_reported_as_a_bout_parse_failure():
+    # THE REGRESSION TEST for #66. This is the real 2026-08-22 payload shape:
+    # 8 bouts parsed, every one unpriced. Reporting that as "expected bouts, got
+    # none" contradicts bout_count in the same file and sent the investigation
+    # after a bout-parser bug that did not exist.
+    errs = ws.failure_errors(
+        [_ev("2026-08-22:ufc-fight-night-hernandez-vs-rodrigues", "parse-failure", 8)])
+    assert len(errs) == 1
+    assert "odds missing" in errs[0]
+    assert "expected bouts, got none" not in errs[0]
+
+
+def test_true_zero_bout_failure_keeps_the_original_wording():
+    errs = ws.failure_errors([_ev("2026-08-22:x", "parse-failure", 0)])
+    assert len(errs) == 1
+    assert "expected bouts, got none" in errs[0]
+
+
+def test_both_failure_kinds_reported_separately():
+    errs = ws.failure_errors([_ev("a", "parse-failure", 0),
+                              _ev("b", "parse-failure", 5)])
+    assert len(errs) == 2
+    assert any("expected bouts" in e and "a" in e for e in errs)
+    assert any("odds missing" in e and "b" in e for e in errs)
+
+
+def test_healthy_and_awaiting_events_produce_no_errors():
+    assert ws.failure_errors([_ev("a", "ok", 12), _ev("b", "awaiting-card", 9)]) == []
+
+
+# --- alert dedup (#67) ------------------------------------------------------
+
+def _alert(event_id="2026-08-22:e", f1="A", f2="B", magnitude=20):
+    return {"event_id": event_id, "f1": f1, "f2": f2, "magnitude": magnitude,
+            "f1_movement": magnitude, "f2_movement": -magnitude, "main_event": False}
+
+
+def test_first_sighting_of_a_mover_is_sent():
+    send, seen = ws.new_alerts([_alert()], {})
+    assert len(send) == 1
+    assert seen[ws.alert_key(_alert())] == 20
+
+
+def test_standing_mover_is_not_reannounced():
+    # THE POINT OF #67. A steam move doesn't un-happen, so every later run
+    # re-detects it. At the 5-minute card-night cadence that is ~288 posts a day
+    # for one move — which is how a useful alert becomes one you mute.
+    _, seen = ws.new_alerts([_alert()], {})
+    send, _ = ws.new_alerts([_alert()], seen)
+    assert send == []
+
+
+def test_a_move_that_keeps_steaming_is_news_again():
+    _, seen = ws.new_alerts([_alert(magnitude=20)], {})
+    send, _ = ws.new_alerts([_alert(magnitude=25)], seen)   # +25% → re-alert
+    assert len(send) == 1
+
+
+def test_marginal_growth_stays_quiet():
+    _, seen = ws.new_alerts([_alert(magnitude=20)], {})
+    send, _ = ws.new_alerts([_alert(magnitude=21)], seen)   # +5% → noise
+    assert send == []
+
+
+def test_oscillation_across_the_threshold_cannot_re_alert():
+    # A line drifting back down and up again must not re-fire: the high-water
+    # mark is kept, so only genuine new extension counts.
+    _, seen = ws.new_alerts([_alert(magnitude=30)], {})
+    _, seen = ws.new_alerts([_alert(magnitude=12)], seen)
+    send, _ = ws.new_alerts([_alert(magnitude=30)], seen)
+    assert send == []
+
+
+def test_alert_key_is_order_independent():
+    assert ws.alert_key(_alert(f1="A", f2="B")) == ws.alert_key(_alert(f1="B", f2="A"))
+
+
+def test_different_bouts_and_events_are_tracked_separately():
+    _, seen = ws.new_alerts([_alert(f1="A", f2="B")], {})
+    send, _ = ws.new_alerts([_alert(f1="C", f2="D"),
+                             _alert(event_id="2026-09-05:x", f1="A", f2="B")], seen)
+    assert len(send) == 2
+
+
+def test_new_alerts_does_not_mutate_the_state_it_was_given():
+    # The caller only persists on a successful post; mutating in place would
+    # mark an alert as sent even when the webhook failed.
+    original = {}
+    ws.new_alerts([_alert()], original)
+    assert original == {}
+
+
+# --- implied probability + alert ranking (#26, #52) -------------------------
+
+def test_implied_prob_matches_the_standard_moneyline_formula():
+    assert ws.implied_prob(-150) == pytest.approx(0.6)
+    assert ws.implied_prob(100) == pytest.approx(0.5)
+    assert ws.implied_prob(300) == pytest.approx(0.25)
+    assert ws.implied_prob(None) is None
+
+
+def test_prob_shift_reveals_what_moneyline_points_hide():
+    # THE POINT OF #26. Both moves are 40 points of American odds, but the
+    # favourite's is more than twice the probability swing. Ranking on raw
+    # points treats them as equal, which they plainly are not.
+    fav = ws.prob_shift(-110, -150)
+    dog = ws.prob_shift(400, 340)
+    assert fav > 6 and dog < 4
+    assert fav > 2 * dog
+
+
+def test_prob_shift_is_none_without_both_sides():
+    assert ws.prob_shift(None, -150) is None
+    assert ws.prob_shift(-150, None) is None
+
+
+def test_main_event_outranks_a_louder_undercard_move():
+    # THE POINT OF #52. The headliner is what people actually have money on, so
+    # a smaller move on it can still be the more actionable alert.
+    main = {"magnitude": 20, "main_event": True}
+    prelim = {"magnitude": 40, "main_event": False}
+    assert ws.alert_priority(main, 2) > ws.alert_priority(prelim, 2)
+
+
+def test_main_event_weighting_has_a_deliberate_ceiling():
+    # The weight is 2.5x, not infinite: a genuinely enormous undercard swing
+    # should still beat a small headliner twitch. Pinning the crossover keeps
+    # that a design decision rather than an accident of tuning.
+    main = {"magnitude": 10, "main_event": True}
+    assert ws.alert_priority(main, 2) < ws.alert_priority(
+        {"magnitude": 26, "main_event": False}, 2)
+    assert ws.alert_priority(main, 2) > ws.alert_priority(
+        {"magnitude": 24, "main_event": False}, 2)
+
+
+def test_imminent_cards_outrank_distant_ones():
+    soon = {"magnitude": 20, "main_event": False}
+    far = {"magnitude": 20, "main_event": False}
+    assert ws.alert_priority(soon, 1) > ws.alert_priority(far, 30)
+
+
+def test_imminence_weight_boundaries():
+    assert ws.imminence_weight(2) == 2.0
+    assert ws.imminence_weight(3) == 1.4
+    assert ws.imminence_weight(30) == 1.0
+    assert ws.imminence_weight(None) == 1.0
+    assert ws.imminence_weight(-1) == 1.0
+
+
+def test_magnitude_still_breaks_ties_within_a_tier():
+    big = {"magnitude": 50, "main_event": False}
+    small = {"magnitude": 10, "main_event": False}
+    assert ws.alert_priority(big, 5) > ws.alert_priority(small, 5)
+
+
+def test_movers_carry_probability_shifts():
+    opens = {("A", "B"): {"f1": "A", "f2": "B", "f1_odds": -110, "f2_odds": -110}}
+    fights = [{"f1": "A", "f2": "B", "f1_odds": -150, "f2_odds": 130}]
+    mover = ws.event_movers(fights, opens, threshold=10)[0]
+    assert mover["f1_prob_shift"] > 0     # A shortened → more likely to win
+    assert mover["f2_prob_shift"] < 0
