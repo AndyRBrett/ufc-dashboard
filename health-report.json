@@ -1,44 +1,36 @@
 {
-  "generated_at": "2026-08-13T21:11:34Z",
+  "generated_at": "2026-08-14T02:22:43Z",
   "summary": {
     "events": 11,
     "block": 0,
-    "warn": 6
+    "warn": 5
   },
   "findings": [
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC 330: Makhachev vs. Machado Garry (2d out): 1 of 12 bouts have no odds",
+      "message": "UFC 330: Makhachev vs. Machado Garry (1d out): 1 of 12 bouts have no odds",
       "event": "UFC 330: Makhachev vs. Machado Garry",
       "date": "2026-08-15",
-      "days_out": 2
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-missing-all",
-      "message": "UFC Fight Night: Hernandez vs. Rodrigues (9d out) has no odds on any of its 8 bouts",
-      "event": "UFC Fight Night: Hernandez vs. Rodrigues",
-      "date": "2026-08-22",
-      "days_out": 9
+      "days_out": 1
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC 330: Makhachev vs. Machado Garry (2d out): Eduardo Henrique has no record",
+      "message": "UFC 330: Makhachev vs. Machado Garry (1d out): Eduardo Henrique has no record",
       "fighter": "Eduardo Henrique",
       "event": "UFC 330: Makhachev vs. Machado Garry",
       "date": "2026-08-15",
-      "days_out": 2
+      "days_out": 1
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC 330: Makhachev vs. Machado Garry (2d out): Eduardo Henrique stats lookup failed (2026-08-13)",
+      "message": "UFC 330: Makhachev vs. Machado Garry (1d out): Eduardo Henrique stats lookup failed (2026-08-14)",
       "fighter": "Eduardo Henrique",
       "event": "UFC 330: Makhachev vs. Machado Garry",
       "date": "2026-08-15",
-      "days_out": 2
+      "days_out": 1
     },
     {
       "severity": "WARN",
