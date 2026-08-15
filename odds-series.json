@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-15T10:07:52Z",
+  "generated_at": "2026-08-15T10:12:49Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -5020,12 +5020,17 @@
         {
           "f1": "Reinier de Ridder",
           "f2": "Roman Dolidze",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-08-15T00:37:32Z",
               "f1_odds": 270,
               "f2_odds": -340
+            },
+            {
+              "at": "2026-08-15T10:12:49Z",
+              "f1_odds": -340,
+              "f2_odds": 270
             }
           ],
           "open": {
@@ -5100,6 +5105,25 @@
             "at": "2026-07-14T10:55:21Z",
             "f1_odds": -423,
             "f2_odds": 323
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Yan Xiaonan",
+          "f2": "Denise Gomes",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-15T10:12:49Z",
+              "f1_odds": -450,
+              "f2_odds": 350
+            }
+          ],
+          "open": {
+            "at": "2026-08-15T10:12:49Z",
+            "f1_odds": -450,
+            "f2_odds": 350
           },
           "close": null,
           "clv": null
@@ -7557,7 +7581,7 @@
         "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
         "opponent": "Roman Dolidze",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 270,
         "close": null,
         "clv": null
@@ -7568,7 +7592,7 @@
         "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
         "opponent": "Reinier de Ridder",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -340,
         "close": null,
         "clv": null
@@ -7623,6 +7647,28 @@
         "side": "f1",
         "points": 1,
         "open": -423,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Yan Xiaonan": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Denise Gomes",
+        "side": "f1",
+        "points": 1,
+        "open": -450,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Denise Gomes": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Yan Xiaonan",
+        "side": "f2",
+        "points": 1,
+        "open": 350,
         "close": null,
         "clv": null
       }

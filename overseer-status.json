@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-15T10:07:52Z",
+  "generated_at": "2026-08-15T10:12:49Z",
   "events_tracked": 11,
-  "stale_events": 1,
+  "stale_events": 0,
   "parse_failure_events": 0,
   "awaiting_card_events": 5,
   "odds_unavailable_events": 0,
@@ -21,7 +21,7 @@
     {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-guskov",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-15T10:07:52Z",
+      "last_changed_at": "2026-08-15T10:12:49Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -57,7 +57,7 @@
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "status": "ok",
-      "last_changed_at": "2026-08-15T00:37:32Z",
+      "last_changed_at": "2026-08-15T10:12:49Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 8,
@@ -66,8 +66,8 @@
     {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
       "status": "ok",
-      "last_changed_at": "2026-08-01T00:07:29Z",
-      "is_stale": true,
+      "last_changed_at": "2026-08-15T10:12:49Z",
+      "is_stale": false,
       "has_data": true,
       "bout_count": 9,
       "line_movement": -57
@@ -75,7 +75,7 @@
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-15T10:07:52Z",
+      "last_changed_at": "2026-08-15T10:12:49Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -84,7 +84,7 @@
     {
       "event_id": "2026-09-12:ufc-fight-night-rodriguez-vs-silva",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-15T10:07:52Z",
+      "last_changed_at": "2026-08-15T10:12:49Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 10,
@@ -93,7 +93,7 @@
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-15T10:07:52Z",
+      "last_changed_at": "2026-08-15T10:12:49Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -102,7 +102,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-15T10:07:52Z",
+      "last_changed_at": "2026-08-15T10:12:49Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 8,
@@ -110,6 +110,18 @@
     }
   ],
   "alerts": [
+    {
+      "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
+      "f1": "Reinier de Ridder",
+      "f2": "Roman Dolidze",
+      "f1_movement": -610,
+      "f2_movement": 610,
+      "magnitude": 610,
+      "main_event": false,
+      "f1_prob_shift": 50.2,
+      "f2_prob_shift": -50.2,
+      "priority": 854.0
+    },
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
       "f1": "Jeremiah Wells",
