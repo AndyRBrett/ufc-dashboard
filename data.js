@@ -139,7 +139,7 @@ var EVENTS=[
     fights:[
       {lbl:"Main Event",wc:"Middleweight",title:false,rematch:false,odds:{f1:-155,f2:130},winner:"",method:"",round:null,state:"pre",f1:{n:"Anthony Hernandez",r:"15-3-0",rk:"",s:null},f2:{n:"Gregory Rodrigues",r:"19-6-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Heavyweight",title:false,rematch:false,odds:{f1:135,f2:-160},winner:"",method:"",round:null,state:"pre",f1:{n:"Serghei Spivac",r:"18-6-0",rk:"",s:null},f2:{n:"Vitor Petrino",r:"14-2-0",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Light Heavyweight",title:false,rematch:false,odds:{f1:270,f2:-340},winner:"",method:"",round:null,state:"pre",f1:{n:"Reinier de Ridder",r:"21-4-0",rk:"",s:null},f2:{n:"Roman Dolidze",r:"15-5-0",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Light Heavyweight",title:false,rematch:false,odds:{f1:-340,f2:270},winner:"",method:"",round:null,state:"pre",f1:{n:"Reinier de Ridder",r:"21-4-0",rk:"",s:null},f2:{n:"Roman Dolidze",r:"15-5-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Women's Flyweight",title:false,rematch:false,odds:{f1:-450,f2:350},winner:"",method:"",round:null,state:"pre",f1:{n:"Carli Judice",r:"6-2-0",rk:"",s:null},f2:{n:"Jeisla Chaves",r:"8-0-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Heavyweight",title:false,rematch:false,odds:{f1:105,f2:-125},winner:"",method:"",round:null,state:"pre",f1:{n:"Kennedy Nzechukwu",r:"14-6-1",rk:"",s:null},f2:{n:"Shamil Gaziev",r:"14-3-0",rk:"",s:null}},
       {lbl:"Prelim",wc:"Middleweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Wesley Schultz",r:"9-3-0",rk:"",s:null},f2:{n:"Jackson McVey",r:"7-2-0",rk:"",s:null}},
@@ -158,7 +158,7 @@ var EVENTS=[
     prelimTime:"00:00",
     fights:[
       {lbl:"Main Event",wc:"Bantamweight",title:false,rematch:false,odds:{f1:-480,f2:353},winner:"",method:"",round:null,state:"pre",f1:{n:"Umar Nurmagomedov",r:"20-1-0",rk:"",s:null},f2:{n:"Song Yadong",r:"23-9-1",rk:"",s:null}},
-      {lbl:"Co-Main",wc:"Women's Strawweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Yan Xiaonan",r:"19-5-0",rk:"",s:null},f2:{n:"Denise Gomes",r:"12-3-0",rk:"",s:null}},
+      {lbl:"Co-Main",wc:"Women's Strawweight",title:false,rematch:false,odds:{f1:-450,f2:350},winner:"",method:"",round:null,state:"pre",f1:{n:"Yan Xiaonan",r:"19-5-0",rk:"",s:null},f2:{n:"Denise Gomes",r:"12-3-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Bantamweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Aori Qileng",r:"26-12-0",rk:"",s:null},f2:{n:"Kai Asakura",r:"22-6-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Flyweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Su Mudaerji",r:"19-7-0",rk:"",s:null},f2:{n:"Alex Perez",r:"26-10-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Light Heavyweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Liu Ce",r:"3-1-0",rk:"",s:null},f2:{n:"Junior Tafa",r:"7-6-0",rk:"",s:null}},
