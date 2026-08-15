@@ -1,11 +1,19 @@
 {
-  "generated_at": "2026-08-15T23:53:21Z",
+  "generated_at": "2026-08-15T23:58:04Z",
   "summary": {
     "events": 11,
     "block": 0,
-    "warn": 6
+    "warn": 7
   },
   "findings": [
+    {
+      "severity": "WARN",
+      "check": "odds-missing-some",
+      "message": "UFC 330: Makhachev vs. Machado Garry (0d out): 1 of 12 bouts have no odds",
+      "event": "UFC 330: Makhachev vs. Machado Garry",
+      "date": "2026-08-15",
+      "days_out": 0
+    },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
