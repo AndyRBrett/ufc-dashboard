@@ -96,6 +96,32 @@ MIN_BOUTS = 1
 # broken). Tunable without a code change. Fixes #14's core conflation.
 ODDS_EXPECTED_WITHIN_DAYS = int(os.environ.get("ODDS_EXPECTED_WITHIN_DAYS", "14"))
 
+# ...but "we expected lines and got none" is only a failure when a fetch could
+# actually have delivered them. When the Odds API budget is spent there was no
+# request to parse, so an unpriced card is the *known consequence* of a condition
+# update.yml has already decided is a warning, not a break — and calling it a
+# parse failure re-fails the run through the back door for the same root cause.
+# That is exactly what happened on 2026-08-14: the quota hit zero, the newly
+# announced 08-22 card could never be priced, and every run went red every 5
+# minutes on a condition that self-heals at the monthly reset.
+ODDS_STATE_PATH = Path(__file__).with_name("odds-state.json")
+
+
+def odds_budget_exhausted(path=ODDS_STATE_PATH):
+    """True when the last Odds API call failed *because the budget is spent*.
+
+    The Odds API answers 401 for both a rejected key and an exhausted quota;
+    x-requests-remaining tells them apart (0 = we spent it). A rejected key never
+    self-heals and must keep failing the run, so only the quota case is excused
+    here. Missing or unreadable state is treated as "not exhausted" — the
+    conservative reading, which keeps genuine parse failures loud.
+    """
+    try:
+        state = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return state.get("last_status") in (401, 403) and state.get("requests_remaining") == 0
+
 # A single serialised fight: odds literal followed by both fighters' names.
 # Matches scrape.fight_js output, which emits each fight on one line.
 FIGHT_RE = re.compile(
@@ -164,22 +190,27 @@ def has_data(fights):
     return len(fights) >= MIN_BOUTS
 
 
-def classify_event(ev, ev_hist, today):
-    """Disambiguate an event's extraction state into one of three statuses (#14).
+def classify_event(ev, ev_hist, today, budget_exhausted=False):
+    """Disambiguate an event's extraction state into one of four statuses (#14).
 
-    - "ok":            at least one odds-bearing bout parsed — a real extraction.
-    - "parse-failure": we expected lines and got none. Either the odds were
-                       present in this event's snapshot history and have since
-                       vanished (a regression), or the event is close enough that
-                       books should already be pricing it (within
-                       ODDS_EXPECTED_WITHIN_DAYS).
-    - "awaiting-card": no odds yet, but legitimately so — an upcoming event still
-                       far enough out that sportsbooks haven't posted lines, or a
-                       past event that simply never carried odds. Not actionable,
-                       so it must NOT pollute the error list.
+    - "ok":               at least one odds-bearing bout parsed — a real extraction.
+    - "parse-failure":    we expected lines and got none. Either the odds were
+                          present in this event's snapshot history and have since
+                          vanished (a regression), or the event is close enough
+                          that books should already be pricing it (within
+                          ODDS_EXPECTED_WITHIN_DAYS).
+    - "odds-unavailable": we expected lines and got none, but the Odds API budget
+                          was spent so no call was made to produce them. Nothing
+                          is broken on our side and it self-heals at the quota
+                          reset, so it warns without failing the run.
+    - "awaiting-card":    no odds yet, but legitimately so — an upcoming event
+                          still far enough out that sportsbooks haven't posted
+                          lines, or a past event that simply never carried odds.
+                          Not actionable, so it must NOT pollute the error list.
 
     `today` is a YYYY-MM-DD string; `ev_hist` is this event's snapshot history as
-    returned by load_snapshot_history (a list of (at, fights)).
+    returned by load_snapshot_history (a list of (at, fights)); `budget_exhausted`
+    is odds_budget_exhausted() hoisted out so the classification stays pure.
     """
     if has_data(ev["fights"]):
         return "ok"
@@ -200,9 +231,11 @@ def classify_event(ev, ev_hist, today):
         return "awaiting-card"
 
     # Imminent and still unpriced ⇒ lines were expected by now. An announced card
-    # (fighters but no odds) makes this an unambiguous odds parse failure.
+    # (fighters but no odds) makes this an unambiguous odds parse failure —
+    # unless we never had the budget to ask, in which case it is the expected,
+    # self-healing consequence of the exhausted quota rather than a break.
     if days_out <= ODDS_EXPECTED_WITHIN_DAYS:
-        return "parse-failure"
+        return "odds-unavailable" if budget_exhausted else "parse-failure"
 
     return "awaiting-card"
 
@@ -521,6 +554,11 @@ def main():
 
     history = load_snapshot_history()
 
+    # Read once per run, not per event: every event is judged against the same
+    # budget state, and re-reading it mid-loop would let a concurrent write split
+    # one run's classification across two different answers.
+    budget_dead = odds_budget_exhausted()
+
     out_events   = []
     stale_events = 0
     alerts       = []
@@ -528,7 +566,7 @@ def main():
         fp       = fingerprint(ev["fights"])
         data_ok  = has_data(ev["fights"]) and fp != EMPTY_SHA
         ev_hist  = history.get(ev["event_id"], [])
-        status_  = classify_event(ev, ev_hist, today)
+        status_  = classify_event(ev, ev_hist, today, budget_dead)
         changed  = last_changed_at(ev_hist, ev["fights"], now_iso)
 
         try:
@@ -576,6 +614,7 @@ def main():
     # the error/status list, which is exactly the false-error #14 was filing.
     failure_ids  = [e["event_id"] for e in out_events if e["status"] == "parse-failure"]
     awaiting_ids = [e["event_id"] for e in out_events if e["status"] == "awaiting-card"]
+    unpriced_ids = [e["event_id"] for e in out_events if e["status"] == "odds-unavailable"]
     errors.extend(failure_errors(out_events))
 
     # Most ACTIONABLE steam first, not merely the loudest (#52). Raw magnitude
@@ -599,6 +638,10 @@ def main():
         "stale_events":             stale_events,
         "parse_failure_events":     len(failure_ids),
         "awaiting_card_events":     len(awaiting_ids),
+        # Counted separately from parse failures so the run signal stays clean
+        # while the gap is still visible to the overseer and the health issue.
+        "odds_unavailable_events":  len(unpriced_ids),
+        "odds_budget_exhausted":    budget_dead,
         "stale_threshold_hours":    STALE_THRESHOLD_HOURS,
         "movement_alert_threshold": MOVEMENT_ALERT_THRESHOLD,
         "events":                   out_events,

@@ -136,6 +136,15 @@ jobs:
               jq -r '.errors[]? | "  - " + .' overseer-status.json
               fail=1
             fi
+
+            # Cards that could not be priced because the odds budget was spent.
+            # Not a failure — it is the same self-healing condition the quota
+            # check below warns about, and failing here would re-fail the run
+            # through the back door for a root cause we already excused.
+            u=$(jq '.odds_unavailable_events // 0' overseer-status.json)
+            if [ "$u" -gt 0 ]; then
+              echo "::warning::$u upcoming card(s) unpriced because the Odds API budget is spent — expected while the quota is exhausted, not a parse failure."
+            fi
           fi
 
           # The Odds API answers 401 for BOTH a bad key and an exhausted quota,
@@ -164,9 +173,24 @@ jobs:
   # GITHUB_TOKEN pushes never trigger `on: push` workflows, so the Pages deploy
   # must be chained here explicitly. Only runs when a commit was actually pushed
   # (mirrors the old branch-based Pages build, which only ran on real pushes).
+  #
+  # always() is load-bearing: without it, `needs: update` silently skips this job
+  # whenever the update job fails for ANY reason — including the report-only step
+  # that runs AFTER the push and was written on the assumption that being last
+  # made it harmless. It wasn't. Between 2026-08-14 02:23 and 2026-08-15 00:30 the
+  # parse-failure gate turned every run red, every deploy was skipped, and the live
+  # site sat 22 hours stale — through UFC 330 fight night — while data.js commits
+  # kept landing in the repo every 5 minutes. The repo looked healthy; the site
+  # everyone was watching was frozen.
+  #
+  # Gating on `pushed` rather than on the job's colour is the honest condition: a
+  # commit exists, so it belongs on the site. Nothing broken can slip through — the
+  # publish gate (health.py --gate) still runs BEFORE the commit, so a structurally
+  # broken build never produces a push, and pages.yml re-runs the static checks and
+  # the boot smoke test in its own validate job before anything deploys.
   deploy:
     needs: update
-    if: needs.update.outputs.pushed == 'true'
+    if: always() && needs.update.outputs.pushed == 'true'
     permissions:
       contents: read
       pages: write
