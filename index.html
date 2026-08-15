@@ -4333,9 +4333,15 @@ var _trashGenerating=false;
 function _trashPairKey(p){return [p.f1,p.f2].sort().join("|");}
 function _trashRecord(u){
   var resolved=(u.picks||[]).filter(function(p){return p.result!==null;}).length;
+  // Nothing decided yet → say exactly that. This used to fall back to the total
+  // pick count ("0 of "+u.total+" right"), so on a card that had not started the
+  // model was handed "0 of 5 right" for everyone and duly roasted the whole
+  // board for going 0-for-5 on fights nobody had fought. A pending pick is not
+  // a wrong pick, and the roast must never imply otherwise.
+  if(!resolved)return (u.total||0)+" pick"+((u.total||0)===1?"":"s")+" in, nothing settled yet";
   // No percentages — they read like a spreadsheet, not a roast. Raw counts,
   // streaks and blown picks land harder.
-  return (u.correct||0)+" of "+(resolved||u.total||0)+" right"
+  return (u.correct||0)+" of "+resolved+" right"
     +(u.currentStreak>0?", on a "+u.currentStreak+"-pick heater":(resolved>0&&!u.currentStreak?", stone cold":""))
     +(u.methods?", "+u.methods+" method bonus"+(u.methods>1?"es":""):"")
     +(u.dogPts?", +"+u.dogPts+" from underdog picks":"");
@@ -4368,7 +4374,16 @@ function _trashFacts(me,opponents){
     if(!whiffs.length&&!beat.length)b+="\n  (no blown picks to mock — lean on attitude, do NOT invent picks or stats)";
     return b;
   });
-  return blocks.join("\n")||"(no real competition to speak of)";
+  var out=blocks.join("\n")||"(no real competition to speak of)";
+  // Belt and braces: when not one pick on the board has resolved, the card is
+  // still to come. Say so up front so the roast runs on attitude instead of
+  // inventing an outcome for fights that have not happened.
+  var anyResolved=[me].concat(opponents).some(function(u){
+    return (u.picks||[]).some(function(p){return p.result!==null;});
+  });
+  if(!anyResolved)out="NOTHING HAS BEEN FOUGHT YET"+(_trashLbEvName?" — "+_trashLbEvName+" has not started":"")
+    +". Nobody is right or wrong yet, nobody has a record. Do NOT say anyone got picks wrong, missed, whiffed, or went 0-for-anything. Roast the picks themselves or the person, not results.\n"+out;
+  return out;
 }
 function generateTrashTalk(){
   if(_trashGenerating)return;
