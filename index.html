@@ -734,6 +734,7 @@ body[data-theme="toonami"] .logo-tom{display:block;animation:eagleBreathe 3.6s e
 .past-pr-bdg.pend{background:var(--card2);color:var(--muted);border:1px solid var(--border)}
 .odds-mv{font-size:9px;font-weight:700;margin-left:3px;vertical-align:middle}
 .odds-mv-up{color:var(--green)}.odds-mv-dn{color:var(--loss)}
+.odds-dog{font-size:9px;font-weight:700;margin-left:4px;padding:1px 4px;border-radius:4px;vertical-align:middle;color:var(--gold);border:1px solid var(--gold);opacity:.85}
 @keyframes muPickConfirm{0%{background:var(--red-dim)}100%{background:transparent}}
 .mu.pick-flash{animation:muPickConfirm .4s ease-out;border-radius:8px}
 .mu-swipe-badge{position:absolute;top:50%;transform:translateY(-50%);background:var(--red);color:var(--on-accent);font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:10;letter-spacing:.04em;white-space:nowrap}
@@ -1189,9 +1190,30 @@ try{userName=localStorage.getItem("ufc_name")||"";preds=JSON.parse(localStorage.
 if(userName==="undefined"||userName==="null"){userName="";try{localStorage.removeItem("ufc_name");}catch(e){}}
 var preds_method={},preds_conf={},preds_fotn={};
 try{preds_method=JSON.parse(localStorage.getItem("ufc_method")||"{}");preds_conf=JSON.parse(localStorage.getItem("ufc_conf")||"{}");preds_fotn=JSON.parse(localStorage.getItem("ufc_fotn")||"{}");}catch(e){}
+// Opening-line baseline for the ▲/▼ odds-movement arrows. This is the line as
+// FIRST seen for each bout, and it is never rewritten while the bout is still on
+// the card — so an arrow shows total movement since the line opened and survives
+// closing and reopening the app. (It used to be overwritten with the current
+// odds on every single load, which made the baseline equal the value it was
+// compared against: the arrows vanished the moment the app was reopened.)
 var prevOdds={};
 try{prevOdds=JSON.parse(localStorage.getItem("ufc_prev_odds")||"{}");}catch(e){}
-(function(){var co={};EVENTS.forEach(function(ev){ev.fights.forEach(function(f){if(!f.odds)return;co[ev.date+"|"+f.f1.n+"|"+f.f2.n]={f1:f.odds.f1,f2:f.odds.f2};});});try{localStorage.setItem("ufc_prev_odds",JSON.stringify(co));}catch(e){}})();
+(function(){
+  var base={};
+  EVENTS.forEach(function(ev){ev.fights.forEach(function(f){
+    if(!f.odds)return;
+    var k=ev.date+"|"+f.f1.n+"|"+f.f2.n;
+    var seen=prevOdds[k];
+    // Seed on first sight only; keep whatever was already recorded thereafter.
+    base[k]=(seen&&typeof seen.f1==="number"&&typeof seen.f2==="number")
+      ? seen
+      : {f1:f.odds.f1,f2:f.odds.f2};
+  });});
+  // Rebuilding from EVENTS also prunes cards that have aged out, so the store
+  // can't grow without bound.
+  prevOdds=base;
+  try{localStorage.setItem("ufc_prev_odds",JSON.stringify(base));}catch(e){}
+})();
 var _aiCache={};
 try{var _aiRaw=sessionStorage.getItem("ufc_ai_cache");if(_aiRaw)_aiCache=JSON.parse(_aiRaw);}catch(e){}
 var _aiFetching={};
@@ -2616,7 +2638,7 @@ function fnRenderStandings(){
   if(meIdx>=5)show.push(list[meIdx]);
   show.forEach(function(u){
     var rank=list.indexOf(u)+1;
-    var pts=u.correct+u.methods*0.5+u.fotn;
+    var pts=userPts(u);
     var row=document.createElement("div");row.className="fnl-stand-row"+(u.isMe?" me":"");
     var prev=_fnStandSnapshot[u.user_id||u.nickname];
     // Build with textContent — nickname is user-controlled and must never be parsed as HTML
@@ -2655,14 +2677,15 @@ function fnRenderSplit(f){
   }
 }
 // "On the line": project your standings rank for each outcome of THIS fight. When it
-// resolves, everyone who backed the winner gets +1, so your rank shift depends on the room.
+// resolves, everyone who backed the winner gets 1 pt plus that side's underdog bonus,
+// so your rank shift depends on the room — and on which corner is the dog.
 function fnRenderStakes(f){
   var el=document.getElementById("fnl-stakes");if(!el)return;el.innerHTML="";el.style.display="none";
   if(!fnEv||f.winner)return;                       // resolved → the result line says it all
   var myPick=preds[pk(fnEv,f)];if(!myPick)return;  // only meaningful when you've got a horse
   var list=_lbSorted||[];if(!list.length)return;
   var base={},meId=null;
-  list.forEach(function(u){base[_fnUid(u)]=u.correct+u.methods*0.5+u.fotn;if(u.isMe)meId=_fnUid(u);});
+  list.forEach(function(u){base[_fnUid(u)]=userPts(u);if(u.isMe)meId=_fnUid(u);});
   if(meId==null)return;
   var b=_fnPicksByFight[pk(fnEv,f)]||{f1:[],f2:[]},picked={f1:{},f2:{}};
   (b.f1||[]).forEach(function(u){picked.f1[_fnUid(u)]=1;});
@@ -2672,11 +2695,12 @@ function fnRenderStakes(f){
   var hdr=document.createElement("div");hdr.className="fnl-stakes-hdr";hdr.textContent="On the line · you're "+_fnOrd(curRank)+" now";el.appendChild(hdr);
   [["f1",f.f1.n],["f2",f.f2.n]].forEach(function(spec){
     var side=spec[0],proj={};
-    list.forEach(function(u){var id=_fnUid(u);proj[id]=base[id]+(picked[side][id]?1:0);});
+    var win=1+dogPtsForPick(f.odds,f.f1.n,f.f2.n,spec[1]);   // 1 pt + the dog bonus for that corner
+    list.forEach(function(u){var id=_fnUid(u);proj[id]=base[id]+(picked[side][id]?win:0);});
     var pr=_fnRankIn(list,proj,meId),d=curRank-pr;  // +ve = you climb
     var row=document.createElement("div");row.className="fnl-stake-row"+(side===mySide?" mine":"");
     var out=document.createElement("span");out.className="fnl-stake-out";out.textContent=_fnNameShort(spec[1])+" wins";
-    var gain=document.createElement("span");gain.className="fnl-stake-gain"+(side===mySide?" up":"");gain.textContent=side===mySide?"+1":"—";
+    var gain=document.createElement("span");gain.className="fnl-stake-gain"+(side===mySide?" up":"");gain.textContent=side===mySide?("+"+win):"—";
     var rank=document.createElement("span");rank.className="fnl-stake-rank";
     var rk=document.createElement("span");rk.textContent=_fnOrd(pr);rank.appendChild(rk);
     if(d!==0){var dd=document.createElement("span");dd.className="fnl-stake-d "+(d>0?"up":"down");dd.textContent=(d>0?"▲":"▼")+Math.abs(d);rank.appendChild(dd);}
@@ -2761,12 +2785,14 @@ function fnPtBadge(text,miss){
   b.addEventListener("animationend",function(){b.remove();});
 }
 function fnRevealResult(f){
-  // Was my pick right? Award-points badge, reusing scoreMethod for the method bonus.
+  // Was my pick right? Award-points badge, reusing scoreMethod for the method bonus
+  // and dogPtsForPick for the underdog bonus, so the float matches the standings.
   var myPick=fnEv?preds[pk(fnEv,f)]:"";
   if(!myPick)return;
   if(myPick===f.winner){
     var bonus=scoreMethod(preds_method[pk(fnEv,f)]||"",f.method||"");
-    fnPtBadge(bonus?"+1.5":"+1",false);
+    var won=1+(bonus?0.5:0)+dogPtsForPick(f.odds,f.f1.n,f.f2.n,myPick);
+    fnPtBadge("+"+won,false);
   }else{
     fnPtBadge("MISS",true);
   }
@@ -3295,8 +3321,16 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
     var ov2=document.createElement("div");ov2.className="odds-val "+(pickem?"":fav1?"dog":"fav");ov2.textContent=fmtOdds(fight.odds.f2);
     s2.appendChild(on2);s2.appendChild(ov2);or.appendChild(s2);
     var ok=EVENTS[ei]?EVENTS[ei].date+"|"+fight.f1.n+"|"+fight.f2.n:"";var po=ok?prevOdds[ok]:null;
-    if(po&&po.f1!==fight.odds.f1){var mv1=document.createElement("span");mv1.className="odds-mv "+(fight.odds.f1<po.f1?"odds-mv-up":"odds-mv-dn");mv1.title="Was "+(po.f1>0?"+":"")+po.f1;mv1.textContent=fight.odds.f1<po.f1?"▲":"▼";ov1.appendChild(mv1);}
-    if(po&&po.f2!==fight.odds.f2){var mv2=document.createElement("span");mv2.className="odds-mv "+(fight.odds.f2<po.f2?"odds-mv-up":"odds-mv-dn");mv2.title="Was "+(po.f2>0?"+":"")+po.f2;mv2.textContent=fight.odds.f2<po.f2?"▲":"▼";ov2.appendChild(mv2);}
+    // ▲ = the line shortened (money came in on that fighter), ▼ = it drifted out.
+    // Measured against the opening line, so the arrow persists for the whole
+    // week the card is up rather than only until the app is closed.
+    if(po&&po.f1!==fight.odds.f1){var mv1=document.createElement("span");mv1.className="odds-mv "+(fight.odds.f1<po.f1?"odds-mv-up":"odds-mv-dn");mv1.title="Opened "+fmtOdds(po.f1)+" → now "+fmtOdds(fight.odds.f1);mv1.textContent=fight.odds.f1<po.f1?"▲":"▼";ov1.appendChild(mv1);}
+    if(po&&po.f2!==fight.odds.f2){var mv2=document.createElement("span");mv2.className="odds-mv "+(fight.odds.f2<po.f2?"odds-mv-up":"odds-mv-dn");mv2.title="Opened "+fmtOdds(po.f2)+" → now "+fmtOdds(fight.odds.f2);mv2.textContent=fight.odds.f2<po.f2?"▲":"▼";ov2.appendChild(mv2);}
+    // Show what a correct call on this dog is worth, so the bonus is visible while
+    // you're picking rather than a surprise on the leaderboard afterwards.
+    var db1=dogPtsFor(fight.odds.f1),db2=dogPtsFor(fight.odds.f2);
+    if(db1){var dg1=document.createElement("span");dg1.className="odds-dog";dg1.title="Underdog bonus if "+fight.f1.n.split(" ").pop()+" wins";dg1.textContent="+"+db1;ov1.appendChild(dg1);}
+    if(db2){var dg2=document.createElement("span");dg2.className="odds-dog";dg2.title="Underdog bonus if "+fight.f2.n.split(" ").pop()+" wins";dg2.textContent="+"+db2;ov2.appendChild(dg2);}
     row.appendChild(or);
   }
   if(fight.winner||fight.state==="in"||fight.state==="post"){
@@ -4211,7 +4245,7 @@ function openTrashTalk(){
   if(!_lbSorted||!_lbSorted.length){toast("Load the leaderboard first!");return;}
   var me=null,myRank=0,opponents=[];
   _lbSorted.forEach(function(u,i){
-    var pts=u.correct+u.methods*0.5+u.fotn;
+    var pts=userPts(u);
     if(u.isMe){me=u;myRank=i+1;}
     else{opponents.push({nickname:u.nickname,user_id:u.user_id,rank:i+1,points:pts,accuracy:u.accuracy,streak:u.currentStreak,currentStreak:u.currentStreak,correct:u.correct,total:u.total,methods:u.methods,fotn:u.fotn,picks:u.picks||[]});}
   });
@@ -4303,7 +4337,8 @@ function _trashRecord(u){
   // streaks and blown picks land harder.
   return (u.correct||0)+" of "+(resolved||u.total||0)+" right"
     +(u.currentStreak>0?", on a "+u.currentStreak+"-pick heater":(resolved>0&&!u.currentStreak?", stone cold":""))
-    +(u.methods?", "+u.methods+" method bonus"+(u.methods>1?"es":""):"");
+    +(u.methods?", "+u.methods+" method bonus"+(u.methods>1?"es":""):"")
+    +(u.dogPts?", +"+u.dogPts+" from underdog picks":"");
 }
 function _trashFacts(me,opponents){
   var myByFight={};
@@ -4387,6 +4422,39 @@ function generateTrashTalk(){
   });
 }
 
+// ── Underdog bonus ─────────────────────────────────────────────────────────
+// Backing a live dog and being right is worth more than riding a -400 favourite,
+// so a correct pick earns extra on top of its 1 pt based on the moneyline the
+// PICKED fighter was carrying.
+//
+// Why +150 is the floor: American odds are quoted with the book's vig baked in,
+// so in a genuine 50/50 UFC bout one corner routinely shows +100…+130 with
+// nothing behind it but the juice. +150 is ~40% implied — the first rung where
+// the market is actually calling someone the lesser fighter rather than the
+// scoreboard rounding. +250 (~29% implied) is the second rung: a real upset.
+// A correct +250 dog therefore pays 2 pts — exactly double a favourite — which
+// caps the swing so one lucky longshot can't run away with the card.
+var DOG_TIERS=[{min:250,pts:1},{min:150,pts:0.5}];
+// Underdog points for one moneyline. Favourites (negative odds) and short dogs
+// under the first tier earn nothing extra.
+function dogPtsFor(odds){
+  if(typeof odds!=="number"||!isFinite(odds)||odds<=0)return 0;
+  for(var i=0;i<DOG_TIERS.length;i++){if(odds>=DOG_TIERS[i].min)return DOG_TIERS[i].pts;}
+  return 0;
+}
+// Underdog points a correct pick of `pickName` earns on this bout. `odds` is the
+// {f1,f2} line and `f1n`/`f2n` the two fighters, in that order. A bout with no
+// stored line (odds:null — the API had nothing for it) simply scores no bonus.
+function dogPtsForPick(odds,f1n,f2n,pickName){
+  if(!odds||!pickName)return 0;
+  if(pickName===f1n)return dogPtsFor(odds.f1);
+  if(pickName===f2n)return dogPtsFor(odds.f2);
+  return 0;
+}
+// Total points for a leaderboard user row — the one formula every board, badge
+// and projection reads, so they can't drift apart.
+function userPts(u){return u.correct+u.methods*0.5+u.fotn+(u.dogPts||0);}
+
 function scoreMethod(userMethod, fightMethod){
   if(!userMethod||!fightMethod)return false;
   var fm=fightMethod.toUpperCase();
@@ -4454,7 +4522,10 @@ function _findFightResult(date,f1,f2){
     for(var j=0;j<EVENTS[i].fights.length;j++){
       var f=EVENTS[i].fights[j];
       if((f.f1.n===f1&&f.f2.n===f2)||(f.f1.n===f2&&f.f2.n===f1))
-        return f.winner?{winner:f.winner,method:f.method||""}:null;
+        // odds/f1n/f2n ride along so callers can price the underdog bonus without
+        // re-finding the bout. The archive branch below has no line on record for
+        // cards that aged out of EVENTS, so those simply score no bonus.
+        return f.winner?{winner:f.winner,method:f.method||"",odds:f.odds||null,f1n:f.f1.n,f2n:f.f2.n}:null;
     }
   }
   var a=RESULTS_ARCHIVE[date];
@@ -4498,7 +4569,7 @@ function computeBeltLineage(rows){
     var d=evScores[p.event_date]||(evScores[p.event_date]={});
     var u=d[base]||(d[base]={name:p.nickname,pts:0,correct:0,total:0});
     u.total++;
-    if(res.winner===p.pick){u.correct++;u.pts+=1+(scoreMethod(p.method||"",res.method||"")?0.5:0);}
+    if(res.winner===p.pick){u.correct++;u.pts+=1+(scoreMethod(p.method||"",res.method||"")?0.5:0)+dogPtsForPick(res.odds,res.f1n,res.f2n,p.pick);}
   });
   // Finished events, oldest first
   var evNames={},dates=[];
@@ -4645,7 +4716,7 @@ function loadLeaderboard(isLive){
       // appearing on it with a zero.
       if(!_pickInScope(p))return;
       var uid=p.user_id||p.nickname||"unknown";
-      if(!users[uid])users[uid]={nickname:p.nickname||"",user_id:p.user_id||null,correct:0,total:0,methods:0,fotn:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
+      if(!users[uid])users[uid]={nickname:p.nickname||"",user_id:p.user_id||null,correct:0,total:0,methods:0,fotn:0,dogPts:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
       // Rows are newest-first, but the freshest row can carry a blank nickname (a
       // pick synced before the name was set), which would render an empty row.
       // Backfill from any row of the same user that does have a name.
@@ -4663,15 +4734,19 @@ function loadLeaderboard(isLive){
       var result=null;
       var methodCorrect=false;
       var pickedMethod=p.method||"";
+      // The underdog bonus this pick is worth if it lands, computed from the line
+      // on the card (which is frozen at the closing line once the event is over,
+      // so every device replays the same score).
+      var dogPts=fight?dogPtsForPick(fight.odds,fight.f1.n,fight.f2.n,p.pick):0;
       users[uid].total++;
       if(fight&&fight.winner){
         if(fight.winner===p.pick){
-          users[uid].correct++;result=true;
+          users[uid].correct++;result=true;users[uid].dogPts+=dogPts;
           console.log("[lb score]",p.f1,"vs",p.f2,"→ winner match. p.method="+JSON.stringify(p.method)+" fallback="+JSON.stringify(pickedMethod)+" fight.method="+JSON.stringify(fight.method));
           if(scoreMethod(pickedMethod,fight.method||"")){users[uid].methods++;methodCorrect=true;}
         }else{result=false;}
       }
-      users[uid].picks.push({f1:p.f1,f2:p.f2,pick:p.pick,method:pickedMethod,result:result,methodCorrect:methodCorrect,evName:p.event_name,evDate:p.event_date});
+      users[uid].picks.push({f1:p.f1,f2:p.f2,pick:p.pick,method:pickedMethod,result:result,methodCorrect:methodCorrect,dogPts:dogPts,evName:p.event_name,evDate:p.event_date});
       if(p.bonus_pick)users[uid].bonusPicks[p.event_date]=p.bonus_pick;
     });
     // De-duplicate by name (keep higher pick count)
@@ -4711,7 +4786,7 @@ function loadLeaderboard(isLive){
       });
     });
     var sorted=Object.values(users).sort(function(a,b){
-      var pa=a.correct+a.methods*0.5+a.fotn,pb=b.correct+b.methods*0.5+b.fotn;
+      var pa=userPts(a),pb=userPts(b);
       if(pa!==pb)return pb-pa;                                  // 1) most points
       var aa=a.accuracy==null?-1:a.accuracy,ab=b.accuracy==null?-1:b.accuracy;
       if(aa!==ab)return ab-aa;                                  // 2) tiebreak: higher pick %
@@ -4795,13 +4870,13 @@ function loadLeaderboard(isLive){
     // so before any fights resolve — everyone on 0 pts — nobody gets a solo podium.
     var ranks=[],tieCount={};
     sorted.forEach(function(u,i){
-      var p=u.correct+u.methods*0.5+u.fotn;
-      var prev=i>0?(sorted[i-1].correct+sorted[i-1].methods*0.5+sorted[i-1].fotn):null;
+      var p=userPts(u);
+      var prev=i>0?userPts(sorted[i-1]):null;
       ranks[i]=(i>0&&p===prev)?ranks[i-1]:i+1;
       tieCount[ranks[i]]=(tieCount[ranks[i]]||0)+1;
     });
     sorted.forEach(function(u,i){
-      var pts=u.correct+u.methods*0.5+u.fotn;
+      var pts=userPts(u);
       var pending=u.picks.filter(function(p){return p.result===null;}).length;
       var hasNextPicks=nextMainFights.length>0;
       var wrap=document.createElement("div");wrap.style.cssText="margin-bottom:8px";
@@ -4838,7 +4913,7 @@ function loadLeaderboard(isLive){
       streakDiv.textContent=u.currentStreak>0?"🔥 "+u.currentStreak:"–";
       metaLine.appendChild(streakDiv);
       var det=document.createElement("div");det.className="lb-detail";
-      det.textContent=anyResolved?(u.correct+"/"+u.total+" correct"+(u.methods?" · +"+u.methods+" method":"")+(u.fotn?" · +"+u.fotn+" bonus":"")):pending+" pending";
+      det.textContent=anyResolved?(u.correct+"/"+u.total+" correct"+(u.methods?" · +"+u.methods+" method":"")+(u.dogPts?" · +"+u.dogPts+" dog":"")+(u.fotn?" · +"+u.fotn+" bonus":"")):pending+" pending";
       metaLine.appendChild(det);
       main.appendChild(metaLine);
       row.appendChild(main);
@@ -4936,7 +5011,7 @@ function loadLeaderboard(isLive){
           if(p.method){var mspan=document.createElement("span");mspan.style.cssText="font-size:10px;flex-shrink:0";mspan.style.color=p.result===true?(p.methodCorrect?"var(--green)":"var(--loss)"):p.result===false?"var(--loss)":"var(--muted)";mspan.textContent="via "+p.method;pr.appendChild(mspan);}
           var bdg=document.createElement("div");bdg.style.cssText="font-size:11px;font-weight:600;flex-shrink:0;min-width:36px;text-align:right";
           if(p.result===null){bdg.textContent="⏳";bdg.style.color="var(--muted)";}
-          else if(p.result===true){var pickPts=1+(p.methodCorrect?0.5:0);bdg.textContent="+"+pickPts+" pt"+(pickPts!==1?"s":"");bdg.style.color="var(--green)";}
+          else if(p.result===true){var pickPts=1+(p.methodCorrect?0.5:0)+(p.dogPts||0);bdg.textContent="+"+pickPts+" pt"+(pickPts!==1?"s":"");bdg.style.color="var(--green)";if(p.dogPts)bdg.title="Includes +"+p.dogPts+" underdog bonus";}
           else{bdg.textContent="0 pts";bdg.style.color="var(--muted);opacity:.5";}
           pr.appendChild(bdg);
           evPicksWrap.appendChild(pr);
@@ -5060,7 +5135,7 @@ function _userEventScore(base,evDate){
     var res=_findFightResult(p.event_date,p.f1,p.f2);
     if(!res)return;
     resolved++;
-    if(res.winner===p.pick)pts+=1+(scoreMethod(p.method||"",res.method||"")?0.5:0);
+    if(res.winner===p.pick)pts+=1+(scoreMethod(p.method||"",res.method||"")?0.5:0)+dogPtsForPick(res.odds,res.f1n,res.f2n,p.pick);
   });
   return{pts:pts,resolved:resolved};
 }
@@ -5076,7 +5151,7 @@ function resolveChallenge(c){
     if(!cp&&!tp)return{kind:"void",how:"neither picked"};
     if(!cp)return{kind:"decided",winner:c.target_name,loser:c.challenger_name,how:"forfeit — no pick"};
     if(!tp)return{kind:"decided",winner:c.challenger_name,loser:c.target_name,how:"forfeit — no pick"};
-    function pts(p){return res.winner===p.pick?1+(scoreMethod(p.method||"",res.method||"")?0.5:0):0;}
+    function pts(p){return res.winner===p.pick?1+(scoreMethod(p.method||"",res.method||"")?0.5:0)+dogPtsForPick(res.odds,res.f1n,res.f2n,p.pick):0;}
     var a=pts(cp),b=pts(tp);
     if(a===b)return{kind:"push"};
     return a>b?{kind:"decided",winner:c.challenger_name,loser:c.target_name}
@@ -5856,8 +5931,11 @@ document.addEventListener("DOMContentLoaded",function(){
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">How Points Work</div>
     <div class="lb-info-row"><span>Pick the winner</span><span class="lb-info-pts">1 pt</span></div>
     <div class="lb-info-row"><span>Correct finish method</span><span class="lb-info-pts">+0.5 pt</span></div>
+    <div class="lb-info-row"><span>Underdog +150 to +249</span><span class="lb-info-pts">+0.5 pt</span></div>
+    <div class="lb-info-row"><span>Underdog +250 or longer</span><span class="lb-info-pts">+1 pt</span></div>
     <div class="lb-info-row"><span>Bonus pick (POTN/FOTN)</span><span class="lb-info-pts">+1 pt</span></div>
     <div style="font-size:11px;color:var(--muted);margin-top:10px">Methods: KO/TKO · Submission · Decision</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:8px">Underdog bonuses only pay on a <b>correct</b> pick, and use the moneyline shown on the card (the closing line once the fight is done). Anything under +150 is priced as a coin flip, so it scores as a normal pick. A bout with no line on record pays no bonus.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">🏆 The Belt</div>
     <div style="font-size:11px;color:var(--muted)">Top scorer of each card takes the belt. The champ defends every event — skip a card and anyone who scores can steal it. A challenger has to <b>beat</b> the champ's score, not match it: a tie involving the champ is a successful defence.<br><br>If the champ is out of it and challengers finish level, the belt goes to the highest <b>career accuracy</b> (the % on your row), then to whoever has made the most picks. If two are identical on both, the belt is vacated. Tap Title History at the bottom of the board for the full lineage — a belt won on a tiebreak says so.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">⚔️ Challenges</div>
