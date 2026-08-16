@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-15T23:58:04Z",
+  "generated_at": "2026-08-16T00:02:58Z",
   "events_tracked": 11,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -21,7 +21,7 @@
     {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-guskov",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-15T23:58:04Z",
+      "last_changed_at": "2026-08-16T00:02:58Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -75,7 +75,7 @@
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-15T23:58:04Z",
+      "last_changed_at": "2026-08-16T00:02:58Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -84,7 +84,7 @@
     {
       "event_id": "2026-09-12:ufc-fight-night-rodriguez-vs-silva",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-15T23:58:04Z",
+      "last_changed_at": "2026-08-16T00:02:58Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 10,
@@ -93,7 +93,7 @@
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-15T23:58:04Z",
+      "last_changed_at": "2026-08-16T00:02:58Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -102,7 +102,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-15T23:58:04Z",
+      "last_changed_at": "2026-08-16T00:02:58Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 8,
@@ -110,18 +110,6 @@
     }
   ],
   "alerts": [
-    {
-      "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
-      "f1": "Jeremiah Wells",
-      "f2": "Myktybek Orolbai",
-      "f1_movement": 359,
-      "f2_movement": -650,
-      "magnitude": 650,
-      "main_event": false,
-      "f1_prob_shift": -11.1,
-      "f2_prob_shift": 11.3,
-      "priority": 1300.0
-    },
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "f1": "Reinier de Ridder",
@@ -136,6 +124,18 @@
     },
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
+      "f1": "Jeremiah Wells",
+      "f2": "Myktybek Orolbai",
+      "f1_movement": 359,
+      "f2_movement": -650,
+      "magnitude": 650,
+      "main_event": false,
+      "f1_prob_shift": -11.1,
+      "f2_prob_shift": 11.3,
+      "priority": 650.0
+    },
+    {
+      "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
       "f1": "Jalin Turner",
       "f2": "Kaue Fernandes",
       "f1_movement": 58,
@@ -144,7 +144,7 @@
       "main_event": false,
       "f1_prob_shift": -10.1,
       "f2_prob_shift": 10.6,
-      "priority": 500.0
+      "priority": 250.0
     },
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
@@ -156,7 +156,7 @@
       "main_event": false,
       "f1_prob_shift": -5.1,
       "f2_prob_shift": 5.0,
-      "priority": 460.0
+      "priority": 230.0
     },
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
@@ -168,7 +168,7 @@
       "main_event": false,
       "f1_prob_shift": -5.8,
       "f2_prob_shift": 6.5,
-      "priority": 456.0
+      "priority": 228.0
     },
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
@@ -180,31 +180,7 @@
       "main_event": false,
       "f1_prob_shift": -5.9,
       "f2_prob_shift": 5.5,
-      "priority": 452.0
-    },
-    {
-      "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
-      "f1": "Mansur Abdul-Malik",
-      "f2": "Dustin Stoltzfus",
-      "f1_movement": -150,
-      "f2_movement": 90,
-      "magnitude": 150,
-      "main_event": false,
-      "f1_prob_shift": 2.9,
-      "f2_prob_shift": -2.9,
-      "priority": 300.0
-    },
-    {
-      "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
-      "f1": "Lucas Fernando",
-      "f2": "Rafael Tobias",
-      "f1_movement": -110,
-      "f2_movement": 78,
-      "magnitude": 110,
-      "main_event": false,
-      "f1_prob_shift": 10.1,
-      "f2_prob_shift": -9.1,
-      "priority": 220.0
+      "priority": 226.0
     },
     {
       "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
@@ -229,6 +205,30 @@
       "f1_prob_shift": 1.9,
       "f2_prob_shift": -1.6,
       "priority": 156.8
+    },
+    {
+      "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
+      "f1": "Mansur Abdul-Malik",
+      "f2": "Dustin Stoltzfus",
+      "f1_movement": -150,
+      "f2_movement": 90,
+      "magnitude": 150,
+      "main_event": false,
+      "f1_prob_shift": 2.9,
+      "f2_prob_shift": -2.9,
+      "priority": 150.0
+    },
+    {
+      "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
+      "f1": "Lucas Fernando",
+      "f2": "Rafael Tobias",
+      "f1_movement": -110,
+      "f2_movement": 78,
+      "magnitude": 110,
+      "main_event": false,
+      "f1_prob_shift": 10.1,
+      "f2_prob_shift": -9.1,
+      "priority": 110.0
     },
     {
       "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
