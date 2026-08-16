@@ -6120,8 +6120,9 @@ if('serviceWorker'in navigator){
     // a postMessage to a focused client can vanish (see notificationclick).
     // When the message DOES arrive we consumed the tap here, so drop the stash
     // or the next launch would replay the same roast.
-    if(e.data&&e.data.type==='trash-talk'&&e.data.fullMessage){showIncomingTrashTalk(e.data.fullMessage,e.data.sender);clearPendingTap();}
-    if(e.data&&e.data.type==='challenge'){openChallengeInbox();clearPendingTap();}
+    if(!e.data)return;
+    if(e.data.type==='trash-talk'&&e.data.fullMessage){_routeTap('',e.data.fullMessage,e.data.sender,e.data.ts,0);clearPendingTap();}
+    else if(e.data.type==='challenge'){_routeTap('challenge','','',e.data.ts,0);clearPendingTap();}
   });
 }
 // Persistent offline banner — make it obvious when the network drops and the app is
@@ -6151,32 +6152,64 @@ function clearPendingTap(){
   if(!window.caches)return;
   caches.open('ufc-tap').then(function(c){return c.delete('/__pending_tap');}).catch(function(){});
 }
-(function(){
-  var params=new URLSearchParams(window.location.search);
-  var pTrash=params.get('trash'),pFrom=params.get('from'),pInbox=params.get('inbox');
-  if(pTrash||pInbox)history.replaceState(null,'',window.location.pathname);
-  var route=function(kind,msg,sender){
-    setTimeout(function(){
-      if(kind==='challenge')openChallengeInbox();
-      else if(msg)showIncomingTrashTalk(msg,sender||"");
-    },800);
-  };
-  var fromParams=function(){
-    if(pTrash)route('',pTrash,pFrom);
-    else if(pInbox)route('challenge');
-  };
-  if(!window.caches){fromParams();return;}
-  caches.open('ufc-tap').then(function(c){
+// Every tap is displayed through here, so the two delivery paths (a postMessage
+// that lands, and the cache stash being consumed) can't show the same roast
+// twice when they race. Keyed on the tap timestamp the SW puts in both. A tap
+// with no ts comes from an older SW that only sends it on one path — route it
+// rather than dedupe it, since showing a sheet twice is invisible (same text,
+// same already-open sheet) but dropping a tap is the bug we're fixing.
+var _tapSeen={};
+function _routeTap(kind,msg,sender,ts,delay){
+  if(ts){
+    if(_tapSeen[ts])return;
+    _tapSeen[ts]=1;
+  }
+  setTimeout(function(){
+    if(kind==='challenge')openChallengeInbox();
+    else if(msg)showIncomingTrashTalk(msg,sender||"");
+  },delay||0);
+}
+// Read and route the stashed tap, if there is a fresh one. delete() resolving
+// true is the mutex: whichever caller wins the delete is the one that shows it.
+// Resolves true when a tap was routed.
+function consumePendingTap(delay){
+  if(!window.caches)return Promise.resolve(false);
+  return caches.open('ufc-tap').then(function(c){
     return c.match('/__pending_tap').then(function(res){
       if(!res)return null;
-      return c.delete('/__pending_tap').then(function(){return res.json();});
+      return res.json().then(function(tap){
+        return c.delete('/__pending_tap').then(function(deleted){return deleted?tap:null;});
+      });
     });
   }).then(function(tap){
     // Stale-tap guard: a stash that never got opened (e.g. openWindow failed)
     // shouldn't pop up days later on a normal launch.
-    if(tap&&Date.now()-(tap.ts||0)<300000)route(tap.kind,tap.fullMessage,tap.sender);
-    else fromParams();
-  }).catch(fromParams);
+    if(!tap||Date.now()-(tap.ts||0)>=300000)return false;
+    _routeTap(tap.kind,tap.fullMessage,tap.sender,tap.ts,delay);
+    return true;
+  }).catch(function(){return false;});
+}
+(function(){
+  var params=new URLSearchParams(window.location.search);
+  var pTrash=params.get('trash'),pFrom=params.get('from'),pInbox=params.get('inbox');
+  if(pTrash||pInbox)history.replaceState(null,'',window.location.pathname);
+  var fromParams=function(){
+    if(pTrash)_routeTap('',pTrash,pFrom,0,800);
+    else if(pInbox)_routeTap('challenge','','',0,800);
+  };
+  if(!window.caches){fromParams();return;}
+  consumePendingTap(800).then(function(shown){if(!shown)fromParams();});
+  // Tapping a notification for an app that's merely backgrounded resumes the
+  // existing page — no reload, so the on-load consumer above never runs again.
+  // That left the SW's postMessage as the only delivery path, and it is not a
+  // guarantee: iOS keeps listing window clients for a PWA it already froze, so
+  // focus() resolves, the message vanishes, and the tap silently did nothing
+  // (see notificationclick in sw.js). Re-check the stash on every foreground —
+  // that's the path where a tapped roast never showed up.
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible')consumePendingTap(0);
+  });
+  window.addEventListener('pageshow',function(e){if(e.persisted)consumePendingTap(0);});
 })();
 </script>
 </body>

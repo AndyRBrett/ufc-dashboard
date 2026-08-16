@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = '2026-08-15-2';
+const SW_VERSION = '2026-08-16-1';
 const CACHE = 'ufc-' + SW_VERSION;
 // Handoff caches that must survive SW upgrades: 'ufc-push-id' carries the push
 // identity used by pushsubscriptionchange while the app is closed, 'ufc-tap'
@@ -177,10 +177,15 @@ self.addEventListener('notificationclick', function(e) {
   // it vanished into a dead client, the relaunched page finds it and the roast
   // still shows. Cheap either way, and it removes the only path where a tap
   // could produce nothing at all.
+  // One id for this tap, carried by BOTH the stash and the postMessage, so the
+  // page can tell "the message and the stash are the same tap" from "two taps"
+  // and show the roast exactly once when both paths deliver.
+  var tapTs = Date.now();
+
   function stashTap() {
     return caches.open('ufc-tap').then(function(c) {
       return c.put('/__pending_tap', new Response(
-        JSON.stringify({ kind: kind, fullMessage: fullMessage, sender: sender, ts: Date.now() }),
+        JSON.stringify({ kind: kind, fullMessage: fullMessage, sender: sender, ts: tapTs }),
         { headers: { 'Content-Type': 'application/json' } }
       ));
     }).catch(function() {});
@@ -224,8 +229,8 @@ self.addEventListener('notificationclick', function(e) {
     return Promise.resolve()
       .then(function() { return target.focus(); })
       .then(function() {
-        if (kind) target.postMessage({ type: kind, fullMessage: fullMessage, sender: sender });
-        else if (fullMessage) target.postMessage({ type: 'trash-talk', fullMessage: fullMessage, sender: sender });
+        if (kind) target.postMessage({ type: kind, fullMessage: fullMessage, sender: sender, ts: tapTs });
+        else if (fullMessage) target.postMessage({ type: 'trash-talk', fullMessage: fullMessage, sender: sender, ts: tapTs });
       })
       .catch(openFresh);
   }));

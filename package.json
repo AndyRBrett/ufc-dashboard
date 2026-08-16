@@ -9,7 +9,8 @@
     "check:web": "node tests/check-web.mjs",
     "check:functions": "node tests/check-functions.mjs",
     "smoke": "node tests/smoke.mjs",
-    "verify": "npm run check:web && npm run check:functions && npm run smoke"
+    "check:tap": "node tests/notification-tap.mjs",
+    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap"
   },
   "devDependencies": {
     "esbuild": "^0.24.0",

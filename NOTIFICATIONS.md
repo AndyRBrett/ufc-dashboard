@@ -45,6 +45,37 @@ triggers ─────┼─ check-results   (results)      ┐
               └─ client live-poll (results)     ┘
 ```
 
+## Tap → in-app display (where this keeps breaking)
+
+Delivering the push is only half of it. A trash-talk roast is too long for the
+notification body, so tapping it has to hand the full text to the page — and
+**every** way the tap can arrive needs a listener, or the user taps and sees
+nothing. That failure has shipped more than once.
+
+`notificationclick` (`sw.js`) always writes the payload to the **`ufc-tap`
+cache** first, then tries to route it. The stash is the contract: a delivery
+path that loses the message is survivable, one that also loses the stash is not.
+
+| How the tap arrives | What consumes it |
+| --- | --- |
+| App closed → SW `openWindow()` | page-load consumer reads `ufc-tap` |
+| App backgrounded → SW focuses it | SW `postMessage` **and** the `visibilitychange` re-check |
+| Old SW, short message | legacy `?trash=` / `?inbox=` URL params |
+
+The backgrounded case is the one that bites. `postMessage` to a focused client
+is **not** a delivery guarantee — iOS keeps listing window clients for a PWA it
+has already frozen, so `focus()` resolves, the message evaporates, and no
+reload ever happens to re-run the page-load consumer. That is why the page
+re-checks the stash on every foreground, not just on load.
+
+Because two paths can now deliver the same tap, both carry the SW's tap `ts`
+and the page shows a given `ts` once. Consumption is mutexed on `cache.delete()`
+resolving `true`, so a race can't double-show or drop.
+
+`npm run check:tap` (`tests/notification-tap.mjs`) covers all of these; it runs
+in `verify` and gates the deploy. If you touch the tap path, that test is the
+one that tells you whether a tapped push still shows anything.
+
 ## Edge functions
 
 | Function | Role | JWT gateway | Inbound auth |
