@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16T04:20:32Z",
+  "generated_at": "2026-08-16T04:51:58Z",
   "summary": {
     "events": 12,
     "block": 0,
@@ -9,7 +9,7 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Hernandez vs. Rodrigues (6d out): 3 of 8 bouts have no odds",
+      "message": "UFC Fight Night: Hernandez vs. Rodrigues (6d out): 8 of 13 bouts have no odds",
       "event": "UFC Fight Night: Hernandez vs. Rodrigues",
       "date": "2026-08-22",
       "days_out": 6
