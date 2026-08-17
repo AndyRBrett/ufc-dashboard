@@ -32,74 +32,6 @@
 :root{--red:#e8192c;--red-dim:rgba(232,25,44,.12);--gold:#c9a84c;--gold-dim:rgba(201,168,76,.12);--bg:#07070a;--card:#0f0f14;--card2:#171720;--surface:#171720;--future-bg:#0b0b0f;--future-border:rgba(255,255,255,.06);--text:#ededef;--muted:#8a8f98;--muted2:#b0b5c0;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(255,255,255,.07);--pill-bg:rgba(255,255,255,.06);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--green:#2ecc71;--green-dim:rgba(46,204,113,.12);--green-border:rgba(46,204,113,.28);--red-border:rgba(232,25,44,.3);--loss:#d65a68;--loss-dim:rgba(214,90,104,.12);--loss-border:rgba(214,90,104,.3);--hdr-bg:rgba(7,7,10,.96);--shadow-card:0 2px 12px rgba(0,0,0,.4);--shadow-el:0 8px 32px rgba(0,0,0,.55);--on-accent:#fff;--on-gold:#000;--accent-glow:rgba(232,25,44,.35);--gold-glow:rgba(201,168,76,.5);--gold-border:rgba(201,168,76,.3);--banner-edge:#a0000a;--fn-tint:rgba(232,25,44,.14);color-scheme:dark}
 /* ===== THEME: KNOCKOUT FIRE — charcoal, molten orange & hot yellow ===== */
 body[data-theme="fire"]{--bg:#0a0705;--card:#141009;--card2:#1d160d;--surface:#1d160d;--future-bg:#0d0a07;--future-border:rgba(255,106,26,.12);--text:#f5ede4;--muted:#9a8b7c;--muted2:#cabba9;--border:rgba(255,106,26,.12);--border2:rgba(255,106,26,.22);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(255,106,26,.08);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:rgba(10,7,5,.96);--red:#ff6a1a;--red-dim:rgba(255,106,26,.12);--red-border:rgba(255,106,26,.38);--gold:#ffc63d;--gold-dim:rgba(255,198,61,.12);--gold-border:rgba(255,198,61,.32);--green:#3ecf6e;--green-dim:rgba(62,207,110,.12);--green-border:rgba(62,207,110,.3);--loss:#ff5d6e;--loss-dim:rgba(255,93,110,.12);--loss-border:rgba(255,93,110,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5),0 0 24px rgba(255,106,26,.04);--shadow-el:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(255,106,26,.06);--on-accent:#2b1000;--on-gold:#2b1c00;--accent-glow:rgba(255,106,26,.4);--gold-glow:rgba(255,198,61,.45);--banner-edge:#8f2f00;--fn-tint:rgba(255,106,26,.14)}
-/* ===== THEME: TOONAMI '97 — midnight broadcast blue, electric blue & logo red-orange ===== */
-body[data-theme="toonami"]{--bg:#04070f;--card:#0a1120;--card2:#111a2e;--surface:#111a2e;--future-bg:#070c17;--future-border:rgba(58,155,255,.12);--text:#e9f1fb;--muted:#7f8ca3;--muted2:#b3c2d9;--border:rgba(58,155,255,.12);--border2:rgba(58,155,255,.22);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(58,155,255,.08);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:rgba(4,7,15,.96);--red:#3a9bff;--red-dim:rgba(58,155,255,.12);--red-border:rgba(58,155,255,.38);--gold:#ff5a24;--gold-dim:rgba(255,90,36,.12);--gold-border:rgba(255,90,36,.32);--green:#3ecf6e;--green-dim:rgba(62,207,110,.12);--green-border:rgba(62,207,110,.3);--loss:#ff5d6e;--loss-dim:rgba(255,93,110,.12);--loss-border:rgba(255,93,110,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5),0 0 24px rgba(58,155,255,.05);--shadow-el:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(58,155,255,.08);--on-accent:#03142b;--on-gold:#2b0d00;--accent-glow:rgba(58,155,255,.45);--gold-glow:rgba(255,90,36,.45);--banner-edge:#0d4a9e;--fn-tint:rgba(58,155,255,.14)}
-/* Toonami space treatment. Deep space seen from the Absolution: a dense
-   blue-white starfield, CRT scanlines, anime speed lines, industrial cobalt
-   lighting, and the red-orange logo as the one warm accent. Star layers reuse
-   the .usa-stars/.usa-stars-lb overlay divs (always in the DOM, shown
-   per-theme); no shooting stars here — those stay a Stars & Stripes thing. */
-body[data-theme="toonami"]{position:relative;--star-tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cg%3E%3Ccircle cx='24' cy='38' r='1.2' fill='%23ffffff' opacity='.16'/%3E%3Ccircle cx='118' cy='20' r='.9' fill='%239ec8ff' opacity='.14'/%3E%3Ccircle cx='206' cy='54' r='1.4' fill='%23ffffff' opacity='.11'/%3E%3Ccircle cx='66' cy='96' r='.9' fill='%23ffffff' opacity='.09'/%3E%3Ccircle cx='166' cy='118' r='1.1' fill='%239ec8ff' opacity='.15'/%3E%3Ccircle cx='238' cy='150' r='.9' fill='%23ffffff' opacity='.08'/%3E%3Ccircle cx='34' cy='168' r='1.3' fill='%239ec8ff' opacity='.11'/%3E%3Ccircle cx='130' cy='200' r='.9' fill='%23ffffff' opacity='.13'/%3E%3Ccircle cx='210' cy='232' r='1.2' fill='%23ffffff' opacity='.1'/%3E%3Ccircle cx='84' cy='244' r='.9' fill='%239ec8ff' opacity='.09'/%3E%3Ccircle cx='96' cy='58' r='.8' fill='%23ffffff' opacity='.07'/%3E%3Ccircle cx='188' cy='14' r='.8' fill='%239ec8ff' opacity='.08'/%3E%3Ccircle cx='14' cy='118' r='.8' fill='%23ffffff' opacity='.06'/%3E%3Ccircle cx='108' cy='142' r='.8' fill='%23ffffff' opacity='.08'/%3E%3Ccircle cx='246' cy='196' r='.8' fill='%239ec8ff' opacity='.07'/%3E%3Ccircle cx='176' cy='250' r='.8' fill='%23ffffff' opacity='.06'/%3E%3Cpath d='M150 60l1.6 6.4 6.4 1.6-6.4 1.6-1.6 6.4-1.6-6.4-6.4-1.6 6.4-1.6z' fill='%23cfe4ff' opacity='.18'/%3E%3Cpath d='M52 208l1.2 4.8 4.8 1.2-4.8 1.2-1.2 4.8-1.2-4.8-4.8-1.2 4.8-1.2z' fill='%23ffffff' opacity='.12'/%3E%3Cpath d='M228 104l.9 3.6 3.6.9-3.6.9-.9 3.6-.9-3.6-3.6-.9 3.6-.9z' fill='%239ec8ff' opacity='.1'/%3E%3C/g%3E%3C/svg%3E");
-  /* Comic-page tile: inked panel gutters, a panel of action lines, and a burst —
-     the printed half of the look, sitting behind everything on the body. */
-  --comic-tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='340'%3E%3Cg fill='none' stroke='%233a9bff' stroke-width='2' opacity='.18'%3E%3Crect x='14' y='16' width='118' height='76' rx='2'/%3E%3Crect x='146' y='16' width='86' height='76' rx='2'/%3E%3Crect x='246' y='16' width='80' height='118' rx='2'/%3E%3Crect x='14' y='106' width='92' height='94' rx='2'/%3E%3Crect x='120' y='106' width='112' height='94' rx='2'/%3E%3Crect x='246' y='148' width='80' height='52' rx='2'/%3E%3Crect x='14' y='214' width='138' height='98' rx='2'/%3E%3Crect x='166' y='214' width='160' height='98' rx='2'/%3E%3C/g%3E%3Cg stroke='%239ec8ff' stroke-width='1.4' opacity='.13' fill='none'%3E%3Cpath d='M158 34h62M158 46h62M158 58h50'/%3E%3Cpath d='M28 232h58M28 244h78M28 256h48'/%3E%3C/g%3E%3Cpath d='M292 66l3.4-11 2.6 8.4 7-6-3.4 9.6 10.4-1.2-9 4.8 8 5.6-9-2 1.2 9.4-5.6-7-4.6 8-1.2-9.4-8 3.4 5.6-7-9-1.2 9-3.4z' fill='%23ff5a24' opacity='.16'/%3E%3C/svg%3E");
-  /* Ben-Day halftone: a blue dot screen with a red-orange screen knocked 3px
-     out of register, the way cheap 90s four-colour printing misaligned. This
-     rides the whole page — it's uniform and low-contrast, so it reads as
-     newsprint texture behind copy. The panel art sits under it: the event
-     cards below are opaque inked panels, so the comic page shows through the
-     gutters between them rather than cutting across fight text. */
-  background-image:
-    radial-gradient(rgba(58,155,255,.17) 1px,transparent 1.6px),
-    radial-gradient(rgba(255,90,36,.1) 1px,transparent 1.6px),
-    var(--comic-tile);
-  background-size:7px 7px,7px 7px,340px 340px;
-  background-position:0 0,3px 2px,0 0}
-/* The star overlay also carries a whisper of halftone so the dot screen grazes
-   the cards too, tying the printed layer across the whole page. */
-body[data-theme="toonami"] .usa-stars{display:block;position:absolute;inset:0;pointer-events:none;z-index:5;background-image:radial-gradient(rgba(158,200,255,.055) 1px,transparent 1.6px),var(--star-tile);background-size:7px 7px,260px 260px}
-body[data-theme="toonami"] .usa-stars-lb{display:block;position:absolute;inset:0;pointer-events:none;z-index:5}
-body[data-theme="toonami"] .lb-body{background-image:radial-gradient(rgba(58,155,255,.14) 1px,transparent 1.6px),var(--star-tile);background-size:7px 7px,260px 260px;background-attachment:local}
-body[data-theme="toonami"] .lb-hdr{position:relative}
-/* Hero = bumper frame: scanlines, faint diagonal speed lines, a planet-rise
-   glow breaking the bottom edge, and a ringed gas giant drifting at the left. */
-body[data-theme="toonami"] .hero{position:relative;overflow:hidden;background:
-  repeating-conic-gradient(from 0deg at 50% 122%,transparent 0 2.4deg,rgba(255,255,255,.05) 2.4deg 4.8deg),
-  var(--comic-tile),
-  repeating-linear-gradient(180deg,rgba(58,155,255,.05) 0 2px,transparent 2px 5px),
-  repeating-linear-gradient(112deg,rgba(255,255,255,.03) 0 2px,transparent 2px 84px),
-  radial-gradient(140% 72% at 50% 126%,rgba(58,155,255,.3) 0%,rgba(13,74,158,.16) 46%,transparent 68%),
-  linear-gradient(180deg,rgba(58,155,255,.08) 0%,transparent 100%)}
-/* Comic panel cards: each event becomes an inked panel — heavy black rule,
-   squared corners, and a hard offset shadow (no blur; comic art has no soft
-   light). The header band and the fight list are separate stacked elements
-   forming one panel, so the drop shadow is split — right edge on the band,
-   right + bottom on the list — and the band closes itself off when collapsed.
-   Opaque backgrounds are what let the comic page tile sit on the body: the
-   panels block it, so it reads through the gutters instead of the fight text.
-   The rule is chrome rather than black — black ink is invisible on a dark page
-   — and the offset is a red-orange ghost, the same misregistration the halftone
-   screens use, which a black shadow could never show against this background. */
-body[data-theme="toonami"] .ev-band{background:var(--card);border-radius:0;border-left:2px solid #93a4bd;border-right:2px solid #93a4bd;border-bottom:0;box-shadow:5px 0 0 rgba(255,90,36,.4)}
-body[data-theme="toonami"] .fights-wrap{border-radius:0;border:2px solid #93a4bd;border-top:0;box-shadow:5px 5px 0 rgba(255,90,36,.4)}
-body[data-theme="toonami"] .ev-band.ev-collapsed{border-bottom:2px solid #93a4bd;box-shadow:5px 5px 0 rgba(255,90,36,.4)}
-/* The between-events label becomes a comic caption box — boxed and opaque so
-   the page's panel rules stop running through it, the way a narration caption
-   sits in the gutter of a real strip. Its trailing rule line is dropped. */
-body[data-theme="toonami"] .ev-divider{display:inline-flex;margin:18px 0 0 12px;padding:3px 9px;background:var(--card);border:2px solid #93a4bd;color:var(--muted2);box-shadow:3px 3px 0 rgba(255,90,36,.4)}
-body[data-theme="toonami"] .ev-divider::after{display:none}
-body[data-theme="toonami"] .hero::before{content:"";position:absolute;left:-52px;bottom:-64px;width:160px;height:160px;pointer-events:none;opacity:.5;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ccircle cx='60' cy='60' r='33' fill='%230d2a55' stroke='%233a9bff' stroke-width='1.5'/%3E%3Cpath d='M30 50q30 12 60-2' stroke='%232f7cff' stroke-width='2' fill='none' opacity='.55'/%3E%3Cpath d='M29 68q31 10 62-4' stroke='%232f7cff' stroke-width='2' fill='none' opacity='.4'/%3E%3Cellipse cx='60' cy='60' rx='55' ry='15' fill='none' stroke='%239ec8ff' stroke-width='2' opacity='.75' transform='rotate(-18 60 60)'/%3E%3Ccircle cx='105' cy='26' r='4.5' fill='%239ec8ff' opacity='.7'/%3E%3C/svg%3E") no-repeat center/contain}
-/* Cobalt tech stripe under the header with a red-orange logo notch and a chrome
-   tick — the Absolution corridor light bar. */
-body[data-theme="toonami"] .hdr::after,body[data-theme="toonami"] .lb-hdr::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:linear-gradient(90deg,#ff5a24 0 34px,#dde3ec 34px 40px,#3a9bff 40px 60%,rgba(58,155,255,.22) 60% 100%)}
-/* Bumper band: black letterboxed strip under the hero — full-body TOM (original
-   vector homage to the little '99 robot) plus a rotating era catchphrase, like
-   a mid-break bumper card. Hidden on every other theme. */
-.toon-bumper{display:none}
-body[data-theme="toonami"] .toon-bumper{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;background:radial-gradient(rgba(58,155,255,.15) 1px,transparent 1.6px) 0 0/7px 7px,repeating-conic-gradient(from 0deg at 22% 118%,transparent 0 3deg,rgba(255,255,255,.045) 3deg 6deg),var(--comic-tile) 40% 30%,linear-gradient(180deg,#000 0%,#02040a 100%);border-bottom:1px solid var(--border2);padding:6px 14px 0 12px;position:relative;overflow:hidden}
-body[data-theme="toonami"] .toon-bumper::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(180deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px)}
-.toon-bumper svg{width:46px;height:69px;flex-shrink:0;display:block;filter:drop-shadow(0 0 7px rgba(58,155,255,.4))}
-.toon-bumper-txt{font-family:Bebas Neue,sans-serif;font-style:italic;font-size:21px;letter-spacing:.14em;color:#e9f1fb;transform:skewX(-6deg);padding-bottom:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 0 12px rgba(58,155,255,.5)}
 /* ===== THEME: CHAMPIONSHIP GOLD — black & gold, title-belt vibes ===== */
 body[data-theme="gold"]{--bg:#0a0908;--card:#14120e;--card2:#1d1a14;--surface:#1d1a14;--future-bg:#0e0d0a;--future-border:rgba(212,175,55,.12);--text:#f2e9d8;--muted:#9a8f7a;--muted2:#c9bda2;--border:rgba(212,175,55,.12);--border2:rgba(212,175,55,.22);--sep:rgba(212,175,55,.15);--stripe-border:rgba(212,175,55,.08);--btn-bg:rgba(212,175,55,.08);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:rgba(10,9,8,.96);--red:#d4af37;--red-dim:rgba(212,175,55,.1);--red-border:rgba(212,175,55,.38);--gold:#f0d78c;--gold-dim:rgba(240,215,140,.1);--gold-border:rgba(240,215,140,.32);--green:#37c878;--green-dim:rgba(55,200,120,.12);--green-border:rgba(55,200,120,.28);--loss:#d2705e;--loss-dim:rgba(210,112,94,.12);--loss-border:rgba(210,112,94,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5);--shadow-el:0 8px 32px rgba(0,0,0,.65);--on-accent:#1a1407;--on-gold:#1a1407;--accent-glow:rgba(212,175,55,.3);--gold-glow:rgba(240,215,140,.4);--banner-edge:#6b520f;--fn-tint:rgba(212,175,55,.12)}
 /* ===== THEME: STARS & STRIPES — midnight navy, Old Glory red, white & blue ===== */
@@ -288,14 +220,8 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .logo-eagle{background:none;border:none;font-size:32px;line-height:1;cursor:pointer;padding:0;display:none}
 body[data-theme="usa"] .logo-oct{display:none}
 body[data-theme="usa"] .logo-eagle{display:block}
-/* TOM (Toonami's robot host) replaces the octagon in the Toonami theme, like the
-   eagle does for USA. Eyes glow via the shared eagleBreathe drop-shadow pulse. */
-.logo-tom{display:none;width:36px;height:36px}
-.logo-tom svg{width:100%;height:100%;display:block}
-body[data-theme="toonami"] .logo-oct{display:none}
-body[data-theme="toonami"] .logo-tom{display:block;animation:eagleBreathe 3.6s ease-in-out infinite}
 .logo-text{font-family:Bebas Neue,sans-serif;font-size:25px;letter-spacing:.08em;white-space:nowrap}
-@media (max-width:350px){.hdr{padding:0 12px}.logo{gap:6px}.logo-oct{width:32px;height:32px;font-size:14px}.logo-eagle{font-size:28px}.logo-tom{width:32px;height:32px}.logo-text{font-size:18px}.hdr-right{gap:6px}.btn-icon{min-width:44px;padding:0 6px}}
+@media (max-width:350px){.hdr{padding:0 12px}.logo{gap:6px}.logo-oct{width:32px;height:32px;font-size:14px}.logo-eagle{font-size:28px}.logo-text{font-size:18px}.hdr-right{gap:6px}.btn-icon{min-width:44px;padding:0 6px}}
 .logo-text span{color:var(--red)}
 .hdr-right{display:flex;align-items:center;gap:8px}
 .btn-icon{background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted2);min-width:54px;height:50px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 9px;transition:color .15s,background .15s}
@@ -776,7 +702,7 @@ body.theme-fade,body.theme-fade *{transition:background-color .35s ease,color .3
 </head>
 <body>
 <script>try{var _t=localStorage.getItem("ufc_theme");
-var _ok={octagon:1,gold:1,neon:1,fire:1,toonami:1,usa:1};
+var _ok={octagon:1,gold:1,neon:1,fire:1,usa:1};
 if(!_ok[_t])_t="octagon";
 document.body.setAttribute("data-theme",_t);}catch(e){}</script>
 <div class="usa-stars" aria-hidden="true"></div>
@@ -947,7 +873,7 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
 <div class="toast" id="toast"></div>
 <div class="fn-banner" id="fnBanner"><div class="fn-banner-dot"></div><div class="fn-banner-text" id="fnBannerText">FIGHT NIGHT</div><div class="fn-banner-dot"></div><div id="fnLastChecked" style="font-size:10px;opacity:.6;margin-left:8px;font-family:Inter,sans-serif;letter-spacing:.04em"></div></div>
 <header class="hdr">
-  <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><span class="logo-tom" title="TOM" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="1" y="25" width="8" height="17" rx="4" fill="#2f7cff"/><rect x="55" y="25" width="8" height="17" rx="4" fill="#2f7cff"/><rect x="12.5" y="3" width="5.5" height="13" rx="2.7" fill="#9fb0c6"/><circle cx="15.2" cy="5.4" r="2.3" fill="#8dff5a"/><path d="M32 5C18.5 5 9 14 9 27c0 13.5 9 24.5 23 27.5C46 51.5 55 40.5 55 27 55 14 45.5 5 32 5Z" fill="#e8edf5"/><path d="M29.4 5.3h5.2l-.9 7.5h-3.4z" fill="#2f7cff"/><path d="M23 16c-6 0-11 4-11 10.5v3.7c0 7.3 6 12.7 13.3 12.7h13.4C46 42.9 52 37.5 52 30.2v-3.7C52 20 47 16 41 16Z" fill="#9fb0c6"/><path d="M23 17.5c-5.2 0-9.5 3.5-9.5 9V30c0 6.8 5.5 11.5 12 11.5h13c6.5 0 12-4.7 12-11.5v-3.5c0-5.5-4.3-9-9.5-9Z" fill="#080c13"/><ellipse cx="24.3" cy="29.5" rx="4.2" ry="5.8" fill="#8dff5a" transform="rotate(15 24.3 29.5)"/><ellipse cx="39.7" cy="29.5" rx="4.2" ry="5.8" fill="#8dff5a" transform="rotate(-15 39.7 29.5)"/><path d="M25 46.5h14c-2.2 3.6-4.6 5.6-7 6.2-2.4-.6-4.8-2.6-7-6.2Z" fill="#b9c6d9"/></svg></span><span class="logo-text">FIGHT <span>CARDS</span></span></div>
+  <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><span class="logo-text">FIGHT <span>CARDS</span></span></div>
   <div class="hdr-right">
     <!-- Leaderboard -->
     <button class="btn-icon" onclick="openLeaderboard()" title="Leaderboard">
@@ -996,10 +922,6 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
           <span class="theme-swatch" style="background:linear-gradient(135deg,#141009 45%,#ff6a1a 45%,#ff6a1a 72%,#ffc63d 72%)"></span>
           <span>Knockout Fire</span><span class="theme-check">&#10003;</span>
         </button>
-        <button class="btn-more-item theme-item" data-theme="toonami" onclick="setTheme('toonami')">
-          <span class="theme-swatch" style="background:linear-gradient(135deg,#0a1120 45%,#3a9bff 45%,#3a9bff 72%,#ff5a24 72%)"></span>
-          <span>Toonami '97</span><span class="theme-check">&#10003;</span>
-        </button>
         <button class="btn-more-item theme-item" data-theme="usa" onclick="setTheme('usa')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#0a3161 40%,#b31942 40%,#b31942 60%,#e7ebf5 60%,#e7ebf5 70%,#b31942 70%,#b31942 80%,#e7ebf5 80%,#e7ebf5 90%,#b31942 90%)"></span>
           <span>Stars &amp; Stripes</span><span class="theme-check">&#10003;</span>
@@ -1024,10 +946,6 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
   </div>
   <p class="hero-sub">Updated <span id="updateDate">Loading...</span></p>
 </section>
-<div class="toon-bumper" aria-hidden="true">
-  <svg viewBox="0 0 80 120"><rect x="12" y="16" width="6" height="12" rx="3" fill="#2f7cff"/><rect x="62" y="16" width="6" height="12" rx="3" fill="#2f7cff"/><rect x="20" y="1" width="4.5" height="10" rx="2.2" fill="#9fb0c6"/><circle cx="22.2" cy="3" r="1.9" fill="#8dff5a"/><path d="M40 2C29.5 2 22 9 22 19c0 10 7 18.5 18 20.5C51 37.5 58 29 58 19 58 9 50.5 2 40 2Z" fill="#e8edf5"/><path d="M38 2.2h4l-.7 5.5h-2.6z" fill="#2f7cff"/><path d="M33 11.5c-4 0-7.5 2.7-7.5 7V21c0 5.2 4.2 8.8 9.2 8.8h10.6c5 0 9.2-3.6 9.2-8.8v-2.5c0-4.3-3.5-7-7.5-7Z" fill="#080c13"/><ellipse cx="34.2" cy="21" rx="3.2" ry="4.4" fill="#8dff5a" transform="rotate(15 34.2 21)"/><ellipse cx="45.8" cy="21" rx="3.2" ry="4.4" fill="#8dff5a" transform="rotate(-15 45.8 21)"/><path d="M35 36h10c-1.6 2.6-3.3 4-5 4.4-1.7-.4-3.4-1.8-5-4.4Z" fill="#b9c6d9"/><rect x="37" y="39" width="6" height="4" fill="#0a0e14"/><ellipse cx="40" cy="66" rx="21" ry="24" fill="#e8edf5"/><rect x="30" y="52" width="20" height="17" rx="6" fill="#2f7cff"/><circle cx="40" cy="60.5" r="4.4" fill="#8dff5a"/><circle cx="17" cy="56" r="5.5" fill="#2f7cff"/><circle cx="63" cy="56" r="5.5" fill="#2f7cff"/><path d="M16 60 12 74M64 60 68 74M32 87l-4 13 2 8M48 87l4 13-2 8" stroke="#0a0e14" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="11.5" cy="79" r="5.5" fill="#e8edf5"/><circle cx="68.5" cy="79" r="5.5" fill="#e8edf5"/><rect x="22" y="106" width="17" height="8" rx="4" fill="#e8edf5"/><rect x="41" y="106" width="17" height="8" rx="4" fill="#e8edf5"/></svg>
-  <span class="toon-bumper-txt" id="toonPhrase">BACK TO THE ACTION</span>
-</div>
 <div class="stats">
   <div class="stat"><div class="sv" id="sev">-</div><div class="sl">Events</div></div>
   <div class="stat"><div class="sv" id="sti">-</div><div class="sl">Titles</div></div>
@@ -1844,12 +1762,10 @@ function countMethodsCorrect(){
   });});
   return count;
 }
-var THEMES={octagon:"#e8192c",gold:"#0a0908",neon:"#050608",fire:"#0a0705",toonami:"#04070f",usa:"#070a13"};
-var TOON_PHRASES=["BACK TO THE ACTION","THE FUTURE IS ALWAYS NOW","BANG.","DREAMS NEVER DIE","LATER.","STAY TUNED"];
+var THEMES={octagon:"#e8192c",gold:"#0a0908",neon:"#050608",fire:"#0a0705",usa:"#070a13"};
 function applyTheme(t){
   if(!THEMES[t])t="octagon";
   document.body.setAttribute("data-theme",t);
-  if(t==="toonami"){var tp=document.getElementById("toonPhrase");if(tp)tp.textContent=TOON_PHRASES[Math.floor(Math.random()*TOON_PHRASES.length)];}
   var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",THEMES[t]);
   var items=document.querySelectorAll(".theme-item");
   for(var i=0;i<items.length;i++)items[i].classList.toggle("active",items[i].getAttribute("data-theme")===t);
