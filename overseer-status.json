@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-17T00:00:25Z",
-  "events_tracked": 12,
+  "generated_at": "2026-08-17T01:10:48Z",
+  "events_tracked": 11,
   "stale_events": 0,
   "parse_failure_events": 0,
   "awaiting_card_events": 6,
@@ -10,18 +10,9 @@
   "movement_alert_threshold": 10,
   "events": [
     {
-      "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
-      "status": "ok",
-      "last_changed_at": "2026-07-19T02:32:55Z",
-      "is_stale": false,
-      "has_data": true,
-      "bout_count": 12,
-      "line_movement": 64
-    },
-    {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-guskov",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-17T00:00:25Z",
+      "last_changed_at": "2026-08-17T01:10:48Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -75,7 +66,7 @@
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-17T00:00:25Z",
+      "last_changed_at": "2026-08-17T01:10:48Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -84,7 +75,7 @@
     {
       "event_id": "2026-09-12:ufc-fight-night-rodriguez-vs-silva",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-17T00:00:25Z",
+      "last_changed_at": "2026-08-17T01:10:48Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 10,
@@ -93,7 +84,7 @@
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-17T00:00:25Z",
+      "last_changed_at": "2026-08-17T01:10:48Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -102,7 +93,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-17T00:00:25Z",
+      "last_changed_at": "2026-08-17T01:10:48Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 8,
@@ -111,7 +102,7 @@
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-17T00:00:25Z",
+      "last_changed_at": "2026-08-17T01:10:48Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 5,
@@ -192,18 +183,6 @@
       "priority": 226.0
     },
     {
-      "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
-      "f1": "Dricus du Plessis",
-      "f2": "Kamaru Usman",
-      "f1_movement": 64,
-      "f2_movement": -61,
-      "magnitude": 64,
-      "main_event": true,
-      "f1_prob_shift": -3.8,
-      "f2_prob_shift": 5.1,
-      "priority": 160.0
-    },
-    {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
       "f1": "Umar Nurmagomedov",
       "f2": "Song Yadong",
@@ -228,54 +207,6 @@
       "priority": 110.0
     },
     {
-      "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
-      "f1": "Alden Coria",
-      "f2": "Stewart Nicoll",
-      "f1_movement": -67,
-      "f2_movement": -32,
-      "magnitude": 67,
-      "main_event": false,
-      "f1_prob_shift": 0.5,
-      "f2_prob_shift": 0.6,
-      "priority": 67.0
-    },
-    {
-      "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
-      "f1": "Fatima Kline",
-      "f2": "Tabatha Ricci",
-      "f1_movement": 42,
-      "f2_movement": -28,
-      "magnitude": 42,
-      "main_event": false,
-      "f1_prob_shift": -1.8,
-      "f2_prob_shift": 1.9,
-      "priority": 42.0
-    },
-    {
-      "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
-      "f1": "Tommy McMillen",
-      "f2": "Alberto Montes",
-      "f1_movement": -20,
-      "f2_movement": 14,
-      "magnitude": 20,
-      "main_event": false,
-      "f1_prob_shift": 4.5,
-      "f2_prob_shift": -2.6,
-      "priority": 20.0
-    },
-    {
-      "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
-      "f1": "Chase Hooper",
-      "f2": "Mitch Ramirez",
-      "f1_movement": -15,
-      "f2_movement": -2,
-      "magnitude": 15,
-      "main_event": false,
-      "f1_prob_shift": 0.9,
-      "f2_prob_shift": 0.2,
-      "priority": 15.0
-    },
-    {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
       "f1": "Michael Oliveira",
       "f2": "Oban Elliott",
@@ -286,18 +217,6 @@
       "f1_prob_shift": 0.6,
       "f2_prob_shift": -0.7,
       "priority": 13.0
-    },
-    {
-      "event_id": "2026-07-18:ufc-fight-night-du-plessis-vs-usman",
-      "f1": "Christian Leroy Duncan",
-      "f2": "Jared Cannonier",
-      "f1_movement": 0,
-      "f2_movement": -12,
-      "magnitude": 12,
-      "main_event": false,
-      "f1_prob_shift": 0.0,
-      "f2_prob_shift": 1.0,
-      "priority": 12.0
     },
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
