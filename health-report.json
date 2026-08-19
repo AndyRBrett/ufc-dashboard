@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-18T09:43:40Z",
+  "generated_at": "2026-08-19T09:45:03Z",
   "summary": {
-    "events": 11,
+    "events": 12,
     "block": 0,
     "warn": 4
   },
@@ -9,18 +9,18 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Hernandez vs. Rodrigues (4d out): 8 of 13 bouts have no odds",
+      "message": "UFC Fight Night: Hernandez vs. Rodrigues (3d out): 8 of 13 bouts have no odds",
       "event": "UFC Fight Night: Hernandez vs. Rodrigues",
       "date": "2026-08-22",
-      "days_out": 4
+      "days_out": 3
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Nurmagomedov vs. Song (11d out): 7 of 9 bouts have no odds",
+      "message": "UFC Fight Night: Nurmagomedov vs. Song (10d out): 7 of 9 bouts have no odds",
       "event": "UFC Fight Night: Nurmagomedov vs. Song",
       "date": "2026-08-29",
-      "days_out": 11
+      "days_out": 10
     },
     {
       "severity": "WARN",
