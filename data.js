@@ -113,19 +113,19 @@ var EVENTS=[
     time:"20:00",
     prelimTime:"17:00",
     fights:[
-      {lbl:"Main Event",wc:"Middleweight",title:false,rematch:false,odds:{f1:-155,f2:130},winner:"",method:"",round:null,state:"pre",f1:{n:"Anthony Hernandez",r:"15-3-0",rk:"",s:null},f2:{n:"Gregory Rodrigues",r:"19-6-0",rk:"",s:null}},
-      {lbl:"Co-Main",wc:"Heavyweight",title:false,rematch:false,odds:{f1:135,f2:-160},winner:"",method:"",round:null,state:"pre",f1:{n:"Serghei Spivac",r:"18-6-0",rk:"",s:null},f2:{n:"Vitor Petrino",r:"14-2-0",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Light Heavyweight",title:false,rematch:false,odds:{f1:-340,f2:270},winner:"",method:"",round:null,state:"pre",f1:{n:"Reinier de Ridder",r:"21-4-0",rk:"",s:null},f2:{n:"Roman Dolidze",r:"15-5-0",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Lightweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"MarQuel Mederos",r:"11-1-1",rk:"",s:null},f2:{n:"Mason Jones",r:"18-2-0",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Women's Flyweight",title:false,rematch:false,odds:{f1:-450,f2:350},winner:"",method:"",round:null,state:"pre",f1:{n:"Carli Judice",r:"6-2-0",rk:"",s:null},f2:{n:"Jeisla Chaves",r:"8-0-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Heavyweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Anthony Wint",r:"7-0-0",rk:"",s:null},f2:{n:"Terrance Chatman",r:"5-1-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Featherweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Jamall Emmers",r:"22-8-0",rk:"",s:null},f2:{n:"Lerryan Douglas",r:"14-5-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Heavyweight",title:false,rematch:false,odds:{f1:105,f2:-125},winner:"",method:"",round:null,state:"pre",f1:{n:"Kennedy Nzechukwu",r:"14-6-1",rk:"",s:null},f2:{n:"Shamil Gaziev",r:"14-3-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Lightweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Chris Padilla",r:"17-6-1",rk:"",s:null},f2:{n:"Nasrat Haqparast",r:"18-6-0",rk:"",s:null}},
+      {lbl:"Main Event",wc:"Middleweight",title:false,rematch:false,odds:{f1:-166,f2:140},winner:"",method:"",round:null,state:"pre",f1:{n:"Anthony Hernandez",r:"15-3-0",rk:"",s:null},f2:{n:"Gregory Rodrigues",r:"19-6-0",rk:"",s:null}},
+      {lbl:"Co-Main",wc:"Heavyweight",title:false,rematch:false,odds:{f1:136,f2:-174},winner:"",method:"",round:null,state:"pre",f1:{n:"Serghei Spivac",r:"18-6-0",rk:"",s:null},f2:{n:"Vitor Petrino",r:"14-2-0",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Light Heavyweight",title:false,rematch:false,odds:{f1:-400,f2:316},winner:"",method:"",round:null,state:"pre",f1:{n:"Reinier de Ridder",r:"21-4-0",rk:"",s:null},f2:{n:"Roman Dolidze",r:"15-5-0",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Lightweight",title:false,rematch:false,odds:{f1:225,f2:-278},winner:"",method:"",round:null,state:"pre",f1:{n:"MarQuel Mederos",r:"11-1-1",rk:"",s:null},f2:{n:"Mason Jones",r:"18-2-0",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Women's Flyweight",title:false,rematch:false,odds:{f1:-600,f2:425},winner:"",method:"",round:null,state:"pre",f1:{n:"Carli Judice",r:"6-2-0",rk:"",s:null},f2:{n:"Jeisla Chaves",r:"8-0-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Heavyweight",title:false,rematch:false,odds:{f1:-1000,f2:625},winner:"",method:"",round:null,state:"pre",f1:{n:"Anthony Wint",r:"7-0-0",rk:"",s:null},f2:{n:"Terrance Chatman",r:"5-1-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Featherweight",title:false,rematch:false,odds:{f1:295,f2:-375},winner:"",method:"",round:null,state:"pre",f1:{n:"Jamall Emmers",r:"22-8-0",rk:"",s:null},f2:{n:"Lerryan Douglas",r:"14-5-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Heavyweight",title:false,rematch:false,odds:{f1:110,f2:-135},winner:"",method:"",round:null,state:"pre",f1:{n:"Kennedy Nzechukwu",r:"14-6-1",rk:"",s:null},f2:{n:"Shamil Gaziev",r:"14-3-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Lightweight",title:false,rematch:false,odds:{f1:100,f2:-120},winner:"",method:"",round:null,state:"pre",f1:{n:"Chris Padilla",r:"17-6-1",rk:"",s:null},f2:{n:"Nasrat Haqparast",r:"18-6-0",rk:"",s:null}},
       {lbl:"Prelim",wc:"Featherweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Marcio Barbosa",r:"18-2-0",rk:"",s:null},f2:{n:"Ryan Kuse",r:"9-2-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Lightweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Gauge Young",r:"11-3-0",rk:"",s:null},f2:{n:"Stanley Dorsainvil",r:"5-0-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Middleweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Wesley Schultz",r:"9-3-0",rk:"",s:null},f2:{n:"Jackson McVey",r:"7-2-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Women's Strawweight",title:false,rematch:false,odds:null,winner:"",method:"",round:null,state:"pre",f1:{n:"Shanelle Dyer",r:"7-1-0",rk:"",s:null},f2:{n:"Elise Reed",r:"8-5-0",rk:"",s:null}}
+      {lbl:"Prelim",wc:"Lightweight",title:false,rematch:false,odds:{f1:-155,f2:130},winner:"",method:"",round:null,state:"pre",f1:{n:"Gauge Young",r:"11-3-0",rk:"",s:null},f2:{n:"Stanley Dorsainvil",r:"5-0-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Middleweight",title:false,rematch:false,odds:{f1:150,f2:-185},winner:"",method:"",round:null,state:"pre",f1:{n:"Wesley Schultz",r:"9-3-0",rk:"",s:null},f2:{n:"Jackson McVey",r:"7-2-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Women's Strawweight",title:false,rematch:false,odds:{f1:-750,f2:525},winner:"",method:"",round:null,state:"pre",f1:{n:"Shanelle Dyer",r:"7-1-0",rk:"",s:null},f2:{n:"Elise Reed",r:"8-5-0",rk:"",s:null}}
     ]
   },
   {
