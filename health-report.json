@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T01:41:10Z",
+  "generated_at": "2026-08-21T04:46:04Z",
   "summary": {
     "events": 12,
     "block": 0,
@@ -17,7 +17,7 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Nurmagomedov vs. Song (8d out): 8 of 10 bouts have no odds",
+      "message": "UFC Fight Night: Nurmagomedov vs. Song (8d out): 11 of 13 bouts have no odds",
       "event": "UFC Fight Night: Nurmagomedov vs. Song",
       "date": "2026-08-29",
       "days_out": 8
