@@ -168,6 +168,16 @@ async function fetchWikitext(slug: string): Promise<string | null> {
   return d?.parse?.wikitext?.["*"] ?? null;
 }
 
+// Constant-time comparison. `!==` on a secret returns at the first differing
+// byte, so response timing across enough requests leaks the secret prefix by
+// prefix. Length is still observable; that is standard and not worth hiding.
+function secretEquals(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 204 });
   if (req.method !== "POST" && req.method !== "GET") {
@@ -177,10 +187,14 @@ Deno.serve(async (req) => {
   // Inbound auth: only a caller that knows CRON_SECRET may trigger a scrape.
   // Accept it as `Authorization: Bearer <secret>` (GitHub Actions) or a ?key=
   // query param (so external cron UIs work without custom headers).
+  // Header-only. A secret in the query string is written to every log that
+  // records a URL — Supabase's own edge logs, any proxy in front of them, and
+  // the Referer of anything the response links to — which a header is not.
+  // scheduled-push.yml has always sent this as a header, so dropping the
+  // ?key= path costs nothing here.
   const CRON_SECRET = Deno.env.get("CRON_SECRET") ?? "";
-  const auth = req.headers.get("Authorization") ?? "";
-  const key = new URL(req.url).searchParams.get("key") ?? "";
-  if (!CRON_SECRET || (auth !== `Bearer ${CRON_SECRET}` && key !== CRON_SECRET)) {
+  const bearer = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
+  if (!CRON_SECRET || !secretEquals(bearer, CRON_SECRET)) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
   }
 
