@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-08-21T20:33:20Z",
+  "generated_at": "2026-08-22T00:03:38Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
-  "awaiting_card_events": 7,
-  "odds_unavailable_events": 0,
+  "awaiting_card_events": 6,
+  "odds_unavailable_events": 1,
   "odds_budget_exhausted": true,
   "stale_threshold_hours": 48,
   "movement_alert_threshold": 10,
@@ -12,7 +12,7 @@
     {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-guskov",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-21T20:33:20Z",
+      "last_changed_at": "2026-08-22T00:03:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -65,8 +65,8 @@
     },
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
-      "status": "awaiting-card",
-      "last_changed_at": "2026-08-21T20:33:20Z",
+      "status": "odds-unavailable",
+      "last_changed_at": "2026-08-22T00:03:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -75,7 +75,7 @@
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-21T20:33:20Z",
+      "last_changed_at": "2026-08-22T00:03:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -84,7 +84,7 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-21T20:33:20Z",
+      "last_changed_at": "2026-08-22T00:03:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -93,7 +93,7 @@
     {
       "event_id": "2026-10-03:ufc-332",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-21T20:33:20Z",
+      "last_changed_at": "2026-08-22T00:03:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 7,
@@ -102,7 +102,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-21T20:33:20Z",
+      "last_changed_at": "2026-08-22T00:03:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -111,7 +111,7 @@
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-21T20:33:20Z",
+      "last_changed_at": "2026-08-22T00:03:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -213,7 +213,7 @@
       "main_event": true,
       "f1_prob_shift": 1.9,
       "f2_prob_shift": -1.6,
-      "priority": 156.8
+      "priority": 199.5
     },
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
