@@ -71,6 +71,47 @@ jobs:
           esac
           echo "number=$RAW" >> "$GITHUB_OUTPUT"
 
+      # WHO WROTE THE ISSUE decides whether an agent may act on it.
+      #
+      # Everything below this step treats the issue body — and its comments — as
+      # the agent's instructions: step 1 of the prompt is literally
+      # `gh issue view <n> --comments`. On a PUBLIC repo anyone can open an issue
+      # and anyone can comment on one, so without this check the text steering a
+      # runner that holds ANTHROPIC_API_KEY and a contents:write token is written
+      # by whoever showed up.
+      #
+      # The dispatcher is not that check. The overseer decides an issue is "ours"
+      # from `_Filed by Project Overseer._` in the body (tools.py OVERSEER_MARKER)
+      # — a fixed string visible in the footer of every issue it has ever filed
+      # here — and an issue carrying it with no `enhancement` label is classed as
+      # a BUG, which its gate implements with no effort label and no author check
+      # at all. Pasting one public line into a new issue is therefore enough to
+      # queue arbitrary attacker-written text as an agent's task. That gap lives
+      # in the overseer's repo; this step closes it at the point of execution, so
+      # this repo is safe whatever the dispatcher decides to send.
+      #
+      # authorAssociation is GitHub's own answer and cannot be set by the author:
+      # OWNER/MEMBER/COLLABORATOR mean push access to this repo. Overseer-filed
+      # issues arrive as OWNER (they are filed with OVERSEER_GITHUB_TOKEN), so the
+      # legitimate path is unaffected. Anything else stops here — loudly, and
+      # before a single paid token is spent.
+      - name: Refuse issues from untrusted authors
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ steps.issue.outputs.number }}
+        run: |
+          assoc=$(gh issue view "$ISSUE" --json authorAssociation --jq .authorAssociation)
+          author=$(gh issue view "$ISSUE" --json author --jq .author.login)
+          case "$assoc" in
+            OWNER|MEMBER|COLLABORATOR)
+              echo "Issue #$ISSUE was filed by $author ($assoc) — trusted."
+              ;;
+            *)
+              echo "::error title=Untrusted issue author::Issue #$ISSUE was filed by $author ($assoc), who does not have write access to this repository. Refusing to hand attacker-controllable text to a coding agent."
+              exit 1
+              ;;
+          esac
+
       # Tier NAME in, model id out. The name may come from a repository_dispatch
       # payload — i.e. over the API — and the model is interpolated into the
       # Claude CLI's arguments, so anything not on this list is refused rather
