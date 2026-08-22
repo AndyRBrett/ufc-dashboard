@@ -77,6 +77,30 @@ const TYPE_RE = /^(main|prelim|register|result:.+|pick-(first|done)-.+|trash-tal
 // checking every other notification type first.
 const MAX_TITLE = 120, MAX_BODY = 1600;
 
+// A push "endpoint" is a URL this function will POST to with the service-role
+// key in hand, and `register` accepts it from any caller holding the public anon
+// key — i.e. from anyone. Unrestricted, that is a server-side request forgery
+// primitive: register an endpoint pointing at an internal address (or any third
+// party) and every later send makes this function fetch it for you, from inside
+// Supabase's network, on a schedule you choose.
+//
+// Only the four real browser push services are ever legitimate here. Hosts are
+// matched exactly or as a leading-dot suffix so `evil-fcm.googleapis.com.attacker
+// .com` cannot pass as `fcm.googleapis.com`. Overridable via env so a new
+// provider can be admitted without a code change.
+const PUSH_HOSTS = (Deno.env.get("PUSH_ENDPOINT_HOSTS") ??
+  "fcm.googleapis.com,updates.push.services.mozilla.com,web.push.apple.com,notify.windows.com")
+  .split(",").map((h) => h.trim().toLowerCase()).filter(Boolean);
+const MAX_ENDPOINT = 512, MAX_KEY = 256, MAX_USER_ID = 128, MAX_NICKNAME = 60;
+
+function allowedEndpoint(raw: string): boolean {
+  let u: URL;
+  try { u = new URL(raw); } catch { return false; }
+  if (u.protocol !== "https:") return false;
+  const host = u.hostname.toLowerCase();
+  return PUSH_HOSTS.some((h) => host === h || host.endsWith("." + h));
+}
+
 interface ReqBody {
   event_date?: string;
   type: string;
@@ -162,6 +186,16 @@ Deno.serve(async (req) => {
     const { user_id, nickname, endpoint, p256dh, auth } = body;
     if (!user_id || !endpoint || !p256dh || !auth) {
       return new Response(JSON.stringify({ error: "Missing required subscription fields" }), { status: 400, headers: CORS });
+    }
+    // Bound every stored field. Without caps a caller can park megabytes in
+    // push_subs through an endpoint that is never delivered to.
+    if (user_id.length > MAX_USER_ID || endpoint.length > MAX_ENDPOINT ||
+        p256dh.length > MAX_KEY || auth.length > MAX_KEY ||
+        (nickname ?? "").length > MAX_NICKNAME) {
+      return new Response(JSON.stringify({ error: "Subscription field too long" }), { status: 400, headers: CORS });
+    }
+    if (!allowedEndpoint(endpoint)) {
+      return new Response(JSON.stringify({ error: "Unrecognised push endpoint" }), { status: 400, headers: CORS });
     }
     const row: Record<string, unknown> = {
       user_id,
