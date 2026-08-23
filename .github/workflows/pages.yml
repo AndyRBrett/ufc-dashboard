@@ -49,7 +49,7 @@ jobs:
     steps:
       # Always deploy the tip of main: when called from update.yml, the run's own
       # SHA predates the auto-update commit that job just pushed.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: main
 
@@ -67,12 +67,12 @@ jobs:
             echo "::warning::Could not switch the Pages publishing source automatically. If the deploy step below fails, set Settings → Pages → Source to 'GitHub Actions' once, manually."
           fi
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
 
       # The site is served raw from the repo root (build.mjs is optional and unused
       # by the deploy), so upload the checkout as-is. upload-pages-artifact already
       # excludes .git and .github.
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: .
 
@@ -81,7 +81,7 @@ jobs:
       # retry the whole action with backoff.
       - name: Deploy to GitHub Pages
         id: deploy1
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
         continue-on-error: true
 
       - name: Wait 30s before retry
@@ -90,7 +90,7 @@ jobs:
       - name: Deploy to GitHub Pages (retry 1)
         id: deploy2
         if: steps.deploy1.outcome == 'failure'
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
         continue-on-error: true
 
       - name: Wait 60s before final retry
@@ -99,7 +99,7 @@ jobs:
       - name: Deploy to GitHub Pages (retry 2)
         id: deploy3
         if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
 
       - name: Flag that the deploy only succeeded on a retry
         if: steps.deploy1.outcome == 'failure' && (steps.deploy2.outcome == 'success' || steps.deploy3.outcome == 'success')
