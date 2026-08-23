@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T23:53:30Z",
+  "generated_at": "2026-08-23T00:03:30Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -5121,7 +5121,7 @@
     },
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Anthony Hernandez",
@@ -5144,8 +5144,15 @@
             "f1_odds": -155,
             "f2_odds": 130
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-21T20:33:20Z",
+            "f1_odds": -166,
+            "f2_odds": 140
+          },
+          "clv": {
+            "f1_odds": -11,
+            "f2_odds": 10
+          }
         },
         {
           "f1": "Serghei Spivac",
@@ -5168,8 +5175,15 @@
             "f1_odds": 135,
             "f2_odds": -160
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-21T20:33:20Z",
+            "f1_odds": 136,
+            "f2_odds": -174
+          },
+          "clv": {
+            "f1_odds": 1,
+            "f2_odds": -14
+          }
         },
         {
           "f1": "Reinier de Ridder",
@@ -5197,8 +5211,15 @@
             "f1_odds": 270,
             "f2_odds": -340
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-21T20:33:20Z",
+            "f1_odds": -400,
+            "f2_odds": 316
+          },
+          "clv": {
+            "f1_odds": -670,
+            "f2_odds": 656
+          }
         },
         {
           "f1": "Carli Judice",
@@ -5221,8 +5242,15 @@
             "f1_odds": -450,
             "f2_odds": 350
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-21T20:33:20Z",
+            "f1_odds": -600,
+            "f2_odds": 425
+          },
+          "clv": {
+            "f1_odds": -150,
+            "f2_odds": 75
+          }
         },
         {
           "f1": "Kennedy Nzechukwu",
@@ -5245,8 +5273,15 @@
             "f1_odds": 105,
             "f2_odds": -125
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-21T20:33:20Z",
+            "f1_odds": 110,
+            "f2_odds": -135
+          },
+          "clv": {
+            "f1_odds": 5,
+            "f2_odds": -10
+          }
         },
         {
           "f1": "MarQuel Mederos",
@@ -5264,8 +5299,15 @@
             "f1_odds": 225,
             "f2_odds": -278
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-21T20:33:20Z",
+            "f1_odds": 225,
+            "f2_odds": -278
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Anthony Wint",
@@ -5283,8 +5325,15 @@
             "f1_odds": -1000,
             "f2_odds": 625
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-21T20:33:20Z",
+            "f1_odds": -1000,
+            "f2_odds": 625
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Jamall Emmers",
@@ -5302,8 +5351,15 @@
             "f1_odds": 295,
             "f2_odds": -375
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-21T20:33:20Z",
+            "f1_odds": 295,
+            "f2_odds": -375
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Chris Padilla",
@@ -5321,8 +5377,15 @@
             "f1_odds": 100,
             "f2_odds": -120
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-21T20:33:20Z",
+            "f1_odds": 100,
+            "f2_odds": -120
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Gauge Young",
@@ -5340,8 +5403,15 @@
             "f1_odds": -155,
             "f2_odds": 130
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-21T20:33:20Z",
+            "f1_odds": -155,
+            "f2_odds": 130
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Wesley Schultz",
@@ -5359,8 +5429,15 @@
             "f1_odds": 150,
             "f2_odds": -185
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-21T20:33:20Z",
+            "f1_odds": 150,
+            "f2_odds": -185
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Shanelle Dyer",
@@ -5378,8 +5455,15 @@
             "f1_odds": -750,
             "f2_odds": 525
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-08-21T20:33:20Z",
+            "f1_odds": -750,
+            "f2_odds": 525
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         }
       ]
     },
@@ -5920,8 +6004,8 @@
         "side": "f2",
         "points": 2,
         "open": 350,
-        "close": null,
-        "clv": null
+        "close": 425,
+        "clv": 75
       }
     ],
     "Yuneisy Duben": [
@@ -7841,8 +7925,8 @@
         "side": "f1",
         "points": 2,
         "open": -155,
-        "close": null,
-        "clv": null
+        "close": -166,
+        "clv": -11
       }
     ],
     "Gregory Rodrigues": [
@@ -7852,8 +7936,8 @@
         "side": "f2",
         "points": 2,
         "open": 130,
-        "close": null,
-        "clv": null
+        "close": 140,
+        "clv": 10
       }
     ],
     "Serghei Spivac": [
@@ -7863,8 +7947,8 @@
         "side": "f1",
         "points": 2,
         "open": 135,
-        "close": null,
-        "clv": null
+        "close": 136,
+        "clv": 1
       }
     ],
     "Vitor Petrino": [
@@ -7874,8 +7958,8 @@
         "side": "f2",
         "points": 2,
         "open": -160,
-        "close": null,
-        "clv": null
+        "close": -174,
+        "clv": -14
       }
     ],
     "Reinier de Ridder": [
@@ -7885,8 +7969,8 @@
         "side": "f1",
         "points": 3,
         "open": 270,
-        "close": null,
-        "clv": null
+        "close": -400,
+        "clv": -670
       }
     ],
     "Roman Dolidze": [
@@ -7896,8 +7980,8 @@
         "side": "f2",
         "points": 3,
         "open": -340,
-        "close": null,
-        "clv": null
+        "close": 316,
+        "clv": 656
       }
     ],
     "Carli Judice": [
@@ -7907,8 +7991,8 @@
         "side": "f1",
         "points": 2,
         "open": -450,
-        "close": null,
-        "clv": null
+        "close": -600,
+        "clv": -150
       }
     ],
     "Kennedy Nzechukwu": [
@@ -7918,8 +8002,8 @@
         "side": "f1",
         "points": 2,
         "open": 105,
-        "close": null,
-        "clv": null
+        "close": 110,
+        "clv": 5
       }
     ],
     "Shamil Gaziev": [
@@ -7929,8 +8013,8 @@
         "side": "f2",
         "points": 2,
         "open": -125,
-        "close": null,
-        "clv": null
+        "close": -135,
+        "clv": -10
       }
     ],
     "MarQuel Mederos": [
@@ -7940,8 +8024,8 @@
         "side": "f1",
         "points": 1,
         "open": 225,
-        "close": null,
-        "clv": null
+        "close": 225,
+        "clv": 0
       }
     ],
     "Mason Jones": [
@@ -7951,8 +8035,8 @@
         "side": "f2",
         "points": 1,
         "open": -278,
-        "close": null,
-        "clv": null
+        "close": -278,
+        "clv": 0
       }
     ],
     "Anthony Wint": [
@@ -7962,8 +8046,8 @@
         "side": "f1",
         "points": 1,
         "open": -1000,
-        "close": null,
-        "clv": null
+        "close": -1000,
+        "clv": 0
       }
     ],
     "Terrance Chatman": [
@@ -7973,8 +8057,8 @@
         "side": "f2",
         "points": 1,
         "open": 625,
-        "close": null,
-        "clv": null
+        "close": 625,
+        "clv": 0
       }
     ],
     "Jamall Emmers": [
@@ -7984,8 +8068,8 @@
         "side": "f1",
         "points": 1,
         "open": 295,
-        "close": null,
-        "clv": null
+        "close": 295,
+        "clv": 0
       }
     ],
     "Lerryan Douglas": [
@@ -7995,8 +8079,8 @@
         "side": "f2",
         "points": 1,
         "open": -375,
-        "close": null,
-        "clv": null
+        "close": -375,
+        "clv": 0
       }
     ],
     "Chris Padilla": [
@@ -8006,8 +8090,8 @@
         "side": "f1",
         "points": 1,
         "open": 100,
-        "close": null,
-        "clv": null
+        "close": 100,
+        "clv": 0
       }
     ],
     "Nasrat Haqparast": [
@@ -8017,8 +8101,8 @@
         "side": "f2",
         "points": 1,
         "open": -120,
-        "close": null,
-        "clv": null
+        "close": -120,
+        "clv": 0
       }
     ],
     "Gauge Young": [
@@ -8028,8 +8112,8 @@
         "side": "f1",
         "points": 1,
         "open": -155,
-        "close": null,
-        "clv": null
+        "close": -155,
+        "clv": 0
       }
     ],
     "Stanley Dorsainvil": [
@@ -8039,8 +8123,8 @@
         "side": "f2",
         "points": 1,
         "open": 130,
-        "close": null,
-        "clv": null
+        "close": 130,
+        "clv": 0
       }
     ],
     "Wesley Schultz": [
@@ -8050,8 +8134,8 @@
         "side": "f1",
         "points": 1,
         "open": 150,
-        "close": null,
-        "clv": null
+        "close": 150,
+        "clv": 0
       }
     ],
     "Jackson McVey": [
@@ -8061,8 +8145,8 @@
         "side": "f2",
         "points": 1,
         "open": -185,
-        "close": null,
-        "clv": null
+        "close": -185,
+        "clv": 0
       }
     ],
     "Shanelle Dyer": [
@@ -8072,8 +8156,8 @@
         "side": "f1",
         "points": 1,
         "open": -750,
-        "close": null,
-        "clv": null
+        "close": -750,
+        "clv": 0
       }
     ],
     "Elise Reed": [
@@ -8083,8 +8167,8 @@
         "side": "f2",
         "points": 1,
         "open": 525,
-        "close": null,
-        "clv": null
+        "close": 525,
+        "clv": 0
       }
     ],
     "Umar Nurmagomedov": [

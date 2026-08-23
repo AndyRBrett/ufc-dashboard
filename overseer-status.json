@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T23:53:30Z",
+  "generated_at": "2026-08-23T00:03:30Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -12,7 +12,7 @@
     {
       "event_id": "2026-07-25:ufc-fight-night-ankalaev-vs-guskov",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-22T23:53:30Z",
+      "last_changed_at": "2026-08-23T00:03:30Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -66,7 +66,7 @@
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-08-22T23:53:30Z",
+      "last_changed_at": "2026-08-23T00:03:30Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -75,7 +75,7 @@
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-22T23:53:30Z",
+      "last_changed_at": "2026-08-23T00:03:30Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -84,7 +84,7 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-22T23:53:30Z",
+      "last_changed_at": "2026-08-23T00:03:30Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -93,7 +93,7 @@
     {
       "event_id": "2026-10-03:ufc-332",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-22T23:53:30Z",
+      "last_changed_at": "2026-08-23T00:03:30Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 7,
@@ -102,7 +102,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-22T23:53:30Z",
+      "last_changed_at": "2026-08-23T00:03:30Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -111,7 +111,7 @@
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-22T23:53:30Z",
+      "last_changed_at": "2026-08-23T00:03:30Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -129,7 +129,7 @@
       "main_event": false,
       "f1_prob_shift": 53.0,
       "f2_prob_shift": -53.2,
-      "priority": 1340.0
+      "priority": 670.0
     },
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
@@ -142,18 +142,6 @@
       "f1_prob_shift": -11.1,
       "f2_prob_shift": 11.3,
       "priority": 650.0
-    },
-    {
-      "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
-      "f1": "Carli Judice",
-      "f2": "Jeisla Chaves",
-      "f1_movement": -150,
-      "f2_movement": 75,
-      "magnitude": 150,
-      "main_event": false,
-      "f1_prob_shift": 3.9,
-      "f2_prob_shift": -3.2,
-      "priority": 300.0
     },
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
@@ -216,6 +204,18 @@
       "priority": 199.5
     },
     {
+      "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
+      "f1": "Carli Judice",
+      "f2": "Jeisla Chaves",
+      "f1_movement": -150,
+      "f2_movement": 75,
+      "magnitude": 150,
+      "main_event": false,
+      "f1_prob_shift": 3.9,
+      "f2_prob_shift": -3.2,
+      "priority": 150.0
+    },
+    {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
       "f1": "Lucas Fernando",
       "f2": "Rafael Tobias",
@@ -237,7 +237,7 @@
       "main_event": true,
       "f1_prob_shift": 1.6,
       "f2_prob_shift": -1.8,
-      "priority": 55.0
+      "priority": 27.5
     },
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
@@ -249,19 +249,7 @@
       "main_event": false,
       "f1_prob_shift": -0.2,
       "f2_prob_shift": 2.0,
-      "priority": 28.0
-    },
-    {
-      "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
-      "f1": "Shamil Gaziev",
-      "f2": "Kennedy Nzechukwu",
-      "f1_movement": -10,
-      "f2_movement": 5,
-      "magnitude": 10,
-      "main_event": false,
-      "f1_prob_shift": 1.9,
-      "f2_prob_shift": -1.2,
-      "priority": 20.0
+      "priority": 14.0
     },
     {
       "event_id": "2026-08-01:ufc-fight-night-medic-vs-rodriguez",
@@ -285,6 +273,18 @@
       "main_event": false,
       "f1_prob_shift": -0.1,
       "f2_prob_shift": 0.1,
+      "priority": 10.0
+    },
+    {
+      "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
+      "f1": "Shamil Gaziev",
+      "f2": "Kennedy Nzechukwu",
+      "f1_movement": -10,
+      "f2_movement": 5,
+      "magnitude": 10,
+      "main_event": false,
+      "f1_prob_shift": 1.9,
+      "f2_prob_shift": -1.2,
       "priority": 10.0
     }
   ],
