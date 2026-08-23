@@ -93,6 +93,39 @@ const PUSH_HOSTS = (Deno.env.get("PUSH_ENDPOINT_HOSTS") ??
   .split(",").map((h) => h.trim().toLowerCase()).filter(Boolean);
 const MAX_ENDPOINT = 512, MAX_KEY = 256, MAX_USER_ID = 128, MAX_NICKNAME = 60;
 
+// Registering a subscription claims an identity: the row is keyed on user_id and
+// upserted on conflict, so whoever gets to pick user_id owns that user's
+// notifications from then on. The anon key cannot establish that — it ships in
+// index.html and is the same for everybody — and user_ids are not secret either,
+// since the leaderboard's picks table is world-readable by design. So a caller
+// proves who they are with their own Supabase session JWT, and may only register
+// as themselves.
+//
+// Escape hatch, not a default: flipping this to "0" restores the old behaviour
+// without a code deploy if the auth round-trip ever becomes the thing that is
+// broken at 2am during a card.
+const REQUIRE_JWT_FOR_REGISTER =
+  (Deno.env.get("REQUIRE_JWT_FOR_REGISTER") ?? "1") !== "0";
+
+// Resolve a bearer token to the user it belongs to, or null. Asking GoTrue is
+// deliberate: it validates signature, expiry and revocation in one call and
+// needs no JWT secret in this function's env. It costs one round-trip, but only
+// on register — which happens when someone subscribes or changes a preference,
+// not on the send path.
+async function verifyUser(supabaseUrl: string, anonKey: string, token: string): Promise<string | null> {
+  if (!token) return null;
+  try {
+    const r = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: { "apikey": anonKey, "Authorization": `Bearer ${token}` },
+    });
+    if (!r.ok) return null;
+    const u = await r.json();
+    return u && typeof u.id === "string" && u.id ? u.id : null;
+  } catch {
+    return null;
+  }
+}
+
 function allowedEndpoint(raw: string): boolean {
   let u: URL;
   try { u = new URL(raw); } catch { return false; }
@@ -141,8 +174,16 @@ Deno.serve(async (req) => {
   }
 
   const ANON_KEY = Deno.env.get("SB_ANON_KEY") ?? "";
-  const auth = req.headers.get("Authorization") ?? "";
-  if (ANON_KEY && auth !== `Bearer ${ANON_KEY}`) {
+  const bearer = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
+  const isAnonKey = ANON_KEY !== "" && bearer === ANON_KEY;
+  // A signed-in caller sends their own session JWT instead of the anon key, so
+  // the flat equality check this replaced would have turned every authenticated
+  // request away. Shape is all that is checked here — three dot-separated
+  // segments — and it confers no trust whatsoever; register verifies the token
+  // against GoTrue below, and every other path is anon-key-equivalent exactly as
+  // it was before.
+  const looksLikeJwt = bearer.split(".").length === 3 && bearer.length > 40;
+  if (ANON_KEY && !isAnonKey && !looksLikeJwt) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: CORS });
   }
 
@@ -166,6 +207,14 @@ Deno.serve(async (req) => {
   const ip = clientIp(req);
   if (rateLimited(ip) || globalRateLimited()) {
     return new Response(JSON.stringify({ error: "Rate limit exceeded — slow down" }), { status: 429, headers: CORS });
+  }
+  // Everything except register keeps EXACTLY the bar it had before: the anon
+  // key, nothing else. The shape check above had to let a JWT through to reach
+  // this point (the type is only known once the body is parsed), and without
+  // this line that would have quietly downgraded every other path from "knows
+  // the anon key" to "sent three dots".
+  if (ANON_KEY && !isAnonKey && body.type !== "register") {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: CORS });
   }
   if (!body.type || !TYPE_RE.test(body.type)) {
     return new Response(JSON.stringify({ error: "Unknown notification type" }), { status: 400, headers: CORS });
@@ -196,6 +245,25 @@ Deno.serve(async (req) => {
     }
     if (!allowedEndpoint(endpoint)) {
       return new Response(JSON.stringify({ error: "Unrecognised push endpoint" }), { status: 400, headers: CORS });
+    }
+    // You may only register as yourself. Without this, reading any user_id off
+    // the public leaderboard and re-registering it with your own endpoint took
+    // over that person's notifications: the upsert below conflicts on user_id,
+    // so their row is overwritten rather than added to.
+    if (REQUIRE_JWT_FOR_REGISTER) {
+      const callerId = await verifyUser(SUPABASE_URL, ANON_KEY, isAnonKey ? "" : bearer);
+      if (!callerId) {
+        return new Response(
+          JSON.stringify({ error: "Sign-in required to register for notifications" }),
+          { status: 401, headers: CORS },
+        );
+      }
+      if (callerId !== user_id) {
+        return new Response(
+          JSON.stringify({ error: "Cannot register a subscription for another user" }),
+          { status: 403, headers: CORS },
+        );
+      }
     }
     const row: Record<string, unknown> = {
       user_id,

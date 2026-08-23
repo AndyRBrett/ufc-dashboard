@@ -2306,10 +2306,16 @@ function _syncLivePref(){
       if(!sub)return;
       var p256dhBuf=sub.getKey('p256dh');var authBuf=sub.getKey('auth');
       if(!p256dhBuf||!authBuf)return;
-      fetch(SUPABASE_URL+"/functions/v1/send-push",{
-        method:"POST",
-        headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-        body:JSON.stringify({type:"register",user_id:USER_ID,nickname:userName||USER_ID.slice(0,8),endpoint:sub.endpoint,p256dh:_bufToBase64Url(p256dhBuf),auth:_bufToBase64Url(authBuf),live_results:_liveResultsOn()})
+      // register claims a user_id, so the server now wants the session JWT that
+      // proves it is ours — the anon key is the same for everyone and proves
+      // nothing. _authReady gates the call because _sbToken is only populated
+      // once the anonymous sign-in has landed.
+      _authReady.then(function(){
+        return fetch(SUPABASE_URL+"/functions/v1/send-push",{
+          method:"POST",
+          headers:{"Content-Type":"application/json","Authorization":_authBearer()},
+          body:JSON.stringify({type:"register",user_id:USER_ID,nickname:userName||USER_ID.slice(0,8),endpoint:sub.endpoint,p256dh:_bufToBase64Url(p256dhBuf),auth:_bufToBase64Url(authBuf),live_results:_liveResultsOn()})
+        });
       }).catch(function(e){console.error("live pref sync failed",e);});
     }).catch(function(){});
   });
@@ -2343,11 +2349,16 @@ function _pushRegister(sub){
   var p256dhBuf=sub.getKey('p256dh'),authBuf=sub.getKey('auth');
   if(!p256dhBuf||!authBuf)return Promise.reject(new Error("push keys unavailable"));
   _stashPushIdentity();
-  return fetch(SUPABASE_URL+"/functions/v1/send-push",{
-    method:"POST",
-    headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-    body:JSON.stringify({type:"register",user_id:USER_ID,nickname:userName||USER_ID.slice(0,8),
-      endpoint:sub.endpoint,p256dh:_bufToBase64Url(p256dhBuf),auth:_bufToBase64Url(authBuf),live_results:_liveResultsOn()})
+  // Wait for auth before claiming a user_id: the server verifies the bearer
+  // token against GoTrue and requires it to match the user_id in the body, so
+  // sending the shared anon key here would be rejected.
+  return _authReady.then(function(){
+    return fetch(SUPABASE_URL+"/functions/v1/send-push",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":_authBearer()},
+      body:JSON.stringify({type:"register",user_id:USER_ID,nickname:userName||USER_ID.slice(0,8),
+        endpoint:sub.endpoint,p256dh:_bufToBase64Url(p256dhBuf),auth:_bufToBase64Url(authBuf),live_results:_liveResultsOn()})
+    });
   });
 }
 // Self-heal the web-push subscription. The bell only persists a flag in
