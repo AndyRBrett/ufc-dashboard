@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-23T23:59:59Z",
+  "generated_at": "2026-08-24T01:13:18Z",
   "summary": {
-    "events": 12,
+    "events": 11,
     "block": 0,
     "warn": 4
   },
@@ -9,18 +9,18 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Nurmagomedov vs. Song (6d out): 11 of 13 bouts have no odds",
+      "message": "UFC Fight Night: Nurmagomedov vs. Song (5d out): 11 of 13 bouts have no odds",
       "event": "UFC Fight Night: Nurmagomedov vs. Song",
       "date": "2026-08-29",
-      "days_out": 6
+      "days_out": 5
     },
     {
       "severity": "WARN",
       "check": "odds-missing-all",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (13d out) has no odds on any of its 12 bouts",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (12d out) has no odds on any of its 12 bouts",
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
-      "days_out": 13
+      "days_out": 12
     },
     {
       "severity": "WARN",
