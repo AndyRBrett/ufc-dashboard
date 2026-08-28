@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T22:06:20Z",
+  "generated_at": "2026-08-28T10:45:17Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -5474,7 +5474,7 @@
         {
           "f1": "Umar Nurmagomedov",
           "f2": "Song Yadong",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-07-14T10:55:21Z",
@@ -5485,6 +5485,11 @@
               "at": "2026-08-01T00:07:29Z",
               "f1_odds": -480,
               "f2_odds": 353
+            },
+            {
+              "at": "2026-08-28T10:45:17Z",
+              "f1_odds": -500,
+              "f2_odds": 380
             }
           ],
           "open": {
@@ -5498,18 +5503,232 @@
         {
           "f1": "Yan Xiaonan",
           "f2": "Denise Gomes",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-08-15T10:12:49Z",
               "f1_odds": -450,
               "f2_odds": 350
+            },
+            {
+              "at": "2026-08-28T10:45:17Z",
+              "f1_odds": -175,
+              "f2_odds": 140
             }
           ],
           "open": {
             "at": "2026-08-15T10:12:49Z",
             "f1_odds": -450,
             "f2_odds": 350
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Aori Qileng",
+          "f2": "Kai Asakura",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-28T10:45:17Z",
+              "f1_odds": 310,
+              "f2_odds": -400
+            }
+          ],
+          "open": {
+            "at": "2026-08-28T10:45:17Z",
+            "f1_odds": 310,
+            "f2_odds": -400
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Su Mudaerji",
+          "f2": "Alex Perez",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-28T10:45:17Z",
+              "f1_odds": -210,
+              "f2_odds": 175
+            }
+          ],
+          "open": {
+            "at": "2026-08-28T10:45:17Z",
+            "f1_odds": -210,
+            "f2_odds": 175
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Liu Ce",
+          "f2": "Levi Rodrigues Jr.",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-28T10:45:17Z",
+              "f1_odds": -110,
+              "f2_odds": -110
+            }
+          ],
+          "open": {
+            "at": "2026-08-28T10:45:17Z",
+            "f1_odds": -110,
+            "f2_odds": -110
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Bilal Hasan",
+          "f2": "Nilson Rojas",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-28T10:45:17Z",
+              "f1_odds": -500,
+              "f2_odds": 375
+            }
+          ],
+          "open": {
+            "at": "2026-08-28T10:45:17Z",
+            "f1_odds": -500,
+            "f2_odds": 375
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Namsrai Batbayar",
+          "f2": "Andre Lima",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-28T10:45:17Z",
+              "f1_odds": 225,
+              "f2_odds": -280
+            }
+          ],
+          "open": {
+            "at": "2026-08-28T10:45:17Z",
+            "f1_odds": 225,
+            "f2_odds": -280
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Rei Tsuruya",
+          "f2": "Kevin Borjas",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-28T10:45:17Z",
+              "f1_odds": -650,
+              "f2_odds": 470
+            }
+          ],
+          "open": {
+            "at": "2026-08-28T10:45:17Z",
+            "f1_odds": -650,
+            "f2_odds": 470
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Xiao Long",
+          "f2": "Francesco Nuzzi",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-28T10:45:17Z",
+              "f1_odds": -175,
+              "f2_odds": 145
+            }
+          ],
+          "open": {
+            "at": "2026-08-28T10:45:17Z",
+            "f1_odds": -175,
+            "f2_odds": 145
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Jack Jenkins",
+          "f2": "Sean Woodson",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-28T10:45:17Z",
+              "f1_odds": 125,
+              "f2_odds": -150
+            }
+          ],
+          "open": {
+            "at": "2026-08-28T10:45:17Z",
+            "f1_odds": 125,
+            "f2_odds": -150
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Lawrence Lui",
+          "f2": "Hector Santiago",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-28T10:45:17Z",
+              "f1_odds": -300,
+              "f2_odds": 250
+            }
+          ],
+          "open": {
+            "at": "2026-08-28T10:45:17Z",
+            "f1_odds": -300,
+            "f2_odds": 250
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Xiong Jingnan",
+          "f2": "Julia Polastri",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-28T10:45:17Z",
+              "f1_odds": 210,
+              "f2_odds": -260
+            }
+          ],
+          "open": {
+            "at": "2026-08-28T10:45:17Z",
+            "f1_odds": 210,
+            "f2_odds": -260
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Ding Meng",
+          "f2": "Cameron Nelson",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-28T10:45:17Z",
+              "f1_odds": -152,
+              "f2_odds": 119
+            }
+          ],
+          "open": {
+            "at": "2026-08-28T10:45:17Z",
+            "f1_odds": -152,
+            "f2_odds": 119
           },
           "close": null,
           "clv": null
@@ -5557,7 +5776,7 @@
         "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
         "opponent": "Umar Nurmagomedov",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 323,
         "close": null,
         "clv": null
@@ -5614,6 +5833,15 @@
         "open": 223,
         "close": 223,
         "clv": 0
+      },
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Aori Qileng",
+        "side": "f2",
+        "points": 1,
+        "open": -400,
+        "close": null,
+        "clv": null
       }
     ],
     "Cameron Smotherman": [
@@ -5658,6 +5886,15 @@
         "open": -130,
         "close": -130,
         "clv": 0
+      },
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Su Mudaerji",
+        "side": "f2",
+        "points": 1,
+        "open": 175,
+        "close": null,
+        "clv": null
       }
     ],
     "Su Mudaerji": [
@@ -5669,6 +5906,15 @@
         "open": 110,
         "close": 110,
         "clv": 0
+      },
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Alex Perez",
+        "side": "f1",
+        "points": 1,
+        "open": -210,
+        "close": null,
+        "clv": null
       }
     ],
     "Cody Haddon": [
@@ -5691,6 +5937,15 @@
         "open": 287,
         "close": 287,
         "clv": 0
+      },
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Kai Asakura",
+        "side": "f1",
+        "points": 1,
+        "open": 310,
+        "close": null,
+        "clv": null
       }
     ],
     "Rei Tsuruya": [
@@ -5702,6 +5957,15 @@
         "open": 257,
         "close": 257,
         "clv": 0
+      },
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Kevin Borjas",
+        "side": "f1",
+        "points": 1,
+        "open": -650,
+        "close": null,
+        "clv": null
       }
     ],
     "Luis Gurule": [
@@ -5735,6 +5999,15 @@
         "open": -188,
         "close": -188,
         "clv": 0
+      },
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Julia Polastri",
+        "side": "f1",
+        "points": 1,
+        "open": 210,
+        "close": null,
+        "clv": null
       }
     ],
     "Rodrigo Vera": [
@@ -6292,6 +6565,15 @@
         "open": -632,
         "close": -632,
         "clv": 0
+      },
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Namsrai Batbayar",
+        "side": "f2",
+        "points": 1,
+        "open": -280,
+        "close": null,
+        "clv": null
       }
     ],
     "Kevin Borjas": [
@@ -6303,6 +6585,15 @@
         "open": 463,
         "close": 465,
         "clv": 2
+      },
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Rei Tsuruya",
+        "side": "f2",
+        "points": 1,
+        "open": 470,
+        "close": null,
+        "clv": null
       }
     ],
     "Beatriz Mesquita": [
@@ -7181,6 +7472,15 @@
         "open": -185,
         "close": -190,
         "clv": -5
+      },
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Liu Ce",
+        "side": "f2",
+        "points": 1,
+        "open": -110,
+        "close": null,
+        "clv": null
       }
     ],
     "Felipe Franco": [
@@ -8176,7 +8476,7 @@
         "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
         "opponent": "Song Yadong",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -423,
         "close": null,
         "clv": null
@@ -8196,7 +8496,7 @@
         "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
         "opponent": "Denise Gomes",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -450,
         "close": null,
         "clv": null
@@ -8207,8 +8507,151 @@
         "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
         "opponent": "Yan Xiaonan",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 350,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Liu Ce": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Levi Rodrigues Jr.",
+        "side": "f1",
+        "points": 1,
+        "open": -110,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Bilal Hasan": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Nilson Rojas",
+        "side": "f1",
+        "points": 1,
+        "open": -500,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Nilson Rojas": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Bilal Hasan",
+        "side": "f2",
+        "points": 1,
+        "open": 375,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Namsrai Batbayar": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Andre Lima",
+        "side": "f1",
+        "points": 1,
+        "open": 225,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Xiao Long": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Francesco Nuzzi",
+        "side": "f1",
+        "points": 1,
+        "open": -175,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Francesco Nuzzi": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Xiao Long",
+        "side": "f2",
+        "points": 1,
+        "open": 145,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Jack Jenkins": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Sean Woodson",
+        "side": "f1",
+        "points": 1,
+        "open": 125,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Sean Woodson": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Jack Jenkins",
+        "side": "f2",
+        "points": 1,
+        "open": -150,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Lawrence Lui": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Hector Santiago",
+        "side": "f1",
+        "points": 1,
+        "open": -300,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Hector Santiago": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Lawrence Lui",
+        "side": "f2",
+        "points": 1,
+        "open": 250,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Julia Polastri": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Xiong Jingnan",
+        "side": "f2",
+        "points": 1,
+        "open": -260,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Ding Meng": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Cameron Nelson",
+        "side": "f1",
+        "points": 1,
+        "open": -152,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Cameron Nelson": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Ding Meng",
+        "side": "f2",
+        "points": 1,
+        "open": 119,
         "close": null,
         "clv": null
       }
