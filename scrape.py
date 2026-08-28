@@ -505,6 +505,13 @@ _TIME_OVERRIDES = {
     "UFC Fight Night: Fiziev vs. Torres": ("12:00", "09:00"),
     # Abu Dhabi (UTC+4): main 15:00 ET = 19:00 UTC = 23:00 local; prelims 12:00 ET.
     "UFC Fight Night: Ankalaev vs. Rountree Jr.": ("15:00", "12:00"),
+    # Shanghai (UTC+8): main 06:00 ET = 10:00 UTC = 18:00 local; prelims 03:00 ET
+    # = 07:00 UTC = 15:00 local. Same failure as the two above: the scraped time
+    # landed on 03:00 ET, which is the STREAM start (i.e. the prelims), and the
+    # prelim slot was then derived three hours earlier still, so both were wrong
+    # by three hours in the same direction. Published Paramount+ times confirmed
+    # by four independent previews.
+    "UFC Fight Night: Nurmagomedov vs. Song": ("06:00", "03:00"),
 }
 
 # Cards with no preliminary bouts -- every fight is treated as a main-card fight
