@@ -113,19 +113,19 @@ var EVENTS=[
     time:"06:00",
     prelimTime:"03:00",
     fights:[
-      {lbl:"Main Event",wc:"Bantamweight",title:false,rematch:false,odds:{f1:-500,f2:380},winner:"",method:"",round:null,state:"pre",f1:{n:"Umar Nurmagomedov",r:"20-1-0",rk:"",s:null},f2:{n:"Song Yadong",r:"23-9-1",rk:"",s:null}},
-      {lbl:"Co-Main",wc:"Women's Strawweight",title:false,rematch:false,odds:{f1:-175,f2:140},winner:"",method:"",round:null,state:"pre",f1:{n:"Yan Xiaonan",r:"19-5-0",rk:"",s:null},f2:{n:"Denise Gomes",r:"12-3-0",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Bantamweight",title:false,rematch:false,odds:{f1:310,f2:-400},winner:"",method:"",round:null,state:"pre",f1:{n:"Aori Qileng",r:"26-12-0",rk:"",s:null},f2:{n:"Kai Asakura",r:"22-6-0",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Flyweight",title:false,rematch:false,odds:{f1:-210,f2:175},winner:"",method:"",round:null,state:"pre",f1:{n:"Su Mudaerji",r:"19-7-0",rk:"",s:null},f2:{n:"Alex Perez",r:"26-10-0",rk:"",s:null}},
-      {lbl:"Main Card",wc:"Light Heavyweight",title:false,rematch:false,odds:{f1:-110,f2:-110},winner:"",method:"",round:null,state:"pre",f1:{n:"Liu Ce",r:"3-1-0",rk:"",s:null},f2:{n:"Levi Rodrigues Jr.",r:"5-1-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Flyweight",title:false,rematch:false,odds:{f1:-500,f2:375},winner:"",method:"",round:null,state:"pre",f1:{n:"Bilal Hasan",r:"9-0-0",rk:"",s:null},f2:{n:"Nilson Rojas",r:"9-0-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Catchweight (127 Lb)",title:false,rematch:false,odds:{f1:225,f2:-280},winner:"",method:"",round:null,state:"pre",f1:{n:"Namsrai Batbayar",r:"10-1-0",rk:"",s:null},f2:{n:"Andre Lima",r:"11-1-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Flyweight",title:false,rematch:false,odds:{f1:-650,f2:470},winner:"",method:"",round:null,state:"pre",f1:{n:"Rei Tsuruya",r:"11-1-0",rk:"",s:null},f2:{n:"Kevin Borjas",r:"11-5-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Bantamweight",title:false,rematch:false,odds:{f1:-175,f2:145},winner:"",method:"",round:null,state:"pre",f1:{n:"Xiao Long",r:"27-11-0",rk:"",s:null},f2:{n:"Francesco Nuzzi",r:"11-2-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Featherweight",title:false,rematch:false,odds:{f1:125,f2:-150},winner:"",method:"",round:null,state:"pre",f1:{n:"Jack Jenkins",r:"14-4-0",rk:"",s:null},f2:{n:"Sean Woodson",r:"13-2-1",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Bantamweight",title:false,rematch:false,odds:{f1:-300,f2:250},winner:"",method:"",round:null,state:"pre",f1:{n:"Lawrence Lui",r:"8-1-0",rk:"",s:null},f2:{n:"Hector Santiago",r:"6-1-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Catchweight (118.5 Lb)",title:false,rematch:false,odds:{f1:210,f2:-260},winner:"",method:"",round:null,state:"pre",f1:{n:"Xiong Jingnan",r:"19-3-0",rk:"",s:null},f2:{n:"Julia Polastri",r:"14-6-0",rk:"",s:null}},
-      {lbl:"Prelim",wc:"Welterweight",title:false,rematch:false,odds:{f1:-152,f2:119},winner:"",method:"",round:null,state:"pre",f1:{n:"Ding Meng",r:"35-10-0",rk:"",s:null},f2:{n:"Cameron Nelson",r:"7-1-0",rk:"",s:null}}
+      {lbl:"Main Event",wc:"Bantamweight",title:false,rematch:false,odds:{f1:-625,f2:455},winner:"",method:"",round:null,state:"pre",f1:{n:"Umar Nurmagomedov",r:"20-1-0",rk:"",s:null},f2:{n:"Song Yadong",r:"23-9-1",rk:"",s:null}},
+      {lbl:"Co-Main",wc:"Women's Strawweight",title:false,rematch:false,odds:{f1:-155,f2:130},winner:"",method:"",round:null,state:"pre",f1:{n:"Yan Xiaonan",r:"19-5-0",rk:"",s:null},f2:{n:"Denise Gomes",r:"12-3-0",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Bantamweight",title:false,rematch:false,odds:{f1:350,f2:-455},winner:"",method:"",round:null,state:"pre",f1:{n:"Aori Qileng",r:"26-12-0",rk:"",s:null},f2:{n:"Kai Asakura",r:"22-6-0",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Flyweight",title:false,rematch:false,odds:{f1:-218,f2:180},winner:"",method:"",round:null,state:"pre",f1:{n:"Su Mudaerji",r:"19-7-0",rk:"",s:null},f2:{n:"Alex Perez",r:"26-10-0",rk:"",s:null}},
+      {lbl:"Main Card",wc:"Light Heavyweight",title:false,rematch:false,odds:{f1:-192,f2:160},winner:"",method:"",round:null,state:"pre",f1:{n:"Liu Ce",r:"3-1-0",rk:"",s:null},f2:{n:"Levi Rodrigues Jr.",r:"5-1-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Flyweight",title:false,rematch:false,odds:{f1:-800,f2:550},winner:"",method:"",round:null,state:"pre",f1:{n:"Bilal Hasan",r:"9-0-0",rk:"",s:null},f2:{n:"Nilson Rojas",r:"9-0-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Catchweight (127 Lb)",title:false,rematch:false,odds:{f1:220,f2:-270},winner:"",method:"",round:null,state:"pre",f1:{n:"Namsrai Batbayar",r:"10-1-0",rk:"",s:null},f2:{n:"Andre Lima",r:"11-1-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Flyweight",title:false,rematch:false,odds:{f1:-850,f2:575},winner:"",method:"",round:null,state:"pre",f1:{n:"Rei Tsuruya",r:"11-1-0",rk:"",s:null},f2:{n:"Kevin Borjas",r:"11-5-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Bantamweight",title:false,rematch:false,odds:{f1:-180,f2:150},winner:"",method:"",round:null,state:"pre",f1:{n:"Xiao Long",r:"27-11-0",rk:"",s:null},f2:{n:"Francesco Nuzzi",r:"11-2-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Featherweight",title:false,rematch:false,odds:{f1:124,f2:-148},winner:"",method:"",round:null,state:"pre",f1:{n:"Jack Jenkins",r:"14-4-0",rk:"",s:null},f2:{n:"Sean Woodson",r:"13-2-1",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Bantamweight",title:false,rematch:false,odds:{f1:-290,f2:235},winner:"",method:"",round:null,state:"pre",f1:{n:"Lawrence Lui",r:"8-1-0",rk:"",s:null},f2:{n:"Hector Santiago",r:"6-1-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Catchweight (118.5 Lb)",title:false,rematch:false,odds:{f1:200,f2:-245},winner:"",method:"",round:null,state:"pre",f1:{n:"Xiong Jingnan",r:"19-3-0",rk:"",s:null},f2:{n:"Julia Polastri",r:"14-6-0",rk:"",s:null}},
+      {lbl:"Prelim",wc:"Welterweight",title:false,rematch:false,odds:{f1:-142,f2:120},winner:"",method:"",round:null,state:"pre",f1:{n:"Ding Meng",r:"35-10-0",rk:"",s:null},f2:{n:"Cameron Nelson",r:"7-1-0",rk:"",s:null}}
     ]
   },
   {
