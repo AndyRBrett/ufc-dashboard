@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-29T10:54:36Z",
+  "generated_at": "2026-08-29T11:00:06Z",
   "summary": {
     "events": 13,
     "block": 0,
-    "warn": 6
+    "warn": 8
   },
   "findings": [
     {
@@ -21,6 +21,24 @@
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
       "days_out": 14
+    },
+    {
+      "severity": "WARN",
+      "check": "record-blank",
+      "message": "UFC Fight Night: Nurmagomedov vs. Song (0d out): {{nowrap|Levi Rodrigues Jr. has no record",
+      "fighter": "{{nowrap|Levi Rodrigues Jr.",
+      "event": "UFC Fight Night: Nurmagomedov vs. Song",
+      "date": "2026-08-29",
+      "days_out": 0
+    },
+    {
+      "severity": "WARN",
+      "check": "stats-fetch-failed",
+      "message": "UFC Fight Night: Nurmagomedov vs. Song (0d out): {{nowrap|Levi Rodrigues Jr. stats lookup failed (2026-08-29)",
+      "fighter": "{{nowrap|Levi Rodrigues Jr.",
+      "event": "UFC Fight Night: Nurmagomedov vs. Song",
+      "date": "2026-08-29",
+      "days_out": 0
     },
     {
       "severity": "WARN",

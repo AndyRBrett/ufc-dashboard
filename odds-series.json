@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-29T10:54:36Z",
+  "generated_at": "2026-08-29T11:00:06Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -5797,6 +5797,25 @@
           },
           "close": null,
           "clv": null
+        },
+        {
+          "f1": "Liu Ce",
+          "f2": "{{nowrap|Levi Rodrigues Jr.",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-08-29T11:00:06Z",
+              "f1_odds": -192,
+              "f2_odds": 160
+            }
+          ],
+          "open": {
+            "at": "2026-08-29T11:00:06Z",
+            "f1_odds": -192,
+            "f2_odds": 160
+          },
+          "close": null,
+          "clv": null
         }
       ]
     },
@@ -8587,6 +8606,15 @@
         "open": -110,
         "close": null,
         "clv": null
+      },
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "{{nowrap|Levi Rodrigues Jr.",
+        "side": "f1",
+        "points": 1,
+        "open": -192,
+        "close": null,
+        "clv": null
       }
     ],
     "Bilal Hasan": [
@@ -8717,6 +8745,17 @@
         "side": "f2",
         "points": 2,
         "open": 119,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "{{nowrap|Levi Rodrigues Jr.": [
+      {
+        "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+        "opponent": "Liu Ce",
+        "side": "f2",
+        "points": 1,
+        "open": 160,
         "close": null,
         "clv": null
       }
