@@ -1,18 +1,44 @@
 {
-  "generated_at": "2026-08-28T22:03:11Z",
+  "generated_at": "2026-08-29T00:03:46Z",
   "summary": {
     "events": 13,
     "block": 0,
-    "warn": 3
+    "warn": 6
   },
   "findings": [
     {
       "severity": "WARN",
       "check": "odds-missing-all",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (8d out) has no odds on any of its 14 bouts",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (7d out) has no odds on any of its 14 bouts",
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
-      "days_out": 8
+      "days_out": 7
+    },
+    {
+      "severity": "WARN",
+      "check": "odds-missing-all",
+      "message": "UFC Fight Night: Silva vs. Delgado (14d out) has no odds on any of its 12 bouts",
+      "event": "UFC Fight Night: Silva vs. Delgado",
+      "date": "2026-09-12",
+      "days_out": 14
+    },
+    {
+      "severity": "WARN",
+      "check": "record-blank",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (7d out): Klaudia Sygua has no record",
+      "fighter": "Klaudia Sygua",
+      "event": "UFC Fight Night: Hooker vs. Parnasse",
+      "date": "2026-09-05",
+      "days_out": 7
+    },
+    {
+      "severity": "WARN",
+      "check": "stats-fetch-failed",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (7d out): Klaudia Sygua stats lookup failed (2026-08-29)",
+      "fighter": "Klaudia Sygua",
+      "event": "UFC Fight Night: Hooker vs. Parnasse",
+      "date": "2026-09-05",
+      "days_out": 7
     },
     {
       "severity": "WARN",
