@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-29T03:38:29Z",
+  "generated_at": "2026-08-29T03:44:02Z",
   "events_tracked": 13,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -48,16 +48,16 @@
     {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
       "status": "ok",
-      "last_changed_at": "2026-08-28T10:45:17Z",
+      "last_changed_at": "2026-08-29T03:44:02Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": -77
+      "line_movement": -202
     },
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-08-29T03:38:29Z",
+      "last_changed_at": "2026-08-29T03:44:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 14,
@@ -66,7 +66,7 @@
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-08-29T03:38:29Z",
+      "last_changed_at": "2026-08-29T03:44:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -75,7 +75,7 @@
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-29T03:38:29Z",
+      "last_changed_at": "2026-08-29T03:44:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -84,7 +84,7 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-29T03:38:29Z",
+      "last_changed_at": "2026-08-29T03:44:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -93,7 +93,7 @@
     {
       "event_id": "2026-10-03:ufc-332",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-29T03:38:29Z",
+      "last_changed_at": "2026-08-29T03:44:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 7,
@@ -102,7 +102,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-29T03:38:29Z",
+      "last_changed_at": "2026-08-29T03:44:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -111,7 +111,7 @@
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-29T03:38:29Z",
+      "last_changed_at": "2026-08-29T03:44:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -120,7 +120,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-29T03:38:29Z",
+      "last_changed_at": "2026-08-29T03:44:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -128,6 +128,18 @@
     }
   ],
   "alerts": [
+    {
+      "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+      "f1": "Umar Nurmagomedov",
+      "f2": "Song Yadong",
+      "f1_movement": -202,
+      "f2_movement": 132,
+      "magnitude": 202,
+      "main_event": true,
+      "f1_prob_shift": 5.3,
+      "f2_prob_shift": -5.6,
+      "priority": 1010.0
+    },
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "f1": "Reinier de Ridder",
@@ -154,27 +166,51 @@
     },
     {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
-      "f1": "Yan Xiaonan",
-      "f2": "Denise Gomes",
-      "f1_movement": 275,
-      "f2_movement": -210,
-      "magnitude": 275,
+      "f1": "Bilal Hasan",
+      "f2": "Nilson Rojas",
+      "f1_movement": -300,
+      "f2_movement": 175,
+      "magnitude": 300,
       "main_event": false,
-      "f1_prob_shift": -18.2,
-      "f2_prob_shift": 19.4,
-      "priority": 550.0
+      "f1_prob_shift": 5.6,
+      "f2_prob_shift": -5.7,
+      "priority": 600.0
     },
     {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
-      "f1": "Umar Nurmagomedov",
-      "f2": "Song Yadong",
-      "f1_movement": -77,
-      "f2_movement": 57,
-      "magnitude": 77,
-      "main_event": true,
-      "f1_prob_shift": 2.5,
-      "f2_prob_shift": -2.8,
-      "priority": 385.0
+      "f1": "Yan Xiaonan",
+      "f2": "Denise Gomes",
+      "f1_movement": 295,
+      "f2_movement": -220,
+      "magnitude": 295,
+      "main_event": false,
+      "f1_prob_shift": -21.0,
+      "f2_prob_shift": 21.3,
+      "priority": 590.0
+    },
+    {
+      "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+      "f1": "Liu Ce",
+      "f2": "Levi Rodrigues Jr.",
+      "f1_movement": -82,
+      "f2_movement": 270,
+      "magnitude": 270,
+      "main_event": false,
+      "f1_prob_shift": 13.4,
+      "f2_prob_shift": -13.9,
+      "priority": 540.0
+    },
+    {
+      "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+      "f1": "Rei Tsuruya",
+      "f2": "Kevin Borjas",
+      "f1_movement": -200,
+      "f2_movement": 105,
+      "magnitude": 200,
+      "main_event": false,
+      "f1_prob_shift": 2.8,
+      "f2_prob_shift": -2.7,
+      "priority": 400.0
     },
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
@@ -249,6 +285,42 @@
       "priority": 110.0
     },
     {
+      "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+      "f1": "Aori Qileng",
+      "f2": "Kai Asakura",
+      "f1_movement": 40,
+      "f2_movement": -55,
+      "magnitude": 55,
+      "main_event": false,
+      "f1_prob_shift": -2.2,
+      "f2_prob_shift": 2.0,
+      "priority": 110.0
+    },
+    {
+      "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+      "f1": "Lawrence Lui",
+      "f2": "Hector Santiago",
+      "f1_movement": 10,
+      "f2_movement": -15,
+      "magnitude": 15,
+      "main_event": false,
+      "f1_prob_shift": -0.6,
+      "f2_prob_shift": 1.3,
+      "priority": 30.0
+    },
+    {
+      "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+      "f1": "Xiong Jingnan",
+      "f2": "Julia Polastri",
+      "f1_movement": -10,
+      "f2_movement": 15,
+      "magnitude": 15,
+      "main_event": false,
+      "f1_prob_shift": 1.1,
+      "f2_prob_shift": -1.2,
+      "priority": 30.0
+    },
+    {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
       "f1": "Gregory Rodrigues",
       "f2": "Anthony Hernandez",
@@ -259,6 +331,30 @@
       "f1_prob_shift": -1.8,
       "f2_prob_shift": 1.6,
       "priority": 27.5
+    },
+    {
+      "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+      "f1": "Namsrai Batbayar",
+      "f2": "Andre Lima",
+      "f1_movement": -5,
+      "f2_movement": 10,
+      "magnitude": 10,
+      "main_event": false,
+      "f1_prob_shift": 0.5,
+      "f2_prob_shift": -0.7,
+      "priority": 20.0
+    },
+    {
+      "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
+      "f1": "Ding Meng",
+      "f2": "Cameron Nelson",
+      "f1_movement": 10,
+      "f2_movement": 1,
+      "magnitude": 10,
+      "main_event": false,
+      "f1_prob_shift": -1.6,
+      "f2_prob_shift": -0.2,
+      "priority": 20.0
     },
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
