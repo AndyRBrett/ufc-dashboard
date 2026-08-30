@@ -698,13 +698,88 @@ body.theme-fade,body.theme-fade *{transition:background-color .35s ease,color .3
 @keyframes dotRipple{from{box-shadow:0 0 0 0 var(--accent-glow)}to{box-shadow:0 0 0 9px transparent}}
 .fn-banner-dot,.fnl-live-dot::before{animation:blink 1s infinite,dotRipple 1.6s ease-out infinite}
 }
+/* ===== THEME: SEASONAL — one theme that resolves itself from the month =====
+   Stars & Stripes is untouched; this is a separate entry. Built to the same
+   anatomy that makes Stars & Stripes work: a mascot in place of the octagon,
+   a sound when you tap it, ambient life on the page, an idle breathe, a bit
+   of chrome, and only then a palette.
+
+   Structure: ONE skeleton maps the app's whole variable set onto seven
+   season-level variables, and each month redefines just those seven. That is
+   why twelve months is a dozen short lines rather than a dozen stylesheets.
+   Mascots are emoji, exactly like .logo-eagle, so this adds no image assets;
+   the sounds are synthesised in the Web Audio API, so it adds no files either. */
+body[data-theme="seasonal"]{
+  --bg:var(--se-bg);--card:var(--se-card);--card2:var(--se-card2);--surface:var(--se-card2);
+  --future-bg:var(--se-bg);--future-border:rgba(255,255,255,.07);
+  --text:var(--se-ink);--muted:var(--se-mut);--muted2:var(--se-mut2);
+  --border:rgba(255,255,255,.09);--border2:rgba(255,255,255,.17);--sep:rgba(255,255,255,.1);
+  --stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(255,255,255,.06);--pill-bg:rgba(255,255,255,.05);
+  --bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:var(--se-bg);
+  --red:var(--se-accent);--red-dim:rgba(255,255,255,.09);--red-border:var(--se-accent);
+  --gold:var(--se-accent2);--gold-dim:rgba(255,255,255,.09);--gold-border:var(--se-accent2);
+  --green:#3ecf6e;--green-dim:rgba(62,207,110,.12);--green-border:rgba(62,207,110,.3);
+  --loss:#ff5d6e;--loss-dim:rgba(255,93,110,.12);--loss-border:rgba(255,93,110,.3);
+  --shadow-card:0 2px 12px rgba(0,0,0,.5);--shadow-el:0 8px 32px rgba(0,0,0,.6);
+  --on-accent:#fff;--on-gold:#12100c;--accent-glow:var(--se-glow);--gold-glow:var(--se-glow);
+  --banner-edge:var(--se-accent2);--fn-tint:rgba(255,255,255,.08)}
+/* the twelve months — seven values each, and nothing else */
+body[data-season="jan"]{--se-bg:#0a0a12;--se-card:#151426;--se-card2:#1e1c38;--se-ink:#f4f2ff;--se-mut:#8d87b8;--se-mut2:#c3bee4;--se-accent:#7b2cbf;--se-accent2:#f4d35e;--se-glow:rgba(244,211,94,.4)}
+body[data-season="feb"]{--se-bg:#190711;--se-card:#2a0d1d;--se-card2:#3d1229;--se-ink:#ffeef4;--se-mut:#c48ba4;--se-mut2:#f0c3d3;--se-accent:#d81e5b;--se-accent2:#ff9dbb;--se-glow:rgba(255,157,187,.4)}
+body[data-season="mar"]{--se-bg:#04140c;--se-card:#0a2517;--se-card2:#103322;--se-ink:#eafaf0;--se-mut:#84b499;--se-mut2:#bde0cb;--se-accent:#2f9e44;--se-accent2:#f2c744;--se-glow:rgba(242,199,68,.4)}
+body[data-season="apr"]{--se-bg:#0b1418;--se-card:#132228;--se-card2:#1b3039;--se-ink:#eef7fb;--se-mut:#8aa8b5;--se-mut2:#c2d8e2;--se-accent:#3f92b4;--se-accent2:#ffb3c7;--se-glow:rgba(255,179,199,.4)}
+body[data-season="may"]{--se-bg:#190a15;--se-card:#2b0f24;--se-card2:#3d1533;--se-ink:#fff3e6;--se-mut:#bb8ea5;--se-mut2:#e8c6d6;--se-accent:#e8175d;--se-accent2:#ffc42e;--se-glow:rgba(255,196,46,.42)}
+body[data-season="jun"]{--se-bg:#04171f;--se-card:#092833;--se-card2:#0d3948;--se-ink:#eafaff;--se-mut:#82adbe;--se-mut2:#bfdfea;--se-accent:#0691ad;--se-accent2:#ffd166;--se-glow:rgba(255,209,102,.4)}
+body[data-season="jul"]{--se-bg:#070a13;--se-card:#0e1322;--se-card2:#161d33;--se-ink:#eef2fb;--se-mut:#8a93ab;--se-mut2:#bcc6dd;--se-accent:#b31942;--se-accent2:#5b8cff;--se-glow:rgba(91,140,255,.45)}
+body[data-season="aug"]{--se-bg:#180d04;--se-card:#28160a;--se-card2:#3a2010;--se-ink:#fff2e2;--se-mut:#b8916d;--se-mut2:#e3c9ab;--se-accent:#ef6f2c;--se-accent2:#ffd166;--se-glow:rgba(255,209,102,.42)}
+body[data-season="sep"]{--se-bg:#0e1c11;--se-card:#16301d;--se-card2:#1e4526;--se-ink:#eef5ea;--se-mut:#8fb098;--se-mut2:#c6dccc;--se-accent:#8a4b2a;--se-accent2:#f5f1e6;--se-glow:rgba(245,241,230,.36)}
+body[data-season="oct"]{--se-bg:#08050e;--se-card:#160b1f;--se-card2:#25102f;--se-ink:#f6ecff;--se-mut:#9a83ad;--se-mut2:#d3c1e2;--se-accent:#6a2c9e;--se-accent2:#ff7518;--se-glow:rgba(255,117,24,.45)}
+body[data-season="nov"]{--se-bg:#140d06;--se-card:#241608;--se-card2:#35200d;--se-ink:#fdf1e0;--se-mut:#b3946f;--se-mut2:#e2cbac;--se-accent:#8c3b1b;--se-accent2:#e8a33d;--se-glow:rgba(232,163,61,.42)}
+body[data-season="dec"]{--se-bg:#05110b;--se-card:#0b2014;--se-card2:#11301d;--se-ink:#f2fbf5;--se-mut:#8bae9a;--se-mut2:#c4dfd0;--se-accent:#c1272d;--se-accent2:#f2d06b;--se-glow:rgba(242,208,107,.42)}
+/* chrome: a two-tone bar under the header, the way the flag stripe works for USA */
+body[data-theme="seasonal"] .hdr::after,body[data-theme="seasonal"] .lb-hdr::after{content:"";position:absolute;
+  left:0;right:0;bottom:-1px;height:3px;background:linear-gradient(90deg,var(--se-accent2) 0 30%,var(--se-accent) 30% 100%)}
+body[data-theme="seasonal"] .lb-hdr{position:relative}
+body[data-theme="seasonal"] .hero{background:radial-gradient(120% 78% at 50% 0%,var(--se-card2) 0%,transparent 68%)}
+/* mascot takes the octagon's place, exactly like the eagle does */
+.logo-season{background:none;border:none;font-size:31px;line-height:1;cursor:pointer;padding:0;display:none}
+body[data-theme="seasonal"] .logo-oct{display:none}
+body[data-theme="seasonal"] .logo-season{display:block;animation:eagleBreathe 3.6s ease-in-out infinite}
+.logo-season:active{transform:scale(.88)}
+/* ambient life: reuses the .usa-stars / .usa-stars-lb overlays already in the DOM */
+body[data-theme="seasonal"] .usa-stars,body[data-theme="seasonal"] .usa-stars-lb{display:block;position:absolute;
+  inset:0;pointer-events:none;z-index:5;overflow:hidden}
+.se-p{position:absolute;pointer-events:none;will-change:transform}
+.se-p.fall{animation:seFall linear forwards}
+.se-p.rise{animation:seRise linear forwards}
+.se-p.em{font-size:15px;line-height:1;opacity:.78}
+@keyframes seFall{0%{opacity:0;transform:translateY(0) rotate(0)}9%{opacity:1}
+  100%{opacity:.8;transform:translateY(88vh) translateX(var(--dx)) rotate(var(--rot))}}
+@keyframes seRise{0%{opacity:0;transform:translateY(0) scale(.7)}14%{opacity:1}
+  100%{opacity:0;transform:translateY(-72vh) translateX(var(--dx)) scale(1.15)}}
+.se-p.snow{width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.85)}
+.se-p.spark{width:3px;height:3px;border-radius:50%;background:#f4d35e;box-shadow:0 0 9px #f4d35e}
+.se-p.bub{width:9px;height:9px;border-radius:50%;border:1px solid rgba(190,240,255,.75);background:rgba(140,220,255,.14)}
+.se-p.heat{width:4px;height:4px;border-radius:50%;background:rgba(255,190,110,.55);box-shadow:0 0 10px rgba(255,140,50,.7)}
+.se-p.star{width:4px;height:4px;background:#fff;box-shadow:0 0 7px rgba(255,255,255,.9);
+  clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.se-p.rain{width:1.5px;height:13px;border-radius:1px;background:linear-gradient(180deg,rgba(180,225,245,0),rgba(180,225,245,.9))}
+.se-p.conf{width:7px;height:11px}
+@media (prefers-reduced-motion:reduce){.se-p{display:none}
+  body[data-theme="seasonal"] .logo-season{animation:none}}
+@media (max-width:350px){.logo-season{font-size:27px}}
+
 </style>
 </head>
 <body>
 <script>try{var _t=localStorage.getItem("ufc_theme");
-var _ok={octagon:1,gold:1,neon:1,fire:1,usa:1};
+var _ok={octagon:1,gold:1,neon:1,fire:1,usa:1,seasonal:1};
 if(!_ok[_t])_t="octagon";
-document.body.setAttribute("data-theme",_t);}catch(e){}</script>
+document.body.setAttribute("data-theme",_t);
+// stamp the month before first paint, so a seasonal load never flashes unstyled
+if(_t==="seasonal")document.body.setAttribute("data-season",
+  ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"][new Date().getMonth()]);
+}catch(e){}</script>
 <div class="usa-stars" aria-hidden="true"></div>
 <div class="modal-bg" id="statsModal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
@@ -873,7 +948,7 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
 <div class="toast" id="toast"></div>
 <div class="fn-banner" id="fnBanner"><div class="fn-banner-dot"></div><div class="fn-banner-text" id="fnBannerText">FIGHT NIGHT</div><div class="fn-banner-dot"></div><div id="fnLastChecked" style="font-size:10px;opacity:.6;margin-left:8px;font-family:Inter,sans-serif;letter-spacing:.04em"></div></div>
 <header class="hdr">
-  <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><span class="logo-text">FIGHT <span>CARDS</span></span></div>
+  <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><button class="logo-season" onclick="seasonCry(this)" aria-label="Play the seasonal sound"></button><span class="logo-text">FIGHT <span>CARDS</span></span></div>
   <div class="hdr-right">
     <!-- Leaderboard -->
     <button class="btn-icon" onclick="openLeaderboard()" title="Leaderboard">
@@ -925,6 +1000,10 @@ document.body.setAttribute("data-theme",_t);}catch(e){}</script>
         <button class="btn-more-item theme-item" data-theme="usa" onclick="setTheme('usa')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#0a3161 40%,#b31942 40%,#b31942 60%,#e7ebf5 60%,#e7ebf5 70%,#b31942 70%,#b31942 80%,#e7ebf5 80%,#e7ebf5 90%,#b31942 90%)"></span>
           <span>Stars &amp; Stripes</span><span class="theme-check">&#10003;</span>
+        </button>
+        <button class="btn-more-item theme-item" data-theme="seasonal" onclick="setTheme('seasonal')">
+          <span class="theme-swatch" style="background:linear-gradient(135deg,#ff7518 0 25%,#c1272d 25% 50%,#2f9e44 50% 75%,#6a3fd6 75%)"></span>
+          <span>Seasonal</span><span class="theme-check">&#10003;</span>
         </button>
         <div class="btn-more-sep"></div>
         <button class="btn-more-item" id="installBtn" onclick="showInstall();closeMoreMenu()" style="display:none">
@@ -1762,11 +1841,13 @@ function countMethodsCorrect(){
   });});
   return count;
 }
-var THEMES={octagon:"#e8192c",gold:"#0a0908",neon:"#050608",fire:"#0a0705",usa:"#070a13"};
+var THEMES={octagon:"#e8192c",gold:"#0a0908",neon:"#050608",fire:"#0a0705",usa:"#070a13",seasonal:"#08050e"};
 function applyTheme(t){
   if(!THEMES[t])t="octagon";
   document.body.setAttribute("data-theme",t);
-  var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",THEMES[t]);
+  if(t==="seasonal")applySeason();else document.body.removeAttribute("data-season");
+  var m=document.querySelector('meta[name="theme-color"]');
+  if(m)m.setAttribute("content",t==="seasonal"?curSeason().bar:THEMES[t]);
   var items=document.querySelectorAll(".theme-item");
   for(var i=0;i<items.length;i++)items[i].classList.toggle("active",items[i].getAttribute("data-theme")===t);
 }
@@ -1777,6 +1858,144 @@ function setTheme(t){
   _themeFadeT=setTimeout(function(){document.body.classList.remove("theme-fade");},420);
   applyTheme(t);try{localStorage.setItem("ufc_theme",t);}catch(e){}
 }
+
+/* ===== SEASONAL =====
+   One theme that resolves itself from the month: October is Halloween,
+   December is Christmas, and nobody opens a settings screen. It is built to
+   the same anatomy that makes Stars & Stripes the most-used skin — mascot,
+   sound, ambient life, idle breathe, chrome, palette — rather than being a
+   palette on its own, which is what every other theme here is.
+
+   Two deliberate choices keep the cost at zero new assets:
+   - mascots are emoji, exactly like the eagle already is;
+   - the twelve cues are synthesised through the Web Audio API rather than
+     shipped as a dozen mp3s, so there is nothing new for the service worker
+     to precache and it all still works offline. */
+var SEASONS=[
+ {k:"jan",em:"🎆",snd:"burst", bar:"#0a0a12",amb:{cls:"spark",dir:"rise",gap:170,cap:26,dur:[2.4,4.2]},
+  ph:["NEW YEAR, NEW RECORD","ROUND ONE","RESOLUTIONS BREAK. YOU DON'T"]},
+ {k:"feb",em:"💘",snd:"thump", bar:"#190711",amb:{cls:"em",dir:"fall",gap:360,cap:14,dur:[5,8],glyph:"💗"},
+  ph:["LOVE HURTS","BE MINE, BE READY","HEARTBREAKER"]},
+ {k:"mar",em:"☘️",snd:"pluck", bar:"#04140c",amb:{cls:"em",dir:"fall",gap:330,cap:15,dur:[4.5,7.5],glyph:"☘️"},
+  ph:["LUCK OF THE IRISH","NO LUCK NEEDED","SLÁINTE"]},
+ {k:"apr",em:"🌧️",snd:"rain",  bar:"#0b1418",amb:{cls:"rain",dir:"fall",gap:90,cap:36,dur:[1.1,1.9]},
+  ph:["APRIL SHOWERS","BLOOM OR BUST","RAIN DOESN'T STOP IT"]},
+ {k:"may",em:"🎺",snd:"bell",  bar:"#190a15",amb:{cls:"conf",dir:"fall",gap:210,cap:26,dur:[3.4,5.6],conf:1},
+  ph:["¡ARRIBA!","¡DALE, DALE, DALE!","CINCO DE KNOCKOUT"]},
+ {k:"jun",em:"🌊",snd:"surf",  bar:"#04171f",amb:{cls:"bub",dir:"rise",gap:300,cap:18,dur:[4.5,8]},
+  ph:["MAKE WAVES","SUMMER HEAT","RIDE IT OUT"]},
+ {k:"jul",em:"🗽",snd:"boom",  bar:"#070a13",amb:{cls:"star",dir:"fall",gap:360,cap:14,dur:[4,7]},
+  ph:["LAND OF THE FREE","HOME OF THE BRAVE","FOURTH OF JULY"]},
+ {k:"aug",em:"🔥",snd:"buzz",  bar:"#180d04",amb:{cls:"heat",dir:"rise",gap:220,cap:22,dur:[3.5,6]},
+  ph:["DOG DAYS","HEAT WAVE","TOO HOT TO QUIT"]},
+ {k:"sep",em:"🏈",snd:"whistle",bar:"#0e1c11",amb:{cls:"em",dir:"fall",gap:440,cap:10,dur:[5,8],glyph:"🏈"},
+  ph:["SEASON'S BACK","GAME ON","FIRST DOWN, FIRST BLOOD"]},
+ {k:"oct",em:"🎃",snd:"ghost", bar:"#08050e",amb:{cls:"em",dir:"fall",gap:560,cap:8,dur:[6,10],glyph:"🦇"},
+  ph:["TRICK OR TAP OUT","SPOOKY SEASON","NO MERCY, NO CANDY"]},
+ {k:"nov",em:"🦃",snd:"warble",bar:"#140d06",amb:{cls:"em",dir:"fall",gap:280,cap:16,dur:[5,8.5],glyph:"🍁"},
+  ph:["GOBBLE 'EM UP","PASS THE PLATE","STUFFED AND STILL STANDING"]},
+ {k:"dec",em:"🎄",snd:"jingle",bar:"#05110b",amb:{cls:"snow",dir:"fall",gap:190,cap:30,dur:[5,9]},
+  ph:["SANTA'S ON THE CARD","DECK THE HALLS","NAUGHTY LIST"]}
+];
+function curSeason(){return SEASONS[new Date().getMonth()];}
+function applySeason(){
+  var S=curSeason();
+  document.body.setAttribute("data-season",S.k);
+  var b=document.querySelector(".logo-season");
+  if(b){b.textContent=S.em;b.title=S.ph[0];}
+}
+// A PWA left open across midnight on the 31st would otherwise keep last
+// month's face until a reload, so re-resolve whenever the tab comes back.
+document.addEventListener("visibilitychange",function(){
+  if(!document.hidden&&document.body.getAttribute("data-theme")==="seasonal")applySeason();
+});
+
+/* Sound is synthesised, so there are no files to ship or precache. The context
+   must be born inside the tap (iOS refuses otherwise), which the mascot is. */
+var _seCtx=null;
+function seCtx(){if(!_seCtx)_seCtx=new (window.AudioContext||window.webkitAudioContext)();
+  if(_seCtx.state==="suspended")_seCtx.resume();return _seCtx;}
+function seNoise(c,secs){var n=Math.floor(c.sampleRate*secs),b=c.createBuffer(1,n,c.sampleRate),d=b.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=Math.random()*2-1;return b;}
+function seasonSound(kind){
+  var c=seCtx(),t=c.currentTime;
+  function tone(type,f,peak,atk,dec,at){var o=c.createOscillator();o.type=type;o.frequency.value=f;
+    var g=c.createGain(),st=t+(at||0);g.gain.setValueAtTime(0,st);
+    g.gain.linearRampToValueAtTime(peak,st+atk);g.gain.exponentialRampToValueAtTime(.0008,st+atk+dec);
+    o.connect(g).connect(c.destination);o.start(st);o.stop(st+atk+dec+.05);return o;}
+  function noise(dur,type,freq,q,peak,atk,dec,at){var src=c.createBufferSource();src.buffer=seNoise(c,dur);
+    var f=c.createBiquadFilter();f.type=type;f.frequency.value=freq;if(q)f.Q.value=q;
+    var g=c.createGain(),st=t+(at||0);g.gain.setValueAtTime(0,st);
+    g.gain.linearRampToValueAtTime(peak,st+atk);g.gain.exponentialRampToValueAtTime(.0008,st+atk+dec);
+    src.connect(f).connect(g).connect(c.destination);src.start(st);src.stop(st+dur+(at||0));}
+  switch(kind){
+    case "burst":  noise(1.4,"highpass",1400,0,.3,.004,.5);
+                   [0,.18,.34].forEach(function(o,i){noise(.6,"bandpass",2600-i*400,3,.22,.003,.32,o);});break;
+    case "thump":  [0,.42].forEach(function(o){var os=tone("sine",64,.42,.006,.34,o);
+                     os.frequency.setValueAtTime(88,t+o);os.frequency.exponentialRampToValueAtTime(44,t+o+.3);});break;
+    case "pluck":  [587,740,880,1175].forEach(function(f,i){tone("triangle",f,.16,.004,.42,i*.11);});break;
+    case "rain":   noise(2.6,"highpass",1900,0,.22,.6,1.7);break;
+    case "bell":   [0,.27].forEach(function(o){[1180,1782,2640].forEach(function(f,i){
+                     tone("sine",f,.3/(i+1),.004,.9,o);});});break;
+    case "surf":   noise(3,"lowpass",900,0,.3,1.1,1.7);break;
+    case "boom":   var bl=tone("sine",70,.5,.006,.5);
+                   bl.frequency.setValueAtTime(95,t);bl.frequency.exponentialRampToValueAtTime(32,t+.42);
+                   noise(1.6,"highpass",1100,0,.24,.006,.9,.05);
+                   [.34,.52,.68].forEach(function(o){noise(.5,"bandpass",2900,4,.14,.003,.3,o);});break;
+    case "buzz":   [0,.22,.44].forEach(function(o){var os=tone("sawtooth",230,.1,.05,.16,o);
+                     os.frequency.setValueAtTime(260,t+o);os.frequency.linearRampToValueAtTime(200,t+o+.2);});break;
+    case "whistle":var w=tone("sine",2350,.24,.012,.5);
+                   w.frequency.setValueAtTime(2250,t);w.frequency.linearRampToValueAtTime(2500,t+.42);
+                   tone("sine",2680,.1,.012,.5);break;
+    case "ghost":  [196,233,277].forEach(function(f,i){var g=tone("sine",f,.13,.28,1.5,i*.05);
+                     g.frequency.setValueAtTime(f,t);g.frequency.linearRampToValueAtTime(f*.82,t+1.6);});
+                   noise(2,"lowpass",620,0,.1,.7,1.2);break;
+    case "warble": [0,.2,.38].forEach(function(o,i){var g=tone("sawtooth",150+i*18,.16,.012,.16,o);
+                     g.frequency.setValueAtTime(230,t+o);g.frequency.exponentialRampToValueAtTime(120,t+o+.15);});break;
+    case "jingle": [0,.13,.26,.4].forEach(function(o){noise(.34,"bandpass",4200,9,.2,.003,.26,o);
+                     tone("sine",2637,.09,.004,.24,o);});break;
+  }
+}
+// Tap the mascot: wiggle, the month's cue, and a line — the same pairing the
+// eagle uses, with the phrase riding the toast we already have.
+function seasonCry(el){
+  var S=curSeason();
+  try{
+    if(el&&el.animate)el.animate([
+      {transform:"rotate(0deg) scale(1)"},{transform:"rotate(-17deg) scale(1.16)"},
+      {transform:"rotate(13deg) scale(1.1)"},{transform:"rotate(-7deg) scale(1.04)"},
+      {transform:"rotate(0deg) scale(1)"}],{duration:520,easing:"ease-out"});
+  }catch(e){}
+  try{seasonSound(S.snd);}catch(e){}
+  try{toast(S.ph[Math.floor(Math.random()*S.ph.length)]);}catch(e){}
+}
+// Ambient life, spawned and self-cleaned exactly like the USA shooting stars.
+var SE_CONF=["#e8175d","#12c2b0","#ffc42e","#6a3fd6","#ff7a1a"];
+var _seLast=0;
+setInterval(function(){
+  if(document.hidden||document.body.getAttribute("data-theme")!=="seasonal")return;
+  if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  var A=curSeason().amb,now=Date.now();
+  if(now-_seLast<A.gap)return;
+  _seLast=now;
+  var lbOpen=document.getElementById("lbPanel").classList.contains("open");
+  var wrap=document.querySelector(lbOpen?".usa-stars-lb":".usa-stars");
+  if(!wrap||wrap.childElementCount>A.cap)return;
+  var el=document.createElement("div");
+  el.className="se-p "+A.cls+" "+A.dir;
+  if(A.glyph)el.textContent=A.glyph;
+  if(A.conf)el.style.background=SE_CONF[Math.floor(Math.random()*SE_CONF.length)];
+  // the page overlay spans the whole document, so anchor inside the current
+  // viewport; the leaderboard layer is viewport-sized already
+  var top0=(lbOpen?0:window.scrollY);
+  el.style.top=Math.round(A.dir==="rise"?top0+window.innerHeight-10:top0-20)+"px";
+  el.style.left=(Math.random()*100)+"%";
+  el.style.setProperty("--dx",(Math.random()*70-35)+"px");
+  el.style.setProperty("--rot",(Math.random()*720-360).toFixed(0)+"deg");
+  el.style.animationDuration=(A.dur[0]+Math.random()*(A.dur[1]-A.dur[0])).toFixed(2)+"s";
+  el.addEventListener("animationend",function(){el.remove();});
+  wrap.appendChild(el);
+},80);
 applyTheme(document.body.getAttribute("data-theme")||"octagon");
 // Eagle screech: two real recordings (sounds/eagle-*.mp3, precached by the SW
 // for offline) picked at random per tap. Raw bytes are prefetched at load and
