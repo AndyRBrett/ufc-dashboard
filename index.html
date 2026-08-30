@@ -223,6 +223,11 @@ body[data-theme="usa"] .logo-eagle{display:block}
 .logo-text{font-family:Bebas Neue,sans-serif;font-size:25px;letter-spacing:.08em;white-space:nowrap}
 @media (max-width:350px){.hdr{padding:0 12px}.logo{gap:6px}.logo-oct{width:32px;height:32px;font-size:14px}.logo-eagle{font-size:28px}.logo-text{font-size:18px}.hdr-right{gap:6px}.btn-icon{min-width:44px;padding:0 6px}}
 .logo-text span{color:var(--red)}
+/* month names run longer than FIGHT CARDS — THANKSGIVING, APRIL SHOWERS —
+   so the seasonal wordmark sits a touch smaller to keep the header on one line */
+body[data-theme="seasonal"] .logo-text{font-size:22px}
+@media (max-width:400px){body[data-theme="seasonal"] .logo-text{font-size:19px}}
+@media (max-width:350px){body[data-theme="seasonal"] .logo-text{font-size:16px}}
 .hdr-right{display:flex;align-items:center;gap:8px}
 .btn-icon{background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted2);min-width:54px;height:50px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 9px;transition:color .15s,background .15s}
 .btn-icon:hover{color:var(--text);background:rgba(255,255,255,.1)}
@@ -1845,7 +1850,8 @@ var THEMES={octagon:"#e8192c",gold:"#0a0908",neon:"#050608",fire:"#0a0705",usa:"
 function applyTheme(t){
   if(!THEMES[t])t="octagon";
   document.body.setAttribute("data-theme",t);
-  if(t==="seasonal")applySeason();else document.body.removeAttribute("data-season");
+  if(t==="seasonal")applySeason();
+  else{document.body.removeAttribute("data-season");restoreLogo();}
   var m=document.querySelector('meta[name="theme-color"]');
   if(m)m.setAttribute("content",t==="seasonal"?curSeason().bar:THEMES[t]);
   var items=document.querySelectorAll(".theme-item");
@@ -1872,37 +1878,81 @@ function setTheme(t){
      shipped as a dozen mp3s, so there is nothing new for the service worker
      to precache and it all still works offline. */
 var SEASONS=[
- {k:"jan",em:"🎆",snd:"burst", bar:"#0a0a12",amb:{cls:"spark",dir:"rise",gap:170,cap:26,dur:[2.4,4.2]},
+ {k:"jan",nm:"NEW YEAR",em:"🎆",snd:"burst", bar:"#0a0a12",amb:{cls:"spark",dir:"rise",gap:170,cap:26,dur:[2.4,4.2]},
   ph:["NEW YEAR, NEW RECORD","ROUND ONE","RESOLUTIONS BREAK. YOU DON'T"]},
- {k:"feb",em:"💘",snd:"thump", bar:"#190711",amb:{cls:"em",dir:"fall",gap:360,cap:14,dur:[5,8],glyph:"💗"},
+ {k:"feb",nm:"LOVE HURTS",em:"💘",snd:"thump", bar:"#190711",amb:{cls:"em",dir:"fall",gap:360,cap:14,dur:[5,8],glyph:"💗"},
   ph:["LOVE HURTS","BE MINE, BE READY","HEARTBREAKER"]},
- {k:"mar",em:"☘️",snd:"pluck", bar:"#04140c",amb:{cls:"em",dir:"fall",gap:330,cap:15,dur:[4.5,7.5],glyph:"☘️"},
+ {k:"mar",nm:"THE LUCK",em:"☘️",snd:"pluck", bar:"#04140c",amb:{cls:"em",dir:"fall",gap:330,cap:15,dur:[4.5,7.5],glyph:"☘️"},
   ph:["LUCK OF THE IRISH","NO LUCK NEEDED","SLÁINTE"]},
- {k:"apr",em:"🌧️",snd:"rain",  bar:"#0b1418",amb:{cls:"rain",dir:"fall",gap:90,cap:36,dur:[1.1,1.9]},
+ {k:"apr",nm:"APRIL SHOWERS",em:"🌧️",snd:"rain",  bar:"#0b1418",amb:{cls:"rain",dir:"fall",gap:90,cap:36,dur:[1.1,1.9]},
   ph:["APRIL SHOWERS","BLOOM OR BUST","RAIN DOESN'T STOP IT"]},
- {k:"may",em:"🎺",snd:"bell",  bar:"#190a15",amb:{cls:"conf",dir:"fall",gap:210,cap:26,dur:[3.4,5.6],conf:1},
+ {k:"may",nm:"CINCO",em:"🎺",snd:"bell",  bar:"#190a15",amb:{cls:"conf",dir:"fall",gap:210,cap:26,dur:[3.4,5.6],conf:1},
   ph:["¡ARRIBA!","¡DALE, DALE, DALE!","CINCO DE KNOCKOUT"]},
- {k:"jun",em:"🌊",snd:"surf",  bar:"#04171f",amb:{cls:"bub",dir:"rise",gap:300,cap:18,dur:[4.5,8]},
+ {k:"jun",nm:"HIGH SUMMER",em:"🌊",snd:"surf",  bar:"#04171f",amb:{cls:"bub",dir:"rise",gap:300,cap:18,dur:[4.5,8]},
   ph:["MAKE WAVES","SUMMER HEAT","RIDE IT OUT"]},
- {k:"jul",em:"🗽",snd:"boom",  bar:"#070a13",amb:{cls:"star",dir:"fall",gap:360,cap:14,dur:[4,7]},
+ {k:"jul",nm:"JULY 4TH",em:"🗽",snd:"boom",  bar:"#070a13",amb:{cls:"star",dir:"fall",gap:360,cap:14,dur:[4,7]},
   ph:["LAND OF THE FREE","HOME OF THE BRAVE","FOURTH OF JULY"]},
- {k:"aug",em:"🔥",snd:"buzz",  bar:"#180d04",amb:{cls:"heat",dir:"rise",gap:220,cap:22,dur:[3.5,6]},
+ {k:"aug",nm:"DOG DAYS",em:"🔥",snd:"buzz",  bar:"#180d04",amb:{cls:"heat",dir:"rise",gap:220,cap:22,dur:[3.5,6]},
   ph:["DOG DAYS","HEAT WAVE","TOO HOT TO QUIT"]},
- {k:"sep",em:"🏈",snd:"whistle",bar:"#0e1c11",amb:{cls:"em",dir:"fall",gap:440,cap:10,dur:[5,8],glyph:"🏈"},
+ {k:"sep",nm:"KICKOFF",em:"🏈",snd:"whistle",bar:"#0e1c11",amb:{cls:"em",dir:"fall",gap:440,cap:10,dur:[5,8],glyph:"🏈"},
   ph:["SEASON'S BACK","GAME ON","FIRST DOWN, FIRST BLOOD"]},
- {k:"oct",em:"🎃",snd:"ghost", bar:"#08050e",amb:{cls:"em",dir:"fall",gap:560,cap:8,dur:[6,10],glyph:"🦇"},
+ {k:"oct",nm:"HALLOWEEN",em:"🎃",snd:"ghost", bar:"#08050e",amb:{cls:"em",dir:"fall",gap:560,cap:8,dur:[6,10],glyph:"🦇"},
   ph:["TRICK OR TAP OUT","SPOOKY SEASON","NO MERCY, NO CANDY"]},
- {k:"nov",em:"🦃",snd:"warble",bar:"#140d06",amb:{cls:"em",dir:"fall",gap:280,cap:16,dur:[5,8.5],glyph:"🍁"},
+ {k:"nov",nm:"THANKSGIVING",em:"🦃",snd:"warble",bar:"#140d06",amb:{cls:"em",dir:"fall",gap:280,cap:16,dur:[5,8.5],glyph:"🍁"},
   ph:["GOBBLE 'EM UP","PASS THE PLATE","STUFFED AND STILL STANDING"]},
- {k:"dec",em:"🎄",snd:"jingle",bar:"#05110b",amb:{cls:"snow",dir:"fall",gap:190,cap:30,dur:[5,9]},
+ {k:"dec",nm:"CHRISTMAS",em:"🎄",snd:"jingle",bar:"#05110b",amb:{cls:"snow",dir:"fall",gap:190,cap:30,dur:[5,9]},
   ph:["SANTA'S ON THE CARD","DECK THE HALLS","NAUGHTY LIST"]}
 ];
 function curSeason(){return SEASONS[new Date().getMonth()];}
+// The wordmark carries the month, so the theme names itself in the header:
+// FIGHT CARDS becomes DOG DAYS, HALLOWEEN, THANKSGIVING. The last word takes
+// the accent colour, the way CARDS already does.
+function seasonLogo(nm){
+  var i=nm.lastIndexOf(" ");
+  return i<0?'<span>'+nm+'</span>':nm.slice(0,i+1)+'<span>'+nm.slice(i+1)+'</span>';
+}
 function applySeason(){
   var S=curSeason();
   document.body.setAttribute("data-season",S.k);
   var b=document.querySelector(".logo-season");
-  if(b){b.textContent=S.em;b.title=S.ph[0];}
+  if(b){b.textContent=S.em;b.title=S.nm;b.setAttribute("aria-label","Play the "+S.nm+" sound");}
+  var t=document.querySelector(".logo-text");
+  if(t)t.innerHTML=seasonLogo(S.nm);
+  seasonPrefetch(S.k);
+}
+function restoreLogo(){
+  var t=document.querySelector(".logo-text");
+  if(t)t.innerHTML='FIGHT <span>CARDS</span>';
+}
+
+/* Audio: a real recording wins, the synth is the fallback.
+   Drop sounds/season-<month>.mp3 in and it is used automatically; with no
+   file the synthesised cue still plays, so the theme is never silent and
+   nothing has to ship before it works. Raw bytes are prefetched for the
+   current month only and decoded lazily on the first tap, the same shape as
+   the eagle's screech. */
+function seasonSndUrl(k){return "sounds/season-"+k+".mp3";}
+var _seRaw={},_seBuf={},_seTried={};
+function seasonPrefetch(k){
+  if(k in _seRaw||_seBuf[k])return;
+  _seRaw[k]=null;
+  try{fetch(seasonSndUrl(k)).then(function(r){return r.ok?r.arrayBuffer():null;})
+    .then(function(ab){if(ab)_seRaw[k]=ab;}).catch(function(){});}catch(e){}
+}
+function seasonPlay(k,kind){
+  var c;try{c=seCtx();}catch(e){return;}
+  function fire(buf){var sc=c.createBufferSource();sc.buffer=buf;sc.connect(c.destination);sc.start();}
+  if(_seBuf[k]){fire(_seBuf[k]);return;}
+  if(_seRaw[k]&&!_seTried[k]){
+    _seTried[k]=1;
+    try{
+      c.decodeAudioData(_seRaw[k].slice(0),
+        function(buf){_seBuf[k]=buf;fire(buf);},
+        function(){seasonSound(kind);});
+      return;
+    }catch(e){}
+  }
+  seasonSound(kind);
 }
 // A PWA left open across midnight on the 31st would otherwise keep last
 // month's face until a reload, so re-resolve whenever the tab comes back.
@@ -1966,7 +2016,7 @@ function seasonCry(el){
       {transform:"rotate(13deg) scale(1.1)"},{transform:"rotate(-7deg) scale(1.04)"},
       {transform:"rotate(0deg) scale(1)"}],{duration:520,easing:"ease-out"});
   }catch(e){}
-  try{seasonSound(S.snd);}catch(e){}
+  try{seasonPlay(S.k,S.snd);}catch(e){}
   try{toast(S.ph[Math.floor(Math.random()*S.ph.length)]);}catch(e){}
 }
 // Ambient life, spawned and self-cleaned exactly like the USA shooting stars.

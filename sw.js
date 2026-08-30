@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = '2026-08-30-1';
+const SW_VERSION = '2026-08-30-2';
 const CACHE = 'ufc-' + SW_VERSION;
 // Handoff caches that must survive SW upgrades: 'ufc-push-id' carries the push
 // identity used by pushsubscriptionchange while the app is closed, 'ufc-tap'
@@ -14,7 +14,13 @@ self.addEventListener('install', function(e) {
   // Precache the app shell so the PWA opens offline. Each URL is cached
   // independently — one miss must not block install.
   e.waitUntil(caches.open(CACHE).then(function(c) {
-    return Promise.all(['./', './data.js', './manifest.json', './icon-192-v2.png', './sounds/eagle-1.mp3', './sounds/eagle-2.mp3'].map(function(u) {
+    var core = ['./', './data.js', './manifest.json', './icon-192-v2.png', './sounds/eagle-1.mp3', './sounds/eagle-2.mp3'];
+    // Seasonal cues, one per month. Listed before the files exist on purpose:
+    // c.add() misses are swallowed below, and the theme falls back to its
+    // synthesised cue, so dropping an mp3 in later is all that is needed.
+    core = core.concat(['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
+      .map(function(k) { return './sounds/season-' + k + '.mp3'; }));
+    return Promise.all(core.map(function(u) {
       return c.add(u).catch(function() {});
     }));
   }));
