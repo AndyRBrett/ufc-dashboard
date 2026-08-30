@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-30T21:10:29Z",
+  "generated_at": "2026-08-30T21:15:30Z",
   "summary": {
     "events": 13,
     "block": 0,
-    "warn": 6
+    "warn": 7
   },
   "findings": [
     {
@@ -39,6 +39,11 @@
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
       "days_out": 6
+    },
+    {
+      "severity": "WARN",
+      "check": "odds-stale",
+      "message": "last Odds API pull was 36h ago with a card 6d out"
     },
     {
       "severity": "WARN",
