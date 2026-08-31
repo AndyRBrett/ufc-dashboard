@@ -436,3 +436,83 @@ def test_movers_carry_probability_shifts():
     mover = ws.event_movers(fights, opens, threshold=10)[0]
     assert mover["f1_prob_shift"] > 0     # A shortened → more likely to win
     assert mover["f2_prob_shift"] < 0
+
+
+# --- odds budget exhaustion: telling someone (issue #76) --------------------
+#
+# The flag was true and surfaced nowhere but the raw JSON. A card whose lines
+# quietly stop refreshing looks exactly like a quiet market, so the failure was
+# invisible for weeks. These pin the telling, and — just as important — pin that
+# it does not become the thing you mute.
+
+def test_budget_alert_fires_on_the_flip_then_once_a_day():
+    from datetime import date
+    day1, day2 = date(2026, 8, 31), date(2026, 9, 1)
+
+    alert, seen = ws.budget_alert(True, {}, day1)
+    assert alert and alert["kind"] == "odds_budget_exhausted"
+
+    # The 5-minute fight-window cadence would otherwise post this ~288x/day.
+    again, seen = ws.budget_alert(True, seen, day1)
+    assert again is None
+
+    tomorrow, seen = ws.budget_alert(True, seen, day2)
+    assert tomorrow, "a standing outage should still be mentioned once a day"
+
+
+def test_recovery_re_arms_the_alert():
+    from datetime import date
+    day = date(2026, 8, 31)
+    _, seen = ws.budget_alert(True, {}, day)
+    _, seen = ws.budget_alert(False, seen, day)
+    assert ws.BUDGET_ALERT_KEY not in seen
+    # Exhausted again the same day must alert again — it is a new outage.
+    again, _ = ws.budget_alert(True, seen, day)
+    assert again
+
+
+def test_days_until_reset_crosses_the_month_end():
+    from datetime import date
+    assert ws.days_until_reset(date(2026, 8, 31), reset_day=1) == 1
+    assert ws.days_until_reset(date(2026, 8, 1), reset_day=1) == 31   # today isn't "0 days"
+    assert ws.days_until_reset(date(2026, 8, 20), reset_day=25) == 5
+    assert ws.days_until_reset(date(2026, 12, 31), reset_day=1) == 1  # year rolls over
+    # A reset day past the shortest month still lands on a real date.
+    assert ws.days_until_reset(date(2026, 2, 1), reset_day=31) >= 1
+
+
+def test_most_affected_is_the_card_about_to_happen():
+    from datetime import date
+    today = date(2026, 8, 31)
+    events = [
+        {"event_id": "2026-08-01:past-card", "status": "ok"},
+        {"event_id": "2026-09-20:far-card", "status": "awaiting-card"},
+        {"event_id": "2026-09-02:next-card", "status": "awaiting-card"},
+        {"event_id": "not-a-date", "status": "ok"},
+    ]
+    out = ws.most_affected_events(events, today)
+    assert [e["event_id"] for e in out] == ["2026-09-02:next-card", "2026-09-20:far-card"]
+    assert out[0]["days_out"] == 2
+
+
+def test_the_banner_renders_what_python_computed():
+    # No JS test runner for index.html, so pin the seam: the banner must read the
+    # fields write_status publishes rather than deriving a countdown of its own,
+    # or the banner and the webhook alert can disagree about the same outage.
+    from pathlib import Path
+    page = (Path(__file__).resolve().parent.parent / "index.html").read_text(encoding="utf-8")
+    assert 'id="oddsBudgetBanner"' in page
+    assert "overseer-status.json" in page
+    for field in ("odds_budget", "resets_in_days", "most_affected", "exhausted"):
+        assert field in page, f"the banner ignores {field}"
+
+
+def test_the_banner_is_not_a_flex_container():
+    # It is one sentence with a <b> countdown inside it. As a flex container each
+    # text run and the <b> become separate flex ITEMS, and the countdown broke out
+    # into its own column mid-sentence on a 420px screen. Caught by rendering the
+    # page in Chromium; it had passed review by eye.
+    from pathlib import Path
+    page = (Path(__file__).resolve().parent.parent / "index.html").read_text(encoding="utf-8")
+    rule = page.split(".odds-budget-banner.show{")[1].split("}")[0]
+    assert "flex" not in rule, "the banner is a flex container again"
