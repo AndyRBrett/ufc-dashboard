@@ -1201,6 +1201,23 @@ ODDS_PULL_INTERVALS = (
 )
 ODDS_PULL_MAX_DAYS_OUT = 30   # nothing beyond this is priced yet — don't spend a call
 
+# Proximity alone still overspends on a DORMANT card. #73: the quota died with
+# five events sat at awaiting-card, because a card 2 days out is polled every 2h
+# whether or not a single book has moved a number. Those calls buy nothing — the
+# payload comes back byte-identical.
+#
+# So the cadence is proximity backed off by observed activity: each consecutive
+# pull that returns lines identical to the previous one doubles the wait, capped.
+# One moved number resets it to the tight proximity cadence immediately, which is
+# the property that matters — backing off must never cost freshness on a card
+# whose lines are actually live.
+#
+# The cap is deliberately low. This throttles a QUIET market, and a quiet market
+# is exactly when a late line move is most worth catching; stretching a 2h
+# cadence past 8h to save a handful of calls would trade the feature for the
+# quota.
+ODDS_IDLE_BACKOFF_MAX = 4
+
 
 def odds_min_interval_hours(days_out):
     """Minimum hours between Odds API pulls given the next card's distance.
@@ -1215,7 +1232,64 @@ def odds_min_interval_hours(days_out):
     return None
 
 
-def should_fetch_odds(now, last_at, days_out):
+def odds_activity_multiplier(idle_pulls):
+    """How far to stretch the proximity interval after `idle_pulls` dead pulls.
+
+    Doubles per consecutive unchanged pull (1, 2, 4, ...) and stops at
+    ODDS_IDLE_BACKOFF_MAX. Junk (None, negative, non-int) reads as "no idle
+    history" and costs nothing: the multiplier is 1 and the proximity cadence
+    stands unchanged.
+    """
+    try:
+        n = int(idle_pulls)
+    except (TypeError, ValueError):
+        return 1
+    if n <= 0:
+        return 1
+    return min(2 ** n, ODDS_IDLE_BACKOFF_MAX)
+
+
+def odds_lines_digest(odds_index):
+    """Fingerprint of the lines in a fetched odds index, or None if it is empty.
+
+    Compared against the previous pull's digest to answer "did the market move?"
+    without re-deriving the fighter-pair matching that get_odds_with_fallback
+    already does. Only the pair and the two prices go in — `source` is excluded
+    on purpose, so the fallback chain covering a bout from a different book (the
+    same numbers, a different sportsbook) does not read as line movement.
+
+    None for an empty index is load-bearing: a failed pull must never be recorded
+    as "nothing moved", or a dead API key backs the cadence off to its maximum and
+    the outage gets quieter the longer it lasts.
+    """
+    if not odds_index:
+        return None
+    parts = []
+    for pair in sorted(odds_index):
+        o = odds_index[pair]
+        parts.append(f"{'|'.join(pair)}={o['f1_odds']}/{o['f2_odds']}")
+    return hashlib.sha1(";".join(parts).encode("utf-8")).hexdigest()
+
+
+def next_idle_pulls(previous_idle, prev_digest, new_digest):
+    """The idle-pull count to persist after a pull.
+
+    Unchanged lines increment it (a longer wait next time); any movement, or a
+    first-ever pull, resets to 0. A pull that returned nothing (new_digest None)
+    leaves the count untouched — see odds_lines_digest.
+    """
+    try:
+        n = max(0, int(previous_idle))
+    except (TypeError, ValueError):
+        n = 0
+    if new_digest is None:
+        return n
+    if prev_digest and new_digest == prev_digest:
+        return n + 1
+    return 0
+
+
+def should_fetch_odds(now, last_at, days_out, idle_pulls=0):
     """True when enough time has passed to spend another Odds API call.
 
     A skipped pull is safe by construction: fetch_odds returns an empty index and
@@ -1226,6 +1300,7 @@ def should_fetch_odds(now, last_at, days_out):
     interval = odds_min_interval_hours(days_out)
     if interval is None:
         return False
+    interval *= odds_activity_multiplier(idle_pulls)
     if not last_at:
         return True
     prev = _parse_ts(last_at)
@@ -2383,21 +2458,38 @@ def step_build_events(data, now):
     # lines already in data.js.
     odds_state = load_odds_state()
     days_out   = _next_event_days_out(data, now)
-    if should_fetch_odds(now, odds_state.get("last_fetch_at"), days_out):
+    idle_pulls = odds_state.get("idle_pulls", 0)
+    if should_fetch_odds(now, odds_state.get("last_fetch_at"), days_out, idle_pulls):
         print(f"Fetching odds (next card {days_out}d out)...", file=sys.stderr)
         odds_index = fetch_odds()
+        digest     = odds_lines_digest(odds_index)
+        odds_state["idle_pulls"] = next_idle_pulls(
+            idle_pulls, odds_state.get("lines_digest"), digest)
+        # Only a pull that returned lines updates the fingerprint. Overwriting it
+        # with None on a failed pull would make the NEXT successful pull look like
+        # movement and reset the backoff for no reason.
+        if digest is not None:
+            odds_state["lines_digest"] = digest
         odds_state["last_fetch_at"] = now.isoformat()
         odds_state["last_status"]   = _odds_last_status
         if _odds_requests_remaining is not None:
             odds_state["requests_remaining"] = _odds_requests_remaining
         odds_state["next_event_days_out"] = days_out
         save_odds_state(odds_state)
+        if odds_state["idle_pulls"]:
+            print(
+                f"Odds unchanged for {odds_state['idle_pulls']} consecutive pull(s) "
+                f"— next wait x{odds_activity_multiplier(odds_state['idle_pulls'])}",
+                file=sys.stderr,
+            )
     else:
         odds_index = {}
         iv = odds_min_interval_hours(days_out)
+        mult = odds_activity_multiplier(idle_pulls)
         print(
             f"Skipping odds pull — next card {days_out}d out, "
-            f"min interval {iv}h, last pull {odds_state.get('last_fetch_at')}",
+            f"min interval {iv}h x{mult} (idle {idle_pulls}), "
+            f"last pull {odds_state.get('last_fetch_at')}",
             file=sys.stderr,
         )
 

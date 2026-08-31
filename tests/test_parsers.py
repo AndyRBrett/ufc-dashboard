@@ -1059,6 +1059,77 @@ def test_odds_force_env_overrides_the_budget(monkeypatch):
     assert scrape.should_fetch_odds(now, "2026-08-07T11:59:00+00:00", 1) is True
 
 
+# --- Odds API budget: activity backoff (#73) -------------------------------
+#
+# Proximity alone kept polling a card whose lines had not moved in days, which is
+# how the quota died with five events still awaiting-card. Each unchanged pull
+# now doubles the wait; one moved number puts it straight back on the proximity
+# cadence.
+
+def test_activity_multiplier_doubles_per_idle_pull_then_caps():
+    f = scrape.odds_activity_multiplier
+    assert f(0) == 1
+    assert f(1) == 2
+    assert f(2) == 4
+    assert f(3) == 4                       # capped — a quiet market is when a
+    assert f(99) == 4                      # late move matters most
+    assert scrape.ODDS_IDLE_BACKOFF_MAX == 4
+
+
+def test_activity_multiplier_ignores_junk_state():
+    # odds-state.json is written by an earlier run; a missing or corrupt field
+    # must degrade to the plain proximity cadence, never to a crash.
+    f = scrape.odds_activity_multiplier
+    assert f(None) == 1
+    assert f("") == 1
+    assert f("three") == 1
+    assert f(-2) == 1
+
+
+def test_idle_backoff_stretches_the_interval():
+    now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
+    # 1 day out → 2h base. Three hours since the last pull.
+    last = "2026-08-07T09:00:00+00:00"
+    assert scrape.should_fetch_odds(now, last, 1, 0) is True     # 2h — due
+    assert scrape.should_fetch_odds(now, last, 1, 1) is False    # 4h — not yet
+    assert scrape.should_fetch_odds(now, last, 1, 2) is False    # 8h
+    # Far enough back and even the capped backoff is due.
+    assert scrape.should_fetch_odds(now, "2026-08-06T12:00:00+00:00", 1, 9) is True
+
+
+def test_backoff_never_resurrects_an_out_of_range_card():
+    now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
+    assert scrape.should_fetch_odds(now, None, 400, 0) is False
+    assert scrape.should_fetch_odds(now, None, 400, 3) is False
+
+
+def test_lines_digest_tracks_prices_not_sources():
+    a = {("jones", "miocic"): {"f1_odds": -150, "f2_odds": 130, "source": "us"}}
+    b = {("jones", "miocic"): {"f1_odds": -150, "f2_odds": 130, "source": "uk"}}
+    c = {("jones", "miocic"): {"f1_odds": -160, "f2_odds": 140, "source": "us"}}
+    # The fallback chain covering a bout from a different book is not a line move.
+    assert scrape.odds_lines_digest(a) == scrape.odds_lines_digest(b)
+    assert scrape.odds_lines_digest(a) != scrape.odds_lines_digest(c)
+    # An empty index is a FAILED pull, not a quiet market.
+    assert scrape.odds_lines_digest({}) is None
+
+
+def test_failed_pull_does_not_count_as_a_quiet_market():
+    # The exact trap: odds-state.json currently records last_status 401. If a dead
+    # key counted as "nothing moved", the cadence would back off to its cap and
+    # the outage would get quieter the longer it lasted.
+    assert scrape.next_idle_pulls(2, "abc", None) == 2
+    assert scrape.next_idle_pulls(0, None, None) == 0
+
+
+def test_idle_pulls_increments_on_repeat_and_resets_on_movement():
+    assert scrape.next_idle_pulls(0, "abc", "abc") == 1
+    assert scrape.next_idle_pulls(1, "abc", "abc") == 2
+    assert scrape.next_idle_pulls(3, "abc", "xyz") == 0     # market moved
+    assert scrape.next_idle_pulls(3, None, "abc") == 0      # first-ever pull
+    assert scrape.next_idle_pulls("junk", "abc", "abc") == 1
+
+
 def test_next_event_days_out_picks_the_soonest_future_card():
     now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
     data = 'date:"2026-07-11" date:"2026-08-08" date:"2026-09-19"'
