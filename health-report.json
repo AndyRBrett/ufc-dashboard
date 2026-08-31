@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-30T22:40:27Z",
+  "generated_at": "2026-08-31T00:08:40Z",
   "summary": {
     "events": 13,
     "block": 0,
@@ -9,41 +9,41 @@
     {
       "severity": "WARN",
       "check": "odds-missing-all",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (6d out) has no odds on any of its 14 bouts",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (5d out) has no odds on any of its 14 bouts",
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
-      "days_out": 6
+      "days_out": 5
     },
     {
       "severity": "WARN",
       "check": "odds-missing-all",
-      "message": "UFC Fight Night: Silva vs. Delgado (13d out) has no odds on any of its 12 bouts",
+      "message": "UFC Fight Night: Silva vs. Delgado (12d out) has no odds on any of its 12 bouts",
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
-      "days_out": 13
+      "days_out": 12
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (6d out): Klaudia Sygua has no record",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (5d out): Klaudia Sygua has no record",
       "fighter": "Klaudia Sygua",
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
-      "days_out": 6
+      "days_out": 5
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (6d out): Klaudia Sygua stats lookup failed (2026-08-29)",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (5d out): Klaudia Sygua stats lookup failed (2026-08-29)",
       "fighter": "Klaudia Sygua",
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
-      "days_out": 6
+      "days_out": 5
     },
     {
       "severity": "WARN",
       "check": "odds-stale",
-      "message": "last Odds API pull was 37h ago with a card 6d out"
+      "message": "last Odds API pull was 39h ago with a card 5d out"
     },
     {
       "severity": "WARN",

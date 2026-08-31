@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-30T22:40:27Z",
+  "generated_at": "2026-08-31T00:08:40Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -5919,7 +5919,7 @@
     },
     {
       "event_id": "2026-08-30:ufc-fight-night-nurmagomedov-vs-song",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Umar Nurmagomedov",
@@ -5937,8 +5937,15 @@
             "f1_odds": -423,
             "f2_odds": 323
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-07-09T12:25:51Z",
+            "f1_odds": -423,
+            "f2_odds": 323
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         }
       ]
     }
@@ -5969,8 +5976,8 @@
         "side": "f2",
         "points": 1,
         "open": 323,
-        "close": null,
-        "clv": null
+        "close": 323,
+        "clv": 0
       }
     ],
     "Deiveson Figueiredo": [
@@ -8669,8 +8676,8 @@
         "side": "f1",
         "points": 1,
         "open": -423,
-        "close": null,
-        "clv": null
+        "close": -423,
+        "clv": 0
       }
     ],
     "Yan Xiaonan": [
