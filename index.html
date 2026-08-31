@@ -251,7 +251,7 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .theme-item .theme-check,#notifBell .theme-check,#liveResBtn .theme-check{display:none;margin-left:auto;color:var(--gold);font-size:12px}
 .theme-item.active .theme-check,#notifBell.bell-active .theme-check,#liveResBtn.bell-active .theme-check{display:block}
 .fn-banner{background:linear-gradient(90deg,var(--banner-edge),var(--red),var(--banner-edge));padding:9px 16px;display:none;align-items:center;gap:10px}
-.fn-banner.show{display:flex}
+.fn-banner.show{display:flex}.odds-budget-banner{display:none;padding:8px 16px;background:var(--gold-dim);border-bottom:1px solid var(--gold-border);color:var(--muted2);font-family:Inter,sans-serif;font-size:12px;line-height:1.45;letter-spacing:.02em}.odds-budget-banner.show{display:block}.odds-budget-banner b{color:var(--gold)}
 .fn-banner-text{font-family:Bebas Neue,sans-serif;font-size:15px;letter-spacing:.12em;color:var(--on-accent)}
 .fn-banner-dot{width:7px;height:7px;border-radius:50%;background:var(--on-accent);animation:blink 1s infinite;flex-shrink:0}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
@@ -952,6 +952,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 </div>
 <div class="toast" id="toast"></div>
 <div class="fn-banner" id="fnBanner"><div class="fn-banner-dot"></div><div class="fn-banner-text" id="fnBannerText">FIGHT NIGHT</div><div class="fn-banner-dot"></div><div id="fnLastChecked" style="font-size:10px;opacity:.6;margin-left:8px;font-family:Inter,sans-serif;letter-spacing:.04em"></div></div>
+<div class="odds-budget-banner" id="oddsBudgetBanner" role="status"></div>
 <header class="hdr">
   <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><button class="logo-season" onclick="seasonCry(this)" aria-label="Play the seasonal sound"></button><span class="logo-text">FIGHT <span>CARDS</span></span></div>
   <div class="hdr-right">
@@ -6406,6 +6407,44 @@ function consumePendingTap(delay){
     if(document.visibilityState==='visible')consumePendingTap(0);
   });
   window.addEventListener('pageshow',function(e){if(e.persisted)consumePendingTap(0);});
+})();
+</script>
+<script>
+// Odds-budget banner (#76).
+//
+// odds_budget_exhausted was true for weeks and said so only in overseer-status.json,
+// which nobody opens. The visible consequence — a card whose lines stop refreshing —
+// is indistinguishable from a market that isn't moving, so the outage read as calm.
+//
+// Everything here comes from the status file. The countdown, the affected cards and
+// the exhausted flag are computed in write_status.py; this renders them and does no
+// arithmetic of its own beyond pluralising, so the banner can't disagree with the
+// alert that fires down the webhook.
+//
+// Failure is silent ON PURPOSE: a missing or stale overseer-status.json must never
+// take the dashboard down with it. No banner is the correct rendering of "nothing
+// to say".
+(function(){
+  var el = document.getElementById("oddsBudgetBanner");
+  if (!el || !window.fetch) return;
+  fetch("overseer-status.json", { cache: "no-store" })
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(s){
+      var b = s && s.odds_budget;
+      if (!b || !b.exhausted) return;
+      var days = b.resets_in_days;
+      var when = (typeof days === "number")
+        ? ("resets in <b>" + days + " day" + (days === 1 ? "" : "s") + "</b>")
+        : "reset date unknown";
+      var hit = (b.most_affected || []).slice(0, 3).map(function(e){
+        var name = String(e.event_id || "").split(":")[1] || e.event_id;
+        return name + " (" + e.days_out + "d)";
+      });
+      el.innerHTML = "\u26A0\uFE0F Odds API budget exhausted \u2014 lines are not refreshing, " + when +
+        (hit.length ? ". Most affected: " + hit.join(", ") : "");
+      el.classList.add("show");
+    })
+    .catch(function(){ /* see above: no banner is the right answer */ });
 })();
 </script>
 </body>

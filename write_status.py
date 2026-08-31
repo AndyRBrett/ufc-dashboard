@@ -445,6 +445,85 @@ def save_alert_state(sent):
         encoding="utf-8")
 
 
+# --- odds budget: exhaustion is an operator event, not a JSON field --------
+#
+# odds_budget_exhausted has been true and surfaced NOWHERE but the raw status
+# file (#76). Nothing pages, nothing renders, and the consequence — a card whose
+# lines quietly stop refreshing — looks identical to a quiet market. The flag
+# existed; the telling did not.
+#
+# The quota is monthly, and the API never says when it resets. ODDS_QUOTA_RESET_DAY
+# is that day of the month (default 1, the common case); a wrong value costs an
+# inaccurate countdown in the banner, never a missed alert, because nothing here
+# is gated on it.
+ODDS_QUOTA_RESET_DAY = int(os.environ.get("ODDS_QUOTA_RESET_DAY", "1"))
+BUDGET_ALERT_KEY = "odds-budget-exhausted"
+
+
+def days_until_reset(today, reset_day=None):
+    """Whole days from `today` to the next monthly quota reset."""
+    reset_day = ODDS_QUOTA_RESET_DAY if reset_day is None else reset_day
+    day = max(1, min(28, reset_day))       # 28 so every month has the date
+    candidate = today.replace(day=day)
+    if candidate <= today:
+        month, year = today.month + 1, today.year
+        if month > 12:
+            month, year = 1, year + 1
+        candidate = today.replace(year=year, month=month, day=day)
+    return (candidate - today).days
+
+
+def budget_alert(exhausted, seen, today):
+    """(alert or None, updated_seen) for the exhaustion state.
+
+    Fires when the flag first flips, then at most once a day while it stays up,
+    and re-arms when the quota recovers. The 5-minute fight-window cadence means
+    a naive alert posts ~288 times a day, which is how a real signal becomes one
+    you mute — the same reasoning as dedupe_alerts, on a state rather than a
+    magnitude.
+    """
+    updated = dict(seen)
+    stamp = today.isoformat()
+    if not exhausted:
+        updated.pop(BUDGET_ALERT_KEY, None)   # recovery re-arms the alert
+        return None, updated
+    if updated.get(BUDGET_ALERT_KEY) == stamp:
+        return None, updated
+    updated[BUDGET_ALERT_KEY] = stamp
+    return {
+        "kind": "odds_budget_exhausted",
+        "message": (
+            "Odds API budget exhausted — lines will not refresh until the quota "
+            f"resets in {days_until_reset(today)} day(s)."
+        ),
+    }, updated
+
+
+def most_affected_events(events, today, limit=5):
+    """Upcoming events soonest-first — who loses most from lines going cold.
+
+    An event that has already happened cannot be hurt by a stale line, and one
+    three weeks out was not being priced anyway; the card about to happen is the
+    one this costs.
+    """
+    upcoming = []
+    for ev in events:
+        head = (ev.get("event_id") or "").split(":", 1)[0]
+        try:
+            date = datetime.strptime(head, "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        if date < today:
+            continue
+        upcoming.append({
+            "event_id": ev.get("event_id"),
+            "days_out": (date - today).days,
+            "status": ev.get("status"),
+        })
+    upcoming.sort(key=lambda e: e["days_out"])
+    return upcoming[:limit]
+
+
 def post_alerts(alerts):
     """Best-effort POST of the alerts payload to ALERT_WEBHOOK_URL.
 
@@ -642,6 +721,15 @@ def main():
         # while the gap is still visible to the overseer and the health issue.
         "odds_unavailable_events":  len(unpriced_ids),
         "odds_budget_exhausted":    budget_dead,
+        # The flag alone told nobody anything (#76). This is what a banner needs
+        # to say something useful: when the quota comes back, and which cards go
+        # cold in the meantime.
+        "odds_budget": {
+            "exhausted":     budget_dead,
+            "reset_day":     ODDS_QUOTA_RESET_DAY,
+            "resets_in_days": days_until_reset(now.date()),
+            "most_affected": most_affected_events(out_events, now.date()) if budget_dead else [],
+        },
         "stale_threshold_hours":    STALE_THRESHOLD_HOURS,
         "movement_alert_threshold": MOVEMENT_ALERT_THRESHOLD,
         "events":                   out_events,
@@ -655,6 +743,12 @@ def main():
     # State advances only on a successful post, so a webhook outage retries next
     # run instead of silently swallowing the alert.
     fresh, updated_seen = new_alerts(alerts, load_alert_state())
+    # Exhaustion rides the same channel but not the same dedup: it is a state,
+    # not a move, so it fires on the flip and then once a day until it clears
+    # rather than being compared against a magnitude it does not have.
+    budget_msg, updated_seen = budget_alert(budget_dead, updated_seen, now.date())
+    if budget_msg:
+        fresh = fresh + [budget_msg]
     if not ALERT_WEBHOOK_URL:
         pass                       # nothing configured: don't burn the dedup state
     elif not fresh:
