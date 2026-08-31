@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-31T00:08:40Z",
+  "generated_at": "2026-08-31T03:42:12Z",
   "summary": {
     "events": 13,
     "block": 0,
@@ -43,7 +43,7 @@
     {
       "severity": "WARN",
       "check": "odds-stale",
-      "message": "last Odds API pull was 39h ago with a card 5d out"
+      "message": "last Odds API pull was 43h ago with a card 5d out"
     },
     {
       "severity": "WARN",
