@@ -254,6 +254,45 @@ def test_index_odds_api_empty_payload_yields_empty_index():
     assert scrape._index_odds_api([], "the-odds-api:us") == {}
 
 
+def _card(*pairs):
+    return [{"odds": None, "f1": {"name": a}, "f2": {"name": b}} for a, b in pairs]
+
+
+def _idx(f1, f2, p1, p2):
+    return scrape._index_odds_api([{
+        "home_team": f1, "away_team": f2,
+        "bookmakers": [{"key": "fanduel", "markets": [{"key": "h2h", "outcomes": [
+            {"name": f1, "price": p1}, {"name": f2, "price": p2}]}]}],
+    }], "the-odds-api:us")
+
+
+def test_reprice_card_prices_a_card_the_guard_kept():
+    # The regression guard keeps a fuller previous card when a parse comes back
+    # short. Swapping the whole card also threw away the lines just fetched, so a
+    # card that tripped the guard on every run could never be priced at all.
+    card = _card(("Dan Hooker", "Salahdine Parnasse"))
+    n = scrape.reprice_card(card, _idx("Dan Hooker", "Salahdine Parnasse", 425, -600), {})
+    assert n == 1
+    assert card[0]["odds"] == {"f1": 425, "f2": -600}
+
+
+def test_reprice_card_keeps_an_existing_line_the_feed_lacks():
+    # A bout the feed has nothing for must not lose the price it already had.
+    card = _card(("Some Fighter", "Other Fighter"))
+    card[0]["odds"] = {"f1": -200, "f2": 170}
+    n = scrape.reprice_card(card, {}, {})
+    assert n == 0
+    assert card[0]["odds"] == {"f1": -200, "f2": 170}
+
+
+def test_reprice_card_reports_only_real_changes():
+    card = _card(("Dan Hooker", "Salahdine Parnasse"))
+    idx = _idx("Dan Hooker", "Salahdine Parnasse", 425, -600)
+    scrape.reprice_card(card, idx, {})
+    # Same lines a second time is not a change.
+    assert scrape.reprice_card(card, idx, {}) == 0
+
+
 # --- odds sanity validation (_valid_odds / _index_odds_api rejection) -------
 
 def test_valid_odds_accepts_standard_lines():
