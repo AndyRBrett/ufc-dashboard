@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T15:27:37Z",
+  "generated_at": "2026-09-01T15:34:15Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -5948,6 +5948,391 @@
           }
         }
       ]
+    },
+    {
+      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Jean Silva",
+          "f2": "Jose Delgado",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": -407,
+              "f2_odds": 320
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": -407,
+            "f2_odds": 320
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Brandon Moreno",
+          "f2": "Joseph Morales",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": -105,
+              "f2_odds": -115
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": -105,
+            "f2_odds": -115
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Tommy McMillen",
+          "f2": "Marwan Rahiki",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": -145,
+              "f2_odds": 124
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": -145,
+            "f2_odds": 124
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Manon Fiorot",
+          "f2": "Alexa Grasso",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": -215,
+              "f2_odds": 180
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": -215,
+            "f2_odds": 180
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Waldo Cortes-Acosta",
+          "f2": "Curtis Blaydes",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": -175,
+              "f2_odds": 150
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": -175,
+            "f2_odds": 150
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "David Martinez",
+          "f2": "Dan Ige",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": -285,
+              "f2_odds": 234
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": -285,
+            "f2_odds": 234
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Tim Elliott",
+          "f2": "Edgar Chairez",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": 184,
+              "f2_odds": -220
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": 184,
+            "f2_odds": -220
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Ignacio Bahamondes",
+          "f2": "Muslim Salikhov",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": -350,
+              "f2_odds": 280
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": -350,
+            "f2_odds": 280
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Yousri Belgaroui",
+          "f2": "Djorden Santos",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": -700,
+              "f2_odds": 490
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": -700,
+            "f2_odds": 490
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Ramiro Jimenez",
+          "f2": "Rodrigo Vera",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": 114,
+              "f2_odds": -135
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": 114,
+            "f2_odds": -135
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Rafa Garcia",
+          "f2": "Rong Zhu",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": 105,
+              "f2_odds": -125
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": 105,
+            "f2_odds": -125
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "JJ Aldrich",
+          "f2": "Regina Tarin",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": 191,
+              "f2_odds": -230
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": 191,
+            "f2_odds": -230
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
+      "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Joshua Van",
+          "f2": "Alexandre Pantoja",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": -113,
+              "f2_odds": -110
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": -113,
+            "f2_odds": -110
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Arman Tsarukyan",
+          "f2": "Mauricio Ruffy",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": -383,
+              "f2_odds": 285
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": -383,
+            "f2_odds": 285
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Gable Steveson",
+          "f2": "Sean Sharaf",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": -1477,
+              "f2_odds": 767
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": -1477,
+            "f2_odds": 767
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Tai Tuivasa",
+          "f2": "Robelis Despaigne",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": 395,
+              "f2_odds": -565
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": 395,
+            "f2_odds": -565
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
+      "event_id": "2026-10-03:ufc-332",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Deiveson Figueiredo",
+          "f2": "Payton Talbott",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": 415,
+              "f2_odds": -550
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": 415,
+            "f2_odds": -550
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
+      "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Alexander Volkanovski",
+          "f2": "Movsar Evloev",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": -115,
+              "f2_odds": -108
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": -115,
+            "f2_odds": -108
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Petr Yan",
+          "f2": "Merab Dvalishvili",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-01T15:34:15Z",
+              "f1_odds": -171,
+              "f2_odds": 138
+            }
+          ],
+          "open": {
+            "at": "2026-09-01T15:34:15Z",
+            "f1_odds": -171,
+            "f2_odds": 138
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
     }
   ],
   "fighters": {
@@ -5989,6 +6374,15 @@
         "open": -588,
         "close": -588,
         "clv": 0
+      },
+      {
+        "event_id": "2026-10-03:ufc-332",
+        "opponent": "Payton Talbott",
+        "side": "f1",
+        "points": 1,
+        "open": 415,
+        "close": null,
+        "clv": null
       }
     ],
     "Sergei Pavlovich": [
@@ -6208,6 +6602,15 @@
         "open": -114,
         "close": -114,
         "clv": 0
+      },
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Ramiro Jimenez",
+        "side": "f2",
+        "points": 1,
+        "open": -135,
+        "close": null,
+        "clv": null
       }
     ],
     "Zhu Kangjie": [
@@ -6393,6 +6796,15 @@
         "open": 34,
         "close": 34,
         "clv": 0
+      },
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Tim Elliott",
+        "side": "f2",
+        "points": 1,
+        "open": -220,
+        "close": null,
+        "clv": null
       }
     ],
     "Bruno Gustavo da Silva": [
@@ -7298,6 +7710,15 @@
         "open": -2833,
         "close": -1850,
         "clv": 983
+      },
+      {
+        "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
+        "opponent": "Sean Sharaf",
+        "side": "f1",
+        "points": 1,
+        "open": -1477,
+        "close": null,
+        "clv": null
       }
     ],
     "Elisha Ellison": [
@@ -7639,6 +8060,15 @@
         "open": 120,
         "close": 100,
         "clv": -20
+      },
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Marwan Rahiki",
+        "side": "f1",
+        "points": 1,
+        "open": -145,
+        "close": null,
+        "clv": null
       }
     ],
     "Alberto Montes": [
@@ -8863,6 +9293,369 @@
         "open": 160,
         "close": 160,
         "clv": 0
+      }
+    ],
+    "Jean Silva": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Jose Delgado",
+        "side": "f1",
+        "points": 1,
+        "open": -407,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Jose Delgado": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Jean Silva",
+        "side": "f2",
+        "points": 1,
+        "open": 320,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Brandon Moreno": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Joseph Morales",
+        "side": "f1",
+        "points": 1,
+        "open": -105,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Joseph Morales": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Brandon Moreno",
+        "side": "f2",
+        "points": 1,
+        "open": -115,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Marwan Rahiki": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Tommy McMillen",
+        "side": "f2",
+        "points": 1,
+        "open": 124,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Manon Fiorot": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Alexa Grasso",
+        "side": "f1",
+        "points": 1,
+        "open": -215,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Alexa Grasso": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Manon Fiorot",
+        "side": "f2",
+        "points": 1,
+        "open": 180,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Waldo Cortes-Acosta": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Curtis Blaydes",
+        "side": "f1",
+        "points": 1,
+        "open": -175,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Curtis Blaydes": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Waldo Cortes-Acosta",
+        "side": "f2",
+        "points": 1,
+        "open": 150,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "David Martinez": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Dan Ige",
+        "side": "f1",
+        "points": 1,
+        "open": -285,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Dan Ige": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "David Martinez",
+        "side": "f2",
+        "points": 1,
+        "open": 234,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Tim Elliott": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Edgar Chairez",
+        "side": "f1",
+        "points": 1,
+        "open": 184,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Ignacio Bahamondes": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Muslim Salikhov",
+        "side": "f1",
+        "points": 1,
+        "open": -350,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Muslim Salikhov": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Ignacio Bahamondes",
+        "side": "f2",
+        "points": 1,
+        "open": 280,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Yousri Belgaroui": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Djorden Santos",
+        "side": "f1",
+        "points": 1,
+        "open": -700,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Djorden Santos": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Yousri Belgaroui",
+        "side": "f2",
+        "points": 1,
+        "open": 490,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Ramiro Jimenez": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Rodrigo Vera",
+        "side": "f1",
+        "points": 1,
+        "open": 114,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Rafa Garcia": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Rong Zhu",
+        "side": "f1",
+        "points": 1,
+        "open": 105,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Rong Zhu": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Rafa Garcia",
+        "side": "f2",
+        "points": 1,
+        "open": -125,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "JJ Aldrich": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Regina Tarin",
+        "side": "f1",
+        "points": 1,
+        "open": 191,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Regina Tarin": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "JJ Aldrich",
+        "side": "f2",
+        "points": 1,
+        "open": -230,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Joshua Van": [
+      {
+        "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
+        "opponent": "Alexandre Pantoja",
+        "side": "f1",
+        "points": 1,
+        "open": -113,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Alexandre Pantoja": [
+      {
+        "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
+        "opponent": "Joshua Van",
+        "side": "f2",
+        "points": 1,
+        "open": -110,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Arman Tsarukyan": [
+      {
+        "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
+        "opponent": "Mauricio Ruffy",
+        "side": "f1",
+        "points": 1,
+        "open": -383,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Mauricio Ruffy": [
+      {
+        "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
+        "opponent": "Arman Tsarukyan",
+        "side": "f2",
+        "points": 1,
+        "open": 285,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Sean Sharaf": [
+      {
+        "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
+        "opponent": "Gable Steveson",
+        "side": "f2",
+        "points": 1,
+        "open": 767,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Tai Tuivasa": [
+      {
+        "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
+        "opponent": "Robelis Despaigne",
+        "side": "f1",
+        "points": 1,
+        "open": 395,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Robelis Despaigne": [
+      {
+        "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
+        "opponent": "Tai Tuivasa",
+        "side": "f2",
+        "points": 1,
+        "open": -565,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Payton Talbott": [
+      {
+        "event_id": "2026-10-03:ufc-332",
+        "opponent": "Deiveson Figueiredo",
+        "side": "f2",
+        "points": 1,
+        "open": -550,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Alexander Volkanovski": [
+      {
+        "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
+        "opponent": "Movsar Evloev",
+        "side": "f1",
+        "points": 1,
+        "open": -115,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Movsar Evloev": [
+      {
+        "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
+        "opponent": "Alexander Volkanovski",
+        "side": "f2",
+        "points": 1,
+        "open": -108,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Petr Yan": [
+      {
+        "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
+        "opponent": "Merab Dvalishvili",
+        "side": "f1",
+        "points": 1,
+        "open": -171,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Merab Dvalishvili": [
+      {
+        "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
+        "opponent": "Petr Yan",
+        "side": "f2",
+        "points": 1,
+        "open": 138,
+        "close": null,
+        "clv": null
       }
     ]
   }

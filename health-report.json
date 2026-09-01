@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-01T15:27:37Z",
+  "generated_at": "2026-09-01T15:34:15Z",
   "summary": {
-    "events": 13,
+    "events": 12,
     "block": 0,
-    "warn": 7
+    "warn": 3
   },
   "findings": [
     {
@@ -13,14 +13,6 @@
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
       "days_out": 4
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-missing-all",
-      "message": "UFC Fight Night: Silva vs. Delgado (11d out) has no odds on any of its 12 bouts",
-      "event": "UFC Fight Night: Silva vs. Delgado",
-      "date": "2026-09-12",
-      "days_out": 11
     },
     {
       "severity": "WARN",
@@ -34,26 +26,11 @@
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (4d out): Klaudia Sygua stats lookup failed (2026-08-29)",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (4d out): Klaudia Sygua stats lookup failed (2026-09-01)",
       "fighter": "Klaudia Sygua",
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
       "days_out": 4
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-stale",
-      "message": "last Odds API pull was 78h ago with a card 4d out"
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-api-error",
-      "message": "last Odds API call returned HTTP 401 \u2014 lines are frozen at their previous values"
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-quota",
-      "message": "Odds API quota down to 0 requests \u2014 lines are frozen until the quota resets"
     }
   ]
 }
