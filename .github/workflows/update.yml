@@ -20,6 +20,11 @@ on:
     - cron: "*/5 0-4 * * 1"
 
   workflow_dispatch:
+    inputs:
+      force_odds:
+        description: "Pull odds regardless of the cadence gate (spends ~2 API calls)"
+        type: boolean
+        default: false
 
 concurrency:
   group: update-main
@@ -46,10 +51,16 @@ jobs:
           python -m pytest -q
       - name: Snapshot the published data.js so the gate can diff against it
         run: cp data.js /tmp/data-before.js
+      # ODDS_FORCE bypasses should_fetch_odds' elapsed-time gate. It exists for the
+      # case where a card is visibly wrong and waiting hours for the next slot is
+      # not acceptable — a fix that only takes effect on a run that pulls odds
+      # cannot be confirmed otherwise. Manual dispatch only, and off by default:
+      # the gate is what keeps the monthly quota from being burned.
       - run: python scrape.py
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           SUPABASE_ANON: ${{ secrets.SUPABASE_ANON }}
+          ODDS_FORCE: ${{ inputs.force_odds && '1' || '' }}
       # The gate between a degraded scrape and a published card. Fails the job on
       # structural breakage (unparseable data, empty EVENTS, a card that lost
       # bouts) so the last-good data.js stays live and GitHub emails the failure.
