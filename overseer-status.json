@@ -1,11 +1,43 @@
 {
-  "generated_at": "2026-08-31T17:00:44Z",
+  "generated_at": "2026-09-01T14:05:33Z",
   "events_tracked": 13,
   "stale_events": 0,
   "parse_failure_events": 0,
   "awaiting_card_events": 6,
   "odds_unavailable_events": 2,
   "odds_budget_exhausted": true,
+  "odds_budget": {
+    "exhausted": true,
+    "reset_day": 1,
+    "resets_in_days": 30,
+    "most_affected": [
+      {
+        "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
+        "days_out": 4,
+        "status": "odds-unavailable"
+      },
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "days_out": 11,
+        "status": "odds-unavailable"
+      },
+      {
+        "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
+        "days_out": 18,
+        "status": "awaiting-card"
+      },
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "days_out": 25,
+        "status": "awaiting-card"
+      },
+      {
+        "event_id": "2026-10-03:ufc-332",
+        "days_out": 32,
+        "status": "awaiting-card"
+      }
+    ]
+  },
   "stale_threshold_hours": 48,
   "movement_alert_threshold": 10,
   "events": [
@@ -57,7 +89,7 @@
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-08-31T17:00:44Z",
+      "last_changed_at": "2026-09-01T14:05:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 14,
@@ -66,7 +98,7 @@
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-08-31T17:00:44Z",
+      "last_changed_at": "2026-09-01T14:05:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -75,7 +107,7 @@
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-31T17:00:44Z",
+      "last_changed_at": "2026-09-01T14:05:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -84,7 +116,7 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-31T17:00:44Z",
+      "last_changed_at": "2026-09-01T14:05:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -93,7 +125,7 @@
     {
       "event_id": "2026-10-03:ufc-332",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-31T17:00:44Z",
+      "last_changed_at": "2026-09-01T14:05:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 7,
@@ -102,7 +134,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-31T17:00:44Z",
+      "last_changed_at": "2026-09-01T14:05:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -111,7 +143,7 @@
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-31T17:00:44Z",
+      "last_changed_at": "2026-09-01T14:05:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -120,7 +152,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-08-31T17:00:44Z",
+      "last_changed_at": "2026-09-01T14:05:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
