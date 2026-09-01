@@ -1586,6 +1586,26 @@ def get_odds_with_fallback(odds_index, existing_odds, f1_name, f2_name):
         candidate = {"f1": o["f2_odds"], "f2": o["f1_odds"]}
     return candidate if _valid_odds(candidate["f1"], candidate["f2"]) else None
 
+def reprice_card(card, odds_index, existing_odds):
+    """Refresh the odds on an existing card in place; returns how many changed.
+
+    Used when the regression guard keeps a previously-built card: the bouts are
+    worth keeping, the prices on them are not. get_odds_with_fallback returns the
+    line already in data.js when the feed has nothing for a bout, so a bout the
+    guard saved never loses the price it already had.
+    """
+    repriced = 0
+    for fight in card:
+        fresh = get_odds_with_fallback(
+            odds_index, existing_odds, fight["f1"]["name"], fight["f2"]["name"])
+        if not fresh:
+            continue
+        if fresh != fight.get("odds"):
+            repriced += 1
+        fight["odds"] = fresh
+    return repriced
+
+
 # ---------------------------------------------------------------------------
 # Fighter stats  (UFCStats)
 # ---------------------------------------------------------------------------
@@ -2600,14 +2620,31 @@ def step_build_events(data, now):
         if prev and len(prev) > len(card):
             print(f"  Card regression guard: parse gave {len(card)} fight(s) for "
                   f"{ev_name}; keeping existing {len(prev)}-fight card", file=sys.stderr)
+            # Keep the fuller card, but NOT its stale prices. Swapping the whole
+            # card also discarded the lines this run just fetched, so an event
+            # that trips the guard every run could never be priced at all: the
+            # Sep 5 2026 card matched 12 of 13 bouts against a healthy Odds API
+            # and still published with zero odds, which then reported as a parse
+            # failure. Re-price the bouts we keep; get_odds_with_fallback returns
+            # the existing line when the feed has nothing, so a bout the guard
+            # saved never loses the price it already had.
             card = prev
+            repriced = reprice_card(card, odds_index, existing_odds)
+            if repriced:
+                print(f"  Re-priced {repriced} bout(s) on the kept card",
+                      file=sys.stderr)
         if not card:
             continue
         # Per-event source attribution: count which adapter covered each bout's
         # line, so a card filled by the secondary fallback is visible in the logs.
+        # Count over the card being PUBLISHED, not the parse that produced it.
+        # Reading from wiki_fights meant a guard-kept card reported the sources of
+        # bouts it had just discarded — the log said 12 bouts priced on a card
+        # that shipped with none.
         src_counts = {}
-        for wf in wiki_fights[:len(card)]:
-            src = odds_source(odds_index, wf["f1"], wf["f2"]) or "none"
+        for fight in card:
+            src = odds_source(
+                odds_index, fight["f1"]["name"], fight["f2"]["name"]) or "none"
             src_counts[src] = src_counts.get(src, 0) + 1
         print(f"  Odds sources for {ev_name}: {src_counts}", file=sys.stderr)
         new_events.append({
