@@ -34,6 +34,47 @@ def test_clean_wiki_strips_markup():
     assert scrape.clean_wiki("Champion[1]") == "Champion"
 
 
+def test_clean_wiki_strips_an_unclosed_template():
+    # A template split across lines arrives without its closing braces, because
+    # the caller only ever hands us one line. Those braces used to survive into a
+    # fighter name in data.js and unbalance inject_results' brace scan (#97).
+    assert scrape.clean_wiki("{{nowrap|Levi Rodrigues Jr.") == "Levi Rodrigues Jr."
+    assert scrape.clean_wiki("{{nowrap|Levi Rodrigues Jr.}}") == ""
+    assert "{" not in scrape.clean_wiki("{{sortname|Jon|Jones")
+    assert "}" not in scrape.clean_wiki("Jon Jones}}")
+
+
+def _fight_js(f1, f2):
+    return (
+        'var EVENTS=[{fights:[{lbl:"Main Card",wc:"Lightweight",title:false,'
+        'rematch:false,odds:{f1:-192,f2:160},winner:"",method:"",round:null,'
+        f'state:"pre",f1:{{n:"{f1}",r:"",rk:"",s:null}},f2:{{n:"{f2}",r:"",rk:"",s:null}}}}]}}];'
+    )
+
+
+def test_inject_results_marks_the_fight_finished():
+    js = _fight_js("Liu Ce", "Levi Rodrigues Jr.")
+    out, n = scrape.inject_results(
+        js, [{"winner": "Liu Ce", "loser": "Levi Rodrigues Jr.",
+              "method": "KO/TKO", "round": 1}])
+    assert n == 1
+    assert 'winner:"Liu Ce"' in out and 'state:"post"' in out and "round:1" in out
+
+
+def test_inject_results_never_counts_an_edit_it_did_not_make():
+    # An unbalanced name leaves the brace scan unable to delimit the fight. The
+    # old code sliced an EMPTY string, changed nothing, and still returned 1 —
+    # and main() exits on any non-zero count, so this one phantom result skipped
+    # the odds/stats/rankings rebuild on every run for as long as the event
+    # stayed in the results window.
+    js = _fight_js("Liu Ce", "{{nowrap|Levi Rodrigues Jr.")
+    out, n = scrape.inject_results(
+        js, [{"winner": "Liu Ce", "loser": "Levi Rodrigues Jr.",
+              "method": "KO/TKO", "round": 1}])
+    assert n == 0
+    assert out == js
+
+
 # --- method normalisation --------------------------------------------------
 
 def test_norm_method_canonical_forms():

@@ -122,6 +122,14 @@ def clean_wiki(text):
         return ""
     text = re.sub(r"\[\[([^\]|]+\|)?([^\]]+)\]\]", r"\2", text)
     text = re.sub(r"\{\{[^}]+\}\}", "", text)
+    # A template split across lines reaches us as an UNCLOSED "{{nowrap|Name"
+    # (the closing braces sit on a later line, which the caller never passes in),
+    # so the rule above cannot see it. Left alone, those braces travel all the way
+    # into a fighter name in data.js and unbalance the brace scan that
+    # inject_results uses to find a fight's extent — see #97. Drop the opener,
+    # keep the argument after the last pipe, then clear any orphaned braces.
+    text = re.sub(r"\{\{\s*(?:[^|{}]*\|)*", "", text)
+    text = text.replace("}}", "").replace("{", "").replace("}", "")
     text = re.sub(r"<[^>]+>", "", text)
     text = re.sub(r"\[\d+\]", "", text)
     return asc(text).strip().strip(",").strip()
@@ -2215,6 +2223,13 @@ def inject_results(js, results):
             if 'state:"post"' in js[fs:fs + 300]:
                 print(f"  Already set: {wn}", file=sys.stderr)
                 break
+            # Locate the fight object's extent by brace depth. A name carrying
+            # stray braces (see clean_wiki) never balances, leaving fe == fs and
+            # an EMPTY slice — whose substitutions changed nothing while still
+            # counting as an injection. main() exits on any injection, so that
+            # phantom result blocked every rebuild (odds, stats, rankings) for as
+            # long as the event stayed in the results window. Skip a fight we
+            # cannot delimit instead of silently editing nothing.
             depth = 0
             fe    = fs
             for i in range(fs, min(fs + 2000, len(js))):
@@ -2225,11 +2240,19 @@ def inject_results(js, results):
                 if depth == 0:
                     fe = i + 1
                     break
+            if fe <= fs:
+                print(f"  WARNING: unbalanced fight object near {f1n} vs {f2n} "
+                      "— cannot inject result", file=sys.stderr)
+                break
             fstr = js[fs:fe]
             fstr = re.sub(r'winner:"[^"]*"',     lambda _: f'winner:"{wn}"',     fstr)
             fstr = re.sub(r'method:"[^"]*"',     lambda _: f'method:"{method}"', fstr)
             fstr = re.sub(r"round:(?:null|\d+)", f"round:{rnd if rnd else 'null'}", fstr)
             fstr = re.sub(r'state:"[^"]*"',      lambda _: 'state:"post"',       fstr)
+            if fstr == js[fs:fe]:
+                # Nothing actually changed. Counting this would report an
+                # injection that never happened and, via main(), skip the rebuild.
+                break
             js   = js[:fs] + fstr + js[fe:]
             print(f"  Injected: {wn} def {f2n if f1w else f1n} R{rnd}", file=sys.stderr)
             count += 1

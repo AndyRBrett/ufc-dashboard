@@ -465,7 +465,10 @@ def days_until_reset(today, reset_day=None):
     reset_day = ODDS_QUOTA_RESET_DAY if reset_day is None else reset_day
     day = max(1, min(28, reset_day))       # 28 so every month has the date
     candidate = today.replace(day=day)
-    if candidate <= today:
+    # Strictly earlier, not "<=": on the reset day itself the quota is back NOW,
+    # so the countdown is 0. Rolling to next month here made the banner read
+    # "resets in 30 days" on the very day the budget refilled.
+    if candidate < today:
         month, year = today.month + 1, today.year
         if month > 12:
             month, year = 1, year + 1

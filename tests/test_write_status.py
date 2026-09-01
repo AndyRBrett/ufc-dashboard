@@ -474,7 +474,10 @@ def test_recovery_re_arms_the_alert():
 def test_days_until_reset_crosses_the_month_end():
     from datetime import date
     assert ws.days_until_reset(date(2026, 8, 31), reset_day=1) == 1
-    assert ws.days_until_reset(date(2026, 8, 1), reset_day=1) == 31   # today isn't "0 days"
+    # The reset day itself is 0, not a full month. Sep 1 2026 proved the old
+    # reading wrong in the worst way: the quota had already refilled that
+    # morning while the banner read "resets in 30 days".
+    assert ws.days_until_reset(date(2026, 8, 1), reset_day=1) == 0
     assert ws.days_until_reset(date(2026, 8, 20), reset_day=25) == 5
     assert ws.days_until_reset(date(2026, 12, 31), reset_day=1) == 1  # year rolls over
     # A reset day past the shortest month still lands on a real date.
