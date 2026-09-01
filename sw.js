@@ -15,11 +15,16 @@ self.addEventListener('install', function(e) {
   // independently — one miss must not block install.
   e.waitUntil(caches.open(CACHE).then(function(c) {
     var core = ['./', './data.js', './manifest.json', './icon-192-v2.png', './sounds/eagle-1.mp3', './sounds/eagle-2.mp3'];
-    // Seasonal cues, one per month. Listed before the files exist on purpose:
-    // c.add() misses are swallowed below, and the theme falls back to its
-    // synthesised cue, so dropping an mp3 in later is all that is needed.
-    core = core.concat(['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
-      .map(function(k) { return './sounds/season-' + k + '.mp3'; }));
+    // Seasonal cues: precache only THIS month's file. All twelve together are
+    // ~5.7MB, which is not worth forcing down every install for eleven sounds
+    // nobody can reach yet — the fetch handler below already runtime-caches
+    // same-origin responses, so the other months are cached the first time
+    // they are played and are offline from then on. A missing file is
+    // harmless: c.add() misses are swallowed and the theme falls back to its
+    // synthesised cue.
+    core.push('./sounds/season-' +
+      ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'][new Date().getMonth()] +
+      '.mp3');
     return Promise.all(core.map(function(u) {
       return c.add(u).catch(function() {});
     }));

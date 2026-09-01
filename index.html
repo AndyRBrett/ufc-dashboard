@@ -751,6 +751,14 @@ body[data-theme="seasonal"] .hero{background:radial-gradient(120% 78% at 50% 0%,
 body[data-theme="seasonal"] .logo-oct{display:none}
 body[data-theme="seasonal"] .logo-season{display:block;animation:eagleBreathe 3.6s ease-in-out infinite}
 .logo-season:active{transform:scale(.88)}
+/* playing = tappable to stop: a ring pulses behind the mascot so the second
+   tap is discoverable rather than a guess */
+.logo-season.playing{position:relative;animation:eagleBreathe 1.5s ease-in-out infinite}
+.logo-season.playing::after{content:"";position:absolute;inset:-5px;border-radius:50%;
+  border:2px solid var(--se-accent2);opacity:.9;animation:seRing 1.5s ease-out infinite;pointer-events:none}
+@keyframes seRing{0%{transform:scale(.82);opacity:.9}100%{transform:scale(1.25);opacity:0}}
+@media (prefers-reduced-motion:reduce){.logo-season.playing,.logo-season.playing::after{animation:none}
+  .logo-season.playing::after{opacity:.9}}
 /* ambient life: reuses the .usa-stars / .usa-stars-lb overlays already in the DOM */
 body[data-theme="seasonal"] .usa-stars,body[data-theme="seasonal"] .usa-stars-lb{display:block;position:absolute;
   inset:0;pointer-events:none;z-index:5;overflow:hidden}
@@ -1852,7 +1860,7 @@ function applyTheme(t){
   if(!THEMES[t])t="octagon";
   document.body.setAttribute("data-theme",t);
   if(t==="seasonal")applySeason();
-  else{document.body.removeAttribute("data-season");restoreLogo();}
+  else{document.body.removeAttribute("data-season");restoreLogo();try{seasonStop();}catch(e){}}
   var m=document.querySelector('meta[name="theme-color"]');
   if(m)m.setAttribute("content",t==="seasonal"?curSeason().bar:THEMES[t]);
   var items=document.querySelectorAll(".theme-item");
@@ -1940,25 +1948,68 @@ function seasonPrefetch(k){
   try{fetch(seasonSndUrl(k)).then(function(r){return r.ok?r.arrayBuffer():null;})
     .then(function(ab){if(ab)_seRaw[k]=ab;}).catch(function(){});}catch(e){}
 }
+/* The real recordings run several seconds, so the mascot is a toggle: tap to
+   start, tap again to stop. Everything routes through one gain node per tap
+   so a stop can fade rather than click, and so the synthesised fallback is
+   just as stoppable as a file. The eagle is deliberately untouched — its
+   screech is short and overlapping taps are part of it. */
+var _seVoice=null;
+function seasonPlaying(){return !!_seVoice;}
+function seasonMark(on){
+  var b=document.querySelector(".logo-season");if(!b)return;
+  b.classList.toggle("playing",!!on);
+  var S=curSeason();
+  b.setAttribute("aria-label",(on?"Stop the ":"Play the ")+S.nm+" sound");
+  b.title=on?"Tap to stop":S.nm;
+}
+function seasonStop(){
+  var v=_seVoice;if(!v)return false;
+  _seVoice=null;
+  try{
+    var c=_seCtx,t=c.currentTime;
+    v.gain.gain.cancelScheduledValues(t);
+    v.gain.gain.setValueAtTime(v.gain.gain.value||1,t);
+    v.gain.gain.linearRampToValueAtTime(0,t+.06);
+    if(v.src){try{v.src.onended=null;v.src.stop(t+.07);}catch(e){}}
+    setTimeout(function(){try{v.gain.disconnect();}catch(e){}},200);
+  }catch(e){}
+  seasonMark(false);
+  return true;
+}
 function seasonPlay(k,kind){
   var c;try{c=seCtx();}catch(e){return;}
-  function fire(buf){var sc=c.createBufferSource();sc.buffer=buf;sc.connect(c.destination);sc.start();}
+  var g=c.createGain();g.gain.value=1;g.connect(c.destination);
+  _seVoice={gain:g,src:null};
+  seasonMark(true);
+  function fire(buf){
+    if(!_seVoice||_seVoice.gain!==g)return;      // stopped while decoding
+    var sc=c.createBufferSource();sc.buffer=buf;sc.connect(g);
+    sc.onended=function(){if(_seVoice&&_seVoice.gain===g){_seVoice=null;seasonMark(false);}};
+    _seVoice.src=sc;sc.start();
+  }
+  function synth(){
+    if(!_seVoice||_seVoice.gain!==g)return;
+    seasonSound(kind,g);
+    // the synthesised cues are all under ~3s and self-terminate
+    setTimeout(function(){if(_seVoice&&_seVoice.gain===g){_seVoice=null;seasonMark(false);}},3200);
+  }
   if(_seBuf[k]){fire(_seBuf[k]);return;}
   if(_seRaw[k]&&!_seTried[k]){
     _seTried[k]=1;
     try{
       c.decodeAudioData(_seRaw[k].slice(0),
         function(buf){_seBuf[k]=buf;fire(buf);},
-        function(){seasonSound(kind);});
+        function(){synth();});
       return;
     }catch(e){}
   }
-  seasonSound(kind);
+  synth();
 }
 // A PWA left open across midnight on the 31st would otherwise keep last
 // month's face until a reload, so re-resolve whenever the tab comes back.
 document.addEventListener("visibilitychange",function(){
-  if(!document.hidden&&document.body.getAttribute("data-theme")==="seasonal")applySeason();
+  if(document.hidden){try{seasonStop();}catch(e){}return;}
+  if(document.body.getAttribute("data-theme")==="seasonal")applySeason();
 });
 
 /* Sound is synthesised, so there are no files to ship or precache. The context
@@ -1968,17 +2019,17 @@ function seCtx(){if(!_seCtx)_seCtx=new (window.AudioContext||window.webkitAudioC
   if(_seCtx.state==="suspended")_seCtx.resume();return _seCtx;}
 function seNoise(c,secs){var n=Math.floor(c.sampleRate*secs),b=c.createBuffer(1,n,c.sampleRate),d=b.getChannelData(0);
   for(var i=0;i<n;i++)d[i]=Math.random()*2-1;return b;}
-function seasonSound(kind){
-  var c=seCtx(),t=c.currentTime;
+function seasonSound(kind,out){
+  var c=seCtx(),t=c.currentTime,dest=out||c.destination;
   function tone(type,f,peak,atk,dec,at){var o=c.createOscillator();o.type=type;o.frequency.value=f;
     var g=c.createGain(),st=t+(at||0);g.gain.setValueAtTime(0,st);
     g.gain.linearRampToValueAtTime(peak,st+atk);g.gain.exponentialRampToValueAtTime(.0008,st+atk+dec);
-    o.connect(g).connect(c.destination);o.start(st);o.stop(st+atk+dec+.05);return o;}
+    o.connect(g).connect(dest);o.start(st);o.stop(st+atk+dec+.05);return o;}
   function noise(dur,type,freq,q,peak,atk,dec,at){var src=c.createBufferSource();src.buffer=seNoise(c,dur);
     var f=c.createBiquadFilter();f.type=type;f.frequency.value=freq;if(q)f.Q.value=q;
     var g=c.createGain(),st=t+(at||0);g.gain.setValueAtTime(0,st);
     g.gain.linearRampToValueAtTime(peak,st+atk);g.gain.exponentialRampToValueAtTime(.0008,st+atk+dec);
-    src.connect(f).connect(g).connect(c.destination);src.start(st);src.stop(st+dur+(at||0));}
+    src.connect(f).connect(g).connect(dest);src.start(st);src.stop(st+dur+(at||0));}
   switch(kind){
     case "burst":  noise(1.4,"highpass",1400,0,.3,.004,.5);
                    [0,.18,.34].forEach(function(o,i){noise(.6,"bandpass",2600-i*400,3,.22,.003,.32,o);});break;
@@ -2017,6 +2068,8 @@ function seasonCry(el){
       {transform:"rotate(13deg) scale(1.1)"},{transform:"rotate(-7deg) scale(1.04)"},
       {transform:"rotate(0deg) scale(1)"}],{duration:520,easing:"ease-out"});
   }catch(e){}
+  // tap to start, tap again to stop
+  try{if(seasonStop())return;}catch(e){}
   try{seasonPlay(S.k,S.snd);}catch(e){}
   try{toast(S.ph[Math.floor(Math.random()*S.ph.length)]);}catch(e){}
 }
