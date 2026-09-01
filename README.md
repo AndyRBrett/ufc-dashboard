@@ -145,6 +145,54 @@ pull indistinguishable from a good one — so the run is gated.
 Findings are weighted by how close the card is: a gap on a card five days out
 matters, the same gap on one three months out does not.
 
+### Results run before the rebuild
+
+`scrape.py` does two different jobs, and it never does both in one run. It first
+looks for results to inject into events in the last few days; if it injects any,
+it writes `data.js` and **exits before the rebuild** — odds, stats and rankings
+are not touched. That is deliberate: during a card the 5-minute runs exist to
+publish results, and a full rebuild on each of them would be wasted work and
+wasted quota.
+
+The cost is that anything which makes an injection *look* successful stops the
+rebuild for as long as the event stays in the results window. In September 2026
+a fighter name reached `data.js` carrying an unclosed `{{nowrap|` template from
+Wikipedia. The stray braces unbalanced the brace scan `inject_results` uses to
+find a bout's extent, so it edited an empty slice — changing nothing, and
+counting it as an injection anyway. Every run for three days stopped at that
+phantom result. The odds froze on a card four days out, the scrape step finished
+in two seconds, and each commit still landed looking healthy.
+
+So: **an injection must be a real edit.** `inject_results` refuses a bout it
+cannot delimit and counts only a substitution that actually changed the text.
+`clean_wiki` strips unclosed template openers, because the caller feeds it one
+line at a time and a template split across lines arrives without its closing
+braces.
+
+### Diagnosing frozen odds
+
+Stale lines report as an Odds API problem — `odds-state.json` shows the last
+status and remaining quota, and the health report repeats it — but that state is
+only as fresh as the last *attempted* pull. A pipeline that never reaches the
+odds step leaves the last failure sitting there looking current. Check the API
+directly before believing it:
+
+```bash
+# headers only; still spends one call from the quota
+curl -s -o /dev/null -D - "https://api.the-odds-api.com/v4/sports/mma_mixed_martial_arts/odds/?apiKey=$KEY&regions=us&markets=h2h"
+```
+
+`x-requests-used` is the honest number. If it is far below what the cadence
+should have spent this cycle, the scraper is not calling the API at all and the
+fault is upstream of the odds code — start with the scrape step's duration and
+whether it exited on a result injection.
+
+Note that the API answers `401` for both an exhausted quota and a rejected key,
+and sends no `x-requests-remaining` header on that response — so the remaining
+count in `odds-state.json` may be left over from an earlier call.
+`update.yml` tells the two cases apart by that count and warns rather than fails
+on exhaustion, since a dead key needs a human and a spent quota fixes itself.
+
 ### Two budgets
 
 - **Odds API calls are quota-metered.** `should_fetch_odds` gates them on elapsed
