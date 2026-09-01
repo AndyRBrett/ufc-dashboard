@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T16:28:54Z",
+  "generated_at": "2026-09-01T16:39:34Z",
   "summary": {
     "events": 12,
     "block": 0,
@@ -8,8 +8,8 @@
   "findings": [
     {
       "severity": "WARN",
-      "check": "odds-missing-all",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (4d out) has no odds on any of its 14 bouts",
+      "check": "odds-missing-some",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (4d out): 2 of 14 bouts have no odds",
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
       "days_out": 4
