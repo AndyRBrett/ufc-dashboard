@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T15:34:15Z",
+  "generated_at": "2026-09-01T16:28:54Z",
   "events_tracked": 12,
   "stale_events": 0,
   "parse_failure_events": 1,
@@ -54,7 +54,7 @@
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
       "status": "parse-failure",
-      "last_changed_at": "2026-09-01T15:34:15Z",
+      "last_changed_at": "2026-09-01T16:28:54Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 14,
@@ -81,7 +81,7 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-01T15:34:15Z",
+      "last_changed_at": "2026-09-01T16:28:54Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-01T15:34:15Z",
+      "last_changed_at": "2026-09-01T16:28:54Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -117,7 +117,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-01T15:34:15Z",
+      "last_changed_at": "2026-09-01T16:28:54Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
