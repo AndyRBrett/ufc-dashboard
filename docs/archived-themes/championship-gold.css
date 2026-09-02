@@ -1,0 +1,21 @@
+/* Championship Gold — retired from the theme menu.
+   Kept here so it can be put back without digging through git history.
+
+   To restore:
+   1. paste the rule below back into the main <style> block in index.html,
+      next to the other body[data-theme=...] blocks
+   2. add  gold:1  to the _ok map in the boot script
+   3. add  gold:"#0a0908"  to the THEMES map
+   4. add the menu button back (markup at the bottom of this file)
+   5. bump SW_VERSION in sw.js
+*/
+/* ===== THEME: CHAMPIONSHIP GOLD — black & gold, title-belt vibes ===== */
+body[data-theme="gold"]{--bg:#0a0908;--card:#14120e;--card2:#1d1a14;--surface:#1d1a14;--future-bg:#0e0d0a;--future-border:rgba(212,175,55,.12);--text:#f2e9d8;--muted:#9a8f7a;--muted2:#c9bda2;--border:rgba(212,175,55,.12);--border2:rgba(212,175,55,.22);--sep:rgba(212,175,55,.15);--stripe-border:rgba(212,175,55,.08);--btn-bg:rgba(212,175,55,.08);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:rgba(10,9,8,.96);--red:#d4af37;--red-dim:rgba(212,175,55,.1);--red-border:rgba(212,175,55,.38);--gold:#f0d78c;--gold-dim:rgba(240,215,140,.1);--gold-border:rgba(240,215,140,.32);--green:#37c878;--green-dim:rgba(55,200,120,.12);--green-border:rgba(55,200,120,.28);--loss:#d2705e;--loss-dim:rgba(210,112,94,.12);--loss-border:rgba(210,112,94,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5);--shadow-el:0 8px 32px rgba(0,0,0,.65);--on-accent:#1a1407;--on-gold:#1a1407;--accent-glow:rgba(212,175,55,.3);--gold-glow:rgba(240,215,140,.4);--banner-edge:#6b520f;--fn-tint:rgba(212,175,55,.12)}
+
+/* Menu button markup:
+
+        <button class="btn-more-item theme-item" data-theme="gold" onclick="setTheme('gold')">
+          <span class="theme-swatch" style="background:linear-gradient(135deg,#14120e 55%,#d4af37 55%)"></span>
+          <span>Championship Gold</span><span class="theme-check">&#10003;</span>
+        </button>
+*/
