@@ -882,8 +882,11 @@ body[data-theme="silver"] .logo-oct{display:none}
 body[data-theme="silver"] .logo-silver{display:block;animation:eagleBreathe 3.6s ease-in-out infinite}
 .logo-silver:active{transform:scale(.9)}
 /* script wordmark */
-body[data-theme="silver"] .logo-text{font-family:'Great Vibes',cursive;font-size:34px;letter-spacing:0;
-  line-height:.8;padding-top:8px;color:#a30d24;text-shadow:0 1px 0 #fff}
+body[data-theme="silver"] .logo-text{font-family:'Great Vibes',cursive;font-size:30px;letter-spacing:0;
+  line-height:.8;padding:7px 6px 0 0;color:#a30d24;text-shadow:0 1px 0 #fff;
+  -webkit-text-stroke:.9px #a30d24;paint-order:stroke fill}
+@media (max-width:400px){body[data-theme="silver"] .logo-text{font-size:26px;-webkit-text-stroke-width:.8px}}
+@media (max-width:350px){body[data-theme="silver"] .logo-text{font-size:22px;-webkit-text-stroke-width:.7px}}
 body[data-theme="silver"] .logo-text span{color:#a30d24}
 /* tagline strip, hidden on every other theme */
 .silver-tag{display:none}
@@ -902,8 +905,7 @@ body[data-theme="silver"] .silver-tag-row svg{width:9px;height:15px;display:bloc
 body[data-theme="silver"] .flive{background:linear-gradient(180deg,#e4f2fd,#cbe6fa)!important;
   box-shadow:inset 3px 0 0 #c8102e,0 2px 10px rgba(0,113,206,.24)}
 @media (max-width:350px){.logo-silver{width:26px;height:42px}
-  body[data-theme="silver"] .logo-text{font-size:27px}
-  body[data-theme="silver"] .silver-tag-row{letter-spacing:.16em;font-size:9px}}
+    body[data-theme="silver"] .silver-tag-row{letter-spacing:.16em;font-size:9px}}
 
 </style>
 </head>
@@ -2247,7 +2249,7 @@ setInterval(function(){
    pipeline had to change. */
 function applySilver(){
   var t=document.querySelector(".logo-text");
-  if(t)t.innerHTML='Mountain <span>Cold</span>';
+  if(t)t.innerHTML='The Silver <span>Bullet</span>';
   silverCheckCold();
 }
 function silverCheckCold(){
@@ -2279,7 +2281,7 @@ function silverCrack(el){
     fz.frequency.setValueAtTime(5200,t+.07);
     fz.frequency.exponentialRampToValueAtTime(2600,t+2.0);
   }catch(e){}
-  try{toast(["MOUNTAIN COLD","ICE COLD, ICE COLD","STAY FROSTY","AS COLD AS IT GETS"][Math.floor(Math.random()*4)]);}catch(e){}
+  try{toast(["THE SILVER BULLET","ICE COLD, ICE COLD","STAY FROSTY","AS COLD AS IT GETS"][Math.floor(Math.random()*4)]);}catch(e){}
 }
 
 // Same artwork as the header mascot. The gradient id has to be unique per
