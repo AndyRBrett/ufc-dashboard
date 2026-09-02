@@ -146,6 +146,68 @@ QUESTION: ${d.question}
 Answer only the question — no preamble, no sign-off.`;
 }
 
+// Private background on the regulars, keyed by the leaderboard nickname the
+// client already sends. The roast prompt is otherwise blind to WHO it is
+// talking about — every burn had to run on rank and picks, so the same handful
+// of angles kept coming back around. One personal detail is what makes a roast
+// actually land, so each nickname carries a short dossier the model may pull a
+// SINGLE detail from (see buildDossier for the usage rules).
+//
+// Matching is exact on the normalized nickname — never substring: short handles
+// like "T" and "AB" would otherwise match half the board. An unknown nickname
+// simply contributes nothing, which is the pre-existing behaviour.
+const ROASTER_PROFILES: { aliases: string[]; bio: string }[] = [
+  {
+    aliases: ["jpeso", "jordan", "jordansalinas"],
+    bio: "Jordan Salinas — late to absolutely everything, parties way too hard, die-hard Houston sports fan, and takes men's fashion a little too seriously.",
+  },
+  {
+    aliases: ["t", "torrey", "torreybrett", "softhands"],
+    bio: "Torrey Brett — AB's brother, tall and on the heavy side, nicknamed 'Soft Hands'. Software developer, animal lover. Just moved to Dallas and hates the city, and hates even more that the Dallas teams are stocked with Houston guys now that he lives there.",
+  },
+  {
+    aliases: ["ab", "andy", "andybrett"],
+    bio: "Andy Brett — Torrey's brother, the short skinny one. Teaches kids' martial arts. Easy-going and thoughtful, but leans into a challenge way too hard.",
+  },
+  {
+    aliases: ["dereko", "derek"],
+    bio: "Derek — could be mistaken for Eminem, or B-Rabbit out of 8 Mile. Obsessed with cliff jumping.",
+  },
+  {
+    aliases: ["tristin", "tris"],
+    bio: "Tristin — AB's wife. Smart, beautiful and ruthless past the point of necessity. Keeps making dead-baby jokes that never land.",
+  },
+];
+
+const _profileIndex = new Map<string, string>();
+for (const p of ROASTER_PROFILES) {
+  for (const a of p.aliases) _profileIndex.set(a, p.bio);
+}
+const normNick = (s: string) => (s ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+function profileFor(nickname: string): string | null {
+  return _profileIndex.get(normNick(nickname)) ?? null;
+}
+
+// One optional paragraph of who-these-people-are, appended to the roast prompt.
+// Deliberately framed as something the persona already knows rather than data
+// to report: without the "never recite / at most one" rule the model reads the
+// dossier back as a list of facts, which is the opposite of a burn.
+function buildDossier(myName: string, targets: string[]): string {
+  const lines: string[] = [];
+  const mine = profileFor(myName);
+  if (mine) lines.push(`${myName} (the one talking): ${mine}`);
+  const seen = new Set<string>();
+  for (const t of targets) {
+    const key = normNick(t);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    const bio = profileFor(t);
+    if (bio) lines.push(`${t} (target): ${bio}`);
+  }
+  if (!lines.length) return "";
+  return ` YOU KNOW THESE PEOPLE personally — background, not material to report: ${lines.join(" | ")} Use AT MOST ONE of those details, and only when it makes the burn funnier than the picks would; never list them, never explain them, never let on that you were handed them. Ignore the lot if the roast is sharper without.`;
+}
+
 // Assembles the full roast prompt from the short variable parts the client
 // sends. The scaffolding used to live client-side inlined into `question`,
 // which put every trash-talk request ~3x over MAX_QUESTION once input caps
@@ -213,9 +275,12 @@ function buildTrashTalkPrompt(d: ReqBody): string {
   const baseRules = `Speak PURELY as ${persona} — their cadence, their swagger, their exact way of talking shit. This is raw trash talk, rude and personal, NOT a scouting report. Do NOT follow a formula: no throat-clearing opener, no obligatory middle jab about their picks, no tidy mic-drop to close — just talk the way ${persona} actually would and let it land however it lands. Shape THIS one like: ${formHint}. You MAY glance at the CARD for ONE detail, and only if it genuinely makes the burn funnier — most roasts should skip the card entirely and run on pure personality and disrespect. FACTS ARE STRICT: only tie a target to a pick explicitly attributed to THEM, never invent one, never blame them for a fight they won, never quote percentages or numbers. Don't lead with a rank, a username, or "hey" — drop straight into the voice, no emojis. LENGTH IS A HARD CAP: this lands as a push notification read on a phone — ONE short sentence is the default, TWO short sentences is the absolute maximum, and the whole roast stays under 30 words before the signature. If it needs more room it isn't funny enough yet; cut, don't explain the joke. Brevity IS the disrespect. When burying a group, land ONE collective burn — do not go person by person. Sign off with '— ${persona}' using the FULL name exactly as written, and even that should feel in-character. No preamble. (variety token, do not print: ${seed})`;
   const who = solo ? `ripping into ${opponentNames}` : `burying ${opponentNames}`;
   const hint = (d.hint ?? "").trim();
+  // Empty string whenever nobody involved has a profile, so unknown nicknames
+  // produce exactly the prompt they produced before profiles existed.
+  const dossier = buildDossier(myName, targets);
   const question = hint
-    ? `You ARE ${persona}. Trash talk on behalf of ${myName} ${who} on ${boardName}. ${boardAngle} Build the bit around this angle: "${hint}". ${baseRules}`
-    : `You ARE ${persona}. Trash talk on behalf of ${myName} ${who} on ${boardName}. ${boardAngle} ${angleHint} ${baseRules}`;
+    ? `You ARE ${persona}. Trash talk on behalf of ${myName} ${who} on ${boardName}. ${boardAngle} Build the bit around this angle: "${hint}".${dossier} ${baseRules}`
+    : `You ARE ${persona}. Trash talk on behalf of ${myName} ${who} on ${boardName}. ${boardAngle} ${angleHint}${dossier} ${baseRules}`;
   return buildChatPrompt({
     event: `UFC Picks Leaderboard — ${boardName}`,
     card: d.card,
