@@ -867,7 +867,15 @@ body[data-theme="silver"] .usa-stars,body[data-theme="silver"] .usa-stars-lb{dis
   animation:svSnow linear forwards}
 @keyframes svSnow{0%{opacity:0;transform:translateY(0) translateX(0)}
   12%{opacity:.95}100%{opacity:.75;transform:translateY(86vh) translateX(var(--dx))}}
-@media (prefers-reduced-motion:reduce){.sv-flake{display:none}}
+/* Every so often a can drops through the snow. Same drift, slower, and it
+   tumbles — a can that fell straight down would read as a mistake. */
+.sv-can{position:absolute;pointer-events:none;filter:drop-shadow(0 2px 4px rgba(13,20,24,.4));
+  animation:svCanFall linear forwards;will-change:transform}
+.sv-can svg{width:100%;height:100%;display:block}
+@keyframes svCanFall{0%{opacity:0;transform:translateY(0) translateX(0) rotate(0)}
+  10%{opacity:1}
+  100%{opacity:.9;transform:translateY(88vh) translateX(var(--dx)) rotate(var(--spin))}}
+@media (prefers-reduced-motion:reduce){.sv-flake,.sv-can{display:none}}
 .logo-silver{background:none;border:none;padding:0;cursor:pointer;display:none;width:30px;height:48px}
 .logo-silver svg{width:100%;height:100%;display:block;filter:drop-shadow(0 2px 3px rgba(13,20,24,.3))}
 body[data-theme="silver"] .logo-oct{display:none}
@@ -2274,9 +2282,30 @@ function silverCrack(el){
   try{toast(["MOUNTAIN COLD","ICE COLD, ICE COLD","STAY FROSTY","AS COLD AS IT GETS"][Math.floor(Math.random()*4)]);}catch(e){}
 }
 
+// Same artwork as the header mascot. The gradient id has to be unique per
+// instance — SVG paint servers are document-scoped, so a shared id would make
+// every falling can pick up the first one's fill.
+var _svCanN=0;
+function fallingCanSvg(){
+  var g="svfall"+(++_svCanN);
+  return '<svg viewBox="0 0 40 64" aria-hidden="true"><defs>'+
+    '<linearGradient id="'+g+'" x1="0" y1="0" x2="1" y2="0">'+
+      '<stop offset="0" stop-color="#8d99a3"/><stop offset=".16" stop-color="#eef2f5"/>'+
+      '<stop offset=".42" stop-color="#c3cdd6"/><stop offset=".62" stop-color="#f6f9fb"/>'+
+      '<stop offset=".86" stop-color="#aab6c0"/><stop offset="1" stop-color="#7f8b95"/>'+
+    '</linearGradient></defs>'+
+    '<rect x="5" y="7" width="30" height="51" rx="5" fill="url(#'+g+')"/>'+
+    '<ellipse cx="20" cy="8" rx="15" ry="3.6" fill="#c9d3db"/>'+
+    '<ellipse cx="20" cy="8" rx="11" ry="2.4" fill="#aeb9c3"/>'+
+    '<rect x="5" y="25" width="30" height="15" fill="#0071ce"/>'+
+    '<path d="M5 39 12 29l4.5 5 5.5-7.5 5 6.5 3.5-3 6 8z" fill="#fff" opacity=".92"/>'+
+    '<rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/>'+
+    '<ellipse cx="20" cy="57.6" rx="15" ry="3.2" fill="#9aa6b0"/>'+
+    '<rect x="9" y="9" width="3" height="47" fill="#fff" opacity=".45" rx="1.5"/></svg>';
+}
 // Snowfall while Silver Bullet is on. Spawn-and-forget with a cap, cleaned up
 // on animationend — the same shape as the USA shooting stars.
-var _svLast=0;
+var _svLast=0,_svLastCan=0,_svCanGap=7000;
 setInterval(function(){
   if(document.hidden||document.body.getAttribute("data-theme")!=="silver")return;
   if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
@@ -2285,13 +2314,29 @@ setInterval(function(){
   var lbOpen=document.getElementById("lbPanel").classList.contains("open");
   var wrap=document.querySelector(lbOpen?".usa-stars-lb":".usa-stars");
   if(!wrap||wrap.childElementCount>34)return;
-  var el=document.createElement("div");el.className="sv-flake";
-  var sz=(2.5+Math.random()*4).toFixed(1);
-  el.style.width=el.style.height=sz+"px";
+  var el=document.createElement("div");
+  // Cans run on their own clock rather than a per-spawn chance: the particle
+  // cap throttles spawning unpredictably, so a probability gave gaps anywhere
+  // from a couple of seconds to half a minute. A timer keeps the cadence even.
+  var isCan=(now-_svLastCan)>_svCanGap;
+  if(isCan){_svLastCan=now;_svCanGap=6000+Math.random()*5000;}
+  if(isCan){
+    el.className="sv-can";
+    var w=16+Math.random()*10;
+    el.style.width=w.toFixed(1)+"px";
+    el.style.height=(w*1.6).toFixed(1)+"px";   // the mascot's 30x48 proportions
+    el.style.setProperty("--spin",(Math.random()<.5?-1:1)*(320+Math.random()*400)+"deg");
+    el.style.animationDuration=(7+Math.random()*4).toFixed(2)+"s";
+    el.innerHTML=fallingCanSvg();
+  } else {
+    el.className="sv-flake";
+    var sz=(2.5+Math.random()*4).toFixed(1);
+    el.style.width=el.style.height=sz+"px";
+    el.style.animationDuration=(5+Math.random()*5).toFixed(2)+"s";
+  }
   el.style.left=(Math.random()*100)+"%";
-  el.style.top=Math.round((lbOpen?0:window.scrollY)-16)+"px";
+  el.style.top=Math.round((lbOpen?0:window.scrollY)-(isCan?52:16))+"px";
   el.style.setProperty("--dx",(Math.random()*80-40)+"px");
-  el.style.animationDuration=(5+Math.random()*5).toFixed(2)+"s";
   el.addEventListener("animationend",function(){el.remove();});
   wrap.appendChild(el);
 },80);
