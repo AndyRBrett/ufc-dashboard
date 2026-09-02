@@ -16,13 +16,15 @@ and stayed live while people were using it. Don't let that happen again.
 npm run verify
 ```
 
-runs three gates (all fast, all local):
+runs the full gate set (all fast, all local):
 
 | script                | catches                                                        |
 | --------------------- | ------------------------------------------------------------- |
 | `npm run check:web`   | syntax errors in inline scripts / `sw.js`; broken/empty `data.js` |
 | `npm run check:functions` | syntax errors in any Supabase edge function (incl. the paid one) |
 | `npm run smoke`       | the app failing to **boot** — loads it headlessly and opens the leaderboard |
+| `npm run check:tap`   | a tapped push notification not surfacing its message            |
+| `npm run check:audience` | trash talk reaching the wrong people (roast targets vs. push recipients) |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.

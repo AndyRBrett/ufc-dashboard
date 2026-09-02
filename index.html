@@ -183,6 +183,11 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-trash-send{width:100%;padding:11px;background:var(--red);color:var(--on-accent);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:opacity .15s}
 .lb-trash-send:disabled{opacity:.4;cursor:not-allowed}
 .lb-trash-hint-section{margin-bottom:2px}
+.lb-trash-audience{margin-top:12px}
+.lb-trash-aud-chips{display:flex;gap:6px}
+.lb-trash-aud-chip{flex:1;font-size:12px;font-weight:600;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border2);color:var(--muted);cursor:pointer;text-align:center;user-select:none;-webkit-user-select:none;opacity:.5;transition:all .2s}
+.lb-trash-aud-chip.selected{background:var(--gold);border-color:var(--gold);color:var(--on-gold);opacity:1}
+.lb-trash-aud-note{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.4}
 .lb-trash-input{width:100%;background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:9px 12px;font-size:16px;color:var(--text);font-family:inherit;box-sizing:border-box;outline:none;margin-bottom:9px}
 .lb-trash-input:focus{border-color:var(--gold)}
 .lb-trash-input::placeholder{color:var(--muted)}
@@ -708,7 +713,7 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .share-badge-num{font-family:Bebas Neue,sans-serif;font-size:46px;color:var(--on-accent);line-height:1}
 .share-badge-sub{font-size:12px;color:var(--on-accent);opacity:.7;margin-top:3px}
 /* ===== MOTION — subtle dynamic touches ===== */
-.btn-icon:active,.ftab:active,.pick-btn:active,.ev-qp:active,.btn-more-item:active,.more-btn:active,.cmp-btn-row:active,.share-btn-small:active,.share-copy-btn:active,.share-done-btn:active,.lb-trash-chip:active,.lb-wheel-pill:active,.lb-trash-send:active,.lb-trash-gen:active,.lb-wheel-spin-btn:active,.quick-q:active,.fn-nb:active,.nm-btn:active,.ai-event-btn:active,.chat-send-btn:active,.picks-toggle:active{transform:scale(.96)}
+.btn-icon:active,.ftab:active,.pick-btn:active,.ev-qp:active,.btn-more-item:active,.more-btn:active,.cmp-btn-row:active,.share-btn-small:active,.share-copy-btn:active,.share-done-btn:active,.lb-trash-chip:active,.lb-trash-aud-chip:active,.lb-wheel-pill:active,.lb-trash-send:active,.lb-trash-gen:active,.lb-wheel-spin-btn:active,.quick-q:active,.fn-nb:active,.nm-btn:active,.ai-event-btn:active,.chat-send-btn:active,.picks-toggle:active{transform:scale(.96)}
 body.theme-fade,body.theme-fade *{transition:background-color .35s ease,color .35s ease,border-color .35s ease,box-shadow .35s ease!important}
 @media (prefers-reduced-motion:no-preference){
 @keyframes evReveal{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -1613,6 +1618,12 @@ var notifActive=false;
 var _openMore={};var _collapsed={};
 var _lbSorted=[];
 var _trashText="",_trashPersona="",_trashMe=null,_trashOpponents=[],_trashMyRank=0,_selectedTargets=new Set();
+// Who the roast is ABOUT (_selectedTargets) and who RECEIVES it are separate
+// questions: "roast JPeso, but let the whole group watch" was impossible while
+// one Set answered both. "targets" delivers only to the people being roasted
+// (the original behaviour, still the default); "group" delivers to everyone on
+// the board except the sender, while the roast stays written about the targets.
+var _trashAudience="targets";
 // Which leaderboard the trash talk is about, captured when the sheet opens.
 var _trashLbMode="current",_trashLbEvName=null,_lbCtxEvName=null;
 var _trashPersonas=["Conor McGregor","Chael Sonnen","Colby Covington","Sean Strickland","Nate Diaz","Jorge Masvidal","Israel Adesanya","Jon Jones","Michael Bisping","Dominick Cruz","Daniel Cormier","Rampage Jackson","Tito Ortiz","Kevin Holland","Paddy Pimblett","Sean O'Malley","Dustin Poirier","Justin Gaethje","Kamaru Usman","Henry Cejudo","Ben Askren","Matt Serra","Donald Cerrone","Khabib Nurmagomedov","Max Holloway","Muhammad Ali","Mike Tyson","Floyd Mayweather Jr.","Tyson Fury","Deontay Wilder","Shannon Briggs","Ric Flair","Dwayne Johnson","Stone Cold Steve Austin","John Cena","CM Punk","Triple H","The Miz","MJF","Paul Heyman","Randy Savage","Roddy Piper","Hulk Hogan","Kurt Angle","Booker T","Chris Jericho","Kevin Garnett","Gary Payton","Charles Barkley","Draymond Green","Richard Sherman","Deion Sanders","Terrell Owens","Chad Johnson","Dennis Rodman","Pat McAfee","Marshawn Lynch","Cam Newton","Jalen Ramsey","Shannon Sharpe","Joe Rogan","Bill Burr","Andrew Schulz","Kevin Hart","Theo Von","Don Rickles","Larry David","Howard Stern","Gordon Ramsay","Simon Cowell","Samuel L. Jackson","Katt Williams","Tony Stark","Deadpool","Ron Swanson","Tyler Durden","Trevor Philips","Kratos","Duke Nukem","Sterling Archer","The Joker","Captain Jack Sparrow","Johnny Lawrence","Homelander","Bender Bending Rodríguez","Kenny Powers","Ron Burgundy","Ricky Bobby","Shooter McGavin","Happy Gilmore","Eric Cartman","Rick Sanchez","Stewie Griffin","Saul Goodman","Walter White","Tony Montana","Dave Chappelle","Ricky Gervais","Yosemite Sam","Patrick Bateman","Frank Reynolds","Dr. Cox","Michael Scott","GOB Bluth","Bugs Bunny","Daffy Duck","Foghorn Leghorn","Marvin the Martian","Taz"];
@@ -4497,7 +4508,8 @@ function closeTrashSheet(){
   document.getElementById("trashText").style.display="none";
   document.getElementById("trashSent").style.display="none";
   document.getElementById("trashHintSection").style.display="none";
-  _trashText="";_trashPersona="";_trashMe=null;_selectedTargets=new Set();
+  document.getElementById("trashAudience").style.display="none";
+  _trashText="";_trashPersona="";_trashMe=null;_selectedTargets=new Set();_trashAudience="targets";
 }
 var _wheelDefaults=[
   // Drinking
@@ -4718,6 +4730,60 @@ function spinWheel(){
   }
   requestAnimationFrame(step);
 }
+// The audience is a pure delivery choice — it never changes what the AI writes,
+// so flipping it after generating leaves the roast on screen intact and only
+// re-labels the send button.
+function setTrashAudience(mode){
+  _trashAudience=(mode==="group")?"group":"targets";
+  document.getElementById("trashAudTargets").classList.toggle("selected",_trashAudience==="targets");
+  document.getElementById("trashAudGroup").classList.toggle("selected",_trashAudience==="group");
+  _renderTrashAudNote();
+  _updateTrashSendBtn();
+}
+// Spells out the split, because "roasting one person in front of everyone" is
+// the whole point of the option and isn't obvious from two pills alone.
+function _renderTrashAudNote(){
+  var note=document.getElementById("trashAudNote");
+  var names=_trashTargetNames();
+  var who=names.length===1?names[0]:(names.length?names.length+" people":"them");
+  note.textContent=_trashAudience==="group"
+    ? "Everyone on the board gets it — but it's still about "+who+"."
+    : "Only "+who+" will see it.";
+}
+// The nicknames currently selected as roast targets, in chip order. Empty
+// selection and "Everyone" both mean the whole board.
+function _trashTargetNames(){
+  var box=document.getElementById("trashChips");
+  var chips=Array.from(box.querySelectorAll(".lb-trash-chip:not([data-uid=\'__all__\'])"));
+  if(_selectedTargets.has("__all__")||_selectedTargets.size===0)return chips.map(function(c){return c.dataset.label;});
+  return chips.filter(function(c){return _selectedTargets.has(c.dataset.uid);}).map(function(c){return c.dataset.label;});
+}
+// Shown only when the two questions can actually differ — with everyone already
+// selected as the target, "just them" and "the whole group" are the same people.
+function _syncTrashAudienceRow(){
+  var box=document.getElementById("trashChips");
+  var individual=box.querySelectorAll(".lb-trash-chip:not([data-uid=\'__all__\'])");
+  var n=_selectedTargets.has("__all__")?individual.length:_selectedTargets.size;
+  // Compare against every opponent, not just the ones with a chip: entries
+  // without a user_id can't be targeted individually, so a broadcast still
+  // reaches strictly more people than the selection does.
+  var others=(_trashOpponents||[]).length;
+  var show=n>0&&!_selectedTargets.has("__all__")&&(n<individual.length||n<others);
+  if(!show&&_trashAudience==="group")setTrashAudience("targets");
+  document.getElementById("trashAudience").style.display=show?"block":"none";
+  if(show)_renderTrashAudNote();
+}
+// One place decides the send label so the targets picker and the post-generate
+// path can never disagree about who's getting it.
+function _updateTrashSendBtn(){
+  var btn=document.getElementById("trashSendBtn");
+  if(!btn)return;
+  var box=document.getElementById("trashChips");
+  var individual=box.querySelectorAll(".lb-trash-chip:not([data-uid=\'__all__\'])");
+  var n=_selectedTargets.has("__all__")?individual.length:_selectedTargets.size;
+  var everyone=_trashAudience==="group"||_selectedTargets.has("__all__")||(n>1&&n===individual.length);
+  btn.textContent=everyone?"Fire at everyone \ud83d\udd25":(n<=1?"Fire it off \ud83d\udd25":"Fire at "+n+" \ud83d\udd25");
+}
 function toggleTrashTarget(chip){
   var uid=chip.dataset.uid;
   // Every lookup here is scoped to the target picker. .lb-trash-chip is not
@@ -4761,11 +4827,14 @@ function toggleTrashTarget(chip){
   document.getElementById("trashSendSection").style.display="none";
   document.getElementById("trashSent").style.display="none";
   document.getElementById("trashHintSection").style.display=n>0?"block":"none";
+  _syncTrashAudienceRow();
 }
 function fireTrashTalk(){
   if(!_trashText||_selectedTargets.size===0)return;
   var btn=document.getElementById("trashSendBtn");btn.disabled=true;
-  var includeIds=_selectedTargets.has("__all__")?null:Array.from(_selectedTargets);
+  // null = every subscriber except the sender. "Whole group" takes that path
+  // deliberately even though only some of them are being roasted.
+  var includeIds=(_trashAudience==="group"||_selectedTargets.has("__all__"))?null:Array.from(_selectedTargets);
   // Send the AI text once — duplicating it (with a \n---\n split + persona prefix)
   // roughly doubled the body and pushed typical 2-3 sentence roasts past the
   // server's 600-char MAX_BODY guard, which silently rejected them. The SW shows
@@ -4902,6 +4971,8 @@ function renderTrashTargets(){
   withId.forEach(function(o){
     var c=document.createElement("span");c.className="lb-trash-chip";c.dataset.uid=o.user_id;c.dataset.label=o.nickname;c.textContent=o.nickname;c.onclick=function(){toggleTrashTarget(c);};chipsDiv.appendChild(c);
   });
+  setTrashAudience("targets");
+  document.getElementById("trashAudience").style.display="none";
   document.getElementById("trashHintSection").style.display="none";
   document.getElementById("trashText").style.display="none";
   document.getElementById("trashSendSection").style.display="none";
@@ -5001,13 +5072,10 @@ function generateTrashTalk(){
     _trashText=data.breakdown||"No trash talk generated.";
     document.getElementById("trashText").textContent=_trashText;
     document.getElementById("trashText").style.display="block";
-    // Targets were chosen up front — just arm the send button for them.
-    var individualChips=document.querySelectorAll(".lb-trash-chip:not([data-uid='__all__'])");
-    var n=_selectedTargets.has("__all__")?individualChips.length:_selectedTargets.size;
-    var everyone=_selectedTargets.has("__all__")||(n>1&&n===individualChips.length);
+    // Targets and audience were both chosen up front — just arm the button.
     var sendBtn=document.getElementById("trashSendBtn");
     sendBtn.disabled=false;
-    sendBtn.textContent=everyone?"Fire at everyone 🔥":(n<=1?"Fire it off 🔥":"Fire at "+n+" 🔥");
+    _updateTrashSendBtn();
     document.getElementById("trashSendSection").style.display="block";
   }).catch(function(){
     document.getElementById("trashText").textContent="Couldn't generate trash talk right now. Try again!";
@@ -6567,6 +6635,14 @@ document.addEventListener("DOMContentLoaded",function(){
     <div class="lb-trash-targets" id="trashTargets" style="display:none">
       <div class="lb-trash-target-lbl">Roast who?</div>
       <div class="lb-trash-chips" id="trashChips"></div>
+      <div class="lb-trash-audience" id="trashAudience" style="display:none">
+        <div class="lb-trash-target-lbl">Who sees it?</div>
+        <div class="lb-trash-aud-chips">
+          <span class="lb-trash-aud-chip selected" id="trashAudTargets" onclick="setTrashAudience('targets')">Just them</span>
+          <span class="lb-trash-aud-chip" id="trashAudGroup" onclick="setTrashAudience('group')">Whole group</span>
+        </div>
+        <div class="lb-trash-aud-note" id="trashAudNote"></div>
+      </div>
     </div>
     <div class="lb-trash-hint-section" id="trashHintSection" style="display:none">
       <input class="lb-trash-input" id="trashHintInput" placeholder="Your angle... (optional)" maxlength="120">

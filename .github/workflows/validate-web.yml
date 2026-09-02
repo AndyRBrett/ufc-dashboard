@@ -9,6 +9,7 @@
 #   check:functions — every Supabase edge function parses (incl. the paid one)
 #   smoke           — the app actually boots headlessly and the leaderboard opens
 #   check:tap       — a tapped push notification actually surfaces its message
+#   check:audience  — trash talk reaches exactly the people it was aimed at
 name: Validate Web
 
 on:
@@ -46,3 +47,5 @@ jobs:
         run: npm run smoke
       - name: Notification tap test
         run: npm run check:tap
+      - name: Trash-talk routing test
+        run: npm run check:audience

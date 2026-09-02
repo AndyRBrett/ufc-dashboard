@@ -10,7 +10,8 @@
     "check:functions": "node tests/check-functions.mjs",
     "smoke": "node tests/smoke.mjs",
     "check:tap": "node tests/notification-tap.mjs",
-    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap"
+    "check:audience": "node tests/trash-audience.mjs",
+    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience"
   },
   "devDependencies": {
     "esbuild": "^0.24.0",
