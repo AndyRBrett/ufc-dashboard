@@ -839,12 +839,31 @@ body[data-theme="silver"]{
    is taken as padding — so it can never overlap the panel content the way an
    overhanging ::after would. */
 body[data-theme="silver"] .lb-hdr{position:relative;height:calc(78px + env(safe-area-inset-top,0px));padding-bottom:22px}
-body[data-theme="silver"] .lb-hdr::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22px;
-  background-color:#aab5bf;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27210%27%20height%3D%2744%27%3E%3Cpath%20d%3D%27M0%2C44%20L0%2C30%20L15%2C10%20L28%2C24%20L42%2C6%20L57%2C26%20L72%2C14%20L88%2C28%20L103%2C8%20L118%2C25%20L133%2C15%20L149%2C29%20L164%2C12%20L180%2C26%20L196%2C17%20L210%2C30%20L210%2C44%20Z%27%20fill%3D%27%230071ce%27%2F%3E%3Cpath%20d%3D%27M15%2C10%20L23.5%2C19.5%20L18.8%2C16.8%20L15.0%2C19.7%20L11.8%2C16.8%20L7.9%2C19.5%20Z%20M42%2C6%20L49.1%2C15.5%20L45.2%2C12.8%20L42.0%2C15.7%20L38.7%2C12.8%20L34.6%2C15.5%20Z%20M72%2C14%20L80.5%2C23.5%20L75.8%2C20.8%20L72.0%2C23.7%20L68.2%2C20.8%20L63.5%2C23.5%20Z%20M103%2C8%20L111.4%2C17.5%20L106.8%2C14.8%20L103.0%2C17.7%20L99.8%2C14.8%20L95.9%2C17.5%20Z%20M133%2C15%20L141.5%2C24.5%20L136.8%2C21.8%20L133.0%2C24.7%20L129.2%2C21.8%20L124.5%2C24.5%20Z%20M164%2C12%20L172.5%2C21.5%20L167.8%2C18.8%20L164.0%2C21.7%20L160.2%2C18.8%20L155.6%2C21.5%20Z%20M196%2C17%20L204.5%2C26.5%20L199.8%2C23.8%20L196.0%2C26.7%20L192.2%2C23.8%20L187.5%2C26.5%20Z%27%20fill%3D%27%23ffffff%27%2F%3E%3C%2Fsvg%3E");background-repeat:repeat-x;
-  background-position:center bottom;background-size:210px 22px;
-  transition:filter .9s ease,box-shadow .9s ease;filter:saturate(.88) brightness(.98)}
-body[data-theme="silver"].cold-on .lb-hdr::after{filter:saturate(1.3) brightness(1.12);
-  box-shadow:0 0 16px rgba(0,113,206,.5)}
+/* The ridge is drawn as inline SVG rather than a repeating background so each
+   peak is its own element: a background image can only ever animate as one
+   piece. Peaks are laid out on the same 210px period the tile used, and the
+   strip is rebuilt on resize so the period never stretches. */
+.sv-ridge{display:none}
+body[data-theme="silver"] .sv-ridge{display:block;position:absolute;left:0;right:0;height:22px;
+  overflow:hidden;background:#aab5bf;pointer-events:none;
+  transition:filter .9s ease;filter:saturate(.88) brightness(.98)}
+body[data-theme="silver"] .silver-tag .sv-ridge{top:0}
+body[data-theme="silver"] .lb-hdr .sv-ridge{bottom:0}
+body[data-theme="silver"].cold-on .sv-ridge{filter:saturate(1.3) brightness(1.12)}
+.sv-ridge svg{display:block;height:22px}
+.sv-pk{transform-box:fill-box;transform-origin:50% 100%}
+.sv-pk .m{fill:#0071ce;transition:fill .35s ease}
+.sv-pk .c{fill:#fff}
+/* a peak catching the light: brighter blue, a rim highlight, and a shiver */
+.sv-pk.lit .m{fill:#37b3ff}
+.sv-pk.lit .c{fill:#fff}
+.sv-pk.lit{animation:svShiver .55s ease-in-out 2;filter:drop-shadow(0 0 5px rgba(60,180,255,.85))}
+@keyframes svShiver{0%,100%{transform:translateX(0) rotate(0)}
+  20%{transform:translateX(-1.1px) rotate(-1.6deg)}
+  45%{transform:translateX(1.1px) rotate(1.6deg)}
+  70%{transform:translateX(-.7px) rotate(-.9deg)}
+  88%{transform:translateX(.5px) rotate(.5deg)}}
+@media (prefers-reduced-motion:reduce){.sv-pk.lit{animation:none}}
 /* silver can replaces the octagon, the way the eagle does */
 /* Cards read as brushed aluminium rather than paper: a bright-to-cool vertical
    sheen over the fine grain the body already carries. */
@@ -891,12 +910,6 @@ body[data-theme="silver"] .logo-text span{color:#a30d24}
 /* tagline strip, hidden on every other theme */
 .silver-tag{display:none}
 body[data-theme="silver"] .silver-tag{display:block;position:relative;padding-top:22px;background:#0d1418}
-body[data-theme="silver"] .silver-tag::before{content:"";position:absolute;left:0;right:0;top:0;height:22px;
-  background-color:#aab5bf;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27210%27%20height%3D%2744%27%3E%3Cpath%20d%3D%27M0%2C44%20L0%2C30%20L15%2C10%20L28%2C24%20L42%2C6%20L57%2C26%20L72%2C14%20L88%2C28%20L103%2C8%20L118%2C25%20L133%2C15%20L149%2C29%20L164%2C12%20L180%2C26%20L196%2C17%20L210%2C30%20L210%2C44%20Z%27%20fill%3D%27%230071ce%27%2F%3E%3Cpath%20d%3D%27M15%2C10%20L23.5%2C19.5%20L18.8%2C16.8%20L15.0%2C19.7%20L11.8%2C16.8%20L7.9%2C19.5%20Z%20M42%2C6%20L49.1%2C15.5%20L45.2%2C12.8%20L42.0%2C15.7%20L38.7%2C12.8%20L34.6%2C15.5%20Z%20M72%2C14%20L80.5%2C23.5%20L75.8%2C20.8%20L72.0%2C23.7%20L68.2%2C20.8%20L63.5%2C23.5%20Z%20M103%2C8%20L111.4%2C17.5%20L106.8%2C14.8%20L103.0%2C17.7%20L99.8%2C14.8%20L95.9%2C17.5%20Z%20M133%2C15%20L141.5%2C24.5%20L136.8%2C21.8%20L133.0%2C24.7%20L129.2%2C21.8%20L124.5%2C24.5%20Z%20M164%2C12%20L172.5%2C21.5%20L167.8%2C18.8%20L164.0%2C21.7%20L160.2%2C18.8%20L155.6%2C21.5%20Z%20M196%2C17%20L204.5%2C26.5%20L199.8%2C23.8%20L196.0%2C26.7%20L192.2%2C23.8%20L187.5%2C26.5%20Z%27%20fill%3D%27%23ffffff%27%2F%3E%3C%2Fsvg%3E");background-repeat:repeat-x;
-  background-position:center bottom;background-size:210px 22px;
-  transition:filter .9s ease,box-shadow .9s ease;filter:saturate(.88) brightness(.98)}
-body[data-theme="silver"].cold-on .silver-tag::before{filter:saturate(1.3) brightness(1.12);
-  box-shadow:0 0 16px rgba(0,113,206,.5)}
 body[data-theme="silver"] .silver-tag-row{display:flex;align-items:center;justify-content:center;gap:9px;
   color:#e8eef2;font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.26em;
   text-transform:uppercase;padding:6px 10px;white-space:nowrap;overflow:hidden}
@@ -1153,7 +1166,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     </div>
   </div>
 </header>
-<div class="silver-tag" aria-hidden="true"><span class="silver-tag-row"><svg viewBox="0 0 40 64" aria-hidden="true"><rect x="5" y="7" width="30" height="51" rx="5" fill="#d5dee5"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/></svg><span>As cold as the <b>Rockies</b></span><svg viewBox="0 0 40 64" aria-hidden="true"><rect x="5" y="7" width="30" height="51" rx="5" fill="#d5dee5"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/></svg></span></div>
+<div class="silver-tag" aria-hidden="true"><div class="sv-ridge"></div><span class="silver-tag-row"><svg viewBox="0 0 40 64" aria-hidden="true"><rect x="5" y="7" width="30" height="51" rx="5" fill="#d5dee5"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/></svg><span>As cold as the <b>Rockies</b></span><svg viewBox="0 0 40 64" aria-hidden="true"><rect x="5" y="7" width="30" height="51" rx="5" fill="#d5dee5"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/></svg></span></div>
 <section class="hero">
   <h1 class="sr-only">Upcoming Fight Cards</h1>
   <div class="cd-wrap" id="cd-wrap" style="display:none">
@@ -2250,6 +2263,10 @@ setInterval(function(){
 function applySilver(){
   var t=document.querySelector(".logo-text");
   if(t)t.innerHTML='The Silver <span>Bullet</span>';
+  // the leaderboard host has no width until its panel is laid out, so rebuild
+  // on the next frame as well as now
+  svBuildRidges();
+  requestAnimationFrame(svBuildRidges);
   silverCheckCold();
 }
 function silverCheckCold(){
@@ -2284,6 +2301,69 @@ function silverCrack(el){
   try{toast(["THE SILVER BULLET","ICE COLD, ICE COLD","STAY FROSTY","AS COLD AS IT GETS"][Math.floor(Math.random()*4)]);}catch(e){}
 }
 
+
+/* ---- the ridge, drawn peak by peak ----
+   Same silhouette the tiled background had, but every peak is its own <g> so
+   one can light up and shiver without touching its neighbours. Laid out on the
+   original 210px period and rebuilt on resize, so peaks never stretch. */
+var SV_PROFILE=[[0,30],[15,10],[28,24],[42,6],[57,26],[72,14],[88,28],[103,8],
+                [118,25],[133,15],[149,29],[164,12],[180,26],[196,17],[210,30]];
+var SV_TILE=210,SV_VB=44;
+function svBuildRidges(){
+  var hosts=document.querySelectorAll(".sv-ridge");
+  for(var h=0;h<hosts.length;h++){
+    var host=hosts[h];
+    var w=host.clientWidth||window.innerWidth;
+    if(!w)continue;
+    var tiles=Math.ceil(w/SV_TILE)+1,total=tiles*SV_TILE,out="";
+    for(var t=0;t<tiles;t++){
+      var off=t*SV_TILE;
+      for(var i=1;i<SV_PROFILE.length-1;i++){
+        var pk=SV_PROFILE[i],l=SV_PROFILE[i-1],r=SV_PROFILE[i+1];
+        if(!(pk[1]<l[1]&&pk[1]<r[1]))continue;          // peaks only
+        var lx=l[0]+off,rx=r[0]+off,px=pk[0]+off;
+        var m="M"+lx+","+SV_VB+" L"+lx+","+l[1]+" L"+px+","+pk[1]+" L"+rx+","+r[1]+" L"+rx+","+SV_VB+" Z";
+        // snowcap sized against this peak's own slopes
+        var d=9.5,wl=Math.min(d*(pk[0]-l[0])/Math.max(l[1]-pk[1],1),8.5),
+                  wr=Math.min(d*(r[0]-pk[0])/Math.max(r[1]-pk[1],1),8.5);
+        var c="M"+px+","+pk[1]+" L"+(px+wr).toFixed(1)+","+(pk[1]+d).toFixed(1)+
+              " L"+(px+wr*0.45).toFixed(1)+","+(pk[1]+d*0.72).toFixed(1)+
+              " L"+px+","+(pk[1]+d*1.02).toFixed(1)+
+              " L"+(px-wl*0.45).toFixed(1)+","+(pk[1]+d*0.72).toFixed(1)+
+              " L"+(px-wl).toFixed(1)+","+(pk[1]+d).toFixed(1)+" Z";
+        out+='<g class="sv-pk"><path class="m" d="'+m+'"/><path class="c" d="'+c+'"/></g>';
+      }
+    }
+    host.innerHTML='<svg width="'+total+'" height="22" viewBox="0 0 '+total+' '+SV_VB+
+      '" preserveAspectRatio="none">'+out+'</svg>';
+  }
+}
+// Light one peak at a time, occasionally two, so it reads as light catching the
+// range rather than the whole ridge blinking.
+setInterval(function(){
+  if(document.hidden||document.body.getAttribute("data-theme")!=="silver")return;
+  var lbOpen=document.getElementById("lbPanel").classList.contains("open");
+  var host=document.querySelector((lbOpen?".lb-hdr":".silver-tag")+" .sv-ridge");
+  if(!host)return;
+  var pks=host.querySelectorAll(".sv-pk");
+  if(!pks.length)return;
+  var n=Math.random()<.3?2:1;
+  for(var i=0;i<n;i++){
+    (function(){
+      var el=pks[Math.floor(Math.random()*pks.length)];
+      if(el.classList.contains("lit"))return;
+      el.classList.add("lit");
+      setTimeout(function(){el.classList.remove("lit");},1250);
+    })();
+  }
+},3200);
+var _svRidgeT=null;
+window.addEventListener("resize",function(){
+  clearTimeout(_svRidgeT);
+  _svRidgeT=setTimeout(function(){
+    if(document.body.getAttribute("data-theme")==="silver")svBuildRidges();
+  },200);
+});
 // Same artwork as the header mascot. The gradient id has to be unique per
 // instance — SVG paint servers are document-scoped, so a shared id would make
 // every falling can pick up the first one's fill.
@@ -4397,7 +4477,7 @@ function countUp(el,target){
 }
 
 
-function openLeaderboard(){var p=document.getElementById("lbPanel");if(!p.classList.contains("open")){p.classList.add("open");lockScroll();}syncLbModeBar();loadLeaderboard();fetchChallenges();if(typeof liveRefresh==="function")liveRefresh();}
+function openLeaderboard(){var p=document.getElementById("lbPanel");if(!p.classList.contains("open")){p.classList.add("open");if(document.body.getAttribute("data-theme")==="silver")requestAnimationFrame(svBuildRidges);lockScroll();}syncLbModeBar();loadLeaderboard();fetchChallenges();if(typeof liveRefresh==="function")liveRefresh();}
 function closeLeaderboard(){var p=document.getElementById("lbPanel");if(p.classList.contains("open")){p.classList.remove("open");unlockScroll();}document.getElementById("lbInfoModal").classList.remove("open");closeTrashSheet();closeWheelSheet();closeChalSheet();}
 document.addEventListener("click",function(e){var m=document.getElementById("lbInfoModal");if(m&&m.classList.contains("open")&&!m.contains(e.target)&&!e.target.classList.contains("lb-info-btn"))m.classList.remove("open");});
 function closeTrashSheet(){
@@ -6424,6 +6504,7 @@ document.addEventListener("DOMContentLoaded",function(){
   <div class="usa-stars-lb" aria-hidden="true"></div>
   <div class="lb-hdr">
     <button class="btn-icon" onclick="closeLeaderboard()" title="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="sv-ridge"></div>
     <div class="lb-title">Leaderboard <button class="lb-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><button class="lb-season" onclick="seasonCry(this)" aria-label="Play the seasonal sound"></button><button class="lb-silver" onclick="silverCrack(this)" aria-label="Crack a cold one"><svg viewBox="0 0 40 64" aria-hidden="true"><defs><linearGradient id="svcanlb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d99a3"/><stop offset=".16" stop-color="#eef2f5"/><stop offset=".42" stop-color="#c3cdd6"/><stop offset=".62" stop-color="#f6f9fb"/><stop offset=".86" stop-color="#aab6c0"/><stop offset="1" stop-color="#7f8b95"/></linearGradient></defs><rect x="5" y="7" width="30" height="51" rx="5" fill="url(#svcanlb)"/><ellipse cx="20" cy="8" rx="15" ry="3.6" fill="#c9d3db"/><ellipse cx="20" cy="8" rx="11" ry="2.4" fill="#aeb9c3"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><path d="M5 39 12 29l4.5 5 5.5-7.5 5 6.5 3.5-3 6 8z" fill="#fff" opacity=".92"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/><ellipse cx="20" cy="57.6" rx="15" ry="3.2" fill="#9aa6b0"/><rect x="9" y="9" width="3" height="47" fill="#fff" opacity=".45" rx="1.5"/></svg></button></div>
     <button class="lb-info-btn" onclick="document.getElementById('lbInfoModal').classList.toggle('open')" title="How scoring works">ℹ</button>
     <button class="lb-info-btn" onclick="loadLeaderboard()" title="Refresh"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
