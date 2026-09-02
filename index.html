@@ -834,7 +834,7 @@ body[data-theme="silver"]{
    overhanging ::after would. */
 body[data-theme="silver"] .lb-hdr{position:relative;height:78px;padding-bottom:22px}
 body[data-theme="silver"] .lb-hdr::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22px;
-  background-color:#d9e1e8;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27210%27%20height%3D%2744%27%3E%3Cpath%20d%3D%27M0%2C44%20L0%2C30%20L15%2C10%20L28%2C24%20L42%2C6%20L57%2C26%20L72%2C14%20L88%2C28%20L103%2C8%20L118%2C25%20L133%2C15%20L149%2C29%20L164%2C12%20L180%2C26%20L196%2C17%20L210%2C30%20L210%2C44%20Z%27%20fill%3D%27%230071ce%27/%3E%3Cpath%20d%3D%27M15%2C10%20l5.2%2C7.2%20-5.2%2C2.4%20-4.6%2C-2.6%20Z%20M42%2C6%20l5.8%2C8%20-5.8%2C2.6%20-5%2C-2.8%20Z%20M103%2C8%20l5.5%2C7.6%20-5.5%2C2.5%20-4.8%2C-2.7%20Z%27%20fill%3D%27%23ffffff%27/%3E%3C/svg%3E");background-repeat:repeat-x;
+  background-color:#d9e1e8;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27210%27%20height%3D%2744%27%3E%3Cpath%20d%3D%27M0%2C44%20L0%2C30%20L15%2C10%20L28%2C24%20L42%2C6%20L57%2C26%20L72%2C14%20L88%2C28%20L103%2C8%20L118%2C25%20L133%2C15%20L149%2C29%20L164%2C12%20L180%2C26%20L196%2C17%20L210%2C30%20L210%2C44%20Z%27%20fill%3D%27%230071ce%27%2F%3E%3Cpath%20d%3D%27M15%2C10%20L23.5%2C19.5%20L18.8%2C16.8%20L15.0%2C19.7%20L11.8%2C16.8%20L7.9%2C19.5%20Z%20M42%2C6%20L49.1%2C15.5%20L45.2%2C12.8%20L42.0%2C15.7%20L38.7%2C12.8%20L34.6%2C15.5%20Z%20M72%2C14%20L80.5%2C23.5%20L75.8%2C20.8%20L72.0%2C23.7%20L68.2%2C20.8%20L63.5%2C23.5%20Z%20M103%2C8%20L111.4%2C17.5%20L106.8%2C14.8%20L103.0%2C17.7%20L99.8%2C14.8%20L95.9%2C17.5%20Z%20M133%2C15%20L141.5%2C24.5%20L136.8%2C21.8%20L133.0%2C24.7%20L129.2%2C21.8%20L124.5%2C24.5%20Z%20M164%2C12%20L172.5%2C21.5%20L167.8%2C18.8%20L164.0%2C21.7%20L160.2%2C18.8%20L155.6%2C21.5%20Z%20M196%2C17%20L204.5%2C26.5%20L199.8%2C23.8%20L196.0%2C26.7%20L192.2%2C23.8%20L187.5%2C26.5%20Z%27%20fill%3D%27%23ffffff%27%2F%3E%3C%2Fsvg%3E");background-repeat:repeat-x;
   background-position:center bottom;background-size:210px 22px;
   transition:filter .9s ease,box-shadow .9s ease;filter:saturate(.88) brightness(.98)}
 body[data-theme="silver"].cold-on .lb-hdr::after{filter:saturate(1.3) brightness(1.12);
@@ -849,6 +849,18 @@ body[data-theme="silver"] .feed-wrap,body[data-theme="silver"] .btn-more-menu,
 body[data-theme="silver"] .chal-row,body[data-theme="silver"] .ev-band{
   background-image:linear-gradient(180deg,rgba(255,255,255,.92) 0%,rgba(255,255,255,.3) 46%,rgba(140,160,176,.16) 100%),
     repeating-linear-gradient(90deg,rgba(255,255,255,.42) 0 1px,rgba(120,140,155,.05) 1px 3px)}
+/* Snow, on the page and over the leaderboard. Reuses the .usa-stars overlays
+   already in the DOM, the same way the seasonal ambient and the USA shooting
+   stars do. Plain white would disappear against a silver ground, so each flake
+   gets a faint shadow to lift it off the metal. */
+body[data-theme="silver"] .usa-stars,body[data-theme="silver"] .usa-stars-lb{display:block;position:absolute;
+  inset:0;pointer-events:none;z-index:5;overflow:hidden}
+.sv-flake{position:absolute;border-radius:50%;background:#fff;
+  box-shadow:0 1px 2px rgba(13,20,24,.4),0 0 5px rgba(255,255,255,.9);
+  animation:svSnow linear forwards}
+@keyframes svSnow{0%{opacity:0;transform:translateY(0) translateX(0)}
+  12%{opacity:.95}100%{opacity:.75;transform:translateY(86vh) translateX(var(--dx))}}
+@media (prefers-reduced-motion:reduce){.sv-flake{display:none}}
 .logo-silver{background:none;border:none;padding:0;cursor:pointer;display:none;width:30px;height:48px}
 .logo-silver svg{width:100%;height:100%;display:block;filter:drop-shadow(0 2px 3px rgba(13,20,24,.3))}
 body[data-theme="silver"] .logo-oct{display:none}
@@ -856,13 +868,13 @@ body[data-theme="silver"] .logo-silver{display:block;animation:eagleBreathe 3.6s
 .logo-silver:active{transform:scale(.9)}
 /* script wordmark */
 body[data-theme="silver"] .logo-text{font-family:'Great Vibes',cursive;font-size:34px;letter-spacing:0;
-  line-height:.8;padding-top:8px;text-shadow:0 1px 0 #fff}
-body[data-theme="silver"] .logo-text span{color:#0071ce}
+  line-height:.8;padding-top:8px;color:#c8102e;text-shadow:0 1px 0 #fff}
+body[data-theme="silver"] .logo-text span{color:#c8102e}
 /* tagline strip, hidden on every other theme */
 .silver-tag{display:none}
 body[data-theme="silver"] .silver-tag{display:block;position:relative;padding-top:22px;background:#0d1418}
 body[data-theme="silver"] .silver-tag::before{content:"";position:absolute;left:0;right:0;top:0;height:22px;
-  background-color:#e9eef2;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27210%27%20height%3D%2744%27%3E%3Cpath%20d%3D%27M0%2C44%20L0%2C30%20L15%2C10%20L28%2C24%20L42%2C6%20L57%2C26%20L72%2C14%20L88%2C28%20L103%2C8%20L118%2C25%20L133%2C15%20L149%2C29%20L164%2C12%20L180%2C26%20L196%2C17%20L210%2C30%20L210%2C44%20Z%27%20fill%3D%27%230071ce%27/%3E%3Cpath%20d%3D%27M15%2C10%20l5.2%2C7.2%20-5.2%2C2.4%20-4.6%2C-2.6%20Z%20M42%2C6%20l5.8%2C8%20-5.8%2C2.6%20-5%2C-2.8%20Z%20M103%2C8%20l5.5%2C7.6%20-5.5%2C2.5%20-4.8%2C-2.7%20Z%27%20fill%3D%27%23ffffff%27/%3E%3C/svg%3E");background-repeat:repeat-x;
+  background-color:#e9eef2;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27210%27%20height%3D%2744%27%3E%3Cpath%20d%3D%27M0%2C44%20L0%2C30%20L15%2C10%20L28%2C24%20L42%2C6%20L57%2C26%20L72%2C14%20L88%2C28%20L103%2C8%20L118%2C25%20L133%2C15%20L149%2C29%20L164%2C12%20L180%2C26%20L196%2C17%20L210%2C30%20L210%2C44%20Z%27%20fill%3D%27%230071ce%27%2F%3E%3Cpath%20d%3D%27M15%2C10%20L23.5%2C19.5%20L18.8%2C16.8%20L15.0%2C19.7%20L11.8%2C16.8%20L7.9%2C19.5%20Z%20M42%2C6%20L49.1%2C15.5%20L45.2%2C12.8%20L42.0%2C15.7%20L38.7%2C12.8%20L34.6%2C15.5%20Z%20M72%2C14%20L80.5%2C23.5%20L75.8%2C20.8%20L72.0%2C23.7%20L68.2%2C20.8%20L63.5%2C23.5%20Z%20M103%2C8%20L111.4%2C17.5%20L106.8%2C14.8%20L103.0%2C17.7%20L99.8%2C14.8%20L95.9%2C17.5%20Z%20M133%2C15%20L141.5%2C24.5%20L136.8%2C21.8%20L133.0%2C24.7%20L129.2%2C21.8%20L124.5%2C24.5%20Z%20M164%2C12%20L172.5%2C21.5%20L167.8%2C18.8%20L164.0%2C21.7%20L160.2%2C18.8%20L155.6%2C21.5%20Z%20M196%2C17%20L204.5%2C26.5%20L199.8%2C23.8%20L196.0%2C26.7%20L192.2%2C23.8%20L187.5%2C26.5%20Z%27%20fill%3D%27%23ffffff%27%2F%3E%3C%2Fsvg%3E");background-repeat:repeat-x;
   background-position:center bottom;background-size:210px 22px;
   transition:filter .9s ease,box-shadow .9s ease;filter:saturate(.88) brightness(.98)}
 body[data-theme="silver"].cold-on .silver-tag::before{filter:saturate(1.3) brightness(1.12);
@@ -1105,7 +1117,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
         </button>
         <button class="btn-more-item theme-item" data-theme="silver" onclick="setTheme('silver')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#e9eef2 0 34%,#0071ce 34% 64%,#c8102e 64% 84%,#0d1418 84%)"></span>
-          <span>Silver</span><span class="theme-check">&#10003;</span>
+          <span>Silver Bullet</span><span class="theme-check">&#10003;</span>
         </button>
         <button class="btn-more-item theme-item" data-theme="usa" onclick="setTheme('usa')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#0a3161 40%,#b31942 40%,#b31942 60%,#e7ebf5 60%,#e7ebf5 70%,#b31942 70%,#b31942 80%,#e7ebf5 80%,#e7ebf5 90%,#b31942 90%)"></span>
@@ -2247,6 +2259,28 @@ function silverCrack(el){
   }catch(e){}
   try{toast(["MOUNTAIN COLD","ICE COLD, ICE COLD","STAY FROSTY","AS COLD AS IT GETS"][Math.floor(Math.random()*4)]);}catch(e){}
 }
+
+// Snowfall while Silver Bullet is on. Spawn-and-forget with a cap, cleaned up
+// on animationend — the same shape as the USA shooting stars.
+var _svLast=0;
+setInterval(function(){
+  if(document.hidden||document.body.getAttribute("data-theme")!=="silver")return;
+  if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  var now=Date.now();if(now-_svLast<170)return;
+  _svLast=now;
+  var lbOpen=document.getElementById("lbPanel").classList.contains("open");
+  var wrap=document.querySelector(lbOpen?".usa-stars-lb":".usa-stars");
+  if(!wrap||wrap.childElementCount>34)return;
+  var el=document.createElement("div");el.className="sv-flake";
+  var sz=(2.5+Math.random()*4).toFixed(1);
+  el.style.width=el.style.height=sz+"px";
+  el.style.left=(Math.random()*100)+"%";
+  el.style.top=Math.round((lbOpen?0:window.scrollY)-16)+"px";
+  el.style.setProperty("--dx",(Math.random()*80-40)+"px");
+  el.style.animationDuration=(5+Math.random()*5).toFixed(2)+"s";
+  el.addEventListener("animationend",function(){el.remove();});
+  wrap.appendChild(el);
+},80);
 applyTheme(document.body.getAttribute("data-theme")||"octagon");
 // Eagle screech: two real recordings (sounds/eagle-*.mp3, precached by the SW
 // for offline) picked at random per tap. Raw bytes are prefetched at load and
