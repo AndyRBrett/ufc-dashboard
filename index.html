@@ -811,12 +811,12 @@ body[data-theme="seasonal"] .usa-stars,body[data-theme="seasonal"] .usa-stars-lb
    so the trick carries state instead of decorating. Fight Night mode keeps its
    own dark surface on purpose; that one is meant to be lights-down. */
 body[data-theme="silver"]{
-  --bg:#e9eef2;--card:#ffffff;--card2:#f2f5f8;--surface:#f2f5f8;
-  --future-bg:#eef2f5;--future-border:rgba(13,20,24,.1);
+  --bg:#d9e1e8;--card:#eef3f7;--card2:#dde5ec;--surface:#dde5ec;
+  --future-bg:#e4ebf1;--future-border:rgba(13,20,24,.1);
   --text:#0d1418;--muted:#5d6b76;--muted2:#3c4c58;
   --border:rgba(13,20,24,.14);--border2:rgba(13,20,24,.24);--sep:rgba(13,20,24,.12);
   --stripe-border:rgba(13,20,24,.07);--btn-bg:rgba(13,20,24,.05);--pill-bg:rgba(13,20,24,.06);
-  --bar-bg:rgba(13,20,24,.11);--pending-bg:rgba(13,20,24,.04);--hdr-bg:#f4f7f9;
+  --bar-bg:rgba(13,20,24,.11);--pending-bg:rgba(13,20,24,.04);--hdr-bg:#eef3f7;
   --red:#c8102e;--red-dim:rgba(200,16,46,.1);--red-border:rgba(200,16,46,.5);
   --gold:#0071ce;--gold-dim:rgba(0,113,206,.1);--gold-border:rgba(0,113,206,.5);
   --green:#17794a;--green-dim:rgba(23,121,74,.13);--green-border:rgba(23,121,74,.45);
@@ -828,10 +828,27 @@ body[data-theme="silver"]{
 /* Ridge + tagline are one element: the mountains sit on top of the black band.
    Keeping them separate had the ridge (hung off .hdr::after) overlapping the
    strip below it. */
-body[data-theme="silver"] .lb-hdr::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;
-  background:linear-gradient(90deg,#c8102e 0 26%,#0071ce 26% 100%)}
-body[data-theme="silver"] .lb-hdr{position:relative}
+/* The ranks header carries the same ridge as the main page. It lives inside
+   the header's own box — the height grows by exactly the ridge and the space
+   is taken as padding — so it can never overlap the panel content the way an
+   overhanging ::after would. */
+body[data-theme="silver"] .lb-hdr{position:relative;height:78px;padding-bottom:22px}
+body[data-theme="silver"] .lb-hdr::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22px;
+  background-color:#d9e1e8;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27210%27%20height%3D%2744%27%3E%3Cpath%20d%3D%27M0%2C44%20L0%2C30%20L15%2C10%20L28%2C24%20L42%2C6%20L57%2C26%20L72%2C14%20L88%2C28%20L103%2C8%20L118%2C25%20L133%2C15%20L149%2C29%20L164%2C12%20L180%2C26%20L196%2C17%20L210%2C30%20L210%2C44%20Z%27%20fill%3D%27%230071ce%27/%3E%3Cpath%20d%3D%27M15%2C10%20l5.2%2C7.2%20-5.2%2C2.4%20-4.6%2C-2.6%20Z%20M42%2C6%20l5.8%2C8%20-5.8%2C2.6%20-5%2C-2.8%20Z%20M103%2C8%20l5.5%2C7.6%20-5.5%2C2.5%20-4.8%2C-2.7%20Z%27%20fill%3D%27%23ffffff%27/%3E%3C/svg%3E");background-repeat:repeat-x;
+  background-position:center bottom;background-size:210px 22px;
+  transition:filter .9s ease,box-shadow .9s ease;filter:saturate(.88) brightness(.98)}
+body[data-theme="silver"].cold-on .lb-hdr::after{filter:saturate(1.3) brightness(1.12);
+  box-shadow:0 0 16px rgba(0,113,206,.5)}
 /* silver can replaces the octagon, the way the eagle does */
+/* Cards read as brushed aluminium rather than paper: a bright-to-cool vertical
+   sheen over the fine grain the body already carries. */
+body[data-theme="silver"] .fights-wrap,body[data-theme="silver"] .stats,
+body[data-theme="silver"] .filter-wrap,body[data-theme="silver"] .lb-row,
+body[data-theme="silver"] .picks-widget,body[data-theme="silver"] .past-ev-card,
+body[data-theme="silver"] .feed-wrap,body[data-theme="silver"] .btn-more-menu,
+body[data-theme="silver"] .chal-row,body[data-theme="silver"] .ev-band{
+  background-image:linear-gradient(180deg,rgba(255,255,255,.92) 0%,rgba(255,255,255,.3) 46%,rgba(140,160,176,.16) 100%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.42) 0 1px,rgba(120,140,155,.05) 1px 3px)}
 .logo-silver{background:none;border:none;padding:0;cursor:pointer;display:none;width:30px;height:48px}
 .logo-silver svg{width:100%;height:100%;display:block;filter:drop-shadow(0 2px 3px rgba(13,20,24,.3))}
 body[data-theme="silver"] .logo-oct{display:none}
@@ -847,8 +864,9 @@ body[data-theme="silver"] .silver-tag{display:block;position:relative;padding-to
 body[data-theme="silver"] .silver-tag::before{content:"";position:absolute;left:0;right:0;top:0;height:22px;
   background-color:#e9eef2;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27210%27%20height%3D%2744%27%3E%3Cpath%20d%3D%27M0%2C44%20L0%2C30%20L15%2C10%20L28%2C24%20L42%2C6%20L57%2C26%20L72%2C14%20L88%2C28%20L103%2C8%20L118%2C25%20L133%2C15%20L149%2C29%20L164%2C12%20L180%2C26%20L196%2C17%20L210%2C30%20L210%2C44%20Z%27%20fill%3D%27%230071ce%27/%3E%3Cpath%20d%3D%27M15%2C10%20l5.2%2C7.2%20-5.2%2C2.4%20-4.6%2C-2.6%20Z%20M42%2C6%20l5.8%2C8%20-5.8%2C2.6%20-5%2C-2.8%20Z%20M103%2C8%20l5.5%2C7.6%20-5.5%2C2.5%20-4.8%2C-2.7%20Z%27%20fill%3D%27%23ffffff%27/%3E%3C/svg%3E");background-repeat:repeat-x;
   background-position:center bottom;background-size:210px 22px;
-  transition:filter .9s ease;filter:saturate(.12) brightness(1.06)}
-body[data-theme="silver"].cold-on .silver-tag::before{filter:none}
+  transition:filter .9s ease,box-shadow .9s ease;filter:saturate(.88) brightness(.98)}
+body[data-theme="silver"].cold-on .silver-tag::before{filter:saturate(1.3) brightness(1.12);
+  box-shadow:0 0 16px rgba(0,113,206,.5)}
 body[data-theme="silver"] .silver-tag-row{display:flex;align-items:center;justify-content:center;gap:9px;
   color:#e8eef2;font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.26em;
   text-transform:uppercase;padding:6px 10px;white-space:nowrap;overflow:hidden}
