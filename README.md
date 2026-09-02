@@ -54,6 +54,24 @@ Supabase backend holds picks and fans out push notifications.
 - Installable PWA with an offline app shell and push notifications for reminders,
   results, and social events.
 
+**Themes**
+- Six skins from the More menu: Octagon Dark, Apex Neon, Knockout Fire, Silver,
+  Stars & Stripes, and Seasonal. Silver is the only light theme, so it redefines
+  the full colour variable set rather than tinting a dark one.
+- A theme is more than a palette. Stars & Stripes swaps the octagon for an eagle
+  that screeches when tapped and streaks shooting stars across the page; Silver
+  swaps in a can whose mountains turn blue while a bout is live.
+- **Seasonal** resolves itself from the month — Halloween in October, Christmas
+  in December, Kickoff in September — each with its own mascot, sound, ambient
+  motion, rotating line, and palette. Picking it once is the entire setup; the
+  month is re-read on `visibilitychange` so an app left open overnight keeps up.
+- Mascots are emoji and most cues are synthesised through the Web Audio API, so
+  the whole system adds no image assets and only the seasonal `sounds/season-*.mp3`
+  files. Only the current month's cue is precached; the rest are cached on first
+  play by the service worker's runtime handler.
+- Retired themes are archived under `docs/archived-themes/` with restore steps
+  rather than deleted.
+
 ---
 
 ## Architecture
@@ -104,6 +122,7 @@ Three deliberate properties hold this together:
 | `supabase/functions/` | Deno edge functions: `send-push`, `send-reminders`, `check-results`, `ai-breakdown`, `kick-scraper`. |
 | `supabase/migrations/` | Row-Level Security policies, kept in version control. |
 | `tests/` | Node validation gates (`check-web`, `check-functions`, `smoke`, `notification-tap`) and Python unit tests. |
+| `docs/archived-themes/` | Themes retired from the menu, kept with restore instructions. |
 | `build.mjs` | Optional minified `dist/` build. Not part of the deploy. |
 | `.github/workflows/` | Data updates, validation, Pages and Supabase deploys, secret scanning. |
 

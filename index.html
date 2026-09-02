@@ -346,9 +346,18 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 @keyframes livepulse{0%,100%{background:var(--pending-bg)}50%{background:var(--red-dim)}}
 .flbl{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;margin-bottom:10px}
 .flbl.lmain{color:var(--red)}.flbl.lco{color:var(--gold)}.flbl.lpre{color:var(--muted)}
-.mu{display:grid;grid-template-columns:1fr 60px 1fr;align-items:center;gap:8px;position:relative;will-change:transform}
+.mu{display:grid;grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr);align-items:center;gap:8px;position:relative;will-change:transform}
 .ft{display:flex;flex-direction:column;gap:2px;min-width:0}
 .ft.ftr{align-items:flex-end;text-align:right}
+/* The right-hand fighter's column is align-items:flex-end, which sizes children
+   to their own content rather than stretching them. A long name therefore
+   rendered at its full nowrap width, overflowed the column, and slid left
+   across the VS ("Salahdine Parnasse", "Alexandre Pantoja"). The left column
+   uses the default stretch, which is why only this side broke.
+   Stretch the name back to the column so its existing ellipsis can do the work;
+   everything else keeps flex-end positioning. */
+.ft.ftr .fn{align-self:stretch}
+.ft>*{max-width:100%}
 .fn{font-family:Bebas Neue,sans-serif;font-size:25px;letter-spacing:.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fn.fsm{font-size:20px}.fn.fxs{font-size:16px;font-family:Inter,sans-serif;font-weight:600}
 .frec{font-size:13px;color:var(--muted2);margin-top:2px;font-weight:400}
