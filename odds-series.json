@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T03:51:32Z",
+  "generated_at": "2026-09-03T08:49:12Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -6043,7 +6043,7 @@
         {
           "f1": "Daniil Donchenko",
           "f2": "Punahele Soriano",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6054,6 +6054,11 @@
               "at": "2026-09-02T13:35:09Z",
               "f1_odds": -260,
               "f2_odds": 203
+            },
+            {
+              "at": "2026-09-03T08:49:12Z",
+              "f1_odds": -253,
+              "f2_odds": 198
             }
           ],
           "open": {
@@ -6168,7 +6173,7 @@
         {
           "f1": "Oumar Sy",
           "f2": "Modestas Bukauskas",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6179,6 +6184,11 @@
               "at": "2026-09-03T03:51:32Z",
               "f1_odds": -223,
               "f2_odds": 177
+            },
+            {
+              "at": "2026-09-03T08:49:12Z",
+              "f1_odds": -232,
+              "f2_odds": 183
             }
           ],
           "open": {
@@ -6221,7 +6231,7 @@
         {
           "f1": "Matthieu Letho Duclos",
           "f2": "Luis Felipe Dias",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6232,6 +6242,11 @@
               "at": "2026-09-02T13:35:09Z",
               "f1_odds": -112,
               "f2_odds": -107
+            },
+            {
+              "at": "2026-09-03T08:49:12Z",
+              "f1_odds": -113,
+              "f2_odds": -106
             }
           ],
           "open": {
@@ -6269,12 +6284,17 @@
         {
           "f1": "Nathaniel Wood",
           "f2": "Pavel Andrusca",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-09-03T03:51:32Z",
               "f1_odds": -321,
               "f2_odds": 243
+            },
+            {
+              "at": "2026-09-03T08:49:12Z",
+              "f1_odds": -325,
+              "f2_odds": 247
             }
           ],
           "open": {
@@ -6342,7 +6362,7 @@
         {
           "f1": "Tommy McMillen",
           "f2": "Marwan Rahiki",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -6353,6 +6373,11 @@
               "at": "2026-09-03T03:51:32Z",
               "f1_odds": -150,
               "f2_odds": 128
+            },
+            {
+              "at": "2026-09-03T08:49:12Z",
+              "f1_odds": -155,
+              "f2_odds": 132
             }
           ],
           "open": {
@@ -8128,7 +8153,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Punahele Soriano",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -250,
         "close": null,
         "clv": null
@@ -8630,7 +8655,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Marwan Rahiki",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -145,
         "close": null,
         "clv": null
@@ -9909,7 +9934,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Daniil Donchenko",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 197,
         "close": null,
         "clv": null
@@ -10008,7 +10033,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Modestas Bukauskas",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -212,
         "close": null,
         "clv": null
@@ -10019,7 +10044,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Oumar Sy",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 168,
         "close": null,
         "clv": null
@@ -10052,7 +10077,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Luis Felipe Dias",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -118,
         "close": null,
         "clv": null
@@ -10063,7 +10088,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Matthieu Letho Duclos",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": -106,
         "close": null,
         "clv": null
@@ -10096,7 +10121,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Pavel Andrusca",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -321,
         "close": null,
         "clv": null
@@ -10107,7 +10132,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Nathaniel Wood",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 243,
         "close": null,
         "clv": null
@@ -10162,7 +10187,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Tommy McMillen",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 124,
         "close": null,
         "clv": null
