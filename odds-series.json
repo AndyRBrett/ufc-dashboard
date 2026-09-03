@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T13:33:58Z",
+  "generated_at": "2026-09-03T16:11:12Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -6212,7 +6212,7 @@
         {
           "f1": "Michael Aljarouj",
           "f2": "Fabia Sintes",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6228,6 +6228,11 @@
               "at": "2026-09-03T03:51:32Z",
               "f1_odds": -135,
               "f2_odds": 109
+            },
+            {
+              "at": "2026-09-03T16:11:12Z",
+              "f1_odds": -130,
+              "f2_odds": 106
             }
           ],
           "open": {
@@ -6241,7 +6246,7 @@
         {
           "f1": "Matthieu Letho Duclos",
           "f2": "Luis Felipe Dias",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6256,6 +6261,11 @@
             {
               "at": "2026-09-03T08:49:12Z",
               "f1_odds": -113,
+              "f2_odds": -106
+            },
+            {
+              "at": "2026-09-03T16:11:12Z",
+              "f1_odds": -114,
               "f2_odds": -106
             }
           ],
@@ -10140,7 +10150,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Fabia Sintes",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -138,
         "close": null,
         "clv": null
@@ -10151,7 +10161,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Michael Aljarouj",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 112,
         "close": null,
         "clv": null
@@ -10162,7 +10172,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Luis Felipe Dias",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -118,
         "close": null,
         "clv": null
@@ -10173,7 +10183,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Matthieu Letho Duclos",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -106,
         "close": null,
         "clv": null
