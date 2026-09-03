@@ -175,7 +175,7 @@ const ROASTER_PROFILES: { aliases: string[]; bio: string }[] = [
   },
   {
     aliases: ["tristin", "tris"],
-    bio: "Tristin — AB's wife. Smart, beautiful and ruthless past the point of necessity. Keeps making dead-baby jokes that never land.",
+    bio: "Tristin — AB's wife. Smart, beautiful and ruthless past the point of necessity. Her sense of humour is darker than anyone expects.",
   },
 ];
 
