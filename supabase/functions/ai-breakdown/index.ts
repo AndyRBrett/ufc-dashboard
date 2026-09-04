@@ -192,7 +192,7 @@ function profileFor(nickname: string): string | null {
 // Deliberately framed as something the persona already knows rather than data
 // to report: without the "never recite / at most one" rule the model reads the
 // dossier back as a list of facts, which is the opposite of a burn.
-function buildDossier(myName: string, targets: string[]): string {
+function buildDossier(myName: string, targets: string[], hasHint: boolean): string {
   const lines: string[] = [];
   const mine = profileFor(myName);
   if (mine) lines.push(`${myName} (the one talking): ${mine}`);
@@ -205,7 +205,13 @@ function buildDossier(myName: string, targets: string[]): string {
     if (bio) lines.push(`${t} (target): ${bio}`);
   }
   if (!lines.length) return "";
-  return ` YOU KNOW THESE PEOPLE personally — background, not material to report: ${lines.join(" | ")} Use AT MOST ONE of those details, and only when it makes the burn funnier than the picks would; never list them, never explain them, never let on that you were handed them. Ignore the lot if the roast is sharper without.`;
+  // With an angle on the table the dossier is a seasoning at most: a personal
+  // detail that pulls away from what the sender actually asked for is worse
+  // than no detail at all.
+  const use = hasHint
+    ? "Use AT MOST ONE of those details, and only if it sharpens the angle you were given — if it pulls anywhere else, leave it out."
+    : "Use AT MOST ONE of those details, and only when it makes the burn funnier than the picks would; ignore the lot if the roast is sharper without.";
+  return ` YOU KNOW THESE PEOPLE personally — background, not material to report: ${lines.join(" | ")} ${use} Never list them, never explain them, never let on that you were handed them.`;
 }
 
 // Assembles the full roast prompt from the short variable parts the client
@@ -269,17 +275,34 @@ function buildTrashTalkPrompt(d: ReqBody): string {
   const angleHint = angles[Math.floor(Math.random() * angles.length)];
   const formHint = forms[Math.floor(Math.random() * forms.length)];
   const seed = Math.random().toString(36).slice(2, 7);
+  const hint = (d.hint ?? "").trim();
+  // A user-supplied angle is an instruction, not a suggestion. It used to be
+  // one clause among a dozen — the random form, the card, the profiles and the
+  // structure rules all pulled equally hard, so "roast his Houston teams" came
+  // back as a generic burn that never mentioned Houston. Everything that can
+  // compete with the angle is now explicitly subordinated to it, and the angle
+  // is restated last, where it is the final thing the model reads.
+  const formRule = hint
+    ? `Shape THIS one like: ${formHint} — but if that shape fights the angle, drop the shape and keep the angle.`
+    : `Shape THIS one like: ${formHint}.`;
+  const cardRule = hint
+    ? "You MAY glance at the CARD for ONE detail, and only if it serves the angle — a card detail that changes the subject is worse than none."
+    : "You MAY glance at the CARD for ONE detail, and only if it genuinely makes the burn funnier — most roasts should skip the card entirely and run on pure personality and disrespect.";
   // Attitude first and almost all the way through; a card reference is optional
   // seasoning, never the main course. A stat dump kills the burn, and — the whole
   // point of this rewrite — so does a predictable structure.
-  const baseRules = `Speak PURELY as ${persona} — their cadence, their swagger, their exact way of talking shit. This is raw trash talk, rude and personal, NOT a scouting report. Do NOT follow a formula: no throat-clearing opener, no obligatory middle jab about their picks, no tidy mic-drop to close — just talk the way ${persona} actually would and let it land however it lands. Shape THIS one like: ${formHint}. You MAY glance at the CARD for ONE detail, and only if it genuinely makes the burn funnier — most roasts should skip the card entirely and run on pure personality and disrespect. FACTS ARE STRICT: only tie a target to a pick explicitly attributed to THEM, never invent one, never blame them for a fight they won, never quote percentages or numbers. Don't lead with a rank, a username, or "hey" — drop straight into the voice, no emojis. LENGTH IS A HARD CAP: this lands as a push notification read on a phone — ONE short sentence is the default, TWO short sentences is the absolute maximum, and the whole roast stays under 30 words before the signature. If it needs more room it isn't funny enough yet; cut, don't explain the joke. Brevity IS the disrespect. When burying a group, land ONE collective burn — do not go person by person. Sign off with '— ${persona}' using the FULL name exactly as written, and even that should feel in-character. No preamble. (variety token, do not print: ${seed})`;
+  const baseRules = `Speak PURELY as ${persona} — their cadence, their swagger, their exact way of talking shit. This is raw trash talk, rude and personal, NOT a scouting report. Do NOT follow a formula: no throat-clearing opener, no obligatory middle jab about their picks, no tidy mic-drop to close — just talk the way ${persona} actually would and let it land however it lands. ${formRule} ${cardRule} FACTS ARE STRICT: only tie a target to a pick explicitly attributed to THEM, never invent one, never blame them for a fight they won, never quote percentages or numbers. Don't lead with a rank, a username, or "hey" — drop straight into the voice, no emojis. LENGTH IS A HARD CAP: this lands as a push notification read on a phone — ONE short sentence is the default, TWO short sentences is the absolute maximum, and the whole roast stays under 30 words before the signature. If it needs more room it isn't funny enough yet; cut, don't explain the joke. Brevity IS the disrespect. When burying a group, land ONE collective burn — do not go person by person. Sign off with '— ${persona}' using the FULL name exactly as written, and even that should feel in-character. No preamble. (variety token, do not print: ${seed})`;
   const who = solo ? `ripping into ${opponentNames}` : `burying ${opponentNames}`;
-  const hint = (d.hint ?? "").trim();
   // Empty string whenever nobody involved has a profile, so unknown nicknames
   // produce exactly the prompt they produced before profiles existed.
-  const dossier = buildDossier(myName, targets);
+  const dossier = buildDossier(myName, targets, !!hint);
+  // Stated up front as a hard requirement, and repeated after the rules — last
+  // position is the one the model weights most, and it is the only instruction
+  // that outranks everything except accuracy and the length cap.
+  const angleRule = `THE ANGLE IS THE JOB: ${myName} asked for this exact angle — "${hint}" — so the roast must be ABOUT that. Someone reading the roast should be able to tell what the angle was without being told. It outranks every other instruction here except the accuracy rules and the length cap: if the shape, the card, or anything you know about these people pulls away from the angle, drop them, not the angle. Do not water it down into a generic insult.`;
+  const angleTail = ` FINAL CHECK before you answer: does the roast actually land on "${hint}"? If not, rewrite it so it does.`;
   const question = hint
-    ? `You ARE ${persona}. Trash talk on behalf of ${myName} ${who} on ${boardName}. ${boardAngle} Build the bit around this angle: "${hint}".${dossier} ${baseRules}`
+    ? `You ARE ${persona}. Trash talk on behalf of ${myName} ${who} on ${boardName}. ${boardAngle} ${angleRule}${dossier} ${baseRules}${angleTail}`
     : `You ARE ${persona}. Trash talk on behalf of ${myName} ${who} on ${boardName}. ${boardAngle} ${angleHint}${dossier} ${baseRules}`;
   return buildChatPrompt({
     event: `UFC Picks Leaderboard — ${boardName}`,

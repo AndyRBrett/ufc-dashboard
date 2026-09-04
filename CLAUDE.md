@@ -25,6 +25,7 @@ runs the full gate set (all fast, all local):
 | `npm run smoke`       | the app failing to **boot** — loads it headlessly and opens the leaderboard |
 | `npm run check:tap`   | a tapped push notification not surfacing its message            |
 | `npm run check:audience` | trash talk reaching the wrong people (roast targets vs. push recipients) |
+| `npm run check:prompt` | a typed roast angle getting diluted by the rest of the prompt |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
