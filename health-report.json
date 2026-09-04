@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T22:28:44Z",
+  "generated_at": "2026-09-04T03:52:48Z",
   "summary": {
     "events": 14,
     "block": 0,
@@ -9,28 +9,28 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (2d out): 1 of 14 bouts have no odds",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (1d out): 1 of 14 bouts have no odds",
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
-      "days_out": 2
+      "days_out": 1
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (2d out): Klaudia Sygua has no record",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (1d out): Klaudia Sygua has no record",
       "fighter": "Klaudia Sygua",
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
-      "days_out": 2
+      "days_out": 1
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (2d out): Klaudia Sygua stats lookup failed (2026-09-03)",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (1d out): Klaudia Sygua stats lookup failed (2026-09-04)",
       "fighter": "Klaudia Sygua",
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
-      "days_out": 2
+      "days_out": 1
     }
   ]
 }

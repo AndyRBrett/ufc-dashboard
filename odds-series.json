@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T22:28:44Z",
+  "generated_at": "2026-09-04T03:52:48Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -5956,7 +5956,7 @@
         {
           "f1": "Dan Hooker",
           "f2": "Salahdine Parnasse",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -5977,6 +5977,11 @@
               "at": "2026-09-03T22:28:44Z",
               "f1_odds": 453,
               "f2_odds": -633
+            },
+            {
+              "at": "2026-09-04T03:52:48Z",
+              "f1_odds": 440,
+              "f2_odds": -607
             }
           ],
           "open": {
@@ -5990,7 +5995,7 @@
         {
           "f1": "Fares Ziam",
           "f2": "Axel Sola",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6010,6 +6015,11 @@
             {
               "at": "2026-09-03T22:28:44Z",
               "f1_odds": -155,
+              "f2_odds": 126
+            },
+            {
+              "at": "2026-09-04T03:52:48Z",
+              "f1_odds": -154,
               "f2_odds": 126
             }
           ],
@@ -6121,7 +6131,7 @@
         {
           "f1": "Losene Keita",
           "f2": "Muhammad Naimov",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6142,6 +6152,11 @@
               "at": "2026-09-03T22:28:44Z",
               "f1_odds": -380,
               "f2_odds": 290
+            },
+            {
+              "at": "2026-09-04T03:52:48Z",
+              "f1_odds": -385,
+              "f2_odds": 293
             }
           ],
           "open": {
@@ -6189,7 +6204,7 @@
         {
           "f1": "Kurtis Campbell",
           "f2": "Trevor Peek",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6209,6 +6224,11 @@
             {
               "at": "2026-09-03T22:28:44Z",
               "f1_odds": -403,
+              "f2_odds": 303
+            },
+            {
+              "at": "2026-09-04T03:52:48Z",
+              "f1_odds": -398,
               "f2_odds": 303
             }
           ],
@@ -6257,7 +6277,7 @@
         {
           "f1": "Michael Aljarouj",
           "f2": "Fabia Sintes",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6283,6 +6303,11 @@
               "at": "2026-09-03T22:28:44Z",
               "f1_odds": -128,
               "f2_odds": 105
+            },
+            {
+              "at": "2026-09-04T03:52:48Z",
+              "f1_odds": -129,
+              "f2_odds": 106
             }
           ],
           "open": {
@@ -6428,12 +6453,17 @@
         {
           "f1": "Brandon Moreno",
           "f2": "Joseph Morales",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
               "f1_odds": -105,
               "f2_odds": -115
+            },
+            {
+              "at": "2026-09-04T03:52:48Z",
+              "f1_odds": 110,
+              "f2_odds": -130
             }
           ],
           "open": {
@@ -6708,7 +6738,7 @@
         {
           "f1": "Joshua Van",
           "f2": "Alexandre Pantoja",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -6719,6 +6749,11 @@
               "at": "2026-09-03T03:51:32Z",
               "f1_odds": -116,
               "f2_odds": -108
+            },
+            {
+              "at": "2026-09-04T03:52:48Z",
+              "f1_odds": -115,
+              "f2_odds": -109
             }
           ],
           "open": {
@@ -7394,7 +7429,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Axel Sola",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -156,
         "close": null,
         "clv": null
@@ -10055,7 +10090,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Salahdine Parnasse",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 435,
         "close": null,
         "clv": null
@@ -10066,7 +10101,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Dan Hooker",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -615,
         "close": null,
         "clv": null
@@ -10077,7 +10112,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Fares Ziam",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 125,
         "close": null,
         "clv": null
@@ -10132,7 +10167,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Muhammad Naimov",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -375,
         "close": null,
         "clv": null
@@ -10143,7 +10178,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Losene Keita",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 282,
         "close": null,
         "clv": null
@@ -10176,7 +10211,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Trevor Peek",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -380,
         "close": null,
         "clv": null
@@ -10187,7 +10222,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Kurtis Campbell",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 283,
         "close": null,
         "clv": null
@@ -10220,7 +10255,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Fabia Sintes",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -138,
         "close": null,
         "clv": null
@@ -10231,7 +10266,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Michael Aljarouj",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 112,
         "close": null,
         "clv": null
@@ -10330,7 +10365,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Joseph Morales",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -105,
         "close": null,
         "clv": null
@@ -10341,7 +10376,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Brandon Moreno",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -115,
         "close": null,
         "clv": null
@@ -10539,7 +10574,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Alexandre Pantoja",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -113,
         "close": null,
         "clv": null
@@ -10550,7 +10585,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Joshua Van",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": -110,
         "close": null,
         "clv": null
