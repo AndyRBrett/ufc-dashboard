@@ -10,6 +10,7 @@
 #   smoke           — the app actually boots headlessly and the leaderboard opens
 #   check:tap       — a tapped push notification actually surfaces its message
 #   check:audience  — trash talk reaches exactly the people it was aimed at
+#   check:prompt    — a user-supplied roast angle still outranks the other prompt rules
 name: Validate Web
 
 on:
@@ -49,3 +50,5 @@ jobs:
         run: npm run check:tap
       - name: Trash-talk routing test
         run: npm run check:audience
+      - name: Trash-talk prompt test
+        run: npm run check:prompt
