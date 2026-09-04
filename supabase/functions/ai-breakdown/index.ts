@@ -218,9 +218,15 @@ function buildDossier(myName: string, targets: string[], hasHint: boolean): stri
 // sends. The scaffolding used to live client-side inlined into `question`,
 // which put every trash-talk request ~3x over MAX_QUESTION once input caps
 // landed; building it here keeps the caps tight without breaking the feature.
-// The assembled text is wrapped in the same chat template the client used to
-// route through (action:"chat"), so the prompt Claude sees is unchanged.
-function buildTrashTalkPrompt(d: ReqBody): string {
+// It deliberately does NOT reuse buildChatPrompt. Routing the roast through the
+// chat template meant the model's opening frame was "You are a UFC picks expert
+// helping a fan make decisions on this card... use the fight data provided",
+// with the roast — and any angle the sender typed — demoted to a QUESTION field
+// in the middle, and the template's own "Answer only the question" as the FINAL
+// instruction. That framing is why roasts came back as picks commentary and why
+// a typed angle ("wax on wax off those tears") could vanish entirely: the model
+// was answering an analyst's question, not writing a roast.
+function buildTrashTalk(d: ReqBody): { system: string; user: string } {
   const persona = d.persona || "A Famous Friend";
   const myName = d.myNickname || "The Champ";
   const targets = (d.targets ?? []).filter(Boolean);
@@ -299,17 +305,34 @@ function buildTrashTalkPrompt(d: ReqBody): string {
   // Stated up front as a hard requirement, and repeated after the rules — last
   // position is the one the model weights most, and it is the only instruction
   // that outranks everything except accuracy and the length cap.
-  const angleRule = `THE ANGLE IS THE JOB: ${myName} asked for this exact angle — "${hint}" — so the roast must be ABOUT that. Someone reading the roast should be able to tell what the angle was without being told. It outranks every other instruction here except the accuracy rules and the length cap: if the shape, the card, or anything you know about these people pulls away from the angle, drop them, not the angle. Do not water it down into a generic insult.`;
-  const angleTail = ` FINAL CHECK before you answer: does the roast actually land on "${hint}"? If not, rewrite it so it does.`;
-  const question = hint
-    ? `You ARE ${persona}. Trash talk on behalf of ${myName} ${who} on ${boardName}. ${boardAngle} ${angleRule}${dossier} ${baseRules}${angleTail}`
-    : `You ARE ${persona}. Trash talk on behalf of ${myName} ${who} on ${boardName}. ${boardAngle} ${angleHint}${dossier} ${baseRules}`;
-  return buildChatPrompt({
-    event: `UFC Picks Leaderboard — ${boardName}`,
-    card: d.card,
-    userPicks: myName + (d.myRank ? ` — Rank #${d.myRank}, ${d.myRecord || ""}` : ""),
-    question,
-  });
+  // Everything about WHO you are and HOW to write goes in the system prompt.
+  // The user turn carries only the situation and the ask — and it ENDS on the
+  // angle, because the last thing in the conversation is what actually steers
+  // the answer.
+  const system = `You ARE ${persona}. You write trash talk on behalf of ${myName} ${who} — one savage line, in character. You are NOT an analyst and this is NOT a scouting report: never explain a pick, never weigh a matchup, never give advice. ${baseRules}${dossier}`;
+  const situation = `LEADERBOARD: ${boardName}. ${boardAngle}
+${myName}${d.myRank ? ` — rank #${d.myRank}, ${d.myRecord || ""}` : ""}. Roasting: ${opponentNames}.
+CARD (background only — you almost never need it):
+${d.card || "n/a"}`;
+  // With no angle typed, the randomised angle is the ask. With one, the ask IS
+  // the angle, stated last and stated as the only thing that matters.
+  return hint
+    ? {
+      system,
+      user: `${situation}
+
+${myName} told you exactly what to hit them with. This is the entire job — a roast that does not land on it is a failed roast, no matter how funny it is:
+
+  THE ANGLE: "${hint}"
+
+Write it now, as ${persona}: one or two short sentences built on that angle, then the '— ${persona}' signature. Use the angle's own imagery and words where you can. Do not swap it for a generic insult about their picks, their rank or their record.`,
+    }
+    : {
+      system,
+      user: `${situation}
+
+Write it now, as ${persona}: one or two short sentences, then the '— ${persona}' signature. Your take this time: ${angleHint}`,
+    };
 }
 
 // The client recovers the persona from the roast's trailing "— X" signature
@@ -388,6 +411,7 @@ Deno.serve(async (req) => {
 
   const action = body.action ?? "breakdown";
   let prompt: string;
+  let system: string | undefined;
   let maxTokens = 250;
   if (action === "chat") {
     prompt = buildChatPrompt(body);
@@ -396,7 +420,9 @@ Deno.serve(async (req) => {
     prompt = buildParlayPrompt(body);
     maxTokens = 300;
   } else if (action === "trash-talk") {
-    prompt = buildTrashTalkPrompt(body);
+    const built = buildTrashTalk(body);
+    system = built.system;
+    prompt = built.user;
     // The prompt hard-caps roasts at ~30 words / two sentences (people stopped
     // reading the long ones). 120 tokens is ~3x that budget, so the signature
     // always lands even when the model runs a little over, while still bounding
@@ -418,6 +444,7 @@ Deno.serve(async (req) => {
   const claudeReqBody = JSON.stringify({
     model: MODEL,
     max_tokens: maxTokens,
+    ...(system ? { system } : {}),
     messages: [{ role: "user", content: prompt }],
   });
 
