@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T20:23:32Z",
+  "generated_at": "2026-09-05T20:28:35Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -7522,6 +7522,31 @@
       ]
     },
     {
+      "event_id": "2026-10-03:ufc-332-silva-vs-cong",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Deiveson Figueiredo",
+          "f2": "Payton Talbott",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-05T20:28:35Z",
+              "f1_odds": 412,
+              "f2_odds": -550
+            }
+          ],
+          "open": {
+            "at": "2026-09-05T20:28:35Z",
+            "f1_odds": 412,
+            "f2_odds": -550
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "concluded": false,
       "bouts": [
@@ -7622,6 +7647,15 @@
         "side": "f1",
         "points": 2,
         "open": 415,
+        "close": null,
+        "clv": null
+      },
+      {
+        "event_id": "2026-10-03:ufc-332-silva-vs-cong",
+        "opponent": "Payton Talbott",
+        "side": "f1",
+        "points": 1,
+        "open": 412,
         "close": null,
         "clv": null
       }
@@ -11276,6 +11310,15 @@
         "opponent": "Deiveson Figueiredo",
         "side": "f2",
         "points": 2,
+        "open": -550,
+        "close": null,
+        "clv": null
+      },
+      {
+        "event_id": "2026-10-03:ufc-332-silva-vs-cong",
+        "opponent": "Deiveson Figueiredo",
+        "side": "f2",
+        "points": 1,
         "open": -550,
         "close": null,
         "clv": null
