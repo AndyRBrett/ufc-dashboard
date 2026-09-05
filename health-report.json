@@ -1,25 +1,11 @@
 {
-  "generated_at": "2026-09-05T12:53:42Z",
+  "generated_at": "2026-09-05T12:58:44Z",
   "summary": {
     "events": 14,
     "block": 0,
-    "warn": 12
+    "warn": 10
   },
   "findings": [
-    {
-      "severity": "WARN",
-      "check": "start-time-changed",
-      "message": "UFC 333: Volkanovski vs. Evloev (49d out): main-card start moved 10:00 \u2192 14:00 ET",
-      "event": "UFC 333: Volkanovski vs. Evloev",
-      "date": "2026-10-24"
-    },
-    {
-      "severity": "WARN",
-      "check": "start-time-changed",
-      "message": "UFC 333: Volkanovski vs. Evloev (49d out): prelim start moved 08:00 \u2192 11:00 ET",
-      "event": "UFC 333: Volkanovski vs. Evloev",
-      "date": "2026-10-24"
-    },
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
