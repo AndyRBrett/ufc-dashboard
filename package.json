@@ -12,7 +12,8 @@
     "check:tap": "node tests/notification-tap.mjs",
     "check:audience": "node tests/trash-audience.mjs",
     "check:prompt": "node tests/trash-prompt.mjs",
-    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt"
+    "check:dedup": "node tests/notify-dedup-key.mjs",
+    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:dedup"
   },
   "devDependencies": {
     "esbuild": "^0.24.0",

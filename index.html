@@ -6341,13 +6341,27 @@ document.addEventListener("DOMContentLoaded",function(){
     }catch(e){}
   }
 
+  // Canonical ASCII form — must stay byte-identical to _fold() in scrape.py and
+  // in supabase/functions/check-results/index.ts. NFD + stripping combining
+  // marks folded "é" to "e" but left the Latin letters that carry their
+  // diacritic in the codepoint itself ("ł", "ø", "đ") untouched, while scrape.py
+  // dropped them outright. So the same bout gave this client the fight key
+  // "…klaudia-sygu-a" (the "ł" falling out as a separator) and the scraper
+  // "…klaudia-sygua": two different `result:<fight_key>` types, two rows in
+  // notif_log, and a duplicate push for everyone who picked the fight. NFKD
+  // then drop-everything-non-ASCII matches scrape.py's asc() exactly.
+  function _fold(t){
+    try{t=t.normalize("NFKD");}catch(e){}
+    return t.replace(/[^\x00-\x7F]/g,"");
+  }
+
   function _cleanWiki(t){
     if(!t)return"";
     t=t.replace(/\[\[(?:[^\]|]+\|)?([^\]]+)\]\]/g,"$1");
     t=t.replace(/\{\{[^}]+\}\}/g,"");
     t=t.replace(/<[^>]+>/g,"");
     t=t.replace(/\[\d+\]/g,"");
-    try{t=t.normalize("NFD").replace(/[̀-ͯ]/g,"");}catch(e){}
+    t=_fold(t);
     return t.trim().replace(/^,|,$/g,"").trim();
   }
 
@@ -6468,7 +6482,10 @@ document.addEventListener("DOMContentLoaded",function(){
     if(!SUPABASE_ANON)return;
     var winner=res.winner||fight.winner;
     var loser=res.loser||(fight.winner===fight.f1.n?fight.f2.n:fight.f1.n);
-    var fightKey=(winner+"-"+loser).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+    // Fold at the key, not only upstream: `loser` can come straight off data.js
+    // and `winner` off a fresh Wikipedia parse, so this is the one place that
+    // guarantees the dedup key is the same string every sender derives.
+    var fightKey=_fold(winner+"-"+loser).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
     // Jitter so dozens of clients detecting the same result don't stampede
     // send-push simultaneously — the first to claim the notif_log row wins and
     // the rest get {skipped:true}.
