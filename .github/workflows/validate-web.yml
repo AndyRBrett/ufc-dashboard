@@ -11,6 +11,7 @@
 #   check:tap       — a tapped push notification actually surfaces its message
 #   check:audience  — trash talk reaches exactly the people it was aimed at
 #   check:prompt    — a user-supplied roast angle still outranks the other prompt rules
+#   check:dedup     — all three result senders derive the same push dedup key
 name: Validate Web
 
 on:
@@ -52,3 +53,5 @@ jobs:
         run: npm run check:audience
       - name: Trash-talk prompt test
         run: npm run check:prompt
+      - name: Result-push dedup key test
+        run: npm run check:dedup

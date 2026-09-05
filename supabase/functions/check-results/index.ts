@@ -23,13 +23,24 @@
 // Wikipedia result parsing — ported verbatim from index.html (~4975-5074).
 // ---------------------------------------------------------------------------
 
+// Canonical ASCII form — must stay byte-identical to _fold() in scrape.py and
+// in index.html. NFD + stripping combining marks folded "é" to "e" but left the
+// Latin letters whose diacritic lives in the codepoint itself ("ł", "ø", "đ"),
+// which scrape.py drops outright. The same bout then keyed as
+// "…klaudia-sygu-a" here and "…klaudia-sygua" there — two `result:<fightKey>`
+// types, so the notif_log dedup never fired and the fight was pushed twice.
+function _fold(t: string): string {
+  try { t = t.normalize("NFKD"); } catch (_e) { /* noop */ }
+  return t.replace(/[^\x00-\x7F]/g, "");
+}
+
 function _cleanWiki(t: string): string {
   if (!t) return "";
   t = t.replace(/\[\[(?:[^\]|]+\|)?([^\]]+)\]\]/g, "$1");
   t = t.replace(/\{\{[^}]+\}\}/g, "");
   t = t.replace(/<[^>]+>/g, "");
   t = t.replace(/\[\d+\]/g, "");
-  try { t = t.normalize("NFD").replace(/[̀-ͯ]/g, ""); } catch (_e) { /* noop */ }
+  t = _fold(t);
   return t.trim().replace(/^,|,$/g, "").trim();
 }
 
@@ -140,7 +151,9 @@ function _deriveSlug(evName: string): string {
 }
 
 function _fightKey(winner: string, loser: string): string {
-  return (winner + "-" + loser).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  // Fold at the key too — the one place that guarantees every sender derives
+  // the identical dedup string regardless of which spelling reached it.
+  return _fold(winner + "-" + loser).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
 // ---------------------------------------------------------------------------

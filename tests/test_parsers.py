@@ -22,6 +22,22 @@ def test_last_name_strips_accents_and_parentheticals():
     assert scrape.last_name("José Aldo") == "aldo"
 
 
+def test_asc_drops_letters_nfkd_cannot_decompose():
+    """The ASCII form is load-bearing, not cosmetic.
+
+    "ł" carries its stroke in the codepoint, so NFKD leaves it whole and asc()
+    drops it: "Syguła" → "Sygua". That spelling is what data.js ships, what
+    every stored pick is keyed on (`date|f1|f2`), and what the result-push
+    `fight_key` is built from — index.html and check-results fold identically so
+    a fight can only produce one `result:<fight_key>` type and one push.
+    Changing this to transliterate ("Sygula") is a data migration, not a tweak:
+    it orphans stored picks and re-opens the duplicate-notification bug.
+    """
+    assert scrape.asc("Klaudia Syguła") == "Klaudia Sygua"
+    assert scrape.asc("José Aldo") == "Jose Aldo"
+    assert scrape.asc("Søren Bak") == "Sren Bak"
+
+
 def test_names_match_by_last_name_and_substring():
     assert scrape.names_match("Max Holloway", "Holloway")
     assert scrape.names_match("Conor McGregor", "conor mcgregor")

@@ -111,6 +111,15 @@ extension. Scheduling is external, with redundancy:
 
 Both can run at once safely — `notif_log` dedup collapses the overlap. This
 removes any single dependency on GitHub Actions' scheduler (which throttles).
+
+> ⚠️ That dedup is **plain string equality on `(event_date, type)`**, and for a
+> result the type is `result:<fight_key>:<group>`. So the three senders only
+> collapse into one push while they build byte-identical fight keys from
+> byte-identical fighter names. They didn't: scrape.py's ASCII fold drops the
+> Latin letters NFKD can't decompose ("Syguła" → "Sygua") and the two JS senders
+> kept them, so one bout keyed two ways and everyone who picked it was notified
+> twice. All three now share the same `_fold()`, and `npm run check:dedup`
+> fails the build if they drift again.
 Reminders also have a **60-minute lead window**, so they tolerate a stalled run.
 
 ## Quotas & usage estimates (as of 2026-06-21)

@@ -99,21 +99,38 @@ EXISTING_ODDS_RE = re.compile(
 # Text utilities
 # ---------------------------------------------------------------------------
 
+# Canonical ASCII form. NFKD splits an accent off its base letter ("é" → "e" +
+# a combining mark) and everything still non-ASCII afterwards is dropped: that
+# includes the combining marks AND the Latin letters NFKD does not decompose at
+# all, because their diacritic is baked into the codepoint ("ł", "ø", "đ").
+#
+# The dropping is what makes "Syguła" come out as "Sygua". That spelling is
+# load-bearing: it is what data.js ships and therefore what every stored pick is
+# keyed on (`date|f1|f2`), so this is the canonical form the whole system agrees
+# on — NOT something to "fix" to "Sygula" without migrating those keys.
+#
+# Keep this byte-identical to _fold() in index.html and in
+# supabase/functions/check-results/index.ts. When the JS senders skipped the
+# drop and kept the "ł", one bout produced two different `result:<fight_key>`
+# dedup keys, so notif_log let both through and everyone who picked that fight
+# was notified twice.
+def _fold(s):
+    return "".join(
+        c for c in unicodedata.normalize("NFKD", s) if ord(c) < 128
+    )
+
+
 def asc(text):
     """Transliterate accented characters to ASCII (e.g. É→E, í→i)."""
     if not text:
         return ""
-    return "".join(
-        c for c in unicodedata.normalize("NFKD", str(text)) if ord(c) < 128
-    ).strip()
+    return _fold(str(text)).strip()
 
 
 def clean(name):
     """Strip accented characters and trailing parentheticals from a name."""
     s = re.sub(r"\s*\([^)]+\)\s*$", "", str(name or "")).strip()
-    return "".join(
-        c for c in unicodedata.normalize("NFKD", s) if ord(c) < 128
-    ).strip()
+    return _fold(s).strip()
 
 
 def clean_wiki(text):
@@ -2370,7 +2387,12 @@ def send_push_notifications(new_results):
             if not is_this_fight or not pick.get("user_id"):
                 continue
             (winners if names_match(chosen, winner) else losers).append(pick["user_id"])
-        fight_key = re.sub(r"[^a-z0-9]+", "-", f"{winner}-{loser}".lower()).strip("-")
+        # asc() before the slug: an unfolded "ł" survives the lowercase and comes
+        # out as a separator here ("sygu-a"), which is a different key from the
+        # "sygua" every folded sender derives — and a different key means a
+        # second notification for the same fight. Fold at the key, not only
+        # upstream, so it is stable whichever spelling reaches this function.
+        fight_key = re.sub(r"[^a-z0-9]+", "-", asc(f"{winner}-{loser}").lower()).strip("-")
         # safe_title/safe_body is the spoiler-free variant — identical for both
         # groups and naming no winner, so neither the text nor a difference
         # between notifications can leak the result. The send-push function
