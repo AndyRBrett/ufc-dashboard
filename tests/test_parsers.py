@@ -1067,10 +1067,19 @@ def test_resolve_times_regional_fallback_when_espn_misses(monkeypatch):
 
 
 def test_resolve_times_espn_still_beats_regional_default(monkeypatch):
-    monkeypatch.setattr(scrape, "fetch_espn_times", lambda n, d: ("12:00", "09:00"))
+    """ESPN remains the primary source for international cards — the regional
+    slot is a coarse fallback, not a replacement.
+
+    The ESPN value here used to be ("12:00", "09:00"), which is 3h off the
+    europe slot: that is now deliberately rejected as ESPN reporting an earlier
+    segment (see test_resolve_times_rejects_espn_three_hours_off_the_regional_slot,
+    the Paris regression). Precedence is unchanged for any time ESPN could
+    plausibly mean as a main card, which is what this asserts.
+    """
+    monkeypatch.setattr(scrape, "fetch_espn_times", lambda n, d: ("14:00", "11:00"))
     assert scrape.resolve_event_times(
         "UFC Fight Night: Medic vs. Rodriguez", "2026-08-01",
-        "TBD", "TBD", loc="Belgrade") == ("12:00", "09:00")
+        "TBD", "TBD", loc="Belgrade") == ("14:00", "11:00")
 
 
 def test_resolve_times_unknown_international_loc_stays_tbd(monkeypatch):
@@ -1297,3 +1306,120 @@ def test_results_archive_keeps_bouts_in_card_order():
     fights = _archive_of(out)["2026-01-03"]["fights"]
     assert [f["f1"] for f in fights] == ["W0", "W1", "W2", "W3"]
     assert [f["lbl"] for f in fights] == ["Main Event", "Co-Main", "Main Card", "Prelim"]
+
+
+# --- start-time sanity: ESPN vs the regional slot ---------------------------
+#
+# ESPN's scoreboard `date` has meant different segments on different cards, and
+# every time it meant "prelims" the dashboard shipped a card three hours early
+# (Paris and Shanghai both did). These pin the clamp that catches that class of
+# error without a manual override.
+
+def test_hours_apart_is_circular_across_midnight():
+    assert scrape._hours_apart("15:00", "12:00") == 3
+    assert scrape._hours_apart("12:00", "15:00") == 3
+    assert scrape._hours_apart("23:00", "01:00") == 2   # not 22
+    assert scrape._hours_apart("00:30", "23:30") == 1
+    assert scrape._hours_apart("bogus", "12:00") is None
+
+
+def test_espn_agrees_with_region_tolerates_small_gaps_only():
+    assert scrape.espn_agrees_with_region("15:00", "15:00")
+    assert scrape.espn_agrees_with_region("13:00", "15:00")   # 2h — allowed
+    assert not scrape.espn_agrees_with_region("12:00", "15:00")  # 3h — a segment
+    # No regional slot to compare against → believe ESPN over a "TBD".
+    assert scrape.espn_agrees_with_region("12:00", "TBD")
+    assert scrape.espn_agrees_with_region("12:00", "")
+
+
+def test_resolve_times_rejects_espn_three_hours_off_the_regional_slot(monkeypatch):
+    """The Paris regression: ESPN reported the prelim start (12:00 ET) as the
+    main card, and the derived prelim went to 09:00 — both 3h early."""
+    monkeypatch.setattr(scrape, "fetch_espn_times", lambda n, d: ("12:00", "09:00"))
+    assert scrape.resolve_event_times(
+        "UFC Fight Night: Someone vs. Other", "2026-09-05", "TBD", "TBD",
+        loc="Paris") == ("15:00", "12:00")
+
+
+def test_resolve_times_rejects_espn_three_hours_off_in_asia(monkeypatch):
+    """Same failure in Shanghai: ESPN's 03:00 was the stream start."""
+    monkeypatch.setattr(scrape, "fetch_espn_times", lambda n, d: ("03:00", "00:00"))
+    assert scrape.resolve_event_times(
+        "UFC Fight Night: Someone vs. Other", "2026-08-29", "TBD", "TBD",
+        loc="Shanghai") == ("06:00", "03:00")
+
+
+def test_resolve_times_keeps_espn_when_it_agrees_with_the_region(monkeypatch):
+    """ESPN stays the primary source — the clamp must not flatten every
+    international card onto the coarse regional slot."""
+    monkeypatch.setattr(scrape, "fetch_espn_times", lambda n, d: ("16:00", "13:00"))
+    assert scrape.resolve_event_times(
+        "UFC Fight Night: Someone vs. Other", "2026-09-05", "TBD", "TBD",
+        loc="Paris") == ("16:00", "13:00")
+
+
+def test_resolve_times_keeps_espn_for_a_region_with_no_slot(monkeypatch):
+    """An unmapped location has nothing to clamp against; ESPN beats TBD."""
+    monkeypatch.setattr(scrape, "fetch_espn_times", lambda n, d: ("11:00", "08:00"))
+    assert scrape.resolve_event_times(
+        "UFC Fight Night: Someone vs. Other", "2026-09-05", "TBD", "TBD",
+        loc="Reykjavik") == ("11:00", "08:00")
+
+
+def test_paris_2026_override_pins_the_published_times():
+    assert scrape._event_times(
+        "UFC Fight Night: Hooker vs. Parnasse", "Paris") == ("15:00", "12:00")
+
+
+# --- start-time cross-check: the odds feed's commence_time -----------------
+
+def _odds_payload(commence, home, away):
+    return [{
+        "home_team": home, "away_team": away, "commence_time": commence,
+        "bookmakers": [{"key": "fanduel", "markets": [{"key": "h2h", "outcomes": [
+            {"name": home, "price": -150}, {"name": away, "price": 130}]}]}],
+    }]
+
+
+def test_index_odds_api_keeps_commence_time():
+    idx = scrape._index_odds_api(
+        _odds_payload("2026-09-05T16:00:00Z", "Dan Hooker", "Salahdine Parnasse"), "t")
+    entry = next(iter(idx.values()))
+    assert entry["commence_time"] == "2026-09-05T16:00:00Z"
+
+
+def test_odds_card_start_et_takes_the_earliest_bout_on_the_date():
+    idx = {}
+    idx.update(scrape._index_odds_api(
+        _odds_payload("2026-09-05T19:00:00Z", "Dan Hooker", "Salahdine Parnasse"), "t"))
+    idx.update(scrape._index_odds_api(
+        _odds_payload("2026-09-05T16:00:00Z", "Fares Ziam", "Axel Sola"), "t"))
+    card = [
+        {"f1": {"name": "Dan Hooker"}, "f2": {"name": "Salahdine Parnasse"}},
+        {"f1": {"name": "Fares Ziam"}, "f2": {"name": "Axel Sola"}},
+    ]
+    # 16:00Z = 12:00 ET (EDT) — the first prelim, not the 15:00 ET main event.
+    assert scrape.odds_card_start_et(idx, card, "2026-09-05") == "12:00"
+
+
+def test_odds_card_start_et_ignores_bouts_from_another_date():
+    idx = scrape._index_odds_api(
+        _odds_payload("2026-09-12T16:00:00Z", "Fares Ziam", "Axel Sola"), "t")
+    card = [{"f1": {"name": "Fares Ziam"}, "f2": {"name": "Axel Sola"}}]
+    assert scrape.odds_card_start_et(idx, card, "2026-09-05") == ""
+
+
+def test_odds_card_start_et_empty_without_a_match():
+    assert scrape.odds_card_start_et({}, [
+        {"f1": {"name": "Dan Hooker"}, "f2": {"name": "Salahdine Parnasse"}}], "2026-09-05") == ""
+
+
+def test_warn_if_odds_disagree_fires_only_on_a_segment_sized_gap():
+    # The Paris bug: prelims published at 09:00, bookmakers say 12:00.
+    assert scrape.warn_if_odds_disagree_on_time("ev", "09:00", "12:00")
+    # Within a segment — nominal-start noise, not a bug.
+    assert not scrape.warn_if_odds_disagree_on_time("ev", "12:00", "13:00")
+    assert not scrape.warn_if_odds_disagree_on_time("ev", "12:00", "12:00")
+    # Nothing to compare against never warns.
+    assert not scrape.warn_if_odds_disagree_on_time("ev", "TBD", "12:00")
+    assert not scrape.warn_if_odds_disagree_on_time("ev", "12:00", "")

@@ -716,6 +716,48 @@ def _warn_if_implausible_time(ev_name, loc, main_et):
         )
 
 
+# How far ESPN's main-card time may sit from the venue's regional broadcast slot
+# before it is treated as the wrong segment rather than a real schedule quirk.
+# The four cards that needed a manual _TIME_OVERRIDES rescue all landed exactly
+# 3h early (ESPN published the prelim/stream start as the event `date`), while
+# the regional slot was never worse than 2h from the published main card:
+#
+#   card                 published main   regional slot   ESPN
+#   Paris (europe)       15:00 ET         15:00  (0h)     12:00  (-3h)
+#   Shanghai (asia)      06:00 ET         06:00  (0h)     03:00  (-3h)
+#   Abu Dhabi (mideast)  15:00 ET         14:00  (1h)     wrong segment
+#   Baku (mideast)       12:00 ET         14:00  (2h)     wrong segment
+#
+# So a 2h window cleanly separates "ESPN is describing the main card" from
+# "ESPN is describing some earlier segment".
+_ESPN_REGION_TOLERANCE_H = 2
+
+
+def _hours_apart(a_hhmm, b_hhmm):
+    """Circular distance in hours between two 24h "HH:MM" times, or None.
+
+    Circular so a card either side of midnight (23:00 vs 01:00) reads as 2h
+    apart rather than 22h.
+    """
+    try:
+        ah, am = (int(x) for x in a_hhmm.split(":")[:2])
+        bh, bm = (int(x) for x in b_hhmm.split(":")[:2])
+    except (ValueError, AttributeError, IndexError):
+        return None
+    diff = abs((ah * 60 + am) - (bh * 60 + bm)) / 60.0
+    return min(diff, 24.0 - diff)
+
+
+def espn_agrees_with_region(espn_main, region_main):
+    """True when ESPN's main-card time is close enough to the regional slot to
+    be believed. Unknown region (no slot) → believe ESPN, since the alternative
+    is "TBD"."""
+    if not region_main or region_main == "TBD":
+        return True
+    apart = _hours_apart(espn_main, region_main)
+    return apart is None or apart <= _ESPN_REGION_TOLERANCE_H
+
+
 def resolve_event_times(ev_name, ev_date, default_main, default_prelim, loc=""):
     """Resolve (main, prelim) ET times for an event.
 
@@ -723,21 +765,36 @@ def resolve_event_times(ev_name, ev_date, default_main, default_prelim, loc=""):
     default is a fixed, known broadcast slot (PPV 21:00/19:00, Fight Night
     20:00/17:00 ET) and is authoritative — ESPN's scoreboard ``date`` is the
     event's first-segment (early-prelim) start rather than the main-card start,
-    so preferring it made every US main-card time hours too early. ESPN is only
-    consulted for international cards, where there's no clean ET rule and it's
-    the primary source; when ESPN also has nothing, the regional fallback slot
-    for the venue's part of the world is used so the card never shows "TBD".
+    so preferring it made every US main-card time hours too early.
+
+    For international cards ESPN is consulted first, but is no longer trusted
+    blind: its ``date`` has the same inconsistent meaning abroad, and when it
+    lands on the prelim/stream start the derived prelim slot is pushed three
+    hours earlier still — so BOTH times ship three hours early (Paris, Shanghai).
+    A resolved main card more than `_ESPN_REGION_TOLERANCE_H` from the venue's
+    regional slot is therefore rejected in favour of that slot, which is the
+    conservative choice: the slot was within 2h of the published time on every
+    card that has needed a manual rescue, while ESPN was a full segment out.
     """
     if ev_name in _TIME_OVERRIDES:
         return default_main, default_prelim
     if default_main != "TBD":            # US/Canada card → fixed ET slot is authoritative
         return default_main, default_prelim
+    region, rmain, rprelim = _regional_default_times(loc)
     main, prelim = fetch_espn_times(ev_name, ev_date)
-    if main:
+    if main and espn_agrees_with_region(main, rmain):
         print(f"  ESPN times for {ev_name}: main {main} ET / prelim {prelim} ET",
               file=sys.stderr)
         return main, prelim
-    region, rmain, rprelim = _regional_default_times(loc)
+    if main:
+        print(
+            f"WARNING: {ev_name} (loc={loc!r}) — ESPN says main {main} ET but the "
+            f"{region} slot is {rmain} ET ({_hours_apart(main, rmain):.0f}h apart). "
+            f"ESPN is almost certainly reporting an earlier segment (prelims or "
+            f"early prelims); using the regional slot instead. If {main} is in "
+            f"fact correct, pin the card in _TIME_OVERRIDES.",
+            file=sys.stderr,
+        )
     if rmain != "TBD":
         print(f"  Regional default times for {ev_name} ({region}): "
               f"main {rmain} ET / prelim {rprelim} ET", file=sys.stderr)
@@ -1137,8 +1194,68 @@ def _index_odds_api(data, source):
                 "f1_odds": f1_odds,
                 "f2_odds": f2_odds,
                 "source":  source,
+                # Bookmakers publish each bout's scheduled start as an absolute
+                # UTC instant. It rides along in the payload we already pay for,
+                # so it is a free second opinion on the card's start time —
+                # wholly independent of ESPN, which is the source that has
+                # silently shipped a wrong time four times now. Kept as the raw
+                # ISO string; see odds_card_start_et().
+                "commence_time": fight.get("commence_time", ""),
             }
     return odds_index
+
+
+def odds_card_start_et(odds_index, card, ev_date):
+    """Earliest bookmaker start time across *card*, as a 24h ET "HH:MM", or "".
+
+    The earliest bout on a card is the first prelim, so this approximates the
+    PRELIM start — the same thing ev.prelimTime holds. Bouts whose start falls
+    on another ET date are ignored so a mis-keyed pair from a neighbouring card
+    can't drag the answer.
+
+    This costs no API quota: commence_time arrives inside the odds payload the
+    scraper already fetches, so it is a free cross-check rather than a source.
+    Treated as advisory only — bookmakers sometimes stamp a whole card with one
+    nominal start — so it warns, it never overwrites a resolved time.
+    """
+    best = None
+    for fight in card:
+        # Reuse the same fuzzy matcher the odds lookup uses, rather than
+        # rebuilding the index key — the key is sorted/cleaned and a rebuilt one
+        # silently misses the bouts whose names needed fuzzy matching.
+        entry, _ = _match_odds(odds_index, fight["f1"]["name"], fight["f2"]["name"])
+        if not entry:
+            continue
+        et = _utc_iso_to_et(entry.get("commence_time"))
+        if et is None or et.strftime("%Y-%m-%d") != ev_date:
+            continue
+        if best is None or et < best:
+            best = et
+    return best.strftime("%H:%M") if best else ""
+
+
+# How far the published prelim time may sit from the bookmakers' earliest start
+# before it is worth flagging. Generous, because commence_time is a nominal
+# start: only a whole-segment error (the 3h class of bug) should trip it.
+_ODDS_TIME_TOLERANCE_H = 2
+
+
+def warn_if_odds_disagree_on_time(ev_name, resolved_prelim, odds_start):
+    """Warn when the bookmakers' card start contradicts the resolved prelim
+    time by more than a segment. Returns True when a warning was emitted."""
+    if not odds_start or not resolved_prelim or resolved_prelim == "TBD":
+        return False
+    apart = _hours_apart(resolved_prelim, odds_start)
+    if apart is None or apart <= _ODDS_TIME_TOLERANCE_H:
+        return False
+    print(
+        f"WARNING: {ev_name} — prelims resolved to {resolved_prelim} ET but the "
+        f"odds feed has the card starting {odds_start} ET ({apart:.0f}h apart). "
+        f"Two independent sources disagree by more than a segment; check the "
+        f"published start before trusting the dashboard clock.",
+        file=sys.stderr,
+    )
+    return True
 
 
 _odds_requests_remaining = None   # last x-requests-remaining seen from the Odds API
@@ -2653,6 +2770,9 @@ def step_build_events(data, now):
                 odds_index, fight["f1"]["name"], fight["f2"]["name"]) or "none"
             src_counts[src] = src_counts.get(src, 0) + 1
         print(f"  Odds sources for {ev_name}: {src_counts}", file=sys.stderr)
+        # Free second opinion on the clock, from the payload already fetched.
+        warn_if_odds_disagree_on_time(
+            ev_name, prelim_time, odds_card_start_et(odds_index, card, ev_date))
         new_events.append({
             "name":        ev_name,
             "date":        ev_date,
