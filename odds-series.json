@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T03:51:19Z",
+  "generated_at": "2026-09-05T08:16:23Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -6162,7 +6162,7 @@
         {
           "f1": "Morgan Charriere",
           "f2": "Felipe Lima",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6188,6 +6188,11 @@
               "at": "2026-09-05T03:51:19Z",
               "f1_odds": 168,
               "f2_odds": -205
+            },
+            {
+              "at": "2026-09-05T08:16:23Z",
+              "f1_odds": 171,
+              "f2_odds": -210
             }
           ],
           "open": {
@@ -6402,7 +6407,7 @@
         {
           "f1": "Michael Aljarouj",
           "f2": "Fabia Sintes",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6448,6 +6453,11 @@
               "at": "2026-09-05T03:51:19Z",
               "f1_odds": -123,
               "f2_odds": 102
+            },
+            {
+              "at": "2026-09-05T08:16:23Z",
+              "f1_odds": -128,
+              "f2_odds": 107
             }
           ],
           "open": {
@@ -6554,7 +6564,7 @@
         {
           "f1": "Nathaniel Wood",
           "f2": "Pavel Andrusca",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-09-03T03:51:32Z",
@@ -6585,6 +6595,11 @@
               "at": "2026-09-04T22:17:52Z",
               "f1_odds": -302,
               "f2_odds": 240
+            },
+            {
+              "at": "2026-09-05T08:16:23Z",
+              "f1_odds": -300,
+              "f2_odds": 238
             }
           ],
           "open": {
@@ -6862,7 +6877,7 @@
         {
           "f1": "Ignacio Bahamondes",
           "f2": "Muslim Salikhov",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -6888,6 +6903,11 @@
               "at": "2026-09-04T16:06:23Z",
               "f1_odds": -547,
               "f2_odds": 392
+            },
+            {
+              "at": "2026-09-05T08:16:23Z",
+              "f1_odds": -530,
+              "f2_odds": 382
             }
           ],
           "open": {
@@ -10459,7 +10479,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Felipe Lima",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": 155,
         "close": null,
         "clv": null
@@ -10470,7 +10490,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Morgan Charriere",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": -193,
         "close": null,
         "clv": null
@@ -10569,7 +10589,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Fabia Sintes",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -138,
         "close": null,
         "clv": null
@@ -10580,7 +10600,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Michael Aljarouj",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 112,
         "close": null,
         "clv": null
@@ -10635,7 +10655,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Pavel Andrusca",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -321,
         "close": null,
         "clv": null
@@ -10646,7 +10666,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Nathaniel Wood",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 243,
         "close": null,
         "clv": null
@@ -10789,7 +10809,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Muslim Salikhov",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -350,
         "close": null,
         "clv": null
@@ -10800,7 +10820,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Ignacio Bahamondes",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 280,
         "close": null,
         "clv": null

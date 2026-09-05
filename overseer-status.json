@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T03:51:19Z",
+  "generated_at": "2026-09-05T08:16:23Z",
   "events_tracked": 14,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -54,7 +54,7 @@
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
       "status": "ok",
-      "last_changed_at": "2026-09-05T03:51:19Z",
+      "last_changed_at": "2026-09-05T08:16:23Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -63,7 +63,7 @@
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
       "status": "ok",
-      "last_changed_at": "2026-09-05T03:51:19Z",
+      "last_changed_at": "2026-09-05T08:16:23Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -81,7 +81,7 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-05T03:51:19Z",
+      "last_changed_at": "2026-09-05T08:16:23Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-05T03:51:19Z",
+      "last_changed_at": "2026-09-05T08:16:23Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -108,7 +108,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-05T03:51:19Z",
+      "last_changed_at": "2026-09-05T08:16:23Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-292",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-05T03:51:19Z",
+      "last_changed_at": "2026-09-05T08:16:23Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 2,
@@ -135,7 +135,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-05T03:51:19Z",
+      "last_changed_at": "2026-09-05T08:16:23Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -216,18 +216,6 @@
       "priority": 295.0
     },
     {
-      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
-      "f1": "Ignacio Bahamondes",
-      "f2": "Muslim Salikhov",
-      "f1_movement": -197,
-      "f2_movement": 112,
-      "magnitude": 197,
-      "main_event": false,
-      "f1_prob_shift": 6.8,
-      "f2_prob_shift": -6.0,
-      "priority": 275.8
-    },
-    {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
       "f1": "Liu Ce",
       "f2": "Levi Rodrigues Jr.",
@@ -238,6 +226,18 @@
       "f1_prob_shift": 13.4,
       "f2_prob_shift": -13.9,
       "priority": 270.0
+    },
+    {
+      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+      "f1": "Ignacio Bahamondes",
+      "f2": "Muslim Salikhov",
+      "f1_movement": -180,
+      "f2_movement": 102,
+      "magnitude": 180,
+      "main_event": false,
+      "f1_prob_shift": 6.3,
+      "f2_prob_shift": -5.6,
+      "priority": 252.0
     },
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
@@ -396,6 +396,18 @@
       "priority": 54.0
     },
     {
+      "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
+      "f1": "Nathaniel Wood",
+      "f2": "Pavel Andrusca",
+      "f1_movement": 21,
+      "f2_movement": -5,
+      "magnitude": 21,
+      "main_event": false,
+      "f1_prob_shift": -1.2,
+      "f2_prob_shift": 0.4,
+      "priority": 42.0
+    },
+    {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
       "f1": "Jean Silva",
       "f2": "Jose Delgado",
@@ -421,18 +433,6 @@
     },
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
-      "f1": "Nathaniel Wood",
-      "f2": "Pavel Andrusca",
-      "f1_movement": 19,
-      "f2_movement": -3,
-      "magnitude": 19,
-      "main_event": false,
-      "f1_prob_shift": -1.1,
-      "f2_prob_shift": 0.3,
-      "priority": 38.0
-    },
-    {
-      "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
       "f1": "Michael Page",
       "f2": "Nursulton Ruziboev",
       "f1_movement": -12,
@@ -441,6 +441,18 @@
       "main_event": false,
       "f1_prob_shift": 1.4,
       "f2_prob_shift": -2.6,
+      "priority": 34.0
+    },
+    {
+      "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
+      "f1": "Morgan Charriere",
+      "f2": "Felipe Lima",
+      "f1_movement": 16,
+      "f2_movement": -17,
+      "magnitude": 17,
+      "main_event": false,
+      "f1_prob_shift": -2.3,
+      "f2_prob_shift": 1.9,
       "priority": 34.0
     },
     {
@@ -454,18 +466,6 @@
       "f1_prob_shift": 0.3,
       "f2_prob_shift": 0.1,
       "priority": 30.8
-    },
-    {
-      "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
-      "f1": "Michael Aljarouj",
-      "f2": "Fabia Sintes",
-      "f1_movement": 15,
-      "f2_movement": -10,
-      "magnitude": 15,
-      "main_event": false,
-      "f1_prob_shift": -2.8,
-      "f2_prob_shift": 2.3,
-      "priority": 30.0
     },
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
@@ -504,18 +504,6 @@
       "priority": 26.6
     },
     {
-      "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
-      "f1": "Morgan Charriere",
-      "f2": "Felipe Lima",
-      "f1_movement": 13,
-      "f2_movement": -12,
-      "magnitude": 13,
-      "main_event": false,
-      "f1_prob_shift": -1.9,
-      "f2_prob_shift": 1.3,
-      "priority": 26.0
-    },
-    {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
       "f1": "Waldo Cortes-Acosta",
       "f2": "Curtis Blaydes",
@@ -538,6 +526,18 @@
       "f1_prob_shift": -0.9,
       "f2_prob_shift": 0.5,
       "priority": 22.0
+    },
+    {
+      "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
+      "f1": "Michael Aljarouj",
+      "f2": "Fabia Sintes",
+      "f1_movement": 10,
+      "f2_movement": -5,
+      "magnitude": 10,
+      "main_event": false,
+      "f1_prob_shift": -1.8,
+      "f2_prob_shift": 1.1,
+      "priority": 20.0
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
