@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T22:17:52Z",
+  "generated_at": "2026-09-05T03:51:19Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -5956,7 +5956,7 @@
         {
           "f1": "Dan Hooker",
           "f2": "Salahdine Parnasse",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -5992,6 +5992,11 @@
               "at": "2026-09-04T22:17:52Z",
               "f1_odds": 433,
               "f2_odds": -583
+            },
+            {
+              "at": "2026-09-05T03:51:19Z",
+              "f1_odds": 422,
+              "f2_odds": -572
             }
           ],
           "open": {
@@ -6005,7 +6010,7 @@
         {
           "f1": "Fares Ziam",
           "f2": "Axel Sola",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6041,6 +6046,11 @@
               "at": "2026-09-04T22:17:52Z",
               "f1_odds": -155,
               "f2_odds": 128
+            },
+            {
+              "at": "2026-09-05T03:51:19Z",
+              "f1_odds": -155,
+              "f2_odds": 129
             }
           ],
           "open": {
@@ -6054,7 +6064,7 @@
         {
           "f1": "Michael Page",
           "f2": "Nursulton Ruziboev",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6090,6 +6100,11 @@
               "at": "2026-09-04T22:17:52Z",
               "f1_odds": -203,
               "f2_odds": 170
+            },
+            {
+              "at": "2026-09-05T03:51:19Z",
+              "f1_odds": -197,
+              "f2_odds": 165
             }
           ],
           "open": {
@@ -6147,7 +6162,7 @@
         {
           "f1": "Morgan Charriere",
           "f2": "Felipe Lima",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6168,6 +6183,11 @@
               "at": "2026-09-04T22:17:52Z",
               "f1_odds": 166,
               "f2_odds": -203
+            },
+            {
+              "at": "2026-09-05T03:51:19Z",
+              "f1_odds": 168,
+              "f2_odds": -205
             }
           ],
           "open": {
@@ -6323,7 +6343,7 @@
         {
           "f1": "Oumar Sy",
           "f2": "Modestas Bukauskas",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6364,6 +6384,11 @@
               "at": "2026-09-04T22:17:52Z",
               "f1_odds": -234,
               "f2_odds": 190
+            },
+            {
+              "at": "2026-09-05T03:51:19Z",
+              "f1_odds": -239,
+              "f2_odds": 194
             }
           ],
           "open": {
@@ -6377,7 +6402,7 @@
         {
           "f1": "Michael Aljarouj",
           "f2": "Fabia Sintes",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6418,6 +6443,11 @@
               "at": "2026-09-04T22:17:52Z",
               "f1_odds": -122,
               "f2_odds": 101
+            },
+            {
+              "at": "2026-09-05T03:51:19Z",
+              "f1_odds": -123,
+              "f2_odds": 102
             }
           ],
           "open": {
@@ -6470,7 +6500,7 @@
         {
           "f1": "Delphine Benouaich",
           "f2": "Sofia Montenegro",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-09-01T16:39:34Z",
@@ -6506,6 +6536,11 @@
               "at": "2026-09-04T22:17:52Z",
               "f1_odds": -145,
               "f2_odds": 121
+            },
+            {
+              "at": "2026-09-05T03:51:19Z",
+              "f1_odds": -142,
+              "f2_odds": 119
             }
           ],
           "open": {
@@ -6569,7 +6604,7 @@
         {
           "f1": "Jean Silva",
           "f2": "Jose Delgado",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -6590,6 +6625,11 @@
               "at": "2026-09-04T16:06:23Z",
               "f1_odds": -415,
               "f2_odds": 312
+            },
+            {
+              "at": "2026-09-05T03:51:19Z",
+              "f1_odds": -410,
+              "f2_odds": 308
             }
           ],
           "open": {
@@ -6975,6 +7015,25 @@
             "at": "2026-09-01T15:34:15Z",
             "f1_odds": 191,
             "f2_odds": -230
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Drakkar Klose",
+          "f2": "Thomas Gantt",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-05T03:51:19Z",
+              "f1_odds": 371,
+              "f2_odds": -500
+            }
+          ],
+          "open": {
+            "at": "2026-09-05T03:51:19Z",
+            "f1_odds": 371,
+            "f2_odds": -500
           },
           "close": null,
           "clv": null
@@ -7684,7 +7743,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Axel Sola",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -156,
         "close": null,
         "clv": null
@@ -8533,7 +8592,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Michael Page",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 148,
         "close": null,
         "clv": null
@@ -10345,7 +10404,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Salahdine Parnasse",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": 435,
         "close": null,
         "clv": null
@@ -10356,7 +10415,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Dan Hooker",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": -615,
         "close": null,
         "clv": null
@@ -10367,7 +10426,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Fares Ziam",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 125,
         "close": null,
         "clv": null
@@ -10378,7 +10437,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Nursulton Ruziboev",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -185,
         "close": null,
         "clv": null
@@ -10400,7 +10459,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Felipe Lima",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 155,
         "close": null,
         "clv": null
@@ -10411,7 +10470,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Morgan Charriere",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -193,
         "close": null,
         "clv": null
@@ -10488,7 +10547,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Modestas Bukauskas",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -212,
         "close": null,
         "clv": null
@@ -10499,7 +10558,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Oumar Sy",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 168,
         "close": null,
         "clv": null
@@ -10510,7 +10569,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Fabia Sintes",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -138,
         "close": null,
         "clv": null
@@ -10521,7 +10580,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Michael Aljarouj",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 112,
         "close": null,
         "clv": null
@@ -10554,7 +10613,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Sofia Montenegro",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -151,
         "close": null,
         "clv": null
@@ -10565,7 +10624,7 @@
         "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
         "opponent": "Delphine Benouaich",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 122,
         "close": null,
         "clv": null
@@ -10598,7 +10657,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Jose Delgado",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -407,
         "close": null,
         "clv": null
@@ -10609,7 +10668,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Jean Silva",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 320,
         "close": null,
         "clv": null
@@ -10820,6 +10879,28 @@
         "side": "f2",
         "points": 2,
         "open": -230,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Drakkar Klose": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Thomas Gantt",
+        "side": "f1",
+        "points": 1,
+        "open": 371,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Thomas Gantt": [
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Drakkar Klose",
+        "side": "f2",
+        "points": 1,
+        "open": -500,
         "close": null,
         "clv": null
       }

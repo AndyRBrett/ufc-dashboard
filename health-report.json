@@ -1,36 +1,88 @@
 {
-  "generated_at": "2026-09-04T22:17:52Z",
+  "generated_at": "2026-09-05T03:51:19Z",
   "summary": {
     "events": 14,
     "block": 0,
-    "warn": 3
+    "warn": 9
   },
   "findings": [
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (1d out): 1 of 14 bouts have no odds",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (0d out): 1 of 14 bouts have no odds",
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
-      "days_out": 1
+      "days_out": 0
+    },
+    {
+      "severity": "WARN",
+      "check": "odds-missing-some",
+      "message": "UFC Fight Night: Silva vs. Delgado (7d out): 1 of 13 bouts have no odds",
+      "event": "UFC Fight Night: Silva vs. Delgado",
+      "date": "2026-09-12",
+      "days_out": 7
+    },
+    {
+      "severity": "WARN",
+      "check": "odds-missing-some",
+      "message": "UFC 331: Van vs. Pantoja 2 (14d out): 3 of 13 bouts have no odds",
+      "event": "UFC 331: Van vs. Pantoja 2",
+      "date": "2026-09-19",
+      "days_out": 14
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (1d out): Klaudia Sygua has no record",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (0d out): Klaudia Sygua has no record",
       "fighter": "Klaudia Sygua",
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
-      "days_out": 1
+      "days_out": 0
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (1d out): Klaudia Sygua stats lookup failed (2026-09-04)",
+      "message": "UFC Fight Night: Hooker vs. Parnasse (0d out): Klaudia Sygua stats lookup failed (2026-09-04)",
       "fighter": "Klaudia Sygua",
       "event": "UFC Fight Night: Hooker vs. Parnasse",
       "date": "2026-09-05",
-      "days_out": 1
+      "days_out": 0
+    },
+    {
+      "severity": "WARN",
+      "check": "record-blank",
+      "message": "UFC Fight Night: Silva vs. Delgado (7d out): Thomas Gantt has no record",
+      "fighter": "Thomas Gantt",
+      "event": "UFC Fight Night: Silva vs. Delgado",
+      "date": "2026-09-12",
+      "days_out": 7
+    },
+    {
+      "severity": "WARN",
+      "check": "stats-fetch-failed",
+      "message": "UFC Fight Night: Silva vs. Delgado (7d out): Thomas Gantt stats lookup failed (2026-09-05)",
+      "fighter": "Thomas Gantt",
+      "event": "UFC Fight Night: Silva vs. Delgado",
+      "date": "2026-09-12",
+      "days_out": 7
+    },
+    {
+      "severity": "WARN",
+      "check": "record-blank",
+      "message": "UFC Fight Night: Silva vs. Delgado (7d out): Rong Zhu has no record",
+      "fighter": "Rong Zhu",
+      "event": "UFC Fight Night: Silva vs. Delgado",
+      "date": "2026-09-12",
+      "days_out": 7
+    },
+    {
+      "severity": "WARN",
+      "check": "stats-fetch-failed",
+      "message": "UFC Fight Night: Silva vs. Delgado (7d out): Rong Zhu stats lookup failed (2026-09-05)",
+      "fighter": "Rong Zhu",
+      "event": "UFC Fight Night: Silva vs. Delgado",
+      "date": "2026-09-12",
+      "days_out": 7
     }
   ]
 }
