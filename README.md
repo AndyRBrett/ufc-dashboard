@@ -230,9 +230,77 @@ on exhaustion, since a dead key needs a human and a spent quota fixes itself.
 | Every 4h Thu–Sat | Fight-week churn — late replacements and withdrawals |
 | Every 5 min during fight windows (Sat and Sun US prime time) | Live results and result pushes |
 
-GitHub throttles `schedule:` cron hard during busy periods, so the
-`kick-scraper` edge function also dispatches the workflow via the API on an
-external schedule, which is not throttled the same way.
+GitHub throttles `schedule:` cron hard during busy periods — during one Saturday
+window ~6 of ~96 expected runs fired — so the `kick-scraper` edge function also
+dispatches the workflow via the API on an external schedule, which is not
+throttled the same way. It runs on **cron-job.org** every 5 minutes, with
+`scheduled-push.yml` pinging it as a throttled backup.
+
+### Diagnosing a stale fight card
+
+The card and the notifications ride **different clocks**, and that asymmetry is
+the whole diagnostic. Results reach a phone through `check-results` → `send-push`
+within ~2 minutes. The card in the app only changes when `data.js` is rebuilt by
+`update.yml`. So *pushes arriving while the card sits still* does not mean the
+pipeline is fine — it means the two paths have diverged, and only the scraper's
+trigger chain is broken.
+
+That chain has three links outside the repo, each of which fails silently:
+
+| Link | How it dies | What you see |
+| --- | --- | --- |
+| the cron-job.org job | auto-disabled after enough consecutive failures | nothing, until the provider emails you |
+| `CRON_SECRET` | rotated in one place, not the others | `401` at the provider |
+| `GH_DISPATCH_TOKEN` | revoked, rescoped, or SSO lapsed | `502` at the provider |
+
+Start at the symptom that is actually load-bearing: **`workflow_dispatch` runs of
+`update.yml`.** Filter the Actions tab by that event. Scheduled runs keep
+appearing regardless and will mislead you; only API-dispatched runs prove the
+chain works. If the newest one is hours old — or, on a fight day, older than five
+minutes — the chain is down and the card is coasting on throttled `schedule:`
+runs alone.
+
+Then read the status code in the cron-job.org job's execution history, because
+`kick-scraper` encodes the fault in it:
+
+- **`502`** — it authenticated, passed the live-card guard and reached GitHub,
+  which refused the dispatch. In practice `GH_DISPATCH_TOKEN` is dead. The 502
+  body carries GitHub's own status (`401` revoked, `403` SSO or permissions,
+  `404` no repo access) plus a `hint`; click through to the response body rather
+  than guessing which. A `403` is *not* fixed by minting a new token.
+- **`401`** — inbound auth. Either `CRON_SECRET` no longer matches, or the job is
+  using a `?key=` URL against a function that takes the header only (below).
+- **`200`** — the function is healthy. Note this covers *both* a real dispatch
+  and the live-card guard declining with `{"dispatched":false}` on an off-day, so
+  a green row is not by itself proof the card is refreshing. Pair it with the
+  Actions check above.
+
+Confirm a fix end to end with a forced dispatch, which bypasses the guard:
+
+```bash
+curl -XPOST ".../functions/v1/kick-scraper?key=$CRON_SECRET&force=1"
+# {"ok":true,"dispatched":true} — then update.yml shows a workflow_dispatch run
+```
+
+Do not leave `force=1` in the scheduled URL: off-days it dispatches the scraper
+every 5 minutes and spends odds quota the guard exists to protect.
+
+**Cron auth is header-only except for `kick-scraper`.** `check-results` and
+`send-reminders` read `CRON_SECRET` from `Authorization: Bearer` and never look
+at the query string, so a job still configured with a `?key=` URL returns `401`
+on every ping. Because `scheduled-push.yml` hits the same two functions with the
+header, pushes keep arriving and nothing looks wrong — the failure is visible
+only in the cron-job.org dashboard. `kick-scraper` still accepts `?key=`, and
+only until `CRON_ALLOW_QUERY_KEY=0` is set; set that without first moving the job
+to a header and you have re-created the outage as a `401`.
+
+**A dead trigger is loud now, but the dependency is real.** `scheduled-push.yml`
+pings `kick-scraper` alongside the push functions and fails its run on a `502`,
+naming `GH_DISPATCH_TOKEN`, so GitHub emails you within the hour instead of the
+break sitting unseen. That is alerting and a floor, not redundancy: GitHub's
+throttling is precisely why `kick-scraper` exists, so the backup fires every few
+hours at best. While the external cron is down the card degrades to *hours
+stale*, not *current*.
 
 ---
 
