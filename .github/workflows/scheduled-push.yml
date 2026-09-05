@@ -5,6 +5,15 @@ name: Scheduled Push Triggers
 # scheduler can run a few minutes late, which is harmless here: send-reminders
 # has a 1-hour lead window and check-results dedups via notif_log, so a late or
 # duplicate run never double-notifies.
+#
+# kick-scraper is here as a backup too, even though its whole reason for
+# existing is that this scheduler is throttled. cron-job.org disabled the
+# kick-scraper job after 26 consecutive failures on 2026-09-05 — a fight day —
+# and because that job was its ONLY trigger, the app's fight card fell back to
+# whatever `update.yml`'s throttled `schedule:` managed (~4-5 hours apart).
+# A throttled backup is worth far more than no backup: it keeps the card moving,
+# and the step below turns a dead GH_DISPATCH_TOKEN into a failed run GitHub
+# emails about, instead of silence until the cron provider gives up.
 
 on:
   schedule:
@@ -41,4 +50,20 @@ jobs:
           code=$(curl -s -o /tmp/c.json -w '%{http_code}' -X POST "$BASE/check-results" \
             -H "Authorization: Bearer $CRON_SECRET" -H "Content-Type: application/json")
           echo "check-results -> HTTP $code"; cat /tmp/c.json || true; echo
+          test "$code" -ge 200 && test "$code" -lt 300
+      # Header auth, not ?key= — SECURITY.md wants the query-string secret gone,
+      # and nothing here needs the header-free form cron-job.org requires.
+      - name: Trigger kick-scraper
+        if: always()
+        run: |
+          code=$(curl -s -o /tmp/k.json -w '%{http_code}' -X POST "$BASE/kick-scraper" \
+            -H "Authorization: Bearer $CRON_SECRET" -H "Content-Type: application/json")
+          echo "kick-scraper -> HTTP $code"; cat /tmp/k.json || true; echo
+          # 200 covers both real outcomes: dispatched, or the live-card guard
+          # declining on an off-day. A 502 means GitHub refused the dispatch,
+          # which in practice means GH_DISPATCH_TOKEN is revoked or rescoped.
+          if [ "$code" = "502" ]; then
+            echo "::error::kick-scraper could not dispatch update.yml (HTTP 502). GH_DISPATCH_TOKEN is likely revoked or rescoped — see supabase/functions/kick-scraper/README.md. App fight cards will go stale while push notifications keep working."
+            exit 1
+          fi
           test "$code" -ge 200 && test "$code" -lt 300

@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
   }
 
   // Inbound auth: only a caller that knows CRON_SECRET may trigger this. Accept
-  // it either as `Authorization: Bearer <secret>` (GitHub Actions) or a ?key=
+  // it header-only: `Authorization: Bearer <secret>`. The ?key= form was removed
   // query param (so external cron UIs work without custom headers).
   // Header-only. A secret in the query string is written to every log that
   // records a URL — Supabase's own edge logs, any proxy in front of them, and

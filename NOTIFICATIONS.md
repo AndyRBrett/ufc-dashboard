@@ -95,13 +95,19 @@ In-database `pg_cron` is **not** used: this project's `pg_net` can't queue
 requests ("Quote command returned error") and `pgaudit` blocks updating the
 extension. Scheduling is external, with redundancy:
 
-1. **cron-job.org (primary)** — one job per function, every **2 min**, no custom
-   headers, secret in the URL:
-   - `…/functions/v1/check-results?key=<CRON_SECRET>`
-   - `…/functions/v1/send-reminders?key=<CRON_SECRET>`
+1. **cron-job.org (primary)** — one job per function, every **2 min**, each
+   sending `Authorization: Bearer <CRON_SECRET>` as a custom request header:
+   - `…/functions/v1/check-results`
+   - `…/functions/v1/send-reminders`
+
+   > ⚠️ These two reject `?key=` — they read the header only. A job still
+   > configured with a `?key=` URL returns 401 on every ping, and because
+   > `scheduled-push.yml` covers them with the header, pushes keep working and
+   > nothing looks broken. Only `kick-scraper` accepts `?key=`.
 2. **GitHub Actions (backup)** — `.github/workflows/scheduled-push.yml`, every
-   **5 min**, POSTs both with the `Authorization: Bearer` header (repo secret
-   `CRON_SECRET`).
+   **5 min**, POSTs all three (including `kick-scraper`) with the
+   `Authorization: Bearer` header (repo secret `CRON_SECRET`). GitHub throttles
+   `schedule:` heavily, so treat this as "hours, not minutes" cover.
 
 Both can run at once safely — `notif_log` dedup collapses the overlap. This
 removes any single dependency on GitHub Actions' scheduler (which throttles).
@@ -127,8 +133,8 @@ timeout. **Not near any cron-job.org limit.**
 **Supabase Edge Functions (free tier = 500,000 invocations/mo):** the real
 ceiling to watch. Tally of everything that hits a function:
 - cron-job.org pings: ~1,730/day
-- GitHub Actions backup (`scheduled-push.yml`, check-results + send-reminders
-  every 5 min): ~575/day
+- GitHub Actions backup (`scheduled-push.yml`, check-results + send-reminders +
+  kick-scraper every 5 min, heavily throttled in practice): ~860/day nominal
 - occasional `send-push` calls during live events
 
 ≈ **~2,300/day ≈ ~70k/mo ≈ 14% of the 500k free allotment** — comfortable
@@ -211,6 +217,7 @@ easy to misdiagnose; match here first:
 | **`check-results` test returns `UNAUTHORIZED_INVALID_JWT_FORMAT`** | function lost its `--no-verify-jwt` (e.g. redeployed without the flag) | `deploy-functions.yml` | Redeploy with `--no-verify-jwt` (already in the workflow). |
 | **Result pushes stop entirely / `send-push` 401s** | legacy `SB_ANON_KEY` / `SB_SERVICE_ROLE_KEY` revoked or rotated | Supabase secrets + `index.html` client key | Reissue keys and update (see legacy-key note below). |
 | **Scraper `update.yml` fails the odds step** | `ODDS_API_KEY` quota exhausted or key expired | GitHub repo secret | Top up / reissue the odds API key. |
+| **App fight cards stale and `update.yml` shows no `workflow_dispatch` runs at all** | **the cron-job.org job was auto-disabled** after too many consecutive failures (happened 2026-09-05, 26 failures) | cron-job.org dashboard | Re-enable the job. Its failure history gives the status codes — a run of 502s means `GH_DISPATCH_TOKEN` (row above); timeouts mean the function was slow, not broken. |
 
 **Fast triage:** notifications working but the **app card** stale → it's almost
 always the **`GH_DISPATCH_TOKEN`** (it gates only the scraper relay, not the push
