@@ -37,7 +37,9 @@ gateway doesn't reject the cron's non-JWT bearer before the function runs.
 Inbound auth is enforced here via `CRON_SECRET`, accepted **either** way:
 
 - `Authorization: Bearer <CRON_SECRET>` header (used by GitHub Actions), **or**
-- a `?key=<CRON_SECRET>` query param (used by cron-job.org — no custom headers).
+- ~~a `?key=<CRON_SECRET>` query param~~ — **removed.** This function is
+  header-only now (see the auth check in `index.ts`). The cron-job.org job must
+  send the header, not `?key=`.
 
 Anything else → 401. Outbound (this function → `send-push`) uses the public anon
 key `SB_ANON_KEY`, exactly like the web client.
@@ -59,10 +61,11 @@ requests ("Quote command returned error") and `pgaudit` blocks updating it, so
 in-database cron is dead here. Two redundant triggers drive it instead, and
 `send-push`'s `notif_log` dedup makes the overlap free:
 
-1. **cron-job.org (primary)** — one job per function, every 2 min, **no
-   headers**, just the URL with the secret in the query string:
+1. **cron-job.org (primary)** — one job per function, every 2 min, with a
+   custom request header (`?key=` is rejected — see Auth above):
    ```
-   https://<project-ref>.supabase.co/functions/v1/send-reminders?key=<CRON_SECRET>
+   URL:    https://<project-ref>.supabase.co/functions/v1/send-reminders
+   Header: Authorization: Bearer <CRON_SECRET>
    ```
 2. **GitHub Actions (backup)** — `.github/workflows/scheduled-push.yml`, every
    5 min, POSTs with the `Authorization: Bearer` header (repo secret

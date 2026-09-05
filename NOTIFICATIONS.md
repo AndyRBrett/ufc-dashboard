@@ -95,10 +95,15 @@ In-database `pg_cron` is **not** used: this project's `pg_net` can't queue
 requests ("Quote command returned error") and `pgaudit` blocks updating the
 extension. Scheduling is external, with redundancy:
 
-1. **cron-job.org (primary)** — one job per function, every **2 min**, no custom
-   headers, secret in the URL:
-   - `…/functions/v1/check-results?key=<CRON_SECRET>`
-   - `…/functions/v1/send-reminders?key=<CRON_SECRET>`
+1. **cron-job.org (primary)** — one job per function, every **2 min**, each
+   sending `Authorization: Bearer <CRON_SECRET>` as a custom request header:
+   - `…/functions/v1/check-results`
+   - `…/functions/v1/send-reminders`
+
+   > ⚠️ These two reject `?key=` — they read the header only. A job still
+   > configured with a `?key=` URL returns 401 on every ping, and because
+   > `scheduled-push.yml` covers them with the header, pushes keep working and
+   > nothing looks broken. Only `kick-scraper` accepts `?key=`.
 2. **GitHub Actions (backup)** — `.github/workflows/scheduled-push.yml`, every
    **5 min**, POSTs all three (including `kick-scraper`) with the
    `Authorization: Bearer` header (repo secret `CRON_SECRET`). GitHub throttles
