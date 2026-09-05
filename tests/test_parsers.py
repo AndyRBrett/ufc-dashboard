@@ -1414,12 +1414,59 @@ def test_odds_card_start_et_empty_without_a_match():
         {"f1": {"name": "Dan Hooker"}, "f2": {"name": "Salahdine Parnasse"}}], "2026-09-05") == ""
 
 
-def test_warn_if_odds_disagree_fires_only_on_a_segment_sized_gap():
-    # The Paris bug: prelims published at 09:00, bookmakers say 12:00.
-    assert scrape.warn_if_odds_disagree_on_time("ev", "09:00", "12:00")
-    # Within a segment — nominal-start noise, not a bug.
-    assert not scrape.warn_if_odds_disagree_on_time("ev", "12:00", "13:00")
-    assert not scrape.warn_if_odds_disagree_on_time("ev", "12:00", "12:00")
-    # Nothing to compare against never warns.
-    assert not scrape.warn_if_odds_disagree_on_time("ev", "TBD", "12:00")
-    assert not scrape.warn_if_odds_disagree_on_time("ev", "12:00", "")
+def test_reconcile_keeps_an_anchored_time_even_when_odds_disagree():
+    """A venue with a real slot behind it is not overruled by commence_time —
+    bookmakers stamp nominal starts, and the slot is deterministic."""
+    assert scrape.reconcile_times_with_odds(
+        "ev", "Paris", "15:00", "12:00", "09:00") == ("15:00", "12:00")
+    assert scrape.reconcile_times_with_odds(
+        "ev", "Las Vegas", "20:00", "17:00", "13:00") == ("20:00", "17:00")
+
+
+def test_reconcile_corrects_an_unanchored_time_from_the_odds_feed():
+    """The UFC 331 hole: a venue in no region has nothing checking ESPN, so a
+    second independent source wins."""
+    assert scrape.reconcile_times_with_odds(
+        "UFC Fight Night: A vs. B", "Atlantis", "17:00", "15:00", "19:00"
+    ) == ("22:00", "19:00")          # Fight Night → 3h main-card offset
+
+
+def test_reconcile_uses_the_ppv_offset_when_correcting():
+    assert scrape.reconcile_times_with_odds(
+        "UFC 340: A vs. B", "Atlantis", "17:00", "15:00", "19:00"
+    ) == ("21:00", "19:00")          # PPV → 2h offset
+
+
+def test_reconcile_is_a_noop_within_tolerance_or_without_data():
+    same = ("20:00", "17:00")
+    assert scrape.reconcile_times_with_odds("ev", "Atlantis", *same, "18:00") == same
+    assert scrape.reconcile_times_with_odds("ev", "Atlantis", *same, "17:00") == same
+    assert scrape.reconcile_times_with_odds("ev", "Atlantis", *same, "") == same
+    assert scrape.reconcile_times_with_odds(
+        "ev", "Atlantis", "TBD", "TBD", "19:00") == ("TBD", "TBD")
+
+
+def test_shift_hhmm_wraps_at_midnight():
+    assert scrape._shift_hhmm("19:00", 2) == "21:00"
+    assert scrape._shift_hhmm("23:30", 3) == "02:30"
+
+
+# --- venue anchoring -------------------------------------------------------
+
+def test_los_angeles_is_recognised_as_a_us_venue():
+    """UFC 331 shipped 4h early because "Los Angeles" was missing and data.js
+    stores a bare city, so the "California" alternative never matched."""
+    assert scrape.classify_region("Los Angeles") == "us"
+    assert scrape._event_times("UFC 331: Van vs. Pantoja 2", "Los Angeles") == \
+        ("21:00", "19:00")
+
+
+def test_classify_region_labels_each_slot_family():
+    assert scrape.classify_region("Las Vegas") == "us"
+    assert scrape.classify_region("Edmonton") == "us"      # Canada shares the ET slots
+    assert scrape.classify_region("Paris") == "europe"
+    assert scrape.classify_region("Shanghai") == "asia"
+    assert scrape.classify_region("Abu Dhabi") == "mideast"
+    # The dangerous case: anchored to nothing.
+    assert scrape.classify_region("Atlantis") == ""
+    assert scrape.classify_region("") == ""

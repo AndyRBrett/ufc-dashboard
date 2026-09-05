@@ -160,8 +160,8 @@ var EVENTS=[
     loc:"Los Angeles",
     slug:"UFC_331",
     tv:"Paramount+",
-    time:"17:00",
-    prelimTime:"15:00",
+    time:"21:00",
+    prelimTime:"19:00",
     fights:[
       {lbl:"Main Event",wc:"Flyweight",title:true,rematch:true,odds:{f1:-115,f2:-109},winner:"",method:"",round:null,state:"pre",f1:{n:"Joshua Van",r:"17-2-0",rk:"C",s:null},f2:{n:"Alexandre Pantoja",r:"30-6-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Lightweight",title:false,rematch:true,odds:{f1:-378,f2:282},winner:"",method:"",round:null,state:"pre",f1:{n:"Arman Tsarukyan",r:"23-3-0",rk:"",s:null},f2:{n:"Mauricio Ruffy",r:"14-2-0",rk:"",s:null}},

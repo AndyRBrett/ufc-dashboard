@@ -466,6 +466,15 @@ _US_REGIONS = re.compile(
     r"Cleveland|Milwaukee|Des Moines|Louisville|Memphis|Albuquerque|Portland|"
     r"Seattle|San Diego|San Jose|San Francisco|Oakland|Fresno|Long Beach|"
     r"Rosemont|Elmont|Uniondale|Sioux Falls|Omaha|Boise|Honolulu|"
+    # Added after UFC 331 (Crypto.com Arena) shipped 4h early: "Los Angeles"
+    # was absent, and because data.js stores a BARE city ("Los Angeles", not
+    # "Los Angeles, California") the "California" alternative above never
+    # matched. The card fell through to ESPN unclamped. Any host city missing
+    # from this list is silently unanchored, so health.py now WARNs on a venue
+    # that matches no region at all rather than waiting for someone to notice.
+    r"Los Angeles|Dallas|Fort Worth|Arlington|Atlantic City|Uncasville|"
+    r"Lincoln|Raleigh|Greenville|Norfolk|Rochester|Wichita|Tulsa|Spokane|"
+    r"Stockton|Sunrise|Bakersfield|Fairfax|Broomfield|Cedar Park|"
     # Canada uses the same fixed-ET broadcast slots
     r"Canada|Vancouver|Toronto|Montreal|Edmonton|Calgary|Ottawa|Winnipeg|"
     r"Quebec City|Halifax|Saskatoon|Ontario)\b",
@@ -576,6 +585,25 @@ _INTL_REGION_SLOTS = [
         r"Peru|Lima|Colombia|Bogota)\b", re.IGNORECASE),
      ("20:00", "17:00")),   # same-hemisphere cards use the US-style evening slot
 ]
+
+
+def classify_region(loc):
+    """Which broadcast-slot family a location belongs to.
+
+    Returns "us" for US/Canada (fixed ET slot), an _INTL_REGION_SLOTS label for
+    a known international region, or "" when the venue is anchored to nothing.
+
+    That last case is the dangerous one: with no slot to compare against there
+    is no way to tell a good ESPN time from one describing the wrong segment,
+    which is exactly how UFC 331 shipped four hours early. Callers are expected
+    to treat "" as "this time is unverified".
+    """
+    if _US_REGIONS.search(loc or ""):
+        return "us"
+    for label, rx, _ in _INTL_REGION_SLOTS:
+        if rx.search(loc or ""):
+            return label
+    return ""
 
 
 def _regional_default_times(loc):
@@ -1240,22 +1268,59 @@ def odds_card_start_et(odds_index, card, ev_date):
 _ODDS_TIME_TOLERANCE_H = 2
 
 
-def warn_if_odds_disagree_on_time(ev_name, resolved_prelim, odds_start):
-    """Warn when the bookmakers' card start contradicts the resolved prelim
-    time by more than a segment. Returns True when a warning was emitted."""
-    if not odds_start or not resolved_prelim or resolved_prelim == "TBD":
-        return False
-    apart = _hours_apart(resolved_prelim, odds_start)
+def reconcile_times_with_odds(ev_name, loc, main, prelim, odds_start):
+    """Reconcile resolved ET times against the bookmakers' card start.
+
+    Returns the (main, prelim) to publish.
+
+    What happens on a disagreement depends on whether the venue is anchored to
+    a known broadcast slot:
+
+    * Anchored (US/Canada or a mapped international region) — WARN only. The
+      slot is a deterministic expectation and commence_time is a nominal start
+      that bookmakers sometimes stamp across a whole card, so it is not allowed
+      to overrule a real anchor.
+    * Unanchored (``classify_region`` returns "") — CORRECT to the odds feed.
+      Here the published time came from ESPN with nothing to check it against,
+      which is precisely the UFC 331 failure. A second independent source
+      beats an unverified one, so the odds start becomes the prelim time and
+      the main card is derived from it by the standard segment offset.
+
+    Correcting only the unanchored case keeps the deterministic paths fully
+    deterministic: a run where the odds pull was skipped resolves those cards
+    identically to one where it ran.
+    """
+    if not odds_start or not prelim or prelim == "TBD":
+        return main, prelim
+    apart = _hours_apart(prelim, odds_start)
     if apart is None or apart <= _ODDS_TIME_TOLERANCE_H:
-        return False
+        return main, prelim
+    region = classify_region(loc)
+    if region:
+        print(
+            f"WARNING: {ev_name} — prelims resolved to {prelim} ET but the odds "
+            f"feed has the card starting {odds_start} ET ({apart:.0f}h apart). "
+            f"Keeping {prelim} because the {region} slot anchors it; check the "
+            f"published start, and pin _TIME_OVERRIDES if the feed is right.",
+            file=sys.stderr,
+        )
+        return main, prelim
+    new_main = _shift_hhmm(odds_start, _prelim_offset_hours(ev_name))
     print(
-        f"WARNING: {ev_name} — prelims resolved to {resolved_prelim} ET but the "
-        f"odds feed has the card starting {odds_start} ET ({apart:.0f}h apart). "
-        f"Two independent sources disagree by more than a segment; check the "
-        f"published start before trusting the dashboard clock.",
+        f"WARNING: {ev_name} (loc={loc!r}) — prelims resolved to {prelim} ET "
+        f"with no regional slot to verify it, and the odds feed disagrees by "
+        f"{apart:.0f}h. Correcting to the odds feed: prelims {odds_start} ET, "
+        f"main {new_main} ET. Add {loc!r} to _US_REGIONS or _INTL_REGION_SLOTS "
+        f"so this card is anchored rather than inferred.",
         file=sys.stderr,
     )
-    return True
+    return new_main, odds_start
+
+
+def _shift_hhmm(hhmm, hours):
+    """"HH:MM" shifted by *hours*, wrapping at midnight."""
+    h, m = (int(x) for x in hhmm.split(":")[:2])
+    return f"{(h + hours) % 24:02d}:{m:02d}"
 
 
 _odds_requests_remaining = None   # last x-requests-remaining seen from the Odds API
@@ -2771,8 +2836,9 @@ def step_build_events(data, now):
             src_counts[src] = src_counts.get(src, 0) + 1
         print(f"  Odds sources for {ev_name}: {src_counts}", file=sys.stderr)
         # Free second opinion on the clock, from the payload already fetched.
-        warn_if_odds_disagree_on_time(
-            ev_name, prelim_time, odds_card_start_et(odds_index, card, ev_date))
+        main_time, prelim_time = reconcile_times_with_odds(
+            ev_name, loc, main_time, prelim_time,
+            odds_card_start_et(odds_index, card, ev_date))
         new_events.append({
             "name":        ev_name,
             "date":        ev_date,
