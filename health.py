@@ -65,6 +65,11 @@ ODDS_STALE_HOURS = 36
 ODDS_QUOTA_WARN = 50
 
 EVENT_RE = re.compile(r'name:"([^"]+)",\s*\n\s*date:"(\d{4}-\d{2}-\d{2})"')
+# The clock fields, read per-event segment. Optional by design: an event that
+# predates them, or one written without a prelim slot, must still parse.
+LOC_RE        = re.compile(r'\n\s*loc:"([^"]*)"')
+TIME_RE       = re.compile(r'\n\s*time:"([^"]*)"')
+PRELIM_TIME_RE = re.compile(r'\n\s*prelimTime:"([^"]*)"')
 # One serialised bout, as written by events_js.
 FIGHT_RE = re.compile(
     r'\{lbl:"(?P<lbl>[^"]*)",wc:"(?P<wc>[^"]*)".*?'
@@ -100,7 +105,16 @@ def parse_data(text):
             }
             for g in (mm.groupdict() for mm in FIGHT_RE.finditer(seg))
         ]
-        events.append({"name": m.group(1), "date": m.group(2), "fights": fights})
+        def field(rx):
+            mm = rx.search(seg)
+            return mm.group(1) if mm else ""
+
+        events.append({
+            "name": m.group(1), "date": m.group(2), "fights": fights,
+            "loc": field(LOC_RE),
+            "time": field(TIME_RE),
+            "prelimTime": field(PRELIM_TIME_RE),
+        })
     return events
 
 
@@ -120,6 +134,33 @@ def days_out(date_str, today):
     except ValueError:
         return None
     return (d - today).days
+
+
+_REGION_FN = "unset"
+
+
+def _region_of(loc):
+    """Slot family for *loc* via scrape.classify_region: "us", a region label,
+    or "" when the venue is anchored to nothing.
+
+    Returns None — which every caller treats as "no opinion" — when scrape.py
+    cannot be imported. health.py is otherwise dependency-free and is run
+    standalone in places scrape's third-party deps aren't installed; a missing
+    import must degrade this one check, not crash the whole gate.
+    """
+    global _REGION_FN
+    if _REGION_FN == "unset":
+        try:
+            from scrape import classify_region
+            _REGION_FN = classify_region
+        except Exception:
+            _REGION_FN = None
+    if _REGION_FN is None:
+        return None
+    try:
+        return _REGION_FN(loc)
+    except Exception:
+        return None
 
 
 def _has_fight_data(st):
@@ -162,6 +203,7 @@ def check(text, baseline_text=None, now=None, odds_state=None):
         add("BLOCK", "no-upcoming", "data.js lists no future event")
 
     # Card regression against the currently-published data.js.
+    base = {}
     if baseline_text:
         base = {(e["name"], e["date"]): e for e in parse_data(baseline_text)}
         for ev in upcoming:
@@ -170,6 +212,47 @@ def check(text, baseline_text=None, now=None, odds_state=None):
                 add("BLOCK", "card-regression",
                     f"{ev['name']} dropped from {len(prev['fights'])} bouts to "
                     f"{len(ev['fights'])} — refusing to publish a shrunken card",
+                    event=ev["name"], date=ev["date"])
+
+    # --- start times ------------------------------------------------------
+    #
+    # The clock had no gate at all until UFC 331 shipped four hours early and
+    # Paris three hours early on the same weekend. Both were silent: every other
+    # check was green because the bouts, odds and records were all fine. These
+    # are WARN, never BLOCK — a wrong time is bad, but refusing to publish
+    # during a card also blocks the live results everyone is watching.
+    for ev in upcoming:
+        d = days_out(ev["date"], today)
+        label = f"{ev['name']} ({d}d out)"
+
+        if not ev["time"] or ev["time"] == "TBD":
+            if d is not None and d <= IMMINENT_DAYS:
+                add("WARN", "start-time-missing",
+                    f"{label}: no main-card start time — the card shows TBD to users",
+                    event=ev["name"], date=ev["date"])
+        elif _region_of(ev["loc"]) == "":
+            # No slot anchors this venue, so nothing cross-checks whatever ESPN
+            # returned. This is the UFC 331 hole: a host city missing from
+            # _US_REGIONS is invisible until someone reads the clock by hand.
+            add("WARN", "start-time-unanchored",
+                f"{label}: venue {ev['loc']!r} matches no known region, so its "
+                f"{ev['time']} ET start is unverified — add it to _US_REGIONS "
+                f"or _INTL_REGION_SLOTS",
+                event=ev["name"], date=ev["date"])
+
+        # A start time that MOVED between runs is either a real reschedule or
+        # the scraper changing its mind; both are worth a human look, and a
+        # silent shift is exactly how the wrong clock reached users.
+        if baseline_text:
+            prev = base.get((ev["name"], ev["date"]))
+            if prev and prev.get("time") and ev["time"] != prev["time"]:
+                add("WARN", "start-time-changed",
+                    f"{label}: main-card start moved {prev['time']} → {ev['time']} ET",
+                    event=ev["name"], date=ev["date"])
+            if prev and prev.get("prelimTime") and ev["prelimTime"] != prev["prelimTime"]:
+                add("WARN", "start-time-changed",
+                    f"{label}: prelim start moved {prev['prelimTime']} → "
+                    f"{ev['prelimTime']} ET",
                     event=ev["name"], date=ev["date"])
 
     # --- odds coverage, over the wider odds-expected window (#66) ----------

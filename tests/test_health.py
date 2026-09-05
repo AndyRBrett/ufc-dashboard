@@ -24,13 +24,19 @@ def fight(f1, f2, *, f1r="10-0-0", f2r="9-1-0", odds='{f1:-150,f2:130}',
             f'f2:{{n:"{f2}",r:"{f2r}",rk:"",s:null}}}}')
 
 
-def data_js(events, stats="{}"):
-    """Build a data.js whose shape matches what events_js actually serialises."""
+def data_js(events, stats="{}", loc="Las Vegas", time="20:00", prelim="17:00"):
+    """Build a data.js whose shape matches what events_js actually serialises.
+
+    time/prelimTime are written by default because events_js always writes them
+    — a fixture without them is not a "healthy" card, it is one whose clock is
+    missing, which health.check now (correctly) reports.
+    """
     blocks = []
     for name, date, fights in events:
         blocks.append(
             f'  {{\n    name:"{name}",\n    date:"{date}",\n'
-            f'    venue:"Apex",\n    loc:"Las Vegas",\n'
+            f'    venue:"Apex",\n    loc:"{loc}",\n'
+            f'    tv:"Paramount+",\n    time:"{time}",\n    prelimTime:"{prelim}",\n'
             f'    fights:[\n      ' + ",\n      ".join(fights) + "\n    ]\n  }"
         )
     return (f"var FIGHTER_STATS={stats};\n"
@@ -248,3 +254,73 @@ def test_yesterdays_card_is_not_checked():
                      [fight("A", "B", f1r="", odds="null")])])
     findings, summary = health.check(text, now=NOW)
     assert summary["warn"] == 0
+
+
+# --- the clock ------------------------------------------------------------
+#
+# There was no gate on start times at all until UFC 331 shipped 4h early and
+# Paris 3h early on the same weekend. Both were invisible: bouts, odds and
+# records were all healthy, so every existing check was green.
+
+def test_missing_start_time_on_imminent_card_warns_only():
+    text = data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])],
+                   time="TBD", prelim="TBD")
+    findings, summary = health.check(text, now=NOW)
+    assert "start-time-missing" in kinds(findings, "WARN")
+    # Never blocks — a wrong clock must not freeze live results mid-card.
+    assert summary["block"] == 0
+
+
+def test_missing_start_time_on_a_distant_card_is_silent():
+    # A card 12 weeks out has legitimately not been scheduled to the hour yet.
+    text = data_js([("UFC 340: A vs. B", "2026-11-01", [fight("A", "B")])],
+                   time="TBD", prelim="TBD")
+    findings, _ = health.check(text, now=NOW)
+    assert "start-time-missing" not in kinds(findings)
+
+
+def test_unanchored_venue_warns_that_the_time_is_unverified():
+    """The UFC 331 hole: a host city in no region has nothing cross-checking
+    whatever ESPN returned, and stayed silent until read by hand."""
+    text = data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])],
+                   loc="Atlantis")
+    findings, summary = health.check(text, now=NOW)
+    assert "start-time-unanchored" in kinds(findings, "WARN")
+    assert summary["block"] == 0
+
+
+def test_known_venue_does_not_warn_as_unanchored():
+    for loc in ("Las Vegas", "Los Angeles", "Paris", "Abu Dhabi"):
+        findings, _ = health.check(
+            data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])],
+                    loc=loc), now=NOW)
+        assert "start-time-unanchored" not in kinds(findings), loc
+
+
+def test_start_time_change_against_the_baseline_warns():
+    before = data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])],
+                     time="20:00", prelim="17:00")
+    after = data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])],
+                    time="15:00", prelim="12:00")
+    findings, summary = health.check(after, baseline_text=before, now=NOW)
+    msgs = [f["message"] for f in findings if f["check"] == "start-time-changed"]
+    assert any("20:00 → 15:00" in m for m in msgs), msgs
+    assert any("17:00 → 12:00" in m for m in msgs), msgs
+    assert summary["block"] == 0
+
+
+def test_unchanged_start_time_is_silent():
+    text = data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])])
+    findings, _ = health.check(text, baseline_text=text, now=NOW)
+    assert "start-time-changed" not in kinds(findings)
+
+
+def test_region_lookup_degrades_to_no_opinion_without_scrape(monkeypatch):
+    """health.py is otherwise dependency-free; an unimportable scrape must
+    disable this one check rather than crash the gate."""
+    monkeypatch.setattr(health, "_REGION_FN", None)
+    findings, summary = health.check(
+        data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])],
+                loc="Atlantis"), now=NOW)
+    assert "start-time-unanchored" not in kinds(findings)
+    assert summary["block"] == 0
