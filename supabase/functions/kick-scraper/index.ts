@@ -8,6 +8,10 @@
 // GitHub token lives here (server-side) so the cron call stays header-free
 // (?key= auth, exactly like check-results / send-reminders).
 //
+// That cron was once the ONLY trigger, so the job being disabled took the whole
+// path down silently. scheduled-push.yml now pings this as a throttled backup
+// (header auth) and fails its run on a 502, which is the alert.
+//
 // Deployed with --no-verify-jwt; inbound auth is enforced here via CRON_SECRET.
 
 // Schedule source used only to decide whether a card is live, so off-days don't
@@ -111,5 +115,21 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ ok: true, dispatched: true, workflow, ref, event: gate.event ?? null }), { status: 200, headers: { "Content-Type": "application/json" } });
   }
   const detail = await ghRes.text().catch(() => "");
-  return new Response(JSON.stringify({ ok: false, dispatched: false, status: ghRes.status, detail }), { status: 502, headers: { "Content-Type": "application/json" } });
+
+  // Announce the failure rather than just returning it. This path is the one
+  // that goes quiet: a 401/403 here means the app's fight card stops refreshing
+  // while push notifications keep working, so nothing user-facing looks broken.
+  // On 2026-09-05 that ran for 26 pings on a fight day and the first anyone
+  // heard of it was cron-job.org emailing to say it had disabled the job.
+  //
+  // console.error surfaces it in the Supabase function logs, and the JSON body
+  // carries a `hint` so whoever reads the response (the scheduled-push.yml
+  // backup step, or a curl) is told what to fix without digging through docs.
+  const credentialFailure = ghRes.status === 401 || ghRes.status === 403;
+  const hint = credentialFailure
+    ? "GH_DISPATCH_TOKEN is revoked, expired or lacks Actions: Read and write on the repo — recreate it and overwrite the Supabase secret (see README)."
+    : `GitHub refused the ${workflow} dispatch on ${ref}.`;
+  console.error(`kick-scraper: dispatch failed — GitHub returned ${ghRes.status}. ${hint} detail=${detail.slice(0, 500)}`);
+
+  return new Response(JSON.stringify({ ok: false, dispatched: false, status: ghRes.status, hint, detail }), { status: 502, headers: { "Content-Type": "application/json" } });
 });

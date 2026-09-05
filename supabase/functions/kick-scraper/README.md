@@ -61,6 +61,25 @@ Deployed with `--no-verify-jwt` by `deploy-functions.yml`.
    The guard means a 24/7 every-5-min schedule is safe — it only dispatches the
    scraper around live cards.
 
+   > ⚠️ **cron-job.org disables a job after enough consecutive failures.** This
+   > happened on 2026-09-05 (26 failures, on a fight day). If the card stops
+   > refreshing, check that the job is still *enabled* there before anything
+   > else — a disabled job looks identical to a broken function from here.
+
+## Backup trigger
+
+`.github/workflows/scheduled-push.yml` also pings this every 5 min (header auth,
+alongside `check-results` / `send-reminders`). GitHub throttles `schedule:` hard
+— that throttling is the entire reason this function exists — so the backup
+fires every few hours at best, not every 5 minutes. It is not a replacement for
+the cron-job.org job; it exists so that losing that job degrades the card to
+"hours stale" instead of "not updating at all", and so a dead
+`GH_DISPATCH_TOKEN` produces a failed workflow run GitHub emails about.
+
+A dispatch failure is announced in three places now: the `::error::` in that
+workflow step, a `console.error` in the Supabase function logs, and a `hint`
+field in the 502 response body naming the likely fix.
+
 ## Smoke test
 
 ```bash
