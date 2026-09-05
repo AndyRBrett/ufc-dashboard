@@ -109,8 +109,8 @@ var EVENTS=[
     loc:"Paris",
     slug:"UFC_Fight_Night:_Hooker_vs._Parnasse",
     tv:"Paramount+",
-    time:"12:00",
-    prelimTime:"09:00",
+    time:"15:00",
+    prelimTime:"12:00",
     fights:[
       {lbl:"Main Event",wc:"Lightweight",title:false,rematch:false,odds:{f1:422,f2:-572},winner:"",method:"",round:null,state:"pre",f1:{n:"Dan Hooker",r:"24-14-0",rk:"",s:null},f2:{n:"Salahdine Parnasse",r:"23-2-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Lightweight",title:false,rematch:false,odds:{f1:-155,f2:129},winner:"",method:"",round:null,state:"pre",f1:{n:"Fares Ziam",r:"18-5-0",rk:"",s:null},f2:{n:"Axel Sola",r:"12-1-1",rk:"",s:null}},

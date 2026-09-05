@@ -520,6 +520,12 @@ _TIME_OVERRIDES = {
     # by three hours in the same direction. Published Paramount+ times confirmed
     # by four independent previews.
     "UFC Fight Night: Nurmagomedov vs. Song": ("06:00", "03:00"),
+    # Paris (UTC+2, CEST): main 15:00 ET = 19:00 UTC = 21:00 local; prelims
+    # 12:00 ET = 16:00 UTC = 18:00 local. Same ESPN failure as the three above
+    # — the scoreboard 'date' was the PRELIM start (12:00 ET), which got stored
+    # as the main-card time and pushed the prelim slot three hours earlier
+    # still, so both were three hours early. Published Paramount+ times.
+    "UFC Fight Night: Hooker vs. Parnasse": ("15:00", "12:00"),
 }
 
 # Cards with no preliminary bouts -- every fight is treated as a main-card fight
