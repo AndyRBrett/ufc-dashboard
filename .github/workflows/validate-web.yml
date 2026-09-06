@@ -57,3 +57,5 @@ jobs:
         run: npm run check:dedup
       - name: Fight model test
         run: npm run check:model
+      - name: Parlay calculator test
+        run: npm run check:parlay

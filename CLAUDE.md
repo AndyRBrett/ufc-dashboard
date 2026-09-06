@@ -28,6 +28,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:prompt` | a typed roast angle getting diluted by the rest of the prompt |
 | `npm run check:dedup` | the three result senders drifting apart and double-pushing a fight |
 | `npm run check:model` | the fight model posting a confident number off missing data |
+| `npm run check:parlay` | a parlay priced with the vig left in, or a correlated ticket read as independent |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.

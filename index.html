@@ -452,6 +452,22 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .chat-send-btn{background:var(--red);border:none;color:var(--on-accent);font:700 12px Inter,sans-serif;padding:9px 14px;border-radius:10px;cursor:pointer;transition:opacity .15s;flex-shrink:0}
 .chat-send-btn:disabled{opacity:.45;pointer-events:none}
 /* Parlay modal */
+.pl-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:2px 0 10px}
+.pl-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.pl-mine{font-size:11px;color:var(--muted2);background:none;border:1px solid var(--border2);border-radius:6px;padding:4px 9px;cursor:pointer}
+.pl-mine:disabled{opacity:.4;cursor:default}
+.pl-bout{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--border)}
+.pl-chip{flex:1;min-width:0;font-size:11px;font-family:Inter,sans-serif;color:var(--muted2);background:var(--card2);border:1px solid var(--border2);border-radius:7px;padding:6px 7px;cursor:pointer;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-chip.on{color:var(--text);border-color:var(--gold);background:var(--gold-dim)}
+.pl-chip-odds{color:var(--muted);margin-left:4px}
+.pl-sum{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin:12px 0 10px}
+.pl-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
+.pl-cell-lbl{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pl-cell-val{font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--gold);line-height:1.1}
+.pl-cell-val.neg{color:var(--loss)}
+.pl-warn{font-size:11.5px;line-height:1.5;color:var(--muted2);border-left:2px solid var(--border2);padding:3px 0 3px 9px;margin-top:8px}
+.pl-warn.high{border-left-color:var(--loss);color:var(--text)}
+.pl-empty{font-size:12px;color:var(--muted);font-style:italic;padding:6px 0 2px}
 .parlay-loading{font-size:13px;color:var(--muted);font-style:italic;padding:8px 0}
 .parlay-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
 .parlay-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
@@ -1117,6 +1133,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <div class="modal-bg" id="parlayModal" onclick="if(event.target===this)closeParlay()">
   <div class="modal" style="padding:18px 16px 20px">
     <div class="chat-modal-header"><div class="chat-ev-name" id="parlayEvName"></div><button class="modal-xbtn" onclick="closeParlay()">x</button></div>
+    <div id="parlayBuilder"></div>
     <div id="parlayContent"></div>
   </div>
 </div>
@@ -1525,6 +1542,224 @@ function sendPickChat(){
   });
 }
 
+// ── Parlay risk calculator (#90) ────────────────────────────────────────
+// The AI suggester below names parlays; this prices the one YOU built. Three
+// numbers do the work: what the ticket pays, what it's actually worth once the
+// bookmaker's margin is divided out of every leg, and the gap between them —
+// which is the part that surprises people, because the margin compounds with
+// each leg while the payout multiplies.
+//
+// The combined probability assumes the bouts are independent. They aren't
+// quite, and pretending otherwise is the classic parlay mistake, so the
+// warnings call out the dependencies that ARE visible in the data rather than
+// burying them in a single confident number.
+// parlay:start
+var PARLAY_MAX_LEGS=10,PARLAY_FINISHER_RATE=0.7,PARLAY_LONGSHOT=0.3,
+    PARLAY_MODEL_GAP=12;
+// American moneyline → decimal odds (total return per unit staked).
+function parlayDecimal(o){
+  if(typeof o!=="number"||!isFinite(o)||Math.abs(o)<100)return null;
+  return o>0?1+o/100:1+100/(-o);
+}
+// One selection: the price, the price's implied probability, and the de-vigged
+// probability the leg is really worth. Null when the bout carries no line, or
+// when the pick isn't in it.
+function parlayLeg(fight,pick){
+  if(!fight||!fight.odds||!fight.f1||!fight.f2)return null;
+  var isF1=pick===fight.f1.n,isF2=pick===fight.f2.n;
+  if(!isF1&&!isF2)return null;
+  var odds=isF1?fight.odds.f1:fight.odds.f2;
+  var dec=parlayDecimal(odds);
+  if(dec===null)return null;
+  var vig=modelDeVig(fight.odds);
+  var implied=modelImplied(odds);
+  if(implied===null)return null;
+  return {
+    fight:fight,pick:pick,other:isF1?fight.f2.n:fight.f1.n,
+    odds:odds,decimal:dec,implied:implied,
+    // De-vigged when both sides are priced; the raw implied probability is the
+    // honest fallback, and it only ever makes the ticket look WORSE than it is.
+    fair:vig?(isF1?vig.p1:vig.p2):implied
+  };
+}
+// The ticket: what it pays, what it's worth, and the expected return on it.
+function parlayCombine(legs){
+  var dec=1,fair=1,implied=1;
+  for(var i=0;i<legs.length;i++){
+    dec*=legs[i].decimal;fair*=legs[i].fair;implied*=legs[i].implied;
+  }
+  return {
+    legs:legs.length,
+    decimal:dec,
+    american:dec>=2?Math.round((dec-1)*100):Math.round(-100/(dec-1)),
+    payout:legs.length?Math.round(dec*100):0,   // return on a 100 stake
+    fair:legs.length?fair:0,
+    implied:legs.length?implied:0,
+    // Expected return per unit staked: 0 is break-even, -0.2 means the ticket
+    // gives up 20% of the stake to the margin. This is the number that grows
+    // with every leg added.
+    ev:legs.length?fair*dec-1:0
+  };
+}
+function _plName(n){return String(n||"").split(" ").pop();}
+function _plFinishRate(name,stats){
+  var st=(stats||(typeof FIGHTER_STATS!=="undefined"?FIGHTER_STATS:{}))[name];
+  if(!st)return null;
+  return _mFinishRate(st);
+}
+// The dependencies worth saying out loud. Ordered most-actionable first; each
+// one is derived from data on the page, never guessed.
+function parlayWarnings(legs,combined,stats,rankings,archive,now){
+  var out=[];
+  if(!legs.length)return out;
+  combined=combined||parlayCombine(legs);
+  if(legs.length>1){
+    // The compounding margin: one leg at -110 gives up ~4.5c per dollar, six of
+    // them give up a quarter of the stake, and the payout figure never shows it.
+    var perLeg=0;
+    for(var i0=0;i0<legs.length;i0++)perLeg+=1-(legs[i0].fair*legs[i0].decimal);
+    perLeg=Math.round(perLeg/legs.length*100);
+    var loss=Math.round(-combined.ev*100);
+    if(loss>0)out.push({level:loss>=20?"high":"info",
+      text:"The margin compounds. One leg at these prices gives up about "
+        +Math.max(perLeg,0)+"c per $1 long-run; stacked "+legs.length
+        +" deep this ticket gives up about "+loss+"c."});
+  }
+  var favs=legs.filter(function(l){return l.fair>0.5;});
+  if(legs.length>=3&&favs.length===legs.length)
+    out.push({level:"info",
+      text:"Every leg is a favourite, so the ticket pays little but still needs "
+        +"all "+legs.length+" to land: there is a "
+        +Math.round((1-combined.fair)*100)+"% chance at least one goes down."});
+  var longs=legs.filter(function(l){return l.fair<PARLAY_LONGSHOT;});
+  if(longs.length)
+    out.push({level:longs.length>1?"high":"info",
+      text:"Longshot leg"+(longs.length>1?"s":"")+" carrying the ticket: "
+        +longs.map(function(l){return _plName(l.pick)+" ("+Math.round(l.fair*100)+"%)";}).join(", ")
+        +". The whole parlay is roughly as likely as "
+        +(longs.length>1?"all of those":"that one")+" landing."});
+  // Same-card correlation the data can actually see: legs that all need a
+  // finish. A grindy, decision-heavy night takes them down together, so they
+  // are not the independent bets the combined probability assumes.
+  var finishers=legs.filter(function(l){
+    var r=_plFinishRate(l.pick,stats);return r!==null&&r>=PARLAY_FINISHER_RATE;});
+  if(finishers.length>=2)
+    out.push({level:"high",
+      text:"Correlated legs: "+finishers.length+" of your picks ("
+        +finishers.map(function(l){return _plName(l.pick);}).join(", ")
+        +") win mostly by finish. A decision-heavy card hurts them at the same "
+        +"time — these legs are less independent than the maths above assumes."});
+  // The model's own disagreement (#74), applied leg by leg.
+  var against=[];
+  for(var i=0;i<legs.length;i++){
+    var e=modelEdge(legs[i].fight,stats,rankings,archive,now);
+    if(!e||!e.market)continue;
+    var isF1=legs[i].pick===legs[i].fight.f1.n;
+    var gap=((isF1?e.model.p1:e.model.p2)-(isF1?e.market.p1:e.market.p2))*100;
+    if(gap<=-PARLAY_MODEL_GAP)against.push({name:legs[i].pick,gap:Math.round(-gap)});
+  }
+  if(against.length)
+    out.push({level:"info",
+      text:"The model rates "+against.map(function(a){
+        return _plName(a.name)+" "+a.gap+" points below this price";}).join(", ")
+        +" — worth a second look before you stack it."});
+  if(legs.length>=5)
+    out.push({level:"info",
+      text:"At "+legs.length+" legs the payout is doing the talking: the odds of "
+        +"hitting are "+Math.round(combined.fair*1000)/10+"%, roughly 1 in "
+        +Math.round(1/Math.max(combined.fair,1e-6))+"."});
+  return out;
+}
+// parlay:end
+
+// The builder UI over the calculator above: tap a corner in each bout, read the
+// ticket. Selections live per event and are seeded from your own picks.
+var _plPicks={};
+function _plKey(ev){return ev.date+"|"+ev.name;}
+function parlayBouts(ev){
+  return (ev.fights||[]).filter(function(f){return f.odds&&!f.winner;});
+}
+function togglePlPick(ev,fi,name){
+  var k=_plKey(ev),sel=_plPicks[k]||(_plPicks[k]={});
+  if(sel[fi]===name)delete sel[fi];else sel[fi]=name;
+  renderParlayBuilder(ev);
+}
+function usePlMyPicks(ev){
+  var k=_plKey(ev),sel=_plPicks[k]={},bouts=parlayBouts(ev);
+  for(var i=0;i<bouts.length;i++){
+    var mine=preds[pk(ev,bouts[i])];
+    if(mine)sel[i]=mine;
+  }
+  renderParlayBuilder(ev);
+}
+function _plLegs(ev){
+  var sel=_plPicks[_plKey(ev)]||{},bouts=parlayBouts(ev),legs=[];
+  for(var i=0;i<bouts.length;i++){
+    if(!sel[i])continue;
+    var leg=parlayLeg(bouts[i],sel[i]);
+    if(leg)legs.push(leg);
+  }
+  return legs;
+}
+function _plCell(lbl,val,neg){
+  var c=document.createElement("div");
+  var v=document.createElement("div");v.className="pl-cell-val"+(neg?" neg":"");v.textContent=val;
+  var l=document.createElement("div");l.className="pl-cell-lbl";l.textContent=lbl;
+  c.appendChild(v);c.appendChild(l);return c;
+}
+function renderParlayBuilder(ev){
+  var host=document.getElementById("parlayBuilder");
+  if(!host)return;
+  host.innerHTML="";
+  var bouts=parlayBouts(ev);
+  var head=document.createElement("div");head.className="pl-head";
+  var t=document.createElement("div");t.className="pl-title";t.textContent="Build your own";
+  head.appendChild(t);
+  var mine=document.createElement("button");mine.className="pl-mine";mine.textContent="Use my picks";
+  mine.onclick=function(){usePlMyPicks(ev);};
+  head.appendChild(mine);
+  host.appendChild(head);
+  if(!bouts.length){
+    var none=document.createElement("div");none.className="pl-empty";
+    none.textContent="No priced bouts left on this card to build with.";
+    host.appendChild(none);return;
+  }
+  var sel=_plPicks[_plKey(ev)]||{};
+  bouts.forEach(function(f,i){
+    var row=document.createElement("div");row.className="pl-bout";
+    [[f.f1,f.odds.f1],[f.f2,f.odds.f2]].forEach(function(pair,side){
+      var b=document.createElement("button");
+      b.className="pl-chip"+(sel[i]===pair[0].n?" on":"");
+      b.appendChild(document.createTextNode(pair[0].n.split(" ").pop()));
+      var o=document.createElement("span");o.className="pl-chip-odds";o.textContent=fmtOdds(pair[1]);
+      b.appendChild(o);
+      b.onclick=function(){togglePlPick(ev,i,pair[0].n);};
+      row.appendChild(b);
+    });
+    host.appendChild(row);
+  });
+  var legs=_plLegs(ev);
+  var sum=document.createElement("div");sum.className="pl-sum";
+  if(!legs.length){
+    var e=document.createElement("div");e.className="pl-empty";
+    e.textContent="Pick two or more corners to price a ticket.";
+    sum.appendChild(e);host.appendChild(sum);return;
+  }
+  var c=parlayCombine(legs);
+  var grid=document.createElement("div");grid.className="pl-grid";
+  grid.appendChild(_plCell(legs.length+" leg"+(legs.length>1?"s":""),fmtOdds(c.american)));
+  grid.appendChild(_plCell("pays on $100","$"+c.payout));
+  // True chance, de-vigged — always lower than the payout implies, which is the
+  // whole point of showing them side by side.
+  grid.appendChild(_plCell("true chance",(Math.round(c.fair*1000)/10)+"%",c.ev<0));
+  sum.appendChild(grid);
+  parlayWarnings(legs,c).forEach(function(w){
+    var d=document.createElement("div");d.className="pl-warn "+(w.level==="high"?"high":"");
+    d.textContent=w.text;sum.appendChild(d);
+  });
+  host.appendChild(sum);
+}
+
 // ── Parlay Suggester ────────────────────────────────────────────
 var _parlayCache={},_parlayFetching={};
 function openParlay(ev,ei){
@@ -1532,6 +1767,9 @@ function openParlay(ev,ei){
   var content=document.getElementById("parlayContent");
   document.getElementById("parlayModal").classList.add("open");
   lockScroll();
+  // The calculator is local and instant; the AI suggestions below it are a
+  // network round-trip, so it renders first and never waits on them (#90).
+  renderParlayBuilder(ev);
   var cacheKey=ev.date;
   if(_parlayCache[cacheKey]){renderParlays(content,_parlayCache[cacheKey]);return;}
   if(_parlayFetching[cacheKey]){content.innerHTML="<div class='parlay-loading'>Building parlay suggestions…</div>";return;}

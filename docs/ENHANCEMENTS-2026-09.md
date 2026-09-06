@@ -8,7 +8,7 @@ dependency-free order so each one commits and ships on its own:
 | #94 | Secondary odds provider fallback when the primary budget runs out | ✅ shipped (M1) |
 | #93 | Movement alerts calibrated per weight class / card position | ✅ shipped (M2) |
 | #74 | Fighter-history + style-matchup model probability alongside odds | ✅ shipped (M3) |
-| #90 | Parlay risk calculator with correlation warnings | ⏳ not started |
+| #90 | Parlay risk calculator with correlation warnings | ✅ shipped (M4) |
 
 Every milestone below is committed separately and passes `npm run verify` plus
 `python -m pytest -q`. Anyone picking this up mid-stream: run both first, then
@@ -175,3 +175,65 @@ and `validate-web.yml`): seeding, the thin-data shrink, no-stats → no model,
 de-vigging, symmetry, named factors, archive replay incl. a result naming
 neither corner, and the flag cap. `SW_VERSION` bumped so installed PWAs pick the
 new page up.
+
+---
+
+## M4 — #90 parlay risk calculator (`index.html`, `tests/parlay-risk.mjs`)
+
+**Problem.** The parlay modal only had AI *suggestions*. Nothing priced the
+ticket you actually built, and the two things a bettor can't check by eye are
+exactly the two the market hides: the margin baked into every leg, and the fact
+that same-card outcomes aren't independent.
+
+**What shipped.** A deterministic calculator (`// parlay:start … // parlay:end`,
+pure, no network) plus a builder UI at the top of the existing parlay modal —
+tap a corner per bout, or hit **Use my picks** to seed it from your own picks.
+It renders instantly and never waits on the AI suggestions below it.
+
+- `parlayLeg` prices a selection and carries **both** probabilities: the raw
+  implied one and the de-vigged one.
+- `parlayCombine` gives payout (product of decimals), *true* chance (product of
+  the **de-vigged** legs — a naive product inherits the book's margin on every
+  leg) and `ev`, the expected return per unit staked.
+- `parlayWarnings` names the dependencies visible in the data:
+  - the **compounding margin**, quantified ("one leg gives up ~5c per $1;
+    stacked 3 deep this ticket gives up ~14c");
+  - **correlated legs** — two or more picks who win mostly by finish share a
+    dependency on a finish-heavy night, so they are not the independent bets the
+    combined probability assumes;
+  - an all-favourites ticket, and the chance at least one leg goes down;
+  - longshot legs, named with their real chance;
+  - legs where the **#74 model** rates the pick ≥12 points below its price.
+
+**Same-camp correlation: not implemented, on purpose.** The issue floats it as an
+example, but nothing in `data.js` carries a fighter's camp or team —
+`FIGHTER_STATS` has stats, physicals, form and opponents, no affiliation — so the
+heuristic would have to be invented rather than derived. If it's wanted, the
+honest route is to scrape a team/camp field first (UFCStats doesn't expose one;
+Sherdog and Tapology do), then add a warning keyed on it.
+
+**Tests.** `npm run check:parlay` (`tests/parlay-risk.mjs`, in `verify` and
+`validate-web.yml`): odds conversion and rejection of impossible prices, the
+de-vigged leg, product math, EV worsening per leg, and each warning — including
+the negative cases (a single leg isn't lectured about compounding; a
+decision-heavy fighter isn't called a finisher). `SW_VERSION` bumped again.
+
+---
+
+## Where to pick this up
+
+All four issues are shipped on `claude/fighter-odds-enhancements-7eylbg` as four
+self-contained commits. Nothing is half-finished; the open follow-ups are the
+ones named above, in rough value order:
+
+1. **#94** — watch the first live scrape for `Odds source espn: +N new fights`.
+   ESPN's egress is blocked from the dev sandbox, so the payload shape was
+   written from ESPN's documented scoreboard schema and fixture-tested. If it
+   comes back empty, the fix is confined to `_espn_competitor_names` /
+   `_espn_moneyline` in `scrape.py`.
+2. **#74** — persist a dated `FIGHTER_STATS` digest per scrape so the model can
+   be backtested without look-ahead leakage. Until that exists, do not publish an
+   accuracy number.
+3. **#93** — once a few months of snapshots carry `wc`, extend the calibration to
+   tier × weight band behind the existing `MIN_SAMPLES` guard.
+4. **#90** — same-camp correlation needs a camp/team field scraped first.

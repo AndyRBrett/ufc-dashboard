@@ -14,7 +14,8 @@
     "check:prompt": "node tests/trash-prompt.mjs",
     "check:dedup": "node tests/notify-dedup-key.mjs",
     "check:model": "node tests/fight-model.mjs",
-    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:dedup && npm run check:model"
+    "check:parlay": "node tests/parlay-risk.mjs",
+    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:dedup && npm run check:model && npm run check:parlay"
   },
   "devDependencies": {
     "esbuild": "^0.24.0",
