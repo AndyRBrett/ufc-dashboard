@@ -18,7 +18,7 @@ import re
 import sys
 import time
 import unicodedata
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -2342,6 +2342,69 @@ _UFCSTATS_NAME_ALIASES = {
 }
 
 
+# How many same-name candidates are worth a disambiguating page fetch. Ambiguity
+# is rare, so this only ever costs requests on the handful of names that need it.
+_UFCSTATS_DISAMBIG_MAX = 4
+# "Sep. 05, 2026" / "September 5, 2026" as UFCStats writes fight dates.
+_UFCSTATS_DATE_RE = re.compile(r"([A-Za-z]{3,9})\.?\s+(\d{1,2}),\s*(\d{4})")
+
+
+def parse_ufcstats_date(text):
+    """The first 'Mon DD, YYYY' date in *text* as a date, or None."""
+    m = _UFCSTATS_DATE_RE.search(text or "")
+    if not m:
+        return None
+    month = MONTH_MAP.get(m.group(1)[:3].lower())
+    if not month:
+        return None
+    try:
+        return datetime(int(m.group(3)), month, int(m.group(2))).date()
+    except ValueError:
+        return None
+
+
+def order_ufcstats_matches(matches, last_dates):
+    """Order same-name UFCStats rows, best match first. Pure.
+
+    The old rule was "most total fights", on the theory that the busiest record
+    belongs to the active roster member. It doesn't, and the failure is silent:
+    a two-time UFC prospect loses to any retired journeyman who shares his name.
+    Petr Yan resolved to an 11-13 fighter born in 1980 and Jean Silva to a
+    48-year-old with a single UFC bout — both wrong records on a live card, and
+    both fed straight into the fight model, which then "disagreed" with the
+    market by 40+ points on the strength of the wrong man's stats.
+
+    Recency is the signal that actually separates them: whoever fought most
+    recently is the one a current card means. Total fights stays as the
+    tie-break, for candidates whose last-fight date couldn't be read.
+    """
+    def key(m):
+        d = last_dates.get(m[0])
+        return (d is not None, d or date.min, m[1] + m[2] + m[3])
+    return sorted(matches, key=key, reverse=True)
+
+
+def _ufcstats_last_fight_date(url):
+    """Date of the most recent bout listed on a UFCStats fighter page, or None."""
+    try:
+        r = _ufcstats_get(url, timeout=15)
+        if r.status_code != 200:
+            return None
+        soup = BeautifulSoup(r.text, "html.parser")
+        dates = []
+        for row in soup.select("tbody.b-fight-details__table-body tr"):
+            cells = row.select("td")
+            if len(cells) < 7:
+                continue
+            d = parse_ufcstats_date(cells[6].get_text(" ", strip=True))
+            if d:
+                dates.append(d)
+        return max(dates) if dates else None
+    except Exception as e:
+        print(f"  UFCStats: could not date {url}: {e}", file=sys.stderr)
+        return None
+
+
 def _search_ufcstats(name):
     """Search UFCStats for *name* by last-name initial. Returns (url, record) or None.
 
@@ -2374,10 +2437,22 @@ def _search_ufcstats(name):
                 if len(matches) > 1:
                     print(
                         f"  UFCStats: {len(matches)} fighters match {name!r} — "
-                        f"picking the most-experienced",
+                        f"picking the most recently active",
                         file=sys.stderr,
                     )
-                    matches.sort(key=lambda m: m[1] + m[2] + m[3], reverse=True)
+                    probes = matches[:_UFCSTATS_DISAMBIG_MAX]
+                    last_dates = {
+                        m[0]: _ufcstats_last_fight_date(m[0]) for m in probes
+                    }
+                    matches = order_ufcstats_matches(probes, last_dates)
+                    print(
+                        "  UFCStats: "
+                        + ", ".join(
+                            f"{m[1]}-{m[2]}-{m[3]} last {last_dates.get(m[0]) or '?'}"
+                            for m in matches
+                        ),
+                        file=sys.stderr,
+                    )
                 href, w, l, d = matches[0]
                 return (href, f"{w}-{l}-{d}" if (w or l) else "")
             if not rows and attempt == 0:

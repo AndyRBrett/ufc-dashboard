@@ -502,7 +502,7 @@ def test_search_ufcstats_single_match_unchanged(monkeypatch):
 
 # --- fighter-stats fetch cadence (_needs_stats_fetch) ----------------------
 
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 _NOW = datetime(2026, 7, 10, tzinfo=timezone.utc)
 
@@ -1622,3 +1622,45 @@ def test_espn_windows_lead_with_one_range_query():
     assert windows[0] == "20260906-20260920"
     assert all(w.isdigit() for w in windows[1:])
     assert len(windows) <= 9
+
+
+# --- same-name fighter disambiguation --------------------------------------
+#
+# UFCStats files several fighters under one name and the scraper has to pick.
+# The old rule ("most total fights") picked the retired journeyman every time a
+# prospect shared his name: Petr Yan resolved to an 11-13 fighter born in 1980
+# and Jean Silva to a 48-year-old with one UFC bout. Nothing errored — a wrong
+# but plausible record went onto a live card and into the fight model.
+
+def test_ufcstats_dates_parse_in_both_formats_the_site_uses():
+    assert scrape.parse_ufcstats_date("UFC 300: Pereira vs. Hill Apr. 13, 2024") == date(2024, 4, 13)
+    assert scrape.parse_ufcstats_date("September 5, 2026") == date(2026, 9, 5)
+    assert scrape.parse_ufcstats_date("no date at all") is None
+    assert scrape.parse_ufcstats_date("Smarch 40, 2026") is None
+    assert scrape.parse_ufcstats_date(None) is None
+
+
+def test_the_recently_active_fighter_wins_over_the_bigger_record():
+    # The real case: a 15-2 prospect fighting this year against a 19-12-3
+    # namesake who last fought in 2012.
+    prospect, veteran = ("/prospect", 15, 2, 0), ("/veteran", 19, 12, 3)
+    ordered = scrape.order_ufcstats_matches(
+        [veteran, prospect],
+        {"/veteran": date(2012, 5, 1), "/prospect": date(2026, 8, 1)})
+    assert ordered[0] == prospect
+
+
+def test_an_undateable_candidate_never_outranks_a_dated_one():
+    # A page we couldn't read tells us nothing; it must not win on record size.
+    big_unknown, small_active = ("/unknown", 30, 5, 0), ("/active", 8, 1, 0)
+    ordered = scrape.order_ufcstats_matches(
+        [big_unknown, small_active],
+        {"/unknown": None, "/active": date(2026, 6, 1)})
+    assert ordered[0] == small_active
+
+
+def test_with_no_dates_at_all_it_falls_back_to_the_old_experience_rule():
+    # UFCStats unreachable for every candidate: keep the previous behaviour
+    # rather than picking arbitrarily.
+    a, b = ("/a", 19, 12, 3), ("/b", 15, 2, 0)
+    assert scrape.order_ufcstats_matches([b, a], {}) == [a, b]

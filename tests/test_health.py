@@ -8,6 +8,7 @@ publishes a broken card or freezes results mid-event.
 
 Run with:  python -m pytest -q
 """
+import json
 from datetime import datetime, timezone
 
 import health
@@ -24,7 +25,8 @@ def fight(f1, f2, *, f1r="10-0-0", f2r="9-1-0", odds='{f1:-150,f2:130}',
             f'f2:{{n:"{f2}",r:"{f2r}",rk:"",s:null}}}}')
 
 
-def data_js(events, stats="{}", loc="Las Vegas", time="20:00", prelim="17:00"):
+def data_js(events, stats="{}", loc="Las Vegas", time="20:00", prelim="17:00",
+            rankings="{}"):
     """Build a data.js whose shape matches what events_js actually serialises.
 
     time/prelimTime are written by default because events_js always writes them
@@ -39,7 +41,8 @@ def data_js(events, stats="{}", loc="Las Vegas", time="20:00", prelim="17:00"):
             f'    tv:"Paramount+",\n    time:"{time}",\n    prelimTime:"{prelim}",\n'
             f'    fights:[\n      ' + ",\n      ".join(fights) + "\n    ]\n  }"
         )
-    return (f"var FIGHTER_STATS={stats};\n"
+    return (f"var RANKINGS={rankings};\n"
+            f"var FIGHTER_STATS={stats};\n"
             "var EVENTS=[\n" + ",\n".join(blocks) + "\n];\n" + PAD)
 
 
@@ -324,3 +327,82 @@ def test_region_lookup_degrades_to_no_opinion_without_scrape(monkeypatch):
                 loc="Atlantis"), now=NOW)
     assert "start-time-unanchored" not in kinds(findings)
     assert summary["block"] == 0
+
+
+# --- a cached profile that belongs to somebody else ------------------------
+#
+# UFCStats files several fighters under one name. When the scraper picks the
+# wrong one nothing errors: the card shows a plausible record, the stats modal
+# shows plausible numbers, and they are another man's. Petr Yan sat on a live
+# card as 11-13-0 born 1980, and Jean Silva as a 48-year-old with one UFC bout —
+# both ranked, both fighting that month, both feeding the fight model.
+#
+# These tests pin the two tells a real roster member cannot produce, and — just
+# as importantly — the legitimate profiles that must NOT be flagged, since a
+# noisy check is one nobody reads.
+
+TODAY = NOW.date()
+
+
+def profile(**over):
+    base = {"slpm": 4.0, "acc": 50, "td": 1.0, "tdd": 60, "ko": 5, "sub": 2,
+            "rec": "15-2-0", "dob": "Jan 01, 1996",
+            "form": [{"r": "W", "m": "Dec"}], "opp": ["A Fighter", "B Fighter"]}
+    base.update(over)
+    return base
+
+
+def test_a_profile_too_old_to_be_fighting_is_flagged():
+    why = health.profile_mismatch(
+        "Jean Silva", profile(dob="Oct 08, 1977", rec="19-12-3", opp=["Takanori Gomi"]),
+        6, TODAY)
+    assert "different Jean Silva" in why and "49 years old" in why
+
+
+def test_a_ranked_fighter_with_no_ufc_history_is_flagged():
+    why = health.profile_mismatch(
+        "Petr Yan", profile(rec="11-13-0", opp=[], dob="Jan 01, 1996"), 3, TODAY)
+    assert "ranked #3" in why and "0 UFC opponent" in why
+
+
+def test_a_real_ranked_fighter_is_not_flagged():
+    assert health.profile_mismatch("Real Contender", profile(), 3, TODAY) == ""
+
+
+def test_a_debutant_with_no_ufc_record_is_not_flagged():
+    # The whole reason the second tell needs the ranking: an unranked signing
+    # legitimately has no UFC opponents.
+    assert health.profile_mismatch("New Signing", profile(opp=[]), None, TODAY) == ""
+
+
+def test_a_veteran_still_inside_the_age_bound_is_not_flagged():
+    assert health.profile_mismatch(
+        "Old Hand", profile(dob="Jan 01, 1985"), 8, TODAY) == ""
+
+
+def test_an_empty_or_failed_profile_is_left_to_the_other_checks():
+    # stats-missing / stats-fetch-failed own these; claiming "wrong fighter" on
+    # a profile with no data in it would be a guess.
+    assert health.profile_mismatch("Nobody", None, 3, TODAY) == ""
+    assert health.profile_mismatch(
+        "Nobody", {"fetch_failed": "2026-08-01", "opp": []}, 3, TODAY) == ""
+
+
+def test_unreadable_dob_never_crashes_the_gate():
+    assert health.profile_age("not a date", TODAY) is None
+    assert health.profile_age(None, TODAY) is None
+    assert health.profile_mismatch("X", profile(dob="???"), None, TODAY) == ""
+
+
+def test_the_mismatch_warns_and_never_blocks():
+    # A false positive must never stop the pipeline publishing a card.
+    stats = json.dumps({"Jean Silva": profile(dob="Oct 08, 1977", opp=["Takanori Gomi"]),
+                        "Jose Delgado": profile()})
+    text = data_js([("UFC Fight Night: Silva vs. Delgado", "2026-08-13",
+                     [fight("Jean Silva", "Jose Delgado", lbl="Main Event")])],
+                   stats=stats, rankings=json.dumps({"Jean Silva": 6}))
+    findings, summary = health.check(text, now=NOW)
+    assert "profile-mismatch" in kinds(findings, "WARN")
+    assert summary["block"] == 0
+    assert any("Jean Silva" in f["message"] for f in findings
+               if f["check"] == "profile-mismatch")

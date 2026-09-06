@@ -63,6 +63,9 @@ ODDS_EXPECTED_WITHIN_DAYS = int(os.environ.get("ODDS_EXPECTED_WITHIN_DAYS", "14"
 ODDS_STALE_HOURS = 36
 # Below this the Odds API quota is about to run out and lines will silently freeze.
 ODDS_QUOTA_WARN = 50
+# An age no fighter on a UFC card has. The oldest to compete in the modern UFC is
+# in his late 40s, so this only fires on a profile that belongs to somebody else.
+PROFILE_MAX_AGE = 44
 
 EVENT_RE = re.compile(r'name:"([^"]+)",\s*\n\s*date:"(\d{4}-\d{2}-\d{2})"')
 # The clock fields, read per-event segment. Optional by design: an event that
@@ -126,6 +129,58 @@ def parse_stats_cache(text):
         return json.loads(m.group(1))
     except json.JSONDecodeError:
         return {}
+
+
+def parse_rankings(text):
+    m = re.search(r"var RANKINGS=(\{.*?\});", text, re.DOTALL)
+    if not m:
+        return {}
+    try:
+        return json.loads(m.group(1))
+    except json.JSONDecodeError:
+        return {}
+
+
+def profile_age(dob, today):
+    """Age in years from a UFCStats DOB ("Oct 08, 1977"), or None if unreadable."""
+    try:
+        born = datetime.strptime(dob, "%b %d, %Y").date()
+    except (TypeError, ValueError):
+        return None
+    return (today - born).days / 365.25
+
+
+def profile_mismatch(name, st, rank, today):
+    """Why this cached profile looks like a DIFFERENT fighter, or "".
+
+    UFCStats files several fighters under the same name, and the scraper has to
+    pick one. When it picks wrong nothing errors: the card shows a plausible
+    record, the stats modal shows plausible numbers, and they belong to somebody
+    else. Petr Yan sat on a live card as 11-13-0 born 1980, and Jean Silva as a
+    48-year-old with one UFC bout — both ranked, both fighting that month.
+
+    So test the profile against what we independently know about the fighter,
+    and keep the tests to ones a real roster member cannot fail:
+
+      * nobody on an upcoming UFC card is over PROFILE_MAX_AGE;
+      * a fighter the UFC ranks in their own division has, by definition, fought
+        in the UFC — a ranked profile with no UFC opponents is not him.
+
+    Debutants and unpriced regional signings legitimately have no UFC history,
+    which is why the second test needs the ranking: it is the part they can't
+    have. Empty profiles are left to stats-missing/stats-fetch-failed.
+    """
+    if not st or not (_has_fight_data(st) or st.get("rec")):
+        return ""
+    age = profile_age(st.get("dob", ""), today)
+    if age is not None and age >= PROFILE_MAX_AGE:
+        return (f"profile is {age:.0f} years old (DOB {st.get('dob')}) — no active "
+                f"fighter is; this is probably a different {name}")
+    if rank and len(st.get("opp") or []) <= 1:
+        return (f"ranked #{rank} but the profile lists "
+                f"{len(st.get('opp') or [])} UFC opponent(s) — a ranked fighter "
+                f"has a UFC record, so this is probably a different {name}")
+    return ""
 
 
 def days_out(date_str, today):
@@ -309,6 +364,26 @@ def check(text, baseline_text=None, now=None, odds_state=None):
                     add("WARN", "stats-fetch-failed",
                         f"{ev['name']} ({d}d out): {name} stats lookup failed "
                         f"({st['fetch_failed'][:10]})", fighter=name, **tag)
+
+    # --- cached profiles that belong to somebody else ----------------------
+    # Not restricted to imminent cards, and not a gap check: a wrong profile is
+    # wrong the day it is cached, it shows the user a confident false record, and
+    # it feeds the fight model. Catching it early is the whole point.
+    rankings = parse_rankings(text)
+    seen_fighters = set()
+    for ev in upcoming:
+        d = days_out(ev["date"], today)
+        for f in ev["fights"]:
+            for side in ("f1", "f2"):
+                name = f[side]
+                if not name or name == "TBD" or name in seen_fighters:
+                    continue
+                seen_fighters.add(name)
+                why = profile_mismatch(name, stats.get(name), rankings.get(name), today)
+                if why:
+                    add("WARN", "profile-mismatch",
+                        f"{ev['name']} ({d}d out): {name} — {why}",
+                        fighter=name, event=ev["name"], date=ev["date"], days_out=d)
 
     # --- odds pipeline health ---------------------------------------------
     if odds_state:
