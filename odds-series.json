@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-06T07:22:40Z",
+  "generated_at": "2026-09-06T12:52:36Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -7797,6 +7797,50 @@
       ]
     },
     {
+      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Natalia Silva",
+          "f2": "Wang Cong",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-06T12:52:36Z",
+              "f1_odds": -230,
+              "f2_odds": 192
+            }
+          ],
+          "open": {
+            "at": "2026-09-06T12:52:36Z",
+            "f1_odds": -230,
+            "f2_odds": 192
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Deiveson Figueiredo",
+          "f2": "Payton Talbott",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-06T12:52:36Z",
+              "f1_odds": 412,
+              "f2_odds": -550
+            }
+          ],
+          "open": {
+            "at": "2026-09-06T12:52:36Z",
+            "f1_odds": 412,
+            "f2_odds": -550
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "concluded": false,
       "bouts": [
@@ -7907,6 +7951,15 @@
       },
       {
         "event_id": "2026-10-03:ufc-332-silva-vs-cong",
+        "opponent": "Payton Talbott",
+        "side": "f1",
+        "points": 1,
+        "open": 412,
+        "close": null,
+        "clv": null
+      },
+      {
+        "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Payton Talbott",
         "side": "f1",
         "points": 1,
@@ -9440,6 +9493,15 @@
         "side": "f2",
         "points": 2,
         "open": 205,
+        "close": null,
+        "clv": null
+      },
+      {
+        "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+        "opponent": "Natalia Silva",
+        "side": "f2",
+        "points": 1,
+        "open": 192,
         "close": null,
         "clv": null
       }
@@ -11586,6 +11648,15 @@
         "open": -550,
         "close": null,
         "clv": null
+      },
+      {
+        "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+        "opponent": "Deiveson Figueiredo",
+        "side": "f2",
+        "points": 1,
+        "open": -550,
+        "close": null,
+        "clv": null
       }
     ],
     "Natalia Silva": [
@@ -11595,6 +11666,15 @@
         "side": "f1",
         "points": 2,
         "open": -250,
+        "close": null,
+        "clv": null
+      },
+      {
+        "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+        "opponent": "Wang Cong",
+        "side": "f1",
+        "points": 1,
+        "open": -230,
         "close": null,
         "clv": null
       }
