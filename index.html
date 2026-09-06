@@ -452,6 +452,22 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .chat-send-btn{background:var(--red);border:none;color:var(--on-accent);font:700 12px Inter,sans-serif;padding:9px 14px;border-radius:10px;cursor:pointer;transition:opacity .15s;flex-shrink:0}
 .chat-send-btn:disabled{opacity:.45;pointer-events:none}
 /* Parlay modal */
+.pl-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:2px 0 10px}
+.pl-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.pl-mine{font-size:11px;color:var(--muted2);background:none;border:1px solid var(--border2);border-radius:6px;padding:4px 9px;cursor:pointer}
+.pl-mine:disabled{opacity:.4;cursor:default}
+.pl-bout{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--border)}
+.pl-chip{flex:1;min-width:0;font-size:11px;font-family:Inter,sans-serif;color:var(--muted2);background:var(--card2);border:1px solid var(--border2);border-radius:7px;padding:6px 7px;cursor:pointer;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-chip.on{color:var(--text);border-color:var(--gold);background:var(--gold-dim)}
+.pl-chip-odds{color:var(--muted);margin-left:4px}
+.pl-sum{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin:12px 0 10px}
+.pl-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
+.pl-cell-lbl{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pl-cell-val{font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--gold);line-height:1.1}
+.pl-cell-val.neg{color:var(--loss)}
+.pl-warn{font-size:11.5px;line-height:1.5;color:var(--muted2);border-left:2px solid var(--border2);padding:3px 0 3px 9px;margin-top:8px}
+.pl-warn.high{border-left-color:var(--loss);color:var(--text)}
+.pl-empty{font-size:12px;color:var(--muted);font-style:italic;padding:6px 0 2px}
 .parlay-loading{font-size:13px;color:var(--muted);font-style:italic;padding:8px 0}
 .parlay-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
 .parlay-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
@@ -691,6 +707,14 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .past-pr-bdg.win{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border)}
 .past-pr-bdg.loss{background:var(--loss-dim);color:var(--loss);border:1px solid var(--loss-border)}
 .past-pr-bdg.pend{background:var(--card2);color:var(--muted);border:1px solid var(--border)}
+.model-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-top:7px;font-family:Inter,sans-serif}
+.model-val{font-size:12px;font-weight:600;color:var(--muted2)}
+.model-val.mr{text-align:right}
+.model-val.mlean{color:var(--text)}
+.model-ctr{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;text-align:center;padding:0 8px}
+.model-mkt{font-weight:500;color:var(--muted)}
+.model-gap{font-size:9px;font-weight:700;margin-left:4px;padding:1px 4px;border-radius:4px;vertical-align:middle;color:var(--gold);border:1px solid var(--gold);opacity:.85}
+.model-flag{display:block;font-size:8px;letter-spacing:.08em;color:var(--gold);margin-top:2px}
 .odds-mv{font-size:9px;font-weight:700;margin-left:3px;vertical-align:middle}
 .odds-mv-up{color:var(--green)}.odds-mv-dn{color:var(--loss)}
 .odds-dog{font-size:9px;font-weight:700;margin-left:4px;padding:1px 4px;border-radius:4px;vertical-align:middle;color:var(--gold);border:1px solid var(--gold);opacity:.85}
@@ -1109,6 +1133,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <div class="modal-bg" id="parlayModal" onclick="if(event.target===this)closeParlay()">
   <div class="modal" style="padding:18px 16px 20px">
     <div class="chat-modal-header"><div class="chat-ev-name" id="parlayEvName"></div><button class="modal-xbtn" onclick="closeParlay()">x</button></div>
+    <div id="parlayBuilder"></div>
     <div id="parlayContent"></div>
   </div>
 </div>
@@ -1517,6 +1542,224 @@ function sendPickChat(){
   });
 }
 
+// ── Parlay risk calculator (#90) ────────────────────────────────────────
+// The AI suggester below names parlays; this prices the one YOU built. Three
+// numbers do the work: what the ticket pays, what it's actually worth once the
+// bookmaker's margin is divided out of every leg, and the gap between them —
+// which is the part that surprises people, because the margin compounds with
+// each leg while the payout multiplies.
+//
+// The combined probability assumes the bouts are independent. They aren't
+// quite, and pretending otherwise is the classic parlay mistake, so the
+// warnings call out the dependencies that ARE visible in the data rather than
+// burying them in a single confident number.
+// parlay:start
+var PARLAY_MAX_LEGS=10,PARLAY_FINISHER_RATE=0.7,PARLAY_LONGSHOT=0.3,
+    PARLAY_MODEL_GAP=12;
+// American moneyline → decimal odds (total return per unit staked).
+function parlayDecimal(o){
+  if(typeof o!=="number"||!isFinite(o)||Math.abs(o)<100)return null;
+  return o>0?1+o/100:1+100/(-o);
+}
+// One selection: the price, the price's implied probability, and the de-vigged
+// probability the leg is really worth. Null when the bout carries no line, or
+// when the pick isn't in it.
+function parlayLeg(fight,pick){
+  if(!fight||!fight.odds||!fight.f1||!fight.f2)return null;
+  var isF1=pick===fight.f1.n,isF2=pick===fight.f2.n;
+  if(!isF1&&!isF2)return null;
+  var odds=isF1?fight.odds.f1:fight.odds.f2;
+  var dec=parlayDecimal(odds);
+  if(dec===null)return null;
+  var vig=modelDeVig(fight.odds);
+  var implied=modelImplied(odds);
+  if(implied===null)return null;
+  return {
+    fight:fight,pick:pick,other:isF1?fight.f2.n:fight.f1.n,
+    odds:odds,decimal:dec,implied:implied,
+    // De-vigged when both sides are priced; the raw implied probability is the
+    // honest fallback, and it only ever makes the ticket look WORSE than it is.
+    fair:vig?(isF1?vig.p1:vig.p2):implied
+  };
+}
+// The ticket: what it pays, what it's worth, and the expected return on it.
+function parlayCombine(legs){
+  var dec=1,fair=1,implied=1;
+  for(var i=0;i<legs.length;i++){
+    dec*=legs[i].decimal;fair*=legs[i].fair;implied*=legs[i].implied;
+  }
+  return {
+    legs:legs.length,
+    decimal:dec,
+    american:dec>=2?Math.round((dec-1)*100):Math.round(-100/(dec-1)),
+    payout:legs.length?Math.round(dec*100):0,   // return on a 100 stake
+    fair:legs.length?fair:0,
+    implied:legs.length?implied:0,
+    // Expected return per unit staked: 0 is break-even, -0.2 means the ticket
+    // gives up 20% of the stake to the margin. This is the number that grows
+    // with every leg added.
+    ev:legs.length?fair*dec-1:0
+  };
+}
+function _plName(n){return String(n||"").split(" ").pop();}
+function _plFinishRate(name,stats){
+  var st=(stats||(typeof FIGHTER_STATS!=="undefined"?FIGHTER_STATS:{}))[name];
+  if(!st)return null;
+  return _mFinishRate(st);
+}
+// The dependencies worth saying out loud. Ordered most-actionable first; each
+// one is derived from data on the page, never guessed.
+function parlayWarnings(legs,combined,stats,rankings,archive,now){
+  var out=[];
+  if(!legs.length)return out;
+  combined=combined||parlayCombine(legs);
+  if(legs.length>1){
+    // The compounding margin: one leg at -110 gives up ~4.5c per dollar, six of
+    // them give up a quarter of the stake, and the payout figure never shows it.
+    var perLeg=0;
+    for(var i0=0;i0<legs.length;i0++)perLeg+=1-(legs[i0].fair*legs[i0].decimal);
+    perLeg=Math.round(perLeg/legs.length*100);
+    var loss=Math.round(-combined.ev*100);
+    if(loss>0)out.push({level:loss>=20?"high":"info",
+      text:"The margin compounds. One leg at these prices gives up about "
+        +Math.max(perLeg,0)+"c per $1 long-run; stacked "+legs.length
+        +" deep this ticket gives up about "+loss+"c."});
+  }
+  var favs=legs.filter(function(l){return l.fair>0.5;});
+  if(legs.length>=3&&favs.length===legs.length)
+    out.push({level:"info",
+      text:"Every leg is a favourite, so the ticket pays little but still needs "
+        +"all "+legs.length+" to land: there is a "
+        +Math.round((1-combined.fair)*100)+"% chance at least one goes down."});
+  var longs=legs.filter(function(l){return l.fair<PARLAY_LONGSHOT;});
+  if(longs.length)
+    out.push({level:longs.length>1?"high":"info",
+      text:"Longshot leg"+(longs.length>1?"s":"")+" carrying the ticket: "
+        +longs.map(function(l){return _plName(l.pick)+" ("+Math.round(l.fair*100)+"%)";}).join(", ")
+        +". The whole parlay is roughly as likely as "
+        +(longs.length>1?"all of those":"that one")+" landing."});
+  // Same-card correlation the data can actually see: legs that all need a
+  // finish. A grindy, decision-heavy night takes them down together, so they
+  // are not the independent bets the combined probability assumes.
+  var finishers=legs.filter(function(l){
+    var r=_plFinishRate(l.pick,stats);return r!==null&&r>=PARLAY_FINISHER_RATE;});
+  if(finishers.length>=2)
+    out.push({level:"high",
+      text:"Correlated legs: "+finishers.length+" of your picks ("
+        +finishers.map(function(l){return _plName(l.pick);}).join(", ")
+        +") win mostly by finish. A decision-heavy card hurts them at the same "
+        +"time — these legs are less independent than the maths above assumes."});
+  // The model's own disagreement (#74), applied leg by leg.
+  var against=[];
+  for(var i=0;i<legs.length;i++){
+    var e=modelEdge(legs[i].fight,stats,rankings,archive,now);
+    if(!e||!e.market)continue;
+    var isF1=legs[i].pick===legs[i].fight.f1.n;
+    var gap=((isF1?e.model.p1:e.model.p2)-(isF1?e.market.p1:e.market.p2))*100;
+    if(gap<=-PARLAY_MODEL_GAP)against.push({name:legs[i].pick,gap:Math.round(-gap)});
+  }
+  if(against.length)
+    out.push({level:"info",
+      text:"The model rates "+against.map(function(a){
+        return _plName(a.name)+" "+a.gap+" points below this price";}).join(", ")
+        +" — worth a second look before you stack it."});
+  if(legs.length>=5)
+    out.push({level:"info",
+      text:"At "+legs.length+" legs the payout is doing the talking: the odds of "
+        +"hitting are "+Math.round(combined.fair*1000)/10+"%, roughly 1 in "
+        +Math.round(1/Math.max(combined.fair,1e-6))+"."});
+  return out;
+}
+// parlay:end
+
+// The builder UI over the calculator above: tap a corner in each bout, read the
+// ticket. Selections live per event and are seeded from your own picks.
+var _plPicks={};
+function _plKey(ev){return ev.date+"|"+ev.name;}
+function parlayBouts(ev){
+  return (ev.fights||[]).filter(function(f){return f.odds&&!f.winner;});
+}
+function togglePlPick(ev,fi,name){
+  var k=_plKey(ev),sel=_plPicks[k]||(_plPicks[k]={});
+  if(sel[fi]===name)delete sel[fi];else sel[fi]=name;
+  renderParlayBuilder(ev);
+}
+function usePlMyPicks(ev){
+  var k=_plKey(ev),sel=_plPicks[k]={},bouts=parlayBouts(ev);
+  for(var i=0;i<bouts.length;i++){
+    var mine=preds[pk(ev,bouts[i])];
+    if(mine)sel[i]=mine;
+  }
+  renderParlayBuilder(ev);
+}
+function _plLegs(ev){
+  var sel=_plPicks[_plKey(ev)]||{},bouts=parlayBouts(ev),legs=[];
+  for(var i=0;i<bouts.length;i++){
+    if(!sel[i])continue;
+    var leg=parlayLeg(bouts[i],sel[i]);
+    if(leg)legs.push(leg);
+  }
+  return legs;
+}
+function _plCell(lbl,val,neg){
+  var c=document.createElement("div");
+  var v=document.createElement("div");v.className="pl-cell-val"+(neg?" neg":"");v.textContent=val;
+  var l=document.createElement("div");l.className="pl-cell-lbl";l.textContent=lbl;
+  c.appendChild(v);c.appendChild(l);return c;
+}
+function renderParlayBuilder(ev){
+  var host=document.getElementById("parlayBuilder");
+  if(!host)return;
+  host.innerHTML="";
+  var bouts=parlayBouts(ev);
+  var head=document.createElement("div");head.className="pl-head";
+  var t=document.createElement("div");t.className="pl-title";t.textContent="Build your own";
+  head.appendChild(t);
+  var mine=document.createElement("button");mine.className="pl-mine";mine.textContent="Use my picks";
+  mine.onclick=function(){usePlMyPicks(ev);};
+  head.appendChild(mine);
+  host.appendChild(head);
+  if(!bouts.length){
+    var none=document.createElement("div");none.className="pl-empty";
+    none.textContent="No priced bouts left on this card to build with.";
+    host.appendChild(none);return;
+  }
+  var sel=_plPicks[_plKey(ev)]||{};
+  bouts.forEach(function(f,i){
+    var row=document.createElement("div");row.className="pl-bout";
+    [[f.f1,f.odds.f1],[f.f2,f.odds.f2]].forEach(function(pair,side){
+      var b=document.createElement("button");
+      b.className="pl-chip"+(sel[i]===pair[0].n?" on":"");
+      b.appendChild(document.createTextNode(pair[0].n.split(" ").pop()));
+      var o=document.createElement("span");o.className="pl-chip-odds";o.textContent=fmtOdds(pair[1]);
+      b.appendChild(o);
+      b.onclick=function(){togglePlPick(ev,i,pair[0].n);};
+      row.appendChild(b);
+    });
+    host.appendChild(row);
+  });
+  var legs=_plLegs(ev);
+  var sum=document.createElement("div");sum.className="pl-sum";
+  if(!legs.length){
+    var e=document.createElement("div");e.className="pl-empty";
+    e.textContent="Pick two or more corners to price a ticket.";
+    sum.appendChild(e);host.appendChild(sum);return;
+  }
+  var c=parlayCombine(legs);
+  var grid=document.createElement("div");grid.className="pl-grid";
+  grid.appendChild(_plCell(legs.length+" leg"+(legs.length>1?"s":""),fmtOdds(c.american)));
+  grid.appendChild(_plCell("pays on $100","$"+c.payout));
+  // True chance, de-vigged — always lower than the payout implies, which is the
+  // whole point of showing them side by side.
+  grid.appendChild(_plCell("true chance",(Math.round(c.fair*1000)/10)+"%",c.ev<0));
+  sum.appendChild(grid);
+  parlayWarnings(legs,c).forEach(function(w){
+    var d=document.createElement("div");d.className="pl-warn "+(w.level==="high"?"high":"");
+    d.textContent=w.text;sum.appendChild(d);
+  });
+  host.appendChild(sum);
+}
+
 // ── Parlay Suggester ────────────────────────────────────────────
 var _parlayCache={},_parlayFetching={};
 function openParlay(ev,ei){
@@ -1524,6 +1767,9 @@ function openParlay(ev,ei){
   var content=document.getElementById("parlayContent");
   document.getElementById("parlayModal").classList.add("open");
   lockScroll();
+  // The calculator is local and instant; the AI suggestions below it are a
+  // network round-trip, so it renders first and never waits on them (#90).
+  renderParlayBuilder(ev);
   var cacheKey=ev.date;
   if(_parlayCache[cacheKey]){renderParlays(content,_parlayCache[cacheKey]);return;}
   if(_parlayFetching[cacheKey]){content.innerHTML="<div class='parlay-loading'>Building parlay suggestions…</div>";return;}
@@ -3881,6 +4127,279 @@ function makePickButton(fighter,side,myPick,fw,locked,regIdx){
   return b;
 }
 
+// ── Fight model: Elo + style matchup (#74) ──────────────────────────────
+// The dashboard reads the market well (movement, CLV, sharp-vs-square) but had
+// no independent view of who should win, so a line move looked the same whether
+// it carried information or just public money. This is that second opinion: a
+// rating rebuilt from results plus a few matchup differentials, shown next to
+// the de-vigged market price. The number that matters is the DIVERGENCE — the
+// market is right far more often than this is, so a gap is a prompt to look,
+// not a pick.
+//
+// Everything here runs off data.js (RESULTS_ARCHIVE, FIGHTER_STATS, RANKINGS),
+// costs one pass at first use, and degrades to "no model" for any fighter the
+// stats cache hasn't seen — never to a wrong number.
+// model:start
+// MODEL_EDGE_MIN is the smallest model-vs-market gap worth naming, and
+// MODEL_FLAG_MAX caps how many bouts a card may flag. The cap is the important
+// half: this model is a rough second opinion (see the note above), its typical
+// disagreement with the price is around 12 points, and badging every bout that
+// clears a fixed bar would badge half the card and mean nothing. Flagging only
+// the biggest gaps keeps the signal comparative — "the market and the model are
+// furthest apart HERE" — which is the question worth asking.
+var MODEL_BASE=1500,MODEL_K=24,MODEL_FINISH_K=1.2,MODEL_EDGE_MIN=12,MODEL_FLAG_MAX=3;
+function _mClamp(v,lo,hi){return v<lo?lo:v>hi?hi:v;}
+function _mNum(v){return typeof v==="number"&&isFinite(v)?v:0;}
+// "24-3-1" → {w:24,l:3,d:1}. Anything else reads as an empty record rather than NaN.
+function _mRecord(rec){
+  var m=/^(\d+)-(\d+)-(\d+)/.exec(String(rec||""));
+  return m?{w:+m[1],l:+m[2],d:+m[3]}:{w:0,l:0,d:0};
+}
+// '78"' → 78. Reach is the one physical edge that survives across divisions.
+function _mInches(s){var m=/(\d+(?:\.\d+)?)/.exec(String(s||""));return m?parseFloat(m[1]):null;}
+function _mAge(dob,now){
+  if(!dob)return null;
+  var t=Date.parse(dob);if(isNaN(t))return null;
+  return ((now||Date.now())-t)/31557600000;
+}
+// Last five results, most recent first: a win is +1 (+0.4 if it was a finish),
+// a loss −1. Decayed so last month outweighs last year.
+function _mForm(form){
+  if(!form||!form.length)return 0;
+  var s=0,w=0;
+  for(var i=0;i<form.length&&i<5;i++){
+    var f=form[i],d=Math.pow(0.8,i),fin=/ko|tko|sub/i.test(f.m||"");
+    var v=f.r==="W"?1+(fin?0.4:0):f.r==="L"?-1:0;
+    s+=v*d;w+=d;
+  }
+  return w?s/w:0;
+}
+// Share of wins that came inside the distance — the finisher's tail the market
+// prices in but a pure record does not.
+function _mFinishRate(st){
+  var r=_mRecord(st.rec);
+  if(!r.w)return 0;
+  return _mClamp((_mNum(st.ko)+_mNum(st.sub))/r.w,0,1);
+}
+// A fighter's starting rating before any archived result is replayed: career
+// record, current divisional ranking, recent form.
+function modelSeed(name,stats,rankings){
+  var st=(stats||{})[name];
+  if(!st)return null;
+  var r=_mRecord(st.rec),fights=r.w+r.l;
+  var winPct=fights?r.w/fights:0.5;
+  // Win RATE, not win margin: a 12-0 prospect and a 24-12 journeyman have the
+  // same +12 margin and the market treats them nothing alike. The margin still
+  // contributes, but only as a small tiebreaker.
+  var seed=MODEL_BASE+_mClamp(260*(winPct-0.5),-130,130)+_mClamp(4*(r.w-r.l),-40,40);
+  var rk=(rankings||{})[name];
+  if(rk)seed+=130-7*(rk-1);
+  seed+=60*_mForm(st.form);
+  return seed;
+}
+var _modelRatings=null;
+// Elo over every archived result, seeded as above. K is bumped for finishes:
+// stopping someone says more than out-pointing them.
+function modelRatings(stats,rankings,archive){
+  // Memoised only for the app's own data; a test or a what-if passing its own
+  // tables always gets a fresh table.
+  var memo=!stats&&!rankings&&!archive;
+  if(memo&&_modelRatings)return _modelRatings;
+  stats=stats||(typeof FIGHTER_STATS!=="undefined"?FIGHTER_STATS:{});
+  rankings=rankings||(typeof RANKINGS!=="undefined"?RANKINGS:{});
+  archive=archive||(typeof RESULTS_ARCHIVE!=="undefined"?RESULTS_ARCHIVE:{});
+  // Seed EVERY known fighter, not just the ones the archive happens to mention.
+  // Seeding lazily inside the replay left anyone who hasn't fought since the
+  // archive began sitting at the 1500 baseline — which had a #2-ranked 23-3
+  // lightweight rated as an unknown and produced a 59-point disagreement with
+  // the market.
+  var R={};
+  for(var n0 in stats){
+    if(!Object.prototype.hasOwnProperty.call(stats,n0))continue;
+    var s0=modelSeed(n0,stats,rankings);
+    if(s0!==null)R[n0]=s0;
+  }
+  function rating(n){
+    if(!(n in R)){var s=modelSeed(n,stats,rankings);R[n]=s===null?MODEL_BASE:s;}
+    return R[n];
+  }
+  var dates=Object.keys(archive).sort();
+  for(var i=0;i<dates.length;i++){
+    var fights=(archive[dates[i]]||{}).fights||[];
+    for(var j=0;j<fights.length;j++){
+      var f=fights[j];
+      if(!f.winner||!f.f1||!f.f2)continue;
+      var loser=f.winner===f.f1?f.f2:f.winner===f.f2?f.f1:null;
+      if(!loser)continue;              // a name we can't align — skip, don't guess
+      var ra=rating(f.winner),rb=rating(loser);
+      var exp=1/(1+Math.pow(10,(rb-ra)/400));
+      var k=MODEL_K*(/ko|tko|sub/i.test(f.method||"")?MODEL_FINISH_K:1);
+      R[f.winner]=ra+k*(1-exp);
+      R[loser]=rb-k*(1-exp);
+    }
+  }
+  if(memo)_modelRatings=R;
+  return R;
+}
+// Style matchup, expressed in Elo points so it adds straight onto the rating
+// gap. Every term is clamped: one freak stat line must never swing a fight.
+function modelStyleAdj(a,b,now){
+  if(!a||!b)return {adj:0,factors:[]};
+  var factors=[],adj=0;
+  function add(label,pts){
+    pts=Math.round(pts);
+    if(!pts)return;
+    adj+=pts;factors.push({label:label,pts:pts});
+  }
+  var ra=_mInches(a.rch),rb=_mInches(b.rch);
+  if(ra!==null&&rb!==null&&ra!==rb)
+    add((ra>rb?"+":"")+Math.round(ra-rb)+"\" reach",_mClamp(4*(ra-rb),-40,40));
+  var aa=_mAge(a.dob,now),ab=_mAge(b.dob,now);
+  if(aa!==null&&ab!==null&&Math.abs(aa-ab)>=1)
+    add(Math.round(Math.abs(aa-ab))+"yr "+(aa<ab?"younger":"older"),_mClamp(-6*(aa-ab),-45,45));
+  var sa=_mNum(a.slpm)*_mNum(a.acc)/100,sb=_mNum(b.slpm)*_mNum(b.acc)/100;
+  if(sa||sb)add("striking volume",_mClamp(12*(sa-sb),-40,40));
+  var ga=_mNum(a.td)*6+_mNum(a.tdd)*0.5,gb=_mNum(b.td)*6+_mNum(b.tdd)*0.5;
+  if(ga||gb)add("grappling",_mClamp(0.6*(ga-gb),-40,40));
+  var fa=_mFinishRate(a),fb=_mFinishRate(b);
+  if(fa||fb)add("finish rate",_mClamp(60*(fa-fb),-30,30));
+  // Southpaws see orthodox opponents constantly; the reverse isn't true.
+  var stA=String(a.stn||"").toLowerCase(),stB=String(b.stn||"").toLowerCase();
+  if(stA==="southpaw"&&stB==="orthodox")add("southpaw vs orthodox",12);
+  else if(stB==="southpaw"&&stA==="orthodox")add("southpaw vs orthodox",-12);
+  return {adj:_mClamp(adj,-120,120),factors:factors};
+}
+// How much of the two profiles we actually have, 0.35–1. A fighter with no
+// record, no form and no striking stats is not a fighter the model knows
+// anything about, and posting a confident number on him is how a 20% market
+// underdog came out an 79% model favourite. Thin data shrinks the whole rating
+// gap toward a coin flip instead.
+function _mConfidence(a,b){
+  function known(st){
+    var r=_mRecord(st.rec),fights=r.w+r.l,c=0;
+    if(fights)c+=0.5*Math.min(fights,10)/10;
+    if(st.form&&st.form.length)c+=0.3*Math.min(st.form.length,3)/3;
+    if(_mNum(st.slpm))c+=0.2;
+    return c;
+  }
+  return _mClamp(Math.min(known(a),known(b)),0.35,1);
+}
+// The widest rating gap the model is allowed to claim (~91%). It is a rough
+// second opinion built from a few public numbers; it has no business posting
+// a 97% certainty on anybody.
+var MODEL_MAX_DIFF=400;
+// Model win probability for a bout. null when either fighter is missing from the
+// stats cache — a half-known matchup is not a weaker prediction, it's a guess.
+function modelProb(n1,n2,stats,rankings,archive,now){
+  var S=stats||(typeof FIGHTER_STATS!=="undefined"?FIGHTER_STATS:{});
+  var a=S[n1],b=S[n2];
+  if(!a||!b)return null;
+  var R=modelRatings(stats,rankings,archive);
+  var ea=(n1 in R)?R[n1]:MODEL_BASE,eb=(n2 in R)?R[n2]:MODEL_BASE;
+  var style=modelStyleAdj(a,b,now);
+  var conf=_mConfidence(a,b);
+  var diff=_mClamp(((ea-eb)+style.adj)*conf,-MODEL_MAX_DIFF,MODEL_MAX_DIFF);
+  var p1=1/(1+Math.pow(10,-diff/400));
+  return {p1:p1,p2:1-p1,elo1:Math.round(ea),elo2:Math.round(eb),
+          styleAdj:style.adj,confidence:Math.round(conf*100)/100,
+          factors:style.factors};
+}
+// American moneyline → implied probability.
+function modelImplied(o){
+  if(typeof o!=="number"||!isFinite(o))return null;
+  return o<0?(-o)/((-o)+100):100/(o+100);
+}
+// The market's own probabilities with the bookmaker's margin divided out, so
+// model and market are compared on the same scale. Without this the market side
+// always sums past 100% and the model looks systematically low on both fighters.
+function modelDeVig(odds){
+  if(!odds)return null;
+  var p1=modelImplied(odds.f1),p2=modelImplied(odds.f2);
+  if(p1===null||p2===null)return null;
+  var s=p1+p2;
+  if(!(s>0))return null;
+  return {p1:p1/s,p2:p2/s};
+}
+// Model vs market for one bout, plus the divergence worth flagging.
+function modelEdge(fight,stats,rankings,archive,now){
+  if(!fight||!fight.f1||!fight.f2)return null;
+  var m=modelProb(fight.f1.n,fight.f2.n,stats,rankings,archive,now);
+  if(!m)return null;
+  var mkt=modelDeVig(fight.odds);
+  var out={model:m,market:mkt,edge:0,side:0};
+  if(mkt){
+    var d1=(m.p1-mkt.p1)*100;
+    out.edge=Math.round(Math.abs(d1)*10)/10;
+    out.side=d1>0?1:d1<0?2:0;
+  }
+  return out;
+}
+// Which bouts on a card carry the flag: the biggest model-vs-market gaps, at
+// most MODEL_FLAG_MAX of them, and none below MODEL_EDGE_MIN. Keyed by the
+// fighter pair so the row renderer can ask about one bout at a time.
+function modelCardFlags(ev,stats,rankings,archive,now){
+  var flags={};
+  if(!ev||!ev.fights)return flags;
+  var scored=[];
+  for(var i=0;i<ev.fights.length;i++){
+    var f=ev.fights[i],e=modelEdge(f,stats,rankings,archive,now);
+    if(e&&e.market&&e.edge>=MODEL_EDGE_MIN)scored.push({key:modelBoutKey(f),edge:e.edge});
+  }
+  scored.sort(function(a,b){return b.edge-a.edge;});
+  for(var j=0;j<scored.length&&j<MODEL_FLAG_MAX;j++)flags[scored[j].key]=true;
+  return flags;
+}
+function modelBoutKey(f){return f&&f.f1&&f.f2?f.f1.n+"|"+f.f2.n:"";}
+// model:end
+
+// Per-card flag sets, built once per event on first use (see modelCardFlags).
+var _modelFlags={};
+function modelFlagsFor(ev){
+  if(!ev)return {};
+  var k=ev.date+"|"+ev.name;
+  if(!(k in _modelFlags))_modelFlags[k]=modelCardFlags(ev);
+  return _modelFlags[k];
+}
+// The model row under the moneyline: two probabilities, and — on the bouts where
+// model and market disagree most — how far apart they are. Absent entirely when
+// either fighter is missing from the stats cache.
+function makeModelRow(fight,ev){
+  var e=modelEdge(fight);
+  if(!e)return null;
+  var p1=Math.round(e.model.p1*100),p2=100-p1;
+  var why=e.model.factors.map(function(f){return f.label;}).join(", ");
+  var row=document.createElement("div");row.className="model-row";
+  row.title="Model win probability — Elo rebuilt from recent results, adjusted for "
+    +"the matchup"+(why?" ("+why+")":"")+". A second opinion on the price, not a pick.";
+  // Each side reads "<model> / <market>" so the two numbers sit against the
+  // fighter they belong to. A single centred market figure was ambiguous — on a
+  // heavy favourite it looked like it belonged to whichever side you read first.
+  var v1=document.createElement("div");v1.className="model-val"+(p1>=p2?" mlean":"");
+  v1.appendChild(document.createTextNode(p1+"%"));
+  var v2=document.createElement("div");v2.className="model-val mr"+(p2>p1?" mlean":"");
+  v2.appendChild(document.createTextNode(p2+"%"));
+  if(e.market){
+    var k1=Math.round(e.market.p1*100),k2=100-k1;
+    var m1=document.createElement("span");m1.className="model-mkt";m1.textContent=" / "+k1+"%";v1.appendChild(m1);
+    var m2=document.createElement("span");m2.className="model-mkt";m2.textContent=" / "+k2+"%";v2.appendChild(m2);
+  }
+  var ctr=document.createElement("div");ctr.className="model-ctr";
+  ctr.textContent=e.market?"MODEL / MARKET":"MODEL";
+  if(e.market&&e.side&&modelFlagsFor(ev)[modelBoutKey(fight)]){
+    var lean=e.side===1?fight.f1:fight.f2;
+    var gap=document.createElement("span");gap.className="model-gap";
+    gap.textContent="+"+Math.round(e.edge);
+    gap.title="The model has "+lean.n.split(" ").pop()+" "+Math.round(e.edge)
+      +" points above the market price — one of this card's widest gaps.";
+    (e.side===1?v1:v2).appendChild(gap);
+    var flag=document.createElement("span");flag.className="model-flag";
+    flag.textContent="WIDEST GAP";
+    ctr.appendChild(flag);
+  }
+  row.appendChild(v1);row.appendChild(ctr);row.appendChild(v2);
+  return row;
+}
+
 function makeFightRow(fight,ei,fi,regIdx,showPick){
   var isMain=fight.lbl==="Main Event",isCo=fight.lbl==="Co-Main";
   var row=document.createElement("div");
@@ -3927,6 +4446,12 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
     if(db1){var dg1=document.createElement("span");dg1.className="odds-dog";dg1.title="Underdog bonus if "+fight.f1.n.split(" ").pop()+" wins";dg1.textContent="+"+db1;ov1.appendChild(dg1);}
     if(db2){var dg2=document.createElement("span");dg2.className="odds-dog";dg2.title="Underdog bonus if "+fight.f2.n.split(" ").pop()+" wins";dg2.textContent="+"+db2;ov2.appendChild(dg2);}
     row.appendChild(or);
+  }
+  // The model's own read, next to the market's (#74). Shown for an unpriced bout
+  // too — that is exactly when a second opinion has nothing to compete with.
+  if(!fight.winner){
+    var mrow=makeModelRow(fight,EVENTS[ei]);
+    if(mrow)row.appendChild(mrow);
   }
   if(fight.winner||fight.state==="in"||fight.state==="post"){
     var rr=document.createElement("div");rr.className="result-row";

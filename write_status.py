@@ -53,9 +53,14 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
+import alert_calibration as calib
+
 DATA_PATH     = Path("data.js")
 STATUS_PATH   = Path("overseer-status.json")
 SNAPSHOT_PATH = Path("odds-snapshots.jsonl")
+# Built by odds_series.py from the snapshot log; read here only to calibrate the
+# per-tier alert thresholds (#93).
+SERIES_PATH   = Path("odds-series.json")
 
 # A bout whose moneyline has drifted at least this many points from its opening
 # line is a "steam move" worth flagging — the sharpest signal this tracker
@@ -125,9 +130,10 @@ def odds_budget_exhausted(path=ODDS_STATE_PATH):
 # A single serialised fight: odds literal followed by both fighters' names.
 # Matches scrape.fight_js output, which emits each fight on one line.
 FIGHT_RE = re.compile(
-    r'odds:\{f1:(-?\d+),f2:(-?\d+)\},'
+    r'lbl:"(?P<lbl>[^"]*)",wc:"(?P<wc>[^"]*)",[^{]*'
+    r'odds:\{f1:(?P<f1_odds>-?\d+),f2:(?P<f2_odds>-?\d+)\},'
     r'winner:"[^"]*",method:"[^"]*",round:[^,]*,state:"[^"]*",'
-    r'f1:\{n:"([^"]+)"[^}]*\},f2:\{n:"([^"]+)"'
+    r'f1:\{n:"(?P<f1>[^"]+)"[^}]*\},f2:\{n:"(?P<f2>[^"]+)"'
 )
 # Any serialised bout, whether or not it carries odds (odds:null bouts don't
 # match FIGHT_RE). Counts the announced card so an event with fighters but no
@@ -166,9 +172,14 @@ def parse_events(data):
         name, date = m.group(1), m.group(2)
         end = heads[n + 1].start() if n + 1 < len(heads) else len(block)
         seg = block[m.start():end]
+        # lbl/wc ride along so the alert tier comes from the card itself rather
+        # than a position guess, and so the snapshot log accumulates the weight
+        # class a future per-division calibration will need (#93).
         fights = [
-            {"f1": f1n, "f2": f2n, "f1_odds": int(f1o), "f2_odds": int(f2o)}
-            for f1o, f2o, f1n, f2n in FIGHT_RE.findall(seg)
+            {"f1": m2["f1"], "f2": m2["f2"],
+             "f1_odds": int(m2["f1_odds"]), "f2_odds": int(m2["f2_odds"]),
+             "lbl": m2["lbl"], "wc": m2["wc"]}
+            for m2 in FIGHT_RE.finditer(seg)
         ]
         events.append({
             "event_id": f"{date}:{slug(name)}",
@@ -357,7 +368,19 @@ def alert_priority(alert, days_out=None):
     return round(score, 1)
 
 
-def event_movers(fights, opens, threshold):
+def load_odds_series(path=SERIES_PATH):
+    """The persisted per-bout odds time-series, or {} when it isn't there yet.
+
+    Only the alert calibration reads this, and it degrades to the global default
+    on {} — so a missing or corrupt series file must never fail the status run.
+    """
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def event_movers(fights, opens, threshold, thresholds=None):
     """Bouts whose line has moved at least `threshold` points from its opener.
 
     A steam move on either fighter trips the alert (American odds aren't
@@ -370,13 +393,21 @@ def event_movers(fights, opens, threshold):
     for i, f in enumerate(fights):
         d = delta(opens.get(matchup_key(f)), f)
         magnitude = max(abs(d["f1_odds"]), abs(d["f2_odds"]))
-        if magnitude >= threshold:
+        # Points of moneyline mean different things on a headliner and on a
+        # prelim, so each bout is judged against its own tier's calibrated bar
+        # (#93) — the global threshold is only the fallback.
+        tier = calib.bout_tier(i, f.get("lbl", ""))
+        bar  = calib.threshold_for(thresholds, tier, threshold)
+        if magnitude >= bar:
             opener = opens.get(matchup_key(f))
             mover = {
                 "f1": f["f1"], "f2": f["f2"],
                 "f1_movement": d["f1_odds"], "f2_movement": d["f2_odds"],
                 "magnitude": magnitude,
                 "main_event": i == 0,
+                "tier": tier,
+                "threshold": bar,
+                "wc": f.get("wc", ""),
             }
             # How much the market actually changed its mind, in probability
             # points rather than moneyline points (#26).
@@ -641,6 +672,12 @@ def main():
     # one run's classification across two different answers.
     budget_dead = odds_budget_exhausted()
 
+    # Per-tier alert thresholds, re-derived each run from the committed odds
+    # time-series (#93). One global constant let prelim noise flood the feed at
+    # the same sensitivity as a main-event steam move.
+    calibration = calib.calibrate(load_odds_series(), MOVEMENT_ALERT_THRESHOLD)
+    thresholds  = calibration["thresholds"]
+
     out_events   = []
     stale_events = 0
     alerts       = []
@@ -677,7 +714,8 @@ def main():
         # headliner's single line_movement. Empty-payload events have no real
         # lines to move, so they're skipped (#17).
         if data_ok:
-            for mover in event_movers(ev["fights"], opens, MOVEMENT_ALERT_THRESHOLD):
+            for mover in event_movers(ev["fights"], opens,
+                                      MOVEMENT_ALERT_THRESHOLD, thresholds):
                 alerts.append({"event_id": ev["event_id"], **mover})
 
         out_events.append({
@@ -735,6 +773,9 @@ def main():
         },
         "stale_threshold_hours":    STALE_THRESHOLD_HOURS,
         "movement_alert_threshold": MOVEMENT_ALERT_THRESHOLD,
+        # What each tier is actually judged by, and the evidence behind it (#93).
+        "movement_alert_thresholds": thresholds,
+        "movement_alert_calibration": calibration["tiers"],
         "events":                   out_events,
         "alerts":                   alerts,
         "errors":                   errors,

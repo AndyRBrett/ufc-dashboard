@@ -39,6 +39,14 @@ ODDS_API_URL = "https://api.the-odds-api.com/v4/sports/mma_mixed_martial_arts/od
 # disabled with an empty string) via the environment.
 ODDS_API_REGIONS_PRIMARY   = os.environ.get("ODDS_API_REGIONS_PRIMARY", "us")
 ODDS_API_REGIONS_SECONDARY = os.environ.get("ODDS_API_REGIONS_SECONDARY", "us2,uk,eu,au")
+# Both of the above spend the SAME monthly quota, so neither survives budget
+# exhaustion (#94). Two independent backstops do:
+#   * a second Odds API account's key — same coverage, its own quota;
+#   * the ESPN scoreboard, which carries moneylines, is keyless and unmetered.
+# Set ODDS_ESPN=0 to disable the unmetered fallback.
+ODDS_API_KEY_SECONDARY = os.environ.get("ODDS_API_KEY_SECONDARY", "")
+ODDS_ESPN_ENABLED      = os.environ.get("ODDS_ESPN", "1") != "0"
+ODDS_ESPN_DAYS_AHEAD   = int(os.environ.get("ODDS_ESPN_DAYS_AHEAD", "45"))
 WIKI_API     = "https://en.wikipedia.org/w/api.php"
 WIKI_HDR     = {
     "User-Agent": (
@@ -1343,22 +1351,46 @@ def _shift_hhmm(hhmm, hours):
 _odds_requests_remaining = None   # last x-requests-remaining seen from the Odds API
 _odds_last_status = None          # last HTTP status seen from the Odds API
 
+# What each odds provider did this run, keyed by quota bucket (#94). Persisted
+# into odds-state.json so the NEXT run can skip a provider whose budget is spent
+# instead of spending a call to rediscover that.
+_provider_stats = {}
 
-def _fetch_odds_api(regions, source):
+
+def note_provider_result(quota, source, status=..., remaining=..., bouts=...):
+    """Record one provider's outcome for this run (#94).
+
+    Called more than once per provider (once for the response, once for the
+    parsed bout count), so only the fields explicitly passed are overwritten —
+    a later call must never blank the status the earlier one recorded.
+    """
+    entry = _provider_stats.setdefault(quota, {"provider": source})
+    entry["provider"] = source
+    if status is not ...:
+        entry["last_status"] = status
+    if remaining is not ...:
+        entry["requests_remaining"] = remaining
+    if bouts is not ...:
+        entry["bouts"] = bouts
+    return entry
+
+
+def _fetch_odds_api(regions, source, api_key=None, quota="the-odds-api"):
     """One Odds API source adapter: fetch `regions` and return a tagged index.
 
     Returns an empty dict on a missing key, a non-200, a request error, or an
     empty payload — all of which the fallback chain treats the same way (the next
     source gets a chance to cover the bout).
     """
-    if not ODDS_API_KEY or not regions:
+    api_key = ODDS_API_KEY if api_key is None else api_key
+    if not api_key or not regions:
         return {}
     try:
         r = get_with_retry(
             ODDS_API_URL,
             label=f"odds {source}",
             params={
-                "apiKey": ODDS_API_KEY,
+                "apiKey": api_key,
                 "regions": regions,
                 "markets": "h2h",
                 "oddsFormat": "american",
@@ -1375,19 +1407,30 @@ def _fetch_odds_api(regions, source):
         # Surface the quota so exhaustion is visible in the health report instead
         # of silently degrading into stale lines for weeks.
         global _odds_requests_remaining, _odds_last_status
-        _odds_last_status = r.status_code
-        if remaining is not None:
-            try:
-                _odds_requests_remaining = int(remaining)
-            except ValueError:
-                pass
+        try:
+            remaining_n = int(remaining) if remaining is not None else None
+        except ValueError:
+            remaining_n = None
+        # The top-level odds-state fields describe the PRIMARY key's budget —
+        # health.py and write_status.odds_budget_exhausted read them and must not
+        # start seeing a backup key's quota. Per-provider detail goes to
+        # _provider_stats instead (#94).
+        if quota == "the-odds-api":
+            _odds_last_status = r.status_code
+            if remaining_n is not None:
+                _odds_requests_remaining = remaining_n
+        note_provider_result(quota, source,
+                             status=r.status_code, remaining=remaining_n)
         if r.status_code != 200:
             return {}
         data = r.json()
     except Exception as e:
         print(f"Odds API [{source}] error: {e}", file=sys.stderr)
+        note_provider_result(quota, source, status=None, remaining=None)
         return {}
-    return _index_odds_api(data, source)
+    idx = _index_odds_api(data, source)
+    note_provider_result(quota, source, bouts=len(idx))
+    return idx
 
 
 # --- Odds API budget -------------------------------------------------------
@@ -1566,19 +1609,309 @@ def fetch_odds_secondary():
 
     Distinct coverage from the primary, so it both backstops an empty primary
     payload and adds cross-book lines for fights the US books haven't posted yet.
+    Note this spends the SAME quota as the primary — see fetch_odds_backup_key
+    and fetch_odds_espn for the sources that survive budget exhaustion.
     """
     return _fetch_odds_api(
         ODDS_API_REGIONS_SECONDARY, f"the-odds-api:{ODDS_API_REGIONS_SECONDARY}"
     )
 
 
+def fetch_odds_backup_key():
+    """Same API, a second account's key — an independent monthly quota (#94).
+
+    Costs nothing when ODDS_API_KEY_SECONDARY is unset (the usual case): the
+    provider returns an empty index and the chain moves on.
+    """
+    if not ODDS_API_KEY_SECONDARY:
+        return {}
+    return _fetch_odds_api(
+        ODDS_API_REGIONS_PRIMARY,
+        f"the-odds-api-backup:{ODDS_API_REGIONS_PRIMARY}",
+        api_key=ODDS_API_KEY_SECONDARY,
+        quota="the-odds-api-backup",
+    )
+
+
+# --- Unmetered fallback: ESPN scoreboard moneylines (#94) ------------------
+#
+# The metered chain above shares one budget, so when it runs out every upcoming
+# card sits odds-unavailable until the monthly reset — two announced cards with
+# 12-14 parsed bouts each did exactly that. ESPN publishes a moneyline per bout
+# on the scoreboard payload this scraper already fetches for start times: free,
+# keyless, no quota. Coverage is thinner and the book differs, so it sits LAST
+# in the chain and only fills pairs no metered source priced.
+
+def _espn_competitor_names(competition):
+    """(home_name, away_name) for an ESPN MMA competition, or (None, None)."""
+    home = away = None
+    for c in competition.get("competitors", []):
+        athlete = c.get("athlete") or {}
+        name = clean(athlete.get("displayName") or c.get("displayName") or "")
+        if not name:
+            continue
+        if c.get("homeAway") == "away":
+            away = name
+        elif c.get("homeAway") == "home":
+            home = name
+        elif home is None:
+            home = name
+        elif away is None:
+            away = name
+    return home, away
+
+
+def _espn_moneyline(side_odds):
+    """The American moneyline on one side of an ESPN odds record, or None.
+
+    ESPN has shipped this field as `moneyLine`, as `current.moneyLine.american`
+    and as a plain string ("-165"), so read all three shapes rather than trusting
+    one — a payload shape change must degrade to "no line", never to an
+    exception that takes the whole fallback down.
+    """
+    if not isinstance(side_odds, dict):
+        return None
+    raw = side_odds.get("moneyLine")
+    if raw is None:
+        cur = side_odds.get("current") or {}
+        ml  = cur.get("moneyLine") if isinstance(cur, dict) else None
+        if isinstance(ml, dict):
+            raw = ml.get("american", ml.get("value"))
+        else:
+            raw = ml
+    if raw in (None, "", "EVEN", "even"):
+        return None
+    try:
+        return int(round(float(str(raw).replace("+", "").strip())))
+    except (TypeError, ValueError):
+        return None
+
+
+def _index_espn_odds(payload, source="espn"):
+    """Pure: fighter-pair odds index from an ESPN MMA scoreboard payload (#94).
+
+    Same shape as _index_odds_api so the two are interchangeable in the chain.
+    Bouts without a usable pair of moneylines are skipped, as are pairs whose
+    two prices don't form a plausible market (_valid_odds) — a fallback that
+    ships junk lines is worse than one that ships none.
+    """
+    odds_index = {}
+    for ev in (payload or {}).get("events", []):
+        for comp in ev.get("competitions", []):
+            home, away = _espn_competitor_names(comp)
+            if not home or not away:
+                continue
+            for rec in comp.get("odds", []) or []:
+                if not isinstance(rec, dict):
+                    continue
+                f1_odds = _espn_moneyline(rec.get("homeTeamOdds"))
+                f2_odds = _espn_moneyline(rec.get("awayTeamOdds"))
+                if f1_odds is None or f2_odds is None:
+                    continue
+                if not _valid_odds(f1_odds, f2_odds):
+                    print(
+                        f"Odds rejected ({home} vs {away}): f1={f1_odds} "
+                        f"f2={f2_odds} — source={source}", file=sys.stderr)
+                    continue
+                pair = tuple(sorted([home.lower(), away.lower()]))
+                odds_index[pair] = {
+                    "f1_name": home,
+                    "f2_name": away,
+                    "f1_odds": f1_odds,
+                    "f2_odds": f2_odds,
+                    "source":  source,
+                    "commence_time": comp.get("date", "") or ev.get("date", ""),
+                }
+                break   # first provider on the bout wins; they rarely disagree
+    return odds_index
+
+
+def _espn_scoreboard(dates):
+    """Fetch one ESPN scoreboard window (cached per `dates` key). {} on failure."""
+    if dates in _espn_cache:
+        return _espn_cache[dates]
+    payload = {}
+    try:
+        r = requests.get(ESPN_SCOREBOARD, params={"dates": dates},
+                         headers=WIKI_HDR, timeout=15)
+        if r.status_code == 200:
+            payload = r.json()
+        else:
+            print(f"  ESPN scoreboard [{dates}]: HTTP {r.status_code}", file=sys.stderr)
+    except Exception as e:
+        print(f"  ESPN error: {e}", file=sys.stderr)
+    _espn_cache[dates] = payload
+    return payload
+
+
+def espn_odds_windows(now, days_ahead=None):
+    """Scoreboard `dates` queries covering the priced window, cheapest first.
+
+    A single range query normally covers everything; the per-weekend fallbacks
+    exist because ESPN has answered range queries with an empty payload before,
+    and a keyless source is only useful if it actually returns something.
+    """
+    days_ahead = ODDS_ESPN_DAYS_AHEAD if days_ahead is None else days_ahead
+    start = now.date()
+    end   = start + timedelta(days=days_ahead)
+    windows = [f"{start:%Y%m%d}-{end:%Y%m%d}"]
+    day = start
+    while day <= end and len(windows) < 9:
+        if day.weekday() in (5, 6):     # UFC cards land Sat/Sun
+            windows.append(f"{day:%Y%m%d}")
+        day += timedelta(days=1)
+    return windows
+
+
+def fetch_odds_espn(now=None):
+    """Unmetered ESPN moneylines for the upcoming window (#94)."""
+    if not ODDS_ESPN_ENABLED:
+        return {}
+    now = now or datetime.now(timezone.utc)
+    combined = {}
+    for dates in espn_odds_windows(now):
+        idx = _index_espn_odds(_espn_scoreboard(dates))
+        for pair, o in idx.items():
+            combined.setdefault(pair, o)
+        if combined and dates.count("-"):
+            break   # the range query answered; no need to walk weekends
+    note_provider_result("espn", "espn", status=200 if combined else None,
+                         remaining=None, bouts=len(combined))
+    return combined
+
+
+# --- Provider registry and quota-aware selection (#94) ---------------------
+
+class OddsProvider:
+    """One source in the odds fallback chain.
+
+    `quota` names the budget the provider spends, so providers sharing a key
+    share an exhaustion state; `metered` marks whether it has a budget at all.
+    """
+
+    def __init__(self, name, fetch, quota=None, metered=True):
+        self.name    = name
+        self.fetch   = fetch
+        self.quota   = quota or name
+        self.metered = metered
+
+    @property
+    def __name__(self):          # keeps the existing "Odds source X" logging
+        return self.name
+
+    def __call__(self):
+        return self.fetch()
+
+
 # Ordered fallback chain. Higher-priority sources win; later ones only fill the
-# fighter-pairs nobody above them covered (see fetch_odds). Swap or extend this
-# list to register additional sportsbooks/APIs.
-ODDS_SOURCES = [fetch_odds_primary, fetch_odds_secondary]
+# fighter-pairs nobody above them covered (see fetch_odds). Append a provider
+# here to register a new sportsbook/API.
+ODDS_PROVIDERS = [
+    OddsProvider("the-odds-api:primary",   fetch_odds_primary,    quota="the-odds-api"),
+    OddsProvider("the-odds-api:secondary", fetch_odds_secondary,  quota="the-odds-api"),
+    OddsProvider("the-odds-api:backup-key", fetch_odds_backup_key,
+                 quota="the-odds-api-backup"),
+    OddsProvider("espn", fetch_odds_espn, quota="espn", metered=False),
+]
+# Back-compat alias: the chain used to be a plain list of callables.
+ODDS_SOURCES = ODDS_PROVIDERS
+
+# How long a spent quota bucket is skipped before it is probed again. The Odds
+# API resets monthly, so the month rollover unblocks it too — the timer only
+# exists so a plan upgrade or an early reset isn't ignored for weeks.
+ODDS_QUOTA_RETRY_HOURS = 12
 
 
-def fetch_odds(sources=None):
+def provider_quota_state(state, quota):
+    """The persisted record for one quota bucket ({} when there is none)."""
+    providers = (state or {}).get("providers") or {}
+    entry = providers.get(quota)
+    return entry if isinstance(entry, dict) else {}
+
+
+def quota_exhausted(pstate):
+    """True when a bucket's last call reported a spent budget.
+
+    The Odds API answers 401 for both a rejected key and a spent quota;
+    x-requests-remaining tells them apart (0 = spent). A rejected key is a
+    different failure and must keep being retried — it never self-heals, and
+    quietly skipping it would hide the outage.
+    """
+    if not pstate:
+        return False
+    if pstate.get("last_status") == 429:
+        return True
+    rem = pstate.get("requests_remaining")
+    return rem is not None and rem <= 0
+
+
+def quota_blocked(pstate, now, retry_hours=ODDS_QUOTA_RETRY_HOURS):
+    """True when a spent bucket is still inside its cooldown.
+
+    Never blocks forever: a UTC month rollover (when the quota resets) or
+    `retry_hours` since exhaustion, whichever comes first, re-opens it. An
+    exhaustion with no recorded timestamp is probed rather than skipped, so a
+    state file written by an older version can't mute a provider.
+    """
+    if not quota_exhausted(pstate):
+        return False
+    at = _parse_ts(pstate.get("exhausted_at"))
+    if at is None:
+        return False
+    if (now.year, now.month) != (at.year, at.month):
+        return False
+    return (now - at) < timedelta(hours=retry_hours)
+
+
+def select_odds_providers(providers, state, now):
+    """The providers worth calling this run, in priority order (#94).
+
+    Skipping a spent metered provider is the point: it stops the run burning
+    time on calls that can only 401, and it is what lets the unmetered ESPN
+    fallback actually price a card while the primary budget is gone.
+    """
+    picked = []
+    for p in providers:
+        pstate = provider_quota_state(state, getattr(p, "quota", getattr(p, "name", "")))
+        if getattr(p, "metered", True) and quota_blocked(pstate, now):
+            print(
+                f"Odds provider {getattr(p, 'name', p)}: skipped — budget spent "
+                f"(remaining {pstate.get('requests_remaining')}, since "
+                f"{pstate.get('exhausted_at')})",
+                file=sys.stderr,
+            )
+            continue
+        picked.append(p)
+    return picked
+
+
+def record_provider_state(state, now, stats=None):
+    """Fold this run's per-provider results into the persisted odds state (#94).
+
+    Sets `exhausted_at` the first time a bucket reports a spent budget and
+    clears it as soon as the bucket answers with quota again, which is what
+    makes the skip in select_odds_providers self-healing.
+    """
+    stats = _provider_stats if stats is None else stats
+    providers = dict((state or {}).get("providers") or {})
+    for quota, result in stats.items():
+        prev  = providers.get(quota) if isinstance(providers.get(quota), dict) else {}
+        entry = dict(prev)
+        entry.update(result)
+        entry["last_fetch_at"] = now.isoformat()
+        if result.get("bouts"):
+            entry["last_ok_at"] = now.isoformat()
+        if quota_exhausted(entry):
+            entry.setdefault("exhausted_at", now.isoformat())
+        else:
+            entry.pop("exhausted_at", None)
+        providers[quota] = entry
+    if providers:
+        state["providers"] = providers
+    return state
+
+
+def fetch_odds(sources=None, state=None, now=None):
     """Build the combined fighter-pair odds index by querying each source in
     priority order.
 
@@ -1587,8 +1920,14 @@ def fetch_odds(sources=None):
     source that fails or parses zero bouts contributes nothing, so the chain
     degrades gracefully instead of leaving a card with no lines (#14/#18). Every
     entry keeps a `source` attribution (see odds_source).
+
+    Passing `state` (the persisted odds state) additionally skips providers whose
+    budget is known to be spent, so the unmetered fallback gets its turn instead
+    of the run stalling on a dead quota (#94).
     """
-    sources  = ODDS_SOURCES if sources is None else sources
+    sources = ODDS_PROVIDERS if sources is None else sources
+    if state is not None:
+        sources = select_odds_providers(sources, state, now or datetime.now(timezone.utc))
     combined = {}
     for src in sources:
         label = getattr(src, "__name__", str(src))
@@ -2714,7 +3053,7 @@ def step_build_events(data, now):
     idle_pulls = odds_state.get("idle_pulls", 0)
     if should_fetch_odds(now, odds_state.get("last_fetch_at"), days_out, idle_pulls):
         print(f"Fetching odds (next card {days_out}d out)...", file=sys.stderr)
-        odds_index = fetch_odds()
+        odds_index = fetch_odds(state=odds_state, now=now)
         digest     = odds_lines_digest(odds_index)
         odds_state["idle_pulls"] = next_idle_pulls(
             idle_pulls, odds_state.get("lines_digest"), digest)
@@ -2728,6 +3067,9 @@ def step_build_events(data, now):
         if _odds_requests_remaining is not None:
             odds_state["requests_remaining"] = _odds_requests_remaining
         odds_state["next_event_days_out"] = days_out
+        # Per-provider budgets, so the next run can skip a spent one and let the
+        # unmetered fallback price the card instead (#94).
+        record_provider_state(odds_state, now)
         save_odds_state(odds_state)
         if odds_state["idle_pulls"]:
             print(
