@@ -237,3 +237,64 @@ ones named above, in rough value order:
 3. **#93** — once a few months of snapshots carry `wc`, extend the calibration to
    tier × weight band behind the existing `MIN_SAMPLES` guard.
 4. **#90** — same-camp correlation needs a camp/team field scraped first.
+
+---
+
+## M5 — follow-up: wrong fighter behind a name (`scrape.py`, `health.py`)
+
+Found by looking at the #74 model row on the live card: the main event showed
+`MODEL 28% / MARKET 77%` with a +49 gap on the underdog. The model wasn't
+disagreeing with the market — it was reading a different man's profile.
+
+**What was wrong.** UFCStats files several fighters under the same name, and
+`_search_ufcstats` disambiguated by *most total fights*, on the theory that the
+busiest record is the active roster member. It isn't, and the failure is silent —
+a plausible record for the wrong person goes onto the card and into the model:
+
+| card name | profile the scraper cached | reality |
+| --- | --- | --- |
+| Jean Silva (ranked #6, main event) | 19-12-3, born **1977**, one UFC opponent (Takanori Gomi) | a 48-year-old namesake |
+| Petr Yan (champion, title co-main) | 11-13-0, born **1980**, one UFC opponent | a 46-year-old namesake |
+
+Both were the *more experienced* row, which is exactly why the old rule picked
+them. This is also what produced the two widest "model vs market" gaps on the
+card — the model was working correctly on wrong inputs.
+
+**Fix — recency, not volume.** `order_ufcstats_matches` (pure) now orders
+same-name candidates by *who fought most recently*, with total fights kept only
+as the tie-break for candidates whose page couldn't be read. `_search_ufcstats`
+fetches the last-fight date for up to `_UFCSTATS_DISAMBIG_MAX` (4) candidates —
+a cost paid only on the rare ambiguous name — and logs each candidate's record
+and last-fight date so the choice is auditable in the scrape log.
+
+**Detection — `profile-mismatch` (WARN) in `health.py`.** The fix stops new bad
+matches; this catches ones already cached, on *all* upcoming cards rather than
+only imminent ones (a wrong profile is wrong the day it lands). Two tells a real
+roster member cannot produce:
+
+- the profile is `PROFILE_MAX_AGE` (44) or older — nobody on a UFC card is;
+- the fighter is **ranked** but the profile lists ≤1 UFC opponent — a ranked
+  fighter has a UFC record by definition.
+
+The ranking is load-bearing in the second one: a debutant legitimately has no UFC
+history, so without it the check would flag every new signing. Empty and failed
+profiles are left to `stats-missing` / `stats-fetch-failed` — claiming "wrong
+fighter" on a profile with no data would be a guess. WARN only: a false positive
+must never block a card from publishing.
+
+Run over the current cache (142 fighters on upcoming cards) it flags exactly
+those two and nothing else.
+
+**Cache purge.** Both poisoned entries were removed from `FIGHTER_STATS` and
+their serialised card records blanked, so the next scrape re-resolves them from
+scratch with the new logic instead of re-hitting the cached wrong URL. Blank for
+a few hours beats confidently wrong. (Without the purge they would have healed
+anyway at the next `STATS_REFRESH_DAYS` re-validation, up to 14 days out.)
+
+**Tests.** `tests/test_parsers.py` — date parsing in both formats UFCStats uses,
+recency beating the bigger record, an undateable candidate never outranking a
+dated one, and the no-dates fallback to the old behaviour.
+`tests/test_health.py` — both real mismatch shapes, plus the profiles that must
+NOT flag (a real ranked fighter, a debutant with no UFC opponents, a veteran
+inside the age bound, an empty/failed entry, an unreadable DOB) and the
+warn-never-block guarantee.
