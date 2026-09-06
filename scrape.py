@@ -1744,6 +1744,24 @@ def _espn_scoreboard(dates):
     return payload
 
 
+def espn_payload_shape(payload):
+    """(events, competitions, competitions carrying an odds block) in a payload.
+
+    The first ESPN pull returned zero bouts with no HTTP error, and nothing in
+    the log could say whether the window held no events at all, held events whose
+    competitions carry no `odds`, or held odds this parser failed to read. Those
+    need three different fixes, so count the layers instead of guessing.
+    """
+    events = (payload or {}).get("events") or []
+    comps = odds = 0
+    for ev in events:
+        for comp in ev.get("competitions", []) or []:
+            comps += 1
+            if comp.get("odds"):
+                odds += 1
+    return len(events), comps, odds
+
+
 def espn_odds_windows(now, days_ahead=None):
     """Scoreboard `dates` queries covering the priced window, cheapest first.
 
@@ -1769,12 +1787,21 @@ def fetch_odds_espn(now=None):
         return {}
     now = now or datetime.now(timezone.utc)
     combined = {}
+    events = comps = with_odds = 0
     for dates in espn_odds_windows(now):
-        idx = _index_espn_odds(_espn_scoreboard(dates))
-        for pair, o in idx.items():
-            combined.setdefault(pair, o)
+        payload = _espn_scoreboard(dates)
+        e, c, o = espn_payload_shape(payload)
+        events, comps, with_odds = events + e, comps + c, with_odds + o
+        idx = _index_espn_odds(payload)
+        for pair, obj in idx.items():
+            combined.setdefault(pair, obj)
         if combined and dates.count("-"):
             break   # the range query answered; no need to walk weekends
+    print(
+        f"  ESPN: {events} event(s), {comps} bout(s), {with_odds} with an odds "
+        f"block, {len(combined)} priced",
+        file=sys.stderr,
+    )
     note_provider_result("espn", "espn", status=200 if combined else None,
                          remaining=None, bouts=len(combined))
     return combined
@@ -2406,13 +2433,14 @@ def _ufcstats_last_fight_date(url):
 
 
 def _search_ufcstats(name):
-    """Search UFCStats for *name* by last-name initial. Returns (url, record) or None.
+    """Search UFCStats for *name* by name-token initial. Returns (url, record) or None.
 
-    Several fighters can share a name (e.g. two distinct "Diego Lopes" on
-    UFCStats). Returning whichever is listed first silently caches the wrong
-    fighter's record and stats, so when more than one row matches the name
-    tokens, prefer the most-experienced (most total fights) — that's the active
-    UFC roster member a current card refers to.
+    Candidates are gathered from EVERY letter page before one is chosen. Stopping
+    at the first page with a hit is what put an 11-13-0 fighter born in 1980 on
+    the card as Petr Yan: UFCStats lists that namesake surname-first ("Yan Petr"),
+    which files him under P, and P is searched before Y — so the real Yan's page
+    was never even loaded, and the tie-break below never ran because only one
+    candidate had been seen.
     """
     name = _UFCSTATS_NAME_ALIASES.get(clean(name).lower(), name)
     toks = _name_tokens(name)
@@ -2426,39 +2454,53 @@ def _search_ufcstats(name):
         if tok[0] not in letters:
             letters.append(tok[0])
     for attempt in range(2):  # one retry on empty result
+        matches, empty = [], False
         for letter in letters:
             rows = _load_ufcstats_letter(letter)
-            matches = [
-                (href, w, l, d)
-                for row_first, row_last, href, w, l, d in rows
-                if _name_tokens_match(row_first, row_last, name)
-            ]
-            if matches:
-                if len(matches) > 1:
-                    print(
-                        f"  UFCStats: {len(matches)} fighters match {name!r} — "
-                        f"picking the most recently active",
-                        file=sys.stderr,
-                    )
-                    probes = matches[:_UFCSTATS_DISAMBIG_MAX]
-                    last_dates = {
-                        m[0]: _ufcstats_last_fight_date(m[0]) for m in probes
-                    }
-                    matches = order_ufcstats_matches(probes, last_dates)
-                    print(
-                        "  UFCStats: "
-                        + ", ".join(
-                            f"{m[1]}-{m[2]}-{m[3]} last {last_dates.get(m[0]) or '?'}"
-                            for m in matches
-                        ),
-                        file=sys.stderr,
-                    )
-                href, w, l, d = matches[0]
-                return (href, f"{w}-{l}-{d}" if (w or l) else "")
-            if not rows and attempt == 0:
-                # Letter page returned empty — clear cache and retry after a pause
-                _ufcstats_letter_cache.pop(letter, None)
-                time.sleep(2)
+            if not rows:
+                empty = True
+                if attempt == 0:
+                    # Letter page returned empty — clear cache so the retry refetches.
+                    _ufcstats_letter_cache.pop(letter, None)
+                continue
+            for row_first, row_last, href, w, l, d in rows:
+                if _name_tokens_match(row_first, row_last, name):
+                    matches.append((href, w, l, d))
+        # De-duplicate: a fighter can appear on more than one letter page when
+        # both of their name tokens share an initial with the search.
+        seen, unique = set(), []
+        for m in matches:
+            if m[0] in seen:
+                continue
+            seen.add(m[0])
+            unique.append(m)
+        matches = unique
+        if matches:
+            if len(matches) > 1:
+                print(
+                    f"  UFCStats: {len(matches)} fighters match {name!r} — "
+                    f"picking the most recently active",
+                    file=sys.stderr,
+                )
+                probes = matches[:_UFCSTATS_DISAMBIG_MAX]
+                last_dates = {
+                    m[0]: _ufcstats_last_fight_date(m[0]) for m in probes
+                }
+                matches = order_ufcstats_matches(probes, last_dates)
+                print(
+                    "  UFCStats: "
+                    + ", ".join(
+                        f"{m[1]}-{m[2]}-{m[3]} last {last_dates.get(m[0]) or '?'}"
+                        for m in matches
+                    ),
+                    file=sys.stderr,
+                )
+            href, w, l, d = matches[0]
+            return (href, f"{w}-{l}-{d}" if (w or l) else "")
+        if not empty:
+            break            # pages loaded fine, the name simply isn't there
+        if attempt == 0:
+            time.sleep(2)
     return None
 
 

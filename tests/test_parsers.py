@@ -1664,3 +1664,49 @@ def test_with_no_dates_at_all_it_falls_back_to_the_old_experience_rule():
     # rather than picking arbitrarily.
     a, b = ("/a", 19, 12, 3), ("/b", 15, 2, 0)
     assert scrape.order_ufcstats_matches([b, a], {}) == [a, b]
+
+
+def test_candidates_are_gathered_from_every_letter_page(monkeypatch):
+    # The Petr Yan case. UFCStats lists the wrong namesake surname-first ("Yan
+    # Petr"), which files him under P — and P is searched before Y, so the old
+    # loop returned from the P page and never loaded Y at all. Only one candidate
+    # was ever seen, which is why the recency tie-break didn't fire.
+    pages = {
+        "p": [("Yan", "Petr", "/namesake", 11, 13, 0)],       # surname-first row
+        "y": [("Petr", "Yan", "/real", 17, 6, 0)],
+    }
+    monkeypatch.setattr(scrape, "_load_ufcstats_letter", lambda ch: pages.get(ch, []))
+    monkeypatch.setattr(scrape, "_ufcstats_last_fight_date",
+                        lambda url: date(2010, 1, 1) if url == "/namesake" else date(2026, 6, 7))
+    assert scrape._search_ufcstats("Petr Yan") == ("/real", "17-6-0")
+
+
+def test_a_fighter_listed_under_both_initials_is_not_double_counted(monkeypatch):
+    same = ("Petr", "Yan", "/real", 17, 6, 0)
+    monkeypatch.setattr(scrape, "_load_ufcstats_letter", lambda ch: [same])
+    probed = []
+    monkeypatch.setattr(scrape, "_ufcstats_last_fight_date",
+                        lambda url: probed.append(url) or date(2026, 6, 7))
+    assert scrape._search_ufcstats("Petr Yan") == ("/real", "17-6-0")
+    # One candidate after de-duplication → no disambiguation fetches at all.
+    assert probed == []
+
+
+def test_a_name_that_isnt_there_returns_nothing_without_retrying(monkeypatch):
+    calls = []
+    monkeypatch.setattr(scrape, "_load_ufcstats_letter",
+                        lambda ch: calls.append(ch) or [("Some", "Body", "/x", 1, 0, 0)])
+    assert scrape._search_ufcstats("Nobody Here") is None
+    # Pages loaded fine, so the empty-page retry must not fire: 2 letters, once.
+    assert len(calls) == 2
+
+
+def test_espn_payload_shape_counts_each_layer():
+    # Which layer is empty decides the fix, so the counts are reported separately.
+    payload = {"events": [
+        {"competitions": [{"odds": [{"homeTeamOdds": {"moneyLine": -150}}]}, {}]},
+        {"competitions": [{"odds": []}]},
+    ]}
+    assert scrape.espn_payload_shape(payload) == (2, 3, 1)
+    assert scrape.espn_payload_shape({}) == (0, 0, 0)
+    assert scrape.espn_payload_shape(None) == (0, 0, 0)

@@ -298,3 +298,55 @@ dated one, and the no-dates fallback to the old behaviour.
 NOT flag (a real ranked fighter, a debutant with no UFC opponents, a veteran
 inside the age bound, an empty/failed entry, an unreadable DOB) and the
 warn-never-block guarantee.
+
+---
+
+## M6 — what the first live run showed (and the second half of the name bug)
+
+Run [#4027](https://github.com/AndyRBrett/ufc-dashboard/actions/runs/34063887222)
+(manual dispatch on the merge of M5) was the first execution of both #94 and the
+name fix. Results:
+
+**Jean Silva — fixed.** The disambiguation worked exactly as designed:
+
+```
+UFCStats: 2 fighters match 'Jean Silva' — picking the most recently active
+UFCStats: 17-3-0 last 2026-01-24, 19-12-3 last 2005-07-17
+Stats Jean Silva: slpm=4.82 acc=51 td=1.2 tdd=78 ko=4 sub=1 rec=17-3-0
+```
+
+**Petr Yan — not fixed, and the log said why by omission**: no "N fighters match"
+line at all, so only ONE candidate was ever seen and the tie-break never ran.
+
+M5 fixed how candidates are *ranked*; this fixes how they are *gathered*.
+`_search_ufcstats` searched one letter page per name token and **returned from
+the first page with a hit**. UFCStats lists the wrong namesake surname-first
+("Yan Petr"), filing him under **P** — searched before **Y**, so the real Yan's
+page was never loaded. Candidates are now collected from every letter page and
+de-duplicated before ranking, and the empty-page retry only fires when a page
+actually came back empty (it used to be reachable whenever a name simply wasn't
+found, costing a pointless second pass).
+
+**ESPN (#94) — reached, parsed nothing.**
+
+```
+Odds source the-odds-api:primary:    +49 new fights (49 total)
+Odds source the-odds-api:secondary:  +2 new fights (51 total)
+Odds source the-odds-api:backup-key: +0 new fights (51 total)
+Odds source espn:                    +0 new fights (51 total)
+```
+
+No `ESPN scoreboard: HTTP nnn` and no `ESPN error:` — the requests succeeded and
+the parser found no moneylines. Three different causes need three different
+fixes (no events in the window / events whose competitions carry no `odds` /
+odds present but read wrongly), and nothing in the log could tell them apart, so
+`espn_payload_shape` now counts each layer and `fetch_odds_espn` logs it:
+
+```
+ESPN: N event(s), M bout(s), K with an odds block, P priced
+```
+
+**Do not "fix" the ESPN parser until that line has been seen.** If K is 0 the
+scoreboard endpoint simply doesn't carry MMA moneylines and the provider should
+be repointed or dropped — editing `_espn_moneyline` would be guessing. ESPN is
+unreachable from the dev sandbox, so this line is the only evidence available.
