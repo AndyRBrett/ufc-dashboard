@@ -282,15 +282,16 @@ function buildTrashTalk(d: ReqBody): { system: string; user: string } {
   const formHint = forms[Math.floor(Math.random() * forms.length)];
   const seed = Math.random().toString(36).slice(2, 7);
   const hint = (d.hint ?? "").trim();
-  // A user-supplied angle is an instruction, not a suggestion. It used to be
-  // one clause among a dozen — the random form, the card, the profiles and the
-  // structure rules all pulled equally hard, so "roast his Houston teams" came
-  // back as a generic burn that never mentioned Houston. Everything that can
-  // compete with the angle is now explicitly subordinated to it, and the angle
-  // is restated last, where it is the final thing the model reads.
-  const formRule = hint
-    ? `Shape THIS one like: ${formHint} — but if that shape fights the angle, drop the shape and keep the angle.`
-    : `Shape THIS one like: ${formHint}.`;
+  // A user-supplied angle is not a suggestion, and subordinating the other
+  // instructions to it was not enough: "roast his Houston teams" still came
+  // back as a burn that gestured at Houston in the model's own words. So with
+  // an angle typed the random shape is not applied AT ALL — leaving it in as a
+  // yielding rule ("drop the shape if it fights the angle") kept a second
+  // styling instruction on the table and the model split the difference every
+  // time, keeping its shape and paraphrasing the sender away. The angle is the
+  // shape now, and it is repeated in the system prompt and as the final line
+  // of the user turn, the two positions the model weights hardest.
+  const formRule = hint ? "" : `Shape THIS one like: ${formHint}.`;
   const cardRule = hint
     ? "You MAY glance at the CARD for ONE detail, and only if it serves the angle — a card detail that changes the subject is worse than none."
     : "You MAY glance at the CARD for ONE detail, and only if it genuinely makes the burn funnier — most roasts should skip the card entirely and run on pure personality and disrespect.";
@@ -302,14 +303,21 @@ function buildTrashTalk(d: ReqBody): { system: string; user: string } {
   // Empty string whenever nobody involved has a profile, so unknown nicknames
   // produce exactly the prompt they produced before profiles existed.
   const dossier = buildDossier(myName, targets, !!hint);
-  // Stated up front as a hard requirement, and repeated after the rules — last
-  // position is the one the model weights most, and it is the only instruction
-  // that outranks everything except accuracy and the length cap.
-  // Everything about WHO you are and HOW to write goes in the system prompt.
-  // The user turn carries only the situation and the ask — and it ENDS on the
+  // Everything about WHO you are and HOW to write goes in the system prompt;
+  // the user turn carries only the situation and the ask, and ENDS on the
   // angle, because the last thing in the conversation is what actually steers
   // the answer.
-  const system = `You ARE ${persona}. You write trash talk on behalf of ${myName} ${who} — one savage line, in character. You are NOT an analyst and this is NOT a scouting report: never explain a pick, never weigh a matchup, never give advice. ${baseRules}${dossier}`;
+  //
+  // The angle used to appear only in that user turn. The system prompt — the
+  // part that defines the whole job — never saw it, so every rule the model
+  // read about who it is and how to write was phrased as if no angle existed,
+  // and a roast that merely shared the angle's TOPIC satisfied all of them.
+  // It goes in both places now, and both places ask for the sender's own
+  // words back rather than the same idea rewritten.
+  const angleRule = hint
+    ? ` THE ANGLE IS THE JOB, AND IT IS NEARLY VERBATIM: ${myName} typed exactly what to hit them with — "${hint}". You are delivering THAT line in ${persona}'s voice, not writing your own burn on the same topic. Keep the angle's distinctive words and imagery WORD FOR WORD, in its own order, and change only what grammar or the voice genuinely forces — a reader who saw what ${myName} typed must recognise it in your line. Never paraphrase it, never summarise it, never trade its words for smarter ones of your own. If something else must go to fit it, cut the something else.`
+    : "";
+  const system = `You ARE ${persona}. You write trash talk on behalf of ${myName} ${who} — one savage line, in character. You are NOT an analyst and this is NOT a scouting report: never explain a pick, never weigh a matchup, never give advice. ${baseRules}${dossier}${angleRule}`;
   const situation = `LEADERBOARD: ${boardName}. ${boardAngle}
 ${myName}${d.myRank ? ` — rank #${d.myRank}, ${d.myRecord || ""}` : ""}. Roasting: ${opponentNames}.
 CARD (background only — you almost never need it):
@@ -321,11 +329,13 @@ ${d.card || "n/a"}`;
       system,
       user: `${situation}
 
-${myName} told you exactly what to hit them with. This is the entire job — a roast that does not land on it is a failed roast, no matter how funny it is:
+${myName} told you exactly what to hit them with, word for word. Your job is to DELIVER that line in ${persona}'s voice — a roast that does not carry its actual words is a failed roast, no matter how funny it is:
 
   THE ANGLE: "${hint}"
 
-Write it now, as ${persona}: one or two short sentences built on that angle, then the '— ${persona}' signature. Use the angle's own imagery and words where you can. Do not swap it for a generic insult about their picks, their rank or their record.`,
+Write it now, as ${persona}: one or two short sentences that keep the angle's own words and imagery verbatim — as close to how ${myName} typed it as ${persona}'s voice allows, changing only what grammar or the voice forces. Do not paraphrase it, do not summarise it, do not swap it for a generic insult about their picks, their rank or their record. Then the '— ${persona}' signature.
+
+Say it to them now, in their words: "${hint}"`,
     }
     : {
       system,
@@ -333,6 +343,47 @@ Write it now, as ${persona}: one or two short sentences built on that angle, the
 
 Write it now, as ${persona}: one or two short sentences, then the '— ${persona}' signature. Your take this time: ${angleHint}`,
     };
+}
+
+// --- Did the roast actually use the sender's angle? -------------------------
+//
+// Prompting alone can't guarantee it: the model still occasionally "improves"
+// a typed angle into its own cleverer burn, which is the exact failure the
+// sender notices ("I asked for wax on wax off and got a joke about his rank").
+// So the output is checked against the angle's own content words, and a miss
+// buys ONE stricter retry — cheap (a ~120-token call), bounded, and only ever
+// spent when a hint was typed and demonstrably ignored.
+const ANGLE_STOPWORDS = new Set([
+  "the", "and", "but", "for", "with", "that", "this", "they", "them", "their", "you", "your",
+  "his", "her", "hers", "its", "our", "ours", "was", "were", "are", "been", "being", "have",
+  "has", "had", "not", "all", "any", "can", "will", "just", "him", "she", "who", "how", "why",
+  "what", "when", "then", "than", "some", "about", "into", "from", "out", "off", "over", "get",
+  "got", "one", "like", "make", "made", "say", "says", "said", "too", "very", "really",
+]);
+const normWord = (w: string) => w.replace(/(?:'s|s|es|ed|ing)$/, "");
+function angleKeywords(hint: string): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const w of (hint ?? "").toLowerCase().replace(/[^a-z0-9'\s]/g, " ").split(/\s+/)) {
+    if (w.length < 3 || ANGLE_STOPWORDS.has(w)) continue;
+    const k = normWord(w);
+    if (!k || seen.has(k)) continue;
+    seen.add(k);
+    out.push(w);
+  }
+  return out;
+}
+// "Used it" means most of the angle's content words came back — not every one,
+// because grammar and the persona's voice legitimately drop a word or two.
+// An angle with no content words at all (punctuation, pure stopwords) can't be
+// judged, so it passes rather than burning a retry it would fail again.
+function usesAngle(text: string, hint: string): boolean {
+  const kws = angleKeywords(hint);
+  if (!kws.length) return true;
+  const hay = " " + (text ?? "").toLowerCase().replace(/[^a-z0-9'\s]/g, " ").replace(/\s+/g, " ") + " ";
+  const words = new Set(hay.trim().split(" ").map(normWord));
+  const hits = kws.filter((k) => words.has(normWord(k)) || hay.includes(" " + k + " ")).length;
+  return hits >= Math.ceil(kws.length * 0.6);
 }
 
 // The client recovers the persona from the roast's trailing "— X" signature
@@ -441,39 +492,59 @@ Deno.serve(async (req) => {
     maxTokens = 250;
   }
 
-  const claudeReqBody = JSON.stringify({
-    model: MODEL,
-    max_tokens: maxTokens,
-    ...(system ? { system } : {}),
-    messages: [{ role: "user", content: prompt }],
-  });
-
-  let claudeRes: Response | null = null;
-  for (let attempt = 0; attempt < 3; attempt++) {
-    if (attempt > 0) await new Promise((r) => setTimeout(r, attempt * 1500));
-    claudeRes = await fetch(CLAUDE_API_URL, {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: claudeReqBody,
+  const callClaude = async (userText: string): Promise<Response> => {
+    const reqBody = JSON.stringify({
+      model: MODEL,
+      max_tokens: maxTokens,
+      ...(system ? { system } : {}),
+      messages: [{ role: "user", content: userText }],
     });
-    if (claudeRes.ok || claudeRes.status !== 529) break;
-  }
+    let res: Response | null = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) await new Promise((r) => setTimeout(r, attempt * 1500));
+      res = await fetch(CLAUDE_API_URL, {
+        method: "POST",
+        headers: {
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
+        },
+        body: reqBody,
+      });
+      if (res.ok || res.status !== 529) break;
+    }
+    return res!;
+  };
 
-  if (!claudeRes!.ok) {
-    const err = await claudeRes!.text();
-    const overloaded = claudeRes!.status === 529;
+  let claudeRes: Response = await callClaude(prompt);
+
+  if (!claudeRes.ok) {
+    const err = await claudeRes.text();
+    const overloaded = claudeRes.status === 529;
     return new Response(
       JSON.stringify({ error: overloaded ? "overloaded" : "Claude API error", detail: err }),
       { status: 502, headers: CORS }
     );
   }
 
-  const data = await claudeRes!.json();
+  const data = await claudeRes.json();
   let text: string = data?.content?.[0]?.text ?? "";
+  // The angle is the one instruction worth spending a second call on: if the
+  // sender's own words didn't survive, ask again with the miss named. Only one
+  // retry, and whatever comes back is used either way — a roast without the
+  // angle still beats no roast when the card is live.
+  const trashHint = (body.hint ?? "").trim();
+  if (action === "trash-talk" && text && trashHint && !usesAngle(text, trashHint)) {
+    const retryRes = await callClaude(`${prompt}
+
+Your last attempt was: "${text.trim()}"
+It dropped ${body.myNickname || "the sender"}'s actual words. Write it again and put the angle's own wording in the line — as close to "${trashHint}" as ${body.persona || "the persona"}'s voice allows. Same length cap, same signature.`);
+    if (retryRes.ok) {
+      const retryData = await retryRes.json();
+      const retryText: string = retryData?.content?.[0]?.text ?? "";
+      if (retryText && usesAngle(retryText, trashHint)) text = retryText;
+    }
+  }
   if (action === "trash-talk" && text) {
     text = enforceSignature(text, body.persona || "A Famous Friend");
   }

@@ -19,8 +19,8 @@ const esbuild = require("esbuild");
 
 globalThis.Deno = { env: { get: () => undefined } };
 const src = readFileSync(join(ROOT, "supabase/functions/ai-breakdown/index.ts"), "utf8").split("Deno.serve(")[0];
-const { code } = esbuild.transformSync(src + "\nexport { buildTrashTalk };", { loader: "ts", format: "esm" });
-const { buildTrashTalk } = await import("data:text/javascript," + encodeURIComponent(code));
+const { code } = esbuild.transformSync(src + "\nexport { buildTrashTalk, usesAngle, angleKeywords };", { loader: "ts", format: "esm" });
+const { buildTrashTalk, usesAngle } = await import("data:text/javascript," + encodeURIComponent(code));
 
 const base = {
   persona: "Johnny Lawrence", myNickname: "AB", myRank: 2, myRecord: "30-100",
@@ -49,8 +49,14 @@ assert("the angle reaches the user turn", withHint.user.includes(HINT));
 assert("the angle is stated as the whole job", /THE ANGLE: "/.test(withHint.user));
 assert("the angle lands in the final stretch of the prompt",
   withHint.user.length - withHint.user.lastIndexOf(HINT) < 400);
-assert("the model is told to reuse the angle's own words", /angle's own imagery and words/.test(withHint.user));
-assert("swapping the angle for a generic burn is ruled out", /Do not swap it for a generic insult/.test(withHint.user));
+assert("the model is told to reuse the angle's own words", /angle's own words and imagery verbatim/.test(withHint.user));
+assert("swapping the angle for a generic burn is ruled out", /do not swap it for a generic insult/i.test(withHint.user));
+assert("paraphrasing the angle is ruled out", /Do not paraphrase it/.test(withHint.user));
+// The system prompt defines the whole job; an angle that only appears in the
+// user turn leaves every rule about HOW to write blind to it.
+assert("the angle reaches the system prompt too", withHint.system.includes(HINT));
+assert("the system prompt demands the words back", /WORD FOR WORD/.test(withHint.system));
+assert("the final line hands the angle over verbatim", withHint.user.trim().endsWith(`"${HINT}"`));
 
 // The randomised canned angles are the main thing that used to compete.
 const CANNED = ["Write them off as a clueless nobody", "Trash their whole vibe", "Tell them to find a new hobby",
@@ -60,8 +66,13 @@ const withHintAll = withHint.system + withHint.user;
 assert("no canned angle competes with the user's", !CANNED.some((a) => withHintAll.includes(a)));
 assert("a canned angle IS the ask when the user gave none", CANNED.some((a) => noHint.user.includes(a)));
 
-// Everything else that can pull off-angle is subordinated, not silent.
-assert("the rhetorical shape yields to the angle", /drop the shape and keep the angle/.test(withHint.system));
+// Everything else that can pull off-angle is subordinated, not silent — and the
+// random rhetorical shape, which competed hardest, is not applied at all.
+const FORMS = ["one clipped, dismissive line", "open mid-thought", "a fake compliment that curdles",
+  "a rhetorical question you never let them answer", "a single devastating one-liner",
+  "a cold quiet threat", "one absurd comparison", "start bored, snap into contempt"];
+assert("no random shape competes with the angle", !/Shape THIS one like/.test(withHintAll) && !FORMS.some((f) => withHintAll.includes(f)));
+assert("a shape still varies the roast when no angle was typed", /Shape THIS one like/.test(noHint.system));
 assert("the card detail yields to the angle", /only if it serves the angle/.test(withHint.system));
 assert("the profile dossier yields to the angle", /only if it sharpens the angle/.test(withHint.system));
 assert("the dossier keeps its own rule with no angle", /makes the burn funnier than the picks/.test(noHint.system));
@@ -79,6 +90,18 @@ assert("whitespace-only input is not an angle", !/THE ANGLE:/.test(blank.user) &
 // Odd input shouldn't mangle the prompt around it.
 const quoted = buildTrashTalk({ ...base, hint: 'he "always" folds' });
 assert("quotes in an angle pass through intact", quoted.user.includes('he "always" folds') && /THE ANGLE: "/.test(quoted.user));
+
+// Prompting alone never fully held, so the function also checks its own output
+// and retries once. These are the cases that check has to get right.
+assert("a roast carrying the angle's words passes",
+  usesAngle("Wax on, wax off those tears, kid. — Johnny Lawrence", HINT));
+assert("a generic burn that ignored the angle fails",
+  !usesAngle("You're rank two with a losing record and it shows. — Johnny Lawrence", HINT));
+assert("a near-verbatim delivery survives grammar drift",
+  usesAngle("Wax on, wax off — go cry about it. Those tears wax nothing. — Johnny Lawrence", HINT));
+assert("a paraphrase that keeps the topic but not the words fails",
+  !usesAngle("Karate Kid stuff won't save you now. — Johnny Lawrence", HINT));
+assert("an angle with no content words can't fail the check", usesAngle("anything at all", "the and but"));
 
 let bad = 0;
 for (const c of checks) { console.log(`  ${c.cond ? "✓" : "✗"} ${c.name}`); if (!c.cond) bad++; }
