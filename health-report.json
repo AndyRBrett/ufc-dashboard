@@ -1,95 +1,69 @@
 {
-  "generated_at": "2026-09-05T23:19:38Z",
+  "generated_at": "2026-09-06T01:06:20Z",
   "summary": {
     "events": 14,
     "block": 0,
-    "warn": 10
+    "warn": 7
   },
   "findings": [
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
-      "message": "UFC Fight Night: Bonfim vs. Brady (63d out): venue 'Meta Apex' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "message": "UFC Fight Night: Bonfim vs. Brady (62d out): venue 'Meta Apex' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Bonfim vs. Brady",
       "date": "2026-11-07"
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (0d out): 1 of 14 bouts have no odds",
-      "event": "UFC Fight Night: Hooker vs. Parnasse",
-      "date": "2026-09-05",
-      "days_out": 0
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-missing-some",
-      "message": "UFC Fight Night: Silva vs. Delgado (7d out): 1 of 13 bouts have no odds",
+      "message": "UFC Fight Night: Silva vs. Delgado (6d out): 1 of 13 bouts have no odds",
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
-      "days_out": 7
+      "days_out": 6
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC 331: Van vs. Pantoja 2 (14d out): 3 of 13 bouts have no odds",
+      "message": "UFC 331: Van vs. Pantoja 2 (13d out): 3 of 13 bouts have no odds",
       "event": "UFC 331: Van vs. Pantoja 2",
       "date": "2026-09-19",
-      "days_out": 14
+      "days_out": 13
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (0d out): Klaudia Sygua has no record",
-      "fighter": "Klaudia Sygua",
-      "event": "UFC Fight Night: Hooker vs. Parnasse",
-      "date": "2026-09-05",
-      "days_out": 0
-    },
-    {
-      "severity": "WARN",
-      "check": "stats-fetch-failed",
-      "message": "UFC Fight Night: Hooker vs. Parnasse (0d out): Klaudia Sygua stats lookup failed (2026-09-04)",
-      "fighter": "Klaudia Sygua",
-      "event": "UFC Fight Night: Hooker vs. Parnasse",
-      "date": "2026-09-05",
-      "days_out": 0
-    },
-    {
-      "severity": "WARN",
-      "check": "record-blank",
-      "message": "UFC Fight Night: Silva vs. Delgado (7d out): Thomas Gantt has no record",
+      "message": "UFC Fight Night: Silva vs. Delgado (6d out): Thomas Gantt has no record",
       "fighter": "Thomas Gantt",
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
-      "days_out": 7
+      "days_out": 6
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC Fight Night: Silva vs. Delgado (7d out): Thomas Gantt stats lookup failed (2026-09-05)",
+      "message": "UFC Fight Night: Silva vs. Delgado (6d out): Thomas Gantt stats lookup failed (2026-09-06)",
       "fighter": "Thomas Gantt",
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
-      "days_out": 7
+      "days_out": 6
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC Fight Night: Silva vs. Delgado (7d out): Rong Zhu has no record",
+      "message": "UFC Fight Night: Silva vs. Delgado (6d out): Rong Zhu has no record",
       "fighter": "Rong Zhu",
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
-      "days_out": 7
+      "days_out": 6
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC Fight Night: Silva vs. Delgado (7d out): Rong Zhu stats lookup failed (2026-09-05)",
+      "message": "UFC Fight Night: Silva vs. Delgado (6d out): Rong Zhu stats lookup failed (2026-09-06)",
       "fighter": "Rong Zhu",
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
-      "days_out": 7
+      "days_out": 6
     }
   ]
 }
