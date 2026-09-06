@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-06T12:52:36Z",
+  "generated_at": "2026-09-06T18:07:04Z",
   "summary": {
     "events": 14,
     "block": 0,
-    "warn": 7
+    "warn": 6
   },
   "findings": [
     {
@@ -12,14 +12,6 @@
       "message": "UFC Fight Night: Bonfim vs. Brady (62d out): venue 'Meta Apex' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Bonfim vs. Brady",
       "date": "2026-11-07"
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-missing-some",
-      "message": "UFC Fight Night: Silva vs. Delgado (6d out): 1 of 13 bouts have no odds",
-      "event": "UFC Fight Night: Silva vs. Delgado",
-      "date": "2026-09-12",
-      "days_out": 6
     },
     {
       "severity": "WARN",
