@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-06T22:13:26Z",
+  "generated_at": "2026-09-06T22:28:43Z",
   "events_tracked": 14,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -97,7 +97,7 @@
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
       "status": "ok",
-      "last_changed_at": "2026-09-06T18:07:04Z",
+      "last_changed_at": "2026-09-06T22:28:43Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -106,7 +106,7 @@
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "status": "ok",
-      "last_changed_at": "2026-09-06T18:07:04Z",
+      "last_changed_at": "2026-09-06T22:28:43Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-06T22:13:26Z",
+      "last_changed_at": "2026-09-06T22:28:43Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -133,7 +133,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-06T22:13:26Z",
+      "last_changed_at": "2026-09-06T22:28:43Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -142,7 +142,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-06T22:13:26Z",
+      "last_changed_at": "2026-09-06T22:28:43Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -160,7 +160,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-292",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-06T22:13:26Z",
+      "last_changed_at": "2026-09-06T22:28:43Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 2,
@@ -169,7 +169,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-06T22:13:26Z",
+      "last_changed_at": "2026-09-06T22:28:43Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -238,6 +238,21 @@
       "priority": 325.0
     },
     {
+      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+      "f1": "Brandon Moreno",
+      "f2": "Joseph Morales",
+      "f1_movement": 216,
+      "f2_movement": -21,
+      "magnitude": 216,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 45,
+      "wc": "Flyweight",
+      "f1_prob_shift": -3.8,
+      "f2_prob_shift": 4.1,
+      "priority": 302.4
+    },
+    {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
       "f1": "Bilal Hasan",
       "f2": "Nilson Rojas",
@@ -251,36 +266,6 @@
       "f1_prob_shift": 5.6,
       "f2_prob_shift": -5.7,
       "priority": 300.0
-    },
-    {
-      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
-      "f1": "Brandon Moreno",
-      "f2": "Joseph Morales",
-      "f1_movement": 214,
-      "f2_movement": -20,
-      "magnitude": 214,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 45,
-      "wc": "Flyweight",
-      "f1_prob_shift": -3.4,
-      "f2_prob_shift": 4.0,
-      "priority": 299.6
-    },
-    {
-      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
-      "f1": "Ignacio Bahamondes",
-      "f2": "Muslim Salikhov",
-      "f1_movement": -212,
-      "f2_movement": 112,
-      "magnitude": 212,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 110,
-      "wc": "Welterweight",
-      "f1_prob_shift": 7.1,
-      "f2_prob_shift": -6.0,
-      "priority": 296.8
     },
     {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
@@ -311,6 +296,21 @@
       "f1_prob_shift": 13.4,
       "f2_prob_shift": -13.9,
       "priority": 270.0
+    },
+    {
+      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+      "f1": "Ignacio Bahamondes",
+      "f2": "Muslim Salikhov",
+      "f1_movement": -182,
+      "f2_movement": 98,
+      "magnitude": 182,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 110,
+      "wc": "Welterweight",
+      "f1_prob_shift": 6.4,
+      "f2_prob_shift": -5.4,
+      "priority": 254.8
     },
     {
       "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
