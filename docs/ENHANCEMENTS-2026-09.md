@@ -7,7 +7,7 @@ dependency-free order so each one commits and ships on its own:
 | ----- | ----------- | ------ |
 | #94 | Secondary odds provider fallback when the primary budget runs out | ✅ shipped (M1) |
 | #93 | Movement alerts calibrated per weight class / card position | ✅ shipped (M2) |
-| #74 | Fighter-history + style-matchup model probability alongside odds | ⏳ not started |
+| #74 | Fighter-history + style-matchup model probability alongside odds | ✅ shipped (M3) |
 | #90 | Parlay risk calculator with correlation warnings | ⏳ not started |
 
 Every milestone below is committed separately and passes `npm run verify` plus
@@ -116,3 +116,62 @@ same `MIN_SAMPLES` guard; nothing else has to change.
 retraced-vs-persisted moves, thin-tier fallback, the sane band, empty/broken
 series file) and new cases in `tests/test_write_status.py` (label/wc parsing,
 a prelim needing a bigger move than a main event, cold-start parity).
+
+---
+
+## M3 — #74 model vs market probability (`index.html`, `tests/fight-model.mjs`)
+
+**Problem.** The dashboard read the market well but had no independent view of
+who should win, so a line move looked the same whether it carried information or
+just public money.
+
+**Where it lives — and why client-side.** Everything the model needs is already
+in `data.js` (`RESULTS_ARCHIVE`, `FIGHTER_STATS` with reach/stance/dob/form,
+`RANKINGS`). Computing it in the browser means no scraper change, no new data
+file, no `health.py` surface to keep green, and it works offline in the PWA. The
+block is delimited by `// model:start` … `// model:end` in `index.html`, is pure
+(reads globals, touches no DOM), and is lifted straight out of the file by the
+test.
+
+**The model.**
+
+- **Seed** per fighter: win *rate* (not win margin — a 12-0 prospect and a
+  24-12 journeyman have the same +12 margin and the market treats them nothing
+  alike), a small margin tiebreaker, divisional ranking, and decayed recent form.
+- **Elo replay** over `RESULTS_ARCHIVE` in date order, K=24, ×1.2 for finishes.
+  Every fighter in the stats cache is seeded up front — seeding lazily inside the
+  replay left anyone who hadn't fought since the archive began at the 1500
+  baseline, which rated a #2-ranked 23-3 lightweight as an unknown.
+- **Style matchup** in Elo points, each term clamped and each one *named* so the
+  tooltip explains the number: reach, age, striking volume×accuracy, takedowns,
+  finish rate, southpaw-vs-orthodox.
+- **Confidence shrink**: the whole gap is scaled by how much of both profiles we
+  actually have (0.35–1) and capped at 400 Elo (~91%). Without it a fighter with
+  no record and no stats came out a 79% model favourite against a 20% market
+  underdog.
+- **Comparison is de-vigged**: the market's two implied probabilities are
+  normalised to sum to 1, or the model reads low on both fighters and every bout
+  looks like an edge.
+
+**UI.** A `.model-row` under the moneyline: `model% / market%` per fighter,
+shown for unpriced bouts too (that's when a second opinion has nothing to compete
+with) and hidden once a bout has a winner. The gap badge is **comparative, not
+absolute**: only the widest gaps on a card, at most `MODEL_FLAG_MAX` (3) and none
+under `MODEL_EDGE_MIN` (12 points). Typical model-vs-market disagreement is ~11
+points, so a fixed bar would badge half the card and mean nothing.
+
+**Accuracy — read this before quoting a number.** A backtest over the archived
+results scores the model at 81% straight-up against the closing line's 66%, and
+that number is **not trustworthy**: `FIGHTER_STATS` is fetched today, so a
+fighter's record and `form` already contain the result being predicted. That is
+look-ahead leakage, and it inflates every accuracy figure available today. Do not
+put an accuracy claim in the UI. A clean walk-forward backtest needs per-fighter
+stat snapshots as of each card, which the pipeline does not keep yet —
+**that is the natural follow-up**: persist a dated `FIGHTER_STATS` digest per
+scrape, then score the model on cards that closed after that snapshot.
+
+**Tests.** `npm run check:model` (`tests/fight-model.mjs`, wired into `verify`
+and `validate-web.yml`): seeding, the thin-data shrink, no-stats → no model,
+de-vigging, symmetry, named factors, archive replay incl. a result naming
+neither corner, and the flag cap. `SW_VERSION` bumped so installed PWAs pick the
+new page up.

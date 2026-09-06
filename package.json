@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "UFC Picks PWA — optional static-asset minification build",
+  "description": "UFC Picks PWA \u2014 optional static-asset minification build",
   "scripts": {
     "build": "node build.mjs",
     "check:web": "node tests/check-web.mjs",
@@ -13,7 +13,8 @@
     "check:audience": "node tests/trash-audience.mjs",
     "check:prompt": "node tests/trash-prompt.mjs",
     "check:dedup": "node tests/notify-dedup-key.mjs",
-    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:dedup"
+    "check:model": "node tests/fight-model.mjs",
+    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:dedup && npm run check:model"
   },
   "devDependencies": {
     "esbuild": "^0.24.0",
