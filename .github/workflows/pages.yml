@@ -67,7 +67,7 @@ jobs:
             echo "::warning::Could not switch the Pages publishing source automatically. If the deploy step below fails, set Settings → Pages → Source to 'GitHub Actions' once, manually."
           fi
 
-      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
       # The site is served raw from the repo root (build.mjs is optional and unused
       # by the deploy), so upload the checkout as-is. upload-pages-artifact already
