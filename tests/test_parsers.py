@@ -1486,3 +1486,139 @@ def test_classify_region_labels_each_slot_family():
     # The dangerous case: anchored to nothing.
     assert scrape.classify_region("Atlantis") == ""
     assert scrape.classify_region("") == ""
+
+
+# --- odds provider failover + per-provider quota (#94) ---------------------
+#
+# The failure this guards: the metered chain shares one monthly budget, so when
+# it ran out, announced cards with a dozen parsed bouts sat odds-unavailable for
+# days. The fallback only helps if a spent provider is actually skipped and the
+# unmetered one still runs.
+
+NOW_94 = datetime(2026, 9, 6, 12, 0, tzinfo=timezone.utc)
+
+
+def _espn_payload(f1, f2, home_ml, away_ml, date="2026-09-12T23:00Z"):
+    return {"events": [{"date": date, "competitions": [{
+        "date": date,
+        "competitors": [
+            {"homeAway": "home", "athlete": {"displayName": f1}},
+            {"homeAway": "away", "athlete": {"displayName": f2}},
+        ],
+        "odds": [{"provider": {"name": "ESPN BET"},
+                  "homeTeamOdds": {"moneyLine": home_ml},
+                  "awayTeamOdds": {"moneyLine": away_ml}}],
+    }]}]}
+
+
+def test_index_espn_odds_reads_a_moneyline_pair():
+    idx = scrape._index_espn_odds(_espn_payload("Max Holloway", "Justin Gaethje", -150, 130))
+    assert scrape.get_odds(idx, "Max Holloway", "Justin Gaethje") == {"f1": -150, "f2": 130}
+    assert scrape.odds_source(idx, "Max Holloway", "Justin Gaethje") == "espn"
+
+
+def test_index_espn_odds_tolerates_the_alternate_payload_shapes():
+    # ESPN has shipped the price as a string and nested under `current`. Both
+    # must read, because a shape change that throws would take the whole
+    # unmetered fallback down with it.
+    assert scrape._espn_moneyline({"moneyLine": "-165"}) == -165
+    assert scrape._espn_moneyline({"current": {"moneyLine": {"american": "+140"}}}) == 140
+    assert scrape._espn_moneyline({"moneyLine": None}) is None
+    assert scrape._espn_moneyline({}) is None
+    assert scrape._espn_moneyline("nonsense") is None
+
+
+def test_index_espn_odds_drops_implausible_and_incomplete_bouts():
+    # One-sided payload → no entry at all; a junk pair is rejected rather than
+    # shipped, same bar the metered sources are held to.
+    assert scrape._index_espn_odds(_espn_payload("A Fighter", "B Fighter", -150, None)) == {}
+    # Both sides priced as dogs: implied total under 100%, so the pair is corrupt.
+    assert scrape._index_espn_odds(_espn_payload("A Fighter", "B Fighter", 200, 200)) == {}
+    assert scrape._index_espn_odds({}) == {}
+    assert scrape._index_espn_odds({"events": [{"competitions": [{}]}]}) == {}
+
+
+def test_quota_exhausted_distinguishes_a_spent_budget_from_a_bad_key():
+    assert scrape.quota_exhausted({"last_status": 401, "requests_remaining": 0}) is True
+    assert scrape.quota_exhausted({"last_status": 429}) is True
+    # A rejected key with quota left never self-heals — keep calling it so the
+    # outage stays loud instead of being silently skipped.
+    assert scrape.quota_exhausted({"last_status": 401, "requests_remaining": 120}) is False
+    assert scrape.quota_exhausted({}) is False
+
+
+def test_quota_blocked_expires_on_cooldown_and_on_the_month_reset():
+    spent = {"requests_remaining": 0, "last_status": 401,
+             "exhausted_at": "2026-09-06T06:00:00+00:00"}
+    assert scrape.quota_blocked(spent, NOW_94) is True
+    assert scrape.quota_blocked(spent, NOW_94 + timedelta(hours=13)) is False
+    # The Odds API resets monthly: a new month unblocks it whatever the timer says.
+    assert scrape.quota_blocked(spent, datetime(2026, 10, 1, 0, 30, tzinfo=timezone.utc)) is False
+    # An exhaustion with no timestamp (older state file) is probed, not muted.
+    assert scrape.quota_blocked({"requests_remaining": 0}, NOW_94) is False
+
+
+def test_select_odds_providers_skips_the_spent_budget_but_keeps_the_free_one():
+    metered  = scrape.OddsProvider("paid", lambda: {}, quota="paid")
+    sibling  = scrape.OddsProvider("paid-2", lambda: {}, quota="paid")   # same budget
+    free     = scrape.OddsProvider("espn", lambda: {}, quota="espn", metered=False)
+    state = {"providers": {"paid": {"requests_remaining": 0, "last_status": 401,
+                                    "exhausted_at": "2026-09-06T06:00:00+00:00"}}}
+    picked = scrape.select_odds_providers([metered, sibling, free], state, NOW_94)
+    assert [p.name for p in picked] == ["espn"]
+    # With budget left, the whole chain runs.
+    state["providers"]["paid"] = {"requests_remaining": 300, "last_status": 200}
+    picked = scrape.select_odds_providers([metered, sibling, free], state, NOW_94)
+    assert [p.name for p in picked] == ["paid", "paid-2", "espn"]
+
+
+def test_fetch_odds_prices_the_card_from_the_free_source_when_the_budget_is_spent():
+    # The #94 scenario end to end: the paid provider is skipped entirely (not
+    # even called), and the card still gets lines.
+    calls = []
+
+    def paid():
+        calls.append("paid")
+        return {}
+
+    espn = lambda: _entry("Ilia Topuria", "Arman Tsarukyan", -180, 155, "espn")
+    providers = [
+        scrape.OddsProvider("paid", paid, quota="the-odds-api"),
+        scrape.OddsProvider("espn", espn, quota="espn", metered=False),
+    ]
+    state = {"providers": {"the-odds-api": {
+        "requests_remaining": 0, "last_status": 401,
+        "exhausted_at": "2026-09-06T06:00:00+00:00"}}}
+    idx = scrape.fetch_odds(sources=providers, state=state, now=NOW_94)
+    assert calls == []
+    assert scrape.get_odds(idx, "Ilia Topuria", "Arman Tsarukyan") == {"f1": -180, "f2": 155}
+    assert scrape.odds_source(idx, "Ilia Topuria", "Arman Tsarukyan") == "espn"
+
+
+def test_record_provider_state_stamps_and_clears_exhaustion():
+    state = {}
+    scrape.record_provider_state(
+        state, NOW_94,
+        stats={"the-odds-api": {"provider": "the-odds-api:primary",
+                                "last_status": 401, "requests_remaining": 0}})
+    entry = state["providers"]["the-odds-api"]
+    assert entry["exhausted_at"] == NOW_94.isoformat()
+    # A later run with quota back clears the block, so the skip self-heals.
+    scrape.record_provider_state(
+        state, NOW_94 + timedelta(days=1),
+        stats={"the-odds-api": {"last_status": 200, "requests_remaining": 480, "bouts": 12}})
+    entry = state["providers"]["the-odds-api"]
+    assert "exhausted_at" not in entry
+    assert entry["last_ok_at"] == (NOW_94 + timedelta(days=1)).isoformat()
+
+
+def test_backup_key_provider_is_a_no_op_without_a_second_key(monkeypatch):
+    monkeypatch.setattr(scrape, "ODDS_API_KEY_SECONDARY", "")
+    assert scrape.fetch_odds_backup_key() == {}
+
+
+def test_espn_windows_lead_with_one_range_query():
+    windows = scrape.espn_odds_windows(NOW_94, days_ahead=14)
+    assert windows[0] == "20260906-20260920"
+    assert all(w.isdigit() for w in windows[1:])
+    assert len(windows) <= 9
