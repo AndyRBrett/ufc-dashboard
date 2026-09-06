@@ -519,3 +519,66 @@ def test_the_banner_is_not_a_flex_container():
     page = (Path(__file__).resolve().parent.parent / "index.html").read_text(encoding="utf-8")
     rule = page.split(".odds-budget-banner.show{")[1].split("}")[0]
     assert "flex" not in rule, "the banner is a flex container again"
+
+
+# --- per-tier alert thresholds (#93) ---------------------------------------
+
+def _priced(f1, f2, o1, o2, lbl="", wc="Lightweight"):
+    return {"f1": f1, "f2": f2, "f1_odds": o1, "f2_odds": o2, "lbl": lbl, "wc": wc}
+
+
+def test_parse_events_carries_the_card_label_and_weight_class():
+    # The tier a bout is judged in comes from the card, not a position guess —
+    # and the weight class rides along into the snapshot log for a future
+    # per-division calibration.
+    data = (
+        'var EVENTS=[\n{\n    name:"UFC 999",\n    date:"2026-09-12",\n'
+        '      {lbl:"Main Event",wc:"Heavyweight",title:false,rematch:false,'
+        'odds:{f1:-150,f2:130},winner:"",method:"",round:null,state:"pre",'
+        'f1:{n:"A Fighter",r:"1-0-0",rk:"",s:null},f2:{n:"B Fighter",r:"2-0-0",rk:"",s:null}},\n'
+        '];\n'
+    )
+    fight = ws.parse_events(data)[0]["fights"][0]
+    assert fight["lbl"] == "Main Event"
+    assert fight["wc"] == "Heavyweight"
+    assert (fight["f1_odds"], fight["f2_odds"]) == (-150, 130)
+
+
+def test_a_prelim_needs_a_bigger_move_than_a_main_event_to_alert():
+    # The #93 complaint: a 60-point prelim drift and a 15-point headliner drift
+    # tripped the same global bar, so the feed filled with the tier nobody bets.
+    fights = [
+        _priced("Main A", "Main B", -125, 105, lbl="Main Event"),
+        _priced("Prelim A", "Prelim B", -460, 380, lbl="Prelim"),
+    ]
+    opens = {
+        ws.matchup_key(fights[0]): _priced("Main A", "Main B", -110, -110),
+        ws.matchup_key(fights[1]): _priced("Prelim A", "Prelim B", -400, 330),
+    }
+    movers = ws.event_movers(fights, opens, 10,
+                             {"main-event": 10, "main-card": 45, "prelim": 110})
+    assert [m["f1"] for m in movers] == ["Main A"]
+    assert movers[0]["tier"] == "main-event"
+    assert movers[0]["threshold"] == 10
+
+    # The same prelim clears its own bar once it actually steams.
+    fights[1] = _priced("Prelim A", "Prelim B", -900, 650, lbl="Prelim")
+    movers = ws.event_movers(fights, opens, 10,
+                             {"main-event": 10, "main-card": 45, "prelim": 110})
+    assert [m["f1"] for m in movers] == ["Main A", "Prelim A"]
+    assert movers[1]["threshold"] == 110
+
+
+def test_event_movers_without_a_calibration_behaves_exactly_as_before():
+    # Cold start (no series file yet) must not change who alerts.
+    fights = [_priced("Prelim A", "Prelim B", -160, 140, lbl="Prelim")]
+    opens  = {ws.matchup_key(fights[0]): _priced("Prelim A", "Prelim B", -140, 120)}
+    assert len(ws.event_movers(fights, opens, 10)) == 1
+    assert len(ws.event_movers(fights, opens, 10, {})) == 1
+
+
+def test_load_odds_series_survives_a_missing_or_corrupt_file(tmp_path):
+    assert ws.load_odds_series(tmp_path / "nope.json") == {}
+    bad = tmp_path / "odds-series.json"
+    bad.write_text("{not json", encoding="utf-8")
+    assert ws.load_odds_series(bad) == {}

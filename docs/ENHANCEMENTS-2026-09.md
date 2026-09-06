@@ -6,7 +6,7 @@ dependency-free order so each one commits and ships on its own:
 | Issue | Enhancement | Status |
 | ----- | ----------- | ------ |
 | #94 | Secondary odds provider fallback when the primary budget runs out | ✅ shipped (M1) |
-| #93 | Movement alerts calibrated per weight class / card position | ⏳ not started |
+| #93 | Movement alerts calibrated per weight class / card position | ✅ shipped (M2) |
 | #74 | Fighter-history + style-matchup model probability alongside odds | ⏳ not started |
 | #90 | Parlay risk calculator with correlation warnings | ⏳ not started |
 
@@ -67,3 +67,52 @@ reset.
 exhausted/blocked semantics (spent budget vs. rejected key), provider selection,
 `record_provider_state` stamping and clearing `exhausted_at`, and the end-to-end
 case — budget spent, paid provider never called, card still priced from ESPN.
+
+---
+
+## M2 — #93 per-tier movement alert thresholds (`alert_calibration.py`, `write_status.py`)
+
+**Problem.** Every bout was judged against one `MOVEMENT_ALERT_THRESHOLD=10`.
+Points of American moneyline aren't comparable across tiers — a big favourite's
+line moves in much larger steps for the same change of mind — so prelim noise
+filed at the same sensitivity as a headliner's steam move. On the live status
+file that was 46 alerts, prelim movers at 670/650 sitting beside main events at
+202/295.
+
+**What shipped.**
+
+- `alert_calibration.py` — pure, no I/O. Per tier (`main-event` / `main-card` /
+  `prelim`), the threshold is the movement magnitude at the top `rate` of *that
+  tier's own* historical open→close drift, from `odds-series.json`.
+  `TIER_ALERT_RATES` is deliberately uneven (0.50 / 0.35 / 0.20): sensitivity
+  tracks what's at stake, not the size of the price tag.
+- Two guards. A tier under `MIN_SAMPLES` (20 scored bouts) keeps the global
+  default — never quieter than before. And a *raised* bar is only accepted if
+  moves at that size historically **persisted** to the close more often than
+  moves at the default (`PERSISTENCE_KEEP` = kept half the move, same side).
+  That's the "sharp money vs noise" backtest #93 asks for; it stops the
+  calibration muting a tier whose big swings are churn.
+- `write_status.py` calibrates once per run from the committed series file
+  (no new artifact), judges each bout by `bout_tier(index, lbl)`, and tags every
+  alert with `tier`, `threshold` and `wc`. The status file gains
+  `movement_alert_thresholds` and `movement_alert_calibration` (the evidence
+  behind each number).
+- `parse_events` now captures `lbl` and `wc` per bout, so the tier comes from the
+  card itself and the **snapshot log starts accumulating weight class**.
+
+**Live effect** (measured against the committed history): thresholds came out
+main-event 10 / main-card 45 / prelim 110, cutting the feed 46 → 20 alerts with
+every main-event mover retained and persistence at the chosen bars of 0.95/0.97
+against 0.77/0.89 at the old global 10.
+
+**Weight-class axis: deliberately deferred.** `odds-snapshots.jsonl` has never
+carried `wc`, so there is no history to segment by division — a per-division
+percentile today would be fitted to a handful of bouts. This milestone starts
+recording it. Once a few months of snapshots carry `wc`, extend
+`collect_samples`/`bout_tier` to a compound key (tier × weight band) behind the
+same `MIN_SAMPLES` guard; nothing else has to change.
+
+**Tests.** `tests/test_alert_calibration.py` (tiering, sample extraction,
+retraced-vs-persisted moves, thin-tier fallback, the sane band, empty/broken
+series file) and new cases in `tests/test_write_status.py` (label/wc parsing,
+a prelim needing a bigger move than a main event, cold-start parity).
