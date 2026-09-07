@@ -1749,6 +1749,15 @@ def record_provider_state(state, now, stats=None):
     """
     stats = _provider_stats if stats is None else stats
     providers = dict((state or {}).get("providers") or {})
+    # Forget buckets no provider spends any more. A retired provider's last
+    # result would otherwise sit in the state file for good, reading exactly like
+    # a live provider stuck at zero bouts — which is how the removed ESPN entry
+    # looked the day after it was deleted.
+    live = {p.quota for p in ODDS_PROVIDERS} | set(stats)
+    for quota in list(providers):
+        if quota not in live:
+            print(f"Odds state: dropping retired provider {quota!r}", file=sys.stderr)
+            providers.pop(quota)
     for quota, result in stats.items():
         prev  = providers.get(quota) if isinstance(providers.get(quota), dict) else {}
         entry = dict(prev)
