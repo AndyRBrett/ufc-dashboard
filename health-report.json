@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-07T02:25:54Z",
+  "generated_at": "2026-09-07T02:43:50Z",
   "summary": {
     "events": 13,
     "block": 0,
-    "warn": 7
+    "warn": 6
   },
   "findings": [
     {
@@ -56,15 +56,6 @@
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
       "days_out": 5
-    },
-    {
-      "severity": "WARN",
-      "check": "profile-mismatch",
-      "message": "UFC 333: Volkanovski vs. Evloev (47d out): Petr Yan \u2014 profile is 46 years old (DOB Mar 20, 1980) \u2014 no active fighter is; this is probably a different Petr Yan",
-      "fighter": "Petr Yan",
-      "event": "UFC 333: Volkanovski vs. Evloev",
-      "date": "2026-10-24",
-      "days_out": 47
     }
   ]
 }
