@@ -1697,3 +1697,26 @@ def test_an_unreadable_or_missing_dob_is_never_called_implausible():
     for dob in ("", None, "???", "1980-03-20"):
         assert scrape.profile_is_implausible(_cached(dob, "2026-09-05T00:00:00+00:00"),
                                              NOW_STATS) is False
+
+
+def test_record_provider_state_forgets_a_retired_provider():
+    # ESPN's last result outlived the provider itself and read like a live source
+    # stuck at zero bouts. A bucket nobody spends any more is dropped.
+    state = {"providers": {
+        "espn": {"bouts": 0, "last_status": None},
+        "the-odds-api": {"bouts": 49, "last_status": 200},
+    }}
+    scrape.record_provider_state(
+        state, NOW_94, stats={"the-odds-api": {"last_status": 200, "bouts": 49}})
+    assert set(state["providers"]) == {"the-odds-api"}
+
+
+def test_a_provider_skipped_this_run_keeps_its_state():
+    # Skipped because its budget is spent is not the same as retired — its
+    # exhaustion record is exactly what makes the skip self-healing.
+    state = {"providers": {"the-odds-api-backup": {
+        "requests_remaining": 0, "last_status": 401,
+        "exhausted_at": "2026-09-06T06:00:00+00:00"}}}
+    scrape.record_provider_state(
+        state, NOW_94, stats={"the-odds-api": {"last_status": 200, "bouts": 49}})
+    assert "the-odds-api-backup" in state["providers"]

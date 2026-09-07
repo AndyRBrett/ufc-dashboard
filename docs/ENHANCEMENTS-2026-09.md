@@ -5,7 +5,7 @@ dependency-free order so each one commits and ships on its own:
 
 | Issue | Enhancement | Status |
 | ----- | ----------- | ------ |
-| #94 | Secondary odds provider fallback when the primary budget runs out | ✅ shipped (M1) |
+| #94 | Secondary odds provider fallback when the primary budget runs out | ✅ shipped (M1, completed M9) |
 | #93 | Movement alerts calibrated per weight class / card position | ✅ shipped (M2) |
 | #74 | Fighter-history + style-matchup model probability alongside odds | ✅ shipped (M3) |
 | #90 | Parlay risk calculator with correlation warnings | ✅ shipped (M4) |
@@ -418,3 +418,37 @@ what lets an unmetered source, if one is ever found, keep pricing cards when the
 paid budget is gone. Any candidate should be added as a provider and proven with
 one live run before being trusted — that loop is now cheap, which is the durable
 outcome of the ESPN experiment.
+
+---
+
+## M9 — #94 verified end to end
+
+`ODDS_API_KEY_SECONDARY` was added as a repo secret and run
+[#4034](https://github.com/AndyRBrett/ufc-dashboard/actions/runs/34144629440)
+proved the whole chain:
+
+```json
+"the-odds-api":        { "last_status": 200, "bouts": 49, "requests_remaining": 374 },
+"the-odds-api-backup": { "last_status": 200, "bouts": 49, "requests_remaining": 499 }
+```
+
+Two keys, two budgets, same coverage. When the primary reaches zero,
+`quota_blocked` skips it and the backup prices the card — the failure #94 was
+filed for cannot recur silently.
+
+Note the verification had to come from `odds-state.json`, not the log: the chain
+merges gap-first, so a working backup still prints `+0 new fights` while the
+primary covers everything. The per-provider `bouts` count is recorded *before*
+the merge precisely so "working but redundant" and "not working" are
+distinguishable.
+
+**Also fixed here:** `record_provider_state` now drops buckets no registered
+provider spends. The retired ESPN entry survived its own deletion and sat in the
+state file reading exactly like a live provider stuck at zero bouts. A bucket
+skipped this run because its budget is spent is *not* retired and keeps its
+record — that exhaustion stamp is what makes the skip self-healing.
+
+**Both fighter profiles are correct on the live card**: Jean Silva 17-3-0 (b.
+1996, 8 UFC opponents), Petr Yan 20-5-0 (b. 1993, 16 UFC opponents) — Yan
+resolved by the first scheduled run after the letter-page fix merged, with no
+manual purge needed beyond the one already committed.
