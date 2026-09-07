@@ -1710,3 +1710,45 @@ def test_espn_payload_shape_counts_each_layer():
     assert scrape.espn_payload_shape(payload) == (2, 3, 1)
     assert scrape.espn_payload_shape({}) == (0, 0, 0)
     assert scrape.espn_payload_shape(None) == (0, 0, 0)
+
+
+# --- a wrong profile has to repair itself ----------------------------------
+#
+# The trap the Petr Yan case exposed: a WRONG cache entry looks exactly as fresh
+# as a right one. The run that cached him stamped fetched_at, so the search fix
+# that shipped hours later was locked out for the full refresh window, and the
+# next run reported "0 new" and skipped him entirely.
+
+NOW_STATS = datetime(2026, 9, 7, 2, 0, tzinfo=timezone.utc)
+
+
+def _cached(dob, fetched_at, **over):
+    entry = {"rec": "17-6-0", "dob": dob, "form": [{"r": "W", "m": "Dec"}],
+             "opp": ["A Fighter"], "fetched_at": fetched_at}
+    entry.update(over)
+    return entry
+
+
+def test_a_profile_too_old_to_be_fighting_is_re_searched_despite_being_fresh():
+    entry = _cached("Mar 20, 1980", "2026-09-06T22:28:00+00:00")
+    assert scrape.profile_is_implausible(entry, NOW_STATS) is True
+    # Fresh by the normal cadence (hours old, not 14 days) — but re-derived anyway.
+    assert scrape._needs_stats_fetch(entry, NOW_STATS + timedelta(days=1)) == (True, True)
+
+
+def test_the_recheck_is_bounded_to_once_a_day():
+    # A genuine 45-year-old must not be re-searched on every single run.
+    entry = _cached("Mar 20, 1980", "2026-09-07T01:00:00+00:00")
+    assert scrape._needs_stats_fetch(entry, NOW_STATS) == (False, False)
+
+
+def test_a_plausible_profile_keeps_the_normal_cadence():
+    entry = _cached("Feb 11, 1993", "2026-09-05T00:00:00+00:00")
+    assert scrape.profile_is_implausible(entry, NOW_STATS) is False
+    assert scrape._needs_stats_fetch(entry, NOW_STATS) == (False, False)
+
+
+def test_an_unreadable_or_missing_dob_is_never_called_implausible():
+    for dob in ("", None, "???", "1980-03-20"):
+        assert scrape.profile_is_implausible(_cached(dob, "2026-09-05T00:00:00+00:00"),
+                                             NOW_STATS) is False

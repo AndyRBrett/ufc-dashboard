@@ -350,3 +350,41 @@ ESPN: N event(s), M bout(s), K with an odds block, P priced
 scoreboard endpoint simply doesn't carry MMA moneylines and the provider should
 be repointed or dropped — editing `_espn_moneyline` would be guessing. ESPN is
 unreachable from the dev sandbox, so this line is the only evidence available.
+
+---
+
+## M7 — the second live run: two definitive answers
+
+Run [#4029](https://github.com/AndyRBrett/ufc-dashboard/actions/runs/34076063168),
+on the merge of M6.
+
+**ESPN carries no MMA odds at all.** The diagnostic added in M6 settled it in one
+line:
+
+```
+ESPN: 16 event(s), 113 bout(s), 0 with an odds block, 0 priced
+```
+
+Events and bouts came back fine; not one competition carried an `odds` block. So
+`_espn_moneyline` / `_espn_competitor_names` were never the problem — there is
+nothing on that endpoint to parse. **Do not patch the parser.** The provider needs
+to be repointed at a source that actually publishes prices, or dropped; #94's
+only other backstop is `ODDS_API_KEY_SECONDARY`, which is unset.
+
+**Petr Yan was never re-fetched** — `Fetching stats for 2 fighters (0 new)` listed
+only Rong Zhu and Thomas Gantt. The 22:28 run had rewritten his entry (wrong
+profile, via the letter-page bug) and stamped `fetched_at`, so the fix that
+merged hours later was locked out for the full `STATS_REFRESH_DAYS`.
+
+That is the trap worth closing: **a wrong entry looks exactly as fresh as a right
+one**, so the freshness cadence can never repair the entries that most need it,
+and M5's `profile-mismatch` warning could only describe the problem for two
+weeks. `profile_is_implausible` + `_needs_stats_fetch` now force a fresh *search*
+(not a cached-URL re-hit) for any profile whose DOB implies an age of
+`STATS_MAX_PLAUSIBLE_AGE` (44) or more, bounded to once per
+`STATS_MISMATCH_RECHECK_H` (24h) so a genuine 45-year-old costs one search a day
+rather than one per run. Yan's entry is purged again so the merged gathering fix
+resolves him on the next run instead of waiting for that recheck.
+
+Detection now triggers correction; before this, they were in different files and
+only one of them ran.

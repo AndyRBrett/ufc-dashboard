@@ -2622,6 +2622,16 @@ STATS_RETRY_DAYS   = 3    # cooldown before retrying a fighter whose fetch faile
 # event. Close to a card, a wasted retry costs one request; a blank record costs
 # the card.
 STATS_URGENT_DAYS  = 7    # a card this close retries failures + refreshes every run
+# No fighter on a UFC card is this old. A cached profile that says otherwise
+# belongs to a namesake, not to the fighter it is filed under — and the freshness
+# cadence alone will never repair it, because a WRONG entry looks exactly as
+# fresh as a right one. Petr Yan sat on a title co-main as an 11-13-0 fighter
+# born in 1980: the run that cached him stamped fetched_at, so the search fix
+# that shipped hours later was locked out for the full STATS_REFRESH_DAYS.
+STATS_MAX_PLAUSIBLE_AGE   = 44
+# ...but re-searching every run would be wasteful (and would loop forever on a
+# genuine 45-year-old), so an implausible profile is re-derived at most daily.
+STATS_MISMATCH_RECHECK_H  = 24
 
 
 def _parse_ts(s):
@@ -2635,6 +2645,29 @@ def _parse_ts(s):
     except (TypeError, ValueError):
         return datetime.min.replace(tzinfo=timezone.utc)
     return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+
+
+def _profile_age_years(entry, now):
+    """Age implied by a cached profile's UFCStats DOB, or None if unreadable."""
+    try:
+        born = datetime.strptime(entry.get("dob", ""), "%b %d, %Y")
+    except (TypeError, ValueError):
+        return None
+    return (now - born.replace(tzinfo=timezone.utc)).days / 365.25
+
+
+def profile_is_implausible(entry, now):
+    """True when a cached profile cannot be the fighter it is filed under.
+
+    Deliberately one narrow test rather than a general "does this look right"
+    heuristic: age is the tell that no real roster member can produce, and a
+    false positive here only costs one extra search per day. health.py reports
+    the same condition (plus a ranking-based one it has the data for); this is
+    the half that has to live in the scraper, because detection that cannot
+    trigger a correction just describes the problem for two weeks.
+    """
+    age = _profile_age_years(entry or {}, now)
+    return age is not None and age >= STATS_MAX_PLAUSIBLE_AGE
 
 
 def _needs_stats_fetch(entry, now, urgent=False):
@@ -2664,6 +2697,12 @@ def _needs_stats_fetch(entry, now, urgent=False):
     fetched = entry.get("fetched_at")
     if not fetched or now - _parse_ts(fetched) >= timedelta(days=STATS_REFRESH_DAYS):
         return True, True                       # stale/legacy → re-validate via search
+    # A profile that cannot belong to this fighter is re-derived from the search
+    # page whatever its freshness stamp says — otherwise the entry that is wrong
+    # is precisely the one nothing ever revisits.
+    if (profile_is_implausible(entry, now)
+            and now - _parse_ts(fetched) >= timedelta(hours=STATS_MISMATCH_RECHECK_H)):
+        return True, True
     return False, False
 
 
