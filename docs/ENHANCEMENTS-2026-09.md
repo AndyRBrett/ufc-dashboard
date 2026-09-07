@@ -452,3 +452,88 @@ record — that exhaustion stamp is what makes the skip self-healing.
 1996, 8 UFC opponents), Petr Yan 20-5-0 (b. 1993, 16 UFC opponents) — Yan
 resolved by the first scheduled run after the letter-page fix merged, with no
 manual purge needed beyond the one already committed.
+
+---
+
+## M10 — acting on the Codex reviews
+
+Codex reviewed every PR in this series and I merged five of them without reading
+its findings, which the repo's own instructions say to triage. Nine findings,
+eight valid, two P1. All are fixed here; each has a regression test named after
+the failure rather than the function.
+
+### P1 — the budget-aware skip re-opened the August quota outage
+
+`step_build_events` wrote `odds_state["last_status"] = _odds_last_status`
+unconditionally, while the line below it guards `requests_remaining`. That was
+harmless until #94 added the skip: an exhausted primary is never called again, so
+the global stays `None` and the state becomes `last_status: null,
+requests_remaining: 0`. `write_status.odds_budget_exhausted()` needs 401/403 AND
+0, so it read "not exhausted" — every unpriced card would be filed as a parse
+failure and the workflow would go red every five minutes for a condition that
+self-heals at the monthly reset. That is the exact August failure this repo
+already fixed once. The write is now guarded the same way its neighbour is.
+
+### P1 — a partial letter scan could still cache the namesake
+
+The M6 gathering fix collected candidates from every letter page, but returned
+from `if matches:` even when a page had come back empty. A loaded P page plus a
+blipped Y page would therefore select the retired namesake — the Petr Yan
+mis-match by another route. An incomplete scan now retries first; on the final
+attempt a partial answer still beats none.
+
+### P2 — age alone was libelling real veterans
+
+`PROFILE_MAX_AGE = 44` sat under a comment admitting fighters compete into their
+late 40s, and every warning lands in the tracking issue. The tell is not age, it
+is **age with no UFC history**: a 47-year-old who really is fighting carries
+dozens of UFC opponents; a namesake scraped off a 2005 record carries one. Both
+halves are now required together, in `health.py` and in `scrape.py`, and the
+ranked-fighter tell is tightened from "≤1 opponent" to "no opponents" — one bout
+is enough to be ranked. Both real cases still fire (Silva 48.9/1, Yan 46.5/1);
+a genuine veteran with a real record no longer can.
+
+### P2 — implausibility now outranks the cheap refetch
+
+An implausible entry that was also missing `form`/`opp` hit the incomplete-entry
+branch first, which re-hits the cached URL — re-confirming the wrong fighter and
+stamping it fresh, delaying the corrective search another day. The check moved
+above that branch.
+
+### P2 — equal persistence keeps the default
+
+The guard's own wording is "persist MORE often"; the code rejected only a
+strictly lower rate, so an equal rate raised the bar and suppressed alerts for no
+cleaner signal. Now `<=`. (This also exposed a synthetic test fixture where every
+move persisted identically — it never modelled the "big moves are cleaner" tier
+the calibration exists for, and now does.)
+
+### P2 — the history was tiered by the wrong index
+
+The one with real effect on #93's numbers. `build_bout_series` orders **only
+odds-bearing bouts**, so an unpriced headliner promotes the next bout into index
+0: the committed history scores Brendan Allen as the June 6 main event, and whole
+cards shift across tier boundaries. `lbl` is now carried from the snapshot
+through the series and `collect_samples` tiers by label, with position kept as
+the fallback for snapshots older than the label.
+
+Measured on the current history (83 of 178 bouts now carry a label):
+
+| tier | before | after |
+| --- | --- | --- |
+| main-event | 10 (too few samples) | 10 (too few samples) |
+| main-card | 45 | **50** |
+| prelim | 110 | **100** |
+
+The numbers move because the samples were partly in the wrong tiers. They will
+keep firming up as more snapshots carry labels.
+
+### P2 — an emptied providers map is now written back
+
+Pruning the last retired bucket with nothing to record this run left the stale
+map on disk, defeating the cleanup in the one case that needed it.
+
+### Already fixed before the review was read
+
+Codex also flagged that `update.yml` never passed `ODDS_API_KEY_SECONDARY` to the
+scrape step — found independently and fixed in M8.

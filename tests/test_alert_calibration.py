@@ -86,8 +86,13 @@ def _series_doc(drift_by_tier):
             # Padding bouts are left unclosed so they contribute no samples of
             # their own — only the bout under test is scored.
             card = [_bout([(-110, -110)], concluded=False) for _ in range(idx)]
-            card.append(_bout([(-110, -110), (-110, -110 - d // 2),
-                               (-110, -110 - d)]))
+            # Each bout opens with a small counter-move that retraces, then
+            # drifts d points and closes there. That is what a tier where the
+            # calibration should RAISE the bar looks like: small moves are noise,
+            # big ones hold. Without the retracing wobble every move persists
+            # equally and the guard is right to refuse the raise.
+            card.append(_bout([(-110, -110), (-110, -110 + 20),
+                               (-110, -110 - d // 2), (-110, -110 - d)]))
             events.append({"event_id": "2026-01-01:e", "concluded": True,
                            "bouts": card})
     return {"events": events}
@@ -147,3 +152,36 @@ def test_persistence_rate_counts_only_moves_at_or_above_the_bar():
     rate, n = calib.persistence_rate(moves, 20)
     assert n == 3 and round(rate, 2) == 0.67
     assert calib.persistence_rate(moves, 500) == (None, 0)
+
+
+def test_equal_persistence_keeps_the_default():
+    # The guard's own wording is "moves at the higher bar persist MORE often".
+    # An equal rate buys no cleaner signal, so raising the bar would suppress
+    # alerts for nothing.
+    samples = {"drifts": [50] * 30,
+               "moves": [(20, True), (60, True)] * 10}
+    value, meta = calib.calibrate_tier("prelim", samples, DEFAULT)
+    assert value == DEFAULT
+    assert meta["source"] == "default"
+
+
+def test_a_bout_is_tiered_by_its_card_label_not_its_position():
+    # The series tracks only PRICED bouts, so an unpriced headliner promotes the
+    # next bout into index 0 — that is how a main-card bout ended up supplying
+    # main-event samples in the committed history.
+    doc = {"events": [{"concluded": True, "bouts": [
+        dict(_bout([(-110, -110), (-110, -150), (-110, -200)]), lbl="Co-Main"),
+        dict(_bout([(-110, -110), (-110, -150), (-110, -200)]), lbl="Main Event"),
+    ]}]}
+    samples = calib.collect_samples(doc)
+    assert len(samples["main-card"]["drifts"]) == 1     # the co-main at index 0
+    assert len(samples["main-event"]["drifts"]) == 1    # the headliner at index 1
+
+
+def test_a_bout_with_no_label_still_falls_back_to_its_position():
+    # Snapshots written before the label existed must keep working.
+    doc = {"events": [{"concluded": True, "bouts": [
+        _bout([(-110, -110), (-110, -150), (-110, -200)]),
+    ]}]}
+    samples = calib.collect_samples(doc)
+    assert len(samples["main-event"]["drifts"]) == 1
