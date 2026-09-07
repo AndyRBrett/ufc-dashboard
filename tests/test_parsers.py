@@ -1498,46 +1498,6 @@ def test_classify_region_labels_each_slot_family():
 NOW_94 = datetime(2026, 9, 6, 12, 0, tzinfo=timezone.utc)
 
 
-def _espn_payload(f1, f2, home_ml, away_ml, date="2026-09-12T23:00Z"):
-    return {"events": [{"date": date, "competitions": [{
-        "date": date,
-        "competitors": [
-            {"homeAway": "home", "athlete": {"displayName": f1}},
-            {"homeAway": "away", "athlete": {"displayName": f2}},
-        ],
-        "odds": [{"provider": {"name": "ESPN BET"},
-                  "homeTeamOdds": {"moneyLine": home_ml},
-                  "awayTeamOdds": {"moneyLine": away_ml}}],
-    }]}]}
-
-
-def test_index_espn_odds_reads_a_moneyline_pair():
-    idx = scrape._index_espn_odds(_espn_payload("Max Holloway", "Justin Gaethje", -150, 130))
-    assert scrape.get_odds(idx, "Max Holloway", "Justin Gaethje") == {"f1": -150, "f2": 130}
-    assert scrape.odds_source(idx, "Max Holloway", "Justin Gaethje") == "espn"
-
-
-def test_index_espn_odds_tolerates_the_alternate_payload_shapes():
-    # ESPN has shipped the price as a string and nested under `current`. Both
-    # must read, because a shape change that throws would take the whole
-    # unmetered fallback down with it.
-    assert scrape._espn_moneyline({"moneyLine": "-165"}) == -165
-    assert scrape._espn_moneyline({"current": {"moneyLine": {"american": "+140"}}}) == 140
-    assert scrape._espn_moneyline({"moneyLine": None}) is None
-    assert scrape._espn_moneyline({}) is None
-    assert scrape._espn_moneyline("nonsense") is None
-
-
-def test_index_espn_odds_drops_implausible_and_incomplete_bouts():
-    # One-sided payload → no entry at all; a junk pair is rejected rather than
-    # shipped, same bar the metered sources are held to.
-    assert scrape._index_espn_odds(_espn_payload("A Fighter", "B Fighter", -150, None)) == {}
-    # Both sides priced as dogs: implied total under 100%, so the pair is corrupt.
-    assert scrape._index_espn_odds(_espn_payload("A Fighter", "B Fighter", 200, 200)) == {}
-    assert scrape._index_espn_odds({}) == {}
-    assert scrape._index_espn_odds({"events": [{"competitions": [{}]}]}) == {}
-
-
 def test_quota_exhausted_distinguishes_a_spent_budget_from_a_bad_key():
     assert scrape.quota_exhausted({"last_status": 401, "requests_remaining": 0}) is True
     assert scrape.quota_exhausted({"last_status": 429}) is True
@@ -1558,33 +1518,36 @@ def test_quota_blocked_expires_on_cooldown_and_on_the_month_reset():
     assert scrape.quota_blocked({"requests_remaining": 0}, NOW_94) is False
 
 
-def test_select_odds_providers_skips_the_spent_budget_but_keeps_the_free_one():
+def test_select_odds_providers_skips_a_spent_budget_but_never_an_unmetered_source():
+    # No unmetered provider is registered today (ESPN published no odds and was
+    # removed), but the capability is what makes the chain survive exhaustion at
+    # all — so it stays covered for whatever free source is added next.
     metered  = scrape.OddsProvider("paid", lambda: {}, quota="paid")
     sibling  = scrape.OddsProvider("paid-2", lambda: {}, quota="paid")   # same budget
-    free     = scrape.OddsProvider("espn", lambda: {}, quota="espn", metered=False)
+    free     = scrape.OddsProvider("free", lambda: {}, quota="free", metered=False)
     state = {"providers": {"paid": {"requests_remaining": 0, "last_status": 401,
                                     "exhausted_at": "2026-09-06T06:00:00+00:00"}}}
     picked = scrape.select_odds_providers([metered, sibling, free], state, NOW_94)
-    assert [p.name for p in picked] == ["espn"]
+    assert [p.name for p in picked] == ["free"]
     # With budget left, the whole chain runs.
     state["providers"]["paid"] = {"requests_remaining": 300, "last_status": 200}
     picked = scrape.select_odds_providers([metered, sibling, free], state, NOW_94)
-    assert [p.name for p in picked] == ["paid", "paid-2", "espn"]
+    assert [p.name for p in picked] == ["paid", "paid-2", "free"]
 
 
-def test_fetch_odds_prices_the_card_from_the_free_source_when_the_budget_is_spent():
-    # The #94 scenario end to end: the paid provider is skipped entirely (not
-    # even called), and the card still gets lines.
+def test_fetch_odds_prices_the_card_from_the_backup_key_when_the_budget_is_spent():
+    # The #94 scenario end to end: the exhausted provider is skipped entirely
+    # (not even called), and the card still gets lines from the other budget.
     calls = []
 
     def paid():
         calls.append("paid")
         return {}
 
-    espn = lambda: _entry("Ilia Topuria", "Arman Tsarukyan", -180, 155, "espn")
+    backup = lambda: _entry("Ilia Topuria", "Arman Tsarukyan", -180, 155, "backup-key")
     providers = [
         scrape.OddsProvider("paid", paid, quota="the-odds-api"),
-        scrape.OddsProvider("espn", espn, quota="espn", metered=False),
+        scrape.OddsProvider("backup", backup, quota="the-odds-api-backup"),
     ]
     state = {"providers": {"the-odds-api": {
         "requests_remaining": 0, "last_status": 401,
@@ -1592,7 +1555,7 @@ def test_fetch_odds_prices_the_card_from_the_free_source_when_the_budget_is_spen
     idx = scrape.fetch_odds(sources=providers, state=state, now=NOW_94)
     assert calls == []
     assert scrape.get_odds(idx, "Ilia Topuria", "Arman Tsarukyan") == {"f1": -180, "f2": 155}
-    assert scrape.odds_source(idx, "Ilia Topuria", "Arman Tsarukyan") == "espn"
+    assert scrape.odds_source(idx, "Ilia Topuria", "Arman Tsarukyan") == "backup-key"
 
 
 def test_record_provider_state_stamps_and_clears_exhaustion():
@@ -1615,13 +1578,6 @@ def test_record_provider_state_stamps_and_clears_exhaustion():
 def test_backup_key_provider_is_a_no_op_without_a_second_key(monkeypatch):
     monkeypatch.setattr(scrape, "ODDS_API_KEY_SECONDARY", "")
     assert scrape.fetch_odds_backup_key() == {}
-
-
-def test_espn_windows_lead_with_one_range_query():
-    windows = scrape.espn_odds_windows(NOW_94, days_ahead=14)
-    assert windows[0] == "20260906-20260920"
-    assert all(w.isdigit() for w in windows[1:])
-    assert len(windows) <= 9
 
 
 # --- same-name fighter disambiguation --------------------------------------
@@ -1699,17 +1655,6 @@ def test_a_name_that_isnt_there_returns_nothing_without_retrying(monkeypatch):
     assert scrape._search_ufcstats("Nobody Here") is None
     # Pages loaded fine, so the empty-page retry must not fire: 2 letters, once.
     assert len(calls) == 2
-
-
-def test_espn_payload_shape_counts_each_layer():
-    # Which layer is empty decides the fix, so the counts are reported separately.
-    payload = {"events": [
-        {"competitions": [{"odds": [{"homeTeamOdds": {"moneyLine": -150}}]}, {}]},
-        {"competitions": [{"odds": []}]},
-    ]}
-    assert scrape.espn_payload_shape(payload) == (2, 3, 1)
-    assert scrape.espn_payload_shape({}) == (0, 0, 0)
-    assert scrape.espn_payload_shape(None) == (0, 0, 0)
 
 
 # --- a wrong profile has to repair itself ----------------------------------

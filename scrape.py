@@ -40,13 +40,16 @@ ODDS_API_URL = "https://api.the-odds-api.com/v4/sports/mma_mixed_martial_arts/od
 ODDS_API_REGIONS_PRIMARY   = os.environ.get("ODDS_API_REGIONS_PRIMARY", "us")
 ODDS_API_REGIONS_SECONDARY = os.environ.get("ODDS_API_REGIONS_SECONDARY", "us2,uk,eu,au")
 # Both of the above spend the SAME monthly quota, so neither survives budget
-# exhaustion (#94). Two independent backstops do:
-#   * a second Odds API account's key — same coverage, its own quota;
-#   * the ESPN scoreboard, which carries moneylines, is keyless and unmetered.
-# Set ODDS_ESPN=0 to disable the unmetered fallback.
+# exhaustion (#94). ODDS_API_KEY_SECONDARY does: a second Odds API account's key
+# is the same coverage on an independent monthly budget, so an exhausted primary
+# falls through to it instead of leaving announced cards unpriced for days.
+#
+# An unmetered ESPN provider was tried here first and removed: the MMA scoreboard
+# returns events and bouts but carries no odds block at all (a live run measured
+# 16 events / 113 bouts / 0 with odds), so there was nothing to parse. Any future
+# free source should be added the same way — as a provider in ODDS_PROVIDERS —
+# and proven with one live run before it is trusted.
 ODDS_API_KEY_SECONDARY = os.environ.get("ODDS_API_KEY_SECONDARY", "")
-ODDS_ESPN_ENABLED      = os.environ.get("ODDS_ESPN", "1") != "0"
-ODDS_ESPN_DAYS_AHEAD   = int(os.environ.get("ODDS_ESPN_DAYS_AHEAD", "45"))
 WIKI_API     = "https://en.wikipedia.org/w/api.php"
 WIKI_HDR     = {
     "User-Agent": (
@@ -1633,180 +1636,6 @@ def fetch_odds_backup_key():
     )
 
 
-# --- Unmetered fallback: ESPN scoreboard moneylines (#94) ------------------
-#
-# The metered chain above shares one budget, so when it runs out every upcoming
-# card sits odds-unavailable until the monthly reset — two announced cards with
-# 12-14 parsed bouts each did exactly that. ESPN publishes a moneyline per bout
-# on the scoreboard payload this scraper already fetches for start times: free,
-# keyless, no quota. Coverage is thinner and the book differs, so it sits LAST
-# in the chain and only fills pairs no metered source priced.
-
-def _espn_competitor_names(competition):
-    """(home_name, away_name) for an ESPN MMA competition, or (None, None)."""
-    home = away = None
-    for c in competition.get("competitors", []):
-        athlete = c.get("athlete") or {}
-        name = clean(athlete.get("displayName") or c.get("displayName") or "")
-        if not name:
-            continue
-        if c.get("homeAway") == "away":
-            away = name
-        elif c.get("homeAway") == "home":
-            home = name
-        elif home is None:
-            home = name
-        elif away is None:
-            away = name
-    return home, away
-
-
-def _espn_moneyline(side_odds):
-    """The American moneyline on one side of an ESPN odds record, or None.
-
-    ESPN has shipped this field as `moneyLine`, as `current.moneyLine.american`
-    and as a plain string ("-165"), so read all three shapes rather than trusting
-    one — a payload shape change must degrade to "no line", never to an
-    exception that takes the whole fallback down.
-    """
-    if not isinstance(side_odds, dict):
-        return None
-    raw = side_odds.get("moneyLine")
-    if raw is None:
-        cur = side_odds.get("current") or {}
-        ml  = cur.get("moneyLine") if isinstance(cur, dict) else None
-        if isinstance(ml, dict):
-            raw = ml.get("american", ml.get("value"))
-        else:
-            raw = ml
-    if raw in (None, "", "EVEN", "even"):
-        return None
-    try:
-        return int(round(float(str(raw).replace("+", "").strip())))
-    except (TypeError, ValueError):
-        return None
-
-
-def _index_espn_odds(payload, source="espn"):
-    """Pure: fighter-pair odds index from an ESPN MMA scoreboard payload (#94).
-
-    Same shape as _index_odds_api so the two are interchangeable in the chain.
-    Bouts without a usable pair of moneylines are skipped, as are pairs whose
-    two prices don't form a plausible market (_valid_odds) — a fallback that
-    ships junk lines is worse than one that ships none.
-    """
-    odds_index = {}
-    for ev in (payload or {}).get("events", []):
-        for comp in ev.get("competitions", []):
-            home, away = _espn_competitor_names(comp)
-            if not home or not away:
-                continue
-            for rec in comp.get("odds", []) or []:
-                if not isinstance(rec, dict):
-                    continue
-                f1_odds = _espn_moneyline(rec.get("homeTeamOdds"))
-                f2_odds = _espn_moneyline(rec.get("awayTeamOdds"))
-                if f1_odds is None or f2_odds is None:
-                    continue
-                if not _valid_odds(f1_odds, f2_odds):
-                    print(
-                        f"Odds rejected ({home} vs {away}): f1={f1_odds} "
-                        f"f2={f2_odds} — source={source}", file=sys.stderr)
-                    continue
-                pair = tuple(sorted([home.lower(), away.lower()]))
-                odds_index[pair] = {
-                    "f1_name": home,
-                    "f2_name": away,
-                    "f1_odds": f1_odds,
-                    "f2_odds": f2_odds,
-                    "source":  source,
-                    "commence_time": comp.get("date", "") or ev.get("date", ""),
-                }
-                break   # first provider on the bout wins; they rarely disagree
-    return odds_index
-
-
-def _espn_scoreboard(dates):
-    """Fetch one ESPN scoreboard window (cached per `dates` key). {} on failure."""
-    if dates in _espn_cache:
-        return _espn_cache[dates]
-    payload = {}
-    try:
-        r = requests.get(ESPN_SCOREBOARD, params={"dates": dates},
-                         headers=WIKI_HDR, timeout=15)
-        if r.status_code == 200:
-            payload = r.json()
-        else:
-            print(f"  ESPN scoreboard [{dates}]: HTTP {r.status_code}", file=sys.stderr)
-    except Exception as e:
-        print(f"  ESPN error: {e}", file=sys.stderr)
-    _espn_cache[dates] = payload
-    return payload
-
-
-def espn_payload_shape(payload):
-    """(events, competitions, competitions carrying an odds block) in a payload.
-
-    The first ESPN pull returned zero bouts with no HTTP error, and nothing in
-    the log could say whether the window held no events at all, held events whose
-    competitions carry no `odds`, or held odds this parser failed to read. Those
-    need three different fixes, so count the layers instead of guessing.
-    """
-    events = (payload or {}).get("events") or []
-    comps = odds = 0
-    for ev in events:
-        for comp in ev.get("competitions", []) or []:
-            comps += 1
-            if comp.get("odds"):
-                odds += 1
-    return len(events), comps, odds
-
-
-def espn_odds_windows(now, days_ahead=None):
-    """Scoreboard `dates` queries covering the priced window, cheapest first.
-
-    A single range query normally covers everything; the per-weekend fallbacks
-    exist because ESPN has answered range queries with an empty payload before,
-    and a keyless source is only useful if it actually returns something.
-    """
-    days_ahead = ODDS_ESPN_DAYS_AHEAD if days_ahead is None else days_ahead
-    start = now.date()
-    end   = start + timedelta(days=days_ahead)
-    windows = [f"{start:%Y%m%d}-{end:%Y%m%d}"]
-    day = start
-    while day <= end and len(windows) < 9:
-        if day.weekday() in (5, 6):     # UFC cards land Sat/Sun
-            windows.append(f"{day:%Y%m%d}")
-        day += timedelta(days=1)
-    return windows
-
-
-def fetch_odds_espn(now=None):
-    """Unmetered ESPN moneylines for the upcoming window (#94)."""
-    if not ODDS_ESPN_ENABLED:
-        return {}
-    now = now or datetime.now(timezone.utc)
-    combined = {}
-    events = comps = with_odds = 0
-    for dates in espn_odds_windows(now):
-        payload = _espn_scoreboard(dates)
-        e, c, o = espn_payload_shape(payload)
-        events, comps, with_odds = events + e, comps + c, with_odds + o
-        idx = _index_espn_odds(payload)
-        for pair, obj in idx.items():
-            combined.setdefault(pair, obj)
-        if combined and dates.count("-"):
-            break   # the range query answered; no need to walk weekends
-    print(
-        f"  ESPN: {events} event(s), {comps} bout(s), {with_odds} with an odds "
-        f"block, {len(combined)} priced",
-        file=sys.stderr,
-    )
-    note_provider_result("espn", "espn", status=200 if combined else None,
-                         remaining=None, bouts=len(combined))
-    return combined
-
-
 # --- Provider registry and quota-aware selection (#94) ---------------------
 
 class OddsProvider:
@@ -1838,7 +1667,6 @@ ODDS_PROVIDERS = [
     OddsProvider("the-odds-api:secondary", fetch_odds_secondary,  quota="the-odds-api"),
     OddsProvider("the-odds-api:backup-key", fetch_odds_backup_key,
                  quota="the-odds-api-backup"),
-    OddsProvider("espn", fetch_odds_espn, quota="espn", metered=False),
 ]
 # Back-compat alias: the chain used to be a plain list of callables.
 ODDS_SOURCES = ODDS_PROVIDERS

@@ -388,3 +388,33 @@ resolves him on the next run instead of waiting for that recheck.
 
 Detection now triggers correction; before this, they were in different files and
 only one of them ran.
+
+---
+
+## M8 — ESPN removed; the second API key is the backstop
+
+Decision taken on the M7 evidence (`0 with an odds block` across 113 bouts): the
+ESPN provider is **deleted**, not patched. Its parser, window-builder, payload
+diagnostic and tests are gone, and the `ODDS_ESPN*` env vars with them. The
+config comment records what was measured so nobody re-adds it hopefully.
+
+`ODDS_API_KEY_SECONDARY` is now #94's only backstop, and it needed one more thing
+to actually work: **`update.yml` never passed the secret to the scrape step.**
+Without that line the key could be added to the repo and change nothing, which is
+the worst kind of fix — one that looks applied. It is wired through now, and
+unset remains harmless (the provider no-ops).
+
+**To finish #94** (owner action, ~2 minutes):
+
+1. Create a second free account at the-odds-api.com (500 calls/month).
+2. Add its key as repo secret **`ODDS_API_KEY_SECONDARY`**.
+
+That doubles the monthly budget and gives the chain a source that survives
+primary exhaustion. Until then the fallback chain is real but empty, and
+`odds_budget_exhausted` still degrades exactly as it did before #94.
+
+The `metered=False` capability stays in `OddsProvider` (and stays tested): it is
+what lets an unmetered source, if one is ever found, keep pricing cards when the
+paid budget is gone. Any candidate should be added as a provider and proven with
+one live run before being trusted — that loop is now cheap, which is the durable
+outcome of the ESPN experiment.
