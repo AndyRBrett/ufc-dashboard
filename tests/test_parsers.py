@@ -1732,17 +1732,17 @@ def test_a_skipped_pull_never_blanks_the_exhaustion_state(monkeypatch, tmp_path)
     # parse failure, and the workflow went red every 5 minutes for a condition
     # that self-heals at the monthly reset.
     import write_status as ws
+    # Drive the real write step_build_events performs (apply_pull_status), not a
+    # restatement of it — a test that mirrors the guard stays green when the
+    # guard is reverted, which is no test at all.
     state = {"last_status": 401, "requests_remaining": 0}
-    monkeypatch.setattr(scrape, "_odds_last_status", None)
-    monkeypatch.setattr(scrape, "_odds_requests_remaining", None)
-    # Mirror the write step_build_events performs on a pull that called nobody.
-    if scrape._odds_last_status is not None:
-        state["last_status"] = scrape._odds_last_status
-    if scrape._odds_requests_remaining is not None:
-        state["requests_remaining"] = scrape._odds_requests_remaining
+    scrape.apply_pull_status(state, None, None)      # the skipped-pull case
     p = tmp_path / "odds-state.json"
     p.write_text(json.dumps(state), encoding="utf-8")
     assert ws.odds_budget_exhausted(p) is True
+    # A run that did call the primary still updates it.
+    scrape.apply_pull_status(state, 200, 480)
+    assert (state["last_status"], state["requests_remaining"]) == (200, 480)
 
 
 def test_an_incomplete_letter_scan_is_retried_before_anything_is_chosen(monkeypatch):
@@ -1751,10 +1751,14 @@ def test_an_incomplete_letter_scan_is_retried_before_anything_is_chosen(monkeypa
     calls = []
 
     def letter(ch):
+        # Count BEFORE recording this call: counting after made the first "y"
+        # look like the second, so the page never came back empty and the test
+        # passed against the very implementation it was written to catch.
+        seen = calls.count(ch)
         calls.append(ch)
         if ch == "p":
             return [("Yan", "Petr", "/namesake", 11, 13, 0)]
-        return [] if calls.count("y") == 0 else [("Petr", "Yan", "/real", 17, 6, 0)]
+        return [] if seen == 0 else [("Petr", "Yan", "/real", 17, 6, 0)]
 
     monkeypatch.setattr(scrape, "_load_ufcstats_letter", letter)
     monkeypatch.setattr(scrape, "_ufcstats_last_fight_date",

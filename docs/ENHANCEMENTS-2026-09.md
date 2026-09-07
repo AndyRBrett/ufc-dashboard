@@ -537,3 +537,28 @@ map on disk, defeating the cleanup in the one case that needed it.
 
 Codex also flagged that `update.yml` never passed `ODDS_API_KEY_SECONDARY` to the
 scrape step — found independently and fixed in M8.
+
+### Second Codex round — two of my regression tests were vacuous
+
+The re-review found three more, all valid, and two of them were about the tests
+written for the round above:
+
+- **The exhaustion test restated the guard instead of driving it.** It copied the
+  two `if ... is not None` lines into the test body, so reverting the production
+  guard left it green — a test that cannot fail is worse than none, because it
+  advertises coverage that does not exist. The guarded write is now a real seam
+  (`apply_pull_status`) that both `step_build_events` and the test call.
+- **The partial-scan test never created a partial scan.** `calls.append(ch)` ran
+  before `calls.count("y")`, so the first "y" already counted as the second and
+  the page never came back empty — it passed against the very implementation it
+  was written to catch. It counts before recording now.
+- **First label wins was the wrong choice.** Cards get reshuffled; a bout
+  promoted after its first labelled snapshot kept the tier it left. The LATEST
+  non-empty label wins, which for a concluded event is where the bout was
+  actually fought. An empty label never erases a recorded one.
+
+Each fix was verified by reverting the production change and confirming the test
+goes red — `apply_pull_status`, the retry branch, and first-vs-latest label
+(`Prelim` → `Main Event`). That check is the point: two tests here proved they
+would not have caught their own bug, and nothing but running them against the
+broken code shows that.

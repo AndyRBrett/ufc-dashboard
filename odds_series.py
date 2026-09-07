@@ -82,9 +82,13 @@ def build_bout_series(event_history):
                 canon[k] = {"f1": f["f1"], "f2": f["f2"], "lbl": f.get("lbl", "")}
                 order.append(k)
                 series[k] = []
-            elif not canon[k].get("lbl") and f.get("lbl"):
-                # First snapshots predate the label; adopt it as soon as one
-                # arrives rather than leaving the bout on the position fallback.
+            elif f.get("lbl"):
+                # LATEST label wins, not the first. Bouts get promoted and
+                # demoted as cards are reshuffled — a headliner withdraws and the
+                # co-main moves up — so the placement a bout was actually fought
+                # at is the one on the last snapshot before the event. Keeping
+                # the first would file a promoted bout's drift under the tier it
+                # left, which is the mis-tiering this label exists to end.
                 canon[k]["lbl"] = f["lbl"]
             f1o, f2o = _aligned_odds(f, canon[k])
             pts = series[k]

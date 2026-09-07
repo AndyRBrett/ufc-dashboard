@@ -1587,6 +1587,27 @@ def _next_event_days_out(data, now):
     return None if best is None else (best - today).days
 
 
+def apply_pull_status(state, status, remaining):
+    """Fold one pull's primary-key outcome into the odds state.
+
+    Only a run that actually CALLED the primary may rewrite its status. Once the
+    budget-aware skip (#94) exists an exhausted primary is never called again, so
+    an unguarded write set last_status back to null while requests_remaining
+    stayed 0 — and odds_budget_exhausted(), which needs 401/403 AND 0, then read
+    "not exhausted". Every unpriced card would be filed as a parse failure and the
+    workflow would go red every five minutes for a condition that self-heals at
+    the monthly reset: exactly the August outage this repo already fixed once.
+
+    Split out of step_build_events so the guard can be tested by driving the real
+    write rather than by a test that restates it.
+    """
+    if status is not None:
+        state["last_status"] = status
+    if remaining is not None:
+        state["requests_remaining"] = remaining
+    return state
+
+
 def load_odds_state():
     try:
         return json.loads(ODDS_STATE_PATH.read_text(encoding="utf-8"))
@@ -3087,18 +3108,7 @@ def step_build_events(data, now):
         if digest is not None:
             odds_state["lines_digest"] = digest
         odds_state["last_fetch_at"] = now.isoformat()
-        # Only a run that actually CALLED the primary key may rewrite its status.
-        # Once the budget-aware skip (#94) exists, an exhausted primary is never
-        # called again, so an unguarded write set last_status back to null while
-        # requests_remaining stayed 0 — and odds_budget_exhausted(), which needs
-        # 401/403 AND 0, then read "not exhausted". Every unpriced card would be
-        # filed as a parse failure and the workflow would go red every 5 minutes
-        # for a condition that self-heals at the monthly reset: exactly the
-        # August failure this repo already fixed once.
-        if _odds_last_status is not None:
-            odds_state["last_status"] = _odds_last_status
-        if _odds_requests_remaining is not None:
-            odds_state["requests_remaining"] = _odds_requests_remaining
+        apply_pull_status(odds_state, _odds_last_status, _odds_requests_remaining)
         odds_state["next_event_days_out"] = days_out
         # Per-provider budgets, so the next run can skip a spent one and let the
         # unmetered fallback price the card instead (#94).
