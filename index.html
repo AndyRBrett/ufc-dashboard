@@ -516,7 +516,13 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .cmp-bar-r{position:absolute;right:0;top:0;height:100%;background:var(--gold);border-radius:4px}
 .fn-mode{display:none;position:fixed;inset:0;background:radial-gradient(ellipse 85% 50% at 50% 0%,var(--fn-tint),transparent 60%),linear-gradient(180deg,#0a000a 0%,#000 100%);z-index:300;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
 .fn-mode.open{display:flex}
-.fn-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+/* FN mode is position:fixed inset:0, so it spans the notch/status-bar area that
+   body's safe-area padding never reaches — and .safe-top (z-index 600) paints an
+   opaque strip over exactly that band. A flat top:16px put the exit button under
+   that strip on every notched phone and installed PWA: the only way out of FN mode
+   was Escape or a backdrop tap, neither of which exists on a phone. Offset it past
+   the inset (fallback 0px keeps the non-notched layout byte-identical). */
+.fn-close{position:absolute;top:calc(env(safe-area-inset-top,0px) + 16px);right:calc(env(safe-area-inset-right,0px) + 16px);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .fn-close:hover{background:rgba(255,255,255,.16)}
 .fn-ev{font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.18em;color:rgba(255,255,255,.88);margin-bottom:8px}
 .fn-wc{font-size:11px;color:rgba(255,255,255,.62);text-transform:uppercase;letter-spacing:.09em;margin-bottom:36px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
