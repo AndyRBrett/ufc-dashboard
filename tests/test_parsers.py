@@ -1720,3 +1720,82 @@ def test_a_provider_skipped_this_run_keeps_its_state():
     scrape.record_provider_state(
         state, NOW_94, stats={"the-odds-api": {"last_status": 200, "bouts": 49}})
     assert "the-odds-api-backup" in state["providers"]
+
+
+# --- Codex review follow-ups -----------------------------------------------
+
+def test_a_skipped_pull_never_blanks_the_exhaustion_state(monkeypatch, tmp_path):
+    # The regression the budget-aware skip introduced: once the primary is
+    # skipped it is never called, so an unguarded write set last_status back to
+    # null while requests_remaining stayed 0. odds_budget_exhausted() needs
+    # 401/403 AND 0, so it read "not exhausted", every unpriced card became a
+    # parse failure, and the workflow went red every 5 minutes for a condition
+    # that self-heals at the monthly reset.
+    import write_status as ws
+    # Drive the real write step_build_events performs (apply_pull_status), not a
+    # restatement of it — a test that mirrors the guard stays green when the
+    # guard is reverted, which is no test at all.
+    state = {"last_status": 401, "requests_remaining": 0}
+    scrape.apply_pull_status(state, None, None)      # the skipped-pull case
+    p = tmp_path / "odds-state.json"
+    p.write_text(json.dumps(state), encoding="utf-8")
+    assert ws.odds_budget_exhausted(p) is True
+    # A run that did call the primary still updates it.
+    scrape.apply_pull_status(state, 200, 480)
+    assert (state["last_status"], state["requests_remaining"]) == (200, 480)
+
+
+def test_an_incomplete_letter_scan_is_retried_before_anything_is_chosen(monkeypatch):
+    # P page returns the namesake, Y page blips empty on the first pass. Choosing
+    # then would cache the namesake — the Petr Yan mis-match by another route.
+    calls = []
+
+    def letter(ch):
+        # Count BEFORE recording this call: counting after made the first "y"
+        # look like the second, so the page never came back empty and the test
+        # passed against the very implementation it was written to catch.
+        seen = calls.count(ch)
+        calls.append(ch)
+        if ch == "p":
+            return [("Yan", "Petr", "/namesake", 11, 13, 0)]
+        return [] if seen == 0 else [("Petr", "Yan", "/real", 17, 6, 0)]
+
+    monkeypatch.setattr(scrape, "_load_ufcstats_letter", letter)
+    monkeypatch.setattr(scrape, "_ufcstats_last_fight_date",
+                        lambda url: date(2010, 1, 1) if url == "/namesake" else date(2026, 6, 7))
+    monkeypatch.setattr(scrape.time, "sleep", lambda *_: None)
+    assert scrape._search_ufcstats("Petr Yan") == ("/real", "17-6-0")
+
+
+def test_a_partial_scan_still_answers_on_the_final_attempt(monkeypatch):
+    # A page that is empty on BOTH passes must not cost us the match we do have.
+    monkeypatch.setattr(scrape, "_load_ufcstats_letter",
+                        lambda ch: [("Petr", "Yan", "/real", 17, 6, 0)] if ch == "y" else [])
+    monkeypatch.setattr(scrape.time, "sleep", lambda *_: None)
+    assert scrape._search_ufcstats("Petr Yan") == ("/real", "17-6-0")
+
+
+def test_age_alone_never_condemns_a_profile():
+    # Fighters do compete into their late 40s; it is age WITH no UFC history
+    # that no roster member can produce.
+    veteran = {"dob": "Feb 04, 1979", "opp": [f"Opponent {i}" for i in range(30)]}
+    namesake = {"dob": "Feb 04, 1979", "opp": ["One Old Foe"]}
+    assert scrape.profile_is_implausible(veteran, NOW_STATS) is False
+    assert scrape.profile_is_implausible(namesake, NOW_STATS) is True
+
+
+def test_an_implausible_entry_missing_form_is_re_searched_not_re_hit():
+    # The incomplete-entry branch returns (True, False) — a cheap re-hit of the
+    # cached URL, which for a namesake re-confirms the wrong fighter and stamps
+    # it fresh. Implausibility has to be judged first.
+    entry = {"dob": "Mar 20, 1980", "opp": [], "rec": "11-13-0",
+             "url": "/namesake", "fetched_at": "2026-09-05T00:00:00+00:00"}
+    assert scrape._needs_stats_fetch(entry, NOW_STATS) == (True, True)
+
+
+def test_record_provider_state_persists_an_emptied_map():
+    # Pruning the last retired bucket with nothing to record this run (no keys
+    # configured) must actually be written back, not silently discarded.
+    state = {"providers": {"espn": {"bouts": 0, "last_status": None}}}
+    scrape.record_provider_state(state, NOW_94, stats={})
+    assert state["providers"] == {}

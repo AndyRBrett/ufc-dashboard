@@ -1587,6 +1587,27 @@ def _next_event_days_out(data, now):
     return None if best is None else (best - today).days
 
 
+def apply_pull_status(state, status, remaining):
+    """Fold one pull's primary-key outcome into the odds state.
+
+    Only a run that actually CALLED the primary may rewrite its status. Once the
+    budget-aware skip (#94) exists an exhausted primary is never called again, so
+    an unguarded write set last_status back to null while requests_remaining
+    stayed 0 — and odds_budget_exhausted(), which needs 401/403 AND 0, then read
+    "not exhausted". Every unpriced card would be filed as a parse failure and the
+    workflow would go red every five minutes for a condition that self-heals at
+    the monthly reset: exactly the August outage this repo already fixed once.
+
+    Split out of step_build_events so the guard can be tested by driving the real
+    write rather than by a test that restates it.
+    """
+    if status is not None:
+        state["last_status"] = status
+    if remaining is not None:
+        state["requests_remaining"] = remaining
+    return state
+
+
 def load_odds_state():
     try:
         return json.loads(ODDS_STATE_PATH.read_text(encoding="utf-8"))
@@ -1770,7 +1791,11 @@ def record_provider_state(state, now, stats=None):
         else:
             entry.pop("exhausted_at", None)
         providers[quota] = entry
-    if providers:
+    # Assign even when empty: pruning the last retired bucket with nothing to
+    # record this run (a deployment with no keys configured) would otherwise
+    # leave the stale map on disk and defeat the cleanup in the one case that
+    # needs it. Only skip the write when there was nothing there to begin with.
+    if providers or "providers" in (state or {}):
         state["providers"] = providers
     return state
 
@@ -2312,6 +2337,18 @@ def _search_ufcstats(name):
             seen.add(m[0])
             unique.append(m)
         matches = unique
+        # A partial scan must never decide. If one initial's page came back empty
+        # while another's returned a namesake, choosing now caches the namesake —
+        # the Petr Yan mis-match re-created by a transient blip. Retry first; on
+        # the final attempt a partial answer beats no answer.
+        if matches and empty and attempt == 0:
+            print(
+                f"  UFCStats: incomplete scan for {name!r} "
+                f"({len(matches)} match(es), a letter page came back empty) — retrying",
+                file=sys.stderr,
+            )
+            time.sleep(2)
+            continue
         if matches:
             if len(matches) > 1:
                 print(
@@ -2459,13 +2496,19 @@ STATS_RETRY_DAYS   = 3    # cooldown before retrying a fighter whose fetch faile
 # event. Close to a card, a wasted retry costs one request; a blank record costs
 # the card.
 STATS_URGENT_DAYS  = 7    # a card this close retries failures + refreshes every run
-# No fighter on a UFC card is this old. A cached profile that says otherwise
-# belongs to a namesake, not to the fighter it is filed under — and the freshness
-# cadence alone will never repair it, because a WRONG entry looks exactly as
-# fresh as a right one. Petr Yan sat on a title co-main as an 11-13-0 fighter
-# born in 1980: the run that cached him stamped fetched_at, so the search fix
-# that shipped hours later was locked out for the full STATS_REFRESH_DAYS.
+# Fighters DO compete into their late 40s, so age alone cannot condemn a profile
+# — it is age together with an empty UFC history that no real roster member can
+# produce. A 47-year-old on a card has fought in the UFC many times (Arlovski
+# carries ~30 opponents); a 48-year-old namesake scraped from a 2005 record
+# carries one. Both of the profiles this caught fit the second shape exactly:
+# Jean Silva at 48.9 with a single opponent, Petr Yan at 46.5 with one.
+#
+# It matters because the freshness cadence alone will never repair a wrong entry
+# — it looks exactly as fresh as a right one. Yan sat on a title co-main as an
+# 11-13-0 fighter born in 1980: the run that cached him stamped fetched_at, so
+# the search fix that shipped hours later was locked out for STATS_REFRESH_DAYS.
 STATS_MAX_PLAUSIBLE_AGE   = 44
+STATS_MAX_NAMESAKE_OPPS   = 1   # UFC opponents a career this long cannot have
 # ...but re-searching every run would be wasteful (and would loop forever on a
 # genuine 45-year-old), so an implausible profile is re-derived at most daily.
 STATS_MISMATCH_RECHECK_H  = 24
@@ -2496,15 +2539,19 @@ def _profile_age_years(entry, now):
 def profile_is_implausible(entry, now):
     """True when a cached profile cannot be the fighter it is filed under.
 
-    Deliberately one narrow test rather than a general "does this look right"
-    heuristic: age is the tell that no real roster member can produce, and a
-    false positive here only costs one extra search per day. health.py reports
-    the same condition (plus a ranking-based one it has the data for); this is
-    the half that has to live in the scraper, because detection that cannot
-    trigger a correction just describes the problem for two weeks.
+    Deliberately narrow: a long-in-the-tooth profile that ALSO has next to no UFC
+    history. Age alone would libel the genuine 47-year-old veterans who do fight
+    (and cost a search a day forever); an empty history alone is just a debutant.
+    Together they describe a namesake and nothing else. health.py reports the
+    same condition (plus a ranking-based one it has the data for); this is the
+    half that has to live in the scraper, because detection that cannot trigger
+    a correction only describes the problem for two weeks.
     """
-    age = _profile_age_years(entry or {}, now)
-    return age is not None and age >= STATS_MAX_PLAUSIBLE_AGE
+    entry = entry or {}
+    age = _profile_age_years(entry, now)
+    if age is None or age < STATS_MAX_PLAUSIBLE_AGE:
+        return False
+    return len(entry.get("opp") or []) <= STATS_MAX_NAMESAKE_OPPS
 
 
 def _needs_stats_fetch(entry, now, urgent=False):
@@ -2529,17 +2576,22 @@ def _needs_stats_fetch(entry, now, urgent=False):
     failed = entry.get("fetch_failed")
     if failed and now - _parse_ts(failed) < timedelta(days=STATS_RETRY_DAYS):
         return False, False                     # failed recently → cooldown, skip
+    fetched = entry.get("fetched_at")
+    # Checked BEFORE the incomplete-entry branch below: an implausible profile
+    # that is also missing form/opp would otherwise take the cheap cached-URL
+    # path, which re-hits the WRONG fighter's page and stamps it fresh — the
+    # corrective search then waits another day behind a re-confirmed mistake.
+    # A profile that cannot belong to this fighter is re-derived from the search
+    # page whatever its freshness stamp says; otherwise the entry that is wrong
+    # is precisely the one nothing ever revisits.
+    if profile_is_implausible(entry, now) and (
+            not fetched
+            or now - _parse_ts(fetched) >= timedelta(hours=STATS_MISMATCH_RECHECK_H)):
+        return True, True
     if "form" not in entry or "opp" not in entry:
         return True, False                      # incomplete → cheap cached-URL refetch
-    fetched = entry.get("fetched_at")
     if not fetched or now - _parse_ts(fetched) >= timedelta(days=STATS_REFRESH_DAYS):
         return True, True                       # stale/legacy → re-validate via search
-    # A profile that cannot belong to this fighter is re-derived from the search
-    # page whatever its freshness stamp says — otherwise the entry that is wrong
-    # is precisely the one nothing ever revisits.
-    if (profile_is_implausible(entry, now)
-            and now - _parse_ts(fetched) >= timedelta(hours=STATS_MISMATCH_RECHECK_H)):
-        return True, True
     return False, False
 
 
@@ -3056,9 +3108,7 @@ def step_build_events(data, now):
         if digest is not None:
             odds_state["lines_digest"] = digest
         odds_state["last_fetch_at"] = now.isoformat()
-        odds_state["last_status"]   = _odds_last_status
-        if _odds_requests_remaining is not None:
-            odds_state["requests_remaining"] = _odds_requests_remaining
+        apply_pull_status(odds_state, _odds_last_status, _odds_requests_remaining)
         odds_state["next_event_days_out"] = days_out
         # Per-provider budgets, so the next run can skip a spent one and let the
         # unmetered fallback price the card instead (#94).

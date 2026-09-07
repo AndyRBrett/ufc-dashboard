@@ -352,17 +352,33 @@ def profile(**over):
     return base
 
 
-def test_a_profile_too_old_to_be_fighting_is_flagged():
+def test_a_long_career_with_no_ufc_history_is_flagged():
+    # Both real cases had this exact shape: decades old, one UFC opponent.
     why = health.profile_mismatch(
         "Jean Silva", profile(dob="Oct 08, 1977", rec="19-12-3", opp=["Takanori Gomi"]),
         6, TODAY)
     assert "different Jean Silva" in why and "49 years old" in why
 
 
+def test_a_genuine_veteran_with_a_real_ufc_record_is_not_flagged():
+    # Fighters do compete into their late 40s. Age alone must never condemn a
+    # profile — the veteran who does it has dozens of UFC opponents behind him.
+    veteran = profile(dob="Feb 04, 1979", rec="34-22-0",
+                      opp=[f"Opponent {i}" for i in range(30)])
+    assert health.profile_mismatch("Andrei Arlovski", veteran, 12, TODAY) == ""
+
+
 def test_a_ranked_fighter_with_no_ufc_history_is_flagged():
     why = health.profile_mismatch(
         "Petr Yan", profile(rec="11-13-0", opp=[], dob="Jan 01, 1996"), 3, TODAY)
-    assert "ranked #3" in why and "0 UFC opponent" in why
+    assert "ranked #3" in why and "no UFC opponents" in why
+
+
+def test_a_ranked_fighter_one_bout_into_the_ufc_is_not_flagged():
+    # One UFC bout is enough to enter the rankings, so a single opponent is a
+    # real record — only an empty one is impossible.
+    newcomer = profile(rec="12-0-0", dob="Jan 01, 1999", opp=["Their Debut Foe"])
+    assert health.profile_mismatch("Fast Riser", newcomer, 9, TODAY) == ""
 
 
 def test_a_real_ranked_fighter_is_not_flagged():

@@ -139,7 +139,13 @@ def collect_samples(series_doc):
         if not event.get("concluded"):
             continue
         for i, bout in enumerate(event.get("bouts", [])):
-            tier = bout_tier(i)
+            # Label first, position only as the fallback. The series tracks
+            # ONLY odds-bearing bouts, so an unpriced headliner promotes the
+            # next bout into index 0 — which had a main-card bout supplying
+            # main-event samples and shifted whole cards across tier
+            # boundaries. Snapshots older than the label carry none, and those
+            # keep the old positional reading rather than being dropped.
+            tier = bout_tier(i, bout.get("lbl", ""))
             drift, moves = bout_samples(bout, tier)
             if drift is None:
                 continue
@@ -195,7 +201,10 @@ def calibrate_tier(tier, samples, default_threshold):
     if cal_n < MIN_PERSIST_OBS or cal_rate is None or base_rate is None:
         meta["reason"] = "not enough closed moves to test the higher bar"
         return default_threshold, meta
-    if cal_rate < base_rate:
+    # Equal persistence is not an improvement: the bar would rise, alerts would be
+    # suppressed, and the signal would be no cleaner — which is the exact trade
+    # this guard exists to refuse.
+    if cal_rate <= base_rate:
         meta["reason"] = ("bigger moves in this tier retrace more often than "
                           "smaller ones — keeping the default")
         return default_threshold, meta

@@ -94,3 +94,34 @@ def test_build_series_indexes_both_fighters():
     # Underdog side is indexed from its own perspective.
     assert out["fighters"]["Kyoji Horiguchi"][0]["clv"] == -4
     assert out["fighters"]["Kyoji Horiguchi"][0]["side"] == "f2"
+
+
+# --- card label carried through for alert tiering ---------------------------
+
+def _labelled(o1, o2, lbl, f1="Manel Kape", f2="Kyoji Horiguchi"):
+    return {"f1": f1, "f2": f2, "f1_odds": o1, "f2_odds": o2, "lbl": lbl}
+
+
+def test_a_promoted_bout_is_filed_under_where_it_actually_fought():
+    # Cards get reshuffled — a headliner withdraws and the co-main moves up. The
+    # placement that matters for alert tiering is the one it was FOUGHT at, so
+    # the latest label wins; keeping the first filed a promoted bout's drift
+    # under the tier it left.
+    history = [("t1", [_labelled(-110, -110, "Prelim")]),
+               ("t2", [_labelled(-160, 140, "Main Card")]),
+               ("t3", [_labelled(-200, 170, "Main Event")])]
+    assert osr.build_bout_series(history)[0]["lbl"] == "Main Event"
+
+
+def test_a_later_snapshot_without_a_label_never_erases_one():
+    # Only non-empty labels replace: a snapshot written before the label existed
+    # must not blank a placement already recorded.
+    history = [("t1", [_labelled(-110, -110, "Main Event")]),
+               ("t2", [_fight(-160, 140)])]
+    assert osr.build_bout_series(history)[0]["lbl"] == "Main Event"
+
+
+def test_a_bout_from_before_labels_existed_carries_an_empty_one():
+    # Pre-label history keeps the positional fallback in alert_calibration.
+    history = [("t1", [_fight(-110, -110)])]
+    assert osr.build_bout_series(history)[0]["lbl"] == ""

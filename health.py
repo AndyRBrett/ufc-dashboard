@@ -63,9 +63,12 @@ ODDS_EXPECTED_WITHIN_DAYS = int(os.environ.get("ODDS_EXPECTED_WITHIN_DAYS", "14"
 ODDS_STALE_HOURS = 36
 # Below this the Odds API quota is about to run out and lines will silently freeze.
 ODDS_QUOTA_WARN = 50
-# An age no fighter on a UFC card has. The oldest to compete in the modern UFC is
-# in his late 40s, so this only fires on a profile that belongs to somebody else.
-PROFILE_MAX_AGE = 44
+# Fighters do compete into their late 40s, so age alone condemns nothing. What no
+# real roster member can produce is a long career PLUS an empty UFC history: a
+# 47-year-old veteran carries dozens of UFC opponents, a scraped namesake carries
+# one. Both tells are required together (see profile_mismatch).
+PROFILE_MAX_AGE  = 44
+PROFILE_MAX_OPPS = 1
 
 EVENT_RE = re.compile(r'name:"([^"]+)",\s*\n\s*date:"(\d{4}-\d{2}-\d{2})"')
 # The clock fields, read per-event segment. Optional by design: an event that
@@ -159,27 +162,31 @@ def profile_mismatch(name, st, rank, today):
     else. Petr Yan sat on a live card as 11-13-0 born 1980, and Jean Silva as a
     48-year-old with one UFC bout — both ranked, both fighting that month.
 
-    So test the profile against what we independently know about the fighter,
-    and keep the tests to ones a real roster member cannot fail:
+    So test the profile against what we independently know about the fighter, and
+    keep the tests to ones a real roster member cannot fail:
 
-      * nobody on an upcoming UFC card is over PROFILE_MAX_AGE;
-      * a fighter the UFC ranks in their own division has, by definition, fought
-        in the UFC — a ranked profile with no UFC opponents is not him.
+      * a career long enough to put them past PROFILE_MAX_AGE, yet with no UFC
+        history to show for it. Neither half is damning alone — fighters do
+        compete into their late 40s, and a debutant legitimately has no UFC
+        opponents — but together they describe a namesake;
+      * a fighter the UFC RANKS in their own division whose profile shows no UFC
+        bouts at all. Ranking is the part a newcomer cannot fake; one bout is
+        enough to be ranked, so only an empty history counts here.
 
-    Debutants and unpriced regional signings legitimately have no UFC history,
-    which is why the second test needs the ranking: it is the part they can't
-    have. Empty profiles are left to stats-missing/stats-fetch-failed.
+    Empty profiles are left to stats-missing/stats-fetch-failed.
     """
     if not st or not (_has_fight_data(st) or st.get("rec")):
         return ""
-    age = profile_age(st.get("dob", ""), today)
-    if age is not None and age >= PROFILE_MAX_AGE:
-        return (f"profile is {age:.0f} years old (DOB {st.get('dob')}) — no active "
-                f"fighter is; this is probably a different {name}")
-    if rank and len(st.get("opp") or []) <= 1:
-        return (f"ranked #{rank} but the profile lists "
-                f"{len(st.get('opp') or [])} UFC opponent(s) — a ranked fighter "
-                f"has a UFC record, so this is probably a different {name}")
+    age  = profile_age(st.get("dob", ""), today)
+    opps = len(st.get("opp") or [])
+    if age is not None and age >= PROFILE_MAX_AGE and opps <= PROFILE_MAX_OPPS:
+        return (f"profile is {age:.0f} years old (DOB {st.get('dob')}) with "
+                f"{opps} UFC opponent(s) — a career that long leaves a UFC "
+                f"record; this is probably a different {name}")
+    if rank and opps == 0:
+        return (f"ranked #{rank} but the profile lists no UFC opponents — a "
+                f"ranked fighter has fought in the UFC, so this is probably a "
+                f"different {name}")
     return ""
 
 
