@@ -59,6 +59,11 @@ jobs:
       - run: python scrape.py
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          # The independent-quota backstop (#94). Unset is fine: the provider
+          # no-ops and the chain is exactly what it was. Without this line the
+          # secret would never reach the scraper, and adding the key would look
+          # like it worked while changing nothing.
+          ODDS_API_KEY_SECONDARY: ${{ secrets.ODDS_API_KEY_SECONDARY }}
           SUPABASE_ANON: ${{ secrets.SUPABASE_ANON }}
           ODDS_FORCE: ${{ inputs.force_odds && '1' || '' }}
       # The gate between a degraded scrape and a published card. Fails the job on

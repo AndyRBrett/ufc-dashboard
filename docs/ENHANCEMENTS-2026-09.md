@@ -350,3 +350,71 @@ ESPN: N event(s), M bout(s), K with an odds block, P priced
 scoreboard endpoint simply doesn't carry MMA moneylines and the provider should
 be repointed or dropped — editing `_espn_moneyline` would be guessing. ESPN is
 unreachable from the dev sandbox, so this line is the only evidence available.
+
+---
+
+## M7 — the second live run: two definitive answers
+
+Run [#4029](https://github.com/AndyRBrett/ufc-dashboard/actions/runs/34076063168),
+on the merge of M6.
+
+**ESPN carries no MMA odds at all.** The diagnostic added in M6 settled it in one
+line:
+
+```
+ESPN: 16 event(s), 113 bout(s), 0 with an odds block, 0 priced
+```
+
+Events and bouts came back fine; not one competition carried an `odds` block. So
+`_espn_moneyline` / `_espn_competitor_names` were never the problem — there is
+nothing on that endpoint to parse. **Do not patch the parser.** The provider needs
+to be repointed at a source that actually publishes prices, or dropped; #94's
+only other backstop is `ODDS_API_KEY_SECONDARY`, which is unset.
+
+**Petr Yan was never re-fetched** — `Fetching stats for 2 fighters (0 new)` listed
+only Rong Zhu and Thomas Gantt. The 22:28 run had rewritten his entry (wrong
+profile, via the letter-page bug) and stamped `fetched_at`, so the fix that
+merged hours later was locked out for the full `STATS_REFRESH_DAYS`.
+
+That is the trap worth closing: **a wrong entry looks exactly as fresh as a right
+one**, so the freshness cadence can never repair the entries that most need it,
+and M5's `profile-mismatch` warning could only describe the problem for two
+weeks. `profile_is_implausible` + `_needs_stats_fetch` now force a fresh *search*
+(not a cached-URL re-hit) for any profile whose DOB implies an age of
+`STATS_MAX_PLAUSIBLE_AGE` (44) or more, bounded to once per
+`STATS_MISMATCH_RECHECK_H` (24h) so a genuine 45-year-old costs one search a day
+rather than one per run. Yan's entry is purged again so the merged gathering fix
+resolves him on the next run instead of waiting for that recheck.
+
+Detection now triggers correction; before this, they were in different files and
+only one of them ran.
+
+---
+
+## M8 — ESPN removed; the second API key is the backstop
+
+Decision taken on the M7 evidence (`0 with an odds block` across 113 bouts): the
+ESPN provider is **deleted**, not patched. Its parser, window-builder, payload
+diagnostic and tests are gone, and the `ODDS_ESPN*` env vars with them. The
+config comment records what was measured so nobody re-adds it hopefully.
+
+`ODDS_API_KEY_SECONDARY` is now #94's only backstop, and it needed one more thing
+to actually work: **`update.yml` never passed the secret to the scrape step.**
+Without that line the key could be added to the repo and change nothing, which is
+the worst kind of fix — one that looks applied. It is wired through now, and
+unset remains harmless (the provider no-ops).
+
+**To finish #94** (owner action, ~2 minutes):
+
+1. Create a second free account at the-odds-api.com (500 calls/month).
+2. Add its key as repo secret **`ODDS_API_KEY_SECONDARY`**.
+
+That doubles the monthly budget and gives the chain a source that survives
+primary exhaustion. Until then the fallback chain is real but empty, and
+`odds_budget_exhausted` still degrades exactly as it did before #94.
+
+The `metered=False` capability stays in `OddsProvider` (and stays tested): it is
+what lets an unmetered source, if one is ever found, keep pricing cards when the
+paid budget is gone. Any candidate should be added as a provider and proven with
+one live run before being trusted — that loop is now cheap, which is the durable
+outcome of the ESPN experiment.
