@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-06T23:57:12Z",
+  "generated_at": "2026-09-07T02:25:54Z",
   "summary": {
-    "events": 14,
+    "events": 13,
     "block": 0,
     "warn": 7
   },
@@ -9,62 +9,62 @@
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
-      "message": "UFC Fight Night: Bonfim vs. Brady (62d out): venue 'Meta Apex' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "message": "UFC Fight Night: Bonfim vs. Brady (61d out): venue 'Meta Apex' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Bonfim vs. Brady",
       "date": "2026-11-07"
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC 331: Van vs. Pantoja 2 (13d out): 3 of 13 bouts have no odds",
+      "message": "UFC 331: Van vs. Pantoja 2 (12d out): 3 of 13 bouts have no odds",
       "event": "UFC 331: Van vs. Pantoja 2",
       "date": "2026-09-19",
-      "days_out": 13
+      "days_out": 12
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC Fight Night: Silva vs. Delgado (6d out): Thomas Gantt has no record",
+      "message": "UFC Fight Night: Silva vs. Delgado (5d out): Thomas Gantt has no record",
       "fighter": "Thomas Gantt",
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
-      "days_out": 6
+      "days_out": 5
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC Fight Night: Silva vs. Delgado (6d out): Thomas Gantt stats lookup failed (2026-09-06)",
+      "message": "UFC Fight Night: Silva vs. Delgado (5d out): Thomas Gantt stats lookup failed (2026-09-07)",
       "fighter": "Thomas Gantt",
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
-      "days_out": 6
+      "days_out": 5
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC Fight Night: Silva vs. Delgado (6d out): Rong Zhu has no record",
+      "message": "UFC Fight Night: Silva vs. Delgado (5d out): Rong Zhu has no record",
       "fighter": "Rong Zhu",
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
-      "days_out": 6
+      "days_out": 5
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC Fight Night: Silva vs. Delgado (6d out): Rong Zhu stats lookup failed (2026-09-06)",
+      "message": "UFC Fight Night: Silva vs. Delgado (5d out): Rong Zhu stats lookup failed (2026-09-07)",
       "fighter": "Rong Zhu",
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
-      "days_out": 6
+      "days_out": 5
     },
     {
       "severity": "WARN",
       "check": "profile-mismatch",
-      "message": "UFC 333: Volkanovski vs. Evloev (48d out): Petr Yan \u2014 profile is 46 years old (DOB Mar 20, 1980) \u2014 no active fighter is; this is probably a different Petr Yan",
+      "message": "UFC 333: Volkanovski vs. Evloev (47d out): Petr Yan \u2014 profile is 46 years old (DOB Mar 20, 1980) \u2014 no active fighter is; this is probably a different Petr Yan",
       "fighter": "Petr Yan",
       "event": "UFC 333: Volkanovski vs. Evloev",
       "date": "2026-10-24",
-      "days_out": 48
+      "days_out": 47
     }
   ]
 }

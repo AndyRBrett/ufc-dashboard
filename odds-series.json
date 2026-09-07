@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-06T23:57:12Z",
+  "generated_at": "2026-09-07T02:25:54Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -7026,7 +7026,7 @@
         {
           "f1": "Waldo Cortes-Acosta",
           "f2": "Curtis Blaydes",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -7067,6 +7067,11 @@
               "at": "2026-09-06T22:28:43Z",
               "f1_odds": -207,
               "f2_odds": 165
+            },
+            {
+              "at": "2026-09-07T02:25:54Z",
+              "f1_odds": -204,
+              "f2_odds": 163
             }
           ],
           "open": {
@@ -7139,7 +7144,7 @@
         {
           "f1": "Tim Elliott",
           "f2": "Edgar Chairez",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -7185,6 +7190,11 @@
               "at": "2026-09-06T22:28:43Z",
               "f1_odds": 160,
               "f2_odds": -201
+            },
+            {
+              "at": "2026-09-07T02:25:54Z",
+              "f1_odds": 162,
+              "f2_odds": -203
             }
           ],
           "open": {
@@ -7335,7 +7345,7 @@
         {
           "f1": "Rafa Garcia",
           "f2": "Rong Zhu",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -7376,6 +7386,11 @@
               "at": "2026-09-06T18:07:04Z",
               "f1_odds": 136,
               "f2_odds": -169
+            },
+            {
+              "at": "2026-09-07T02:25:54Z",
+              "f1_odds": 137,
+              "f2_odds": -171
             }
           ],
           "open": {
@@ -7389,7 +7404,7 @@
         {
           "f1": "JJ Aldrich",
           "f2": "Regina Tarin",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -7425,6 +7440,11 @@
               "at": "2026-09-06T22:28:43Z",
               "f1_odds": 217,
               "f2_odds": -273
+            },
+            {
+              "at": "2026-09-07T02:25:54Z",
+              "f1_odds": 220,
+              "f2_odds": -279
             }
           ],
           "open": {
@@ -7477,12 +7497,17 @@
         {
           "f1": "Sean King",
           "f2": "Jessie Rosas",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-09-06T18:07:04Z",
               "f1_odds": -129,
               "f2_odds": 107
+            },
+            {
+              "at": "2026-09-07T02:25:54Z",
+              "f1_odds": -128,
+              "f2_odds": 105
             }
           ],
           "open": {
@@ -8545,7 +8570,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Tim Elliott",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": -220,
         "close": null,
         "clv": null
@@ -11428,7 +11453,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Curtis Blaydes",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -175,
         "close": null,
         "clv": null
@@ -11439,7 +11464,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Waldo Cortes-Acosta",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 150,
         "close": null,
         "clv": null
@@ -11472,7 +11497,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Edgar Chairez",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": 184,
         "close": null,
         "clv": null
@@ -11538,7 +11563,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Rong Zhu",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": 105,
         "close": null,
         "clv": null
@@ -11549,7 +11574,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Rafa Garcia",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": -125,
         "close": null,
         "clv": null
@@ -11560,7 +11585,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Regina Tarin",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": 191,
         "close": null,
         "clv": null
@@ -11571,7 +11596,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "JJ Aldrich",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": -230,
         "close": null,
         "clv": null
@@ -11604,7 +11629,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Jessie Rosas",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -129,
         "close": null,
         "clv": null
@@ -11615,7 +11640,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Sean King",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 107,
         "close": null,
         "clv": null
