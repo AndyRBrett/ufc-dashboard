@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-07T16:47:41Z",
+  "generated_at": "2026-09-08T13:32:02Z",
   "summary": {
     "events": 13,
     "block": 0,
@@ -9,53 +9,53 @@
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
-      "message": "UFC Fight Night: Bonfim vs. Brady (61d out): venue 'Meta Apex' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "message": "UFC Fight Night: Bonfim vs. Brady (60d out): venue 'Meta Apex' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Bonfim vs. Brady",
       "date": "2026-11-07"
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC 331: Van vs. Pantoja 2 (12d out): 3 of 13 bouts have no odds",
+      "message": "UFC 331: Van vs. Pantoja 2 (11d out): 3 of 13 bouts have no odds",
       "event": "UFC 331: Van vs. Pantoja 2",
       "date": "2026-09-19",
-      "days_out": 12
+      "days_out": 11
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC Fight Night: Silva vs. Delgado (5d out): Thomas Gantt has no record",
+      "message": "UFC Fight Night: Silva vs. Delgado (4d out): Thomas Gantt has no record",
       "fighter": "Thomas Gantt",
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
-      "days_out": 5
+      "days_out": 4
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC Fight Night: Silva vs. Delgado (5d out): Thomas Gantt stats lookup failed (2026-09-07)",
+      "message": "UFC Fight Night: Silva vs. Delgado (4d out): Thomas Gantt stats lookup failed (2026-09-08)",
       "fighter": "Thomas Gantt",
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
-      "days_out": 5
+      "days_out": 4
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC Fight Night: Silva vs. Delgado (5d out): Rong Zhu has no record",
+      "message": "UFC Fight Night: Silva vs. Delgado (4d out): Rong Zhu has no record",
       "fighter": "Rong Zhu",
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
-      "days_out": 5
+      "days_out": 4
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC Fight Night: Silva vs. Delgado (5d out): Rong Zhu stats lookup failed (2026-09-07)",
+      "message": "UFC Fight Night: Silva vs. Delgado (4d out): Rong Zhu stats lookup failed (2026-09-08)",
       "fighter": "Rong Zhu",
       "event": "UFC Fight Night: Silva vs. Delgado",
       "date": "2026-09-12",
-      "days_out": 5
+      "days_out": 4
     }
   ]
 }
