@@ -4154,8 +4154,27 @@ function makePickButton(fighter,side,myPick,fw,locked,regIdx){
 // the biggest gaps keeps the signal comparative — "the market and the model are
 // furthest apart HERE" — which is the question worth asking.
 var MODEL_BASE=1500,MODEL_K=24,MODEL_FINISH_K=1.2,MODEL_EDGE_MIN=12,MODEL_FLAG_MAX=3;
+// The confidence a bout needs before it may carry the flag. Thin data doesn't
+// just weaken the model, it INVERTS the badge: _mConfidence shrinks the model
+// toward 50/50, and against a lopsided market (an 18/82 line) a coin flip is
+// maximally divergent. So the bouts the model knew least about were producing
+// the widest gaps and taking the badge off the honest disagreements — thin-data
+// bouts averaged a 23-point gap against 10 for fully-known ones. The number
+// still shows on these bouts; only the "widest gap" claim is withheld, because
+// an absence of data is not a disagreement with the market.
+var MODEL_FLAG_MIN_CONF=0.6;
 function _mClamp(v,lo,hi){return v<lo?lo:v>hi?hi:v;}
 function _mNum(v){return typeof v==="number"&&isFinite(v)?v:0;}
+// Was this half of the profile actually scraped? The two blocks are asked about
+// separately because a RECORDED ZERO is real data and must not be mistaken for a
+// missing one: a counter-striker genuinely averages td 0 alongside a tdd of 70,
+// and dropping his grappling term throws away that 70. So the test is whether
+// the block was populated at all, never whether one stat is above zero.
+//   - striking is populated when slpm is: nobody who has fought lands 0.00/min.
+//   - grappling is populated when either td or tdd is: 0/0 is the scraper's
+//     placeholder for a fighter with no UFC bouts logged yet, not a real line.
+function _mHasStriking(st){return _mNum(st.slpm)>0;}
+function _mHasGrappling(st){return _mNum(st.td)>0||_mNum(st.tdd)>0;}
 // "24-3-1" → {w:24,l:3,d:1}. Anything else reads as an empty record rather than NaN.
 function _mRecord(rec){
   var m=/^(\d+)-(\d+)-(\d+)/.exec(String(rec||""));
@@ -4263,12 +4282,19 @@ function modelStyleAdj(a,b,now){
   var aa=_mAge(a.dob,now),ab=_mAge(b.dob,now);
   if(aa!==null&&ab!==null&&Math.abs(aa-ab)>=1)
     add(Math.round(Math.abs(aa-ab))+"yr "+(aa<ab?"younger":"older"),_mClamp(-6*(aa-ab),-45,45));
-  var sa=_mNum(a.slpm)*_mNum(a.acc)/100,sb=_mNum(b.slpm)*_mNum(b.acc)/100;
-  if(sa||sb)add("striking volume",_mClamp(12*(sa-sb),-40,40));
-  var ga=_mNum(a.td)*6+_mNum(a.tdd)*0.5,gb=_mNum(b.td)*6+_mNum(b.tdd)*0.5;
-  if(ga||gb)add("grappling",_mClamp(0.6*(ga-gb),-40,40));
+  // Each differential needs the stat on BOTH sides. Reading a missing stat as 0
+  // (what _mNum does) doesn't say "unknown", it says "worst in the division" —
+  // so a fighter the stats cache has nothing on was handing his opponent the
+  // full +40 striking and +40 grappling swing for having no data. That is how a
+  // +348 market underdog came out a 61% model favourite off an empty profile.
+  if(_mHasStriking(a)&&_mHasStriking(b))
+    add("striking volume",_mClamp(12*(_mNum(a.slpm)*_mNum(a.acc)/100
+                                     -_mNum(b.slpm)*_mNum(b.acc)/100),-40,40));
+  if(_mHasGrappling(a)&&_mHasGrappling(b))
+    add("grappling",_mClamp(0.6*((_mNum(a.td)*6+_mNum(a.tdd)*0.5)
+                                -(_mNum(b.td)*6+_mNum(b.tdd)*0.5)),-40,40));
   var fa=_mFinishRate(a),fb=_mFinishRate(b);
-  if(fa||fb)add("finish rate",_mClamp(60*(fa-fb),-30,30));
+  if(_mRecord(a.rec).w&&_mRecord(b.rec).w)add("finish rate",_mClamp(60*(fa-fb),-30,30));
   // Southpaws see orthodox opponents constantly; the reverse isn't true.
   var stA=String(a.stn||"").toLowerCase(),stB=String(b.stn||"").toLowerCase();
   if(stA==="southpaw"&&stB==="orthodox")add("southpaw vs orthodox",12);
@@ -4349,7 +4375,8 @@ function modelCardFlags(ev,stats,rankings,archive,now){
   var scored=[];
   for(var i=0;i<ev.fights.length;i++){
     var f=ev.fights[i],e=modelEdge(f,stats,rankings,archive,now);
-    if(e&&e.market&&e.edge>=MODEL_EDGE_MIN)scored.push({key:modelBoutKey(f),edge:e.edge});
+    if(e&&e.market&&e.edge>=MODEL_EDGE_MIN&&e.model.confidence>=MODEL_FLAG_MIN_CONF)
+      scored.push({key:modelBoutKey(f),edge:e.edge});
   }
   scored.sort(function(a,b){return b.edge-a.edge;});
   for(var j=0;j<scored.length&&j<MODEL_FLAG_MAX;j++)flags[scored[j].key]=true;
