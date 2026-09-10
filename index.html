@@ -4165,10 +4165,16 @@ var MODEL_BASE=1500,MODEL_K=24,MODEL_FINISH_K=1.2,MODEL_EDGE_MIN=12,MODEL_FLAG_M
 var MODEL_FLAG_MIN_CONF=0.6;
 function _mClamp(v,lo,hi){return v<lo?lo:v>hi?hi:v;}
 function _mNum(v){return typeof v==="number"&&isFinite(v)?v:0;}
-// A stat we actually have, or null. The difference from _mNum matters: a missing
-// stat is unknown, not zero, and must drop its term out of the matchup rather
-// than score as the worst possible value (see modelStyleAdj).
-function _mStat(v){return typeof v==="number"&&isFinite(v)&&v>0?v:null;}
+// Was this half of the profile actually scraped? The two blocks are asked about
+// separately because a RECORDED ZERO is real data and must not be mistaken for a
+// missing one: a counter-striker genuinely averages td 0 alongside a tdd of 70,
+// and dropping his grappling term throws away that 70. So the test is whether
+// the block was populated at all, never whether one stat is above zero.
+//   - striking is populated when slpm is: nobody who has fought lands 0.00/min.
+//   - grappling is populated when either td or tdd is: 0/0 is the scraper's
+//     placeholder for a fighter with no UFC bouts logged yet, not a real line.
+function _mHasStriking(st){return _mNum(st.slpm)>0;}
+function _mHasGrappling(st){return _mNum(st.td)>0||_mNum(st.tdd)>0;}
 // "24-3-1" → {w:24,l:3,d:1}. Anything else reads as an empty record rather than NaN.
 function _mRecord(rec){
   var m=/^(\d+)-(\d+)-(\d+)/.exec(String(rec||""));
@@ -4281,12 +4287,12 @@ function modelStyleAdj(a,b,now){
   // so a fighter the stats cache has nothing on was handing his opponent the
   // full +40 striking and +40 grappling swing for having no data. That is how a
   // +348 market underdog came out a 61% model favourite off an empty profile.
-  var sa=_mStat(a.slpm),sb=_mStat(b.slpm);
-  if(sa!==null&&sb!==null)
-    add("striking volume",_mClamp(12*(sa*_mNum(a.acc)/100-sb*_mNum(b.acc)/100),-40,40));
-  var ga=_mStat(a.td),gb=_mStat(b.td);
-  if(ga!==null&&gb!==null)
-    add("grappling",_mClamp(0.6*((ga*6+_mNum(a.tdd)*0.5)-(gb*6+_mNum(b.tdd)*0.5)),-40,40));
+  if(_mHasStriking(a)&&_mHasStriking(b))
+    add("striking volume",_mClamp(12*(_mNum(a.slpm)*_mNum(a.acc)/100
+                                     -_mNum(b.slpm)*_mNum(b.acc)/100),-40,40));
+  if(_mHasGrappling(a)&&_mHasGrappling(b))
+    add("grappling",_mClamp(0.6*((_mNum(a.td)*6+_mNum(a.tdd)*0.5)
+                                -(_mNum(b.td)*6+_mNum(b.tdd)*0.5)),-40,40));
   var fa=_mFinishRate(a),fb=_mFinishRate(b);
   if(_mRecord(a.rec).w&&_mRecord(b.rec).w)add("finish rate",_mClamp(60*(fa-fb),-30,30));
   // Southpaws see orthodox opponents constantly; the reverse isn't true.

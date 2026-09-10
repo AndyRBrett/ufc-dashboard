@@ -138,6 +138,21 @@ check("the same differentials still apply when both sides have the stat",
       call(`modelStyleAdj(${JSON.stringify(fighter({ slpm: 7 }))},` +
            `${JSON.stringify(fighter({ slpm: 2 }))},${Date.parse("2026-01-01")})`).adj > 0);
 
+// A RECORDED zero is real data. Guarding the terms on `stat > 0` rather than on
+// "was this block scraped" threw away the takedown DEFENCE of any fighter who
+// simply never shoots — a counter-striker sits at td 0 with a tdd of 70, and
+// dropping his grappling term discarded that 70 (caught in review on #121).
+const zeroTd = call(`modelStyleAdj(${JSON.stringify(fighter({ td: 0, tdd: 70 }))},` +
+                    `${JSON.stringify(fighter({ td: 0, tdd: 20 }))},${Date.parse("2026-01-01")})`);
+check("a genuine zero takedown average still compares takedown defence",
+      zeroTd.factors.some((f) => /grappling/.test(f.label)) && zeroTd.adj > 0);
+// …but an all-zero block is the scraper's placeholder, not a fighter who is
+// merely bad everywhere, so it still drops out.
+const placeholder = call(`modelStyleAdj(${JSON.stringify(fighter())},` +
+  `${JSON.stringify(fighter({ slpm: 0, acc: 0, td: 0, tdd: 0 }))},${Date.parse("2026-01-01")})`);
+check("an all-zero stat block is treated as unscraped, not as the worst fighter alive",
+      !placeholder.factors.some((f) => /striking|grappling/.test(f.label)));
+
 // 6. Thin data must not WIN the flag. _mConfidence shrinks the model toward
 //    50/50, and against a lopsided line a coin flip is maximally divergent — so
 //    the bouts the model knew least about produced the widest gaps and took the
