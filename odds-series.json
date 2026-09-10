@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T04:01:05Z",
+  "generated_at": "2026-09-10T08:58:38Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -7113,7 +7113,7 @@
           "f1": "Tommy McMillen",
           "f2": "Marwan Rahiki",
           "lbl": "Main Card",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -7174,6 +7174,11 @@
               "at": "2026-09-10T04:01:05Z",
               "f1_odds": -169,
               "f2_odds": 135
+            },
+            {
+              "at": "2026-09-10T08:58:38Z",
+              "f1_odds": -169,
+              "f2_odds": 136
             }
           ],
           "open": {
@@ -7899,7 +7904,7 @@
           "f1": "Joshua Van",
           "f2": "Alexandre Pantoja",
           "lbl": "Main Event",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -7930,6 +7935,11 @@
               "at": "2026-09-10T04:01:05Z",
               "f1_odds": -118,
               "f2_odds": -105
+            },
+            {
+              "at": "2026-09-10T08:58:38Z",
+              "f1_odds": -117,
+              "f2_odds": -106
             }
           ],
           "open": {
@@ -10376,7 +10386,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Marwan Rahiki",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -145,
         "close": null,
         "clv": null
@@ -11908,7 +11918,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Tommy McMillen",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 124,
         "close": null,
         "clv": null
@@ -12139,7 +12149,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Alexandre Pantoja",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -113,
         "close": null,
         "clv": null
@@ -12150,7 +12160,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Joshua Van",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": -110,
         "close": null,
         "clv": null
