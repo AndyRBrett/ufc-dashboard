@@ -126,6 +126,46 @@ check("an unpriced bout still gets a model but never a gap",
         return e && e.model && e.market === null && e.edge === 0;
       })());
 
+// 5. A missing stat is UNKNOWN, not zero. Reading an absent slpm/td as 0 graded
+//    a fighter the cache has nothing on as the worst striker and grappler alive,
+//    handing his opponent the full +80 style swing — which turned a +348 market
+//    underdog into a 61% model favourite off an entirely empty profile.
+const blank = call(`modelStyleAdj(${JSON.stringify(STATS.Even)},` +
+                   `${JSON.stringify(STATS.Unknown)},${Date.parse("2026-01-01")})`);
+check("an opponent with no stats scores no style edge rather than the worst one",
+      blank.adj === 0 && !blank.factors.some((f) => /striking|grappling|finish/.test(f.label)));
+check("the same differentials still apply when both sides have the stat",
+      call(`modelStyleAdj(${JSON.stringify(fighter({ slpm: 7 }))},` +
+           `${JSON.stringify(fighter({ slpm: 2 }))},${Date.parse("2026-01-01")})`).adj > 0);
+
+// 6. Thin data must not WIN the flag. _mConfidence shrinks the model toward
+//    50/50, and against a lopsided line a coin flip is maximally divergent — so
+//    the bouts the model knew least about produced the widest gaps and took the
+//    badge off the honest disagreements.
+const thinCard = {
+  date: "2026-09-12", name: "UFC Thin",
+  fights: [
+    // Nothing known about the opponent, against a market that loves him.
+    { f1: { n: "Even" },  f2: { n: "Unknown" },  odds: { f1: 400, f2: -550 } },
+    // A real disagreement between two fully-known fighters.
+    { f1: { n: "Champ" }, f2: { n: "Veteran" },  odds: { f1: 200, f2: -250 } },
+  ],
+};
+const thinFlags = call(`modelCardFlags(${JSON.stringify(thinCard)},${JSON.stringify(STATS)},` +
+                       `${JSON.stringify(RANKINGS)},{})`);
+const thinEdge = call(`modelEdge(${JSON.stringify(thinCard.fights[0])},${JSON.stringify(STATS)},` +
+                      `${JSON.stringify(RANKINGS)},{})`);
+check("a thin-data bout is not flagged as a widest gap even when its gap is widest",
+      thinEdge.edge >= call("MODEL_EDGE_MIN") && !thinFlags["Even|Unknown"]);
+check("the honest disagreement keeps its flag", !!thinFlags["Champ|Veteran"]);
+check("every flagged bout is one the model actually has data for",
+      Object.keys(thinFlags).every((k) => {
+        const f = thinCard.fights.find((x) => x.f1.n + "|" + x.f2.n === k);
+        const ed = call(`modelEdge(${JSON.stringify(f)},${JSON.stringify(STATS)},` +
+                        `${JSON.stringify(RANKINGS)},{})`);
+        return ed.model.confidence >= call("MODEL_FLAG_MIN_CONF");
+      }));
+
 console.log(failures
   ? `\nfight-model: ${failures} check(s) failed.`
   : "\nfight-model: the model is seeded, shrunk on thin data, and compared de-vigged.");
