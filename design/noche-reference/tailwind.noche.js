@@ -22,16 +22,20 @@
        }
    `@theme inline` is the key: it keeps the var() indirection instead of
    resolving it at build time, which is what makes runtime theming work.
-
-   ── Tailwind v3 ────────────────────────────────────────────────────────────
-   // tailwind.config.js
-   const noche = require("./tailwind.noche.js");
-   module.exports = {
-     content: ["./src/**/*.{js,ts,jsx,tsx,html}"],
-     theme: { extend: noche.theme.extend },
-     plugins: [noche.plugin],
-   };
    ============================================================================= */
+
+// ── Tailwind v3 ────────────────────────────────────────────────────────────
+// The content glob below contains the character pair that ends a block
+// comment, so this example is in line comments on purpose — don't fold it
+// back into the block above.
+//
+//   // tailwind.config.js
+//   const noche = require("./tailwind.noche.js");
+//   module.exports = {
+//     content: ["./src/**/*.{js,ts,jsx,tsx,html}"],
+//     theme: { extend: noche.theme.extend },
+//     plugins: [noche.plugin],
+//   };
 
 const v = (name) => `var(--noche-${name})`;
 
