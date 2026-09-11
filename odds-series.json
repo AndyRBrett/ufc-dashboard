@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T08:50:27Z",
+  "generated_at": "2026-09-11T13:31:41Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -7283,7 +7283,7 @@
           "f1": "Waldo Cortes-Acosta",
           "f2": "Curtis Blaydes",
           "lbl": "Main Card",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -7359,6 +7359,11 @@
               "at": "2026-09-10T22:25:38Z",
               "f1_odds": -213,
               "f2_odds": 171
+            },
+            {
+              "at": "2026-09-11T13:31:41Z",
+              "f1_odds": -209,
+              "f2_odds": 168
             }
           ],
           "open": {
@@ -7453,7 +7458,7 @@
           "f1": "Tim Elliott",
           "f2": "Edgar Chairez",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -7534,6 +7539,11 @@
               "at": "2026-09-11T08:50:27Z",
               "f1_odds": 177,
               "f2_odds": -221
+            },
+            {
+              "at": "2026-09-11T13:31:41Z",
+              "f1_odds": 175,
+              "f2_odds": -219
             }
           ],
           "open": {
@@ -9218,7 +9228,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Tim Elliott",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": -220,
         "close": null,
         "clv": null
@@ -12101,7 +12111,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Curtis Blaydes",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -175,
         "close": null,
         "clv": null
@@ -12112,7 +12122,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Waldo Cortes-Acosta",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 150,
         "close": null,
         "clv": null
@@ -12145,7 +12155,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Edgar Chairez",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": 184,
         "close": null,
         "clv": null
