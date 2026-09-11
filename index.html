@@ -3028,6 +3028,21 @@ function _eagleSynth(){
    it: synthesised through Web Audio so nothing new has to ship, and spawned
    into the .usa-stars / .usa-stars-lb overlays that seasonal and silver
    already borrow. */
+/* The Noche grito plays a real recording (the same cue the seasonal May theme
+   uses — one file, referenced twice, rather than two identical copies in the
+   repo) and keeps the synthesised laugh as the fallback, exactly the shape the
+   eagle uses. Raw bytes are prefetched at load and decoded lazily on the first
+   tap, because iOS will not let an AudioContext start outside a user gesture.
+   A miss is harmless: the synth covers it, which is also what happens offline
+   in any month the service worker has not cached this file. */
+var NOCHE_SOUND="sounds/season-may.mp3";
+var _nocheRaw=null,_nocheBuf=null,_nocheTried=false,_nochePending=false;
+try{fetch(NOCHE_SOUND).then(function(r){return r.ok?r.arrayBuffer():null;})
+  .then(function(ab){if(ab)_nocheRaw=ab;}).catch(function(){});}catch(e){}
+function _nochePlay(){
+  var c=seCtx(),s=c.createBufferSource();
+  s.buffer=_nocheBuf;s.connect(c.destination);s.start();
+}
 function nocheGrito(el){
   try{
     if(el&&el.animate)el.animate([
@@ -3036,45 +3051,91 @@ function nocheGrito(el){
       {duration:560,easing:"ease-out"});
   }catch(e){}
   try{
+    var nc=seCtx();
+    if(nc.state==="suspended")nc.resume();
+    if(_nocheBuf){_nochePlay();}
+    else if(_nocheRaw&&!_nocheTried){
+      _nocheTried=true;_nochePending=true;
+      // callback form for older iOS Safari; slice() because decode detaches the buffer
+      nc.decodeAudioData(_nocheRaw.slice(0),function(b){
+        _nocheBuf=b;
+        if(_nochePending){_nochePending=false;_nochePlay();}
+      },function(){if(_nochePending){_nochePending=false;_nocheSynth();}});
+      // don't leave the tap silent if the decode stalls
+      setTimeout(function(){if(_nochePending){_nochePending=false;_nocheSynth();}},700);
+    }
+    else{_nocheSynth();}
+  }catch(e){try{_nocheSynth();}catch(e2){}}
+  try{toast(["¡AY, AY, AY!","VIVA MEXICO","ARRIBA","NOCHE UFC","¡ESO!"][Math.floor(Math.random()*5)]);}catch(e){}
+}
+// The synthesised charro laugh — fallback when the recording is unavailable.
+function _nocheSynth(){
+  try{
     var c=seCtx(),t=c.currentTime;
-    // A grito is a voice, so it is built like one: a sawtooth glottal source
-    // through two formant bandpasses, with vibrato that widens as the cry
-    // opens up. The pitch rides up into the "ay", holds, then falls away.
+    // A charro laugh, not a single cry: the "ay-ay-ay-ay-ay" warble, up in
+    // falsetto. What makes it read as a LAUGH rather than one long note is that
+    // it is chopped into discrete syllables with real silence between them, and
+    // what makes each syllable read as "ay" rather than a bare tone is the /ai/
+    // diphthong - the tract closing from an open "ah" to a close "ee" while the
+    // pitch kicks up and falls back inside each one.
     var out=c.createGain();out.gain.value=.22;out.connect(c.destination);
-    function voice(f0,peak,at,dur,fA,fB){
+    // Formants are PARALLEL resonances of one vocal tract, not a chain. In
+    // series each band attenuates what the other passes and almost nothing
+    // survives: measured offline that cost ~18 dB and left the voice inaudible
+    // under the trumpet. Drive both filters from the source and sum them.
+    function laugh(f0,peak,at,syls,sylDur,drop){
       var o=c.createOscillator();o.type="sawtooth";
-      var st=t+at;
+      var st=t+at,fin=st+syls*sylDur;
+      var f1=c.createBiquadFilter();f1.type="bandpass";f1.Q.value=6;
+      var f2=c.createBiquadFilter();f2.type="bandpass";f2.Q.value=8;
+      var g=c.createGain();g.gain.setValueAtTime(.0001,st);
+      var vib=c.createOscillator();vib.type="sine";vib.frequency.value=6.2;
+      var vg=c.createGain();vg.gain.value=9;vib.connect(vg);vg.connect(o.frequency);
+      o.connect(f1);o.connect(f2);f1.connect(g);f2.connect(g);g.connect(out);
+      var pit=f0,amp=peak;
+      for(var i=0;i<syls;i++){
+        var b=st+i*sylDur,mid=b+sylDur*.40,e=b+sylDur*.90;
+        o.frequency.setValueAtTime(pit*.90,b);
+        o.frequency.exponentialRampToValueAtTime(pit*1.14,mid);
+        o.frequency.exponentialRampToValueAtTime(pit*.88,e);
+        f1.frequency.setValueAtTime(780,b);
+        f1.frequency.exponentialRampToValueAtTime(430,e);
+        f2.frequency.setValueAtTime(1240,b);
+        f2.frequency.exponentialRampToValueAtTime(2320,e);
+        g.gain.setValueAtTime(.0001,b);
+        g.gain.exponentialRampToValueAtTime(amp,b+sylDur*.14);
+        g.gain.setValueAtTime(amp,mid);
+        g.gain.exponentialRampToValueAtTime(.0001,e);
+        pit*=drop;amp*=.97;
+      }
+      o.start(st);vib.start(st);o.stop(fin+.02);vib.stop(fin+.02);
+    }
+    // The held "...aaay" the run lands on, sliding down with widening vibrato.
+    function tail(f0,peak,at,dur){
+      var o=c.createOscillator();o.type="sawtooth";var st=t+at;
       o.frequency.setValueAtTime(f0,st);
-      o.frequency.exponentialRampToValueAtTime(f0*1.5,st+dur*.22);
-      o.frequency.setValueAtTime(f0*1.5,st+dur*.55);
-      o.frequency.exponentialRampToValueAtTime(f0*.82,st+dur);
-      var vib=c.createOscillator();vib.type="sine";vib.frequency.value=5.6;
-      var vg=c.createGain();vg.gain.setValueAtTime(2,st);
-      vg.gain.linearRampToValueAtTime(14,st+dur*.6);
+      o.frequency.exponentialRampToValueAtTime(f0*.62,st+dur);
+      var vib=c.createOscillator();vib.type="sine";vib.frequency.value=5.4;
+      var vg=c.createGain();vg.gain.setValueAtTime(4,st);
+      vg.gain.linearRampToValueAtTime(16,st+dur*.7);
       vib.connect(vg);vg.connect(o.frequency);
-      var f1=c.createBiquadFilter();f1.type="bandpass";f1.frequency.value=fA;f1.Q.value=7;
-      var f2=c.createBiquadFilter();f2.type="bandpass";f2.frequency.value=fB;f2.Q.value=9;
+      var f1=c.createBiquadFilter();f1.type="bandpass";f1.frequency.value=700;f1.Q.value=6;
+      var f2=c.createBiquadFilter();f2.type="bandpass";f2.frequency.value=1150;f2.Q.value=8;
       var g=c.createGain();
       g.gain.setValueAtTime(.0001,st);
-      g.gain.exponentialRampToValueAtTime(peak,st+.06);
-      g.gain.setValueAtTime(peak,st+dur*.62);
+      g.gain.exponentialRampToValueAtTime(peak,st+.05);
+      g.gain.setValueAtTime(peak,st+dur*.55);
       g.gain.exponentialRampToValueAtTime(.0001,st+dur);
-      // Formants are PARALLEL resonances of one vocal tract, not a chain. In
-      // series the 760Hz band and the 1180Hz band each attenuate what the other
-      // passes, and with Q of 7 and 9 the surviving overlap is tiny: measured
-      // offline, series peaked at -43.1 dBFS against -24.9 for parallel, so the
-      // cry was ~8x quieter than the trumpet that answers it and was in
-      // practice inaudible. Drive both filters from the source and sum them.
       o.connect(f1);o.connect(f2);f1.connect(g);f2.connect(g);g.connect(out);
       o.start(st);vib.start(st);o.stop(st+dur);vib.stop(st+dur);
     }
-    voice(300,.5,0,1.15,760,1180);      // "ay"  — open vowel
-    voice(450,.16,.06,1.05,760,1180);   // a fifth up, thin, for the rasp
-    voice(232,.34,1.1,.5,560,980);      // "...ja" — the drop at the end
+    laugh(600,.5,0,7,.145,.972);     // ay-ay-ay-ay-ay-ay-ay, falsetto
+    laugh(900,.13,.004,7,.145,.972); // a fifth up, thin, for the rasp
+    tail(430,.42,1.03,.55);          // ...aaay
     // Trumpet stab answering the cry, the way a mariachi section would.
     [.0,.115].forEach(function(off,i){
       var o=c.createOscillator();o.type="square";
-      var st=t+1.36+off,f=i?466.16:349.23;
+      var st=t+1.64+off,f=i?466.16:349.23;
       o.frequency.setValueAtTime(f,st);
       var bp=c.createBiquadFilter();bp.type="bandpass";bp.frequency.value=1300;bp.Q.value=3;
       var g=c.createGain();
@@ -3085,7 +3146,6 @@ function nocheGrito(el){
       o.start(st);o.stop(st+.32);
     });
   }catch(e){}
-  try{toast(["¡AY, AY, AY!","VIVA MEXICO","ARRIBA","NOCHE UFC","¡ESO!"][Math.floor(Math.random()*5)]);}catch(e){}
 }
 // Cempasuchil petals drifting down — the marigold path that guides the souls.
 var _noLast=0;
