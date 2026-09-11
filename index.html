@@ -70,6 +70,34 @@ body[data-theme="usa"]{--star-tile:url("data:image/svg+xml,%3Csvg xmlns='http://
 @keyframes usaShoot{0%{opacity:0;transform:rotate(var(--ang)) translateX(0)}12%{opacity:1}100%{opacity:0;transform:rotate(var(--ang)) translateX(260px)}}
 /* ===== THEME: APEX NEON — near-black, electric teal & magenta ===== */
 body[data-theme="neon"]{--bg:#050608;--card:#0b0e14;--card2:#121723;--surface:#121723;--future-bg:#080a10;--future-border:rgba(22,224,207,.1);--text:#e8f6f6;--muted:#7c8a99;--muted2:#aebecf;--border:rgba(22,224,207,.1);--border2:rgba(22,224,207,.2);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(22,224,207,.07);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:rgba(5,6,8,.95);--red:#16e0cf;--red-dim:rgba(22,224,207,.1);--red-border:rgba(22,224,207,.35);--gold:#f23bd4;--gold-dim:rgba(242,59,212,.12);--gold-border:rgba(242,59,212,.35);--green:#3df08c;--green-dim:rgba(61,240,140,.12);--green-border:rgba(61,240,140,.3);--loss:#ff5d7e;--loss-dim:rgba(255,93,126,.12);--loss-border:rgba(255,93,126,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5),0 0 24px rgba(22,224,207,.04);--shadow-el:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(22,224,207,.07);--on-accent:#03211e;--on-gold:#2a0322;--accent-glow:rgba(22,224,207,.4);--gold-glow:rgba(242,59,212,.45);--banner-edge:#0a6e66;--fn-tint:rgba(22,224,207,.12)}
+/* ===== THEME: UFC NOCHE — an original Dia de Muertos / Mexican Independence
+   skin (NOT a reproduction of any sponsor's logo or label art): charred-paper
+   black, cempasuchil marigold gold and lienzo charro red, with a papel-picado
+   perforated band under the header and a faded marigold-bloom watermark. ===== */
+body[data-theme="noche"]{--bg:#0b0704;--card:#171009;--card2:#211708;--surface:#211708;--future-bg:#0d0906;--future-border:rgba(234,163,44,.14);--text:#f5ecd9;--muted:#a8927a;--muted2:#d3bd9c;--border:rgba(234,163,44,.14);--border2:rgba(234,163,44,.26);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(234,163,44,.09);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:rgba(11,7,4,.96);--red:#ce1126;--red-dim:rgba(206,17,38,.14);--red-border:rgba(206,17,38,.38);--gold:#eaa32c;--gold-dim:rgba(234,163,44,.14);--gold-border:rgba(234,163,44,.34);--green:#3fb56a;--green-dim:rgba(63,181,106,.12);--green-border:rgba(63,181,106,.3);--loss:#e2586a;--loss-dim:rgba(226,88,106,.12);--loss-border:rgba(226,88,106,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5),0 0 24px rgba(234,163,44,.05);--shadow-el:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(234,163,44,.08);--on-accent:#fff;--on-gold:#2b1a00;--accent-glow:rgba(206,17,38,.4);--gold-glow:rgba(234,163,44,.5);--banner-edge:#7a0f1c;--fn-tint:rgba(206,17,38,.14)}
+/* Noche flourishes: a perforated papel-picado band (tricolor paper bands with
+   punched-dot cutouts, not literal flag stripes) under the header, a faint
+   full-page marigold-bloom watermark like the USA theme's star field, and a
+   soft tricolor wash behind the hero. */
+body[data-theme="noche"] .hdr::after,body[data-theme="noche"] .lb-hdr::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:8px;background:
+  repeating-radial-gradient(circle at 8px 4px,var(--bg) 0 2.1px,transparent 2.1px 16px),
+  linear-gradient(90deg,#046a38 0 33%,#f5f0e0 33% 66%,#ce1126 66% 100%)}
+body[data-theme="noche"] .lb-hdr{position:relative}
+body[data-theme="noche"] .hero{background:
+  repeating-linear-gradient(180deg,rgba(234,163,44,.06) 0 7px,transparent 7px 14px),
+  linear-gradient(180deg,rgba(206,17,38,.08) 0%,transparent 100%)}
+.noche-flor{display:none}
+body[data-theme="noche"]{position:relative}
+body[data-theme="noche"] .noche-flor{display:block;position:absolute;inset:0;pointer-events:none;z-index:5;background:var(--flor-tile)}
+body[data-theme="noche"] .lb-body{background-image:var(--flor-tile);background-attachment:local}
+body[data-theme="noche"]{--flor-tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cg fill='%23eaa32c'%3E%3Cg opacity='.14' transform='translate(28,34) scale(1.1)'%3E%3Ccircle r='3.2'/%3E%3Ccircle cx='0' cy='-6' r='2.6'/%3E%3Ccircle cx='6' cy='0' r='2.6'/%3E%3Ccircle cx='0' cy='6' r='2.6'/%3E%3Ccircle cx='-6' cy='0' r='2.6'/%3E%3C/g%3E%3Cg opacity='.08' transform='translate(130,18) scale(.7)'%3E%3Ccircle r='3.2'/%3E%3Ccircle cx='0' cy='-6' r='2.6'/%3E%3Ccircle cx='6' cy='0' r='2.6'/%3E%3Ccircle cx='0' cy='6' r='2.6'/%3E%3Ccircle cx='-6' cy='0' r='2.6'/%3E%3C/g%3E%3Cg opacity='.1' transform='translate(172,86) scale(.9)'%3E%3Ccircle r='3.2'/%3E%3Ccircle cx='0' cy='-6' r='2.6'/%3E%3Ccircle cx='6' cy='0' r='2.6'/%3E%3Ccircle cx='0' cy='6' r='2.6'/%3E%3Ccircle cx='-6' cy='0' r='2.6'/%3E%3C/g%3E%3Cg opacity='.07' transform='translate(64,118) scale(.6)'%3E%3Ccircle r='3.2'/%3E%3Ccircle cx='0' cy='-6' r='2.6'/%3E%3Ccircle cx='6' cy='0' r='2.6'/%3E%3Ccircle cx='0' cy='6' r='2.6'/%3E%3Ccircle cx='-6' cy='0' r='2.6'/%3E%3C/g%3E%3Cg opacity='.12' transform='translate(150,158) scale(1)'%3E%3Ccircle r='3.2'/%3E%3Ccircle cx='0' cy='-6' r='2.6'/%3E%3Ccircle cx='6' cy='0' r='2.6'/%3E%3Ccircle cx='0' cy='6' r='2.6'/%3E%3Ccircle cx='-6' cy='0' r='2.6'/%3E%3C/g%3E%3Cg opacity='.08' transform='translate(20,172) scale(.65)'%3E%3Ccircle r='3.2'/%3E%3Ccircle cx='0' cy='-6' r='2.6'/%3E%3Ccircle cx='6' cy='0' r='2.6'/%3E%3Ccircle cx='0' cy='6' r='2.6'/%3E%3Ccircle cx='-6' cy='0' r='2.6'/%3E%3C/g%3E%3Cg opacity='.06' transform='translate(98,58) scale(.5)'%3E%3Ccircle r='3.2'/%3E%3Ccircle cx='0' cy='-6' r='2.6'/%3E%3Ccircle cx='6' cy='0' r='2.6'/%3E%3Ccircle cx='0' cy='6' r='2.6'/%3E%3Ccircle cx='-6' cy='0' r='2.6'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.logo-noche{display:none;width:34px;height:34px}
+.logo-noche svg{width:100%;height:100%;display:block;filter:drop-shadow(0 0 5px var(--accent-glow,rgba(206,17,38,.4)))}
+body[data-theme="noche"] .logo-oct{display:none}
+body[data-theme="noche"] .logo-noche{display:block;animation:eagleBreathe 3.6s ease-in-out infinite}
+.lb-noche{display:none;background:none;border:none;padding:0;width:22px;height:22px;vertical-align:-6px}
+.lb-noche svg{width:100%;height:100%;display:block}
+body[data-theme="noche"] .lb-noche{display:inline-block;animation:eagleBreathe 3.6s ease-in-out infinite}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;min-height:100vh;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 80px);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
 /* The status-bar strip is ours to paint. iOS reads theme-color when a standalone
@@ -970,7 +998,7 @@ body[data-theme="silver"] .flive{background:linear-gradient(180deg,#e4f2fd,#cbe6
 </head>
 <body>
 <script>try{var _t=localStorage.getItem("ufc_theme");
-var _ok={octagon:1,neon:1,fire:1,usa:1,seasonal:1,silver:1};
+var _ok={octagon:1,neon:1,fire:1,usa:1,seasonal:1,silver:1,noche:1};
 if(!_ok[_t])_t="octagon";
 document.body.setAttribute("data-theme",_t);
 // stamp the month before first paint, so a seasonal load never flashes unstyled
@@ -978,6 +1006,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
   ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"][new Date().getMonth()]);
 }catch(e){}</script>
 <div class="usa-stars" aria-hidden="true"></div>
+<div class="noche-flor" aria-hidden="true"></div>
 <div class="modal-bg" id="statsModal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-top"><div class="modal-name" id="mName"></div><button class="modal-xbtn" onclick="closeModal()">x</button></div>
@@ -1148,7 +1177,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <div class="fn-banner" id="fnBanner"><div class="fn-banner-dot"></div><div class="fn-banner-text" id="fnBannerText">FIGHT NIGHT</div><div class="fn-banner-dot"></div><div id="fnLastChecked" style="font-size:10px;opacity:.6;margin-left:8px;font-family:Inter,sans-serif;letter-spacing:.04em"></div></div>
 <div class="odds-budget-banner" id="oddsBudgetBanner" role="status"></div>
 <header class="hdr">
-  <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><button class="logo-season" onclick="seasonCry(this)" aria-label="Play the seasonal sound"></button><button class="logo-silver" onclick="silverCrack(this)" aria-label="Crack a cold one"><svg viewBox="0 0 40 64" aria-hidden="true"><defs><linearGradient id="svcan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d99a3"/><stop offset=".16" stop-color="#eef2f5"/><stop offset=".42" stop-color="#c3cdd6"/><stop offset=".62" stop-color="#f6f9fb"/><stop offset=".86" stop-color="#aab6c0"/><stop offset="1" stop-color="#7f8b95"/></linearGradient></defs><rect x="5" y="7" width="30" height="51" rx="5" fill="url(#svcan)"/><ellipse cx="20" cy="8" rx="15" ry="3.6" fill="#c9d3db"/><ellipse cx="20" cy="8" rx="11" ry="2.4" fill="#aeb9c3"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><path d="M5 39 12 29l4.5 5 5.5-7.5 5 6.5 3.5-3 6 8z" fill="#fff" opacity=".92"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/><ellipse cx="20" cy="57.6" rx="15" ry="3.2" fill="#9aa6b0"/><rect x="9" y="9" width="3" height="47" fill="#fff" opacity=".45" rx="1.5"/></svg></button><span class="logo-text">FIGHT <span>CARDS</span></span></div>
+  <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><button class="logo-season" onclick="seasonCry(this)" aria-label="Play the seasonal sound"></button><button class="logo-silver" onclick="silverCrack(this)" aria-label="Crack a cold one"><svg viewBox="0 0 40 64" aria-hidden="true"><defs><linearGradient id="svcan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d99a3"/><stop offset=".16" stop-color="#eef2f5"/><stop offset=".42" stop-color="#c3cdd6"/><stop offset=".62" stop-color="#f6f9fb"/><stop offset=".86" stop-color="#aab6c0"/><stop offset="1" stop-color="#7f8b95"/></linearGradient></defs><rect x="5" y="7" width="30" height="51" rx="5" fill="url(#svcan)"/><ellipse cx="20" cy="8" rx="15" ry="3.6" fill="#c9d3db"/><ellipse cx="20" cy="8" rx="11" ry="2.4" fill="#aeb9c3"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><path d="M5 39 12 29l4.5 5 5.5-7.5 5 6.5 3.5-3 6 8z" fill="#fff" opacity=".92"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/><ellipse cx="20" cy="57.6" rx="15" ry="3.2" fill="#9aa6b0"/><rect x="9" y="9" width="3" height="47" fill="#fff" opacity=".45" rx="1.5"/></svg></button><span class="logo-noche" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 4c-7 0-12.5 5.4-12.5 12.3 0 4.2 1.9 7.1 4.3 9.4l.9 4.8h3l.6-2.8h1.9l.5 2.8h3.6l.5-2.8h1.9l.6 2.8h3l.9-4.8c2.4-2.3 4.3-5.2 4.3-9.4C32.5 9.4 27 4 20 4z" fill="none" stroke="#eaa32c" stroke-width="1.7" stroke-linejoin="round"/><circle cx="14.6" cy="17" r="3.1" fill="#eaa32c"/><circle cx="25.4" cy="17" r="3.1" fill="#eaa32c"/><path d="M20 19.4l-2.1 4h4.2z" fill="#eaa32c"/><path d="M12.6 26.6h14.8" stroke="#eaa32c" stroke-width="1.1"/><path d="M13.6 26.6v2.8M16.4 26.6v2.8M19.2 26.6v2.8M22 26.6v2.8M24.8 26.6v2.8" stroke="#eaa32c" stroke-width="1.1"/><path d="M9 9.5c1.8-2.6 4.4-3.6 5.6-3.8M31 9.5c-1.8-2.6-4.4-3.6-5.6-3.8" fill="none" stroke="#f0d9ad" stroke-width=".9" opacity=".75"/></svg></span><span class="logo-text">FIGHT <span>CARDS</span></span></div>
   <div class="hdr-right">
     <!-- Leaderboard -->
     <button class="btn-icon" onclick="openLeaderboard()" title="Leaderboard">
@@ -1204,6 +1233,10 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
         <button class="btn-more-item theme-item" data-theme="seasonal" onclick="setTheme('seasonal')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#ff7518 0 25%,#c1272d 25% 50%,#2f9e44 50% 75%,#6a3fd6 75%)"></span>
           <span>Seasonal</span><span class="theme-check">&#10003;</span>
+        </button>
+        <button class="btn-more-item theme-item" data-theme="noche" onclick="setTheme('noche')">
+          <span class="theme-swatch" style="background:linear-gradient(135deg,#046a38 0 28%,#f5f0e0 28% 52%,#ce1126 52% 76%,#eaa32c 76%)"></span>
+          <span>UFC Noche</span><span class="theme-check">&#10003;</span>
         </button>
         <div class="btn-more-sep"></div>
         <button class="btn-more-item" id="installBtn" onclick="showInstall();closeMoreMenu()" style="display:none">
@@ -2269,7 +2302,7 @@ function countMethodsCorrect(){
   });});
   return count;
 }
-var THEMES={octagon:"#e8192c",neon:"#050608",fire:"#0a0705",usa:"#070a13",seasonal:"#08050e",silver:"#c4cdd5"};
+var THEMES={octagon:"#e8192c",neon:"#050608",fire:"#0a0705",usa:"#070a13",seasonal:"#08050e",silver:"#c4cdd5",noche:"#0b0704"};
 function applyTheme(t){
   if(!THEMES[t])t="octagon";
   document.body.setAttribute("data-theme",t);
@@ -7160,7 +7193,7 @@ document.addEventListener("DOMContentLoaded",function(){
   <div class="lb-hdr">
     <button class="btn-icon" onclick="closeLeaderboard()" title="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
     <div class="sv-ridge"></div>
-    <div class="lb-title">Leaderboard <button class="lb-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><button class="lb-season" onclick="seasonCry(this)" aria-label="Play the seasonal sound"></button><button class="lb-silver" onclick="silverCrack(this)" aria-label="Crack a cold one"><svg viewBox="0 0 40 64" aria-hidden="true"><defs><linearGradient id="svcanlb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d99a3"/><stop offset=".16" stop-color="#eef2f5"/><stop offset=".42" stop-color="#c3cdd6"/><stop offset=".62" stop-color="#f6f9fb"/><stop offset=".86" stop-color="#aab6c0"/><stop offset="1" stop-color="#7f8b95"/></linearGradient></defs><rect x="5" y="7" width="30" height="51" rx="5" fill="url(#svcanlb)"/><ellipse cx="20" cy="8" rx="15" ry="3.6" fill="#c9d3db"/><ellipse cx="20" cy="8" rx="11" ry="2.4" fill="#aeb9c3"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><path d="M5 39 12 29l4.5 5 5.5-7.5 5 6.5 3.5-3 6 8z" fill="#fff" opacity=".92"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/><ellipse cx="20" cy="57.6" rx="15" ry="3.2" fill="#9aa6b0"/><rect x="9" y="9" width="3" height="47" fill="#fff" opacity=".45" rx="1.5"/></svg></button></div>
+    <div class="lb-title">Leaderboard <button class="lb-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><button class="lb-season" onclick="seasonCry(this)" aria-label="Play the seasonal sound"></button><button class="lb-silver" onclick="silverCrack(this)" aria-label="Crack a cold one"><svg viewBox="0 0 40 64" aria-hidden="true"><defs><linearGradient id="svcanlb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d99a3"/><stop offset=".16" stop-color="#eef2f5"/><stop offset=".42" stop-color="#c3cdd6"/><stop offset=".62" stop-color="#f6f9fb"/><stop offset=".86" stop-color="#aab6c0"/><stop offset="1" stop-color="#7f8b95"/></linearGradient></defs><rect x="5" y="7" width="30" height="51" rx="5" fill="url(#svcanlb)"/><ellipse cx="20" cy="8" rx="15" ry="3.6" fill="#c9d3db"/><ellipse cx="20" cy="8" rx="11" ry="2.4" fill="#aeb9c3"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><path d="M5 39 12 29l4.5 5 5.5-7.5 5 6.5 3.5-3 6 8z" fill="#fff" opacity=".92"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/><ellipse cx="20" cy="57.6" rx="15" ry="3.2" fill="#9aa6b0"/><rect x="9" y="9" width="3" height="47" fill="#fff" opacity=".45" rx="1.5"/></svg></button><span class="lb-noche" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 4c-7 0-12.5 5.4-12.5 12.3 0 4.2 1.9 7.1 4.3 9.4l.9 4.8h3l.6-2.8h1.9l.5 2.8h3.6l.5-2.8h1.9l.6 2.8h3l.9-4.8c2.4-2.3 4.3-5.2 4.3-9.4C32.5 9.4 27 4 20 4z" fill="none" stroke="#eaa32c" stroke-width="1.7" stroke-linejoin="round"/><circle cx="14.6" cy="17" r="3.1" fill="#eaa32c"/><circle cx="25.4" cy="17" r="3.1" fill="#eaa32c"/><path d="M20 19.4l-2.1 4h4.2z" fill="#eaa32c"/><path d="M12.6 26.6h14.8" stroke="#eaa32c" stroke-width="1.1"/><path d="M13.6 26.6v2.8M16.4 26.6v2.8M19.2 26.6v2.8M22 26.6v2.8M24.8 26.6v2.8" stroke="#eaa32c" stroke-width="1.1"/><path d="M9 9.5c1.8-2.6 4.4-3.6 5.6-3.8M31 9.5c-1.8-2.6-4.4-3.6-5.6-3.8" fill="none" stroke="#f0d9ad" stroke-width=".9" opacity=".75"/></svg></span></div>
     <button class="lb-info-btn" onclick="document.getElementById('lbInfoModal').classList.toggle('open')" title="How scoring works">ℹ</button>
     <button class="lb-info-btn" onclick="loadLeaderboard()" title="Refresh"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
   </div>
