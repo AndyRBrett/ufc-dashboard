@@ -7,7 +7,7 @@ agave and marigold, letterpress depth.
 ```
 noche-theme.css      tokens + component styles       (~700 lines, no deps)
 noche-assets.svg     decorative SVG sprite           (papel picado, corners, calavera, agave, marigold)
-tailwind.noche.js    Tailwind token bridge + plugin
+tailwind.noche.cjs    Tailwind token bridge + plugin
 noche-preview.html   self-contained mock dashboard   (open on a phone)
 README.md            this file
 ```
@@ -113,7 +113,7 @@ if (d.getMonth() === 8 && d.getDate() >= 10 && d.getDate() <= 17) setTheme("noch
 
 ## Tailwind
 
-`tailwind.noche.js` maps the same tokens onto Tailwind's theme keys as
+`tailwind.noche.cjs` maps the same tokens onto Tailwind's theme keys as
 `var(--noche-*)` references — not baked hex values. That's the whole trick:
 `bg-surface` resolves to night-850 inside the theme and to your default surface
 outside it, so you write one set of classes and skip `dark:` variants entirely.
@@ -122,7 +122,7 @@ outside it, so you write one set of classes and skip `dark:` variants entirely.
 
 ```js
 // tailwind.config.js
-const noche = require("./tailwind.noche.js");
+const noche = require("./tailwind.noche.cjs");
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx,html}"],
   theme: { extend: noche.theme.extend },

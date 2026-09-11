@@ -30,7 +30,7 @@
 // back into the block above.
 //
 //   // tailwind.config.js
-//   const noche = require("./tailwind.noche.js");
+//   const noche = require("./tailwind.noche.cjs");
 //   module.exports = {
 //     content: ["./src/**/*.{js,ts,jsx,tsx,html}"],
 //     theme: { extend: noche.theme.extend },
