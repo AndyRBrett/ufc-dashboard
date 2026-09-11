@@ -1289,9 +1289,54 @@ svg.noche-papel,
 }
 
 @media print {
+  /* Re-point the TOKENS, not just the themed root. Setting colour on the root
+     alone left every descendant still reading the screen palette — pale bone
+     text and dark surfaces — and browsers commonly print with background
+     graphics suppressed, so that pale text landed on white paper and was
+     effectively unreadable. Overriding the tokens here means every component
+     that reads them (cards, badges, tables, .noche-display) converts to ink on
+     white without needing its own print rule. */
+  [data-theme="noche"] {
+    --noche-bg: #fff;
+    --noche-bg-gradient: none;
+    --noche-surface: #fff;
+    --noche-surface-raised: #fff;
+    --noche-surface-hover: #fff;
+    --noche-surface-inset: #fff;
+    --noche-surface-sunken: #fff;
+    --noche-surface-gold: #fff;
+    --noche-text: #000;
+    --noche-text-strong: #000;
+    --noche-text-muted: #333;
+    --noche-text-subtle: #555;
+    --noche-text-inverse: #fff;
+    --noche-text-accent: #000;
+    --noche-text-link: #000;
+    --noche-border: rgba(0, 0, 0, 0.35);
+    --noche-border-strong: rgba(0, 0, 0, 0.6);
+    --noche-border-gold: rgba(0, 0, 0, 0.45);
+    --noche-border-gold-hi: rgba(0, 0, 0, 0.6);
+    --noche-shadow-1: none;
+    --noche-shadow-2: none;
+    --noche-shadow-3: none;
+    --noche-shadow-gold: none;
+    --noche-shadow-live: none;
+    --noche-gradient-foil: none;
+    --noche-emboss: none;
+    --noche-debossed: none;
+    --noche-ink-shadow: none;
+    --noche-grain-opacity: 0;
+  }
   [data-theme="noche"] { background: #fff; color: #000; }
   [data-theme="noche"]::before { display: none; }
   .noche-papel, .noche-motif, .noche-corner { display: none; }
+  /* Gold-on-dark chips invert to outlined ink so they survive a mono printer
+     and a background-graphics-off print alike. */
+  .noche-badge, .noche-btn, .noche-card {
+    background: #fff !important;
+    color: #000 !important;
+    border-color: rgba(0, 0, 0, 0.45) !important;
+  }
 }
 
 
