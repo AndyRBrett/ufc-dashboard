@@ -1,0 +1,1319 @@
+/* =============================================================================
+   UFC NOCHE — visual theme
+   -----------------------------------------------------------------------------
+   Día de la Independencia edition. Dark, moody, letterpress. Bone and gold on
+   deep night; verde/blanco/rojo as accent, never as wallpaper.
+
+   Visual language: José Guadalupe Posada-era woodcut/engraving linework,
+   papel picado, lotería card framing, agave and marigold motifs, aged paper.
+   All artwork is original and drawn from public-domain-rooted traditions.
+   Contains no third-party logos, wordmarks, mascots or label artwork.
+
+   USAGE
+     <html data-theme="noche">   ... or any subtree element
+   Everything below is scoped to [data-theme="noche"], so it cannot leak into
+   your existing default styles. Nothing here targets bare element selectors
+   outside that scope.
+
+   NAMESPACE
+     --noche-*   canonical tokens. Safe: cannot collide with your app.
+     A commented "bridge" block at the end maps generic --color-* / --font-*
+     names onto them, if your app already consumes generic token names.
+   ============================================================================= */
+
+
+/* -----------------------------------------------------------------------------
+   1. TOKENS
+   -------------------------------------------------------------------------- */
+
+[data-theme="noche"] {
+  color-scheme: dark;
+
+  /* --- 1.1 Raw ramps ------------------------------------------------------ */
+
+  /* Night — deep indigo-black, the ground everything sits on */
+  --noche-night-950: #04050a;
+  --noche-night-900: #080a11;
+  --noche-night-850: #0c0f18;
+  --noche-night-800: #11151f;
+  --noche-night-700: #181d29;
+  --noche-night-600: #212736;
+  --noche-night-500: #2c3345;
+  --noche-night-400: #3b4356;
+
+  /* Bone — aged paper, printed ink negative, primary text */
+  --noche-bone-50:  #fbf6ec;
+  --noche-bone-100: #f4ecdb;
+  --noche-bone-200: #e9dcc2;
+  --noche-bone-300: #d8c8a8;
+  --noche-bone-400: #bda98a;
+  --noche-bone-500: #9a8a70;
+  --noche-bone-600: #746956;
+
+  /* Oro — foil, engraved rule, primary accent */
+  --noche-oro-100: #fbeec2;
+  --noche-oro-200: #f6dd93;
+  --noche-oro-300: #eec462;
+  --noche-oro-400: #dfa93a;
+  --noche-oro-500: #c68a1f;
+  --noche-oro-600: #9c6716;
+  --noche-oro-700: #6d470f;
+  --noche-oro-800: #432c0b;
+
+  /* Tricolor + fiesta accents — used sparingly, as accent */
+  --noche-verde-400: #2fae6d;
+  --noche-verde-500: #1e8a53;
+  --noche-verde-600: #14603a;
+  --noche-rojo-400:  #e0463a;
+  --noche-rojo-500:  #c02a20;
+  --noche-rojo-600:  #8d1c15;
+  --noche-blanco:    #f7f3ea;
+  --noche-cempasuchil-400: #f5952b;  /* marigold */
+  --noche-cempasuchil-500: #dd7413;
+  --noche-rosa-400:  #e0357f;        /* rosa mexicano */
+  --noche-turquesa-400: #1fa8ae;
+  --noche-morado-400: #7b4bb5;
+
+  /* --- 1.2 Semantic surfaces --------------------------------------------- */
+  --noche-bg:              var(--noche-night-950);
+  --noche-bg-gradient:
+      radial-gradient(120% 80% at 50% -10%, #16182b 0%, rgba(22,24,43,0) 62%),
+      radial-gradient(90% 60% at 100% 100%, #131a19 0%, rgba(19,26,25,0) 58%),
+      linear-gradient(180deg, #06070d 0%, #04050a 100%);
+  --noche-surface:         var(--noche-night-850);
+  --noche-surface-raised:  var(--noche-night-800);
+  --noche-surface-sunken:  var(--noche-night-900);
+  --noche-surface-inset:   rgba(0, 0, 0, 0.38);
+  --noche-surface-hover:   var(--noche-night-700);
+  --noche-surface-gold:    linear-gradient(168deg, #241a08 0%, #14100a 58%, #0d0b09 100%);
+  --noche-scrim:           rgba(4, 5, 10, 0.72);
+
+  /* --- 1.3 Semantic text -------------------------------------------------- */
+  --noche-text:            var(--noche-bone-100);
+  --noche-text-strong:     var(--noche-bone-50);
+  --noche-text-muted:      var(--noche-bone-400);
+  --noche-text-subtle:     var(--noche-bone-500);
+  --noche-text-accent:     var(--noche-oro-300);
+  --noche-text-inverse:    var(--noche-night-950);
+  --noche-text-link:       var(--noche-oro-200);
+
+  /* --- 1.4 Borders / rules ------------------------------------------------ */
+  --noche-border:          rgba(216, 200, 168, 0.14);
+  --noche-border-strong:   rgba(216, 200, 168, 0.28);
+  --noche-border-gold:     rgba(198, 138, 31, 0.46);
+  --noche-border-gold-hi:  rgba(238, 196, 98, 0.72);
+  --noche-border-verde:    rgba(47, 174, 109, 0.5);
+  --noche-border-rojo:     rgba(224, 70, 58, 0.5);
+  --noche-rule-engraved:
+      linear-gradient(90deg, transparent, var(--noche-oro-600) 12%,
+      var(--noche-oro-300) 50%, var(--noche-oro-600) 88%, transparent);
+
+  /* --- 1.5 Typography ----------------------------------------------------- */
+  /* Deliberately system-font-only: no network requests, no licensing.
+     Swap in a real display face by overriding --noche-font-display. */
+  --noche-font-display: "Bodoni 72", "Bodoni MT", "Didot", "Playfair Display",
+                        "Times New Roman", Georgia, serif;
+  --noche-font-engraved: "Copperplate", "Copperplate Gothic Light", "Optima",
+                         "Trajan Pro", Georgia, serif;
+  --noche-font-body: "Iowan Old Style", "Palatino Linotype", Palatino,
+                     Georgia, "Times New Roman", serif;
+  --noche-font-ui: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+                   Helvetica, Arial, sans-serif;
+  --noche-font-data: ui-monospace, "SF Mono", SFMono-Regular, Menlo,
+                     "Roboto Mono", monospace;
+
+  --noche-text-2xs: 0.6875rem;   /* 11 */
+  --noche-text-xs:  0.75rem;     /* 12 */
+  --noche-text-sm:  0.8125rem;   /* 13 */
+  --noche-text-base: 0.9375rem;  /* 15 */
+  --noche-text-md:  1.0625rem;   /* 17 */
+  --noche-text-lg:  1.25rem;     /* 20 */
+  --noche-text-xl:  1.5rem;      /* 24 */
+  --noche-text-2xl: clamp(1.625rem, 1.2rem + 1.8vw, 2.125rem);
+  --noche-text-3xl: clamp(2rem, 1.35rem + 2.9vw, 3rem);
+  --noche-text-4xl: clamp(2.5rem, 1.5rem + 4.6vw, 4.25rem);
+
+  --noche-leading-tight: 1.05;
+  --noche-leading-snug: 1.25;
+  --noche-leading-normal: 1.5;
+  --noche-leading-relaxed: 1.65;
+
+  --noche-tracking-tight: -0.02em;
+  --noche-tracking-normal: 0;
+  --noche-tracking-wide: 0.06em;
+  --noche-tracking-wider: 0.14em;
+  --noche-tracking-widest: 0.24em;
+
+  --noche-weight-regular: 400;
+  --noche-weight-medium: 500;
+  --noche-weight-bold: 700;
+
+  /* --- 1.6 Space ---------------------------------------------------------- */
+  --noche-space-0: 0;
+  --noche-space-1: 0.25rem;
+  --noche-space-2: 0.5rem;
+  --noche-space-3: 0.75rem;
+  --noche-space-4: 1rem;
+  --noche-space-5: 1.25rem;
+  --noche-space-6: 1.5rem;
+  --noche-space-8: 2rem;
+  --noche-space-10: 2.5rem;
+  --noche-space-12: 3rem;
+  --noche-space-16: 4rem;
+
+  /* --- 1.7 Radii ---------------------------------------------------------- */
+  /* Letterpress and lotería cards are square-ish. Keep radii small. */
+  --noche-radius-none: 0;
+  --noche-radius-xs: 2px;
+  --noche-radius-sm: 3px;
+  --noche-radius-md: 5px;
+  --noche-radius-lg: 8px;
+  --noche-radius-xl: 14px;
+  --noche-radius-pill: 999px;
+
+  /* --- 1.8 Shadows / glow ------------------------------------------------- */
+  --noche-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --noche-shadow-2: 0 4px 14px -4px rgba(0, 0, 0, 0.7);
+  --noche-shadow-3: 0 18px 44px -18px rgba(0, 0, 0, 0.9),
+                    0 2px 10px -4px rgba(0, 0, 0, 0.6);
+  --noche-shadow-gold: 0 0 0 1px var(--noche-border-gold),
+                       0 0 22px -6px rgba(223, 169, 58, 0.42);
+  --noche-shadow-live: 0 0 0 1px rgba(224, 70, 58, 0.55),
+                       0 0 18px -4px rgba(224, 70, 58, 0.6);
+  /* letterpress: light catches the top edge, ink sinks below */
+  --noche-emboss: inset 0 1px 0 rgba(244, 236, 219, 0.09),
+                  inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+  --noche-debossed: inset 0 1px 3px rgba(0, 0, 0, 0.7),
+                    inset 0 -1px 0 rgba(244, 236, 219, 0.06);
+  --noche-ink-shadow: 0 1px 0 rgba(0, 0, 0, 0.7);
+  --noche-focus-ring: 0 0 0 2px var(--noche-night-950),
+                      0 0 0 4px var(--noche-oro-400);
+
+  /* --- 1.9 Textures ------------------------------------------------------- */
+  /* Aged-paper grain, generated inline. No external assets. */
+  --noche-texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  --noche-texture-fibre: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.014 0.55' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23f)'/%3E%3C/svg%3E");
+  --noche-grain-opacity: 0.055;
+  --noche-papel-height: 54px;
+  --noche-gradient-foil: linear-gradient(100deg,
+      var(--noche-oro-600) 0%, var(--noche-oro-200) 22%, var(--noche-oro-100) 38%,
+      var(--noche-oro-400) 56%, var(--noche-oro-600) 78%, var(--noche-oro-300) 100%);
+  --noche-gradient-tricolor: linear-gradient(90deg,
+      var(--noche-verde-500) 0 33.333%, var(--noche-blanco) 33.333% 66.666%,
+      var(--noche-rojo-500) 66.666% 100%);
+
+  /* --- 1.10 Motion -------------------------------------------------------- */
+  --noche-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --noche-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --noche-dur-fast: 120ms;
+  --noche-dur: 200ms;
+  --noche-dur-slow: 420ms;
+
+  /* --- 1.11 Layout -------------------------------------------------------- */
+  --noche-container: 68rem;
+  --noche-container-narrow: 46rem;
+}
+
+
+/* -----------------------------------------------------------------------------
+   2. BASE (scoped)
+   -------------------------------------------------------------------------- */
+
+[data-theme="noche"] {
+  background-color: var(--noche-bg);
+  background-image: var(--noche-bg-gradient);
+  background-attachment: fixed;
+  color: var(--noche-text);
+  font-family: var(--noche-font-body);
+  font-size: var(--noche-text-base);
+  line-height: var(--noche-leading-normal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  position: relative;
+}
+
+/* Global grain veil over the themed subtree */
+[data-theme="noche"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--noche-texture-grain);
+  opacity: var(--noche-grain-opacity);
+  mix-blend-mode: soft-light;
+}
+[data-theme="noche"] > * { position: relative; z-index: 1; }
+
+[data-theme="noche"] ::selection {
+  background: var(--noche-oro-500);
+  color: var(--noche-night-950);
+}
+
+[data-theme="noche"] :focus-visible {
+  outline: none;
+  box-shadow: var(--noche-focus-ring);
+  border-radius: var(--noche-radius-xs);
+}
+
+[data-theme="noche"] a { color: var(--noche-text-link); text-decoration-color: var(--noche-border-gold); }
+[data-theme="noche"] a:hover { color: var(--noche-oro-100); }
+
+[data-theme="noche"] hr {
+  border: 0;
+  height: 1px;
+  background: var(--noche-rule-engraved);
+  opacity: 0.6;
+}
+
+
+/* -----------------------------------------------------------------------------
+   3. TYPE UTILITIES
+   -------------------------------------------------------------------------- */
+
+.noche-display {
+  font-family: var(--noche-font-display);
+  font-weight: var(--noche-weight-bold);
+  line-height: var(--noche-leading-tight);
+  letter-spacing: var(--noche-tracking-tight);
+  color: var(--noche-text-strong);
+  text-shadow: var(--noche-ink-shadow);
+}
+
+.noche-eyebrow,
+.noche-engraved {
+  font-family: var(--noche-font-engraved);
+  font-size: var(--noche-text-2xs);
+  letter-spacing: var(--noche-tracking-widest);
+  text-transform: uppercase;
+  color: var(--noche-text-muted);
+  font-weight: var(--noche-weight-medium);
+}
+
+.noche-foil {
+  background: var(--noche-gradient-foil);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  /* fallback for engines without background-clip:text */
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.55));
+}
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .noche-foil { -webkit-text-fill-color: var(--noche-oro-300); color: var(--noche-oro-300); }
+}
+
+.noche-data {
+  font-family: var(--noche-font-data);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: var(--noche-tracking-tight);
+}
+
+.noche-muted { color: var(--noche-text-muted); }
+.noche-subtle { color: var(--noche-text-subtle); }
+
+
+/* -----------------------------------------------------------------------------
+   4. DECORATIVE PRIMITIVES
+   -------------------------------------------------------------------------- */
+
+/* Thin engraved divider with a centred diamond */
+.noche-rule {
+  display: flex;
+  align-items: center;
+  gap: var(--noche-space-3);
+  color: var(--noche-oro-500);
+}
+.noche-rule::before,
+.noche-rule::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--noche-rule-engraved);
+  opacity: 0.75;
+}
+.noche-rule > .noche-rule-mark {
+  width: 7px; height: 7px;
+  background: currentColor;
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 3px var(--noche-bg), 0 0 0 4px currentColor;
+}
+
+/* Tricolor hairline — accent, 2px tall, used at the top of headers only */
+.noche-tricolor {
+  height: 2px;
+  background: var(--noche-gradient-tricolor);
+  opacity: 0.85;
+}
+.noche-tricolor--soft { opacity: 0.5; height: 1px; }
+
+/* Papel picado strip.
+   The SVG has NO viewBox on purpose: user units then equal CSS pixels, and the
+   #noche-papel-pattern paint server tiles the banner on x at exact integer
+   steps. Panels keep their proportions at any container width — nothing
+   stretches, no scallop gets cropped, no seams.
+
+   Markup:
+     <svg class="noche-papel" aria-hidden="true">
+       <rect width="100%" height="100%" fill="url(#noche-papel-pattern)"/>
+     </svg>  */
+svg.noche-papel,
+.noche-papel > svg {
+  display: block;
+  width: 100%;
+  height: var(--noche-papel-height);
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0.94;
+  filter: drop-shadow(0 7px 11px rgba(0, 0, 0, 0.6));
+}
+/* footer variant: banner strung from a rail below, scallops pointing up */
+.noche-papel--flip { transform: scaleY(-1); filter: drop-shadow(0 -7px 11px rgba(0, 0, 0, 0.6)); }
+
+/* Ornamental corners: drop into any positioned box */
+.noche-ornate { position: relative; }
+.noche-ornate > .noche-corner {
+  position: absolute;
+  width: 34px; height: 34px;
+  color: var(--noche-oro-500);
+  opacity: 0.75;
+  pointer-events: none;
+}
+.noche-ornate > .noche-corner svg { width: 100%; height: 100%; display: block; }
+.noche-corner--tl { top: 5px; left: 5px; }
+.noche-corner--tr { top: 5px; right: 5px; transform: scaleX(-1); }
+.noche-corner--bl { bottom: 5px; left: 5px; transform: scaleY(-1); }
+.noche-corner--br { bottom: 5px; right: 5px; transform: scale(-1); }
+.noche-ornate--lg > .noche-corner { width: 48px; height: 48px; }
+
+/* Decorative motif holders */
+.noche-motif { color: var(--noche-oro-600); opacity: 0.5; }
+.noche-motif svg { display: block; width: 100%; height: auto; }
+.noche-motif--bone { color: var(--noche-bone-300); }
+.noche-motif--faint { opacity: 0.16; }
+
+/* Aged-paper panel — for the rare light-on-dark inversion (tickets, receipts) */
+.noche-paper {
+  background:
+    var(--noche-texture-fibre),
+    linear-gradient(178deg, #efe3c8 0%, #e4d5b4 100%);
+  background-blend-mode: multiply, normal;
+  color: #2a2113;
+  box-shadow: var(--noche-shadow-3), inset 0 0 40px rgba(120, 92, 40, 0.22);
+  border: 1px solid #b59a63;
+}
+
+
+/* -----------------------------------------------------------------------------
+   5. LAYOUT
+   -------------------------------------------------------------------------- */
+
+.noche-container {
+  width: 100%;
+  max-width: var(--noche-container);
+  margin-inline: auto;
+  padding-inline: var(--noche-space-4);
+}
+@media (min-width: 48rem) {
+  .noche-container { padding-inline: var(--noche-space-6); }
+}
+
+.noche-stack > * + * { margin-top: var(--noche-space-4); }
+.noche-stack--tight > * + * { margin-top: var(--noche-space-2); }
+.noche-stack--loose > * + * { margin-top: var(--noche-space-8); }
+
+.noche-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--noche-space-4);
+  margin-bottom: var(--noche-space-3);
+}
+.noche-section-head h2 {
+  margin: 0;
+  font-family: var(--noche-font-engraved);
+  font-size: var(--noche-text-sm);
+  letter-spacing: var(--noche-tracking-wider);
+  text-transform: uppercase;
+  color: var(--noche-oro-300);
+}
+
+
+/* -----------------------------------------------------------------------------
+   6. EVENT HEADER
+   -------------------------------------------------------------------------- */
+
+.noche-event-header {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--noche-border-gold);
+  border-radius: var(--noche-radius-lg);
+  background:
+    radial-gradient(140% 110% at 50% 0%, rgba(198, 138, 31, 0.16) 0%, rgba(198, 138, 31, 0) 58%),
+    var(--noche-surface-gold);
+  box-shadow: var(--noche-shadow-3), var(--noche-emboss);
+  text-align: center;
+  padding: 0 var(--noche-space-4) var(--noche-space-6);
+}
+.noche-event-header > .noche-tricolor {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 2;
+}
+.noche-event-header__papel { margin: 0 -1rem var(--noche-space-4); }
+.noche-event-header__kicker {
+  font-family: var(--noche-font-engraved);
+  font-size: var(--noche-text-2xs);
+  letter-spacing: var(--noche-tracking-widest);
+  text-transform: uppercase;
+  color: var(--noche-oro-400);
+  margin-bottom: var(--noche-space-2);
+}
+.noche-event-header__title {
+  font-family: var(--noche-font-display);
+  font-size: var(--noche-text-4xl);
+  line-height: 0.92;
+  font-weight: var(--noche-weight-bold);
+  letter-spacing: var(--noche-tracking-tight);
+  margin: 0;
+  text-transform: uppercase;
+}
+.noche-event-header__sub {
+  font-family: var(--noche-font-engraved);
+  font-size: var(--noche-text-xs);
+  letter-spacing: var(--noche-tracking-wider);
+  text-transform: uppercase;
+  color: var(--noche-bone-300);
+  margin-top: var(--noche-space-3);
+}
+.noche-event-header__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--noche-space-2) var(--noche-space-5);
+  margin-top: var(--noche-space-4);
+  font-size: var(--noche-text-xs);
+  color: var(--noche-text-muted);
+  font-family: var(--noche-font-ui);
+}
+.noche-event-header__meta > * {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--noche-space-2);
+}
+.noche-event-header__glyph {
+  position: absolute;
+  width: 190px;
+  bottom: -34px;
+  opacity: 0.09;
+  color: var(--noche-bone-200);
+  pointer-events: none;
+}
+.noche-event-header__glyph--l { left: -26px; transform: rotate(-14deg); }
+.noche-event-header__glyph--r { right: -26px; transform: rotate(14deg) scaleX(-1); }
+
+
+/* -----------------------------------------------------------------------------
+   7. TABS / NAV
+   -------------------------------------------------------------------------- */
+
+.noche-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--noche-space-4);
+  padding: var(--noche-space-3) 0;
+  border-bottom: 1px solid var(--noche-border);
+}
+.noche-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--noche-space-3);
+  font-family: var(--noche-font-engraved);
+  letter-spacing: var(--noche-tracking-wider);
+  text-transform: uppercase;
+  font-size: var(--noche-text-sm);
+  color: var(--noche-bone-200);
+}
+.noche-brand__mark {
+  width: 30px; height: 30px;
+  color: var(--noche-oro-300);
+  flex: none;
+}
+
+.noche-tabs {
+  display: flex;
+  gap: var(--noche-space-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--noche-border);
+  padding-bottom: 0;
+  -webkit-overflow-scrolling: touch;
+}
+.noche-tabs::-webkit-scrollbar { display: none; }
+.noche-tab {
+  appearance: none;
+  flex: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--noche-radius-sm) var(--noche-radius-sm) 0 0;
+  color: var(--noche-text-muted);
+  font-family: var(--noche-font-engraved);
+  font-size: var(--noche-text-xs);
+  letter-spacing: var(--noche-tracking-wide);
+  text-transform: uppercase;
+  padding: var(--noche-space-3) var(--noche-space-4);
+  cursor: pointer;
+  position: relative;
+  transition: color var(--noche-dur) var(--noche-ease),
+              background-color var(--noche-dur) var(--noche-ease);
+  white-space: nowrap;
+}
+.noche-tab:hover { color: var(--noche-bone-200); background: rgba(216, 200, 168, 0.05); }
+.noche-tab[aria-selected="true"] {
+  color: var(--noche-oro-200);
+  background: linear-gradient(180deg, rgba(198, 138, 31, 0.16), rgba(198, 138, 31, 0.03));
+  border-color: var(--noche-border-gold);
+}
+.noche-tab[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 2px;
+  background: var(--noche-gradient-foil);
+}
+.noche-tab__count {
+  margin-left: var(--noche-space-2);
+  font-family: var(--noche-font-data);
+  font-size: var(--noche-text-2xs);
+  color: var(--noche-text-subtle);
+}
+
+
+/* -----------------------------------------------------------------------------
+   8. FIGHT CARD  (lotería-card framing)
+   -------------------------------------------------------------------------- */
+
+.noche-card {
+  position: relative;
+  background: var(--noche-surface);
+  border: 1px solid var(--noche-border);
+  border-radius: var(--noche-radius-md);
+  box-shadow: var(--noche-shadow-2), var(--noche-emboss);
+  overflow: hidden;
+  transition: border-color var(--noche-dur) var(--noche-ease),
+              transform var(--noche-dur) var(--noche-ease),
+              box-shadow var(--noche-dur) var(--noche-ease);
+}
+.noche-card:hover { border-color: var(--noche-border-strong); }
+
+/* the double-rule lotería frame */
+.noche-card--framed { padding: var(--noche-space-1); }
+.noche-card--framed > .noche-card__inner {
+  border: 1px solid var(--noche-border);
+  border-radius: var(--noche-radius-xs);
+  padding: var(--noche-space-4);
+}
+
+.noche-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--noche-space-3);
+  padding: var(--noche-space-3) var(--noche-space-4);
+  background: var(--noche-surface-sunken);
+  border-bottom: 1px solid var(--noche-border);
+}
+.noche-card__title {
+  margin: 0;
+  font-family: var(--noche-font-engraved);
+  font-size: var(--noche-text-xs);
+  letter-spacing: var(--noche-tracking-wider);
+  text-transform: uppercase;
+  color: var(--noche-bone-300);
+}
+.noche-card__body { padding: var(--noche-space-4); }
+.noche-card__footer {
+  padding: var(--noche-space-3) var(--noche-space-4);
+  border-top: 1px solid var(--noche-border);
+  background: var(--noche-surface-inset);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--noche-space-3);
+  flex-wrap: wrap;
+  font-size: var(--noche-text-xs);
+  color: var(--noche-text-subtle);
+}
+
+/* Feature (main event) card — gold frame, foil, corner ornaments */
+.noche-card--feature {
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(198, 138, 31, 0.12) 0%, rgba(198, 138, 31, 0) 60%),
+    var(--noche-surface-raised);
+  border-color: var(--noche-border-gold);
+  box-shadow: var(--noche-shadow-3), var(--noche-shadow-gold), var(--noche-emboss);
+}
+.noche-card--feature .noche-card__header {
+  background: linear-gradient(180deg, rgba(198, 138, 31, 0.14), rgba(198, 138, 31, 0.02));
+  border-bottom-color: var(--noche-border-gold);
+}
+
+/* Title-fight card — verde edge */
+.noche-card--title { border-color: var(--noche-border-verde); }
+
+
+/* -----------------------------------------------------------------------------
+   9. FIGHTER MATCHUP ROW
+   -------------------------------------------------------------------------- */
+
+.noche-matchup {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--noche-space-3);
+  padding: var(--noche-space-4);
+  border-bottom: 1px solid var(--noche-border);
+  transition: background-color var(--noche-dur) var(--noche-ease);
+}
+.noche-matchup:last-child { border-bottom: none; }
+.noche-matchup:hover { background: rgba(216, 200, 168, 0.035); }
+
+.noche-fighter {
+  display: flex;
+  align-items: center;
+  gap: var(--noche-space-3);
+  min-width: 0;
+}
+.noche-fighter--away { flex-direction: row-reverse; text-align: right; }
+
+.noche-fighter__avatar {
+  flex: none;
+  width: 46px; height: 46px;
+  border-radius: var(--noche-radius-pill);
+  display: grid;
+  place-items: center;
+  background: var(--noche-surface-sunken);
+  border: 1px solid var(--noche-border-gold);
+  box-shadow: var(--noche-debossed);
+  overflow: hidden;
+  color: var(--noche-bone-300);
+}
+.noche-fighter__avatar svg { width: 74%; height: 74%; opacity: 0.65; }
+.noche-fighter__avatar--initials {
+  font-family: var(--noche-font-display);
+  font-size: var(--noche-text-md);
+  font-weight: var(--noche-weight-bold);
+  color: var(--noche-oro-200);
+}
+.noche-fighter__flag {
+  font-size: var(--noche-text-xs);
+  line-height: 1;
+}
+.noche-fighter__meta { min-width: 0; }
+/* display:block so these work as <span>s inside the meta wrapper */
+.noche-fighter__name {
+  display: block;
+  font-family: var(--noche-font-display);
+  font-size: var(--noche-text-md);
+  font-weight: var(--noche-weight-bold);
+  letter-spacing: var(--noche-tracking-tight);
+  color: var(--noche-text-strong);
+  line-height: 1.12;
+  text-shadow: var(--noche-ink-shadow);
+  overflow-wrap: break-word;
+}
+.noche-fighter__nick {
+  display: block;
+  font-family: var(--noche-font-body);
+  font-style: italic;
+  font-size: var(--noche-text-xs);
+  color: var(--noche-oro-300);
+  margin-top: 2px;
+}
+.noche-fighter__record {
+  display: block;
+  font-family: var(--noche-font-data);
+  font-size: var(--noche-text-2xs);
+  color: var(--noche-text-subtle);
+  margin-top: 3px;
+  letter-spacing: 0;
+}
+.noche-fighter__rank {
+  display: inline-block;
+  font-family: var(--noche-font-data);
+  font-size: var(--noche-text-2xs);
+  color: var(--noche-oro-400);
+  border: 1px solid var(--noche-border-gold);
+  border-radius: var(--noche-radius-xs);
+  padding: 0 4px;
+  margin-right: 5px;
+  vertical-align: 2px;
+}
+.noche-fighter--away .noche-fighter__rank { margin: 0 0 0 5px; }
+
+/* centre column: VS mark + odds */
+.noche-matchup__center {
+  display: grid;
+  justify-items: center;
+  gap: var(--noche-space-1);
+  min-width: 74px;
+}
+.noche-vs {
+  font-family: var(--noche-font-display);
+  font-size: var(--noche-text-sm);
+  letter-spacing: var(--noche-tracking-wide);
+  color: var(--noche-text-subtle);
+  position: relative;
+  padding: 0 var(--noche-space-2);
+}
+.noche-vs::before,
+.noche-vs::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 8px; height: 1px;
+  background: var(--noche-oro-600);
+}
+.noche-vs::before { left: -6px; }
+.noche-vs::after { right: -6px; }
+.noche-weight {
+  font-family: var(--noche-font-engraved);
+  font-size: 0.625rem;
+  letter-spacing: var(--noche-tracking-wide);
+  text-transform: uppercase;
+  color: var(--noche-text-subtle);
+  white-space: nowrap;
+}
+
+/* Odds chips */
+.noche-odds {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  font-family: var(--noche-font-data);
+  font-size: var(--noche-text-sm);
+  font-variant-numeric: tabular-nums;
+  padding: 3px 8px;
+  border-radius: var(--noche-radius-xs);
+  border: 1px solid var(--noche-border);
+  background: var(--noche-surface-inset);
+  color: var(--noche-bone-200);
+  box-shadow: var(--noche-debossed);
+  white-space: nowrap;
+}
+.noche-odds--fav {
+  color: var(--noche-verde-400);
+  border-color: var(--noche-border-verde);
+  background: rgba(30, 138, 83, 0.1);
+}
+.noche-odds--dog {
+  color: var(--noche-rojo-400);
+  border-color: var(--noche-border-rojo);
+  background: rgba(192, 42, 32, 0.1);
+}
+.noche-odds__delta {
+  font-size: var(--noche-text-2xs);
+  opacity: 0.8;
+}
+
+/* Implied-probability bar under a matchup */
+.noche-odds-bar {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--noche-space-3);
+  margin-top: var(--noche-space-1);
+}
+.noche-odds-bar__track {
+  height: 5px;
+  border-radius: var(--noche-radius-pill);
+  background: var(--noche-surface-inset);
+  box-shadow: var(--noche-debossed);
+  overflow: hidden;
+  display: flex;
+}
+.noche-odds-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--noche-verde-600), var(--noche-verde-400));
+}
+.noche-odds-bar__fill--b {
+  background: linear-gradient(90deg, var(--noche-rojo-400), var(--noche-rojo-600));
+  margin-left: auto;
+}
+.noche-odds-bar__pct {
+  font-family: var(--noche-font-data);
+  font-size: var(--noche-text-2xs);
+  color: var(--noche-text-subtle);
+}
+
+/* Big feature matchup — stacked on mobile, split on desktop */
+.noche-matchup--feature {
+  padding: var(--noche-space-5) var(--noche-space-4) var(--noche-space-6);
+  gap: var(--noche-space-4);
+  border-bottom: none;
+}
+.noche-matchup--feature .noche-fighter { flex-direction: column; text-align: center; gap: var(--noche-space-2); }
+.noche-matchup--feature .noche-fighter__avatar {
+  width: 82px; height: 82px;
+  font-size: var(--noche-text-xl);
+}
+.noche-matchup--feature .noche-fighter__name { font-size: var(--noche-text-xl); }
+.noche-matchup--feature .noche-fighter__nick { font-size: var(--noche-text-sm); }
+.noche-matchup--feature .noche-matchup__center { min-width: 92px; }
+.noche-matchup--feature .noche-vs { font-size: var(--noche-text-lg); }
+
+@media (max-width: 30rem) {
+  .noche-matchup {
+    grid-template-columns: 1fr auto;
+    row-gap: var(--noche-space-3);
+  }
+  .noche-matchup__center { grid-row: 1 / span 2; grid-column: 2; align-self: center; }
+  .noche-fighter--away { flex-direction: row; text-align: left; }
+  .noche-fighter--away .noche-fighter__rank { margin: 0 5px 0 0; }
+  .noche-matchup--feature { grid-template-columns: 1fr; }
+  .noche-matchup--feature .noche-matchup__center { grid-row: auto; grid-column: auto; }
+}
+
+
+/* -----------------------------------------------------------------------------
+   10. BADGES
+   -------------------------------------------------------------------------- */
+
+.noche-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--noche-space-1);
+  font-family: var(--noche-font-engraved);
+  font-size: 0.625rem;
+  letter-spacing: var(--noche-tracking-wider);
+  text-transform: uppercase;
+  padding: 3px 8px 2px;
+  border-radius: var(--noche-radius-xs);
+  border: 1px solid var(--noche-border);
+  background: var(--noche-surface-inset);
+  color: var(--noche-text-muted);
+  white-space: nowrap;
+  line-height: 1.4;
+}
+.noche-badge--main {
+  color: var(--noche-night-950);
+  background: var(--noche-gradient-foil);
+  border-color: var(--noche-oro-300);
+  font-weight: var(--noche-weight-bold);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28);
+  box-shadow: 0 1px 8px -2px rgba(223, 169, 58, 0.6);
+}
+.noche-badge--title {
+  color: var(--noche-oro-100);
+  border-color: var(--noche-border-gold-hi);
+  background: linear-gradient(180deg, rgba(198, 138, 31, 0.3), rgba(109, 71, 15, 0.18));
+}
+.noche-badge--verde {
+  color: var(--noche-verde-400);
+  border-color: var(--noche-border-verde);
+  background: rgba(30, 138, 83, 0.12);
+}
+.noche-badge--rojo {
+  color: var(--noche-rojo-400);
+  border-color: var(--noche-border-rojo);
+  background: rgba(192, 42, 32, 0.12);
+}
+.noche-badge--rosa {
+  color: var(--noche-rosa-400);
+  border-color: rgba(224, 53, 127, 0.45);
+  background: rgba(224, 53, 127, 0.12);
+}
+.noche-badge--bone {
+  color: var(--noche-bone-100);
+  border-color: var(--noche-border-strong);
+  background: rgba(244, 236, 219, 0.08);
+}
+.noche-badge--ghost { background: transparent; }
+
+
+/* -----------------------------------------------------------------------------
+   11. STATUS INDICATOR (live / upcoming / final)
+   -------------------------------------------------------------------------- */
+
+.noche-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--noche-space-2);
+  font-family: var(--noche-font-engraved);
+  font-size: var(--noche-text-2xs);
+  letter-spacing: var(--noche-tracking-wider);
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: var(--noche-radius-pill);
+  border: 1px solid var(--noche-border);
+  background: var(--noche-surface-inset);
+  color: var(--noche-text-muted);
+  white-space: nowrap;
+}
+.noche-status__dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+  position: relative;
+}
+
+.noche-status--live {
+  color: var(--noche-rojo-400);
+  border-color: var(--noche-border-rojo);
+  background: rgba(192, 42, 32, 0.14);
+  box-shadow: var(--noche-shadow-live);
+}
+.noche-status--live .noche-status__dot::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  animation: noche-ping 1.8s var(--noche-ease-out) infinite;
+}
+.noche-status--upcoming {
+  color: var(--noche-oro-300);
+  border-color: var(--noche-border-gold);
+  background: rgba(198, 138, 31, 0.1);
+}
+.noche-status--upcoming .noche-status__dot { animation: noche-breathe 2.6s ease-in-out infinite; }
+.noche-status--final {
+  color: var(--noche-text-subtle);
+  border-color: var(--noche-border);
+}
+.noche-status--final .noche-status__dot { background: var(--noche-bone-600); }
+
+@keyframes noche-ping {
+  0%   { transform: scale(0.6); opacity: 0.9; }
+  70%  { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+@keyframes noche-breathe {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+
+/* Live round/time readout */
+.noche-clock {
+  font-family: var(--noche-font-data);
+  font-size: var(--noche-text-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--noche-bone-100);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--noche-space-2);
+}
+.noche-clock__round {
+  font-family: var(--noche-font-engraved);
+  font-size: var(--noche-text-2xs);
+  letter-spacing: var(--noche-tracking-wide);
+  text-transform: uppercase;
+  color: var(--noche-text-subtle);
+}
+
+
+/* -----------------------------------------------------------------------------
+   12. BUTTONS
+   -------------------------------------------------------------------------- */
+
+.noche-btn {
+  --_bg: var(--noche-surface-raised);
+  --_fg: var(--noche-bone-100);
+  --_bd: var(--noche-border-strong);
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--noche-space-2);
+  font-family: var(--noche-font-engraved);
+  font-size: var(--noche-text-xs);
+  letter-spacing: var(--noche-tracking-wide);
+  text-transform: uppercase;
+  padding: 0.6rem 1.1rem;
+  min-height: 40px;
+  border-radius: var(--noche-radius-sm);
+  border: 1px solid var(--_bd);
+  background: var(--_bg);
+  color: var(--_fg);
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: var(--noche-emboss), var(--noche-shadow-1);
+  transition: transform var(--noche-dur-fast) var(--noche-ease),
+              filter var(--noche-dur) var(--noche-ease),
+              background-color var(--noche-dur) var(--noche-ease),
+              border-color var(--noche-dur) var(--noche-ease);
+}
+.noche-btn:hover { filter: brightness(1.14); }
+.noche-btn:active { transform: translateY(1px); box-shadow: var(--noche-debossed); }
+.noche-btn[disabled],
+.noche-btn[aria-disabled="true"] {
+  opacity: 0.45; cursor: not-allowed; filter: none; transform: none;
+}
+
+.noche-btn--primary {
+  --_fg: var(--noche-night-950);
+  --_bd: var(--noche-oro-300);
+  background: var(--noche-gradient-foil);
+  font-weight: var(--noche-weight-bold);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.22) inset,
+              0 6px 18px -8px rgba(223, 169, 58, 0.75);
+}
+.noche-btn--verde {
+  --_fg: var(--noche-blanco);
+  --_bd: var(--noche-border-verde);
+  --_bg: linear-gradient(180deg, var(--noche-verde-500), var(--noche-verde-600));
+}
+.noche-btn--rojo {
+  --_fg: var(--noche-blanco);
+  --_bd: var(--noche-border-rojo);
+  --_bg: linear-gradient(180deg, var(--noche-rojo-500), var(--noche-rojo-600));
+}
+.noche-btn--ghost {
+  --_bg: transparent;
+  --_bd: var(--noche-border);
+  --_fg: var(--noche-text-muted);
+  box-shadow: none;
+}
+.noche-btn--ghost:hover { --_fg: var(--noche-bone-100); --_bd: var(--noche-border-strong); }
+.noche-btn--sm { min-height: 30px; padding: 0.3rem 0.7rem; font-size: 0.625rem; }
+.noche-btn--lg { min-height: 50px; padding: 0.85rem 1.7rem; font-size: var(--noche-text-sm); }
+.noche-btn--block { width: 100%; }
+
+.noche-btn-group { display: flex; flex-wrap: wrap; gap: var(--noche-space-2); }
+
+
+/* -----------------------------------------------------------------------------
+   13. STAT TABLE  (tale of the tape)
+   -------------------------------------------------------------------------- */
+
+.noche-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--noche-border);
+  border-radius: var(--noche-radius-md);
+  background: var(--noche-surface);
+  box-shadow: var(--noche-shadow-2);
+}
+.noche-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--noche-text-sm);
+}
+.noche-table caption {
+  caption-side: top;
+  text-align: left;
+  padding: var(--noche-space-3) var(--noche-space-4);
+  font-family: var(--noche-font-engraved);
+  font-size: var(--noche-text-xs);
+  letter-spacing: var(--noche-tracking-wider);
+  text-transform: uppercase;
+  color: var(--noche-oro-300);
+  background: var(--noche-surface-sunken);
+  border-bottom: 1px solid var(--noche-border);
+}
+.noche-table thead th {
+  font-family: var(--noche-font-engraved);
+  font-size: var(--noche-text-2xs);
+  letter-spacing: var(--noche-tracking-wide);
+  text-transform: uppercase;
+  color: var(--noche-text-subtle);
+  font-weight: var(--noche-weight-medium);
+  text-align: right;
+  padding: var(--noche-space-3) var(--noche-space-4);
+  background: var(--noche-surface-sunken);
+  border-bottom: 1px solid var(--noche-border-strong);
+  white-space: nowrap;
+}
+.noche-table thead th:first-child { text-align: left; }
+.noche-table tbody th {
+  font-family: var(--noche-font-engraved);
+  font-weight: var(--noche-weight-regular);
+  font-size: var(--noche-text-2xs);
+  letter-spacing: var(--noche-tracking-wide);
+  text-transform: uppercase;
+  color: var(--noche-text-muted);
+  text-align: left;
+  padding: var(--noche-space-3) var(--noche-space-4);
+  white-space: nowrap;
+}
+.noche-table tbody td {
+  padding: var(--noche-space-3) var(--noche-space-4);
+  text-align: right;
+  font-family: var(--noche-font-data);
+  font-variant-numeric: tabular-nums;
+  color: var(--noche-bone-100);
+  white-space: nowrap;
+}
+.noche-table tbody tr + tr th,
+.noche-table tbody tr + tr td { border-top: 1px solid var(--noche-border); }
+.noche-table tbody tr:nth-child(even) { background: rgba(216, 200, 168, 0.022); }
+.noche-table tbody tr:hover { background: rgba(216, 200, 168, 0.05); }
+.noche-table tfoot td,
+.noche-table tfoot th {
+  border-top: 1px solid var(--noche-border-gold);
+  background: var(--noche-surface-inset);
+  color: var(--noche-text-muted);
+  font-size: var(--noche-text-2xs);
+}
+
+/* highlight the winning side of a stat */
+.noche-stat-lead { color: var(--noche-oro-200); font-weight: var(--noche-weight-bold); }
+.noche-stat-lead::after {
+  content: "";
+  display: inline-block;
+  width: 5px; height: 5px;
+  margin-left: 6px;
+  background: var(--noche-oro-400);
+  transform: rotate(45deg);
+  vertical-align: 2px;
+}
+
+/* compact key/value stat grid */
+.noche-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 1px;
+  background: var(--noche-border);
+  border: 1px solid var(--noche-border);
+  border-radius: var(--noche-radius-sm);
+  overflow: hidden;
+}
+.noche-stat {
+  background: var(--noche-surface-raised);
+  padding: var(--noche-space-3);
+  text-align: center;
+}
+.noche-stat__label {
+  font-family: var(--noche-font-engraved);
+  font-size: 0.5625rem;
+  letter-spacing: var(--noche-tracking-wide);
+  text-transform: uppercase;
+  color: var(--noche-text-subtle);
+}
+.noche-stat__value {
+  font-family: var(--noche-font-display);
+  font-size: var(--noche-text-lg);
+  font-weight: var(--noche-weight-bold);
+  color: var(--noche-oro-200);
+  margin-top: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* -----------------------------------------------------------------------------
+   14. MISC
+   -------------------------------------------------------------------------- */
+
+.noche-grid-cards {
+  display: grid;
+  gap: var(--noche-space-4);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 56rem) {
+  .noche-grid-cards--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.noche-empty {
+  text-align: center;
+  padding: var(--noche-space-10) var(--noche-space-4);
+  color: var(--noche-text-subtle);
+  font-style: italic;
+}
+
+.noche-footer {
+  border-top: 1px solid var(--noche-border);
+  margin-top: var(--noche-space-12);
+  padding: var(--noche-space-8) 0 var(--noche-space-10);
+  text-align: center;
+  color: var(--noche-text-subtle);
+  font-size: var(--noche-text-xs);
+}
+
+.noche-sr {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.noche-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: var(--noche-space-2);
+}
+.noche-swatch {
+  border: 1px solid var(--noche-border);
+  border-radius: var(--noche-radius-xs);
+  overflow: hidden;
+  background: var(--noche-surface-raised);
+}
+.noche-swatch__chip { height: 34px; }
+.noche-swatch__name {
+  font-family: var(--noche-font-data);
+  font-size: 0.5625rem;
+  color: var(--noche-text-subtle);
+  padding: 4px 5px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* -----------------------------------------------------------------------------
+   15. ACCESSIBILITY / PREFERENCES
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="noche"] *,
+  [data-theme="noche"] *::before,
+  [data-theme="noche"] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  [data-theme="noche"] {
+    --noche-border: rgba(233, 220, 194, 0.34);
+    --noche-border-strong: rgba(233, 220, 194, 0.56);
+    --noche-text-muted: var(--noche-bone-200);
+    --noche-text-subtle: var(--noche-bone-300);
+    --noche-grain-opacity: 0.02;
+  }
+}
+
+@media print {
+  [data-theme="noche"] { background: #fff; color: #000; }
+  [data-theme="noche"]::before { display: none; }
+  .noche-papel, .noche-motif, .noche-corner { display: none; }
+}
+
+
+/* -----------------------------------------------------------------------------
+   16. OPTIONAL BRIDGE
+   -----------------------------------------------------------------------------
+   Uncomment if your app already reads generic token names. Scoped to the theme,
+   so your default palette is untouched outside [data-theme="noche"].
+
+[data-theme="noche"] {
+  --color-bg: var(--noche-bg);
+  --color-surface: var(--noche-surface);
+  --color-surface-raised: var(--noche-surface-raised);
+  --color-border: var(--noche-border);
+  --color-text: var(--noche-text);
+  --color-text-muted: var(--noche-text-muted);
+  --color-primary: var(--noche-oro-400);
+  --color-success: var(--noche-verde-400);
+  --color-danger: var(--noche-rojo-400);
+  --font-display: var(--noche-font-display);
+  --font-body: var(--noche-font-body);
+  --radius-md: var(--noche-radius-md);
+  --shadow-md: var(--noche-shadow-2);
+}
+   -------------------------------------------------------------------------- */
