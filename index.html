@@ -124,7 +124,8 @@ body[data-theme="noche"] .ev-divider::after{height:12px;background:var(--noche-r
 /* Ambient petal layer — borrows the .usa-stars / .usa-stars-lb overlays that
    seasonal and silver already reuse, so no new host element is needed. It sits
    above .noche-flor (z-index 2) so petals drift over the marigold watermark. */
-body[data-theme="noche"] .usa-stars,body[data-theme="noche"] .usa-stars-lb{display:block;position:absolute;inset:0;pointer-events:none;z-index:5;background:none}
+body[data-theme="noche"] .usa-stars,body[data-theme="noche"] .usa-stars-lb{display:block;position:absolute;
+  inset:0;pointer-events:none;z-index:5;background:none;overflow:hidden}
 /* A cempasuchil petal: an asymmetric teardrop with the marigold's own ribbing. */
 body[data-theme="noche"] .se-p.petal{display:block;border-radius:60% 60% 46% 46%/72% 72% 30% 30%;
   background:linear-gradient(160deg,#f5a623 0%,#e07b1e 52%,#a8530f 100%);
@@ -2497,8 +2498,22 @@ function countMethodsCorrect(){
   return count;
 }
 var THEMES={octagon:"#e8192c",neon:"#050608",fire:"#0a0705",usa:"#070a13",seasonal:"#08050e",silver:"#c4cdd5",noche:"#04050a"};
+/* The .usa-stars / .usa-stars-lb overlays are shared by every theme that spawns
+   ambient particles, and the nodes outlive a theme switch — a Noche petal lives
+   up to 11s. `.se-p{display:none}` only applies under prefers-reduced-motion, so
+   a stale particle stays VISIBLE under whatever theme you switched to: Noche
+   petals drifting through Seasonal, snow drifting through Noche. They also
+   occupy the per-theme childElementCount cap, so a lingering set can starve a
+   lower-capped effect until it ages out. Emptying both hosts on every theme
+   change is the cheap fix, and it covers the pre-existing seasonal/silver/usa
+   crossings too. */
+function ambClear(){
+  var h=document.querySelectorAll(".usa-stars,.usa-stars-lb");
+  for(var i=0;i<h.length;i++)h[i].textContent="";
+}
 function applyTheme(t){
   if(!THEMES[t])t="octagon";
+  if(document.body.getAttribute("data-theme")!==t)ambClear();
   document.body.setAttribute("data-theme",t);
   if(t==="seasonal")applySeason();
   else{document.body.removeAttribute("data-season");try{seasonStop();}catch(e){}

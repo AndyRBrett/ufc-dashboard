@@ -539,6 +539,9 @@ svg.noche-papel,.noche-papel > svg{display:block;width:100%;height:var(--noche-p
   [data-theme="noche"]::before{display:none}
   .noche-papel,.noche-motif,.noche-corner{display:none}
   .noche-badge,.noche-btn,.noche-card{background:#fff !important;color:#000 !important;border-color:rgba(0,0,0,.45) !important}
+  /* foil text is gradient-through-background-clip with transparent fill;
+     blanking the gradient alone would erase it from print. */
+  .noche-foil{background:none !important;-webkit-text-fill-color:#000 !important;color:#000 !important}
 }
 
 /* =========================================================================

@@ -1337,6 +1337,16 @@ svg.noche-papel,
     color: #000 !important;
     border-color: rgba(0, 0, 0, 0.45) !important;
   }
+  /* .noche-foil paints its text with a gradient through background-clip:text,
+     so it carries color:transparent AND -webkit-text-fill-color:transparent.
+     Blanking --noche-gradient-foil above removes the paint but NOT the
+     transparency, which would make every foil heading vanish from print
+     entirely. Give the glyphs an opaque fill back. */
+  .noche-foil {
+    background: none !important;
+    -webkit-text-fill-color: #000 !important;
+    color: #000 !important;
+  }
 }
 
 
