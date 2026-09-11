@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="es-MX" data-theme="noche">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#04050a">
+<title>UFC Noche — theme preview</title>
+<style>
+/* ===== minimal reset (preview page only) ================================= */
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;min-height:100%}
+body{-webkit-text-size-adjust:100%}
+img,svg{max-width:100%}
+button{font:inherit}
+h1,h2,h3,h4,p,ul,ol{margin:0}
+
+/* =========================================================================
+   UFC NOCHE THEME  — mirror of noche-theme.css (inlined, comments stripped)
+   ========================================================================= */
+
+[data-theme="noche"]{
+  color-scheme:dark;
+
+  --noche-night-950:#04050a; --noche-night-900:#080a11; --noche-night-850:#0c0f18;
+  --noche-night-800:#11151f; --noche-night-700:#181d29; --noche-night-600:#212736;
+  --noche-night-500:#2c3345; --noche-night-400:#3b4356;
+
+  --noche-bone-50:#fbf6ec; --noche-bone-100:#f4ecdb; --noche-bone-200:#e9dcc2;
+  --noche-bone-300:#d8c8a8; --noche-bone-400:#bda98a; --noche-bone-500:#9a8a70;
+  --noche-bone-600:#746956;
+
+  --noche-oro-100:#fbeec2; --noche-oro-200:#f6dd93; --noche-oro-300:#eec462;
+  --noche-oro-400:#dfa93a; --noche-oro-500:#c68a1f; --noche-oro-600:#9c6716;
+  --noche-oro-700:#6d470f; --noche-oro-800:#432c0b;
+
+  --noche-verde-400:#2fae6d; --noche-verde-500:#1e8a53; --noche-verde-600:#14603a;
+  --noche-rojo-400:#e0463a;  --noche-rojo-500:#c02a20;  --noche-rojo-600:#8d1c15;
+  --noche-blanco:#f7f3ea;
+  --noche-cempasuchil-400:#f5952b; --noche-cempasuchil-500:#dd7413;
+  --noche-rosa-400:#e0357f; --noche-turquesa-400:#1fa8ae; --noche-morado-400:#7b4bb5;
+
+  --noche-bg:var(--noche-night-950);
+  --noche-bg-gradient:
+      radial-gradient(120% 80% at 50% -10%,#16182b 0%,rgba(22,24,43,0) 62%),
+      radial-gradient(90% 60% at 100% 100%,#131a19 0%,rgba(19,26,25,0) 58%),
+      linear-gradient(180deg,#06070d 0%,#04050a 100%);
+  --noche-surface:var(--noche-night-850);
+  --noche-surface-raised:var(--noche-night-800);
+  --noche-surface-sunken:var(--noche-night-900);
+  --noche-surface-inset:rgba(0,0,0,.38);
+  --noche-surface-hover:var(--noche-night-700);
+  --noche-surface-gold:linear-gradient(168deg,#241a08 0%,#14100a 58%,#0d0b09 100%);
+  --noche-scrim:rgba(4,5,10,.72);
+
+  --noche-text:var(--noche-bone-100);
+  --noche-text-strong:var(--noche-bone-50);
+  --noche-text-muted:var(--noche-bone-400);
+  --noche-text-subtle:var(--noche-bone-500);
+  --noche-text-accent:var(--noche-oro-300);
+  --noche-text-inverse:var(--noche-night-950);
+  --noche-text-link:var(--noche-oro-200);
+
+  --noche-border:rgba(216,200,168,.14);
+  --noche-border-strong:rgba(216,200,168,.28);
+  --noche-border-gold:rgba(198,138,31,.46);
+  --noche-border-gold-hi:rgba(238,196,98,.72);
+  --noche-border-verde:rgba(47,174,109,.5);
+  --noche-border-rojo:rgba(224,70,58,.5);
+  --noche-rule-engraved:linear-gradient(90deg,transparent,var(--noche-oro-600) 12%,
+      var(--noche-oro-300) 50%,var(--noche-oro-600) 88%,transparent);
+
+  --noche-font-display:"Bodoni 72","Bodoni MT","Didot","Playfair Display","Times New Roman",Georgia,serif;
+  --noche-font-engraved:"Copperplate","Copperplate Gothic Light","Optima","Trajan Pro",Georgia,serif;
+  --noche-font-body:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --noche-font-ui:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --noche-font-data:ui-monospace,"SF Mono",SFMono-Regular,Menlo,"Roboto Mono",monospace;
+
+  --noche-text-2xs:.6875rem; --noche-text-xs:.75rem; --noche-text-sm:.8125rem;
+  --noche-text-base:.9375rem; --noche-text-md:1.0625rem; --noche-text-lg:1.25rem;
+  --noche-text-xl:1.5rem;
+  --noche-text-2xl:clamp(1.625rem,1.2rem + 1.8vw,2.125rem);
+  --noche-text-3xl:clamp(2rem,1.35rem + 2.9vw,3rem);
+  --noche-text-4xl:clamp(2.5rem,1.5rem + 4.6vw,4.25rem);
+
+  --noche-leading-tight:1.05; --noche-leading-snug:1.25;
+  --noche-leading-normal:1.5; --noche-leading-relaxed:1.65;
+  --noche-tracking-tight:-.02em; --noche-tracking-normal:0;
+  --noche-tracking-wide:.06em; --noche-tracking-wider:.14em; --noche-tracking-widest:.24em;
+  --noche-weight-regular:400; --noche-weight-medium:500; --noche-weight-bold:700;
+
+  --noche-space-0:0; --noche-space-1:.25rem; --noche-space-2:.5rem; --noche-space-3:.75rem;
+  --noche-space-4:1rem; --noche-space-5:1.25rem; --noche-space-6:1.5rem; --noche-space-8:2rem;
+  --noche-space-10:2.5rem; --noche-space-12:3rem; --noche-space-16:4rem;
+
+  --noche-radius-none:0; --noche-radius-xs:2px; --noche-radius-sm:3px;
+  --noche-radius-md:5px; --noche-radius-lg:8px; --noche-radius-xl:14px;
+  --noche-radius-pill:999px;
+
+  --noche-shadow-1:0 1px 2px rgba(0,0,0,.5);
+  --noche-shadow-2:0 4px 14px -4px rgba(0,0,0,.7);
+  --noche-shadow-3:0 18px 44px -18px rgba(0,0,0,.9),0 2px 10px -4px rgba(0,0,0,.6);
+  --noche-shadow-gold:0 0 0 1px var(--noche-border-gold),0 0 22px -6px rgba(223,169,58,.42);
+  --noche-shadow-live:0 0 0 1px rgba(224,70,58,.55),0 0 18px -4px rgba(224,70,58,.6);
+  --noche-emboss:inset 0 1px 0 rgba(244,236,219,.09),inset 0 -1px 0 rgba(0,0,0,.5);
+  --noche-debossed:inset 0 1px 3px rgba(0,0,0,.7),inset 0 -1px 0 rgba(244,236,219,.06);
+  --noche-ink-shadow:0 1px 0 rgba(0,0,0,.7);
+  --noche-focus-ring:0 0 0 2px var(--noche-night-950),0 0 0 4px var(--noche-oro-400);
+
+  --noche-texture-grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  --noche-texture-fibre:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.014 0.55' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23f)'/%3E%3C/svg%3E");
+  --noche-grain-opacity:.055;
+  --noche-papel-height:54px;
+  --noche-gradient-foil:linear-gradient(100deg,var(--noche-oro-600) 0%,var(--noche-oro-200) 22%,
+      var(--noche-oro-100) 38%,var(--noche-oro-400) 56%,var(--noche-oro-600) 78%,var(--noche-oro-300) 100%);
+  --noche-gradient-tricolor:linear-gradient(90deg,var(--noche-verde-500) 0 33.333%,
+      var(--noche-blanco) 33.333% 66.666%,var(--noche-rojo-500) 66.666% 100%);
+
+  --noche-ease:cubic-bezier(.2,.7,.2,1); --noche-ease-out:cubic-bezier(.16,1,.3,1);
+  --noche-dur-fast:120ms; --noche-dur:200ms; --noche-dur-slow:420ms;
+  --noche-container:68rem; --noche-container-narrow:46rem;
+}
+
+/* --- base --------------------------------------------------------------- */
+[data-theme="noche"]{
+  background-color:var(--noche-bg);
+  background-image:var(--noche-bg-gradient);
+  background-attachment:fixed;
+  color:var(--noche-text);
+  font-family:var(--noche-font-body);
+  font-size:var(--noche-text-base);
+  line-height:var(--noche-leading-normal);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  position:relative;
+}
+[data-theme="noche"]::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:var(--noche-texture-grain);
+  opacity:var(--noche-grain-opacity);mix-blend-mode:soft-light;
+}
+[data-theme="noche"] > *{position:relative;z-index:1}
+[data-theme="noche"] ::selection{background:var(--noche-oro-500);color:var(--noche-night-950)}
+[data-theme="noche"] :focus-visible{outline:none;box-shadow:var(--noche-focus-ring);border-radius:var(--noche-radius-xs)}
+[data-theme="noche"] a{color:var(--noche-text-link);text-decoration-color:var(--noche-border-gold)}
+[data-theme="noche"] a:hover{color:var(--noche-oro-100)}
+[data-theme="noche"] hr{border:0;height:1px;background:var(--noche-rule-engraved);opacity:.6}
+
+/* --- type utilities ----------------------------------------------------- */
+.noche-display{font-family:var(--noche-font-display);font-weight:var(--noche-weight-bold);
+  line-height:var(--noche-leading-tight);letter-spacing:var(--noche-tracking-tight);
+  color:var(--noche-text-strong);text-shadow:var(--noche-ink-shadow)}
+.noche-eyebrow,.noche-engraved{font-family:var(--noche-font-engraved);font-size:var(--noche-text-2xs);
+  letter-spacing:var(--noche-tracking-widest);text-transform:uppercase;
+  color:var(--noche-text-muted);font-weight:var(--noche-weight-medium)}
+.noche-foil{background:var(--noche-gradient-foil);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  filter:drop-shadow(0 1px 0 rgba(0,0,0,.55))}
+@supports not ((-webkit-background-clip:text) or (background-clip:text)){
+  .noche-foil{-webkit-text-fill-color:var(--noche-oro-300);color:var(--noche-oro-300)}
+}
+.noche-data{font-family:var(--noche-font-data);font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum" 1;letter-spacing:var(--noche-tracking-tight)}
+.noche-muted{color:var(--noche-text-muted)}
+.noche-subtle{color:var(--noche-text-subtle)}
+
+/* --- decorative primitives ---------------------------------------------- */
+.noche-rule{display:flex;align-items:center;gap:var(--noche-space-3);color:var(--noche-oro-500)}
+.noche-rule::before,.noche-rule::after{content:"";flex:1;height:1px;
+  background:var(--noche-rule-engraved);opacity:.75}
+.noche-rule > .noche-rule-mark{width:7px;height:7px;background:currentColor;
+  transform:rotate(45deg);box-shadow:0 0 0 3px var(--noche-bg),0 0 0 4px currentColor}
+
+.noche-tricolor{height:2px;background:var(--noche-gradient-tricolor);opacity:.85}
+.noche-tricolor--soft{opacity:.5;height:1px}
+
+svg.noche-papel,.noche-papel > svg{display:block;width:100%;height:var(--noche-papel-height);
+  overflow:visible;pointer-events:none;opacity:.94;
+  filter:drop-shadow(0 7px 11px rgba(0,0,0,.6))}
+.noche-papel--flip{transform:scaleY(-1);filter:drop-shadow(0 -7px 11px rgba(0,0,0,.6))}
+
+.noche-ornate{position:relative}
+.noche-ornate > .noche-corner{position:absolute;width:34px;height:34px;
+  color:var(--noche-oro-500);opacity:.75;pointer-events:none}
+.noche-ornate > .noche-corner svg{width:100%;height:100%;display:block}
+.noche-corner--tl{top:5px;left:5px}
+.noche-corner--tr{top:5px;right:5px;transform:scaleX(-1)}
+.noche-corner--bl{bottom:5px;left:5px;transform:scaleY(-1)}
+.noche-corner--br{bottom:5px;right:5px;transform:scale(-1)}
+.noche-ornate--lg > .noche-corner{width:48px;height:48px}
+
+.noche-motif{color:var(--noche-oro-600);opacity:.5}
+.noche-motif svg{display:block;width:100%;height:auto}
+.noche-motif--bone{color:var(--noche-bone-300)}
+.noche-motif--faint{opacity:.16}
+
+.noche-paper{background:var(--noche-texture-fibre),linear-gradient(178deg,#efe3c8 0%,#e4d5b4 100%);
+  background-blend-mode:multiply,normal;color:#2a2113;
+  box-shadow:var(--noche-shadow-3),inset 0 0 40px rgba(120,92,40,.22);border:1px solid #b59a63}
+
+/* --- layout ------------------------------------------------------------- */
+.noche-container{width:100%;max-width:var(--noche-container);margin-inline:auto;
+  padding-inline:var(--noche-space-4)}
+@media (min-width:48rem){.noche-container{padding-inline:var(--noche-space-6)}}
+.noche-stack > * + *{margin-top:var(--noche-space-4)}
+.noche-stack--tight > * + *{margin-top:var(--noche-space-2)}
+.noche-stack--loose > * + *{margin-top:var(--noche-space-8)}
+.noche-section-head{display:flex;align-items:baseline;justify-content:space-between;
+  gap:var(--noche-space-4);margin-bottom:var(--noche-space-3)}
+.noche-section-head h2{margin:0;font-family:var(--noche-font-engraved);font-size:var(--noche-text-sm);
+  letter-spacing:var(--noche-tracking-wider);text-transform:uppercase;color:var(--noche-oro-300)}
+
+/* --- event header ------------------------------------------------------- */
+.noche-event-header{position:relative;overflow:hidden;
+  border:1px solid var(--noche-border-gold);border-radius:var(--noche-radius-lg);
+  background:radial-gradient(140% 110% at 50% 0%,rgba(198,138,31,.16) 0%,rgba(198,138,31,0) 58%),
+             var(--noche-surface-gold);
+  box-shadow:var(--noche-shadow-3),var(--noche-emboss);
+  text-align:center;padding:0 var(--noche-space-4) var(--noche-space-6)}
+.noche-event-header > .noche-tricolor{position:absolute;inset:0 0 auto 0;z-index:2}
+.noche-event-header__papel{margin:0 -1rem var(--noche-space-4)}
+.noche-event-header__kicker{font-family:var(--noche-font-engraved);font-size:var(--noche-text-2xs);
+  letter-spacing:var(--noche-tracking-widest);text-transform:uppercase;
+  color:var(--noche-oro-400);margin-bottom:var(--noche-space-2)}
+.noche-event-header__title{font-family:var(--noche-font-display);font-size:var(--noche-text-4xl);
+  line-height:.92;font-weight:var(--noche-weight-bold);
+  letter-spacing:var(--noche-tracking-tight);margin:0;text-transform:uppercase}
+.noche-event-header__sub{font-family:var(--noche-font-engraved);font-size:var(--noche-text-xs);
+  letter-spacing:var(--noche-tracking-wider);text-transform:uppercase;
+  color:var(--noche-bone-300);margin-top:var(--noche-space-3)}
+.noche-event-header__meta{display:flex;flex-wrap:wrap;justify-content:center;
+  gap:var(--noche-space-2) var(--noche-space-5);margin-top:var(--noche-space-4);
+  font-size:var(--noche-text-xs);color:var(--noche-text-muted);font-family:var(--noche-font-ui)}
+.noche-event-header__meta > *{display:inline-flex;align-items:center;gap:var(--noche-space-2)}
+.noche-event-header__glyph{position:absolute;width:190px;bottom:-34px;opacity:.09;
+  color:var(--noche-bone-200);pointer-events:none}
+.noche-event-header__glyph--l{left:-26px;transform:rotate(-14deg)}
+.noche-event-header__glyph--r{right:-26px;transform:rotate(14deg) scaleX(-1)}
+
+/* --- tabs / nav --------------------------------------------------------- */
+.noche-nav{display:flex;align-items:center;justify-content:space-between;
+  gap:var(--noche-space-4);padding:var(--noche-space-3) 0;border-bottom:1px solid var(--noche-border)}
+.noche-brand{display:inline-flex;align-items:center;gap:var(--noche-space-3);
+  font-family:var(--noche-font-engraved);letter-spacing:var(--noche-tracking-wider);
+  text-transform:uppercase;font-size:var(--noche-text-sm);color:var(--noche-bone-200)}
+.noche-brand__mark{width:30px;height:30px;color:var(--noche-oro-300);flex:none}
+
+.noche-tabs{display:flex;gap:var(--noche-space-1);overflow-x:auto;scrollbar-width:none;
+  border-bottom:1px solid var(--noche-border);-webkit-overflow-scrolling:touch}
+.noche-tabs::-webkit-scrollbar{display:none}
+.noche-tab{appearance:none;flex:none;background:transparent;border:1px solid transparent;
+  border-bottom:none;border-radius:var(--noche-radius-sm) var(--noche-radius-sm) 0 0;
+  color:var(--noche-text-muted);font-family:var(--noche-font-engraved);font-size:var(--noche-text-xs);
+  letter-spacing:var(--noche-tracking-wide);text-transform:uppercase;
+  padding:var(--noche-space-3) var(--noche-space-4);cursor:pointer;position:relative;
+  transition:color var(--noche-dur) var(--noche-ease),background-color var(--noche-dur) var(--noche-ease);
+  white-space:nowrap}
+.noche-tab:hover{color:var(--noche-bone-200);background:rgba(216,200,168,.05)}
+.noche-tab[aria-selected="true"]{color:var(--noche-oro-200);
+  background:linear-gradient(180deg,rgba(198,138,31,.16),rgba(198,138,31,.03));
+  border-color:var(--noche-border-gold)}
+.noche-tab[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;
+  height:2px;background:var(--noche-gradient-foil)}
+.noche-tab__count{margin-left:var(--noche-space-2);font-family:var(--noche-font-data);
+  font-size:var(--noche-text-2xs);color:var(--noche-text-subtle)}
+
+/* --- fight card --------------------------------------------------------- */
+.noche-card{position:relative;background:var(--noche-surface);border:1px solid var(--noche-border);
+  border-radius:var(--noche-radius-md);box-shadow:var(--noche-shadow-2),var(--noche-emboss);
+  overflow:hidden;
+  transition:border-color var(--noche-dur) var(--noche-ease),transform var(--noche-dur) var(--noche-ease),
+             box-shadow var(--noche-dur) var(--noche-ease)}
+.noche-card:hover{border-color:var(--noche-border-strong)}
+.noche-card--framed{padding:var(--noche-space-1)}
+.noche-card--framed > .noche-card__inner{border:1px solid var(--noche-border);
+  border-radius:var(--noche-radius-xs);padding:var(--noche-space-4)}
+.noche-card__header{display:flex;align-items:center;justify-content:space-between;
+  gap:var(--noche-space-3);padding:var(--noche-space-3) var(--noche-space-4);
+  background:var(--noche-surface-sunken);border-bottom:1px solid var(--noche-border)}
+.noche-card__title{margin:0;font-family:var(--noche-font-engraved);font-size:var(--noche-text-xs);
+  letter-spacing:var(--noche-tracking-wider);text-transform:uppercase;color:var(--noche-bone-300)}
+.noche-card__body{padding:var(--noche-space-4)}
+.noche-card__footer{padding:var(--noche-space-3) var(--noche-space-4);
+  border-top:1px solid var(--noche-border);background:var(--noche-surface-inset);
+  display:flex;align-items:center;justify-content:space-between;gap:var(--noche-space-3);
+  font-size:var(--noche-text-xs);color:var(--noche-text-subtle);flex-wrap:wrap}
+.noche-card--feature{background:radial-gradient(120% 90% at 50% 0%,rgba(198,138,31,.12) 0%,rgba(198,138,31,0) 60%),
+  var(--noche-surface-raised);border-color:var(--noche-border-gold);
+  box-shadow:var(--noche-shadow-3),var(--noche-shadow-gold),var(--noche-emboss)}
+.noche-card--feature .noche-card__header{
+  background:linear-gradient(180deg,rgba(198,138,31,.14),rgba(198,138,31,.02));
+  border-bottom-color:var(--noche-border-gold)}
+.noche-card--title{border-color:var(--noche-border-verde)}
+
+/* --- matchup row -------------------------------------------------------- */
+.noche-matchup{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  gap:var(--noche-space-3);padding:var(--noche-space-4);
+  border-bottom:1px solid var(--noche-border);
+  transition:background-color var(--noche-dur) var(--noche-ease)}
+.noche-matchup:last-child{border-bottom:none}
+.noche-matchup:hover{background:rgba(216,200,168,.035)}
+.noche-fighter{display:flex;align-items:center;gap:var(--noche-space-3);min-width:0}
+.noche-fighter--away{flex-direction:row-reverse;text-align:right}
+.noche-fighter__avatar{flex:none;width:46px;height:46px;border-radius:var(--noche-radius-pill);
+  display:grid;place-items:center;background:var(--noche-surface-sunken);
+  border:1px solid var(--noche-border-gold);box-shadow:var(--noche-debossed);
+  overflow:hidden;color:var(--noche-bone-300)}
+.noche-fighter__avatar svg{width:74%;height:74%;opacity:.65}
+.noche-fighter__avatar--initials{font-family:var(--noche-font-display);font-size:var(--noche-text-md);
+  font-weight:var(--noche-weight-bold);color:var(--noche-oro-200)}
+.noche-fighter__meta{min-width:0}
+.noche-fighter__name{display:block;font-family:var(--noche-font-display);font-size:var(--noche-text-md);
+  font-weight:var(--noche-weight-bold);letter-spacing:var(--noche-tracking-tight);
+  color:var(--noche-text-strong);line-height:1.12;text-shadow:var(--noche-ink-shadow);
+  overflow-wrap:break-word}
+.noche-fighter__nick{display:block;font-family:var(--noche-font-body);font-style:italic;
+  font-size:var(--noche-text-xs);color:var(--noche-oro-300);margin-top:2px}
+.noche-fighter__record{display:block;font-family:var(--noche-font-data);font-size:var(--noche-text-2xs);
+  color:var(--noche-text-subtle);margin-top:3px;letter-spacing:0}
+.noche-fighter__rank{display:inline-block;font-family:var(--noche-font-data);
+  font-size:var(--noche-text-2xs);color:var(--noche-oro-400);
+  border:1px solid var(--noche-border-gold);border-radius:var(--noche-radius-xs);
+  padding:0 4px;margin-right:5px;vertical-align:2px}
+.noche-fighter--away .noche-fighter__rank{margin:0 0 0 5px}
+
+.noche-matchup__center{display:grid;justify-items:center;gap:var(--noche-space-1);min-width:74px}
+.noche-vs{font-family:var(--noche-font-display);font-size:var(--noche-text-sm);
+  letter-spacing:var(--noche-tracking-wide);color:var(--noche-text-subtle);
+  position:relative;padding:0 var(--noche-space-2)}
+.noche-vs::before,.noche-vs::after{content:"";position:absolute;top:50%;width:8px;height:1px;
+  background:var(--noche-oro-600)}
+.noche-vs::before{left:-6px}
+.noche-vs::after{right:-6px}
+.noche-weight{font-family:var(--noche-font-engraved);font-size:.625rem;
+  letter-spacing:var(--noche-tracking-wide);text-transform:uppercase;
+  color:var(--noche-text-subtle);white-space:nowrap}
+
+.noche-odds{display:inline-flex;align-items:baseline;gap:2px;font-family:var(--noche-font-data);
+  font-size:var(--noche-text-sm);font-variant-numeric:tabular-nums;padding:3px 8px;
+  border-radius:var(--noche-radius-xs);border:1px solid var(--noche-border);
+  background:var(--noche-surface-inset);color:var(--noche-bone-200);
+  box-shadow:var(--noche-debossed);white-space:nowrap}
+.noche-odds--fav{color:var(--noche-verde-400);border-color:var(--noche-border-verde);
+  background:rgba(30,138,83,.1)}
+.noche-odds--dog{color:var(--noche-rojo-400);border-color:var(--noche-border-rojo);
+  background:rgba(192,42,32,.1)}
+.noche-odds__delta{font-size:var(--noche-text-2xs);opacity:.8}
+
+.noche-odds-bar{grid-column:1 / -1;display:grid;grid-template-columns:auto 1fr auto;
+  align-items:center;gap:var(--noche-space-3);margin-top:var(--noche-space-1)}
+.noche-odds-bar__track{height:5px;border-radius:var(--noche-radius-pill);
+  background:var(--noche-surface-inset);box-shadow:var(--noche-debossed);overflow:hidden;display:flex}
+.noche-odds-bar__fill{height:100%;background:linear-gradient(90deg,var(--noche-verde-600),var(--noche-verde-400))}
+.noche-odds-bar__fill--b{background:linear-gradient(90deg,var(--noche-rojo-400),var(--noche-rojo-600));
+  margin-left:auto}
+.noche-odds-bar__pct{font-family:var(--noche-font-data);font-size:var(--noche-text-2xs);
+  color:var(--noche-text-subtle)}
+
+.noche-matchup--feature{padding:var(--noche-space-5) var(--noche-space-4) var(--noche-space-6);
+  gap:var(--noche-space-4);border-bottom:none}
+.noche-matchup--feature .noche-fighter{flex-direction:column;text-align:center;gap:var(--noche-space-2)}
+.noche-matchup--feature .noche-fighter__avatar{width:82px;height:82px;font-size:var(--noche-text-xl)}
+.noche-matchup--feature .noche-fighter__name{font-size:var(--noche-text-xl)}
+.noche-matchup--feature .noche-fighter__nick{font-size:var(--noche-text-sm)}
+.noche-matchup--feature .noche-matchup__center{min-width:92px}
+.noche-matchup--feature .noche-vs{font-size:var(--noche-text-lg)}
+
+@media (max-width:30rem){
+  .noche-matchup{grid-template-columns:1fr auto;row-gap:var(--noche-space-3)}
+  .noche-matchup__center{grid-row:1 / span 2;grid-column:2;align-self:center}
+  .noche-fighter--away{flex-direction:row;text-align:left}
+  .noche-fighter--away .noche-fighter__rank{margin:0 5px 0 0}
+  .noche-matchup--feature{grid-template-columns:1fr}
+  .noche-matchup--feature .noche-matchup__center{grid-row:auto;grid-column:auto}
+}
+
+/* --- badges ------------------------------------------------------------- */
+.noche-badge{display:inline-flex;align-items:center;gap:var(--noche-space-1);
+  font-family:var(--noche-font-engraved);font-size:.625rem;
+  letter-spacing:var(--noche-tracking-wider);text-transform:uppercase;padding:3px 8px 2px;
+  border-radius:var(--noche-radius-xs);border:1px solid var(--noche-border);
+  background:var(--noche-surface-inset);color:var(--noche-text-muted);
+  white-space:nowrap;line-height:1.4}
+.noche-badge--main{color:var(--noche-night-950);background:var(--noche-gradient-foil);
+  border-color:var(--noche-oro-300);font-weight:var(--noche-weight-bold);
+  text-shadow:0 1px 0 rgba(255,255,255,.28);box-shadow:0 1px 8px -2px rgba(223,169,58,.6)}
+.noche-badge--title{color:var(--noche-oro-100);border-color:var(--noche-border-gold-hi);
+  background:linear-gradient(180deg,rgba(198,138,31,.3),rgba(109,71,15,.18))}
+.noche-badge--verde{color:var(--noche-verde-400);border-color:var(--noche-border-verde);
+  background:rgba(30,138,83,.12)}
+.noche-badge--rojo{color:var(--noche-rojo-400);border-color:var(--noche-border-rojo);
+  background:rgba(192,42,32,.12)}
+.noche-badge--rosa{color:var(--noche-rosa-400);border-color:rgba(224,53,127,.45);
+  background:rgba(224,53,127,.12)}
+.noche-badge--bone{color:var(--noche-bone-100);border-color:var(--noche-border-strong);
+  background:rgba(244,236,219,.08)}
+.noche-badge--ghost{background:transparent}
+
+/* --- status ------------------------------------------------------------- */
+.noche-status{display:inline-flex;align-items:center;gap:var(--noche-space-2);
+  font-family:var(--noche-font-engraved);font-size:var(--noche-text-2xs);
+  letter-spacing:var(--noche-tracking-wider);text-transform:uppercase;padding:4px 9px;
+  border-radius:var(--noche-radius-pill);border:1px solid var(--noche-border);
+  background:var(--noche-surface-inset);color:var(--noche-text-muted);white-space:nowrap}
+.noche-status__dot{width:7px;height:7px;border-radius:50%;background:currentColor;
+  flex:none;position:relative}
+.noche-status--live{color:var(--noche-rojo-400);border-color:var(--noche-border-rojo);
+  background:rgba(192,42,32,.14);box-shadow:var(--noche-shadow-live)}
+.noche-status--live .noche-status__dot::after{content:"";position:absolute;inset:-4px;
+  border-radius:50%;border:1px solid currentColor;
+  animation:noche-ping 1.8s var(--noche-ease-out) infinite}
+.noche-status--upcoming{color:var(--noche-oro-300);border-color:var(--noche-border-gold);
+  background:rgba(198,138,31,.1)}
+.noche-status--upcoming .noche-status__dot{animation:noche-breathe 2.6s ease-in-out infinite}
+.noche-status--final{color:var(--noche-text-subtle);border-color:var(--noche-border)}
+.noche-status--final .noche-status__dot{background:var(--noche-bone-600)}
+@keyframes noche-ping{0%{transform:scale(.6);opacity:.9}70%{transform:scale(1.9);opacity:0}100%{transform:scale(1.9);opacity:0}}
+@keyframes noche-breathe{0%,100%{opacity:1}50%{opacity:.35}}
+.noche-clock{font-family:var(--noche-font-data);font-size:var(--noche-text-sm);
+  font-variant-numeric:tabular-nums;color:var(--noche-bone-100);
+  display:inline-flex;align-items:center;gap:var(--noche-space-2)}
+.noche-clock__round{font-family:var(--noche-font-engraved);font-size:var(--noche-text-2xs);
+  letter-spacing:var(--noche-tracking-wide);text-transform:uppercase;color:var(--noche-text-subtle)}
+
+/* --- buttons ------------------------------------------------------------ */
+.noche-btn{--_bg:var(--noche-surface-raised);--_fg:var(--noche-bone-100);--_bd:var(--noche-border-strong);
+  appearance:none;display:inline-flex;align-items:center;justify-content:center;
+  gap:var(--noche-space-2);font-family:var(--noche-font-engraved);font-size:var(--noche-text-xs);
+  letter-spacing:var(--noche-tracking-wide);text-transform:uppercase;padding:.6rem 1.1rem;
+  min-height:40px;border-radius:var(--noche-radius-sm);border:1px solid var(--_bd);
+  background:var(--_bg);color:var(--_fg);cursor:pointer;text-decoration:none;
+  box-shadow:var(--noche-emboss),var(--noche-shadow-1);
+  transition:transform var(--noche-dur-fast) var(--noche-ease),filter var(--noche-dur) var(--noche-ease),
+             background-color var(--noche-dur) var(--noche-ease),border-color var(--noche-dur) var(--noche-ease)}
+.noche-btn:hover{filter:brightness(1.14)}
+.noche-btn:active{transform:translateY(1px);box-shadow:var(--noche-debossed)}
+.noche-btn[disabled],.noche-btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed;filter:none;transform:none}
+.noche-btn--primary{--_fg:var(--noche-night-950);--_bd:var(--noche-oro-300);
+  background:var(--noche-gradient-foil);font-weight:var(--noche-weight-bold);
+  text-shadow:0 1px 0 rgba(255,255,255,.3);
+  box-shadow:0 1px 0 rgba(255,255,255,.22) inset,0 6px 18px -8px rgba(223,169,58,.75)}
+.noche-btn--verde{--_fg:var(--noche-blanco);--_bd:var(--noche-border-verde);
+  --_bg:linear-gradient(180deg,var(--noche-verde-500),var(--noche-verde-600))}
+.noche-btn--rojo{--_fg:var(--noche-blanco);--_bd:var(--noche-border-rojo);
+  --_bg:linear-gradient(180deg,var(--noche-rojo-500),var(--noche-rojo-600))}
+.noche-btn--ghost{--_bg:transparent;--_bd:var(--noche-border);--_fg:var(--noche-text-muted);box-shadow:none}
+.noche-btn--ghost:hover{--_fg:var(--noche-bone-100);--_bd:var(--noche-border-strong)}
+.noche-btn--sm{min-height:30px;padding:.3rem .7rem;font-size:.625rem}
+.noche-btn--lg{min-height:50px;padding:.85rem 1.7rem;font-size:var(--noche-text-sm)}
+.noche-btn--block{width:100%}
+.noche-btn-group{display:flex;flex-wrap:wrap;gap:var(--noche-space-2)}
+
+/* --- stat table --------------------------------------------------------- */
+.noche-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;
+  border:1px solid var(--noche-border);border-radius:var(--noche-radius-md);
+  background:var(--noche-surface);box-shadow:var(--noche-shadow-2)}
+.noche-table{width:100%;border-collapse:collapse;font-size:var(--noche-text-sm)}
+.noche-table caption{caption-side:top;text-align:left;
+  padding:var(--noche-space-3) var(--noche-space-4);font-family:var(--noche-font-engraved);
+  font-size:var(--noche-text-xs);letter-spacing:var(--noche-tracking-wider);
+  text-transform:uppercase;color:var(--noche-oro-300);background:var(--noche-surface-sunken);
+  border-bottom:1px solid var(--noche-border)}
+.noche-table thead th{font-family:var(--noche-font-engraved);font-size:var(--noche-text-2xs);
+  letter-spacing:var(--noche-tracking-wide);text-transform:uppercase;color:var(--noche-text-subtle);
+  font-weight:var(--noche-weight-medium);text-align:right;
+  padding:var(--noche-space-3) var(--noche-space-4);background:var(--noche-surface-sunken);
+  border-bottom:1px solid var(--noche-border-strong);white-space:nowrap}
+.noche-table thead th:first-child{text-align:left}
+.noche-table tbody th{font-family:var(--noche-font-engraved);font-weight:var(--noche-weight-regular);
+  font-size:var(--noche-text-2xs);letter-spacing:var(--noche-tracking-wide);text-transform:uppercase;
+  color:var(--noche-text-muted);text-align:left;padding:var(--noche-space-3) var(--noche-space-4);
+  white-space:nowrap}
+.noche-table tbody td{padding:var(--noche-space-3) var(--noche-space-4);text-align:right;
+  font-family:var(--noche-font-data);font-variant-numeric:tabular-nums;
+  color:var(--noche-bone-100);white-space:nowrap}
+.noche-table tbody tr + tr th,.noche-table tbody tr + tr td{border-top:1px solid var(--noche-border)}
+.noche-table tbody tr:nth-child(even){background:rgba(216,200,168,.022)}
+.noche-table tbody tr:hover{background:rgba(216,200,168,.05)}
+.noche-table tfoot td,.noche-table tfoot th{border-top:1px solid var(--noche-border-gold);
+  background:var(--noche-surface-inset);color:var(--noche-text-muted);font-size:var(--noche-text-2xs)}
+.noche-stat-lead{color:var(--noche-oro-200);font-weight:var(--noche-weight-bold)}
+.noche-stat-lead::after{content:"";display:inline-block;width:5px;height:5px;margin-left:6px;
+  background:var(--noche-oro-400);transform:rotate(45deg);vertical-align:2px}
+.noche-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:1px;
+  background:var(--noche-border);border:1px solid var(--noche-border);
+  border-radius:var(--noche-radius-sm);overflow:hidden}
+.noche-stat{background:var(--noche-surface-raised);padding:var(--noche-space-3);text-align:center}
+.noche-stat__label{font-family:var(--noche-font-engraved);font-size:.5625rem;
+  letter-spacing:var(--noche-tracking-wide);text-transform:uppercase;color:var(--noche-text-subtle)}
+.noche-stat__value{font-family:var(--noche-font-display);font-size:var(--noche-text-lg);
+  font-weight:var(--noche-weight-bold);color:var(--noche-oro-200);margin-top:3px;
+  font-variant-numeric:tabular-nums}
+
+/* --- misc --------------------------------------------------------------- */
+.noche-grid-cards{display:grid;gap:var(--noche-space-4);grid-template-columns:1fr}
+@media (min-width:56rem){.noche-grid-cards--2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.noche-empty{text-align:center;padding:var(--noche-space-10) var(--noche-space-4);
+  color:var(--noche-text-subtle);font-style:italic}
+.noche-footer{border-top:1px solid var(--noche-border);margin-top:var(--noche-space-12);
+  padding:var(--noche-space-8) 0 var(--noche-space-10);text-align:center;
+  color:var(--noche-text-subtle);font-size:var(--noche-text-xs)}
+.noche-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.noche-swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));
+  gap:var(--noche-space-2)}
+.noche-swatch{border:1px solid var(--noche-border);border-radius:var(--noche-radius-xs);
+  overflow:hidden;background:var(--noche-surface-raised)}
+.noche-swatch__chip{height:34px}
+.noche-swatch__name{font-family:var(--noche-font-data);font-size:.5625rem;
+  color:var(--noche-text-subtle);padding:4px 5px;text-align:center;overflow:hidden;
+  text-overflow:ellipsis}
+
+/* --- preferences -------------------------------------------------------- */
+@media (prefers-reduced-motion:reduce){
+  [data-theme="noche"] *,[data-theme="noche"] *::before,[data-theme="noche"] *::after{
+    animation-duration:.001ms !important;animation-iteration-count:1 !important;
+    transition-duration:.001ms !important}
+}
+@media (prefers-contrast:more){
+  [data-theme="noche"]{--noche-border:rgba(233,220,194,.34);--noche-border-strong:rgba(233,220,194,.56);
+    --noche-text-muted:var(--noche-bone-200);--noche-text-subtle:var(--noche-bone-300);
+    --noche-grain-opacity:.02}
+}
+@media print{
+  [data-theme="noche"]{background:#fff;color:#000}
+  [data-theme="noche"]::before{display:none}
+  .noche-papel,.noche-motif,.noche-corner{display:none}
+}
+
+/* =========================================================================
+   "base" comparison theme — PREVIEW ONLY.
+   Identical component markup, different token values. Proves the drop-in.
+   ========================================================================= */
+[data-theme="base"]{
+  color-scheme:dark;
+  --noche-night-950:#0e0e10;--noche-night-900:#141416;--noche-night-850:#18181b;
+  --noche-night-800:#1f1f23;--noche-night-700:#27272b;--noche-night-600:#33333a;
+  --noche-bone-50:#fafafa;--noche-bone-100:#ededf0;--noche-bone-200:#d9d9de;
+  --noche-bone-300:#bcbcc4;--noche-bone-400:#8e8e97;--noche-bone-500:#6f6f78;--noche-bone-600:#55555d;
+  --noche-oro-100:#dbeafe;--noche-oro-200:#bfdbfe;--noche-oro-300:#93c5fd;
+  --noche-oro-400:#60a5fa;--noche-oro-500:#3b82f6;--noche-oro-600:#2563eb;--noche-oro-700:#1d4ed8;
+  --noche-verde-400:#34d399;--noche-verde-500:#10b981;--noche-verde-600:#047857;
+  --noche-rojo-400:#f87171;--noche-rojo-500:#ef4444;--noche-rojo-600:#b91c1c;
+  --noche-blanco:#fff;--noche-rosa-400:#f472b6;
+  --noche-cempasuchil-400:#fbbf24;--noche-turquesa-400:#22d3ee;--noche-morado-400:#a78bfa;
+  --noche-bg:var(--noche-night-950);--noche-bg-gradient:none;
+  --noche-surface:var(--noche-night-850);--noche-surface-raised:var(--noche-night-800);
+  --noche-surface-sunken:var(--noche-night-900);--noche-surface-inset:rgba(0,0,0,.3);
+  --noche-surface-gold:var(--noche-night-800);--noche-scrim:rgba(0,0,0,.7);
+  --noche-text:var(--noche-bone-100);--noche-text-strong:var(--noche-bone-50);
+  --noche-text-muted:var(--noche-bone-400);--noche-text-subtle:var(--noche-bone-500);
+  --noche-text-accent:var(--noche-oro-300);--noche-text-inverse:#0e0e10;
+  --noche-text-link:var(--noche-oro-300);
+  --noche-border:rgba(255,255,255,.1);--noche-border-strong:rgba(255,255,255,.2);
+  --noche-border-gold:rgba(96,165,250,.4);--noche-border-gold-hi:rgba(147,197,253,.7);
+  --noche-border-verde:rgba(52,211,153,.4);--noche-border-rojo:rgba(248,113,113,.4);
+  --noche-rule-engraved:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);
+  --noche-font-display:ui-sans-serif,system-ui,sans-serif;
+  --noche-font-engraved:ui-sans-serif,system-ui,sans-serif;
+  --noche-font-body:ui-sans-serif,system-ui,sans-serif;
+  --noche-font-ui:ui-sans-serif,system-ui,sans-serif;
+  --noche-font-data:ui-monospace,Menlo,monospace;
+  --noche-text-2xs:.6875rem;--noche-text-xs:.75rem;--noche-text-sm:.8125rem;
+  --noche-text-base:.9375rem;--noche-text-md:1rem;--noche-text-lg:1.125rem;
+  --noche-text-xl:1.375rem;--noche-text-2xl:1.75rem;--noche-text-3xl:2rem;--noche-text-4xl:2.25rem;
+  --noche-leading-tight:1.15;--noche-leading-snug:1.3;--noche-leading-normal:1.5;
+  --noche-leading-relaxed:1.6;
+  --noche-tracking-tight:0;--noche-tracking-normal:0;--noche-tracking-wide:.02em;
+  --noche-tracking-wider:.04em;--noche-tracking-widest:.06em;
+  --noche-weight-regular:400;--noche-weight-medium:500;--noche-weight-bold:600;
+  --noche-space-0:0;--noche-space-1:.25rem;--noche-space-2:.5rem;--noche-space-3:.75rem;
+  --noche-space-4:1rem;--noche-space-5:1.25rem;--noche-space-6:1.5rem;--noche-space-8:2rem;
+  --noche-space-10:2.5rem;--noche-space-12:3rem;--noche-space-16:4rem;
+  --noche-radius-none:0;--noche-radius-xs:6px;--noche-radius-sm:8px;--noche-radius-md:12px;
+  --noche-radius-lg:16px;--noche-radius-xl:20px;--noche-radius-pill:999px;
+  --noche-shadow-1:0 1px 2px rgba(0,0,0,.4);--noche-shadow-2:0 2px 8px rgba(0,0,0,.4);
+  --noche-shadow-3:0 8px 24px rgba(0,0,0,.5);
+  --noche-shadow-gold:0 0 0 1px rgba(96,165,250,.35);
+  --noche-shadow-live:0 0 0 1px rgba(248,113,113,.4);
+  --noche-emboss:none;--noche-debossed:none;--noche-ink-shadow:none;
+  --noche-focus-ring:0 0 0 2px #0e0e10,0 0 0 4px var(--noche-oro-400);
+  --noche-texture-grain:none;--noche-texture-fibre:none;--noche-grain-opacity:0;
+  --noche-papel-height:0px;
+  --noche-gradient-foil:linear-gradient(90deg,var(--noche-oro-500),var(--noche-oro-300));
+  --noche-gradient-tricolor:linear-gradient(90deg,#3b82f6,#93c5fd);
+  --noche-ease:ease;--noche-ease-out:ease-out;
+  --noche-dur-fast:120ms;--noche-dur:200ms;--noche-dur-slow:400ms;
+  --noche-container:68rem;--noche-container-narrow:46rem;
+  background-color:var(--noche-bg);color:var(--noche-text);
+  font-family:var(--noche-font-body);font-size:var(--noche-text-base);
+  line-height:var(--noche-leading-normal);-webkit-font-smoothing:antialiased;
+}
+[data-theme="base"] .noche-papel,
+[data-theme="base"] .noche-motif,
+[data-theme="base"] .noche-corner,
+[data-theme="base"] .noche-event-header__glyph,
+[data-theme="base"] .pv-agave{display:none}
+[data-theme="base"] .noche-event-header{padding-top:1.5rem}
+[data-theme="base"] .noche-event-header__title{text-transform:none;letter-spacing:-.01em}
+[data-theme="base"] .noche-foil{-webkit-text-fill-color:var(--noche-oro-200);
+  color:var(--noche-oro-200);background:none}
+
+/* =========================================================================
+   preview-page chrome (not part of the theme)
+   ========================================================================= */
+.pv-page{padding-bottom:var(--noche-space-16)}
+.pv-topbar{position:sticky;top:0;z-index:20;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  background:linear-gradient(180deg,rgba(4,5,10,.94),rgba(4,5,10,.74));
+  border-bottom:1px solid var(--noche-border)}
+.pv-section{margin-top:var(--noche-space-8)}
+.pv-live-strip{display:flex;align-items:center;gap:var(--noche-space-3);flex-wrap:wrap;
+  padding:var(--noche-space-3) var(--noche-space-4);
+  border:1px solid var(--noche-border-rojo);border-radius:var(--noche-radius-md);
+  background:linear-gradient(90deg,rgba(192,42,32,.16),rgba(192,42,32,.03));
+  margin-top:var(--noche-space-4)}
+.pv-live-strip__text{font-size:var(--noche-text-xs);color:var(--noche-bone-200);
+  font-family:var(--noche-font-ui)}
+.pv-push{margin-left:auto}
+.pv-badges{display:flex;flex-wrap:wrap;gap:var(--noche-space-2);align-items:center}
+.pv-agave{display:flex;align-items:flex-end;justify-content:center;
+  margin:var(--noche-space-10) 0 var(--noche-space-4)}
+.pv-agave > span{width:190px}
+.pv-note{font-size:var(--noche-text-xs);color:var(--noche-text-subtle);
+  font-family:var(--noche-font-ui);line-height:var(--noche-leading-relaxed)}
+.pv-footer-skull{display:block;width:60px;margin:0 auto var(--noche-space-4)}
+@media (min-width:52rem){
+  .pv-card-cols{display:grid;gap:var(--noche-space-4);grid-template-columns:1fr 1fr;align-items:start}
+}
+</style>
+</head>
+<body class="pv-page">
+
+<!-- ═══════════════════ decorative asset sprite (noche-assets.svg) ═══════════════════ -->
+<svg xmlns="http://www.w3.org/2000/svg" class="noche-sprite" aria-hidden="true"
+     focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <defs>
+    <g id="noche-agave-blade">
+      <path d="M0,0 C-8,-28 -7,-62 0,-102 C7,-62 8,-28 0,0 Z"
+            fill="currentColor" fill-opacity=".22"
+            stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M0,-8 V-93" stroke="currentColor" stroke-width="1.1" opacity=".85"/>
+      <path d="M-3.6,-30 L0,-38 M3.6,-30 L0,-38 M-3.2,-52 L0,-59 M3.2,-52 L0,-59"
+            stroke="currentColor" stroke-width=".8" opacity=".6" fill="none"/>
+    </g>
+
+    <g id="noche-marigold-core">
+      <g fill="currentColor">
+        <ellipse cx="0" cy="-15" rx="3.6" ry="8"/>
+        <ellipse cx="0" cy="-15" rx="3.6" ry="8" transform="rotate(45)"/>
+        <ellipse cx="0" cy="-15" rx="3.6" ry="8" transform="rotate(90)"/>
+        <ellipse cx="0" cy="-15" rx="3.6" ry="8" transform="rotate(135)"/>
+        <ellipse cx="0" cy="-15" rx="3.6" ry="8" transform="rotate(180)"/>
+        <ellipse cx="0" cy="-15" rx="3.6" ry="8" transform="rotate(225)"/>
+        <ellipse cx="0" cy="-15" rx="3.6" ry="8" transform="rotate(270)"/>
+        <ellipse cx="0" cy="-15" rx="3.6" ry="8" transform="rotate(315)"/>
+      </g>
+      <g fill="currentColor" opacity=".78">
+        <ellipse cx="0" cy="-9" rx="2.8" ry="6" transform="rotate(22.5)"/>
+        <ellipse cx="0" cy="-9" rx="2.8" ry="6" transform="rotate(67.5)"/>
+        <ellipse cx="0" cy="-9" rx="2.8" ry="6" transform="rotate(112.5)"/>
+        <ellipse cx="0" cy="-9" rx="2.8" ry="6" transform="rotate(157.5)"/>
+        <ellipse cx="0" cy="-9" rx="2.8" ry="6" transform="rotate(202.5)"/>
+        <ellipse cx="0" cy="-9" rx="2.8" ry="6" transform="rotate(247.5)"/>
+        <ellipse cx="0" cy="-9" rx="2.8" ry="6" transform="rotate(292.5)"/>
+        <ellipse cx="0" cy="-9" rx="2.8" ry="6" transform="rotate(337.5)"/>
+      </g>
+      <circle r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <circle r="1.4" fill="currentColor"/>
+    </g>
+  </defs>
+
+  <!-- papel picado artwork: 3 panels, seamless on x -->
+  <defs>
+   <g id="noche-papel-art">
+    <g fill="#1e8a53">
+      <path fill-rule="evenodd" d="M2,12 H128 V74
+        Q107,95 86,74 Q65,95 44,74 Q23,95 2,74 Z
+        M65,26 L81,44 L65,62 L49,44 Z
+        M18,34 a8,8 0 1,1 16,0 a8,8 0 1,1 -16,0 Z
+        M96,34 a8,8 0 1,1 16,0 a8,8 0 1,1 -16,0 Z
+        M20,52 h14 v7 h-14 Z
+        M96,52 h14 v7 h-14 Z
+        M19,78 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0 Z
+        M103,78 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0 Z
+        M65,71 L70,78 L65,85 L60,78 Z"/>
+    </g>
+    <rect x="2" y="12" width="126" height="5" fill="#0d3f27" opacity=".55"/>
+
+    <g fill="#e9dcc2">
+      <path fill-rule="evenodd" d="M132,12 H258 V74
+        Q237,95 216,74 Q195,95 174,74 Q153,95 132,74 Z
+        M195,26 L211,44 L195,62 L179,44 Z
+        M148,34 a8,8 0 1,1 16,0 a8,8 0 1,1 -16,0 Z
+        M226,34 a8,8 0 1,1 16,0 a8,8 0 1,1 -16,0 Z
+        M150,52 h14 v7 h-14 Z
+        M226,52 h14 v7 h-14 Z
+        M149,78 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0 Z
+        M233,78 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0 Z
+        M195,71 L200,78 L195,85 L190,78 Z"/>
+    </g>
+    <rect x="132" y="12" width="126" height="5" fill="#9a8a70" opacity=".55"/>
+
+    <g fill="#c02a20">
+      <path fill-rule="evenodd" d="M262,12 H388 V74
+        Q367,95 346,74 Q325,95 304,74 Q283,95 262,74 Z
+        M325,26 L341,44 L325,62 L309,44 Z
+        M278,34 a8,8 0 1,1 16,0 a8,8 0 1,1 -16,0 Z
+        M356,34 a8,8 0 1,1 16,0 a8,8 0 1,1 -16,0 Z
+        M280,52 h14 v7 h-14 Z
+        M356,52 h14 v7 h-14 Z
+        M279,78 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0 Z
+        M363,78 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0 Z
+        M325,71 L330,78 L325,85 L320,78 Z"/>
+    </g>
+    <rect x="262" y="12" width="126" height="5" fill="#5e120d" opacity=".55"/>
+
+    <path d="M0,9 Q97.5,20 195,9 T390,9" fill="none"
+          stroke="#9c6716" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M0,9 Q97.5,20 195,9 T390,9" fill="none"
+          stroke="#eec462" stroke-width=".7" opacity=".6"/>
+   </g>
+
+   <pattern id="noche-papel-pattern" patternUnits="userSpaceOnUse" width="195" height="54">
+     <g transform="scale(.5)"><use href="#noche-papel-art"/></g>
+   </pattern>
+  </defs>
+
+  <symbol id="noche-papel-tile" viewBox="0 0 390 108">
+    <use href="#noche-papel-art"/>
+  </symbol>
+
+  <symbol id="noche-corner" viewBox="0 0 120 120">
+    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6,58 V16 A10,10 0 0 1 16,6 H58" stroke-width="2.2"/>
+      <path d="M14,58 V20 A6,6 0 0 1 20,14 H58" stroke-width="1"/>
+      <path d="M26,27 C45,25 60,37 62,55 C63,65 57,73 48,73 C40,73 34,67 34,59
+               C34,52 39,47 46,47 C51,47 55,51 55,56" stroke-width="2"/>
+      <path d="M27,26 C25,45 37,60 55,62 C65,63 73,57 73,48 C73,40 67,34 59,34
+               C52,34 47,39 47,46 C47,51 51,55 56,55" stroke-width="1.4" opacity=".82"/>
+      <path d="M36,53 l-6,6 M41,60 l-6,6 M48,64 l-6,6" stroke-width=".9" opacity=".7"/>
+      <path d="M64,10 l0,7 M76,12 l-2,7 M10,64 l7,0 M12,76 l7,-2" stroke-width=".9" opacity=".55"/>
+    </g>
+    <path d="M62,55 C73,50 86,55 93,66 C81,68 68,64 62,55 Z"
+          fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.2"/>
+    <path d="M55,62 C50,73 55,86 66,93 C68,81 64,68 55,62 Z"
+          fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.2"/>
+    <path d="M10,10 l5,-5 l5,5 l-5,5 Z" fill="currentColor"/>
+    <circle cx="58" cy="6" r="2" fill="currentColor"/>
+    <circle cx="6" cy="58" r="2" fill="currentColor"/>
+  </symbol>
+
+  <symbol id="noche-calavera" viewBox="0 0 200 240">
+    <path fill="currentColor" fill-rule="evenodd" d="
+      M100,16 C60,16 32,44 32,84 C32,102 38,116 47,126 L47,141
+      C47,149 52,155 60,158 C66,160 70,164 72,171 C75,183 84,193 100,193
+      C116,193 125,183 128,171 C130,164 134,160 140,158 C148,155 153,149 153,141
+      L153,126 C162,116 168,102 168,84 C168,44 140,16 100,16 Z
+      M58,76 C58,61 70,52 82,57 C92,61 95,72 91,84 C87,96 74,101 65,97
+      C58,94 58,86 58,76 Z
+      M142,76 C142,61 130,52 118,57 C108,61 105,72 109,84 C113,96 126,101 135,97
+      C142,94 142,86 142,76 Z
+      M100,98 C96,109 89,118 89,126 C89,132 94,137 100,137 C106,137 111,132 111,126
+      C111,118 104,109 100,98 Z
+      M66,146 H134 A4,4 0 0 1 138,150 V166 A4,4 0 0 1 134,170 H66
+      A4,4 0 0 1 62,166 V150 A4,4 0 0 1 66,146 Z"/>
+    <g fill="currentColor">
+      <rect x="62" y="156.5" width="76" height="2.6"/>
+      <rect x="74" y="146" width="2.6" height="24"/>
+      <rect x="86" y="146" width="2.6" height="24"/>
+      <rect x="98.7" y="146" width="2.6" height="24"/>
+      <rect x="111" y="146" width="2.6" height="24"/>
+      <rect x="123" y="146" width="2.6" height="24"/>
+    </g>
+    <g stroke="currentColor" fill="none" stroke-linecap="round" opacity=".55">
+      <path d="M37,70 l14,-7 M38,79 l15,-7 M40,88 l15,-7" stroke-width="1.5"/>
+      <path d="M163,70 l-14,-7 M162,79 l-15,-7 M160,88 l-15,-7" stroke-width="1.5"/>
+      <path d="M56,110 C63,117 63,126 56,132" stroke-width="1.6"/>
+      <path d="M144,110 C137,117 137,126 144,132" stroke-width="1.6"/>
+      <path d="M78,178 C88,183 112,183 122,178" stroke-width="1.4"/>
+    </g>
+    <g fill="currentColor" opacity=".85">
+      <circle cx="52" cy="63" r="2.2"/><circle cx="63" cy="49" r="2.2"/>
+      <circle cx="78" cy="46" r="2.2"/><circle cx="93" cy="50" r="2.2"/>
+      <circle cx="148" cy="63" r="2.2"/><circle cx="137" cy="49" r="2.2"/>
+      <circle cx="122" cy="46" r="2.2"/><circle cx="107" cy="50" r="2.2"/>
+      <circle cx="60" cy="104" r="2"/><circle cx="140" cy="104" r="2"/>
+    </g>
+    <g transform="translate(100,36) scale(.62)"><use href="#noche-marigold-core"/></g>
+    <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".7">
+      <path d="M72,200 C82,208 96,210 100,220 C104,210 118,208 128,200"/>
+      <path d="M100,220 C97,228 92,231 86,231 M100,220 C103,228 108,231 114,231"/>
+      <path d="M86,231 C82,231 80,228 81,225 M114,231 C118,231 120,228 119,225"/>
+    </g>
+  </symbol>
+
+  <symbol id="noche-agave" viewBox="0 0 240 132">
+    <g transform="translate(120,126)">
+      <use href="#noche-agave-blade" transform="rotate(-74) scale(.66)"/>
+      <use href="#noche-agave-blade" transform="rotate(74) scale(.66)"/>
+      <use href="#noche-agave-blade" transform="rotate(-56) scale(.82)"/>
+      <use href="#noche-agave-blade" transform="rotate(56) scale(.82)"/>
+      <use href="#noche-agave-blade" transform="rotate(-38) scale(.94)"/>
+      <use href="#noche-agave-blade" transform="rotate(38) scale(.94)"/>
+      <use href="#noche-agave-blade" transform="rotate(-19) scale(1.02)"/>
+      <use href="#noche-agave-blade" transform="rotate(19) scale(1.02)"/>
+      <use href="#noche-agave-blade" transform="rotate(0) scale(1.14)"/>
+      <path d="M-34,2 C-16,-8 16,-8 34,2 Z" fill="currentColor" fill-opacity=".35"/>
+      <path d="M-40,3 C-18,-9 18,-9 40,3" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    </g>
+  </symbol>
+
+  <symbol id="noche-marigold" viewBox="0 0 48 48">
+    <g transform="translate(24,24)"><use href="#noche-marigold-core"/></g>
+  </symbol>
+
+  <symbol id="noche-divider-mark" viewBox="0 0 120 32">
+    <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+      <path d="M2,16 H34"/><path d="M86,16 H118"/>
+      <path d="M34,16 C40,16 42,10 48,10 C53,10 55,16 60,16 C65,16 67,10 72,10 C78,10 80,16 86,16"/>
+      <path d="M34,16 C40,16 42,22 48,22 C53,22 55,16 60,16 C65,16 67,22 72,22 C78,22 80,16 86,16"/>
+    </g>
+    <path d="M60,9 L67,16 L60,23 L53,16 Z" fill="currentColor"/>
+    <circle cx="34" cy="16" r="2" fill="currentColor"/>
+    <circle cx="86" cy="16" r="2" fill="currentColor"/>
+  </symbol>
+</svg>
+
+<!-- ══════════════════════════ top bar ══════════════════════════ -->
+<div class="pv-topbar">
+  <div class="noche-container noche-nav">
+    <span class="noche-brand">
+      <svg class="noche-brand__mark" viewBox="0 0 200 240" aria-hidden="true"><use href="#noche-calavera"/></svg>
+      <span>Noche</span>
+    </span>
+    <button class="noche-btn noche-btn--ghost noche-btn--sm" id="pv-theme-toggle" aria-pressed="true">
+      Tema · <span id="pv-theme-name">Noche</span>
+    </button>
+  </div>
+</div>
+
+<main class="noche-container">
+
+  <!-- ══════════════════════════ event header ══════════════════════════ -->
+  <header class="noche-event-header pv-section noche-ornate noche-ornate--lg">
+    <div class="noche-tricolor"></div>
+    <svg class="noche-papel noche-event-header__papel" aria-hidden="true">
+      <rect width="100%" height="100%" fill="url(#noche-papel-pattern)"/>
+    </svg>
+
+    <svg class="noche-event-header__glyph noche-event-header__glyph--l" viewBox="0 0 200 240" aria-hidden="true"><use href="#noche-calavera"/></svg>
+    <svg class="noche-event-header__glyph noche-event-header__glyph--r" viewBox="0 0 200 240" aria-hidden="true"><use href="#noche-calavera"/></svg>
+
+    <span class="noche-corner noche-corner--tl"><svg viewBox="0 0 120 120" aria-hidden="true"><use href="#noche-corner"/></svg></span>
+    <span class="noche-corner noche-corner--tr"><svg viewBox="0 0 120 120" aria-hidden="true"><use href="#noche-corner"/></svg></span>
+    <span class="noche-corner noche-corner--bl"><svg viewBox="0 0 120 120" aria-hidden="true"><use href="#noche-corner"/></svg></span>
+    <span class="noche-corner noche-corner--br"><svg viewBox="0 0 120 120" aria-hidden="true"><use href="#noche-corner"/></svg></span>
+
+    <p class="noche-event-header__kicker">Fight Night · Edición Independencia</p>
+    <h1 class="noche-event-header__title"><span class="noche-foil">Noche</span></h1>
+    <p class="noche-event-header__sub">Quintero vs Brooks-Ade · Campeonato Peso Mosca</p>
+    <div class="noche-event-header__meta">
+      <span>◆ Sáb 16 Sept · 7:00 PM CT</span>
+      <span>◆ Arena Ciudad de México</span>
+      <span>◆ 13 peleas</span>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════ live strip ══════════════════════════ -->
+  <div class="pv-live-strip">
+    <span class="noche-status noche-status--live"><span class="noche-status__dot"></span>En vivo</span>
+    <span class="noche-clock"><span class="noche-clock__round">Round 2</span><span id="pv-clock">3:12</span></span>
+    <span class="pv-live-strip__text">Mancilla vs. Vásquez — preliminares</span>
+    <a class="noche-btn noche-btn--rojo noche-btn--sm pv-push" href="#prelims">Ver ahora</a>
+  </div>
+
+  <!-- ══════════════════════════ tabs ══════════════════════════ -->
+  <nav class="noche-tabs pv-section" role="tablist" aria-label="Secciones del evento">
+    <button class="noche-tab" role="tab" aria-selected="true">Cartelera<span class="noche-tab__count">5</span></button>
+    <button class="noche-tab" role="tab" aria-selected="false">Preliminares<span class="noche-tab__count">4</span></button>
+    <button class="noche-tab" role="tab" aria-selected="false">Prelims temp.<span class="noche-tab__count">4</span></button>
+    <button class="noche-tab" role="tab" aria-selected="false">Estadísticas</button>
+    <button class="noche-tab" role="tab" aria-selected="false">Momios</button>
+  </nav>
+
+  <!-- ══════════════════════════ main event ══════════════════════════ -->
+  <section class="pv-section">
+    <div class="noche-section-head">
+      <h2>Pelea principal</h2>
+      <span class="noche-engraved">5 rounds · 125 lb</span>
+    </div>
+
+    <article class="noche-card noche-card--feature noche-ornate">
+      <span class="noche-corner noche-corner--tl"><svg viewBox="0 0 120 120" aria-hidden="true"><use href="#noche-corner"/></svg></span>
+      <span class="noche-corner noche-corner--tr"><svg viewBox="0 0 120 120" aria-hidden="true"><use href="#noche-corner"/></svg></span>
+
+      <div class="noche-card__header">
+        <h3 class="noche-card__title">Peso Mosca · Título</h3>
+        <span class="pv-badges">
+          <span class="noche-badge noche-badge--main">Main event</span>
+          <span class="noche-badge noche-badge--title">◆ Título</span>
+        </span>
+      </div>
+
+      <div class="noche-matchup noche-matchup--feature">
+        <div class="noche-fighter">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">RQ</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name"><span class="noche-fighter__rank">C</span>Rafael Quintero</span>
+            <span class="noche-fighter__nick">“El Lobo de Guadalajara”</span>
+            <span class="noche-fighter__record">22–2–0 · 🇲🇽 MEX · 5'4" · 66"</span>
+          </span>
+        </div>
+
+        <div class="noche-matchup__center">
+          <span class="noche-odds noche-odds--fav">−155</span>
+          <span class="noche-vs">VS</span>
+          <span class="noche-odds noche-odds--dog">+130</span>
+          <span class="noche-weight">125 lb</span>
+        </div>
+
+        <div class="noche-fighter noche-fighter--away">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">TB</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name"><span class="noche-fighter__rank">#1</span>Tavian Brooks-Ade</span>
+            <span class="noche-fighter__nick">“Nightshade”</span>
+            <span class="noche-fighter__record">17–3–0 · 🇺🇸 USA · 5'6" · 69"</span>
+          </span>
+        </div>
+
+        <div class="noche-odds-bar">
+          <span class="noche-odds-bar__pct">61%</span>
+          <span class="noche-odds-bar__track">
+            <span class="noche-odds-bar__fill" style="width:61%"></span>
+            <span class="noche-odds-bar__fill noche-odds-bar__fill--b" style="width:39%"></span>
+          </span>
+          <span class="noche-odds-bar__pct">39%</span>
+        </div>
+      </div>
+
+      <div class="noche-card__body" style="padding-top:0">
+        <div class="noche-stats">
+          <div class="noche-stat"><div class="noche-stat__label">Tasa finish</div><div class="noche-stat__value">68%</div></div>
+          <div class="noche-stat"><div class="noche-stat__label">Golpes/min</div><div class="noche-stat__value">5.1</div></div>
+          <div class="noche-stat"><div class="noche-stat__label">Def. derribo</div><div class="noche-stat__value">84%</div></div>
+          <div class="noche-stat"><div class="noche-stat__label">Racha</div><div class="noche-stat__value">6–0</div></div>
+        </div>
+      </div>
+
+      <div class="noche-card__footer">
+        <span class="noche-status noche-status--upcoming"><span class="noche-status__dot"></span>Estelar · 11:30 PM</span>
+        <span class="noche-btn-group">
+          <button class="noche-btn noche-btn--ghost noche-btn--sm">Tale of the tape</button>
+          <button class="noche-btn noche-btn--primary noche-btn--sm">Seguir pelea</button>
+        </span>
+      </div>
+    </article>
+  </section>
+
+  <!-- ══════════════════════════ main card ══════════════════════════ -->
+  <section class="pv-section">
+    <div class="noche-section-head">
+      <h2>Cartelera principal</h2>
+      <span class="noche-engraved">9:00 PM CT</span>
+    </div>
+
+    <div class="noche-card">
+      <div class="noche-card__header">
+        <h3 class="noche-card__title">4 peleas</h3>
+        <span class="noche-status noche-status--upcoming"><span class="noche-status__dot"></span>Próximamente</span>
+      </div>
+
+      <div class="noche-matchup">
+        <div class="noche-fighter">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">MV</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name"><span class="noche-fighter__rank">#4</span>Marisol Vega</span>
+            <span class="noche-fighter__nick">“La Tijera”</span>
+            <span class="noche-fighter__record">14–2–0 · 🇲🇽 MEX</span>
+          </span>
+        </div>
+        <div class="noche-matchup__center">
+          <span class="noche-odds noche-odds--fav">−210</span>
+          <span class="noche-vs">VS</span>
+          <span class="noche-odds noche-odds--dog">+175</span>
+          <span class="noche-weight">115 lb</span>
+        </div>
+        <div class="noche-fighter noche-fighter--away">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">IK</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name"><span class="noche-fighter__rank">#8</span>Ines Kowalczyk</span>
+            <span class="noche-fighter__nick">“Hailstorm”</span>
+            <span class="noche-fighter__record">11–4–0 · 🇵🇱 POL</span>
+          </span>
+        </div>
+        <div class="noche-odds-bar">
+          <span class="noche-odds-bar__pct">68%</span>
+          <span class="noche-odds-bar__track">
+            <span class="noche-odds-bar__fill" style="width:68%"></span>
+            <span class="noche-odds-bar__fill noche-odds-bar__fill--b" style="width:32%"></span>
+          </span>
+          <span class="noche-odds-bar__pct">32%</span>
+        </div>
+      </div>
+
+      <div class="noche-matchup">
+        <div class="noche-fighter">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">ER</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name">Emiliano Ruvalcaba</span>
+            <span class="noche-fighter__nick">“Chispa”</span>
+            <span class="noche-fighter__record">19–7–1 · 🇲🇽 MEX</span>
+          </span>
+        </div>
+        <div class="noche-matchup__center">
+          <span class="noche-odds noche-odds--fav">−120</span>
+          <span class="noche-vs">VS</span>
+          <span class="noche-odds">+100</span>
+          <span class="noche-weight">155 lb</span>
+        </div>
+        <div class="noche-fighter noche-fighter--away">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">DP</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name">Deshawn Pruitt</span>
+            <span class="noche-fighter__nick">“The Ledger”</span>
+            <span class="noche-fighter__record">15–6–0 · 🇺🇸 USA</span>
+          </span>
+        </div>
+        <div class="noche-odds-bar">
+          <span class="noche-odds-bar__pct">55%</span>
+          <span class="noche-odds-bar__track">
+            <span class="noche-odds-bar__fill" style="width:55%"></span>
+            <span class="noche-odds-bar__fill noche-odds-bar__fill--b" style="width:45%"></span>
+          </span>
+          <span class="noche-odds-bar__pct">45%</span>
+        </div>
+      </div>
+
+      <div class="noche-matchup">
+        <div class="noche-fighter">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">GI</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name">Gustavo Ibarra</span>
+            <span class="noche-fighter__nick">“Cuervo”</span>
+            <span class="noche-fighter__record">12–3–0 · 🇲🇽 MEX</span>
+          </span>
+        </div>
+        <div class="noche-matchup__center">
+          <span class="noche-odds noche-odds--dog">+145</span>
+          <span class="noche-vs">VS</span>
+          <span class="noche-odds noche-odds--fav">−170</span>
+          <span class="noche-weight">135 lb</span>
+        </div>
+        <div class="noche-fighter noche-fighter--away">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">KF</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name">Kaito Fujimura</span>
+            <span class="noche-fighter__nick">“Shirasagi”</span>
+            <span class="noche-fighter__record">16–2–0 · 🇯🇵 JPN</span>
+          </span>
+        </div>
+        <div class="noche-odds-bar">
+          <span class="noche-odds-bar__pct">41%</span>
+          <span class="noche-odds-bar__track">
+            <span class="noche-odds-bar__fill" style="width:41%"></span>
+            <span class="noche-odds-bar__fill noche-odds-bar__fill--b" style="width:59%"></span>
+          </span>
+          <span class="noche-odds-bar__pct">59%</span>
+        </div>
+      </div>
+
+      <div class="noche-matchup">
+        <div class="noche-fighter">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">AC</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name">Ana Paula Cifuentes</span>
+            <span class="noche-fighter__nick">“Ave Negra”</span>
+            <span class="noche-fighter__record">9–0–0 · 🇲🇽 MEX</span>
+          </span>
+        </div>
+        <div class="noche-matchup__center">
+          <span class="noche-odds noche-odds--fav">−335</span>
+          <span class="noche-vs">VS</span>
+          <span class="noche-odds noche-odds--dog">+265</span>
+          <span class="noche-weight">125 lb</span>
+        </div>
+        <div class="noche-fighter noche-fighter--away">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">RG</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name">Rhiannon Glaser</span>
+            <span class="noche-fighter__record">8–5–0 · 🇦🇺 AUS</span>
+          </span>
+        </div>
+        <div class="noche-odds-bar">
+          <span class="noche-odds-bar__pct">77%</span>
+          <span class="noche-odds-bar__track">
+            <span class="noche-odds-bar__fill" style="width:77%"></span>
+            <span class="noche-odds-bar__fill noche-odds-bar__fill--b" style="width:23%"></span>
+          </span>
+          <span class="noche-odds-bar__pct">23%</span>
+        </div>
+      </div>
+
+      <div class="noche-card__footer">
+        <span>Momios de apertura · act. 14:20</span>
+        <button class="noche-btn noche-btn--ghost noche-btn--sm">Ver todas</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ prelims ══════════════════════════ -->
+  <section class="pv-section" id="prelims">
+    <div class="noche-section-head">
+      <h2>Preliminares</h2>
+      <span class="noche-engraved">En curso</span>
+    </div>
+
+    <div class="noche-card">
+      <div class="noche-matchup">
+        <div class="noche-fighter">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">NM</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name">Néstor Mancilla</span>
+            <span class="noche-fighter__record">13–5–0 · 🇲🇽 MEX</span>
+          </span>
+        </div>
+        <div class="noche-matchup__center">
+          <span class="noche-status noche-status--live"><span class="noche-status__dot"></span>R2</span>
+          <span class="noche-vs">VS</span>
+          <span class="noche-weight">170 lb</span>
+        </div>
+        <div class="noche-fighter noche-fighter--away">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">BV</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name">Bruno Vásquez</span>
+            <span class="noche-fighter__record">10–4–0 · 🇦🇷 ARG</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="noche-matchup">
+        <div class="noche-fighter">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">YA</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name">Yamil Abdo</span>
+            <span class="noche-fighter__nick">vencedor · KO R1 4:02</span>
+            <span class="noche-fighter__record">18–6–0 · 🇧🇷 BRA</span>
+          </span>
+        </div>
+        <div class="noche-matchup__center">
+          <span class="noche-badge noche-badge--verde">KO</span>
+          <span class="noche-vs">VS</span>
+          <span class="noche-weight">145 lb</span>
+        </div>
+        <div class="noche-fighter noche-fighter--away" style="opacity:.5">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">CF</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name">Cormac Feeney</span>
+            <span class="noche-fighter__record">12–7–0 · 🇮🇪 IRL</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="noche-matchup">
+        <div class="noche-fighter">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">LS</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name">Lupita Serrano</span>
+            <span class="noche-fighter__nick">“Chamaca”</span>
+            <span class="noche-fighter__record">7–1–0 · 🇲🇽 MEX</span>
+          </span>
+        </div>
+        <div class="noche-matchup__center">
+          <span class="noche-odds noche-odds--fav">−145</span>
+          <span class="noche-vs">VS</span>
+          <span class="noche-odds noche-odds--dog">+125</span>
+          <span class="noche-weight">135 lb</span>
+        </div>
+        <div class="noche-fighter noche-fighter--away">
+          <span class="noche-fighter__avatar noche-fighter__avatar--initials">TN</span>
+          <span class="noche-fighter__meta">
+            <span class="noche-fighter__name">Tessa Nyhagen</span>
+            <span class="noche-fighter__record">9–3–0 · 🇳🇴 NOR</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="noche-card__footer">
+        <span class="noche-status noche-status--final"><span class="noche-status__dot"></span>1 finalizada · 2 pendientes</span>
+        <span>Preliminares</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ agave divider ══════════════════════════ -->
+  <div class="pv-agave">
+    <span class="noche-motif" style="color:var(--noche-oro-600);opacity:.45">
+      <svg viewBox="0 0 240 132" aria-hidden="true"><use href="#noche-agave"/></svg>
+    </span>
+  </div>
+  <div class="noche-rule" aria-hidden="true"><span class="noche-rule-mark"></span></div>
+
+  <!-- ══════════════════════════ tape + components ══════════════════════════ -->
+  <section class="pv-section pv-card-cols">
+    <div>
+      <div class="noche-section-head"><h2>Tale of the tape</h2></div>
+      <div class="noche-table-wrap">
+        <table class="noche-table">
+          <caption>Quintero vs. Brooks-Ade</caption>
+          <thead>
+            <tr><th scope="col">Métrica</th><th scope="col">Quintero</th><th scope="col">Brooks-Ade</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Edad</th><td>29</td><td>26</td></tr>
+            <tr><th scope="row">Altura</th><td>5'4"</td><td class="noche-stat-lead">5'6"</td></tr>
+            <tr><th scope="row">Alcance</th><td>66"</td><td class="noche-stat-lead">69"</td></tr>
+            <tr><th scope="row">Guardia</th><td>Ortodoxa</td><td>Zurda</td></tr>
+            <tr><th scope="row">Golpes / min</th><td class="noche-stat-lead">5.14</td><td>4.02</td></tr>
+            <tr><th scope="row">Precisión</th><td class="noche-stat-lead">52%</td><td>47%</td></tr>
+            <tr><th scope="row">Derribos / 15m</th><td>1.86</td><td class="noche-stat-lead">2.41</td></tr>
+            <tr><th scope="row">Def. derribo</th><td class="noche-stat-lead">84%</td><td>71%</td></tr>
+            <tr><th scope="row">Sumisiones / 15m</th><td>0.40</td><td class="noche-stat-lead">1.20</td></tr>
+          </tbody>
+          <tfoot>
+            <tr><td colspan="3">◆ Datos de muestra · peleadores ficticios</td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div style="margin-top:var(--noche-space-8)">
+      <div class="noche-section-head"><h2>Componentes</h2></div>
+      <div class="noche-card noche-card--framed">
+        <div class="noche-card__inner noche-stack">
+          <div>
+            <p class="noche-eyebrow" style="margin-bottom:.5rem">Badges</p>
+            <div class="pv-badges">
+              <span class="noche-badge noche-badge--main">Main event</span>
+              <span class="noche-badge noche-badge--title">◆ Título</span>
+              <span class="noche-badge noche-badge--verde">Vencedor</span>
+              <span class="noche-badge noche-badge--rojo">Cancelada</span>
+              <span class="noche-badge noche-badge--rosa">Debut</span>
+              <span class="noche-badge noche-badge--bone">Co-main</span>
+              <span class="noche-badge noche-badge--ghost">3 rounds</span>
+            </div>
+          </div>
+          <div>
+            <p class="noche-eyebrow" style="margin-bottom:.5rem">Estado</p>
+            <div class="pv-badges">
+              <span class="noche-status noche-status--live"><span class="noche-status__dot"></span>En vivo</span>
+              <span class="noche-status noche-status--upcoming"><span class="noche-status__dot"></span>Próxima</span>
+              <span class="noche-status noche-status--final"><span class="noche-status__dot"></span>Final</span>
+            </div>
+          </div>
+          <div>
+            <p class="noche-eyebrow" style="margin-bottom:.5rem">Momios</p>
+            <div class="pv-badges">
+              <span class="noche-odds noche-odds--fav">−155 <span class="noche-odds__delta">▲6</span></span>
+              <span class="noche-odds">+100</span>
+              <span class="noche-odds noche-odds--dog">+265 <span class="noche-odds__delta">▼12</span></span>
+            </div>
+          </div>
+          <div>
+            <p class="noche-eyebrow" style="margin-bottom:.5rem">Botones</p>
+            <div class="noche-btn-group">
+              <button class="noche-btn noche-btn--primary">Comprar boletos</button>
+              <button class="noche-btn">Recordatorio</button>
+              <button class="noche-btn noche-btn--verde noche-btn--sm">Favorito</button>
+              <button class="noche-btn noche-btn--rojo noche-btn--sm">En vivo</button>
+              <button class="noche-btn noche-btn--ghost noche-btn--sm">Compartir</button>
+              <button class="noche-btn noche-btn--sm" disabled>Agotado</button>
+            </div>
+          </div>
+          <div>
+            <p class="noche-eyebrow" style="margin-bottom:.5rem">Ornamentos</p>
+            <div class="pv-badges" style="gap:1.25rem;color:var(--noche-oro-400)">
+              <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true"><use href="#noche-marigold"/></svg>
+              <svg viewBox="0 0 120 32" width="88" height="24" aria-hidden="true"><use href="#noche-divider-mark"/></svg>
+              <svg viewBox="0 0 120 120" width="34" height="34" aria-hidden="true"><use href="#noche-corner"/></svg>
+              <svg viewBox="0 0 200 240" width="26" height="32" aria-hidden="true"><use href="#noche-calavera"/></svg>
+              <svg viewBox="0 0 240 132" width="56" height="31" aria-hidden="true"><use href="#noche-agave"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ tokens ══════════════════════════ -->
+  <section class="pv-section">
+    <div class="noche-section-head">
+      <h2>Paleta</h2><span class="noche-engraved">tokens</span>
+    </div>
+    <div class="noche-swatches" id="pv-swatches"></div>
+    <p class="pv-note" style="margin-top:.75rem">
+      El tricolor entra como acento — filos, indicadores, papel picado — nunca como fondo.
+    </p>
+  </section>
+
+  <div style="margin-top:3.5rem">
+    <svg class="noche-papel noche-papel--flip" aria-hidden="true">
+      <rect width="100%" height="100%" fill="url(#noche-papel-pattern)"/>
+    </svg>
+  </div>
+
+  <footer class="noche-footer">
+    <span class="noche-motif noche-motif--faint pv-footer-skull">
+      <svg viewBox="0 0 200 240" aria-hidden="true"><use href="#noche-calavera"/></svg>
+    </span>
+    <p class="noche-engraved">UFC Noche · tema visual</p>
+    <p class="pv-note" style="max-width:34rem;margin:.75rem auto 0">
+      Vista previa. Peleadores, momios y estadísticas son ficticios.
+      Ilustración original en la tradición del grabado de José&nbsp;Guadalupe&nbsp;Posada
+      (dominio público); no incluye logotipos, marcas ni ilustraciones de terceros.
+    </p>
+  </footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  /* theme toggle — the whole integration story in six lines */
+  var root  = document.documentElement;
+  var btn   = document.getElementById("pv-theme-toggle");
+  var label = document.getElementById("pv-theme-name");
+  btn.addEventListener("click", function () {
+    var on = root.getAttribute("data-theme") === "noche";
+    root.setAttribute("data-theme", on ? "base" : "noche");
+    label.textContent = on ? "Base" : "Noche";
+    btn.setAttribute("aria-pressed", String(!on));
+  });
+
+  /* tabs */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll(".noche-tab"));
+  tabs.forEach(function (t) {
+    t.addEventListener("click", function () {
+      tabs.forEach(function (o) { o.setAttribute("aria-selected", "false"); });
+      t.setAttribute("aria-selected", "true");
+    });
+  });
+
+  /* fight clock, so "live" actually feels live */
+  var clock = document.getElementById("pv-clock");
+  var secs = 192;
+  setInterval(function () {
+    secs = secs > 0 ? secs - 1 : 300;
+    var m = Math.floor(secs / 60), s = secs % 60;
+    clock.textContent = m + ":" + (s < 10 ? "0" : "") + s;
+  }, 1000);
+
+  /* swatch strip, read straight off the tokens */
+  var names = [
+    "night-900","night-800","night-700","night-600",
+    "bone-100","bone-200","bone-300","bone-400",
+    "oro-100","oro-200","oro-300","oro-400","oro-500","oro-600",
+    "verde-400","verde-500","rojo-400","rojo-500",
+    "cempasuchil-400","rosa-400","turquesa-400","morado-400"
+  ];
+  document.getElementById("pv-swatches").innerHTML = names.map(function (n) {
+    return '<div class="noche-swatch">' +
+             '<div class="noche-swatch__chip" style="background:var(--noche-' + n + ')"></div>' +
+             '<div class="noche-swatch__name">' + n + '</div>' +
+           '</div>';
+  }).join("");
+})();
+</script>
+</body>
+</html>
