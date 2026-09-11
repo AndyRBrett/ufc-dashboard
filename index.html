@@ -1412,26 +1412,34 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
           <span class="theme-swatch" style="background:linear-gradient(135deg,#0b0e14 45%,#16e0cf 45%,#16e0cf 72%,#f23bd4 72%)"></span>
           <span>Apex Neon</span><span class="theme-check">&#10003;</span>
         </button>
-        <button class="btn-more-item theme-item" data-theme="fire" onclick="setTheme('fire')">
-          <span class="theme-swatch" style="background:linear-gradient(135deg,#141009 45%,#ff6a1a 45%,#ff6a1a 72%,#ffc63d 72%)"></span>
-          <span>Knockout Fire</span><span class="theme-check">&#10003;</span>
+        <button class="btn-more-item theme-item" data-theme="usa" onclick="setTheme('usa')">
+          <span class="theme-swatch" style="background:linear-gradient(135deg,#0a3161 40%,#b31942 40%,#b31942 60%,#e7ebf5 60%,#e7ebf5 70%,#b31942 70%,#b31942 80%,#e7ebf5 80%,#e7ebf5 90%,#b31942 90%)"></span>
+          <span>Stars &amp; Stripes</span><span class="theme-check">&#10003;</span>
+        </button>
+        <!-- Swatch is the tricolor in the papel picado's own panel colours, so the
+             chip matches the bunting the theme hangs under the header. -->
+        <button class="btn-more-item theme-item" data-theme="noche" onclick="setTheme('noche')">
+          <span class="theme-swatch" style="background:linear-gradient(135deg,#1e8a53 0 33.34%,#e9dcc2 33.34% 66.67%,#c02a20 66.67%)"></span>
+          <span>UFC Noche</span><span class="theme-check">&#10003;</span>
         </button>
         <button class="btn-more-item theme-item" data-theme="silver" onclick="setTheme('silver')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#e9eef2 0 34%,#0071ce 34% 64%,#c8102e 64% 84%,#0d1418 84%)"></span>
           <span>Silver Bullet</span><span class="theme-check">&#10003;</span>
         </button>
-        <button class="btn-more-item theme-item" data-theme="usa" onclick="setTheme('usa')">
-          <span class="theme-swatch" style="background:linear-gradient(135deg,#0a3161 40%,#b31942 40%,#b31942 60%,#e7ebf5 60%,#e7ebf5 70%,#b31942 70%,#b31942 80%,#e7ebf5 80%,#e7ebf5 90%,#b31942 90%)"></span>
-          <span>Stars &amp; Stripes</span><span class="theme-check">&#10003;</span>
-        </button>
         <button class="btn-more-item theme-item" data-theme="seasonal" onclick="setTheme('seasonal')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#ff7518 0 25%,#c1272d 25% 50%,#2f9e44 50% 75%,#6a3fd6 75%)"></span>
           <span>Seasonal</span><span class="theme-check">&#10003;</span>
         </button>
-        <button class="btn-more-item theme-item" data-theme="noche" onclick="setTheme('noche')">
-          <span class="theme-swatch" style="background:linear-gradient(135deg,#04050a 0 45%,#dfa93a 45% 82%,#2fae6d 82% 88%,#f4ecdb 88% 94%,#e0463a 94%)"></span>
-          <span>UFC Noche</span><span class="theme-check">&#10003;</span>
-        </button>
+        <!-- Knockout Fire is ARCHIVED: pulled from the picker, but its palette,
+             its _ok entry and its THEMES entry all stay. Anyone already carrying
+             ufc_theme="fire" in localStorage keeps rendering it correctly — they
+             just can't newly select it, and can't get it back once they leave.
+             Deleting the palette instead would silently drop those users to
+             Octagon Dark on their next load. -->
+        <!-- <button class="btn-more-item theme-item" data-theme="fire" onclick="setTheme('fire')">
+          <span class="theme-swatch" style="background:linear-gradient(135deg,#141009 45%,#ff6a1a 45%,#ff6a1a 72%,#ffc63d 72%)"></span>
+          <span>Knockout Fire</span><span class="theme-check">&#10003;</span>
+        </button> -->
         <div class="btn-more-sep"></div>
         <button class="btn-more-item" id="installBtn" onclick="showInstall();closeMoreMenu()" style="display:none">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="6" x2="12" y2="12"/><polyline points="9 9 12 6 15 9"/></svg>
