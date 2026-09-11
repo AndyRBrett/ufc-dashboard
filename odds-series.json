@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T22:25:38Z",
+  "generated_at": "2026-09-11T03:57:35Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -6973,7 +6973,7 @@
           "f1": "Jean Silva",
           "f2": "Jose Delgado",
           "lbl": "Main Event",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -7034,6 +7034,11 @@
               "at": "2026-09-10T04:01:05Z",
               "f1_odds": -428,
               "f2_odds": 313
+            },
+            {
+              "at": "2026-09-11T03:57:35Z",
+              "f1_odds": -425,
+              "f2_odds": 317
             }
           ],
           "open": {
@@ -7113,7 +7118,7 @@
           "f1": "Tommy McMillen",
           "f2": "Marwan Rahiki",
           "lbl": "Main Card",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -7189,6 +7194,11 @@
               "at": "2026-09-10T22:25:38Z",
               "f1_odds": -163,
               "f2_odds": 131
+            },
+            {
+              "at": "2026-09-11T03:57:35Z",
+              "f1_odds": -156,
+              "f2_odds": 128
             }
           ],
           "open": {
@@ -7358,7 +7368,7 @@
           "f1": "David Martinez",
           "f2": "Dan Ige",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -7419,6 +7429,11 @@
               "at": "2026-09-10T22:25:38Z",
               "f1_odds": -403,
               "f2_odds": 307
+            },
+            {
+              "at": "2026-09-11T03:57:35Z",
+              "f1_odds": -423,
+              "f2_odds": 320
             }
           ],
           "open": {
@@ -7433,7 +7448,7 @@
           "f1": "Tim Elliott",
           "f2": "Edgar Chairez",
           "lbl": "Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -7504,6 +7519,11 @@
               "at": "2026-09-10T22:25:38Z",
               "f1_odds": 173,
               "f2_odds": -217
+            },
+            {
+              "at": "2026-09-11T03:57:35Z",
+              "f1_odds": 178,
+              "f2_odds": -223
             }
           ],
           "open": {
@@ -7603,7 +7623,7 @@
           "f1": "Yousri Belgaroui",
           "f2": "Djorden Santos",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -7659,6 +7679,11 @@
               "at": "2026-09-10T22:25:38Z",
               "f1_odds": -828,
               "f2_odds": 533
+            },
+            {
+              "at": "2026-09-11T03:57:35Z",
+              "f1_odds": -845,
+              "f2_odds": 542
             }
           ],
           "open": {
@@ -7793,7 +7818,7 @@
           "f1": "JJ Aldrich",
           "f2": "Regina Tarin",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -7859,6 +7884,11 @@
               "at": "2026-09-10T22:25:38Z",
               "f1_odds": 232,
               "f2_odds": -288
+            },
+            {
+              "at": "2026-09-11T03:57:35Z",
+              "f1_odds": 230,
+              "f2_odds": -286
             }
           ],
           "open": {
@@ -7873,7 +7903,7 @@
           "f1": "Drakkar Klose",
           "f2": "Thomas Gantt",
           "lbl": "Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-09-05T03:51:19Z",
@@ -7919,6 +7949,11 @@
               "at": "2026-09-10T22:25:38Z",
               "f1_odds": 347,
               "f2_odds": -468
+            },
+            {
+              "at": "2026-09-11T03:57:35Z",
+              "f1_odds": 343,
+              "f2_odds": -463
             }
           ],
           "open": {
@@ -9168,7 +9203,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Tim Elliott",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -220,
         "close": null,
         "clv": null
@@ -10486,7 +10521,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Marwan Rahiki",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -145,
         "close": null,
         "clv": null
@@ -11974,7 +12009,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Jose Delgado",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -407,
         "close": null,
         "clv": null
@@ -11985,7 +12020,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Jean Silva",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 320,
         "close": null,
         "clv": null
@@ -12018,7 +12053,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Tommy McMillen",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 124,
         "close": null,
         "clv": null
@@ -12073,7 +12108,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Dan Ige",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -285,
         "close": null,
         "clv": null
@@ -12084,7 +12119,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "David Martinez",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 234,
         "close": null,
         "clv": null
@@ -12095,7 +12130,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Edgar Chairez",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": 184,
         "close": null,
         "clv": null
@@ -12128,7 +12163,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Djorden Santos",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -700,
         "close": null,
         "clv": null
@@ -12139,7 +12174,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Yousri Belgaroui",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 490,
         "close": null,
         "clv": null
@@ -12183,7 +12218,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Regina Tarin",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 191,
         "close": null,
         "clv": null
@@ -12194,7 +12229,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "JJ Aldrich",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -230,
         "close": null,
         "clv": null
@@ -12205,7 +12240,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Thomas Gantt",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": 371,
         "close": null,
         "clv": null
@@ -12216,7 +12251,7 @@
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
         "opponent": "Drakkar Klose",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": -500,
         "close": null,
         "clv": null
