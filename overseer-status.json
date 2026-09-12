@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-11T22:25:04Z",
+  "generated_at": "2026-09-12T00:03:50Z",
   "events_tracked": 13,
   "stale_events": 1,
-  "parse_failure_events": 0,
-  "awaiting_card_events": 5,
+  "parse_failure_events": 1,
+  "awaiting_card_events": 4,
   "odds_unavailable_events": 0,
   "odds_budget_exhausted": false,
   "odds_budget": {
     "exhausted": false,
     "reset_day": 1,
-    "resets_in_days": 20,
+    "resets_in_days": 19,
     "most_affected": []
   },
   "stale_threshold_hours": 48,
@@ -105,8 +105,8 @@
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
-      "status": "awaiting-card",
-      "last_changed_at": "2026-09-11T22:25:04Z",
+      "status": "parse-failure",
+      "last_changed_at": "2026-09-12T00:03:50Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -124,7 +124,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-11T22:25:04Z",
+      "last_changed_at": "2026-09-12T00:03:50Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -133,7 +133,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-11T22:25:04Z",
+      "last_changed_at": "2026-09-12T00:03:50Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -151,7 +151,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-292",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-11T22:25:04Z",
+      "last_changed_at": "2026-09-12T00:03:50Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 2,
@@ -160,7 +160,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-11T22:25:04Z",
+      "last_changed_at": "2026-09-12T00:03:50Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -514,5 +514,7 @@
       "priority": 27.5
     }
   ],
-  "errors": []
+  "errors": [
+    "odds missing on an announced card (bouts parsed, zero priced): 2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos"
+  ]
 }
