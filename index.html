@@ -2149,6 +2149,41 @@ function fmtUpdated(s){
 }
 function fmtOdds(n){return n>0?"+"+n:""+n;}
 function pk(ev,fight){return ev.date+"|"+fight.f1.n+"|"+fight.f2.n;}
+// Fighter names reach the app from two places that don't always agree on
+// generational suffixes: the bout listing and the fighter-stats page. At Noche
+// (UFC Fight Night: Silva vs. Delgado, 2026-09-12) ufcstats renamed
+// "Sean King III" to "Sean King" MID-CARD, between the 19:04 and 19:08 scrapes —
+// after picks were in and right as his result landed. Every pick was stored under
+// the old spelling, so the bout lookup (f.f1.n===p.f1) stopped finding the fight
+// and the winner compare (fight.winner===p.pick) stopped matching: correct picks
+// silently went unscored and showed as pending forever.
+//
+// So fighters are never compared by raw string. nmKey folds away case, accents,
+// punctuation and Jr/Sr/II-IV suffixes; nmEq compares on it. Suffix-only
+// namesakes would collide, but every comparison here is already scoped to one
+// bout on one date, where that can't happen.
+// fighter-names:start
+var _NM_SUFFIX_RE=/\b(?:jr|sr|ii|iii|iv)\b/g;
+function nmKey(n){
+  var s=String(n==null?"":n);
+  if(s.normalize)s=s.normalize("NFD").replace(/[̀-ͯ]/g,"");
+  return s.toLowerCase()
+    .replace(/[.,'’`‘\-]/g," ")
+    .replace(_NM_SUFFIX_RE," ")
+    .replace(/\s+/g," ").trim();
+}
+// True when two fighter names refer to the same person. Blank never matches
+// blank — an undecided bout has winner:"" and must not read as "you were right".
+function nmEq(a,b){
+  if(a&&a===b)return true;
+  var x=nmKey(a);
+  return !!x&&x===nmKey(b);
+}
+// True when `f` (an EVENTS bout) is the bout between `a` and `b`, in either corner.
+function nmBout(f,a,b){
+  return (nmEq(f.f1.n,a)&&nmEq(f.f2.n,b))||(nmEq(f.f1.n,b)&&nmEq(f.f2.n,a));
+}
+// fighter-names:end
 // Nicknames are stored as "<emoji> <name>" — but not reliably. Legacy rows carry
 // no emoji at all, and nothing stops an emoji with no space after it. Nine places
 // independently split on the FIRST SPACE, which meant:
@@ -2228,16 +2263,59 @@ function saveConf(){_saveJSON("ufc_conf",preds_conf);}
 // the "you" leaderboard chip) silently misses. Re-key any reversed-order entries to the
 // current order so the whole app stays order-agnostic — the same two-way intent the DB
 // scoring already uses. Cheap no-op when nothing flipped.
+// pick-reconcile:start
+// Set when a pick was re-keyed across a RENAME (not a bare corner flip). The
+// server row still carries the old spelling in its conflict key, so syncAllPicks
+// has to prune it — see the comment there.
+var _pickSpellingChanged=false;
 function _reconcilePickOrder(){
   var moved=false,movedM=false,movedC=false;
+  // A RENAME orphans local picks the same way an order flip does, and the key
+  // carries BOTH names, so it can't be repaired by checking the two orders alone.
+  // Index every stored key for this date under its normalized fighter pair, then
+  // look the current bout up in that index — which catches a flip, a rename, or
+  // both at once. (Noche: "Sean King III" → "Sean King" mid-card.)
+  var byPair={};
+  Object.keys(preds).forEach(function(k){
+    var parts=k.split("|");
+    if(parts.length!==3)return;                       // fotn_/legacy keys — not bout keys
+    var pair=parts[0]+"|"+[nmKey(parts[1]),nmKey(parts[2])].sort().join("|");
+    if(!byPair[pair])byPair[pair]=k;                  // first wins; exact-match keys are preferred below
+  });
   EVENTS.forEach(function(ev){ev.fights.forEach(function(f){
     var k=ev.date+"|"+f.f1.n+"|"+f.f2.n,kr=ev.date+"|"+f.f2.n+"|"+f.f1.n;
-    if(preds[k]===undefined&&preds[kr]!==undefined){preds[k]=preds[kr];delete preds[kr];moved=true;}
-    if(preds_method[k]===undefined&&preds_method[kr]!==undefined){preds_method[k]=preds_method[kr];delete preds_method[kr];movedM=true;}
-    if(preds_conf[k]===undefined&&preds_conf[kr]!==undefined){preds_conf[k]=preds_conf[kr];delete preds_conf[kr];movedC=true;}
+    var alt=preds[kr]!==undefined?kr:
+      (byPair[ev.date+"|"+[nmKey(f.f1.n),nmKey(f.f2.n)].sort().join("|")]||null);
+    if(alt===k)alt=null;                              // already under the current spelling
+    if(alt){
+      // A bare corner flip re-keys to the SAME two names, and syncPick already
+      // deletes that reverse-order row. A rename re-keys to a DIFFERENT name, so
+      // the old server row survives the upsert and has to be pruned separately.
+      var ap=alt.split("|");
+      if(!(ap[1]===f.f2.n&&ap[2]===f.f1.n))_pickSpellingChanged=true;
+      if(preds[k]===undefined&&preds[alt]!==undefined){preds[k]=preds[alt];delete preds[alt];moved=true;}
+      if(preds_method[k]===undefined&&preds_method[alt]!==undefined){preds_method[k]=preds_method[alt];delete preds_method[alt];movedM=true;}
+      if(preds_conf[k]===undefined&&preds_conf[alt]!==undefined){preds_conf[k]=preds_conf[alt];delete preds_conf[alt];movedC=true;}
+      // resolvedPicks is iterated by KEY for the streak/record tallies, so a stale
+      // entry left under the old spelling is counted a SECOND time alongside the
+      // re-keyed bout. Move it with the rest instead of leaving it behind.
+      if(resolvedPicks[alt]!==undefined){
+        if(resolvedPicks[k]===undefined)resolvedPicks[k]=resolvedPicks[alt];
+        delete resolvedPicks[alt];
+        try{localStorage.setItem("ufc_resolved",JSON.stringify(resolvedPicks));}catch(e){}
+      }
+    }
+    // The pick VALUE is a fighter name too, and every local read compares it to
+    // f1.n/f2.n/winner by string. Re-spell it to whatever the card says now.
+    var v=preds[k];
+    if(v&&v!==f.f1.n&&v!==f.f2.n){
+      if(nmEq(v,f.f1.n)){preds[k]=f.f1.n;moved=true;}
+      else if(nmEq(v,f.f2.n)){preds[k]=f.f2.n;moved=true;}
+    }
   });});
   if(moved)save();if(movedM)saveMethod();if(movedC)saveConf();
 }
+// pick-reconcile:end
 
 function _sbHeaders(){return{apikey:SUPABASE_ANON,Authorization:_authBearer(),"Content-Type":"application/json"};}
 function _sbQ(ev,fight){return"?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(ev.date)+"&f1=eq."+encodeURIComponent(fight.f1.n)+"&f2=eq."+encodeURIComponent(fight.f2.n);}
@@ -2308,11 +2386,22 @@ function _dedupeMyPicks(){
         if(!Array.isArray(rows)||rows.length<2)return;
         if(!_fightIndex)_buildFightIndex();
         var groups={};
-        rows.forEach(function(p){var g=p.event_date+"|"+[p.f1,p.f2].sort().join("|");(groups[g]=groups[g]||[]).push(p);});
+        rows.forEach(function(p){var g=p.event_date+"|"+[nmKey(p.f1),nmKey(p.f2)].sort().join("|");(groups[g]=groups[g]||[]).push(p);});
         var del=[];
         Object.keys(groups).forEach(function(g){
           var arr=groups[g];if(arr.length<2)return;       // not duplicated — leave alone
-          var fi=_fightIndex[arr[0].event_date+"|"+arr[0].f1+"|"+arr[0].f2]||_fightIndex[arr[0].event_date+"|"+arr[0].f2+"|"+arr[0].f1]||null;
+          var fi=null;
+          for(var ai=0;ai<arr.length&&!fi;ai++){
+            fi=_fightIndex[arr[ai].event_date+"|"+arr[ai].f1+"|"+arr[ai].f2]||_fightIndex[arr[ai].event_date+"|"+arr[ai].f2+"|"+arr[ai].f1]||null;
+          }
+          // A renamed bout is in the index under the NEW spelling only, so fall back
+          // to scanning the date's bouts for the same pair, compared name-tolerantly.
+          if(!fi)for(var ei=0;ei<EVENTS.length&&!fi;ei++){
+            if(EVENTS[ei].date!==arr[0].event_date)continue;
+            for(var fj=0;fj<EVENTS[ei].fights.length;fj++){
+              if(nmBout(EVENTS[ei].fights[fj],arr[0].f1,arr[0].f2)){fi={fight:EVENTS[ei].fights[fj]};break;}
+            }
+          }
           var keep=null;
           if(fi){keep=arr.filter(function(p){return p.f1===fi.fight.f1.n&&p.f2===fi.fight.f2.n;})[0];}
           if(!keep)keep=arr[0];                            // newest (rows are updated_at desc)
@@ -2329,7 +2418,22 @@ function _dedupeMyPicks(){
 function syncAllPicks(){
   if(!userName)return;
   _authReady.then(function(){
-    EVENTS.forEach(function(ev){ev.fights.forEach(function(fight){if(preds[pk(ev,fight)])syncPick(ev,fight);});});
+    var jobs=[];
+    EVENTS.forEach(function(ev){ev.fights.forEach(function(fight){if(preds[pk(ev,fight)])jobs.push(syncPick(ev,fight));});});
+    // A pick re-keyed across a rename upserts under the NEW spelling, but the
+    // conflict key is (user_id,event_date,f1,f2) — so the OLD-name row SURVIVES
+    // beside it and scoring counts the same pick twice (total, correct and the
+    // dog bonus all double, on the board and in the belt lineage).
+    //
+    // Neither existing cleanup catches it: syncPick only deletes the reverse
+    // ordering of the current spelling, and _dedupeMyPicks already ran — and
+    // latched _dedupeRan — during the initial render, BEFORE this row existed.
+    // So re-run the dedupe once the upserts land. It groups by nmKey and keeps
+    // the row matching current event data, which is exactly the stale alias we
+    // need pruned; without this it only heals on the user's next page load.
+    if(!_pickSpellingChanged)return;
+    _pickSpellingChanged=false;
+    return Promise.all(jobs).then(function(){_dedupeRan=false;_dedupeMyPicks();});
   });
 }
 var _rtWs=null,_rtRef=0,_rtJoinRef=null,_rtOpen=false,_rtCbs=[];
@@ -5179,7 +5283,7 @@ function renderPicksWidget(){
     }
     var bdg=document.createElement("div");bdg.className="pick-result-badge";
     if(!p.result){bdg.className+=" pending";bdg.textContent="Pending";}
-    else if(p.result===p.pick){
+    else if(nmEq(p.result,p.pick)){
       bdg.className+=" win";bdg.textContent="Correct";correct++;resolved++;
       if(ei>=0){var rk=pk(EVENTS[ei],p.fight);resolvedPicks[rk]="win";try{localStorage.setItem("ufc_resolved",JSON.stringify(resolvedPicks));}catch(e){}}
     } else {
@@ -6062,6 +6166,7 @@ function generateTrashTalk(){
 // scoreboard rounding. +250 (~29% implied) is the second rung: a real upset.
 // A correct +250 dog therefore pays 2 pts — exactly double a favourite — which
 // caps the swing so one lucky longshot can't run away with the card.
+// pick-match:start
 var DOG_TIERS=[{min:250,pts:1},{min:150,pts:0.5}];
 // Underdog points for one moneyline. Favourites (negative odds) and short dogs
 // under the first tier earn nothing extra.
@@ -6075,8 +6180,8 @@ function dogPtsFor(odds){
 // stored line (odds:null — the API had nothing for it) simply scores no bonus.
 function dogPtsForPick(odds,f1n,f2n,pickName){
   if(!odds||!pickName)return 0;
-  if(pickName===f1n)return dogPtsFor(odds.f1);
-  if(pickName===f2n)return dogPtsFor(odds.f2);
+  if(nmEq(pickName,f1n))return dogPtsFor(odds.f1);
+  if(nmEq(pickName,f2n))return dogPtsFor(odds.f2);
   return 0;
 }
 // Total points for a leaderboard user row — the one formula every board, badge
@@ -6126,14 +6231,14 @@ function _isMainCardPick(date,f1,f2){
     if(EVENTS[i].date!==date)continue;
     for(var j=0;j<EVENTS[i].fights.length;j++){
       var f=EVENTS[i].fights[j];
-      if((f.f1.n===f1&&f.f2.n===f2)||(f.f1.n===f2&&f.f2.n===f1))return isMainCardBout(f);
+      if(nmBout(f,f1,f2))return isMainCardBout(f);
     }
     break;   // event is known but this bout isn't on it
   }
   var a=RESULTS_ARCHIVE[date];
   if(a&&a.fights)for(var k=0;k<a.fights.length;k++){
     var af=a.fights[k];
-    if((af.f1===f1&&af.f2===f2)||(af.f1===f2&&af.f2===f1))
+    if((nmEq(af.f1,f1)&&nmEq(af.f2,f2))||(nmEq(af.f1,f2)&&nmEq(af.f2,f1)))
       return af.lbl?isMainCardBout(af):k<MAIN_CARD_BOUTS;
   }
   return false;
@@ -6149,7 +6254,7 @@ function _findFightResult(date,f1,f2){
     if(EVENTS[i].date!==date)continue;
     for(var j=0;j<EVENTS[i].fights.length;j++){
       var f=EVENTS[i].fights[j];
-      if((f.f1.n===f1&&f.f2.n===f2)||(f.f1.n===f2&&f.f2.n===f1))
+      if(nmBout(f,f1,f2))
         // odds/f1n/f2n ride along so callers can price the underdog bonus without
         // re-finding the bout. The archive branch below has no line on record for
         // cards that aged out of EVENTS, so those simply score no bonus.
@@ -6159,7 +6264,7 @@ function _findFightResult(date,f1,f2){
   var a=RESULTS_ARCHIVE[date];
   if(a&&a.fights)for(var k=0;k<a.fights.length;k++){
     var af=a.fights[k];
-    if((af.f1===f1&&af.f2===f2)||(af.f1===f2&&af.f2===f1))
+    if((nmEq(af.f1,f1)&&nmEq(af.f2,f2))||(nmEq(af.f1,f2)&&nmEq(af.f2,f1)))
       return af.winner?{winner:af.winner,method:af.method||""}:null;
   }
   return null;
@@ -6168,6 +6273,7 @@ function _findFightResult(date,f1,f2){
 // An event is "finished" when every fight is final, or the card is >2 days old
 // with results in (a cancelled bout would otherwise hold it "pre" forever).
 // Cards that have aged out of EVENTS count as finished via the results archive.
+// pick-match:end
 function _eventFinished(date){
   for(var i=0;i<EVENTS.length;i++){
     if(EVENTS[i].date!==date)continue;
@@ -6197,7 +6303,7 @@ function computeBeltLineage(rows){
     var d=evScores[p.event_date]||(evScores[p.event_date]={});
     var u=d[base]||(d[base]={name:p.nickname,pts:0,correct:0,total:0});
     u.total++;
-    if(res.winner===p.pick){u.correct++;u.pts+=1+(scoreMethod(p.method||"",res.method||"")?0.5:0)+dogPtsForPick(res.odds,res.f1n,res.f2n,p.pick);}
+    if(nmEq(res.winner,p.pick)){u.correct++;u.pts+=1+(scoreMethod(p.method||"",res.method||"")?0.5:0)+dogPtsForPick(res.odds,res.f1n,res.f2n,p.pick);}
   });
   // Finished events, oldest first
   var evNames={},dates=[];
@@ -6354,7 +6460,7 @@ function loadLeaderboard(isLive){
         if(EVENTS[i].date===p.event_date){
           for(var j=0;j<EVENTS[i].fights.length;j++){
             var f=EVENTS[i].fights[j];
-            if((f.f1.n===p.f1&&f.f2.n===p.f2)||(f.f1.n===p.f2&&f.f2.n===p.f1)){fight=f;break;}
+            if(nmBout(f,p.f1,p.f2)){fight=f;break;}
           }
           if(fight)break;
         }
@@ -6368,7 +6474,7 @@ function loadLeaderboard(isLive){
       var dogPts=fight?dogPtsForPick(fight.odds,fight.f1.n,fight.f2.n,p.pick):0;
       users[uid].total++;
       if(fight&&fight.winner){
-        if(fight.winner===p.pick){
+        if(nmEq(fight.winner,p.pick)){
           users[uid].correct++;result=true;users[uid].dogPts+=dogPts;
           console.log("[lb score]",p.f1,"vs",p.f2,"→ winner match. p.method="+JSON.stringify(p.method)+" fallback="+JSON.stringify(pickedMethod)+" fight.method="+JSON.stringify(fight.method));
           if(scoreMethod(pickedMethod,fight.method||"")){users[uid].methods++;methodCorrect=true;}
@@ -6426,11 +6532,11 @@ function loadLeaderboard(isLive){
     sorted.forEach(function(u){
       u.picks.forEach(function(p){
         var ev=null,fight=null;
-        for(var i=0;i<EVENTS.length;i++){if(EVENTS[i].date===p.evDate){ev=EVENTS[i];for(var j=0;j<ev.fights.length;j++){var f=ev.fights[j];if((f.f1.n===p.f1&&f.f2.n===p.f2)||(f.f1.n===p.f2&&f.f2.n===p.f1)){fight=f;break;}}break;}}
+        for(var i=0;i<EVENTS.length;i++){if(EVENTS[i].date===p.evDate){ev=EVENTS[i];for(var j=0;j<ev.fights.length;j++){var f=ev.fights[j];if(nmBout(f,p.f1,p.f2)){fight=f;break;}}break;}}
         if(!ev||!fight)return;
         var key=pk(ev,fight);
         if(!_fnPicksByFight[key])_fnPicksByFight[key]={f1:[],f2:[]};
-        _fnPicksByFight[key][p.pick===fight.f1.n?"f1":"f2"].push({nickname:u.nickname,user_id:u.user_id,isMe:u.isMe});
+        _fnPicksByFight[key][nmEq(p.pick,fight.f1.n)?"f1":"f2"].push({nickname:u.nickname,user_id:u.user_id,isMe:u.isMe});
       });
     });
     _lbSorted=sorted;
@@ -6566,10 +6672,10 @@ function loadLeaderboard(isLive){
         // (e.g. when winners are filled in), and stored picks keep the old order. Scoring
         // already matches both ways (see above), so the chips must too — otherwise an
         // order swap makes a real pick render as "?".
-        u.picks.forEach(function(p){if(p.evDate===nextEv.date){var entry={pick:p.pick,method:p.method};var k1=p.f1+"|"+p.f2,k2=p.f2+"|"+p.f1;if(!nextMap[k1])nextMap[k1]=entry;if(!nextMap[k2])nextMap[k2]=entry;}});
+        u.picks.forEach(function(p){if(p.evDate===nextEv.date){var entry={pick:p.pick,method:p.method};[p.f1+"|"+p.f2,p.f2+"|"+p.f1,nmKey(p.f1)+"|"+nmKey(p.f2),nmKey(p.f2)+"|"+nmKey(p.f1)].forEach(function(k){if(!nextMap[k])nextMap[k]=entry;});}});
         nextMainFights.forEach(function(f){
           var fkey=pk(nextEv,f);
-          var entry=nextMap[f.f1.n+"|"+f.f2.n];
+          var entry=nextMap[f.f1.n+"|"+f.f2.n]||nextMap[nmKey(f.f1.n)+"|"+nmKey(f.f2.n)];
           // For current user prefer localStorage so display matches main page; fall back to
           // the (order-agnostic) server entry so a not-yet-reconciled order flip still renders.
           var picked=u.isMe?(preds[fkey]||(entry?entry.pick:null)):(entry?entry.pick:null);
@@ -6582,10 +6688,15 @@ function loadLeaderboard(isLive){
           // the same rule sitting a few hundred lines from the first.
           if(!isMainCardBout(f)&&(lbScope==="main"||!picked))return;
           var chip=document.createElement("span");chip.className="lb-pick-chip";
-          var nameSpan=document.createElement("span");nameSpan.textContent=picked?picked.split(" ").pop():"?";chip.appendChild(nameSpan);
+          // Render the card's own spelling, not the stored one: a pick synced before
+          // a rename still reads "Sean King III", and last-word-of-name would put a
+          // bare "III" on the chip. nmEq picks the matching corner; the raw value is
+          // only the fallback for a bout we couldn't resolve at all.
+          var pickedShown=picked?(nmEq(picked,f.f1.n)?f.f1.n:nmEq(picked,f.f2.n)?f.f2.n:picked):null;
+          var nameSpan=document.createElement("span");nameSpan.textContent=pickedShown?pickedShown.split(" ").pop():"?";chip.appendChild(nameSpan);
           if(picked&&chipMethod){var ms=document.createElement("span");ms.className="lb-pick-method";var mAbbr=chipMethod==="KO/TKO"?"KO":chipMethod;ms.textContent=mAbbr;chip.appendChild(ms);}
           if(!picked){chip.classList.add("lbc-none");}
-          else if(f.winner){chip.classList.add(picked===f.winner?"lbc-win":"lbc-loss");}
+          else if(f.winner){chip.classList.add(nmEq(picked,f.winner)?"lbc-win":"lbc-loss");}
           else if(u.isMe){chip.classList.add("lbc-me");}
           nextPicksDiv.appendChild(chip);
         });
@@ -6605,7 +6716,7 @@ function loadLeaderboard(isLive){
         if(p.evDate&&(!evDates[k]||p.evDate>evDates[k]))evDates[k]=p.evDate;
       });
       evOrder.sort(function(a,b){return String(evDates[b]||"").localeCompare(String(evDates[a]||""));});
-      function _fightIdx(p){for(var i=0;i<EVENTS.length;i++){if(EVENTS[i].date===p.evDate){for(var j=0;j<EVENTS[i].fights.length;j++){var f=EVENTS[i].fights[j];if((f.f1.n===p.f1&&f.f2.n===p.f2)||(f.f1.n===p.f2&&f.f2.n===p.f1))return j;}}}return 999;}
+      function _fightIdx(p){for(var i=0;i<EVENTS.length;i++){if(EVENTS[i].date===p.evDate){for(var j=0;j<EVENTS[i].fights.length;j++){var f=EVENTS[i].fights[j];if(nmBout(f,p.f1,p.f2))return j;}}}return 999;}
       evOrder.forEach(function(evName){byEv[evName].sort(function(a,b){return _fightIdx(a)-_fightIdx(b);});});
       evOrder.forEach(function(evName,evIdx){
         var evLbl=document.createElement("div");
@@ -6737,7 +6848,7 @@ function _chalEvLocked(c){
     if(c.f1&&c.f2){
       for(var j=0;j<ev.fights.length;j++){
         var f=ev.fights[j];
-        if((f.f1.n===c.f1&&f.f2.n===c.f2)||(f.f1.n===c.f2&&f.f2.n===c.f1))return f.state==="post";
+        if(nmBout(f,c.f1,c.f2))return f.state==="post";
       }
       // target bout not on the card (cancelled/renamed) → fall back to card-level
     }
@@ -6751,19 +6862,19 @@ function _userFightPick(base,evDate,f1,f2){
   if(!_lbRows)return null;
   for(var i=0;i<_lbRows.length;i++){var p=_lbRows[i];
     if(p.event_date===evDate&&_lbBaseName(p.nickname)===base&&
-       ((p.f1===f1&&p.f2===f2)||(p.f1===f2&&p.f2===f1)))return p;}
+       ((nmEq(p.f1,f1)&&nmEq(p.f2,f2))||(nmEq(p.f1,f2)&&nmEq(p.f2,f1))))return p;}
   return null;
 }
 function _userEventScore(base,evDate){
   var pts=0,resolved=0,seen={};
   if(_lbRows)_lbRows.forEach(function(p){
     if(p.event_date!==evDate||_lbBaseName(p.nickname)!==base)return;
-    var fk=[p.f1,p.f2].sort().join("|");
+    var fk=[nmKey(p.f1),nmKey(p.f2)].sort().join("|");
     if(seen[fk])return;seen[fk]=true;          // rows are newest-first; keep the latest per fight
     var res=_findFightResult(p.event_date,p.f1,p.f2);
     if(!res)return;
     resolved++;
-    if(res.winner===p.pick)pts+=1+(scoreMethod(p.method||"",res.method||"")?0.5:0)+dogPtsForPick(res.odds,res.f1n,res.f2n,p.pick);
+    if(nmEq(res.winner,p.pick))pts+=1+(scoreMethod(p.method||"",res.method||"")?0.5:0)+dogPtsForPick(res.odds,res.f1n,res.f2n,p.pick);
   });
   return{pts:pts,resolved:resolved};
 }
@@ -6779,7 +6890,7 @@ function resolveChallenge(c){
     if(!cp&&!tp)return{kind:"void",how:"neither picked"};
     if(!cp)return{kind:"decided",winner:c.target_name,loser:c.challenger_name,how:"forfeit — no pick"};
     if(!tp)return{kind:"decided",winner:c.challenger_name,loser:c.target_name,how:"forfeit — no pick"};
-    function pts(p){return res.winner===p.pick?1+(scoreMethod(p.method||"",res.method||"")?0.5:0)+dogPtsForPick(res.odds,res.f1n,res.f2n,p.pick):0;}
+    function pts(p){return nmEq(res.winner,p.pick)?1+(scoreMethod(p.method||"",res.method||"")?0.5:0)+dogPtsForPick(res.odds,res.f1n,res.f2n,p.pick):0;}
     var a=pts(cp),b=pts(tp);
     if(a===b)return{kind:"push"};
     return a>b?{kind:"decided",winner:c.challenger_name,loser:c.target_name}
@@ -7011,7 +7122,7 @@ function renderActivityFeed(){
     var base=_lbBaseName(p.nickname)||"anon";
     var u=perUser[base]||(perUser[base]={name:p.nickname,res:[]});
     u.name=p.nickname;
-    u.res.push({d:p.event_date,w:res.winner===p.pick});
+    u.res.push({d:p.event_date,w:nmEq(res.winner,p.pick)});
   });
   Object.keys(perUser).forEach(function(b){
     var u=perUser[b];
@@ -7075,7 +7186,7 @@ function _slackersFor(nextEv,rows){
   var mainKeys={},mainTotal=0;
   nextEv.fights.forEach(function(f){
     if(f.lbl!=="Main Event"&&f.lbl!=="Co-Main"&&f.lbl!=="Main Card")return;
-    mainKeys[[f.f1.n,f.f2.n].sort().join("|")]=true;mainTotal++;
+    mainKeys[[nmKey(f.f1.n),nmKey(f.f2.n)].sort().join("|")]=true;mainTotal++;
   });
   if(!mainTotal)return[];
   var users={},cutoff=Date.now()-60*DAY_MS;
@@ -7087,7 +7198,7 @@ function _slackersFor(nextEv,rows){
     if(p.user_id&&t>=u._uidT){u._uidT=t;u.user_id=p.user_id;}
     if(p.event_date>u.latestEv)u.latestEv=p.event_date;
     if(p.event_date===nextEv.date){
-      var fk=[p.f1,p.f2].sort().join("|");
+      var fk=[nmKey(p.f1),nmKey(p.f2)].sort().join("|");
       if(mainKeys[fk])u.picked[fk]=true;
     }
   });
