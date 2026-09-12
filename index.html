@@ -2263,6 +2263,11 @@ function saveConf(){_saveJSON("ufc_conf",preds_conf);}
 // the "you" leaderboard chip) silently misses. Re-key any reversed-order entries to the
 // current order so the whole app stays order-agnostic — the same two-way intent the DB
 // scoring already uses. Cheap no-op when nothing flipped.
+// pick-reconcile:start
+// Set when a pick was re-keyed across a RENAME (not a bare corner flip). The
+// server row still carries the old spelling in its conflict key, so syncAllPicks
+// has to prune it — see the comment there.
+var _pickSpellingChanged=false;
 function _reconcilePickOrder(){
   var moved=false,movedM=false,movedC=false;
   // A RENAME orphans local picks the same way an order flip does, and the key
@@ -2283,6 +2288,11 @@ function _reconcilePickOrder(){
       (byPair[ev.date+"|"+[nmKey(f.f1.n),nmKey(f.f2.n)].sort().join("|")]||null);
     if(alt===k)alt=null;                              // already under the current spelling
     if(alt){
+      // A bare corner flip re-keys to the SAME two names, and syncPick already
+      // deletes that reverse-order row. A rename re-keys to a DIFFERENT name, so
+      // the old server row survives the upsert and has to be pruned separately.
+      var ap=alt.split("|");
+      if(!(ap[1]===f.f2.n&&ap[2]===f.f1.n))_pickSpellingChanged=true;
       if(preds[k]===undefined&&preds[alt]!==undefined){preds[k]=preds[alt];delete preds[alt];moved=true;}
       if(preds_method[k]===undefined&&preds_method[alt]!==undefined){preds_method[k]=preds_method[alt];delete preds_method[alt];movedM=true;}
       if(preds_conf[k]===undefined&&preds_conf[alt]!==undefined){preds_conf[k]=preds_conf[alt];delete preds_conf[alt];movedC=true;}
@@ -2305,6 +2315,7 @@ function _reconcilePickOrder(){
   });});
   if(moved)save();if(movedM)saveMethod();if(movedC)saveConf();
 }
+// pick-reconcile:end
 
 function _sbHeaders(){return{apikey:SUPABASE_ANON,Authorization:_authBearer(),"Content-Type":"application/json"};}
 function _sbQ(ev,fight){return"?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(ev.date)+"&f1=eq."+encodeURIComponent(fight.f1.n)+"&f2=eq."+encodeURIComponent(fight.f2.n);}
@@ -2407,7 +2418,22 @@ function _dedupeMyPicks(){
 function syncAllPicks(){
   if(!userName)return;
   _authReady.then(function(){
-    EVENTS.forEach(function(ev){ev.fights.forEach(function(fight){if(preds[pk(ev,fight)])syncPick(ev,fight);});});
+    var jobs=[];
+    EVENTS.forEach(function(ev){ev.fights.forEach(function(fight){if(preds[pk(ev,fight)])jobs.push(syncPick(ev,fight));});});
+    // A pick re-keyed across a rename upserts under the NEW spelling, but the
+    // conflict key is (user_id,event_date,f1,f2) — so the OLD-name row SURVIVES
+    // beside it and scoring counts the same pick twice (total, correct and the
+    // dog bonus all double, on the board and in the belt lineage).
+    //
+    // Neither existing cleanup catches it: syncPick only deletes the reverse
+    // ordering of the current spelling, and _dedupeMyPicks already ran — and
+    // latched _dedupeRan — during the initial render, BEFORE this row existed.
+    // So re-run the dedupe once the upserts land. It groups by nmKey and keeps
+    // the row matching current event data, which is exactly the stale alias we
+    // need pruned; without this it only heals on the user's next page load.
+    if(!_pickSpellingChanged)return;
+    _pickSpellingChanged=false;
+    return Promise.all(jobs).then(function(){_dedupeRan=false;_dedupeMyPicks();});
   });
 }
 var _rtWs=null,_rtRef=0,_rtJoinRef=null,_rtOpen=false,_rtCbs=[];

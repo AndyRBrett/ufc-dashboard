@@ -111,7 +111,66 @@ const arch = call(`_findFightResult("2026-05-30","Sean King","Jessie Rosas")`);
 check("the results archive resolves across the rename too",
   !!arch && nmEq(arch.winner, "Sean King"));
 
-// ── 3. no collisions on any card we actually ship ────────────────────────────
+// ── 3. a rename must not leave the pick stored TWICE on the server ───────────
+// _reconcilePickOrder re-keys the local pick to the card's new spelling. The
+// server row's conflict key is (user_id,event_date,f1,f2), so the later
+// syncAllPicks upsert lands as a SECOND row beside the old-name one, and the
+// (now name-tolerant) scoring counts the same pick twice. syncPick only clears
+// the reverse ordering of the current spelling, and _dedupeMyPicks has already
+// latched by then — so _reconcilePickOrder has to flag the rename, and
+// syncAllPicks has to re-run the dedupe. This checks the flag half: the half a
+// unit test can see without a live Supabase.
+const rctx = vm.createContext({ console, String, Object, Array, JSON });
+vm.runInContext(`
+  var EVENTS=${JSON.stringify([{ date: DATE, fights: [KING] }])};
+  var preds={},preds_method={},preds_conf={},resolvedPicks={};
+  var saved=0,savedM=0,savedC=0;
+  function save(){saved++;} function saveMethod(){savedM++;} function saveConf(){savedC++;}
+  var localStorage={setItem:function(){},getItem:function(){return null;}};
+`, rctx);
+vm.runInContext(block("fighter-names"), rctx);
+vm.runInContext(block("pick-reconcile"), rctx);
+const reset = (preds, method, conf, resolved) => vm.runInContext(
+  `preds=${JSON.stringify(preds)};preds_method=${JSON.stringify(method || {})};` +
+  `preds_conf=${JSON.stringify(conf || {})};resolvedPicks=${JSON.stringify(resolved || {})};` +
+  `_pickSpellingChanged=false;_reconcilePickOrder();`, rctx);
+const rd = (expr) => vm.runInContext(expr, rctx);
+
+const OLDKEY = `${DATE}|Sean King III|Jessie Rosas`;
+const NEWKEY = `${DATE}|Sean King|Jessie Rosas`;
+const FLIPKEY = `${DATE}|Jessie Rosas|Sean King`;
+
+reset({ [OLDKEY]: "Sean King III" }, { [OLDKEY]: "KO/TKO" }, { [OLDKEY]: 3 }, { [OLDKEY]: "win" });
+check("a pick stored under the old name is re-keyed to the card's spelling",
+  rd(`preds[${JSON.stringify(NEWKEY)}]`) !== undefined &&
+  rd(`preds[${JSON.stringify(OLDKEY)}]`) === undefined);
+check("its method, confidence and resolved entry move with it",
+  rd(`preds_method[${JSON.stringify(NEWKEY)}]`) === "KO/TKO" &&
+  rd(`preds_conf[${JSON.stringify(NEWKEY)}]`) === 3 &&
+  rd(`resolvedPicks[${JSON.stringify(NEWKEY)}]`) === "win" &&
+  rd(`resolvedPicks[${JSON.stringify(OLDKEY)}]`) === undefined);
+check("the stored pick VALUE is re-spelled, so it compares equal to the winner",
+  rd(`preds[${JSON.stringify(NEWKEY)}]`) === "Sean King");
+// The flag is what makes syncAllPicks prune the stale server row. Without it the
+// pick scores twice for the rest of the session.
+check("the rename is flagged, so the stale server row gets pruned",
+  rd("_pickSpellingChanged") === true);
+
+// A bare corner flip must NOT raise it — syncPick already deletes that row, and
+// a needless re-dedupe costs a full table fetch on every sync.
+reset({ [FLIPKEY]: "Sean King" });
+check("a bare corner flip is re-keyed but NOT flagged (syncPick already clears it)",
+  rd(`preds[${JSON.stringify(NEWKEY)}]`) === "Sean King" &&
+  rd("_pickSpellingChanged") === false);
+
+// Steady state: nothing to do, nothing flagged.
+reset({ [NEWKEY]: "Sean King" });
+check("a pick already under the current spelling is left alone and unflagged",
+  rd(`preds[${JSON.stringify(NEWKEY)}]`) === "Sean King" &&
+  rd("_pickSpellingChanged") === false &&
+  Object.keys(rd("preds")).length === 1);
+
+// ── 4. no collisions on any card we actually ship ────────────────────────────
 const dataSrc = readFileSync(join(ROOT, "data.js"), "utf8");
 const dctx = vm.createContext({});
 vm.runInContext(dataSrc, dctx);
