@@ -563,6 +563,18 @@ _TIME_OVERRIDES = {
     # as the main-card time and pushed the prelim slot three hours earlier
     # still, so both were three hours early. Published Paramount+ times.
     "UFC Fight Night: Hooker vs. Parnasse": ("15:00", "12:00"),
+    # Glendale, AZ (MST, UTC-7 year-round — no DST): main 17:00 ET = 21:00 UTC
+    # = 14:00 local; prelims 14:00 ET = 18:00 UTC = 11:00 local. STRUCTURAL, not
+    # a correction: Noche UFC 4 runs an afternoon broadcast slot rather than the
+    # standard US Fight Night 20:00/17:00 ET, because it shares the day with the
+    # Garcia vs. Benn boxing card. Nothing else can catch this — the location
+    # default stamps 20:00/17:00 for any _US_REGIONS venue, resolve_event_times
+    # treats that fixed slot as authoritative for US cards, and the odds feed's
+    # earlier start is discarded with a stderr-only warning by
+    # reconcile_times_with_odds precisely because the venue IS anchored. So an
+    # anchored-but-wrong US time has no gate at all; only this pin fixes it.
+    # Published Paramount+ times (prelims 2pm ET / main card 5pm ET).
+    "UFC Fight Night: Silva vs. Delgado": ("17:00", "14:00"),
 }
 
 # Cards with no preliminary bouts -- every fight is treated as a main-card fight
@@ -570,6 +582,29 @@ _TIME_OVERRIDES = {
 _NO_PRELIM_CARDS = {
     "UFC Freedom 250",
 }
+
+# How many bouts sit on the main card, for cards that don't use the usual five.
+#
+# parse_upcoming_card reads every {{MMAevent bout}} template in the article
+# without recording which section heading it fell under, so the main/prelim
+# split is inferred purely from bout order (_MAIN_CARD_DEFAULT below). A card
+# that broadcasts six main-card bouts therefore has its sixth silently labelled
+# "Prelim", which is not just a cosmetic label: index.html locks a bout when its
+# OWN segment starts, so a main-card bout tagged "Prelim" locks at prelimTime
+# (hours early) and gets swept into the prelim push notification.
+#
+# The real fix is to parse the section headings; until the parser carries that
+# through, pin the exceptions here.
+_MAIN_CARD_DEFAULT = 5
+_MAIN_CARD_SIZE = {
+    # Noche UFC 4: six-bout main card, opening with David Martinez vs. Dan Ige.
+    "UFC Fight Night: Silva vs. Delgado": 6,
+}
+
+
+def _main_card_size(ev_name):
+    """Number of bouts on *ev_name*'s main card, counting the main event."""
+    return _MAIN_CARD_SIZE.get(ev_name, _MAIN_CARD_DEFAULT)
 
 # Regional fallback broadcast slots for international cards, used only when
 # ESPN has no time for the event (so a card can never sit at "TBD" just
@@ -3172,11 +3207,12 @@ def step_build_events(data, now):
 
         card = []
         no_prelims = ev_name in _NO_PRELIM_CARDS
+        main_card_size = _main_card_size(ev_name)
         for i, wf in enumerate(wiki_fights):
             if i == 0:        lbl = "Main Event"
             elif i == 1:      lbl = "Co-Main"
             elif no_prelims:  lbl = "Main Card"
-            elif i < 5:       lbl = "Main Card"
+            elif i < main_card_size: lbl = "Main Card"
             else:             lbl = "Prelim"
             f1, f2 = wf["f1"], wf["f2"]
             wiki_rematch = wf.get("rematch", False) or _wiki_rematch(wt, f1, f2)
