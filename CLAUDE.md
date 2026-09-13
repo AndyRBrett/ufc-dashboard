@@ -31,6 +31,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:parlay` | a parlay priced with the vig left in, or a correlated ticket read as independent |
 | `npm run check:names` | a fighter renamed mid-card silently unscoring picks made under the old name |
 | `npm run check:intel` | a curated fight-week link landing under the wrong card |
+| `npm run check:whatsnew` | the what's-new popup losing a backfill announcement or growing unbounded |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -151,6 +152,40 @@ own source that no `fail()` creeps back into that block.
 
 A dead feed is reported, not swallowed: per-feed HTTP status lands in
 `intel.json`'s `sources` block and a `::warning::` in the run log.
+
+## What's New popup — add an entry per shipped feature
+
+`index.html`'s `WHATS_NEW` array (inside the `whats-new:start`/`:end` marker
+block) drives a short highlights popup, shown once per browser when there are
+entries it hasn't checkpointed.
+
+**When you ship a user-facing feature, append ONE entry** — `{id, emoji,
+title, desc}`, `id` as `YYYY-MM-DD-slug`, appended at the end so ids stay
+ascending. Never edit or remove a past entry: its `id` may already be the
+checkpoint a browser's `localStorage` (`ufc_whatsnew_seen`) is holding.
+
+**A checkpoint-less browser is shown everything, not baselined silently.**
+`seen===null` covers two different browsers — a brand-new install, and an
+existing user whose browser simply predates a given entry — and both get the
+same (capped) list. Baselining silently would mean nobody who already had the
+app installed before a feature shipped ever hears about it. Only once a real
+checkpoint exists do the older entries stop showing. Always capped at
+`WHATS_NEW_MAX` (5), so neither a long-dormant browser nor, eventually, a
+large array shows an unbounded backlog — dismissing checkpoints the newest
+entry currently defined, not just the newest one shown, so entries the cap
+pushes out of view still clear.
+
+Fires once per boot, ~1.2s after the initial `render()`, and skips entirely
+if a real overlay is already open — a tap-driven deep link (trash talk,
+challenge inbox) always wins. "Real overlay" means listed in `_escClosers`
+(the same array Escape-to-close trusts), checked by `_anyOverlayOpen()` —
+**never** a blanket `.open[id]` DOM query. Several ordinary, persisted UI
+states (`#activityFeed`, restored `.open` from `localStorage` on every boot
+once a user has ever expanded it once; a per-card "N more fights" body) also
+carry both an id and an `open` class without covering anything, and a
+blanket match silently blocked the popup forever for anyone who'd triggered
+one. `npm run check:whatsnew` holds the backfill and cap invariants above,
+`WHATS_NEW`'s own shape, and this exact regression.
 
 ## Other conventions
 
