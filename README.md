@@ -73,6 +73,16 @@ Supabase backend holds picks and fans out push notifications.
 - Retired themes are archived under `docs/archived-themes/` with restore steps
   rather than deleted.
 
+**What's New**
+- A short highlights popup for features shipped since a browser's last visit,
+  drawn from a hand-maintained list in `index.html` (`WHATS_NEW`) — one entry
+  per user-facing feature, capped at 5 most recent. Shown once per boot, never
+  over a tap-driven deep link.
+- A browser with no checkpoint yet (a fresh install, or an existing user whose
+  browser predates a given entry) sees the current list rather than nothing —
+  otherwise a feature shipped before this existed would never reach anyone
+  who already had the app installed.
+
 ---
 
 ## Architecture

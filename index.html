@@ -184,6 +184,21 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .install-steps{display:flex;flex-direction:column;gap:14px}
 .install-step{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text)}
 .install-step-num{width:26px;height:26px;border-radius:50%;background:var(--red);color:var(--on-accent);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* What's New — a short, capped highlights popup shown once per browser when new
+   entries land in WHATS_NEW (below). Same bottom-sheet language as #install-overlay
+   so it reads as part of the app, not a separate ad-style interstitial. */
+#wn-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+#wn-overlay.open{display:flex}
+#wn-panel{background:var(--card);border:1px solid var(--border2);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px 24px;position:relative;animation:slideUp .25s ease-out;max-height:80vh;display:flex;flex-direction:column}
+.wn-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-shrink:0}
+.wn-title{font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.06em;color:var(--text)}
+.wn-close{background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wn-list{display:flex;flex-direction:column;gap:16px;overflow-y:auto;padding-bottom:4px}
+.wn-item{display:flex;gap:12px;align-items:flex-start}
+.wn-emoji{font-size:22px;line-height:1;flex-shrink:0;margin-top:1px}
+.wn-item-title{font:700 14px Inter,sans-serif;color:var(--text);margin-bottom:2px}
+.wn-item-desc{font-size:13px;color:var(--muted2);line-height:1.4}
+.wn-btn{margin-top:18px;width:100%;padding:12px;background:var(--red);color:var(--on-accent);border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;flex-shrink:0}
 .install-step-icon{display:inline-flex;align-items:center;vertical-align:middle;margin:0 3px;color:var(--red)}
 .install-arrow{text-align:center;margin-top:16px;font-size:13px;color:var(--muted)}
 .install-arrow svg{display:block;margin:4px auto 0;animation:bounce .9s ease-in-out infinite}
@@ -5191,6 +5206,82 @@ function loadIntel(){
   return _intelReq;
 }
 // fight-week-intel:end
+// whats-new:start
+// A short, capped "what's new" popup — one hand-maintained entry per
+// user-facing feature this repo ships. Convention (see CLAUDE.md): every PR
+// that ships something a user would notice adds ONE entry here, appended at
+// the end. Never edit or remove a past entry's id — it's the checkpoint every
+// browser's localStorage may already be pointing at.
+//
+// id format: "YYYY-MM-DD-slug", kept in ascending order. Ascending order is
+// tested (tests/check-whats-new.mjs) because sorting/capping below assumes it.
+var WHATS_NEW=[
+  {id:"2026-09-13-fight-week-intel",emoji:"📰",title:"Fight Week Intel",
+   desc:"Curated interviews, breakdowns and camp pieces for the fighters on the upcoming card — right under the fight, linking straight to the source."}
+];
+var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
+var WHATS_NEW_MAX=5;
+// Which entries to show, given the checkpoint this browser last saw.
+//
+// `seen===null` is deliberately NOT "show nothing, just baseline silently" —
+// it covers two different browsers and both want the same answer:
+//   1. a genuinely brand-new install, where "everything currently listed" is a
+//      reasonable first-run highlights popup, and
+//   2. an EXISTING user whose browser predates this feature entirely — they
+//      have used the app for months, just never had this checkpoint written.
+// Silently baselining case 2 would mean nobody who already had the app
+// installed before this shipped ever hears about Fight Week Intel (or this
+// popup itself). Both cases get the current list; only the entries strictly
+// newer than an actual recorded checkpoint are withheld once one exists.
+//
+// Always capped at WHATS_NEW_MAX so a long-dormant browser — or, eventually,
+// a large WHATS_NEW array — never shows an unbounded backlog.
+function unseenWhatsNew(list,seen){
+  var threshold=seen===null?"":seen;
+  var out=list.filter(function(e){return e.id>threshold;});
+  out.sort(function(a,b){return a.id<b.id?1:a.id>b.id?-1:0;}); // newest first
+  return out.slice(0,WHATS_NEW_MAX);
+}
+// whats-new:end
+// whats-new-ui:start
+function renderWhatsNew(items){
+  var list=document.getElementById("wn-list");
+  if(!list)return;
+  list.textContent="";
+  items.forEach(function(it){
+    var row=document.createElement("div");row.className="wn-item";
+    var em=document.createElement("div");em.className="wn-emoji";em.textContent=it.emoji||"✨";row.appendChild(em);
+    var txt=document.createElement("div");
+    var t=document.createElement("div");t.className="wn-item-title";t.textContent=it.title;txt.appendChild(t);
+    var d=document.createElement("div");d.className="wn-item-desc";d.textContent=it.desc;txt.appendChild(d);
+    row.appendChild(txt);list.appendChild(row);
+  });
+  var ov=document.getElementById("wn-overlay");
+  if(ov)ov.classList.add("open");
+}
+function closeWhatsNew(){
+  var ov=document.getElementById("wn-overlay");
+  if(ov)ov.classList.remove("open");
+  // Newest entry currently defined, not just the newest one shown — a capped
+  // backlog is still fully acknowledged once dismissed, or the entries the cap
+  // pushed out would linger as permanently "unseen" and never clear.
+  if(WHATS_NEW.length){
+    try{localStorage.setItem(WHATS_NEW_SEEN_KEY,WHATS_NEW[WHATS_NEW.length-1].id);}catch(e){}
+  }
+}
+function checkWhatsNew(){
+  if(!WHATS_NEW.length)return;
+  // Never compete with a tap-driven deep link (trash talk / challenge inbox)
+  // or any overlay a faster path already opened on this same boot.
+  var openOverlay=document.querySelector(".open[id]");
+  if(openOverlay)return;
+  var seen=null;
+  try{seen=localStorage.getItem(WHATS_NEW_SEEN_KEY);}catch(e){}
+  var unseen=unseenWhatsNew(WHATS_NEW,seen);
+  if(!unseen.length)return;
+  renderWhatsNew(unseen);
+}
+// whats-new-ui:end
 var _openIntel={};
 function renderIntelSection(wrap,ev,ei){
   var items=intelItemsFor(INTEL,ev);
@@ -7432,6 +7523,7 @@ var _escClosers=[
   ["acctBg",function(){closeAcct();}],
   ["nmBg",function(){closeNameModal();}],
   ["install-overlay",function(){closeInstall();}],
+  ["wn-overlay",function(){closeWhatsNew();}],
   ["fnMode",function(){closeFN();}],
   ["lbPanel",function(){closeLeaderboard();}],
   ["moreMenu",function(){closeMoreMenu();}]
@@ -7485,6 +7577,7 @@ document.addEventListener("DOMContentLoaded",function(){
       app.textContent="Something went wrong. Please refresh the page.";
     }
   }
+  setTimeout(checkWhatsNew, 1200);
   setTimeout(reconcileMyPicks, 1500);
   setTimeout(syncAllPicks, 2000);
   setTimeout(fetchCommunityPicks, 3000);
@@ -7960,6 +8053,16 @@ document.addEventListener("DOMContentLoaded",function(){
       <span>Share button is at the bottom of your screen</span>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
     </div>
+  </div>
+</div>
+<div id="wn-overlay" onclick="if(event.target===this)closeWhatsNew()">
+  <div id="wn-panel">
+    <div class="wn-hdr">
+      <div class="wn-title">What&#8217;s New</div>
+      <button class="wn-close" onclick="closeWhatsNew()">&#x2715;</button>
+    </div>
+    <div class="wn-list" id="wn-list"></div>
+    <button class="wn-btn" onclick="closeWhatsNew()">Got it</button>
   </div>
 </div>
 <script>
