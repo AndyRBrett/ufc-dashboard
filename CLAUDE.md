@@ -176,9 +176,16 @@ entry currently defined, not just the newest one shown, so entries the cap
 pushes out of view still clear.
 
 Fires once per boot, ~1.2s after the initial `render()`, and skips entirely
-if any other overlay is already open — a tap-driven deep link (trash talk,
-challenge inbox) always wins. `npm run check:whatsnew` holds the backfill and
-cap invariants above, plus `WHATS_NEW`'s own shape (unique, ascending ids).
+if a real overlay is already open — a tap-driven deep link (trash talk,
+challenge inbox) always wins. "Real overlay" means listed in `_escClosers`
+(the same array Escape-to-close trusts), checked by `_anyOverlayOpen()` —
+**never** a blanket `.open[id]` DOM query. Several ordinary, persisted UI
+states (`#activityFeed`, restored `.open` from `localStorage` on every boot
+once a user has ever expanded it once; a per-card "N more fights" body) also
+carry both an id and an `open` class without covering anything, and a
+blanket match silently blocked the popup forever for anyone who'd triggered
+one. `npm run check:whatsnew` holds the backfill and cap invariants above,
+`WHATS_NEW`'s own shape, and this exact regression.
 
 ## Other conventions
 

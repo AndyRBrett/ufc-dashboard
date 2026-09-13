@@ -5269,12 +5269,29 @@ function closeWhatsNew(){
     try{localStorage.setItem(WHATS_NEW_SEEN_KEY,WHATS_NEW[WHATS_NEW.length-1].id);}catch(e){}
   }
 }
+// True if any REAL overlay is open. Deliberately checks only the ids
+// _escClosers already treats as dismissible overlays, not a blanket
+// ".open[id]" class match: several ordinary, persisted UI states (the
+// activity-feed accordion, restored from localStorage on every boot; the
+// per-card "N more fights" body) also carry both an id and an "open" class
+// while just sitting inline on the page, not covering anything. Matching
+// those blocked the popup, silently and permanently, for any user who had
+// ever expanded the feed once. _escClosers is the one list in this app
+// that already enumerates real overlays, so reusing it means a future
+// overlay added there is covered here for free, with nothing new to keep
+// in sync.
+function _anyOverlayOpen(){
+  for(var i=0;i<_escClosers.length;i++){
+    var el=document.getElementById(_escClosers[i][0]);
+    if(el&&el.classList.contains("open"))return true;
+  }
+  return false;
+}
 function checkWhatsNew(){
   if(!WHATS_NEW.length)return;
   // Never compete with a tap-driven deep link (trash talk / challenge inbox)
   // or any overlay a faster path already opened on this same boot.
-  var openOverlay=document.querySelector(".open[id]");
-  if(openOverlay)return;
+  if(_anyOverlayOpen())return;
   var seen=null;
   try{seen=localStorage.getItem(WHATS_NEW_SEEN_KEY);}catch(e){}
   var unseen=unseenWhatsNew(WHATS_NEW,seen);

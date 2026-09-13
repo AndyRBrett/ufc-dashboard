@@ -123,12 +123,19 @@ function fakeEl(open) {
   };
 }
 
-function runUi({ openOverlayPresent, storage }) {
+// `openIds`: which elements (by id) currently carry the "open" class — real
+// overlays AND, in the regression case, non-overlay accordions like
+// #activityFeed that carry both an id and a persisted "open" class without
+// covering anything. `escCloserIds` models the app's real _escClosers list:
+// only ids on it are actual overlays, and _anyOverlayOpen must consult only
+// that list, never the DOM at large.
+function runUi({ openIds = [], escCloserIds = ["trashSheet", "wn-overlay"], storage = {} }) {
   const rendered = [];
   const store = { ...storage };
+  const openSet = new Set(openIds);
   const doc = {
-    querySelector: (sel) => (sel === ".open[id]" && openOverlayPresent ? fakeEl(true) : null),
-    getElementById: (id) => (id === "wn-list" || id === "wn-overlay" ? fakeEl(false) : null),
+    getElementById: (id) => (openSet.has(id) || id === "wn-list" || id === "wn-overlay"
+      ? fakeEl(openSet.has(id)) : null),
     createElement: () => fakeEl(false),
   };
   const uiCtx = vm.createContext({
@@ -140,6 +147,8 @@ function runUi({ openOverlayPresent, storage }) {
     },
     WHATS_NEW: FIX,
     WHATS_NEW_SEEN_KEY: "ufc_whatsnew_seen",
+    // The real array is [id, closerFn] pairs; only the id matters here.
+    _escClosers: escCloserIds.map((id) => [id, () => {}]),
     unseenWhatsNew: (list, seen) => call(`unseenWhatsNew(${JSON.stringify(list)}, ${JSON.stringify(seen)})`),
   });
   // renderWhatsNew is stubbed to a recorder — this level tests checkWhatsNew's
@@ -163,28 +172,51 @@ function runUi({ openOverlayPresent, storage }) {
 }
 
 {
-  const r = runUi({ openOverlayPresent: true, storage: {} });
+  // trashSheet IS on _escClosers — a real, currently-open overlay.
+  const r = runUi({ openIds: ["trashSheet"] });
   r.run("checkWhatsNew");
-  check("checkWhatsNew never renders while a deep-link overlay is already open",
+  check("checkWhatsNew never renders while a real, known overlay is already open",
     r.rendered.length === 0);
 }
 
 {
-  const r = runUi({ openOverlayPresent: false, storage: {} });
+  // Regression fixture for the Codex P2: #activityFeed carries an id and a
+  // persisted "open" class (index.html restores it from localStorage on
+  // EVERY boot once a user has ever expanded the feed once) but is not on
+  // _escClosers — it's an inline accordion, not an overlay. A blanket
+  // ".open[id]" match blocked the popup for any such user, silently and
+  // permanently. It must not count.
+  const r = runUi({ openIds: ["activityFeed"] });
+  r.run("checkWhatsNew");
+  check("checkWhatsNew ignores a non-overlay element that merely has an id "
+        + "and an \"open\" class (the #activityFeed regression)",
+    r.rendered.length === 1);
+}
+
+{
+  // Same shape, a second non-overlay case: the per-card "N more fights" body.
+  const r = runUi({ openIds: ["more3"] });
+  r.run("checkWhatsNew");
+  check("checkWhatsNew ignores an expanded \"more fights\" body the same way",
+    r.rendered.length === 1);
+}
+
+{
+  const r = runUi({ openIds: [] });
   r.run("checkWhatsNew");
   check("checkWhatsNew renders the (capped) full list for a checkpoint-less browser",
     r.rendered.length === 1 && r.rendered[0].length === FIX.length);
 }
 
 {
-  const r = runUi({ openOverlayPresent: false, storage: { ufc_whatsnew_seen: "2026-03-01-c" } });
+  const r = runUi({ openIds: [], storage: { ufc_whatsnew_seen: "2026-03-01-c" } });
   r.run("checkWhatsNew");
   check("checkWhatsNew renders nothing once fully checkpointed",
     r.rendered.length === 0);
 }
 
 {
-  const r = runUi({ openOverlayPresent: false, storage: {} });
+  const r = runUi({ openIds: [] });
   r.run("closeWhatsNew");
   check("closeWhatsNew persists the NEWEST entry currently defined as the checkpoint",
     r.store.ufc_whatsnew_seen === FIX[FIX.length - 1].id);
