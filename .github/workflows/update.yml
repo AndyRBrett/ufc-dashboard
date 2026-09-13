@@ -86,6 +86,15 @@ jobs:
           ODDS_EXPECTED_WITHIN_DAYS: "7"
       - name: Rebuild per-fighter odds time-series + closing-line value
         run: python odds_series.py
+      # Fight Week Intel — curated links for the upcoming card. Every source is a
+      # free public RSS/Atom feed parsed with the stdlib, so this step spends no
+      # Odds API quota and no model tokens; the only budget it touches is a few
+      # seconds of runner time. Its own cadence gate (intel-state.json) keeps it
+      # from re-pulling on every 5-minute fight-night run. Never fatal: a card
+      # with no intel is a missing section, not a broken deploy.
+      - name: Curate fight-week intel (free feeds, no metered API)
+        continue-on-error: true
+        run: python intel.py
       # Warnings don't block the publish, so they need somewhere to land that
       # isn't a workflow log nobody opens. One long-lived issue, rewritten in
       # place each run: GitHub emails when it opens, the body is always current
@@ -127,7 +136,7 @@ jobs:
           # which is exactly the behaviour the dedup exists to stop.
           for f in data.js overseer-status.json odds-snapshots.jsonl \
                    odds-series.json odds-state.json odds-alert-state.json \
-                   health-report.json; do
+                   health-report.json intel.json intel-state.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           if git diff --staged --quiet; then

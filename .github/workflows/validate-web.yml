@@ -12,6 +12,7 @@
 #   check:audience  — trash talk reaches exactly the people it was aimed at
 #   check:prompt    — a user-supplied roast angle still outranks the other prompt rules
 #   check:dedup     — all three result senders derive the same push dedup key
+#   check:intel     — a curated fight-week link never lands under the wrong card
 name: Validate Web
 
 on:
@@ -59,3 +60,5 @@ jobs:
         run: npm run check:model
       - name: Parlay calculator test
         run: npm run check:parlay
+      - name: Fight Week Intel attribution test
+        run: npm run check:intel

@@ -30,6 +30,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:model` | the fight model posting a confident number off missing data |
 | `npm run check:parlay` | a parlay priced with the vig left in, or a correlated ticket read as independent |
 | `npm run check:names` | a fighter renamed mid-card silently unscoring picks made under the old name |
+| `npm run check:intel` | a curated fight-week link landing under the wrong card |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -82,6 +83,67 @@ Two budgets to respect when changing cadence:
 - **Fighters on a card within `STATS_URGENT_DAYS` bypass the failure cooldown**
   (`_needs_stats_fetch(..., urgent=True)`). The flat 3-day cooldown guaranteed a
   blank record through any card that landed inside it.
+
+## Fight Week Intel costs nothing — keep it that way
+
+`intel.py` builds `intel.json`: curated interviews, breakdowns and camp pieces
+for the upcoming card, rendered as a collapsible section under each event.
+
+The whole feature rests on one premise — **it spends no metered budget**:
+
+- sources are free public RSS/Atom feeds (no key, no quota), parsed with the
+  stdlib, matched to fighters by string comparison. No model call, no Odds API
+  call, no new pip dependency.
+- the output is a **static JSON file committed to the repo**, not a Supabase
+  table. A table would charge a DB read on every page load, forever, for content
+  that changes twice a week and is identical for every user. A committed file is
+  free to serve, free to cache, survives Supabase being down, and shows up in a
+  diff. Don't "upgrade" it to a table without a reason that beats all four.
+- it runs inside the existing `update.yml` job. No new workflow, no new schedule.
+- `should_fetch` gates it the way `should_fetch_odds` gates odds — nothing
+  outside `INTEL_WINDOW_DAYS` of a card, then every 8h (3h inside fight week).
+  Feeds are free, but a pull on every 5-minute fight-night run would add a commit
+  to each one. `INTEL_FORCE=1` bypasses it.
+- **A card stays eligible through its own fight night.** `today` is UTC and US
+  prime-time cards run past UTC midnight — a Saturday 21:00 ET main card is
+  01:00 UTC Sunday — so the window runs from `-WINDOW_PAST_DAYS` (2), not 0. The
+  app-side cutoff in `makeEventBlock` uses the same `2*DAY_MS` as `render()`'s
+  event-visibility filter. Both bounds are one decision: a shorter one deletes
+  the section an hour before the main card while the event block stays on
+  screen. `check:intel` asserts they match.
+- **A changed card outranks the interval.** `card_fingerprint` (slug + date +
+  roster) is stored in `intel-state.json`; when it moves, the interval is
+  bypassed and the set is rebuilt now. A late replacement is exactly the thing
+  that lands mid-window, and waiting 8h for it means showing intel about someone
+  who has withdrawn, during the days people actually read it.
+
+Two rules that aren't stylistic:
+
+- **Link out; never rehost.** `blurb` is capped at `BLURB_MAX` (220) characters of
+  the feed's own summary, in the curator *and* again at render. The section is a
+  pointer to the publisher's page.
+- **The app treats `intel.json` as untrusted.** `intelItemsFor()` re-validates
+  every item against the card being rendered: off-card fighter tags are dropped,
+  a bucket whose date doesn't match its event is dropped whole, and only absolute
+  `https://` links become an href. String matching's failure mode is
+  mis-attribution, and an interview about a different Silva shown under tonight's
+  main event is the app stating something false about a fight people are picking.
+  `npm run check:intel` holds that contract.
+
+**`check:intel`'s cross-check against `data.js` is advisory — keep it that way.**
+The fixture assertions fail the build; the block comparing the committed
+`intel.json` to the committed `data.js` only reports. It runs in
+`validate-web.yml`, and `pages.yml`'s `deploy` **needs** `validate`, so a failure
+there stops the site from publishing — live results included. Drift between those
+two files is normal and self-healing: `scrape.py` rewrites `data.js` every five
+minutes while the curator is cadence-gated, so any replacement or date move
+leaves the file briefly stale. Failing on it would block a deploy for a data gap,
+which is the WARN/BLOCK rule above, violated. Nothing is lost by reporting
+instead: the app drops those items at render anyway. The test asserts against its
+own source that no `fail()` creeps back into that block.
+
+A dead feed is reported, not swallowed: per-feed HTTP status lands in
+`intel.json`'s `sources` block and a `::warning::` in the run log.
 
 ## Other conventions
 

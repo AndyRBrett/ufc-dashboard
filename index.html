@@ -528,6 +528,29 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .ai-event-btn{flex:1;background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted2);font:600 11px Inter,sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:7px 10px;border-radius:8px;cursor:pointer;transition:color .15s,background .15s,border-color .15s;display:flex;align-items:center;justify-content:center;gap:5px}
 .ai-event-btn:hover{color:var(--text);background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.22)}
 .ai-event-btn.btn-gold{border-color:var(--gold-border);color:var(--gold)}
+/* Fight Week Intel — curated links out to interviews/breakdowns/camp pieces.
+   Served from the static intel.json, so rendering it costs no API call. */
+.intel-wrap{border-bottom:1px solid var(--border)}
+.intel-hdr{display:flex;align-items:center;gap:6px;width:100%;background:none;border:none;padding:9px 16px;cursor:pointer;
+  font:700 11px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted2);text-align:left}
+.intel-hdr:hover{color:var(--text)}
+.intel-arrow{font-size:9px;display:inline-block;transition:transform .2s;color:var(--muted)}
+.intel-hdr.open .intel-arrow{transform:rotate(90deg)}
+.intel-count{margin-left:auto;font-size:10px;color:var(--muted);letter-spacing:.04em}
+.intel-body{display:none;padding:2px 12px 10px}
+.intel-body.open{display:block}
+.intel-item{display:flex;gap:10px;padding:8px;border-radius:8px;text-decoration:none;color:inherit;
+  border:1px solid transparent;transition:background .15s,border-color .15s}
+.intel-item:hover{background:rgba(255,255,255,.04);border-color:var(--border)}
+.intel-thumb{width:76px;height:44px;flex-shrink:0;border-radius:5px;object-fit:cover;background:var(--pill-bg)}
+.intel-txt{min-width:0;flex:1}
+.intel-title{font:600 12.5px Inter,sans-serif;color:var(--text);line-height:1.3;margin-bottom:2px}
+.intel-blurb{font-size:11px;color:var(--muted);line-height:1.35;margin-bottom:3px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.intel-meta{font-size:10px;color:var(--muted);letter-spacing:.03em;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.intel-kind{font-weight:700;color:var(--gold)}
+.intel-tag{background:var(--pill-bg);border-radius:3px;padding:1px 5px;color:var(--muted2)}
+.intel-note{padding:4px 8px 2px;font-size:10px;color:var(--muted);letter-spacing:.03em}
 /* Chat modal */
 .chat-modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
 .chat-ev-name{font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:.05em;color:var(--text);line-height:1.1}
@@ -5123,6 +5146,109 @@ function to12hr(t){
   var ap=h>=12?"PM":"AM";h=h%12||12;
   return h+":"+(m===0?"00":String(m).padStart(2,"0"))+" "+ap;
 }
+// fight-week-intel:start
+// Curated fight-week links (interviews, breakdowns, camp pieces), built by
+// intel.py into the static intel.json and fetched once per session. It is a
+// same-origin file on Pages, so this section adds ZERO API calls — no Supabase
+// read, no model call, nothing metered. If the file is missing or stale the
+// section simply doesn't render.
+var INTEL=null,_intelReq=null;
+function intelKey(ev){return (ev&&ev.slug)||(ev&&ev.date)||"";}
+// Every item is re-validated here rather than trusted from the file. intel.py
+// matches fighters by string, and the expensive failure is mis-attribution: an
+// article about a different Silva surfacing under this card, or a stale bucket
+// whose slug got reused. Both are caught by checking the item against the card
+// the app is actually rendering.
+function intelItemsFor(intel,ev){
+  if(!intel||!intel.events||!ev)return [];
+  var bucket=intel.events[intelKey(ev)];
+  if(!bucket||!bucket.items)return [];
+  if(bucket.date&&bucket.date!==ev.date)return [];          // slug reused by a later card
+  var roster=[];
+  (ev.fights||[]).forEach(function(f){
+    if(f&&f.f1&&f.f1.n)roster.push(f.f1.n);
+    if(f&&f.f2&&f.f2.n)roster.push(f.f2.n);
+  });
+  return bucket.items.filter(function(it){
+    if(!it||!it.title||typeof it.url!=="string")return false;
+    // Only absolute https links leave this app. Anything else (javascript:,
+    // data:, a relative path) is a link we would be wrong to render.
+    if(it.url.indexOf("https://")!==0)return false;
+    var tags=it.fighters||[];
+    if(!tags.length)return false;
+    // Every fighter the item claims must actually be on this card.
+    return tags.every(function(n){
+      return roster.some(function(r){return nmEq(r,n);});
+    });
+  });
+}
+function loadIntel(){
+  if(_intelReq)return _intelReq;
+  _intelReq=fetch("intel.json",{cache:"no-cache"})
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(j){INTEL=j;return j;})
+    .catch(function(){INTEL=null;return null;});
+  return _intelReq;
+}
+// fight-week-intel:end
+var _openIntel={};
+function renderIntelSection(wrap,ev,ei){
+  var items=intelItemsFor(INTEL,ev);
+  if(!items.length)return;                       // nothing curated yet — stay invisible
+  wrap.textContent="";wrap.style.display="";
+  var hdr=document.createElement("button");hdr.className="intel-hdr"+(_openIntel[ei]?" open":"");
+  var arrow=document.createElement("span");arrow.className="intel-arrow";arrow.textContent="▶";
+  hdr.appendChild(arrow);
+  hdr.appendChild(document.createTextNode("📰 Fight Week Intel"));
+  var cnt=document.createElement("span");cnt.className="intel-count";cnt.textContent=items.length+" link"+(items.length!==1?"s":"");
+  hdr.appendChild(cnt);
+  var body=document.createElement("div");body.className="intel-body"+(_openIntel[ei]?" open":"");
+  items.forEach(function(it){
+    var a=document.createElement("a");a.className="intel-item";a.href=it.url;
+    a.target="_blank";a.rel="noopener noreferrer";
+    a.onclick=function(e){e.stopPropagation();};
+    if(it.thumb&&String(it.thumb).indexOf("https://")===0){
+      var img=document.createElement("img");img.className="intel-thumb";img.src=it.thumb;
+      img.loading="lazy";img.alt="";img.onerror=function(){img.remove();};
+      a.appendChild(img);
+    }
+    var txt=document.createElement("div");txt.className="intel-txt";
+    var t=document.createElement("div");t.className="intel-title";t.textContent=it.title;txt.appendChild(t);
+    if(it.blurb){
+      var b=document.createElement("div");b.className="intel-blurb";
+      // Re-clamped on render as well as in intel.py: this is a pointer to the
+      // publisher's page, never a copy of their article.
+      b.textContent=String(it.blurb).slice(0,220);
+      txt.appendChild(b);
+    }
+    var meta=document.createElement("div");meta.className="intel-meta";
+    var k=document.createElement("span");k.className="intel-kind";
+    k.textContent=it.kind==="video"?"▶ VIDEO":"ARTICLE";meta.appendChild(k);
+    var src=document.createElement("span");src.textContent=it.source||"";meta.appendChild(src);
+    if(it.published){var d=document.createElement("span");d.textContent=intelAgo(it.published);meta.appendChild(d);}
+    (it.fighters||[]).slice(0,2).forEach(function(n){
+      var tag=document.createElement("span");tag.className="intel-tag";tag.textContent=n;meta.appendChild(tag);
+    });
+    txt.appendChild(meta);a.appendChild(txt);body.appendChild(a);
+  });
+  var note=document.createElement("div");note.className="intel-note";
+  note.textContent="Headlines link to the publisher — nothing is hosted here.";
+  body.appendChild(note);
+  hdr.onclick=function(e){
+    e.stopPropagation();
+    var open=body.classList.toggle("open");
+    hdr.classList.toggle("open");
+    _openIntel[ei]=open;
+  };
+  wrap.appendChild(hdr);wrap.appendChild(body);
+}
+function intelAgo(iso){
+  var t=Date.parse(iso);if(isNaN(t))return "";
+  var h=Math.floor((Date.now()-t)/3600000);
+  if(h<1)return "just now";
+  if(h<24)return h+"h ago";
+  var d=Math.round(h/24);return d+"d ago";
+}
 function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
   var frag=document.createDocumentFragment();
   var du=daysOut(ev.date);
@@ -5156,6 +5282,19 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
     var parlayBtn=document.createElement("button");parlayBtn.className="ai-event-btn btn-gold";parlayBtn.innerHTML="🎰 Parlay Picks";
     parlayBtn.onclick=function(e){e.stopPropagation();openParlay(evRef,eiRef);};
     tb.appendChild(chatBtn);tb.appendChild(parlayBtn);fw.appendChild(tb);
+  })(ev,ei);
+  // Fight Week Intel sits between the toolbar and the card. Populated async from
+  // the static intel.json, and left entirely absent when there is nothing for
+  // this event — an empty "no intel" box every week is worse than no box.
+  (function(evRef,eiRef){
+    // 2*DAY_MS, matching render()'s own event-visibility window — NOT one day.
+    // Event dates are UTC midnight, so a Saturday 21:00 ET main card is already
+    // 01:00 UTC Sunday: a one-day bound hid this section at the exact moment the
+    // main card started, while the event block itself stayed on screen.
+    if(new Date(evRef.date).getTime()<Date.now()-2*DAY_MS)return;   // past card
+    var wrap=document.createElement("div");wrap.className="intel-wrap";wrap.style.display="none";
+    fw.appendChild(wrap);
+    loadIntel().then(function(){try{renderIntelSection(wrap,evRef,eiRef);}catch(e){}});
   })(ev,ei);
   var mainCard=ev.fights.slice(2).filter(function(f){return f.lbl==="Main Card";});
   var prelims=ev.fights.filter(function(f){return f.lbl==="Prelim"||f.lbl==="Early Prelim";});
