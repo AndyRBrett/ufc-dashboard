@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T23:58:21Z",
+  "generated_at": "2026-09-13T00:08:52Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -6967,7 +6967,7 @@
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Jean Silva",
@@ -7071,8 +7071,15 @@
             "f1_odds": -407,
             "f2_odds": 320
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-12T19:54:10Z",
+            "f1_odds": -420,
+            "f2_odds": 320
+          },
+          "clv": {
+            "f1_odds": -13,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Brandon Moreno",
@@ -7156,8 +7163,15 @@
             "f1_odds": -105,
             "f2_odds": -115
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-12T22:58:27Z",
+            "f1_odds": -106,
+            "f2_odds": -114
+          },
+          "clv": {
+            "f1_odds": -1,
+            "f2_odds": 1
+          }
         },
         {
           "f1": "Tommy McMillen",
@@ -7291,8 +7305,15 @@
             "f1_odds": -145,
             "f2_odds": 124
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-12T22:58:27Z",
+            "f1_odds": -184,
+            "f2_odds": 148
+          },
+          "clv": {
+            "f1_odds": -39,
+            "f2_odds": 24
+          }
         },
         {
           "f1": "Manon Fiorot",
@@ -7381,8 +7402,15 @@
             "f1_odds": -215,
             "f2_odds": 180
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-12T13:48:23Z",
+            "f1_odds": -282,
+            "f2_odds": 225
+          },
+          "clv": {
+            "f1_odds": -67,
+            "f2_odds": 45
+          }
         },
         {
           "f1": "Waldo Cortes-Acosta",
@@ -7506,8 +7534,15 @@
             "f1_odds": -175,
             "f2_odds": 150
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-12T19:54:10Z",
+            "f1_odds": -195,
+            "f2_odds": 159
+          },
+          "clv": {
+            "f1_odds": -20,
+            "f2_odds": 9
+          }
         },
         {
           "f1": "David Martinez",
@@ -7611,8 +7646,15 @@
             "f1_odds": -285,
             "f2_odds": 234
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-12T19:54:10Z",
+            "f1_odds": -435,
+            "f2_odds": 330
+          },
+          "clv": {
+            "f1_odds": -150,
+            "f2_odds": 96
+          }
         },
         {
           "f1": "Tim Elliott",
@@ -7731,8 +7773,15 @@
             "f1_odds": 184,
             "f2_odds": -220
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-12T19:54:10Z",
+            "f1_odds": 167,
+            "f2_odds": -206
+          },
+          "clv": {
+            "f1_odds": -17,
+            "f2_odds": 14
+          }
         },
         {
           "f1": "Ignacio Bahamondes",
@@ -7831,8 +7880,15 @@
             "f1_odds": -350,
             "f2_odds": 280
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-12T19:54:10Z",
+            "f1_odds": -572,
+            "f2_odds": 412
+          },
+          "clv": {
+            "f1_odds": -222,
+            "f2_odds": 132
+          }
         },
         {
           "f1": "Yousri Belgaroui",
@@ -7936,8 +7992,15 @@
             "f1_odds": -700,
             "f2_odds": 490
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-12T19:54:10Z",
+            "f1_odds": -903,
+            "f2_odds": 587
+          },
+          "clv": {
+            "f1_odds": -203,
+            "f2_odds": 97
+          }
         },
         {
           "f1": "Ramiro Jimenez",
@@ -7961,8 +8024,15 @@
             "f1_odds": 114,
             "f2_odds": -135
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-04T16:06:23Z",
+            "f1_odds": 112,
+            "f2_odds": -138
+          },
+          "clv": {
+            "f1_odds": -2,
+            "f2_odds": -3
+          }
         },
         {
           "f1": "Rafa Garcia",
@@ -8076,8 +8146,15 @@
             "f1_odds": 105,
             "f2_odds": -125
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-12T16:53:16Z",
+            "f1_odds": 132,
+            "f2_odds": -159
+          },
+          "clv": {
+            "f1_odds": 27,
+            "f2_odds": -34
+          }
         },
         {
           "f1": "JJ Aldrich",
@@ -8176,8 +8253,15 @@
             "f1_odds": 191,
             "f2_odds": -230
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-12T13:48:23Z",
+            "f1_odds": 230,
+            "f2_odds": -283
+          },
+          "clv": {
+            "f1_odds": 39,
+            "f2_odds": -53
+          }
         },
         {
           "f1": "Drakkar Klose",
@@ -8256,8 +8340,15 @@
             "f1_odds": 371,
             "f2_odds": -500
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-12T19:54:10Z",
+            "f1_odds": 2183,
+            "f2_odds": -39000
+          },
+          "clv": {
+            "f1_odds": 1812,
+            "f2_odds": -38500
+          }
         },
         {
           "f1": "Sean King",
@@ -8326,8 +8417,15 @@
             "f1_odds": -129,
             "f2_odds": 107
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-12T01:28:47Z",
+            "f1_odds": -209,
+            "f2_odds": 172
+          },
+          "clv": {
+            "f1_odds": -80,
+            "f2_odds": 65
+          }
         },
         {
           "f1": "Sean King III",
@@ -8346,8 +8444,42 @@
             "f1_odds": -209,
             "f2_odds": 172
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-12T04:33:33Z",
+            "f1_odds": -209,
+            "f2_odds": 172
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
+        },
+        {
+          "f1": "Jean Silva",
+          "f2": "Jose Miguel Delgado",
+          "lbl": "Main Event",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-13T00:08:51Z",
+              "f1_odds": -420,
+              "f2_odds": 320
+            }
+          ],
+          "open": {
+            "at": "2026-09-13T00:08:51Z",
+            "f1_odds": -420,
+            "f2_odds": 320
+          },
+          "close": {
+            "at": "2026-09-13T00:08:51Z",
+            "f1_odds": -420,
+            "f2_odds": 320
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         }
       ]
     },
@@ -9329,8 +9461,8 @@
         "side": "f2",
         "points": 2,
         "open": -135,
-        "close": null,
-        "clv": null
+        "close": -138,
+        "clv": -3
       }
     ],
     "Zhu Kangjie": [
@@ -9550,8 +9682,8 @@
         "side": "f2",
         "points": 21,
         "open": -220,
-        "close": null,
-        "clv": null
+        "close": -206,
+        "clv": 14
       }
     ],
     "Bruno Gustavo da Silva": [
@@ -10868,8 +11000,8 @@
         "side": "f1",
         "points": 24,
         "open": -145,
-        "close": null,
-        "clv": null
+        "close": -184,
+        "clv": -39
       }
     ],
     "Alberto Montes": [
@@ -10956,6 +11088,15 @@
         "open": -110,
         "close": -113,
         "clv": -3
+      },
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Jean Silva",
+        "side": "f2",
+        "points": 1,
+        "open": 320,
+        "close": 320,
+        "clv": 0
       }
     ],
     "Magomed Ankalaev": [
@@ -12356,8 +12497,17 @@
         "side": "f1",
         "points": 18,
         "open": -407,
-        "close": null,
-        "clv": null
+        "close": -420,
+        "clv": -13
+      },
+      {
+        "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
+        "opponent": "Jose Miguel Delgado",
+        "side": "f1",
+        "points": 1,
+        "open": -420,
+        "close": -420,
+        "clv": 0
       }
     ],
     "Jose Delgado": [
@@ -12367,8 +12517,8 @@
         "side": "f2",
         "points": 18,
         "open": 320,
-        "close": null,
-        "clv": null
+        "close": 320,
+        "clv": 0
       }
     ],
     "Brandon Moreno": [
@@ -12378,8 +12528,8 @@
         "side": "f1",
         "points": 14,
         "open": -105,
-        "close": null,
-        "clv": null
+        "close": -106,
+        "clv": -1
       }
     ],
     "Joseph Morales": [
@@ -12389,8 +12539,8 @@
         "side": "f2",
         "points": 14,
         "open": -115,
-        "close": null,
-        "clv": null
+        "close": -114,
+        "clv": 1
       }
     ],
     "Marwan Rahiki": [
@@ -12400,8 +12550,8 @@
         "side": "f2",
         "points": 24,
         "open": 124,
-        "close": null,
-        "clv": null
+        "close": 148,
+        "clv": 24
       }
     ],
     "Manon Fiorot": [
@@ -12411,8 +12561,8 @@
         "side": "f1",
         "points": 15,
         "open": -215,
-        "close": null,
-        "clv": null
+        "close": -282,
+        "clv": -67
       }
     ],
     "Alexa Grasso": [
@@ -12422,8 +12572,8 @@
         "side": "f2",
         "points": 15,
         "open": 180,
-        "close": null,
-        "clv": null
+        "close": 225,
+        "clv": 45
       }
     ],
     "Waldo Cortes-Acosta": [
@@ -12433,8 +12583,8 @@
         "side": "f1",
         "points": 22,
         "open": -175,
-        "close": null,
-        "clv": null
+        "close": -195,
+        "clv": -20
       }
     ],
     "Curtis Blaydes": [
@@ -12444,8 +12594,8 @@
         "side": "f2",
         "points": 22,
         "open": 150,
-        "close": null,
-        "clv": null
+        "close": 159,
+        "clv": 9
       }
     ],
     "David Martinez": [
@@ -12455,8 +12605,8 @@
         "side": "f1",
         "points": 18,
         "open": -285,
-        "close": null,
-        "clv": null
+        "close": -435,
+        "clv": -150
       }
     ],
     "Dan Ige": [
@@ -12466,8 +12616,8 @@
         "side": "f2",
         "points": 18,
         "open": 234,
-        "close": null,
-        "clv": null
+        "close": 330,
+        "clv": 96
       }
     ],
     "Tim Elliott": [
@@ -12477,8 +12627,8 @@
         "side": "f1",
         "points": 21,
         "open": 184,
-        "close": null,
-        "clv": null
+        "close": 167,
+        "clv": -17
       }
     ],
     "Ignacio Bahamondes": [
@@ -12488,8 +12638,8 @@
         "side": "f1",
         "points": 17,
         "open": -350,
-        "close": null,
-        "clv": null
+        "close": -572,
+        "clv": -222
       }
     ],
     "Muslim Salikhov": [
@@ -12499,8 +12649,8 @@
         "side": "f2",
         "points": 17,
         "open": 280,
-        "close": null,
-        "clv": null
+        "close": 412,
+        "clv": 132
       }
     ],
     "Yousri Belgaroui": [
@@ -12510,8 +12660,8 @@
         "side": "f1",
         "points": 18,
         "open": -700,
-        "close": null,
-        "clv": null
+        "close": -903,
+        "clv": -203
       }
     ],
     "Djorden Santos": [
@@ -12521,8 +12671,8 @@
         "side": "f2",
         "points": 18,
         "open": 490,
-        "close": null,
-        "clv": null
+        "close": 587,
+        "clv": 97
       }
     ],
     "Ramiro Jimenez": [
@@ -12532,8 +12682,8 @@
         "side": "f1",
         "points": 2,
         "open": 114,
-        "close": null,
-        "clv": null
+        "close": 112,
+        "clv": -2
       }
     ],
     "Rafa Garcia": [
@@ -12543,8 +12693,8 @@
         "side": "f1",
         "points": 20,
         "open": 105,
-        "close": null,
-        "clv": null
+        "close": 132,
+        "clv": 27
       }
     ],
     "Rong Zhu": [
@@ -12554,8 +12704,8 @@
         "side": "f2",
         "points": 20,
         "open": -125,
-        "close": null,
-        "clv": null
+        "close": -159,
+        "clv": -34
       }
     ],
     "JJ Aldrich": [
@@ -12565,8 +12715,8 @@
         "side": "f1",
         "points": 17,
         "open": 191,
-        "close": null,
-        "clv": null
+        "close": 230,
+        "clv": 39
       }
     ],
     "Regina Tarin": [
@@ -12576,8 +12726,8 @@
         "side": "f2",
         "points": 17,
         "open": -230,
-        "close": null,
-        "clv": null
+        "close": -283,
+        "clv": -53
       }
     ],
     "Drakkar Klose": [
@@ -12587,8 +12737,8 @@
         "side": "f1",
         "points": 13,
         "open": 371,
-        "close": null,
-        "clv": null
+        "close": 2183,
+        "clv": 1812
       }
     ],
     "Thomas Gantt": [
@@ -12598,8 +12748,8 @@
         "side": "f2",
         "points": 13,
         "open": -500,
-        "close": null,
-        "clv": null
+        "close": -39000,
+        "clv": -38500
       }
     ],
     "Sean King": [
@@ -12609,8 +12759,8 @@
         "side": "f1",
         "points": 11,
         "open": -129,
-        "close": null,
-        "clv": null
+        "close": -209,
+        "clv": -80
       }
     ],
     "Jessie Rosas": [
@@ -12620,8 +12770,8 @@
         "side": "f2",
         "points": 11,
         "open": 107,
-        "close": null,
-        "clv": null
+        "close": 172,
+        "clv": 65
       },
       {
         "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
@@ -12629,8 +12779,8 @@
         "side": "f2",
         "points": 1,
         "open": 172,
-        "close": null,
-        "clv": null
+        "close": 172,
+        "clv": 0
       }
     ],
     "Sean King III": [
@@ -12640,8 +12790,8 @@
         "side": "f1",
         "points": 1,
         "open": -209,
-        "close": null,
-        "clv": null
+        "close": -209,
+        "clv": 0
       }
     ],
     "Joshua Van": [
