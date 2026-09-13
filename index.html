@@ -5244,6 +5244,10 @@ function unseenWhatsNew(list,seen){
 }
 // whats-new:end
 // whats-new-ui:start
+// Where focus was before the popup opened, so closing it returns a
+// keyboard/screen-reader user to where they were rather than dropping focus
+// back to <body>.
+var _wnPrevFocus=null;
 function renderWhatsNew(items){
   var list=document.getElementById("wn-list");
   if(!list)return;
@@ -5258,6 +5262,31 @@ function renderWhatsNew(items){
   });
   var ov=document.getElementById("wn-overlay");
   if(ov)ov.classList.add("open");
+  // #wn-overlay sits at the very end of the DOM, after every fight card's
+  // buttons — and now that Escape and backdrop-click no longer close it (a
+  // user lost an announcement to an accidental outside tap), a keyboard user
+  // who auto-opens this popup with focus still on the underlying page would
+  // have to tab through the entire app body to reach either dismiss control.
+  // Move focus onto the popup itself, and restore it on close.
+  try{
+    _wnPrevFocus=document.activeElement;
+    var gotBtn=document.getElementById("wn-gotit-btn");
+    if(gotBtn)gotBtn.focus();
+  }catch(e){}
+}
+// Keeps Tab cycling between the popup's only two controls (the X and "Got
+// it") instead of escaping into the page behind it, now that there is no
+// other way out.
+function _wnTrapFocus(e){
+  if(e.key!=="Tab")return;
+  var closeBtn=document.getElementById("wn-close-btn"),gotBtn=document.getElementById("wn-gotit-btn");
+  if(!closeBtn||!gotBtn)return;
+  var active=document.activeElement;
+  if(e.shiftKey){
+    if(active===closeBtn){gotBtn.focus();e.preventDefault();}
+  } else {
+    if(active===gotBtn){closeBtn.focus();e.preventDefault();}
+  }
 }
 function closeWhatsNew(){
   var ov=document.getElementById("wn-overlay");
@@ -5268,6 +5297,10 @@ function closeWhatsNew(){
   if(WHATS_NEW.length){
     try{localStorage.setItem(WHATS_NEW_SEEN_KEY,WHATS_NEW[WHATS_NEW.length-1].id);}catch(e){}
   }
+  try{
+    if(_wnPrevFocus&&document.documentElement.contains(_wnPrevFocus))_wnPrevFocus.focus();
+  }catch(e){}
+  _wnPrevFocus=null;
 }
 // True if any REAL overlay is open. Deliberately checks only the ids
 // _escClosers already treats as dismissible overlays, not a blanket
@@ -8076,13 +8109,13 @@ document.addEventListener("DOMContentLoaded",function(){
      they'd read it, so the only ways out are the X and "Got it" — both call
      closeWhatsNew explicitly. -->
 <div id="wn-overlay">
-  <div id="wn-panel">
+  <div id="wn-panel" onkeydown="_wnTrapFocus(event)">
     <div class="wn-hdr">
       <div class="wn-title">What&#8217;s New</div>
-      <button class="wn-close" onclick="closeWhatsNew()">&#x2715;</button>
+      <button class="wn-close" id="wn-close-btn" onclick="closeWhatsNew()">&#x2715;</button>
     </div>
     <div class="wn-list" id="wn-list"></div>
-    <button class="wn-btn" onclick="closeWhatsNew()">Got it</button>
+    <button class="wn-btn" id="wn-gotit-btn" onclick="closeWhatsNew()">Got it</button>
   </div>
 </div>
 <script>
