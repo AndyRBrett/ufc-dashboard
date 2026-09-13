@@ -110,7 +110,14 @@ The whole feature rests on one premise — **it spends no metered budget**:
   app-side cutoff in `makeEventBlock` uses the same `2*DAY_MS` as `render()`'s
   event-visibility filter. Both bounds are one decision: a shorter one deletes
   the section an hour before the main card while the event block stays on
-  screen. `check:intel` asserts they match.
+  screen. `check:intel` asserts they match — anchored inside `render()` and
+  `makeEventBlock()`, because `index.html` carries four copies of that filter
+  line and an unanchored search reads the wrong one.
+  Expiry is an **exact timestamp** (`not_expired`), not `days_out >= -2`:
+  whole-calendar-day arithmetic kept a card a full day longer than the client
+  showed it, and since `curate()` dedupes URLs across events in date order, a
+  card nobody could see would claim a shared article and leave the upcoming
+  card — the one being read — empty.
 - **A changed card outranks the interval.** `card_fingerprint` (slug + date +
   roster) is stored in `intel-state.json`; when it moves, the interval is
   bypassed and the set is rebuilt now. A late replacement is exactly the thing

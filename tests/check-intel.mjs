@@ -158,6 +158,7 @@ if (!existsSync(intelPath)) {
   }
 }
 
+// Advisory cross-check:end
 // The intel section's cutoff must match render()'s event-visibility window.
 //
 // Event dates are UTC midnight and US prime-time cards run past it: a Saturday
@@ -165,13 +166,41 @@ if (!existsSync(intelPath)) {
 // at the exact moment the main card started, while render() kept the event block
 // on screen for another day — the card visible, its intel gone. The two bounds
 // are one decision and must move together.
+//
+// Both sides are located by slicing out the enclosing function FIRST. index.html
+// has four copies of this EVENTS.filter line (currentEvent, two others, and
+// render); an unanchored search matched the first one, in a different function,
+// so render() itself was never inspected and a one-day regression there would
+// have passed this check while another copy still read 2.
 {
-  const evFilter = /EVENTS\.filter\(function\(e\)\{return new Date\(e\.date\)>=now-(\d*)\*?DAY_MS/.exec(html);
-  const intelCut = /new Date\(evRef\.date\)\.getTime\(\)<Date\.now\(\)-(\d*)\*?DAY_MS/.exec(html);
-  const days = (m) => m ? (m[1] === "" ? 1 : Number(m[1])) : null;
+  const fnBody = (decl) => {
+    const a = html.indexOf(decl);
+    if (a < 0) return null;
+    const b = html.indexOf("\nfunction ", a + decl.length);
+    return html.slice(a, b < 0 ? html.length : b);
+  };
+  const soleMatch = (src, re, what) => {
+    if (src === null) { fail(`index.html: could not locate ${what}`); return null; }
+    const hits = [...src.matchAll(re)];
+    // Exactly one: zero means the pattern rotted and this check would pass
+    // vacuously, which is the failure it is here to prevent.
+    if (hits.length !== 1) {
+      fail(`index.html: expected exactly 1 ${what}, found ${hits.length}`);
+      return null;
+    }
+    return hits[0][1] === "" ? 1 : Number(hits[0][1]);
+  };
+  const renderDays = soleMatch(
+    fnBody("function render(){"),
+    /EVENTS\.filter\(function\(e\)\{return new Date\(e\.date\)>=now-(\d*)\*?DAY_MS/g,
+    "event-visibility filter inside render()");
+  const intelDays = soleMatch(
+    fnBody("function makeEventBlock("),
+    /new Date\(evRef\.date\)\.getTime\(\)<Date\.now\(\)-(\d*)\*?DAY_MS/g,
+    "intel cutoff inside makeEventBlock()");
   check(`the intel cutoff matches render()'s event window `
-        + `(render ${days(evFilter)}d vs intel ${days(intelCut)}d)`,
-    evFilter !== null && intelCut !== null && days(evFilter) === days(intelCut));
+        + `(render ${renderDays}d vs intel ${intelDays}d)`,
+    renderDays !== null && intelDays !== null && renderDays === intelDays);
 }
 
 // The advisory block must stay advisory. It sits in the deploy gate, so a fail()
@@ -182,10 +211,12 @@ if (!existsSync(intelPath)) {
 // read it.
 {
   const self = readFileSync(fileURLToPath(import.meta.url), "utf8");
-  const a = self.indexOf("// Advisory cross-check");
-  const b = self.indexOf("// The advisory block must stay advisory");
+  const a = self.indexOf("// Advisory cross-check \u2014");
+  const b = self.indexOf("// Advisory cross-check:end");
   // Comments in that block mention fail() by name, so strip them before looking.
   const region = self.slice(a, b).replace(/^\s*\/\/.*$/gm, "");
+  check("the advisory block's own boundary markers are still present",
+    a > 0 && b > a && region.length > 200);
   check("the intel.json cross-check cannot fail the build (no fail() in the advisory block)",
     a > 0 && b > a && !/\bfail\s*\(/.test(region));
 }

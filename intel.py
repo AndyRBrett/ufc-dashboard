@@ -315,11 +315,34 @@ def days_out(date_str, today):
     return (d - today).days
 
 
+def not_expired(date_str, now):
+    """True while the client would still be showing this event.
+
+    An EXACT timestamp comparison, deliberately not `days_out >= -2`. days_out
+    counts whole calendar dates, so an inclusive -2 keeps a Saturday card all
+    through Monday and drops it at Tuesday 00:00 UTC — while render() hides it at
+    Monday 00:00 UTC. That 24-hour disagreement is not just wasted work: curate()
+    dedupes URLs across events in chronological order, so during the gap a card
+    nobody can see claims a shared article and the upcoming card — the one people
+    are actually reading — renders nothing. Both sides expire at date + 2 days.
+    """
+    try:
+        start = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    except Exception:
+        return False
+    return now <= start + timedelta(days=WINDOW_PAST_DAYS)
+
+
+def in_window(date_str, now):
+    """Eligible for curation: not yet expired, and not too far out."""
+    return (not_expired(date_str, now)
+            and days_out(date_str, now.date()) <= WINDOW_DAYS)
+
+
 def curate(events, now=None):
     now = now or datetime.now(timezone.utc)
     today = now.date()
-    upcoming = [e for e in events
-                if -WINDOW_PAST_DAYS <= days_out(e["date"], today) <= WINDOW_DAYS]
+    upcoming = [e for e in events if in_window(e["date"], now)]
     out = {"generated_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
            "window_days": WINDOW_DAYS, "sources": [], "events": {}}
     if not upcoming:
@@ -415,7 +438,7 @@ def card_fingerprint(events, now):
     today = now.date()
     parts = []
     for e in sorted(events, key=lambda e: (e["date"], e["slug"])):
-        if not (-WINDOW_PAST_DAYS <= days_out(e["date"], today) <= WINDOW_DAYS):
+        if not in_window(e["date"], now):
             continue
         roster = sorted(nm_key(f["name"]) for f in e["fighters"])
         parts.append("%s|%s|%s" % (e["slug"], e["date"], ",".join(roster)))
@@ -428,11 +451,11 @@ def should_fetch(events, state, now):
     if os.environ.get("INTEL_FORCE"):
         return True, "forced"
     today = now.date()
-    # Same lower bound as curate(), for the same reason: during a live card
+    # Same expiry rule as curate(), for the same reason: during a live card
     # days_out is already -1, and a >= 0 filter would report "no card within 10d"
     # and stop refreshing the set mid-event.
     nearest = min([days_out(e["date"], today) for e in events
-                   if days_out(e["date"], today) >= -WINDOW_PAST_DAYS] or [9999])
+                   if not_expired(e["date"], now)] or [9999])
     if nearest > WINDOW_DAYS:
         return False, "no card within %dd (nearest %dd)" % (WINDOW_DAYS, nearest)
     last = parse_date(state.get("last_fetch"))

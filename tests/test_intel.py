@@ -312,3 +312,59 @@ def test_the_fingerprint_still_covers_a_live_card():
     # An empty fingerprint here would make every live card look identical, so a
     # late swap during the prelims would never trigger a refresh.
     assert intel.card_fingerprint(evs, live) != intel.card_fingerprint(swapped, live)
+
+
+# --- backend/client expiry parity ------------------------------------------
+#
+# days_out counts whole calendar dates, so an inclusive `days_out >= -2` bound
+# kept a Saturday card all through Monday while render() hid it at Monday 00:00
+# UTC. The gap is not merely wasted work: curate() dedupes URLs across events in
+# chronological order, so a card nobody can see claims a shared article and the
+# upcoming card renders nothing.
+
+def _client_shows(date_str, now):
+    """render(): new Date(e.date) >= now - 2*DAY_MS, with the date at UTC midnight."""
+    start = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    return start >= now - timedelta(days=2)
+
+
+@pytest.mark.parametrize("iso", [
+    "2026-09-20T01:00:00Z",   # main card, Sat 21:00 ET
+    "2026-09-21T00:00:00Z",   # exactly the boundary
+    "2026-09-21T00:00:01Z",   # one second past it
+    "2026-09-21T12:00:00Z",   # the day that used to diverge
+    "2026-09-21T23:59:00Z",
+    "2026-09-22T00:00:00Z",
+])
+def test_backend_expiry_matches_the_client_exactly(iso):
+    now = _utc(iso)
+    assert intel.in_window("2026-09-19", now) == _client_shows("2026-09-19", now), iso
+
+
+def test_an_expired_card_cannot_steal_an_upcoming_cards_article(one_feed):
+    two = """
+var EVENTS=[
+  {name:"done",date:"2026-09-19",slug:"UFC_A",fights:[
+    {lbl:"Main Event",wc:"X",title:false,rematch:false,odds:null,winner:"",f1:{n:"Anthony Hernandez",r:"",rk:"",s:null},f2:{n:"Gregory Rodrigues",r:"",rk:"",s:null}}]},
+  {name:"next",date:"2026-09-26",slug:"UFC_B",fights:[
+    {lbl:"Main Event",wc:"X",title:false,rematch:false,odds:null,winner:"",f1:{n:"Anthony Hernandez",r:"",rk:"",s:null},f2:{n:"Joshua Van",r:"",rk:"",s:null}}]}
+];
+"""
+    # Monday noon: the Saturday card is expired on both sides now.
+    out = intel.curate(intel.parse_events(two), now=_utc("2026-09-21T12:00:00Z"))
+    assert "UFC_A" not in out["events"]
+    assert [i["url"] for i in out["events"]["UFC_B"]["items"]] == [
+        "https://mmajunkie.test/hernandez"]
+
+
+def test_should_fetch_uses_the_same_expiry_rule():
+    evs = intel.parse_events(SAT_CARD)
+    # Just inside the window: the card is still live-ish, so it must not read as
+    # "no card at all" and freeze the set.
+    go, why = intel.should_fetch(evs, {}, _utc("2026-09-20T23:00:00Z"))
+    assert go is True and "no card within" not in why
+
+
+def test_a_malformed_date_is_never_in_window():
+    assert intel.not_expired("not-a-date", NOW) is False
+    assert intel.in_window("", NOW) is False
