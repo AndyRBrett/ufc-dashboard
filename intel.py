@@ -23,6 +23,7 @@ Run: python intel.py            (respects the cadence gate)
      INTEL_FORCE=1 python intel.py   (ignore the gate)
 """
 
+import hashlib
 import html as _html
 import json
 import os
@@ -392,6 +393,26 @@ def read_state():
         return {}
 
 
+def card_fingerprint(events, now):
+    """Identity of the cards we are curating: slug, date and full roster.
+
+    Any change here — a late replacement, a withdrawal, a moved date, a card
+    entering the window — means the curated set is describing a card that no
+    longer exists, so it must be rebuilt now rather than at the next slot. Late
+    replacements are precisely the thing that lands inside a cadence window (the
+    Jessie Rosas withdrawal in update.yml's comment was announced the day before
+    the fight).
+    """
+    today = now.date()
+    parts = []
+    for e in sorted(events, key=lambda e: (e["date"], e["slug"])):
+        if not (0 <= days_out(e["date"], today) <= WINDOW_DAYS):
+            continue
+        roster = sorted(nm_key(f["name"]) for f in e["fighters"])
+        parts.append("%s|%s|%s" % (e["slug"], e["date"], ",".join(roster)))
+    return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()[:16]
+
+
 def should_fetch(events, state, now):
     """Feeds cost no quota, but a pull every 5 minutes on fight night would add a
     commit to every one of those runs for content that changes hourly at best."""
@@ -405,6 +426,12 @@ def should_fetch(events, state, now):
     last = parse_date(state.get("last_fetch"))
     if not last:
         return True, "no previous pull"
+    # The fingerprint outranks the interval. Waiting up to 8 hours to notice a
+    # fighter swap would leave the section showing intel about someone who is no
+    # longer on the card, through exactly the days when people are reading it.
+    fp = card_fingerprint(events, now)
+    if state.get("fingerprint") and state["fingerprint"] != fp:
+        return True, "card changed (roster/date fingerprint moved)"
     interval = timedelta(hours=3 if nearest <= 3 else 8)
     if now - last < interval:
         return False, "last pull %s ago (interval %s)" % (now - last, interval)
@@ -432,6 +459,9 @@ def main():
                         encoding="utf-8")
     STATE_JSON.write_text(json.dumps({
         "last_fetch": result["generated_at"],
+        # What the curated set was built against. The next run compares against
+        # this to notice a replacement or date move inside the cadence window.
+        "fingerprint": card_fingerprint(events, now),
         "sources": result["sources"],
         "events": len(result["events"]),
         "items": n_items,

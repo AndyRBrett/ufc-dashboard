@@ -255,15 +255,21 @@ and served statically, so rendering the section costs nothing per page view eith
 
 It runs as a step in the existing update workflow, gated by `intel-state.json` the
 same way odds pulls are gated: nothing outside `INTEL_WINDOW_DAYS` (10) of a card,
-then every 8 hours, tightening to every 3 during fight week. `INTEL_FORCE=1`
-bypasses the gate. Feed selection is overridable via `INTEL_FEEDS` (a JSON array),
+then every 8 hours, tightening to every 3 during fight week. A change to the card
+itself — a late replacement, a withdrawal, a moved date — bypasses the interval
+and rebuilds immediately, so the section never advertises a fighter who has pulled
+out. `INTEL_FORCE=1` bypasses the gate entirely. Feed selection is overridable via `INTEL_FEEDS` (a JSON array),
 and each feed's HTTP status is recorded in `intel.json` so a dead source is visible
 rather than silently missing.
 
 Because the match is string-based, the app treats the file as untrusted input:
 `intelItemsFor()` drops any item tagged with a fighter who isn't on the card, any
 bucket whose date doesn't match the event, and any link that isn't absolute
-`https://`. `npm run check:intel` enforces that.
+`https://`. `npm run check:intel` enforces that on fixtures. Its comparison of the
+committed `intel.json` against the committed `data.js` is deliberately advisory —
+that check runs in the deploy gate, and drift between the two files is routine and
+self-correcting, so failing on it would block the site from publishing over a data
+gap.
 
 ---
 

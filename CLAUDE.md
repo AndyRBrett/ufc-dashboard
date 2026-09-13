@@ -104,6 +104,11 @@ The whole feature rests on one premise — **it spends no metered budget**:
   outside `INTEL_WINDOW_DAYS` of a card, then every 8h (3h inside fight week).
   Feeds are free, but a pull on every 5-minute fight-night run would add a commit
   to each one. `INTEL_FORCE=1` bypasses it.
+- **A changed card outranks the interval.** `card_fingerprint` (slug + date +
+  roster) is stored in `intel-state.json`; when it moves, the interval is
+  bypassed and the set is rebuilt now. A late replacement is exactly the thing
+  that lands mid-window, and waiting 8h for it means showing intel about someone
+  who has withdrawn, during the days people actually read it.
 
 Two rules that aren't stylistic:
 
@@ -117,6 +122,18 @@ Two rules that aren't stylistic:
   mis-attribution, and an interview about a different Silva shown under tonight's
   main event is the app stating something false about a fight people are picking.
   `npm run check:intel` holds that contract.
+
+**`check:intel`'s cross-check against `data.js` is advisory — keep it that way.**
+The fixture assertions fail the build; the block comparing the committed
+`intel.json` to the committed `data.js` only reports. It runs in
+`validate-web.yml`, and `pages.yml`'s `deploy` **needs** `validate`, so a failure
+there stops the site from publishing — live results included. Drift between those
+two files is normal and self-healing: `scrape.py` rewrites `data.js` every five
+minutes while the curator is cadence-gated, so any replacement or date move
+leaves the file briefly stale. Failing on it would block a deploy for a data gap,
+which is the WARN/BLOCK rule above, violated. Nothing is lost by reporting
+instead: the app drops those items at render anyway. The test asserts against its
+own source that no `fail()` creeps back into that block.
 
 A dead feed is reported, not swallowed: per-feed HTTP status lands in
 `intel.json`'s `sources` block and a `::warning::` in the run log.

@@ -20,8 +20,9 @@
 //      data: URL never becomes an href.
 //   4. Renamed fighters still match (nmEq), so a mid-card rename doesn't blank
 //      the section the way it once un-scored picks.
-//   5. The real intel.json in the repo, if present, passes its own contract
-//      against the real data.js.
+//   5. The committed intel.json is cross-checked against the committed data.js
+//      — but ADVISORY ONLY. See the note above that block for why it must never
+//      fail the build.
 import { readFileSync, existsSync } from "node:fs";
 import vm from "node:vm";
 import { join, dirname } from "node:path";
@@ -107,29 +108,70 @@ check("a different fighter is still kept apart",
 //    against the committed data.js — a curator change that starts emitting
 //    off-card tags fails here rather than in front of users.
 const intelPath = join(ROOT, "intel.json");
+// Advisory cross-check — reports drift, never fails.
+//
+// This block MUST NOT call fail(). check:intel runs in validate-web.yml, and
+// pages.yml's deploy `needs: validate` — so a failure here stops the site from
+// deploying, live fight results included.
+//
+// Drift between these two files is normal and self-healing, not a defect. The
+// curator is cadence-gated while scrape.py rewrites data.js every five minutes,
+// so any late replacement, withdrawal or date move leaves intel.json describing
+// the previous roster until the next curator run (which the roster fingerprint
+// in intel-state.json now triggers immediately). Failing on that would block the
+// deploy for a data gap — exactly what CLAUDE.md forbids: "a blocked commit
+// during a card also blocks the live results everyone is watching."
+//
+// Nothing is lost by making it advisory, because the app does not trust this
+// file either: intelItemsFor() drops the same stale items at render time, and
+// the fixture assertions above prove it — deterministically, on synthetic input
+// that cannot drift. Those are the contract. This is a report.
 if (!existsSync(intelPath)) {
-  console.log("  ✓ no intel.json committed yet — nothing to cross-check");
+  console.log("  · no intel.json committed yet — nothing to cross-check");
 } else {
-  const intel = JSON.parse(readFileSync(intelPath, "utf8"));
-  const dctx = vm.createContext({});
-  vm.runInContext(readFileSync(join(ROOT, "data.js"), "utf8"), dctx);
-  const events = vm.runInContext("EVENTS", dctx);
-  let checked = 0, dropped = 0, total = 0;
-  for (const ev of events) {
-    const key = ev.slug || ev.date;
-    const bucket = intel.events && intel.events[key];
-    if (!bucket) continue;
-    checked++;
-    total += (bucket.items || []).length;
-    ctx.__intel = intel; ctx.__ev = ev;
-    dropped += (bucket.items || []).length - call("intelItemsFor(__intel,__ev).length");
+  let note = (m) => console.log("  · " + m);
+  try {
+    const intel = JSON.parse(readFileSync(intelPath, "utf8"));
+    const dctx = vm.createContext({});
+    vm.runInContext(readFileSync(join(ROOT, "data.js"), "utf8"), dctx);
+    const events = vm.runInContext("EVENTS", dctx);
+    let checked = 0, dropped = 0, total = 0;
+    for (const ev of events) {
+      const key = ev.slug || ev.date;
+      const bucket = intel.events && intel.events[key];
+      if (!bucket) continue;
+      checked++;
+      total += (bucket.items || []).length;
+      ctx.__intel = intel; ctx.__ev = ev;
+      dropped += (bucket.items || []).length - call("intelItemsFor(__intel,__ev).length");
+    }
+    const orphans = Object.keys(intel.events || {})
+      .filter((k) => !events.some((e) => (e.slug || e.date) === k));
+    note(`intel.json vs data.js: ${checked} event(s), ${total} item(s), `
+         + `${dropped} would be dropped at render, ${orphans.length} orphan bucket(s)`);
+    if (dropped || orphans.length) {
+      note("the card moved since the last curator run — the app drops these on its own, "
+           + "and the next intel.py run rebuilds them (advisory, not a failure)");
+    }
+  } catch (e) {
+    note(`intel.json could not be cross-checked (${e.message}) — advisory, not a failure`);
   }
-  check(`every item in intel.json survives validation against data.js `
-        + `(${checked} event(s), ${total} item(s), ${dropped} dropped)`, dropped === 0);
-  const orphans = Object.keys(intel.events || {})
-    .filter((k) => !events.some((e) => (e.slug || e.date) === k));
-  check(`intel.json has no buckets for events missing from data.js`
-        + (orphans.length ? ` — found ${orphans.join(", ")}` : ""), orphans.length === 0);
+}
+
+// The advisory block must stay advisory. It sits in the deploy gate, so a fail()
+// added there would let a routine card change stop the site from publishing —
+// the regression this file exists to prevent a second time. Asserted against its
+// own source, because the property is "this code never calls fail()", and the
+// only way to observe that from inside a run where it happens not to fire is to
+// read it.
+{
+  const self = readFileSync(fileURLToPath(import.meta.url), "utf8");
+  const a = self.indexOf("// Advisory cross-check");
+  const b = self.indexOf("// The advisory block must stay advisory");
+  // Comments in that block mention fail() by name, so strip them before looking.
+  const region = self.slice(a, b).replace(/^\s*\/\/.*$/gm, "");
+  check("the intel.json cross-check cannot fail the build (no fail() in the advisory block)",
+    a > 0 && b > a && !/\bfail\s*\(/.test(region));
 }
 
 if (failures) { console.error(`\n${failures} intel check(s) failed`); process.exit(1); }

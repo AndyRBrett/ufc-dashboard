@@ -131,6 +131,58 @@ def test_fight_week_tightens_the_interval_but_still_gates():
     assert intel.should_fetch(evs, older, near)[0] is True
 
 
+def test_fingerprint_moves_when_a_fighter_is_replaced():
+    # The Codex P1 / Jessie Rosas case: a late replacement inside the cadence
+    # window used to leave intel.json describing a fighter who had withdrawn.
+    evs = intel.parse_events(DATA)
+    swapped = intel.parse_events(DATA.replace('n:"Gregory Rodrigues"', 'n:"Bo Nickal"'))
+    assert intel.card_fingerprint(evs, NOW) != intel.card_fingerprint(swapped, NOW)
+
+
+def test_fingerprint_moves_when_the_card_date_moves():
+    evs = intel.parse_events(DATA)
+    moved = intel.parse_events(DATA.replace('date:"2026-09-19"', 'date:"2026-09-20"'))
+    assert intel.card_fingerprint(evs, NOW) != intel.card_fingerprint(moved, NOW)
+
+
+def test_fingerprint_is_stable_when_nothing_relevant_changed():
+    evs = intel.parse_events(DATA)
+    assert intel.card_fingerprint(evs, NOW) == intel.card_fingerprint(evs, NOW)
+    # A rename that nmKey folds away is the same roster, not a new card — this is
+    # what stops a ufcstats spelling change from forcing a needless re-pull.
+    renamed = intel.parse_events(DATA.replace('n:"Sean King III"', 'n:"Sean King"'))
+    assert intel.card_fingerprint(evs, NOW) == intel.card_fingerprint(renamed, NOW)
+
+
+def test_fingerprint_ignores_cards_outside_the_window():
+    evs = intel.parse_events(DATA)
+    far = intel.parse_events(DATA.replace('n:"Islam Makhachev"', 'n:"Justin Gaethje"'))
+    assert intel.card_fingerprint(evs, NOW) == intel.card_fingerprint(far, NOW)
+
+
+def test_a_changed_card_beats_the_cadence_interval():
+    evs = intel.parse_events(DATA)
+    # Pulled a minute ago — normally nowhere near due.
+    state = {"last_fetch": (NOW - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+             "fingerprint": "stale000stale000"}
+    go, why = intel.should_fetch(evs, state, NOW)
+    assert go is True and "card changed" in why
+
+
+def test_an_unchanged_card_still_respects_the_interval():
+    evs = intel.parse_events(DATA)
+    state = {"last_fetch": (NOW - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+             "fingerprint": intel.card_fingerprint(evs, NOW)}
+    assert intel.should_fetch(evs, state, NOW)[0] is False
+
+
+def test_a_state_file_with_no_fingerprint_does_not_force_a_pull():
+    # Upgrading from the pre-fingerprint state file must not re-pull on every run.
+    evs = intel.parse_events(DATA)
+    state = {"last_fetch": (NOW - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")}
+    assert intel.should_fetch(evs, state, NOW)[0] is False
+
+
 def test_force_overrides_the_gate(monkeypatch):
     monkeypatch.setenv("INTEL_FORCE", "1")
     evs = intel.parse_events(DATA)
@@ -199,3 +251,15 @@ def test_stale_items_are_dropped(one_feed):
         DATA.replace('date:"2026-09-19"', late.strftime('date:"%Y-%m-%d"'))), now=late)
     key = list(out["events"])[0]
     assert out["events"][key]["items"] == []
+
+
+def test_main_persists_the_fingerprint_for_the_next_run(one_feed, monkeypatch, tmp_path):
+    monkeypatch.setenv("INTEL_FORCE", "1")
+    monkeypatch.setattr(intel, "OUT_JSON", tmp_path / "intel.json")
+    monkeypatch.setattr(intel, "STATE_JSON", tmp_path / "intel-state.json")
+    monkeypatch.setattr(intel, "DATA_JS", tmp_path / "data.js")
+    (tmp_path / "data.js").write_text(DATA, encoding="utf-8")
+    assert intel.main() == 0
+    state = json.loads((tmp_path / "intel-state.json").read_text())
+    assert state["fingerprint"] == intel.card_fingerprint(
+        intel.parse_events(DATA), intel.datetime.now(timezone.utc))
