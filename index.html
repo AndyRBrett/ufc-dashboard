@@ -7540,7 +7540,6 @@ var _escClosers=[
   ["acctBg",function(){closeAcct();}],
   ["nmBg",function(){closeNameModal();}],
   ["install-overlay",function(){closeInstall();}],
-  ["wn-overlay",function(){closeWhatsNew();}],
   ["fnMode",function(){closeFN();}],
   ["lbPanel",function(){closeLeaderboard();}],
   ["moreMenu",function(){closeMoreMenu();}]
@@ -8072,7 +8071,11 @@ document.addEventListener("DOMContentLoaded",function(){
     </div>
   </div>
 </div>
-<div id="wn-overlay" onclick="if(event.target===this)closeWhatsNew()">
+<!-- Deliberately no backdrop-click or Escape dismissal (see closeWhatsNew /
+     _escClosers): a user reported the popup closing on an outside tap before
+     they'd read it, so the only ways out are the X and "Got it" — both call
+     closeWhatsNew explicitly. -->
+<div id="wn-overlay">
   <div id="wn-panel">
     <div class="wn-hdr">
       <div class="wn-title">What&#8217;s New</div>

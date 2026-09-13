@@ -129,7 +129,11 @@ function fakeEl(open) {
 // covering anything. `escCloserIds` models the app's real _escClosers list:
 // only ids on it are actual overlays, and _anyOverlayOpen must consult only
 // that list, never the DOM at large.
-function runUi({ openIds = [], escCloserIds = ["trashSheet", "wn-overlay"], storage = {} }) {
+// wn-overlay itself is NOT on this default: it is deliberately absent from
+// the real _escClosers (Escape must not dismiss the popup either — see the
+// markup-level checks below), and _anyOverlayOpen never needs to see its own
+// overlay's state to gate opening it in the first place.
+function runUi({ openIds = [], escCloserIds = ["trashSheet"], storage = {} }) {
   const rendered = [];
   const store = { ...storage };
   const openSet = new Set(openIds);
@@ -220,6 +224,28 @@ function runUi({ openIds = [], escCloserIds = ["trashSheet", "wn-overlay"], stor
   r.run("closeWhatsNew");
   check("closeWhatsNew persists the NEWEST entry currently defined as the checkpoint",
     r.store.ufc_whatsnew_seen === FIX[FIX.length - 1].id);
+}
+
+// --- forced dismissal: only "Got it" / the X close it -----------------
+//
+// A user reported the popup closing when they tapped outside it, before
+// they'd read the entry — a classic backdrop-click dismissal, and here it
+// meant a shipped feature (the whole point of this popup) went unseen. Two
+// separate exits had to be checked, not just the one reported: a click on
+// the overlay backdrop, and the Escape key via _escClosers (which also
+// drives _anyOverlayOpen — see above — so this is a markup assertion, not
+// something the vm-context tests above can see).
+
+check("#wn-overlay's opening tag carries no onclick backdrop-dismiss handler",
+  /<div id="wn-overlay">/.test(html) && !/<div id="wn-overlay"[^>]*onclick/.test(html));
+
+{
+  const a = html.indexOf("var _escClosers=[");
+  const b = html.indexOf("];", a);
+  const closers = a >= 0 && b > a ? html.slice(a, b) : "";
+  check("_escClosers block was located", closers.length > 0);
+  check("wn-overlay is NOT in _escClosers, so Escape cannot dismiss it either",
+    closers.length > 0 && !closers.includes('"wn-overlay"'));
 }
 
 if (failures) { console.error(`\n${failures} what's-new check(s) failed`); process.exit(1); }
