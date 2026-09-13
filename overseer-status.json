@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-13T00:08:51Z",
+  "generated_at": "2026-09-13T00:14:37Z",
   "events_tracked": 13,
   "stale_events": 2,
   "parse_failure_events": 0,
@@ -17,35 +17,35 @@
   "movement_alert_thresholds": {
     "main-event": 10,
     "main-card": 50,
-    "prelim": 100
+    "prelim": 120
   },
   "movement_alert_calibration": [
     {
       "tier": "main-event",
-      "bouts": 10,
+      "bouts": 11,
       "target_alert_rate": 0.5,
       "source": "default",
-      "reason": "only 10 scored bouts (need 20)"
+      "reason": "only 11 scored bouts (need 20)"
     },
     {
       "tier": "main-card",
-      "bouts": 35,
+      "bouts": 40,
       "target_alert_rate": 0.35,
       "source": "calibrated",
       "observed_p": 48,
-      "persistence_at_default": 0.785,
-      "persistence_at_threshold": 0.945,
-      "persistence_samples": 55
+      "persistence_at_default": 0.782,
+      "persistence_at_threshold": 0.854,
+      "persistence_samples": 82
     },
     {
       "tier": "prelim",
-      "bouts": 55,
+      "bouts": 63,
       "target_alert_rate": 0.2,
       "source": "calibrated",
-      "observed_p": 102,
-      "persistence_at_default": 0.883,
-      "persistence_at_threshold": 0.974,
-      "persistence_samples": 38
+      "observed_p": 197,
+      "persistence_at_default": 0.898,
+      "persistence_at_threshold": 1.0,
+      "persistence_samples": 54
     }
   ],
   "events": [
@@ -106,7 +106,7 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-13T00:08:51Z",
+      "last_changed_at": "2026-09-13T00:14:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -124,7 +124,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-13T00:08:51Z",
+      "last_changed_at": "2026-09-13T00:14:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -133,7 +133,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-13T00:08:51Z",
+      "last_changed_at": "2026-09-13T00:14:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -151,7 +151,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-292",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-13T00:08:51Z",
+      "last_changed_at": "2026-09-13T00:14:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 2,
@@ -160,7 +160,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-13T00:08:51Z",
+      "last_changed_at": "2026-09-13T00:14:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -177,7 +177,7 @@
       "magnitude": 38500,
       "main_event": false,
       "tier": "prelim",
-      "threshold": 100,
+      "threshold": 120,
       "wc": "Lightweight",
       "f1_prob_shift": 16.4,
       "f2_prob_shift": -16.9,
@@ -207,7 +207,7 @@
       "magnitude": 650,
       "main_event": false,
       "tier": "prelim",
-      "threshold": 100,
+      "threshold": 120,
       "wc": "Welterweight",
       "f1_prob_shift": -11.1,
       "f2_prob_shift": 11.3,
@@ -252,7 +252,7 @@
       "magnitude": 300,
       "main_event": false,
       "tier": "prelim",
-      "threshold": 100,
+      "threshold": 120,
       "wc": "Flyweight",
       "f1_prob_shift": 5.6,
       "f2_prob_shift": -5.7,
@@ -327,7 +327,7 @@
       "magnitude": 228,
       "main_event": false,
       "tier": "prelim",
-      "threshold": 100,
+      "threshold": 120,
       "wc": "Middleweight",
       "f1_prob_shift": -5.8,
       "f2_prob_shift": 6.5,
@@ -342,7 +342,7 @@
       "magnitude": 226,
       "main_event": false,
       "tier": "prelim",
-      "threshold": 100,
+      "threshold": 120,
       "wc": "Welterweight",
       "f1_prob_shift": -5.9,
       "f2_prob_shift": 5.5,
@@ -357,7 +357,7 @@
       "magnitude": 222,
       "main_event": false,
       "tier": "prelim",
-      "threshold": 100,
+      "threshold": 120,
       "wc": "Welterweight",
       "f1_prob_shift": 7.3,
       "f2_prob_shift": -6.8,
@@ -372,7 +372,7 @@
       "magnitude": 207,
       "main_event": false,
       "tier": "prelim",
-      "threshold": 100,
+      "threshold": 120,
       "wc": "Middleweight",
       "f1_prob_shift": 0.4,
       "f2_prob_shift": -1.7,
@@ -387,7 +387,7 @@
       "magnitude": 203,
       "main_event": false,
       "tier": "prelim",
-      "threshold": 100,
+      "threshold": 120,
       "wc": "Middleweight",
       "f1_prob_shift": 2.5,
       "f2_prob_shift": -2.4,
@@ -402,7 +402,7 @@
       "magnitude": 200,
       "main_event": false,
       "tier": "prelim",
-      "threshold": 100,
+      "threshold": 120,
       "wc": "Flyweight",
       "f1_prob_shift": 2.8,
       "f2_prob_shift": -2.7,
@@ -437,21 +437,6 @@
       "f1_prob_shift": 7.3,
       "f2_prob_shift": -6.7,
       "priority": 150.0
-    },
-    {
-      "event_id": "2026-08-15:ufc-330-makhachev-vs-machado-garry",
-      "f1": "Lucas Fernando",
-      "f2": "Rafael Tobias",
-      "f1_movement": -110,
-      "f2_movement": 78,
-      "magnitude": 110,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 100,
-      "wc": "Light Heavyweight",
-      "f1_prob_shift": 10.1,
-      "f2_prob_shift": -9.1,
-      "priority": 110.0
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
