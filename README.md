@@ -19,6 +19,7 @@ Supabase backend holds picks and fans out push notifications.
 - [Architecture](#architecture)
 - [Repository layout](#repository-layout)
 - [The data pipeline](#the-data-pipeline)
+- [Fight Week Intel](#fight-week-intel)
 - [Scoring](#scoring)
 - [Notifications](#notifications)
 - [Local development](#local-development)
@@ -118,6 +119,7 @@ Three deliberate properties hold this together:
 | `health.py` | Reads the built `data.js` and reports what's wrong; gates the publish. |
 | `write_status.py` | Per-event freshness and odds-movement status (`overseer-status.json`). |
 | `odds_series.py` | Rebuilds the odds snapshot log into per-bout time series and closing-line value. |
+| `intel.py` | Fight Week Intel curator — matches free RSS/Atom feeds to the upcoming card and writes `intel.json`. No metered API. |
 | `make_icons.py` | Regenerates the app icons. |
 | `supabase/functions/` | Deno edge functions: `send-push`, `send-reminders`, `check-results`, `ai-breakdown`, `kick-scraper`. |
 | `supabase/migrations/` | Row-Level Security policies, kept in version control. |
@@ -127,7 +129,8 @@ Three deliberate properties hold this together:
 | `.github/workflows/` | Data updates, validation, Pages and Supabase deploys, secret scanning. |
 
 Generated state files at the repo root — `odds-state.json`, `odds-snapshots.jsonl`,
-`odds-series.json`, `overseer-status.json`, `health-report.json` — are written by
+`odds-series.json`, `overseer-status.json`, `health-report.json`, `intel.json`,
+`intel-state.json` — are written by
 the pipeline and committed so the next run can diff against them. The runner is
 ephemeral; uncommitted state would reset every run.
 
@@ -233,6 +236,42 @@ on exhaustion, since a dead key needs a human and a spent quota fixes itself.
 GitHub throttles `schedule:` cron hard during busy periods, so the
 `kick-scraper` edge function also dispatches the workflow via the API on an
 external schedule, which is not throttled the same way.
+
+---
+
+## Fight Week Intel
+
+Each upcoming event carries a collapsible **Fight Week Intel** section: interviews,
+breakdowns and camp pieces about the fighters on that card, linking out to the
+publisher. Nothing is rehosted — headlines and a 220-character excerpt of the
+feed's own summary, then a link.
+
+It is deliberately free to run. `intel.py` reads public RSS/Atom feeds (MMA Junkie,
+MMA Fighting, Sherdog, Bloody Elbow, and the UFC / MMA Fighting YouTube channel
+feeds) — no key, no quota, no per-call charge — parses them with the standard
+library, and matches items to fighters already in `data.js` by name. There is no
+model call and no database: the result is `intel.json`, committed next to `data.js`
+and served statically, so rendering the section costs nothing per page view either.
+
+It runs as a step in the existing update workflow, gated by `intel-state.json` the
+same way odds pulls are gated: nothing outside `INTEL_WINDOW_DAYS` (10) of a card,
+then every 8 hours, tightening to every 3 during fight week. A change to the card
+itself — a late replacement, a withdrawal, a moved date — bypasses the interval
+and rebuilds immediately, so the section never advertises a fighter who has pulled
+out. A card stays eligible for two days past its date, so the section is still
+there through fight night: dates are UTC, and a Saturday 21:00 ET main card is
+already Sunday in UTC terms. `INTEL_FORCE=1` bypasses the gate entirely. Feed selection is overridable via `INTEL_FEEDS` (a JSON array),
+and each feed's HTTP status is recorded in `intel.json` so a dead source is visible
+rather than silently missing.
+
+Because the match is string-based, the app treats the file as untrusted input:
+`intelItemsFor()` drops any item tagged with a fighter who isn't on the card, any
+bucket whose date doesn't match the event, and any link that isn't absolute
+`https://`. `npm run check:intel` enforces that on fixtures. Its comparison of the
+committed `intel.json` against the committed `data.js` is deliberately advisory —
+that check runs in the deploy gate, and drift between the two files is routine and
+self-correcting, so failing on it would block the site from publishing over a data
+gap.
 
 ---
 
