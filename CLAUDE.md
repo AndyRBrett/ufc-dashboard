@@ -187,6 +187,24 @@ blanket match silently blocked the popup forever for anyone who'd triggered
 one. `npm run check:whatsnew` holds the backfill and cap invariants above,
 `WHATS_NEW`'s own shape, and this exact regression.
 
+**Only "Got it" or the X dismiss it — no backdrop-click, no Escape.** A user
+reported it closing on an outside tap before they'd read it, which defeats
+the entire point of a feature-announcement popup. `#wn-overlay` carries no
+`onclick` handler and is deliberately absent from `_escClosers`. Don't add
+either back without a way to guarantee the checkpoint still only advances on
+an explicit dismissal.
+
+**That means focus management is load-bearing, not cosmetic.** `#wn-overlay`
+sits at the very end of the DOM, after every fight card's buttons. With
+Escape and backdrop-click both gone, a keyboard/screen-reader user whose
+focus was still on the underlying page when this auto-opens would have to
+tab through the entire app body to reach either control — effectively
+stranded. `renderWhatsNew` moves focus onto "Got it" on open; `_wnTrapFocus`
+(wired to `#wn-panel`'s `onkeydown`) keeps Tab/Shift+Tab cycling between the
+X and "Got it" instead of escaping into the page; `closeWhatsNew` restores
+focus to wherever it was. `npm run check:whatsnew` holds all three,
+mutation-tested individually.
+
 ## Other conventions
 
 - **Bump `SW_VERSION` in `sw.js`** whenever you change `index.html` / `data.js`

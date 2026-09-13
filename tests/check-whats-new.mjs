@@ -109,17 +109,36 @@ check("an empty WHATS_NEW list never throws and returns nothing",
 // persisting the checkpoint on dismiss (which would make the popup, or the
 // backfill it exists to deliver, repeat forever).
 
-function fakeEl(open) {
-  const classes = new Set(open ? ["open"] : []);
+// Elements are cached by id (a real `getElementById` returns the same node
+// every call) so focus-trap tests can compare identity: `active===closeBtn`
+// only means anything if repeated lookups don't hand back a fresh object.
+function makeRegistry(doc, openSet) {
+  const registry = new Map();
+  let anon = 0;
+  function make(id) {
+    const classes = new Set(openSet.has(id) ? ["open"] : []);
+    const el = {
+      id,
+      classList: {
+        add: (c) => classes.add(c),
+        remove: (c) => classes.delete(c),
+        contains: (c) => classes.has(c),
+      },
+      textContent: "",
+      appendChild() {},
+      focus() { doc.activeElement = el; },
+    };
+    return el;
+  }
   return {
-    id: "x",
-    classList: {
-      add: (c) => classes.add(c),
-      remove: (c) => classes.delete(c),
-      contains: (c) => classes.has(c),
+    get(id) {
+      if (!registry.has(id)) registry.set(id, make(id));
+      return registry.get(id);
     },
-    textContent: "",
-    appendChild() {},
+    createAnon() {
+      anon++;
+      return make(`anon-${anon}`);
+    },
   };
 }
 
@@ -129,15 +148,26 @@ function fakeEl(open) {
 // covering anything. `escCloserIds` models the app's real _escClosers list:
 // only ids on it are actual overlays, and _anyOverlayOpen must consult only
 // that list, never the DOM at large.
-function runUi({ openIds = [], escCloserIds = ["trashSheet", "wn-overlay"], storage = {} }) {
+// wn-overlay itself is NOT on this default: it is deliberately absent from
+// the real _escClosers (Escape must not dismiss the popup either — see the
+// markup-level checks below), and _anyOverlayOpen never needs to see its own
+// overlay's state to gate opening it in the first place.
+//
+// `startFocusOn`: the id (or null) of the element with focus BEFORE the
+// popup is asked to open — models a keyboard/screen-reader user's actual
+// position on the page, which renderWhatsNew must move away from and
+// closeWhatsNew must restore.
+function runUi({ openIds = [], escCloserIds = ["trashSheet"], storage = {}, startFocusOn = "page-body", stubRender = true }) {
   const rendered = [];
   const store = { ...storage };
   const openSet = new Set(openIds);
-  const doc = {
-    getElementById: (id) => (openSet.has(id) || id === "wn-list" || id === "wn-overlay"
-      ? fakeEl(openSet.has(id)) : null),
-    createElement: () => fakeEl(false),
-  };
+  const doc = {};
+  const els = makeRegistry(doc, openSet);
+  doc.getElementById = (id) => (openSet.has(id) || ["wn-list", "wn-overlay", "wn-close-btn", "wn-gotit-btn"].includes(id)
+    ? els.get(id) : null);
+  doc.createElement = () => els.createAnon();
+  doc.documentElement = { contains: () => true };
+  doc.activeElement = startFocusOn ? els.get(startFocusOn) : null;
   const uiCtx = vm.createContext({
     console, String, Object, Array, JSON,
     document: doc,
@@ -151,24 +181,31 @@ function runUi({ openIds = [], escCloserIds = ["trashSheet", "wn-overlay"], stor
     _escClosers: escCloserIds.map((id) => [id, () => {}]),
     unseenWhatsNew: (list, seen) => call(`unseenWhatsNew(${JSON.stringify(list)}, ${JSON.stringify(seen)})`),
   });
-  // renderWhatsNew is stubbed to a recorder — this level tests checkWhatsNew's
-  // decision to call it (or not), not the DOM it builds, which the smoke test
-  // already boots end-to-end.
-  uiCtx.renderWhatsNew = (items) => rendered.push(items);
-  // renderWhatsNew's real body is stubbed above; drop it from the source (by
-  // brace counting, since it contains nested `{}` a lazy regex would stop at)
-  // so the injected stub is the only definition that survives.
-  const full = block("whats-new-ui");
-  const fnStart = full.indexOf("function renderWhatsNew(items){");
-  const bodyStart = full.indexOf("{", fnStart);
-  let depth = 0, i = bodyStart;
-  for (; i < full.length; i++) {
-    if (full[i] === "{") depth++;
-    else if (full[i] === "}") { depth--; if (depth === 0) { i++; break; } }
+  let src = block("whats-new-ui");
+  if (stubRender) {
+    // renderWhatsNew is stubbed to a recorder for the checkWhatsNew-focused
+    // tests below — they test the decision to call it, not the DOM/focus
+    // work it does. Dropped by brace counting (nested `{}` breaks a lazy
+    // regex) so the injected stub is the only definition that survives.
+    uiCtx.renderWhatsNew = (items) => rendered.push(items);
+    const fnStart = src.indexOf("function renderWhatsNew(items){");
+    const bodyStart = src.indexOf("{", fnStart);
+    let depth = 0, i = bodyStart;
+    for (; i < src.length; i++) {
+      if (src[i] === "{") depth++;
+      else if (src[i] === "}") { depth--; if (depth === 0) { i++; break; } }
+    }
+    src = src.slice(0, fnStart) + src.slice(i);
   }
-  const src = full.slice(0, fnStart) + full.slice(i);
   vm.runInContext(src, uiCtx);
-  return { rendered, store, run: (fn, ...args) => vm.runInContext(`${fn}(${args.map(JSON.stringify).join(",")})`, uiCtx) };
+  return {
+    rendered, store, doc, els,
+    run: (fn, ...args) => vm.runInContext(`${fn}(${args.map(JSON.stringify).join(",")})`, uiCtx),
+    dispatchTab: (opts) => {
+      uiCtx.__evt = { key: "Tab", shiftKey: !!(opts && opts.shift), preventDefault() {} };
+      return vm.runInContext("_wnTrapFocus(__evt)", uiCtx);
+    },
+  };
 }
 
 {
@@ -220,6 +257,64 @@ function runUi({ openIds = [], escCloserIds = ["trashSheet", "wn-overlay"], stor
   r.run("closeWhatsNew");
   check("closeWhatsNew persists the NEWEST entry currently defined as the checkpoint",
     r.store.ufc_whatsnew_seen === FIX[FIX.length - 1].id);
+}
+
+// --- forced dismissal: only "Got it" / the X close it -----------------
+//
+// A user reported the popup closing when they tapped outside it, before
+// they'd read the entry — a classic backdrop-click dismissal, and here it
+// meant a shipped feature (the whole point of this popup) went unseen. Two
+// separate exits had to be checked, not just the one reported: a click on
+// the overlay backdrop, and the Escape key via _escClosers (which also
+// drives _anyOverlayOpen — see above — so this is a markup assertion, not
+// something the vm-context tests above can see).
+
+check("#wn-overlay's opening tag carries no onclick backdrop-dismiss handler",
+  /<div id="wn-overlay">/.test(html) && !/<div id="wn-overlay"[^>]*onclick/.test(html));
+
+{
+  const a = html.indexOf("var _escClosers=[");
+  const b = html.indexOf("];", a);
+  const closers = a >= 0 && b > a ? html.slice(a, b) : "";
+  check("_escClosers block was located", closers.length > 0);
+  check("wn-overlay is NOT in _escClosers, so Escape cannot dismiss it either",
+    closers.length > 0 && !closers.includes('"wn-overlay"'));
+}
+
+// --- keyboard access, now that there is no other way out ------------------
+//
+// Codex P2 on #128: removing backdrop-click and Escape (the fix above) means
+// the ONLY way out is reaching "Got it" or the X. #wn-overlay sits at the
+// very end of the DOM, after every fight card's buttons, so a keyboard user
+// whose focus is still on the underlying page when this auto-opens would
+// have to tab through the entire app body first — effectively stranded.
+// renderWhatsNew must move focus into the popup, _wnTrapFocus must keep Tab
+// cycling inside it, and closeWhatsNew must give focus back.
+
+{
+  const r = runUi({ stubRender: false });
+  r.run("renderWhatsNew", FIX);
+  check("renderWhatsNew moves focus onto \"Got it\" — not left on the underlying page",
+    r.doc.activeElement === r.els.get("wn-gotit-btn"));
+}
+
+{
+  const r = runUi({ stubRender: false, startFocusOn: "page-body" });
+  r.run("renderWhatsNew", FIX);
+  r.run("closeWhatsNew");
+  check("closeWhatsNew returns focus to wherever it was before the popup opened",
+    r.doc.activeElement === r.els.get("page-body"));
+}
+
+{
+  const r = runUi({ stubRender: false });
+  r.run("renderWhatsNew", FIX);              // focus lands on Got-it
+  r.dispatchTab();                            // Tab forward from the last control
+  check("Tab from \"Got it\" (the last control) wraps to the close X, not out to the page",
+    r.doc.activeElement === r.els.get("wn-close-btn"));
+  r.dispatchTab({ shift: true });             // Shift+Tab back from the first control
+  check("Shift+Tab from the close X (the first control) wraps back to \"Got it\"",
+    r.doc.activeElement === r.els.get("wn-gotit-btn"));
 }
 
 if (failures) { console.error(`\n${failures} what's-new check(s) failed`); process.exit(1); }
