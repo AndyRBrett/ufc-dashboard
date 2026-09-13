@@ -45,6 +45,14 @@ STATE_JSON = ROOT / "intel-state.json"
 # Only curate cards this close. Nothing useful is published about a card three
 # weeks out, and a wider window just churns the commit every run.
 WINDOW_DAYS = int(os.environ.get("INTEL_WINDOW_DAYS", "10"))
+# How long a card stays eligible AFTER its date. Not cosmetic padding: `today` is
+# UTC, and a US prime-time card runs past UTC midnight — a Saturday 21:00 ET main
+# card starts at 01:00 UTC Sunday, by which point a `days_out >= 0` bound has
+# already dropped the event. That deleted the section an hour before the main
+# card, every Saturday and Sunday. 2 days matches the window render() in
+# index.html already uses to keep an event visible; the two must agree, or the
+# card is on screen with its intel missing.
+WINDOW_PAST_DAYS = int(os.environ.get("INTEL_WINDOW_PAST_DAYS", "2"))
 # Items older than this are stale for fight week regardless of what matched.
 MAX_ITEM_AGE_DAYS = int(os.environ.get("INTEL_MAX_ITEM_AGE_DAYS", "14"))
 MAX_ITEMS_PER_EVENT = int(os.environ.get("INTEL_MAX_ITEMS", "8"))
@@ -310,7 +318,8 @@ def days_out(date_str, today):
 def curate(events, now=None):
     now = now or datetime.now(timezone.utc)
     today = now.date()
-    upcoming = [e for e in events if 0 <= days_out(e["date"], today) <= WINDOW_DAYS]
+    upcoming = [e for e in events
+                if -WINDOW_PAST_DAYS <= days_out(e["date"], today) <= WINDOW_DAYS]
     out = {"generated_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
            "window_days": WINDOW_DAYS, "sources": [], "events": {}}
     if not upcoming:
@@ -406,7 +415,7 @@ def card_fingerprint(events, now):
     today = now.date()
     parts = []
     for e in sorted(events, key=lambda e: (e["date"], e["slug"])):
-        if not (0 <= days_out(e["date"], today) <= WINDOW_DAYS):
+        if not (-WINDOW_PAST_DAYS <= days_out(e["date"], today) <= WINDOW_DAYS):
             continue
         roster = sorted(nm_key(f["name"]) for f in e["fighters"])
         parts.append("%s|%s|%s" % (e["slug"], e["date"], ",".join(roster)))
@@ -419,8 +428,11 @@ def should_fetch(events, state, now):
     if os.environ.get("INTEL_FORCE"):
         return True, "forced"
     today = now.date()
+    # Same lower bound as curate(), for the same reason: during a live card
+    # days_out is already -1, and a >= 0 filter would report "no card within 10d"
+    # and stop refreshing the set mid-event.
     nearest = min([days_out(e["date"], today) for e in events
-                   if days_out(e["date"], today) >= 0] or [9999])
+                   if days_out(e["date"], today) >= -WINDOW_PAST_DAYS] or [9999])
     if nearest > WINDOW_DAYS:
         return False, "no card within %dd (nearest %dd)" % (WINDOW_DAYS, nearest)
     last = parse_date(state.get("last_fetch"))

@@ -104,6 +104,13 @@ The whole feature rests on one premise — **it spends no metered budget**:
   outside `INTEL_WINDOW_DAYS` of a card, then every 8h (3h inside fight week).
   Feeds are free, but a pull on every 5-minute fight-night run would add a commit
   to each one. `INTEL_FORCE=1` bypasses it.
+- **A card stays eligible through its own fight night.** `today` is UTC and US
+  prime-time cards run past UTC midnight — a Saturday 21:00 ET main card is
+  01:00 UTC Sunday — so the window runs from `-WINDOW_PAST_DAYS` (2), not 0. The
+  app-side cutoff in `makeEventBlock` uses the same `2*DAY_MS` as `render()`'s
+  event-visibility filter. Both bounds are one decision: a shorter one deletes
+  the section an hour before the main card while the event block stays on
+  screen. `check:intel` asserts they match.
 - **A changed card outranks the interval.** `card_fingerprint` (slug + date +
   roster) is stored in `intel-state.json`; when it moves, the interval is
   bypassed and the set is rebuilt now. A late replacement is exactly the thing

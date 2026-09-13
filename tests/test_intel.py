@@ -263,3 +263,52 @@ def test_main_persists_the_fingerprint_for_the_next_run(one_feed, monkeypatch, t
     state = json.loads((tmp_path / "intel-state.json").read_text())
     assert state["fingerprint"] == intel.card_fingerprint(
         intel.parse_events(DATA), intel.datetime.now(timezone.utc))
+
+
+# --- the live fight window ------------------------------------------------
+#
+# `today` is UTC and US prime-time cards run past UTC midnight, so a bound of
+# days_out >= 0 drops a Saturday card an hour BEFORE its main card. update.yml
+# keeps pushing live results until 04:59 UTC the next day; the intel set has to
+# survive at least that long, and the app keeps the event block on screen for two
+# days, so the curator matches that.
+
+SAT_CARD = DATA.replace('date:"2026-09-19"', 'date:"2026-09-19"')  # a Saturday
+
+
+def _utc(iso):
+    return datetime.fromisoformat(iso.replace("Z", "+00:00"))
+
+
+@pytest.mark.parametrize("label,iso", [
+    ("prelims start, Sat 17:00 ET",   "2026-09-19T21:00:00Z"),
+    ("Sat 20:00 ET, UTC rolls over",  "2026-09-20T00:00:00Z"),
+    ("MAIN CARD, Sat 21:00 ET",       "2026-09-20T01:00:00Z"),
+    ("main event, Sat 23:30 ET",      "2026-09-20T03:30:00Z"),
+    ("last live-results run, 04:59Z", "2026-09-20T04:59:00Z"),
+])
+def test_the_card_survives_its_own_live_window(one_feed, label, iso):
+    out = intel.curate(intel.parse_events(SAT_CARD), now=_utc(iso))
+    assert "UFC_331" in out["events"], "card dropped during %s" % label
+
+
+def test_the_card_does_eventually_age_out(one_feed):
+    out = intel.curate(intel.parse_events(SAT_CARD), now=_utc("2026-09-22T12:00:00Z"))
+    assert "UFC_331" not in out["events"]
+
+
+def test_a_live_card_does_not_read_as_no_card_at_all():
+    # should_fetch must use the same lower bound, or mid-event it reports
+    # "no card within 10d" and stops refreshing exactly when the card is on.
+    evs = intel.parse_events(SAT_CARD)
+    go, why = intel.should_fetch(evs, {}, _utc("2026-09-20T01:00:00Z"))
+    assert go is True and "no card within" not in why
+
+
+def test_the_fingerprint_still_covers_a_live_card():
+    evs = intel.parse_events(SAT_CARD)
+    swapped = intel.parse_events(SAT_CARD.replace('n:"Gregory Rodrigues"', 'n:"Bo Nickal"'))
+    live = _utc("2026-09-20T01:00:00Z")
+    # An empty fingerprint here would make every live card look identical, so a
+    # late swap during the prelims would never trigger a refresh.
+    assert intel.card_fingerprint(evs, live) != intel.card_fingerprint(swapped, live)

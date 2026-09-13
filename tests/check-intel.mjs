@@ -158,6 +158,22 @@ if (!existsSync(intelPath)) {
   }
 }
 
+// The intel section's cutoff must match render()'s event-visibility window.
+//
+// Event dates are UTC midnight and US prime-time cards run past it: a Saturday
+// 21:00 ET main card is 01:00 UTC Sunday. A one-day bound here hid the section
+// at the exact moment the main card started, while render() kept the event block
+// on screen for another day — the card visible, its intel gone. The two bounds
+// are one decision and must move together.
+{
+  const evFilter = /EVENTS\.filter\(function\(e\)\{return new Date\(e\.date\)>=now-(\d*)\*?DAY_MS/.exec(html);
+  const intelCut = /new Date\(evRef\.date\)\.getTime\(\)<Date\.now\(\)-(\d*)\*?DAY_MS/.exec(html);
+  const days = (m) => m ? (m[1] === "" ? 1 : Number(m[1])) : null;
+  check(`the intel cutoff matches render()'s event window `
+        + `(render ${days(evFilter)}d vs intel ${days(intelCut)}d)`,
+    evFilter !== null && intelCut !== null && days(evFilter) === days(intelCut));
+}
+
 // The advisory block must stay advisory. It sits in the deploy gate, so a fail()
 // added there would let a routine card change stop the site from publishing —
 // the regression this file exists to prevent a second time. Asserted against its

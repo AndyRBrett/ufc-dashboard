@@ -258,7 +258,9 @@ same way odds pulls are gated: nothing outside `INTEL_WINDOW_DAYS` (10) of a car
 then every 8 hours, tightening to every 3 during fight week. A change to the card
 itself — a late replacement, a withdrawal, a moved date — bypasses the interval
 and rebuilds immediately, so the section never advertises a fighter who has pulled
-out. `INTEL_FORCE=1` bypasses the gate entirely. Feed selection is overridable via `INTEL_FEEDS` (a JSON array),
+out. A card stays eligible for two days past its date, so the section is still
+there through fight night: dates are UTC, and a Saturday 21:00 ET main card is
+already Sunday in UTC terms. `INTEL_FORCE=1` bypasses the gate entirely. Feed selection is overridable via `INTEL_FEEDS` (a JSON array),
 and each feed's HTTP status is recorded in `intel.json` so a dead source is visible
 rather than silently missing.
 

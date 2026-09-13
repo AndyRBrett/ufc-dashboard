@@ -5287,7 +5287,11 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
   // the static intel.json, and left entirely absent when there is nothing for
   // this event — an empty "no intel" box every week is worse than no box.
   (function(evRef,eiRef){
-    if(new Date(evRef.date).getTime()<Date.now()-DAY_MS)return;   // past card
+    // 2*DAY_MS, matching render()'s own event-visibility window — NOT one day.
+    // Event dates are UTC midnight, so a Saturday 21:00 ET main card is already
+    // 01:00 UTC Sunday: a one-day bound hid this section at the exact moment the
+    // main card started, while the event block itself stayed on screen.
+    if(new Date(evRef.date).getTime()<Date.now()-2*DAY_MS)return;   // past card
     var wrap=document.createElement("div");wrap.className="intel-wrap";wrap.style.display="none";
     fw.appendChild(wrap);
     loadIntel().then(function(){try{renderIntelSection(wrap,evRef,eiRef);}catch(e){}});
