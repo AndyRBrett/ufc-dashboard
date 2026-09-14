@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T09:14:03Z",
+  "generated_at": "2026-09-14T15:54:16Z",
   "summary": {
     "events": 12,
     "block": 0,
@@ -50,24 +50,6 @@
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC 331: Van vs. Pantoja 2 (5d out): Osman Diaz has no record",
-      "fighter": "Osman Diaz",
-      "event": "UFC 331: Van vs. Pantoja 2",
-      "date": "2026-09-19",
-      "days_out": 5
-    },
-    {
-      "severity": "WARN",
-      "check": "stats-fetch-failed",
-      "message": "UFC 331: Van vs. Pantoja 2 (5d out): Osman Diaz stats lookup failed (2026-09-14)",
-      "fighter": "Osman Diaz",
-      "event": "UFC 331: Van vs. Pantoja 2",
-      "date": "2026-09-19",
-      "days_out": 5
-    },
-    {
-      "severity": "WARN",
-      "check": "record-blank",
       "message": "UFC 331: Van vs. Pantoja 2 (5d out): Yoo Joo-sang has no record",
       "fighter": "Yoo Joo-sang",
       "event": "UFC 331: Van vs. Pantoja 2",
@@ -79,6 +61,24 @@
       "check": "stats-fetch-failed",
       "message": "UFC 331: Van vs. Pantoja 2 (5d out): Yoo Joo-sang stats lookup failed (2026-09-14)",
       "fighter": "Yoo Joo-sang",
+      "event": "UFC 331: Van vs. Pantoja 2",
+      "date": "2026-09-19",
+      "days_out": 5
+    },
+    {
+      "severity": "WARN",
+      "check": "record-blank",
+      "message": "UFC 331: Van vs. Pantoja 2 (5d out): Osman Diaz has no record",
+      "fighter": "Osman Diaz",
+      "event": "UFC 331: Van vs. Pantoja 2",
+      "date": "2026-09-19",
+      "days_out": 5
+    },
+    {
+      "severity": "WARN",
+      "check": "stats-fetch-failed",
+      "message": "UFC 331: Van vs. Pantoja 2 (5d out): Osman Diaz stats lookup failed (2026-09-14)",
+      "fighter": "Osman Diaz",
       "event": "UFC 331: Van vs. Pantoja 2",
       "date": "2026-09-19",
       "days_out": 5

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T09:14:03Z",
+  "generated_at": "2026-09-14T15:54:16Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -8491,7 +8491,7 @@
           "f1": "Joshua Van",
           "f2": "Alexandre Pantoja",
           "lbl": "Main Event",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -8542,6 +8542,11 @@
               "at": "2026-09-14T01:04:07Z",
               "f1_odds": -130,
               "f2_odds": 106
+            },
+            {
+              "at": "2026-09-14T15:54:16Z",
+              "f1_odds": -133,
+              "f2_odds": 108
             }
           ],
           "open": {
@@ -8701,7 +8706,7 @@
           "f1": "Renato Moicano",
           "f2": "Brian Ortega",
           "lbl": "Main Card",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -8737,6 +8742,11 @@
               "at": "2026-09-14T01:04:07Z",
               "f1_odds": -211,
               "f2_odds": 168
+            },
+            {
+              "at": "2026-09-14T15:54:16Z",
+              "f1_odds": -214,
+              "f2_odds": 171
             }
           ],
           "open": {
@@ -8751,7 +8761,7 @@
           "f1": "Alonzo Menifield",
           "f2": "Iwo Baraniewski",
           "lbl": "Main Card",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -8797,6 +8807,11 @@
               "at": "2026-09-13T18:36:13Z",
               "f1_odds": 192,
               "f2_odds": -244
+            },
+            {
+              "at": "2026-09-14T15:54:16Z",
+              "f1_odds": 190,
+              "f2_odds": -242
             }
           ],
           "open": {
@@ -8811,7 +8826,7 @@
           "f1": "Marlon Vera",
           "f2": "Charles Jourdain",
           "lbl": "Prelim",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -8862,6 +8877,11 @@
               "at": "2026-09-14T09:14:03Z",
               "f1_odds": 187,
               "f2_odds": -237
+            },
+            {
+              "at": "2026-09-14T15:54:16Z",
+              "f1_odds": 185,
+              "f2_odds": -235
             }
           ],
           "open": {
@@ -8876,7 +8896,7 @@
           "f1": "Edmen Shahbazyan",
           "f2": "Brunno Ferreira",
           "lbl": "Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -8922,6 +8942,11 @@
               "at": "2026-09-13T18:36:13Z",
               "f1_odds": -168,
               "f2_odds": 136
+            },
+            {
+              "at": "2026-09-14T15:54:16Z",
+              "f1_odds": -166,
+              "f2_odds": 134
             }
           ],
           "open": {
@@ -8936,7 +8961,7 @@
           "f1": "Giga Chikadze",
           "f2": "Joanderson Brito",
           "lbl": "Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -8982,6 +9007,11 @@
               "at": "2026-09-14T01:04:07Z",
               "f1_odds": 273,
               "f2_odds": -365
+            },
+            {
+              "at": "2026-09-14T15:54:16Z",
+              "f1_odds": 280,
+              "f2_odds": -375
             }
           ],
           "open": {
@@ -8996,7 +9026,7 @@
           "f1": "Casey O'Neill",
           "f2": "Eduarda Moura",
           "lbl": "Prelim",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -9047,6 +9077,11 @@
               "at": "2026-09-14T09:14:03Z",
               "f1_odds": -184,
               "f2_odds": 148
+            },
+            {
+              "at": "2026-09-14T15:54:16Z",
+              "f1_odds": -190,
+              "f2_odds": 152
             }
           ],
           "open": {
@@ -9673,7 +9708,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Brunno Ferreira",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -155,
         "close": null,
         "clv": null
@@ -9746,7 +9781,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Alonzo Menifield",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": -245,
         "close": null,
         "clv": null
@@ -9883,7 +9918,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Giga Chikadze",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": -340,
         "close": null,
         "clv": null
@@ -10458,7 +10493,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Edmen Shahbazyan",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 132,
         "close": null,
         "clv": null
@@ -12958,7 +12993,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Alexandre Pantoja",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -113,
         "close": null,
         "clv": null
@@ -12969,7 +13004,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Joshua Van",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": -110,
         "close": null,
         "clv": null
@@ -13035,7 +13070,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Brian Ortega",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -200,
         "close": null,
         "clv": null
@@ -13046,7 +13081,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Renato Moicano",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 169,
         "close": null,
         "clv": null
@@ -13057,7 +13092,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Iwo Baraniewski",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": 205,
         "close": null,
         "clv": null
@@ -13068,7 +13103,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Charles Jourdain",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": 200,
         "close": null,
         "clv": null
@@ -13079,7 +13114,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Marlon Vera",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": -240,
         "close": null,
         "clv": null
@@ -13090,7 +13125,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Joanderson Brito",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": 274,
         "close": null,
         "clv": null
@@ -13101,7 +13136,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Eduarda Moura",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -177,
         "close": null,
         "clv": null
@@ -13112,7 +13147,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Casey O'Neill",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 150,
         "close": null,
         "clv": null
