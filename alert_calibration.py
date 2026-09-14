@@ -195,6 +195,7 @@ def calibrate_tier(tier, samples, default_threshold):
     meta["persistence_at_default"]   = None if base_rate is None else round(base_rate, 3)
     meta["persistence_at_threshold"] = None if cal_rate is None else round(cal_rate, 3)
     meta["persistence_samples"]      = cal_n
+    meta["persistence_samples_at_default"] = base_n
     if threshold <= default_threshold:
         meta["source"] = "calibrated"
         return max(threshold, MIN_THRESHOLD), meta
@@ -233,3 +234,42 @@ def threshold_for(thresholds, tier, default_threshold):
     """The threshold to judge a bout in `tier` by, defaulting safely."""
     value = (thresholds or {}).get(tier)
     return default_threshold if not isinstance(value, (int, float)) else value
+
+
+# A tier's alerts are downweighted, not dropped, once the moves that actually
+# clear its enforced bar have historically retraced more often than they held —
+# worse than a coin flip that the move survives to fight time (#129).
+LOW_PERSISTENCE_CUTOFF = 0.5
+
+
+def enforced_persistence(meta):
+    """(persistence rate, sample size) behind the bar a tier actually enforces.
+
+    `persistence_at_threshold` is measured against the CANDIDATE calibrated bar.
+    When that candidate was rejected by the backtest guard and the tier fell
+    back to the global default (source == "default"), the bar actually being
+    enforced is the default one, so `persistence_at_default` — not the rejected
+    candidate's rate — is the figure that describes it.
+    """
+    if meta.get("source") == "calibrated":
+        return meta.get("persistence_at_threshold"), meta.get("persistence_samples")
+    return meta.get("persistence_at_default"), meta.get("persistence_samples_at_default")
+
+
+def low_confidence_tiers(evidence):
+    """{tier, ...} whose enforced bar has, historically, held less than half the
+    time — the alert fires, but the move it's flagging is more likely than not
+    to be gone by fight time.
+
+    Consumed live by write_status.event_movers (#129) so a fresh alert in one of
+    these tiers is tagged low-confidence rather than ranked at equal priority to
+    a tier whose big moves are usually sharp money rather than noise. Gated by
+    MIN_PERSIST_OBS the same way the calibration guard is — a tier with too few
+    closed moves to test hasn't earned an opinion either way.
+    """
+    out = set()
+    for meta in evidence:
+        rate, n = enforced_persistence(meta)
+        if rate is not None and n is not None and n >= MIN_PERSIST_OBS and rate < LOW_PERSISTENCE_CUTOFF:
+            out.add(meta["tier"])
+    return out

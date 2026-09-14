@@ -26,6 +26,11 @@ Steam moves are surfaced as actionable signals rather than left buried in the
 snapshot log: any bout whose line has drifted at least MOVEMENT_ALERT_THRESHOLD
 points from its opener (across the whole card, not just the headliner) is emitted
 in an `alerts` array, and optionally POSTed to ALERT_WEBHOOK_URL. Implements #17.
+Each alert is also tagged `low_confidence` when its tier's own calibrated bar
+has historically retraced more often than it held (calib.low_confidence_tiers)
+and ranked accordingly by alert_priority — the move still fires, it just isn't
+weighted as if it were as trustworthy as a tier whose big moves usually stick.
+Implements #129.
 
 A successfully-fetched-but-empty page parses to zero odds-bearing bouts, whose
 fingerprint is the SHA-256 of the empty string (e3b0c442...). But "zero odds" has
@@ -343,6 +348,10 @@ MAIN_EVENT_WEIGHT = 2.5
 # Multiplier by days until the card. A move 2 days out is close to final and
 # worth acting on; the same move 3 weeks out will likely be retraced.
 IMMINENCE_WEIGHTS = ((2, 2.0), (7, 1.4), (14, 1.1))
+# A tier whose enforced bar historically retraces more often than it holds
+# (calib.low_confidence_tiers, #129) still alerts — the move is real — but isn't
+# ranked as if it were as trustworthy as a tier where big moves usually stick.
+LOW_CONFIDENCE_WEIGHT = 0.5
 
 
 def imminence_weight(days_out):
@@ -365,6 +374,8 @@ def alert_priority(alert, days_out=None):
     score = alert["magnitude"] * imminence_weight(days_out)
     if alert.get("main_event"):
         score *= MAIN_EVENT_WEIGHT
+    if alert.get("low_confidence"):
+        score *= LOW_CONFIDENCE_WEIGHT
     return round(score, 1)
 
 
@@ -380,7 +391,7 @@ def load_odds_series(path=SERIES_PATH):
         return {}
 
 
-def event_movers(fights, opens, threshold, thresholds=None):
+def event_movers(fights, opens, threshold, thresholds=None, low_confidence_tiers=None):
     """Bouts whose line has moved at least `threshold` points from its opener.
 
     A steam move on either fighter trips the alert (American odds aren't
@@ -407,6 +418,11 @@ def event_movers(fights, opens, threshold, thresholds=None):
                 "main_event": i == 0,
                 "tier": tier,
                 "threshold": bar,
+                # Whether THIS tier's own history says moves this size are more
+                # likely to revert before fight time than to hold (#129) — the
+                # calibration already measures persistence, this is where it
+                # gets acted on instead of just reported.
+                "low_confidence": tier in (low_confidence_tiers or ()),
                 "wc": f.get("wc", ""),
             }
             # How much the market actually changed its mind, in probability
@@ -677,6 +693,10 @@ def main():
     # the same sensitivity as a main-event steam move.
     calibration = calib.calibrate(load_odds_series(), MOVEMENT_ALERT_THRESHOLD)
     thresholds  = calibration["thresholds"]
+    # Tiers whose enforced bar historically retraces more often than it holds
+    # (#129) — used to tag fresh alerts as low-confidence below rather than
+    # leaving that persistence evidence sitting unused in the calibration report.
+    low_conf_tiers = calib.low_confidence_tiers(calibration["tiers"])
 
     out_events   = []
     stale_events = 0
@@ -715,7 +735,8 @@ def main():
         # lines to move, so they're skipped (#17).
         if data_ok:
             for mover in event_movers(ev["fights"], opens,
-                                      MOVEMENT_ALERT_THRESHOLD, thresholds):
+                                      MOVEMENT_ALERT_THRESHOLD, thresholds,
+                                      low_conf_tiers):
                 alerts.append({"event_id": ev["event_id"], **mover})
 
         out_events.append({
@@ -776,6 +797,8 @@ def main():
         # What each tier is actually judged by, and the evidence behind it (#93).
         "movement_alert_thresholds": thresholds,
         "movement_alert_calibration": calibration["tiers"],
+        # Which tiers' alerts are being deprioritized below and why (#129).
+        "movement_alert_low_confidence_tiers": sorted(low_conf_tiers),
         "events":                   out_events,
         "alerts":                   alerts,
         "errors":                   errors,

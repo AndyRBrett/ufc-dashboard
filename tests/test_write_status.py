@@ -577,6 +577,31 @@ def test_event_movers_without_a_calibration_behaves_exactly_as_before():
     assert len(ws.event_movers(fights, opens, 10, {})) == 1
 
 
+# --- persistence-driven low-confidence tagging (#129) -----------------------
+
+def test_event_movers_tags_a_low_persistence_tier():
+    fights = [_priced("Prelim A", "Prelim B", -460, 380, lbl="Prelim")]
+    opens  = {ws.matchup_key(fights[0]): _priced("Prelim A", "Prelim B", -400, 330)}
+    movers = ws.event_movers(fights, opens, 10, low_confidence_tiers={"prelim"})
+    assert movers[0]["low_confidence"] is True
+
+
+def test_event_movers_defaults_to_high_confidence():
+    fights = [_priced("Main A", "Main B", -460, 380, lbl="Main Event")]
+    opens  = {ws.matchup_key(fights[0]): _priced("Main A", "Main B", -400, 330)}
+    assert ws.event_movers(fights, opens, 10)[0]["low_confidence"] is False
+    movers = ws.event_movers(fights, opens, 10, low_confidence_tiers={"prelim"})
+    assert movers[0]["low_confidence"] is False
+
+
+def test_low_confidence_alerts_rank_below_equal_magnitude_high_confidence_ones():
+    # THE POINT OF #129: the persistence evidence the calibration already
+    # computes has to change ranking, not just sit in the report.
+    sharp = {"magnitude": 20, "main_event": False, "low_confidence": False}
+    noisy = {"magnitude": 20, "main_event": False, "low_confidence": True}
+    assert ws.alert_priority(sharp, 5) > ws.alert_priority(noisy, 5)
+
+
 def test_load_odds_series_survives_a_missing_or_corrupt_file(tmp_path):
     assert ws.load_odds_series(tmp_path / "nope.json") == {}
     bad = tmp_path / "odds-series.json"
