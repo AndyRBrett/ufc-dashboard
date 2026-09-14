@@ -185,3 +185,59 @@ def test_a_bout_with_no_label_still_falls_back_to_its_position():
     ]}]}
     samples = calib.collect_samples(doc)
     assert len(samples["main-event"]["drifts"]) == 1
+
+
+# --- low-confidence tagging (#129) ------------------------------------------
+#
+# persistence_at_default / persistence_at_threshold were already computed and
+# reported, but nothing downstream acted on them: a tier whose big moves mostly
+# retrace fired alerts at the same priority as one where they hold.
+
+def test_a_reverted_tier_is_judged_by_its_default_persistence():
+    # The candidate bar was rejected (moves at it don't persist better than at
+    # the default), so what actually fires alerts for this tier IS the default
+    # bar — persistence_at_default is the figure that describes it, not the
+    # rejected candidate's persistence_at_threshold.
+    samples = {"drifts": [50] * 25,
+               "moves": [(15, False)] * 8 + [(15, True)] * 2}
+    value, meta = calib.calibrate_tier("prelim", samples, DEFAULT)
+    assert meta["source"] == "default"
+    assert meta["persistence_at_default"] == 0.2
+    assert meta["persistence_samples_at_default"] == 10
+    rate, n = calib.enforced_persistence(meta)
+    assert rate == 0.2 and n == 10
+    assert calib.low_confidence_tiers([meta]) == {"prelim"}
+
+
+def test_a_calibrated_tier_is_judged_by_its_own_threshold_persistence():
+    # threshold == default here (raw quantile never clears MIN_THRESHOLD), so
+    # the guard is skipped and the bar is "calibrated" even though it landed on
+    # the same number — persistence_at_threshold is what backs it.
+    samples = {"drifts": [10] * 25,
+               "moves": [(10, False)] * 8 + [(10, True)] * 2}
+    value, meta = calib.calibrate_tier("prelim", samples, DEFAULT)
+    assert value == DEFAULT and meta["source"] == "calibrated"
+    rate, n = calib.enforced_persistence(meta)
+    assert rate == meta["persistence_at_threshold"] == 0.2 and n == 10
+    assert calib.low_confidence_tiers([meta]) == {"prelim"}
+
+
+def test_high_persistence_tiers_are_not_flagged():
+    samples = {"drifts": [50] * 25,
+               "moves": [(15, True)] * 9 + [(15, False)]}
+    _, meta = calib.calibrate_tier("main-card", samples, DEFAULT)
+    assert calib.low_confidence_tiers([meta]) == set()
+
+
+def test_a_thin_persistence_sample_is_not_flagged_either_way():
+    # Fewer than MIN_PERSIST_OBS closed moves proves nothing — same guard the
+    # calibration itself uses before trusting a rate.
+    meta = {"tier": "prelim", "source": "default",
+            "persistence_at_default": 0.1, "persistence_samples_at_default": 3}
+    assert calib.low_confidence_tiers([meta]) == set()
+
+
+def test_a_tier_with_no_persistence_evidence_is_not_flagged():
+    meta = {"tier": "main-event", "source": "default",
+            "reason": "only 3 scored bouts (need 20)"}
+    assert calib.low_confidence_tiers([meta]) == set()
