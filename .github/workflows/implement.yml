@@ -54,3 +54,21 @@ jobs:
         web gate that blocks releases: `npm run verify`.
     secrets:
       anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+      # WHO OPENS THE PULL REQUEST decides whether anything checks it. PR #130,
+      # the first this repo's implementer ever produced, opened as
+      # github-actions[bot]: both checks landed in `action_required` waiting on
+      # a human tap, and Codex never reviewed it, because that App reviews a PR
+      # opened by a PERSON and a bot cannot ask for a review on its own. A PR
+      # opened with these credentials is an ordinary PR, so CI runs and the
+      # review arrives unasked.
+      #
+      # An installation token CANNOT be stored as a secret: it dies within the
+      # hour, and an expired secret is still non-empty, so the `||` fallback in
+      # the shared workflow would never engage and every later run would fail
+      # authentication. These are the App's id and private key; the token is
+      # minted fresh per run from them.
+      pr_app_id: ${{ secrets.OVERSEER_PR_APP_ID }}
+      pr_app_private_key: ${{ secrets.OVERSEER_PR_APP_PRIVATE_KEY }}
+      # Unset today. Here so adding a PAT later is a secret, not a workflow edit
+      # — and with all three empty the run still works and warns that it did.
+      pr_token: ${{ secrets.OVERSEER_PR_TOKEN }}
