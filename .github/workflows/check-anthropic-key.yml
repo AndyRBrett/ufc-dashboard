@@ -1,0 +1,43 @@
+name: Check the Anthropic key
+
+# TEMPORARY — delete once it has answered. See the commit message.
+#
+# Prints NOTHING that is secret: a length, a whitespace yes/no, an HTTP
+# status and the API's own error type. Never the key.
+
+on: workflow_dispatch
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask the API what it thinks of this secret
+        env:
+          KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "The secret is EMPTY or not set on this repository."
+            exit 0
+          fi
+
+          # A truncated paste or a pasted trailing newline is the most common
+          # way a working key becomes a broken secret. Both show up here.
+          echo "length: ${#KEY}"
+          case "$KEY" in
+            *[[:space:]]) echo "ends in WHITESPACE — that alone would break it" ;;
+            *)            echo "no trailing whitespace" ;;
+          esac
+
+          code=$(curl -s -o /tmp/r.json -w '%{http_code}' \
+            https://api.anthropic.com/v1/messages \
+            -H "x-api-key: $KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -H "content-type: application/json" \
+            -d '{"model":"claude-sonnet-5","max_tokens":1,"messages":[{"role":"user","content":"hi"}]}')
+
+          echo "http: $code"
+          echo "--- response ---"
+          jq -r '.error.type // "ok", .error.message // "(no error)"' /tmp/r.json 2>/dev/null \
+            || cat /tmp/r.json
