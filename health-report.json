@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T15:54:16Z",
+  "generated_at": "2026-09-15T14:20:21Z",
   "summary": {
     "events": 12,
     "block": 0,
@@ -9,79 +9,79 @@
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
-      "message": "UFC Fight Night: Bonfim vs. Brady (54d out): venue 'Meta Apex' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "message": "UFC Fight Night: Bonfim vs. Brady (53d out): venue 'Meta Apex' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Bonfim vs. Brady",
       "date": "2026-11-07"
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC 331: Van vs. Pantoja 2 (5d out): 2 of 13 bouts have no odds",
+      "message": "UFC 331: Van vs. Pantoja 2 (4d out): 2 of 13 bouts have no odds",
       "event": "UFC 331: Van vs. Pantoja 2",
       "date": "2026-09-19",
-      "days_out": 5
+      "days_out": 4
     },
     {
       "severity": "WARN",
       "check": "odds-missing-all",
-      "message": "UFC Fight Night: Rosas Jr. vs. Barcelos (12d out) has no odds on any of its 11 bouts",
+      "message": "UFC Fight Night: Rosas Jr. vs. Barcelos (11d out) has no odds on any of its 11 bouts",
       "event": "UFC Fight Night: Rosas Jr. vs. Barcelos",
       "date": "2026-09-26",
-      "days_out": 12
+      "days_out": 11
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC 331: Van vs. Pantoja 2 (5d out): Choi Doo-ho has no record",
+      "message": "UFC 331: Van vs. Pantoja 2 (4d out): Choi Doo-ho has no record",
       "fighter": "Choi Doo-ho",
       "event": "UFC 331: Van vs. Pantoja 2",
       "date": "2026-09-19",
-      "days_out": 5
+      "days_out": 4
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC 331: Van vs. Pantoja 2 (5d out): Choi Doo-ho stats lookup failed (2026-09-14)",
+      "message": "UFC 331: Van vs. Pantoja 2 (4d out): Choi Doo-ho stats lookup failed (2026-09-15)",
       "fighter": "Choi Doo-ho",
       "event": "UFC 331: Van vs. Pantoja 2",
       "date": "2026-09-19",
-      "days_out": 5
+      "days_out": 4
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC 331: Van vs. Pantoja 2 (5d out): Yoo Joo-sang has no record",
+      "message": "UFC 331: Van vs. Pantoja 2 (4d out): Yoo Joo-sang has no record",
       "fighter": "Yoo Joo-sang",
       "event": "UFC 331: Van vs. Pantoja 2",
       "date": "2026-09-19",
-      "days_out": 5
+      "days_out": 4
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC 331: Van vs. Pantoja 2 (5d out): Yoo Joo-sang stats lookup failed (2026-09-14)",
+      "message": "UFC 331: Van vs. Pantoja 2 (4d out): Yoo Joo-sang stats lookup failed (2026-09-15)",
       "fighter": "Yoo Joo-sang",
       "event": "UFC 331: Van vs. Pantoja 2",
       "date": "2026-09-19",
-      "days_out": 5
+      "days_out": 4
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC 331: Van vs. Pantoja 2 (5d out): Osman Diaz has no record",
+      "message": "UFC 331: Van vs. Pantoja 2 (4d out): Osman Diaz has no record",
       "fighter": "Osman Diaz",
       "event": "UFC 331: Van vs. Pantoja 2",
       "date": "2026-09-19",
-      "days_out": 5
+      "days_out": 4
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC 331: Van vs. Pantoja 2 (5d out): Osman Diaz stats lookup failed (2026-09-14)",
+      "message": "UFC 331: Van vs. Pantoja 2 (4d out): Osman Diaz stats lookup failed (2026-09-15)",
       "fighter": "Osman Diaz",
       "event": "UFC 331: Van vs. Pantoja 2",
       "date": "2026-09-19",
-      "days_out": 5
+      "days_out": 4
     }
   ]
 }
