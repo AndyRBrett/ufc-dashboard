@@ -1799,3 +1799,50 @@ def test_record_provider_state_persists_an_emptied_map():
     state = {"providers": {"espn": {"bouts": 0, "last_status": None}}}
     scrape.record_provider_state(state, NOW_94, stats={})
     assert state["providers"] == {}
+
+
+# --- a fighter coming off the card ------------------------------------------
+#
+# The regression guard reverts a card that came back shorter, because the parse
+# failure it was built for (Wikipedia flipping an over event to a results table)
+# looks exactly like that. A withdrawal looks like it too, at a much smaller
+# scale — and reverting one leaves a cancelled bout on a card people are picking,
+# which is what happened to Ortega/Moicano on UFC 331 through fight week.
+
+
+def _prev(n, *, decided=False):
+    return [{"f1": {"name": f"A{i}"}, "f2": {"name": f"B{i}"},
+             "winner": (f"A{i}" if decided else "")} for i in range(n)]
+
+
+def _parsed(n):
+    return [{"f1": {"name": f"A{i}"}, "f2": {"name": f"B{i}"}, "winner": ""}
+            for i in range(n)]
+
+
+def test_a_withdrawal_is_published_not_reverted():
+    assert scrape._shrink_is_a_withdrawal(_prev(13), _parsed(12), False)
+
+
+def test_a_collapsed_parse_is_never_a_withdrawal():
+    """An empty parse means `card` is the one-bout title-regex stub."""
+    assert not scrape._shrink_is_a_withdrawal(_prev(13), _parsed(1), True)
+
+
+def test_a_card_with_results_is_never_shrunk():
+    """Results injected = the event is over or underway, which is precisely when
+    Wikipedia rewrites the page. A shorter card then is the rewrite."""
+    assert not scrape._shrink_is_a_withdrawal(
+        _prev(13, decided=True), _parsed(12), False)
+
+
+def test_an_unbelievable_drop_still_keeps_the_fuller_card():
+    assert not scrape._shrink_is_a_withdrawal(_prev(13), _parsed(4), False)
+
+
+def test_the_scraper_and_the_gate_share_one_shrink_policy():
+    """Two copies of this rule can disagree, and the strict one silently wins:
+    a card the scraper shortens but the gate rejects is a change that can never
+    publish — the exact deadlock this pair replaces."""
+    import health
+    assert scrape.believable_shrink is health.believable_shrink

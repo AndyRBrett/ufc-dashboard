@@ -25,6 +25,13 @@ from zoneinfo import ZoneInfo
 import requests
 from bs4 import BeautifulSoup
 
+# The publish gate owns the "how much of a card may disappear at once" policy,
+# and this module has to apply the same answer: a card the scraper shortens but
+# the gate rejects is a change that can never land, which is the failure mode
+# believable_shrink exists to end. health.py is stdlib-only, so importing it here
+# costs nothing and keeps one definition instead of two that can drift.
+from health import believable_shrink
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
@@ -2054,6 +2061,28 @@ def get_odds_with_fallback(odds_index, existing_odds, f1_name, f2_name):
         candidate = {"f1": o["f2_odds"], "f2": o["f1_odds"]}
     return candidate if _valid_odds(candidate["f1"], candidate["f2"]) else None
 
+def _shrink_is_a_withdrawal(prev, card, parse_collapsed):
+    """True when a card coming back shorter is roster churn, not a bad parse.
+
+    Three things have to hold, and each one rules out a different way the old
+    unconditional guard was right:
+
+      * the parse produced something. An empty parse means the article flipped to
+        a results table (or the fetch failed) and `card` is the one-bout
+        title-regex stub — never a real card.
+      * nothing on the existing card has been decided. Once results are injected
+        the event is over or underway, which is exactly when Wikipedia rewrites
+        the page; a shorter card then is the rewrite, not a cancellation.
+      * the drop is small enough to be believable (health.believable_shrink,
+        shared so the scraper and the publish gate cannot disagree about it).
+    """
+    if parse_collapsed:
+        return False
+    if any(f.get("winner") for f in prev):
+        return False
+    return believable_shrink(len(prev), len(card))
+
+
 def reprice_card(card, odds_index, existing_odds):
     """Refresh the odds on an existing card in place; returns how many changed.
 
@@ -3200,6 +3229,11 @@ def step_build_events(data, now):
         wiki_fights = parse_upcoming_card(wt) if wt else []
         print(f"  Wiki fights found: {len(wiki_fights)}", file=sys.stderr)
 
+        # Whether the card below came from a real parse or the title-regex stub.
+        # The regression guard needs to tell those apart: a stub must never
+        # replace a real card, while a real parse that came back one bout shorter
+        # is a withdrawal and has to be allowed through.
+        parse_collapsed = not wiki_fights
         if not wiki_fights:
             m = re.search(r":\s*(\w+)\s+vs\.?\s+(\w+)", ev_name, re.IGNORECASE)
             if m:
@@ -3241,14 +3275,27 @@ def step_build_events(data, now):
                 "f1":     {"name": f1, "record": "", "ranking": wf.get("f1_rk", "")},
                 "f2":     {"name": f2, "record": "", "ranking": wf.get("f2_rk", "")},
             })
-        # Regression guard: never let a bad/partial parse shrink a card that we
-        # already have. Once an event is over, Wikipedia's page flips to a results
-        # table parse_upcoming_card can't read, so the parse returns nothing and the
-        # title-regex fallback above builds a one-bout stub from the event name. That
-        # stub (or any partial parse) must not replace the fuller card — with all its
-        # injected results — already in data.js. Keep whichever card has more fights.
+        # Regression guard: never let a BAD parse shrink a card that we already
+        # have. Once an event is over, Wikipedia's page flips to a results table
+        # parse_upcoming_card can't read, so the parse returns nothing and the
+        # title-regex fallback above builds a one-bout stub from the event name.
+        # That stub must not replace the fuller card — with all its injected
+        # results — already in data.js.
+        #
+        # A GOOD parse that comes back shorter is the opposite case: a fighter
+        # withdrew, and keeping the old card leaves a bout on screen that will
+        # never happen. _shrink_is_a_withdrawal separates the two; only the bad
+        # parse falls through to the keep-the-fuller-card branch.
         prev = existing_cards.get((ev_name, ev_date))
-        if prev and len(prev) > len(card):
+        if prev and len(prev) > len(card) and _shrink_is_a_withdrawal(
+                prev, card, parse_collapsed):
+            # A real parse, a bounded drop, and nothing decided yet: the card
+            # genuinely lost a bout. Take the smaller card. Reverting here is what
+            # kept a cancelled Ortega/Moicano bout on UFC 331 through fight week —
+            # the parse was right every run and the guard overruled it every run.
+            print(f"  Withdrawal: {ev_name} went from {len(prev)} to {len(card)} "
+                  f"bout(s); publishing the shorter card", file=sys.stderr)
+        elif prev and len(prev) > len(card):
             print(f"  Card regression guard: parse gave {len(card)} fight(s) for "
                   f"{ev_name}; keeping existing {len(prev)}-fight card", file=sys.stderr)
             # Keep the fuller card, but NOT its stale prices. Swapping the whole

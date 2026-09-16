@@ -84,6 +84,50 @@ def test_card_growing_is_fine():
     assert "card-regression" not in kinds(findings)
 
 
+# --- a withdrawal is not breakage -----------------------------------------
+#
+# Ortega/Moicano came off UFC 331 four days out. Wikipedia dropped the bout, the
+# scraper parsed the correct 12-bout card every single run, and this gate BLOCKed
+# it as a "shrunken card" — so the cancelled fight stayed on screen, being picked,
+# for the rest of fight week. A bounded drop has to publish.
+
+def _card(n):
+    names = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    return [fight(names[i], names[i].lower()) for i in range(n)]
+
+
+def test_one_bout_withdrawal_warns_but_publishes():
+    before = data_js([("UFC 331: Van vs. Pantoja 2", "2026-08-08", _card(13))])
+    after = data_js([("UFC 331: Van vs. Pantoja 2", "2026-08-08", _card(12))])
+    findings, summary = health.check(after, baseline_text=before, now=NOW)
+    assert "card-shrink" in kinds(findings, "WARN")
+    assert "card-regression" not in kinds(findings)
+    assert summary["block"] == 0
+
+
+def test_collapse_to_a_stub_still_blocks():
+    """The case the guard was written for: 13 bouts → the title-regex stub."""
+    before = data_js([("UFC 331: Van vs. Pantoja 2", "2026-08-08", _card(13))])
+    after = data_js([("UFC 331: Van vs. Pantoja 2", "2026-08-08", _card(1))])
+    findings, summary = health.check(after, baseline_text=before, now=NOW)
+    assert "card-regression" in kinds(findings, "BLOCK")
+    assert summary["block"] >= 1
+
+
+def test_shrink_bounds():
+    # Both bounds have to bite, or a collapse sneaks through on one of them: a
+    # small card halving passes the absolute drop, and a big card losing a third
+    # of itself passes the ratio.
+    assert health.believable_shrink(13, 12)
+    assert health.believable_shrink(13, 10)      # 3 gone, still 77% of the card
+    assert not health.believable_shrink(13, 9)   # 4 gone — past the absolute drop
+    assert not health.believable_shrink(4, 2)    # half the card, inside the drop
+    assert not health.believable_shrink(12, 8)   # a third gone, inside neither
+    assert not health.believable_shrink(3, 0)    # every bout gone is never churn
+    assert not health.believable_shrink(12, 12)  # nothing shrank
+    assert not health.believable_shrink(0, 0)
+
+
 def test_empty_imminent_card_blocks():
     text = data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])])
     # Strip the only bout, leaving the event header — a zero-bout parse.

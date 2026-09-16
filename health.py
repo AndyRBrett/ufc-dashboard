@@ -15,9 +15,10 @@ actually wrong with it, weighted by how close the affected card is.
 Two severities, and the split matters:
 
   BLOCK  Structural breakage — data.js unparseable, EVENTS empty, or the next
-         card losing bouts it already had. Publishing this is strictly worse
-         than keeping what is already live, so the gate fails and the workflow
-         stops before committing.
+         card COLLAPSING (losing most of the bouts it already had). Publishing
+         this is strictly worse than keeping what is already live, so the gate
+         fails and the workflow stops before committing. A card that loses a bout
+         or two is a withdrawal, not breakage — see believable_shrink.
 
   WARN   Data gaps — a blank record, a missing line, a TBD fighter. These are
          reported and alerted on but never block, because during a live card a
@@ -69,6 +70,31 @@ ODDS_QUOTA_WARN = 50
 # one. Both tells are required together (see profile_mismatch).
 PROFILE_MAX_AGE  = 44
 PROFILE_MAX_OPPS = 1
+
+# How much of a card is allowed to disappear between two builds.
+#
+# A card losing bouts used to be treated as impossible — scrape.py's regression
+# guard reverted to the fuller card and this module BLOCKed the publish — because
+# the failure mode it was written for produces exactly that shape: once an event
+# is over Wikipedia rewrites the page into a results table parse_upcoming_card
+# can't read, the parse collapses to nothing, and the title-regex fallback
+# synthesises a one-bout stub that would wipe a full card and its injected
+# results.
+#
+# But a withdrawal produces the same shape at a much smaller scale, and
+# withdrawals are routine: Ortega/Moicano came off UFC 331 four days out,
+# Wikipedia dropped the bout, every run re-parsed the correct 12-bout card, and
+# both layers put the stale 13th bout back — for the rest of fight week, on the
+# card people were actively picking. "Fewer bouts than last time" cannot be the
+# test, because it cannot tell a collapsed parse from a cancelled fight.
+#
+# These two bounds are that test. A drop inside BOTH of them is believable as
+# real roster churn and is allowed through (WARN, so it still gets reported);
+# anything bigger is a collapse and stays BLOCK. They are deliberately tight:
+# the most bouts a UFC card has ever lost in a week is low single digits, while
+# the failure they guard against drops a card to one bout or zero.
+CARD_SHRINK_MAX_DROP  = 3     # at most this many bouts may vanish at once...
+CARD_SHRINK_MIN_RATIO = 0.6   # ...and never more than this fraction of the card
 
 EVENT_RE = re.compile(r'name:"([^"]+)",\s*\n\s*date:"(\d{4}-\d{2}-\d{2})"')
 # The clock fields, read per-event segment. Optional by design: an event that
@@ -198,6 +224,25 @@ def days_out(date_str, today):
     return (d - today).days
 
 
+def believable_shrink(prev_count, new_count):
+    """True when a card going prev_count → new_count bouts reads as roster churn.
+
+    Shared with scrape.py's regression guard so the two layers agree on what a
+    withdrawal looks like. If they disagree the strict one wins by construction
+    and the change simply never publishes, which is the bug this pair replaces.
+
+    A card that lost EVERY bout is never believable however small it was: that is
+    the collapsed parse, not a cancellation.
+    """
+    if not prev_count or new_count >= prev_count:
+        return False          # nothing shrank — not this check's business
+    if new_count <= 0:
+        return False
+    if prev_count - new_count > CARD_SHRINK_MAX_DROP:
+        return False
+    return new_count >= CARD_SHRINK_MIN_RATIO * prev_count
+
+
 _REGION_FN = "unset"
 
 
@@ -271,10 +316,21 @@ def check(text, baseline_text=None, now=None, odds_state=None):
         for ev in upcoming:
             prev = base.get((ev["name"], ev["date"]))
             if prev and len(ev["fights"]) < len(prev["fights"]):
-                add("BLOCK", "card-regression",
-                    f"{ev['name']} dropped from {len(prev['fights'])} bouts to "
-                    f"{len(ev['fights'])} — refusing to publish a shrunken card",
-                    event=ev["name"], date=ev["date"])
+                before, after_ = len(prev["fights"]), len(ev["fights"])
+                # A bounded drop is a withdrawal, and a withdrawn bout that stays
+                # on the card is a fight people are picking that will not happen —
+                # worse than the gap this WARN reports. Only a collapse blocks.
+                if believable_shrink(before, after_):
+                    add("WARN", "card-shrink",
+                        f"{ev['name']} dropped from {before} bouts to {after_} — "
+                        f"publishing it as a withdrawal; confirm the bout really "
+                        f"came off the card",
+                        event=ev["name"], date=ev["date"])
+                else:
+                    add("BLOCK", "card-regression",
+                        f"{ev['name']} dropped from {before} bouts to "
+                        f"{after_} — refusing to publish a shrunken card",
+                        event=ev["name"], date=ev["date"])
 
     # --- start times ------------------------------------------------------
     #

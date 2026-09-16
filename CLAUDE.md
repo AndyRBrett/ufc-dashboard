@@ -69,11 +69,27 @@ were indistinguishable — the commit landed either way. Three pieces fix that:
 **between the scrape and the commit**. The severity split is load-bearing:
 
 - **BLOCK** — structural breakage (unparseable data, empty `EVENTS`, a card that
-  *lost* bouts). The job fails, nothing is committed, the last-good `data.js`
+  *collapsed*). The job fails, nothing is committed, the last-good `data.js`
   stays live, and GitHub emails the failure.
 - **WARN** — data gaps (blank record, missing line, TBD fighter). Reported to a
   single auto-updating GitHub issue, but **never blocks** — a blocked commit
   during a card also blocks the live results everyone is watching.
+
+**A card losing a bout is a withdrawal, not breakage — don't re-tighten that.**
+Both layers used to treat *any* shrink as a bad parse: `scrape.py`'s regression
+guard reverted to the fuller card and `health.py` BLOCKed the publish. The
+failure they were built for (an over event's article flips to a results table,
+the parse collapses, and the title-regex fallback synthesises a one-bout stub
+that would wipe a card and its injected results) does produce that shape — but so
+does a fighter pulling out, and pull-outs are routine. Ortega/Moicano came off
+UFC 331 four days out, the scraper parsed the correct 12-bout card on every run
+for the rest of fight week, and both layers put the cancelled bout back every
+time; users kept picking a fight that no longer existed.
+`health.believable_shrink` is now the single test for "is this churn or a
+collapse" (bounded by `CARD_SHRINK_MAX_DROP` and `CARD_SHRINK_MIN_RATIO`), and
+`scrape.py` imports it rather than keeping its own copy: if the two disagree the
+stricter one wins silently and the change can never publish at all. A collapse
+still BLOCKs, and a card with results already injected is never shrunk.
 
 Two budgets to respect when changing cadence:
 
