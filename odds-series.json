@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T14:20:21Z",
+  "generated_at": "2026-09-16T14:03:17Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -8561,7 +8561,7 @@
           "f1": "Arman Tsarukyan",
           "f2": "Mauricio Ruffy",
           "lbl": "Co-Main",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -8612,6 +8612,11 @@
               "at": "2026-09-15T14:20:21Z",
               "f1_odds": -312,
               "f2_odds": 238
+            },
+            {
+              "at": "2026-09-16T14:03:17Z",
+              "f1_odds": -327,
+              "f2_odds": 248
             }
           ],
           "open": {
@@ -8625,8 +8630,8 @@
         {
           "f1": "Gable Steveson",
           "f2": "Sean Sharaf",
-          "lbl": "Prelim",
-          "points": 5,
+          "lbl": "Main Card",
+          "points": 6,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -8652,6 +8657,11 @@
               "at": "2026-09-15T14:20:21Z",
               "f1_odds": -2033,
               "f2_odds": 917
+            },
+            {
+              "at": "2026-09-16T14:03:17Z",
+              "f1_odds": -2267,
+              "f2_odds": 950
             }
           ],
           "open": {
@@ -8666,7 +8676,7 @@
           "f1": "Tai Tuivasa",
           "f2": "Robelis Despaigne",
           "lbl": "Prelim",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -8707,6 +8717,11 @@
               "at": "2026-09-15T14:20:21Z",
               "f1_odds": 493,
               "f2_odds": -773
+            },
+            {
+              "at": "2026-09-16T14:03:17Z",
+              "f1_odds": 502,
+              "f2_odds": -790
             }
           ],
           "open": {
@@ -8781,7 +8796,7 @@
           "f1": "Alonzo Menifield",
           "f2": "Iwo Baraniewski",
           "lbl": "Main Card",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -8837,6 +8852,11 @@
               "at": "2026-09-15T14:20:21Z",
               "f1_odds": 185,
               "f2_odds": -237
+            },
+            {
+              "at": "2026-09-16T14:03:17Z",
+              "f1_odds": 193,
+              "f2_odds": -247
             }
           ],
           "open": {
@@ -8851,7 +8871,7 @@
           "f1": "Marlon Vera",
           "f2": "Charles Jourdain",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -8912,6 +8932,11 @@
               "at": "2026-09-15T14:20:21Z",
               "f1_odds": 185,
               "f2_odds": -233
+            },
+            {
+              "at": "2026-09-16T14:03:17Z",
+              "f1_odds": 181,
+              "f2_odds": -229
             }
           ],
           "open": {
@@ -9066,7 +9091,7 @@
           "f1": "Casey O'Neill",
           "f2": "Eduarda Moura",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -9122,6 +9147,11 @@
               "at": "2026-09-14T15:54:16Z",
               "f1_odds": -190,
               "f2_odds": 152
+            },
+            {
+              "at": "2026-09-16T14:03:17Z",
+              "f1_odds": -200,
+              "f2_odds": 161
             }
           ],
           "open": {
@@ -9831,7 +9861,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Alonzo Menifield",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -245,
         "close": null,
         "clv": null
@@ -10865,7 +10895,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Sean Sharaf",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -1477,
         "close": null,
         "clv": null
@@ -13065,7 +13095,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Mauricio Ruffy",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -383,
         "close": null,
         "clv": null
@@ -13076,7 +13106,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Arman Tsarukyan",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 285,
         "close": null,
         "clv": null
@@ -13087,7 +13117,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Gable Steveson",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 767,
         "close": null,
         "clv": null
@@ -13098,7 +13128,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Robelis Despaigne",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": 395,
         "close": null,
         "clv": null
@@ -13109,7 +13139,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Tai Tuivasa",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": -565,
         "close": null,
         "clv": null
@@ -13142,7 +13172,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Iwo Baraniewski",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": 205,
         "close": null,
         "clv": null
@@ -13153,7 +13183,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Charles Jourdain",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": 200,
         "close": null,
         "clv": null
@@ -13164,7 +13194,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Marlon Vera",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -240,
         "close": null,
         "clv": null
@@ -13186,7 +13216,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Eduarda Moura",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -177,
         "close": null,
         "clv": null
@@ -13197,7 +13227,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Casey O'Neill",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 150,
         "close": null,
         "clv": null
