@@ -1,18 +1,11 @@
 {
-  "generated_at": "2026-09-16T14:03:17Z",
+  "generated_at": "2026-09-16T14:12:31Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 11
+    "warn": 10
   },
   "findings": [
-    {
-      "severity": "WARN",
-      "check": "card-shrink",
-      "message": "UFC 331: Van vs. Pantoja 2 dropped from 13 bouts to 12 \u2014 publishing it as a withdrawal; confirm the bout really came off the card",
-      "event": "UFC 331: Van vs. Pantoja 2",
-      "date": "2026-09-19"
-    },
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
