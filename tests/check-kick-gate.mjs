@@ -112,12 +112,35 @@ ok("the soonest in-range card sets the mode", many.daysOut === 2 && many.event =
 const liveWins = cardStatus(dataJs(card("UFC 332", plus(5)), card("UFC 331", today)));
 ok("a live card outranks an upcoming one whatever the order", liveWins.mode === "live");
 
-// --- force is header-only ---------------------------------------------------
+// --- force takes its own credential -----------------------------------------
 //
-// force=1 skips every gate above, so a leaked query key must not reach it. The
-// platform logs whole request URLs, which is exactly how that key leaks.
-ok("force=1 requires header auth", /force\s*&&\s*!byHeader/.test(src));
-ok("the query-string key cannot be used to force", /byHeader\s*=\s*secretEquals\(bearer/.test(src));
+// force=1 skips every gate above, so it is the one input that turns a leaked
+// credential into unlimited workflow runs. CRON_SECRET is the credential that
+// leaks (the platform logs whole request URLs), so force must not accept it in
+// ANY form — a header carrying the leaked value is the same secret, just moved.
+ok("force=1 checks FORCE_SECRET, not CRON_SECRET",
+   /if\s*\(force\)\s*\{[\s\S]{0,200}secretEquals\(bearer,\s*FORCE_SECRET\)/.test(src));
+ok("force is refused when FORCE_SECRET is unset", /!FORCE_SECRET\s*\|\|/.test(src));
+ok("CRON_SECRET is never consulted on the force path",
+   !/force[\s\S]{0,120}secretEquals\([^)]*CRON_SECRET/.test(src));
+
+// --- the cadence lookup must not fail silently -------------------------------
+//
+// A revoked GH_DISPATCH_TOKEN makes minutesSinceLastRun() null on every ping.
+// Declining on that would return 200, which scheduled-push.yml and the cron both
+// read as healthy — the scraper stops for fight week with every monitor green.
+// Dispatching anyway routes a dead credential into the 502 path, which alarms.
+const unknownBranch = src.slice(
+  src.indexOf("if (since === null)"),
+  src.indexOf("} else if (since <"),
+);
+ok("the unknown-run branch exists at all", unknownBranch.length > 0 && unknownBranch.length < 2000);
+ok("an unreadable run history dispatches rather than returning early",
+   !/\breturn\b/.test(unknownBranch));
+ok("...and says so in the function logs", /console\.error/.test(unknownBranch));
+ok("only a known-too-recent run declines",
+   /reason:\s*"fight-week cadence: too soon"/.test(src) &&
+   !/last run unknown/.test(src));
 
 console.log(failures ? `\nkick-scraper gate: ${failures} failure(s)` : "\nkick-scraper gate checks passed");
 process.exit(failures ? 1 : 0);

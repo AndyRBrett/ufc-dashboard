@@ -22,7 +22,8 @@ the documented form. See [Security](#security).
 ## How it works
 
 1. Authenticates the caller via `CRON_SECRET` (header **or** `?key=`). `?force=1`
-   requires the **header** — see [Security](#security).
+   takes a **different** secret, `FORCE_SECRET`, by header — see
+   [Security](#security).
 2. **Cadence gate:** fetches `data.js` and reads how hard the scraper should be
    driven right now:
 
@@ -32,10 +33,13 @@ the documented form. See [Security](#security).
    | `fight-week` | an unfinished card is within `FIGHT_WEEK_DAYS` (7) | dispatch at most once per `FIGHT_WEEK_MIN_GAP_MIN` (60) |
    | `idle` | nothing closer than that | `{"dispatched":false,"reason":"no card in range"}` |
 
-   The `live` gate **fails open** (any fetch/parse error → dispatch anyway).
-   The `fight-week` thinning **fails closed** — if the Actions API can't be read
-   the ping is skipped rather than risk dispatching every 5 minutes for a week.
-   The live path never consults that API, so fight night doesn't depend on it.
+   Both gates **fail open**: an unreadable `data.js` is treated as a live card,
+   and an unreadable Actions API (the fight-week thinning reads `update.yml`'s
+   last run from it) dispatches rather than skipping. Skipping there would be
+   silent — a revoked `GH_DISPATCH_TOKEN` fails that lookup on every ping, and a
+   skip returns 200, which both the cron and `scheduled-push.yml` read as
+   healthy. Dispatching instead puts a dead credential in front of the 502 path,
+   which already alarms. The live path never consults the Actions API at all.
 3. POSTs `workflow_dispatch` for `update.yml` on `main`; GitHub returns 204.
 
 ### Why fight week dispatches at all
@@ -68,6 +72,7 @@ hourly, and an idle week must not dispatch.
 | `DATA_URL`          | Optional, schedule source for the cadence gate.          |
 | `FIGHT_WEEK_DAYS`   | Optional, default `7`. How far out counts as fight week. |
 | `FIGHT_WEEK_MIN_GAP_MIN` | Optional, default `60`. Minimum minutes between fight-week dispatches. |
+| `FORCE_SECRET`      | Optional. Separate operator credential for `?force=1`; unset disables forcing. |
 
 Deployed with `--no-verify-jwt` by `deploy-functions.yml`.
 
@@ -120,10 +125,11 @@ field in the 502 response body naming the likely fix.
 ## Smoke test
 
 ```bash
-# Forces a dispatch regardless of the cadence gate. HEADER auth — force=1 with
-# ?key= is refused with 403 (see Security).
+# Forces a dispatch regardless of the cadence gate. Takes FORCE_SECRET, NOT
+# CRON_SECRET, and only as a header; 403 otherwise (see Security). If
+# FORCE_SECRET is unset on the deployment, forcing is disabled outright.
 curl -XPOST "https://<ref>.supabase.co/functions/v1/kick-scraper?force=1" \
-  -H "Authorization: Bearer <CRON_SECRET>"
+  -H "Authorization: Bearer <FORCE_SECRET>"
 # Expect {"ok":true,"dispatched":true,...}; then update.yml shows a
 # workflow_dispatch run in the Actions tab.
 
@@ -141,10 +147,19 @@ logs, for as long as the logs are retained — confirmed present on 2026-09-16.
 This is the worst function for that to happen to: `GH_DISPATCH_TOKEN` lives here,
 so the secret is a route to firing workflows in the repo.
 
-Mitigated in code as far as it can be: `force=1` (the only input that bypasses
-the cadence gate, and so the only way to turn a leaked key into unbounded
-workflow runs) requires header auth. A query-key holder can do exactly what the
-cron already does — nothing more.
+Mitigated in code as far as it can be: `force=1` — the only input that bypasses
+the cadence gate, and so the only way to turn a leaked credential into unbounded
+workflow runs — now takes a **separate** secret, `FORCE_SECRET`, supplied by
+header. Moving `force` to header auth on `CRON_SECRET` would have bought
+nothing: the leaked value and the header value are the same string, so anyone
+reading it out of a logged URL could simply send it as `Authorization: Bearer`.
+A distinct credential that never travels in a URL is the only version of this
+that contains the actual threat. When `FORCE_SECRET` is unset, forcing is
+disabled — the safe default, since nothing automated uses it.
+
+Whoever holds a leaked `CRON_SECRET` can therefore do exactly what the cron
+already does, at the cadence the gate allows, and nothing more. That is a
+smaller blast radius, **not** a fix: rotation below is the fix.
 
 Closing it properly is three owner steps, in this order:
 
@@ -154,7 +169,8 @@ Closing it properly is three owner steps, in this order:
 2. **Rotate `CRON_SECRET`** (`supabase secrets set CRON_SECRET=…`), then update
    it in the cron-job.org job and in the `CRON_SECRET` GitHub Actions secret that
    `scheduled-push.yml` uses. The old value has been logged for months; moving to
-   headers does not un-log it.
+   headers does not un-log it, and the logged value keeps working until it is
+   rotated. **This step is the actual fix — 1 and 3 only stop the bleeding.**
 3. **Set `CRON_ALLOW_QUERY_KEY=0`** to refuse the query form outright. No code
    change — the switch already exists.
 
