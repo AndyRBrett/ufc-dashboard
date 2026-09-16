@@ -14,6 +14,7 @@
 #   check:dedup     — all three result senders derive the same push dedup key
 #   check:intel     — a curated fight-week link never lands under the wrong card
 #   check:whatsnew  — the what's-new popup never loses a backfill or grows unbounded
+#   check:kick      — the scraper still gets dispatched on a card day and in fight week
 name: Validate Web
 
 on:
@@ -65,3 +66,5 @@ jobs:
         run: npm run check:intel
       - name: What's New popup test
         run: npm run check:whatsnew
+      - name: kick-scraper cadence gate test
+        run: npm run check:kick

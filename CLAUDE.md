@@ -32,6 +32,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:names` | a fighter renamed mid-card silently unscoring picks made under the old name |
 | `npm run check:intel` | a curated fight-week link landing under the wrong card |
 | `npm run check:whatsnew` | the what's-new popup losing a backfill announcement or growing unbounded |
+| `npm run check:kick`  | the scraper not being dispatched on a card day or in fight week |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -90,6 +91,18 @@ collapse" (bounded by `CARD_SHRINK_MAX_DROP` and `CARD_SHRINK_MIN_RATIO`), and
 `scrape.py` imports it rather than keeping its own copy: if the two disagree the
 stricter one wins silently and the change can never publish at all. A collapse
 still BLOCKs, and a card with results already injected is never shrunk.
+
+**What actually runs the scraper is `kick-scraper`, not `schedule:`.** GitHub
+delivers this repo's cron events best-effort and throttles them hard — measured
+2026-09-15/16, one `update.yml` run per day, both ~5h late, zero in the 23h
+between; in a Saturday fight window it once delivered ~6 of ~96. The real driver
+is cron-job.org → the `kick-scraper` edge function → `workflow_dispatch`, which
+isn't throttled. So when reasoning about "how fresh is the card", read
+`supabase/functions/kick-scraper/`'s cadence gate, not the `schedule:` block in
+`update.yml` — and remember an edge-function change needs a Supabase deploy, not
+just a push. Its three modes (`live` every ping, `fight-week` hourly, `idle`
+never) are held by `npm run check:kick`; widening `idle` is what let a cancelled
+bout sit on UFC 331 for days.
 
 Two budgets to respect when changing cadence:
 

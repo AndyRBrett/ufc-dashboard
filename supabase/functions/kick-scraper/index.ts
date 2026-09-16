@@ -14,31 +14,91 @@
 //
 // Deployed with --no-verify-jwt; inbound auth is enforced here via CRON_SECRET.
 
-// Schedule source used only to decide whether a card is live, so off-days don't
-// burn odds-API quota. Same file the PWA loads.
+// Schedule source used only to decide how hard to drive the scraper. Same file
+// the PWA loads.
 const DATA_URL = Deno.env.get("DATA_URL") ??
   "https://andyrbrett.github.io/ufc-dashboard/data.js";
 
+// A card this far out is "fight week": the days when withdrawals, replacements
+// and the real line movement land. Ortega/Moicano came off UFC 331 four days
+// out and the app showed the cancelled bout until someone triggered a run by
+// hand — because on a non-fight day the ONLY thing left driving the scraper is
+// GitHub's `schedule:`, which is the throttling this whole function exists to
+// route around (measured 2026-09-15/16: one delivered run per day).
+const FIGHT_WEEK_DAYS = Number(Deno.env.get("FIGHT_WEEK_DAYS") ?? "7");
+
+// ...but fight week does not need the 5-minute cadence a live card does, so
+// those pings are thinned to one dispatch an hour. Note this is NOT an odds
+// budget control: scrape.py gates every Odds API call itself on elapsed time
+// (ODDS_PULL_INTERVALS, 2h–24h by proximity, backed off further on a quiet
+// market), so an extra run costs Actions minutes — free on a public repo — and
+// nothing else. A run that finds nothing new writes no commit.
+const FIGHT_WEEK_MIN_GAP_MIN = Number(Deno.env.get("FIGHT_WEEK_MIN_GAP_MIN") ?? "60");
+
 function ymd(d: Date): string { return d.toISOString().slice(0, 10); }
 
-// True if data.js shows an event dated today/yesterday (UTC — fight nights cross
-// midnight) that still has an unfinished (`state:"pre"`) bout. Event headers use
-// `name:"…"`; fight objects use `n:"…"`, so splitting on `name:"` is safe.
-function hasLiveCard(js: string): { live: boolean; event?: string } {
+function daysBetween(fromYmd: string, toYmd: string): number {
+  return Math.round((Date.parse(toYmd + "T00:00:00Z") - Date.parse(fromYmd + "T00:00:00Z")) / 864e5);
+}
+
+type Mode = "live" | "fight-week" | "idle";
+
+// How hard the scraper should be driven right now, read off data.js.
+//
+//   live        an event dated today/yesterday (UTC — fight nights cross
+//               midnight) still has an unfinished (`state:"pre"`) bout. Results
+//               are landing; every ping dispatches.
+//   fight-week  an unfinished card is within FIGHT_WEEK_DAYS. Rostered bouts
+//               still move; dispatch at most once an hour.
+//   idle        nothing close enough to be worth a run.
+//
+// Event headers use `name:"…"`; fight objects use `n:"…"`, so splitting on
+// `name:"` is safe.
+function cardStatus(js: string): { mode: Mode; event?: string; daysOut?: number } {
   const i = js.indexOf("var EVENTS=");
   const ev = i >= 0 ? js.slice(i) : js;
   const now = new Date();
   const today = ymd(now);
   const yest = ymd(new Date(now.getTime() - 864e5));
   const re = /name:"([^"]+)",\s*date:"(\d{4}-\d{2}-\d{2})"([\s\S]*?)(?=name:"|$)/g;
+  let soonest: { event: string; daysOut: number } | null = null;
   let m: RegExpExecArray | null;
   while ((m = re.exec(ev)) !== null) {
     const [, name, date, body] = m;
-    if ((date === today || date === yest) && /state:"pre"/.test(body)) {
-      return { live: true, event: name };
+    if (!/state:"pre"/.test(body)) continue;
+    if (date === today || date === yest) return { mode: "live", event: name, daysOut: 0 };
+    const out = daysBetween(today, date);
+    if (out > 0 && out <= FIGHT_WEEK_DAYS && (!soonest || out < soonest.daysOut)) {
+      soonest = { event: name, daysOut: out };
     }
   }
-  return { live: false };
+  if (soonest) return { mode: "fight-week", event: soonest.event, daysOut: soonest.daysOut };
+  return { mode: "idle" };
+}
+
+// Minutes since update.yml last started, via the Actions API. Used only to thin
+// the fight-week cadence; null means "couldn't tell".
+async function minutesSinceLastRun(repo: string, workflow: string, token: string): Promise<number | null> {
+  try {
+    const r = await fetch(
+      `https://api.github.com/repos/${repo}/actions/workflows/${workflow}/runs?per_page=1`,
+      {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+          "User-Agent": "ufc-dashboard-kick-scraper",
+        },
+      },
+    );
+    if (!r.ok) return null;
+    const body = await r.json();
+    const last = body?.workflow_runs?.[0]?.created_at;
+    if (!last) return null;
+    return (Date.now() - Date.parse(last)) / 60000;
+  } catch (_e) {
+    return null;
+  }
 }
 
 // Constant-time comparison. `!==` on a secret returns at the first differing
@@ -71,8 +131,20 @@ Deno.serve(async (req) => {
   const ALLOW_QUERY_KEY = (Deno.env.get("CRON_ALLOW_QUERY_KEY") ?? "1") !== "0";
   const bearer = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
   const key = ALLOW_QUERY_KEY ? (new URL(req.url).searchParams.get("key") ?? "") : "";
-  if (!CRON_SECRET || !(secretEquals(bearer, CRON_SECRET) || secretEquals(key, CRON_SECRET))) {
+  const byHeader = secretEquals(bearer, CRON_SECRET);
+  if (!CRON_SECRET || !(byHeader || secretEquals(key, CRON_SECRET))) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
+  }
+
+  // `force=1` bypasses every cadence gate below, so it is the one thing a leaked
+  // key could use to fire unlimited workflow runs — and the query-string key is
+  // the credential most likely to leak, because the platform logs the whole URL
+  // on every request. Header auth only. The scheduled caller never forces, so
+  // this costs nothing operationally and leaves a query-key holder with exactly
+  // the behaviour the cron already has.
+  const force = new URL(req.url).searchParams.get("force") === "1";
+  if (force && !byHeader) {
+    return new Response(JSON.stringify({ error: "force=1 requires header auth (Authorization: Bearer <CRON_SECRET>)" }), { status: 403, headers: { "Content-Type": "application/json" } });
   }
 
   const TOKEN = Deno.env.get("GH_DISPATCH_TOKEN");
@@ -83,16 +155,36 @@ Deno.serve(async (req) => {
   const workflow = Deno.env.get("GH_WORKFLOW") ?? "update.yml";
   const ref = Deno.env.get("GH_REF") ?? "main";
 
-  // Quota guard — fail OPEN: only skip when we're confident there's no live card.
-  // A fetch/parse hiccup must never silently stop scraping, so default to firing.
-  let gate: { live: boolean; event?: string } = { live: true };
+  // Cadence gate — fail OPEN: only thin or skip when we're confident about the
+  // schedule. A fetch/parse hiccup must never silently stop scraping, so an
+  // unreadable data.js is treated as a live card and dispatches.
+  let gate: { mode: Mode; event?: string; daysOut?: number } = { mode: "live" };
   try {
     const r = await fetch(`${DATA_URL}?t=${Date.now()}`, { headers: { "User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)" } });
-    if (r.ok) gate = hasLiveCard(await r.text());
-  } catch (_e) { /* fail open: gate stays { live: true } */ }
+    if (r.ok) gate = cardStatus(await r.text());
+  } catch (_e) { /* fail open: gate stays { mode: "live" } */ }
 
-  if (!gate.live && (new URL(req.url).searchParams.get("force") !== "1")) {
-    return new Response(JSON.stringify({ ok: true, dispatched: false, reason: "no live card" }), { status: 200, headers: { "Content-Type": "application/json" } });
+  if (!force && gate.mode === "idle") {
+    return new Response(JSON.stringify({ ok: true, dispatched: false, reason: "no card in range", mode: gate.mode }), { status: 200, headers: { "Content-Type": "application/json" } });
+  }
+
+  // Fight week is thinned to one run an hour. Fail CLOSED here, unlike the gate
+  // above: if the Actions API can't be read we skip this ping rather than risk
+  // dispatching every five minutes for days. The live path never reaches this
+  // branch, so nothing about fight night depends on that call succeeding.
+  if (!force && gate.mode === "fight-week") {
+    const since = await minutesSinceLastRun(repo, workflow, TOKEN);
+    if (since === null || since < FIGHT_WEEK_MIN_GAP_MIN) {
+      return new Response(JSON.stringify({
+        ok: true,
+        dispatched: false,
+        reason: since === null ? "fight-week cadence: last run unknown" : "fight-week cadence: too soon",
+        mode: gate.mode,
+        event: gate.event ?? null,
+        days_out: gate.daysOut ?? null,
+        minutes_since_last_run: since,
+      }), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
   }
 
   const ghRes = await fetch(

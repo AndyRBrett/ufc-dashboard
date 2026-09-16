@@ -18,7 +18,8 @@
     "check:names": "node tests/fighter-rename.mjs",
     "check:intel": "node tests/check-intel.mjs",
     "check:whatsnew": "node tests/check-whats-new.mjs",
-    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew"
+    "check:kick": "node tests/check-kick-gate.mjs",
+    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew && npm run check:kick"
   },
   "devDependencies": {
     "esbuild": "^0.24.0",
