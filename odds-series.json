@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T17:28:09Z",
+  "generated_at": "2026-09-17T18:33:17Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -8571,7 +8571,7 @@
           "f1": "Arman Tsarukyan",
           "f2": "Mauricio Ruffy",
           "lbl": "Co-Main",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -8637,6 +8637,11 @@
               "at": "2026-09-17T16:23:14Z",
               "f1_odds": -342,
               "f2_odds": 260
+            },
+            {
+              "at": "2026-09-17T18:33:16Z",
+              "f1_odds": -332,
+              "f2_odds": 253
             }
           ],
           "open": {
@@ -9346,7 +9351,7 @@
           "f1": "Michael Aswell Jr.",
           "f2": "Yoo Joo-sang",
           "lbl": "Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-09-17T03:08:05Z",
@@ -9362,6 +9367,11 @@
               "at": "2026-09-17T11:53:27Z",
               "f1_odds": 207,
               "f2_odds": -267
+            },
+            {
+              "at": "2026-09-17T18:33:16Z",
+              "f1_odds": 200,
+              "f2_odds": -256
             }
           ],
           "open": {
@@ -10594,7 +10604,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Yoo Joo-sang",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": 210,
         "close": null,
         "clv": null
@@ -13279,7 +13289,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Mauricio Ruffy",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -383,
         "close": null,
         "clv": null
@@ -13290,7 +13300,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Arman Tsarukyan",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 285,
         "close": null,
         "clv": null
@@ -13455,7 +13465,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Michael Aswell Jr.",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -270,
         "close": null,
         "clv": null
