@@ -458,6 +458,36 @@ def test_name_tokens_match_fixes_dropped_leading_given_name():
     assert m("Carlos Diego", "Ferreira", "Diego Ferreira")
 
 
+def test_name_tokens_match_fixes_split_east_asian_given_names():
+    # A Korean given name is written "Doo-ho" on the card and "Dooho" on
+    # UFCStats. Splitting the hyphen left the card name with a token the row
+    # didn't have AND no shared surname to fall back on ({choi, doo, ho} vs
+    # {dooho, choi}), so Choi Doo-ho matched nothing and rendered with a blank
+    # record on a UFC main card. Gluing adjacent pieces bridges it in either
+    # name order and whichever side carries the split.
+    m = scrape._name_tokens_match
+    assert m("Dooho", "Choi", "Choi Doo-ho")     # card hyphenates, UFCStats glues
+    assert m("Dooho", "Choi", "Doo Ho Choi")     # card spaces the syllables
+    assert m("Doo Ho", "Choi", "Choi Doo-ho")    # UFCStats splits, card hyphenates
+    assert m("Dooho", "Choi", "Dooho Choi")      # both glued (unchanged)
+    assert m("Jiyoung", "Park", "Park Ji-young")
+    # Gluing only ever adds matches — it must not invent one between fighters
+    # who share a surname and nothing else.
+    assert not m("Jiyoung", "Park", "Park Ji-yeong")
+    assert not m("Dooho", "Choi", "Choi Seung-woo")
+
+
+def test_name_token_variants_only_glues_adjacent_pairs():
+    v = scrape._name_token_variants
+    assert v(["choi", "doo", "ho"]) == [
+        ["choi", "doo", "ho"],
+        ["choidoo", "ho"],
+        ["choi", "dooho"],
+    ]
+    assert v(["aldo"]) == [["aldo"]]          # nothing to glue
+    assert v([]) == [[]]
+
+
 def test_name_tokens_match_still_rejects_distinct_fighters():
     m = scrape._name_tokens_match
     assert not m("Stipe", "Miocic", "Jon Jones")             # unrelated
