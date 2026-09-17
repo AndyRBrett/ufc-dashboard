@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T19:42:53Z",
+  "generated_at": "2026-09-17T20:43:20Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -9181,7 +9181,7 @@
           "f1": "Casey O'Neill",
           "f2": "Eduarda Moura",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -9262,6 +9262,11 @@
               "at": "2026-09-17T16:23:14Z",
               "f1_odds": -230,
               "f2_odds": 182
+            },
+            {
+              "at": "2026-09-17T20:43:19Z",
+              "f1_odds": -235,
+              "f2_odds": 185
             }
           ],
           "open": {
@@ -13410,7 +13415,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Eduarda Moura",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -177,
         "close": null,
         "clv": null
@@ -13421,7 +13426,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Casey O'Neill",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 150,
         "close": null,
         "clv": null
