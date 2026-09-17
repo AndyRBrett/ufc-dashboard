@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-16T23:53:17Z",
+ "generated_at": "2026-09-17T03:08:05Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -44,65 +44,6 @@
    "name": "UFC 331: Van vs. Pantoja 2",
    "date": "2026-09-19",
    "items": [
-    {
-     "title": "Crypto.com UFC 331 Embedded: Vlog Series - Episode 3",
-     "url": "https://www.youtube.com/watch?v=aeAknXq_t6E",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-09-16T14:46:44Z",
-     "thumb": "https://i2.ytimg.com/vi/aeAknXq_t6E/hqdefault.jpg",
-     "blurb": "Arman Tsarukyan takes a stroll and plays backgammon with friends in Newport Beach; Giga Chikadze trains with Beneil Dariush and promises a bloody, Tarantino-style performance; Casey O’Neill sharpens her skills in Los…",
-     "fighters": [
-      "Arman Tsarukyan",
-      "Casey O'Neill",
-      "Edmen Shahbazyan",
-      "Giga Chikadze",
-      "Joshua Van",
-      "Marlon Vera",
-      "Michael Aswell Jr."
-     ]
-    },
-    {
-     "title": "UFC Connected: Joshua Van, Mauricio Ruffy, Alexandre Pantoja & More!",
-     "url": "https://www.youtube.com/watch?v=dQ_ZpmWFT-k",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-09-16T14:00:08Z",
-     "thumb": "https://i1.ytimg.com/vi/dQ_ZpmWFT-k/hqdefault.jpg",
-     "blurb": "Mauricio Ruffy details the unexplainable phenomenon that led him to two miracles. We go behind the scenes for Gable Stevenson’s highly anticipated UFC debut. Flyweight champion Joshua Van gets some work in with Atlanta…",
-     "fighters": [
-      "Alexandre Pantoja",
-      "Joshua Van",
-      "Mauricio Ruffy"
-     ]
-    },
-    {
-     "title": "UFC 331 preview: Start time, full card and how to watch flyweight title rematch and Arman Tsarukyan’s return",
-     "url": "https://bloodyelbow.com/2026/09/16/ufc-331-preview-start-time-full-card-and-how-to-watch-flyweight-title-rematch-and-arman-tsarukyans-return/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-09-16T05:00:00Z",
-     "thumb": null,
-     "blurb": "Joshua Van faces Alexandre Pantoja in a five-round double-header in Los Angeles. Van won the flyweight title from Pantoja just 26 seconds into their previous ...",
-     "fighters": [
-      "Alexandre Pantoja",
-      "Arman Tsarukyan",
-      "Joshua Van"
-     ]
-    },
-    {
-     "title": "\"He's Not Getting The Belt Back!\" | Crypto.com UFC 331 Media Day",
-     "url": "https://www.youtube.com/watch?v=QDua1pqG-fg",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-09-16T22:50:01Z",
-     "thumb": "https://i2.ytimg.com/vi/QDua1pqG-fg/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Listen to Joshua Van and Alexandre Pantoja answer questions from the press ahead of their matchup at UFC 331. Subscribe to get all the latest UFC content:…",
-     "fighters": [
-      "Alexandre Pantoja",
-      "Joshua Van"
-     ]
-    },
     {
      "title": "Alexandre Pantoja isn't interested in selling Joshua Van rematch",
      "url": "https://www.sherdog.com/news/news/Alexandre-Pantoja-isnt-interested-in-selling-Joshua-Van-rematch-202820",
@@ -130,6 +71,19 @@
      ]
     },
     {
+     "title": "Joshua Van will test Alexandre Pantoja in a way no one else has says only man to fight both of them",
+     "url": "https://bloodyelbow.com/2026/09/16/joshua-van-will-test-alexandre-pantoja-in-a-way-no-one-else-has-says-only-man-to-fight-both-of-them/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-09-17T02:00:00Z",
+     "thumb": null,
+     "blurb": "Brandon Royval shares his analysis of the next flyweight title fight. A rivalry has developed between Joshua Van and Alexandre Pantoja following the sudden ending ...",
+     "fighters": [
+      "Alexandre Pantoja",
+      "Joshua Van"
+     ]
+    },
+    {
      "title": "Joshua Van offers prediction for UFC 331 title fight against Alexandre Pantoja as he promises ‘banger’",
      "url": "https://bloodyelbow.com/2026/09/16/joshua-van-offers-prediction-for-ufc-331-title-fight-against-alexandre-pantoja-as-he-promises-banger/",
      "source": "Bloody Elbow",
@@ -150,6 +104,19 @@
      "published": "2026-09-16T03:32:15Z",
      "thumb": null,
      "blurb": "American Top Team muay thai coach Anderson França believes Arman Tsarukyan presents a tricky stylistic challenge for Mauricio Ruffy .",
+     "fighters": [
+      "Arman Tsarukyan",
+      "Mauricio Ruffy"
+     ]
+    },
+    {
+     "title": "Arman Tsarukyan’s teammate explains Khabib Nurmagomedov-like edge that won’t affect Mauricio Ruffy",
+     "url": "https://bloodyelbow.com/2026/09/16/arman-tsarukyans-teammate-explains-khabib-nurmagomedov-like-edge-that-wont-affect-mauricio-ruffy/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-09-17T01:00:00Z",
+     "thumb": null,
+     "blurb": "Grant Dawson doesn’t think Mauricio Ruffy will have lost before the fight starts. Ruffy claims that he will earn a lightweight title shot if he ...",
      "fighters": [
       "Arman Tsarukyan",
       "Mauricio Ruffy"

@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-17T02:03:29Z",
+  "generated_at": "2026-09-17T03:08:05Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 6
+    "warn": 5
   },
   "findings": [
     {
@@ -19,14 +19,6 @@
       "message": "UFC Fight Night: Bonfim vs. Brady (51d out): venue 'Meta Apex' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Bonfim vs. Brady",
       "date": "2026-11-07"
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-missing-some",
-      "message": "UFC 331: Van vs. Pantoja 2 (2d out): 2 of 12 bouts have no odds",
-      "event": "UFC 331: Van vs. Pantoja 2",
-      "date": "2026-09-19",
-      "days_out": 2
     },
     {
       "severity": "WARN",

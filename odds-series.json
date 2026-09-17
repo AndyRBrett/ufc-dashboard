@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T02:03:30Z",
+  "generated_at": "2026-09-17T03:08:05Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -9246,6 +9246,46 @@
           },
           "close": null,
           "clv": null
+        },
+        {
+          "f1": "Patricio Pitbull",
+          "f2": "Choi Doo-ho",
+          "lbl": "Main Card",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-17T03:08:05Z",
+              "f1_odds": 223,
+              "f2_odds": -289
+            }
+          ],
+          "open": {
+            "at": "2026-09-17T03:08:05Z",
+            "f1_odds": 223,
+            "f2_odds": -289
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Michael Aswell Jr.",
+          "f2": "Yoo Joo-sang",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-17T03:08:05Z",
+              "f1_odds": 210,
+              "f2_odds": -270
+            }
+          ],
+          "open": {
+            "at": "2026-09-17T03:08:05Z",
+            "f1_odds": 210,
+            "f2_odds": -270
+          },
+          "close": null,
+          "clv": null
         }
       ]
     },
@@ -10464,6 +10504,15 @@
         "open": -428,
         "close": -390,
         "clv": 38
+      },
+      {
+        "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
+        "opponent": "Yoo Joo-sang",
+        "side": "f1",
+        "points": 1,
+        "open": 210,
+        "close": null,
+        "clv": null
       }
     ],
     "Leon Shahbazyan": [
@@ -13290,6 +13339,39 @@
         "side": "f2",
         "points": 6,
         "open": 354,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Patricio Pitbull": [
+      {
+        "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
+        "opponent": "Choi Doo-ho",
+        "side": "f1",
+        "points": 1,
+        "open": 223,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Choi Doo-ho": [
+      {
+        "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
+        "opponent": "Patricio Pitbull",
+        "side": "f2",
+        "points": 1,
+        "open": -289,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Yoo Joo-sang": [
+      {
+        "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
+        "opponent": "Michael Aswell Jr.",
+        "side": "f2",
+        "points": 1,
+        "open": -270,
         "close": null,
         "clv": null
       }
