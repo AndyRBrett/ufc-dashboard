@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T21:48:07Z",
+  "generated_at": "2026-09-17T22:47:38Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -9011,7 +9011,7 @@
           "f1": "Edmen Shahbazyan",
           "f2": "Brunno Ferreira",
           "lbl": "Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -9082,6 +9082,11 @@
               "at": "2026-09-17T16:23:14Z",
               "f1_odds": -182,
               "f2_odds": 146
+            },
+            {
+              "at": "2026-09-17T22:47:38Z",
+              "f1_odds": -179,
+              "f2_odds": 146
             }
           ],
           "open": {
@@ -9096,7 +9101,7 @@
           "f1": "Giga Chikadze",
           "f2": "Joanderson Brito",
           "lbl": "Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -9167,6 +9172,11 @@
               "at": "2026-09-17T11:53:27Z",
               "f1_odds": 310,
               "f2_odds": -420
+            },
+            {
+              "at": "2026-09-17T22:47:38Z",
+              "f1_odds": 313,
+              "f2_odds": -417
             }
           ],
           "open": {
@@ -9181,7 +9191,7 @@
           "f1": "Casey O'Neill",
           "f2": "Eduarda Moura",
           "lbl": "Prelim",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -9267,6 +9277,11 @@
               "at": "2026-09-17T20:43:19Z",
               "f1_odds": -235,
               "f2_odds": 185
+            },
+            {
+              "at": "2026-09-17T22:47:38Z",
+              "f1_odds": -230,
+              "f2_odds": 184
             }
           ],
           "open": {
@@ -9281,7 +9296,7 @@
           "f1": "Ryan Gandra",
           "f2": "Osman Diaz",
           "lbl": "Prelim",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-09-13T18:36:13Z",
@@ -9322,6 +9337,11 @@
               "at": "2026-09-17T16:23:14Z",
               "f1_odds": -587,
               "f2_odds": 403
+            },
+            {
+              "at": "2026-09-17T22:47:38Z",
+              "f1_odds": -577,
+              "f2_odds": 407
             }
           ],
           "open": {
@@ -9978,7 +9998,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Brunno Ferreira",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -155,
         "close": null,
         "clv": null
@@ -10188,7 +10208,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Giga Chikadze",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -340,
         "close": null,
         "clv": null
@@ -10772,7 +10792,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Edmen Shahbazyan",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 132,
         "close": null,
         "clv": null
@@ -11275,7 +11295,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Osman Diaz",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -450,
         "close": null,
         "clv": null
@@ -13404,7 +13424,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Joanderson Brito",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": 274,
         "close": null,
         "clv": null
@@ -13415,7 +13435,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Eduarda Moura",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": -177,
         "close": null,
         "clv": null
@@ -13426,7 +13446,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Casey O'Neill",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": 150,
         "close": null,
         "clv": null
@@ -13437,7 +13457,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Ryan Gandra",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 354,
         "close": null,
         "clv": null
