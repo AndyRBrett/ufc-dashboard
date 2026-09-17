@@ -2239,20 +2239,54 @@ def _name_tokens(name):
     return [t for t in s.split() if t and t not in _NAME_SUFFIXES]
 
 
+def _name_token_variants(tokens):
+    """*tokens*, plus every variant with one adjacent pair glued together.
+
+    An East Asian given name is written three ways for the same fighter —
+    "Doo-ho", "Doo Ho", "Dooho" — and UFCStats files them under the glued one.
+    Splitting on the hyphen (or the space) leaves two tokens where the row has
+    one, and that breaks the surname check below rather than merely loosening
+    it: the card's "Choi Doo-ho" reduces to {choi, doo, ho} and his UFCStats row
+    "Dooho Choi" to {dooho, choi}, so the two share no surname to pin identity
+    on and he matched nothing at all — a blank record on a main-card fight, with
+    no alias entry able to help because the split is systematic, not per-fighter.
+    Gluing the pieces back gives {choi, dooho}: an exact set match, either order.
+
+    Only adjacent pieces are glued, one pair at a time, and the glued lists are
+    offered *alongside* the plain one, never instead of it — so every name that
+    matched before still matches, and a glued token still has to land exactly on
+    a token from the other side to count.
+    """
+    out = [tokens]
+    for i in range(len(tokens) - 1):
+        out.append(tokens[:i] + [tokens[i] + tokens[i + 1]] + tokens[i + 2:])
+    return out
+
+
 def _name_tokens_match(row_first, row_last, target_name):
     """Match a UFCStats (first, last) row against a card name.
 
     UFCStats stores first/last separately and files particle surnames under the
-    particle ("Du Plessis", "De Ridder"), keeps generational suffixes, and lists
-    some names in the opposite order. The old rule (row last-name == the card's
-    *last token*) silently missed all of those. Here both sides are reduced to a
-    normalised token list and matched order-independently, while still requiring
-    the surname to line up so distinct fighters aren't conflated.
+    particle ("Du Plessis", "De Ridder"), keeps generational suffixes, lists some
+    names in the opposite order, and glues multi-syllable given names into one
+    word. The old rule (row last-name == the card's *last token*) silently missed
+    all of those. Here both sides are reduced to a normalised token list and
+    matched order-independently, while still requiring the surname to line up so
+    distinct fighters aren't conflated.
     """
-    t   = _name_tokens(target_name)
-    row = _name_tokens(row_first) + _name_tokens(row_last)
-    if not t or not row:
+    t_base   = _name_tokens(target_name)
+    row_base = _name_tokens(row_first) + _name_tokens(row_last)
+    if not t_base or not row_base:
         return False
+    return any(
+        _token_lists_match(t, row)
+        for t in _name_token_variants(t_base)
+        for row in _name_token_variants(row_base)
+    )
+
+
+def _token_lists_match(t, row):
+    """One normalised token list against another. See _name_tokens_match."""
     # Exact token set (any order): particle surnames, suffixes, reversed order.
     if set(t) == set(row):
         return True
