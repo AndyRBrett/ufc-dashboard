@@ -2368,19 +2368,21 @@ def _token_lists_match(t, row):
     # Exact token set (any order): particle surnames, suffixes, reversed order.
     if set(t) == set(row):
         return True
-    # Otherwise the surname must appear and a given name must be compatible
-    # (Jon/Jonathan, Saint/St.); extra given names are ignored so a dropped one
-    # (UFCStats "Ian Garry" vs card "Ian Machado Garry") still matches.
+    # Otherwise BOTH sides must end on the same surname, and a given name must
+    # be compatible (Jon/Jonathan, Saint/St.); extra given names are ignored so
+    # a dropped one (UFCStats "Ian Garry" vs card "Ian Machado Garry") matches.
     #
-    # Given names are compared as sets, not first-token-to-anything: UFCStats
-    # keeps only part of a multi-part given name, and the part it keeps is not
-    # always the leading one. Pinning the comparison to t[0] matched a dropped
-    # *middle* name but silently missed a dropped *leading* one — UFCStats
-    # "Diego Ferreira" never matched the card's "Carlos Diego Ferreira", so that
-    # fighter's record stayed blank on the card. The surname check above still
-    # pins identity, so widening this cannot conflate different fighters.
+    # The surname has to be the last token on each side, not merely present
+    # somewhere in the other list. "Appears anywhere" reads a family-name-first
+    # name's GIVEN name as its surname and then finds it among the other name's
+    # given names: "Choi Doo-ho" matched "Doo Ho Kim" on a surname of "ho" plus
+    # a shared "doo", so a stale or replacement bout in the odds feed could hand
+    # Kim's prices to Choi's fight, and a UFCStats row for Kim was a candidate
+    # for Choi's record. Requiring the two to line up costs nothing the dropped
+    # -given-name cases need — those are Western order on both sides, where the
+    # last token really is the family name.
     surname = t[-1]
-    if surname not in row:
+    if surname != row[-1]:
         return False
     if len(t) == 1:
         return True

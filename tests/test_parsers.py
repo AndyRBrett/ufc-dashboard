@@ -548,6 +548,27 @@ def test_report_unmatched_odds_names_the_feed_spelling(capsys):
     assert capsys.readouterr().err == ""
 
 
+def test_surname_must_be_the_last_token_on_both_sides():
+    # "Appears anywhere in the other list" read a family-name-first name's GIVEN
+    # name as its surname, then found it among the other name's given names:
+    # "Choi Doo-ho" matched "Doo Ho Kim" on a surname of "ho" plus a shared
+    # "doo". Choi and Kim are different people, so a stale or replacement bout
+    # in the feed could hand Kim's prices to Choi's fight, and a UFCStats row
+    # for Kim was a candidate for Choi's record. (Pre-existing in the surname
+    # fallback; the whole-name path made it reachable from the odds matcher.)
+    assert not scrape._names_denote_same_fighter("Choi Doo-ho", "Doo Ho Kim")
+    assert not scrape._name_tokens_match("Doo Ho", "Kim", "Choi Doo-ho")
+    assert not scrape._names_denote_same_fighter("Yoo Joo-sang", "Joo Sang Park")
+    # A bout must never be priced off a different fighter's line.
+    idx = {("a", "b"): {"f1_name": "Patricio Pitbull", "f2_name": "Doo Ho Kim",
+                        "f1_odds": -150, "f2_odds": 125, "source": "t"}}
+    assert scrape.get_odds(idx, "Patricio Pitbull", "Choi Doo-ho") is None
+    # The real man still matches, in every spelling — the tightening must not
+    # cost the fix it is guarding.
+    for feed in ("Doo Ho Choi", "Dooho Choi", "Doo-Ho Choi"):
+        assert scrape._names_denote_same_fighter("Choi Doo-ho", feed), feed
+
+
 def test_name_tokens_match_still_rejects_distinct_fighters():
     m = scrape._name_tokens_match
     assert not m("Stipe", "Miocic", "Jon Jones")             # unrelated
