@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T10:48:08Z",
+  "generated_at": "2026-09-17T11:53:27Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -91,7 +91,7 @@
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "status": "ok",
-      "last_changed_at": "2026-09-17T05:23:08Z",
+      "last_changed_at": "2026-09-17T11:53:27Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -100,7 +100,7 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-17T10:48:08Z",
+      "last_changed_at": "2026-09-17T11:53:27Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -118,7 +118,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-17T10:48:08Z",
+      "last_changed_at": "2026-09-17T11:53:27Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -127,7 +127,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-17T10:48:08Z",
+      "last_changed_at": "2026-09-17T11:53:27Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-17T10:48:08Z",
+      "last_changed_at": "2026-09-17T11:53:27Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -154,7 +154,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-17T10:48:08Z",
+      "last_changed_at": "2026-09-17T11:53:27Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -182,17 +182,17 @@
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "f1": "Gable Steveson",
       "f2": "Sean Sharaf",
-      "f1_movement": -790,
-      "f2_movement": 200,
-      "magnitude": 790,
+      "f1_movement": -890,
+      "f2_movement": 233,
+      "magnitude": 890,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": 2.1,
-      "f2_prob_shift": -2.2,
-      "priority": 1580.0
+      "f1_prob_shift": 2.3,
+      "f2_prob_shift": -2.4,
+      "priority": 1780.0
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
@@ -246,17 +246,17 @@
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "f1": "Tai Tuivasa",
       "f2": "Robelis Despaigne",
-      "f1_movement": 95,
-      "f2_movement": -200,
-      "magnitude": 200,
+      "f1_movement": 92,
+      "f2_movement": -192,
+      "magnitude": 192,
       "main_event": false,
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": -3.3,
-      "f2_prob_shift": 3.5,
-      "priority": 400.0
+      "f1_prob_shift": -3.2,
+      "f2_prob_shift": 3.4,
+      "priority": 384.0
     },
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
@@ -422,17 +422,17 @@
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "f1": "Arman Tsarukyan",
       "f2": "Mauricio Ruffy",
-      "f1_movement": 56,
-      "f2_movement": -37,
-      "magnitude": 56,
+      "f1_movement": 51,
+      "f2_movement": -33,
+      "magnitude": 51,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Lightweight",
-      "f1_prob_shift": -2.7,
-      "f2_prob_shift": 2.8,
-      "priority": 112.0
+      "f1_prob_shift": -2.4,
+      "f2_prob_shift": 2.4,
+      "priority": 102.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
