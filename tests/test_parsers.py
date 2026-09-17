@@ -488,6 +488,66 @@ def test_name_token_variants_only_glues_adjacent_pairs():
     assert v([]) == [[]]
 
 
+def test_odds_match_survives_a_reordered_hyphenated_name():
+    # last_name() takes the last WHITESPACE token, so a card that writes the
+    # family name first yields the GIVEN name, hyphen included: "Choi Doo-ho"
+    # -> "doo-ho", a substring of no spelling the odds feed uses. Both his bout
+    # and Yoo Joo-sang's sat at odds:null on UFC 331 while the ten around them
+    # priced fine.
+    assert scrape.last_name("Choi Doo-ho") == "doo-ho"      # the trap itself
+    for feed_f2 in ("Doo Ho Choi", "Dooho Choi", "Doo-Ho Choi", "Choi Doo-ho"):
+        idx = {("a", "b"): {"f1_name": "Patricio Pitbull", "f2_name": feed_f2,
+                            "f1_odds": -150, "f2_odds": 125, "source": "t"}}
+        assert scrape.get_odds(idx, "Patricio Pitbull", "Choi Doo-ho") == {
+            "f1": -150, "f2": 125}, feed_f2
+    # ...and the same bout with the feed's two sides swapped stays swapped back.
+    idx = {("a", "b"): {"f1_name": "Doo Ho Choi", "f2_name": "Patricio Pitbull",
+                        "f1_odds": 125, "f2_odds": -150, "source": "t"}}
+    assert scrape.get_odds(idx, "Patricio Pitbull", "Choi Doo-ho") == {
+        "f1": -150, "f2": 125}
+    # The other UFC 331 casualty, whose feed spelling splits differently.
+    idx = {("a", "b"): {"f1_name": "Michael Aswell Jr.", "f2_name": "Joo Sang Yoo",
+                        "f1_odds": -300, "f2_odds": 240, "source": "t"}}
+    assert scrape.get_odds(idx, "Michael Aswell Jr.", "Yoo Joo-sang") == {
+        "f1": -300, "f2": 240}
+
+
+def test_odds_match_still_refuses_a_different_bout():
+    # Widening the comparison must not price a bout off someone else's line.
+    idx = {("a", "b"): {"f1_name": "Patricio Pitbull", "f2_name": "Seung Woo Choi",
+                        "f1_odds": -150, "f2_odds": 125, "source": "t"}}
+    assert scrape.get_odds(idx, "Patricio Pitbull", "Choi Doo-ho") is None
+    idx = {("a", "b"): {"f1_name": "Jose Aldo", "f2_name": "Doo Ho Choi",
+                        "f1_odds": -150, "f2_odds": 125, "source": "t"}}
+    assert scrape.get_odds(idx, "Patricio Pitbull", "Choi Doo-ho") is None
+
+
+def test_report_unmatched_odds_names_the_feed_spelling(capsys):
+    # A bout with odds:null is ambiguous in the committed data — no line posted,
+    # or a line we failed to match. The warning is what tells them apart, so it
+    # has to carry the feed's own spelling.
+    idx = {
+        ("a", "b"): {"f1_name": "Joshua Van", "f2_name": "Alexandre Pantoja",
+                     "f1_odds": -134, "f2_odds": 109, "source": "primary"},
+        ("c", "d"): {"f1_name": "Patricio Pitbull", "f2_name": "Doo Ho Choi",
+                     "f1_odds": -150, "f2_odds": 125, "source": "primary"},
+    }
+    events = [{"fights": [
+        {"f1": {"name": "Joshua Van"}, "f2": {"name": "Alexandre Pantoja"}},
+    ]}]
+    scrape.report_unmatched_odds(idx, events)
+    err = capsys.readouterr().err
+    assert "Doo Ho Choi" in err and "::warning::" in err
+    assert "Joshua Van" not in err          # the matched bout is not reported
+    # Nothing to say when every feed bout found its card.
+    events[0]["fights"].append(
+        {"f1": {"name": "Patricio Pitbull"}, "f2": {"name": "Choi Doo-ho"}})
+    scrape.report_unmatched_odds(idx, events)
+    assert capsys.readouterr().err == ""
+    scrape.report_unmatched_odds({}, events)  # no feed at all is not a warning
+    assert capsys.readouterr().err == ""
+
+
 def test_name_tokens_match_still_rejects_distinct_fighters():
     m = scrape._name_tokens_match
     assert not m("Stipe", "Miocic", "Jon Jones")             # unrelated
