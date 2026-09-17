@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-16T23:53:17Z",
+  "generated_at": "2026-09-17T00:59:31Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -8491,7 +8491,7 @@
           "f1": "Joshua Van",
           "f2": "Alexandre Pantoja",
           "lbl": "Main Event",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -8547,6 +8547,11 @@
               "at": "2026-09-14T15:54:16Z",
               "f1_odds": -133,
               "f2_odds": 108
+            },
+            {
+              "at": "2026-09-17T00:59:31Z",
+              "f1_odds": -134,
+              "f2_odds": 109
             }
           ],
           "open": {
@@ -8881,7 +8886,7 @@
           "f1": "Marlon Vera",
           "f2": "Charles Jourdain",
           "lbl": "Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -8952,6 +8957,11 @@
               "at": "2026-09-16T20:38:19Z",
               "f1_odds": 183,
               "f2_odds": -233
+            },
+            {
+              "at": "2026-09-17T00:59:31Z",
+              "f1_odds": 182,
+              "f2_odds": -231
             }
           ],
           "open": {
@@ -9196,7 +9206,7 @@
           "f1": "Ryan Gandra",
           "f2": "Osman Diaz",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-09-13T18:36:13Z",
@@ -9222,6 +9232,11 @@
               "at": "2026-09-16T20:38:19Z",
               "f1_odds": -510,
               "f2_odds": 363
+            },
+            {
+              "at": "2026-09-17T00:59:31Z",
+              "f1_odds": -527,
+              "f2_odds": 370
             }
           ],
           "open": {
@@ -11111,7 +11126,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Osman Diaz",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -450,
         "close": null,
         "clv": null
@@ -13108,7 +13123,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Alexandre Pantoja",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -113,
         "close": null,
         "clv": null
@@ -13119,7 +13134,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Joshua Van",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -110,
         "close": null,
         "clv": null
@@ -13218,7 +13233,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Charles Jourdain",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": 200,
         "close": null,
         "clv": null
@@ -13229,7 +13244,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Marlon Vera",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -240,
         "close": null,
         "clv": null
@@ -13273,7 +13288,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Ryan Gandra",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 354,
         "close": null,
         "clv": null
