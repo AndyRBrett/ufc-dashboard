@@ -1897,12 +1897,29 @@ def _match_odds(odds_index, f1_name, f2_name):
     f2l    = f2_name.lower()
     f1last = last_name(f1_name)
     f2last = last_name(f2_name)
+
+    def same(card_name, card_last, card_lower, feed_lower, feed_name):
+        # last_name() is the last WHITESPACE token, so for a card that writes the
+        # family name first it returns the given name — and keeps the hyphen.
+        # "Choi Doo-ho" yields "doo-ho", which is a substring of no spelling the
+        # feed uses ("Doo Ho Choi", "Dooho Choi"), so both his bout and Yoo
+        # Joo-sang's sat at odds:null on UFC 331 while the ten bouts around them
+        # priced fine — including Osman Diaz, a debutant, so the feed plainly
+        # carried the card. The token comparison is order-independent and glues
+        # split syllables, which is exactly the gap the substring rules leave.
+        return (
+            card_last in feed_lower
+            or feed_lower in card_lower
+            or card_lower in feed_lower
+            or _names_denote_same_fighter(card_name, feed_name)
+        )
+
     for o in odds_index.values():
         n1, n2 = o["f1_name"].lower(), o["f2_name"].lower()
-        match_f1    = f1last in n1 or n1 in f1l or f1l in n1
-        match_f2    = f2last in n2 or n2 in f2l or f2l in n2
-        match_swap1 = f1last in n2 or n2 in f1l or f1l in n2
-        match_swap2 = f2last in n1 or n1 in f2l or f2l in n1
+        match_f1    = same(f1_name, f1last, f1l, n1, o["f1_name"])
+        match_f2    = same(f2_name, f2last, f2l, n2, o["f2_name"])
+        match_swap1 = same(f1_name, f1last, f1l, n2, o["f2_name"])
+        match_swap2 = same(f2_name, f2last, f2l, n1, o["f1_name"])
         if match_f1 and match_f2:
             return o, False
         if match_swap1 and match_swap2:
@@ -2039,6 +2056,49 @@ def update_results_archive(data, now):
         return patch_js_var(data, "RESULTS_ARCHIVE", js_json)
     # First run: declare the var just above EVENTS
     return data.replace("var EVENTS=", f"var RESULTS_ARCHIVE={js_json};\nvar EVENTS=", 1)
+
+
+def report_unmatched_odds(odds_index, events):
+    """Warn about priced bouts in the feed that matched no bout on any card.
+
+    A bout showing odds:null has two very different causes — the bookmakers
+    never posted a line, or they did and our name matching missed it — and the
+    published data looks identical either way. That ambiguity cost a full
+    debugging cycle on UFC 331's Choi Doo-ho and Yoo Joo-sang bouts, where
+    nothing in the repo could distinguish the two. Reporting the leftovers makes
+    the second case self-evident: an unmatched feed entry naming a fighter who
+    IS on a card is a matcher bug, and the warning carries the feed's own
+    spelling, which is the one thing the committed data never records.
+
+    Advisory only, in the spirit of the WARN/BLOCK split — an unmatched entry is
+    a data gap, and a card is routinely missing from the feed for honest reasons
+    (a bout added after the last pull, a promotion the book doesn't cover).
+    """
+    if not odds_index:
+        return
+    matched = set()
+    for ev in events:
+        for fight in ev.get("fights", []):
+            o, _ = _match_odds(
+                odds_index, fight["f1"]["name"], fight["f2"]["name"])
+            if o:
+                matched.add((o["f1_name"], o["f2_name"]))
+    leftover = [
+        o for o in odds_index.values()
+        if (o["f1_name"], o["f2_name"]) not in matched
+    ]
+    for o in leftover:
+        print(
+            f"::warning::Odds feed has a line for {o['f1_name']} vs "
+            f"{o['f2_name']} ({o['source']}) that matched no bout on any card",
+            file=sys.stderr,
+        )
+    if leftover:
+        print(
+            f"Odds: {len(leftover)} of {len(odds_index)} feed bout(s) matched "
+            f"no card — see the warnings above",
+            file=sys.stderr,
+        )
 
 
 def get_odds_with_fallback(odds_index, existing_odds, f1_name, f2_name):
@@ -2263,6 +2323,24 @@ def _name_token_variants(tokens):
     return out
 
 
+def _names_denote_same_fighter(a, b):
+    """True when two FULL fighter names denote one person, order-independently.
+
+    _name_tokens_match takes UFCStats' split (first, last) columns; the odds feed
+    gives a single string per fighter, so this is the same comparison over two
+    whole names. Both sides get the glued-syllable variants, which is what lets
+    the card's "Choi Doo-ho" meet the feed's "Doo Ho Choi" or "Dooho Choi".
+    """
+    ta, tb = _name_tokens(a), _name_tokens(b)
+    if not ta or not tb:
+        return False
+    return any(
+        _token_lists_match(x, y)
+        for x in _name_token_variants(ta)
+        for y in _name_token_variants(tb)
+    )
+
+
 def _name_tokens_match(row_first, row_last, target_name):
     """Match a UFCStats (first, last) row against a card name.
 
@@ -2290,19 +2368,21 @@ def _token_lists_match(t, row):
     # Exact token set (any order): particle surnames, suffixes, reversed order.
     if set(t) == set(row):
         return True
-    # Otherwise the surname must appear and a given name must be compatible
-    # (Jon/Jonathan, Saint/St.); extra given names are ignored so a dropped one
-    # (UFCStats "Ian Garry" vs card "Ian Machado Garry") still matches.
+    # Otherwise BOTH sides must end on the same surname, and a given name must
+    # be compatible (Jon/Jonathan, Saint/St.); extra given names are ignored so
+    # a dropped one (UFCStats "Ian Garry" vs card "Ian Machado Garry") matches.
     #
-    # Given names are compared as sets, not first-token-to-anything: UFCStats
-    # keeps only part of a multi-part given name, and the part it keeps is not
-    # always the leading one. Pinning the comparison to t[0] matched a dropped
-    # *middle* name but silently missed a dropped *leading* one — UFCStats
-    # "Diego Ferreira" never matched the card's "Carlos Diego Ferreira", so that
-    # fighter's record stayed blank on the card. The surname check above still
-    # pins identity, so widening this cannot conflate different fighters.
+    # The surname has to be the last token on each side, not merely present
+    # somewhere in the other list. "Appears anywhere" reads a family-name-first
+    # name's GIVEN name as its surname and then finds it among the other name's
+    # given names: "Choi Doo-ho" matched "Doo Ho Kim" on a surname of "ho" plus
+    # a shared "doo", so a stale or replacement bout in the odds feed could hand
+    # Kim's prices to Choi's fight, and a UFCStats row for Kim was a candidate
+    # for Choi's record. Requiring the two to line up costs nothing the dropped
+    # -given-name cases need — those are Western order on both sides, where the
+    # last token really is the family name.
     surname = t[-1]
-    if surname not in row:
+    if surname != row[-1]:
         return False
     if len(t) == 1:
         return True
@@ -3405,6 +3485,8 @@ def step_build_events(data, now):
                     r = existing_results[key]
                     fight.update({"winner": r["winner"], "method": r["method"],
                                   "round": r["round"], "state": r["state"]})
+
+    report_unmatched_odds(odds_index, new_events)
 
     # Fighter stats — fetch new, backfill missing form, refresh changed records.
     # Fighters booked inside STATS_URGENT_DAYS are marked urgent so a previously
