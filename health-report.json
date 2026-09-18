@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-18T12:13:13Z",
+  "generated_at": "2026-09-18T13:18:08Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 5
+    "warn": 3
   },
   "findings": [
     {
@@ -27,24 +27,6 @@
       "event": "UFC Fight Night: Rosas Jr. vs. Barcelos",
       "date": "2026-09-26",
       "days_out": 8
-    },
-    {
-      "severity": "WARN",
-      "check": "record-blank",
-      "message": "UFC 331: Van vs. Pantoja 2 (1d out): Osman Diaz has no record",
-      "fighter": "Osman Diaz",
-      "event": "UFC 331: Van vs. Pantoja 2",
-      "date": "2026-09-19",
-      "days_out": 1
-    },
-    {
-      "severity": "WARN",
-      "check": "stats-fetch-failed",
-      "message": "UFC 331: Van vs. Pantoja 2 (1d out): Osman Diaz stats lookup failed (2026-09-18)",
-      "fighter": "Osman Diaz",
-      "event": "UFC 331: Van vs. Pantoja 2",
-      "date": "2026-09-19",
-      "days_out": 1
     }
   ]
 }
