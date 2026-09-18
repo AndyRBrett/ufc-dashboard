@@ -32,7 +32,14 @@
      Every theme but Silver Bullet is near-black there already, and Silver
      Bullet deliberately painted that strip dark (#0d1418) too, so the visible
      change is close to nil. If this is ever reverted, the banner blur comes
-     back with it. -->
+     back with it.
+     Testing this tag costs a round trip if you forget: iOS reads
+     apple-mobile-web-app-* ONCE, when the icon is added to the home screen,
+     and never again. Editing it here changes nothing for an installed app --
+     not on reopen, not on a new SW_VERSION, not on a hard refresh. The icon
+     has to be deleted and re-added. A change here that "did not work" has
+     almost certainly not run yet: confirm against a fresh install before
+     concluding anything about the tag itself. -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="UFC Picks">
 <link rel="apple-touch-icon" href="icon-192-v2.png">
@@ -5254,7 +5261,14 @@ function loadIntel(){
 // tested (tests/check-whats-new.mjs) because sorting/capping below assumes it.
 var WHATS_NEW=[
   {id:"2026-09-13-fight-week-intel",emoji:"📰",title:"Fight Week Intel",
-   desc:"Curated interviews, breakdowns and camp pieces for the fighters on the upcoming card — right under the fight, linking straight to the source."}
+   desc:"Curated interviews, breakdowns and camp pieces for the fighters on the upcoming card — right under the fight, linking straight to the source."},
+  // Not a feature, but the one fix users have to act on themselves: iOS bakes
+  // apple-mobile-web-app-* into the home-screen app when it is added, so the
+  // fix for the blurred top bar cannot reach an already-installed icon. A page
+  // update and a new SW_VERSION both leave it in place. This popup is the only
+  // channel that reaches those users, which is why a fix gets an entry here.
+  {id:"2026-09-18-crisp-top-bar",emoji:"✨",title:"Blurry top bar fixed",
+   desc:"The fight-night banner was rendering smeared under the iPhone status bar. Already added to your home screen? Remove the icon and add it again to pick this up — reopening alone won't."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
