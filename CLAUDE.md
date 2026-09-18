@@ -32,6 +32,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:names` | a fighter renamed mid-card silently unscoring picks made under the old name |
 | `npm run check:intel` | a curated fight-week link landing under the wrong card |
 | `npm run check:whatsnew` | the what's-new popup losing a backfill announcement or growing unbounded |
+| `npm run check:prefs` | a restored notification pref lighting the bell with nothing subscribed |
 | `npm run check:kick`  | the scraper not being dispatched on a card day or in fight week |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
