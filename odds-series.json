@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T23:48:07Z",
+  "generated_at": "2026-09-18T00:53:46Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -8656,7 +8656,7 @@
           "f1": "Gable Steveson",
           "f2": "Sean Sharaf",
           "lbl": "Main Card",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -8697,6 +8697,11 @@
               "at": "2026-09-17T11:53:27Z",
               "f1_odds": -2367,
               "f2_odds": 1000
+            },
+            {
+              "at": "2026-09-18T00:53:46Z",
+              "f1_odds": -2267,
+              "f2_odds": 1027
             }
           ],
           "open": {
@@ -8711,7 +8716,7 @@
           "f1": "Tai Tuivasa",
           "f2": "Robelis Despaigne",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -8767,6 +8772,11 @@
               "at": "2026-09-17T11:53:27Z",
               "f1_odds": 487,
               "f2_odds": -757
+            },
+            {
+              "at": "2026-09-18T00:53:46Z",
+              "f1_odds": 475,
+              "f2_odds": -715
             }
           ],
           "open": {
@@ -8921,7 +8931,7 @@
           "f1": "Marlon Vera",
           "f2": "Charles Jourdain",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -8997,6 +9007,11 @@
               "at": "2026-09-17T00:59:31Z",
               "f1_odds": 182,
               "f2_odds": -231
+            },
+            {
+              "at": "2026-09-18T00:53:46Z",
+              "f1_odds": 182,
+              "f2_odds": -228
             }
           ],
           "open": {
@@ -9376,7 +9391,7 @@
           "f1": "Michael Aswell Jr.",
           "f2": "Yoo Joo-sang",
           "lbl": "Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-17T03:08:05Z",
@@ -9397,12 +9412,183 @@
               "at": "2026-09-17T18:33:16Z",
               "f1_odds": 200,
               "f2_odds": -256
+            },
+            {
+              "at": "2026-09-18T00:53:46Z",
+              "f1_odds": 198,
+              "f2_odds": -248
             }
           ],
           "open": {
             "at": "2026-09-17T03:08:05Z",
             "f1_odds": 210,
             "f2_odds": -270
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
+      "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Raul Rosas Jr.",
+          "f2": "Raoni Barcelos",
+          "lbl": "Main Event",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-18T00:53:46Z",
+              "f1_odds": -180,
+              "f2_odds": 153
+            }
+          ],
+          "open": {
+            "at": "2026-09-18T00:53:46Z",
+            "f1_odds": -180,
+            "f2_odds": 153
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Rodolfo Vieira",
+          "f2": "Robert Bryczek",
+          "lbl": "Co-Main",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-18T00:53:46Z",
+              "f1_odds": -108,
+              "f2_odds": -108
+            }
+          ],
+          "open": {
+            "at": "2026-09-18T00:53:46Z",
+            "f1_odds": -108,
+            "f2_odds": -108
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Brady Hiestand",
+          "f2": "Rinya Nakamura",
+          "lbl": "Main Card",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-18T00:53:46Z",
+              "f1_odds": 265,
+              "f2_odds": -325
+            }
+          ],
+          "open": {
+            "at": "2026-09-18T00:53:46Z",
+            "f1_odds": 265,
+            "f2_odds": -325
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Rodolfo Bellato",
+          "f2": "Christian Edwards",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-18T00:53:46Z",
+              "f1_odds": -160,
+              "f2_odds": 136
+            }
+          ],
+          "open": {
+            "at": "2026-09-18T00:53:46Z",
+            "f1_odds": -160,
+            "f2_odds": 136
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Montel Jackson",
+          "f2": "Ricky Simon",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-18T00:53:46Z",
+              "f1_odds": -176,
+              "f2_odds": 149
+            }
+          ],
+          "open": {
+            "at": "2026-09-18T00:53:46Z",
+            "f1_odds": -176,
+            "f2_odds": 149
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "John Castaneda",
+          "f2": "Alateng Heili",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-18T00:53:46Z",
+              "f1_odds": -280,
+              "f2_odds": 232
+            }
+          ],
+          "open": {
+            "at": "2026-09-18T00:53:46Z",
+            "f1_odds": -280,
+            "f2_odds": 232
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Norma Dumont",
+          "f2": "Ailin Perez",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-18T00:53:46Z",
+              "f1_odds": 111,
+              "f2_odds": -130
+            }
+          ],
+          "open": {
+            "at": "2026-09-18T00:53:46Z",
+            "f1_odds": 111,
+            "f2_odds": -130
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Vanessa Demopoulos",
+          "f2": "Yazmin Jauregui",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-18T00:53:46Z",
+              "f1_odds": 451,
+              "f2_odds": -600
+            }
+          ],
+          "open": {
+            "at": "2026-09-18T00:53:46Z",
+            "f1_odds": 451,
+            "f2_odds": -600
           },
           "close": null,
           "clv": null
@@ -10629,7 +10815,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Yoo Joo-sang",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 210,
         "close": null,
         "clv": null
@@ -11114,7 +11300,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Sean Sharaf",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -1477,
         "close": null,
         "clv": null
@@ -13336,7 +13522,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Gable Steveson",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 767,
         "close": null,
         "clv": null
@@ -13347,7 +13533,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Robelis Despaigne",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": 395,
         "close": null,
         "clv": null
@@ -13358,7 +13544,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Tai Tuivasa",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -565,
         "close": null,
         "clv": null
@@ -13402,7 +13588,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Charles Jourdain",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": 200,
         "close": null,
         "clv": null
@@ -13413,7 +13599,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Marlon Vera",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": -240,
         "close": null,
         "clv": null
@@ -13490,8 +13676,184 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Michael Aswell Jr.",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -270,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Raul Rosas Jr.": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Raoni Barcelos",
+        "side": "f1",
+        "points": 1,
+        "open": -180,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Raoni Barcelos": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Raul Rosas Jr.",
+        "side": "f2",
+        "points": 1,
+        "open": 153,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Rodolfo Vieira": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Robert Bryczek",
+        "side": "f1",
+        "points": 1,
+        "open": -108,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Robert Bryczek": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Rodolfo Vieira",
+        "side": "f2",
+        "points": 1,
+        "open": -108,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Brady Hiestand": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Rinya Nakamura",
+        "side": "f1",
+        "points": 1,
+        "open": 265,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Rinya Nakamura": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Brady Hiestand",
+        "side": "f2",
+        "points": 1,
+        "open": -325,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Rodolfo Bellato": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Christian Edwards",
+        "side": "f1",
+        "points": 1,
+        "open": -160,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Christian Edwards": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Rodolfo Bellato",
+        "side": "f2",
+        "points": 1,
+        "open": 136,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Montel Jackson": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Ricky Simon",
+        "side": "f1",
+        "points": 1,
+        "open": -176,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Ricky Simon": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Montel Jackson",
+        "side": "f2",
+        "points": 1,
+        "open": 149,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "John Castaneda": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Alateng Heili",
+        "side": "f1",
+        "points": 1,
+        "open": -280,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Alateng Heili": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "John Castaneda",
+        "side": "f2",
+        "points": 1,
+        "open": 232,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Norma Dumont": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Ailin Perez",
+        "side": "f1",
+        "points": 1,
+        "open": 111,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Ailin Perez": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Norma Dumont",
+        "side": "f2",
+        "points": 1,
+        "open": -130,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Vanessa Demopoulos": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Yazmin Jauregui",
+        "side": "f1",
+        "points": 1,
+        "open": 451,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Yazmin Jauregui": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Vanessa Demopoulos",
+        "side": "f2",
+        "points": 1,
+        "open": -600,
         "close": null,
         "clv": null
       }
