@@ -203,6 +203,33 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
     h.store.ufc_notif === "1" && last && last.reminders === true);
 }
 
+// --- Codex #140 round 3 P2: a load in flight must not undo a toggle ---
+{
+  // Stored push:true. The user taps the bell OFF while the GET is still in
+  // the air. When the old row lands it must not write ufc_push back to "1"
+  // and re-subscribe, which would silently reverse the tap.
+  const h = run(null, "granted");
+  h.set("ufc_push", "0");
+  await h.save("push");                 // the tap
+  await h.load([ALL_ON]);               // the response that was already flying
+  check("a stale load does not re-enable a bell the user just turned off",
+    h.store.ufc_push === "0");
+  check("...and does not re-subscribe behind them",
+    h.calls.ensureFresh === 0);
+  check("...while an untouched key from the same row still applies",
+    h.store.ufc_notif === "1");
+}
+{
+  // Same race with permission withheld: the prompt must not nag about a
+  // preference the user has just switched off themselves.
+  const h = run(null, "default");
+  h.set("ufc_push", "0");
+  await h.save("push");
+  await h.load([{ push: true, live_results: false, reminders: false }]);
+  check("no prompt for intent the user has explicitly just declined",
+    h.calls.toasts.length === 0);
+}
+
 // --- Codex #140 P1: an existing install must seed a row before it can be wiped ---
 {
   const h = run(null, "granted");
@@ -237,6 +264,8 @@ check("toggleLiveResults persists, naming its key",
 check("toggleNotif persists on both paths, naming its key",
   (seg("toggleNotif").match(/_prefsSave\("reminders"\)/g) || []).length >= 2);
 check("boot reads prefs once auth resolves", /_authReady\.then\(_prefsLoad\)/.test(html));
+check("signing into another identity rebinds the push endpoint to it",
+  /if\(changed\)_ensurePushFresh\(\);/.test(html));
 check("an in-app sign-in re-reads prefs for the new identity",
   /_prefsLoad\(\);\s*\/\/ \.\.\.and restore/.test(html));
 check("the upsert is keyed on user_id, so a second device updates rather than duplicates",

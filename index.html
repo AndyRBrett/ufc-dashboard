@@ -3798,6 +3798,14 @@ function _postSignIn(prevId,email){
     if(window._pp&&userName){window._pp();window._pp=null;}
     syncAllPicks();           // merge this device's local picks into the signed-in identity
     _prefsLoad();             // ...and restore that identity's notification toggles
+    // The browser's push subscription is still registered under the PREVIOUS
+    // user_id. Until something re-registers it, account-targeted pushes keep
+    // going to the old identity and the signed-in one gets none. _ensurePushFresh
+    // re-registers under the current USER_ID, and send-push's register deletes
+    // any row holding the same endpoint under a different user, so this rebinds
+    // rather than duplicating. It healed itself on the next load before; that is
+    // a long time to misroute in an app people leave open on fight night.
+    if(changed)_ensurePushFresh();
     fetchCommunityPicks();
     var lbPanel=document.getElementById("lbPanel");
     if(lbPanel&&lbPanel.classList.contains("open"))loadLeaderboard(false);
@@ -3839,6 +3847,13 @@ function _pushOn(){try{return localStorage.getItem("ufc_push")==="1";}catch(e){r
 function _remindersOn(){try{return localStorage.getItem("ufc_notif")==="1";}catch(e){return false;}}
 // Intent we could not apply for want of OS permission, held until we can.
 var _prefsPending=null;
+// Keys the user has explicitly set in this session. A stored value never
+// overrides one of these. Without it, a GET already in flight when the user
+// taps the bell lands afterwards and applies the OLD row: ufc_push goes back
+// to "1" and _ensurePushFresh re-subscribes, silently undoing the tap. Session
+// scoped on purpose -- an explicit action is the freshest signal there is, and
+// it should outlive one response, not just the one that raced it.
+var _prefsTouched={};
 function _prefsGranted(){try{return("Notification" in window)&&Notification.permission==="granted";}catch(e){return false;}}
 // `changed` names the key the calling toggle just set, if any. Two jobs, and
 // both are about held intent (_prefsPending) that we could not apply for want
@@ -3857,7 +3872,7 @@ function _prefsGranted(){try{return("Notification" in window)&&Notification.perm
 //      longer at risk.
 function _prefsSave(changed){
   if(!USER_ID)return Promise.resolve();
-  if(_prefsPending&&changed&&changed in _prefsPending)delete _prefsPending[changed];
+  if(changed){_prefsTouched[changed]=true;if(_prefsPending&&changed in _prefsPending)delete _prefsPending[changed];}
   // Permission granted (typically by the toggle that just called us): apply
   // the rest of the held row for real, so the flags below read it back.
   if(_prefsPending&&_prefsGranted()){
@@ -3917,7 +3932,7 @@ function _prefsApply(p){
   var granted=_prefsGranted();
   // Pure preference, no OS permission involved: restore either way so it is
   // already right the moment the bell comes back on.
-  if(p.live_results){
+  if(p.live_results&&!_prefsTouched.live_results){
     try{localStorage.setItem("ufc_live_results","1");}catch(e){}
     _setLiveResActive(true);
   }
@@ -3925,15 +3940,16 @@ function _prefsApply(p){
     // Hold what we could not apply. Without this the intent is not merely
     // unshown, it is destroyed by the next _prefsSave (see there).
     _prefsPending=p;
-    if(p.push||p.reminders)toast("Tap the bell to turn your fight notifications back on");
+    if((p.push&&!_prefsTouched.push)||(p.reminders&&!_prefsTouched.reminders))
+      toast("Tap the bell to turn your fight notifications back on");
     return;
   }
-  if(p.push){
+  if(p.push&&!_prefsTouched.push){
     try{localStorage.setItem("ufc_push","1");}catch(e){}
     _setBellActive(true);
     _ensurePushFresh();
   }
-  if(p.reminders){
+  if(p.reminders&&!_prefsTouched.reminders){
     try{localStorage.setItem("ufc_notif","1");}catch(e){}
     notifActive=true;
     var nb=document.getElementById("notifBtn");if(nb)nb.classList.add("active");
