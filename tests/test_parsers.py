@@ -595,6 +595,27 @@ def test_search_ufcstats_applies_name_alias(monkeypatch):
     assert scrape._search_ufcstats("Jose Aldo") is None
 
 
+def test_search_ufcstats_resolves_a_given_name_nickname(monkeypatch):
+    # Sherdog has him as Osman "Ozzy" Diaz: the card uses the legal given name,
+    # UFCStats the nickname. The surname matches, so this is not the Montanha
+    # case — but "Osman"/"Ozzy" share only a first letter, so the token matcher
+    # cannot and must not bridge it. He showed no record on a UFC 331 main-card
+    # week. Real row: ufcstats fighter-details/6967153c7edb4d87, 10-4-0.
+    rows = {"d": [("Ozzy", "Diaz", "http://x/ozzy", 10, 4, 0),
+                  ("Adrian", "Diaz", "http://x/adrian", 3, 2, 0)]}
+    monkeypatch.setattr(
+        scrape, "_load_ufcstats_letter", lambda letter: rows.get(letter, []))
+    assert scrape._search_ufcstats("Osman Diaz") == ("http://x/ozzy", "10-4-0")
+    # The alias resolves one fighter, not every Diaz: an unaliased namesake
+    # still has to match on his own name.
+    assert scrape._search_ufcstats("Adrian Diaz") == ("http://x/adrian", "3-2-0")
+    assert scrape._search_ufcstats("Ricardo Diaz") is None
+    # And the matcher itself still refuses the pair, so the alias is load-bearing
+    # rather than redundant — if this ever starts passing, the token rule has
+    # been loosened enough to match any O-named Diaz.
+    assert not scrape._name_tokens_match("Ozzy", "Diaz", "Osman Diaz")
+
+
 def test_search_ufcstats_matches_particle_surname(monkeypatch):
     # "De Ridder" is filed under D on UFCStats; the search must look under the
     # particle's initial, not just the card's last token ("Ridder" → R).
