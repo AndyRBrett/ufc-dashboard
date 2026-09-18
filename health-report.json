@@ -1,11 +1,18 @@
 {
-  "generated_at": "2026-09-18T13:35:55Z",
+  "generated_at": "2026-09-18T14:38:21Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 3
+    "warn": 4
   },
   "findings": [
+    {
+      "severity": "WARN",
+      "check": "card-shrink",
+      "message": "UFC 333: Volkanovski vs. Evloev dropped from 9 bouts to 8 \u2014 publishing it as a withdrawal; confirm the bout really came off the card",
+      "event": "UFC 333: Volkanovski vs. Evloev",
+      "date": "2026-10-24"
+    },
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
