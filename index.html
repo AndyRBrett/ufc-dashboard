@@ -5267,8 +5267,27 @@ var WHATS_NEW=[
   // fix for the blurred top bar cannot reach an already-installed icon. A page
   // update and a new SW_VERSION both leave it in place. This popup is the only
   // channel that reaches those users, which is why a fix gets an entry here.
+  //
+  // Two things the wording has to carry, both of which an earlier draft got
+  // wrong:
+  //   1. It is CONDITIONAL ("still seeing it"), never a flat instruction to
+  //      reinstall. unseenWhatsNew() shows every entry to a checkpoint-less
+  //      browser by design -- a brand-new install, and a just-re-added app
+  //      whose storage went with the old icon, both land here. An unqualified
+  //      "remove and add it again" tells an app that already HAS the fixed tag
+  //      to reinstall itself, and a re-added app arrives checkpoint-less again,
+  //      so the instruction repeats. Don't fix that in unseenWhatsNew: showing
+  //      checkpoint-less browsers everything is deliberate (see CLAUDE.md and
+  //      the comment below) and tested. The entry qualifies itself instead.
+  //   2. It sends people to Account FIRST. Deleting a standalone app clears
+  //      its local storage, and for an anonymous user ufc_sb_session is the
+  //      ONLY copy of the Supabase credential -- _ensureAuth() then takes the
+  //      no-session path, _signInAnon() mints a different user, and the picks
+  //      and stats on the old identity become unreachable with no way back.
+  //      Linking an email first makes the identity recoverable via the
+  //      magic-link sign-in. Never tell a user to delete this app without it.
   {id:"2026-09-18-crisp-top-bar",emoji:"✨",title:"Blurry top bar fixed",
-   desc:"The fight-night banner was rendering smeared under the iPhone status bar. Already added to your home screen? Remove the icon and add it again to pick this up — reopening alone won't."}
+   desc:"The fight-night banner rendered smeared under the iPhone status bar. Still seeing it on a home-screen app? Open More → Account and save your picks to an email first — removing the app clears its local data — then delete the icon and add it again."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
