@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-18T04:02:46Z",
+  "generated_at": "2026-09-18T05:03:14Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -8491,7 +8491,7 @@
           "f1": "Joshua Van",
           "f2": "Alexandre Pantoja",
           "lbl": "Main Event",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -8557,6 +8557,11 @@
               "at": "2026-09-17T16:23:14Z",
               "f1_odds": -136,
               "f2_odds": 111
+            },
+            {
+              "at": "2026-09-18T05:03:14Z",
+              "f1_odds": -135,
+              "f2_odds": 112
             }
           ],
           "open": {
@@ -9321,7 +9326,7 @@
           "f1": "Ryan Gandra",
           "f2": "Osman Diaz",
           "lbl": "Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-09-13T18:36:13Z",
@@ -9367,6 +9372,11 @@
               "at": "2026-09-17T22:47:38Z",
               "f1_odds": -577,
               "f2_odds": 407
+            },
+            {
+              "at": "2026-09-18T05:03:14Z",
+              "f1_odds": -563,
+              "f2_odds": 400
             }
           ],
           "open": {
@@ -9452,12 +9462,17 @@
           "f1": "Raul Rosas Jr.",
           "f2": "Raoni Barcelos",
           "lbl": "Main Event",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
               "f1_odds": -180,
               "f2_odds": 153
+            },
+            {
+              "at": "2026-09-18T05:03:14Z",
+              "f1_odds": -185,
+              "f2_odds": 157
             }
           ],
           "open": {
@@ -11496,7 +11511,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Osman Diaz",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -450,
         "close": null,
         "clv": null
@@ -13493,7 +13508,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Alexandre Pantoja",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -113,
         "close": null,
         "clv": null
@@ -13504,7 +13519,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Joshua Van",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -110,
         "close": null,
         "clv": null
@@ -13658,7 +13673,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Ryan Gandra",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 354,
         "close": null,
         "clv": null
@@ -13702,7 +13717,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Raoni Barcelos",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -180,
         "close": null,
         "clv": null
@@ -13713,7 +13728,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Raul Rosas Jr.",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 153,
         "close": null,
         "clv": null
