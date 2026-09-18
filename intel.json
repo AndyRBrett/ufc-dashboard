@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-17T22:47:38Z",
+ "generated_at": "2026-09-18T01:58:41Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -44,21 +44,6 @@
    "name": "UFC 331: Van vs. Pantoja 2",
    "date": "2026-09-19",
    "items": [
-    {
-     "title": "Crypto.com UFC 331 Embedded: Vlog Series - Episode 4",
-     "url": "https://www.youtube.com/watch?v=K6oVV5PbXg4",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-09-17T14:49:13Z",
-     "thumb": "https://i4.ytimg.com/vi/K6oVV5PbXg4/hqdefault.jpg",
-     "blurb": "Arman Tsarukyan hits pads at the athlete hotel in Los Angeles; flyweight champion Joshua Van and teammate Michael Aswell nearly miss their flight from Houston; Edmen Shahbazyan cruises around Burbank and grabs coffee…",
-     "fighters": [
-      "Arman Tsarukyan",
-      "Edmen Shahbazyan",
-      "Joshua Van",
-      "Michael Aswell Jr."
-     ]
-    },
     {
      "title": "Alexandre Pantoja fully healed, ready to reclaim UFC title from Joshua Van",
      "url": "https://www.sherdog.com/news/news/Alexandre-Pantoja-fully-healed-ready-to-reclaim-UFC-title-from-Joshua-Van-202843",
@@ -80,19 +65,6 @@
      "published": "2026-09-17T21:00:00Z",
      "thumb": null,
      "blurb": "Joseph Benavidez believes Alexandre Pantoja could end up benefitting from losing the belt. Joshua Van believes that he will stop Pantoja in their flyweight title ...",
-     "fighters": [
-      "Alexandre Pantoja",
-      "Joshua Van"
-     ]
-    },
-    {
-     "title": "Joshua Van will test Alexandre Pantoja in a way no one else has says only man to fight both of them",
-     "url": "https://bloodyelbow.com/2026/09/16/joshua-van-will-test-alexandre-pantoja-in-a-way-no-one-else-has-says-only-man-to-fight-both-of-them/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-09-17T02:00:00Z",
-     "thumb": null,
-     "blurb": "Brandon Royval shares his analysis of the next flyweight title fight. A rivalry has developed between Joshua Van and Alexandre Pantoja following the sudden ending ...",
      "fighters": [
       "Alexandre Pantoja",
       "Joshua Van"
@@ -125,26 +97,26 @@
      ]
     },
     {
-     "title": "The GREATEST COMAIN EVENT OF 2026 | Arman Tsarukyan vs Mauricio Ruffy",
-     "url": "https://www.youtube.com/watch?v=4X7jjXcqNDQ",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-09-17T14:45:19Z",
-     "thumb": "https://i1.ytimg.com/vi/4X7jjXcqNDQ/hqdefault.jpg",
-     "blurb": "Sit back and watch an excerpt from UFC 331 Countdown before Arman Tsarukyan and Mauricio Ruffy go head to head in the comain event. Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest…",
+     "title": "Mauricio Ruffy reacts to Arman Tsarukyan bringing in streamer N3on as part of UFC 331 corner team",
+     "url": "https://bloodyelbow.com/2026/09/17/mauricio-ruffy-reacts-to-arman-tsarukyan-bringing-in-streamer-n3on-as-part-of-ufc-331-corner-team/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-09-18T01:00:00Z",
+     "thumb": null,
+     "blurb": "Ruffy has shared his thoughts on N3on's role.",
      "fighters": [
       "Arman Tsarukyan",
       "Mauricio Ruffy"
      ]
     },
     {
-     "title": "\"He's The Joker!\" | Crypto.com UFC 331 Media Day",
-     "url": "https://www.youtube.com/watch?v=RcIGNd8zMxI",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-09-16T23:22:00Z",
-     "thumb": "https://i3.ytimg.com/vi/RcIGNd8zMxI/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Listen to Arman Tsarukyan and Mauricio Ruffy answer questions from the press ahead of their matchup at UFC 331. Subscribe to get all the latest UFC content:…",
+     "title": "Khamzat Chimaev breaks down Arman Tsarukyan vs Mauricio Ruffy ahead of sharing corner with N3on",
+     "url": "https://bloodyelbow.com/2026/09/17/khamzat-chimaev-breaks-down-arman-tsarukyan-vs-mauricio-ruffy-ahead-of-sharing-corner-with-n3on/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-09-18T00:00:00Z",
+     "thumb": null,
+     "blurb": "Khamzat Chimaev rates Mauricio Ruffy but doesn’t think he can match Arman Tsarukyan. On Friday night in Florida, Chimaev faces Gilbert Burns in an RAF ...",
      "fighters": [
       "Arman Tsarukyan",
       "Mauricio Ruffy"
