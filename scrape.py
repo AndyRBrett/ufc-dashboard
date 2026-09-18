@@ -2396,16 +2396,26 @@ def _token_lists_match(t, row):
 
 
 # Card name → the name UFCStats files the fighter under. Last resort, for the
-# handful of fighters whose UFCStats surname is a different word entirely (a
-# nickname promoted to surname, or a dropped family name) — no token matcher can
-# bridge that, because there is no shared surname to pin identity on. Everything
-# that IS bridgeable (particles, suffixes, dropped given names, reversed order)
-# belongs in _name_tokens_match, not here. Keys are clean()ed + lowercased.
+# handful of fighters where one side carries a NICKNAME the other doesn't: a
+# nickname standing in for the surname (no shared surname left to pin identity
+# on) or for the given name (no morphology connecting the two words). Neither is
+# a variant spelling, so no token rule can bridge it without conflating
+# strangers. Everything that IS bridgeable (particles, suffixes, dropped given
+# names, reversed order, split syllables) belongs in _name_tokens_match, not
+# here. Keys are clean()ed + lowercased.
 _UFCSTATS_NAME_ALIASES = {
     # Wikipedia/Sherdog list him as Jose "Montanha" Luiz; UFCStats and the UFC
     # both file him under Montanha, so the card name shares no surname with the
     # UFCStats row and his record rendered blank.
     "jose luiz": "Jose Montanha",
+    # Sherdog has him as Osman "Ozzy" Diaz: the card uses the legal given name,
+    # UFCStats and the UFC use the nickname. The surname lines up here, so this
+    # is the given-name case above — and the two given names share only their
+    # first letter, which no rule can exploit. The existing two-character test
+    # ("os" vs "oz") correctly refuses them, and relaxing it to one character
+    # would match every other O-named Diaz on the roster. Left blank he showed
+    # no record on a UFC 331 main-card week.
+    "osman diaz": "Ozzy Diaz",
 }
 
 
