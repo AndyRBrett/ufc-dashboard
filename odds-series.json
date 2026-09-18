@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-18T09:00:59Z",
+  "generated_at": "2026-09-18T10:03:15Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -8576,7 +8576,7 @@
           "f1": "Arman Tsarukyan",
           "f2": "Mauricio Ruffy",
           "lbl": "Co-Main",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -8652,6 +8652,11 @@
               "at": "2026-09-18T03:03:12Z",
               "f1_odds": -323,
               "f2_odds": 252
+            },
+            {
+              "at": "2026-09-18T10:03:15Z",
+              "f1_odds": -315,
+              "f2_odds": 243
             }
           ],
           "open": {
@@ -8726,7 +8731,7 @@
           "f1": "Tai Tuivasa",
           "f2": "Robelis Despaigne",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -8792,6 +8797,11 @@
               "at": "2026-09-18T07:13:19Z",
               "f1_odds": 470,
               "f2_odds": -707
+            },
+            {
+              "at": "2026-09-18T10:03:15Z",
+              "f1_odds": 457,
+              "f2_odds": -672
             }
           ],
           "open": {
@@ -8951,7 +8961,7 @@
           "f1": "Marlon Vera",
           "f2": "Charles Jourdain",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -9032,6 +9042,11 @@
               "at": "2026-09-18T00:53:46Z",
               "f1_odds": 182,
               "f2_odds": -228
+            },
+            {
+              "at": "2026-09-18T10:03:15Z",
+              "f1_odds": 173,
+              "f2_odds": -215
             }
           ],
           "open": {
@@ -9426,7 +9441,7 @@
           "f1": "Michael Aswell Jr.",
           "f2": "Yoo Joo-sang",
           "lbl": "Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-09-17T03:08:05Z",
@@ -9457,6 +9472,11 @@
               "at": "2026-09-18T07:13:19Z",
               "f1_odds": 194,
               "f2_odds": -243
+            },
+            {
+              "at": "2026-09-18T10:03:15Z",
+              "f1_odds": 184,
+              "f2_odds": -230
             }
           ],
           "open": {
@@ -10860,7 +10880,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Yoo Joo-sang",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": 210,
         "close": null,
         "clv": null
@@ -13545,7 +13565,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Mauricio Ruffy",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -383,
         "close": null,
         "clv": null
@@ -13556,7 +13576,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Arman Tsarukyan",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 285,
         "close": null,
         "clv": null
@@ -13578,7 +13598,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Robelis Despaigne",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 395,
         "close": null,
         "clv": null
@@ -13589,7 +13609,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Tai Tuivasa",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -565,
         "close": null,
         "clv": null
@@ -13633,7 +13653,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Charles Jourdain",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": 200,
         "close": null,
         "clv": null
@@ -13644,7 +13664,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Marlon Vera",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": -240,
         "close": null,
         "clv": null
@@ -13721,7 +13741,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Michael Aswell Jr.",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": -270,
         "close": null,
         "clv": null
