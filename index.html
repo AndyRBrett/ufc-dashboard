@@ -5286,8 +5286,16 @@ var WHATS_NEW=[
   //      and stats on the old identity become unreachable with no way back.
   //      Linking an email first makes the identity recoverable via the
   //      magic-link sign-in. Never tell a user to delete this app without it.
+  //   3. It ends with signing back IN. Linking the email only makes recovery
+  //      possible; it does not survive the delete by itself. The re-added app
+  //      finds no ufc_sb_session, mints a fresh anonymous user, and shows an
+  //      empty history -- so a user who followed every other step still lands
+  //      on a blank identity and may start picking under it. The old picks
+  //      come back only on signing in with that same email. Any instruction
+  //      here that clears storage has to carry all three steps or it strands
+  //      the person halfway.
   {id:"2026-09-18-crisp-top-bar",emoji:"✨",title:"Blurry top bar fixed",
-   desc:"The fight-night banner rendered smeared under the iPhone status bar. Still seeing it on a home-screen app? Open More → Account and save your picks to an email first — removing the app clears its local data — then delete the icon and add it again."}
+   desc:"The fight-night banner rendered smeared under the iPhone status bar. Still seeing it on a home-screen app? Open More → Account and save your picks to an email first — removing the app clears its local data — then delete the icon, add it again, and sign back in with that same email."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
