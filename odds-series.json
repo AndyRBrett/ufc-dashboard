@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-18T06:07:57Z",
+  "generated_at": "2026-09-18T07:13:19Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -8726,7 +8726,7 @@
           "f1": "Tai Tuivasa",
           "f2": "Robelis Despaigne",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -8787,6 +8787,11 @@
               "at": "2026-09-18T00:53:46Z",
               "f1_odds": 475,
               "f2_odds": -715
+            },
+            {
+              "at": "2026-09-18T07:13:19Z",
+              "f1_odds": 470,
+              "f2_odds": -707
             }
           ],
           "open": {
@@ -9391,7 +9396,7 @@
           "f1": "Patricio Pitbull",
           "f2": "Choi Doo-ho",
           "lbl": "Main Card",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-09-17T03:08:05Z",
@@ -9402,6 +9407,11 @@
               "at": "2026-09-18T03:03:12Z",
               "f1_odds": 222,
               "f2_odds": -282
+            },
+            {
+              "at": "2026-09-18T07:13:19Z",
+              "f1_odds": 220,
+              "f2_odds": -279
             }
           ],
           "open": {
@@ -9416,7 +9426,7 @@
           "f1": "Michael Aswell Jr.",
           "f2": "Yoo Joo-sang",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-09-17T03:08:05Z",
@@ -9442,6 +9452,11 @@
               "at": "2026-09-18T00:53:46Z",
               "f1_odds": 198,
               "f2_odds": -248
+            },
+            {
+              "at": "2026-09-18T07:13:19Z",
+              "f1_odds": 194,
+              "f2_odds": -243
             }
           ],
           "open": {
@@ -10845,7 +10860,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Yoo Joo-sang",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": 210,
         "close": null,
         "clv": null
@@ -13563,7 +13578,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Robelis Despaigne",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": 395,
         "close": null,
         "clv": null
@@ -13574,7 +13589,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Tai Tuivasa",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -565,
         "close": null,
         "clv": null
@@ -13684,7 +13699,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Choi Doo-ho",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": 223,
         "close": null,
         "clv": null
@@ -13695,7 +13710,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Patricio Pitbull",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": -289,
         "close": null,
         "clv": null
@@ -13706,7 +13721,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Michael Aswell Jr.",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": -270,
         "close": null,
         "clv": null
