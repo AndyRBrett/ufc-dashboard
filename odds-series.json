@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-18T01:58:41Z",
+  "generated_at": "2026-09-18T03:03:12Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -8571,7 +8571,7 @@
           "f1": "Arman Tsarukyan",
           "f2": "Mauricio Ruffy",
           "lbl": "Co-Main",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -8642,6 +8642,11 @@
               "at": "2026-09-17T18:33:16Z",
               "f1_odds": -332,
               "f2_odds": 253
+            },
+            {
+              "at": "2026-09-18T03:03:12Z",
+              "f1_odds": -323,
+              "f2_odds": 252
             }
           ],
           "open": {
@@ -8851,7 +8856,7 @@
           "f1": "Alonzo Menifield",
           "f2": "Iwo Baraniewski",
           "lbl": "Main Card",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -8917,6 +8922,11 @@
               "at": "2026-09-17T16:23:14Z",
               "f1_odds": 200,
               "f2_odds": -255
+            },
+            {
+              "at": "2026-09-18T03:03:12Z",
+              "f1_odds": 199,
+              "f2_odds": -250
             }
           ],
           "open": {
@@ -9371,12 +9381,17 @@
           "f1": "Patricio Pitbull",
           "f2": "Choi Doo-ho",
           "lbl": "Main Card",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-09-17T03:08:05Z",
               "f1_odds": 223,
               "f2_odds": -289
+            },
+            {
+              "at": "2026-09-18T03:03:12Z",
+              "f1_odds": 222,
+              "f2_odds": -282
             }
           ],
           "open": {
@@ -10257,7 +10272,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Alonzo Menifield",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -245,
         "close": null,
         "clv": null
@@ -13500,7 +13515,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Mauricio Ruffy",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -383,
         "close": null,
         "clv": null
@@ -13511,7 +13526,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Arman Tsarukyan",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 285,
         "close": null,
         "clv": null
@@ -13577,7 +13592,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Iwo Baraniewski",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 205,
         "close": null,
         "clv": null
@@ -13654,7 +13669,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Choi Doo-ho",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 223,
         "close": null,
         "clv": null
@@ -13665,7 +13680,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Patricio Pitbull",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -289,
         "close": null,
         "clv": null
