@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-18T18:18:06Z",
+  "generated_at": "2026-09-18T19:23:19Z",
   "events_tracked": 12,
   "stale_events": 2,
   "parse_failure_events": 0,
@@ -91,16 +91,16 @@
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "status": "ok",
-      "last_changed_at": "2026-09-18T17:13:01Z",
+      "last_changed_at": "2026-09-18T19:23:19Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
-      "line_movement": -24
+      "line_movement": -27
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "ok",
-      "last_changed_at": "2026-09-18T17:13:01Z",
+      "last_changed_at": "2026-09-18T19:23:19Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 11,
@@ -118,7 +118,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-18T18:18:06Z",
+      "last_changed_at": "2026-09-18T19:23:19Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -127,7 +127,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-18T18:18:06Z",
+      "last_changed_at": "2026-09-18T19:23:19Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-18T18:18:06Z",
+      "last_changed_at": "2026-09-18T19:23:19Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -154,7 +154,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-18T18:18:06Z",
+      "last_changed_at": "2026-09-18T19:23:19Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -182,33 +182,33 @@
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "f1": "Gable Steveson",
       "f2": "Sean Sharaf",
-      "f1_movement": -790,
-      "f2_movement": 260,
-      "magnitude": 790,
+      "f1_movement": -990,
+      "f2_movement": 313,
+      "magnitude": 990,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": 2.1,
-      "f2_prob_shift": -2.7,
-      "priority": 1580.0
+      "f1_prob_shift": 2.4,
+      "f2_prob_shift": -3.1,
+      "priority": 1980.0
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "f1": "Joshua Van",
       "f2": "Alexandre Pantoja",
-      "f1_movement": -24,
-      "f2_movement": 223,
-      "magnitude": 223,
+      "f1_movement": -27,
+      "f2_movement": 225,
+      "magnitude": 225,
       "main_event": true,
       "tier": "main-event",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Flyweight",
-      "f1_prob_shift": 4.8,
-      "f2_prob_shift": -5.4,
-      "priority": 1115.0
+      "f1_prob_shift": 5.3,
+      "f2_prob_shift": -5.9,
+      "priority": 1125.0
     },
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
@@ -289,6 +289,22 @@
       "f1_prob_shift": 21.3,
       "f2_prob_shift": -21.0,
       "priority": 295.0
+    },
+    {
+      "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+      "f1": "Vanessa Demopoulos",
+      "f2": "Yazmin Jauregui",
+      "f1_movement": 125,
+      "f2_movement": -250,
+      "magnitude": 250,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 120,
+      "low_confidence": false,
+      "wc": "Women's Strawweight",
+      "f1_prob_shift": -3.4,
+      "f2_prob_shift": 3.8,
+      "priority": 275.0
     },
     {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
@@ -406,17 +422,17 @@
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "f1": "Arman Tsarukyan",
       "f2": "Mauricio Ruffy",
-      "f1_movement": 70,
-      "f2_movement": -43,
-      "magnitude": 70,
+      "f1_movement": 68,
+      "f2_movement": -42,
+      "magnitude": 68,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Lightweight",
-      "f1_prob_shift": -3.5,
-      "f2_prob_shift": 3.3,
-      "priority": 140.0
+      "f1_prob_shift": -3.4,
+      "f2_prob_shift": 3.2,
+      "priority": 136.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
