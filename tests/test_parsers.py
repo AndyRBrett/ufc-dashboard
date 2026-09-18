@@ -601,10 +601,16 @@ def test_search_ufcstats_resolves_a_given_name_nickname(monkeypatch):
     # case — but "Osman"/"Ozzy" share only a first letter, so the token matcher
     # cannot and must not bridge it. He showed no record on a UFC 331 main-card
     # week. Real row: ufcstats fighter-details/6967153c7edb4d87, 10-4-0.
+    # Every other initial returns a non-empty page, as the alias test above
+    # does: an empty one reads as a failed/partial scan and makes
+    # _search_ufcstats take its real two-second retry sleep. Each assertion
+    # below touches a missing initial (o, a, r), so returning [] would put six
+    # seconds of wall time into every run of the suite.
+    other = [("Someone", "Else", "http://x/else", 1, 1, 0)]
     rows = {"d": [("Ozzy", "Diaz", "http://x/ozzy", 10, 4, 0),
                   ("Adrian", "Diaz", "http://x/adrian", 3, 2, 0)]}
     monkeypatch.setattr(
-        scrape, "_load_ufcstats_letter", lambda letter: rows.get(letter, []))
+        scrape, "_load_ufcstats_letter", lambda letter: rows.get(letter, other))
     assert scrape._search_ufcstats("Osman Diaz") == ("http://x/ozzy", "10-4-0")
     # The alias resolves one fighter, not every Diaz: an unaliased namesake
     # still has to match on his own name.
