@@ -54,5 +54,11 @@ create policy user_prefs_update on public.user_prefs
   using (auth.uid()::text = user_id)
   with check (auth.uid()::text = user_id);
 
+-- "Delete forever" promises to remove notification settings, so the owner
+-- must be able to delete their own row.
+drop policy if exists user_prefs_delete on public.user_prefs;
+create policy user_prefs_delete on public.user_prefs
+  for delete to authenticated using (auth.uid()::text = user_id);
+
 revoke all on public.user_prefs from anon, authenticated;
-grant select, insert, update on public.user_prefs to authenticated;
+grant select, insert, update, delete on public.user_prefs to authenticated;

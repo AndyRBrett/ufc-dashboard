@@ -3614,7 +3614,12 @@ function deleteAccount(){
     // Delete the user's own rows first, using the current authenticated session.
     return fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h}).then(function(r){
       if(!r.ok)throw new Error("delete "+r.status);
-      return fetch(SUPABASE_URL+"/rest/v1/push_subs?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h}).catch(function(){});
+      return fetch(SUPABASE_URL+"/rest/v1/push_subs?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h}).catch(function(){})
+        // The delete dialog promises to remove "notification settings", and
+        // user_prefs is now where those live. Leaving it would outlive the
+        // account and silently restore itself if the same email signed in
+        // again -- the app stating something false about its own deletion.
+        .then(function(){return fetch(SUPABASE_URL+"/rest/v1/user_prefs?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h}).catch(function(){});});
     });
   }).then(function(){
     // Best-effort: drop the browser push subscription, then wipe all local state.
@@ -3819,8 +3824,21 @@ function _liveResultsOn(){try{return localStorage.getItem("ufc_live_results")===
 // sign-in switches identity, and written on every toggle.
 function _pushOn(){try{return localStorage.getItem("ufc_push")==="1";}catch(e){return false;}}
 function _remindersOn(){try{return localStorage.getItem("ufc_notif")==="1";}catch(e){return false;}}
+// Intent we could not apply for want of OS permission, held until we can.
+var _prefsPending=null;
+function _prefsGranted(){try{return("Notification" in window)&&Notification.permission==="granted";}catch(e){return false;}}
 function _prefsSave(){
   if(!USER_ID)return Promise.resolve();
+  // If a pending row is waiting and permission has since been granted --
+  // which is exactly what the toggle calling us just did -- apply it BEFORE
+  // reading the flags. Otherwise this save writes the un-restored defaults
+  // straight over the stored intent: tap the bell, enablePush() grants and
+  // saves, _remindersOn() is still false because nothing restored it, and
+  // reminders:true becomes reminders:false. Applying is positives-only, so
+  // the toggle the user just flipped on still wins.
+  if(_prefsPending&&_prefsGranted()){
+    var pend=_prefsPending;_prefsPending=null;_prefsApply(pend);
+  }
   return _authReady.then(function(){
     var h=_sbHeaders();h.Prefer="resolution=merge-duplicates";
     return fetch(SUPABASE_URL+"/rest/v1/user_prefs?on_conflict=user_id",{
@@ -3835,7 +3853,17 @@ function _prefsLoad(){
   return _authReady.then(function(){
     return fetch(SUPABASE_URL+"/rest/v1/user_prefs?select=push,live_results,reminders&user_id=eq."+encodeURIComponent(USER_ID),{headers:_sbHeaders()});
   }).then(function(r){return r.ok?r.json():[];})
-    .then(function(rows){if(rows&&rows[0])_prefsApply(rows[0]);})
+    .then(function(rows){
+      if(rows&&rows[0]){_prefsApply(rows[0]);return;}
+      // No row: this account predates the table, so its settings still live
+      // only in localStorage -- and the next thing this user may do is follow
+      // the what's-new notice and delete the app, which clears exactly that.
+      // Waiting for the next toggle to write would lose the settings of every
+      // existing user, the cohort this whole change is for. Seed now instead.
+      // Only when something is actually on: a row of falses is a write per
+      // user carrying no information.
+      if(_pushOn()||_liveResultsOn()||_remindersOn())_prefsSave();
+    })
     .catch(function(e){console.error("prefs load failed",e);});
 }
 // Restoring a preference must never claim a capability the browser has not
@@ -3856,8 +3884,7 @@ function _prefsLoad(){
 // leaving it on -- the user turned it on here and can turn it off here.
 function _prefsApply(p){
   if(!p)return;
-  var granted=false;
-  try{granted=("Notification" in window)&&Notification.permission==="granted";}catch(e){}
+  var granted=_prefsGranted();
   // Pure preference, no OS permission involved: restore either way so it is
   // already right the moment the bell comes back on.
   if(p.live_results){
@@ -3865,6 +3892,9 @@ function _prefsApply(p){
     _setLiveResActive(true);
   }
   if(!granted){
+    // Hold what we could not apply. Without this the intent is not merely
+    // unshown, it is destroyed by the next _prefsSave (see there).
+    _prefsPending=p;
     if(p.push||p.reminders)toast("Tap the bell to turn your fight notifications back on");
     return;
   }

@@ -32,20 +32,28 @@ const src = html.slice(a, b);
 // Build a context where every side effect _prefsApply can have is observable.
 function run(prefs, permission) {
   const store = {};
-  const calls = { ensureFresh: 0, bell: [], liveRes: [], toasts: [], schedule: 0 };
+  const calls = { ensureFresh: 0, bell: [], liveRes: [], toasts: [], schedule: 0, saved: [] };
+  const perm = { value: permission };
   const ctx = vm.createContext({
     console, JSON, Object, String, Array, Promise, Date, encodeURIComponent,
     localStorage: {
       getItem: (k) => (k in store ? store[k] : null),
       setItem: (k, v) => { store[k] = String(v); },
     },
-    Notification: { permission },
-    window: { Notification: { permission } },
+    Notification: { get permission() { return perm.value; } },
+    window: { Notification: { get permission() { return perm.value; } } },
     USER_ID: "u1", notifActive: false,
     document: { getElementById: () => null },
-    fetch: () => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }),
+    fetch: (url, opt) => {
+      if (String(url).includes("user_prefs") && opt && opt.method === "POST")
+        calls.saved.push(JSON.parse(opt.body));
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(rows) });
+    },
     _authReady: Promise.resolve(),
     SUPABASE_URL: "https://x", _sbHeaders: () => ({}),
+    // Defined above the prefs block in index.html, so stub it here with the
+    // same semantics: reads the same key the block writes.
+    _liveResultsOn: () => store.ufc_live_results === "1",
     _ensurePushFresh: () => { calls.ensureFresh++; },
     _setBellActive: (v) => calls.bell.push(v),
     _setLiveResActive: (v) => calls.liveRes.push(v),
@@ -53,9 +61,16 @@ function run(prefs, permission) {
     toast: (m) => calls.toasts.push(m),
   });
   // `"Notification" in window` is how the source probes support.
+  let rows = [];
   vm.runInContext(src, ctx);
   vm.runInContext("_prefsApply(" + JSON.stringify(prefs) + ")", ctx);
-  return { store, calls };
+  return {
+    store, calls, perm,
+    // Re-enter through the real entry points, as a toggle would.
+    save: () => vm.runInContext("_prefsSave()", ctx),
+    load: (r) => { rows = r; return vm.runInContext("_prefsLoad()", ctx); },
+    set: (k, v) => { store[k] = v; },
+  };
 }
 
 const ALL_ON = { push: true, live_results: true, reminders: true };
@@ -108,6 +123,62 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
   check("a missing prefs row is a no-op rather than a crash", !threw);
 }
 
+// --- Codex #140 P1: the prompt must not destroy the intent it prompts for ---
+// Fresh install, reminders were on, permission not yet granted. The user
+// follows the toast and taps the bell; enablePush() grants permission and
+// calls _prefsSave(). If the pending row is not applied first, that save reads
+// ufc_notif as unset and writes reminders:false over the stored true, so
+// reminders never come back.
+{
+  const h = run(ALL_ON, "default");
+  check("no permission: the unapplied row is held, not dropped",
+    h.store.ufc_notif !== "1");
+  h.perm.value = "granted";          // the bell tap granted it
+  h.set("ufc_push", "1");            // ...and enablePush wrote its own flag
+  await h.save();
+  check("after the grant, the held reminder intent is applied",
+    h.store.ufc_notif === "1");
+  const last = h.calls.saved[h.calls.saved.length - 1];
+  check("the save that follows the grant persists reminders:true, not false",
+    last && last.reminders === true);
+  check("...and does not lose live_results on the way through",
+    last && last.live_results === true);
+}
+{
+  // The same trap via the reminder button instead of the bell.
+  const h = run(ALL_ON, "default");
+  h.perm.value = "granted";
+  h.set("ufc_notif", "1");
+  await h.save();
+  const last = h.calls.saved[h.calls.saved.length - 1];
+  check("granting through the reminder toggle does not clobber push:true",
+    last && last.push === true);
+}
+{
+  const h = run(ALL_ON, "default");
+  await h.save();                     // still no permission
+  const last = h.calls.saved[h.calls.saved.length - 1];
+  check("while permission is still withheld, the held row is NOT applied",
+    h.store.ufc_push !== "1" && last && last.push === false);
+}
+
+// --- Codex #140 P1: an existing install must seed a row before it can be wiped ---
+{
+  const h = run(null, "granted");
+  h.set("ufc_live_results", "1");
+  h.set("ufc_notif", "1");
+  await h.load([]);                   // no row yet: account predates the table
+  const seeded = h.calls.saved[h.calls.saved.length - 1];
+  check("an account with no row seeds it from existing local settings",
+    seeded && seeded.live_results === true && seeded.reminders === true);
+}
+{
+  const h = run(null, "granted");
+  await h.load([]);                   // nothing on locally
+  check("a user with nothing enabled writes no row — no empty write per user",
+    h.calls.saved.length === 0);
+}
+
 // --- plumbing: every toggle persists, both restore points read ---
 const seg = (name) => {
   const i = html.indexOf("function " + name);
@@ -130,6 +201,11 @@ const sql = readFileSync(join(ROOT, "supabase/migrations/0004_user_prefs.sql"), 
 check("user_prefs has RLS enabled", /alter table public\.user_prefs enable row level security/.test(sql));
 check("user_prefs select is owner-only — prefs are nobody else's business",
   /user_prefs_select[\s\S]{0,200}auth\.uid\(\)::text = user_id/.test(sql));
+check("\"Delete forever\" removes the prefs row — the dialog promises exactly that",
+  /user_prefs\?user_id=eq\.[\s\S]{0,120}method:"DELETE"/.test(html.slice(html.indexOf("function deleteAccount"), html.indexOf("function deleteAccount") + 1800)));
+check("user_prefs grants the owner DELETE so that request can succeed",
+  /user_prefs_delete[\s\S]{0,200}for delete to authenticated using \(auth\.uid\(\)::text = user_id\)/.test(sql) &&
+  /grant select, insert, update, delete on public\.user_prefs to authenticated/.test(sql));
 check("anon holds no grant on user_prefs",
   /revoke all on public\.user_prefs from anon, authenticated/.test(sql) &&
   !/grant[^\n]*to[^\n]*\banon\b/.test(sql.split("revoke all")[1] || ""));
