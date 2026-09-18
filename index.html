@@ -3619,7 +3619,20 @@ function deleteAccount(){
         // user_prefs is now where those live. Leaving it would outlive the
         // account and silently restore itself if the same email signed in
         // again -- the app stating something false about its own deletion.
-        .then(function(){return fetch(SUPABASE_URL+"/rest/v1/user_prefs?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h}).catch(function(){});});
+        .then(function(){return fetch(SUPABASE_URL+"/rest/v1/user_prefs?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h});})
+        .then(function(r){
+          // Not swallowed: a failure here leaves the row recoverable on the
+          // next sign-in while the dialog has already claimed the settings
+          // were permanently removed. Propagate so the user is told to retry
+          // instead of being told it worked.
+          // 404 is the exception, and it is not a failure: PostgREST answers
+          // 404 for a table that does not exist, which is every install until
+          // 0004 is applied by hand. Treating that as fatal would make
+          // "Delete forever" impossible until the migration runs. A DELETE
+          // that matches no rows returns 204, so 404 really does mean "no
+          // such table" -- there is nothing there to leave behind.
+          if(!r.ok&&r.status!==404)throw new Error("delete prefs "+r.status);
+        });
     });
   }).then(function(){
     // Best-effort: drop the browser push subscription, then wipe all local state.
@@ -3827,24 +3840,41 @@ function _remindersOn(){try{return localStorage.getItem("ufc_notif")==="1";}catc
 // Intent we could not apply for want of OS permission, held until we can.
 var _prefsPending=null;
 function _prefsGranted(){try{return("Notification" in window)&&Notification.permission==="granted";}catch(e){return false;}}
-function _prefsSave(){
+// `changed` names the key the calling toggle just set, if any. Two jobs, and
+// both are about held intent (_prefsPending) that we could not apply for want
+// of OS permission:
+//
+//   1. The user's explicit choice supersedes held intent for that key, so the
+//      key is dropped from the pending row. Without this, turning Live Result
+//      Spoilers OFF before the permission prompt, then granting, would apply
+//      the stale pending snapshot and switch it straight back on.
+//   2. Every OTHER held key is merged into this write instead of being
+//      serialized from an unset local flag. Without this, ANY save before the
+//      prompt -- a spoiler toggle, anything -- writes push:false and
+//      reminders:false over the stored true, and if the page closes before
+//      permission is granted the settings are gone for good. Protecting the
+//      intent only once permission arrives protects it exactly when it is no
+//      longer at risk.
+function _prefsSave(changed){
   if(!USER_ID)return Promise.resolve();
-  // If a pending row is waiting and permission has since been granted --
-  // which is exactly what the toggle calling us just did -- apply it BEFORE
-  // reading the flags. Otherwise this save writes the un-restored defaults
-  // straight over the stored intent: tap the bell, enablePush() grants and
-  // saves, _remindersOn() is still false because nothing restored it, and
-  // reminders:true becomes reminders:false. Applying is positives-only, so
-  // the toggle the user just flipped on still wins.
+  if(_prefsPending&&changed&&changed in _prefsPending)delete _prefsPending[changed];
+  // Permission granted (typically by the toggle that just called us): apply
+  // the rest of the held row for real, so the flags below read it back.
   if(_prefsPending&&_prefsGranted()){
     var pend=_prefsPending;_prefsPending=null;_prefsApply(pend);
+  }
+  var vals={push:_pushOn(),live_results:_liveResultsOn(),reminders:_remindersOn()};
+  if(_prefsPending){
+    if(_prefsPending.push)vals.push=true;
+    if(_prefsPending.live_results)vals.live_results=true;
+    if(_prefsPending.reminders)vals.reminders=true;
   }
   return _authReady.then(function(){
     var h=_sbHeaders();h.Prefer="resolution=merge-duplicates";
     return fetch(SUPABASE_URL+"/rest/v1/user_prefs?on_conflict=user_id",{
       method:"POST",headers:h,
-      body:JSON.stringify({user_id:USER_ID,push:_pushOn(),live_results:_liveResultsOn(),
-        reminders:_remindersOn(),updated_at:new Date().toISOString()})
+      body:JSON.stringify({user_id:USER_ID,push:vals.push,live_results:vals.live_results,
+        reminders:vals.reminders,updated_at:new Date().toISOString()})
     });
   }).catch(function(e){console.error("prefs save failed",e);});
 }
@@ -3941,7 +3971,7 @@ function toggleLiveResults(){
   _setLiveResActive(on);
   _stashPushIdentity();
   _syncLivePref();
-  _prefsSave();
+  _prefsSave("live_results");
   toast(on?"Live results on — alerts will name winners 🚨":"Spoiler-free — alerts won't reveal winners 🙈");
 }
 // Stash the identity the service worker needs to re-register itself if the
@@ -4007,7 +4037,7 @@ function enablePush(){
             }).catch(function(e){console.error("push register error",e);toast("⚠️ Notification setup failed — check connection");});
             try{localStorage.setItem("ufc_push","1");}catch(e){}
             _setBellActive(true);
-            _prefsSave();
+            _prefsSave("push");
             toast("Fight notifications enabled! 🔔");
           }).catch(function(){toast("Could not subscribe to notifications");});
         };
@@ -4022,7 +4052,7 @@ function togglePush(){
   if(active){
     try{localStorage.setItem("ufc_push","0");}catch(e){}
     _setBellActive(false);
-    _prefsSave();
+    _prefsSave("push");
     if("serviceWorker" in navigator){
       navigator.serviceWorker.ready.then(function(reg){
         reg.pushManager.getSubscription().then(function(sub){
@@ -4714,9 +4744,9 @@ function checkNotifSchedule(){
 setInterval(checkNotifSchedule,5*60*1000);
 function toggleNotif(){
   if(!("Notification" in window)){toast("Notifications not supported");return;}
-  if(notifActive){notifActive=false;document.getElementById("notifBtn").classList.remove("active");toast("Reminders off");try{localStorage.setItem("ufc_notif","0");}catch(e){}_prefsSave();return;}
+  if(notifActive){notifActive=false;document.getElementById("notifBtn").classList.remove("active");toast("Reminders off");try{localStorage.setItem("ufc_notif","0");}catch(e){}_prefsSave("reminders");return;}
   Notification.requestPermission().then(function(perm){
-    if(perm==="granted"){notifActive=true;document.getElementById("notifBtn").classList.add("active");try{localStorage.setItem("ufc_notif","1");}catch(e){}_prefsSave();checkNotifSchedule();toast("Fight night reminders on!");}
+    if(perm==="granted"){notifActive=true;document.getElementById("notifBtn").classList.add("active");try{localStorage.setItem("ufc_notif","1");}catch(e){}_prefsSave("reminders");checkNotifSchedule();toast("Fight night reminders on!");}
     else{toast("Enable notifications in settings");}
   });
 }

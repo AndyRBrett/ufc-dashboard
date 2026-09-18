@@ -67,7 +67,7 @@ function run(prefs, permission) {
   return {
     store, calls, perm,
     // Re-enter through the real entry points, as a toggle would.
-    save: () => vm.runInContext("_prefsSave()", ctx),
+    save: (changed) => vm.runInContext("_prefsSave(" + (changed ? JSON.stringify(changed) : "") + ")", ctx),
     load: (r) => { rows = r; return vm.runInContext("_prefsLoad()", ctx); },
     set: (k, v) => { store[k] = v; },
   };
@@ -155,11 +155,52 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
     last && last.push === true);
 }
 {
+  // Withheld permission: the held row must not be APPLIED locally (that would
+  // light the bell with nothing subscribed) but must still be CARRIED in the
+  // write (or the save destroys the very intent we are holding). Those two
+  // pull in opposite directions and this is the line between them.
   const h = run(ALL_ON, "default");
-  await h.save();                     // still no permission
+  await h.save();
   const last = h.calls.saved[h.calls.saved.length - 1];
-  check("while permission is still withheld, the held row is NOT applied",
-    h.store.ufc_push !== "1" && last && last.push === false);
+  check("while permission is withheld, held intent is not applied locally",
+    h.store.ufc_push !== "1" && h.store.ufc_notif !== "1");
+  check("...but the save still carries it, rather than erasing it",
+    last && last.push === true && last.reminders === true);
+}
+
+// --- Codex #140 round 2 P1: held intent must survive saves made BEFORE the
+// permission prompt, and must never resurrect a key the user has since changed.
+{
+  // Fresh install, everything stored on, permission still withheld. The user
+  // toggles Live Result Spoilers off — an ordinary action needing no
+  // permission — which saves. That save must not write push/reminders false.
+  const h = run(ALL_ON, "default");
+  h.set("ufc_live_results", "0");
+  await h.save("live_results");
+  const last = h.calls.saved[h.calls.saved.length - 1];
+  check("a save before the prompt keeps held push intent instead of writing false",
+    last && last.push === true);
+  check("...and keeps held reminder intent too",
+    last && last.reminders === true);
+  check("...while honouring the change the user actually made",
+    last && last.live_results === false);
+}
+{
+  // Same, then permission is granted. The stale snapshot must not switch the
+  // spoiler preference back on behind the user.
+  const h = run(ALL_ON, "default");
+  h.set("ufc_live_results", "0");
+  await h.save("live_results");
+  h.perm.value = "granted";
+  h.set("ufc_push", "1");
+  await h.save("push");
+  check("granting later does not resurrect the preference the user turned off",
+    h.store.ufc_live_results === "0");
+  const last = h.calls.saved[h.calls.saved.length - 1];
+  check("...and the save records it as off",
+    last && last.live_results === false);
+  check("...while the untouched reminder intent still comes back",
+    h.store.ufc_notif === "1" && last && last.reminders === true);
 }
 
 // --- Codex #140 P1: an existing install must seed a row before it can be wiped ---
@@ -185,11 +226,16 @@ const seg = (name) => {
   if (i < 0) return "";
   return html.slice(i, i + 1400);
 };
-check("togglePush persists on the off path", /_prefsSave\(\)/.test(seg("togglePush")));
-check("enablePush persists once the subscription lands", /_prefsSave\(\)/.test(seg("enablePush")));
-check("toggleLiveResults persists", /_prefsSave\(\)/.test(seg("toggleLiveResults")));
-check("toggleNotif persists on both paths",
-  (seg("toggleNotif").match(/_prefsSave\(\)/g) || []).length >= 2);
+// Each toggle must NAME the key it changed, or _prefsSave cannot tell an
+// explicit choice from an unset flag and will resurrect held intent over it.
+check("togglePush persists on the off path, naming its key",
+  /_prefsSave\("push"\)/.test(seg("togglePush")));
+check("enablePush persists once the subscription lands, naming its key",
+  /_prefsSave\("push"\)/.test(seg("enablePush")));
+check("toggleLiveResults persists, naming its key",
+  /_prefsSave\("live_results"\)/.test(seg("toggleLiveResults")));
+check("toggleNotif persists on both paths, naming its key",
+  (seg("toggleNotif").match(/_prefsSave\("reminders"\)/g) || []).length >= 2);
 check("boot reads prefs once auth resolves", /_authReady\.then\(_prefsLoad\)/.test(html));
 check("an in-app sign-in re-reads prefs for the new identity",
   /_prefsLoad\(\);\s*\/\/ \.\.\.and restore/.test(html));
@@ -203,6 +249,13 @@ check("user_prefs select is owner-only — prefs are nobody else's business",
   /user_prefs_select[\s\S]{0,200}auth\.uid\(\)::text = user_id/.test(sql));
 check("\"Delete forever\" removes the prefs row — the dialog promises exactly that",
   /user_prefs\?user_id=eq\.[\s\S]{0,120}method:"DELETE"/.test(html.slice(html.indexOf("function deleteAccount"), html.indexOf("function deleteAccount") + 1800)));
+const delSrc = html.slice(html.indexOf("function deleteAccount"), html.indexOf("function deleteAccount") + 2600);
+check("a failed prefs delete is not swallowed — deletion cannot report false success",
+  /if\(!r\.ok&&r\.status!==404\)throw new Error\("delete prefs "/.test(delSrc));
+check("...but a 404 (table not yet migrated) still lets the account be deleted",
+  /r\.status!==404/.test(delSrc));
+check("the prefs delete does not re-swallow via its own .catch",
+  !/user_prefs\?user_id=eq\.[^;]*\}\)\.catch\(function\(\)\{\}\)/.test(delSrc));
 check("user_prefs grants the owner DELETE so that request can succeed",
   /user_prefs_delete[\s\S]{0,200}for delete to authenticated using \(auth\.uid\(\)::text = user_id\)/.test(sql) &&
   /grant select, insert, update, delete on public\.user_prefs to authenticated/.test(sql));
