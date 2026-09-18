@@ -12,7 +12,28 @@
 <meta name="theme-color" content="#e8192c">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- black, not black-translucent. black-translucent opts the web view into
+     drawing UNDER the status bar, and iOS then applies its own legibility
+     treatment to whatever sits in that band: a dark blur, feathered ~30px
+     PAST the safe-area inset, anchored to the screen rather than to any
+     element. On a fight-night day that lands on .fn-banner, and "FIGHT NIGHT
+     TOMORROW" rendered smeared and grey-on-red while the header an inch below
+     it stayed sharp. Measured on the report: the banner's top edge smears over
+     ~16 CSS px and its red only reaches true value at the bottom, while the
+     bottom edge is sharp to 2 device pixels -- darkening from above, not a
+     filter on the element. Confirmed by scrolling: the smear stays at the top
+     of the screen while content moves through it.
+     No CSS reaches this. An opaque .safe-top only covers the inset itself, and
+     the feather extends past it; padding the content down far enough means
+     hard-coding a number measured from one device. Declining the draw-under is
+     the only fix that is not a guess.
+     Cost: env(safe-area-inset-top) is now 0 in standalone, so .safe-top
+     collapses and the status bar is system black rather than theme-tinted.
+     Every theme but Silver Bullet is near-black there already, and Silver
+     Bullet deliberately painted that strip dark (#0d1418) too, so the visible
+     change is close to nil. If this is ever reverted, the banner blur comes
+     back with it. -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="UFC Picks">
 <link rel="apple-touch-icon" href="icon-192-v2.png">
 <link rel="preload" href="fonts/bebas-neue-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -1047,6 +1068,10 @@ body[data-theme="silver"].cold-on .sv-ridge{filter:saturate(1.3) brightness(1.12
    it, so on a banner day the header was reserving status-bar space in the
    middle of the page while the banner ran under the clock. It sits above the
    toast (500) so nothing is ever drawn over the system status bar. */
+/* Inert while the status-bar style is "black": that reserves the strip itself,
+   so env(safe-area-inset-top) is 0 in standalone and this collapses to nothing.
+   It is kept because it costs nothing at height 0 and is what paints the strip
+   again the moment a translucent status bar is reinstated. */
 .safe-top{position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);
   z-index:600;background:var(--hdr-bg);pointer-events:none}
 /* Silver Bullet is the only light theme and the status-bar style is
