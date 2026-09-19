@@ -83,6 +83,125 @@ async function main() {
         return !!(p && (p.classList.contains("open") || getComputedStyle(p).display !== "none"));
       });
       assert("leaderboard panel opens", lbOpen);
+
+      // The scroll lock must hold the background still WITHOUT repositioning
+      // <body>. body{position:fixed} lays the document against the initial
+      // containing block, which under viewport-fit=cover includes the
+      // status-bar band; iOS then blurs what is under the status bar and does
+      // not undo it when the lock releases. That is how the fixed top-bar blur
+      // came back every time an overlay was opened and closed.
+      const locked = await page.evaluate(() => ({
+        bodyPosition: document.body.style.position,
+        bodyTop: document.body.style.top,
+        bodyOverflow: document.body.style.overflow,
+        htmlOverflow: document.documentElement.style.overflow,
+      }));
+      assert("scroll lock never sets body{position:fixed}", locked.bodyPosition !== "fixed");
+      assert("scroll lock never offsets body with a top", !locked.bodyTop);
+      assert("scroll lock does hold the background (body overflow hidden)", locked.bodyOverflow === "hidden");
+      assert("scroll lock hides html overflow too", locked.htmlOverflow === "hidden");
+
+      // Style strings alone cannot prove the lock WORKS: on iOS, overflow:hidden
+      // does not stop a touch drag from scrolling the root, which is exactly why
+      // body{position:fixed} was used before. Assert the behaviour instead — a
+      // background touchmove must be cancelled, and a drag inside a real
+      // scroller must not be.
+      const drag = await page.evaluate(() => {
+        // fromY -> toY so the lock can tell which way the finger went: a
+        // scroller pinned at its edge must NOT be exempt for a drag that would
+        // carry the gesture past that edge and into the page behind.
+        const move = (el, y) => {
+          const t = new Touch({ identifier: 1, target: el, clientX: 10, clientY: y });
+          const e = new TouchEvent("touchmove", { bubbles: true, cancelable: true, touches: [t] });
+          el.dispatchEvent(e);
+          return e.defaultPrevented;
+        };
+        const start = (el, y) => {
+          const t = new Touch({ identifier: 1, target: el, clientX: 10, clientY: y });
+          el.dispatchEvent(new TouchEvent("touchstart", { bubbles: true, cancelable: true, touches: [t] }));
+        };
+        const fire = (el, fromY = 10, toY = 10) => { start(el, fromY); return move(el, toY); };
+        // The panel is empty headlessly, so build a scroller that matches what
+        // the leaderboard list is at runtime rather than skipping the case.
+        const panel = document.getElementById("lbPanel") || document.body;
+        const scroller = document.createElement("div");
+        scroller.style.cssText = "overflow-y:auto;height:40px";
+        scroller.innerHTML = "<div style='height:400px'></div>";
+        panel.appendChild(scroller);
+        const inner = scroller.firstChild;
+        const out = {
+          background: fire(document.getElementById("fnBanner") || document.body),
+          scrollerIsReal: scroller.scrollHeight > scroller.clientHeight,
+          // At the top, dragging DOWN would chain to the page behind: cancel.
+          atTopDragDown: (scroller.scrollTop = 0, fire(inner, 10, 60)),
+          // At the top, dragging UP still has somewhere to go: allow.
+          atTopDragUp: (scroller.scrollTop = 0, fire(inner, 60, 10)),
+          // Mid-scroll, either direction is the scroller's own business.
+          midDragDown: (scroller.scrollTop = 100, fire(inner, 10, 60)),
+          // At the bottom, dragging UP would chain: cancel.
+          atBottomDragUp: (scroller.scrollTop = scroller.scrollHeight, fire(inner, 60, 10)),
+        };
+
+        // Reversing direction mid-gesture: each move must be judged against the
+        // PREVIOUS one. Measured against touchstart, dy stays negative until the
+        // finger passes where it began, so a downward drag at the top still
+        // reads as upward and is exempted straight through to the root.
+        scroller.scrollTop = 0;
+        start(inner, 100);
+        out.reverseFirstUp = move(inner, 50);   // upward, room below: allowed
+        out.reverseThenDown = move(inner, 60);  // now downward at the top: cancel
+
+        // A pinned inner scroller must hand off to a scrollable ancestor rather
+        // than cancelling: .chat-history inside an overflowing .modal.
+        const outer = document.createElement("div");
+        outer.style.cssText = "overflow-y:auto;height:40px";
+        const nested = document.createElement("div");
+        nested.style.cssText = "overflow-y:auto;height:20px";
+        nested.innerHTML = "<div style='height:200px'></div>";
+        outer.appendChild(nested);
+        outer.appendChild(Object.assign(document.createElement("div"), { style: "height:400px" }));
+        panel.appendChild(outer);
+        nested.scrollTop = 0;       // inner pinned at its top
+        outer.scrollTop = 100;      // ...but the parent still has room upward
+        out.nestedHandoff = fire(nested.firstChild, 10, 60);
+        out.nestedIsReal = nested.scrollHeight > nested.clientHeight &&
+                           outer.scrollHeight > outer.clientHeight;
+        outer.remove();
+        out.insideScroller = out.midDragDown;
+        scroller.remove();
+        return out;
+      });
+      assert("a background drag is cancelled, so the page cannot scroll behind the overlay",
+        drag.background === true);
+      assert("...while a mid-scroll drag inside a real scroller is left alone",
+        drag.scrollerIsReal && drag.midDragDown === false);
+      assert("a scroller pinned at its top does not exempt a downward drag",
+        drag.atTopDragDown === true);
+      assert("...but still scrolls upward from there", drag.atTopDragUp === false);
+      assert("a scroller pinned at its bottom does not exempt an upward drag",
+        drag.atBottomDragUp === true);
+      assert("a reversed gesture is judged on the latest move, not the touchstart",
+        drag.reverseFirstUp === false && drag.reverseThenDown === true);
+      assert("a pinned inner scroller hands off to a parent that can still scroll",
+        drag.nestedIsReal && drag.nestedHandoff === false);
+
+      await page.evaluate(() => window.closeLeaderboard && window.closeLeaderboard());
+      await page.waitForTimeout(300);
+      const unlocked = await page.evaluate(() => ({
+        bodyOverflow: document.body.style.overflow,
+        htmlOverflow: document.documentElement.style.overflow,
+        bodyOverscroll: document.body.style.overscrollBehavior,
+      }));
+      assert("closing the overlay releases the lock", !unlocked.bodyOverflow && !unlocked.htmlOverflow);
+      assert("...and clears overscroll-behavior with it", !unlocked.bodyOverscroll);
+      const dragAfter = await page.evaluate(() => {
+        const el = document.getElementById("fnBanner") || document.body;
+        const t = new Touch({ identifier: 1, target: el, clientX: 10, clientY: 10 });
+        const e = new TouchEvent("touchmove", { bubbles: true, cancelable: true, touches: [t] });
+        el.dispatchEvent(e);
+        return e.defaultPrevented;
+      });
+      assert("...and stops cancelling drags, so the page scrolls again", dragAfter === false);
     }
   } catch (e) {
     fatal.push("Navigation/boot failed: " + e.message);
