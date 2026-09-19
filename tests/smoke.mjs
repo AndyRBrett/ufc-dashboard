@@ -83,6 +83,33 @@ async function main() {
         return !!(p && (p.classList.contains("open") || getComputedStyle(p).display !== "none"));
       });
       assert("leaderboard panel opens", lbOpen);
+
+      // The scroll lock must hold the background still WITHOUT repositioning
+      // <body>. body{position:fixed} lays the document against the initial
+      // containing block, which under viewport-fit=cover includes the
+      // status-bar band; iOS then blurs what is under the status bar and does
+      // not undo it when the lock releases. That is how the fixed top-bar blur
+      // came back every time an overlay was opened and closed.
+      const locked = await page.evaluate(() => ({
+        bodyPosition: document.body.style.position,
+        bodyTop: document.body.style.top,
+        bodyOverflow: document.body.style.overflow,
+        htmlOverflow: document.documentElement.style.overflow,
+      }));
+      assert("scroll lock never sets body{position:fixed}", locked.bodyPosition !== "fixed");
+      assert("scroll lock never offsets body with a top", !locked.bodyTop);
+      assert("scroll lock does hold the background (body overflow hidden)", locked.bodyOverflow === "hidden");
+      assert("scroll lock hides html overflow too (iOS scrolls the root)", locked.htmlOverflow === "hidden");
+
+      await page.evaluate(() => window.closeLeaderboard && window.closeLeaderboard());
+      await page.waitForTimeout(300);
+      const unlocked = await page.evaluate(() => ({
+        bodyOverflow: document.body.style.overflow,
+        htmlOverflow: document.documentElement.style.overflow,
+        bodyOverscroll: document.body.style.overscrollBehavior,
+      }));
+      assert("closing the overlay releases the lock", !unlocked.bodyOverflow && !unlocked.htmlOverflow);
+      assert("...and clears overscroll-behavior with it", !unlocked.bodyOverscroll);
     }
   } catch (e) {
     fatal.push("Navigation/boot failed: " + e.message);
