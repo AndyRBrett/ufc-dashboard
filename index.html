@@ -2223,23 +2223,38 @@ var _scrollY=0;
 // the source: a touchmove that is not inside something which can actually
 // scroll gets preventDefault(). A drag inside the leaderboard list, the chat
 // transcript or the wheel list still scrolls normally.
-var _lockTouch=null,_lockStart=null,_lockY=0;
-function _lockTouchStart(e){if(e.touches&&e.touches.length===1)_lockY=e.touches[0].clientY;}
+var _lockTouch=null,_lockStart=null,_lockY=0,_lockX=0;
+function _lockTouchStart(e){if(e.touches&&e.touches.length===1){_lockY=e.touches[0].clientY;_lockX=e.touches[0].clientX;}}
 function _lockTouchMove(e){
   if(e.touches&&e.touches.length>1)return;          // leave pinch-zoom alone
   var t=e.touches&&e.touches[0];
-  var y=t?t.clientY:_lockY;
-  var dy=y-_lockY;                                  // >0 dragging down, <0 dragging up
+  var y=t?t.clientY:_lockY,x=t?t.clientX:_lockX;
+  var dy=y-_lockY,dx=x-_lockX;                      // >0 down/right, <0 up/left
   // Measured against the PREVIOUS move, not the touchstart. Against the start,
   // dy is total displacement: reverse direction mid-gesture and it keeps
   // reporting the original direction until the finger passes where it began,
   // so a downward drag at a scroller's top still reads as "upward" and gets
   // exempted -- straight through to the root.
-  _lockY=y;
+  _lockY=y;_lockX=x;
   var n=e.target;
   while(n&&n.nodeType===1&&n!==document.body){
+    // Horizontal counts too. Live FN mode's standings strip (.fnl-stand) and
+    // the weight-class filter row (.filter-wrap) are overflow-x:auto, and a
+    // vertical-only walk finds no eligible scroller for a sideways swipe --
+    // so it reaches preventDefault() and the off-screen entries become
+    // unreachable for as long as an overlay is open.
+    var cs=null;
+    if(n.scrollWidth>n.clientWidth){
+      cs=getComputedStyle(n);
+      if(cs.overflowX==="auto"||cs.overflowX==="scroll"){
+        var atLeft=n.scrollLeft<=0;
+        var atRight=n.scrollLeft+n.clientWidth>=n.scrollWidth-1;
+        if(dx>0&&!atLeft)return;
+        if(dx<0&&!atRight)return;
+      }
+    }
     if(n.scrollHeight>n.clientHeight){
-      var oy=getComputedStyle(n).overflowY;
+      var oy=(cs||getComputedStyle(n)).overflowY;
       if(oy==="auto"||oy==="scroll"){
         // The innermost real scroller owns this gesture -- but only while it
         // can still move THAT WAY. Exempting it unconditionally is what lets a

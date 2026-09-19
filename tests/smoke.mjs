@@ -110,14 +110,14 @@ async function main() {
         // fromY -> toY so the lock can tell which way the finger went: a
         // scroller pinned at its edge must NOT be exempt for a drag that would
         // carry the gesture past that edge and into the page behind.
-        const move = (el, y) => {
-          const t = new Touch({ identifier: 1, target: el, clientX: 10, clientY: y });
+        const move = (el, y, x = 10) => {
+          const t = new Touch({ identifier: 1, target: el, clientX: x, clientY: y });
           const e = new TouchEvent("touchmove", { bubbles: true, cancelable: true, touches: [t] });
           el.dispatchEvent(e);
           return e.defaultPrevented;
         };
-        const start = (el, y) => {
-          const t = new Touch({ identifier: 1, target: el, clientX: 10, clientY: y });
+        const start = (el, y, x = 10) => {
+          const t = new Touch({ identifier: 1, target: el, clientX: x, clientY: y });
           el.dispatchEvent(new TouchEvent("touchstart", { bubbles: true, cancelable: true, touches: [t] }));
         };
         const fire = (el, fromY = 10, toY = 10) => { start(el, fromY); return move(el, toY); };
@@ -167,6 +167,24 @@ async function main() {
         out.nestedIsReal = nested.scrollHeight > nested.clientHeight &&
                            outer.scrollHeight > outer.clientHeight;
         outer.remove();
+
+        // Sideways swipes on a horizontal strip (.fnl-stand in live FN mode,
+        // .filter-wrap) must survive the lock, and stop at its edges the same
+        // way a vertical scroller does.
+        const strip = document.createElement("div");
+        strip.style.cssText = "overflow-x:auto;width:40px;white-space:nowrap";
+        strip.innerHTML = "<div style='width:400px;display:inline-block'></div>";
+        panel.appendChild(strip);
+        const stripInner = strip.firstChild;
+        out.stripIsReal = strip.scrollWidth > strip.clientWidth;
+        strip.scrollLeft = 100;                                  // mid-scroll
+        start(stripInner, 10, 10); out.stripMid = move(stripInner, 10, 60);
+        strip.scrollLeft = 0;                                    // pinned left
+        start(stripInner, 10, 10); out.stripAtLeftRight = move(stripInner, 10, 60);
+        strip.scrollLeft = strip.scrollWidth;                    // pinned right
+        start(stripInner, 10, 60); out.stripAtRightLeft = move(stripInner, 10, 10);
+        strip.remove();
+
         out.insideScroller = out.midDragDown;
         scroller.remove();
         return out;
@@ -184,6 +202,10 @@ async function main() {
         drag.reverseFirstUp === false && drag.reverseThenDown === true);
       assert("a pinned inner scroller hands off to a parent that can still scroll",
         drag.nestedIsReal && drag.nestedHandoff === false);
+      assert("a sideways swipe on a horizontal strip is left alone",
+        drag.stripIsReal && drag.stripMid === false);
+      assert("...and is cancelled at the strip's own edges",
+        drag.stripAtLeftRight === true && drag.stripAtRightLeft === true);
 
       await page.evaluate(() => window.closeLeaderboard && window.closeLeaderboard());
       await page.waitForTimeout(300);
