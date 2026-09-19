@@ -3793,15 +3793,17 @@ function acctVerify(){
 function _postSignIn(prevId,email){
   if(email){try{var s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");if(s&&!s.email){s.email=email;_saveSession(s);}}catch(e){}}
   var changed=(prevId&&USER_ID&&prevId!==USER_ID)||(!userName&&!!USER_ID);
+  // Cleared HERE rather than in finish(): a different account is a different
+  // set of answers, and finish() does not run until the profile fetch settles.
+  // The account modal has already closed by then, so a toggle during a slow
+  // fetch would be handled with the PREVIOUS account's held intent and touched
+  // keys -- writing A's answers onto B's row. Nothing between here and finish()
+  // reads this state, so clearing it early costs nothing.
+  if(changed){_prefsTouched={};_prefsPending=null;}
   var finish=function(){
     _syncAcctBtn();
     if(window._pp&&userName){window._pp();window._pp=null;}
     syncAllPicks();           // merge this device's local picks into the signed-in identity
-    // A different account is a different set of answers: the keys this session
-    // touched, and any intent held for them, belonged to the PREVIOUS identity.
-    // Carrying them over would make the new account's stored preferences
-    // unrestorable until a reload.
-    if(changed){_prefsTouched={};_prefsPending=null;}
     _prefsLoad();             // ...and restore that identity's notification toggles
     // The browser's push subscription is still registered under the PREVIOUS
     // user_id. Until something re-registers it, account-targeted pushes keep
@@ -3897,6 +3899,15 @@ function _prefsWrite(payload,forId){
       payload.user_id=forId;payload.updated_at=new Date().toISOString();
       return fetch(SUPABASE_URL+"/rest/v1/user_prefs?on_conflict=user_id",{
         method:"POST",headers:h,body:JSON.stringify(payload)});
+    }).then(function(r){
+      // fetch resolves on 401/403/5xx, so without this a rejected write was
+      // indistinguishable from a stored one: the toggle stayed on locally, the
+      // row never changed, and the old value came back on the next reinstall.
+      // Nothing here retries -- the next toggle of that key writes it again,
+      // and a load cannot silently "repair" it without overriding a choice the
+      // user may have made elsewhere. It must at least stop lying.
+      if(!r.ok)throw new Error("prefs save "+r.status);
+      return r;
     });
   }).catch(function(e){console.error("prefs save failed",e);});
   return _prefsQ;

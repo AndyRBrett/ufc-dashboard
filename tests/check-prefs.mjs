@@ -392,8 +392,20 @@ check("toggleLiveResults persists, naming its key",
 check("toggleNotif persists on both paths, naming its key",
   (seg("toggleNotif").match(/_prefsSave\("reminders"\)/g) || []).length >= 2);
 check("boot reads prefs once auth resolves", /_authReady\.then\(_prefsLoad\)/.test(html));
-check("switching identity clears touched keys and held intent first",
-  /if\(changed\)\{_prefsTouched=\{\};_prefsPending=null;\}/.test(html));
+// The reset must sit OUTSIDE finish(): finish() waits on the profile fetch,
+// and the account modal is already closed, so a toggle in that window would be
+// handled with the previous account's state.
+{
+  const fn = html.slice(html.indexOf("function _postSignIn"), html.indexOf("function _postSignIn") + 2400);
+  const reset = fn.indexOf("_prefsTouched={};_prefsPending=null;");
+  const finishStart = fn.indexOf("var finish=function(){");
+  check("switching identity clears touched keys and held intent",
+    reset > 0);
+  check("...before finish(), not inside it — the modal closes during that wait",
+    reset > 0 && finishStart > 0 && reset < finishStart);
+}
+check("a non-2xx write is rejected, not counted as stored",
+  /if\(!r\.ok\)throw new Error\("prefs save "\+r\.status\);/.test(html));
 check("signing into another identity rebinds the push endpoint to it",
   /if\(changed\)_ensurePushFresh\(\);/.test(html));
 check("an in-app sign-in re-reads prefs for the new identity",
