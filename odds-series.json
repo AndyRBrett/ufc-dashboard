@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-19T06:43:16Z",
+  "generated_at": "2026-09-19T06:48:08Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -8771,7 +8771,7 @@
           "f1": "Tai Tuivasa",
           "f2": "Robelis Despaigne",
           "lbl": "Prelim",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -8867,6 +8867,11 @@
               "at": "2026-09-19T00:38:21Z",
               "f1_odds": 410,
               "f2_odds": -567
+            },
+            {
+              "at": "2026-09-19T06:48:08Z",
+              "f1_odds": 413,
+              "f2_odds": -577
             }
           ],
           "open": {
@@ -8941,7 +8946,7 @@
           "f1": "Alonzo Menifield",
           "f2": "Iwo Baraniewski",
           "lbl": "Main Card",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-09-02T13:35:09Z",
@@ -9027,6 +9032,11 @@
               "at": "2026-09-19T03:43:05Z",
               "f1_odds": 196,
               "f2_odds": -243
+            },
+            {
+              "at": "2026-09-19T06:48:08Z",
+              "f1_odds": 195,
+              "f2_odds": -241
             }
           ],
           "open": {
@@ -10587,7 +10597,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Alonzo Menifield",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": -245,
         "close": null,
         "clv": null
@@ -13863,7 +13873,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Robelis Despaigne",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": 395,
         "close": null,
         "clv": null
@@ -13874,7 +13884,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Tai Tuivasa",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": -565,
         "close": null,
         "clv": null
@@ -13907,7 +13917,7 @@
         "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
         "opponent": "Iwo Baraniewski",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": 205,
         "close": null,
         "clv": null
