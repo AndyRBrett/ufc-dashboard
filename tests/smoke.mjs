@@ -197,6 +197,30 @@ async function main() {
         start(inner, 10, 10);
         out.vScrollerHorizontalDrag = move(inner, 12, 80);       // dx 70, dy 2
 
+        // The axis is latched for the GESTURE, not recomputed per move. A
+        // horizontal swipe that opens with a vertical-dominant pixel, or
+        // pauses mid-flick, must not flip to the vertical branch and get
+        // cancelled — on iOS one early cancel kills the rest of the touch.
+        const strip2 = document.createElement("div");
+        strip2.style.cssText = "overflow-x:auto;width:40px;white-space:nowrap";
+        strip2.innerHTML = "<div style='width:400px;display:inline-block'></div>";
+        panel.appendChild(strip2);
+        const s2i = strip2.firstChild;
+        strip2.scrollLeft = 100;
+        start(s2i, 10, 10);
+        move(s2i, 12, 11);                       // jittery opener: dy 2, dx 1
+        out.jitterThenSwipe = move(s2i, 13, 60); // now clearly horizontal
+        // A pause mid-gesture (one vertical-dominant move) must not flip it.
+        out.pauseMidSwipe = move(s2i, 16, 61);   // dy 3, dx 1 — still horizontal
+        strip2.remove();
+
+        // And the latch holds the other way: a vertical gesture stays vertical
+        // even if one later move happens to be horizontal-dominant.
+        scroller.scrollTop = 100;
+        start(inner, 10, 10);
+        move(inner, 60, 10);                     // clearly vertical: latches v
+        out.vLatchHeld = move(inner, 62, 70);    // dx 60, dy 2 — still vertical
+
         out.insideScroller = out.midDragDown;
         scroller.remove();
         return out;
@@ -222,6 +246,11 @@ async function main() {
         drag.stripVerticalDrag === true);
       assert("...nor a mostly-horizontal drag by a vertical-only scroller",
         drag.vScrollerHorizontalDrag === true);
+      assert("a jittery opener does not flip a horizontal swipe to the vertical branch",
+        drag.jitterThenSwipe === false);
+      assert("...nor does a pause mid-swipe", drag.pauseMidSwipe === false);
+      assert("a latched vertical gesture stays vertical through a sideways move",
+        drag.vLatchHeld === false);
 
       await page.evaluate(() => window.closeLeaderboard && window.closeLeaderboard());
       await page.waitForTimeout(300);

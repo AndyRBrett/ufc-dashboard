@@ -2223,8 +2223,15 @@ var _scrollY=0;
 // the source: a touchmove that is not inside something which can actually
 // scroll gets preventDefault(). A drag inside the leaderboard list, the chat
 // transcript or the wheel list still scrolls normally.
-var _lockTouch=null,_lockStart=null,_lockY=0,_lockX=0;
-function _lockTouchStart(e){if(e.touches&&e.touches.length===1){_lockY=e.touches[0].clientY;_lockX=e.touches[0].clientX;}}
+var _lockTouch=null,_lockStart=null,_lockY=0,_lockX=0,_lockSY=0,_lockSX=0,_lockAxis="";
+var _LOCK_AXIS_MIN=6;                               // px of travel before the axis is called
+function _lockTouchStart(e){
+  if(e.touches&&e.touches.length===1){
+    _lockY=_lockSY=e.touches[0].clientY;
+    _lockX=_lockSX=e.touches[0].clientX;
+    _lockAxis="";                                   // a new gesture decides again
+  }
+}
 function _lockTouchMove(e){
   if(e.touches&&e.touches.length>1)return;          // leave pinch-zoom alone
   var t=e.touches&&e.touches[0];
@@ -2236,13 +2243,23 @@ function _lockTouchMove(e){
   // so a downward drag at a scroller's top still reads as "upward" and gets
   // exempted -- straight through to the root.
   _lockY=y;_lockX=x;
-  // One gesture scrolls one axis, so only that axis may exempt anything. A
-  // mostly-vertical drag that happens to start over the standings strip picks
-  // up a pixel or two of dx; without this it matched the horizontal branch,
-  // returned before dy was ever considered, and let the vertical component
-  // scroll the root behind FN mode -- the exact movement this lock exists to
-  // stop, reintroduced by adding horizontal support for it.
-  var horiz=Math.abs(dx)>Math.abs(dy);
+  // One gesture scrolls one axis, so only that axis may exempt anything -- a
+  // mostly-vertical drag over the standings strip must not be exempted by it
+  // and then scroll the root behind FN mode.
+  //
+  // The axis is LATCHED for the gesture, measured from touchstart, not
+  // recomputed per move. Per-move deltas jitter: a horizontal swipe can open
+  // with a vertical-dominant pixel or pause mid-flick, which would flip the
+  // branch and preventDefault() -- and on iOS one early cancellation kills the
+  // scroll for the rest of that touch. Per-move deltas still decide direction
+  // and edges below; they just no longer decide which axis we are on.
+  if(!_lockAxis){
+    var tx=Math.abs(x-_lockSX),ty=Math.abs(y-_lockSY);
+    if(tx>=_LOCK_AXIS_MIN||ty>=_LOCK_AXIS_MIN)_lockAxis=tx>ty?"h":"v";
+  }
+  // Until it is called, stay permissive and consider both: a few pixels of
+  // background travel costs less than cancelling a gesture we cannot yet read.
+  var horiz=_lockAxis!=="v",vert=_lockAxis!=="h";
   var n=e.target;
   while(n&&n.nodeType===1&&n!==document.body){
     // Horizontal counts too. Live FN mode's standings strip (.fnl-stand) and
@@ -2260,7 +2277,7 @@ function _lockTouchMove(e){
         if(dx<0&&!atRight)return;
       }
     }
-    if(!horiz&&n.scrollHeight>n.clientHeight){
+    if(vert&&n.scrollHeight>n.clientHeight){
       var oy=(cs||getComputedStyle(n)).overflowY;
       if(oy==="auto"||oy==="scroll"){
         // The innermost real scroller owns this gesture -- but only while it
