@@ -2562,6 +2562,119 @@ function _rtBroadcastReaction(emoji){
     ref:String(++_rtRef),join_ref:_rtJoinRef}));
 }
 function saveFOTN(){_saveJSON("ufc_fotn",preds_fotn);}
+// picks-restore:start
+// ===== Picks come back DOWN from the account, not just up to it =====
+//
+// Picks only ever synced UP: preds lives in localStorage and syncPick upserts
+// it to Supabase. Nothing ever read it back. Reported on fight night -- the
+// Ranks page (server-backed) listed every pick while the home page
+// (preds-backed) showed none and offered the bouts as unpicked, inviting the
+// user to re-pick a card they had already picked. An iOS home-screen app's
+// storage is cleared when the icon is deleted, which #138/#139 required, and
+// signing back in restored the identity, the nickname and the leaderboard --
+// everything except the picks, because for those there was no path.
+//
+// ADDITIVE ONLY, and that is the load-bearing part. A server row fills a key
+// only when this device has NO pick for that bout. The device's own copy
+// always wins, so a restore can never overwrite a pick made here -- including
+// one made offline, or one made while this fetch was in flight. Letting the
+// server win instead would mean a stale row silently replacing tonight's pick,
+// which is worse than the gap it fixes: a wrong pick shown as yours reads as
+// deliberate, where a missing one is visibly missing.
+var _restoreRan=false;
+function _restoreMyPicks(){
+  if(_restoreRan)return;_restoreRan=true;
+  _authReady.then(function(){
+    // No identity yet means nothing to restore FROM, not "nothing to restore" --
+    // let a later render try again rather than burning the one-shot.
+    if(!USER_ID){_restoreRan=false;return;}
+    // Paged, because Supabase REST caps a response at 1000 rows -- an account
+    // over that would get its OLDEST 1000 and silently lose exactly the recent
+    // picks this exists to restore. Ordered NEWEST first, and the first row to
+    // claim a key wins: a rename or corner flip can leave the old row beside
+    // the current one, and both collapse to the same local key here.
+    // _dedupeMyPicks runs from the same render but is not awaited, so it cannot
+    // be relied on to have removed the stale row first -- oldest-first ordering
+    // would restore the superseded pick and the additive checks would then
+    // ignore the real one. The order ends in a unique column combo, which
+    // _sbFetchAll requires or rows shift between pages.
+    return _sbFetchAll("/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID)+
+      "&select=event_date,f1,f2,pick,method,confidence,bonus_pick"+
+      "&order=updated_at.desc,event_date.desc,f1.asc,f2.asc")
+      .then(function(rows){
+        if(!Array.isArray(rows)||!rows.length)return;
+        if(!_fightIndex)_buildFightIndex();
+        var added=0,mAdd=false,cAdd=false,fAdd=false,rAdd=false;
+        rows.forEach(function(p){
+          // Never resurrect the wiped pre-Freedom-250 test phase. syncPick
+          // refuses to upload those rows; restoring them would put back locally
+          // what the server-side delete removed, and the one-time prune that
+          // cleared them has already marked itself done on this device.
+          if(!p.event_date||p.event_date<PICKS_CUTOFF)return;
+          // Match the bout as the card spells it TODAY, not as it was spelled at
+          // pick time: a rename or a corner flip since then would otherwise
+          // restore a key that no render ever reads.
+          // The exact-spelling index is the fast path; the scan below is the
+          // one that actually decides, and it subsumes both a corner flip and
+          // a rename, so there is no separate reversed-order lookup to keep in
+          // step with it.
+          var hit=_fightIndex[p.event_date+"|"+p.f1+"|"+p.f2]||null;
+          for(var ei=0;ei<EVENTS.length&&!hit;ei++){
+            if(EVENTS[ei].date!==p.event_date)continue;
+            for(var fj=0;fj<EVENTS[ei].fights.length;fj++){
+              if(nmBout(EVENTS[ei].fights[fj],p.f1,p.f2)){hit={ev:EVENTS[ei],fight:EVENTS[ei].fights[fj]};break;}
+            }
+          }
+          if(!hit){
+            // A card older than the EVENTS window lives on in RESULTS_ARCHIVE,
+            // and buildPastPicksData renders a pick whose event is gone from
+            // the KEY itself. Dropping these would restore only the cards still
+            // on screen and leave the account's history and record incomplete --
+            // "your picks follow your account" has to mean all of them. A row
+            // matching neither EVENTS nor the archive is a genuinely unknown or
+            // cancelled bout and is still dropped.
+            var ar=RESULTS_ARCHIVE[p.event_date],af=null;
+            if(ar&&ar.fights)for(var ai=0;ai<ar.fights.length&&!af;ai++){
+              var c=ar.fights[ai];
+              if((nmEq(c.f1,p.f1)&&nmEq(c.f2,p.f2))||(nmEq(c.f1,p.f2)&&nmEq(c.f2,p.f1)))af=c;
+            }
+            if(!af)return;
+            var aside=nmEq(af.f1,p.pick)?af.f1:nmEq(af.f2,p.pick)?af.f2:null;
+            if(!aside)return;
+            var ak=p.event_date+"|"+af.f1+"|"+af.f2;
+            if(preds[ak]===undefined){preds[ak]=aside;added++;}
+            if(p.method&&preds_method[ak]===undefined){preds_method[ak]=p.method;mAdd=true;}
+            if(p.confidence&&preds_conf[ak]===undefined){preds_conf[ak]=p.confidence;cAdd=true;}
+            // resolvedPicks is local-only and went with the rest of the storage,
+            // and an aged-out card has no EVENTS row to score against -- so
+            // without this every restored archive pick reads "pending" forever.
+            if(af.winner&&resolvedPicks[ak]===undefined){resolvedPicks[ak]=nmEq(af.winner,aside)?"win":"loss";rAdd=true;}
+            return;
+          }
+          // Resolve the stored fighter name to this card's spelling too, so the
+          // preds[k]===fight.winner compares behind scoring keep working.
+          var side=nmEq(hit.fight.f1.n,p.pick)?hit.fight.f1.n:nmEq(hit.fight.f2.n,p.pick)?hit.fight.f2.n:null;
+          if(!side)return;
+          var k=pk(hit.ev,hit.fight);
+          if(preds[k]===undefined){preds[k]=side;added++;}
+          if(p.method&&preds_method[k]===undefined){preds_method[k]=p.method;mAdd=true;}
+          if(p.confidence&&preds_conf[k]===undefined){preds_conf[k]=p.confidence;cAdd=true;}
+          var fk="fotn_"+p.event_date;
+          if(p.bonus_pick&&preds_fotn[fk]===undefined){preds_fotn[fk]=p.bonus_pick;fAdd=true;}
+        });
+        if(mAdd)saveMethod();
+        if(cAdd)saveConf();
+        if(fAdd)saveFOTN();
+        if(rAdd)_saveJSON("ufc_resolved",resolvedPicks);
+        if(!added)return;
+        save();
+        if(typeof render==="function")render();
+        if(typeof updatePicksWidget==="function")updatePicksWidget();
+        toast("Restored "+added+" pick"+(added===1?"":"s")+" from your account");
+      }).catch(function(){_restoreRan=false;});
+  });
+}
+// picks-restore:end
 function reconcileMyPicks(){
   if(!Object.keys(preds).length&&!Object.keys(preds_method).length)return;
   // Only clear local picks when the ENTIRE table is empty (admin wipe signal).
@@ -3804,6 +3917,10 @@ function _postSignIn(prevId,email){
     _syncAcctBtn();
     if(window._pp&&userName){window._pp();window._pp=null;}
     syncAllPicks();           // merge this device's local picks into the signed-in identity
+    // ...and bring that identity's own picks down, which nothing else does.
+    // Re-armed because the boot restore already ran under the PREVIOUS identity
+    // (or under none at all, before this sign-in produced one).
+    _restoreRan=false;_restoreMyPicks();
     _prefsLoad(!changed);     // ...and restore that identity's toggles (never seed B from A)
     // The browser's push subscription is still registered under the PREVIOUS
     // user_id. Until something re-registers it, account-targeted pushes keep
@@ -5559,7 +5676,9 @@ var WHATS_NEW=[
   //      here that clears storage has to carry all three steps or it strands
   //      the person halfway.
   {id:"2026-09-18-crisp-top-bar",emoji:"✨",title:"Blurry top bar fixed",
-   desc:"The fight-night banner rendered smeared under the iPhone status bar. Still seeing it on a home-screen app? Open More → Account and save your picks to an email first — removing the app clears its local data — then delete the icon, add it again, and sign back in with that same email."}
+   desc:"The fight-night banner rendered smeared under the iPhone status bar. Still seeing it on a home-screen app? Open More → Account and save your picks to an email first — removing the app clears its local data — then delete the icon, add it again, and sign back in with that same email."},
+  {id:"2026-09-19-picks-restore",emoji:"↻",title:"Your picks follow your account",
+   desc:"Picks were only ever uploaded, never downloaded — so a phone that lost its local copy showed an empty card while Ranks still listed every pick. They come back down now: sign in and the card fills itself in. A pick already on this phone is never overwritten."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -6108,6 +6227,7 @@ function render(){
   buildReg();
   _reconcilePickOrder();
   _dedupeMyPicks();
+  _restoreMyPicks();
   var now=Date.now();
   var events=EVENTS.filter(function(e){return new Date(e.date)>=now-2*DAY_MS&&new Date(e.date)<=now+DAY_MS*65;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);});
   var pastEvs=EVENTS.filter(function(e){return new Date(e.date)<now-2*DAY_MS&&e.fights.some(function(f){return f.state==="post";});}).sort(function(a,b){return new Date(b.date)-new Date(a.date);});
