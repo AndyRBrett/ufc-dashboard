@@ -66,5 +66,7 @@ jobs:
         run: npm run check:intel
       - name: What's New popup test
         run: npm run check:whatsnew
+      - name: Pick restore test
+        run: npm run check:picks
       - name: kick-scraper cadence gate test
         run: npm run check:kick

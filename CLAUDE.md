@@ -33,6 +33,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:intel` | a curated fight-week link landing under the wrong card |
 | `npm run check:whatsnew` | the what's-new popup losing a backfill announcement or growing unbounded |
 | `npm run check:prefs` | a restored notification pref lighting the bell with nothing subscribed |
+| `npm run check:picks` | an account's picks not coming back to a device that lost them (or a stale row overwriting one) |
 | `npm run check:kick`  | the scraper not being dispatched on a card day or in fight week |
 | `npm run check:lock`  | a bout still pickable after its own segment has started (or locked before it) |
 
