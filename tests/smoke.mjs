@@ -130,7 +130,9 @@ async function main() {
         panel.appendChild(scroller);
         const inner = scroller.firstChild;
         const out = {
-          background: fire(document.getElementById("fnBanner") || document.body),
+          // A real drag, not a zero-movement event: the axis latch needs travel
+          // before anything can be cancelled, so fromY===toY proved nothing.
+          background: fire(document.getElementById("fnBanner") || document.body, 10, 60),
           scrollerIsReal: scroller.scrollHeight > scroller.clientHeight,
           // At the top, dragging DOWN would chain to the page behind: cancel.
           atTopDragDown: (scroller.scrollTop = 0, fire(inner, 10, 60)),
@@ -207,6 +209,12 @@ async function main() {
         panel.appendChild(strip2);
         const s2i = strip2.firstChild;
         strip2.scrollLeft = 100;
+        // Pure-vertical opening jitter, below the latch threshold and with
+        // NOTHING on the horizontal axis — the previous jitter test supplied
+        // dx===1, so it never reached this. Must not be cancelled: on iOS one
+        // early cancel kills the swipe that follows.
+        start(s2i, 10, 10);
+        out.undecidedZeroDx = move(s2i, 13, 10); // dy 3, dx 0, axis undecided
         start(s2i, 10, 10);
         move(s2i, 12, 11);                       // jittery opener: dy 2, dx 1
         out.jitterThenSwipe = move(s2i, 13, 60); // now clearly horizontal
@@ -230,11 +238,13 @@ async function main() {
         // the top, a fresh touch whose first move says nothing has no direction
         // to act on and must be cancelled — if it inherited the previous
         // gesture's upward direction it would be exempted and chain to the root.
-        scroller.scrollTop = 0;
-        start(inner, 10, 10);
-        move(inner, 4, 10);                      // gesture 1: upward, allowed
-        start(inner, 50, 50);                    // gesture 2: fresh touch
-        out.dirResetBetweenGestures = move(inner, 50, 50);   // dy 0, dx 0
+        // NOTE: there is deliberately no cross-gesture direction-leak test.
+        // Once cancellation is deferred until the axis latches, the latching
+        // move always carries a non-zero delta on that axis and overwrites any
+        // stale direction, so the leak is unreachable by any gesture we can
+        // construct. The reset in _lockTouchStart stays as hygiene, but an
+        // assertion for it would pass with the reset removed -- which is what
+        // the earlier version of this test was doing.
 
         out.insideScroller = out.midDragDown;
         scroller.remove();
@@ -268,8 +278,8 @@ async function main() {
         drag.vLatchHeld === false);
       assert("a move with zero delta on the latched axis is not cancelled",
         drag.zeroDeltaOnAxis === false && drag.vZeroDelta === false);
-      assert("...but direction memory does not carry into the next gesture",
-        drag.dirResetBetweenGestures === true);
+      assert("nothing is cancelled while the gesture axis is still undecided",
+        drag.undecidedZeroDx === false);
 
       await page.evaluate(() => window.closeLeaderboard && window.closeLeaderboard());
       await page.waitForTimeout(300);

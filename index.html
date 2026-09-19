@@ -2259,9 +2259,14 @@ function _lockTouchMove(e){
     var tx=Math.abs(x-_lockSX),ty=Math.abs(y-_lockSY);
     if(tx>=_LOCK_AXIS_MIN||ty>=_LOCK_AXIS_MIN)_lockAxis=tx>ty?"h":"v";
   }
-  // Until it is called, stay permissive and consider both: a few pixels of
-  // background travel costs less than cancelling a gesture we cannot yet read.
-  var horiz=_lockAxis!=="v",vert=_lockAxis!=="h";
+  // Until the axis is called, DEFER -- do not cancel at all. "Consider both
+  // axes" was not actually permissive: an opening jitter with dx===0 matches
+  // neither edge test (edx is 0, so no horizontal scroller returns) and fell
+  // through to preventDefault(), which on iOS terminates the native scroll for
+  // the rest of the gesture. A few pixels of background travel before the
+  // threshold costs less than killing the swipe that follows it.
+  if(!_lockAxis)return;
+  var horiz=_lockAxis==="h",vert=_lockAxis==="v";
   // A move can be zero on the axis that owns the gesture -- a horizontal swipe
   // reported with only vertical jitter gives dx===0. Neither edge test then
   // matches, so the handler fell through to preventDefault() and killed the
