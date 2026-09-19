@@ -2588,14 +2588,23 @@ function _restoreMyPicks(){
     // No identity yet means nothing to restore FROM, not "nothing to restore" --
     // let a later render try again rather than burning the one-shot.
     if(!USER_ID){_restoreRan=false;return;}
-    return fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID)+
-      "&select=event_date,f1,f2,pick,method,confidence,bonus_pick&order=updated_at.asc",
-      {headers:_sbHeaders()})
-      .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
+    // Paged, because Supabase REST caps a response at 1000 rows -- an account
+    // over that would get its OLDEST 1000 and silently lose exactly the recent
+    // picks this exists to restore. Ordered NEWEST first, and the first row to
+    // claim a key wins: a rename or corner flip can leave the old row beside
+    // the current one, and both collapse to the same local key here.
+    // _dedupeMyPicks runs from the same render but is not awaited, so it cannot
+    // be relied on to have removed the stale row first -- oldest-first ordering
+    // would restore the superseded pick and the additive checks would then
+    // ignore the real one. The order ends in a unique column combo, which
+    // _sbFetchAll requires or rows shift between pages.
+    return _sbFetchAll("/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID)+
+      "&select=event_date,f1,f2,pick,method,confidence,bonus_pick"+
+      "&order=updated_at.desc,event_date.desc,f1.asc,f2.asc")
       .then(function(rows){
         if(!Array.isArray(rows)||!rows.length)return;
         if(!_fightIndex)_buildFightIndex();
-        var added=0,mAdd=false,cAdd=false,fAdd=false;
+        var added=0,mAdd=false,cAdd=false,fAdd=false,rAdd=false;
         rows.forEach(function(p){
           // Never resurrect the wiped pre-Freedom-250 test phase. syncPick
           // refuses to upload those rows; restoring them would put back locally
@@ -2616,7 +2625,32 @@ function _restoreMyPicks(){
               if(nmBout(EVENTS[ei].fights[fj],p.f1,p.f2)){hit={ev:EVENTS[ei],fight:EVENTS[ei].fights[fj]};break;}
             }
           }
-          if(!hit)return;
+          if(!hit){
+            // A card older than the EVENTS window lives on in RESULTS_ARCHIVE,
+            // and buildPastPicksData renders a pick whose event is gone from
+            // the KEY itself. Dropping these would restore only the cards still
+            // on screen and leave the account's history and record incomplete --
+            // "your picks follow your account" has to mean all of them. A row
+            // matching neither EVENTS nor the archive is a genuinely unknown or
+            // cancelled bout and is still dropped.
+            var ar=RESULTS_ARCHIVE[p.event_date],af=null;
+            if(ar&&ar.fights)for(var ai=0;ai<ar.fights.length&&!af;ai++){
+              var c=ar.fights[ai];
+              if((nmEq(c.f1,p.f1)&&nmEq(c.f2,p.f2))||(nmEq(c.f1,p.f2)&&nmEq(c.f2,p.f1)))af=c;
+            }
+            if(!af)return;
+            var aside=nmEq(af.f1,p.pick)?af.f1:nmEq(af.f2,p.pick)?af.f2:null;
+            if(!aside)return;
+            var ak=p.event_date+"|"+af.f1+"|"+af.f2;
+            if(preds[ak]===undefined){preds[ak]=aside;added++;}
+            if(p.method&&preds_method[ak]===undefined){preds_method[ak]=p.method;mAdd=true;}
+            if(p.confidence&&preds_conf[ak]===undefined){preds_conf[ak]=p.confidence;cAdd=true;}
+            // resolvedPicks is local-only and went with the rest of the storage,
+            // and an aged-out card has no EVENTS row to score against -- so
+            // without this every restored archive pick reads "pending" forever.
+            if(af.winner&&resolvedPicks[ak]===undefined){resolvedPicks[ak]=nmEq(af.winner,aside)?"win":"loss";rAdd=true;}
+            return;
+          }
           // Resolve the stored fighter name to this card's spelling too, so the
           // preds[k]===fight.winner compares behind scoring keep working.
           var side=nmEq(hit.fight.f1.n,p.pick)?hit.fight.f1.n:nmEq(hit.fight.f2.n,p.pick)?hit.fight.f2.n:null;
@@ -2631,6 +2665,7 @@ function _restoreMyPicks(){
         if(mAdd)saveMethod();
         if(cAdd)saveConf();
         if(fAdd)saveFOTN();
+        if(rAdd)_saveJSON("ufc_resolved",resolvedPicks);
         if(!added)return;
         save();
         if(typeof render==="function")render();

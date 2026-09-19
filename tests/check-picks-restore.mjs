@@ -47,6 +47,12 @@ const CARD = {
     { f1: { n: "Sean O'Malley" }, f2: { n: "Merab Dvalishvili" } },
   ],
 };
+const ARCHIVE = {
+  "2026-07-04": { name: "UFC 318", fights: [
+    { f1: "Rory MacDonald", f2: "Gilbert Burns", winner: "Gilbert Burns", method: "DEC" },
+    { f1: "Kai Kara-France", f2: "Brandon Royval", winner: "", method: "" },
+  ] },
+};
 const OLD = { date: "2026-05-01", name: "Test Phase", fights: [{ f1: { n: "A One" }, f2: { n: "B Two" } }] };
 
 // Runs the block with a stubbed fetch and returns everything observable.
@@ -54,7 +60,7 @@ function run(src, { rows, local = {}, method = {}, conf = {}, fotn = {}, ok = tr
   const out = {
     preds: Object.assign({}, local), method: Object.assign({}, method),
     conf: Object.assign({}, conf), fotn: Object.assign({}, fotn),
-    saved: [], toasts: [], renders: 0, url: null,
+    saved: [], toasts: [], renders: 0, url: null, resolved: {},
   };
   const ctx = vm.createContext({
     console, JSON, Object, String, Array, Promise, Date, encodeURIComponent,
@@ -63,7 +69,9 @@ function run(src, { rows, local = {}, method = {}, conf = {}, fotn = {}, ok = tr
     _authReady: Promise.resolve(),
     _sbHeaders: () => ({}),
     _fightIndex: null,
-    fetch: (u) => { out.url = u; return Promise.resolve({ ok, status: ok ? 200 : 401, json: () => Promise.resolve(rows) }); },
+    RESULTS_ARCHIVE: ARCHIVE,
+    _sbFetchAll: (q) => { out.url = q; return ok ? Promise.resolve(rows) : Promise.reject(new Error("HTTP 401")); },
+    _saveJSON: (k) => out.saved.push(k),
     save: () => out.saved.push("preds"),
     saveMethod: () => out.saved.push("method"),
     saveConf: () => out.saved.push("conf"),
@@ -72,8 +80,10 @@ function run(src, { rows, local = {}, method = {}, conf = {}, fotn = {}, ok = tr
     updatePicksWidget: () => {},
     toast: (t) => out.toasts.push(t),
   });
+  out.resolved = {};
   ctx.preds = out.preds; ctx.preds_method = out.method;
   ctx.preds_conf = out.conf; ctx.preds_fotn = out.fotn;
+  ctx.resolvedPicks = out.resolved;
   vm.runInContext(
     NAMES +
     "\nfunction pk(ev,f){return ev.date+'|'+f.f1.n+'|'+f.f2.n;}" +
@@ -171,6 +181,73 @@ const T = {
     const o = await run(src, { rows: [row({ f1: "Alex Pereira", f2: "Magomed Ankalaev", pick: "Alex Pereira" })] });
     return o.renders === 1 && o.toasts.length === 1;
   },
+  // P1: a rename or flip can leave the OLD row beside the current one, and both
+  // collapse to this same local key. Newest-first ordering plus first-wins means
+  // the CURRENT pick lands; oldest-first would restore the superseded one and
+  // the additive checks would then ignore the real pick.
+  async aliasCollapsePrefersCurrent(src) {
+    const o = await run(src, {
+      rows: [
+        // _sbFetchAll is stubbed, so the harness supplies them already ordered
+        // the way the query asks for them: newest first.
+        row({ f1: "Sean O'Malley", f2: "Merab Dvalishvili", pick: "Merab Dvalishvili", method: "SUB" }),
+        row({ f1: "Sean O Malley", f2: "Merab Dvalishvili", pick: "Sean O Malley", method: "KO" }),
+      ],
+    });
+    const k = "2026-09-19|Sean O'Malley|Merab Dvalishvili";
+    return o.preds[k] === "Merab Dvalishvili" && o.method[k] === "SUB";
+  },
+  // P1 again, from the other side: the restore must ASK for newest-first.
+  async ordersNewestFirst(src) {
+    const o = await run(src, { rows: [] });
+    return /order=updated_at\.desc/.test(o.url || "");
+  },
+  // P3: Supabase REST caps a response at 1000 rows, so an unpaged read would
+  // return an over-1000 account's oldest rows and drop the active card.
+  async pagesTheRead(src) {
+    const o = await run(src, { rows: [] });
+    return o.url !== null && !/^https/.test(o.url);
+  },
+  // ...and the order has to end in a unique combo or rows shift between pages.
+  async stableOrderForPaging(src) {
+    const o = await run(src, { rows: [] });
+    return /order=.*f1\.asc,f2\.asc/.test(o.url || "");
+  },
+  // P2: a card aged out of EVENTS still exists in RESULTS_ARCHIVE, and
+  // buildPastPicksData renders such a pick from the key itself.
+  async restoresArchived(src) {
+    const o = await run(src, {
+      rows: [row({ event_date: "2026-07-04", f1: "Rory MacDonald", f2: "Gilbert Burns", pick: "Gilbert Burns", method: "DEC" })],
+    });
+    const k = "2026-07-04|Rory MacDonald|Gilbert Burns";
+    return o.preds[k] === "Gilbert Burns" && o.method[k] === "DEC";
+  },
+  // resolvedPicks is local-only and was lost too, so an archived pick would
+  // read "pending" forever without scoring it off the archive's winner.
+  async archivedPickCarriesItsResult(src) {
+    const o = await run(src, {
+      rows: [
+        row({ event_date: "2026-07-04", f1: "Rory MacDonald", f2: "Gilbert Burns", pick: "Gilbert Burns" }),
+        row({ event_date: "2026-07-04", f1: "Rory MacDonald", f2: "Gilbert Burns", pick: "Rory MacDonald" }),
+      ],
+    });
+    const k = "2026-07-04|Rory MacDonald|Gilbert Burns";
+    return o.resolved[k] === "win" && o.saved.includes("ufc_resolved");
+  },
+  // An archived bout with no winner yet must not be scored as a loss.
+  async archivedUndecidedNotScored(src) {
+    const o = await run(src, {
+      rows: [row({ event_date: "2026-07-04", f1: "Kai Kara-France", f2: "Brandon Royval", pick: "Brandon Royval" })],
+    });
+    return o.resolved["2026-07-04|Kai Kara-France|Brandon Royval"] === undefined;
+  },
+  // A row in neither EVENTS nor the archive is a cancelled/unknown bout: dropped.
+  async archiveMissDropped(src) {
+    const o = await run(src, {
+      rows: [row({ event_date: "2026-07-04", f1: "Ghost One", f2: "Ghost Two", pick: "Ghost One" })],
+    });
+    return Object.keys(o.preds).length === 0;
+  },
   // Scoped to this user, or one device restores another's picks.
   async scopedToUser(src) {
     const o = await run(src, { rows: [] });
@@ -211,6 +288,18 @@ const MUT = [
   ["repaints: restore does not repaint",
     "if(typeof render===\"function\")render();", "",
     ["repaints"]],
+  ["aliasCollapsePrefersCurrent/ordersNewestFirst: read reverts to oldest-first",
+    "&order=updated_at.desc,event_date.desc,f1.asc,f2.asc", "&order=updated_at.asc",
+    ["aliasCollapsePrefersCurrent", "ordersNewestFirst"]],
+  ["restoresArchived: archive branch dropped",
+    "if(!af)return;", "if(true)return;",
+    ["restoresArchived", "archivedPickCarriesItsResult"]],
+  ["archivedUndecidedNotScored: undecided archive bout scored anyway",
+    "if(af.winner&&resolvedPicks[ak]===undefined)", "if(resolvedPicks[ak]===undefined)",
+    ["archivedUndecidedNotScored"]],
+  ["archiveMissDropped: unmatched row restored under the server's own spelling",
+    "if(!af)return;", "if(!af){preds[p.event_date+\"|\"+p.f1+\"|\"+p.f2]=p.pick;added++;return;}",
+    ["archiveMissDropped"]],
   ["sidecarsLocalWins: server allowed to overwrite a device method",
     "if(p.method&&preds_method[k]===undefined)", "if(p.method)",
     ["sidecarsLocalWins"]],
