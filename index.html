@@ -4746,20 +4746,32 @@ function etOffset(){
   var e=new Date(y,10,1);e.setDate(1+(7-e.getDay())%7); // 1st Sunday November
   return(d>=s&&d<e)?4:5;
 }
-function picksLocked(ev){
-  var now=Date.now(),eto=etOffset();
+// Has ET time *t* (an "HH:MM" on ev's date) already passed? null when the event
+// carries no usable clock, so callers can pick their own fallback — a restored
+// past event can hold time:"TBD", and NaN arithmetic silently answers "not yet".
+function _segPassed(ev,t){
+  if(!t||t==="TBD")return null;
+  var pp=String(t).split(":"),h=parseInt(pp[0],10);
+  if(isNaN(h))return null;
   var dp=ev.date.split("-");
-  var t=ev.prelimTime||ev.time;var pp=t.split(":");
-  return now>=Date.UTC(+dp[0],+dp[1]-1,+dp[2],+pp[0]+eto,+(pp[1]||0),0);
+  return Date.now()>=Date.UTC(+dp[0],+dp[1]-1,+dp[2],h+etOffset(),+(pp[1]||0),0);
+}
+// The card's own start, which is its EARLIEST segment — early prelims when the
+// card runs them, otherwise the prelims. Before earlyPrelimTime existed this
+// read the prelim clock and called a PPV "not started" for the two hours its
+// early prelims were actually on air.
+function cardStartTime(ev){
+  return (ev&&ev.earlyPrelimTime)||(ev&&ev.prelimTime)||(ev&&ev.time)||"";
+}
+function picksLocked(ev){
+  return _segPassed(ev,cardStartTime(ev))===true;
 }
 // Challenges only ever target main-card fights, so they stay open until the MAIN
 // CARD starts (ev.time) — not the prelim start that locks whole-card picks. That
 // let the prelims lock out challenges for a main card that hadn't begun.
 function mainCardLocked(ev){
-  var t=ev&&ev.time;
-  if(!t||t==="TBD")return picksLocked(ev);  // no known main-card time → fall back
-  var now=Date.now(),eto=etOffset(),dp=ev.date.split("-"),pp=t.split(":");
-  return now>=Date.UTC(+dp[0],+dp[1]-1,+dp[2],+pp[0]+eto,+(pp[1]||0),0);
+  var r=_segPassed(ev,ev&&ev.time);
+  return r===null?picksLocked(ev):r;        // no known main-card time → fall back
 }
 // Which clock locks a given bout.
 //
@@ -4769,22 +4781,40 @@ function mainCardLocked(ev){
 // unpickable three hours before it ran, while the countdown alongside it was
 // still counting down to the main card. Two clocks, two answers, same screen.
 //
-// A bout locks when ITS OWN segment starts: prelims at ev.prelimTime, anything
-// on the main card at ev.time. A decided bout is locked regardless of the clock.
+// A bout locks when ITS OWN segment starts: early prelims at ev.earlyPrelimTime,
+// prelims at ev.prelimTime, anything on the main card at ev.time. A decided bout
+// is locked regardless of the clock.
+//
+// A PPV runs three segments, not two. While "Early Prelim" had no clock of its
+// own, its bouts answered to the 7pm prelim gate and so stayed pickable from
+// their own 5pm opening bell until their result landed — you could back a fight
+// you were watching. UFC 331 shipped three bouts that way.
 function isMainCardBout(f){
   var l=f&&f.lbl;
   return l==="Main Event"||l==="Co-Main"||l==="Main Card";
 }
+function isEarlyPrelimBout(f){return !!f&&f.lbl==="Early Prelim";}
+// The clock that governs this bout. An early prelim on a card with no
+// earlyPrelimTime falls back to the prelim gate — the old behaviour, which is
+// still the right answer when the third clock is unknown rather than wrong.
+function boutSegmentTime(ev,f){
+  if(isMainCardBout(f))return ev.time;
+  if(isEarlyPrelimBout(f)&&ev.earlyPrelimTime)return ev.earlyPrelimTime;
+  return ev.prelimTime||ev.time;
+}
 function fightLocked(ev,f){
   if(!ev)return false;
   if(f&&f.winner)return true;
-  return isMainCardBout(f)?mainCardLocked(ev):picksLocked(ev);
+  if(isMainCardBout(f))return mainCardLocked(ev);
+  var r=_segPassed(ev,boutSegmentTime(ev,f));
+  return r===null?picksLocked(ev):r;
 }
 // Why a bout is locked, for the toast — "the event has started" is not a useful
 // thing to be told when the segment you're trying to pick hasn't.
 function lockReason(f){
-  return isMainCardBout(f)?"Picks are locked — the main card has started"
-                         :"Picks are locked — the prelims have started";
+  if(isMainCardBout(f))return "Picks are locked — the main card has started";
+  if(isEarlyPrelimBout(f))return "Picks are locked — the early prelims have started";
+  return "Picks are locked — the prelims have started";
 }
 // A challenge rides on specific main-card fights, so it stays available as long as
 // any main-card bout is still undecided — the 9pm main-card clock passing does not
@@ -5717,6 +5747,7 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
   function det(icon,txt){var d=document.createElement("span");d.className="ev-detail";d.textContent=txt;evrow.appendChild(d);}
   if(ev.venue||ev.loc){det("pin",[ev.venue,ev.loc].filter(Boolean).join(", "));}det("tv",ev.tv);det("clk","Main card "+to12hr(ev.time)+" ET");
   if(ev.prelimTime){det("clk","Prelims "+to12hr(ev.prelimTime)+" ET");}
+  if(ev.earlyPrelimTime){det("clk","Early prelims "+to12hr(ev.earlyPrelimTime)+" ET");}
   band.appendChild(evrow);
   var badges=document.createElement("div");badges.className="ev-badges";
   if(isFeat){var bn=document.createElement("span");bn.className="badge b-next";bn.textContent="Next Up";badges.appendChild(bn);}

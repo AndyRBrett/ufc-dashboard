@@ -538,6 +538,33 @@ def _default_prelim_time(loc, ev_name=""):
     return "19:00" if _is_ppv(ev_name) else "17:00"
 
 
+# A numbered PPV runs THREE segments (early prelims 5pm / prelims 7pm / main
+# card 9pm ET); a Fight Night runs two. Only the PPV needs a third clock, and
+# it sits a fixed two hours ahead of the prelim slot on every published card,
+# so it is derived from whatever prelim time survived ESPN/override resolution
+# rather than hardcoded — a card whose prelims move takes its early prelims
+# along with it.
+#
+# This is a LOCK time, not decoration: index.html locks a bout when its own
+# segment starts, so before this existed the three early-prelim bouts of every
+# PPV stayed pickable until the 7pm prelim clock — i.e. while they were being
+# fought, until their result landed. UFC 331 shipped that way.
+_EARLY_PRELIM_LEAD_H = 2
+
+
+def _early_prelim_time(ev_name, prelim_time):
+    """Early-prelim ET start for *ev_name*, or "" when the card has no such segment."""
+    if not _is_ppv(ev_name) or not prelim_time or prelim_time == "TBD":
+        return ""
+    m = re.match(r"^(\d{1,2}):(\d{2})$", prelim_time)
+    if not m:
+        return ""
+    hour = int(m.group(1)) - _EARLY_PRELIM_LEAD_H
+    if hour < 0:                      # would cross back over midnight — don't guess
+        return ""
+    return f"{hour:02d}:{m.group(2)}"
+
+
 # STRUCTURAL time overrides only — for cards where the broadcast format is
 # unusual (e.g. no prelims, atypical slot). DO NOT add entries here just to
 # "correct" a time: if ESPN has the wrong time, fix the ESPN fetch or wait for
@@ -612,6 +639,21 @@ _MAIN_CARD_SIZE = {
 def _main_card_size(ev_name):
     """Number of bouts on *ev_name*'s main card, counting the main event."""
     return _MAIN_CARD_SIZE.get(ev_name, _MAIN_CARD_DEFAULT)
+
+
+# How many bouts sit in the PPV prelim segment, between the main card and the
+# early prelims. Same inference problem as _MAIN_CARD_SIZE above and the same
+# stopgap: the parser doesn't carry section headings, so the boundary comes
+# from bout order. Four is the standard PPV shape (5 main / 4 prelim / rest
+# early) and matched UFC 331 exactly; pin the exceptions here until the parser
+# learns to read the headings, at which point BOTH tables retire together.
+_PRELIM_CARD_DEFAULT = 4
+_PRELIM_CARD_SIZE = {}
+
+
+def _prelim_card_size(ev_name):
+    """Number of bouts in *ev_name*'s (non-early) prelim segment."""
+    return _PRELIM_CARD_SIZE.get(ev_name, _PRELIM_CARD_DEFAULT)
 
 # Regional fallback broadcast slots for international cards, used only when
 # ESPN has no time for the event (so a card can never sit at "TBD" just
@@ -3199,6 +3241,10 @@ def events_js(evs):
         ]
         if ev.get("prelimTime"):
             lines.append(f"    prelimTime:{json.dumps(ev['prelimTime'])},")
+        # Written after prelimTime: so the name/date/venue/loc/time adjacency the
+        # health.py field regexes rely on stays intact.
+        if ev.get("earlyPrelimTime"):
+            lines.append(f"    earlyPrelimTime:{json.dumps(ev['earlyPrelimTime'])},")
         lines.append("    fights:[")
         fights = ev.get("fights", [])
         for fi, fight in enumerate(fights):
@@ -3366,11 +3412,21 @@ def step_build_events(data, now):
         card = []
         no_prelims = ev_name in _NO_PRELIM_CARDS
         main_card_size = _main_card_size(ev_name)
+        # Only a PPV runs a third (early-prelim) segment. The boundary keys off
+        # the event name rather than the resolved prelim time, which isn't known
+        # until after this loop; a PPV that ends up without an early-prelim clock
+        # simply has these bouts fall back to the prelim clock, as before.
+        early_prelim_start = (
+            main_card_size + _prelim_card_size(ev_name)
+            if _is_ppv(ev_name) and not no_prelims else None
+        )
         for i, wf in enumerate(wiki_fights):
             if i == 0:        lbl = "Main Event"
             elif i == 1:      lbl = "Co-Main"
             elif no_prelims:  lbl = "Main Card"
             elif i < main_card_size: lbl = "Main Card"
+            elif early_prelim_start is not None and i >= early_prelim_start:
+                lbl = "Early Prelim"
             else:             lbl = "Prelim"
             f1, f2 = wf["f1"], wf["f2"]
             # The per-bout block flag is scoped to THIS bout's own wikitext, so it
@@ -3479,6 +3535,16 @@ def step_build_events(data, now):
             "tv":          "Paramount+",
             "time":        main_time,
             "prelimTime":  prelim_time,
+            # Gated on the built card, not just on "is this a PPV": withdrawals
+            # shrink cards routinely, and a PPV down to nine bouts has its last
+            # one land in the prelim segment, leaving no Early Prelim bout at
+            # all. Publishing the clock anyway would advertise a segment that
+            # doesn't exist and — via cardStartTime() — call the card live two
+            # hours before its real first bout.
+            "earlyPrelimTime": (
+                _early_prelim_time(ev_name, prelim_time)
+                if any(f.get("label") == "Early Prelim" for f in card) else ""
+            ),
             "fights":      card,
         })
         print(f"  Built: {ev_name} ({len(card)} fights)", file=sys.stderr)

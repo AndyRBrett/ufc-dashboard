@@ -821,6 +821,102 @@ def test_wiki_rematch_hint_never_sets_the_flag_on_its_own():
             f"flag: {line.strip()}")
 
 
+# --- early-prelim segment (the PPV's third clock) --------------------------
+
+def test_early_prelim_time_is_two_hours_before_the_prelims_on_a_ppv():
+    # UFC 331's published slots: early prelims 5pm / prelims 7pm / main card 9pm ET.
+    assert scrape._early_prelim_time("UFC 331: Van vs. Pantoja 2", "19:00") == "17:00"
+    # Derived from the RESOLVED prelim time, so a card whose prelims move takes
+    # its early prelims along rather than sitting on a stale hardcoded slot.
+    assert scrape._early_prelim_time("UFC 332: Silva vs. Wang", "18:30") == "16:30"
+
+
+def test_only_a_ppv_gets_a_third_clock():
+    # Fight Nights run two segments; inventing a third would lock their prelims
+    # two hours early, which is the same class of bug in the other direction.
+    assert scrape._early_prelim_time("UFC Fight Night: Hooker vs. Parnasse", "17:00") == ""
+    assert scrape._early_prelim_time("UFC on ESPN 71: A vs. B", "17:00") == ""
+
+
+def test_early_prelim_time_declines_to_guess_on_an_unusable_prelim_slot():
+    ppv = "UFC 331: Van vs. Pantoja 2"
+    assert scrape._early_prelim_time(ppv, "TBD") == ""
+    assert scrape._early_prelim_time(ppv, "") == ""
+    assert scrape._early_prelim_time(ppv, "garbage") == ""
+    # Would cross back over midnight — a negative hour is not a start time.
+    assert scrape._early_prelim_time(ppv, "01:00") == ""
+
+
+def test_prelim_card_size_matches_the_standard_ppv_shape():
+    # 5 main / 4 prelim / rest early is the shape UFC 331 shipped, and the
+    # boundary is what decides which clock locks a bout.
+    assert scrape._prelim_card_size("UFC 331: Van vs. Pantoja 2") == 4
+    assert scrape._main_card_size("UFC 331: Van vs. Pantoja 2") == 5
+
+
+def _label_card(ev_name, n_bouts):
+    """The labels build_events would assign to an *n_bouts* card for *ev_name*."""
+    mcs = scrape._main_card_size(ev_name)
+    early = mcs + scrape._prelim_card_size(ev_name) if scrape._is_ppv(ev_name) else None
+    out = []
+    for i in range(n_bouts):
+        if i == 0:                                     out.append("Main Event")
+        elif i == 1:                                   out.append("Co-Main")
+        elif i < mcs:                                  out.append("Main Card")
+        elif early is not None and i >= early:         out.append("Early Prelim")
+        else:                                          out.append("Prelim")
+    return out
+
+
+def test_a_shrunken_ppv_publishes_no_early_prelim_clock():
+    """A withdrawal can leave a PPV with no early-prelim segment at all.
+
+    Cards lose bouts routinely (see believable_shrink), and at nine bouts the
+    last one lands in the prelim segment — the labelling loop emits zero
+    "Early Prelim" bouts. Publishing earlyPrelimTime anyway would advertise a
+    segment that doesn't exist and, because cardStartTime() reads the earliest
+    clock, flip the card to "live" two hours before its real first bout.
+    """
+    ev = "UFC 331: Van vs. Pantoja 2"
+    assert _label_card(ev, 12).count("Early Prelim") == 3
+    assert _label_card(ev, 10).count("Early Prelim") == 1
+    # The boundary: nine bouts is exactly 5 main + 4 prelim, nothing left over.
+    assert _label_card(ev, 9).count("Early Prelim") == 0
+    assert _label_card(ev, 8).count("Early Prelim") == 0
+
+    # The clock is gated on the built card, so the shrunken versions publish "".
+    def emitted(n):
+        card = [{"label": l} for l in _label_card(ev, n)]
+        return (scrape._early_prelim_time(ev, "19:00")
+                if any(f["label"] == "Early Prelim" for f in card) else "")
+    assert emitted(12) == "17:00"
+    assert emitted(10) == "17:00"
+    assert emitted(9) == ""
+    assert emitted(8) == ""
+
+
+def test_build_events_gates_the_early_clock_on_the_card_not_just_the_name():
+    """Guard the gate itself — the bug was emitting on _is_ppv alone."""
+    src = open("scrape.py", encoding="utf-8").read()
+    m = re.search(r'"earlyPrelimTime":\s*\((.*?)\),\n', src, re.S)
+    assert m, "build_events no longer sets earlyPrelimTime as a gated expression"
+    assert 'f.get("label") == "Early Prelim" for f in card' in m.group(1), (
+        "earlyPrelimTime must be gated on the built card containing an "
+        f"Early Prelim bout, got: {m.group(1).strip()}")
+
+
+def test_events_js_writes_early_prelim_time_only_when_present():
+    base = {"name": "UFC 331: Van vs. Pantoja 2", "date": "2026-09-19", "venue": "V",
+            "loc": "Los Angeles", "tv": "Paramount+", "time": "21:00",
+            "prelimTime": "19:00", "fights": []}
+    with_early = scrape.events_js([dict(base, earlyPrelimTime="17:00")])
+    assert 'earlyPrelimTime:"17:00"' in with_early
+    # ...and the prelim field it sits next to must still be readable on its own,
+    # since health.py matches prelimTime: anchored to the start of a line.
+    assert re.search(r'\n\s*prelimTime:"19:00"', with_early)
+    assert "earlyPrelimTime" not in scrape.events_js([base])
+
+
 # --- event de-duplication (stub must not shadow the real card) -------------
 
 def test_dedupe_events_keeps_richest_card():
