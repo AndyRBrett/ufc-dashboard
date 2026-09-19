@@ -2228,7 +2228,14 @@ function _lockTouchStart(e){if(e.touches&&e.touches.length===1)_lockY=e.touches[
 function _lockTouchMove(e){
   if(e.touches&&e.touches.length>1)return;          // leave pinch-zoom alone
   var t=e.touches&&e.touches[0];
-  var dy=t?t.clientY-_lockY:0;                      // >0 dragging down, <0 dragging up
+  var y=t?t.clientY:_lockY;
+  var dy=y-_lockY;                                  // >0 dragging down, <0 dragging up
+  // Measured against the PREVIOUS move, not the touchstart. Against the start,
+  // dy is total displacement: reverse direction mid-gesture and it keeps
+  // reporting the original direction until the finger passes where it began,
+  // so a downward drag at a scroller's top still reads as "upward" and gets
+  // exempted -- straight through to the root.
+  _lockY=y;
   var n=e.target;
   while(n&&n.nodeType===1&&n!==document.body){
     if(n.scrollHeight>n.clientHeight){
@@ -2244,7 +2251,11 @@ function _lockTouchMove(e){
         var atBottom=n.scrollTop+n.clientHeight>=n.scrollHeight-1;
         if(dy>0&&!atTop)return;
         if(dy<0&&!atBottom)return;
-        break;                                       // pinned at the edge: cancel
+        // Pinned that way -- but keep walking rather than cancelling here. A
+        // scrollable ANCESTOR may still have room (a .chat-history inside an
+        // overflowing .modal on a short screen), and the browser hands the
+        // gesture to it. Stopping at the inner one makes the rest of the modal
+        // unreachable from any drag that starts over the transcript.
       }
     }
     n=n.parentElement;

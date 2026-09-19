@@ -110,14 +110,17 @@ async function main() {
         // fromY -> toY so the lock can tell which way the finger went: a
         // scroller pinned at its edge must NOT be exempt for a drag that would
         // carry the gesture past that edge and into the page behind.
-        const fire = (el, fromY = 10, toY = 10) => {
-          const start = new Touch({ identifier: 1, target: el, clientX: 10, clientY: fromY });
-          el.dispatchEvent(new TouchEvent("touchstart", { bubbles: true, cancelable: true, touches: [start] }));
-          const move = new Touch({ identifier: 1, target: el, clientX: 10, clientY: toY });
-          const e = new TouchEvent("touchmove", { bubbles: true, cancelable: true, touches: [move] });
+        const move = (el, y) => {
+          const t = new Touch({ identifier: 1, target: el, clientX: 10, clientY: y });
+          const e = new TouchEvent("touchmove", { bubbles: true, cancelable: true, touches: [t] });
           el.dispatchEvent(e);
           return e.defaultPrevented;
         };
+        const start = (el, y) => {
+          const t = new Touch({ identifier: 1, target: el, clientX: 10, clientY: y });
+          el.dispatchEvent(new TouchEvent("touchstart", { bubbles: true, cancelable: true, touches: [t] }));
+        };
+        const fire = (el, fromY = 10, toY = 10) => { start(el, fromY); return move(el, toY); };
         // The panel is empty headlessly, so build a scroller that matches what
         // the leaderboard list is at runtime rather than skipping the case.
         const panel = document.getElementById("lbPanel") || document.body;
@@ -138,6 +141,32 @@ async function main() {
           // At the bottom, dragging UP would chain: cancel.
           atBottomDragUp: (scroller.scrollTop = scroller.scrollHeight, fire(inner, 60, 10)),
         };
+
+        // Reversing direction mid-gesture: each move must be judged against the
+        // PREVIOUS one. Measured against touchstart, dy stays negative until the
+        // finger passes where it began, so a downward drag at the top still
+        // reads as upward and is exempted straight through to the root.
+        scroller.scrollTop = 0;
+        start(inner, 100);
+        out.reverseFirstUp = move(inner, 50);   // upward, room below: allowed
+        out.reverseThenDown = move(inner, 60);  // now downward at the top: cancel
+
+        // A pinned inner scroller must hand off to a scrollable ancestor rather
+        // than cancelling: .chat-history inside an overflowing .modal.
+        const outer = document.createElement("div");
+        outer.style.cssText = "overflow-y:auto;height:40px";
+        const nested = document.createElement("div");
+        nested.style.cssText = "overflow-y:auto;height:20px";
+        nested.innerHTML = "<div style='height:200px'></div>";
+        outer.appendChild(nested);
+        outer.appendChild(Object.assign(document.createElement("div"), { style: "height:400px" }));
+        panel.appendChild(outer);
+        nested.scrollTop = 0;       // inner pinned at its top
+        outer.scrollTop = 100;      // ...but the parent still has room upward
+        out.nestedHandoff = fire(nested.firstChild, 10, 60);
+        out.nestedIsReal = nested.scrollHeight > nested.clientHeight &&
+                           outer.scrollHeight > outer.clientHeight;
+        outer.remove();
         out.insideScroller = out.midDragDown;
         scroller.remove();
         return out;
@@ -151,6 +180,10 @@ async function main() {
       assert("...but still scrolls upward from there", drag.atTopDragUp === false);
       assert("a scroller pinned at its bottom does not exempt an upward drag",
         drag.atBottomDragUp === true);
+      assert("a reversed gesture is judged on the latest move, not the touchstart",
+        drag.reverseFirstUp === false && drag.reverseThenDown === true);
+      assert("a pinned inner scroller hands off to a parent that can still scroll",
+        drag.nestedIsReal && drag.nestedHandoff === false);
 
       await page.evaluate(() => window.closeLeaderboard && window.closeLeaderboard());
       await page.waitForTimeout(300);
