@@ -3535,7 +3535,16 @@ def step_build_events(data, now):
             "tv":          "Paramount+",
             "time":        main_time,
             "prelimTime":  prelim_time,
-            "earlyPrelimTime": _early_prelim_time(ev_name, prelim_time),
+            # Gated on the built card, not just on "is this a PPV": withdrawals
+            # shrink cards routinely, and a PPV down to nine bouts has its last
+            # one land in the prelim segment, leaving no Early Prelim bout at
+            # all. Publishing the clock anyway would advertise a segment that
+            # doesn't exist and — via cardStartTime() — call the card live two
+            # hours before its real first bout.
+            "earlyPrelimTime": (
+                _early_prelim_time(ev_name, prelim_time)
+                if any(f.get("label") == "Early Prelim" for f in card) else ""
+            ),
             "fights":      card,
         })
         print(f"  Built: {ev_name} ({len(card)} fights)", file=sys.stderr)
