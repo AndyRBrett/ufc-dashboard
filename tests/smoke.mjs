@@ -99,7 +99,40 @@ async function main() {
       assert("scroll lock never sets body{position:fixed}", locked.bodyPosition !== "fixed");
       assert("scroll lock never offsets body with a top", !locked.bodyTop);
       assert("scroll lock does hold the background (body overflow hidden)", locked.bodyOverflow === "hidden");
-      assert("scroll lock hides html overflow too (iOS scrolls the root)", locked.htmlOverflow === "hidden");
+      assert("scroll lock hides html overflow too", locked.htmlOverflow === "hidden");
+
+      // Style strings alone cannot prove the lock WORKS: on iOS, overflow:hidden
+      // does not stop a touch drag from scrolling the root, which is exactly why
+      // body{position:fixed} was used before. Assert the behaviour instead — a
+      // background touchmove must be cancelled, and a drag inside a real
+      // scroller must not be.
+      const drag = await page.evaluate(() => {
+        const fire = (el) => {
+          const t = new Touch({ identifier: 1, target: el, clientX: 10, clientY: 10 });
+          const e = new TouchEvent("touchmove", { bubbles: true, cancelable: true, touches: [t] });
+          el.dispatchEvent(e);
+          return e.defaultPrevented;
+        };
+        // The panel is empty headlessly, so build a scroller that matches what
+        // the leaderboard list is at runtime rather than skipping the case.
+        const panel = document.getElementById("lbPanel") || document.body;
+        const scroller = document.createElement("div");
+        scroller.style.cssText = "overflow-y:auto;height:40px";
+        scroller.innerHTML = "<div style='height:400px'></div>";
+        panel.appendChild(scroller);
+        const inner = scroller.firstChild;
+        const out = {
+          background: fire(document.getElementById("fnBanner") || document.body),
+          insideScroller: fire(inner),
+          scrollerIsReal: scroller.scrollHeight > scroller.clientHeight,
+        };
+        scroller.remove();
+        return out;
+      });
+      assert("a background drag is cancelled, so the page cannot scroll behind the overlay",
+        drag.background === true);
+      assert("...while a drag inside a real scroller is left alone",
+        drag.scrollerIsReal && drag.insideScroller === false);
 
       await page.evaluate(() => window.closeLeaderboard && window.closeLeaderboard());
       await page.waitForTimeout(300);
@@ -110,6 +143,14 @@ async function main() {
       }));
       assert("closing the overlay releases the lock", !unlocked.bodyOverflow && !unlocked.htmlOverflow);
       assert("...and clears overscroll-behavior with it", !unlocked.bodyOverscroll);
+      const dragAfter = await page.evaluate(() => {
+        const el = document.getElementById("fnBanner") || document.body;
+        const t = new Touch({ identifier: 1, target: el, clientX: 10, clientY: 10 });
+        const e = new TouchEvent("touchmove", { bubbles: true, cancelable: true, touches: [t] });
+        el.dispatchEvent(e);
+        return e.defaultPrevented;
+      });
+      assert("...and stops cancelling drags, so the page scrolls again", dragAfter === false);
     }
   } catch (e) {
     fatal.push("Navigation/boot failed: " + e.message);
