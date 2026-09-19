@@ -2224,12 +2224,14 @@ var _scrollY=0;
 // scroll gets preventDefault(). A drag inside the leaderboard list, the chat
 // transcript or the wheel list still scrolls normally.
 var _lockTouch=null,_lockStart=null,_lockY=0,_lockX=0,_lockSY=0,_lockSX=0,_lockAxis="";
+var _lockDirX=0,_lockDirY=0;                        // last non-zero direction, per axis
 var _LOCK_AXIS_MIN=6;                               // px of travel before the axis is called
 function _lockTouchStart(e){
   if(e.touches&&e.touches.length===1){
     _lockY=_lockSY=e.touches[0].clientY;
     _lockX=_lockSX=e.touches[0].clientX;
     _lockAxis="";                                   // a new gesture decides again
+    _lockDirX=_lockDirY=0;
   }
 }
 function _lockTouchMove(e){
@@ -2260,6 +2262,15 @@ function _lockTouchMove(e){
   // Until it is called, stay permissive and consider both: a few pixels of
   // background travel costs less than cancelling a gesture we cannot yet read.
   var horiz=_lockAxis!=="v",vert=_lockAxis!=="h";
+  // A move can be zero on the axis that owns the gesture -- a horizontal swipe
+  // reported with only vertical jitter gives dx===0. Neither edge test then
+  // matches, so the handler fell through to preventDefault() and killed the
+  // native scroll for the rest of the touch. Carry the last non-zero direction
+  // instead: the finger has not changed its mind, the event just had nothing
+  // to say on that axis.
+  if(dx)_lockDirX=dx;
+  if(dy)_lockDirY=dy;
+  var edx=dx||_lockDirX,edy=dy||_lockDirY;
   var n=e.target;
   while(n&&n.nodeType===1&&n!==document.body){
     // Horizontal counts too. Live FN mode's standings strip (.fnl-stand) and
@@ -2273,8 +2284,8 @@ function _lockTouchMove(e){
       if(cs.overflowX==="auto"||cs.overflowX==="scroll"){
         var atLeft=n.scrollLeft<=0;
         var atRight=n.scrollLeft+n.clientWidth>=n.scrollWidth-1;
-        if(dx>0&&!atLeft)return;
-        if(dx<0&&!atRight)return;
+        if(edx>0&&!atLeft)return;
+        if(edx<0&&!atRight)return;
       }
     }
     if(vert&&n.scrollHeight>n.clientHeight){
@@ -2288,8 +2299,8 @@ function _lockTouchMove(e){
         // only useful when it is not already there, and vice versa.
         var atTop=n.scrollTop<=0;
         var atBottom=n.scrollTop+n.clientHeight>=n.scrollHeight-1;
-        if(dy>0&&!atTop)return;
-        if(dy<0&&!atBottom)return;
+        if(edy>0&&!atTop)return;
+        if(edy<0&&!atBottom)return;
         // Pinned that way -- but keep walking rather than cancelling here. A
         // scrollable ANCESTOR may still have room (a .chat-history inside an
         // overflowing .modal on a short screen), and the browser hands the

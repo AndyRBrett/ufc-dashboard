@@ -212,6 +212,10 @@ async function main() {
         out.jitterThenSwipe = move(s2i, 13, 60); // now clearly horizontal
         // A pause mid-gesture (one vertical-dominant move) must not flip it.
         out.pauseMidSwipe = move(s2i, 16, 61);   // dy 3, dx 1 — still horizontal
+        // ...and a move with NOTHING on the latched axis (dx===0, pure vertical
+        // jitter) must not be cancelled either. The previous "pause" advanced x
+        // by 1px, so it never exercised this.
+        out.zeroDeltaOnAxis = move(s2i, 20, 61); // dx 0, dy 4
         strip2.remove();
 
         // And the latch holds the other way: a vertical gesture stays vertical
@@ -220,6 +224,17 @@ async function main() {
         start(inner, 10, 10);
         move(inner, 60, 10);                     // clearly vertical: latches v
         out.vLatchHeld = move(inner, 62, 70);    // dx 60, dy 2 — still vertical
+        out.vZeroDelta = move(inner, 62, 90);    // dy 0, dx 20 — nothing on the axis
+
+        // Direction memory must not survive into the NEXT gesture. Pinned at
+        // the top, a fresh touch whose first move says nothing has no direction
+        // to act on and must be cancelled — if it inherited the previous
+        // gesture's upward direction it would be exempted and chain to the root.
+        scroller.scrollTop = 0;
+        start(inner, 10, 10);
+        move(inner, 4, 10);                      // gesture 1: upward, allowed
+        start(inner, 50, 50);                    // gesture 2: fresh touch
+        out.dirResetBetweenGestures = move(inner, 50, 50);   // dy 0, dx 0
 
         out.insideScroller = out.midDragDown;
         scroller.remove();
@@ -251,6 +266,10 @@ async function main() {
       assert("...nor does a pause mid-swipe", drag.pauseMidSwipe === false);
       assert("a latched vertical gesture stays vertical through a sideways move",
         drag.vLatchHeld === false);
+      assert("a move with zero delta on the latched axis is not cancelled",
+        drag.zeroDeltaOnAxis === false && drag.vZeroDelta === false);
+      assert("...but direction memory does not carry into the next gesture",
+        drag.dirResetBetweenGestures === true);
 
       await page.evaluate(() => window.closeLeaderboard && window.closeLeaderboard());
       await page.waitForTimeout(300);
