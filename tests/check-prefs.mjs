@@ -83,7 +83,10 @@ function run(prefs, permission) {
     store, calls, perm,
     // Re-enter through the real entry points, as a toggle would.
     save: (changed) => vm.runInContext("_prefsSave(" + (changed ? JSON.stringify(changed) : "") + ")", ctx),
-    load: (r, st) => { rows = r; status = st === undefined ? 200 : st; return vm.runInContext("_prefsLoad()", ctx); },
+    load: (r, st, allowSeed) => {
+      rows = r; status = st === undefined ? 200 : st;
+      return vm.runInContext("_prefsLoad(" + (allowSeed === undefined ? "true" : allowSeed) + ")", ctx);
+    },
     set: (k, v) => { store[k] = v; },
     delayPosts: (...d) => { postDelays.length = 0; postDelays.push(...d); },
     // The seed write is fired from inside _prefsLoad and not chained into its
@@ -318,6 +321,30 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
     h.calls.saved.length === 0);
 }
 
+// --- Codex #140 round 8 P1: never seed a switched-into account from the old one ---
+{
+  // Sign in A -> B, and B has no row (expected for accounts predating 0004).
+  // The local flags still hold A's settings — _postSignIn clears touched keys
+  // and held intent but cannot clear those, they describe a live subscription
+  // on this device. Seeding here would copy A's preferences into B for good,
+  // and on to B's other installs.
+  const h = run(null, "granted");
+  h.set("ufc_push", "1");
+  h.set("ufc_notif", "1");
+  await h.load([], 200, false);       // identity just switched
+  await h.flush();
+  check("after an identity switch, an empty row is NOT seeded from local flags",
+    h.calls.saved.length === 0);
+}
+{
+  const h = run(null, "granted");
+  h.set("ufc_push", "1");
+  await h.load([], 200, true);        // ordinary boot, same identity
+  await h.flush();
+  check("...while an ordinary load still seeds a legacy account",
+    h.calls.saved.length === 1);
+}
+
 // --- Codex #140 round 7 P2: a restored spoiler preference must reach push_subs ---
 {
   // send-push reads push_subs.live_results to decide whether a result alert
@@ -414,7 +441,10 @@ check("toggleLiveResults persists, naming its key",
   /_prefsSave\("live_results"\)/.test(seg("toggleLiveResults")));
 check("toggleNotif persists on both paths, naming its key",
   (seg("toggleNotif").match(/_prefsSave\("reminders"\)/g) || []).length >= 2);
-check("boot reads prefs once auth resolves", /_authReady\.then\(_prefsLoad\)/.test(html));
+check("boot reads prefs once auth resolves, and may seed",
+  /_authReady\.then\(function\(\)\{_prefsLoad\(true\);\}\)/.test(html));
+check("an in-app sign-in that CHANGED identity passes allowSeed=false",
+  /_prefsLoad\(!changed\)/.test(html));
 // The reset must sit OUTSIDE finish(): finish() waits on the profile fetch,
 // and the account modal is already closed, so a toggle in that window would be
 // handled with the previous account's state.
@@ -432,7 +462,7 @@ check("a non-2xx write is rejected, not counted as stored",
 check("signing into another identity rebinds the push endpoint to it",
   /if\(changed\)_ensurePushFresh\(\);/.test(html));
 check("an in-app sign-in re-reads prefs for the new identity",
-  /_prefsLoad\(\);\s*\/\/ \.\.\.and restore/.test(html));
+  /_prefsLoad\(!changed\);\s*\/\/ \.\.\.and restore/.test(html));
 check("the upsert is keyed on user_id, so a second device updates rather than duplicates",
   /user_prefs\?on_conflict=user_id/.test(html) && /resolution=merge-duplicates/.test(html));
 

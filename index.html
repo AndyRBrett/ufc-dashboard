@@ -3804,7 +3804,7 @@ function _postSignIn(prevId,email){
     _syncAcctBtn();
     if(window._pp&&userName){window._pp();window._pp=null;}
     syncAllPicks();           // merge this device's local picks into the signed-in identity
-    _prefsLoad();             // ...and restore that identity's notification toggles
+    _prefsLoad(!changed);     // ...and restore that identity's toggles (never seed B from A)
     // The browser's push subscription is still registered under the PREVIOUS
     // user_id. Until something re-registers it, account-targeted pushes keep
     // going to the old identity and the signed-in one gets none. _ensurePushFresh
@@ -3936,7 +3936,8 @@ function _prefsSave(changed){
   else{payload.push=vals.push;payload.live_results=vals.live_results;payload.reminders=vals.reminders;}
   return _prefsWrite(payload,USER_ID);
 }
-function _prefsLoad(){
+// allowSeed=false after an identity switch: see the seed branch below.
+function _prefsLoad(allowSeed){
   if(!USER_ID)return Promise.resolve();
   // Whose preferences this request is for. An in-app sign-in can adopt a
   // different identity while it is in the air, and applying A's row to B would
@@ -3966,6 +3967,16 @@ function _prefsLoad(){
       // existing user, the cohort this whole change is for. Seed now instead.
       // Only when something is actually on: a row of falses is a write per
       // user carrying no information.
+      //
+      // NOT after an identity switch. Seeding writes THIS DEVICE's local flags
+      // as the account's settings, which is right for an account whose
+      // settings have always lived here and wrong the moment you sign into a
+      // different one: the flags still belong to the account just signed out
+      // of, so this would copy A's push, reminder and spoiler preferences into
+      // B -- permanently, and onward to B's other installs. _postSignIn clears
+      // the touched keys and held intent on a switch but cannot clear the
+      // local flags, because they describe a live subscription on this device.
+      if(allowSeed===false)return;
       if(_pushOn()||_liveResultsOn()||_remindersOn())_prefsSave();
     })
     .catch(function(e){if(!e||e.message!=="_prefs_stale_identity")console.error("prefs load failed",e);});
@@ -7964,7 +7975,7 @@ document.addEventListener("DOMContentLoaded",function(){
   _authReady.then(_ensurePushFresh);
   // Preferences ride the account: pull them once auth has settled, so a fresh
   // install that signs in gets its toggles back instead of showing them off.
-  _authReady.then(_prefsLoad);
+  _authReady.then(function(){_prefsLoad(true);});
   _setLiveResActive(_liveResultsOn());
   setTimeout(startLivePolling,4000);
   _initSwipe();
