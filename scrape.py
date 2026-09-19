@@ -3373,15 +3373,29 @@ def step_build_events(data, now):
             elif i < main_card_size: lbl = "Main Card"
             else:             lbl = "Prelim"
             f1, f2 = wf["f1"], wf["f2"]
-            wiki_rematch = wf.get("rematch", False) or _wiki_rematch(wt, f1, f2)
+            # The per-bout block flag is scoped to THIS bout's own wikitext, so it
+            # stands on its own. _wiki_rematch is a PAGE-WIDE proximity heuristic
+            # (±1000 chars around any "rematch"/"trilogy"/"II", matched on last
+            # names only) and is a hint, never proof: on a card whose main event is
+            # a rematch, the background section explaining it sits inside the
+            # window of half the other bouts on the page. UFC 331 badged Tsarukyan
+            # vs Ruffy and Vera vs Jourdain — both first meetings — off the Van vs
+            # Pantoja 2 and Oliveira-replacement paragraphs. A false REMATCH badge
+            # is the app stating something false about a fight people are picking,
+            # so the hint now has to clear the same cross-confirmation an unflagged
+            # bout does. Genuine rematches keep two independent nets: this one, and
+            # the UFCStats opponent-history pass below, which reruns for anything
+            # still unflagged.
+            wiki_rematch = wf.get("rematch", False)
             if wiki_rematch:
-                print(f"  Rematch (wiki): {f1} vs {f2}", file=sys.stderr)
+                print(f"  Rematch (bout block): {f1} vs {f2}", file=sys.stderr)
             # Layer 4: BOTH fighters' Wikipedia fight records must confirm the past bout.
             # Requiring cross-confirmation eliminates false positives from common surnames
             # or upcoming fights inadvertently appearing in one fighter's record. Runs for
             # every bout, not just the headliners — mid-card rematches (e.g. Sandhagen vs
             # Bautista II) were being missed when the event page didn't spell out "rematch".
             if not wiki_rematch:
+                hinted = _wiki_rematch(wt, f1, f2)
                 fw1 = fetch_wikitext(f1.replace(" ", "_"))
                 if _fighter_wiki_past_fight(fw1, f2):
                     time.sleep(0.5)
@@ -3389,6 +3403,9 @@ def step_build_events(data, now):
                     if _fighter_wiki_past_fight(fw2, f1):
                         wiki_rematch = True
                         print(f"  Rematch (fighter wiki): {f1} vs {f2}", file=sys.stderr)
+                if hinted and not wiki_rematch:
+                    print(f"  Rematch hint unconfirmed, ignoring: {f1} vs {f2}",
+                          file=sys.stderr)
             card.append({
                 "label":   lbl,
                 "wc":      wf.get("wc", "TBD"),

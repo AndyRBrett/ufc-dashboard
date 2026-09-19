@@ -760,6 +760,67 @@ def test_norm_full_distinguishes_shared_surnames():
     assert scrape._norm_full("Jon Jones") != scrape._norm_full("Dustin Jones")
 
 
+# --- _wiki_rematch is a hint, never a standalone source of truth -----------
+
+# Shape of a real event page's Background section: ONE genuine rematch (the main
+# event) explained in prose, with unrelated bouts announced in the paragraphs
+# around it. This is the UFC 331 page in miniature.
+_UFC331_BACKGROUND = """
+==Background==
+A UFC Flyweight Championship rematch between current champion Joshua Van and
+former champion Alexandre Pantoja was expected to headline the event. The pair
+first met in December 2025, where Van won the title.
+
+A lightweight bout between Arman Tsarukyan and Charles Oliveira was expected to
+take place at this event. However, Oliveira withdrew and was replaced by
+Mauricio Ruffy.
+
+A bantamweight bout between Marlon Vera and Charles Jourdain was added to the card.
+"""
+
+
+def test_wiki_rematch_false_positives_on_neighbouring_bouts():
+    """The page-wide heuristic cannot tell whose rematch it found.
+
+    _wiki_rematch takes a ±1000-character window around any
+    "rematch"/"trilogy"/"II" and asks only whether both LAST NAMES appear in it.
+    On a card headlined by a rematch, that window swallows the bouts announced
+    next to it. UFC 331 shipped a REMATCH badge on Tsarukyan vs Ruffy and Vera
+    vs Jourdain — both first meetings — off exactly this text.
+
+    Locking the false positives in is deliberate: the caller must treat this as
+    a hint requiring cross-confirmation, not tighten the window and call it
+    solved. If someone does make it precise, this test failing is the prompt to
+    re-check the caller, not to delete the cross-confirmation.
+    """
+    assert scrape._wiki_rematch(_UFC331_BACKGROUND, "Joshua Van", "Alexandre Pantoja")
+    # Neither of these pairs has ever met:
+    assert scrape._wiki_rematch(_UFC331_BACKGROUND, "Arman Tsarukyan", "Mauricio Ruffy")
+    assert scrape._wiki_rematch(_UFC331_BACKGROUND, "Marlon Vera", "Charles Jourdain")
+    # Far enough from the word "rematch" to escape the window.
+    assert not scrape._wiki_rematch(_UFC331_BACKGROUND, "Gable Steveson", "Sean Sharaf")
+
+
+def test_wiki_rematch_hint_never_sets_the_flag_on_its_own():
+    """Guard the caller, since the false positives above are unfixable here.
+
+    A REMATCH badge on a first meeting is the app stating something false about
+    a fight people are picking, so `_wiki_rematch` must not be ORed straight
+    into the flag — it has to clear the same both-fighters'-pages confirmation
+    an unflagged bout does. Asserted against the source because the bug is the
+    shape of one expression, and reproducing it needs live Wikipedia.
+    """
+    src = open("scrape.py", encoding="utf-8").read()
+    calls = re.findall(r"^.*_wiki_rematch\(wt.*$", src, re.M)
+    assert calls, "expected _wiki_rematch to still be called with the event wikitext"
+    for line in calls:
+        assert "or" not in line, (
+            f"_wiki_rematch must not be ORed into the rematch flag: {line.strip()}")
+        assert re.search(r"\bhinted\s*=", line), (
+            f"_wiki_rematch result must be held as a hint, not assigned to the "
+            f"flag: {line.strip()}")
+
+
 # --- event de-duplication (stub must not shadow the real card) -------------
 
 def test_dedupe_events_keeps_richest_card():
