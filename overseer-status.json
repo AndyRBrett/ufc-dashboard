@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-19T18:53:21Z",
+  "generated_at": "2026-09-19T18:58:20Z",
   "events_tracked": 12,
   "stale_events": 2,
   "parse_failure_events": 0,
@@ -91,16 +91,16 @@
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "status": "ok",
-      "last_changed_at": "2026-09-19T15:53:04Z",
+      "last_changed_at": "2026-09-19T18:58:20Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
-      "line_movement": -33
+      "line_movement": -40
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "ok",
-      "last_changed_at": "2026-09-19T15:53:04Z",
+      "last_changed_at": "2026-09-19T18:58:20Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 11,
@@ -118,7 +118,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-19T18:53:21Z",
+      "last_changed_at": "2026-09-19T18:58:20Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -127,7 +127,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-19T18:53:21Z",
+      "last_changed_at": "2026-09-19T18:58:20Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-19T18:53:21Z",
+      "last_changed_at": "2026-09-19T18:58:20Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -154,7 +154,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-19T18:53:21Z",
+      "last_changed_at": "2026-09-19T18:58:20Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -198,17 +198,17 @@
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "f1": "Joshua Van",
       "f2": "Alexandre Pantoja",
-      "f1_movement": -33,
-      "f2_movement": 231,
-      "magnitude": 231,
+      "f1_movement": -40,
+      "f2_movement": 237,
+      "magnitude": 237,
       "main_event": true,
       "tier": "main-event",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Flyweight",
-      "f1_prob_shift": 6.3,
-      "f2_prob_shift": -7.1,
-      "priority": 1155.0
+      "f1_prob_shift": 7.4,
+      "f2_prob_shift": -8.3,
+      "priority": 1185.0
     },
     {
       "event_id": "2026-08-22:ufc-fight-night-hernandez-vs-rodrigues",
@@ -289,22 +289,6 @@
       "f1_prob_shift": 5.6,
       "f2_prob_shift": -5.7,
       "priority": 300.0
-    },
-    {
-      "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
-      "f1": "Norma Dumont",
-      "f2": "Ailin Perez",
-      "f1_movement": -214,
-      "f2_movement": 15,
-      "magnitude": 214,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 120,
-      "low_confidence": false,
-      "wc": "Women's Bantamweight",
-      "f1_prob_shift": 3.3,
-      "f2_prob_shift": -3.0,
-      "priority": 299.6
     },
     {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
