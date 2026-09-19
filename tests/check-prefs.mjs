@@ -32,7 +32,7 @@ const src = html.slice(a, b);
 // Build a context where every side effect _prefsApply can have is observable.
 function run(prefs, permission) {
   const store = {};
-  const calls = { ensureFresh: 0, bell: [], liveRes: [], toasts: [], schedule: 0, saved: [] };
+  const calls = { ensureFresh: 0, bell: [], liveRes: [], toasts: [], schedule: 0, saved: [], liveSync: 0 };
   const perm = { value: permission };
   const ctx = vm.createContext({
     console, JSON, Object, String, Array, Promise, Date, encodeURIComponent,
@@ -68,6 +68,7 @@ function run(prefs, permission) {
     // same semantics: reads the same key the block writes.
     _liveResultsOn: () => store.ufc_live_results === "1",
     _ensurePushFresh: () => { calls.ensureFresh++; },
+    _syncLivePref: () => { calls.liveSync++; },
     _setBellActive: (v) => calls.bell.push(v),
     _setLiveResActive: (v) => calls.liveRes.push(v),
     checkNotifSchedule: () => { calls.schedule++; },
@@ -315,6 +316,28 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
   await h.flush();
   check("a user with nothing enabled writes no row — no empty write per user",
     h.calls.saved.length === 0);
+}
+
+// --- Codex #140 round 7 P2: a restored spoiler preference must reach push_subs ---
+{
+  // send-push reads push_subs.live_results to decide whether a result alert
+  // names the winner. Restoring the flag locally without re-registering shows
+  // "on" while alerts stay spoiler-free. push:false here, so the push branch
+  // cannot cover it.
+  const h = run({ push: false, live_results: true, reminders: false }, "granted");
+  check("restoring live_results re-registers the subscription",
+    h.calls.liveSync === 1);
+  check("...and shows it on locally", h.store.ufc_live_results === "1");
+}
+{
+  const h = run({ push: false, live_results: true, reminders: false }, "default");
+  check("...even with OS permission withheld (it is not a push-gated setting)",
+    h.calls.liveSync === 1);
+}
+{
+  const h = run({ push: true, live_results: false, reminders: false }, "granted");
+  check("a row with live_results off does not re-register for it",
+    h.calls.liveSync === 0);
 }
 
 // --- Codex #140 round 5 P2: a write must not carry columns it did not change ---

@@ -3989,11 +3989,20 @@ function _prefsLoad(){
 function _prefsApply(p){
   if(!p)return;
   var granted=_prefsGranted();
-  // Pure preference, no OS permission involved: restore either way so it is
-  // already right the moment the bell comes back on.
+  // Pure preference as far as the OS is concerned, so it restores either way.
+  // But it is not purely local: send-push decides whether a result alert names
+  // the winner from push_subs.live_results, so restoring the flag without
+  // re-registering leaves the toggle reading "on" while alerts stay
+  // spoiler-free -- the app showing a setting it is not honouring.
+  // toggleLiveResults() syncs for exactly this reason; the restore path has to
+  // as well, and cannot lean on the push branch below, which does not run when
+  // the stored push preference is false. _syncLivePref no-ops without a
+  // subscription, and re-registering is an idempotent upsert, so the rare
+  // overlap with _ensurePushFresh costs one redundant call and nothing else.
   if(p.live_results&&!_prefsTouched.live_results){
     try{localStorage.setItem("ufc_live_results","1");}catch(e){}
     _setLiveResActive(true);
+    _syncLivePref();
   }
   if(!granted){
     // Hold what we could not apply. Without this the intent is not merely
