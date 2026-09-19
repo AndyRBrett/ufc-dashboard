@@ -183,7 +183,19 @@ async function main() {
         start(stripInner, 10, 10); out.stripAtLeftRight = move(stripInner, 10, 60);
         strip.scrollLeft = strip.scrollWidth;                    // pinned right
         start(stripInner, 10, 60); out.stripAtRightLeft = move(stripInner, 10, 10);
+        // A gesture scrolls one axis. A mostly-VERTICAL drag that happens to
+        // start over the horizontal strip must not be exempted by it — the
+        // vertical component would scroll the root behind the overlay.
+        strip.scrollLeft = 100;                                  // could move sideways
+        start(stripInner, 10, 10);
+        out.stripVerticalDrag = move(stripInner, 80, 12);        // dy 70, dx 2
         strip.remove();
+
+        // ...and the mirror: a mostly-HORIZONTAL drag over a vertical-only
+        // scroller must not be exempted by it either.
+        scroller.scrollTop = 100;
+        start(inner, 10, 10);
+        out.vScrollerHorizontalDrag = move(inner, 12, 80);       // dx 70, dy 2
 
         out.insideScroller = out.midDragDown;
         scroller.remove();
@@ -206,6 +218,10 @@ async function main() {
         drag.stripIsReal && drag.stripMid === false);
       assert("...and is cancelled at the strip's own edges",
         drag.stripAtLeftRight === true && drag.stripAtRightLeft === true);
+      assert("a mostly-vertical drag is not exempted by a horizontal strip",
+        drag.stripVerticalDrag === true);
+      assert("...nor a mostly-horizontal drag by a vertical-only scroller",
+        drag.vScrollerHorizontalDrag === true);
 
       await page.evaluate(() => window.closeLeaderboard && window.closeLeaderboard());
       await page.waitForTimeout(300);

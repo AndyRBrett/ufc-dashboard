@@ -2236,6 +2236,13 @@ function _lockTouchMove(e){
   // so a downward drag at a scroller's top still reads as "upward" and gets
   // exempted -- straight through to the root.
   _lockY=y;_lockX=x;
+  // One gesture scrolls one axis, so only that axis may exempt anything. A
+  // mostly-vertical drag that happens to start over the standings strip picks
+  // up a pixel or two of dx; without this it matched the horizontal branch,
+  // returned before dy was ever considered, and let the vertical component
+  // scroll the root behind FN mode -- the exact movement this lock exists to
+  // stop, reintroduced by adding horizontal support for it.
+  var horiz=Math.abs(dx)>Math.abs(dy);
   var n=e.target;
   while(n&&n.nodeType===1&&n!==document.body){
     // Horizontal counts too. Live FN mode's standings strip (.fnl-stand) and
@@ -2244,7 +2251,7 @@ function _lockTouchMove(e){
     // so it reaches preventDefault() and the off-screen entries become
     // unreachable for as long as an overlay is open.
     var cs=null;
-    if(n.scrollWidth>n.clientWidth){
+    if(horiz&&n.scrollWidth>n.clientWidth){
       cs=getComputedStyle(n);
       if(cs.overflowX==="auto"||cs.overflowX==="scroll"){
         var atLeft=n.scrollLeft<=0;
@@ -2253,7 +2260,7 @@ function _lockTouchMove(e){
         if(dx<0&&!atRight)return;
       }
     }
-    if(n.scrollHeight>n.clientHeight){
+    if(!horiz&&n.scrollHeight>n.clientHeight){
       var oy=(cs||getComputedStyle(n)).overflowY;
       if(oy==="auto"||oy==="scroll"){
         // The innermost real scroller owns this gesture -- but only while it
