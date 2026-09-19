@@ -70,6 +70,9 @@ function run(prefs, permission) {
     save: (changed) => vm.runInContext("_prefsSave(" + (changed ? JSON.stringify(changed) : "") + ")", ctx),
     load: (r) => { rows = r; return vm.runInContext("_prefsLoad()", ctx); },
     set: (k, v) => { store[k] = v; },
+    become: (id) => vm.runInContext("USER_ID = " + JSON.stringify(id), ctx),
+    touched: () => vm.runInContext("JSON.stringify(_prefsTouched)", ctx),
+    reset: () => vm.runInContext("_prefsTouched = {}; _prefsPending = null;", ctx),
   };
 }
 
@@ -230,6 +233,54 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
     h.calls.toasts.length === 0);
 }
 
+// --- Codex #140 round 4 P2: a touched key must not be HELD, only skipped ---
+{
+  // Permission withheld. The user turns the bell off, then a load lands with
+  // push:true. Filtering only at apply time leaves the stored true sitting in
+  // the held row, and the next unrelated save merges it straight back to the
+  // account — the choice reappears on the next reinstall.
+  const h = run(null, "default");
+  h.set("ufc_push", "0");
+  await h.save("push");                       // explicit: bell off
+  await h.load([ALL_ON]);                     // response says push:true
+  h.set("ufc_live_results", "1");
+  await h.save("live_results");               // an unrelated later toggle
+  const last = h.calls.saved[h.calls.saved.length - 1];
+  check("an unrelated save does not resurrect a touched key from held intent",
+    last && last.push === false);
+  check("...while still carrying untouched held intent",
+    last && last.reminders === true);
+}
+
+// --- Codex #140 round 4 P2: touched keys belong to the identity that set them ---
+{
+  const h = run(null, "granted");
+  h.set("ufc_push", "0");
+  await h.save("push");
+  check("a touch is recorded for the signing-out identity",
+    JSON.parse(h.touched()).push === true);
+  h.reset();                                   // what _postSignIn does on a switch
+  await h.load([ALL_ON]);
+  check("after switching accounts, the new account's stored prefs DO apply",
+    h.store.ufc_push === "1");
+}
+
+// --- Codex #140 round 4 P2: a response must not land on a different identity ---
+{
+  const h = run(null, "granted");
+  const inflight = h.load([ALL_ON]);           // request issued as u1
+  h.become("u2");                              // sign-in adopts another account
+  await inflight;
+  check("a load issued for one account is discarded if the identity changed",
+    h.store.ufc_push === undefined && h.calls.ensureFresh === 0);
+}
+{
+  const h = run(null, "granted");
+  await h.load([ALL_ON]);                      // identity unchanged
+  check("...while a load for the current identity still applies normally",
+    h.store.ufc_push === "1");
+}
+
 // --- Codex #140 P1: an existing install must seed a row before it can be wiped ---
 {
   const h = run(null, "granted");
@@ -264,6 +315,8 @@ check("toggleLiveResults persists, naming its key",
 check("toggleNotif persists on both paths, naming its key",
   (seg("toggleNotif").match(/_prefsSave\("reminders"\)/g) || []).length >= 2);
 check("boot reads prefs once auth resolves", /_authReady\.then\(_prefsLoad\)/.test(html));
+check("switching identity clears touched keys and held intent first",
+  /if\(changed\)\{_prefsTouched=\{\};_prefsPending=null;\}/.test(html));
 check("signing into another identity rebinds the push endpoint to it",
   /if\(changed\)_ensurePushFresh\(\);/.test(html));
 check("an in-app sign-in re-reads prefs for the new identity",

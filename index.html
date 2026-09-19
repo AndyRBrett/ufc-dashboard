@@ -3797,6 +3797,11 @@ function _postSignIn(prevId,email){
     _syncAcctBtn();
     if(window._pp&&userName){window._pp();window._pp=null;}
     syncAllPicks();           // merge this device's local picks into the signed-in identity
+    // A different account is a different set of answers: the keys this session
+    // touched, and any intent held for them, belonged to the PREVIOUS identity.
+    // Carrying them over would make the new account's stored preferences
+    // unrestorable until a reload.
+    if(changed){_prefsTouched={};_prefsPending=null;}
     _prefsLoad();             // ...and restore that identity's notification toggles
     // The browser's push subscription is still registered under the PREVIOUS
     // user_id. Until something re-registers it, account-targeted pushes keep
@@ -3854,6 +3859,16 @@ var _prefsPending=null;
 // scoped on purpose -- an explicit action is the freshest signal there is, and
 // it should outlive one response, not just the one that raced it.
 var _prefsTouched={};
+// Held intent must be filtered the same way applying it is. Storing the row
+// wholesale and only filtering at apply time still leaks: the merge in
+// _prefsSave reads the unfiltered row, so an unrelated later toggle writes the
+// touched key's stored value back to the account, and the choice the user made
+// reappears on their next reinstall.
+function _prefsWithoutTouched(p){
+  var o={},k;
+  for(k in p)if(Object.prototype.hasOwnProperty.call(p,k)&&!_prefsTouched[k])o[k]=p[k];
+  return o;
+}
 function _prefsGranted(){try{return("Notification" in window)&&Notification.permission==="granted";}catch(e){return false;}}
 // `changed` names the key the calling toggle just set, if any. Two jobs, and
 // both are about held intent (_prefsPending) that we could not apply for want
@@ -3880,24 +3895,32 @@ function _prefsSave(changed){
   }
   var vals={push:_pushOn(),live_results:_liveResultsOn(),reminders:_remindersOn()};
   if(_prefsPending){
-    if(_prefsPending.push)vals.push=true;
-    if(_prefsPending.live_results)vals.live_results=true;
-    if(_prefsPending.reminders)vals.reminders=true;
+    // Re-checked here as well as at hold time: a key can be touched AFTER the
+    // row was held, and the merge is the path that writes it back.
+    if(_prefsPending.push&&!_prefsTouched.push)vals.push=true;
+    if(_prefsPending.live_results&&!_prefsTouched.live_results)vals.live_results=true;
+    if(_prefsPending.reminders&&!_prefsTouched.reminders)vals.reminders=true;
   }
+  var forId=USER_ID;   // these values describe THIS identity, not whoever is current when the write lands
   return _authReady.then(function(){
     var h=_sbHeaders();h.Prefer="resolution=merge-duplicates";
     return fetch(SUPABASE_URL+"/rest/v1/user_prefs?on_conflict=user_id",{
       method:"POST",headers:h,
-      body:JSON.stringify({user_id:USER_ID,push:vals.push,live_results:vals.live_results,
+      body:JSON.stringify({user_id:forId,push:vals.push,live_results:vals.live_results,
         reminders:vals.reminders,updated_at:new Date().toISOString()})
     });
   }).catch(function(e){console.error("prefs save failed",e);});
 }
 function _prefsLoad(){
   if(!USER_ID)return Promise.resolve();
+  // Whose preferences this request is for. An in-app sign-in can adopt a
+  // different identity while it is in the air, and applying A's row to B would
+  // light B's bell from A's preference and register B for push A asked for.
+  var forId=USER_ID;
   return _authReady.then(function(){
-    return fetch(SUPABASE_URL+"/rest/v1/user_prefs?select=push,live_results,reminders&user_id=eq."+encodeURIComponent(USER_ID),{headers:_sbHeaders()});
+    return fetch(SUPABASE_URL+"/rest/v1/user_prefs?select=push,live_results,reminders&user_id=eq."+encodeURIComponent(forId),{headers:_sbHeaders()});
   }).then(function(r){return r.ok?r.json():[];})
+    .then(function(rows){if(USER_ID!==forId)throw new Error("_prefs_stale_identity");return rows;})
     .then(function(rows){
       if(rows&&rows[0]){_prefsApply(rows[0]);return;}
       // No row: this account predates the table, so its settings still live
@@ -3909,7 +3932,7 @@ function _prefsLoad(){
       // user carrying no information.
       if(_pushOn()||_liveResultsOn()||_remindersOn())_prefsSave();
     })
-    .catch(function(e){console.error("prefs load failed",e);});
+    .catch(function(e){if(!e||e.message!=="_prefs_stale_identity")console.error("prefs load failed",e);});
 }
 // Restoring a preference must never claim a capability the browser has not
 // granted. A fresh install has NO OS notification permission -- iOS only
@@ -3939,7 +3962,7 @@ function _prefsApply(p){
   if(!granted){
     // Hold what we could not apply. Without this the intent is not merely
     // unshown, it is destroyed by the next _prefsSave (see there).
-    _prefsPending=p;
+    _prefsPending=_prefsWithoutTouched(p);
     if((p.push&&!_prefsTouched.push)||(p.reminders&&!_prefsTouched.reminders))
       toast("Tap the bell to turn your fight notifications back on");
     return;
