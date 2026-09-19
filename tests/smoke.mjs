@@ -83,6 +83,221 @@ async function main() {
         return !!(p && (p.classList.contains("open") || getComputedStyle(p).display !== "none"));
       });
       assert("leaderboard panel opens", lbOpen);
+
+      // The scroll lock must hold the background still WITHOUT repositioning
+      // <body>. body{position:fixed} lays the document against the initial
+      // containing block, which under viewport-fit=cover includes the
+      // status-bar band; iOS then blurs what is under the status bar and does
+      // not undo it when the lock releases. That is how the fixed top-bar blur
+      // came back every time an overlay was opened and closed.
+      const locked = await page.evaluate(() => ({
+        bodyPosition: document.body.style.position,
+        bodyTop: document.body.style.top,
+        bodyOverflow: document.body.style.overflow,
+        htmlOverflow: document.documentElement.style.overflow,
+      }));
+      assert("scroll lock never sets body{position:fixed}", locked.bodyPosition !== "fixed");
+      assert("scroll lock never offsets body with a top", !locked.bodyTop);
+      assert("scroll lock does hold the background (body overflow hidden)", locked.bodyOverflow === "hidden");
+      assert("scroll lock hides html overflow too", locked.htmlOverflow === "hidden");
+
+      // Style strings alone cannot prove the lock WORKS: on iOS, overflow:hidden
+      // does not stop a touch drag from scrolling the root, which is exactly why
+      // body{position:fixed} was used before. Assert the behaviour instead — a
+      // background touchmove must be cancelled, and a drag inside a real
+      // scroller must not be.
+      const drag = await page.evaluate(() => {
+        // fromY -> toY so the lock can tell which way the finger went: a
+        // scroller pinned at its edge must NOT be exempt for a drag that would
+        // carry the gesture past that edge and into the page behind.
+        const move = (el, y, x = 10) => {
+          const t = new Touch({ identifier: 1, target: el, clientX: x, clientY: y });
+          const e = new TouchEvent("touchmove", { bubbles: true, cancelable: true, touches: [t] });
+          el.dispatchEvent(e);
+          return e.defaultPrevented;
+        };
+        const start = (el, y, x = 10) => {
+          const t = new Touch({ identifier: 1, target: el, clientX: x, clientY: y });
+          el.dispatchEvent(new TouchEvent("touchstart", { bubbles: true, cancelable: true, touches: [t] }));
+        };
+        const fire = (el, fromY = 10, toY = 10) => { start(el, fromY); return move(el, toY); };
+        // The panel is empty headlessly, so build a scroller that matches what
+        // the leaderboard list is at runtime rather than skipping the case.
+        const panel = document.getElementById("lbPanel") || document.body;
+        const scroller = document.createElement("div");
+        scroller.style.cssText = "overflow-y:auto;height:40px";
+        scroller.innerHTML = "<div style='height:400px'></div>";
+        panel.appendChild(scroller);
+        const inner = scroller.firstChild;
+        const out = {
+          // A real drag, not a zero-movement event: the axis latch needs travel
+          // before anything can be cancelled, so fromY===toY proved nothing.
+          background: fire(document.getElementById("fnBanner") || document.body, 10, 60),
+          scrollerIsReal: scroller.scrollHeight > scroller.clientHeight,
+          // At the top, dragging DOWN would chain to the page behind: cancel.
+          atTopDragDown: (scroller.scrollTop = 0, fire(inner, 10, 60)),
+          // At the top, dragging UP still has somewhere to go: allow.
+          atTopDragUp: (scroller.scrollTop = 0, fire(inner, 60, 10)),
+          // Mid-scroll, either direction is the scroller's own business.
+          midDragDown: (scroller.scrollTop = 100, fire(inner, 10, 60)),
+          // At the bottom, dragging UP would chain: cancel.
+          atBottomDragUp: (scroller.scrollTop = scroller.scrollHeight, fire(inner, 60, 10)),
+        };
+
+        // Reversing direction mid-gesture: each move must be judged against the
+        // PREVIOUS one. Measured against touchstart, dy stays negative until the
+        // finger passes where it began, so a downward drag at the top still
+        // reads as upward and is exempted straight through to the root.
+        scroller.scrollTop = 0;
+        start(inner, 100);
+        out.reverseFirstUp = move(inner, 50);   // upward, room below: allowed
+        out.reverseThenDown = move(inner, 60);  // now downward at the top: cancel
+
+        // A pinned inner scroller must hand off to a scrollable ancestor rather
+        // than cancelling: .chat-history inside an overflowing .modal.
+        const outer = document.createElement("div");
+        outer.style.cssText = "overflow-y:auto;height:40px";
+        const nested = document.createElement("div");
+        nested.style.cssText = "overflow-y:auto;height:20px";
+        nested.innerHTML = "<div style='height:200px'></div>";
+        outer.appendChild(nested);
+        outer.appendChild(Object.assign(document.createElement("div"), { style: "height:400px" }));
+        panel.appendChild(outer);
+        nested.scrollTop = 0;       // inner pinned at its top
+        outer.scrollTop = 100;      // ...but the parent still has room upward
+        out.nestedHandoff = fire(nested.firstChild, 10, 60);
+        out.nestedIsReal = nested.scrollHeight > nested.clientHeight &&
+                           outer.scrollHeight > outer.clientHeight;
+        outer.remove();
+
+        // Sideways swipes on a horizontal strip (.fnl-stand in live FN mode,
+        // .filter-wrap) must survive the lock, and stop at its edges the same
+        // way a vertical scroller does.
+        const strip = document.createElement("div");
+        strip.style.cssText = "overflow-x:auto;width:40px;white-space:nowrap";
+        strip.innerHTML = "<div style='width:400px;display:inline-block'></div>";
+        panel.appendChild(strip);
+        const stripInner = strip.firstChild;
+        out.stripIsReal = strip.scrollWidth > strip.clientWidth;
+        strip.scrollLeft = 100;                                  // mid-scroll
+        start(stripInner, 10, 10); out.stripMid = move(stripInner, 10, 60);
+        strip.scrollLeft = 0;                                    // pinned left
+        start(stripInner, 10, 10); out.stripAtLeftRight = move(stripInner, 10, 60);
+        strip.scrollLeft = strip.scrollWidth;                    // pinned right
+        start(stripInner, 10, 60); out.stripAtRightLeft = move(stripInner, 10, 10);
+        // A gesture scrolls one axis. A mostly-VERTICAL drag that happens to
+        // start over the horizontal strip must not be exempted by it — the
+        // vertical component would scroll the root behind the overlay.
+        strip.scrollLeft = 100;                                  // could move sideways
+        start(stripInner, 10, 10);
+        out.stripVerticalDrag = move(stripInner, 80, 12);        // dy 70, dx 2
+        strip.remove();
+
+        // ...and the mirror: a mostly-HORIZONTAL drag over a vertical-only
+        // scroller must not be exempted by it either.
+        scroller.scrollTop = 100;
+        start(inner, 10, 10);
+        out.vScrollerHorizontalDrag = move(inner, 12, 80);       // dx 70, dy 2
+
+        // The axis is latched for the GESTURE, not recomputed per move. A
+        // horizontal swipe that opens with a vertical-dominant pixel, or
+        // pauses mid-flick, must not flip to the vertical branch and get
+        // cancelled — on iOS one early cancel kills the rest of the touch.
+        const strip2 = document.createElement("div");
+        strip2.style.cssText = "overflow-x:auto;width:40px;white-space:nowrap";
+        strip2.innerHTML = "<div style='width:400px;display:inline-block'></div>";
+        panel.appendChild(strip2);
+        const s2i = strip2.firstChild;
+        strip2.scrollLeft = 100;
+        // Pure-vertical opening jitter, below the latch threshold and with
+        // NOTHING on the horizontal axis — the previous jitter test supplied
+        // dx===1, so it never reached this. Must not be cancelled: on iOS one
+        // early cancel kills the swipe that follows.
+        start(s2i, 10, 10);
+        out.undecidedZeroDx = move(s2i, 13, 10); // dy 3, dx 0, axis undecided
+        start(s2i, 10, 10);
+        move(s2i, 12, 11);                       // jittery opener: dy 2, dx 1
+        out.jitterThenSwipe = move(s2i, 13, 60); // now clearly horizontal
+        // A pause mid-gesture (one vertical-dominant move) must not flip it.
+        out.pauseMidSwipe = move(s2i, 16, 61);   // dy 3, dx 1 — still horizontal
+        // ...and a move with NOTHING on the latched axis (dx===0, pure vertical
+        // jitter) must not be cancelled either. The previous "pause" advanced x
+        // by 1px, so it never exercised this.
+        out.zeroDeltaOnAxis = move(s2i, 20, 61); // dx 0, dy 4
+        strip2.remove();
+
+        // And the latch holds the other way: a vertical gesture stays vertical
+        // even if one later move happens to be horizontal-dominant.
+        scroller.scrollTop = 100;
+        start(inner, 10, 10);
+        move(inner, 60, 10);                     // clearly vertical: latches v
+        out.vLatchHeld = move(inner, 62, 70);    // dx 60, dy 2 — still vertical
+        out.vZeroDelta = move(inner, 62, 90);    // dy 0, dx 20 — nothing on the axis
+
+        // Direction memory must not survive into the NEXT gesture. Pinned at
+        // the top, a fresh touch whose first move says nothing has no direction
+        // to act on and must be cancelled — if it inherited the previous
+        // gesture's upward direction it would be exempted and chain to the root.
+        // NOTE: there is deliberately no cross-gesture direction-leak test.
+        // Once cancellation is deferred until the axis latches, the latching
+        // move always carries a non-zero delta on that axis and overwrites any
+        // stale direction, so the leak is unreachable by any gesture we can
+        // construct. The reset in _lockTouchStart stays as hygiene, but an
+        // assertion for it would pass with the reset removed -- which is what
+        // the earlier version of this test was doing.
+
+        out.insideScroller = out.midDragDown;
+        scroller.remove();
+        return out;
+      });
+      assert("a background drag is cancelled, so the page cannot scroll behind the overlay",
+        drag.background === true);
+      assert("...while a mid-scroll drag inside a real scroller is left alone",
+        drag.scrollerIsReal && drag.midDragDown === false);
+      assert("a scroller pinned at its top does not exempt a downward drag",
+        drag.atTopDragDown === true);
+      assert("...but still scrolls upward from there", drag.atTopDragUp === false);
+      assert("a scroller pinned at its bottom does not exempt an upward drag",
+        drag.atBottomDragUp === true);
+      assert("a reversed gesture is judged on the latest move, not the touchstart",
+        drag.reverseFirstUp === false && drag.reverseThenDown === true);
+      assert("a pinned inner scroller hands off to a parent that can still scroll",
+        drag.nestedIsReal && drag.nestedHandoff === false);
+      assert("a sideways swipe on a horizontal strip is left alone",
+        drag.stripIsReal && drag.stripMid === false);
+      assert("...and is cancelled at the strip's own edges",
+        drag.stripAtLeftRight === true && drag.stripAtRightLeft === true);
+      assert("a mostly-vertical drag is not exempted by a horizontal strip",
+        drag.stripVerticalDrag === true);
+      assert("...nor a mostly-horizontal drag by a vertical-only scroller",
+        drag.vScrollerHorizontalDrag === true);
+      assert("a jittery opener does not flip a horizontal swipe to the vertical branch",
+        drag.jitterThenSwipe === false);
+      assert("...nor does a pause mid-swipe", drag.pauseMidSwipe === false);
+      assert("a latched vertical gesture stays vertical through a sideways move",
+        drag.vLatchHeld === false);
+      assert("a move with zero delta on the latched axis is not cancelled",
+        drag.zeroDeltaOnAxis === false && drag.vZeroDelta === false);
+      assert("nothing is cancelled while the gesture axis is still undecided",
+        drag.undecidedZeroDx === false);
+
+      await page.evaluate(() => window.closeLeaderboard && window.closeLeaderboard());
+      await page.waitForTimeout(300);
+      const unlocked = await page.evaluate(() => ({
+        bodyOverflow: document.body.style.overflow,
+        htmlOverflow: document.documentElement.style.overflow,
+        bodyOverscroll: document.body.style.overscrollBehavior,
+      }));
+      assert("closing the overlay releases the lock", !unlocked.bodyOverflow && !unlocked.htmlOverflow);
+      assert("...and clears overscroll-behavior with it", !unlocked.bodyOverscroll);
+      const dragAfter = await page.evaluate(() => {
+        const el = document.getElementById("fnBanner") || document.body;
+        const t = new Touch({ identifier: 1, target: el, clientX: 10, clientY: 10 });
+        const e = new TouchEvent("touchmove", { bubbles: true, cancelable: true, touches: [t] });
+        el.dispatchEvent(e);
+        return e.defaultPrevented;
+      });
+      assert("...and stops cancelling drags, so the page scrolls again", dragAfter === false);
     }
   } catch (e) {
     fatal.push("Navigation/boot failed: " + e.message);
