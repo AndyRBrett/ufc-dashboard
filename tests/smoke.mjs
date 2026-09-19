@@ -107,9 +107,14 @@ async function main() {
       // background touchmove must be cancelled, and a drag inside a real
       // scroller must not be.
       const drag = await page.evaluate(() => {
-        const fire = (el) => {
-          const t = new Touch({ identifier: 1, target: el, clientX: 10, clientY: 10 });
-          const e = new TouchEvent("touchmove", { bubbles: true, cancelable: true, touches: [t] });
+        // fromY -> toY so the lock can tell which way the finger went: a
+        // scroller pinned at its edge must NOT be exempt for a drag that would
+        // carry the gesture past that edge and into the page behind.
+        const fire = (el, fromY = 10, toY = 10) => {
+          const start = new Touch({ identifier: 1, target: el, clientX: 10, clientY: fromY });
+          el.dispatchEvent(new TouchEvent("touchstart", { bubbles: true, cancelable: true, touches: [start] }));
+          const move = new Touch({ identifier: 1, target: el, clientX: 10, clientY: toY });
+          const e = new TouchEvent("touchmove", { bubbles: true, cancelable: true, touches: [move] });
           el.dispatchEvent(e);
           return e.defaultPrevented;
         };
@@ -123,16 +128,29 @@ async function main() {
         const inner = scroller.firstChild;
         const out = {
           background: fire(document.getElementById("fnBanner") || document.body),
-          insideScroller: fire(inner),
           scrollerIsReal: scroller.scrollHeight > scroller.clientHeight,
+          // At the top, dragging DOWN would chain to the page behind: cancel.
+          atTopDragDown: (scroller.scrollTop = 0, fire(inner, 10, 60)),
+          // At the top, dragging UP still has somewhere to go: allow.
+          atTopDragUp: (scroller.scrollTop = 0, fire(inner, 60, 10)),
+          // Mid-scroll, either direction is the scroller's own business.
+          midDragDown: (scroller.scrollTop = 100, fire(inner, 10, 60)),
+          // At the bottom, dragging UP would chain: cancel.
+          atBottomDragUp: (scroller.scrollTop = scroller.scrollHeight, fire(inner, 60, 10)),
         };
+        out.insideScroller = out.midDragDown;
         scroller.remove();
         return out;
       });
       assert("a background drag is cancelled, so the page cannot scroll behind the overlay",
         drag.background === true);
-      assert("...while a drag inside a real scroller is left alone",
-        drag.scrollerIsReal && drag.insideScroller === false);
+      assert("...while a mid-scroll drag inside a real scroller is left alone",
+        drag.scrollerIsReal && drag.midDragDown === false);
+      assert("a scroller pinned at its top does not exempt a downward drag",
+        drag.atTopDragDown === true);
+      assert("...but still scrolls upward from there", drag.atTopDragUp === false);
+      assert("a scroller pinned at its bottom does not exempt an upward drag",
+        drag.atBottomDragUp === true);
 
       await page.evaluate(() => window.closeLeaderboard && window.closeLeaderboard());
       await page.waitForTimeout(300);

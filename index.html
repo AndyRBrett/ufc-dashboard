@@ -2223,14 +2223,29 @@ var _scrollY=0;
 // the source: a touchmove that is not inside something which can actually
 // scroll gets preventDefault(). A drag inside the leaderboard list, the chat
 // transcript or the wheel list still scrolls normally.
-var _lockTouch=null;
+var _lockTouch=null,_lockStart=null,_lockY=0;
+function _lockTouchStart(e){if(e.touches&&e.touches.length===1)_lockY=e.touches[0].clientY;}
 function _lockTouchMove(e){
   if(e.touches&&e.touches.length>1)return;          // leave pinch-zoom alone
+  var t=e.touches&&e.touches[0];
+  var dy=t?t.clientY-_lockY:0;                      // >0 dragging down, <0 dragging up
   var n=e.target;
   while(n&&n.nodeType===1&&n!==document.body){
     if(n.scrollHeight>n.clientHeight){
       var oy=getComputedStyle(n).overflowY;
-      if(oy==="auto"||oy==="scroll")return;         // a real scroller: let it work
+      if(oy==="auto"||oy==="scroll"){
+        // The innermost real scroller owns this gesture -- but only while it
+        // can still move THAT WAY. Exempting it unconditionally is what lets a
+        // drag outward from its top or bottom edge chain to the root and take
+        // the background with it, which is the whole failure this lock exists
+        // to stop. Dragging down scrolls its content toward the top, so it is
+        // only useful when it is not already there, and vice versa.
+        var atTop=n.scrollTop<=0;
+        var atBottom=n.scrollTop+n.clientHeight>=n.scrollHeight-1;
+        if(dy>0&&!atTop)return;
+        if(dy<0&&!atBottom)return;
+        break;                                       // pinned at the edge: cancel
+      }
     }
     n=n.parentElement;
   }
@@ -2242,7 +2257,8 @@ function lockScroll(){
   d.style.overflow='hidden';b.style.overflow='hidden';
   d.style.overscrollBehavior='none';b.style.overscrollBehavior='none';
   if(!_lockTouch){
-    _lockTouch=_lockTouchMove;
+    _lockTouch=_lockTouchMove;_lockStart=_lockTouchStart;
+    document.addEventListener('touchstart',_lockStart,{passive:true});
     document.addEventListener('touchmove',_lockTouch,{passive:false});
   }
 }
@@ -2250,7 +2266,11 @@ function unlockScroll(){
   var d=document.documentElement,b=document.body;
   d.style.overflow='';b.style.overflow='';
   d.style.overscrollBehavior='';b.style.overscrollBehavior='';
-  if(_lockTouch){document.removeEventListener('touchmove',_lockTouch,{passive:false});_lockTouch=null;}
+  if(_lockTouch){
+    document.removeEventListener('touchmove',_lockTouch,{passive:false});
+    document.removeEventListener('touchstart',_lockStart,{passive:true});
+    _lockTouch=null;_lockStart=null;
+  }
   window.scrollTo(0,_scrollY);
 }
 
