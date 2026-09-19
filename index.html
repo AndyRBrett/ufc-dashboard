@@ -3614,7 +3614,25 @@ function deleteAccount(){
     // Delete the user's own rows first, using the current authenticated session.
     return fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h}).then(function(r){
       if(!r.ok)throw new Error("delete "+r.status);
-      return fetch(SUPABASE_URL+"/rest/v1/push_subs?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h}).catch(function(){});
+      return fetch(SUPABASE_URL+"/rest/v1/push_subs?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h}).catch(function(){})
+        // The delete dialog promises to remove "notification settings", and
+        // user_prefs is now where those live. Leaving it would outlive the
+        // account and silently restore itself if the same email signed in
+        // again -- the app stating something false about its own deletion.
+        .then(function(){return fetch(SUPABASE_URL+"/rest/v1/user_prefs?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h});})
+        .then(function(r){
+          // Not swallowed: a failure here leaves the row recoverable on the
+          // next sign-in while the dialog has already claimed the settings
+          // were permanently removed. Propagate so the user is told to retry
+          // instead of being told it worked.
+          // 404 is the exception, and it is not a failure: PostgREST answers
+          // 404 for a table that does not exist, which is every install until
+          // 0004 is applied by hand. Treating that as fatal would make
+          // "Delete forever" impossible until the migration runs. A DELETE
+          // that matches no rows returns 204, so 404 really does mean "no
+          // such table" -- there is nothing there to leave behind.
+          if(!r.ok&&r.status!==404)throw new Error("delete prefs "+r.status);
+        });
     });
   }).then(function(){
     // Best-effort: drop the browser push subscription, then wipe all local state.
@@ -3775,10 +3793,26 @@ function acctVerify(){
 function _postSignIn(prevId,email){
   if(email){try{var s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");if(s&&!s.email){s.email=email;_saveSession(s);}}catch(e){}}
   var changed=(prevId&&USER_ID&&prevId!==USER_ID)||(!userName&&!!USER_ID);
+  // Cleared HERE rather than in finish(): a different account is a different
+  // set of answers, and finish() does not run until the profile fetch settles.
+  // The account modal has already closed by then, so a toggle during a slow
+  // fetch would be handled with the PREVIOUS account's held intent and touched
+  // keys -- writing A's answers onto B's row. Nothing between here and finish()
+  // reads this state, so clearing it early costs nothing.
+  if(changed){_prefsTouched={};_prefsPending=null;}
   var finish=function(){
     _syncAcctBtn();
     if(window._pp&&userName){window._pp();window._pp=null;}
     syncAllPicks();           // merge this device's local picks into the signed-in identity
+    _prefsLoad(!changed);     // ...and restore that identity's toggles (never seed B from A)
+    // The browser's push subscription is still registered under the PREVIOUS
+    // user_id. Until something re-registers it, account-targeted pushes keep
+    // going to the old identity and the signed-in one gets none. _ensurePushFresh
+    // re-registers under the current USER_ID, and send-push's register deletes
+    // any row holding the same endpoint under a different user, so this rebinds
+    // rather than duplicating. It healed itself on the next load before; that is
+    // a long time to misroute in an app people leave open on fight night.
+    if(changed)_ensurePushFresh();
     fetchCommunityPicks();
     var lbPanel=document.getElementById("lbPanel");
     if(lbPanel&&lbPanel.classList.contains("open"))loadLeaderboard(false);
@@ -3805,6 +3839,203 @@ function _bufToBase64Url(buf){var bytes=new Uint8Array(buf);var str='';for(var i
 function _setBellActive(on){var nb=document.getElementById("notifBell");if(!nb)return;if(on)nb.classList.add("bell-active");else nb.classList.remove("bell-active");}
 // Result notifications are spoiler-free unless the user opts in to live results.
 function _liveResultsOn(){try{return localStorage.getItem("ufc_live_results")==="1";}catch(e){return false;}}
+// prefs:start
+// ===== Notification preferences follow the account, not the install =====
+//
+// All three notification toggles (the bell, Live Result Spoilers, fight-night
+// reminders) lived only in localStorage. Signing back in restored the identity
+// and every pick and then showed all three off, so the user re-picked settings
+// they had already chosen. Reported after exactly that: changing an
+// apple-mobile-web-app-* tag only reaches an iOS home-screen app if it is
+// deleted and re-added, which clears its storage. user_prefs (migration 0004)
+// is keyed by user_id, read when auth resolves and again when an in-app
+// sign-in switches identity, and written on every toggle.
+function _pushOn(){try{return localStorage.getItem("ufc_push")==="1";}catch(e){return false;}}
+function _remindersOn(){try{return localStorage.getItem("ufc_notif")==="1";}catch(e){return false;}}
+// Intent we could not apply for want of OS permission, held until we can.
+var _prefsPending=null;
+// Keys the user has explicitly set in this session. A stored value never
+// overrides one of these. Without it, a GET already in flight when the user
+// taps the bell lands afterwards and applies the OLD row: ufc_push goes back
+// to "1" and _ensurePushFresh re-subscribes, silently undoing the tap. Session
+// scoped on purpose -- an explicit action is the freshest signal there is, and
+// it should outlive one response, not just the one that raced it.
+var _prefsTouched={};
+// Held intent must be filtered the same way applying it is. Storing the row
+// wholesale and only filtering at apply time still leaks: the merge in
+// _prefsSave reads the unfiltered row, so an unrelated later toggle writes the
+// touched key's stored value back to the account, and the choice the user made
+// reappears on their next reinstall.
+function _prefsWithoutTouched(p){
+  var o={},k;
+  for(k in p)if(Object.prototype.hasOwnProperty.call(p,k)&&!_prefsTouched[k])o[k]=p[k];
+  return o;
+}
+function _prefsGranted(){try{return("Notification" in window)&&Notification.permission==="granted";}catch(e){return false;}}
+// `changed` names the key the calling toggle just set, if any. Two jobs, and
+// both are about held intent (_prefsPending) that we could not apply for want
+// of OS permission:
+//
+//   1. The user's explicit choice supersedes held intent for that key, so the
+//      key is dropped from the pending row. Without this, turning Live Result
+//      Spoilers OFF before the permission prompt, then granting, would apply
+//      the stale pending snapshot and switch it straight back on.
+//   2. Every OTHER held key is merged into this write instead of being
+//      serialized from an unset local flag. Without this, ANY save before the
+//      prompt -- a spoiler toggle, anything -- writes push:false and
+//      reminders:false over the stored true, and if the page closes before
+//      permission is granted the settings are gone for good. Protecting the
+//      intent only once permission arrives protects it exactly when it is no
+//      longer at risk.
+// Writes are serialized. Two toggles in quick succession used to race, and
+// whichever POST happened to land last won -- flip a preference on then off
+// and the row could keep the "on", so the reinstall restored a setting the
+// user had switched off. Chaining costs nothing at this volume.
+var _prefsQ=Promise.resolve();
+function _prefsWrite(payload,forId){
+  _prefsQ=_prefsQ.then(function(){
+    return _authReady.then(function(){
+      var h=_sbHeaders();h.Prefer="resolution=merge-duplicates";
+      payload.user_id=forId;payload.updated_at=new Date().toISOString();
+      return fetch(SUPABASE_URL+"/rest/v1/user_prefs?on_conflict=user_id",{
+        method:"POST",headers:h,body:JSON.stringify(payload)});
+    }).then(function(r){
+      // fetch resolves on 401/403/5xx, so without this a rejected write was
+      // indistinguishable from a stored one: the toggle stayed on locally, the
+      // row never changed, and the old value came back on the next reinstall.
+      // Nothing here retries -- the next toggle of that key writes it again,
+      // and a load cannot silently "repair" it without overriding a choice the
+      // user may have made elsewhere. It must at least stop lying.
+      if(!r.ok)throw new Error("prefs save "+r.status);
+      return r;
+    });
+  }).catch(function(e){console.error("prefs save failed",e);});
+  return _prefsQ;
+}
+// A toggle writes ONLY the column it changed. PostgREST's merge-duplicates
+// upsert updates just the columns present in the payload, so a preference this
+// device knows nothing about is left alone instead of being overwritten with
+// this device's stale copy. The full-row write survives for exactly one case:
+// seeding an account that has no row, where there is nothing to overwrite.
+//
+// This is what the previous full-row write cost, and it is why the merge that
+// used to live here is gone. Sending all three columns every time meant (a) a
+// toggle on one device erased a preference set on another, and (b) held intent
+// had to be merged into every write or the unset local flags erased it. Per
+// column, neither can happen: what we do not send, the server keeps.
+function _prefsSave(changed){
+  if(!USER_ID)return Promise.resolve();
+  if(changed){_prefsTouched[changed]=true;if(_prefsPending&&changed in _prefsPending)delete _prefsPending[changed];}
+  // Permission granted (typically by the toggle that just called us): apply
+  // the rest of the held row for real, so the flags below read it back.
+  if(_prefsPending&&_prefsGranted()){
+    var pend=_prefsPending;_prefsPending=null;_prefsApply(pend);
+  }
+  var vals={push:_pushOn(),live_results:_liveResultsOn(),reminders:_remindersOn()},payload={};
+  if(changed)payload[changed]=vals[changed];
+  else{payload.push=vals.push;payload.live_results=vals.live_results;payload.reminders=vals.reminders;}
+  return _prefsWrite(payload,USER_ID);
+}
+// allowSeed=false after an identity switch: see the seed branch below.
+function _prefsLoad(allowSeed){
+  if(!USER_ID)return Promise.resolve();
+  // Whose preferences this request is for. An in-app sign-in can adopt a
+  // different identity while it is in the air, and applying A's row to B would
+  // light B's bell from A's preference and register B for push A asked for.
+  var forId=USER_ID;
+  return _authReady.then(function(){
+    return fetch(SUPABASE_URL+"/rest/v1/user_prefs?select=push,live_results,reminders&user_id=eq."+encodeURIComponent(forId),{headers:_sbHeaders()});
+  }).then(function(r){
+    // A transient failure is NOT "this account has no row". Reading it as one
+    // takes the seed path below, which writes the full row -- overwriting a
+    // real remote row, settings enabled on another device included, with this
+    // device's local snapshot. 404 is the one non-2xx that is not a failure:
+    // it means the table is not there (0004 unapplied), and there is nothing
+    // to seed into.
+    if(r.status===404)return null;
+    if(!r.ok)throw new Error("prefs load "+r.status);
+    return r.json();
+  })
+    .then(function(rows){if(USER_ID!==forId)throw new Error("_prefs_stale_identity");return rows;})
+    .then(function(rows){
+      if(rows===null)return;                       // no table to read or seed
+      if(rows&&rows[0]){_prefsApply(rows[0]);return;}
+      // No row: this account predates the table, so its settings still live
+      // only in localStorage -- and the next thing this user may do is follow
+      // the what's-new notice and delete the app, which clears exactly that.
+      // Waiting for the next toggle to write would lose the settings of every
+      // existing user, the cohort this whole change is for. Seed now instead.
+      // Only when something is actually on: a row of falses is a write per
+      // user carrying no information.
+      //
+      // NOT after an identity switch. Seeding writes THIS DEVICE's local flags
+      // as the account's settings, which is right for an account whose
+      // settings have always lived here and wrong the moment you sign into a
+      // different one: the flags still belong to the account just signed out
+      // of, so this would copy A's push, reminder and spoiler preferences into
+      // B -- permanently, and onward to B's other installs. _postSignIn clears
+      // the touched keys and held intent on a switch but cannot clear the
+      // local flags, because they describe a live subscription on this device.
+      if(allowSeed===false)return;
+      if(_pushOn()||_liveResultsOn()||_remindersOn())_prefsSave();
+    })
+    .catch(function(e){if(!e||e.message!=="_prefs_stale_identity")console.error("prefs load failed",e);});
+}
+// Restoring a preference must never claim a capability the browser has not
+// granted. A fresh install has NO OS notification permission -- iOS only
+// prompts on a user gesture -- so writing ufc_push="1" from a stored pref
+// would light the bell while nothing is subscribed: precisely the "thinks
+// notifications are on, silently unreachable when the app is closed" state
+// _ensurePushFresh exists to prevent, and it would also make _ensurePushFresh
+// itself pass its localStorage gate and then bail on the permission check,
+// leaving the lie in place. So the push-dependent flags restore only when
+// permission is already granted; otherwise the remembered intent becomes a
+// prompt, and the user's one tap does the rest with live_results and
+// reminders already correct underneath it.
+//
+// Positives only, deliberately: a stored false never switches off something
+// that is on and working on this device. Divergence means another device
+// changed it, and silently killing a live subscription is far worse than
+// leaving it on -- the user turned it on here and can turn it off here.
+function _prefsApply(p){
+  if(!p)return;
+  var granted=_prefsGranted();
+  // Pure preference as far as the OS is concerned, so it restores either way.
+  // But it is not purely local: send-push decides whether a result alert names
+  // the winner from push_subs.live_results, so restoring the flag without
+  // re-registering leaves the toggle reading "on" while alerts stay
+  // spoiler-free -- the app showing a setting it is not honouring.
+  // toggleLiveResults() syncs for exactly this reason; the restore path has to
+  // as well, and cannot lean on the push branch below, which does not run when
+  // the stored push preference is false. _syncLivePref no-ops without a
+  // subscription, and re-registering is an idempotent upsert, so the rare
+  // overlap with _ensurePushFresh costs one redundant call and nothing else.
+  if(p.live_results&&!_prefsTouched.live_results){
+    try{localStorage.setItem("ufc_live_results","1");}catch(e){}
+    _setLiveResActive(true);
+    _syncLivePref();
+  }
+  if(!granted){
+    // Hold what we could not apply. Without this the intent is not merely
+    // unshown, it is destroyed by the next _prefsSave (see there).
+    _prefsPending=_prefsWithoutTouched(p);
+    if((p.push&&!_prefsTouched.push)||(p.reminders&&!_prefsTouched.reminders))
+      toast("Tap the bell to turn your fight notifications back on");
+    return;
+  }
+  if(p.push&&!_prefsTouched.push){
+    try{localStorage.setItem("ufc_push","1");}catch(e){}
+    _setBellActive(true);
+    _ensurePushFresh();
+  }
+  if(p.reminders&&!_prefsTouched.reminders){
+    try{localStorage.setItem("ufc_notif","1");}catch(e){}
+    notifActive=true;
+    var nb=document.getElementById("notifBtn");if(nb)nb.classList.add("active");
+    if(typeof checkNotifSchedule==="function")checkNotifSchedule();
+  }
+}
+// prefs:end
 function _setLiveResActive(on){var b=document.getElementById("liveResBtn");if(!b)return;if(on)b.classList.add("bell-active");else b.classList.remove("bell-active");}
 // Re-register the existing push subscription so the server picks up the new
 // live_results preference (register upserts on user_id — no resubscribe needed).
@@ -3835,6 +4066,7 @@ function toggleLiveResults(){
   _setLiveResActive(on);
   _stashPushIdentity();
   _syncLivePref();
+  _prefsSave("live_results");
   toast(on?"Live results on — alerts will name winners 🚨":"Spoiler-free — alerts won't reveal winners 🙈");
 }
 // Stash the identity the service worker needs to re-register itself if the
@@ -3900,6 +4132,7 @@ function enablePush(){
             }).catch(function(e){console.error("push register error",e);toast("⚠️ Notification setup failed — check connection");});
             try{localStorage.setItem("ufc_push","1");}catch(e){}
             _setBellActive(true);
+            _prefsSave("push");
             toast("Fight notifications enabled! 🔔");
           }).catch(function(){toast("Could not subscribe to notifications");});
         };
@@ -3914,6 +4147,7 @@ function togglePush(){
   if(active){
     try{localStorage.setItem("ufc_push","0");}catch(e){}
     _setBellActive(false);
+    _prefsSave("push");
     if("serviceWorker" in navigator){
       navigator.serviceWorker.ready.then(function(reg){
         reg.pushManager.getSubscription().then(function(sub){
@@ -4605,9 +4839,9 @@ function checkNotifSchedule(){
 setInterval(checkNotifSchedule,5*60*1000);
 function toggleNotif(){
   if(!("Notification" in window)){toast("Notifications not supported");return;}
-  if(notifActive){notifActive=false;document.getElementById("notifBtn").classList.remove("active");toast("Reminders off");try{localStorage.setItem("ufc_notif","0");}catch(e){}return;}
+  if(notifActive){notifActive=false;document.getElementById("notifBtn").classList.remove("active");toast("Reminders off");try{localStorage.setItem("ufc_notif","0");}catch(e){}_prefsSave("reminders");return;}
   Notification.requestPermission().then(function(perm){
-    if(perm==="granted"){notifActive=true;document.getElementById("notifBtn").classList.add("active");try{localStorage.setItem("ufc_notif","1");}catch(e){}checkNotifSchedule();toast("Fight night reminders on!");}
+    if(perm==="granted"){notifActive=true;document.getElementById("notifBtn").classList.add("active");try{localStorage.setItem("ufc_notif","1");}catch(e){}_prefsSave("reminders");checkNotifSchedule();toast("Fight night reminders on!");}
     else{toast("Enable notifications in settings");}
   });
 }
@@ -7739,6 +7973,9 @@ document.addEventListener("DOMContentLoaded",function(){
   // silently become a dead subscription (rotated endpoint / pruned row) that
   // never reaches the phone while the app is closed.
   _authReady.then(_ensurePushFresh);
+  // Preferences ride the account: pull them once auth has settled, so a fresh
+  // install that signs in gets its toggles back instead of showing them off.
+  _authReady.then(function(){_prefsLoad(true);});
   _setLiveResActive(_liveResultsOn());
   setTimeout(startLivePolling,4000);
   _initSwipe();
