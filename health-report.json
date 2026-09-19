@@ -1,32 +1,40 @@
 {
-  "generated_at": "2026-09-18T23:28:05Z",
+  "generated_at": "2026-09-19T00:03:05Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 3
+    "warn": 4
   },
   "findings": [
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
-      "message": "UFC Fight Night: Moicano vs. Nolan (43d out): venue 'TBD' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "message": "UFC Fight Night: Moicano vs. Nolan (42d out): venue 'TBD' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Moicano vs. Nolan",
       "date": "2026-10-31"
     },
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
-      "message": "UFC Fight Night: Bonfim vs. Brady (50d out): venue 'Meta Apex' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "message": "UFC Fight Night: Bonfim vs. Brady (49d out): venue 'Meta Apex' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Bonfim vs. Brady",
       "date": "2026-11-07"
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Rosas Jr. vs. Barcelos (8d out): 3 of 11 bouts have no odds",
+      "message": "UFC Fight Night: Rosas Jr. vs. Barcelos (7d out): 3 of 11 bouts have no odds",
       "event": "UFC Fight Night: Rosas Jr. vs. Barcelos",
       "date": "2026-09-26",
-      "days_out": 8
+      "days_out": 7
+    },
+    {
+      "severity": "WARN",
+      "check": "odds-missing-some",
+      "message": "UFC 332: Silva vs. Wang (14d out): 11 of 13 bouts have no odds",
+      "event": "UFC 332: Silva vs. Wang",
+      "date": "2026-10-03",
+      "days_out": 14
     }
   ]
 }
