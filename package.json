@@ -20,7 +20,8 @@
     "check:whatsnew": "node tests/check-whats-new.mjs",
     "check:prefs": "node tests/check-prefs.mjs",
     "check:kick": "node tests/check-kick-gate.mjs",
-    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew && npm run check:prefs && npm run check:kick"
+    "check:lock": "node tests/check-lock-times.mjs",
+    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew && npm run check:prefs && npm run check:kick && npm run check:lock"
   },
   "devDependencies": {
     "esbuild": "^0.24.0",

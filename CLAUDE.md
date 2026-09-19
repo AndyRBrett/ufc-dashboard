@@ -34,6 +34,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:whatsnew` | the what's-new popup losing a backfill announcement or growing unbounded |
 | `npm run check:prefs` | a restored notification pref lighting the bell with nothing subscribed |
 | `npm run check:kick`  | the scraper not being dispatched on a card day or in fight week |
+| `npm run check:lock`  | a bout still pickable after its own segment has started (or locked before it) |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -234,6 +235,32 @@ stranded. `renderWhatsNew` moves focus onto "Got it" on open; `_wnTrapFocus`
 X and "Got it" instead of escaping into the page; `closeWhatsNew` restores
 focus to wherever it was. `npm run check:whatsnew` holds all three,
 mutation-tested individually.
+
+## A PPV runs three segments, and each one is a lock clock
+
+A numbered PPV airs early prelims 5pm / prelims 7pm / main card 9pm ET; a Fight
+Night airs two segments. `index.html` locks a bout when **its own** segment
+starts, so the segment label is not cosmetic — it decides when picks close.
+
+The event model carried only `time` and `prelimTime`, so early-prelim bouts
+answered to the 7pm prelim gate: from their own 5pm opening bell until their
+result landed in `data.js` they stayed pickable, and you could back a fight you
+were watching. UFC 331 shipped three bouts that way. `earlyPrelimTime` is now
+the third clock, derived from the *resolved* prelim time (`_EARLY_PRELIM_LEAD_H`)
+so a card whose prelims move takes its early prelims along, and written only for
+PPVs — inventing one for a Fight Night would lock its prelims two hours early,
+the same bug pointing the other way.
+
+**The opposite error is the older one.** Locking every bout the moment the first
+segment starts made the main event unpickable hours before it ran, beside a
+countdown still counting down to it. `npm run check:lock` asserts both
+directions at all three boundaries, and is mutation-tested against each half.
+
+Which bouts sit in which segment is still inferred from **bout order**, not from
+the article's section headings — `parse_upcoming_card` reads `{{MMAevent bout}}`
+templates and throws the headings away. `_MAIN_CARD_SIZE` and
+`_PRELIM_CARD_SIZE` pin the exceptions to the standard 5 / 4 / rest shape. When
+the parser learns to read the headings, both tables retire together.
 
 ## Other conventions
 

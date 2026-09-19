@@ -821,6 +821,51 @@ def test_wiki_rematch_hint_never_sets_the_flag_on_its_own():
             f"flag: {line.strip()}")
 
 
+# --- early-prelim segment (the PPV's third clock) --------------------------
+
+def test_early_prelim_time_is_two_hours_before_the_prelims_on_a_ppv():
+    # UFC 331's published slots: early prelims 5pm / prelims 7pm / main card 9pm ET.
+    assert scrape._early_prelim_time("UFC 331: Van vs. Pantoja 2", "19:00") == "17:00"
+    # Derived from the RESOLVED prelim time, so a card whose prelims move takes
+    # its early prelims along rather than sitting on a stale hardcoded slot.
+    assert scrape._early_prelim_time("UFC 332: Silva vs. Wang", "18:30") == "16:30"
+
+
+def test_only_a_ppv_gets_a_third_clock():
+    # Fight Nights run two segments; inventing a third would lock their prelims
+    # two hours early, which is the same class of bug in the other direction.
+    assert scrape._early_prelim_time("UFC Fight Night: Hooker vs. Parnasse", "17:00") == ""
+    assert scrape._early_prelim_time("UFC on ESPN 71: A vs. B", "17:00") == ""
+
+
+def test_early_prelim_time_declines_to_guess_on_an_unusable_prelim_slot():
+    ppv = "UFC 331: Van vs. Pantoja 2"
+    assert scrape._early_prelim_time(ppv, "TBD") == ""
+    assert scrape._early_prelim_time(ppv, "") == ""
+    assert scrape._early_prelim_time(ppv, "garbage") == ""
+    # Would cross back over midnight — a negative hour is not a start time.
+    assert scrape._early_prelim_time(ppv, "01:00") == ""
+
+
+def test_prelim_card_size_matches_the_standard_ppv_shape():
+    # 5 main / 4 prelim / rest early is the shape UFC 331 shipped, and the
+    # boundary is what decides which clock locks a bout.
+    assert scrape._prelim_card_size("UFC 331: Van vs. Pantoja 2") == 4
+    assert scrape._main_card_size("UFC 331: Van vs. Pantoja 2") == 5
+
+
+def test_events_js_writes_early_prelim_time_only_when_present():
+    base = {"name": "UFC 331: Van vs. Pantoja 2", "date": "2026-09-19", "venue": "V",
+            "loc": "Los Angeles", "tv": "Paramount+", "time": "21:00",
+            "prelimTime": "19:00", "fights": []}
+    with_early = scrape.events_js([dict(base, earlyPrelimTime="17:00")])
+    assert 'earlyPrelimTime:"17:00"' in with_early
+    # ...and the prelim field it sits next to must still be readable on its own,
+    # since health.py matches prelimTime: anchored to the start of a line.
+    assert re.search(r'\n\s*prelimTime:"19:00"', with_early)
+    assert "earlyPrelimTime" not in scrape.events_js([base])
+
+
 # --- event de-duplication (stub must not shadow the real card) -------------
 
 def test_dedupe_events_keeps_richest_card():
