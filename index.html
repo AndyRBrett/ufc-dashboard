@@ -3885,6 +3885,33 @@ function _prefsGranted(){try{return("Notification" in window)&&Notification.perm
 //      permission is granted the settings are gone for good. Protecting the
 //      intent only once permission arrives protects it exactly when it is no
 //      longer at risk.
+// Writes are serialized. Two toggles in quick succession used to race, and
+// whichever POST happened to land last won -- flip a preference on then off
+// and the row could keep the "on", so the reinstall restored a setting the
+// user had switched off. Chaining costs nothing at this volume.
+var _prefsQ=Promise.resolve();
+function _prefsWrite(payload,forId){
+  _prefsQ=_prefsQ.then(function(){
+    return _authReady.then(function(){
+      var h=_sbHeaders();h.Prefer="resolution=merge-duplicates";
+      payload.user_id=forId;payload.updated_at=new Date().toISOString();
+      return fetch(SUPABASE_URL+"/rest/v1/user_prefs?on_conflict=user_id",{
+        method:"POST",headers:h,body:JSON.stringify(payload)});
+    });
+  }).catch(function(e){console.error("prefs save failed",e);});
+  return _prefsQ;
+}
+// A toggle writes ONLY the column it changed. PostgREST's merge-duplicates
+// upsert updates just the columns present in the payload, so a preference this
+// device knows nothing about is left alone instead of being overwritten with
+// this device's stale copy. The full-row write survives for exactly one case:
+// seeding an account that has no row, where there is nothing to overwrite.
+//
+// This is what the previous full-row write cost, and it is why the merge that
+// used to live here is gone. Sending all three columns every time meant (a) a
+// toggle on one device erased a preference set on another, and (b) held intent
+// had to be merged into every write or the unset local flags erased it. Per
+// column, neither can happen: what we do not send, the server keeps.
 function _prefsSave(changed){
   if(!USER_ID)return Promise.resolve();
   if(changed){_prefsTouched[changed]=true;if(_prefsPending&&changed in _prefsPending)delete _prefsPending[changed];}
@@ -3893,23 +3920,10 @@ function _prefsSave(changed){
   if(_prefsPending&&_prefsGranted()){
     var pend=_prefsPending;_prefsPending=null;_prefsApply(pend);
   }
-  var vals={push:_pushOn(),live_results:_liveResultsOn(),reminders:_remindersOn()};
-  if(_prefsPending){
-    // Re-checked here as well as at hold time: a key can be touched AFTER the
-    // row was held, and the merge is the path that writes it back.
-    if(_prefsPending.push&&!_prefsTouched.push)vals.push=true;
-    if(_prefsPending.live_results&&!_prefsTouched.live_results)vals.live_results=true;
-    if(_prefsPending.reminders&&!_prefsTouched.reminders)vals.reminders=true;
-  }
-  var forId=USER_ID;   // these values describe THIS identity, not whoever is current when the write lands
-  return _authReady.then(function(){
-    var h=_sbHeaders();h.Prefer="resolution=merge-duplicates";
-    return fetch(SUPABASE_URL+"/rest/v1/user_prefs?on_conflict=user_id",{
-      method:"POST",headers:h,
-      body:JSON.stringify({user_id:forId,push:vals.push,live_results:vals.live_results,
-        reminders:vals.reminders,updated_at:new Date().toISOString()})
-    });
-  }).catch(function(e){console.error("prefs save failed",e);});
+  var vals={push:_pushOn(),live_results:_liveResultsOn(),reminders:_remindersOn()},payload={};
+  if(changed)payload[changed]=vals[changed];
+  else{payload.push=vals.push;payload.live_results=vals.live_results;payload.reminders=vals.reminders;}
+  return _prefsWrite(payload,USER_ID);
 }
 function _prefsLoad(){
   if(!USER_ID)return Promise.resolve();
@@ -3919,9 +3933,20 @@ function _prefsLoad(){
   var forId=USER_ID;
   return _authReady.then(function(){
     return fetch(SUPABASE_URL+"/rest/v1/user_prefs?select=push,live_results,reminders&user_id=eq."+encodeURIComponent(forId),{headers:_sbHeaders()});
-  }).then(function(r){return r.ok?r.json():[];})
+  }).then(function(r){
+    // A transient failure is NOT "this account has no row". Reading it as one
+    // takes the seed path below, which writes the full row -- overwriting a
+    // real remote row, settings enabled on another device included, with this
+    // device's local snapshot. 404 is the one non-2xx that is not a failure:
+    // it means the table is not there (0004 unapplied), and there is nothing
+    // to seed into.
+    if(r.status===404)return null;
+    if(!r.ok)throw new Error("prefs load "+r.status);
+    return r.json();
+  })
     .then(function(rows){if(USER_ID!==forId)throw new Error("_prefs_stale_identity");return rows;})
     .then(function(rows){
+      if(rows===null)return;                       // no table to read or seed
       if(rows&&rows[0]){_prefsApply(rows[0]);return;}
       // No row: this account predates the table, so its settings still live
       // only in localStorage -- and the next thing this user may do is follow

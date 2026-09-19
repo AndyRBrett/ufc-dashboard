@@ -45,9 +45,22 @@ function run(prefs, permission) {
     USER_ID: "u1", notifActive: false,
     document: { getElementById: () => null },
     fetch: (url, opt) => {
-      if (String(url).includes("user_prefs") && opt && opt.method === "POST")
-        calls.saved.push(JSON.parse(opt.body));
-      return Promise.resolve({ ok: true, json: () => Promise.resolve(rows) });
+      if (String(url).includes("user_prefs") && opt && opt.method === "POST") {
+        // Recorded when the write COMPLETES, not when it is issued, and the
+        // first one is made slow on purpose. Recording at issue time would
+        // preserve order even with no serialization at all, so the test would
+        // pass a broken implementation.
+        const body = JSON.parse(opt.body);
+        const delay = postDelays.length ? postDelays.shift() : 0;
+        return new Promise((res) => setTimeout(() => {
+          calls.saved.push(body);
+          res({ ok: true, status: 200, json: () => Promise.resolve([]) });
+        }, delay));
+      }
+      return Promise.resolve({
+        ok: status >= 200 && status < 300, status,
+        json: () => Promise.resolve(rows),
+      });
     },
     _authReady: Promise.resolve(),
     SUPABASE_URL: "https://x", _sbHeaders: () => ({}),
@@ -61,15 +74,20 @@ function run(prefs, permission) {
     toast: (m) => calls.toasts.push(m),
   });
   // `"Notification" in window` is how the source probes support.
-  let rows = [];
+  let rows = [], status = 200;
+  const postDelays = [];
   vm.runInContext(src, ctx);
   vm.runInContext("_prefsApply(" + JSON.stringify(prefs) + ")", ctx);
   return {
     store, calls, perm,
     // Re-enter through the real entry points, as a toggle would.
     save: (changed) => vm.runInContext("_prefsSave(" + (changed ? JSON.stringify(changed) : "") + ")", ctx),
-    load: (r) => { rows = r; return vm.runInContext("_prefsLoad()", ctx); },
+    load: (r, st) => { rows = r; status = st === undefined ? 200 : st; return vm.runInContext("_prefsLoad()", ctx); },
     set: (k, v) => { store[k] = v; },
+    delayPosts: (...d) => { postDelays.length = 0; postDelays.push(...d); },
+    // The seed write is fired from inside _prefsLoad and not chained into its
+    // promise, so tests must wait on the write queue itself.
+    flush: () => vm.runInContext("_prefsQ", ctx),
     become: (id) => vm.runInContext("USER_ID = " + JSON.stringify(id), ctx),
     touched: () => vm.runInContext("JSON.stringify(_prefsTouched)", ctx),
     reset: () => vm.runInContext("_prefsTouched = {}; _prefsPending = null;", ctx),
@@ -158,17 +176,15 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
     last && last.push === true);
 }
 {
-  // Withheld permission: the held row must not be APPLIED locally (that would
-  // light the bell with nothing subscribed) but must still be CARRIED in the
-  // write (or the save destroys the very intent we are holding). Those two
-  // pull in opposite directions and this is the line between them.
+  // Withheld permission: the held row must not be APPLIED locally — that would
+  // light the bell with nothing subscribed.
   const h = run(ALL_ON, "default");
-  await h.save();
-  const last = h.calls.saved[h.calls.saved.length - 1];
+  await h.save("live_results");
   check("while permission is withheld, held intent is not applied locally",
     h.store.ufc_push !== "1" && h.store.ufc_notif !== "1");
-  check("...but the save still carries it, rather than erasing it",
-    last && last.push === true && last.reminders === true);
+  const last = h.calls.saved[h.calls.saved.length - 1];
+  check("...and a keyed save cannot erase it, because it never sends it",
+    last && !("push" in last) && !("reminders" in last));
 }
 
 // --- Codex #140 round 2 P1: held intent must survive saves made BEFORE the
@@ -181,10 +197,11 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
   h.set("ufc_live_results", "0");
   await h.save("live_results");
   const last = h.calls.saved[h.calls.saved.length - 1];
-  check("a save before the prompt keeps held push intent instead of writing false",
-    last && last.push === true);
-  check("...and keeps held reminder intent too",
-    last && last.reminders === true);
+  check("a save before the prompt writes ONLY the key it changed",
+    last && Object.keys(last).filter((k) => k !== "user_id" && k !== "updated_at")
+      .join() === "live_results");
+  check("...so held push intent is left standing on the server, not overwritten",
+    last && !("push" in last) && !("reminders" in last));
   check("...while honouring the change the user actually made",
     last && last.live_results === false);
 }
@@ -199,11 +216,11 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
   await h.save("push");
   check("granting later does not resurrect the preference the user turned off",
     h.store.ufc_live_results === "0");
+  check("...while the untouched reminder intent is applied on the grant",
+    h.store.ufc_notif === "1");
   const last = h.calls.saved[h.calls.saved.length - 1];
-  check("...and the save records it as off",
-    last && last.live_results === false);
-  check("...while the untouched reminder intent still comes back",
-    h.store.ufc_notif === "1" && last && last.reminders === true);
+  check("...and that save touches only the bell it was called for",
+    last && !("live_results" in last) && !("reminders" in last) && last.push === true);
 }
 
 // --- Codex #140 round 3 P2: a load in flight must not undo a toggle ---
@@ -246,10 +263,10 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
   h.set("ufc_live_results", "1");
   await h.save("live_results");               // an unrelated later toggle
   const last = h.calls.saved[h.calls.saved.length - 1];
-  check("an unrelated save does not resurrect a touched key from held intent",
-    last && last.push === false);
-  check("...while still carrying untouched held intent",
-    last && last.reminders === true);
+  check("an unrelated save cannot resurrect a touched key — it is not in the write",
+    last && !("push" in last));
+  check("...and leaves untouched held intent alone on the server too",
+    last && !("reminders" in last));
 }
 
 // --- Codex #140 round 4 P2: touched keys belong to the identity that set them ---
@@ -287,6 +304,7 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
   h.set("ufc_live_results", "1");
   h.set("ufc_notif", "1");
   await h.load([]);                   // no row yet: account predates the table
+  await h.flush();
   const seeded = h.calls.saved[h.calls.saved.length - 1];
   check("an account with no row seeds it from existing local settings",
     seeded && seeded.live_results === true && seeded.reminders === true);
@@ -294,7 +312,66 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
 {
   const h = run(null, "granted");
   await h.load([]);                   // nothing on locally
+  await h.flush();
   check("a user with nothing enabled writes no row — no empty write per user",
+    h.calls.saved.length === 0);
+}
+
+// --- Codex #140 round 5 P2: a write must not carry columns it did not change ---
+{
+  // Two devices, one account. This device last saw reminders off; the other
+  // device just turned them on. A full-row write from this device's snapshot
+  // would erase that. A per-column write cannot.
+  const h = run(null, "granted");
+  h.set("ufc_live_results", "1");
+  await h.save("live_results");
+  const last = h.calls.saved[h.calls.saved.length - 1];
+  check("a toggle writes only its own column, so another device's setting survives",
+    last && !("reminders" in last) && !("push" in last) && last.live_results === true);
+  check("...and still carries the row key and a timestamp",
+    last && last.user_id === "u1" && typeof last.updated_at === "string");
+}
+{
+  // Seeding is the one full-row write, and it is safe precisely because it
+  // only happens when the account has no row to overwrite.
+  const h = run(null, "granted");
+  h.set("ufc_push", "1");
+  await h.load([]);
+  await h.flush();
+  const seeded = h.calls.saved[h.calls.saved.length - 1];
+  check("seeding an account with no row does write the full row",
+    seeded && "push" in seeded && "live_results" in seeded && "reminders" in seeded);
+}
+
+// --- Codex #140 round 5 P2: two quick toggles must land in order ---
+{
+  const h = run(null, "granted");
+  h.delayPosts(25, 0);              // the first write is the slow one
+  h.set("ufc_push", "1");
+  const first = h.save("push");     // on
+  h.set("ufc_push", "0");
+  const second = h.save("push");    // ...then off, before the first resolves
+  await Promise.all([first, second]);
+  const order = h.calls.saved.map((w) => w.push);
+  check("concurrent toggles are serialized, so the last one written is the last one made",
+    order[order.length - 1] === false);
+}
+
+// --- Codex #140 round 5 P2: a failed read must not be mistaken for an empty one ---
+{
+  const h = run(null, "granted");
+  h.set("ufc_push", "1");
+  await h.load([], 500);
+  await h.flush();
+  check("a transient read failure does not seed over a row that may exist",
+    h.calls.saved.length === 0);
+}
+{
+  const h = run(null, "granted");
+  h.set("ufc_push", "1");
+  await h.load([], 404);
+  await h.flush();
+  check("a 404 (table absent) neither seeds nor throws",
     h.calls.saved.length === 0);
 }
 
