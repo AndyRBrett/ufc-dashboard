@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-19T04:28:21Z",
+ "generated_at": "2026-09-19T07:33:05Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 404,
-   "items": 0
+   "status": 200,
+   "items": 15
   },
   {
    "id": "yt-mmaf",
@@ -44,6 +44,34 @@
    "name": "UFC 331: Van vs. Pantoja 2",
    "date": "2026-09-19",
    "items": [
+    {
+     "title": "Crypto.com UFC 331 Embedded: Vlog Series - Episode 6",
+     "url": "https://www.youtube.com/watch?v=Q7UJsuRpKg0",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-09-19T05:01:35Z",
+     "thumb": "https://i2.ytimg.com/vi/Q7UJsuRpKg0/hqdefault.jpg",
+     "blurb": "Alexandre Pantoja cuts weight with his family by his side; Giga Chikadze sheds the final pounds at the athlete hotel; UFC 331 athletes step on the scale for official weigh-ins; Mauricio Ruffy refuels and catches up with…",
+     "fighters": [
+      "Alexandre Pantoja",
+      "Arman Tsarukyan",
+      "Giga Chikadze",
+      "Mauricio Ruffy"
+     ]
+    },
+    {
+     "title": "Joshua Van vs. Alexandre Pantoja 2: Bloody Elbow staff divided on the UFC 331 main event",
+     "url": "https://bloodyelbow.com/2026/09/19/joshua-van-vs-alexandre-pantoja-2-bloody-elbow-staff-divided-on-the-ufc-331-main-event/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-09-19T05:00:00Z",
+     "thumb": null,
+     "blurb": "Joshua Van and Alexandre Pantoja will run it back for the flyweight title on Saturday night. A freak injury meant their first fight at UFC ...",
+     "fighters": [
+      "Alexandre Pantoja",
+      "Joshua Van"
+     ]
+    },
     {
      "title": "Alexandre Pantoja fully healed, ready to reclaim UFC title from Joshua Van",
      "url": "https://www.sherdog.com/news/news/Alexandre-Pantoja-fully-healed-ready-to-reclaim-UFC-title-from-Joshua-Van-202843",
@@ -84,41 +112,29 @@
      ]
     },
     {
-     "title": "Arman Tsarukyan’s teammate admits Mauricio Ruffy has a chance at UFC 331 after leaving Fighting Nerds",
-     "url": "https://bloodyelbow.com/2026/09/18/arman-tsarukyans-teammate-admits-mauricio-ruffy-has-a-chance-at-ufc-331-after-leaving-fighting-nerds/",
+     "title": "Arman Tsarukyan vs. Mauricio Ruffy: Bloody Elbow staff predict the UFC 331 co-main event",
+     "url": "https://bloodyelbow.com/2026/09/19/arman-tsarukyan-vs-mauricio-ruffy-bloody-elbow-staff-predict-the-ufc-331-co-main-event/",
      "source": "Bloody Elbow",
      "kind": "article",
-     "published": "2026-09-18T17:30:00Z",
+     "published": "2026-09-19T06:00:00Z",
      "thumb": null,
-     "blurb": "Mauricio Ruffy made changes to his preparation after losing for the first time in the UFC. The Brazilian lightweight contender is back on a winning ...",
+     "blurb": "Arman Tsarukyan hopes to secure a long-overdue UFC title shot on Saturday night. The top lightweight contender will face Mauricio Ruffy in the co-main event ...",
      "fighters": [
       "Arman Tsarukyan",
       "Mauricio Ruffy"
      ]
     },
     {
-     "title": "Arman Tsarukyan avoids previous issues to make UFC 331 potential title eliminator official at weigh-ins",
-     "url": "https://bloodyelbow.com/2026/09/18/arman-tsarukyan-avoids-previous-issues-to-make-ufc-331-potential-title-eliminator-official-at-weigh-ins/",
+     "title": "Dana White’s x-rated two-word reaction as Arman Tsarukyan and Mauricio Ruffy almost come to blows ahead of UFC 331",
+     "url": "https://bloodyelbow.com/2026/09/19/dana-whites-x-rated-two-word-reaction-as-arman-tsarukyan-and-mauricio-ruffy-almost-come-to-blows-ahead-of-ufc-331/",
      "source": "Bloody Elbow",
      "kind": "article",
-     "published": "2026-09-18T16:47:52Z",
+     "published": "2026-09-19T05:38:25Z",
      "thumb": null,
-     "blurb": "Arman Tsarukyan and Mauricio Ruffy both made weight for their co-main event clash. Tsarukyan has said he was given verbal confirmation that a win on ...",
+     "blurb": "Dana White was almost forced to get between Arman Tsarukyan and Mauricio Ruffy tonight in California. It’s been a relatively tame fight week build-up between ...",
      "fighters": [
       "Arman Tsarukyan",
       "Mauricio Ruffy"
-     ]
-    },
-    {
-     "title": "Dana White says ex-WWE star Jake Hager’s Power Slap injury is probably worse than any in UFC history",
-     "url": "https://bloodyelbow.com/2026/09/18/dana-white-says-ex-wwe-star-jake-hagers-power-slap-injury-is-probably-worse-than-any-in-ufc-history/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-09-18T21:00:00Z",
-     "thumb": null,
-     "blurb": "Dana White said doctors had never seen anything like Jake Hager’s strange injury before. Last year, Alexandre Pantoja lost the UFC flyweight title after injuring ...",
-     "fighters": [
-      "Alexandre Pantoja"
      ]
     }
    ]
