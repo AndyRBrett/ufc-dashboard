@@ -67,7 +67,7 @@ were indistinguishable — the commit landed either way. Three pieces fix that:
 | piece | what it does |
 | ----- | ------------ |
 | `health.py` | reads the built `data.js` and reports what's wrong, weighted by how close the card is |
-| `odds-state.json` | last Odds API pull time, HTTP status, and remaining quota |
+| `odds-state.json` | last Odds API pull time, HTTP status, remaining quota, and what the feed listed/priced per card date |
 | `health-report.json` / `.md` | findings for the run; the `.md` is the tracking-issue body |
 
 `update.yml` runs `python health.py --gate --baseline /tmp/data-before.js`
@@ -117,6 +117,23 @@ Two budgets to respect when changing cadence:
 - **Fighters on a card within `STATS_URGENT_DAYS` bypass the failure cooldown**
   (`_needs_stats_fetch(..., urgent=True)`). The flat 3-day cooldown guaranteed a
   blank record through any card that landed inside it.
+
+**"No odds" has two causes and only one of them is a bug.** `write_status.py`
+files an unpriced card as `parse-failure` (which fails the run) or
+`awaiting-card` (which doesn't), and for years it guessed between them on the
+event's distance alone — `ODDS_EXPECTED_WITHIN_DAYS`. A threshold can't
+separate "no book has opened this card" from "a market exists and we failed to
+read it", so every value is wrong for one of them: on 2026-09-12 the Sep 26
+card crossed the 14-day default unpriced and went red every run until the
+threshold was narrowed to 7 days, which would have broken again on the next
+card priced late. The scraper now records the fact instead of inferring it —
+`note_market_dates` folds each odds payload into `odds-state.json`'s `markets`
+block (per **ET** card date: bouts `listed`, bouts `priced`), and
+`write_status.market_priced` reads it. Only `priced` can make a card our
+failure. The signal ages out (`MARKET_SIGNAL_MAX_AGE_H`, 72h) back to the day
+threshold, and a run that observed nothing keeps the previous snapshot rather
+than blanking it — an empty map would read as "no market exists anywhere" and
+excuse every real parse failure at once.
 
 ## Fight Week Intel costs nothing — keep it that way
 

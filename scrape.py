@@ -1462,6 +1462,76 @@ def note_provider_result(quota, source, status=..., remaining=..., bouts=...):
     return entry
 
 
+# What the odds feed actually LISTED this run, keyed by the card's ET date.
+# Persisted into odds-state.json so write_status.py can tell "the book has posted
+# no market for this card yet" from "it posted one and we failed to parse it" —
+# two states the day-threshold heuristic (ODDS_EXPECTED_WITHIN_DAYS) could only
+# guess at, which is why a card that crossed the threshold unpriced turned every
+# run red on 2026-09-12 until the threshold itself was narrowed as a stopgap.
+_market_dates = {}
+
+
+def _et_card_date(iso):
+    """The ET calendar date ("YYYY-MM-DD") of a feed bout's start, or None.
+
+    ET, not UTC: a Saturday-night US card commences after UTC midnight, so a UTC
+    date would file half the season's main cards under the following day and
+    never match the event dates data.js carries.
+    """
+    dt = _utc_iso_to_et(iso)
+    return dt.strftime("%Y-%m-%d") if dt else None
+
+
+def note_market_dates(data, idx, dates=None):
+    """Record, per ET card date, how many bouts this payload listed and priced.
+
+    `listed` counts every bout the feed returned for that date; `priced` counts
+    only those that survived into the index (a bookmaker posted a usable h2h
+    line). The classification hinges on `priced`: a date the feed prices at all
+    is a date we could have read lines from, so zero odds on our side is ours to
+    explain. `listed` is kept because it separates "no market exists" from "the
+    market exists but is unpriced" in the state file, where an investigation can
+    see it.
+
+    Providers are merged by max rather than summed — the chain queries overlapping
+    book sets, so two sources covering the same eleven bouts is eleven, not
+    twenty-two.
+    """
+    dates = _market_dates if dates is None else dates
+    seen = {}
+    for fight in data or []:
+        d = _et_card_date(fight.get("commence_time"))
+        if d:
+            seen.setdefault(d, {"listed": 0, "priced": 0})["listed"] += 1
+    for entry in (idx or {}).values():
+        d = _et_card_date(entry.get("commence_time"))
+        if d:
+            seen.setdefault(d, {"listed": 0, "priced": 0})["priced"] += 1
+    for d, counts in seen.items():
+        cur = dates.setdefault(d, {"listed": 0, "priced": 0})
+        cur["listed"] = max(cur["listed"], counts["listed"])
+        cur["priced"] = max(cur["priced"], counts["priced"])
+    return dates
+
+
+def record_market_state(state, now, dates=None):
+    """Fold this run's market observations into the persisted odds state.
+
+    An empty observation is NOT written. Every provider failing (or being skipped
+    on a spent budget) says nothing about what the books have posted, and blanking
+    the map would read downstream as "no market exists for any card" — which is
+    the same silent excuse-everything failure the budget carve-out was careful to
+    avoid. Keeping the last good snapshot is safe: write_status ages it out and
+    falls back to the day threshold once it is too old to trust.
+    """
+    dates = _market_dates if dates is None else dates
+    if not dates:
+        return state
+    state["markets"] = {d: dict(c) for d, c in sorted(dates.items())}
+    state["markets_at"] = now.isoformat()
+    return state
+
+
 def _fetch_odds_api(regions, source, api_key=None, quota="the-odds-api"):
     """One Odds API source adapter: fetch `regions` and return a tagged index.
 
@@ -1517,6 +1587,8 @@ def _fetch_odds_api(regions, source, api_key=None, quota="the-odds-api"):
         return {}
     idx = _index_odds_api(data, source)
     note_provider_result(quota, source, bouts=len(idx))
+    # Both halves, from the one payload: what the feed carried and what it priced.
+    note_market_dates(data, idx)
     return idx
 
 
@@ -3347,6 +3419,9 @@ def step_build_events(data, now):
         # Per-provider budgets, so the next run can skip a spent one and let the
         # unmetered fallback price the card instead (#94).
         record_provider_state(odds_state, now)
+        # Which cards the books have actually posted a market for, so an unpriced
+        # card can be told apart from an unparsed one downstream.
+        record_market_state(odds_state, now)
         save_odds_state(odds_state)
         if odds_state["idle_pulls"]:
             print(

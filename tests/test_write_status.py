@@ -10,6 +10,7 @@ Run with:  python -m pytest -q
 import pytest
 import hashlib
 import json
+from datetime import datetime, timedelta, timezone
 
 import write_status as ws
 
@@ -102,6 +103,113 @@ def test_odds_unavailable_is_not_reported_as_an_error():
     # The whole point: it must not reach failure_errors, which is what
     # parse_failure_events (and the run's red/green) is computed from.
     assert ws.failure_errors([_ev("a", "odds-unavailable", 8)]) == []
+
+
+# --- market signal: no market posted vs a market we failed to parse ---------
+#
+# The 2026-09-12 stopgap (ODDS_EXPECTED_WITHIN_DAYS narrowed to 7) existed
+# because a day threshold cannot tell those two apart. scrape.py now records
+# what the feed listed and priced per card date; these hold the reading of it.
+
+def _state(priced, listed=None, at=None, date="2026-06-28"):
+    at = at or datetime.now(timezone.utc)
+    return {
+        "markets": {date: {"listed": listed if listed is not None else priced,
+                           "priced": priced}},
+        "markets_at": at.isoformat(),
+    }
+
+
+def test_market_priced_true_when_the_feed_priced_that_card():
+    assert ws.market_priced(_state(11), "2026-06-28") is True
+
+
+def test_market_priced_false_when_the_feed_listed_the_card_unpriced():
+    # The books opened the event but no bookmaker has posted an h2h line yet —
+    # still nothing to parse.
+    assert ws.market_priced(_state(0, listed=11), "2026-06-28") is False
+
+
+def test_market_priced_false_for_a_date_the_snapshot_never_mentions():
+    # Absence IS the answer here, not an unknown: the pull covered the feed and
+    # the feed carried nothing for that date.
+    assert ws.market_priced(_state(11, date="2026-07-05"), "2026-06-28") is False
+
+
+def test_market_priced_unknown_without_a_snapshot():
+    assert ws.market_priced({}, "2026-06-28") is None
+    assert ws.market_priced({"markets": {}, "markets_at": "2026-06-22T00:00:00+00:00"},
+                            "2026-06-28") is None
+    assert ws.market_priced(None, "2026-06-28") is None
+
+
+def test_market_priced_unknown_when_the_snapshot_is_too_old_to_trust():
+    # Relative, never an absolute date: a fixed timestamp would pass on the day
+    # it was written and assert nothing afterwards.
+    stale = datetime.now(timezone.utc) - timedelta(hours=ws.MARKET_SIGNAL_MAX_AGE_H + 1)
+    fresh = datetime.now(timezone.utc) - timedelta(hours=ws.MARKET_SIGNAL_MAX_AGE_H - 1)
+    assert ws.market_priced(_state(0, listed=11, at=stale), "2026-06-28") is None
+    assert ws.market_priced(_state(0, listed=11, at=fresh), "2026-06-28") is False
+
+
+def test_market_priced_unknown_when_the_timestamp_is_unreadable():
+    bad = _state(11)
+    bad["markets_at"] = "last tuesday"
+    assert ws.market_priced(bad, "2026-06-28") is None
+    del bad["markets_at"]
+    assert ws.market_priced(bad, "2026-06-28") is None
+
+
+def test_classify_awaiting_card_when_no_market_exists_for_an_imminent_card():
+    # THE REGRESSION TEST for 2026-09-12. Six days out, eleven announced bouts,
+    # zero odds — and the feed prices nothing for that date. Nothing is broken;
+    # the books simply have not opened it.
+    assert ws.classify_event(
+        _empty_event("2026-06-28"), [], "2026-06-22", market_priced=False
+    ) == "awaiting-card"
+
+
+def test_classify_parse_failure_when_the_market_exists_and_we_have_no_odds():
+    # The other half, and the one the stopgap was suppressing: lines were there
+    # to read and our card carries none, so this is ours to fix and must be loud.
+    assert ws.classify_event(
+        _empty_event("2026-06-28"), [], "2026-06-22", market_priced=True
+    ) == "parse-failure"
+
+
+def test_classify_falls_back_to_the_day_threshold_when_the_market_is_unknown():
+    # No snapshot: keep the old behaviour rather than excusing the gap.
+    assert ws.classify_event(
+        _empty_event("2026-06-28"), [], "2026-06-22", market_priced=None
+    ) == "parse-failure"
+
+
+def test_no_market_does_not_excuse_vanished_odds():
+    # Same carve-out discipline as the budget case: odds we once had and lost is
+    # a regression whatever the feed says today.
+    hist = [("t1", [{"f1": "A", "f2": "B", "f1_odds": -150, "f2_odds": 130}])]
+    assert ws.classify_event(
+        _empty_event("2026-06-28"), hist, "2026-06-22", market_priced=False
+    ) == "parse-failure"
+
+
+def test_spent_budget_outranks_the_market_signal():
+    # With no call made, the snapshot describes an older pull, not this run. The
+    # self-healing quota answer is the accurate one.
+    assert ws.classify_event(
+        _empty_event("2026-06-28"), [], "2026-06-22",
+        budget_exhausted=True, market_priced=True
+    ) == "odds-unavailable"
+
+
+def test_load_odds_state_survives_a_missing_or_corrupt_file(tmp_path):
+    assert ws.load_odds_state(tmp_path / "nope.json") == {}
+    bad = tmp_path / "bad.json"
+    bad.write_text("{not json", encoding="utf-8")
+    assert ws.load_odds_state(bad) == {}
+    good = tmp_path / "odds-state.json"
+    good.write_text(json.dumps({"markets": {}}), encoding="utf-8")
+    assert ws.load_odds_state(good) == {"markets": {}}
 
 
 # --- odds_budget_exhausted: quota spent vs key rejected ---------------------
