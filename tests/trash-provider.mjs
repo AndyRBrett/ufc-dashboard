@@ -25,14 +25,22 @@ const require = createRequire(import.meta.url);
 const esbuild = require("esbuild");
 
 // Swappable env so provider selection can be tested under each configuration.
-let ENV = {};
+//
+// GROK_TIMEOUT_MS is overridden to something tiny for the whole module, because
+// the timeout test has to actually WAIT one out. At the real 8s default this
+// single test would add eight seconds to `npm run verify`, and the gate set's
+// whole promise is that it is fast enough to run before every push. The real
+// default is asserted separately, by reading it out of the source. RETRY_BACKOFF_MS
+// is squashed for the same reason: three retry-path tests at real backoff spend
+// ~13s of `verify` asleep.
+let ENV = { GROK_TIMEOUT_MS: "250", RETRY_BACKOFF_MS: "1" };
 globalThis.Deno = { env: { get: (k) => ENV[k] } };
 
 const FULL = readFileSync(join(ROOT, "supabase/functions/ai-breakdown/index.ts"), "utf8");
 const src = FULL.split("Deno.serve(")[0];
 const handler = FULL.slice(FULL.indexOf("Deno.serve("));
 const { code } = esbuild.transformSync(
-  src + "\nexport { buildTrashTalk, trashTalkProvider, unfilteredRule, callGrok, callAnthropic, GROK_MODEL, GROK_MAX_TOKENS, MODEL, clampRoast, ROAST_MAX_CHARS };",
+  src + "\nexport { buildTrashTalk, trashTalkProvider, unfilteredRule, callGrok, callAnthropic, GROK_MODEL, GROK_MAX_TOKENS, MODEL, clampRoast, ROAST_MAX_CHARS, GROK_TIMEOUT_MS, ROAST_RETRY_BUDGET_MS };",
   { loader: "ts", format: "esm" },
 );
 const M = await import("data:text/javascript," + encodeURIComponent(code));
@@ -252,6 +260,147 @@ assert("the snapshot moves only when the retry's text is accepted",
   /text = retry\.text;\s*textProvider = provider;\s*textFellBack = fellBack;/.test(handler));
 assert("the clamp runs before the signature, so the signature survives it",
   /enforceSignature\(clampRoast\(text, ROAST_MAX_CHARS\)/.test(handler));
+
+// ── Latency: the roast is generated while someone watches a spinner ────────
+// The shipped default is the only Grok model measured on this workload — 1.7s
+// end to end, against ~2s for the Claude path it replaced. Three things keep a
+// slow roast from shipping: a non-reasoning default, a bounded wait, and a
+// retry that doesn't fire when the first call was already slow.
+
+// 1. The default model does not reason.
+assert("the default Grok model is a non-reasoning one",
+  /non-reasoning/.test(M.GROK_MODEL));
+
+// 2. Grok calls are bounded, and the bound is not applied to Claude — which is
+//    the fallback of last resort, so aborting it would leave nothing to return.
+assert("Grok's call is given a timeout",
+  /fetchWithRetry\(GROK_API_URL[\s\S]{0,260}\}, GROK_TIMEOUT_MS\)/.test(src));
+assert("the Claude call is deliberately not timed out",
+  !/fetchWithRetry\(CLAUDE_API_URL[\s\S]{0,260}\}, GROK_TIMEOUT_MS\)/.test(src));
+// Read the shipped defaults out of the source, not from the module — the module
+// is loaded with a tiny timeout injected so the wait-it-out test stays fast.
+const shippedDefault = (name) => {
+  const m = src.match(new RegExp(`${name} = Number\\(Deno\\.env\\.get\\("${name}"\\) \\?\\? "(\\d+)"\\)`));
+  return m ? Number(m[1]) : NaN;
+};
+const TIMEOUT_DEFAULT = shippedDefault("GROK_TIMEOUT_MS");
+const RETRY_BUDGET_DEFAULT = shippedDefault("ROAST_RETRY_BUDGET_MS");
+// The test squashes the backoff to keep `verify` fast; production must not be
+// squashed with it, or a retry storm hits the provider with no spacing at all.
+const BACKOFF_DEFAULT = shippedDefault("RETRY_BACKOFF_MS");
+assert("the shipped retry backoff is real, not the test's squashed one",
+  BACKOFF_DEFAULT >= 500);
+assert("the shipped timeout default was found", Number.isFinite(TIMEOUT_DEFAULT));
+assert("the shipped timeout is short enough to matter — nobody waits 23s for a joke",
+  TIMEOUT_DEFAULT <= 10000);
+assert("the shipped timeout still allows a normal call to finish", TIMEOUT_DEFAULT >= 3000);
+
+// A timed-out call must resolve as a failure (so the fallback runs) and must
+// NOT be retried — retrying three times multiplies the exact latency the
+// timeout exists to bound, which is worse than having no timeout at all.
+calls.length = 0;
+attempts = 0;
+globalThis.fetch = async (_url, init) => {
+  attempts++;
+  return await new Promise((_resolve, reject) => {
+    const onAbort = () => reject(Object.assign(new Error("aborted"), { name: "AbortError" }));
+    if (init?.signal?.aborted) return onAbort();
+    init?.signal?.addEventListener("abort", onAbort);
+  });
+};
+const t0 = Date.now();
+r = await M.callGrok("xai-key", { system: "SYS", user: "USR", maxTokens: 120 });
+const elapsed = Date.now() - t0;
+assert("a hung Grok call is aborted rather than hanging forever", r.ok === false);
+assert("a timeout is reported as a transport-class failure", r.status === 0);
+assert("the timeout says so, so it is not confused with a reset",
+  /timed out after/.test(r.detail));
+assert("a timeout is NOT retried — that would multiply the latency it bounds",
+  attempts === 1);
+assert("the whole call returns within about one timeout, not three",
+  elapsed < 2000);
+
+// The deadline covers the WHOLE sequence, not each attempt. This is the case a
+// per-attempt timer misses entirely: a slow but *retryable* response is not an
+// abort, so breaking on abort does nothing for it. Three of them, each given a
+// fresh timer, plus the backoffs that sit between them, used to spend roughly
+// 3x the advertised bound before the fallback ran.
+calls.length = 0;
+attempts = 0;
+// Each attempt must be given the REMAINING budget. Asserted structurally as
+// well as behaviourally: `left() <= 0` between attempts masks a per-attempt
+// timer well enough that timing alone barely separates them, and a timing-only
+// assertion loose enough to be stable is too loose to catch the regression.
+assert("every attempt's timer is the remaining budget, not a fresh one",
+  /setTimeout\(\(\) => ctl\.abort\(\), left\(\)\)/.test(src) &&
+  !/ctl\.abort\(\), timeoutMs\)/.test(src));
+// The backoff is spent from the same budget. Unobservable in this test (backoff
+// is squashed to 1ms to keep `verify` fast), so it is pinned structurally.
+assert("the backoff counts against the deadline rather than sitting on top of it",
+  /if \(deadline && wait >= left\(\)\)/.test(src));
+
+globalThis.fetch = async (_url, init) => {
+  attempts++;
+  // Slow enough that a second full attempt cannot fit inside the deadline —
+  // which is what makes the correct behaviour and the per-attempt-timer
+  // regression separable by wall clock at all.
+  //
+  // This stub HONOURS the abort signal, because real fetch does. An earlier
+  // version just slept and ignored it: the abort fired on schedule and the
+  // fake request sailed on past it, so the test measured the stub's behaviour
+  // rather than the deadline's and failed against correct code.
+  await new Promise((resolve, reject) => {
+    const t = setTimeout(resolve, 200);
+    const onAbort = () => {
+      clearTimeout(t);
+      reject(Object.assign(new Error("aborted"), { name: "AbortError" }));
+    };
+    if (init?.signal?.aborted) return onAbort();
+    init?.signal?.addEventListener("abort", onAbort);
+  });
+  return { ok: false, status: 503, text: async () => "busy", json: async () => ({}) };
+};
+const slowStart = Date.now();
+r = await M.callGrok("xai-key", { system: "SYS", user: "USR", maxTokens: 120 });
+const slowTotal = Date.now() - slowStart;
+assert("a slow retryable response still ends as a failure", r.ok === false);
+assert("slow retries cannot outrun the deadline",
+  slowTotal < M.GROK_TIMEOUT_MS * 1.3);
+
+// The body is read inside the timer too: fetch resolves on headers, so a
+// response that sends headers and then stalls its body would otherwise hang
+// past the deadline with the fallback still waiting on it.
+attempts = 0;
+globalThis.fetch = async (_url, init) => {
+  attempts++;
+  return {
+    ok: true, status: 200,
+    json: async () => ({}),
+    text: () => new Promise((_res, rej) => {
+      const onAbort = () => rej(Object.assign(new Error("aborted"), { name: "AbortError" }));
+      if (init?.signal?.aborted) return onAbort();
+      init?.signal?.addEventListener("abort", onAbort);
+    }),
+  };
+};
+const stallStart = Date.now();
+r = await M.callGrok("xai-key", { system: "SYS", user: "USR", maxTokens: 120 });
+const stallTotal = Date.now() - stallStart;
+assert("a stalled body is aborted, not waited on forever", r.ok === false);
+assert("a stalled body is bounded by the same deadline",
+  stallTotal < M.GROK_TIMEOUT_MS * 2);
+
+// 3. The angle retry is a second full model call, so it is skipped when the
+//    first one already spent the budget.
+assert("the retry budget is read before spending a second call",
+  /timeLeftForRetry = Date\.now\(\) - startedAt < ROAST_RETRY_BUDGET_MS/.test(handler));
+assert("the angle retry is gated on that budget",
+  /trashHint && timeLeftForRetry && !usesAngle/.test(handler));
+assert("the shipped retry budget was found", Number.isFinite(RETRY_BUDGET_DEFAULT));
+assert("the budget sits below the timeout, so a maxed-out first call buys no retry",
+  RETRY_BUDGET_DEFAULT < TIMEOUT_DEFAULT);
+assert("the budget still leaves a fast first call room to use its retry",
+  RETRY_BUDGET_DEFAULT >= 3000);
 
 let bad = 0;
 for (const c of checks) { console.log(`  ${c.cond ? "✓" : "✗"} ${c.name}`); if (!c.cond) bad++; }
