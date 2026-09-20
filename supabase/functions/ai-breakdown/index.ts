@@ -439,12 +439,27 @@ function enforceSignature(text: string, persona: string): string {
 // suffix and re-send the identical system prompt, instead of rebuilding it and
 // re-rolling the random angle, form and seed the first attempt already picked.
 //
-// The floor is narrow on purpose. This is a private board of five friends who
-// opted into being roasted, so crude, profane and personal is the product, not
-// a side effect. What it rules out is the stuff that stops being a joke the
-// moment it lands on someone's lock screen.
+// The floor is ONE line now: no slurs. Two things that used to sit here came
+// out, because between five friends who opted into this they were pulling
+// ordinary roast material off the table:
+//
+//   - the blanket "don't touch race, religion, sex, gender, disability or
+//     sexuality". Too broad by a mile. It caught Derek's Eminem likeness and
+//     any joke about AB and Tristin being married — which is exactly the
+//     material the board exists for.
+//   - "no threat meant literally". This prompt LISTS comedic menace as one of
+//     its rhetorical forms ("a cold quiet threat delivered like a calm
+//     promise"), so the ban was arguing with the feature around it.
+//
+// What stays is word-level, not topic-level: no topic is off-limits and the
+// roast can go as hard at anyone here as it likes, it just doesn't reach for
+// those words. This is a standing instruction in a system prompt rather than
+// something a sender typed once, and the output is signed with a real name and
+// pushed to a real friend's lock screen. The sender does read the roast before
+// hitting send, so this is a floor on what gets GENERATED, not the last line
+// of defence — if it ever needs to move further, move it here.
 function unfilteredRule(persona: string): string {
-  return ` NO CLEAN-LANGUAGE FILTER — THIS IS THE WHOLE POINT: everyone on this board opted in and they want it filthy. Swear properly and often, go crude, go below the belt, get genuinely mean. Profanity is not seasoning here, it is the register: ${persona} talking shit in private, not ${persona} on a broadcast. A roast that could be read aloud on daytime TV has FAILED this job — if you find yourself reaching for a polite word, use the rude one instead. Two lines you do not cross, and they are the only two: no slurs and nothing that attacks anyone's race, religion, sex, gender, disability or sexuality; and no threat of real violence meant to be taken literally. Everything else is open.`;
+  return ` NO CLEAN-LANGUAGE FILTER — THIS IS THE WHOLE POINT: everyone on this board opted in and they want it filthy. Swear properly and often, go crude, go below the belt, get genuinely mean. Profanity is not seasoning here, it is the register: ${persona} talking shit in private, not ${persona} on a broadcast. A roast that could be read aloud on daytime TV has FAILED this job — if you find yourself reaching for a polite word, use the rude one instead. NOTHING about these people is off-limits: their looks, their weight, their habits, their marriage, their city, their job, their whole personality are fair game, and no subject is too far. ONE rule, and it is the only one: no slurs — that is a rule about specific words, not about what you are allowed to go after. Everything else is open.`;
 }
 
 type Provider = "grok" | "claude";

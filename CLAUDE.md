@@ -279,12 +279,20 @@ Claude rather than erroring. The response carries `provider`, `model` and
 `fellBack` so a roast that reads oddly polite can be traced to that instead of
 being debugged as a prompt problem — the client only reads `breakdown`.
 
-**What the unfiltered rule does NOT relax.** Profanity, crudeness and genuinely
-mean personal shots are the product. The floor is two lines: no slurs or attacks
-on race, religion, sex, gender, disability or sexuality, and no threat of real
-violence meant literally — these land on a friend's lock screen as a push
-notification, signed with a real name. The length cap, `FACTS ARE STRICT`, and
-the signature rule are untouched by it, and `check:provider` asserts all three
+**The floor is one line — no slurs — and it is about words, not topics.** No
+subject is off-limits; the rule names specific words and nothing else. Two
+earlier bans came out because they were confiscating ordinary roast material: a
+blanket "don't touch race, religion, sex, gender, disability or sexuality"
+(which caught Derek's Eminem likeness and any joke about AB and Tristin being
+married), and "no threat meant literally" (which contradicted the comedic-menace
+shape this same prompt offers as a rhetorical form). `check:provider` asserts
+the slur line survives *and* that neither ban has crept back — a prompt tweak
+aimed at making roasts rawer should not silently re-tighten the floor either.
+Worth knowing when weighing where it sits: the sender reads the roast on screen
+and taps send, so this governs what gets **generated**, not what reaches a phone.
+
+**What the rule does NOT relax.** The length cap, `FACTS ARE STRICT` and the
+signature rule are untouched by it, and `check:provider` asserts all three
 survive. `send-push`'s `MAX_BODY` already sits well above what 120 tokens can
 produce, so nothing downstream needed resizing.
 

@@ -61,11 +61,19 @@ ENV = {};
 const rule = M.unfilteredRule("Johnny Lawrence");
 assert("the rule actually licenses profanity", /swear/i.test(rule) && /crude/i.test(rule));
 assert("the rule is spoken in the sender's persona", rule.includes("Johnny Lawrence"));
-// The floor. Crude and personal is the product; these two are not.
+// The floor is one line and it is word-level: no slurs. It is asserted here so
+// that it cannot be dropped by accident — a prompt tweak aimed at making the
+// roast rawer should not quietly take it with it.
 assert("slurs stay ruled out", /no slurs/i.test(rule));
-assert("protected characteristics stay ruled out",
-  /race, religion, sex, gender, disability or sexuality/i.test(rule));
-assert("literal threats stay ruled out", /threat of real violence/i.test(rule));
+assert("the slur rule is the ONLY rule", /ONE rule, and it is the only one/i.test(rule));
+// The topic bans deliberately came out: they were catching ordinary roast
+// material (the Eminem likeness, AB and Tristin being married) and the threat
+// ban contradicted the comedic-menace form this same prompt offers. If either
+// reappears, someone has re-tightened the floor without saying so.
+assert("no blanket topic ban came back",
+  !/race, religion, sex, gender, disability or sexuality/i.test(rule));
+assert("the threat ban did not come back", !/threat of real violence/i.test(rule));
+assert("the rule says no subject is off-limits", /off-limits/i.test(rule) && /fair game/i.test(rule));
 
 // It must be a pure SUFFIX. The fallback strips it by re-sending the stored
 // filtered system prompt, which is only equivalent if appending was the only
