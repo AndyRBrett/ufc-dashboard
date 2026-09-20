@@ -1469,6 +1469,9 @@ def note_provider_result(quota, source, status=..., remaining=..., bouts=...):
 # guess at, which is why a card that crossed the threshold unpriced turned every
 # run red on 2026-09-12 until the threshold itself was narrowed as a stopgap.
 _market_dates = {}
+# True once any provider this run failed, errored or was skipped. A partial view
+# of the feed must not be published as a complete one — see record_market_state.
+_market_partial = False
 
 
 def _et_card_date(iso):
@@ -1482,50 +1485,89 @@ def _et_card_date(iso):
     return dt.strftime("%Y-%m-%d") if dt else None
 
 
-def note_market_dates(data, idx, dates=None):
-    """Record, per ET card date, how many bouts this payload listed and priced.
+def _raw_h2h_priced(fight):
+    """True when the RAW payload carries a usable h2h price for this bout.
 
-    `listed` counts every bout the feed returned for that date; `priced` counts
-    only those that survived into the index (a bookmaker posted a usable h2h
-    line). The classification hinges on `priced`: a date the feed prices at all
-    is a date we could have read lines from, so zero odds on our side is ours to
-    explain. `listed` is kept because it separates "no market exists" from "the
-    market exists but is unpriced" in the state file, where an investigation can
-    see it.
+    Deliberately independent of _index_odds_api and _valid_odds. The whole point
+    of this signal is to catch our own parser failing on a market that exists,
+    so deriving it from the parser's output would make it blind to exactly that:
+    a shape change upstream, or every line rejected as corrupt, would read as
+    "no market posted" and excuse the parse failure it is meant to expose.
+    """
+    for bm in fight.get("bookmakers") or []:
+        for mkt in bm.get("markets") or []:
+            if mkt.get("key") != "h2h":
+                continue
+            prices = [o for o in (mkt.get("outcomes") or [])
+                      if isinstance(o.get("price"), (int, float))]
+            if len(prices) >= 2:
+                return True
+    return False
 
-    Providers are merged by max rather than summed — the chain queries overlapping
-    book sets, so two sources covering the same eleven bouts is eleven, not
-    twenty-two.
+
+def note_market_dates(data, dates=None):
+    """Record what the feed held for each ET card date, straight from the payload.
+
+    Per date: `listed` bouts, `priced` bouts (a bookmaker has posted an h2h
+    line), and the surnames of the priced ones. The names matter because the
+    endpoint is the umbrella `mma_mixed_martial_arts` feed: a priced PFL bout on
+    the same Saturday as an unpriced UFC card would otherwise read as evidence
+    that our card had lines, and turn the run red for a market that was never
+    posted. write_status intersects them with the card's own roster.
+
+    Providers are merged by max rather than summed — the chain queries
+    overlapping book sets, so two sources covering the same eleven bouts is
+    eleven, not twenty-two.
     """
     dates = _market_dates if dates is None else dates
-    seen = {}
     for fight in data or []:
         d = _et_card_date(fight.get("commence_time"))
-        if d:
-            seen.setdefault(d, {"listed": 0, "priced": 0})["listed"] += 1
-    for entry in (idx or {}).values():
-        d = _et_card_date(entry.get("commence_time"))
-        if d:
-            seen.setdefault(d, {"listed": 0, "priced": 0})["priced"] += 1
-    for d, counts in seen.items():
-        cur = dates.setdefault(d, {"listed": 0, "priced": 0})
-        cur["listed"] = max(cur["listed"], counts["listed"])
-        cur["priced"] = max(cur["priced"], counts["priced"])
+        if not d:
+            continue
+        cur = dates.setdefault(d, {"listed": 0, "priced": 0, "fighters": []})
+        cur["_listed"] = cur.get("_listed", 0) + 1
+        if _raw_h2h_priced(fight):
+            cur["_priced"] = cur.get("_priced", 0) + 1
+            for name in (fight.get("home_team", ""), fight.get("away_team", "")):
+                ln = last_name(clean(name)) if name else ""
+                if ln and ln not in cur["fighters"]:
+                    cur["fighters"].append(ln)
+    # Fold this provider's tallies in by max, then clear them for the next one.
+    for counts in dates.values():
+        counts["listed"] = max(counts["listed"], counts.pop("_listed", 0))
+        counts["priced"] = max(counts["priced"], counts.pop("_priced", 0))
     return dates
 
 
-def record_market_state(state, now, dates=None):
+def note_market_incomplete(why):
+    """Mark this run's view of the feed as partial (a provider failed or was skipped)."""
+    global _market_partial
+    _market_partial = True
+    print(f"Odds market snapshot: incomplete — {why}", file=sys.stderr)
+
+
+def record_market_state(state, now, dates=None, partial=None):
     """Fold this run's market observations into the persisted odds state.
 
-    An empty observation is NOT written. Every provider failing (or being skipped
-    on a spent budget) says nothing about what the books have posted, and blanking
-    the map would read downstream as "no market exists for any card" — which is
-    the same silent excuse-everything failure the budget carve-out was careful to
-    avoid. Keeping the last good snapshot is safe: write_status ages it out and
-    falls back to the day threshold once it is too old to trust.
+    Two runs are refused, both for the same reason — a snapshot downstream reads
+    as the whole truth about what the books have posted, and a missing date is
+    taken as "no market", so anything less than a complete view can excuse a
+    real parse failure for as long as the snapshot stays fresh:
+
+    - nothing observed at all (every provider failed, or all were skipped on a
+      spent budget). Keeping the last good snapshot is safe; write_status ages
+      it out and falls back to the day threshold.
+    - a PARTIAL view. The providers cover deliberately different book sets, so
+      a card priced only in the regions the failed provider covers would be
+      absent from the surviving one's payload and read as unpriced. Timestamping
+      that as fresh would hide the gap for the full staleness window.
     """
     dates = _market_dates if dates is None else dates
-    if not dates:
+    partial = _market_partial if partial is None else partial
+    if not dates or partial:
+        if partial:
+            print("Odds market snapshot: not published — partial provider view",
+                  file=sys.stderr)
         return state
     state["markets"] = {d: dict(c) for d, c in sorted(dates.items())}
     state["markets_at"] = now.isoformat()
@@ -1579,16 +1621,18 @@ def _fetch_odds_api(regions, source, api_key=None, quota="the-odds-api"):
         note_provider_result(quota, source,
                              status=r.status_code, remaining=remaining_n)
         if r.status_code != 200:
+            note_market_incomplete(f"{source} returned {r.status_code}")
             return {}
         data = r.json()
     except Exception as e:
         print(f"Odds API [{source}] error: {e}", file=sys.stderr)
         note_provider_result(quota, source, status=None, remaining=None)
+        note_market_incomplete(f"{source} errored")
         return {}
     idx = _index_odds_api(data, source)
     note_provider_result(quota, source, bouts=len(idx))
-    # Both halves, from the one payload: what the feed carried and what it priced.
-    note_market_dates(data, idx)
+    # Read straight from the payload, not from idx — see _raw_h2h_priced.
+    note_market_dates(data)
     return idx
 
 
@@ -1972,7 +2016,11 @@ def fetch_odds(sources=None, state=None, now=None):
     """
     sources = ODDS_PROVIDERS if sources is None else sources
     if state is not None:
-        sources = select_odds_providers(sources, state, now or datetime.now(timezone.utc))
+        picked = select_odds_providers(sources, state, now or datetime.now(timezone.utc))
+        if len(picked) < len(sources):
+            note_market_incomplete(
+                f"{len(sources) - len(picked)} provider(s) skipped on a spent budget")
+        sources = picked
     combined = {}
     for src in sources:
         label = getattr(src, "__name__", str(src))
@@ -1980,6 +2028,7 @@ def fetch_odds(sources=None, state=None, now=None):
             idx = src()
         except Exception as e:
             print(f"Odds source {label} error: {e}", file=sys.stderr)
+            note_market_incomplete(f"{label} raised")
             continue
         added = 0
         for pair, o in idx.items():

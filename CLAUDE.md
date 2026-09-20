@@ -128,12 +128,35 @@ card crossed the 14-day default unpriced and went red every run until the
 threshold was narrowed to 7 days, which would have broken again on the next
 card priced late. The scraper now records the fact instead of inferring it —
 `note_market_dates` folds each odds payload into `odds-state.json`'s `markets`
-block (per **ET** card date: bouts `listed`, bouts `priced`), and
-`write_status.market_priced` reads it. Only `priced` can make a card our
-failure. The signal ages out (`MARKET_SIGNAL_MAX_AGE_H`, 72h) back to the day
-threshold, and a run that observed nothing keeps the previous snapshot rather
-than blanking it — an empty map would read as "no market exists anywhere" and
-excuse every real parse failure at once.
+block (per **ET** card date: bouts `listed`, bouts `priced`, and the priced
+bouts' surnames), and `write_status.market_priced` reads it. Only `priced` can
+make a card our failure.
+
+Three properties of that signal are load-bearing, and each one is a way it
+could quietly stop working:
+
+- **It is read from the RAW payload, never from our own index**
+  (`_raw_h2h_priced`, not `_index_odds_api`). The failure it exists to catch is
+  our parser missing a market that exists, so deriving it from the parser would
+  make it blind to exactly that: an upstream shape change, or every line
+  rejected by `_valid_odds`, would read as "no market posted" and excuse the
+  parse failure.
+- **A priced bout must be one of OURS.** The endpoint is the umbrella
+  `mma_mixed_martial_arts` feed, so a priced PFL bout on the same Saturday as
+  an unpriced UFC card would otherwise prove the card had lines and turn the
+  run red for a market nobody posted. `market_priced` intersects the snapshot's
+  surnames with the card's roster; one hit is enough, which is why it is far
+  more robust than the per-bout matching it polices (UFC 331 matched ten of
+  twelve).
+- **A partial view is never published as a complete one.** The providers cover
+  deliberately different book sets, so if one fails or is skipped on a spent
+  budget, a card priced only in its regions is absent from the survivor's
+  payload. Publishing that would read as "no market" and hide the gap for the
+  whole staleness window, so `record_market_state` refuses both a partial run
+  and an empty one and keeps the last good snapshot instead.
+
+The signal ages out (`MARKET_SIGNAL_MAX_AGE_H`, 72h) back to the day threshold,
+which errs loud.
 
 ## Fight Week Intel costs nothing — keep it that way
 

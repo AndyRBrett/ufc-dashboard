@@ -111,11 +111,12 @@ def test_odds_unavailable_is_not_reported_as_an_error():
 # because a day threshold cannot tell those two apart. scrape.py now records
 # what the feed listed and priced per card date; these hold the reading of it.
 
-def _state(priced, listed=None, at=None, date="2026-06-28"):
+def _state(priced, listed=None, at=None, date="2026-06-28", fighters=None):
     at = at or datetime.now(timezone.utc)
     return {
         "markets": {date: {"listed": listed if listed is not None else priced,
-                           "priced": priced}},
+                           "priced": priced,
+                           "fighters": fighters if fighters is not None else []}},
         "markets_at": at.isoformat(),
     }
 
@@ -158,6 +159,54 @@ def test_market_priced_unknown_when_the_timestamp_is_unreadable():
     assert ws.market_priced(bad, "2026-06-28") is None
     del bad["markets_at"]
     assert ws.market_priced(bad, "2026-06-28") is None
+
+
+def test_market_priced_requires_the_priced_bouts_to_be_ours():
+    # The endpoint is the umbrella mma_mixed_martial_arts feed. A priced PFL
+    # bout on the same Saturday as an unpriced UFC card is not evidence about
+    # the UFC card — counting it would turn the run red for a market that was
+    # never posted, which is the exact failure this whole signal fixes.
+    st = _state(6, fighters=["nemkov", "bader"])
+    assert ws.market_priced(st, "2026-06-28", ["holloway", "gaethje"]) is False
+    assert ws.market_priced(st, "2026-06-28", ["nemkov", "someone"]) is True
+
+
+def test_market_priced_needs_only_one_roster_name_to_match():
+    # Deliberately generous: the per-bout matching this polices failed on two
+    # of UFC 331's twelve bouts while ten matched, so one hit establishes that
+    # the feed carried the card.
+    st = _state(11, fighters=["holloway"] + [f"x{i}" for i in range(10)])
+    assert ws.market_priced(st, "2026-06-28", ["holloway", "gaethje"]) is True
+
+
+def test_market_priced_ignores_the_roster_when_the_snapshot_predates_it():
+    # An older snapshot carries no fighters; fall back to the count rather than
+    # reading "no names" as "not our card" and going quiet.
+    st = _state(11)
+    del st["markets"]["2026-06-28"]["fighters"]
+    assert ws.market_priced(st, "2026-06-28", ["holloway"]) is True
+
+
+def test_an_empty_fighters_list_errs_loud_rather_than_quiet():
+    # A priced bout always carries both names, so this shape should not occur —
+    # and if it ever does, "priced but unattributable" must fall back to the
+    # count, not silently resolve to "not our card" and suppress the failure.
+    assert ws.market_priced(_state(6, fighters=[]), "2026-06-28", ["holloway"]) is True
+
+
+def test_market_priced_without_a_roster_is_the_count_alone():
+    assert ws.market_priced(_state(6, fighters=["nemkov"]), "2026-06-28") is True
+
+
+def test_parse_events_carries_the_cards_roster():
+    # The roster comes off the announced card, odds-bearing or not — the
+    # unpriced case is the whole point.
+    data = ('var EVENTS=[{name:"UFC 999: A vs B",\n date:"2026-06-28",'
+            'fights:[{lbl:"Main",wc:"Lightweight",odds:null,'
+            'f1:{n:"Max Holloway"},f2:{n:"Justin Gaethje"}}]}]')
+    ev = ws.parse_events(data)[0]
+    assert ev["roster"] == ["gaethje", "holloway"]
+    assert ev["bout_count"] == 1
 
 
 def test_classify_awaiting_card_when_no_market_exists_for_an_imminent_card():

@@ -59,6 +59,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import alert_calibration as calib
+# The same surname normalisation the scraper indexes the odds feed with. Two
+# copies would drift on exactly the accented and hyphenated names this has
+# already been bitten by, and the roster check below compares one against the
+# other (see market_priced).
+from scrape import last_name
 
 DATA_PATH     = Path("data.js")
 STATUS_PATH   = Path("overseer-status.json")
@@ -148,14 +153,17 @@ def load_odds_state(path=ODDS_STATE_PATH):
         return {}
 
 
-def market_priced(state, event_date, now=None):
+def market_priced(state, event_date, roster=None, now=None):
     """Did the odds feed carry priced bouts for this card at the last pull?
 
-    True  — the feed priced at least one bout on that ET date. Lines existed to
-            read, so an event of ours with none is our failure to parse or match
-            them (the Doo-ho-style name-matching gap, or a selector break).
-    False — the feed returned nothing priced for that date. No market has been
-            posted, so there is nothing to have failed at.
+    True  — the feed priced at least one bout on that ET date AND, when `roster`
+            (the card's own fighter surnames) is given, at least one of those
+            priced bouts is a bout of ours. Lines existed to read, so an event
+            of ours with none is our failure to parse or match them (the
+            Doo-ho-style name-matching gap, or a selector break).
+    False — the feed returned nothing priced for that date, or priced only other
+            promotions' bouts. No market has been posted for this card, so there
+            is nothing to have failed at.
     None  — we cannot tell: no snapshot, or one too old to speak for today's
             books. Callers fall back to the ODDS_EXPECTED_WITHIN_DAYS heuristic,
             which is the conservative reading (a real failure stays loud).
@@ -165,6 +173,14 @@ def market_priced(state, event_date, now=None):
     14-day default at UTC midnight and failed every run for hours; the books
     simply had not opened it yet, and the threshold was narrowed to 7 days as a
     stopgap that would break again on the next card priced late.
+
+    The roster check is what keeps the umbrella `mma_mixed_martial_arts` feed
+    honest: a priced PFL bout on the same Saturday as an unpriced UFC card is
+    not evidence about the UFC card. One surname out of a whole roster is enough
+    to establish coverage, which is why this is far more robust than the
+    per-bout matching it polices — UFC 331 matched ten of twelve bouts while
+    two failed. A total miss reads as False (quiet); health.py still WARNs on an
+    imminent card carrying no lines, so the gap is never invisible.
     """
     markets = (state or {}).get("markets")
     if not isinstance(markets, dict) or not markets:
@@ -184,7 +200,12 @@ def market_priced(state, event_date, now=None):
         # A date the snapshot does not mention is a date the feed listed nothing
         # for — that is the "no market yet" answer, not an unknown one.
         return False
-    return bool(entry.get("priced"))
+    if not entry.get("priced"):
+        return False
+    fighters = entry.get("fighters")
+    if roster and isinstance(fighters, list) and fighters:
+        return bool(set(fighters) & set(roster))
+    return True
 
 # A single serialised fight: odds literal followed by both fighters' names.
 # Matches scrape.fight_js output, which emits each fight on one line.
@@ -197,7 +218,7 @@ FIGHT_RE = re.compile(
 # Any serialised bout, whether or not it carries odds (odds:null bouts don't
 # match FIGHT_RE). Counts the announced card so an event with fighters but no
 # posted lines reads as "awaiting-card", not a zero-bout parse failure (#14).
-BOUT_RE = re.compile(r'f1:\{n:"[^"]+"[^}]*\},f2:\{n:"[^"]+"')
+BOUT_RE = re.compile(r'f1:\{n:"([^"]+)"[^}]*\},f2:\{n:"([^"]+)"')
 # Event header — name immediately followed by date, as serialised by events_js.
 EVENT_RE = re.compile(r'name:"([^"]+)",\s*\n\s*date:"(\d{4}-\d{2}-\d{2})"')
 
@@ -240,10 +261,16 @@ def parse_events(data):
              "lbl": m2["lbl"], "wc": m2["wc"]}
             for m2 in FIGHT_RE.finditer(seg)
         ]
+        bouts = BOUT_RE.findall(seg)
         events.append({
             "event_id": f"{date}:{slug(name)}",
             "date": date,
-            "bout_count": len(BOUT_RE.findall(seg)),
+            "bout_count": len(bouts),
+            # Surnames of everyone announced on the card, odds or not. Used to
+            # tie a priced market in the umbrella MMA feed to THIS card rather
+            # than to whatever else runs that night (see market_priced).
+            "roster": sorted({last_name(n) for pair in bouts for n in pair
+                              if last_name(n)}),
             "fights": fights,
         })
     return events
@@ -778,7 +805,7 @@ def main():
         fp       = fingerprint(ev["fights"])
         data_ok  = has_data(ev["fights"]) and fp != EMPTY_SHA
         ev_hist  = history.get(ev["event_id"], [])
-        priced   = market_priced(odds_state, ev["date"], now)
+        priced   = market_priced(odds_state, ev["date"], ev.get("roster"), now)
         status_  = classify_event(ev, ev_hist, today, budget_dead, priced)
         changed  = last_changed_at(ev_hist, ev["fights"], now_iso)
 
