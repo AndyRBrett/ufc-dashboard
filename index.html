@@ -6591,7 +6591,11 @@ function _syncTrashAudienceRow(){
 function _updateTrashSendBtn(){
   var btn=document.getElementById("trashSendBtn");
   if(!btn)return;
+  // Guarded for the same reason btn is, one line up. Without this the null
+  // dereference threw out of the generate handler's success path and was
+  // reported to the user as a failed generation.
   var box=document.getElementById("trashChips");
+  if(!box)return;
   var individual=box.querySelectorAll(".lb-trash-chip:not([data-uid=\'__all__\'])");
   var n=_selectedTargets.has("__all__")?individual.length:_selectedTargets.size;
   var everyone=_trashAudience==="group"||_selectedTargets.has("__all__")||(n>1&&n===individual.length);
@@ -6883,16 +6887,32 @@ function generateTrashTalk(){
     body:JSON.stringify({action:"trash-talk",persona:persona,myNickname:myName,myRank:myRank,myRecord:myRecord,targets:targets.slice(0,20).map(function(o){return o.nickname;}),lbMode:_trashLbMode,evName:_trashLbEvName,card:facts,hint:hint})
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(data){
     _trashText=data.breakdown||"No trash talk generated.";
-    document.getElementById("trashText").textContent=_trashText;
-    document.getElementById("trashText").style.display="block";
-    // Targets and audience were both chosen up front — just arm the button.
-    var sendBtn=document.getElementById("trashSendBtn");
-    sendBtn.disabled=false;
-    _updateTrashSendBtn();
-    document.getElementById("trashSendSection").style.display="block";
-  }).catch(function(){
-    document.getElementById("trashText").textContent="Couldn't generate trash talk right now. Try again!";
-    document.getElementById("trashHintSection").style.display="block";
+    var t=document.getElementById("trashText");
+    if(t){t.textContent=_trashText;t.style.display="block";}
+    // Arming the send controls must NOT be able to throw away a roast the
+    // server already produced. It used to: sendBtn was dereferenced unguarded
+    // and _updateTrashSendBtn dereferenced #trashChips the same way, so a
+    // missing node threw into the shared catch below, which then printed
+    // "Couldn't generate trash talk right now" over a roast that had come back
+    // fine in 1.7s. The roast is the product; the button is furniture, and
+    // furniture failing is not a generation failure.
+    try{
+      var sendBtn=document.getElementById("trashSendBtn");
+      if(sendBtn)sendBtn.disabled=false;
+      _updateTrashSendBtn();
+      var sendSec=document.getElementById("trashSendSection");
+      if(sendSec)sendSec.style.display="block";
+    }catch(armErr){console.error("trash talk: couldn't arm the send controls",armErr);}
+  }).catch(function(err){
+    // Never swallow this. An empty catch made a network failure, an HTTP
+    // error and a null node in the success path all look identical from the
+    // outside, which is exactly the ambiguity that made this bug expensive to
+    // find — the edge function logged 200 while the app claimed it failed.
+    console.error("trash talk: generate failed",err);
+    var t=document.getElementById("trashText");
+    if(t)t.textContent="Couldn't generate trash talk right now. Try again!";
+    var hintSec=document.getElementById("trashHintSection");
+    if(hintSec)hintSec.style.display="block";
   }).finally(function(){
     _trashGenerating=false;
     var genBtn=document.querySelector(".lb-trash-gen");if(genBtn)genBtn.disabled=false;
