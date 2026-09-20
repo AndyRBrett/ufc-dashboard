@@ -23,6 +23,11 @@ jobs:
       - run: npm ci
       - name: Syntax-check edge functions
         run: npm run check:functions
+      # ai-breakdown routes the roast to Grok and everything else to Claude.
+      # A break there deploys clean and only shows up as a roast in the wrong
+      # voice, so it gates the deploy alongside the syntax check.
+      - name: Trash-talk model routing test
+        run: npm run check:provider
 
   deploy:
     needs: validate

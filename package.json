@@ -12,6 +12,7 @@
     "check:tap": "node tests/notification-tap.mjs",
     "check:audience": "node tests/trash-audience.mjs",
     "check:prompt": "node tests/trash-prompt.mjs",
+    "check:provider": "node tests/trash-provider.mjs",
     "check:dedup": "node tests/notify-dedup-key.mjs",
     "check:model": "node tests/fight-model.mjs",
     "check:parlay": "node tests/parlay-risk.mjs",
@@ -22,7 +23,7 @@
     "check:prefs": "node tests/check-prefs.mjs",
     "check:kick": "node tests/check-kick-gate.mjs",
     "check:lock": "node tests/check-lock-times.mjs",
-    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew && npm run check:prefs && npm run check:picks && npm run check:kick && npm run check:lock"
+    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:provider && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew && npm run check:prefs && npm run check:picks && npm run check:kick && npm run check:lock"
   },
   "devDependencies": {
     "esbuild": "^0.24.0",

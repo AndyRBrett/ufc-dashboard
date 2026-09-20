@@ -5,6 +5,22 @@ const CLAUDE_API_URL = "https://api.anthropic.com/v1/messages";
 // Overridable so the model can be upgraded without redeploying code.
 const MODEL = Deno.env.get("MODEL") ?? "claude-haiku-4-5-20251001";
 
+// --- Grok (xAI), for the roast only ----------------------------------------
+//
+// Claude writes a good burn but keeps sanding the edges off it: the language
+// comes back PG no matter how the prompt is phrased, and a roast that reads
+// like it was cleared by a publicist is not what anyone on this board wants
+// pushed to their phone. Grok will actually swear, so the `trash-talk` action
+// runs on it while `breakdown`, `chat` and `parlay` — where accuracy matters
+// and tone does not — stay on Claude. Two models, split by what each is good
+// at, not a wholesale migration.
+//
+// The endpoint is OpenAI-shaped chat-completions, so the response is parsed
+// differently (choices[0].message.content, not content[0].text) — that is the
+// only structural difference; system/user split and max_tokens carry over.
+const GROK_API_URL = Deno.env.get("GROK_API_URL") ?? "https://api.x.ai/v1/chat/completions";
+const GROK_MODEL = Deno.env.get("GROK_MODEL") ?? "grok-4-fast-non-reasoning";
+
 // Restrict which sites may call this (Claude-backed, cost-bearing) endpoint.
 // Comma-separated env override; defaults to the production GitHub Pages origin.
 const ALLOWED_ORIGINS = (Deno.env.get("ALLOWED_ORIGINS") ?? "https://andyrbrett.github.io")
@@ -409,6 +425,117 @@ function enforceSignature(text: string, persona: string): string {
   return t + " — " + persona;
 }
 
+// --- The gloves-off rule ---------------------------------------------------
+//
+// Appended to the END of the roast system prompt, and ONLY when the roast is
+// going to a provider that will actually honour it. Last position is deliberate
+// — it is the same reason the sender's angle is repeated as the final line of
+// the user turn: the model weights the end of its instructions hardest, and a
+// "you may swear" buried mid-prompt loses to the thirty rules around it.
+//
+// It is a suffix rather than a flag threaded through buildTrashTalk so that the
+// filtered prompt and the unfiltered one are the SAME STRING plus this — which
+// is what makes the Grok→Claude fallback below exact. On a fallback we drop the
+// suffix and re-send the identical system prompt, instead of rebuilding it and
+// re-rolling the random angle, form and seed the first attempt already picked.
+//
+// The floor is narrow on purpose. This is a private board of five friends who
+// opted into being roasted, so crude, profane and personal is the product, not
+// a side effect. What it rules out is the stuff that stops being a joke the
+// moment it lands on someone's lock screen.
+function unfilteredRule(persona: string): string {
+  return ` NO CLEAN-LANGUAGE FILTER — THIS IS THE WHOLE POINT: everyone on this board opted in and they want it filthy. Swear properly and often, go crude, go below the belt, get genuinely mean. Profanity is not seasoning here, it is the register: ${persona} talking shit in private, not ${persona} on a broadcast. A roast that could be read aloud on daytime TV has FAILED this job — if you find yourself reaching for a polite word, use the rude one instead. Two lines you do not cross, and they are the only two: no slurs and nothing that attacks anyone's race, religion, sex, gender, disability or sexuality; and no threat of real violence meant to be taken literally. Everything else is open.`;
+}
+
+type Provider = "grok" | "claude";
+
+// Which model writes the roast. Grok whenever there is a key for it, because
+// that is the entire reason it was wired up; TRASH_TALK_PROVIDER=claude is the
+// kill switch if xAI starts billing badly or the tone goes wrong. With no Grok
+// key configured this returns "claude" and the feature behaves exactly as it
+// did before — deploying this function without setting GROK_API_KEY changes
+// nothing, which is what makes the rollout safe.
+function trashTalkProvider(grokKey: string): Provider {
+  const want = (Deno.env.get("TRASH_TALK_PROVIDER") ?? "grok").trim().toLowerCase();
+  if (want === "claude" || want === "anthropic") return "claude";
+  return grokKey ? "grok" : "claude";
+}
+
+interface ModelReply { ok: boolean; status: number; text: string; detail: string; }
+
+// Retry the statuses that mean "try again", not the ones that mean "you asked
+// wrong". A 400/401/403 retried three times is three times the latency for the
+// same failure, and the roast is generated while someone watches a spinner.
+const RETRYABLE = new Set([429, 500, 502, 503, 504, 529]);
+const RETRIES = 3;
+const backoff = (attempt: number) => new Promise((r) => setTimeout(r, attempt * 1500));
+
+async function callAnthropic(
+  apiKey: string,
+  { system, user, maxTokens }: { system?: string; user: string; maxTokens: number },
+): Promise<ModelReply> {
+  const payload = JSON.stringify({
+    model: MODEL,
+    max_tokens: maxTokens,
+    ...(system ? { system } : {}),
+    messages: [{ role: "user", content: user }],
+  });
+  let res: Response | null = null;
+  for (let attempt = 0; attempt < RETRIES; attempt++) {
+    if (attempt > 0) await backoff(attempt);
+    res = await fetch(CLAUDE_API_URL, {
+      method: "POST",
+      headers: {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: payload,
+    });
+    if (res.ok || !RETRYABLE.has(res.status)) break;
+  }
+  const r = res!;
+  if (!r.ok) return { ok: false, status: r.status, text: "", detail: await r.text() };
+  const data = await r.json();
+  return { ok: true, status: r.status, text: data?.content?.[0]?.text ?? "", detail: "" };
+}
+
+// xAI's API is OpenAI-compatible: bearer auth, a messages array that carries the
+// system prompt as its own role: "system" entry rather than a top-level field,
+// and the answer at choices[0].message.content. Everything else — max_tokens,
+// the retry policy, the shape this returns — matches callAnthropic so the
+// handler can swap one for the other without caring which it got.
+async function callGrok(
+  apiKey: string,
+  { system, user, maxTokens }: { system?: string; user: string; maxTokens: number },
+): Promise<ModelReply> {
+  const payload = JSON.stringify({
+    model: GROK_MODEL,
+    max_tokens: maxTokens,
+    messages: [
+      ...(system ? [{ role: "system", content: system }] : []),
+      { role: "user", content: user },
+    ],
+  });
+  let res: Response | null = null;
+  for (let attempt = 0; attempt < RETRIES; attempt++) {
+    if (attempt > 0) await backoff(attempt);
+    res = await fetch(GROK_API_URL, {
+      method: "POST",
+      headers: {
+        "authorization": `Bearer ${apiKey}`,
+        "content-type": "application/json",
+      },
+      body: payload,
+    });
+    if (res.ok || !RETRYABLE.has(res.status)) break;
+  }
+  const r = res!;
+  if (!r.ok) return { ok: false, status: r.status, text: "", detail: await r.text() };
+  const data = await r.json();
+  return { ok: true, status: r.status, text: data?.choices?.[0]?.message?.content ?? "", detail: "" };
+}
+
 function buildParlayPrompt(d: ReqBody): string {
   return `You are a UFC betting analyst. Suggest exactly 3 parlay combinations for this card. Mix risk levels: one safe (2 heavy favourites), one medium (2-3 fighters with value), one risky upset special.
 
@@ -455,15 +582,22 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: "Input too long" }), { status: 400, headers: CORS });
   }
 
-  const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: "Server misconfigured: missing API key" }), { status: 500, headers: CORS });
-  }
+  const apiKey = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
+  // GROK_API_KEY is the name used here; XAI_API_KEY is accepted too because
+  // that is what xAI's own console calls it and it is the one people paste.
+  const grokKey = Deno.env.get("GROK_API_KEY") ?? Deno.env.get("XAI_API_KEY") ?? "";
 
   const action = body.action ?? "breakdown";
   let prompt: string;
   let system: string | undefined;
   let maxTokens = 250;
+  // Only the roast is eligible for Grok; everything else is analysis and stays
+  // on Claude. Resolved before the key check below so a Grok-only deployment
+  // isn't rejected for missing an Anthropic key it never uses.
+  let provider: Provider = "claude";
+  // Kept so the Grok→Claude fallback can re-send the same prompt minus the
+  // gloves-off suffix. See unfilteredRule.
+  let claudeSystem: string | undefined;
   if (action === "chat") {
     prompt = buildChatPrompt(body);
     maxTokens = 180;
@@ -471,8 +605,12 @@ Deno.serve(async (req) => {
     prompt = buildParlayPrompt(body);
     maxTokens = 300;
   } else if (action === "trash-talk") {
+    provider = trashTalkProvider(grokKey);
     const built = buildTrashTalk(body);
-    system = built.system;
+    claudeSystem = built.system;
+    system = provider === "grok"
+      ? built.system + unfilteredRule(body.persona || "A Famous Friend")
+      : built.system;
     prompt = built.user;
     // The prompt hard-caps roasts at ~30 words / two sentences (people stopped
     // reading the long ones). 120 tokens is ~3x that budget, so the signature
@@ -492,61 +630,67 @@ Deno.serve(async (req) => {
     maxTokens = 250;
   }
 
-  const callClaude = async (userText: string): Promise<Response> => {
-    const reqBody = JSON.stringify({
-      model: MODEL,
-      max_tokens: maxTokens,
-      ...(system ? { system } : {}),
-      messages: [{ role: "user", content: userText }],
-    });
-    let res: Response | null = null;
-    for (let attempt = 0; attempt < 3; attempt++) {
-      if (attempt > 0) await new Promise((r) => setTimeout(r, attempt * 1500));
-      res = await fetch(CLAUDE_API_URL, {
-        method: "POST",
-        headers: {
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-          "content-type": "application/json",
-        },
-        body: reqBody,
-      });
-      if (res.ok || res.status !== 529) break;
+  // The active provider can change mid-request (Grok down → Claude), so the key
+  // check runs against whichever one could actually be used.
+  if (provider === "claude" && !apiKey) {
+    return new Response(JSON.stringify({ error: "Server misconfigured: missing API key" }), { status: 500, headers: CORS });
+  }
+
+  // One call, whichever model is live. On a Grok failure this falls back to
+  // Claude rather than surfacing an error: the roast is generated while someone
+  // watches a spinner on a live card, and a tamer burn beats no burn. The
+  // fallback re-sends the SAME user turn with the gloves-off suffix stripped
+  // from the system prompt — not a rebuilt prompt, which would re-roll the
+  // random angle and form the first attempt already chose.
+  let fellBack = false;
+  const callModel = async (userText: string): Promise<ModelReply> => {
+    if (provider === "grok") {
+      const r = await callGrok(grokKey, { system, user: userText, maxTokens });
+      if (r.ok || !apiKey) return r;
+      provider = "claude";
+      fellBack = true;
+      system = claudeSystem;
+      console.error(`grok failed (${r.status}), falling back to claude: ${r.detail.slice(0, 200)}`);
     }
-    return res!;
+    return await callAnthropic(apiKey, { system, user: userText, maxTokens });
   };
 
-  let claudeRes: Response = await callClaude(prompt);
+  const first = await callModel(prompt);
 
-  if (!claudeRes.ok) {
-    const err = await claudeRes.text();
-    const overloaded = claudeRes.status === 529;
+  if (!first.ok) {
+    const overloaded = first.status === 529 || first.status === 503;
     return new Response(
-      JSON.stringify({ error: overloaded ? "overloaded" : "Claude API error", detail: err }),
+      JSON.stringify({ error: overloaded ? "overloaded" : "Model API error", detail: first.detail }),
       { status: 502, headers: CORS }
     );
   }
 
-  const data = await claudeRes.json();
-  let text: string = data?.content?.[0]?.text ?? "";
+  let text: string = first.text;
   // The angle is the one instruction worth spending a second call on: if the
   // sender's own words didn't survive, ask again with the miss named. Only one
   // retry, and whatever comes back is used either way — a roast without the
   // angle still beats no roast when the card is live.
   const trashHint = (body.hint ?? "").trim();
   if (action === "trash-talk" && text && trashHint && !usesAngle(text, trashHint)) {
-    const retryRes = await callClaude(`${prompt}
+    const retry = await callModel(`${prompt}
 
 Your last attempt was: "${text.trim()}"
 It dropped ${body.myNickname || "the sender"}'s actual words. Write it again and put the angle's own wording in the line — as close to "${trashHint}" as ${body.persona || "the persona"}'s voice allows. Same length cap, same signature.`);
-    if (retryRes.ok) {
-      const retryData = await retryRes.json();
-      const retryText: string = retryData?.content?.[0]?.text ?? "";
-      if (retryText && usesAngle(retryText, trashHint)) text = retryText;
-    }
+    if (retry.ok && retry.text && usesAngle(retry.text, trashHint)) text = retry.text;
   }
   if (action === "trash-talk" && text) {
     text = enforceSignature(text, body.persona || "A Famous Friend");
   }
-  return new Response(JSON.stringify({ breakdown: text }), { status: 200, headers: CORS });
+  // `provider`/`model` are reported back so a roast that reads oddly tame can be
+  // traced to a silent fallback instead of being debugged as a prompt problem.
+  // The client reads only `breakdown`; these are extra fields, not a contract change.
+  return new Response(
+    JSON.stringify({
+      breakdown: text,
+      ...(action === "trash-talk"
+        ? { provider, model: provider === "grok" ? GROK_MODEL : MODEL, ...(fellBack ? { fellBack: true } : {}) }
+        : {}),
+    }),
+    { status: 200, headers: CORS }
+  );
 });

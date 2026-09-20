@@ -26,6 +26,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:tap`   | a tapped push notification not surfacing its message            |
 | `npm run check:audience` | trash talk reaching the wrong people (roast targets vs. push recipients) |
 | `npm run check:prompt` | a typed roast angle getting diluted by the rest of the prompt |
+| `npm run check:provider` | the roast losing its unfiltered model, or analysis drifting onto it |
 | `npm run check:dedup` | the three result senders drifting apart and double-pushing a fight |
 | `npm run check:model` | the fight model posting a confident number off missing data |
 | `npm run check:parlay` | a parlay priced with the vig left in, or a correlated ticket read as independent |
@@ -51,7 +52,7 @@ Pushing to `main` deploys automatically, so the gates also run in CI and
 - `.github/workflows/pages.yml` → GitHub Pages. `deploy` **needs** the
   `validate` job (the `validate-web.yml` reusable workflow = the checks above).
 - `.github/workflows/deploy-functions.yml` → Supabase. `deploy` **needs** a
-  `check:functions` gate.
+  `check:functions` + `check:provider` gate.
 - `.github/workflows/ci.yml` runs everything on every push/PR for visibility.
 
 CI is a backstop, not a substitute: run `verify` locally first so you never
@@ -236,6 +237,63 @@ stranded. `renderWhatsNew` moves focus onto "Got it" on open; `_wnTrapFocus`
 X and "Got it" instead of escaping into the page; `closeWhatsNew` restores
 focus to wherever it was. `npm run check:whatsnew` holds all three,
 mutation-tested individually.
+
+## The roast runs on Grok; everything else runs on Claude
+
+`ai-breakdown` serves four actions. Three of them — `breakdown`, `chat`,
+`parlay` — make claims about real fights people are betting picks on, and those
+stay on Claude. The fourth, `trash-talk`, is a joke between five friends, and
+Claude would not stop sanding the edges off it: the burn came back PG no matter
+how the prompt was phrased, which is the one thing the feature cannot be. So the
+roast calls xAI's Grok instead.
+
+**The split is per-action, not per-deployment, and `check:provider` holds it.**
+A breakdown quietly routed to Grok is a different model answering a question
+about a real fight; the gloves-off rule leaking into a parlay prompt is worse.
+The test asserts `trashTalkProvider` and `unfilteredRule` are each referenced
+exactly once in the handler, inside the roast branch.
+
+| env | default | what it does |
+| --- | ------- | ------------ |
+| `GROK_API_KEY` (or `XAI_API_KEY`) | unset | the xAI key. **Unset = the roast stays on Claude and nothing changes** |
+| `TRASH_TALK_PROVIDER` | `grok` | set to `claude` to force the roast back, without touching the key |
+| `GROK_MODEL` | `grok-4-fast-non-reasoning` | overridable so the model moves without a redeploy, same as `MODEL` |
+| `GROK_API_URL` | xAI chat-completions | only for pointing at a proxy |
+
+**Deploying this function before the secret exists is a no-op.** That ordering is
+deliberate — `trashTalkProvider("")` returns `claude`, so the code can ship and
+sit inert until `GROK_API_KEY` is set in the Supabase dashboard. Remember an edge
+function only goes live on a Supabase deploy, not on a git push.
+
+**The gloves-off rule is a SUFFIX on the system prompt, never a flag through
+`buildTrashTalk`.** `buildTrashTalk` rolls a random angle, a random rhetorical
+form and a freshness seed; if Grok fails mid-request the handler falls back to
+Claude by re-sending *the same user turn* with `unfilteredRule(...)` stripped off
+the system prompt. Threading a flag in would mean rebuilding, which re-rolls all
+three and throws away the framing the first attempt was given. `check:provider`
+asserts the unfiltered prompt is byte-for-byte the filtered one plus the rule.
+
+**The fallback is deliberate: a tamer burn beats no burn.** Roasts are generated
+while someone watches a spinner on a live card, so a Grok outage degrades to
+Claude rather than erroring. The response carries `provider`, `model` and
+`fellBack` so a roast that reads oddly polite can be traced to that instead of
+being debugged as a prompt problem — the client only reads `breakdown`.
+
+**What the unfiltered rule does NOT relax.** Profanity, crudeness and genuinely
+mean personal shots are the product. The floor is two lines: no slurs or attacks
+on race, religion, sex, gender, disability or sexuality, and no threat of real
+violence meant literally — these land on a friend's lock screen as a push
+notification, signed with a real name. The length cap, `FACTS ARE STRICT`, and
+the signature rule are untouched by it, and `check:provider` asserts all three
+survive. `send-push`'s `MAX_BODY` already sits well above what 120 tokens can
+produce, so nothing downstream needed resizing.
+
+**The two APIs differ in exactly one structural way.** xAI is OpenAI-shaped:
+bearer auth, the system prompt as a `role: "system"` message rather than a
+top-level field, and the answer at `choices[0].message.content` instead of
+`content[0].text`. Reading one with the other's accessor yields an *empty
+roast*, not an error, which is why `check:provider` exercises both callers
+against a stubbed `fetch` rather than trusting the shape.
 
 ## A PPV runs three segments, and each one is a lock clock
 
