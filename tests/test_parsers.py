@@ -270,6 +270,142 @@ def test_index_odds_api_empty_payload_yields_empty_index():
     assert scrape._index_odds_api([], "the-odds-api:us") == {}
 
 
+# --- market observation: what the feed listed vs what it priced -------------
+#
+# write_status.classify_event reads this to tell "the books have posted no
+# market for this card yet" from "a market exists and we failed to parse it" —
+# the distinction the 2026-09-12 day-threshold stopgap could only approximate.
+
+def _feed_bout(f1, f2, commence, priced=True):
+    books = [{"key": "fanduel", "markets": [{"key": "h2h", "outcomes": [
+        {"name": f1, "price": -150}, {"name": f2, "price": 130}]}]}] if priced else []
+    return {"home_team": f1, "away_team": f2,
+            "commence_time": commence, "bookmakers": books}
+
+
+def test_market_dates_are_ET_not_UTC():
+    # A Saturday 22:00 ET main event commences at 02:00 UTC Sunday. Filed under
+    # the UTC date it would never match the event date data.js carries, and
+    # every late US card would read as "no market posted".
+    payload = [_feed_bout("Max Holloway", "Justin Gaethje", "2026-06-28T02:00:00Z")]
+    dates = scrape.note_market_dates(payload, {})
+    assert list(dates) == ["2026-06-27"]
+    assert dates["2026-06-27"]["listed"] == 1
+    assert dates["2026-06-27"]["priced"] == 1
+
+
+def test_market_dates_separate_listed_from_priced():
+    # The event is on the board with no bookmaker line yet: listed, not priced.
+    # Only `priced` can turn an empty card of ours into a parse failure.
+    payload = [_feed_bout("A Fighter", "B Fighter", "2026-06-28T23:00:00Z",
+                          priced=False)]
+    dates = scrape.note_market_dates(payload, {})
+    assert dates["2026-06-28"]["listed"] == 1
+    assert dates["2026-06-28"]["priced"] == 0
+    assert dates["2026-06-28"]["fighters"] == []
+
+
+def test_market_dates_record_the_priced_bouts_surnames():
+    # The endpoint is the umbrella mma_mixed_martial_arts feed, so the date
+    # alone cannot say WHOSE card was priced — write_status intersects these
+    # with the card's own roster.
+    payload = [_feed_bout("Max Holloway", "Justin Gaethje", "2026-06-28T23:00:00Z")]
+    dates = scrape.note_market_dates(payload, {})
+    assert dates["2026-06-28"]["fighters"] == ["holloway", "gaethje"]
+
+
+def test_market_priced_is_read_from_the_raw_payload_not_our_parser():
+    # THE point of the signal: a market exists and our indexer returns nothing
+    # (a shape change upstream, or every line rejected as corrupt). Deriving
+    # `priced` from the index would file that as "no market posted" and excuse
+    # the very parse failure this is meant to expose.
+    payload = [{"home_team": "A Fighter", "away_team": "B Fighter",
+                "commence_time": "2026-06-28T23:00:00Z",
+                "bookmakers": [{"key": "fanduel", "markets": [{"key": "h2h",
+                    "outcomes": [{"name": "A Fighter", "price": -120},
+                                 {"name": "B Fighter", "price": -36}]}]}]}]
+    assert scrape._index_odds_api(payload, "s") == {}       # rejected as corrupt
+    assert scrape.note_market_dates(payload, {})["2026-06-28"]["priced"] == 1
+
+
+def test_market_dates_need_two_priced_outcomes_to_count():
+    # A market listed with one side priced is not a readable line.
+    payload = [{"home_team": "A Fighter", "away_team": "B Fighter",
+                "commence_time": "2026-06-28T23:00:00Z",
+                "bookmakers": [{"key": "fanduel", "markets": [{"key": "h2h",
+                    "outcomes": [{"name": "A Fighter", "price": -150}]}]}]}]
+    assert scrape.note_market_dates(payload, {})["2026-06-28"]["priced"] == 0
+
+
+def test_market_dates_merge_overlapping_providers_by_max():
+    # Two sources covering the same bout is one bout, not two — a sum would
+    # inflate the count and read as coverage the feed never had.
+    payload = [_feed_bout("A Fighter", "B Fighter", "2026-06-28T23:00:00Z")]
+    dates = {}
+    for _ in range(2):
+        scrape.note_market_dates(payload, dates)
+    assert dates["2026-06-28"]["listed"] == 1
+    assert dates["2026-06-28"]["priced"] == 1
+
+
+def test_market_dates_keep_the_wider_provider_coverage():
+    # A second provider that carries fewer bouts must not shrink what the first
+    # one saw, and a bout only it carries must still be counted.
+    wide = [_feed_bout(f"A{i}", f"B{i}", "2026-06-28T23:00:00Z") for i in range(3)]
+    dates = scrape.note_market_dates(wide, {})
+    scrape.note_market_dates(wide[:1], dates)
+    assert dates["2026-06-28"]["priced"] == 3
+
+
+def test_market_dates_ignore_a_bout_with_no_commence_time():
+    payload = [_feed_bout("A Fighter", "B Fighter", "")]
+    assert scrape.note_market_dates(payload, {}) == {}
+
+
+def test_record_market_state_writes_the_snapshot_with_its_timestamp():
+    from datetime import datetime, timezone
+    now = datetime(2026, 6, 22, 9, 0, tzinfo=timezone.utc)
+    state = scrape.record_market_state(
+        {}, now, {"2026-06-28": {"listed": 11, "priced": 0, "fighters": []}},
+        partial=False)
+    assert state["markets"]["2026-06-28"]["listed"] == 11
+    assert state["markets_at"] == now.isoformat()
+
+
+def test_record_market_state_keeps_the_last_snapshot_when_nothing_was_observed():
+    # Every provider failing (or being skipped on a spent budget) says nothing
+    # about what the books posted. Blanking the map would read downstream as "no
+    # market exists for any card" and excuse every genuine parse failure.
+    from datetime import datetime, timezone
+    prev = {"markets": {"2026-06-28": {"listed": 11, "priced": 11}},
+            "markets_at": "2026-06-21T09:00:00+00:00"}
+    state = scrape.record_market_state(dict(prev), datetime.now(timezone.utc), {},
+                                       partial=False)
+    assert state == prev
+
+
+def test_record_market_state_refuses_to_publish_a_partial_view():
+    # The providers cover deliberately different book sets. A card priced only
+    # in the regions the FAILED provider covers is absent from the survivor's
+    # payload, so publishing that as the complete snapshot would read as "no
+    # market" and hide a real gap for the whole staleness window.
+    from datetime import datetime, timezone
+    prev = {"markets": {"2026-06-28": {"listed": 11, "priced": 11}},
+            "markets_at": "2026-06-21T09:00:00+00:00"}
+    state = scrape.record_market_state(
+        dict(prev), datetime.now(timezone.utc),
+        {"2026-06-28": {"listed": 4, "priced": 4, "fighters": ["x"]}}, partial=True)
+    assert state == prev
+
+
+def test_a_failed_provider_marks_the_run_partial(monkeypatch):
+    # The flag has to be set where the failure happens, not inferred later.
+    monkeypatch.setattr(scrape, "_market_partial", False, raising=False)
+    scrape.note_market_incomplete("test")
+    assert scrape._market_partial is True
+    monkeypatch.setattr(scrape, "_market_partial", False, raising=False)
+
+
 def _card(*pairs):
     return [{"odds": None, "f1": {"name": a}, "f2": {"name": b}} for a, b in pairs]
 

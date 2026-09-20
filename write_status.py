@@ -59,6 +59,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import alert_calibration as calib
+# The same surname normalisation the scraper indexes the odds feed with. Two
+# copies would drift on exactly the accented and hyphenated names this has
+# already been bitten by, and the roster check below compares one against the
+# other (see market_priced).
+from scrape import last_name
 
 DATA_PATH     = Path("data.js")
 STATUS_PATH   = Path("overseer-status.json")
@@ -132,6 +137,76 @@ def odds_budget_exhausted(path=ODDS_STATE_PATH):
         return False
     return state.get("last_status") in (401, 403) and state.get("requests_remaining") == 0
 
+# How long the market snapshot in odds-state.json stays trustworthy. The pull
+# cadence stretches to 24h on a far-out card and backs off further on a dormant
+# one, so a snapshot is routinely a day old; past this it is no longer evidence
+# about today's books and the day threshold takes over again. Erring long would
+# let one stale pull excuse a genuine parse failure indefinitely.
+MARKET_SIGNAL_MAX_AGE_H = int(os.environ.get("ODDS_MARKET_SIGNAL_MAX_AGE_H", "72"))
+
+
+def load_odds_state(path=ODDS_STATE_PATH):
+    """The persisted odds state, or {} when it is missing or unreadable."""
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def market_priced(state, event_date, roster=None, now=None):
+    """Did the odds feed carry priced bouts for this card at the last pull?
+
+    True  — the feed priced at least one bout on that ET date AND, when `roster`
+            (the card's own fighter surnames) is given, at least one of those
+            priced bouts is a bout of ours. Lines existed to read, so an event
+            of ours with none is our failure to parse or match them (the
+            Doo-ho-style name-matching gap, or a selector break).
+    False — the feed returned nothing priced for that date, or priced only other
+            promotions' bouts. No market has been posted for this card, so there
+            is nothing to have failed at.
+    None  — we cannot tell: no snapshot, or one too old to speak for today's
+            books. Callers fall back to the ODDS_EXPECTED_WITHIN_DAYS heuristic,
+            which is the conservative reading (a real failure stays loud).
+
+    This is the distinction the day threshold could only approximate. On
+    2026-09-12 the 2026-09-26 card (11 bouts, no lines anywhere) crossed the
+    14-day default at UTC midnight and failed every run for hours; the books
+    simply had not opened it yet, and the threshold was narrowed to 7 days as a
+    stopgap that would break again on the next card priced late.
+
+    The roster check is what keeps the umbrella `mma_mixed_martial_arts` feed
+    honest: a priced PFL bout on the same Saturday as an unpriced UFC card is
+    not evidence about the UFC card. One surname out of a whole roster is enough
+    to establish coverage, which is why this is far more robust than the
+    per-bout matching it polices — UFC 331 matched ten of twelve bouts while
+    two failed. A total miss reads as False (quiet); health.py still WARNs on an
+    imminent card carrying no lines, so the gap is never invisible.
+    """
+    markets = (state or {}).get("markets")
+    if not isinstance(markets, dict) or not markets:
+        return None
+    try:
+        at = datetime.fromisoformat(
+            str((state or {}).get("markets_at", "")).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if at.tzinfo is None:
+        at = at.replace(tzinfo=timezone.utc)
+    now = now or datetime.now(timezone.utc)
+    if (now - at).total_seconds() / 3600 > MARKET_SIGNAL_MAX_AGE_H:
+        return None
+    entry = markets.get(event_date)
+    if not isinstance(entry, dict):
+        # A date the snapshot does not mention is a date the feed listed nothing
+        # for — that is the "no market yet" answer, not an unknown one.
+        return False
+    if not entry.get("priced"):
+        return False
+    fighters = entry.get("fighters")
+    if roster and isinstance(fighters, list) and fighters:
+        return bool(set(fighters) & set(roster))
+    return True
+
 # A single serialised fight: odds literal followed by both fighters' names.
 # Matches scrape.fight_js output, which emits each fight on one line.
 FIGHT_RE = re.compile(
@@ -143,7 +218,7 @@ FIGHT_RE = re.compile(
 # Any serialised bout, whether or not it carries odds (odds:null bouts don't
 # match FIGHT_RE). Counts the announced card so an event with fighters but no
 # posted lines reads as "awaiting-card", not a zero-bout parse failure (#14).
-BOUT_RE = re.compile(r'f1:\{n:"[^"]+"[^}]*\},f2:\{n:"[^"]+"')
+BOUT_RE = re.compile(r'f1:\{n:"([^"]+)"[^}]*\},f2:\{n:"([^"]+)"')
 # Event header — name immediately followed by date, as serialised by events_js.
 EVENT_RE = re.compile(r'name:"([^"]+)",\s*\n\s*date:"(\d{4}-\d{2}-\d{2})"')
 
@@ -186,10 +261,16 @@ def parse_events(data):
              "lbl": m2["lbl"], "wc": m2["wc"]}
             for m2 in FIGHT_RE.finditer(seg)
         ]
+        bouts = BOUT_RE.findall(seg)
         events.append({
             "event_id": f"{date}:{slug(name)}",
             "date": date,
-            "bout_count": len(BOUT_RE.findall(seg)),
+            "bout_count": len(bouts),
+            # Surnames of everyone announced on the card, odds or not. Used to
+            # tie a priced market in the umbrella MMA feed to THIS card rather
+            # than to whatever else runs that night (see market_priced).
+            "roster": sorted({last_name(n) for pair in bouts for n in pair
+                              if last_name(n)}),
             "fights": fights,
         })
     return events
@@ -206,7 +287,8 @@ def has_data(fights):
     return len(fights) >= MIN_BOUTS
 
 
-def classify_event(ev, ev_hist, today, budget_exhausted=False):
+def classify_event(ev, ev_hist, today, budget_exhausted=False,
+                   market_priced=None):
     """Disambiguate an event's extraction state into one of four statuses (#14).
 
     - "ok":               at least one odds-bearing bout parsed — a real extraction.
@@ -221,12 +303,20 @@ def classify_event(ev, ev_hist, today, budget_exhausted=False):
                           reset, so it warns without failing the run.
     - "awaiting-card":    no odds yet, but legitimately so — an upcoming event
                           still far enough out that sportsbooks haven't posted
-                          lines, or a past event that simply never carried odds.
-                          Not actionable, so it must NOT pollute the error list.
+                          lines, an imminent one the feed carries no priced
+                          market for yet, or a past event that simply never
+                          carried odds. Not actionable, so it must NOT pollute
+                          the error list.
 
     `today` is a YYYY-MM-DD string; `ev_hist` is this event's snapshot history as
     returned by load_snapshot_history (a list of (at, fights)); `budget_exhausted`
-    is odds_budget_exhausted() hoisted out so the classification stays pure.
+    is odds_budget_exhausted() and `market_priced` is market_priced(), both
+    hoisted out so the classification stays pure.
+
+    `market_priced` is what turns the imminent-and-unpriced case from a guess
+    into an observation: False means the books have posted nothing to parse, so
+    the card is awaiting its market however close it is. None (no snapshot, or a
+    stale one) keeps the old day-threshold behaviour, which errs loud.
     """
     if has_data(ev["fights"]):
         return "ok"
@@ -251,7 +341,15 @@ def classify_event(ev, ev_hist, today, budget_exhausted=False):
     # unless we never had the budget to ask, in which case it is the expected,
     # self-healing consequence of the exhausted quota rather than a break.
     if days_out <= ODDS_EXPECTED_WITHIN_DAYS:
-        return "odds-unavailable" if budget_exhausted else "parse-failure"
+        if budget_exhausted:
+            return "odds-unavailable"
+        # The feed priced nothing for this date: there was no market to misread,
+        # so this is a card waiting on its book, not a break. health.py still
+        # WARNs about an imminent card with no lines, which is where an unpriced
+        # card belongs — visible, but not failing the publish.
+        if market_priced is False:
+            return "awaiting-card"
+        return "parse-failure"
 
     return "awaiting-card"
 
@@ -687,6 +785,8 @@ def main():
     # budget state, and re-reading it mid-loop would let a concurrent write split
     # one run's classification across two different answers.
     budget_dead = odds_budget_exhausted()
+    # Same reasoning for the market snapshot: one read, one answer for the run.
+    odds_state = load_odds_state()
 
     # Per-tier alert thresholds, re-derived each run from the committed odds
     # time-series (#93). One global constant let prelim noise flood the feed at
@@ -705,7 +805,8 @@ def main():
         fp       = fingerprint(ev["fights"])
         data_ok  = has_data(ev["fights"]) and fp != EMPTY_SHA
         ev_hist  = history.get(ev["event_id"], [])
-        status_  = classify_event(ev, ev_hist, today, budget_dead)
+        priced   = market_priced(odds_state, ev["date"], ev.get("roster"), now)
+        status_  = classify_event(ev, ev_hist, today, budget_dead, priced)
         changed  = last_changed_at(ev_hist, ev["fights"], now_iso)
 
         try:
@@ -747,6 +848,10 @@ def main():
             "has_data":        data_ok,
             "bout_count":      ev["bout_count"],
             "line_movement":   movement,
+            # What the feed had for this date at the last pull (null = unknown).
+            # Without it, "awaiting-card" on an imminent card looks like the
+            # threshold being lenient rather than an observation about the books.
+            "odds_market_priced": priced,
         })
 
     # Surface only genuine parse failures in errors — events we expected lines for
