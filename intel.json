@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-19T22:48:44Z",
+ "generated_at": "2026-09-20T01:50:29Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -45,18 +45,16 @@
    "date": "2026-09-19",
    "items": [
     {
-     "title": "Crypto.com UFC 331 Embedded: Vlog Series - Episode 6",
-     "url": "https://www.youtube.com/watch?v=Q7UJsuRpKg0",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-09-19T05:01:35Z",
-     "thumb": "https://i2.ytimg.com/vi/Q7UJsuRpKg0/hqdefault.jpg",
-     "blurb": "Alexandre Pantoja cuts weight with his family by his side; Giga Chikadze sheds the final pounds at the athlete hotel; UFC 331 athletes step on the scale for official weigh-ins; Mauricio Ruffy refuels and catches up with…",
+     "title": "Alexandre Pantoja’s greatest rival predicts UFC 331 loss having fought him for over 45 minutes",
+     "url": "https://bloodyelbow.com/2026/09/19/alexandre-pantojas-greatest-rival-predicts-ufc-331-loss-having-fought-him-for-over-45-minutes/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-09-19T23:00:00Z",
+     "thumb": null,
+     "blurb": "Brandon Moreno believes that UFC 331 might be the moment that Joshua Van truly cements himself. Pantoja’s loss to Van last December due to the ...",
      "fighters": [
       "Alexandre Pantoja",
-      "Arman Tsarukyan",
-      "Giga Chikadze",
-      "Mauricio Ruffy"
+      "Joshua Van"
      ]
     },
     {
@@ -67,19 +65,6 @@
      "published": "2026-09-19T10:00:00Z",
      "thumb": null,
      "blurb": "Drake will be keeping a close eye on Saturday’s curtain closer in Los Angeles. The UFC Octagon is currently at the Crypto.com Arena, where one ...",
-     "fighters": [
-      "Alexandre Pantoja",
-      "Joshua Van"
-     ]
-    },
-    {
-     "title": "Joshua Van vs. Alexandre Pantoja 2: Bloody Elbow staff divided on the UFC 331 main event",
-     "url": "https://bloodyelbow.com/2026/09/19/joshua-van-vs-alexandre-pantoja-2-bloody-elbow-staff-divided-on-the-ufc-331-main-event/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-09-19T05:00:00Z",
-     "thumb": null,
-     "blurb": "Joshua Van and Alexandre Pantoja will run it back for the flyweight title on Saturday night. A freak injury meant their first fight at UFC ...",
      "fighters": [
       "Alexandre Pantoja",
       "Joshua Van"
@@ -125,28 +110,16 @@
      ]
     },
     {
-     "title": "Arman Tsarukyan vs. Mauricio Ruffy: Bloody Elbow staff predict the UFC 331 co-main event",
-     "url": "https://bloodyelbow.com/2026/09/19/arman-tsarukyan-vs-mauricio-ruffy-bloody-elbow-staff-predict-the-ufc-331-co-main-event/",
+     "title": "Arman Tsarukyan vs Mauricio Ruffy UFC 331 LIVE stream info, results, updates and more as N3on corners in Los Angeles",
+     "url": "https://bloodyelbow.com/2026/09/19/arman-tsarukyan-vs-mauricio-ruffy-ufc-331-live-stream-info-results-updates-and-more-as-n3on-corners-in-los-angeles/",
      "source": "Bloody Elbow",
      "kind": "article",
-     "published": "2026-09-19T06:00:00Z",
+     "published": "2026-09-20T01:22:34Z",
      "thumb": null,
-     "blurb": "Arman Tsarukyan hopes to secure a long-overdue UFC title shot on Saturday night. The top lightweight contender will face Mauricio Ruffy in the co-main event ...",
+     "blurb": "Arman Tsarukyan is back in the octagon tonight for the first time since November as he pushes for a world title fight. Mauricio Ruffy is ...",
      "fighters": [
       "Arman Tsarukyan",
       "Mauricio Ruffy"
-     ]
-    },
-    {
-     "title": "Casey O'Neill Octagon Interview | UFC 331",
-     "url": "https://www.youtube.com/watch?v=-U5JlGtwV9w",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-09-19T22:20:04Z",
-     "thumb": "https://i2.ytimg.com/vi/-U5JlGtwV9w/hqdefault.jpg",
-     "blurb": "Listen to Casey O'Neill talk with Joe Rogan after her win at UFC 331. UFC 331 RESULTS: https://ufc.ac/3T6eHGw Watch UFC on Paramount Plus ➡️ https://www.paramountplus.com/ Subscribe to get all the latest UFC content:…",
-     "fighters": [
-      "Casey O'Neill"
      ]
     }
    ]
