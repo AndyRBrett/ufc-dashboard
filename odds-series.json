@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-19T23:58:02Z",
+  "generated_at": "2026-09-20T00:00:49Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -8485,7 +8485,7 @@
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Joshua Van",
@@ -8604,8 +8604,15 @@
             "f1_odds": -113,
             "f2_odds": -110
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-19T22:03:04Z",
+            "f1_odds": -158,
+            "f2_odds": 130
+          },
+          "clv": {
+            "f1_odds": -45,
+            "f2_odds": 240
+          }
         },
         {
           "f1": "Arman Tsarukyan",
@@ -8714,8 +8721,15 @@
             "f1_odds": -383,
             "f2_odds": 285
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-19T03:43:05Z",
+            "f1_odds": -312,
+            "f2_odds": 245
+          },
+          "clv": {
+            "f1_odds": 71,
+            "f2_odds": -40
+          }
         },
         {
           "f1": "Gable Steveson",
@@ -8784,8 +8798,15 @@
             "f1_odds": -1477,
             "f2_odds": 767
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-19T03:43:05Z",
+            "f1_odds": -2367,
+            "f2_odds": 1100
+          },
+          "clv": {
+            "f1_odds": -890,
+            "f2_odds": 333
+          }
         },
         {
           "f1": "Tai Tuivasa",
@@ -8914,8 +8935,15 @@
             "f1_odds": 395,
             "f2_odds": -565
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-19T18:58:20Z",
+            "f1_odds": 357,
+            "f2_odds": -472
+          },
+          "clv": {
+            "f1_odds": -38,
+            "f2_odds": 93
+          }
         },
         {
           "f1": "Renato Moicano",
@@ -8974,8 +9002,15 @@
             "f1_odds": -200,
             "f2_odds": 169
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-15T14:20:21Z",
+            "f1_odds": -215,
+            "f2_odds": 180
+          },
+          "clv": {
+            "f1_odds": -15,
+            "f2_odds": 11
+          }
         },
         {
           "f1": "Alonzo Menifield",
@@ -9099,8 +9134,15 @@
             "f1_odds": 205,
             "f2_odds": -245
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-19T22:03:04Z",
+            "f1_odds": 208,
+            "f2_odds": -258
+          },
+          "clv": {
+            "f1_odds": 3,
+            "f2_odds": -13
+          }
         },
         {
           "f1": "Marlon Vera",
@@ -9214,8 +9256,15 @@
             "f1_odds": 200,
             "f2_odds": -240
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-19T18:58:20Z",
+            "f1_odds": 170,
+            "f2_odds": -208
+          },
+          "clv": {
+            "f1_odds": -30,
+            "f2_odds": 32
+          }
         },
         {
           "f1": "Edmen Shahbazyan",
@@ -9334,8 +9383,15 @@
             "f1_odds": -155,
             "f2_odds": 132
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-19T18:58:20Z",
+            "f1_odds": -187,
+            "f2_odds": 153
+          },
+          "clv": {
+            "f1_odds": -32,
+            "f2_odds": 21
+          }
         },
         {
           "f1": "Giga Chikadze",
@@ -9439,8 +9495,15 @@
             "f1_odds": 274,
             "f2_odds": -340
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-19T22:03:04Z",
+            "f1_odds": 317,
+            "f2_odds": -505
+          },
+          "clv": {
+            "f1_odds": 43,
+            "f2_odds": -165
+          }
         },
         {
           "f1": "Casey O'Neill",
@@ -9589,8 +9652,15 @@
             "f1_odds": -177,
             "f2_odds": 150
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-19T22:03:04Z",
+            "f1_odds": -235,
+            "f2_odds": 190
+          },
+          "clv": {
+            "f1_odds": -58,
+            "f2_odds": 40
+          }
         },
         {
           "f1": "Ryan Gandra",
@@ -9674,8 +9744,15 @@
             "f1_odds": -450,
             "f2_odds": 354
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-19T22:03:04Z",
+            "f1_odds": -530,
+            "f2_odds": 392
+          },
+          "clv": {
+            "f1_odds": -80,
+            "f2_odds": 38
+          }
         },
         {
           "f1": "Patricio Pitbull",
@@ -9734,8 +9811,15 @@
             "f1_odds": 223,
             "f2_odds": -289
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-19T22:03:04Z",
+            "f1_odds": 222,
+            "f2_odds": -278
+          },
+          "clv": {
+            "f1_odds": -1,
+            "f2_odds": 11
+          }
         },
         {
           "f1": "Michael Aswell Jr.",
@@ -9824,8 +9908,15 @@
             "f1_odds": 210,
             "f2_odds": -270
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-19T22:03:04Z",
+            "f1_odds": 146,
+            "f2_odds": -176
+          },
+          "clv": {
+            "f1_odds": -64,
+            "f2_odds": 94
+          }
         }
       ]
     },
@@ -10731,8 +10822,8 @@
         "side": "f1",
         "points": 21,
         "open": -155,
-        "close": null,
-        "clv": null
+        "close": -187,
+        "clv": -32
       }
     ],
     "Tom Nolan": [
@@ -10804,8 +10895,8 @@
         "side": "f2",
         "points": 22,
         "open": -245,
-        "close": null,
-        "clv": null
+        "close": -258,
+        "clv": -13
       }
     ],
     "Junior Tafa": [
@@ -10941,8 +11032,8 @@
         "side": "f2",
         "points": 18,
         "open": -340,
-        "close": null,
-        "clv": null
+        "close": -505,
+        "clv": -165
       }
     ],
     "Jordan Leavitt": [
@@ -11362,8 +11453,8 @@
         "side": "f1",
         "points": 15,
         "open": 210,
-        "close": null,
-        "clv": null
+        "close": 146,
+        "clv": -64
       }
     ],
     "Leon Shahbazyan": [
@@ -11525,8 +11616,8 @@
         "side": "f2",
         "points": 21,
         "open": 132,
-        "close": null,
-        "clv": null
+        "close": 153,
+        "clv": 21
       }
     ],
     "Abusupiyan Magomedov": [
@@ -11847,8 +11938,8 @@
         "side": "f1",
         "points": 11,
         "open": -1477,
-        "close": null,
-        "clv": null
+        "close": -2367,
+        "clv": -890
       }
     ],
     "Elisha Ellison": [
@@ -12028,8 +12119,8 @@
         "side": "f1",
         "points": 14,
         "open": -450,
-        "close": null,
-        "clv": null
+        "close": -530,
+        "clv": -80
       }
     ],
     "Zachary Reese": [
@@ -14025,8 +14116,8 @@
         "side": "f1",
         "points": 21,
         "open": -113,
-        "close": null,
-        "clv": null
+        "close": -158,
+        "clv": -45
       }
     ],
     "Alexandre Pantoja": [
@@ -14036,8 +14127,8 @@
         "side": "f2",
         "points": 21,
         "open": -110,
-        "close": null,
-        "clv": null
+        "close": 130,
+        "clv": 240
       }
     ],
     "Arman Tsarukyan": [
@@ -14047,8 +14138,8 @@
         "side": "f1",
         "points": 19,
         "open": -383,
-        "close": null,
-        "clv": null
+        "close": -312,
+        "clv": 71
       }
     ],
     "Mauricio Ruffy": [
@@ -14058,8 +14149,8 @@
         "side": "f2",
         "points": 19,
         "open": 285,
-        "close": null,
-        "clv": null
+        "close": 245,
+        "clv": -40
       }
     ],
     "Sean Sharaf": [
@@ -14069,8 +14160,8 @@
         "side": "f2",
         "points": 11,
         "open": 767,
-        "close": null,
-        "clv": null
+        "close": 1100,
+        "clv": 333
       }
     ],
     "Tai Tuivasa": [
@@ -14080,8 +14171,8 @@
         "side": "f1",
         "points": 23,
         "open": 395,
-        "close": null,
-        "clv": null
+        "close": 357,
+        "clv": -38
       }
     ],
     "Robelis Despaigne": [
@@ -14091,8 +14182,8 @@
         "side": "f2",
         "points": 23,
         "open": -565,
-        "close": null,
-        "clv": null
+        "close": -472,
+        "clv": 93
       }
     ],
     "Renato Moicano": [
@@ -14102,8 +14193,8 @@
         "side": "f1",
         "points": 9,
         "open": -200,
-        "close": null,
-        "clv": null
+        "close": -215,
+        "clv": -15
       }
     ],
     "Brian Ortega": [
@@ -14113,8 +14204,8 @@
         "side": "f2",
         "points": 9,
         "open": 169,
-        "close": null,
-        "clv": null
+        "close": 180,
+        "clv": 11
       }
     ],
     "Alonzo Menifield": [
@@ -14124,8 +14215,8 @@
         "side": "f1",
         "points": 22,
         "open": 205,
-        "close": null,
-        "clv": null
+        "close": 208,
+        "clv": 3
       }
     ],
     "Marlon Vera": [
@@ -14135,8 +14226,8 @@
         "side": "f1",
         "points": 20,
         "open": 200,
-        "close": null,
-        "clv": null
+        "close": 170,
+        "clv": -30
       }
     ],
     "Charles Jourdain": [
@@ -14146,8 +14237,8 @@
         "side": "f2",
         "points": 20,
         "open": -240,
-        "close": null,
-        "clv": null
+        "close": -208,
+        "clv": 32
       }
     ],
     "Giga Chikadze": [
@@ -14157,8 +14248,8 @@
         "side": "f1",
         "points": 18,
         "open": 274,
-        "close": null,
-        "clv": null
+        "close": 317,
+        "clv": 43
       }
     ],
     "Casey O'Neill": [
@@ -14168,8 +14259,8 @@
         "side": "f1",
         "points": 27,
         "open": -177,
-        "close": null,
-        "clv": null
+        "close": -235,
+        "clv": -58
       }
     ],
     "Eduarda Moura": [
@@ -14179,8 +14270,8 @@
         "side": "f2",
         "points": 27,
         "open": 150,
-        "close": null,
-        "clv": null
+        "close": 190,
+        "clv": 40
       }
     ],
     "Osman Diaz": [
@@ -14190,8 +14281,8 @@
         "side": "f2",
         "points": 14,
         "open": 354,
-        "close": null,
-        "clv": null
+        "close": 392,
+        "clv": 38
       }
     ],
     "Patricio Pitbull": [
@@ -14201,8 +14292,8 @@
         "side": "f1",
         "points": 9,
         "open": 223,
-        "close": null,
-        "clv": null
+        "close": 222,
+        "clv": -1
       }
     ],
     "Choi Doo-ho": [
@@ -14212,8 +14303,8 @@
         "side": "f2",
         "points": 9,
         "open": -289,
-        "close": null,
-        "clv": null
+        "close": -278,
+        "clv": 11
       }
     ],
     "Yoo Joo-sang": [
@@ -14223,8 +14314,8 @@
         "side": "f2",
         "points": 15,
         "open": -270,
-        "close": null,
-        "clv": null
+        "close": -176,
+        "clv": 94
       }
     ],
     "Raul Rosas Jr.": [
