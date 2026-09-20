@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-20T17:53:24Z",
+  "generated_at": "2026-09-20T18:34:16Z",
   "events_tracked": 12,
   "stale_events": 2,
   "parse_failure_events": 0,
@@ -100,11 +100,11 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "ok",
-      "last_changed_at": "2026-09-20T11:58:20Z",
+      "last_changed_at": "2026-09-20T18:34:16Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 11,
-      "line_movement": 0
+      "line_movement": -4
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
@@ -118,7 +118,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-20T17:53:24Z",
+      "last_changed_at": "2026-09-20T18:34:16Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -127,7 +127,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-20T17:53:24Z",
+      "last_changed_at": "2026-09-20T18:34:16Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-20T17:53:24Z",
+      "last_changed_at": "2026-09-20T18:34:16Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -154,7 +154,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-20T17:53:24Z",
+      "last_changed_at": "2026-09-20T18:34:16Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -273,6 +273,22 @@
       "f1_prob_shift": 5.6,
       "f2_prob_shift": -5.7,
       "priority": 300.0
+    },
+    {
+      "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+      "f1": "Rodolfo Vieira",
+      "f2": "Robert Bryczek",
+      "f1_movement": -26,
+      "f2_movement": 214,
+      "magnitude": 214,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 5.3,
+      "f2_prob_shift": -3.4,
+      "priority": 299.6
     },
     {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
