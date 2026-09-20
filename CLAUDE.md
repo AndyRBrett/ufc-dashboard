@@ -257,8 +257,11 @@ exactly once in the handler, inside the roast branch.
 | --- | ------- | ------------ |
 | `GROK_API_KEY` (or `XAI_API_KEY`) | unset | the xAI key. **Unset = the roast stays on Claude and nothing changes** |
 | `TRASH_TALK_PROVIDER` | `grok` | set to `claude` to force the roast back, without touching the key |
-| `GROK_MODEL` | `grok-4.6` | overridable so the model moves without a redeploy, same as `MODEL` |
+| `GROK_MODEL` | `grok-4.20-0309-non-reasoning` | **non-reasoning on purpose — see below.** Moves without a redeploy, same as `MODEL` |
 | `GROK_MAX_TOKENS` | `1000` | Grok's ceiling. Not a length control — see below |
+| `GROK_TIMEOUT_MS` | `8000` | how long the roast waits on Grok before Claude writes it instead |
+| `ROAST_RETRY_BUDGET_MS` | `6000` | a first call slower than this buys no angle retry |
+| `RETRY_BACKOFF_MS` | `1500` | spacing between retries; squashed in tests, never in production |
 | `GROK_API_URL` | xAI chat-completions | only for pointing at a proxy |
 
 **Two ways this feature fails silently, both ending in a roast that isn't
@@ -286,6 +289,34 @@ is why `provider`, `model` and `fellBack` come back in the response.
    A blank-but-successful reply is therefore treated as a *failure* and falls
    back, rather than being returned as an empty roast the client renders as
    "No trash talk generated." with nothing logged. `check:provider` holds this.
+
+**The roast is generated while someone watches a spinner, so latency is a
+correctness property here.** `grok-4.6` was the first model tried and it is a
+*reasoning* model: a measured roast took **23.4 seconds** end to end against
+roughly 2s for the Claude path it replaced. A burn of under 30 words has nothing
+to reason about, so that budget bought latency and no quality. Three things keep
+it from coming back, and `check:provider` holds all three:
+
+1. **The default model does not reason.** The 4.20 family is the one that ships
+   an explicit `-non-reasoning` variant, which is why the default crosses
+   families rather than staying on 4.6. `GROK_MODEL=grok-4.6` puts it back
+   without a redeploy if the output is ever worth the wait.
+2. **`GROK_TIMEOUT_MS` bounds the wait**, via `AbortController`, after which
+   Claude writes the roast instead. A timeout is **never retried** — retrying it
+   three times multiplies the very latency it exists to bound, which is worse
+   than having no timeout at all. It is deliberately *not* applied to the Claude
+   call: Claude is the fallback of last resort and aborting it leaves nothing to
+   return.
+3. **The angle retry is a second full model call**, so it is skipped when the
+   first one already spent `ROAST_RETRY_BUDGET_MS`. That was half of the 23
+   seconds. A roast that drops the typed angle is worse; a roast that takes half
+   a minute is a worse *feature*, and the sender can retype and regenerate.
+
+`RETRY_BACKOFF_MS` exists so the gate can exercise the retry paths without
+sleeping through real backoffs — three of those tests at production spacing put
+~13s of pure waiting into `npm run verify`. The test squashes it to 1ms and
+asserts the *shipped* default is still ≥500ms, so production spacing can't be
+squashed along with it.
 
 **Deploying this function before the secret exists is a no-op.** That ordering is
 deliberate — `trashTalkProvider("")` returns `claude`, so the code can ship and

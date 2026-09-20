@@ -19,13 +19,27 @@ const MODEL = Deno.env.get("MODEL") ?? "claude-haiku-4-5-20251001";
 // differently (choices[0].message.content, not content[0].text) — that is the
 // only structural difference; system/user split and max_tokens carry over.
 const GROK_API_URL = Deno.env.get("GROK_API_URL") ?? "https://api.x.ai/v1/chat/completions";
-// Verified against GET /v1/models on this account — not typed from memory.
-// The display name and the API id happen to match here ("Grok 4.6" →
-// "grok-4.6"), which is NOT a rule: the 4.20 family ships as
-// grok-4.20-0309-reasoning / -non-reasoning, so check the list before changing
-// this. A model id this account cannot serve is a 400, and a 400 on the roast
-// falls back to Claude silently — it reads as a tone regression, not a typo.
-const GROK_MODEL = Deno.env.get("GROK_MODEL") ?? "grok-4.6";
+// NON-REASONING ON PURPOSE. grok-4.6 was the first default here and it is a
+// reasoning model: a measured roast took 23.4 SECONDS end to end (two calls —
+// the angle retry doubles it), against roughly 2s for the Claude path it
+// replaced. That is not a tuning detail, it is the feature breaking. The roast
+// is generated while someone stands there watching a spinner on a live card,
+// and nobody waits 23 seconds for a one-line joke.
+//
+// A burn of under 30 words has nothing to reason about, so the thinking budget
+// bought latency and no quality. The 4.20 family is the one that ships an
+// explicit non-reasoning variant, which is why the default crosses families
+// rather than staying on 4.6.
+//
+// Verified against GET /v1/models on this account — never typed from memory.
+// Note the display name matches the id for some ("Grok 4.6" → "grok-4.6") and
+// not others, so check the list before changing this. An id this account
+// cannot serve is a 400, and a 400 on the roast falls back to Claude silently
+// — it reads as a tone regression, not a typo.
+//
+// GROK_MODEL=grok-4.6 puts it back without a redeploy if the output is worth
+// the wait.
+const GROK_MODEL = Deno.env.get("GROK_MODEL") ?? "grok-4.20-0309-non-reasoning";
 
 // Grok gets a far bigger token ceiling than Claude does for the same roast, and
 // it is not so the roast can be longer — length is enforced by the prompt (~30
@@ -503,7 +517,12 @@ interface ModelReply { ok: boolean; status: number; text: string; detail: string
 // same failure, and the roast is generated while someone watches a spinner.
 const RETRYABLE = new Set([429, 500, 502, 503, 504, 529]);
 const RETRIES = 3;
-const backoff = (attempt: number) => new Promise((r) => setTimeout(r, attempt * 1500));
+// Configurable so the gate that exercises the retry paths doesn't have to sit
+// through real backoffs — three retried calls at 1.5s/3s is ~13s of `verify`
+// spent sleeping, and this gate set's whole promise is that it runs before
+// every push without anyone minding.
+const RETRY_BACKOFF_MS = Number(Deno.env.get("RETRY_BACKOFF_MS") ?? "1500");
+const backoff = (attempt: number) => new Promise((r) => setTimeout(r, attempt * RETRY_BACKOFF_MS));
 
 // Status 0 means "no HTTP response at all" — a DNS failure, TLS error or
 // connection reset, where fetch REJECTS rather than resolving with a status.
@@ -514,20 +533,44 @@ const backoff = (attempt: number) => new Promise((r) => setTimeout(r, attempt * 
 // and finally reported as an ordinary failed ModelReply.
 const STATUS_TRANSPORT = 0;
 
+// How long the roast may wait on Grok before giving up and letting Claude write
+// it instead. Without this the only ceiling is the platform's, so a model
+// having a slow day strands someone on a spinner with no way out — which is
+// exactly how the 23-second roast happened.
+//
+// It is deliberately NOT applied to the Claude call: Claude is the fallback of
+// last resort, and aborting it leaves nothing to return at all.
+const GROK_TIMEOUT_MS = Number(Deno.env.get("GROK_TIMEOUT_MS") ?? "8000");
+
 async function fetchWithRetry(
   url: string,
   init: RequestInit,
+  timeoutMs = 0,
 ): Promise<{ res: Response | null; detail: string }> {
   let res: Response | null = null;
   let detail = "";
   for (let attempt = 0; attempt < RETRIES; attempt++) {
     if (attempt > 0) await backoff(attempt);
+    const ctl = timeoutMs > 0 ? new AbortController() : null;
+    const timer = ctl ? setTimeout(() => ctl.abort(), timeoutMs) : null;
     try {
-      res = await fetch(url, init);
+      res = await fetch(url, ctl ? { ...init, signal: ctl.signal } : init);
     } catch (e) {
       res = null;
+      // A timeout is NEVER retried. Retrying it three times would multiply the
+      // very latency the timeout exists to bound — 8s becomes 24s plus backoff,
+      // which is worse than having no timeout at all. One slow call is enough
+      // evidence; hand it to the fallback.
+      if (ctl?.signal.aborted) {
+        detail = `timed out after ${timeoutMs}ms`;
+        break;
+      }
       detail = `transport error: ${e instanceof Error ? e.message : String(e)}`;
       continue;
+    } finally {
+      // Cleared as soon as the headers land, so reading the (small) body is
+      // never aborted mid-parse by a timer meant for the request itself.
+      if (timer) clearTimeout(timer);
     }
     if (res.ok || !RETRYABLE.has(res.status)) break;
   }
@@ -593,7 +636,7 @@ async function callGrok(
       "content-type": "application/json",
     },
     body: payload,
-  });
+  }, GROK_TIMEOUT_MS);
   if (!res) return { ok: false, status: STATUS_TRANSPORT, text: "", detail };
   if (!res.ok) return { ok: false, status: res.status, text: "", detail: await res.text() };
   const data = await readJson(res) as { choices?: { message?: { content?: string } }[] } | null;
@@ -619,6 +662,11 @@ async function callGrok(
 // below MAX_BODY even once the signature is appended, so this never fires on a
 // roast that followed its instructions — it only catches a runaway.
 const ROAST_MAX_CHARS = Number(Deno.env.get("ROAST_MAX_CHARS") ?? "600");
+
+// How long the first call may have taken and still leave room to spend a second
+// one chasing the sender's angle. Set below GROK_TIMEOUT_MS so a first call that
+// went the distance never buys a retry that would double it.
+const ROAST_RETRY_BUDGET_MS = Number(Deno.env.get("ROAST_RETRY_BUDGET_MS") ?? "6000");
 
 // Cutting a joke short is bad; sending nothing is worse. Prefer the last
 // sentence end so a trimmed roast still reads as a finished line, and fall
@@ -761,6 +809,7 @@ Deno.serve(async (req) => {
     return await callAnthropic(apiKey, { system, user: userText, maxTokens });
   };
 
+  const startedAt = Date.now();
   const first = await callModel(prompt);
 
   if (!first.ok) {
@@ -784,8 +833,15 @@ Deno.serve(async (req) => {
   // sender's own words didn't survive, ask again with the miss named. Only one
   // retry, and whatever comes back is used either way — a roast without the
   // angle still beats no roast when the card is live.
+  //
+  // The retry is a SECOND full model call, so it doubles what the sender waits.
+  // That was half of the 23-second roast. It is worth its cost when the first
+  // call was quick and skipped when it wasn't: a roast that drops the typed
+  // angle is a worse roast, but a roast that takes half a minute is a worse
+  // feature, and the sender can always retype the angle and hit generate again.
   const trashHint = (body.hint ?? "").trim();
-  if (action === "trash-talk" && text && trashHint && !usesAngle(text, trashHint)) {
+  const timeLeftForRetry = Date.now() - startedAt < ROAST_RETRY_BUDGET_MS;
+  if (action === "trash-talk" && text && trashHint && timeLeftForRetry && !usesAngle(text, trashHint)) {
     const retry = await callModel(`${prompt}
 
 Your last attempt was: "${text.trim()}"
