@@ -291,16 +291,24 @@ is why `provider`, `model` and `fellBack` come back in the response.
    "No trash talk generated." with nothing logged. `check:provider` holds this.
 
 **The roast is generated while someone watches a spinner, so latency is a
-correctness property here.** `grok-4.6` was the first model tried and it is a
-*reasoning* model: a measured roast took **23.4 seconds** end to end against
-roughly 2s for the Claude path it replaced. A burn of under 30 words has nothing
-to reason about, so that budget bought latency and no quality. Three things keep
-it from coming back, and `check:provider` holds all three:
+correctness property here.** The shipped default,
+`grok-4.20-0309-non-reasoning`, is the only Grok model that has actually served
+a roast on this workload: **1.7s** end to end, against roughly 2s for the Claude
+path it replaced. A burn of under 30 words has nothing to reason about, so a
+thinking budget buys latency and no quality. Three things hold that, and
+`check:provider` holds all three:
 
 1. **The default model does not reason.** The 4.20 family is the one that ships
    an explicit `-non-reasoning` variant, which is why the default crosses
-   families rather than staying on 4.6. `GROK_MODEL=grok-4.6` puts it back
-   without a redeploy if the output is ever worth the wait.
+   families rather than staying on 4.6.
+
+   **A correction worth keeping, because the wrong version of it was committed
+   here first:** an early roast took **23.4 seconds**, and this file briefly
+   blamed `grok-4.6` for it. That call never reached xAI — `GROK_API_KEY` wasn't
+   named what the function reads, so `trashTalkProvider("")` returned `claude`
+   and Claude served it, evidently retrying under load. **`grok-4.6`'s real
+   latency on this workload has never been measured.** Don't cite 23.4s as
+   evidence against it; measure it if you want it.
 2. **`GROK_TIMEOUT_MS` bounds the wait**, via `AbortController`, after which
    Claude writes the roast instead. A timeout is **never retried** — retrying it
    three times multiplies the very latency it exists to bound, which is worse

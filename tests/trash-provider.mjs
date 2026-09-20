@@ -262,8 +262,10 @@ assert("the clamp runs before the signature, so the signature survives it",
   /enforceSignature\(clampRoast\(text, ROAST_MAX_CHARS\)/.test(handler));
 
 // ── Latency: the roast is generated while someone watches a spinner ────────
-// grok-4.6 is a reasoning model and a measured roast took 23.4s against ~2s for
-// the Claude path it replaced. Three things keep that from coming back.
+// The shipped default is the only Grok model measured on this workload — 1.7s
+// end to end, against ~2s for the Claude path it replaced. Three things keep a
+// slow roast from shipping: a non-reasoning default, a bounded wait, and a
+// retry that doesn't fire when the first call was already slow.
 
 // 1. The default model does not reason.
 assert("the default Grok model is a non-reasoning one",

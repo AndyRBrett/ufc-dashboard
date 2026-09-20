@@ -19,17 +19,19 @@ const MODEL = Deno.env.get("MODEL") ?? "claude-haiku-4-5-20251001";
 // differently (choices[0].message.content, not content[0].text) — that is the
 // only structural difference; system/user split and max_tokens carry over.
 const GROK_API_URL = Deno.env.get("GROK_API_URL") ?? "https://api.x.ai/v1/chat/completions";
-// NON-REASONING ON PURPOSE. grok-4.6 was the first default here and it is a
-// reasoning model: a measured roast took 23.4 SECONDS end to end (two calls —
-// the angle retry doubles it), against roughly 2s for the Claude path it
-// replaced. That is not a tuning detail, it is the feature breaking. The roast
-// is generated while someone stands there watching a spinner on a live card,
-// and nobody waits 23 seconds for a one-line joke.
+// NON-REASONING, AND MEASURED. This is the only Grok model that has actually
+// served a roast here: 1.7s end to end, against roughly 2s for the Claude path
+// it replaced. The roast is generated while someone stands there watching a
+// spinner on a live card, so that number is the requirement, not a nice-to-have.
+// A burn of under 30 words has nothing to reason about, so a thinking budget
+// buys latency and no quality.
 //
-// A burn of under 30 words has nothing to reason about, so the thinking budget
-// bought latency and no quality. The 4.20 family is the one that ships an
-// explicit non-reasoning variant, which is why the default crosses families
-// rather than staying on 4.6.
+// What is NOT the reason: grok-4.6 was the first default here and a roast on
+// that config took 23.4 seconds, but that call never reached xAI — the key
+// wasn't named what the function reads, so it went to Claude, which was
+// evidently retrying under load. **grok-4.6's real latency on this workload has
+// never been measured.** Don't repeat the 23.4s figure as evidence against it;
+// if you want 4.6, measure it rather than inheriting this note's conclusion.
 //
 // Verified against GET /v1/models on this account — never typed from memory.
 // Note the display name matches the id for some ("Grok 4.6" → "grok-4.6") and
@@ -37,8 +39,7 @@ const GROK_API_URL = Deno.env.get("GROK_API_URL") ?? "https://api.x.ai/v1/chat/c
 // cannot serve is a 400, and a 400 on the roast falls back to Claude silently
 // — it reads as a tone regression, not a typo.
 //
-// GROK_MODEL=grok-4.6 puts it back without a redeploy if the output is worth
-// the wait.
+// GROK_MODEL is a secret, so any of this moves without a redeploy.
 const GROK_MODEL = Deno.env.get("GROK_MODEL") ?? "grok-4.20-0309-non-reasoning";
 
 // Grok gets a far bigger token ceiling than Claude does for the same roast, and
