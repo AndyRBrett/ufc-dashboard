@@ -320,8 +320,34 @@ and taps send, so this governs what gets **generated**, not what reaches a phone
 
 **What the rule does NOT relax.** The length cap, `FACTS ARE STRICT` and the
 signature rule are untouched by it, and `check:provider` asserts all three
-survive. `send-push`'s `MAX_BODY` already sits well above what 120 tokens can
-produce, so nothing downstream needed resizing.
+survive.
+
+**The roast's length has a hard bound in code, not just in the prompt
+(`ROAST_MAX_CHARS`, 600).** It used to be safe to lean on the prompt, because
+120 max_tokens could not produce more than ~480 characters and `send-push`
+rejects a body over `MAX_BODY` (1600) — the headroom made the question moot.
+`GROK_MAX_TOKENS` at 1000 ends that: ~4000 characters of prose clears `MAX_BODY`
+easily, and the resulting failure splits the feature in half — `ai-breakdown`
+returns 200, the sender reads a roast on screen, taps send, and gets a 400 they
+can do nothing about. So the clamp runs server-side, **before** `enforceSignature`
+so the trailing `— Persona` the client parses always survives the cut. 600 never
+fires on a compliant roast (30 words is ~180 chars) and always leaves room for
+the signature. `check:provider` reads `MAX_BODY` out of `send-push` and asserts
+clamp + longest-possible signature still fits, so the two files can't drift.
+
+**Never let an exception escape `callGrok` / `callAnthropic`.** A DNS failure,
+TLS error or connection reset makes `fetch` *reject* rather than resolve with a
+status, and a throw skips `callModel`'s fallback entirely — the fallback would
+miss the exact shape a real provider outage takes. `fetchWithRetry` converts
+transport errors into an ordinary failed `ModelReply` with `status: 0`, and
+`readJson` does the same for a 200 whose body isn't the JSON expected.
+
+**The reported `provider` describes the returned text, not the last call made.**
+The angle retry can fail over to Claude and still have its output rejected,
+leaving Grok's original text in hand — reporting `claude` there would point
+debugging at the wrong model in precisely the fallback case this metadata
+exists to diagnose. `textProvider` / `textFellBack` are snapshotted with the
+accepted text and move only when `text` itself is replaced.
 
 **The two APIs differ in exactly one structural way.** xAI is OpenAI-shaped:
 bearer auth, the system prompt as a `role: "system"` message rather than a

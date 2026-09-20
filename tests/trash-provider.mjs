@@ -32,7 +32,7 @@ const FULL = readFileSync(join(ROOT, "supabase/functions/ai-breakdown/index.ts")
 const src = FULL.split("Deno.serve(")[0];
 const handler = FULL.slice(FULL.indexOf("Deno.serve("));
 const { code } = esbuild.transformSync(
-  src + "\nexport { buildTrashTalk, trashTalkProvider, unfilteredRule, callGrok, callAnthropic, GROK_MODEL, GROK_MAX_TOKENS, MODEL };",
+  src + "\nexport { buildTrashTalk, trashTalkProvider, unfilteredRule, callGrok, callAnthropic, GROK_MODEL, GROK_MAX_TOKENS, MODEL, clampRoast, ROAST_MAX_CHARS };",
   { loader: "ts", format: "esm" },
 );
 const M = await import("data:text/javascript," + encodeURIComponent(code));
@@ -176,6 +176,82 @@ calls.length = 0;
 stub(503, { error: "unavailable" });
 r = await M.callGrok("xai-key", { system: "SYS", user: "USR", maxTokens: 120 });
 assert("a transient Grok status is retried", calls.length === 3 && !r.ok);
+
+// ── Transport failures must not escape the caller ──────────────────────────
+// A DNS failure, TLS error or connection reset makes fetch REJECT rather than
+// resolve with a status. An exception thrown out of callGrok skips callModel's
+// Claude fallback entirely and fails the whole request — the fallback would
+// miss the one shape a real outage actually takes.
+calls.length = 0;
+let attempts = 0;
+globalThis.fetch = async () => { attempts++; throw new TypeError("error sending request: connection reset"); };
+r = await M.callGrok("xai-key", { system: "SYS", user: "USR", maxTokens: 120 });
+assert("a transport error resolves instead of throwing", r && r.ok === false);
+assert("a transport error reports status 0, not a fake HTTP code", r.status === 0);
+assert("the transport error's cause survives for the log", /connection reset/.test(r.detail));
+assert("a transport error is retried like any transient failure", attempts === 3);
+// Same guarantee on the Claude side, which is where the fallback lands.
+attempts = 0;
+r = await M.callAnthropic("sk-key", { system: "SYS", user: "USR", maxTokens: 120 });
+assert("the Claude caller is equally throw-proof", r.ok === false && r.status === 0);
+
+// A 200 carrying something that isn't the expected JSON must not throw either.
+globalThis.fetch = async () => ({
+  ok: true, status: 200,
+  json: async () => { throw new SyntaxError("Unexpected token < in JSON"); },
+  text: async () => "<html>502 Bad Gateway</html>",
+});
+r = await M.callGrok("xai-key", { system: "SYS", user: "USR", maxTokens: 120 });
+assert("a non-JSON 200 yields an empty roast rather than an exception",
+  r.ok === true && r.text === "");
+
+// ── The roast's hard length bound ──────────────────────────────────────────
+// GROK_MAX_TOKENS raised the programmatic ceiling to 1000 (~4000 chars), while
+// send-push still rejects a body over MAX_BODY. Without a bound here the
+// sender reads a roast on screen and then cannot send it: 200 from this
+// function, 400 from send-push, nothing they can do.
+const MAX_BODY = Number(
+  readFileSync(join(ROOT, "supabase/functions/send-push/index.ts"), "utf8")
+    .match(/MAX_BODY\s*=\s*(\d+)/)[1],
+);
+assert("send-push's MAX_BODY was found, so this test is actually comparing something",
+  MAX_BODY > 0);
+assert("a compliant roast is left completely untouched",
+  M.clampRoast("Wax on, wax off those tears, kid.", M.ROAST_MAX_CHARS) ===
+  "Wax on, wax off those tears, kid.");
+const runaway = ("You absolute clown, you pick like a concussed toddler. ").repeat(100);
+const clamped = M.clampRoast(runaway, M.ROAST_MAX_CHARS);
+assert("a runaway roast is cut to the bound", clamped.length <= M.ROAST_MAX_CHARS);
+assert("the cut lands on a sentence end so it still reads as a line", /[.!?]$/.test(clamped));
+// The signature is appended AFTER the clamp, so the real wire length is
+// clamp + signature. That total is what has to clear MAX_BODY.
+const signed = M.clampRoast(runaway, M.ROAST_MAX_CHARS) + " — " + "x".repeat(100);
+assert("clamped roast plus the longest possible signature still fits send-push",
+  signed.length < MAX_BODY);
+assert("the bound leaves a compliant roast far more room than it needs",
+  M.ROAST_MAX_CHARS > 300);
+// No sentence end to fall back on — a word boundary and an ellipsis, never a
+// mid-word chop.
+// Distinct words, so a mid-word chop is actually detectable — a fixture of one
+// repeated word cannot tell the two apart.
+const words = Array.from({ length: 400 }, (_, i) => `insult${i}`);
+const noStops = M.clampRoast(words.join(" "), M.ROAST_MAX_CHARS);
+const lastTok = noStops.replace(/…$/, "").split(" ").pop();
+assert("a roast with no sentence end is cut at a word boundary",
+  noStops.length <= M.ROAST_MAX_CHARS && noStops.endsWith("…") && words.includes(lastTok));
+
+// ── The reported provider describes the TEXT, not the last call ────────────
+// The angle retry can fail over to Claude and still have its output rejected,
+// leaving Grok's original text in hand. Reporting "claude" there points
+// debugging at the wrong model in exactly the case this metadata is for.
+assert("the response reports the text's provider, not the live one",
+  /provider: textProvider/.test(handler) && /textProvider === "grok" \? GROK_MODEL : MODEL/.test(handler));
+assert("the fallback flag is snapshotted with the text too",
+  /textFellBack \? \{ fellBack: true \}/.test(handler));
+assert("the snapshot moves only when the retry's text is accepted",
+  /text = retry\.text;\s*textProvider = provider;\s*textFellBack = fellBack;/.test(handler));
+assert("the clamp runs before the signature, so the signature survives it",
+  /enforceSignature\(clampRoast\(text, ROAST_MAX_CHARS\)/.test(handler));
 
 let bad = 0;
 for (const c of checks) { console.log(`  ${c.cond ? "✓" : "✗"} ${c.name}`); if (!c.cond) bad++; }

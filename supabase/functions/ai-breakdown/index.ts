@@ -505,6 +505,45 @@ const RETRYABLE = new Set([429, 500, 502, 503, 504, 529]);
 const RETRIES = 3;
 const backoff = (attempt: number) => new Promise((r) => setTimeout(r, attempt * 1500));
 
+// Status 0 means "no HTTP response at all" — a DNS failure, TLS error or
+// connection reset, where fetch REJECTS rather than resolving with a status.
+// That is the shape a real provider outage takes, and an exception thrown out
+// of a caller skips the Claude fallback entirely and fails the whole request:
+// the one scenario the fallback exists for would be the one it didn't cover.
+// So transport errors are caught, retried like any other transient failure,
+// and finally reported as an ordinary failed ModelReply.
+const STATUS_TRANSPORT = 0;
+
+async function fetchWithRetry(
+  url: string,
+  init: RequestInit,
+): Promise<{ res: Response | null; detail: string }> {
+  let res: Response | null = null;
+  let detail = "";
+  for (let attempt = 0; attempt < RETRIES; attempt++) {
+    if (attempt > 0) await backoff(attempt);
+    try {
+      res = await fetch(url, init);
+    } catch (e) {
+      res = null;
+      detail = `transport error: ${e instanceof Error ? e.message : String(e)}`;
+      continue;
+    }
+    if (res.ok || !RETRYABLE.has(res.status)) break;
+  }
+  return { res, detail };
+}
+
+// A 200 whose body isn't the JSON we expect must not throw either, for the
+// same reason: an exception here escapes the caller and skips the fallback.
+async function readJson(res: Response): Promise<Record<string, unknown> | null> {
+  try {
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 async function callAnthropic(
   apiKey: string,
   { system, user, maxTokens }: { system?: string; user: string; maxTokens: number },
@@ -515,24 +554,19 @@ async function callAnthropic(
     ...(system ? { system } : {}),
     messages: [{ role: "user", content: user }],
   });
-  let res: Response | null = null;
-  for (let attempt = 0; attempt < RETRIES; attempt++) {
-    if (attempt > 0) await backoff(attempt);
-    res = await fetch(CLAUDE_API_URL, {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: payload,
-    });
-    if (res.ok || !RETRYABLE.has(res.status)) break;
-  }
-  const r = res!;
-  if (!r.ok) return { ok: false, status: r.status, text: "", detail: await r.text() };
-  const data = await r.json();
-  return { ok: true, status: r.status, text: data?.content?.[0]?.text ?? "", detail: "" };
+  const { res, detail } = await fetchWithRetry(CLAUDE_API_URL, {
+    method: "POST",
+    headers: {
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "content-type": "application/json",
+    },
+    body: payload,
+  });
+  if (!res) return { ok: false, status: STATUS_TRANSPORT, text: "", detail };
+  if (!res.ok) return { ok: false, status: res.status, text: "", detail: await res.text() };
+  const data = await readJson(res) as { content?: { text?: string }[] } | null;
+  return { ok: true, status: res.status, text: data?.content?.[0]?.text ?? "", detail: "" };
 }
 
 // xAI's API is OpenAI-compatible: bearer auth, a messages array that carries the
@@ -552,23 +586,51 @@ async function callGrok(
       { role: "user", content: user },
     ],
   });
-  let res: Response | null = null;
-  for (let attempt = 0; attempt < RETRIES; attempt++) {
-    if (attempt > 0) await backoff(attempt);
-    res = await fetch(GROK_API_URL, {
-      method: "POST",
-      headers: {
-        "authorization": `Bearer ${apiKey}`,
-        "content-type": "application/json",
-      },
-      body: payload,
-    });
-    if (res.ok || !RETRYABLE.has(res.status)) break;
-  }
-  const r = res!;
-  if (!r.ok) return { ok: false, status: r.status, text: "", detail: await r.text() };
-  const data = await r.json();
-  return { ok: true, status: r.status, text: data?.choices?.[0]?.message?.content ?? "", detail: "" };
+  const { res, detail } = await fetchWithRetry(GROK_API_URL, {
+    method: "POST",
+    headers: {
+      "authorization": `Bearer ${apiKey}`,
+      "content-type": "application/json",
+    },
+    body: payload,
+  });
+  if (!res) return { ok: false, status: STATUS_TRANSPORT, text: "", detail };
+  if (!res.ok) return { ok: false, status: res.status, text: "", detail: await res.text() };
+  const data = await readJson(res) as { choices?: { message?: { content?: string } }[] } | null;
+  return { ok: true, status: res.status, text: data?.choices?.[0]?.message?.content ?? "", detail: "" };
+}
+
+// --- The roast's only HARD length bound ------------------------------------
+//
+// The prompt asks for ~30 words and two sentences, but prompt text is a
+// request, not a bound. That was tolerable while max_tokens was 120: ~480
+// characters at the very worst, comfortably inside send-push's MAX_BODY of
+// 1600. GROK_MAX_TOKENS raised the programmatic ceiling to 1000 to leave a
+// reasoning model room to think, and 1000 tokens of actual prose is ~4000
+// characters — well past MAX_BODY.
+//
+// The failure that opens up is a nasty one because it splits the two halves of
+// the feature: ai-breakdown returns 200, the sender reads a roast on screen and
+// taps send, and send-push rejects it with a 400 they can do nothing about. So
+// the length gets enforced here, where the text is produced, rather than being
+// left to the prompt.
+//
+// 600 is far above any compliant roast (30 words is ~180 characters) and far
+// below MAX_BODY even once the signature is appended, so this never fires on a
+// roast that followed its instructions — it only catches a runaway.
+const ROAST_MAX_CHARS = Number(Deno.env.get("ROAST_MAX_CHARS") ?? "600");
+
+// Cutting a joke short is bad; sending nothing is worse. Prefer the last
+// sentence end so a trimmed roast still reads as a finished line, and fall
+// back to a word boundary with an ellipsis when there is no sentence to keep.
+function clampRoast(text: string, max: number): string {
+  const t = (text ?? "").trim();
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max);
+  const lastEnd = Math.max(cut.lastIndexOf("."), cut.lastIndexOf("!"), cut.lastIndexOf("?"));
+  if (lastEnd >= max / 2) return cut.slice(0, lastEnd + 1);
+  const lastSpace = cut.lastIndexOf(" ");
+  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut).trimEnd() + "…";
 }
 
 function buildParlayPrompt(d: ReqBody): string {
@@ -710,6 +772,14 @@ Deno.serve(async (req) => {
   }
 
   let text: string = first.text;
+  // Which provider produced the text actually being returned — NOT simply the
+  // last one called. `provider` and `fellBack` track the most recent call, and
+  // the angle retry below can fail over to Claude and still have its output
+  // rejected, leaving Grok's original text in hand under a "claude" label.
+  // That mislabels exactly the fallback case this metadata exists to diagnose,
+  // so the snapshot moves only when `text` itself is replaced.
+  let textProvider: Provider = provider;
+  let textFellBack = fellBack;
   // The angle is the one instruction worth spending a second call on: if the
   // sender's own words didn't survive, ask again with the miss named. Only one
   // retry, and whatever comes back is used either way — a roast without the
@@ -720,10 +790,16 @@ Deno.serve(async (req) => {
 
 Your last attempt was: "${text.trim()}"
 It dropped ${body.myNickname || "the sender"}'s actual words. Write it again and put the angle's own wording in the line — as close to "${trashHint}" as ${body.persona || "the persona"}'s voice allows. Same length cap, same signature.`);
-    if (retry.ok && retry.text && usesAngle(retry.text, trashHint)) text = retry.text;
+    if (retry.ok && retry.text && usesAngle(retry.text, trashHint)) {
+      text = retry.text;
+      textProvider = provider;
+      textFellBack = fellBack;
+    }
   }
   if (action === "trash-talk" && text) {
-    text = enforceSignature(text, body.persona || "A Famous Friend");
+    // Clamp BEFORE the signature so the signature always survives the cut —
+    // the client recovers the persona by parsing the trailing "— X".
+    text = enforceSignature(clampRoast(text, ROAST_MAX_CHARS), body.persona || "A Famous Friend");
   }
   // `provider`/`model` are reported back so a roast that reads oddly tame can be
   // traced to a silent fallback instead of being debugged as a prompt problem.
@@ -732,7 +808,11 @@ It dropped ${body.myNickname || "the sender"}'s actual words. Write it again and
     JSON.stringify({
       breakdown: text,
       ...(action === "trash-talk"
-        ? { provider, model: provider === "grok" ? GROK_MODEL : MODEL, ...(fellBack ? { fellBack: true } : {}) }
+        ? {
+          provider: textProvider,
+          model: textProvider === "grok" ? GROK_MODEL : MODEL,
+          ...(textFellBack ? { fellBack: true } : {}),
+        }
         : {}),
     }),
     { status: 200, headers: CORS }
