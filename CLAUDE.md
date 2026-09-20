@@ -26,6 +26,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:tap`   | a tapped push notification not surfacing its message            |
 | `npm run check:audience` | trash talk reaching the wrong people (roast targets vs. push recipients) |
 | `npm run check:prompt` | a typed roast angle getting diluted by the rest of the prompt |
+| `npm run check:provider` | the roast losing its unfiltered model, or analysis drifting onto it |
 | `npm run check:dedup` | the three result senders drifting apart and double-pushing a fight |
 | `npm run check:model` | the fight model posting a confident number off missing data |
 | `npm run check:parlay` | a parlay priced with the vig left in, or a correlated ticket read as independent |
@@ -51,7 +52,7 @@ Pushing to `main` deploys automatically, so the gates also run in CI and
 - `.github/workflows/pages.yml` → GitHub Pages. `deploy` **needs** the
   `validate` job (the `validate-web.yml` reusable workflow = the checks above).
 - `.github/workflows/deploy-functions.yml` → Supabase. `deploy` **needs** a
-  `check:functions` gate.
+  `check:functions` + `check:provider` gate.
 - `.github/workflows/ci.yml` runs everything on every push/PR for visibility.
 
 CI is a backstop, not a substitute: run `verify` locally first so you never
@@ -236,6 +237,124 @@ stranded. `renderWhatsNew` moves focus onto "Got it" on open; `_wnTrapFocus`
 X and "Got it" instead of escaping into the page; `closeWhatsNew` restores
 focus to wherever it was. `npm run check:whatsnew` holds all three,
 mutation-tested individually.
+
+## The roast runs on Grok; everything else runs on Claude
+
+`ai-breakdown` serves four actions. Three of them — `breakdown`, `chat`,
+`parlay` — make claims about real fights people are betting picks on, and those
+stay on Claude. The fourth, `trash-talk`, is a joke between five friends, and
+Claude would not stop sanding the edges off it: the burn came back PG no matter
+how the prompt was phrased, which is the one thing the feature cannot be. So the
+roast calls xAI's Grok instead.
+
+**The split is per-action, not per-deployment, and `check:provider` holds it.**
+A breakdown quietly routed to Grok is a different model answering a question
+about a real fight; the gloves-off rule leaking into a parlay prompt is worse.
+The test asserts `trashTalkProvider` and `unfilteredRule` are each referenced
+exactly once in the handler, inside the roast branch.
+
+| env | default | what it does |
+| --- | ------- | ------------ |
+| `GROK_API_KEY` (or `XAI_API_KEY`) | unset | the xAI key. **Unset = the roast stays on Claude and nothing changes** |
+| `TRASH_TALK_PROVIDER` | `grok` | set to `claude` to force the roast back, without touching the key |
+| `GROK_MODEL` | `grok-4.6` | overridable so the model moves without a redeploy, same as `MODEL` |
+| `GROK_MAX_TOKENS` | `1000` | Grok's ceiling. Not a length control — see below |
+| `GROK_API_URL` | xAI chat-completions | only for pointing at a proxy |
+
+**Two ways this feature fails silently, both ending in a roast that isn't
+there.** Neither raises an error, and both look identical from the app — which
+is why `provider`, `model` and `fellBack` come back in the response.
+
+1. **A wrong `GROK_MODEL` is a 400**, and a 400 is deliberately not retried. The
+   roast falls back to Claude and comes back *polite*, which reads like a prompt
+   regression rather than a config typo. Always verify against
+   `GET https://api.x.ai/v1/models` rather than typing an id from memory — the
+   first default committed here (`grok-4-fast-non-reasoning`) turned out not to
+   exist on this account at all, and would have shipped as exactly that silent
+   fallback. The display name sometimes matches the id ("Grok 4.6" →
+   `grok-4.6`) and sometimes doesn't (the 4.20 family ships as
+   `grok-4.20-0309-reasoning` / `-non-reasoning`), so don't infer it.
+2. **A reasoning model returns HTTP 200 with empty content** if the token budget
+   is tight, because on the OpenAI-shaped API that budget covers the model's
+   internal reasoning, not just the reply. The roast's prompt-level cap (~30
+   words) made 120 tokens a natural ceiling, and 120 is nowhere near enough for
+   a model that thinks first. Hence `GROK_MAX_TOKENS` at 1000, separate from the
+   120 the Claude path still uses: **it buys reasoning room, it does not permit a
+   longer roast** — length is the prompt's job. A loose ceiling costs nothing
+   when the model doesn't reason, since billing is per token produced.
+
+   A blank-but-successful reply is therefore treated as a *failure* and falls
+   back, rather than being returned as an empty roast the client renders as
+   "No trash talk generated." with nothing logged. `check:provider` holds this.
+
+**Deploying this function before the secret exists is a no-op.** That ordering is
+deliberate — `trashTalkProvider("")` returns `claude`, so the code can ship and
+sit inert until `GROK_API_KEY` is set in the Supabase dashboard. Remember an edge
+function only goes live on a Supabase deploy, not on a git push.
+
+**The gloves-off rule is a SUFFIX on the system prompt, never a flag through
+`buildTrashTalk`.** `buildTrashTalk` rolls a random angle, a random rhetorical
+form and a freshness seed; if Grok fails mid-request the handler falls back to
+Claude by re-sending *the same user turn* with `unfilteredRule(...)` stripped off
+the system prompt. Threading a flag in would mean rebuilding, which re-rolls all
+three and throws away the framing the first attempt was given. `check:provider`
+asserts the unfiltered prompt is byte-for-byte the filtered one plus the rule.
+
+**The fallback is deliberate: a tamer burn beats no burn.** Roasts are generated
+while someone watches a spinner on a live card, so a Grok outage degrades to
+Claude rather than erroring. The response carries `provider`, `model` and
+`fellBack` so a roast that reads oddly polite can be traced to that instead of
+being debugged as a prompt problem — the client only reads `breakdown`.
+
+**The floor is one line — no slurs — and it is about words, not topics.** No
+subject is off-limits; the rule names specific words and nothing else. Two
+earlier bans came out because they were confiscating ordinary roast material: a
+blanket "don't touch race, religion, sex, gender, disability or sexuality"
+(which caught Derek's Eminem likeness and any joke about AB and Tristin being
+married), and "no threat meant literally" (which contradicted the comedic-menace
+shape this same prompt offers as a rhetorical form). `check:provider` asserts
+the slur line survives *and* that neither ban has crept back — a prompt tweak
+aimed at making roasts rawer should not silently re-tighten the floor either.
+Worth knowing when weighing where it sits: the sender reads the roast on screen
+and taps send, so this governs what gets **generated**, not what reaches a phone.
+
+**What the rule does NOT relax.** The length cap, `FACTS ARE STRICT` and the
+signature rule are untouched by it, and `check:provider` asserts all three
+survive.
+
+**The roast's length has a hard bound in code, not just in the prompt
+(`ROAST_MAX_CHARS`, 600).** It used to be safe to lean on the prompt, because
+120 max_tokens could not produce more than ~480 characters and `send-push`
+rejects a body over `MAX_BODY` (1600) — the headroom made the question moot.
+`GROK_MAX_TOKENS` at 1000 ends that: ~4000 characters of prose clears `MAX_BODY`
+easily, and the resulting failure splits the feature in half — `ai-breakdown`
+returns 200, the sender reads a roast on screen, taps send, and gets a 400 they
+can do nothing about. So the clamp runs server-side, **before** `enforceSignature`
+so the trailing `— Persona` the client parses always survives the cut. 600 never
+fires on a compliant roast (30 words is ~180 chars) and always leaves room for
+the signature. `check:provider` reads `MAX_BODY` out of `send-push` and asserts
+clamp + longest-possible signature still fits, so the two files can't drift.
+
+**Never let an exception escape `callGrok` / `callAnthropic`.** A DNS failure,
+TLS error or connection reset makes `fetch` *reject* rather than resolve with a
+status, and a throw skips `callModel`'s fallback entirely — the fallback would
+miss the exact shape a real provider outage takes. `fetchWithRetry` converts
+transport errors into an ordinary failed `ModelReply` with `status: 0`, and
+`readJson` does the same for a 200 whose body isn't the JSON expected.
+
+**The reported `provider` describes the returned text, not the last call made.**
+The angle retry can fail over to Claude and still have its output rejected,
+leaving Grok's original text in hand — reporting `claude` there would point
+debugging at the wrong model in precisely the fallback case this metadata
+exists to diagnose. `textProvider` / `textFellBack` are snapshotted with the
+accepted text and move only when `text` itself is replaced.
+
+**The two APIs differ in exactly one structural way.** xAI is OpenAI-shaped:
+bearer auth, the system prompt as a `role: "system"` message rather than a
+top-level field, and the answer at `choices[0].message.content` instead of
+`content[0].text`. Reading one with the other's accessor yields an *empty
+roast*, not an error, which is why `check:provider` exercises both callers
+against a stubbed `fetch` rather than trusting the shape.
 
 ## A PPV runs three segments, and each one is a lock clock
 
