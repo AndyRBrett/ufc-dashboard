@@ -1,26 +1,26 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-09-19T22:00:23.963005+00:00",
+  "last_fetch_at": "2026-09-20T05:05:20.882058+00:00",
   "last_status": 200,
-  "lines_digest": "2829c8431992c5363e282107e74315cafb250b96",
-  "next_event_days_out": 0,
+  "lines_digest": "cd9271dac402acd424d16dc011f84c7b8f4aa461",
+  "next_event_days_out": 6,
   "providers": {
     "the-odds-api": {
-      "bouts": 43,
-      "last_fetch_at": "2026-09-19T22:00:23.963005+00:00",
-      "last_ok_at": "2026-09-19T22:00:23.963005+00:00",
+      "bouts": 31,
+      "last_fetch_at": "2026-09-20T05:05:20.882058+00:00",
+      "last_ok_at": "2026-09-20T05:05:20.882058+00:00",
       "last_status": 200,
       "provider": "the-odds-api:us2,uk,eu,au",
-      "requests_remaining": 89
+      "requests_remaining": 84
     },
     "the-odds-api-backup": {
-      "bouts": 43,
-      "last_fetch_at": "2026-09-19T22:00:23.963005+00:00",
-      "last_ok_at": "2026-09-19T22:00:23.963005+00:00",
+      "bouts": 31,
+      "last_fetch_at": "2026-09-20T05:05:20.882058+00:00",
+      "last_ok_at": "2026-09-20T05:05:20.882058+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 442
+      "requests_remaining": 441
     }
   },
-  "requests_remaining": 89
+  "requests_remaining": 84
 }
