@@ -577,6 +577,13 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .ai-panel.open{display:block}
 .ai-panel-text{font-size:12px;color:var(--muted2);line-height:1.65}
 .ai-panel-meta{font-size:10px;color:var(--muted);margin-top:6px;letter-spacing:.04em}
+/* This app is used on phones, where there is no console to open. Both of these
+   put on screen what would otherwise only exist in a DevTools session nobody
+   can start: which model wrote the roast, and what actually went wrong when one
+   doesn't arrive. Same muted treatment as .ai-panel-meta so neither competes
+   with the roast itself. */
+.trash-meta{font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.04em}
+.trash-err-detail{font-size:10px;color:var(--muted);margin-top:8px;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .ai-err{font-size:12px;color:var(--loss)}
 /* AI event toolbar */
 .ai-event-toolbar{display:flex;gap:8px;padding:10px 16px 6px;border-bottom:1px solid var(--border)}
@@ -6588,6 +6595,14 @@ function _syncTrashAudienceRow(){
 }
 // One place decides the send label so the targets picker and the post-generate
 // path can never disagree about who's getting it.
+// A short, safe one-liner for an unknown throwable. Built with textContent at
+// the call site, never innerHTML — an error message can carry anything.
+function _errLabel(e){
+  if(!e)return "unknown error";
+  var s=(e.name?e.name+": ":"")+(e.message||String(e));
+  return s.length>160?s.slice(0,160)+"…":s;
+}
+
 function _updateTrashSendBtn(){
   var btn=document.getElementById("trashSendBtn");
   if(!btn)return;
@@ -6888,7 +6903,22 @@ function generateTrashTalk(){
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(data){
     _trashText=data.breakdown||"No trash talk generated.";
     var t=document.getElementById("trashText");
-    if(t){t.textContent=_trashText;t.style.display="block";}
+    if(t){
+      t.textContent=_trashText;t.style.display="block";
+      // Which model actually wrote this, on screen. The response has carried
+      // provider/model/fellBack since the Grok split, but reading it meant
+      // opening DevTools — which you cannot do on a phone, which is where this
+      // app is used. A roast that comes back oddly tame is now traceable to a
+      // silent fallback by looking at it, instead of by reading edge logs.
+      if(data.provider){
+        var meta=document.createElement("div");
+        meta.className="trash-meta";
+        meta.textContent=data.fellBack
+          ? "wrote: "+data.provider+" ("+(data.model||"?")+") — fell back"
+          : "wrote: "+data.provider+" ("+(data.model||"?")+")";
+        t.appendChild(meta);
+      }
+    }
     // Arming the send controls must NOT be able to throw away a roast the
     // server already produced. It used to: sendBtn was dereferenced unguarded
     // and _updateTrashSendBtn dereferenced #trashChips the same way, so a
@@ -6910,7 +6940,19 @@ function generateTrashTalk(){
     // find — the edge function logged 200 while the app claimed it failed.
     console.error("trash talk: generate failed",err);
     var t=document.getElementById("trashText");
-    if(t)t.textContent="Couldn't generate trash talk right now. Try again!";
+    if(t){
+      t.textContent="Couldn't generate trash talk right now. Try again!";
+      // The reason goes on screen, not just in a console nobody can open.
+      // These three read very differently and want different fixes:
+      //   "TypeError: ... reading 'querySelectorAll'" — a bug in here
+      //   "TypeError: Failed to fetch"                — CORS or no network
+      //   "Error: HTTP 502"                           — the model call failed
+      // Without it, all three show the same sentence and the edge logs say 200.
+      var why=document.createElement("div");
+      why.className="trash-err-detail";
+      why.textContent=_errLabel(err);
+      t.appendChild(why);
+    }
     var hintSec=document.getElementById("trashHintSection");
     if(hintSec)hintSec.style.display="block";
   }).finally(function(){
