@@ -257,7 +257,7 @@ exactly once in the handler, inside the roast branch.
 | --- | ------- | ------------ |
 | `GROK_API_KEY` (or `XAI_API_KEY`) | unset | the xAI key. **Unset = the roast stays on Claude and nothing changes** |
 | `TRASH_TALK_PROVIDER` | `grok` | set to `claude` to force the roast back, without touching the key |
-| `GROK_MODEL` | `grok-4-fast-non-reasoning` | overridable so the model moves without a redeploy, same as `MODEL` |
+| `GROK_MODEL` | `grok-4.6` | overridable so the model moves without a redeploy, same as `MODEL` |
 | `GROK_MAX_TOKENS` | `1000` | Grok's ceiling. Not a length control — see below |
 | `GROK_API_URL` | xAI chat-completions | only for pointing at a proxy |
 
@@ -267,9 +267,13 @@ is why `provider`, `model` and `fellBack` come back in the response.
 
 1. **A wrong `GROK_MODEL` is a 400**, and a 400 is deliberately not retried. The
    roast falls back to Claude and comes back *polite*, which reads like a prompt
-   regression rather than a config typo. Verify the id against
-   `GET https://api.x.ai/v1/models` rather than typing it from memory; the
-   marketing name ("Grok 4.6") is not necessarily the API id.
+   regression rather than a config typo. Always verify against
+   `GET https://api.x.ai/v1/models` rather than typing an id from memory — the
+   first default committed here (`grok-4-fast-non-reasoning`) turned out not to
+   exist on this account at all, and would have shipped as exactly that silent
+   fallback. The display name sometimes matches the id ("Grok 4.6" →
+   `grok-4.6`) and sometimes doesn't (the 4.20 family ships as
+   `grok-4.20-0309-reasoning` / `-non-reasoning`), so don't infer it.
 2. **A reasoning model returns HTTP 200 with empty content** if the token budget
    is tight, because on the OpenAI-shaped API that budget covers the model's
    internal reasoning, not just the reply. The roast's prompt-level cap (~30

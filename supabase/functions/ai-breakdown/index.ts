@@ -19,7 +19,13 @@ const MODEL = Deno.env.get("MODEL") ?? "claude-haiku-4-5-20251001";
 // differently (choices[0].message.content, not content[0].text) — that is the
 // only structural difference; system/user split and max_tokens carry over.
 const GROK_API_URL = Deno.env.get("GROK_API_URL") ?? "https://api.x.ai/v1/chat/completions";
-const GROK_MODEL = Deno.env.get("GROK_MODEL") ?? "grok-4-fast-non-reasoning";
+// Verified against GET /v1/models on this account — not typed from memory.
+// The display name and the API id happen to match here ("Grok 4.6" →
+// "grok-4.6"), which is NOT a rule: the 4.20 family ships as
+// grok-4.20-0309-reasoning / -non-reasoning, so check the list before changing
+// this. A model id this account cannot serve is a 400, and a 400 on the roast
+// falls back to Claude silently — it reads as a tone regression, not a typo.
+const GROK_MODEL = Deno.env.get("GROK_MODEL") ?? "grok-4.6";
 
 // Grok gets a far bigger token ceiling than Claude does for the same roast, and
 // it is not so the roast can be longer — length is enforced by the prompt (~30
