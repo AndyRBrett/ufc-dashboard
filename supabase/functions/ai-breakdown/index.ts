@@ -21,6 +21,20 @@ const MODEL = Deno.env.get("MODEL") ?? "claude-haiku-4-5-20251001";
 const GROK_API_URL = Deno.env.get("GROK_API_URL") ?? "https://api.x.ai/v1/chat/completions";
 const GROK_MODEL = Deno.env.get("GROK_MODEL") ?? "grok-4-fast-non-reasoning";
 
+// Grok gets a far bigger token ceiling than Claude does for the same roast, and
+// it is not so the roast can be longer — length is enforced by the prompt (~30
+// words, two sentences), not by this number.
+//
+// It is because a REASONING model spends this budget thinking before it writes.
+// On the OpenAI-shaped API the cap covers reasoning tokens as well as the reply,
+// so the 120 that comfortably fits a one-line burn from a non-reasoning model
+// can be consumed entirely by a reasoning model's scratchpad — returning HTTP
+// 200 with empty content, which is a dud roast and not an error anyone can see.
+// A ceiling this loose costs nothing extra when the model doesn't reason (you
+// are billed for tokens produced, not for the cap) and saves the request when
+// it does. Lower it only if a bill says to.
+const GROK_MAX_TOKENS = Number(Deno.env.get("GROK_MAX_TOKENS") ?? "1000");
+
 // Restrict which sites may call this (Claude-backed, cost-bearing) endpoint.
 // Comma-separated env override; defaults to the production GitHub Pages origin.
 const ALLOWED_ORIGINS = (Deno.env.get("ALLOWED_ORIGINS") ?? "https://andyrbrett.github.io")
@@ -657,15 +671,24 @@ Deno.serve(async (req) => {
   // fallback re-sends the SAME user turn with the gloves-off suffix stripped
   // from the system prompt — not a rebuilt prompt, which would re-roll the
   // random angle and form the first attempt already chose.
+  //
+  // A blank-but-successful reply counts as a failure here. It is the specific
+  // way a reasoning model fails this request: on the OpenAI-shaped API the
+  // token budget covers the model's internal reasoning as well as the text it
+  // returns, so a reasoning model handed the roast's tight cap can spend the
+  // whole budget thinking and return HTTP 200 with empty content. That used to
+  // sail through as success and reach the client as "No trash talk generated."
+  // — a silent dud with no error anywhere to explain it. See GROK_MAX_TOKENS.
   let fellBack = false;
   const callModel = async (userText: string): Promise<ModelReply> => {
     if (provider === "grok") {
-      const r = await callGrok(grokKey, { system, user: userText, maxTokens });
-      if (r.ok || !apiKey) return r;
+      const r = await callGrok(grokKey, { system, user: userText, maxTokens: GROK_MAX_TOKENS });
+      if ((r.ok && r.text.trim()) || !apiKey) return r;
       provider = "claude";
       fellBack = true;
       system = claudeSystem;
-      console.error(`grok failed (${r.status}), falling back to claude: ${r.detail.slice(0, 200)}`);
+      const why = r.ok ? "returned an empty roast (token budget exhausted?)" : `failed (${r.status})`;
+      console.error(`grok ${why}, falling back to claude: ${r.detail.slice(0, 200)}`);
     }
     return await callAnthropic(apiKey, { system, user: userText, maxTokens });
   };

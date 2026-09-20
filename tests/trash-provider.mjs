@@ -32,7 +32,7 @@ const FULL = readFileSync(join(ROOT, "supabase/functions/ai-breakdown/index.ts")
 const src = FULL.split("Deno.serve(")[0];
 const handler = FULL.slice(FULL.indexOf("Deno.serve("));
 const { code } = esbuild.transformSync(
-  src + "\nexport { buildTrashTalk, trashTalkProvider, unfilteredRule, callGrok, callAnthropic, GROK_MODEL, MODEL };",
+  src + "\nexport { buildTrashTalk, trashTalkProvider, unfilteredRule, callGrok, callAnthropic, GROK_MODEL, GROK_MAX_TOKENS, MODEL };",
   { loader: "ts", format: "esm" },
 );
 const M = await import("data:text/javascript," + encodeURIComponent(code));
@@ -109,7 +109,21 @@ assert("the fallback restores the filtered system prompt",
 assert("the fallback does not rebuild the prompt",
   (handler.match(/buildTrashTalk\(/g) || []).length === 1);
 assert("a Grok failure with no Anthropic key surfaces rather than looping",
-  /if \(r\.ok \|\| !apiKey\) return r;/.test(handler));
+  /if \(\(r\.ok && r\.text\.trim\(\)\) \|\| !apiKey\) return r;/.test(handler));
+// A reasoning model handed too tight a budget answers 200 with empty content:
+// the budget covers its internal reasoning, not just the reply. That is a dud
+// roast, not a success, and it used to reach the client as the generic
+// "No trash talk generated." with nothing logged to explain it.
+assert("a blank-but-successful Grok reply is treated as a failure",
+  /r\.ok && r\.text\.trim\(\)/.test(handler));
+assert("the empty-roast case is distinguished in the log",
+  /empty roast \(token budget exhausted\?\)/.test(handler));
+// The roast's length is held by the prompt, so Grok's ceiling exists purely to
+// leave reasoning room. Reusing Claude's 120 here is the bug this guards.
+assert("Grok gets its own token ceiling, not the roast's prompt-level cap",
+  /callGrok\(grokKey, \{ system, user: userText, maxTokens: GROK_MAX_TOKENS \}\)/.test(handler));
+assert("the Claude fallback keeps the tight cap", /callAnthropic\(apiKey, \{ system, user: userText, maxTokens \}\)/.test(handler));
+assert("Grok's ceiling leaves real reasoning room", M.GROK_MAX_TOKENS >= 500);
 
 // ── Wire format, against a stubbed fetch ───────────────────────────────────
 const calls = [];
