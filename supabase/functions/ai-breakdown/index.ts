@@ -523,7 +523,6 @@ const RETRIES = 3;
 // spent sleeping, and this gate set's whole promise is that it runs before
 // every push without anyone minding.
 const RETRY_BACKOFF_MS = Number(Deno.env.get("RETRY_BACKOFF_MS") ?? "1500");
-const backoff = (attempt: number) => new Promise((r) => setTimeout(r, attempt * RETRY_BACKOFF_MS));
 
 // Status 0 means "no HTTP response at all" — a DNS failure, TLS error or
 // connection reset, where fetch REJECTS rather than resolving with a status.
@@ -543,25 +542,56 @@ const STATUS_TRANSPORT = 0;
 // last resort, and aborting it leaves nothing to return at all.
 const GROK_TIMEOUT_MS = Number(Deno.env.get("GROK_TIMEOUT_MS") ?? "8000");
 
+interface RawReply { ok: boolean; status: number; body: string; detail: string; }
+
+// `timeoutMs` is a deadline for the WHOLE sequence — every attempt and every
+// backoff between them — not a fresh budget per attempt.
+//
+// A per-attempt timer bounds one call and nothing else. Three slow-but-
+// retryable responses (a 503 arriving at 7.9s, which is exactly what a provider
+// under load returns) would each get their own full timer, and the backoffs sit
+// outside those timers: ~28 seconds before the Claude fallback runs, from a
+// bound advertised as 8. Aborting immediately on a timeout was never enough,
+// because a 503 is not an abort.
+//
+// The body is read INSIDE the timer too. fetch resolves when the headers land,
+// so clearing the timer there leaves `res.text()` unbounded — headers followed
+// by a stalled or truncated body would hang past the deadline with the fallback
+// still waiting. Reading to a string here is what lets the timer cover it, and
+// the bodies involved are one short roast.
 async function fetchWithRetry(
   url: string,
   init: RequestInit,
   timeoutMs = 0,
-): Promise<{ res: Response | null; detail: string }> {
-  let res: Response | null = null;
-  let detail = "";
+): Promise<RawReply> {
+  let ok = false, status = STATUS_TRANSPORT, body = "", detail = "";
+  const deadline = timeoutMs > 0 ? Date.now() + timeoutMs : 0;
+  const left = () => deadline - Date.now();
   for (let attempt = 0; attempt < RETRIES; attempt++) {
-    if (attempt > 0) await backoff(attempt);
-    const ctl = timeoutMs > 0 ? new AbortController() : null;
-    const timer = ctl ? setTimeout(() => ctl.abort(), timeoutMs) : null;
+    if (attempt > 0) {
+      const wait = attempt * RETRY_BACKOFF_MS;
+      // The wait counts against the budget as well; sleeping past the deadline
+      // to make a request that can no longer finish helps nobody.
+      if (deadline && wait >= left()) {
+        detail = detail || `deadline ${timeoutMs}ms reached before retry`;
+        break;
+      }
+      await new Promise((r) => setTimeout(r, wait));
+    }
+    if (deadline && left() <= 0) {
+      detail = detail || `timed out after ${timeoutMs}ms`;
+      break;
+    }
+    const ctl = deadline ? new AbortController() : null;
+    const timer = ctl ? setTimeout(() => ctl.abort(), left()) : null;
     try {
-      res = await fetch(url, ctl ? { ...init, signal: ctl.signal } : init);
+      const res = await fetch(url, ctl ? { ...init, signal: ctl.signal } : init);
+      ok = res.ok;
+      status = res.status;
+      body = await res.text();
     } catch (e) {
-      res = null;
-      // A timeout is NEVER retried. Retrying it three times would multiply the
-      // very latency the timeout exists to bound — 8s becomes 24s plus backoff,
-      // which is worse than having no timeout at all. One slow call is enough
-      // evidence; hand it to the fallback.
+      ok = false; status = STATUS_TRANSPORT; body = "";
+      // A timeout is never retried: the deadline is spent by definition.
       if (ctl?.signal.aborted) {
         detail = `timed out after ${timeoutMs}ms`;
         break;
@@ -569,20 +599,18 @@ async function fetchWithRetry(
       detail = `transport error: ${e instanceof Error ? e.message : String(e)}`;
       continue;
     } finally {
-      // Cleared as soon as the headers land, so reading the (small) body is
-      // never aborted mid-parse by a timer meant for the request itself.
       if (timer) clearTimeout(timer);
     }
-    if (res.ok || !RETRYABLE.has(res.status)) break;
+    if (ok || !RETRYABLE.has(status)) break;
   }
-  return { res, detail };
+  return { ok, status, body, detail };
 }
 
-// A 200 whose body isn't the JSON we expect must not throw either, for the
-// same reason: an exception here escapes the caller and skips the fallback.
-async function readJson(res: Response): Promise<Record<string, unknown> | null> {
+// A response whose body isn't the JSON we expect must not throw: an exception
+// escapes the caller and skips the Claude fallback entirely.
+function parseJson(body: string): Record<string, unknown> | null {
   try {
-    return await res.json();
+    return JSON.parse(body);
   } catch {
     return null;
   }
@@ -598,7 +626,7 @@ async function callAnthropic(
     ...(system ? { system } : {}),
     messages: [{ role: "user", content: user }],
   });
-  const { res, detail } = await fetchWithRetry(CLAUDE_API_URL, {
+  const r = await fetchWithRetry(CLAUDE_API_URL, {
     method: "POST",
     headers: {
       "x-api-key": apiKey,
@@ -607,10 +635,9 @@ async function callAnthropic(
     },
     body: payload,
   });
-  if (!res) return { ok: false, status: STATUS_TRANSPORT, text: "", detail };
-  if (!res.ok) return { ok: false, status: res.status, text: "", detail: await res.text() };
-  const data = await readJson(res) as { content?: { text?: string }[] } | null;
-  return { ok: true, status: res.status, text: data?.content?.[0]?.text ?? "", detail: "" };
+  if (!r.ok) return { ok: false, status: r.status, text: "", detail: r.detail || r.body };
+  const data = parseJson(r.body) as { content?: { text?: string }[] } | null;
+  return { ok: true, status: r.status, text: data?.content?.[0]?.text ?? "", detail: "" };
 }
 
 // xAI's API is OpenAI-compatible: bearer auth, a messages array that carries the
@@ -630,7 +657,7 @@ async function callGrok(
       { role: "user", content: user },
     ],
   });
-  const { res, detail } = await fetchWithRetry(GROK_API_URL, {
+  const r = await fetchWithRetry(GROK_API_URL, {
     method: "POST",
     headers: {
       "authorization": `Bearer ${apiKey}`,
@@ -638,10 +665,9 @@ async function callGrok(
     },
     body: payload,
   }, GROK_TIMEOUT_MS);
-  if (!res) return { ok: false, status: STATUS_TRANSPORT, text: "", detail };
-  if (!res.ok) return { ok: false, status: res.status, text: "", detail: await res.text() };
-  const data = await readJson(res) as { choices?: { message?: { content?: string } }[] } | null;
-  return { ok: true, status: res.status, text: data?.choices?.[0]?.message?.content ?? "", detail: "" };
+  if (!r.ok) return { ok: false, status: r.status, text: "", detail: r.detail || r.body };
+  const data = parseJson(r.body) as { choices?: { message?: { content?: string } }[] } | null;
+  return { ok: true, status: r.status, text: data?.choices?.[0]?.message?.content ?? "", detail: "" };
 }
 
 // --- The roast's only HARD length bound ------------------------------------

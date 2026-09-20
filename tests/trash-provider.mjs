@@ -33,7 +33,7 @@ const esbuild = require("esbuild");
 // default is asserted separately, by reading it out of the source. RETRY_BACKOFF_MS
 // is squashed for the same reason: three retry-path tests at real backoff spend
 // ~13s of `verify` asleep.
-let ENV = { GROK_TIMEOUT_MS: "120", RETRY_BACKOFF_MS: "1" };
+let ENV = { GROK_TIMEOUT_MS: "250", RETRY_BACKOFF_MS: "1" };
 globalThis.Deno = { env: { get: (k) => ENV[k] } };
 
 const FULL = readFileSync(join(ROOT, "supabase/functions/ai-breakdown/index.ts"), "utf8");
@@ -319,6 +319,76 @@ assert("a timeout is NOT retried — that would multiply the latency it bounds",
   attempts === 1);
 assert("the whole call returns within about one timeout, not three",
   elapsed < 2000);
+
+// The deadline covers the WHOLE sequence, not each attempt. This is the case a
+// per-attempt timer misses entirely: a slow but *retryable* response is not an
+// abort, so breaking on abort does nothing for it. Three of them, each given a
+// fresh timer, plus the backoffs that sit between them, used to spend roughly
+// 3x the advertised bound before the fallback ran.
+calls.length = 0;
+attempts = 0;
+// Each attempt must be given the REMAINING budget. Asserted structurally as
+// well as behaviourally: `left() <= 0` between attempts masks a per-attempt
+// timer well enough that timing alone barely separates them, and a timing-only
+// assertion loose enough to be stable is too loose to catch the regression.
+assert("every attempt's timer is the remaining budget, not a fresh one",
+  /setTimeout\(\(\) => ctl\.abort\(\), left\(\)\)/.test(src) &&
+  !/ctl\.abort\(\), timeoutMs\)/.test(src));
+// The backoff is spent from the same budget. Unobservable in this test (backoff
+// is squashed to 1ms to keep `verify` fast), so it is pinned structurally.
+assert("the backoff counts against the deadline rather than sitting on top of it",
+  /if \(deadline && wait >= left\(\)\)/.test(src));
+
+globalThis.fetch = async (_url, init) => {
+  attempts++;
+  // Slow enough that a second full attempt cannot fit inside the deadline —
+  // which is what makes the correct behaviour and the per-attempt-timer
+  // regression separable by wall clock at all.
+  //
+  // This stub HONOURS the abort signal, because real fetch does. An earlier
+  // version just slept and ignored it: the abort fired on schedule and the
+  // fake request sailed on past it, so the test measured the stub's behaviour
+  // rather than the deadline's and failed against correct code.
+  await new Promise((resolve, reject) => {
+    const t = setTimeout(resolve, 200);
+    const onAbort = () => {
+      clearTimeout(t);
+      reject(Object.assign(new Error("aborted"), { name: "AbortError" }));
+    };
+    if (init?.signal?.aborted) return onAbort();
+    init?.signal?.addEventListener("abort", onAbort);
+  });
+  return { ok: false, status: 503, text: async () => "busy", json: async () => ({}) };
+};
+const slowStart = Date.now();
+r = await M.callGrok("xai-key", { system: "SYS", user: "USR", maxTokens: 120 });
+const slowTotal = Date.now() - slowStart;
+assert("a slow retryable response still ends as a failure", r.ok === false);
+assert("slow retries cannot outrun the deadline",
+  slowTotal < M.GROK_TIMEOUT_MS * 1.3);
+
+// The body is read inside the timer too: fetch resolves on headers, so a
+// response that sends headers and then stalls its body would otherwise hang
+// past the deadline with the fallback still waiting on it.
+attempts = 0;
+globalThis.fetch = async (_url, init) => {
+  attempts++;
+  return {
+    ok: true, status: 200,
+    json: async () => ({}),
+    text: () => new Promise((_res, rej) => {
+      const onAbort = () => rej(Object.assign(new Error("aborted"), { name: "AbortError" }));
+      if (init?.signal?.aborted) return onAbort();
+      init?.signal?.addEventListener("abort", onAbort);
+    }),
+  };
+};
+const stallStart = Date.now();
+r = await M.callGrok("xai-key", { system: "SYS", user: "USR", maxTokens: 120 });
+const stallTotal = Date.now() - stallStart;
+assert("a stalled body is aborted, not waited on forever", r.ok === false);
+assert("a stalled body is bounded by the same deadline",
+  stallTotal < M.GROK_TIMEOUT_MS * 2);
 
 // 3. The angle retry is a second full model call, so it is skipped when the
 //    first one already spent the budget.
