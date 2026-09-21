@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-21T06:37:45Z",
+  "generated_at": "2026-09-21T07:43:09Z",
   "events_tracked": 11,
-  "stale_events": 2,
+  "stale_events": 1,
   "parse_failure_events": 0,
   "awaiting_card_events": 4,
   "odds_unavailable_events": 0,
@@ -95,27 +95,27 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "ok",
-      "last_changed_at": "2026-09-21T01:08:34Z",
+      "last_changed_at": "2026-09-21T07:43:09Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 11,
-      "line_movement": 1,
+      "line_movement": -1,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "status": "ok",
-      "last_changed_at": "2026-09-15T14:20:21Z",
-      "is_stale": true,
+      "last_changed_at": "2026-09-21T07:43:09Z",
+      "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": 17,
+      "line_movement": 19,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-21T06:37:45Z",
+      "last_changed_at": "2026-09-21T07:43:09Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-21T06:37:45Z",
+      "last_changed_at": "2026-09-21T07:43:09Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-21T06:37:45Z",
+      "last_changed_at": "2026-09-21T07:43:09Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -155,7 +155,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-21T06:37:45Z",
+      "last_changed_at": "2026-09-21T07:43:09Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -248,17 +248,17 @@
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Rodolfo Vieira",
       "f2": "Robert Bryczek",
-      "f1_movement": -24,
-      "f2_movement": 217,
-      "magnitude": 217,
+      "f1_movement": -26,
+      "f2_movement": 219,
+      "magnitude": 219,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 5.0,
-      "f2_prob_shift": -4.1,
-      "priority": 303.8
+      "f1_prob_shift": 5.3,
+      "f2_prob_shift": -4.5,
+      "priority": 306.6
     },
     {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
@@ -453,6 +453,22 @@
       "priority": 67.0
     },
     {
+      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+      "f1": "Natalia Silva",
+      "f2": "Wang Cong",
+      "f1_movement": 19,
+      "f2_movement": -22,
+      "magnitude": 22,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Women's Flyweight",
+      "f1_prob_shift": -1.9,
+      "f2_prob_shift": 2.8,
+      "priority": 60.5
+    },
+    {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
       "f1": "Kai Asakura",
       "f2": "Aori Qileng",
@@ -466,22 +482,6 @@
       "wc": "Bantamweight",
       "f1_prob_shift": 2.0,
       "f2_prob_shift": -2.2,
-      "priority": 55.0
-    },
-    {
-      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
-      "f1": "Natalia Silva",
-      "f2": "Wang Cong",
-      "f1_movement": 17,
-      "f2_movement": -20,
-      "magnitude": 20,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Women's Flyweight",
-      "f1_prob_shift": -1.6,
-      "f2_prob_shift": 2.5,
       "priority": 55.0
     }
   ],
