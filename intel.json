@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-21T08:47:59Z",
+ "generated_at": "2026-09-21T16:57:41Z",
  "window_days": 10,
  "sources": [
   {
@@ -43,7 +43,21 @@
   "UFC_Fight_Night:_Rosas_Jr._vs._Barcelos": {
    "name": "UFC Fight Night: Rosas Jr. vs. Barcelos",
    "date": "2026-09-26",
-   "items": []
+   "items": [
+    {
+     "title": "Raul Rosas Jr vs Ricky Turcios | FULL FIGHT | UFC Vegas 121",
+     "url": "https://www.youtube.com/watch?v=Li9Ge7oDxWM",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-09-21T16:00:15Z",
+     "thumb": "https://i1.ytimg.com/vi/Li9Ge7oDxWM/hqdefault.jpg",
+     "blurb": "Rewatch the full fight between Raul Rosas Jr and Ricky Turcios ahead of Rosas Jr's main event match up against Raoni Barcelos at UFC Vegas 121. Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all…",
+     "fighters": [
+      "Raoni Barcelos",
+      "Raul Rosas Jr."
+     ]
+    }
+   ]
   }
  }
 }
