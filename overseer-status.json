@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-21T01:08:34Z",
-  "events_tracked": 12,
+  "generated_at": "2026-09-21T02:07:46Z",
+  "events_tracked": 11,
   "stale_events": 2,
   "parse_failure_events": 0,
   "awaiting_card_events": 4,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-21T01:08:34Z",
+      "last_changed_at": "2026-09-21T02:07:46Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-21T01:08:34Z",
+      "last_changed_at": "2026-09-21T02:07:46Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-21T01:08:34Z",
+      "last_changed_at": "2026-09-21T02:07:46Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -155,19 +155,9 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-21T01:08:34Z",
+      "last_changed_at": "2026-09-21T02:07:46Z",
       "is_stale": false,
       "has_data": false,
-      "bout_count": 1,
-      "line_movement": 0,
-      "odds_market_priced": false
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "status": "ok",
-      "last_changed_at": "2026-09-21T01:08:34Z",
-      "is_stale": false,
-      "has_data": true,
       "bout_count": 1,
       "line_movement": 0,
       "odds_market_priced": false
