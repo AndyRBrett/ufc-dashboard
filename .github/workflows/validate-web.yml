@@ -17,6 +17,7 @@
 #   check:whatsnew  — the what's-new popup never loses a backfill or grows unbounded
 #   check:kick      — the scraper still gets dispatched on a card day and in fight week
 #   check:recap     — the post-card recap scores the night the way the board and belt do
+#   check:wrapped   — Year Wrapped reports the year the way the board and belt scored it
 name: Validate Web
 
 on:
@@ -76,3 +77,5 @@ jobs:
         run: npm run check:kick
       - name: Card recap test
         run: npm run check:recap
+      - name: Year Wrapped test
+        run: npm run check:wrapped
