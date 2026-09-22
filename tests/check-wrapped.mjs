@@ -177,8 +177,22 @@ check("nemesis is the lowest agreement rate (Bob)", ann.nemesis && /Bob/.test(an
 {
   const belt = ctx.computeBeltLineage(rows);
   const mine = belt.reigns.filter((r) => r.base === "ann" && r.date.startsWith("2026"));
+  const defs26 = belt.reigns.filter((r) => r.base === "ann")
+    .reduce((n, r) => n + r.defDates.filter((d) => d.startsWith("2026")).length, 0);
   check("title reigns are Title History's 2026 reigns",
-    ann.title.reigns === mine.length && ann.title.defenses === mine.reduce((s, r) => s + r.defenses, 0));
+    ann.title.reigns === mine.length && ann.title.defenses === defs26);
+  // Ann's 2025 reign was defended on card 1 (2026): that defence is 2026's.
+  check("a defence made this year counts even when the reign began last year",
+    ann.title.defenses === 1 && belt.reigns.find((r) => r.date === OLD).defDates[0] === C1);
+  {
+    // Carried in and never lost: no 2026 win, only defences — still a belt year.
+    const carried = rows.filter((p) => !(p.event_date === C2 && /Bob/.test(p.nickname)) && p.event_date !== C3);
+    const w = wrap(carried, "2026", "ann");
+    check("a champion who only defended this year is not told \"Not this year\"",
+      w.title.reigns === 0 && w.title.defenses === 2 && w.title.holding &&
+      /champ/i.test(ctx.wrappedSlides(w).find((x) => /belt/.test(x.kicker)).big));
+    check("carried-in defences make that champion the year's longest holder", /Ann/.test(wrap(carried, "2026", "bob").title.king.name));
+  }
   check("holding flag follows the current champion", ann.title.holding === (belt.holderBase === "ann"));
   // Ann won it on last year's card and took it back on card 3: one 2026 reign.
   check("a reign begun last year is not a 2026 reign", belt.reigns.some((r) => r.base === "ann" && r.date === OLD) && ann.title.reigns === 1);
@@ -269,6 +283,8 @@ check("nemesis is the lowest agreement rate (Bob)", ann.nemesis && /Bob/.test(an
   check("the scroll lock is only released if Wrapped took it (it doesn't nest)",
     /_wrLocked=document\.body\.style\.position!=="fixed"/.test(ow) && /if\(_wrLocked\)unlockScroll\(\)/.test(cl));
   check("focus returns to where it was on close", /_wrPrevFocus\.focus\(\)/.test(cl));
+  check("Wrapped reads the polled community rows before the board's snapshot",
+    /return _commRows\|\|_lbRows/.test(fn("_wrRows")));
   check("reachable from the More menu", /id="wrappedBtn"[^>]*openWrapped\(\)/.test(html));
   check("reachable from the leaderboard", /wrappedYear\(rows,/.test(fn("loadLeaderboard")) && /openWrapped\(\)/.test(fn("loadLeaderboard")));
 }

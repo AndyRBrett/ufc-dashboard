@@ -7224,6 +7224,7 @@ function computeBeltLineage(rows){
     var champPts=holder&&scores[holder.base]?scores[holder.base].pts:0;
     if(holder&&champPts>=top.pts){                          // ties go to the champion
       reigns[reigns.length-1].defenses++;
+      reigns[reigns.length-1].defDates.push(date);   // Year Wrapped counts defences by when they happened
       return;
     }
     // How the belt was won, recorded so the title history can SAY so. A reign
@@ -7252,7 +7253,7 @@ function computeBeltLineage(rows){
     if(holder)reigns[reigns.length-1].end={evName:evNames[date],takenBy:wn.name};
     holder={base:wn.base,name:wn.name};
     reigns.push({base:wn.base,name:wn.name,evName:evNames[date],date:date,defenses:0,end:null,
-                 pts:wn.pts,via:wonVia});
+                 pts:wn.pts,via:wonVia,defDates:[]});
   });
   if(!reigns.length)return null;
   var cur=reigns[reigns.length-1];
@@ -7649,10 +7650,15 @@ function computeYearWrapped(rows,year,myBase){
   var title={reigns:0,defenses:0,holding:false,king:null};
   if(belt){
     var kings={};
+    // Credit each win and each defence to the year it HAPPENED. Filtering on
+    // the reign's start date dropped a whole year of defences by a champion
+    // who won the belt the December before.
     belt.reigns.forEach(function(r){
-      if(_wrYearOf(r.date)!==year)return;
-      var kk=kings[r.base]||(kings[r.base]={name:r.name,cards:0});kk.cards+=1+r.defenses;
-      if(r.base===myBase){title.reigns++;title.defenses+=r.defenses;}
+      var won=_wrYearOf(r.date)===year?1:0;
+      var defs=(r.defDates||[]).filter(function(d){return _wrYearOf(d)===year;}).length;
+      if(!won&&!defs)return;
+      var kk=kings[r.base]||(kings[r.base]={name:r.name,cards:0});kk.cards+=won+defs;
+      if(r.base===myBase){title.reigns+=won;title.defenses+=defs;}
     });
     title.holding=belt.holderBase===myBase;
     Object.keys(kings).forEach(function(b){if(!title.king||kings[b].cards>title.king.cards)title.king=kings[b];});
@@ -7720,8 +7726,8 @@ function wrappedSlides(w){
               (w.nemesis?" Your nemesis: "+(splitNick(w.nemesis.name).name||w.nemesis.name)+", on your side just "+w.nemesis.pct+"% of the time.":"")});
   var t=w.title;
   s.push({bg:"wr-bg10",kicker:"The belt 🏆",
-          big:t.reigns?(t.holding?"Still champ":_wrPlural(t.reigns,"reign")):"Not this year",
-          sub:t.reigns?_wrPlural(t.reigns,"title win")+", "+_wrPlural(t.defenses,"defence")+"."+(t.holding?" You're holding it right now.":"")
+          big:t.reigns||t.defenses?(t.holding?"Still champ":t.reigns?_wrPlural(t.reigns,"reign"):_wrPlural(t.defenses,"defence")):"Not this year",
+          sub:t.reigns||t.defenses?(t.reigns?_wrPlural(t.reigns,"title win")+", "+_wrPlural(t.defenses,"defence")+".":"Carried the belt in and defended it "+_wrPlural(t.defenses,"time")+".")+(t.holding?" You're holding it right now.":"")
                       :(t.king?splitNick(t.king.name).name+" held it longest ("+_wrPlural(t.king.cards,"card")+"). Next year."
                               :"Nobody held it long enough to matter.")});
   s.push({bg:"wr-bg11",kicker:"Your pick personality",big:w.archetype.em+" "+w.archetype.name,sub:w.archetype.desc});
@@ -7797,7 +7803,9 @@ function _wrKey(e){
     else if(!e.shiftKey&&i===f.length-1){f[0].focus();e.preventDefault();}
   }
 }
-function _wrRows(){return _lbRows||_recapRows||_commRows;}
+// The community rows first: the 30-second poll keeps them fresh, while
+// _lbRows is only as new as the last time Ranks was opened.
+function _wrRows(){return _commRows||_lbRows||_recapRows;}
 function openWrapped(){
   var rows=_wrRows();
   if(!userName){toast("Set a name and make some picks to get your Wrapped");return;}
