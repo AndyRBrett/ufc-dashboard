@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-22T02:38:07Z",
+  "generated_at": "2026-09-22T03:39:07Z",
   "summary": {
     "events": 11,
     "block": 0,
-    "warn": 4
+    "warn": 5
   },
   "findings": [
     {
@@ -35,6 +35,11 @@
       "event": "UFC 332: Silva vs. Wang",
       "date": "2026-10-03",
       "days_out": 11
+    },
+    {
+      "severity": "WARN",
+      "check": "odds-quota",
+      "message": "Odds API quota down to 49 requests \u2014 lines will freeze silently when it hits zero"
     }
   ]
 }
