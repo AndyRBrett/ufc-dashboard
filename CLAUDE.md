@@ -38,6 +38,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:kick`  | the scraper not being dispatched on a card day or in fight week |
 | `npm run check:lock`  | a bout still pickable after its own segment has started (or locked before it) |
 | `npm run check:recap` | the post-card recap crediting a title, rank or score the board and belt don't |
+| `npm run check:wrapped` | Year Wrapped reporting a rank, score, upset or reign the year-scoped board and belt don't |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.

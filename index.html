@@ -247,6 +247,58 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .rc-rank{width:22px;color:var(--muted);flex-shrink:0}
 .rc-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rc-pts{color:var(--muted2);flex-shrink:0}
+/* Year Wrapped — full-screen, story-style. Deliberately NOT themed: like the
+   thing it's named after, each slide is its own loud gradient, with white
+   text that holds contrast on every one of them in every app theme. */
+#wr-overlay{display:none;position:fixed;inset:0;z-index:450;background:#000;align-items:center;justify-content:center}
+#wr-overlay.open{display:flex}
+#wr-panel{position:relative;width:100%;max-width:480px;height:100%;max-height:900px;overflow:hidden;color:#fff;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 16px);transition:background .35s ease}
+@media (min-width:520px){#wr-panel{height:92vh;border-radius:20px}}
+.wr-bg1{background:linear-gradient(160deg,#e8192c 0%,#7a0616 55%,#12030a 100%)}
+.wr-bg2{background:linear-gradient(160deg,#1db954 0%,#0b5d2a 60%,#04140a 100%)}
+.wr-bg3{background:linear-gradient(160deg,#6c3bf5 0%,#321178 60%,#0d0426 100%)}
+.wr-bg4{background:linear-gradient(160deg,#ff8a00 0%,#a33b00 60%,#240b00 100%)}
+.wr-bg5{background:linear-gradient(160deg,#f23bd4 0%,#7b0f6a 60%,#1c0318 100%)}
+.wr-bg6{background:linear-gradient(160deg,#ff3d1f 0%,#8f1400 55%,#1f0500 100%)}
+.wr-bg7{background:linear-gradient(160deg,#0fa3b1 0%,#075a63 60%,#021417 100%)}
+.wr-bg8{background:linear-gradient(160deg,#c9a84c 0%,#6d5516 60%,#1a1405 100%)}
+.wr-bg9{background:linear-gradient(160deg,#3b82f6 0%,#163f8a 60%,#050f24 100%)}
+.wr-bg10{background:linear-gradient(160deg,#d4af37 0%,#7c5a05 55%,#150e00 100%)}
+.wr-bg11{background:linear-gradient(160deg,#16e0cf 0%,#086e66 55%,#021a18 100%)}
+.wr-bg12{background:linear-gradient(160deg,#1f1f2b 0%,#0f0f14 100%)}
+.wr-top{display:flex;align-items:center;gap:10px;position:relative;z-index:2}
+#wr-bars{flex:1;display:flex;gap:4px}
+.wr-bar{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.3)}
+.wr-bar.done,.wr-bar.on{background:#fff}
+.wr-x{background:rgba(0,0,0,.25);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:15px;cursor:pointer;flex-shrink:0}
+.wr-x:focus-visible,.wr-act:focus-visible{outline:2px solid #fff;outline-offset:2px}
+/* The tap zones are half the screen; a ring round one reads as a stray line.
+   Keyboard focus there is announced via #wr-live instead. */
+.wr-nav:focus-visible{outline:none}
+#wr-stage{flex:1;display:flex;align-items:center;min-height:0;position:relative;z-index:1;pointer-events:none}
+.wr-slide{width:100%;padding:0 6px}
+.wr-acts{pointer-events:auto}
+.wr-kicker{font:600 13px Inter,sans-serif;text-transform:uppercase;letter-spacing:.14em;opacity:.85;margin-bottom:14px}
+.wr-big{font:800 clamp(38px,12vw,60px)/1.02 Inter,sans-serif;letter-spacing:-.02em;margin-bottom:18px;overflow-wrap:anywhere}
+.wr-sub{font:500 17px/1.45 Inter,sans-serif;opacity:.92;max-width:34ch}
+.wr-name{font:800 30px/1.1 Inter,sans-serif;margin-bottom:16px;overflow-wrap:anywhere}
+.wr-sum{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:6px 14px}
+.wr-sum-row{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.wr-sum-row:last-child{border-bottom:none}
+.wr-sum-row span:first-child{opacity:.7}
+.wr-sum-row span:last-child{font-weight:700;text-align:right}
+.wr-acts{display:flex;gap:10px;margin-top:18px}
+.wr-act{flex:1;padding:13px;border-radius:999px;border:none;background:#fff;color:#000;font:700 15px Inter,sans-serif;cursor:pointer}
+.wr-act-2{background:rgba(255,255,255,.14);color:#fff}
+/* Tap zones: left third goes back, the rest goes forward — real buttons, so
+   they work from a keyboard and a screen reader too. */
+.wr-nav{position:absolute;top:0;bottom:0;background:none;border:none;padding:0;cursor:pointer;z-index:0;color:transparent}
+.wr-nav:disabled{cursor:default}
+#wr-prev{left:0;width:33%}
+#wr-next{right:0;width:67%}
+.wr-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:no-preference){.wr-slide{animation:wrIn .4s ease-out}}
+@keyframes wrIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 #wn-panel{background:var(--card);border:1px solid var(--border2);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px 24px;position:relative;animation:slideUp .25s ease-out;max-height:80vh;display:flex;flex-direction:column}
 .wn-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-shrink:0}
 .wn-title{font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.06em;color:var(--text)}
@@ -1508,6 +1560,10 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
         <button class="btn-more-item" id="acctBtn" onclick="openAcct();closeMoreMenu()" title="Account">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           <span id="acctBtnLbl">Sign In / Link Email</span>
+        </button>
+        <button class="btn-more-item" id="wrappedBtn" onclick="closeMoreMenu();openWrapped()" title="Your year of picks, Wrapped">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8c-1.5-3-5-4-5-1.5S10 8 12 8zm0 0c1.5-3 5-4 5-1.5S14 8 12 8z"/></svg>
+          <span>Year Wrapped</span>
         </button>
         <div class="btn-more-sep"></div>
         <div class="btn-more-label">Theme</div>
@@ -5710,7 +5766,9 @@ var WHATS_NEW=[
   {id:"2026-09-22-card-recap",emoji:"📋",title:"Card Recap",
    desc:"When a card wraps, you get your night in one sheet: who won (or kept) the title, your points and card rank, how far you moved on the all-time board, your best upset, and a nod if you went perfect. Missed it? Ranks → Card Recap brings it back."},
   {id:"2026-09-22-every-card-all-time",emoji:"📊",title:"All-Time now counts every card",
-   desc:"The All-Time board was only scoring the last four cards — picks from older events were counted but never scored. Every card since June counts now, the same history Title History already used, so expect the standings to move. Older cards have no betting lines on record, so they score no underdog bonus."}
+   desc:"The All-Time board was only scoring the last four cards — picks from older events were counted but never scored. Every card since June counts now, the same history Title History already used, so expect the standings to move. Older cards have no betting lines on record, so they score no underdog bonus."},
+  {id:"2026-09-22-year-wrapped",emoji:"🎁",title:"Your Year Wrapped",
+   desc:"Your year of picks as a swipe-through story: cards played, hit rate against the group, best night, biggest upset, longest heater, your ride-or-die fighter, pick twin and nemesis, title reigns, and your pick personality. More → Year Wrapped, or Ranks → Your Wrapped. Tap Share on the last slide to brag."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -7443,6 +7501,317 @@ function _recapAfterWn(){
   if(!_anyOverlayOpen())setTimeout(function(){openCardRecap(d);},400);
 }
 // card-recap-ui:end
+// year-wrapped:start
+// Year Wrapped — a Spotify-Wrapped-style look back at one player's year of
+// picks: cards played, record, best night, biggest upset, longest heater,
+// ride-or-die fighter, pick twin and nemesis, title reigns, and a pick
+// "personality".
+//
+// Same rule as the card recap: every score is read from the board's own
+// _lbScoreUsers (scoped to the year) and every title fact from
+// computeBeltLineage, never from a private copy of either, so the Wrapped
+// can't tell someone they finished #2 while the board says #3.
+var WRAPPED_TWIN_MIN=5;    // shared bouts before a pick twin / nemesis counts
+function _wrYearOf(d){return String(d||"").slice(0,4);}
+// Newest year in which this player has a SCORED pick — the year to wrap.
+function wrappedYear(rows,myBase){
+  if(!myBase)return null;
+  var best=null;
+  (rows||[]).forEach(function(p){
+    if(_lbBaseName(p.nickname)!==myBase)return;
+    var y=_wrYearOf(p.event_date);
+    if(!/^\d{4}$/.test(y)||(best&&y<=best))return;
+    var r=_findFightResult(p.event_date,p.f1,p.f2);
+    if(r&&r.winner)best=y;
+  });
+  return best;
+}
+// The closing line on the fighter a pick backed: EVENTS first (frozen at the
+// close once the card is over), then the archive, which usually has none.
+function _wrLine(date,f1,f2,pick){
+  var i,j,f=null;
+  for(i=0;i<EVENTS.length&&!f;i++){
+    if(EVENTS[i].date!==date)continue;
+    for(j=0;j<EVENTS[i].fights.length;j++)if(nmBout(EVENTS[i].fights[j],f1,f2)){f=EVENTS[i].fights[j];break;}
+  }
+  if(!f){
+    var a=RESULTS_ARCHIVE[date];
+    if(a&&a.fights)for(j=0;j<a.fights.length;j++){
+      var af=a.fights[j];
+      if((nmEq(af.f1,f1)&&nmEq(af.f2,f2))||(nmEq(af.f1,f2)&&nmEq(af.f2,f1))){f={f1:{n:af.f1},f2:{n:af.f2},odds:af.odds||null};break;}
+    }
+  }
+  if(!f||!f.odds)return null;
+  var l=nmEq(pick,f.f1.n)?f.odds.f1:nmEq(pick,f.f2.n)?f.odds.f2:null;
+  return typeof l==="number"&&isFinite(l)&&l!==0?l:null;
+}
+function _wrBoutKey(date,a,b){var x=nmKey(a),y=nmKey(b);return date+"|"+(x<y?x+"|"+y:y+"|"+x);}
+function _wrFotnHit(u,date){
+  var bp=u.bonusPicks&&u.bonusPicks[date];
+  if(!bp)return false;
+  for(var i=0;i<EVENTS.length;i++)if(EVENTS[i].date===date)return !!EVENTS[i].fotn&&bp===EVENTS[i].fotn;
+  return false;
+}
+// The one-line pick personality. First rule that fits wins, so the rarer and
+// more flattering reads sit at the top.
+var WRAPPED_ARCHETYPES=[
+  {id:"oracle",em:"🔮",name:"The Oracle",desc:"You called winners like you'd already seen the tape. Everyone else was guessing; you were reading.",
+   test:function(s){return s.total>=15&&s.accuracy>=65;}},
+  {id:"hunter",em:"🐺",name:"Underdog Hunter",desc:"Favourites bore you. You went looking for plus money all year and you weren't shy about it.",
+   test:function(s){return s.priced>=8&&s.dogShare>=0.3;}},
+  {id:"violence",em:"💥",name:"Violence Enjoyer",desc:"Nobody's going the distance on your watch. KO or sub — the judges can stay home.",
+   test:function(s){return s.methodPicks>=8&&s.finishShare>=0.75;}},
+  {id:"scholar",em:"📜",name:"Scorecard Scholar",desc:"Fifteen minutes, three rounds, split decision. You respect the full fight.",
+   test:function(s){return s.methodPicks>=8&&s.decShare>=0.5;}},
+  {id:"chalk",em:"🧱",name:"Chalk Connoisseur",desc:"The favourite is the favourite for a reason, and you rode the reason all year.",
+   test:function(s){return s.priced>=8&&s.dogShare<=0.12;}},
+  {id:"tactician",em:"♟️",name:"The Tactician",desc:"A little chalk, a little chaos. You picked every fight on its own merits.",
+   test:function(){return true;}}
+];
+function _wrArchetype(s){
+  for(var i=0;i<WRAPPED_ARCHETYPES.length;i++)if(WRAPPED_ARCHETYPES[i].test(s))return WRAPPED_ARCHETYPES[i];
+  return WRAPPED_ARCHETYPES[WRAPPED_ARCHETYPES.length-1];
+}
+function computeYearWrapped(rows,year,myBase){
+  if(!year||!myBase)return null;
+  var ordered=_recapBoardOrder(rows);
+  var users=_lbScoreUsers(ordered,function(p){return _wrYearOf(p.event_date)===year;});
+  var me=users.filter(function(u){return _lbBaseName(u.nickname)===myBase;})[0];
+  if(!me)return null;
+  var resolved=me.picks.filter(function(p){return p.result!==null;});
+  if(!resolved.length)return null;
+  var ranks=_recapRanks(users);
+
+  // Per card — the same points the board's "This Event" tab gives the night.
+  var cards={},cardDates=[];
+  resolved.forEach(function(p){
+    var c=cards[p.evDate];
+    if(!c){c=cards[p.evDate]={date:p.evDate,evName:_recapEvName(p.evDate),correct:0,total:0,pts:0};cardDates.push(p.evDate);}
+    c.total++;
+    if(p.result===true){c.correct++;c.pts+=1+(p.methodCorrect?0.5:0)+(p.dogPts||0);}
+  });
+  cardDates.sort();
+  cardDates.forEach(function(d){if(_wrFotnHit(me,d))cards[d].pts+=1;});
+  var best=null,perfect=0;
+  cardDates.forEach(function(d){
+    var c=cards[d];
+    if(c.total>=3&&c.correct===c.total)perfect++;
+    if(!best||c.pts>best.pts||(c.pts===best.pts&&c.correct>best.correct))best=c;
+  });
+
+  // Lines, upsets, and how you pick.
+  var upset=null,priced=0,dogs=0,methodPicks=0,finishes=0,decs=0,methodTally={};
+  var fighters={};
+  resolved.forEach(function(p){
+    var line=_wrLine(p.evDate,p.f1,p.f2,p.pick);
+    if(line!==null){priced++;if(line>0)dogs++;}
+    if(p.result===true&&line!==null&&line>0&&(!upset||line>upset.line))
+      upset={pick:p.pick,opp:nmEq(p.pick,p.f1)?p.f2:p.f1,line:line,evName:_recapEvName(p.evDate)};
+    if(p.method){
+      methodPicks++;methodTally[p.method]=(methodTally[p.method]||0)+1;
+      if(p.method==="Dec")decs++;else finishes++;
+    }
+    var k=nmKey(p.pick);
+    if(k){var fr=fighters[k]||(fighters[k]={name:p.pick,n:0,w:0});fr.n++;if(p.result===true)fr.w++;}
+  });
+  var goTo=null;
+  Object.keys(methodTally).forEach(function(m){if(!goTo||methodTally[m]>methodTally[goTo])goTo=m;});
+  var ride=null;
+  Object.keys(fighters).forEach(function(k){
+    var f=fighters[k];
+    if(f.n<2)return;
+    if(!ride||f.n>ride.n||(f.n===ride.n&&f.w>ride.w))ride=f;
+  });
+
+  // Pick twin and nemesis: agreement rate on the bouts you both picked.
+  var mine={};
+  me.picks.forEach(function(p){mine[_wrBoutKey(p.evDate,p.f1,p.f2)]=nmKey(p.pick);});
+  var twin=null,nemesis=null;
+  users.forEach(function(u){
+    if(u===me)return;
+    var shared=0,agree=0;
+    u.picks.forEach(function(p){
+      var m=mine[_wrBoutKey(p.evDate,p.f1,p.f2)];
+      if(m===undefined)return;
+      shared++;if(m===nmKey(p.pick))agree++;
+    });
+    if(shared<WRAPPED_TWIN_MIN)return;
+    var o={name:u.nickname,shared:shared,agree:agree,pct:Math.round(agree/shared*100)};
+    if(!twin||o.pct>twin.pct||(o.pct===twin.pct&&o.shared>twin.shared))twin=o;
+    if(!nemesis||o.pct<nemesis.pct||(o.pct===nemesis.pct&&o.shared>nemesis.shared))nemesis=o;
+  });
+  if(twin&&nemesis&&twin.name===nemesis.name)nemesis=null;
+
+  // The belt, replayed through the end of the year.
+  var belt=computeBeltLineage((rows||[]).filter(function(p){return _wrYearOf(p.event_date)<=year;}));
+  var title={reigns:0,defenses:0,holding:false,king:null};
+  if(belt){
+    var kings={};
+    belt.reigns.forEach(function(r){
+      if(_wrYearOf(r.date)!==year)return;
+      var kk=kings[r.base]||(kings[r.base]={name:r.name,cards:0});kk.cards+=1+r.defenses;
+      if(r.base===myBase){title.reigns++;title.defenses+=r.defenses;}
+    });
+    title.holding=belt.holderBase===myBase;
+    Object.keys(kings).forEach(function(b){if(!title.king||kings[b].cards>title.king.cards)title.king=kings[b];});
+  }
+
+  // The group, for context.
+  var grpC=0,grpT=0;
+  users.forEach(function(u){u.picks.forEach(function(p){if(p.result!==null){grpT++;if(p.result===true)grpC++;}});});
+
+  var stats={total:resolved.length,accuracy:me.accuracy||0,priced:priced,dogShare:priced?dogs/priced:0,
+             methodPicks:methodPicks,finishShare:methodPicks?finishes/methodPicks:0,decShare:methodPicks?decs/methodPicks:0};
+  return {
+    year:year,name:me.nickname,
+    cards:cardDates.length,picks:resolved.length,correct:me.correct,accuracy:me.accuracy||0,
+    pts:userPts(me),rank:ranks[myBase],of:users.length,
+    groupAccuracy:grpT?Math.round(grpC/grpT*100):null,groupPicks:grpT,
+    bestCard:best,perfectCards:perfect,upset:upset,bestStreak:me.bestStreak||0,
+    methodPicks:methodPicks,methodHits:me.methods,goTo:goTo,dogs:dogs,priced:priced,
+    ride:ride,twin:twin,nemesis:nemesis,title:title,
+    archetype:_wrArchetype(stats)
+  };
+}
+// year-wrapped:end
+// year-wrapped-ui:start
+// Story-style: one stat per slide, tap the right side (or →) for the next,
+// the left side (or ←) to go back. Every string goes in via textContent —
+// nicknames and fighter names are user/scraper data, never markup.
+var _wrSlides=[],_wrIdx=0,_wrData=null,_wrPrevFocus=null,_wrLocked=false;
+function _wrShort(n){return String(n||"").replace("UFC Fight Night: ","");}
+function _wrPlural(n,one,many){return n+" "+(n===1?one:(many||one+"s"));}
+var _WR_METHOD={"KO/TKO":"KO/TKO","Sub":"Submission","Dec":"Decision"};
+function wrappedSlides(w){
+  var s=[];
+  s.push({bg:"wr-bg1",kicker:"🥊 "+w.year+" Wrapped",big:splitNick(w.name).name||w.name,
+          sub:"Your year of picks, one round at a time. Tap to start."});
+  s.push({bg:"wr-bg2",kicker:"You showed up for",big:_wrPlural(w.cards,"card"),
+          sub:_wrPlural(w.picks,"pick")+" locked in and scored"+(w.groupPicks?" — "+Math.round(w.picks/w.groupPicks*100)+"% of everything the group picked.":".")});
+  s.push({bg:"wr-bg3",kicker:"You called the winner",big:w.accuracy+"%",
+          sub:w.correct+" of "+w.picks+" right"+(w.groupAccuracy!=null?" · the group hit "+w.groupAccuracy+"%":"")+". "+
+              (w.groupAccuracy==null?"":w.accuracy>w.groupAccuracy?"Sharper than the room.":w.accuracy<w.groupAccuracy?"The room had your number this year.":"Dead level with the room.")});
+  if(w.bestCard)s.push({bg:"wr-bg4",kicker:"Your best night",big:w.bestCard.pts+" pts",
+          sub:_wrShort(w.bestCard.evName||w.bestCard.date)+" · "+w.bestCard.correct+"/"+w.bestCard.total+" winners"+
+              (w.perfectCards?" · "+_wrPlural(w.perfectCards,"perfect card")+" this year 🎯":"")});
+  if(w.upset)s.push({bg:"wr-bg5",kicker:"Biggest upset you called",big:w.upset.pick,
+          sub:"+"+w.upset.line+" over "+w.upset.opp+(w.upset.evName?" · "+_wrShort(w.upset.evName):"")+". Nobody can take that one off you."});
+  if(w.bestStreak>=2)s.push({bg:"wr-bg6",kicker:"Longest heater",big:"🔥 "+w.bestStreak+" straight",
+          sub:"winners in a row, without a miss in between."});
+  if(w.ride)s.push({bg:"wr-bg7",kicker:"Your ride-or-die",big:w.ride.name,
+          sub:"Backed "+_wrPlural(w.ride.n,"time")+" · "+w.ride.w+"–"+(w.ride.n-w.ride.w)+(w.ride.w===w.ride.n?". Never let you down.":w.ride.w===0?". Loyalty, not profit.":".")});
+  if(w.goTo)s.push({bg:"wr-bg8",kicker:"Your go-to finish",big:_WR_METHOD[w.goTo]||w.goTo,
+          sub:w.methodHits+" of "+w.methodPicks+" method calls landed"+(w.methodPicks?" ("+Math.round(w.methodHits/w.methodPicks*100)+"%).":".")});
+  if(w.twin)s.push({bg:"wr-bg9",kicker:"Your pick twin",big:splitNick(w.twin.name).name||w.twin.name,
+          sub:"Agreed with you on "+w.twin.pct+"% of the "+w.twin.shared+" fights you both picked."+
+              (w.nemesis?" Your nemesis: "+(splitNick(w.nemesis.name).name||w.nemesis.name)+", on your side just "+w.nemesis.pct+"% of the time.":"")});
+  var t=w.title;
+  s.push({bg:"wr-bg10",kicker:"The belt 🏆",
+          big:t.reigns?(t.holding?"Still champ":_wrPlural(t.reigns,"reign")):"Not this year",
+          sub:t.reigns?_wrPlural(t.reigns,"title win")+", "+_wrPlural(t.defenses,"defence")+"."+(t.holding?" You're holding it right now.":"")
+                      :(t.king?splitNick(t.king.name).name+" held it longest ("+_wrPlural(t.king.cards,"card")+"). Next year."
+                              :"Nobody held it long enough to matter.")});
+  s.push({bg:"wr-bg11",kicker:"Your pick personality",big:w.archetype.em+" "+w.archetype.name,sub:w.archetype.desc});
+  s.push({bg:"wr-bg12",kicker:w.year+" in one card",summary:true});
+  return s;
+}
+function _wrSummary(w){
+  var box=_rcEl("div","wr-sum");
+  [["Rank","#"+w.rank+" of "+w.of],["Points",String(w.pts)],["Winners",w.correct+"/"+w.picks+" ("+w.accuracy+"%)"],
+   ["Cards",String(w.cards)],["Best streak",String(w.bestStreak)],
+   ["Best night",w.bestCard?w.bestCard.pts+" pts":"—"],
+   ["Biggest upset",w.upset?w.upset.pick+" +"+w.upset.line:"—"],
+   ["Personality",w.archetype.em+" "+w.archetype.name]].forEach(function(r){
+    var row=_rcEl("div","wr-sum-row");row.appendChild(_rcEl("span","",r[0]));row.appendChild(_rcEl("span","",r[1]));box.appendChild(row);
+  });
+  return box;
+}
+function _wrShareText(w){
+  return "My "+w.year+" UFC Picks Wrapped 🥊\n"+
+    "#"+w.rank+" of "+w.of+" · "+w.pts+" pts · "+w.accuracy+"% winners\n"+
+    (w.bestCard?"Best night: "+w.bestCard.pts+" pts ("+_wrShort(w.bestCard.evName||w.bestCard.date)+")\n":"")+
+    (w.upset?"Biggest upset: "+w.upset.pick+" +"+w.upset.line+"\n":"")+
+    "Longest streak: "+w.bestStreak+"\n"+
+    "Personality: "+w.archetype.em+" "+w.archetype.name;
+}
+function shareWrapped(){
+  if(!_wrData)return;
+  var txt=_wrShareText(_wrData),url=location.origin+location.pathname;
+  if(navigator.share){navigator.share({title:_wrData.year+" Wrapped",text:txt,url:url}).catch(function(){});return;}
+  var full=txt+"\n"+url;
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(full).then(function(){toast("Copied your Wrapped");},function(){toast("Couldn't copy");});
+  else toast("Sharing isn't supported here");
+}
+function _wrRender(){
+  var sl=_wrSlides[_wrIdx];if(!sl)return;
+  var panel=document.getElementById("wr-panel");
+  panel.className=sl.bg;
+  var bars=document.getElementById("wr-bars");bars.textContent="";
+  _wrSlides.forEach(function(_,i){var b=_rcEl("div","wr-bar"+(i<_wrIdx?" done":i===_wrIdx?" on":""));bars.appendChild(b);});
+  var st=document.getElementById("wr-stage");st.textContent="";
+  var inner=_rcEl("div","wr-slide");
+  inner.appendChild(_rcEl("div","wr-kicker",sl.kicker));
+  if(sl.summary){
+    inner.appendChild(_rcEl("div","wr-name",_wrData.name));
+    inner.appendChild(_wrSummary(_wrData));
+    var acts=_rcEl("div","wr-acts");
+    var sh=_rcEl("button","wr-act","Share");sh.type="button";sh.onclick=function(e){e.stopPropagation();shareWrapped();};
+    var dn=_rcEl("button","wr-act wr-act-2","Done");dn.type="button";dn.onclick=function(e){e.stopPropagation();closeWrapped();};
+    acts.appendChild(sh);acts.appendChild(dn);inner.appendChild(acts);
+  }else{
+    inner.appendChild(_rcEl("div","wr-big",sl.big));
+    inner.appendChild(_rcEl("div","wr-sub",sl.sub));
+  }
+  st.appendChild(inner);
+  document.getElementById("wr-prev").disabled=_wrIdx===0;
+  document.getElementById("wr-next").disabled=_wrIdx===_wrSlides.length-1;
+  document.getElementById("wr-live").textContent="Slide "+(_wrIdx+1)+" of "+_wrSlides.length+". "+sl.kicker+(sl.summary?"":": "+sl.big+". "+sl.sub);
+}
+function wrappedStep(d){
+  var n=_wrIdx+d;
+  if(n<0||n>=_wrSlides.length)return;
+  _wrIdx=n;_wrRender();
+}
+function _wrKey(e){
+  if(e.key==="ArrowRight"){e.preventDefault();wrappedStep(1);}
+  else if(e.key==="ArrowLeft"){e.preventDefault();wrappedStep(-1);}
+  else if(e.key==="Tab"){
+    // Keep focus inside the story: it covers the whole screen.
+    var f=[].slice.call(document.getElementById("wr-panel").querySelectorAll("button:not([disabled])"));
+    if(!f.length)return;
+    var i=f.indexOf(document.activeElement);
+    if(e.shiftKey&&i<=0){f[f.length-1].focus();e.preventDefault();}
+    else if(!e.shiftKey&&i===f.length-1){f[0].focus();e.preventDefault();}
+  }
+}
+function _wrRows(){return _lbRows||_recapRows||_commRows;}
+function openWrapped(){
+  var rows=_wrRows();
+  if(!userName){toast("Set a name and make some picks to get your Wrapped");return;}
+  if(!rows){toast("Picks are still loading — try again in a second");return;}
+  var base=_lbBaseName(userName),year=wrappedYear(rows,base);
+  var w=year?computeYearWrapped(rows,year,base):null;
+  if(!w){toast("No scored picks yet — your Wrapped fills in once a card finishes");return;}
+  _wrData=w;_wrSlides=wrappedSlides(w);_wrIdx=0;
+  _wrPrevFocus=document.activeElement;
+  document.getElementById("wr-overlay").classList.add("open");
+  // The board may already hold the scroll lock; lockScroll doesn't nest, so
+  // only take (and later release) it when nobody else has.
+  _wrLocked=document.body.style.position!=="fixed";
+  if(_wrLocked)lockScroll();
+  _wrRender();
+  try{document.getElementById("wr-next").focus();}catch(e){}
+}
+function closeWrapped(){
+  var ov=document.getElementById("wr-overlay");
+  if(!ov||!ov.classList.contains("open"))return;
+  ov.classList.remove("open");
+  if(_wrLocked)unlockScroll();
+  _wrLocked=false;
+  try{if(_wrPrevFocus&&document.documentElement.contains(_wrPrevFocus))_wrPrevFocus.focus();}catch(e){}
+  _wrPrevFocus=null;
+}
+// year-wrapped-ui:end
 
 // Repair: persist locally-stored method picks that never reached the DB, so every
 // device scores them — not just the pick's author. Patches the fetched rows in place
@@ -7888,6 +8257,17 @@ function loadLeaderboard(isLive){
       rcBtn.onclick=function(){openCardRecap(_rcDate);};
       rcBtn.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();openCardRecap(_rcDate);}};
       body.appendChild(rcBtn);
+    }
+    // Year Wrapped — only once this player has a scored pick to wrap.
+    var _wrY=userName?wrappedYear(rows,_lbBaseName(userName)):null;
+    if(_wrY){
+      var wrBtn=document.createElement("div");
+      wrBtn.style.cssText="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;padding:8px 2px;cursor:pointer;user-select:none";
+      wrBtn.setAttribute("role","button");wrBtn.tabIndex=0;
+      wrBtn.textContent="🎁 Your "+_wrY+" Wrapped";
+      wrBtn.onclick=function(){openWrapped();};
+      wrBtn.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();openWrapped();}};
+      body.appendChild(wrBtn);
     }
     // Title history — collapsed reign list under the standings
     if(belt&&belt.reigns.length){
@@ -8395,6 +8775,7 @@ function closeInstall(){document.getElementById("install-overlay").classList.rem
 // Escape closes the topmost open overlay (sub-sheets before their parent panels).
 // Keyboard/desktop a11y — harmless on touch devices that have no Escape key.
 var _escClosers=[
+  ["wr-overlay",function(){closeWrapped();}],
   ["lbInfoModal",function(){document.getElementById("lbInfoModal").classList.remove("open");}],
   ["trashSheet",function(){closeTrashSheet();}],
   ["wheelSheet",function(){closeWheelSheet();}],
@@ -8972,6 +9353,20 @@ document.addEventListener("DOMContentLoaded",function(){
     <div class="rc-ev" id="rc-ev"></div>
     <div class="rc-body" id="rc-body"></div>
     <button class="wn-btn" id="rc-gotit-btn" onclick="closeCardRecap()">Got it</button>
+  </div>
+</div>
+<!-- Year Wrapped. User-opened, so unlike the auto-popups above it closes on
+     Escape and the X as well as "Done" (see openWrapped / _escClosers). -->
+<div id="wr-overlay">
+  <div id="wr-panel" role="dialog" aria-modal="true" aria-label="Your year Wrapped" onkeydown="_wrKey(event)">
+    <button class="wr-nav" id="wr-prev" type="button" onclick="wrappedStep(-1)" aria-label="Previous">Previous</button>
+    <button class="wr-nav" id="wr-next" type="button" onclick="wrappedStep(1)" aria-label="Next">Next</button>
+    <div class="wr-top">
+      <div id="wr-bars" aria-hidden="true"></div>
+      <button class="wr-x" id="wr-close-btn" type="button" onclick="closeWrapped()" aria-label="Close">&#x2715;</button>
+    </div>
+    <div id="wr-stage"></div>
+    <div class="wr-sr" id="wr-live" aria-live="polite"></div>
   </div>
 </div>
 <script>
