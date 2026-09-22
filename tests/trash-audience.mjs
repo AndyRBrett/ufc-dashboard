@@ -49,6 +49,12 @@ const SETUP = () => {
     return realFetch.apply(this, arguments);
   };
   window._trashMe = { user_id: "me", nickname: "AB" };
+  // The push's exclude_user_id is USER_ID, which the app only sets once its
+  // anonymous sign-in to the live Supabase settles. Offline that fails fast and
+  // falls back to a local id; in CI it's a real round-trip that can outlast the
+  // page's settle time, leaving USER_ID null and "still excludes the sender"
+  // failing on network latency rather than on the code. Pin it like _trashMe.
+  window.USER_ID = "me";
   window._trashOpponents = [
     { user_id: "u-jpeso", nickname: "JPeso" },
     { user_id: "u-t", nickname: "T" },
