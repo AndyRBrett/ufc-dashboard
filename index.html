@@ -7237,9 +7237,27 @@ function latestRecapDate(rows){
   });
   return best;
 }
+// One row per player per bout. A nickname can carry stale rows under an old
+// user_id (device storage reset), and both rows land on the same base name —
+// scored raw, that bout counts twice. Newest updated_at wins, the same rule
+// the community tally uses; the bout key is corner-order-agnostic.
+function _recapDedupe(rows){
+  var keep={},order=[];
+  (rows||[]).forEach(function(p){
+    var base=_lbBaseName(p.nickname);
+    if(!base)return;
+    var a=nmKey(p.f1),b=nmKey(p.f2);
+    var k=base+"|"+p.event_date+"|"+(a<b?a+"|"+b:b+"|"+a);
+    var cur=keep[k];
+    if(!cur){keep[k]=p;order.push(k);}
+    else if(String(p.updated_at||"")>=String(cur.updated_at||""))keep[k]=p;
+  });
+  return order.map(function(k){return keep[k];});
+}
 function computeCardRecap(rows,date,myBase){
   var card={},before={},after={},fotnSeen={};
-  (rows||[]).forEach(function(p){
+  rows=_recapDedupe(rows);
+  rows.forEach(function(p){
     if(p.event_date>date)return;
     var base=_lbBaseName(p.nickname);
     if(!base)return;

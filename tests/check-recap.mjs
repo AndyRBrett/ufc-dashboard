@@ -97,6 +97,19 @@ setEvents([card1]);
     tie.me.cardRank === 2 && tie.standings.filter((u) => u.rank === 2).length === 2);
 }
 
+// --- stale duplicate identities count once ---------------------------------
+{
+  // Bob's picks also exist under an old user_id: the same winning pick
+  // (corners flipped) plus an older, since-changed pick on A3.
+  const dup = rows1.map((p) => Object.assign({ updated_at: "2026-09-10T00:00:00Z" }, p)).concat([
+    pick("Bob", C1, "B1", "A1", "A1", { user_id: "old", updated_at: "2026-09-01T00:00:00Z" }),
+    pick("Bob", C1, "A3", "B3", "A3", { user_id: "old", updated_at: "2026-09-01T00:00:00Z" }),
+  ]);
+  const r = recap(dup, C1, "bob");
+  check("a bout picked under two stale identities is scored once (newest row wins)",
+    r.me.total === 3 && r.me.correct === 1 && r.me.pts === 1);
+}
+
 // --- card 2: Bob outscores the champ and takes it -------------------------
 const card2 = { name: "UFC Fight Night: Two", date: C2, fights: [
   bout("C1", "D1", "C1"), bout("C2", "D2", "C2"), bout("C3", "D3", "C3"), bout("C4", "D4", "C4"),
