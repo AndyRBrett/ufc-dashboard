@@ -16,6 +16,7 @@
 #   check:intel     — a curated fight-week link never lands under the wrong card
 #   check:whatsnew  — the what's-new popup never loses a backfill or grows unbounded
 #   check:kick      — the scraper still gets dispatched on a card day and in fight week
+#   check:recap     — the post-card recap scores the night the way the board and belt do
 name: Validate Web
 
 on:
@@ -73,3 +74,5 @@ jobs:
         run: npm run check:picks
       - name: kick-scraper cadence gate test
         run: npm run check:kick
+      - name: Card recap test
+        run: npm run check:recap
