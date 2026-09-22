@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-22T15:03:08Z",
+  "generated_at": "2026-09-22T16:04:13Z",
   "summary": {
-    "events": 11,
+    "events": 12,
     "block": 0,
     "warn": 5
   },
@@ -23,7 +23,7 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Rosas Jr. vs. Barcelos (4d out): 1 of 11 bouts have no odds",
+      "message": "UFC Fight Night: Rosas Jr. vs. Barcelos (4d out): 2 of 12 bouts have no odds",
       "event": "UFC Fight Night: Rosas Jr. vs. Barcelos",
       "date": "2026-09-26",
       "days_out": 4
