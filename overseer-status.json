@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-22T16:04:13Z",
+  "generated_at": "2026-09-22T17:08:06Z",
   "events_tracked": 12,
   "stale_events": 0,
-  "parse_failure_events": 1,
+  "parse_failure_events": 0,
   "awaiting_card_events": 4,
   "odds_unavailable_events": 0,
   "odds_budget_exhausted": false,
@@ -95,27 +95,27 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "ok",
-      "last_changed_at": "2026-09-22T10:07:49Z",
+      "last_changed_at": "2026-09-22T17:08:06Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
-      "line_movement": -5,
+      "line_movement": 3,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "status": "ok",
-      "last_changed_at": "2026-09-22T03:39:07Z",
+      "last_changed_at": "2026-09-22T17:08:06Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": 30,
+      "line_movement": 27,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-22T16:04:13Z",
+      "last_changed_at": "2026-09-22T17:08:06Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-22T16:04:13Z",
+      "last_changed_at": "2026-09-22T17:08:06Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -135,17 +135,17 @@
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "ok",
-      "last_changed_at": "2026-09-22T03:39:07Z",
+      "last_changed_at": "2026-09-22T17:08:06Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 8,
-      "line_movement": -1,
+      "line_movement": 0,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-22T16:04:13Z",
+      "last_changed_at": "2026-09-22T17:08:06Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -155,7 +155,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-22T16:04:13Z",
+      "last_changed_at": "2026-09-22T17:08:06Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -164,10 +164,10 @@
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "status": "parse-failure",
-      "last_changed_at": "2026-09-22T16:04:13Z",
+      "status": "ok",
+      "last_changed_at": "2026-09-22T17:08:06Z",
       "is_stale": false,
-      "has_data": false,
+      "has_data": true,
       "bout_count": 12,
       "line_movement": 0,
       "odds_market_priced": false
@@ -207,6 +207,22 @@
       "priority": 600.0
     },
     {
+      "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+      "f1": "Vanessa Demopoulos",
+      "f2": "Yazmin Jauregui",
+      "f1_movement": 182,
+      "f2_movement": -387,
+      "magnitude": 387,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 110,
+      "low_confidence": false,
+      "wc": "Women's Strawweight",
+      "f1_prob_shift": -4.5,
+      "f2_prob_shift": 5.1,
+      "priority": 541.8
+    },
+    {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
       "f1": "Song Yadong",
       "f2": "Umar Nurmagomedov",
@@ -224,35 +240,19 @@
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
-      "f1": "Vanessa Demopoulos",
-      "f2": "Yazmin Jauregui",
-      "f1_movement": 166,
-      "f2_movement": -353,
-      "magnitude": 353,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 110,
-      "low_confidence": false,
-      "wc": "Women's Strawweight",
-      "f1_prob_shift": -4.2,
-      "f2_prob_shift": 4.8,
-      "priority": 494.2
-    },
-    {
-      "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Rodolfo Vieira",
       "f2": "Robert Bryczek",
-      "f1_movement": -49,
-      "f2_movement": 239,
-      "magnitude": 239,
+      "f1_movement": -47,
+      "f2_movement": 237,
+      "magnitude": 237,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 9.2,
-      "f2_prob_shift": -8.6,
-      "priority": 334.6
+      "f1_prob_shift": 8.9,
+      "f2_prob_shift": -8.3,
+      "priority": 331.8
     },
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
@@ -434,17 +434,17 @@
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Natalia Silva",
       "f2": "Wang Cong",
-      "f1_movement": 30,
-      "f2_movement": -30,
-      "magnitude": 30,
+      "f1_movement": 27,
+      "f2_movement": -28,
+      "magnitude": 28,
       "main_event": true,
       "tier": "main-event",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Women's Flyweight",
-      "f1_prob_shift": -3.0,
-      "f2_prob_shift": 3.9,
-      "priority": 82.5
+      "f1_prob_shift": -2.7,
+      "f2_prob_shift": 3.6,
+      "priority": 77.0
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
@@ -495,7 +495,5 @@
       "priority": 55.0
     }
   ],
-  "errors": [
-    "odds missing on an announced card (bouts parsed, zero priced): 2026-11-14:ufc-334-gane-vs-hokit"
-  ]
+  "errors": []
 }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-22T16:04:13Z",
+  "generated_at": "2026-09-22T17:08:06Z",
   "summary": {
     "events": 12,
     "block": 0,
@@ -23,7 +23,7 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Rosas Jr. vs. Barcelos (4d out): 2 of 12 bouts have no odds",
+      "message": "UFC Fight Night: Rosas Jr. vs. Barcelos (4d out): 1 of 12 bouts have no odds",
       "event": "UFC Fight Night: Rosas Jr. vs. Barcelos",
       "date": "2026-09-26",
       "days_out": 4
@@ -39,7 +39,7 @@
     {
       "severity": "WARN",
       "check": "odds-quota",
-      "message": "Odds API quota down to 44 requests \u2014 lines will freeze silently when it hits zero"
+      "message": "Odds API quota down to 39 requests \u2014 lines will freeze silently when it hits zero"
     }
   ]
 }

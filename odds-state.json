@@ -1,18 +1,24 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-09-22T10:05:20.380334+00:00",
+  "last_fetch_at": "2026-09-22T17:05:20.261181+00:00",
   "last_status": 200,
-  "lines_digest": "e369acf8d1d9b39fda8899aabc9414f28de227d2",
+  "lines_digest": "71516c7c5372f8a76cd5262262b83a5b026acd45",
   "markets": {
     "2026-09-22": {
       "fighters": [
         "quissua",
         "piwowarczyk",
         "jr.",
-        "haig"
+        "haig",
+        "guaylupo",
+        "connor",
+        "moran",
+        "degli",
+        "dasuyev",
+        "ortega"
       ],
-      "listed": 2,
-      "priced": 2
+      "listed": 5,
+      "priced": 5
     },
     "2026-09-25": {
       "fighters": [
@@ -169,25 +175,25 @@
       "priced": 1
     }
   },
-  "markets_at": "2026-09-22T10:05:20.380334+00:00",
+  "markets_at": "2026-09-22T17:05:20.261181+00:00",
   "next_event_days_out": 4,
   "providers": {
     "the-odds-api": {
-      "bouts": 39,
-      "last_fetch_at": "2026-09-22T10:05:20.380334+00:00",
-      "last_ok_at": "2026-09-22T10:05:20.380334+00:00",
+      "bouts": 42,
+      "last_fetch_at": "2026-09-22T17:05:20.261181+00:00",
+      "last_ok_at": "2026-09-22T17:05:20.261181+00:00",
       "last_status": 200,
       "provider": "the-odds-api:us2,uk,eu,au",
-      "requests_remaining": 44
+      "requests_remaining": 39
     },
     "the-odds-api-backup": {
-      "bouts": 38,
-      "last_fetch_at": "2026-09-22T10:05:20.380334+00:00",
-      "last_ok_at": "2026-09-22T10:05:20.380334+00:00",
+      "bouts": 41,
+      "last_fetch_at": "2026-09-22T17:05:20.261181+00:00",
+      "last_ok_at": "2026-09-22T17:05:20.261181+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 433
+      "requests_remaining": 432
     }
   },
-  "requests_remaining": 44
+  "requests_remaining": 39
 }
