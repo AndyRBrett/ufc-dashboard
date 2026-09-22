@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T23:22:46Z",
+  "generated_at": "2026-09-22T00:28:31Z",
   "summary": {
     "events": 11,
     "block": 0,
@@ -9,32 +9,32 @@
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
-      "message": "UFC Fight Night: Moicano vs. Nolan (40d out): venue 'TBD' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "message": "UFC Fight Night: Moicano vs. Nolan (39d out): venue 'TBD' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Moicano vs. Nolan",
       "date": "2026-10-31"
     },
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
-      "message": "UFC Fight Night: Bonfim vs. Brady (47d out): venue 'Meta Apex' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "message": "UFC Fight Night: Bonfim vs. Brady (46d out): venue 'Meta Apex' matches no known region, so its 17:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Bonfim vs. Brady",
       "date": "2026-11-07"
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Rosas Jr. vs. Barcelos (5d out): 1 of 11 bouts have no odds",
+      "message": "UFC Fight Night: Rosas Jr. vs. Barcelos (4d out): 1 of 11 bouts have no odds",
       "event": "UFC Fight Night: Rosas Jr. vs. Barcelos",
       "date": "2026-09-26",
-      "days_out": 5
+      "days_out": 4
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC 332: Silva vs. Wang (12d out): 11 of 13 bouts have no odds",
+      "message": "UFC 332: Silva vs. Wang (11d out): 11 of 13 bouts have no odds",
       "event": "UFC 332: Silva vs. Wang",
       "date": "2026-10-03",
-      "days_out": 12
+      "days_out": 11
     }
   ]
 }
