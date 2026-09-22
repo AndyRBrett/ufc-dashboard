@@ -6,7 +6,13 @@
 // the board doesn't, or reports a "defence" on a card nobody scored on. None of
 // that throws — the sheet just says something false about people's picks. So
 // this runs the REAL scoring (fighter-names + pick-match blocks,
-// _eventFinished, computeBeltLineage) under the recap and checks its answers.
+// _eventFinished, computeBeltLineage, and the board's own _lbScoreUsers) under
+// the recap and checks its answers.
+//
+// The recap's numbers must be the BOARD's numbers. The first version kept its
+// own scoring, which also counted archived cards the board does not, and told
+// a player they held #2 while the leaderboard had them #3. The "matches the
+// board" checks below reproduce that and hold the recap to _lbScoreUsers.
 //
 // Also holds the wiring: the recap is fed by the boot-time community fetch
 // (which must carry bonus_pick for FOTN), waits behind What's New, and — like
@@ -47,6 +53,7 @@ const DAY = 86400000;
 const ctx = vm.createContext({
   console, String, Object, Array, JSON, Math, Date, isFinite,
   DAY_MS: DAY, EVENTS: [], RESULTS_ARCHIVE: {}, lbScope: "all", MAIN_CARD_BOUTS: 5,
+  USER_ID: null,
   // Nicknames are "<emoji> <name>"; the real splitNick needs the emoji regex
   // machinery, and the recap only needs the name half.
   splitNick: (n) => ({ name: String(n || "").replace(/^\S+\s+/, "") }),
@@ -55,6 +62,7 @@ vm.runInContext(block("fighter-names"), ctx);
 vm.runInContext(block("pick-match"), ctx);
 vm.runInContext(fn("_eventFinished"), ctx);
 vm.runInContext(fn("computeBeltLineage"), ctx);
+vm.runInContext(fn("_lbScoreUsers"), ctx);
 vm.runInContext(block("card-recap"), ctx);
 
 const bout = (a, b, winner, odds) => ({
@@ -168,8 +176,49 @@ setEvents([card1, card2]);
   // Counted twice, Cat would sit alone on 2 and push Bob down to #3.
   check("FOTN adds once to the all-time rank, however many rows carry it",
     r.me.rankAfter === 2 && recap(rows, C1, "bob").me.rankAfter === 2);
-  check("FOTN stays out of the card points (the belt ignores it)", r.me.pts === 0);
+  // Card points are the board's "This Event" points, which include FOTN.
+  check("card points include FOTN, as the board's This Event tab does", r.me.pts === 1);
   setEvents([card1, card2]);
+}
+
+// --- the recap's ranks ARE the board's ranks -----------------------------
+{
+  // The real bug: Zed dominates an ARCHIVED card (in RESULTS_ARCHIVE, gone
+  // from EVENTS). The board doesn't score archived cards, so the recap must
+  // not either — counting it put a player a rank above where the board had
+  // them.
+  const OLD = "2026-08-01";
+  ctx.RESULTS_ARCHIVE = { [OLD]: { name: "UFC Old", fights: [
+    { f1: "X1", f2: "Y1", winner: "X1", method: "KO/TKO" },
+    { f1: "X2", f2: "Y2", winner: "X2", method: "KO/TKO" },
+    { f1: "X3", f2: "Y3", winner: "X3", method: "KO/TKO" },
+  ] } };
+  setEvents([card1, card2]);
+  const rows = rows2.concat([
+    pick("Zed", OLD, "X1", "Y1", "X1"), pick("Zed", OLD, "X2", "Y2", "X2"), pick("Zed", OLD, "X3", "Y3", "X3"),
+    pick("Zed", C2, "C1", "D1", "C1"),
+  ]);
+  const board = ctx._lbScoreUsers(ctx._recapBoardOrder(rows), null);
+  const boardRank = {};
+  board.forEach((u) => { boardRank[ctx._lbBaseName(u.nickname)] = 1 + board.filter((v) => ctx.userPts(v) > ctx.userPts(u)).length; });
+  const r = recap(rows, C2, "zed");
+  check("an archived card the board doesn't score doesn't lift the recap's rank",
+    r.me.rankAfter === boardRank.zed && r.me.rankAfter === 3);
+  check("every player's recap rank equals their leaderboard rank",
+    ["ann", "bob", "zed"].every((b) => recap(rows, C2, b).me.rankAfter === boardRank[b]));
+  check("an archive-only card is never recapped (the board would show it unscored)",
+    ctx.latestRecapDate([pick("Zed", OLD, "X1", "Y1", "X1")]) === null);
+  ctx.RESULTS_ARCHIVE = {};
+}
+
+// --- one scorer, not two ---------------------------------------------------
+{
+  const lb = fn("loadLeaderboard");
+  check("the leaderboard scores through _lbScoreUsers (no private copy to drift)",
+    /_lbScoreUsers\(rows,/.test(lb) && !/var users=\{\};/.test(lb));
+  const cr = fn("computeCardRecap");
+  check("the recap's standings and ranks come from _lbScoreUsers",
+    (cr.match(/_lbScoreUsers\(/g) || []).length === 3);
 }
 
 // --- wiring ---------------------------------------------------------------

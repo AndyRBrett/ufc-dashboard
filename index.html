@@ -7202,111 +7202,101 @@ function computeBeltLineage(rows){
 // card-recap:start
 // Post-card recap: once a card is finished, each player sees how their night
 // went — points, card rank, all-time rank movement, best upset, a perfect-card
-// flag — and who left with the title. Everything is replayed from the same
-// pick rows and the same scoring the board and the belt use, so every phone
-// shows the same recap.
+// flag — and who left with the title.
 //
-// Card points are the BELT's points (1 per winner, +0.5 method, + underdog
-// bonus; no FOTN), so the name at the top of the card list is always the one
-// the title block is talking about. The all-time rank adds FOTN back so it
-// matches the leaderboard's own rank.
+// Every number is read from code the app already shows elsewhere, never from
+// a second copy of it:
+//   - card standings and both all-time ranks come from _lbScoreUsers, the
+//     leaderboard's own scoring (identity dedupe, EVENTS-only results, FOTN,
+//     sort order), so the recap's rank is the rank the board shows;
+//   - the title comes from computeBeltLineage on the raw rows, exactly as
+//     Title History computes it.
+// The first version scored its own way — it also counted archived cards the
+// board does not — and told a player they held #2 while the board had them #3.
 var RECAP_SEEN_KEY="ufc_recap_seen";
 var RECAP_WINDOW_DAYS=4;   // auto-show only for a card finished this recently
-function _recapFotnOk(date,pick){
-  if(!pick)return false;
-  for(var i=0;i<EVENTS.length;i++)if(EVENTS[i].date===date)return !!EVENTS[i].fotn&&EVENTS[i].fotn===pick;
-  return false;
+// Tie-aware rank on the board's points (1,1,3,…), keyed by base name.
+function _recapRanks(users){
+  var out={};
+  users.forEach(function(u){
+    var p=userPts(u),r=1;
+    users.forEach(function(v){if(userPts(v)>p)r++;});
+    out[_lbBaseName(u.nickname)]=r;
+  });
+  return out;
 }
-function _recapRank(ptsByBase,base){
-  if(!(base in ptsByBase))return null;
-  var mine=ptsByBase[base],r=1;
-  Object.keys(ptsByBase).forEach(function(b){if(ptsByBase[b]>mine)r++;});
-  return r;   // tie-aware: everyone on equal points shares a rank, as on the board
+function _recapEvent(date){
+  for(var i=0;i<EVENTS.length;i++)if(EVENTS[i].date===date)return EVENTS[i];
+  return null;
 }
 function _recapEvName(date){
-  for(var i=0;i<EVENTS.length;i++)if(EVENTS[i].date===date)return EVENTS[i].name;
+  var ev=_recapEvent(date);
+  if(ev)return ev.name;
   return RESULTS_ARCHIVE[date]?RESULTS_ARCHIVE[date].name:"";
 }
-// The most recent finished card anyone has a scored pick on, or null.
+// The board scores results from EVENTS only, so a card is recappable only
+// while it is still there — an archived card would show every pick unscored.
 function latestRecapDate(rows){
   var best=null;
   (rows||[]).forEach(function(p){
     if(best&&p.event_date<=best)return;
-    if(!_eventFinished(p.event_date))return;
-    if(_findFightResult(p.event_date,p.f1,p.f2))best=p.event_date;
+    var ev=_recapEvent(p.event_date);
+    if(!ev||!_eventFinished(p.event_date))return;
+    if(ev.fights.some(function(f){return f.winner&&nmBout(f,p.f1,p.f2);}))best=p.event_date;
   });
   return best;
 }
-// One row per player per bout. A nickname can carry stale rows under an old
-// user_id (device storage reset), and both rows land on the same base name —
-// scored raw, that bout counts twice. Newest updated_at wins, the same rule
-// the community tally uses; the bout key is corner-order-agnostic.
-function _recapDedupe(rows){
-  var keep={},order=[];
-  (rows||[]).forEach(function(p){
-    var base=_lbBaseName(p.nickname);
-    if(!base)return;
-    var a=nmKey(p.f1),b=nmKey(p.f2);
-    var k=base+"|"+p.event_date+"|"+(a<b?a+"|"+b:b+"|"+a);
-    var cur=keep[k];
-    if(!cur){keep[k]=p;order.push(k);}
-    else if(String(p.updated_at||"")>=String(cur.updated_at||""))keep[k]=p;
+// The board iterates rows newest-first (its nickname backfill depends on it);
+// the boot-time community fetch arrives oldest-first. Normalise to the board's.
+function _recapBoardOrder(rows){
+  return (rows||[]).slice().sort(function(a,b){
+    var x=String(a.updated_at||""),y=String(b.updated_at||"");
+    return x<y?1:x>y?-1:0;
   });
-  return order.map(function(k){return keep[k];});
 }
 function computeCardRecap(rows,date,myBase){
-  var card={},before={},after={},fotnSeen={};
-  rows=_recapDedupe(rows);
-  rows.forEach(function(p){
-    if(p.event_date>date)return;
-    var base=_lbBaseName(p.nickname);
-    if(!base)return;
-    // FOTN is one bonus per player per card, however many rows carry it.
-    var fk=base+"|"+p.event_date;
-    if(p.bonus_pick&&!fotnSeen[fk]){
-      fotnSeen[fk]=true;
-      if(_recapFotnOk(p.event_date,p.bonus_pick)){
-        after[base]=(after[base]||0)+1;
-        if(p.event_date<date)before[base]=(before[base]||0)+1;
+  var ev=_recapEvent(date);
+  if(!ev)return null;
+  var ordered=_recapBoardOrder(rows);
+  var card=_lbScoreUsers(ordered,function(p){return p.event_date===date;});
+  if(!card.length)return null;
+  var cardRank=_recapRanks(card);
+  var standings=card.map(function(u){
+    var resolved=u.picks.filter(function(p){return p.result!==null;});
+    var upset=null;
+    u.picks.forEach(function(p){
+      if(p.result!==true)return;
+      for(var i=0;i<ev.fights.length;i++){
+        var f=ev.fights[i];
+        if(!nmBout(f,p.f1,p.f2)||!f.odds)continue;
+        var line=nmEq(p.pick,f.f1.n)?f.odds.f1:nmEq(p.pick,f.f2.n)?f.odds.f2:null;
+        if(typeof line==="number"&&line>0&&(!upset||line>upset.line))
+          upset={pick:f.winner,opp:nmEq(f.winner,f.f1.n)?f.f2.n:f.f1.n,line:line};
+        break;
       }
-    }
-    var res=_findFightResult(p.event_date,p.f1,p.f2);
-    if(!res)return;
-    var hit=nmEq(res.winner,p.pick);
-    var dog=hit?dogPtsForPick(res.odds,res.f1n,res.f2n,p.pick):0;
-    var pts=hit?1+(scoreMethod(p.method||"",res.method||"")?0.5:0)+dog:0;
-    after[base]=(after[base]||0)+pts;
-    if(p.event_date<date){before[base]=(before[base]||0)+pts;return;}
-    var u=card[base]||(card[base]={base:base,name:p.nickname,pts:0,correct:0,total:0,upset:null});
-    u.total++;
-    if(!hit)return;
-    u.correct++;u.pts+=pts;
-    // Best upset = the longest-priced winner they called. Only cards still in
-    // EVENTS carry a line, so an archived card simply has no upset to report.
-    var o=res.odds,line=null;
-    if(o){line=nmEq(p.pick,res.f1n)?o.f1:nmEq(p.pick,res.f2n)?o.f2:null;}
-    if(typeof line==="number"&&line>0&&(!u.upset||line>u.upset.line))
-      u.upset={pick:res.winner,opp:nmEq(res.winner,res.f1n)?res.f2n:res.f1n,line:line};
+    });
+    var base=_lbBaseName(u.nickname);
+    return {base:base,name:u.nickname,pts:userPts(u),correct:u.correct,total:u.total,
+            rank:cardRank[base],upset:upset,
+            perfect:resolved.length>=3&&resolved.every(function(p){return p.result===true;})};
   });
-  var standings=Object.keys(card).map(function(b){return card[b];});
-  if(!standings.length)return null;
-  standings.sort(function(a,b){return b.pts-a.pts||b.correct-a.correct||a.name.localeCompare(b.name);});
-  standings.forEach(function(u){u.perfect=u.total>=3&&u.correct===u.total;});
-  var cardPts={};standings.forEach(function(u){cardPts[u.base]=u.pts;});
-  // Tie-aware, like the board: equal points share a rank, so the list and
-  // "Card rank" under Your night can never disagree.
-  standings.forEach(function(u){u.rank=_recapRank(cardPts,u.base);});
-  var evName=_recapEvName(date);
-  var me=null;
-  if(myBase&&card[myBase]){
-    var m=card[myBase];
-    me={pts:m.pts,correct:m.correct,total:m.total,perfect:m.perfect,upset:m.upset,
-        cardRank:_recapRank(cardPts,myBase),of:standings.length,
-        rankBefore:_recapRank(before,myBase),rankAfter:_recapRank(after,myBase)};
+  var me=null,mine=myBase?standings.filter(function(u){return u.base===myBase;})[0]:null;
+  if(mine){
+    var after=_recapRanks(_lbScoreUsers(ordered,function(p){return p.event_date<=date;}));
+    var before=_recapRanks(_lbScoreUsers(ordered,function(p){return p.event_date<date;}));
+    me={pts:mine.pts,correct:mine.correct,total:mine.total,perfect:mine.perfect,upset:mine.upset,
+        cardRank:mine.rank,of:standings.length,
+        rankBefore:before[myBase]||null,rankAfter:after[myBase]||null};
   }
-  // A card nobody scored on is a no-contest for the belt — don't report the
-  // standing champion as having "defended" on it.
-  var title=standings[0].pts>0?recapTitle(rows,date,evName):{kind:"none"};
+  var evName=ev.name;
+  // computeBeltLineage skips a card nobody scored on (no contest); don't
+  // report the standing champion as having "defended" on it.
+  var contest=(rows||[]).some(function(p){
+    if(p.event_date!==date||!_lbBaseName(p.nickname))return false;
+    var r=_findFightResult(p.event_date,p.f1,p.f2);
+    return !!r&&nmEq(r.winner,p.pick);
+  });
+  var title=contest?recapTitle(rows,date,evName):{kind:"none"};
   return {date:date,evName:evName,standings:standings,me:me,title:title};
 }
 // What happened to the belt on this card, replayed with only the picks up to
@@ -7492,6 +7482,94 @@ function _reconcileMyMethods(rows){
   });
 }
 
+// The leaderboard's scoring, lifted out of loadLeaderboard verbatim so the card
+// recap reads rank from the SAME code the board renders — a second copy of
+// this logic is how the recap came to say #2 while the board said #3 (it
+// scored archived cards the board doesn't). `keep(p)` is the row filter: the
+// board passes its mode/scope, the recap passes a date cutoff. Returns the
+// deduped users sorted exactly as the board sorts them.
+function _lbScoreUsers(rows,keep){
+  var users={};
+  rows.forEach(function(p){
+    if(keep&&!keep(p))return;
+    var uid=p.user_id||p.nickname||"unknown";
+    if(!users[uid])users[uid]={nickname:p.nickname||"",user_id:p.user_id||null,correct:0,total:0,methods:0,fotn:0,dogPts:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
+    // Rows are newest-first, but the freshest row can carry a blank nickname (a
+    // pick synced before the name was set), which would render an empty row.
+    // Backfill from any row of the same user that does have a name.
+    else if(!String(users[uid].nickname||"").trim()&&p.nickname&&String(p.nickname).trim())users[uid].nickname=p.nickname;
+    var fight=null;
+    for(var i=0;i<EVENTS.length;i++){
+      if(EVENTS[i].date===p.event_date){
+        for(var j=0;j<EVENTS[i].fights.length;j++){
+          var f=EVENTS[i].fights[j];
+          if(nmBout(f,p.f1,p.f2)){fight=f;break;}
+        }
+        if(fight)break;
+      }
+    }
+    var result=null;
+    var methodCorrect=false;
+    var pickedMethod=p.method||"";
+    // The underdog bonus this pick is worth if it lands, computed from the line
+    // on the card (which is frozen at the closing line once the event is over,
+    // so every device replays the same score).
+    var dogPts=fight?dogPtsForPick(fight.odds,fight.f1.n,fight.f2.n,p.pick):0;
+    users[uid].total++;
+    if(fight&&fight.winner){
+      if(nmEq(fight.winner,p.pick)){
+        users[uid].correct++;result=true;users[uid].dogPts+=dogPts;
+        console.log("[lb score]",p.f1,"vs",p.f2,"→ winner match. p.method="+JSON.stringify(p.method)+" fallback="+JSON.stringify(pickedMethod)+" fight.method="+JSON.stringify(fight.method));
+        if(scoreMethod(pickedMethod,fight.method||"")){users[uid].methods++;methodCorrect=true;}
+      }else{result=false;}
+    }
+    users[uid].picks.push({f1:p.f1,f2:p.f2,pick:p.pick,method:pickedMethod,result:result,methodCorrect:methodCorrect,dogPts:dogPts,evName:p.event_name,evDate:p.event_date});
+    if(p.bonus_pick)users[uid].bonusPicks[p.event_date]=p.bonus_pick;
+  });
+  // De-duplicate by name (keep higher pick count)
+  var seenNames={};
+  Object.keys(users).forEach(function(uid){
+    var base=_lbBaseName(users[uid].nickname);
+    if(!seenNames[base]){seenNames[base]=uid;}
+    else{
+      var prev=seenNames[base];
+      if(users[uid].total>users[prev].total){
+        if(users[uid].isMe||!users[prev].isMe){delete users[prev];seenNames[base]=uid;}
+        else{delete users[uid];}
+      }else{
+        if(users[prev].isMe||!users[uid].isMe){delete users[uid];}
+        else{delete users[prev];seenNames[base]=uid;}
+      }
+    }
+  });
+  // Compute streak + accuracy per user
+  Object.values(users).forEach(function(u){
+    var resolved=u.picks.filter(function(p){return p.result!==null;}).sort(function(a,b){return a.evDate<b.evDate?-1:1;});
+    var best=0,cur=0;
+    resolved.forEach(function(p){if(p.result===true){cur++;if(cur>best)best=cur;}else{cur=0;}});
+    u.bestStreak=best;
+    var desc=resolved.slice().reverse(),streak=0;
+    for(var j=0;j<desc.length;j++){if(desc[j].result===true)streak++;else break;}
+    u.currentStreak=streak;
+    u.accuracy=resolved.length>0?Math.round(u.correct/resolved.length*100):null;
+  });
+  // Score bonus picks (FOTN/POTN)
+  Object.values(users).forEach(function(u){
+    u.fotn=0;
+    Object.keys(u.bonusPicks).forEach(function(evDate){
+      var ev=null;
+      for(var i=0;i<EVENTS.length;i++){if(EVENTS[i].date===evDate){ev=EVENTS[i];break;}}
+      if(ev&&ev.fotn&&u.bonusPicks[evDate]===ev.fotn)u.fotn++;
+    });
+  });
+  return Object.values(users).sort(function(a,b){
+    var pa=userPts(a),pb=userPts(b);
+    if(pa!==pb)return pb-pa;                                  // 1) most points
+    var aa=a.accuracy==null?-1:a.accuracy,ab=b.accuracy==null?-1:b.accuracy;
+    if(aa!==ab)return ab-aa;                                  // 2) tiebreak: higher pick %
+    return b.total-a.total;                                   // 3) then more picks made
+  });
+}
 var _lbRows=null;   // raw picks rows from the last leaderboard fetch
 function loadLeaderboard(isLive){
   var body=document.getElementById("lbBody");
@@ -7520,89 +7598,12 @@ function loadLeaderboard(isLive){
       body.innerHTML='<div class="lb-empty">No active event right now.<br>Switch to All-Time to see standings.</div>';
       return;
     }
-    var users={};
-    rows.forEach(function(p){
-      if(lbMode==="current"&&p.event_date!==nextEv.date)return;
+    var sorted=_lbScoreUsers(rows,function(p){
+      if(lbMode==="current"&&p.event_date!==nextEv.date)return false;
       // Scope filter runs before the user object exists, so someone whose only
       // picks are prelims drops off the main-card board entirely rather than
       // appearing on it with a zero.
-      if(!_pickInScope(p))return;
-      var uid=p.user_id||p.nickname||"unknown";
-      if(!users[uid])users[uid]={nickname:p.nickname||"",user_id:p.user_id||null,correct:0,total:0,methods:0,fotn:0,dogPts:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
-      // Rows are newest-first, but the freshest row can carry a blank nickname (a
-      // pick synced before the name was set), which would render an empty row.
-      // Backfill from any row of the same user that does have a name.
-      else if(!String(users[uid].nickname||"").trim()&&p.nickname&&String(p.nickname).trim())users[uid].nickname=p.nickname;
-      var fight=null;
-      for(var i=0;i<EVENTS.length;i++){
-        if(EVENTS[i].date===p.event_date){
-          for(var j=0;j<EVENTS[i].fights.length;j++){
-            var f=EVENTS[i].fights[j];
-            if(nmBout(f,p.f1,p.f2)){fight=f;break;}
-          }
-          if(fight)break;
-        }
-      }
-      var result=null;
-      var methodCorrect=false;
-      var pickedMethod=p.method||"";
-      // The underdog bonus this pick is worth if it lands, computed from the line
-      // on the card (which is frozen at the closing line once the event is over,
-      // so every device replays the same score).
-      var dogPts=fight?dogPtsForPick(fight.odds,fight.f1.n,fight.f2.n,p.pick):0;
-      users[uid].total++;
-      if(fight&&fight.winner){
-        if(nmEq(fight.winner,p.pick)){
-          users[uid].correct++;result=true;users[uid].dogPts+=dogPts;
-          console.log("[lb score]",p.f1,"vs",p.f2,"→ winner match. p.method="+JSON.stringify(p.method)+" fallback="+JSON.stringify(pickedMethod)+" fight.method="+JSON.stringify(fight.method));
-          if(scoreMethod(pickedMethod,fight.method||"")){users[uid].methods++;methodCorrect=true;}
-        }else{result=false;}
-      }
-      users[uid].picks.push({f1:p.f1,f2:p.f2,pick:p.pick,method:pickedMethod,result:result,methodCorrect:methodCorrect,dogPts:dogPts,evName:p.event_name,evDate:p.event_date});
-      if(p.bonus_pick)users[uid].bonusPicks[p.event_date]=p.bonus_pick;
-    });
-    // De-duplicate by name (keep higher pick count)
-    var seenNames={};
-    Object.keys(users).forEach(function(uid){
-      var base=_lbBaseName(users[uid].nickname);
-      if(!seenNames[base]){seenNames[base]=uid;}
-      else{
-        var prev=seenNames[base];
-        if(users[uid].total>users[prev].total){
-          if(users[uid].isMe||!users[prev].isMe){delete users[prev];seenNames[base]=uid;}
-          else{delete users[uid];}
-        }else{
-          if(users[prev].isMe||!users[uid].isMe){delete users[uid];}
-          else{delete users[prev];seenNames[base]=uid;}
-        }
-      }
-    });
-    // Compute streak + accuracy per user
-    Object.values(users).forEach(function(u){
-      var resolved=u.picks.filter(function(p){return p.result!==null;}).sort(function(a,b){return a.evDate<b.evDate?-1:1;});
-      var best=0,cur=0;
-      resolved.forEach(function(p){if(p.result===true){cur++;if(cur>best)best=cur;}else{cur=0;}});
-      u.bestStreak=best;
-      var desc=resolved.slice().reverse(),streak=0;
-      for(var j=0;j<desc.length;j++){if(desc[j].result===true)streak++;else break;}
-      u.currentStreak=streak;
-      u.accuracy=resolved.length>0?Math.round(u.correct/resolved.length*100):null;
-    });
-    // Score bonus picks (FOTN/POTN)
-    Object.values(users).forEach(function(u){
-      u.fotn=0;
-      Object.keys(u.bonusPicks).forEach(function(evDate){
-        var ev=null;
-        for(var i=0;i<EVENTS.length;i++){if(EVENTS[i].date===evDate){ev=EVENTS[i];break;}}
-        if(ev&&ev.fotn&&u.bonusPicks[evDate]===ev.fotn)u.fotn++;
-      });
-    });
-    var sorted=Object.values(users).sort(function(a,b){
-      var pa=userPts(a),pb=userPts(b);
-      if(pa!==pb)return pb-pa;                                  // 1) most points
-      var aa=a.accuracy==null?-1:a.accuracy,ab=b.accuracy==null?-1:b.accuracy;
-      if(aa!==ab)return ab-aa;                                  // 2) tiebreak: higher pick %
-      return b.total-a.total;                                   // 3) then more picks made
+      return _pickInScope(p);
     });
     // Index picks per fight (from the DEDUPED users) for Fight Night LIVE fans, and publish
     // _lbSorted now so the live view has data even when a panel early-return fires below.
