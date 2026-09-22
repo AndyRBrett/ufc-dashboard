@@ -1,39 +1,11 @@
 {
-  "generated_at": "2026-09-22T21:28:15Z",
+  "generated_at": "2026-09-22T22:33:21Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 7
+    "warn": 3
   },
   "findings": [
-    {
-      "severity": "WARN",
-      "check": "start-time-changed",
-      "message": "UFC Fight Night: Moicano vs. Nolan (39d out): main-card start moved 17:00 \u2192 20:00 ET",
-      "event": "UFC Fight Night: Moicano vs. Nolan",
-      "date": "2026-10-31"
-    },
-    {
-      "severity": "WARN",
-      "check": "start-time-changed",
-      "message": "UFC Fight Night: Moicano vs. Nolan (39d out): prelim start moved 14:00 \u2192 17:00 ET",
-      "event": "UFC Fight Night: Moicano vs. Nolan",
-      "date": "2026-10-31"
-    },
-    {
-      "severity": "WARN",
-      "check": "start-time-changed",
-      "message": "UFC Fight Night: Bonfim vs. Brady (46d out): main-card start moved 17:00 \u2192 20:00 ET",
-      "event": "UFC Fight Night: Bonfim vs. Brady",
-      "date": "2026-11-07"
-    },
-    {
-      "severity": "WARN",
-      "check": "start-time-changed",
-      "message": "UFC Fight Night: Bonfim vs. Brady (46d out): prelim start moved 14:00 \u2192 17:00 ET",
-      "event": "UFC Fight Night: Bonfim vs. Brady",
-      "date": "2026-11-07"
-    },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
