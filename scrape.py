@@ -510,6 +510,10 @@ _US_REGIONS = re.compile(
     r"Los Angeles|Dallas|Fort Worth|Arlington|Atlantic City|Uncasville|"
     r"Lincoln|Raleigh|Greenville|Norfolk|Rochester|Wichita|Tulsa|Spokane|"
     r"Stockton|Sunrise|Bakersfield|Fairfax|Broomfield|Cedar Park|"
+    # The UFC's own Las Vegas studio, under both names. The venue parser's old
+    # cell-attribute bug shifted "Meta Apex" into loc; anchoring the venue name
+    # means that shape still reads as Las Vegas instead of unverified.
+    r"Meta Apex|UFC Apex|"
     # Canada uses the same fixed-ET broadcast slots
     r"Canada|Vancouver|Toronto|Montreal|Edmonton|Calgary|Ottawa|Winnipeg|"
     r"Quebec City|Halifax|Saskatoon|Ontario)\b",
@@ -942,12 +946,25 @@ def resolve_event_times(ev_name, ev_date, default_main, default_prelim, loc=""):
     return default_main, default_prelim
 
 
+_CELL_ATTR_RE = re.compile(
+    r"\b(?:rowspan|colspan|style|class|align|valign|width|bgcolor|scope|"
+    r"data-sort-value)\s*=\s*(?:\"[^\"]*\"|'[^']*'|[^\s|]+)",
+    re.IGNORECASE,
+)
+_ROWSPAN_RE = re.compile(r"\browspan\s*=\s*[\"']?(\d+)", re.IGNORECASE)
+
+
 def _infer_venue_loc_from_row(row, after_pos):
     """
     Extract venue and location from the row text after the event link position.
     Strips wikitext markup and tries to find a 'Venue, City' pattern.
     """
     tail = clean_wiki(row[after_pos:])
+    # Wikitable cell attributes (`rowspan="2" | Meta Apex`, `style="..." |`)
+    # survive clean_wiki as their own cell. Left in, the attribute became the
+    # venue and pushed the venue into loc — the Nov 7 card shipped as
+    # 'rowspan="2", Meta Apex', which also left its start time unanchored.
+    tail = _CELL_ATTR_RE.sub("", tail)
     # Remove date-like strings, standalone numbers, and TBD
     tail = re.sub(r"\b(TBD|N/A|\d{4,})\b", "", tail)
     tail = re.sub(r"\s+", " ", tail).strip().strip("|").strip()
@@ -971,7 +988,12 @@ def _parse_event_table_rows(wt, now, seen):
     """
     results = []
     all_rows = re.split(r"^\s*\|-", wt, flags=re.MULTILINE)
+    carry = None   # (venue, loc, rows still covered) from a rowspan venue cell
     for row in all_rows:
+        # Every table row consumes one row of an open rowspan, including rows
+        # skipped below (out of window, already seen) — count it up front.
+        inherit = carry if carry and carry[2] > 0 else None
+        carry = (carry[0], carry[1], carry[2] - 1) if inherit else None
         # Search the whole row for a date and a UFC link — no cell splitting needed
         ev_date = parse_date_wiki(row)
         if not ev_date:
@@ -1014,6 +1036,13 @@ def _parse_event_table_rows(wt, now, seen):
 
         # Best-effort venue/location: strip wikitext from the row and split on commas
         venue, loc = _infer_venue_loc_from_row(row, after_pos)
+        # A venue cell with rowspan=N covers the next N-1 rows too, and those
+        # rows carry no venue cells of their own — inherit it instead of TBD.
+        span = _ROWSPAN_RE.search(row[after_pos:])
+        if venue == "TBD" and inherit:
+            venue, loc = inherit[0], inherit[1]
+        elif span and venue != "TBD":
+            carry = (venue, loc, int(span.group(1)) - 1)
 
         seen.add(slug)
         results.append((ev_date, slug, asc(ev_name), venue, loc))

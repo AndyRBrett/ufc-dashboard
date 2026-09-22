@@ -100,6 +100,11 @@ EVENT_RE = re.compile(r'name:"([^"]+)",\s*\n\s*date:"(\d{4}-\d{2}-\d{2})"')
 # The clock fields, read per-event segment. Optional by design: an event that
 # predates them, or one written without a prelim slot, must still parse.
 LOC_RE        = re.compile(r'\n\s*loc:"([^"]*)"')
+# Venue is JSON-escaped on write, so markup that leaked into it (the reason this
+# field is read at all) arrives with \" inside — match escapes, not just [^"].
+VENUE_RE      = re.compile(r'\n\s*venue:"((?:[^"\\]|\\.)*)"')
+# Wikitext that must never reach the event card's venue line.
+VENUE_MARKUP_RE = re.compile(r'=|\||\{\{|\}\}|\[\[|\\"')
 TIME_RE       = re.compile(r'\n\s*time:"([^"]*)"')
 PRELIM_TIME_RE = re.compile(r'\n\s*prelimTime:"([^"]*)"')
 # One serialised bout, as written by events_js.
@@ -143,6 +148,7 @@ def parse_data(text):
 
         events.append({
             "name": m.group(1), "date": m.group(2), "fights": fights,
+            "venue": field(VENUE_RE),
             "loc": field(LOC_RE),
             "time": field(TIME_RE),
             "prelimTime": field(PRELIM_TIME_RE),
@@ -331,6 +337,21 @@ def check(text, baseline_text=None, now=None, odds_state=None):
                         f"{ev['name']} dropped from {before} bouts to "
                         f"{after_} — refusing to publish a shrunken card",
                         event=ev["name"], date=ev["date"])
+
+    # --- venue text -------------------------------------------------------
+    #
+    # The Nov 7 card shipped with venue 'rowspan="2"' and its real venue shoved
+    # into loc: the wikitable cell attribute was parsed as a cell. Users saw the
+    # markup on the card, and the shifted loc also left the start time
+    # unanchored. WARN — it is a display gap, not a reason to hold results.
+    for ev in upcoming:
+        bad = [f"{k} {ev[k]!r}" for k in ("venue", "loc")
+               if VENUE_MARKUP_RE.search(ev.get(k) or "")]
+        if bad:
+            add("WARN", "venue-markup",
+                f"{ev['name']}: wikitext leaked into the location line "
+                f"({', '.join(bad)}) — users see it on the event card",
+                event=ev["name"], date=ev["date"])
 
     # --- start times ------------------------------------------------------
     #

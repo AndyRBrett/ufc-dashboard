@@ -26,7 +26,7 @@ def fight(f1, f2, *, f1r="10-0-0", f2r="9-1-0", odds='{f1:-150,f2:130}',
 
 
 def data_js(events, stats="{}", loc="Las Vegas", time="20:00", prelim="17:00",
-            rankings="{}"):
+            rankings="{}", venue="Apex"):
     """Build a data.js whose shape matches what events_js actually serialises.
 
     time/prelimTime are written by default because events_js always writes them
@@ -37,7 +37,7 @@ def data_js(events, stats="{}", loc="Las Vegas", time="20:00", prelim="17:00",
     for name, date, fights in events:
         blocks.append(
             f'  {{\n    name:"{name}",\n    date:"{date}",\n'
-            f'    venue:"Apex",\n    loc:"{loc}",\n'
+            f'    venue:"{venue}",\n    loc:"{loc}",\n'
             f'    tv:"Paramount+",\n    time:"{time}",\n    prelimTime:"{prelim}",\n'
             f'    fights:[\n      ' + ",\n      ".join(fights) + "\n    ]\n  }"
         )
@@ -342,6 +342,25 @@ def test_known_venue_does_not_warn_as_unanchored():
             data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])],
                     loc=loc), now=NOW)
         assert "start-time-unanchored" not in kinds(findings), loc
+
+
+def test_wikitext_in_the_venue_warns():
+    """Nov 7 shipped as venue 'rowspan="2"', loc 'Meta Apex' — a table cell
+    attribute parsed as the venue, visible on the card."""
+    text = data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])],
+                   venue='rowspan=\\"2\\"', loc="Meta Apex")
+    findings, summary = health.check(text, now=NOW)
+    msgs = [f["message"] for f in findings if f["check"] == "venue-markup"]
+    assert msgs and "rowspan" in msgs[0], findings
+    assert summary["block"] == 0
+
+
+def test_clean_venue_does_not_warn_as_markup():
+    for venue in ("Meta Apex", "TBD", "Madison Square Garden"):
+        findings, _ = health.check(
+            data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])],
+                    venue=venue), now=NOW)
+        assert "venue-markup" not in kinds(findings), venue
 
 
 def test_start_time_change_against_the_baseline_warns():
