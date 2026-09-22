@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-22T09:02:59Z",
+  "generated_at": "2026-09-22T10:07:50Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -10128,7 +10128,7 @@
           "f1": "Rodolfo Bellato",
           "f2": "Christian Edwards",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10184,6 +10184,11 @@
               "at": "2026-09-21T14:27:49Z",
               "f1_odds": -177,
               "f2_odds": 146
+            },
+            {
+              "at": "2026-09-22T10:07:49Z",
+              "f1_odds": -178,
+              "f2_odds": 148
             }
           ],
           "open": {
@@ -14750,7 +14755,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Christian Edwards",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -160,
         "close": null,
         "clv": null
@@ -14761,7 +14766,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rodolfo Bellato",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 136,
         "close": null,
         "clv": null
