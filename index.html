@@ -2802,6 +2802,7 @@ function fetchCommunityPicks(){
     if(!Array.isArray(rows))return;
     _commRows=rows;   // activity feed derives lock-ins/streaks/belt from the same rows
     try{checkCardRecap(rows);}catch(e){console.warn("[recap]",e);}
+    try{checkWrappedPopup(rows);}catch(e){console.warn("[wrapped]",e);}
     // One name = one vote per fight. Stale duplicate identities (a user whose
     // device storage reset gets a new user_id but keeps their nickname) leave
     // ghost rows that the leaderboard de-dupes by base name — mirror that here
@@ -5768,7 +5769,7 @@ var WHATS_NEW=[
   {id:"2026-09-22-every-card-all-time",emoji:"📊",title:"All-Time now counts every card",
    desc:"The All-Time board was only scoring the last four cards — picks from older events were counted but never scored. Every card since June counts now, the same history Title History already used, so expect the standings to move. Older cards have no betting lines on record, so they score no underdog bonus."},
   {id:"2026-09-22-year-wrapped",emoji:"🎁",title:"Your Year Wrapped",
-   desc:"Your year of picks as a swipe-through story: cards played, hit rate against the group, best night, biggest upset, longest heater, your ride-or-die fighter, pick twin and nemesis, title reigns, and your pick personality. More → Year Wrapped, or Ranks → Your Wrapped. Tap Share on the last slide to brag."}
+   desc:"Your year of picks as a swipe-through story: cards played, hit rate against the group, best night, biggest upset, longest heater, your ride-or-die fighter, pick twin and nemesis, title reigns, and your pick personality. It pops up by itself once every December; any time before that, More → Year Wrapped or Ranks → Your Wrapped. Tap Share on the last slide to brag."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -7465,6 +7466,7 @@ function closeCardRecap(){
   try{if(d&&(localStorage.getItem(RECAP_SEEN_KEY)||"")<d)localStorage.setItem(RECAP_SEEN_KEY,d);}catch(e){}
   try{if(_recapPrevFocus&&document.documentElement.contains(_recapPrevFocus))_recapPrevFocus.focus();}catch(e){}
   _recapPrevFocus=null;
+  _wrappedAfterOverlay();
 }
 // With backdrop and Escape gone, a keyboard user must never be able to Tab
 // out into the page behind: cycle between the X and "Got it", as What's New does.
@@ -7496,7 +7498,7 @@ function checkCardRecap(rows){
   openCardRecap(date);
 }
 function _recapAfterWn(){
-  if(!_recapQueued)return;
+  if(!_recapQueued){_wrappedAfterOverlay();return;}   // a recap goes first; Wrapped follows it
   var d=_recapQueued;_recapQueued=null;
   if(!_anyOverlayOpen())setTimeout(function(){openCardRecap(d);},400);
 }
@@ -7673,6 +7675,17 @@ function computeYearWrapped(rows,year,myBase){
     archetype:_wrArchetype(stats)
   };
 }
+// The December popup: once a year, like the real thing. Due only in December
+// (the viewer's local calendar), only for the year being lived — a player
+// whose last scored pick was last year gets no popup about it — and only
+// until this browser has checkpointed that year.
+var WRAPPED_SEEN_KEY="ufc_wrapped_seen";
+function wrappedPopupDue(rows,myBase,now,seen){
+  if(!myBase||!now||now.getMonth()!==11)return null;
+  var y=String(now.getFullYear());
+  if((seen||"")>=y)return null;
+  return wrappedYear(rows,myBase)===y?y:null;
+}
 // year-wrapped:end
 // year-wrapped-ui:start
 // Story-style: one stat per slide, tap the right side (or →) for the next,
@@ -7806,10 +7819,38 @@ function closeWrapped(){
   var ov=document.getElementById("wr-overlay");
   if(!ov||!ov.classList.contains("open"))return;
   ov.classList.remove("open");
+  // Seen in December = this year's popup is done, whether it auto-opened or
+  // was opened by hand. Earlier in the year it's not: the year isn't over, and
+  // an October look must not swallow December's.
+  var now=new Date();
+  if(_wrData&&now.getMonth()===11&&_wrData.year===String(now.getFullYear()))
+    try{localStorage.setItem(WRAPPED_SEEN_KEY,_wrData.year);}catch(e){}
   if(_wrLocked)unlockScroll();
   _wrLocked=false;
   try{if(_wrPrevFocus&&document.documentElement.contains(_wrPrevFocus))_wrPrevFocus.focus();}catch(e){}
   _wrPrevFocus=null;
+}
+// Auto-show once in December, fed by the boot-time community fetch (no extra
+// request). Never over another overlay: behind What's New or a card recap it
+// waits its turn, and either one's close releases it.
+var _wrQueued=false;
+function _wrOverlayUp(id){var e=document.getElementById(id);return !!(e&&e.classList.contains("open"));}
+function checkWrappedPopup(rows){
+  if(!userName)return;
+  var seen="";try{seen=localStorage.getItem(WRAPPED_SEEN_KEY)||"";}catch(e){}
+  if(!wrappedPopupDue(rows,_lbBaseName(userName),new Date(),seen))return;
+  if(_wrOverlayUp("wr-overlay"))return;
+  if(_wrOverlayUp("wn-overlay")||_wrOverlayUp("recap-overlay")||_recapQueued){_wrQueued=true;return;}
+  if(_anyOverlayOpen())return;
+  openWrapped();
+}
+function _wrappedAfterOverlay(){
+  if(!_wrQueued)return;
+  _wrQueued=false;
+  setTimeout(function(){
+    if(_anyOverlayOpen()||_wrOverlayUp("wn-overlay")||_wrOverlayUp("recap-overlay"))return;
+    openWrapped();
+  },400);
 }
 // year-wrapped-ui:end
 

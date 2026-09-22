@@ -221,6 +221,29 @@ check("nemesis is the lowest agreement rate (Bob)", ann.nemesis && /Bob/.test(an
     /#\d+ of 3/.test(ctx._wrShareText(ann)) && ctx._wrShareText(ann).includes(ann.archetype.name));
 }
 
+// --- the December popup ------------------------------------------------------
+{
+  const due = (m, d, seen, r) => ctx.wrappedPopupDue(r || rows, "ann", new Date(2026, m, d, 12), seen);
+  check("due in December for the year being lived", due(11, 1, "") === "2026" && due(11, 31, null) === "2026");
+  check("not due in November or January", due(10, 30, "") === null && ctx.wrappedPopupDue(rows, "ann", new Date(2027, 0, 2, 12), "") === null);
+  check("once a year: a checkpointed year is not shown again", due(11, 15, "2026") === null);
+  check("last year's checkpoint doesn't block this year", due(11, 15, "2025") === "2026");
+  check("no scored pick this year, no popup", due(11, 15, "", rows.filter((p) => p.event_date === OLD)) === null);
+  check("no name, no popup", ctx.wrappedPopupDue(rows, "", new Date(2026, 11, 5), "") === null);
+  const cw = fn("closeWrapped");
+  check("closing in December checkpoints the year (auto-opened or by hand)",
+    /getMonth\(\)===11/.test(cw) && /WRAPPED_SEEN_KEY/.test(cw));
+  const cp = fn("checkWrappedPopup");
+  check("the popup waits behind What's New and a card recap instead of stacking",
+    /wn-overlay/.test(cp) && /recap-overlay/.test(cp) && /_recapQueued/.test(cp) && /_wrQueued=true/.test(cp));
+  check("closing What's New or the recap releases a queued Wrapped",
+    /_wrappedAfterOverlay\(\)/.test(fn("_recapAfterWn")) && /_wrappedAfterOverlay\(\)/.test(fn("closeCardRecap")) &&
+    /_recapAfterWn\(\)/.test(fn("closeWhatsNew")));
+  const f = fn("fetchCommunityPicks");
+  check("fed by the boot-time community fetch, after the recap check",
+    /checkCardRecap\(rows\)[\s\S]*checkWrappedPopup\(rows\)/.test(f));
+}
+
 // --- one scorer, not three -------------------------------------------------
 {
   const cw = fn("computeYearWrapped");
