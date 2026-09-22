@@ -105,6 +105,20 @@ setEvents([card1]);
     tie.me.cardRank === 2 && tie.standings.filter((u) => u.rank === 2).length === 2);
 }
 
+// --- a cancelled bout is not a miss --------------------------------------
+{
+  // Bout 4 finished with no winner (cancelled / no contest). It is in the
+  // board's u.total with a null result; the recap's record must not count it.
+  const cx = Object.assign({}, card1, { fights: card1.fights.concat([
+    Object.assign(bout("A4", "B4"), { state: "post" }),
+  ]) });
+  setEvents([cx]);
+  const r = recap(rows1.concat([pick("Ann", C1, "A4", "B4", "A4")]), C1, "ann");
+  check("a cancelled bout leaves the record consistent with the perfect flag",
+    r.me.perfect === true && r.me.correct === 3 && r.me.total === 3);
+  setEvents([card1]);
+}
+
 // --- stale duplicate identities count once ---------------------------------
 {
   // Bob's picks also exist under an old user_id: the same winning pick

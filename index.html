@@ -7276,7 +7276,10 @@ function computeCardRecap(rows,date,myBase){
       }
     });
     var base=_lbBaseName(u.nickname);
-    return {base:base,name:u.nickname,pts:userPts(u),correct:u.correct,total:u.total,
+    // `total` is the SCORED picks, not u.total: a cancelled or no-contest bout
+    // is in u.total with a null result, and counting it would print "Perfect
+    // card!" beside "11 / 12". Same denominator as the board's accuracy %.
+    return {base:base,name:u.nickname,pts:userPts(u),correct:u.correct,total:resolved.length,
             rank:cardRank[base],upset:upset,
             perfect:resolved.length>=3&&resolved.every(function(p){return p.result===true;})};
   });
