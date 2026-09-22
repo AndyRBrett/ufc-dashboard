@@ -195,32 +195,39 @@ setEvents([card1, card2]);
   setEvents([card1, card2]);
 }
 
-// --- the recap's ranks ARE the board's ranks -----------------------------
+// --- the recap's ranks ARE the board's ranks, and All-Time is every card ---
 {
-  // The real bug: Zed dominates an ARCHIVED card (in RESULTS_ARCHIVE, gone
-  // from EVENTS). The board doesn't score archived cards, so the recap must
-  // not either — counting it put a player a rank above where the board had
-  // them.
+  // Zed's biggest night is on an ARCHIVED card (in RESULTS_ARCHIVE, gone from
+  // EVENTS). All-Time counts every card captured, so the board scores it —
+  // it used to skip it, leaving those picks counted but never scored — and the
+  // recap, reading the board, must rank Zed exactly where the board does.
   const OLD = "2026-08-01";
   ctx.RESULTS_ARCHIVE = { [OLD]: { name: "UFC Old", fights: [
     { f1: "X1", f2: "Y1", winner: "X1", method: "KO/TKO" },
     { f1: "X2", f2: "Y2", winner: "X2", method: "KO/TKO" },
-    { f1: "X3", f2: "Y3", winner: "X3", method: "KO/TKO" },
+    { f1: "X3", f2: "Y3", winner: "X3", method: "Decision (Unanimous)" },
   ] } };
   setEvents([card1, card2]);
   const rows = rows2.concat([
-    pick("Zed", OLD, "X1", "Y1", "X1"), pick("Zed", OLD, "X2", "Y2", "X2"), pick("Zed", OLD, "X3", "Y3", "X3"),
-    pick("Zed", C2, "C1", "D1", "C1"),
+    pick("Zed", OLD, "X1", "Y1", "X1", { method: "KO/TKO" }), pick("Zed", OLD, "Y2", "X2", "X2"), pick("Zed", OLD, "X3", "Y3", "Y3"),
+    pick("Zed", C2, "C1", "D1", "C1"), pick("Zed", C2, "C2", "D2", "C2"), pick("Zed", C2, "C3", "D3", "C3"), pick("Zed", C2, "C4", "D4", "C4"),
   ]);
   const board = ctx._lbScoreUsers(ctx._recapBoardOrder(rows), null);
+  const zed = board.find((u) => /Zed/.test(u.nickname));
+  // Archive: 2 winners (corners flipped on one) + a KO/TKO method = 2.5, no dog
+  // points (no line on record). EVENTS card: 4. Total 6.5.
+  check("All-Time scores archived cards (winners + method, corner-order-agnostic, no dog bonus)",
+    zed && zed.correct === 6 && zed.methods === 1 && zed.dogPts === 0 && ctx.userPts(zed) === 6.5);
+  check("an archived miss is scored as a miss, not left unresolved",
+    zed.picks.filter((p) => p.result === false).length === 1 && zed.picks.every((p) => p.result !== null));
   const boardRank = {};
   board.forEach((u) => { boardRank[ctx._lbBaseName(u.nickname)] = 1 + board.filter((v) => ctx.userPts(v) > ctx.userPts(u)).length; });
   const r = recap(rows, C2, "zed");
-  check("an archived card the board doesn't score doesn't lift the recap's rank",
-    r.me.rankAfter === boardRank.zed && r.me.rankAfter === 3);
+  check("the recap ranks an archive-heavy player where the board does (#1)",
+    r.me.rankAfter === boardRank.zed && r.me.rankAfter === 1);
   check("every player's recap rank equals their leaderboard rank",
     ["ann", "bob", "zed"].every((b) => recap(rows, C2, b).me.rankAfter === boardRank[b]));
-  check("an archive-only card is never recapped (the board would show it unscored)",
+  check("an archive-only card is never recapped (no closing lines to read)",
     ctx.latestRecapDate([pick("Zed", OLD, "X1", "Y1", "X1")]) === null);
   ctx.RESULTS_ARCHIVE = {};
 }

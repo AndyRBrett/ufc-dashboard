@@ -5708,7 +5708,9 @@ var WHATS_NEW=[
   {id:"2026-09-20-roasts-off-the-leash",emoji:"🤬",title:"Trash talk lost its manners",
    desc:"Roasts are written by a different model now, and it swears. Same one-line burns, same personas, same typed angle — just no longer sanded down into something you could read out at a family dinner. Nothing changed for fight breakdowns or parlays."},
   {id:"2026-09-22-card-recap",emoji:"📋",title:"Card Recap",
-   desc:"When a card wraps, you get your night in one sheet: who won (or kept) the title, your points and card rank, how far you moved on the all-time board, your best upset, and a nod if you went perfect. Missed it? Ranks → Card Recap brings it back."}
+   desc:"When a card wraps, you get your night in one sheet: who won (or kept) the title, your points and card rank, how far you moved on the all-time board, your best upset, and a nod if you went perfect. Missed it? Ranks → Card Recap brings it back."},
+  {id:"2026-09-22-every-card-all-time",emoji:"📊",title:"All-Time now counts every card",
+   desc:"The All-Time board was only scoring the last four cards — picks from older events were counted but never scored. Every card since June counts now, the same history Title History already used, so expect the standings to move. Older cards have no betting lines on record, so they score no underdog bonus."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -7211,8 +7213,8 @@ function computeBeltLineage(rows){
 //     sort order), so the recap's rank is the rank the board shows;
 //   - the title comes from computeBeltLineage on the raw rows, exactly as
 //     Title History computes it.
-// The first version scored its own way — it also counted archived cards the
-// board does not — and told a player they held #2 while the board had them #3.
+// The first version scored its own way — it counted archived cards the board
+// then skipped — and told a player they held #2 while the board had them #3.
 var RECAP_SEEN_KEY="ufc_recap_seen";
 var RECAP_WINDOW_DAYS=4;   // auto-show only for a card finished this recently
 // Tie-aware rank on the board's points (1,1,3,…), keyed by base name.
@@ -7234,8 +7236,9 @@ function _recapEvName(date){
   if(ev)return ev.name;
   return RESULTS_ARCHIVE[date]?RESULTS_ARCHIVE[date].name:"";
 }
-// The board scores results from EVENTS only, so a card is recappable only
-// while it is still there — an archived card would show every pick unscored.
+// A card is recappable only while it is still in EVENTS: that is where its
+// closing lines live (best upset, underdog points), and the recap only
+// auto-shows within RECAP_WINDOW_DAYS anyway — far inside EVENTS' window.
 function latestRecapDate(rows){
   var best=null;
   (rows||[]).forEach(function(p){
@@ -7509,6 +7512,24 @@ function _lbScoreUsers(rows,keep){
           if(nmBout(f,p.f1,p.f2)){fight=f;break;}
         }
         if(fight)break;
+      }
+    }
+    // All-Time means every card captured, not just the ones still in EVENTS.
+    // data.js keeps only the last few past cards in EVENTS; older results live
+    // in RESULTS_ARCHIVE, and scoring EVENTS alone left ten cards of picks
+    // counted in `total` but never scored (31 of 173) while Title History, via
+    // _findFightResult, scored all of them. Same fallback rule as
+    // _findFightResult: any bout not found in EVENTS is looked up in the
+    // archive. Archived cards carry no line, so they earn no underdog bonus —
+    // exactly as the belt scores them.
+    if(!fight){
+      var arc=RESULTS_ARCHIVE[p.event_date];
+      if(arc&&arc.fights)for(var k=0;k<arc.fights.length;k++){
+        var af=arc.fights[k];
+        if((nmEq(af.f1,p.f1)&&nmEq(af.f2,p.f2))||(nmEq(af.f1,p.f2)&&nmEq(af.f2,p.f1))){
+          fight={f1:{n:af.f1},f2:{n:af.f2},winner:af.winner||"",method:af.method||"",odds:af.odds||null};
+          break;
+        }
       }
     }
     var result=null;
