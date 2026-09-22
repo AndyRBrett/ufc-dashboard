@@ -1,24 +1,22 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-09-22T17:05:20.261181+00:00",
+  "last_fetch_at": "2026-09-22T23:35:19.442088+00:00",
   "last_status": 200,
-  "lines_digest": "71516c7c5372f8a76cd5262262b83a5b026acd45",
+  "lines_digest": "487cf2d02d724c9dfbff72158582a147ecc50394",
   "markets": {
     "2026-09-22": {
       "fighters": [
-        "quissua",
-        "piwowarczyk",
-        "jr.",
-        "haig",
         "guaylupo",
         "connor",
         "moran",
         "degli",
         "dasuyev",
-        "ortega"
+        "ortega",
+        "jr.",
+        "haig"
       ],
-      "listed": 5,
-      "priced": 5
+      "listed": 4,
+      "priced": 4
     },
     "2026-09-25": {
       "fighters": [
@@ -26,13 +24,15 @@
         "eckerlin",
         "jungwirth",
         "holloway",
+        "ilbay",
+        "vach",
         "diakiese",
         "duric",
         "paulus",
         "lemberanskij"
       ],
-      "listed": 4,
-      "priced": 4
+      "listed": 5,
+      "priced": 5
     },
     "2026-09-26": {
       "fighters": [
@@ -175,25 +175,25 @@
       "priced": 1
     }
   },
-  "markets_at": "2026-09-22T17:05:20.261181+00:00",
+  "markets_at": "2026-09-22T23:35:19.442088+00:00",
   "next_event_days_out": 4,
   "providers": {
     "the-odds-api": {
-      "bouts": 42,
-      "last_fetch_at": "2026-09-22T17:05:20.261181+00:00",
-      "last_ok_at": "2026-09-22T17:05:20.261181+00:00",
+      "bouts": 41,
+      "last_fetch_at": "2026-09-22T23:35:19.442088+00:00",
+      "last_ok_at": "2026-09-22T23:35:19.442088+00:00",
       "last_status": 200,
       "provider": "the-odds-api:us2,uk,eu,au",
-      "requests_remaining": 39
+      "requests_remaining": 34
     },
     "the-odds-api-backup": {
-      "bouts": 41,
-      "last_fetch_at": "2026-09-22T17:05:20.261181+00:00",
-      "last_ok_at": "2026-09-22T17:05:20.261181+00:00",
+      "bouts": 42,
+      "last_fetch_at": "2026-09-22T23:35:19.442088+00:00",
+      "last_ok_at": "2026-09-22T23:35:19.442088+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 432
+      "requests_remaining": 431
     }
   },
-  "requests_remaining": 39
+  "requests_remaining": 34
 }
