@@ -1908,6 +1908,56 @@ def test_los_angeles_is_recognised_as_a_us_venue():
         ("21:00", "19:00")
 
 
+def test_meta_apex_is_recognised_as_a_us_venue():
+    assert scrape.classify_region("Meta Apex") == "us"
+    assert scrape.classify_region("UFC Apex") == "us"
+
+
+# --- event-list venue cells ------------------------------------------------
+
+_RS_TABLE = """{| class="wikitable"
+|-
+! Event !! Date !! Venue !! Location
+|-
+| [[UFC Fight Night: Bonfim vs. Brady]]
+| {{dts|2026|11|07}}
+| rowspan="2" | Meta Apex
+| rowspan="2" | Las Vegas, Nevada, U.S.
+|-
+| [[UFC Fight Night: Foo vs. Bar]]
+| {{dts|2026|11|14}}
+|-
+| [[UFC 340: A vs. B]]
+| {{dts|2026|11|21}}
+| style="text-align:center" | T-Mobile Arena
+| Las Vegas, Nevada, U.S.
+|-
+| [[UFC Fight Night: C vs. D]]
+| {{dts|2026|11|28}}
+| TBD
+| TBD
+|}"""
+
+
+def _rs_rows():
+    from datetime import datetime, timezone
+    now = datetime(2026, 9, 22, tzinfo=timezone.utc)
+    return {r[2]: (r[3], r[4]) for r in scrape._parse_event_table_rows(_RS_TABLE, now, set())}
+
+
+def test_cell_attribute_is_not_parsed_as_the_venue():
+    """Nov 7 shipped as venue 'rowspan="2"', loc 'Meta Apex'."""
+    rows = _rs_rows()
+    assert rows["UFC Fight Night: Bonfim vs. Brady"] == ("Meta Apex", "Las Vegas")
+    assert rows["UFC 340: A vs. B"] == ("T-Mobile Arena", "Las Vegas")
+
+
+def test_rowspan_venue_carries_to_the_row_it_covers_and_no_further():
+    rows = _rs_rows()
+    assert rows["UFC Fight Night: Foo vs. Bar"] == ("Meta Apex", "Las Vegas")
+    assert rows["UFC Fight Night: C vs. D"] == ("TBD", "TBD")
+
+
 def test_classify_region_labels_each_slot_family():
     assert scrape.classify_region("Las Vegas") == "us"
     assert scrape.classify_region("Edmonton") == "us"      # Canada shares the ET slots

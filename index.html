@@ -229,6 +229,24 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
    so it reads as part of the app, not a separate ad-style interstitial. */
 #wn-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
 #wn-overlay.open{display:flex}
+#recap-overlay{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+#recap-overlay.open{display:flex}
+#recap-panel{background:var(--card);border:1px solid var(--border2);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px 24px;position:relative;animation:slideUp .25s ease-out;max-height:85vh;display:flex;flex-direction:column}
+.rc-body{overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.rc-ev{font-size:12px;color:var(--muted);margin:-8px 0 2px}
+.rc-title{background:var(--btn-bg);border:1px solid var(--border2);border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center}
+.rc-title-em{font-size:26px;line-height:1}
+.rc-title-main{font:700 15px Inter,sans-serif;color:var(--text)}
+.rc-sub{font-size:12px;color:var(--muted2);line-height:1.4;margin-top:2px}
+.rc-sec{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.rc-stat{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--text);padding:5px 0;border-bottom:1px solid var(--border)}
+.rc-stat span:last-child{font-weight:600;text-align:right}
+.rc-up{color:#3fb950}.rc-down{color:var(--red)}
+.rc-row{display:flex;gap:8px;align-items:baseline;font-size:13px;padding:5px 2px;border-bottom:1px solid var(--border)}
+.rc-row.me{font-weight:700}
+.rc-rank{width:22px;color:var(--muted);flex-shrink:0}
+.rc-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rc-pts{color:var(--muted2);flex-shrink:0}
 #wn-panel{background:var(--card);border:1px solid var(--border2);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px 24px;position:relative;animation:slideUp .25s ease-out;max-height:80vh;display:flex;flex-direction:column}
 .wn-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-shrink:0}
 .wn-title{font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.06em;color:var(--text)}
@@ -2724,9 +2742,10 @@ function _sbFetchAll(query){
   return _ensureFreshToken().then(function(){return page(0,[],false);});
 }
 function fetchCommunityPicks(){
-  _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,method,nickname,user_id,updated_at&order=updated_at.asc,event_date.asc,f1.asc,f2.asc").then(function(rows){
+  _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,method,nickname,user_id,updated_at,bonus_pick&order=updated_at.asc,event_date.asc,f1.asc,f2.asc").then(function(rows){
     if(!Array.isArray(rows))return;
     _commRows=rows;   // activity feed derives lock-ins/streaks/belt from the same rows
+    try{checkCardRecap(rows);}catch(e){console.warn("[recap]",e);}
     // One name = one vote per fight. Stale duplicate identities (a user whose
     // device storage reset gets a new user_id but keeps their nickname) leave
     // ghost rows that the leaderboard de-dupes by base name — mirror that here
@@ -5687,7 +5706,9 @@ var WHATS_NEW=[
   {id:"2026-09-19-picks-restore",emoji:"↻",title:"Your picks follow your account",
    desc:"Picks were only ever uploaded, never downloaded — so a phone that lost its local copy showed an empty card while Ranks still listed every pick. They come back down now: sign in and the card fills itself in. A pick already on this phone is never overwritten."},
   {id:"2026-09-20-roasts-off-the-leash",emoji:"🤬",title:"Trash talk lost its manners",
-   desc:"Roasts are written by a different model now, and it swears. Same one-line burns, same personas, same typed angle — just no longer sanded down into something you could read out at a family dinner. Nothing changed for fight breakdowns or parlays."}
+   desc:"Roasts are written by a different model now, and it swears. Same one-line burns, same personas, same typed angle — just no longer sanded down into something you could read out at a family dinner. Nothing changed for fight breakdowns or parlays."},
+  {id:"2026-09-22-card-recap",emoji:"📋",title:"Card Recap",
+   desc:"When a card wraps, you get your night in one sheet: who won (or kept) the title, your points and card rank, how far you moved on the all-time board, your best upset, and a nod if you went perfect. Missed it? Ranks → Card Recap brings it back."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -5771,6 +5792,7 @@ function closeWhatsNew(){
     if(_wnPrevFocus&&document.documentElement.contains(_wnPrevFocus))_wnPrevFocus.focus();
   }catch(e){}
   _wnPrevFocus=null;
+  if(typeof _recapAfterWn==="function")_recapAfterWn();
 }
 // True if any REAL overlay is open. Deliberately checks only the ids
 // _escClosers already treats as dismissible overlays, not a blanket
@@ -7177,6 +7199,255 @@ function computeBeltLineage(rows){
           defenses:holder?cur.defenses:0,reigns:reigns};
 }
 
+// card-recap:start
+// Post-card recap: once a card is finished, each player sees how their night
+// went — points, card rank, all-time rank movement, best upset, a perfect-card
+// flag — and who left with the title. Everything is replayed from the same
+// pick rows and the same scoring the board and the belt use, so every phone
+// shows the same recap.
+//
+// Card points are the BELT's points (1 per winner, +0.5 method, + underdog
+// bonus; no FOTN), so the name at the top of the card list is always the one
+// the title block is talking about. The all-time rank adds FOTN back so it
+// matches the leaderboard's own rank.
+var RECAP_SEEN_KEY="ufc_recap_seen";
+var RECAP_WINDOW_DAYS=4;   // auto-show only for a card finished this recently
+function _recapFotnOk(date,pick){
+  if(!pick)return false;
+  for(var i=0;i<EVENTS.length;i++)if(EVENTS[i].date===date)return !!EVENTS[i].fotn&&EVENTS[i].fotn===pick;
+  return false;
+}
+function _recapRank(ptsByBase,base){
+  if(!(base in ptsByBase))return null;
+  var mine=ptsByBase[base],r=1;
+  Object.keys(ptsByBase).forEach(function(b){if(ptsByBase[b]>mine)r++;});
+  return r;   // tie-aware: everyone on equal points shares a rank, as on the board
+}
+function _recapEvName(date){
+  for(var i=0;i<EVENTS.length;i++)if(EVENTS[i].date===date)return EVENTS[i].name;
+  return RESULTS_ARCHIVE[date]?RESULTS_ARCHIVE[date].name:"";
+}
+// The most recent finished card anyone has a scored pick on, or null.
+function latestRecapDate(rows){
+  var best=null;
+  (rows||[]).forEach(function(p){
+    if(best&&p.event_date<=best)return;
+    if(!_eventFinished(p.event_date))return;
+    if(_findFightResult(p.event_date,p.f1,p.f2))best=p.event_date;
+  });
+  return best;
+}
+// One row per player per bout. A nickname can carry stale rows under an old
+// user_id (device storage reset), and both rows land on the same base name —
+// scored raw, that bout counts twice. Newest updated_at wins, the same rule
+// the community tally uses; the bout key is corner-order-agnostic.
+function _recapDedupe(rows){
+  var keep={},order=[];
+  (rows||[]).forEach(function(p){
+    var base=_lbBaseName(p.nickname);
+    if(!base)return;
+    var a=nmKey(p.f1),b=nmKey(p.f2);
+    var k=base+"|"+p.event_date+"|"+(a<b?a+"|"+b:b+"|"+a);
+    var cur=keep[k];
+    if(!cur){keep[k]=p;order.push(k);}
+    else if(String(p.updated_at||"")>=String(cur.updated_at||""))keep[k]=p;
+  });
+  return order.map(function(k){return keep[k];});
+}
+function computeCardRecap(rows,date,myBase){
+  var card={},before={},after={},fotnSeen={};
+  rows=_recapDedupe(rows);
+  rows.forEach(function(p){
+    if(p.event_date>date)return;
+    var base=_lbBaseName(p.nickname);
+    if(!base)return;
+    // FOTN is one bonus per player per card, however many rows carry it.
+    var fk=base+"|"+p.event_date;
+    if(p.bonus_pick&&!fotnSeen[fk]){
+      fotnSeen[fk]=true;
+      if(_recapFotnOk(p.event_date,p.bonus_pick)){
+        after[base]=(after[base]||0)+1;
+        if(p.event_date<date)before[base]=(before[base]||0)+1;
+      }
+    }
+    var res=_findFightResult(p.event_date,p.f1,p.f2);
+    if(!res)return;
+    var hit=nmEq(res.winner,p.pick);
+    var dog=hit?dogPtsForPick(res.odds,res.f1n,res.f2n,p.pick):0;
+    var pts=hit?1+(scoreMethod(p.method||"",res.method||"")?0.5:0)+dog:0;
+    after[base]=(after[base]||0)+pts;
+    if(p.event_date<date){before[base]=(before[base]||0)+pts;return;}
+    var u=card[base]||(card[base]={base:base,name:p.nickname,pts:0,correct:0,total:0,upset:null});
+    u.total++;
+    if(!hit)return;
+    u.correct++;u.pts+=pts;
+    // Best upset = the longest-priced winner they called. Only cards still in
+    // EVENTS carry a line, so an archived card simply has no upset to report.
+    var o=res.odds,line=null;
+    if(o){line=nmEq(p.pick,res.f1n)?o.f1:nmEq(p.pick,res.f2n)?o.f2:null;}
+    if(typeof line==="number"&&line>0&&(!u.upset||line>u.upset.line))
+      u.upset={pick:res.winner,opp:nmEq(res.winner,res.f1n)?res.f2n:res.f1n,line:line};
+  });
+  var standings=Object.keys(card).map(function(b){return card[b];});
+  if(!standings.length)return null;
+  standings.sort(function(a,b){return b.pts-a.pts||b.correct-a.correct||a.name.localeCompare(b.name);});
+  standings.forEach(function(u){u.perfect=u.total>=3&&u.correct===u.total;});
+  var cardPts={};standings.forEach(function(u){cardPts[u.base]=u.pts;});
+  // Tie-aware, like the board: equal points share a rank, so the list and
+  // "Card rank" under Your night can never disagree.
+  standings.forEach(function(u){u.rank=_recapRank(cardPts,u.base);});
+  var evName=_recapEvName(date);
+  var me=null;
+  if(myBase&&card[myBase]){
+    var m=card[myBase];
+    me={pts:m.pts,correct:m.correct,total:m.total,perfect:m.perfect,upset:m.upset,
+        cardRank:_recapRank(cardPts,myBase),of:standings.length,
+        rankBefore:_recapRank(before,myBase),rankAfter:_recapRank(after,myBase)};
+  }
+  // A card nobody scored on is a no-contest for the belt — don't report the
+  // standing champion as having "defended" on it.
+  var title=standings[0].pts>0?recapTitle(rows,date,evName):{kind:"none"};
+  return {date:date,evName:evName,standings:standings,me:me,title:title};
+}
+// What happened to the belt on this card, replayed with only the picks up to
+// and including it — so an old card's recap still says who won THAT night.
+function recapTitle(rows,date,evName){
+  var belt=computeBeltLineage((rows||[]).filter(function(p){return p.event_date<=date;}));
+  if(!belt||!belt.reigns.length)return {kind:"none"};
+  var rs=belt.reigns,last=rs[rs.length-1];
+  if(last.date===date){
+    var prev=rs.length>1?rs[rs.length-2]:null;
+    var took=prev&&prev.end&&prev.end.evName===evName&&prev.end.takenBy?prev.name:null;
+    return {kind:took?"taken":"won",name:last.name,pts:last.pts,from:took,via:last.via};
+  }
+  if(!belt.holderName){
+    return last.end&&last.end.vacated&&last.end.evName===evName
+      ? {kind:"vacated",name:last.name}
+      : {kind:"none"};
+  }
+  return {kind:"defended",name:belt.holderName,defenses:belt.defenses};
+}
+// card-recap:end
+// card-recap-ui:start
+var _recapRows=null,_recapPrevFocus=null,_recapQueued=null;
+function _recapLine(n){return n>0?"+"+n:String(n);}
+function _recapTitleText(t){
+  var em="🏆",main="",sub="";
+  if(t.kind==="won"){main=t.name+" won the title";sub=t.pts+" pts on the night";}
+  else if(t.kind==="taken"){main=t.name+" took the title";sub="from "+t.from+" with "+t.pts+" pts";}
+  else if(t.kind==="defended"){main=t.name+" defended the title";sub=t.defenses+(t.defenses===1?" defence":" defences")+" in this reign";}
+  else if(t.kind==="vacated"){em="🫥";main="The title is vacant";sub=t.name+" lost it and the challengers finished dead level";}
+  else {em="🥊";main="No title change";sub="Nobody scored on this card";}
+  if(t.via)sub+=" · "+t.via.tied+"-way tie, won on "+t.via.val+(t.via.by==="accuracy"?" accuracy":" made");
+  return {em:em,main:main,sub:sub};
+}
+function _rcEl(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+function _rcStat(parent,label,val,cls){
+  var r=_rcEl("div","rc-stat");r.appendChild(_rcEl("span","",label));
+  var v=_rcEl("span",cls||"",val);r.appendChild(v);parent.appendChild(r);
+}
+function renderCardRecap(rc){
+  var body=document.getElementById("rc-body");
+  if(!body)return false;
+  body.textContent="";
+  document.getElementById("rc-ev").textContent=rc.evName||rc.date;
+  var tt=_recapTitleText(rc.title);
+  var tb=_rcEl("div","rc-title");tb.appendChild(_rcEl("div","rc-title-em",tt.em));
+  var tx=_rcEl("div");tx.appendChild(_rcEl("div","rc-title-main",tt.main));tx.appendChild(_rcEl("div","rc-sub",tt.sub));
+  tb.appendChild(tx);body.appendChild(tb);
+
+  var you=_rcEl("div");you.appendChild(_rcEl("div","rc-sec","Your night"));
+  var m=rc.me;
+  if(!m){you.appendChild(_rcEl("div","rc-sub","You sat this one out — no picks on this card."));}
+  else{
+    if(m.perfect)you.appendChild(_rcEl("div","rc-title-main","🎯 Perfect card!"));
+    _rcStat(you,"Picks",m.correct+" / "+m.total+" correct");
+    _rcStat(you,"Points",String(m.pts));
+    _rcStat(you,"Card rank","#"+m.cardRank+" of "+m.of);
+    if(m.rankAfter){
+      var d=m.rankBefore?m.rankBefore-m.rankAfter:0;
+      var mv=!m.rankBefore?"#"+m.rankAfter+" (new)":d>0?"#"+m.rankBefore+" → #"+m.rankAfter+" ▲"+d:d<0?"#"+m.rankBefore+" → #"+m.rankAfter+" ▼"+(-d):"#"+m.rankAfter+" (held)";
+      _rcStat(you,"All-time rank",mv,d>0?"rc-up":d<0?"rc-down":"");
+    }
+    _rcStat(you,"Best upset",m.upset?m.upset.pick+" ("+_recapLine(m.upset.line)+") over "+m.upset.opp:"—");
+  }
+  body.appendChild(you);
+
+  var st=_rcEl("div");st.appendChild(_rcEl("div","rc-sec","Card standings"));
+  var myBase=userName?_lbBaseName(userName):"";
+  var shown=rc.standings.slice(0,8);
+  // Always show your own row, even when you finished outside the top eight.
+  if(myBase&&!shown.some(function(u){return u.base===myBase;})){
+    var mine=rc.standings.filter(function(u){return u.base===myBase;})[0];
+    if(mine)shown.push(mine);
+  }
+  shown.forEach(function(u){
+    var r=_rcEl("div","rc-row"+(u.base===myBase?" me":""));
+    r.appendChild(_rcEl("span","rc-rank",String(u.rank)));
+    r.appendChild(_rcEl("span","rc-name",u.name+(u.perfect?" 🎯":"")));
+    r.appendChild(_rcEl("span","rc-pts",u.pts+" pts · "+u.correct+"/"+u.total));
+    st.appendChild(r);
+  });
+  body.appendChild(st);
+  var ov=document.getElementById("recap-overlay");
+  ov.setAttribute("data-date",rc.date);
+  ov.classList.add("open");
+  try{_recapPrevFocus=document.activeElement;document.getElementById("rc-gotit-btn").focus();}catch(e){}
+  return true;
+}
+function openCardRecap(date){
+  var rows=_recapRows||_lbRows||_commRows;
+  if(!rows)return;
+  var rc=computeCardRecap(rows,date||latestRecapDate(rows),userName?_lbBaseName(userName):"");
+  if(rc)renderCardRecap(rc);
+}
+function closeCardRecap(){
+  var ov=document.getElementById("recap-overlay");
+  if(!ov||!ov.classList.contains("open"))return;
+  ov.classList.remove("open");
+  var d=ov.getAttribute("data-date");
+  // Checkpoint the card, so the auto-popup never repeats it. Any later card
+  // is strictly greater, so a plain string compare is enough.
+  try{if(d&&(localStorage.getItem(RECAP_SEEN_KEY)||"")<d)localStorage.setItem(RECAP_SEEN_KEY,d);}catch(e){}
+  try{if(_recapPrevFocus&&document.documentElement.contains(_recapPrevFocus))_recapPrevFocus.focus();}catch(e){}
+  _recapPrevFocus=null;
+}
+// With backdrop and Escape gone, a keyboard user must never be able to Tab
+// out into the page behind: cycle between the X and "Got it", as What's New does.
+function _rcTrapFocus(e){
+  if(e.key!=="Tab")return;
+  var x=document.getElementById("rc-close-btn"),g=document.getElementById("rc-gotit-btn");
+  if(!x||!g)return;
+  var a=document.activeElement;
+  if(e.shiftKey){if(a===x){g.focus();e.preventDefault();}}
+  else if(a===g){x.focus();e.preventDefault();}
+}
+// Auto-show once per finished card, fed by the community-picks fetch the app
+// already makes at boot — no extra request. Only for someone who plays (has a
+// name), only within RECAP_WINDOW_DAYS of the card, and never over another
+// overlay: if What's New is up it waits for that to be dismissed.
+function checkCardRecap(rows){
+  _recapRows=rows;
+  if(!userName)return;
+  var date=latestRecapDate(rows);
+  if(!date)return;
+  if(new Date(date).getTime()<Date.now()-RECAP_WINDOW_DAYS*DAY_MS)return;
+  var seen="";try{seen=localStorage.getItem(RECAP_SEEN_KEY)||"";}catch(e){}
+  if(seen>=date)return;
+  var rcOv=document.getElementById("recap-overlay");
+  if(rcOv&&rcOv.classList.contains("open"))return;   // already showing
+  var wn=document.getElementById("wn-overlay");
+  if(wn&&wn.classList.contains("open")){_recapQueued=date;return;}
+  if(_anyOverlayOpen())return;
+  openCardRecap(date);
+}
+function _recapAfterWn(){
+  if(!_recapQueued)return;
+  var d=_recapQueued;_recapQueued=null;
+  if(!_anyOverlayOpen())setTimeout(function(){openCardRecap(d);},400);
+}
+// card-recap-ui:end
+
 // Repair: persist locally-stored method picks that never reached the DB, so every
 // device scores them — not just the pick's author. Patches the fetched rows in place
 // so your own score is right immediately, and upserts the missing data to Supabase.
@@ -7581,6 +7852,18 @@ function loadLeaderboard(isLive){
       body.appendChild(wrap);
     });
     _lbSorted=sorted;
+    // Card recap — reopen the latest finished card's recap from the board.
+    var _rcDate=latestRecapDate(rows);
+    if(_rcDate){
+      _recapRows=rows;
+      var rcBtn=document.createElement("div");
+      rcBtn.style.cssText="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;padding:8px 2px;cursor:pointer;user-select:none";
+      rcBtn.setAttribute("role","button");rcBtn.tabIndex=0;
+      rcBtn.textContent="📋 Card Recap — "+(_recapEvName(_rcDate)||_rcDate).replace("UFC Fight Night: ","");
+      rcBtn.onclick=function(){openCardRecap(_rcDate);};
+      rcBtn.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();openCardRecap(_rcDate);}};
+      body.appendChild(rcBtn);
+    }
     // Title history — collapsed reign list under the standings
     if(belt&&belt.reigns.length){
       function _shortEv(n){return (n||"").replace("UFC Fight Night: ","");}
@@ -8106,6 +8389,10 @@ var _escClosers=[
 ];
 document.addEventListener("keydown",function(e){
   if(e.key!=="Escape"&&e.key!=="Esc")return;
+  // The recap only closes on its X or "Got it" — and Escape must not reach
+  // past it to close the leaderboard sitting underneath either.
+  var _rc=document.getElementById("recap-overlay");
+  if(_rc&&_rc.classList.contains("open")){e.preventDefault();return;}
   for(var i=0;i<_escClosers.length;i++){
     var el=document.getElementById(_escClosers[i][0]);
     if(el&&el.classList.contains("open")){
@@ -8646,6 +8933,20 @@ document.addEventListener("DOMContentLoaded",function(){
     </div>
     <div class="wn-list" id="wn-list"></div>
     <button class="wn-btn" id="wn-gotit-btn" onclick="closeWhatsNew()">Got it</button>
+  </div>
+</div>
+<!-- Locked like What's New: no backdrop-click, no Escape. The only ways out
+     are the X and "Got it", so the recap can't vanish on a stray tap before
+     it has been read (see closeCardRecap / _rcTrapFocus). -->
+<div id="recap-overlay">
+  <div id="recap-panel" role="dialog" aria-modal="true" aria-labelledby="rc-heading" onkeydown="_rcTrapFocus(event)">
+    <div class="wn-hdr">
+      <div class="wn-title" id="rc-heading">Card Recap</div>
+      <button class="wn-close" id="rc-close-btn" onclick="closeCardRecap()" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="rc-ev" id="rc-ev"></div>
+    <div class="rc-body" id="rc-body"></div>
+    <button class="wn-btn" id="rc-gotit-btn" onclick="closeCardRecap()">Got it</button>
   </div>
 </div>
 <script>
