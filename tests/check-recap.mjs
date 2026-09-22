@@ -9,8 +9,8 @@
 // _eventFinished, computeBeltLineage) under the recap and checks its answers.
 //
 // Also holds the wiring: the recap is fed by the boot-time community fetch
-// (which must carry bonus_pick for FOTN), is a real overlay in _escClosers
-// (so What's New and deep links see it), and waits behind What's New.
+// (which must carry bonus_pick for FOTN), waits behind What's New, and — like
+// What's New — is locked: no backdrop-click, no Escape, only the X or "Got it".
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { join, dirname } from "node:path";
@@ -160,8 +160,23 @@ setEvents([card1, card2]);
 }
 
 // --- wiring ---------------------------------------------------------------
-check("recap overlay is a real overlay in _escClosers",
-  /var _escClosers=\[[\s\S]*?\["recap-overlay",/.test(html));
+// Locked like What's New: only the X and "Got it" dismiss it.
+{
+  const tag = (html.match(/<div id="recap-overlay"[^>]*>/) || [""])[0];
+  check("recap overlay exists with no backdrop-click handler", tag && !/onclick/.test(tag));
+  const esc = (html.match(/var _escClosers=\[[\s\S]*?\n\];/) || [""])[0];
+  check("recap is NOT in _escClosers (Escape must not dismiss it)", esc && !/recap-overlay/.test(esc));
+  check("Escape is swallowed while the recap is open (never closes the board beneath)",
+    /Escape[\s\S]{0,400}recap-overlay[\s\S]{0,120}preventDefault\(\);return;/.test(html));
+  const a = html.indexOf('<div id="recap-overlay"'), b = html.indexOf("</div>\n</div>", a);
+  const markup = html.slice(a, b);
+  check("exactly two controls close it: the X and \"Got it\"",
+    (markup.match(/closeCardRecap\(\)/g) || []).length === 2 &&
+    /id="rc-close-btn"/.test(markup) && /id="rc-gotit-btn"[^>]*>Got it</.test(markup));
+  check("focus moves to \"Got it\" on open", /rc-gotit-btn"\)\.focus\(\)/.test(fn("renderCardRecap")));
+  check("Tab is trapped between the X and \"Got it\"",
+    /onkeydown="_rcTrapFocus\(event\)"/.test(markup) && /rc-close-btn[\s\S]*rc-gotit-btn/.test(fn("_rcTrapFocus")));
+}
 check("closeWhatsNew releases a recap queued behind it",
   /_recapAfterWn\(\)/.test(fn("closeWhatsNew")));
 {
