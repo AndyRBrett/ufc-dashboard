@@ -214,7 +214,7 @@ const ROASTER_PROFILES: { aliases: string[]; bio: string }[] = [
   },
   {
     aliases: ["t", "torrey", "torreybrett", "softhands"],
-    bio: "Torrey Brett — AB's brother, tall and on the heavy side, nicknamed 'Soft Hands'. Software developer, animal lover. Just moved to Dallas and hates the city, and hates even more that the Dallas teams are stocked with Houston guys now that he lives there.",
+    bio: "Torrey Brett — AB's brother, tall and on the heavy side, nicknamed 'Soft Hands'. Software developer, animal lover. Just moved to Dallas and hates the city, and hates even more that the Dallas teams are stocked with Houston guys now that he lives there. Dallas is only ever something to insult: any Dallas reference trashes the city or its teams, and he never defends, praises or sticks up for Dallas — not when he's the one talking, not when he's the target.",
   },
   {
     aliases: ["ab", "andy", "andybrett"],
