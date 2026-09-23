@@ -413,27 +413,40 @@ const ANGLE_STOPWORDS = new Set([
   "what", "when", "then", "than", "some", "about", "into", "from", "out", "off", "over", "get",
   "got", "one", "like", "make", "made", "say", "says", "said", "too", "very", "really",
 ]);
+// Words any roast on this board is likely to say whether or not it went near
+// the angle. With a one-word bar, "compare his picks to a broken slot machine"
+// would otherwise be satisfied by "your picks are embarrassing" — so these
+// never count as evidence the angle was used. Compared after normWord.
+const ANGLE_CONTEXT_WORDS = new Set([
+  "pick", "rank", "record", "fight", "fighter", "card", "board", "leaderboard", "event",
+  "ufc", "mma", "win", "won", "lose", "loss", "lost", "point", "score", "bet", "odd",
+  "roast", "trash", "talk", "week", "night", "season", "year", "guy", "man", "bro", "dude",
+].map((w) => w.replace(/(?:'s|s|es|ed|ing)$/, "")));
 const normWord = (w: string) => w.replace(/(?:'s|s|es|ed|ing)$/, "");
-function angleKeywords(hint: string): string[] {
+// `names` are the sender's and targets' nicknames: a roast addresses them by
+// name regardless of the angle, so a name is no evidence either.
+function angleKeywords(hint: string, names: string[] = []): string[] {
   const seen = new Set<string>();
   const out: string[] = [];
+  const nameWords = new Set(names.flatMap((n) => (n ?? "").toLowerCase().split(/[^a-z0-9]+/)).filter(Boolean).map(normWord));
   for (const w of (hint ?? "").toLowerCase().replace(/[^a-z0-9'\s]/g, " ").split(/\s+/)) {
     if (w.length < 3 || ANGLE_STOPWORDS.has(w)) continue;
     const k = normWord(w);
-    if (!k || seen.has(k)) continue;
+    if (!k || seen.has(k) || ANGLE_CONTEXT_WORDS.has(k) || nameWords.has(k)) continue;
     seen.add(k);
     out.push(w);
   }
   return out;
 }
-// "Used it" means at least one of the angle's content words came back. It used
+// "Used it" means at least one of the angle's distinctive words came back —
+// context vocabulary and names excluded (see ANGLE_CONTEXT_WORDS). It used
 // to demand most of them, back when the angle was enforced near-verbatim; that
 // threshold would now reject exactly the reworded riffs the prompt asks for.
 // One word is a deliberately low bar: it only catches a roast that walked away
 // from the angle entirely. An angle with no content words at all (punctuation,
 // pure stopwords) can't be judged, so it passes rather than burning a retry.
-function usesAngle(text: string, hint: string): boolean {
-  const kws = angleKeywords(hint);
+function usesAngle(text: string, hint: string, names: string[] = []): boolean {
+  const kws = angleKeywords(hint, names);
   if (!kws.length) return true;
   const hay = " " + (text ?? "").toLowerCase().replace(/[^a-z0-9'\s]/g, " ").replace(/\s+/g, " ") + " ";
   const words = new Set(hay.trim().split(" ").map(normWord));
@@ -871,13 +884,14 @@ Deno.serve(async (req) => {
   // angle is a worse roast, but a roast that takes half a minute is a worse
   // feature, and the sender can always retype the angle and hit generate again.
   const trashHint = (body.hint ?? "").trim();
+  const trashNames = [body.myNickname ?? "", ...(body.targets ?? [])];
   const timeLeftForRetry = Date.now() - startedAt < ROAST_RETRY_BUDGET_MS;
-  if (action === "trash-talk" && text && trashHint && timeLeftForRetry && !usesAngle(text, trashHint)) {
+  if (action === "trash-talk" && text && trashHint && timeLeftForRetry && !usesAngle(text, trashHint, trashNames)) {
     const retry = await callModel(`${prompt}
 
 Your last attempt was: "${text.trim()}"
 It walked away from ${body.myNickname || "the sender"}'s angle entirely. Write it again and make "${trashHint}" what the roast is about — reword and escalate it however ${body.persona || "the persona"} would, but it has to be recognisably that angle. Same length cap, same signature.`);
-    if (retry.ok && retry.text && usesAngle(retry.text, trashHint)) {
+    if (retry.ok && retry.text && usesAngle(retry.text, trashHint, trashNames)) {
       text = retry.text;
       textProvider = provider;
       textFellBack = fellBack;

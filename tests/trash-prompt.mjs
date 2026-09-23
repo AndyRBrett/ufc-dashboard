@@ -113,6 +113,15 @@ assert("a reworked riff that keeps the idea passes",
   usesAngle("Mop up the waterworks, princess — all that crying won't fix your picks. — Johnny Lawrence", HINT));
 assert("a burn with none of the angle's words still fails",
   !usesAngle("Karate Kid stuff won't save you now. — Johnny Lawrence", HINT));
+// With a one-word bar, generic board vocabulary or a name must not count.
+const SLOT = "compare his picks to a broken slot machine";
+assert("a generic burn that only repeats 'picks' fails",
+  !usesAngle("Your picks are embarrassing. — Johnny Lawrence", SLOT));
+assert("the distinctive image still passes", usesAngle("You pick like a busted slot machine. — Johnny Lawrence", SLOT));
+assert("a target's name is no evidence the angle was used",
+  !usesAngle("Torrey, you're a joke. — Johnny Lawrence", "Torrey cries at dog movies", ["AB", "Torrey"]));
+assert("the rest of a name-bearing angle still counts",
+  usesAngle("Bet you sob at every dog movie. — Johnny Lawrence", "Torrey cries at dog movies", ["AB", "Torrey"]));
 assert("an angle with no content words can't fail the check", usesAngle("anything at all", "the and but"));
 
 let bad = 0;
