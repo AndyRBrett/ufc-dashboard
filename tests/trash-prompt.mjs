@@ -49,13 +49,17 @@ assert("the angle reaches the user turn", withHint.user.includes(HINT));
 assert("the angle is stated as the whole job", /THE ANGLE: "/.test(withHint.user));
 assert("the angle lands in the final stretch of the prompt",
   withHint.user.length - withHint.user.lastIndexOf(HINT) < 400);
-assert("the model is told to reuse the angle's own words", /angle's own words and imagery verbatim/.test(withHint.user));
+// The angle is a springboard on Grok, not a script: the model may reword and
+// build on it, but it must stay the subject.
+assert("the model is free to rework the angle", /Rephrase it, exaggerate it and escalate it/.test(withHint.user));
+assert("the angle stays the subject throughout", /keep it the subject throughout/.test(withHint.user));
 assert("swapping the angle for a generic burn is ruled out", /do not swap it for a generic insult/i.test(withHint.user));
-assert("paraphrasing the angle is ruled out", /Do not paraphrase it/.test(withHint.user));
+assert("verbatim delivery is no longer demanded", !/WORD FOR WORD|verbatim —|Do not paraphrase it/.test(withHint.system + withHint.user));
 // The system prompt defines the whole job; an angle that only appears in the
 // user turn leaves every rule about HOW to write blind to it.
 assert("the angle reaches the system prompt too", withHint.system.includes(HINT));
-assert("the system prompt demands the words back", /WORD FOR WORD/.test(withHint.system));
+assert("the system prompt makes the angle the subject", /THE ANGLE IS THE SUBJECT/.test(withHint.system));
+assert("the system prompt treats it as a springboard", /springboard, not a script/.test(withHint.system));
 assert("the final line hands the angle over verbatim", withHint.user.trim().endsWith(`"${HINT}"`));
 
 // The randomised canned angles are the main thing that used to compete.
@@ -68,19 +72,25 @@ assert("a canned angle IS the ask when the user gave none", CANNED.some((a) => n
 
 // Everything else that can pull off-angle is subordinated, not silent — and the
 // random rhetorical shape, which competed hardest, is not applied at all.
-const FORMS = ["one clipped, dismissive line", "open mid-thought", "a fake compliment that curdles",
-  "a rhetorical question you never let them answer", "a single devastating one-liner",
-  "a cold quiet threat", "one absurd comparison", "start bored, snap into contempt"];
+const FORMS = ["open mid-thought", "a fake compliment that curdles",
+  "a string of rhetorical questions", "a cold quiet threat", "one absurd comparison",
+  "start bored, snap into contempt", "a mock pep talk", "a slow build to one devastating"];
 assert("no random shape competes with the angle", !/Shape THIS one like/.test(withHintAll) && !FORMS.some((f) => withHintAll.includes(f)));
 assert("a shape still varies the roast when no angle was typed", /Shape THIS one like/.test(noHint.system));
 assert("the card detail yields to the angle", /only if it serves the angle/.test(withHint.system));
-assert("the profile dossier yields to the angle", /only if it sharpens the angle/.test(withHint.system));
+assert("the profile dossier yields to the angle", /only if it builds on the angle/.test(withHint.system));
 assert("the dossier keeps its own rule with no angle", /makes the burn funnier than the picks/.test(noHint.system));
 assert("the card is demoted to background", /background only/.test(withHint.user));
 
 // Accuracy, length and the signature are NOT subordinated to the angle.
 assert("accuracy rules survive an angle", /FACTS ARE STRICT/.test(withHint.system));
 assert("the length cap survives an angle", /LENGTH IS A HARD CAP/.test(withHint.system));
+// Room for a real riff now, but still a bounded one.
+for (const [label, p] of [["with an angle", withHint], ["without one", noHint]]) {
+  assert(`the roast gets two to four sentences ${label}`, /TWO to FOUR sentences/.test(p.system) && /two to four sentences/.test(p.user));
+  assert(`the word cap is 70 ${label}`, /under 70 words/.test(p.system));
+  assert(`the old one-line cap is gone ${label}`, !/under 30 words|one savage line|one or two short sentences/.test(p.system + p.user));
+}
 assert("the signature rule survives an angle", /Sign off with '— Johnny Lawrence'/.test(withHint.system));
 
 // A blank box is not an angle.
@@ -91,19 +101,21 @@ assert("whitespace-only input is not an angle", !/THE ANGLE:/.test(blank.user) &
 const quoted = buildTrashTalk({ ...base, hint: 'he "always" folds' });
 assert("quotes in an angle pass through intact", quoted.user.includes('he "always" folds') && /THE ANGLE: "/.test(quoted.user));
 
-// Prompting alone never fully held, so the function also checks its own output
-// and retries once. These are the cases that check has to get right.
+// The function still checks its own output and retries once — but only when
+// the roast walked away from the angle entirely, since rewording it is allowed.
 assert("a roast carrying the angle's words passes",
   usesAngle("Wax on, wax off those tears, kid. — Johnny Lawrence", HINT));
 assert("a generic burn that ignored the angle fails",
   !usesAngle("You're rank two with a losing record and it shows. — Johnny Lawrence", HINT));
 assert("a near-verbatim delivery survives grammar drift",
   usesAngle("Wax on, wax off — go cry about it. Those tears wax nothing. — Johnny Lawrence", HINT));
-assert("a paraphrase that keeps the topic but not the words fails",
+assert("a reworked riff that keeps the idea passes",
+  usesAngle("Mop up the waterworks, princess — all that crying won't fix your picks. — Johnny Lawrence", HINT));
+assert("a burn with none of the angle's words still fails",
   !usesAngle("Karate Kid stuff won't save you now. — Johnny Lawrence", HINT));
 assert("an angle with no content words can't fail the check", usesAngle("anything at all", "the and but"));
 
 let bad = 0;
 for (const c of checks) { console.log(`  ${c.cond ? "✓" : "✗"} ${c.name}`); if (!c.cond) bad++; }
 if (bad) { console.error(`\ntrash-prompt: FAILED (${bad} assertion(s)) — DO NOT deploy.`); process.exit(1); }
-console.log("\ntrash-prompt: the roast is written as the persona, and ends on the sender's angle.");
+console.log("\ntrash-prompt: the roast is written as the persona, and is built around the sender's angle.");

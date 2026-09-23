@@ -23,7 +23,7 @@ const GROK_API_URL = Deno.env.get("GROK_API_URL") ?? "https://api.x.ai/v1/chat/c
 // served a roast here: 1.7s end to end, against roughly 2s for the Claude path
 // it replaced. The roast is generated while someone stands there watching a
 // spinner on a live card, so that number is the requirement, not a nice-to-have.
-// A burn of under 30 words has nothing to reason about, so a thinking budget
+// A burn of a few sentences has nothing to reason about, so a thinking budget
 // buys latency and no quality.
 //
 // What is NOT the reason: grok-4.6 was the first default here and a roast on
@@ -43,12 +43,12 @@ const GROK_API_URL = Deno.env.get("GROK_API_URL") ?? "https://api.x.ai/v1/chat/c
 const GROK_MODEL = Deno.env.get("GROK_MODEL") ?? "grok-4.20-0309-non-reasoning";
 
 // Grok gets a far bigger token ceiling than Claude does for the same roast, and
-// it is not so the roast can be longer — length is enforced by the prompt (~30
-// words, two sentences), not by this number.
+// it is not so the roast can be longer — length is enforced by the prompt (~70
+// words, four sentences) and ROAST_MAX_CHARS, not by this number.
 //
 // It is because a REASONING model spends this budget thinking before it writes.
 // On the OpenAI-shaped API the cap covers reasoning tokens as well as the reply,
-// so the 120 that comfortably fits a one-line burn from a non-reasoning model
+// so the 250 that comfortably fits a short riff from a non-reasoning model
 // can be consumed entirely by a reasoning model's scratchpad — returning HTTP
 // 200 with empty content, which is a dud roast and not an error anyone can see.
 // A ceiling this loose costs nothing extra when the model doesn't reason (you
@@ -256,11 +256,11 @@ function buildDossier(myName: string, targets: string[], hasHint: boolean): stri
     if (bio) lines.push(`${t} (target): ${bio}`);
   }
   if (!lines.length) return "";
-  // With an angle on the table the dossier is a seasoning at most: a personal
-  // detail that pulls away from what the sender actually asked for is worse
-  // than no detail at all.
+  // With an angle on the table the dossier backs it up: a personal detail that
+  // piles onto what the sender asked for is welcome, one that drags the roast
+  // somewhere else entirely is not.
   const use = hasHint
-    ? "Use AT MOST ONE of those details, and only if it sharpens the angle you were given — if it pulls anywhere else, leave it out."
+    ? "Use AT MOST ONE of those details, and only if it builds on the angle you were given — if it drags the roast somewhere else entirely, leave it out."
     : "Use AT MOST ONE of those details, and only when it makes the burn funnier than the picks would; ignore the lot if the roast is sharper without.";
   return ` YOU KNOW THESE PEOPLE personally — background, not material to report: ${lines.join(" | ")} ${use} Never list them, never explain them, never let on that you were handed them.`;
 }
@@ -315,33 +315,35 @@ function buildTrashTalk(d: ReqBody): { system: string; user: string } {
     "Act amazed this many people could be this wrong at once."
   ];
   // Rhetorical shapes — the real fix for the monotony. Each one breaks the
-  // opener/jab/outro mold in a different direction. Every shape must be
-  // deliverable in one or two short sentences: the run-on-breath and
-  // mock-pep-talk shapes were cut because they invited the model to sprawl
-  // past what anyone reads in a push notification.
+  // opener/jab/outro mold in a different direction. The roast has room for a
+  // short riff now (see LENGTH in baseRules), so a shape can build over a few
+  // sentences instead of having to land in one — but none of them should read
+  // as a list of separate insults.
   const forms = [
-    "one clipped, dismissive line — they weren't worth a full effort",
-    "open mid-thought, like you're already three insults deep",
-    "a fake compliment that curdles into a gut-punch by the last word",
-    "a rhetorical question you never let them answer",
-    "a single devastating one-liner and nothing else",
-    "a cold quiet threat delivered like a calm promise",
-    "one absurd comparison, done in a single line",
-    "start bored, snap into contempt by the end"
+    "open mid-thought, like you're already three insults deep, and keep escalating",
+    "a fake compliment that curdles into a gut-punch by the last line",
+    "a string of rhetorical questions you never let them answer",
+    "a cold quiet threat delivered like a calm promise, then twist the knife",
+    "one absurd comparison, then stretch it until it hurts",
+    "start bored, snap into contempt by the end",
+    "a mock pep talk that falls apart into pure disrespect",
+    "a slow build to one devastating closing line"
   ];
   const angleHint = angles[Math.floor(Math.random() * angles.length)];
   const formHint = forms[Math.floor(Math.random() * forms.length)];
   const seed = Math.random().toString(36).slice(2, 7);
   const hint = (d.hint ?? "").trim();
-  // A user-supplied angle is not a suggestion, and subordinating the other
-  // instructions to it was not enough: "roast his Houston teams" still came
-  // back as a burn that gestured at Houston in the model's own words. So with
-  // an angle typed the random shape is not applied AT ALL — leaving it in as a
-  // yielding rule ("drop the shape if it fights the angle") kept a second
-  // styling instruction on the table and the model split the difference every
-  // time, keeping its shape and paraphrasing the sender away. The angle is the
-  // shape now, and it is repeated in the system prompt and as the final line
-  // of the user turn, the two positions the model weights hardest.
+  // A user-supplied angle is the subject of the roast, but it is a springboard,
+  // not a script. It used to be enforced near-verbatim, because Claude kept
+  // swapping a typed angle for its own tamer burn; on Grok that fight is over,
+  // and holding it to the sender's exact words made the roast read like the
+  // sender's line read back rather than the persona riffing on it. So the
+  // angle must be recognisably what the roast is ABOUT, and the model is free
+  // to rephrase it, exaggerate it and build on it. The random shape is still
+  // not applied with an angle typed — two competing briefs made the model
+  // split the difference — and the angle is still repeated in the system
+  // prompt and as the final line of the user turn, the two positions the
+  // model weights hardest.
   const formRule = hint ? "" : `Shape THIS one like: ${formHint}.`;
   const cardRule = hint
     ? "You MAY glance at the CARD for ONE detail, and only if it serves the angle — a card detail that changes the subject is worse than none."
@@ -349,7 +351,7 @@ function buildTrashTalk(d: ReqBody): { system: string; user: string } {
   // Attitude first and almost all the way through; a card reference is optional
   // seasoning, never the main course. A stat dump kills the burn, and — the whole
   // point of this rewrite — so does a predictable structure.
-  const baseRules = `Speak PURELY as ${persona} — their cadence, their swagger, their exact way of talking shit. This is raw trash talk, rude and personal, NOT a scouting report. Do NOT follow a formula: no throat-clearing opener, no obligatory middle jab about their picks, no tidy mic-drop to close — just talk the way ${persona} actually would and let it land however it lands. ${formRule} ${cardRule} FACTS ARE STRICT: only tie a target to a pick explicitly attributed to THEM, never invent one, never blame them for a fight they won, never quote percentages or numbers. Don't lead with a rank, a username, or "hey" — drop straight into the voice, no emojis. LENGTH IS A HARD CAP: this lands as a push notification read on a phone — ONE short sentence is the default, TWO short sentences is the absolute maximum, and the whole roast stays under 30 words before the signature. If it needs more room it isn't funny enough yet; cut, don't explain the joke. Brevity IS the disrespect. When burying a group, land ONE collective burn — do not go person by person. Sign off with '— ${persona}' using the FULL name exactly as written, and even that should feel in-character. No preamble. (variety token, do not print: ${seed})`;
+  const baseRules = `Speak PURELY as ${persona} — their cadence, their swagger, their exact way of talking shit. This is raw trash talk, rude and personal, NOT a scouting report. Do NOT follow a formula: no throat-clearing opener, no obligatory middle jab about their picks, no tidy mic-drop to close — just talk the way ${persona} actually would and let it land however it lands. ${formRule} ${cardRule} FACTS ARE STRICT: only tie a target to a pick explicitly attributed to THEM, never invent one, never blame them for a fight they won, never quote percentages or numbers. Don't lead with a rank, a username, or "hey" — drop straight into the voice, no emojis. LENGTH IS A HARD CAP: this is read on a phone, so give it a proper riff — TWO to FOUR sentences, building on itself, and the whole roast stays under 70 words before the signature. Every sentence has to hit harder than the last; no filler, no explaining the joke. When burying a group, keep it one collective burn — do not go person by person. Sign off with '— ${persona}' using the FULL name exactly as written, and even that should feel in-character. No preamble. (variety token, do not print: ${seed})`;
   const who = solo ? `ripping into ${opponentNames}` : `burying ${opponentNames}`;
   // Empty string whenever nobody involved has a profile, so unknown nicknames
   // produce exactly the prompt they produced before profiles existed.
@@ -363,12 +365,12 @@ function buildTrashTalk(d: ReqBody): { system: string; user: string } {
   // part that defines the whole job — never saw it, so every rule the model
   // read about who it is and how to write was phrased as if no angle existed,
   // and a roast that merely shared the angle's TOPIC satisfied all of them.
-  // It goes in both places now, and both places ask for the sender's own
-  // words back rather than the same idea rewritten.
+  // It goes in both places now. Both ask for the angle to be what the roast is
+  // about — not for its exact words back (see formRule above for why).
   const angleRule = hint
-    ? ` THE ANGLE IS THE JOB, AND IT IS NEARLY VERBATIM: ${myName} typed exactly what to hit them with — "${hint}". You are delivering THAT line in ${persona}'s voice, not writing your own burn on the same topic. Keep the angle's distinctive words and imagery WORD FOR WORD, in its own order, and change only what grammar or the voice genuinely forces — a reader who saw what ${myName} typed must recognise it in your line. Never paraphrase it, never summarise it, never trade its words for smarter ones of your own. If something else must go to fit it, cut the something else.`
+    ? ` THE ANGLE IS THE SUBJECT: ${myName} told you what to hit them with — "${hint}". Build the roast around that idea, in ${persona}'s voice. Treat it as a springboard, not a script: you are free to reword it, exaggerate it, twist it and pile on top of it — a better take on the same idea beats reading it back verbatim. Borrow its words or imagery wherever they land hardest. The one way to fail is to drift off it: a reader who saw what ${myName} typed must recognise that THIS is what the roast is about.`
     : "";
-  const system = `You ARE ${persona}. You write trash talk on behalf of ${myName} ${who} — one savage line, in character. You are NOT an analyst and this is NOT a scouting report: never explain a pick, never weigh a matchup, never give advice. ${baseRules}${dossier}${angleRule}`;
+  const system = `You ARE ${persona}. You write trash talk on behalf of ${myName} ${who} — a short savage riff, in character. You are NOT an analyst and this is NOT a scouting report: never explain a pick, never weigh a matchup, never give advice. ${baseRules}${dossier}${angleRule}`;
   const situation = `LEADERBOARD: ${boardName}. ${boardAngle}
 ${myName}${d.myRank ? ` — rank #${d.myRank}, ${d.myRecord || ""}` : ""}. Roasting: ${opponentNames}.
 CARD (background only — you almost never need it):
@@ -380,30 +382,30 @@ ${d.card || "n/a"}`;
       system,
       user: `${situation}
 
-${myName} told you exactly what to hit them with, word for word. Your job is to DELIVER that line in ${persona}'s voice — a roast that does not carry its actual words is a failed roast, no matter how funny it is:
+${myName} told you what to hit them with. Run with it — make it the heart of the roast and take it further than they did:
 
   THE ANGLE: "${hint}"
 
-Write it now, as ${persona}: one or two short sentences that keep the angle's own words and imagery verbatim — as close to how ${myName} typed it as ${persona}'s voice allows, changing only what grammar or the voice forces. Do not paraphrase it, do not summarise it, do not swap it for a generic insult about their picks, their rank or their record. Then the '— ${persona}' signature.
+Write it now, as ${persona}: two to four sentences built around that angle. Rephrase it, exaggerate it and escalate it however ${persona} would, but keep it the subject throughout — do not swap it for a generic insult about their picks, their rank or their record. Then the '— ${persona}' signature.
 
-Say it to them now, in their words: "${hint}"`,
+Hit them with this: "${hint}"`,
     }
     : {
       system,
       user: `${situation}
 
-Write it now, as ${persona}: one or two short sentences, then the '— ${persona}' signature. Your take this time: ${angleHint}`,
+Write it now, as ${persona}: two to four sentences, then the '— ${persona}' signature. Your take this time: ${angleHint}`,
     };
 }
 
-// --- Did the roast actually use the sender's angle? -------------------------
+// --- Did the roast actually go after the sender's angle? --------------------
 //
-// Prompting alone can't guarantee it: the model still occasionally "improves"
-// a typed angle into its own cleverer burn, which is the exact failure the
-// sender notices ("I asked for wax on wax off and got a joke about his rank").
-// So the output is checked against the angle's own content words, and a miss
-// buys ONE stricter retry — cheap (a ~120-token call), bounded, and only ever
-// spent when a hint was typed and demonstrably ignored.
+// The angle is a springboard now, not a script (see buildTrashTalk), so the
+// model is free to reword it. What it still may not do is abandon it for its
+// own burn, which is the failure the sender notices ("I asked for wax on wax
+// off and got a joke about his rank"). So the output is checked against the
+// angle's content words, and a roast that carries NONE of them buys ONE
+// retry — bounded, and only ever spent when a hint was typed and ignored.
 const ANGLE_STOPWORDS = new Set([
   "the", "and", "but", "for", "with", "that", "this", "they", "them", "their", "you", "your",
   "his", "her", "hers", "its", "our", "ours", "was", "were", "are", "been", "being", "have",
@@ -424,17 +426,19 @@ function angleKeywords(hint: string): string[] {
   }
   return out;
 }
-// "Used it" means most of the angle's content words came back — not every one,
-// because grammar and the persona's voice legitimately drop a word or two.
-// An angle with no content words at all (punctuation, pure stopwords) can't be
-// judged, so it passes rather than burning a retry it would fail again.
+// "Used it" means at least one of the angle's content words came back. It used
+// to demand most of them, back when the angle was enforced near-verbatim; that
+// threshold would now reject exactly the reworded riffs the prompt asks for.
+// One word is a deliberately low bar: it only catches a roast that walked away
+// from the angle entirely. An angle with no content words at all (punctuation,
+// pure stopwords) can't be judged, so it passes rather than burning a retry.
 function usesAngle(text: string, hint: string): boolean {
   const kws = angleKeywords(hint);
   if (!kws.length) return true;
   const hay = " " + (text ?? "").toLowerCase().replace(/[^a-z0-9'\s]/g, " ").replace(/\s+/g, " ") + " ";
   const words = new Set(hay.trim().split(" ").map(normWord));
   const hits = kws.filter((k) => words.has(normWord(k)) || hay.includes(" " + k + " ")).length;
-  return hits >= Math.ceil(kws.length * 0.6);
+  return hits >= 1;
 }
 
 // The client recovers the persona from the roast's trailing "— X" signature
@@ -672,7 +676,7 @@ async function callGrok(
 
 // --- The roast's only HARD length bound ------------------------------------
 //
-// The prompt asks for ~30 words and two sentences, but prompt text is a
+// The prompt asks for under ~70 words and four sentences, but prompt text is a
 // request, not a bound. That was tolerable while max_tokens was 120: ~480
 // characters at the very worst, comfortably inside send-push's MAX_BODY of
 // 1600. GROK_MAX_TOKENS raised the programmatic ceiling to 1000 to leave a
@@ -685,10 +689,10 @@ async function callGrok(
 // the length gets enforced here, where the text is produced, rather than being
 // left to the prompt.
 //
-// 600 is far above any compliant roast (30 words is ~180 characters) and far
+// 900 is far above any compliant roast (70 words is ~420 characters) and far
 // below MAX_BODY even once the signature is appended, so this never fires on a
 // roast that followed its instructions — it only catches a runaway.
-const ROAST_MAX_CHARS = Number(Deno.env.get("ROAST_MAX_CHARS") ?? "600");
+const ROAST_MAX_CHARS = Number(Deno.env.get("ROAST_MAX_CHARS") ?? "900");
 
 // How long the first call may have taken and still leave room to spend a second
 // one chasing the sender's angle. Set below GROK_TIMEOUT_MS so a first call that
@@ -784,12 +788,12 @@ Deno.serve(async (req) => {
       ? built.system + unfilteredRule(body.persona || "A Famous Friend")
       : built.system;
     prompt = built.user;
-    // The prompt hard-caps roasts at ~30 words / two sentences (people stopped
-    // reading the long ones). 120 tokens is ~3x that budget, so the signature
-    // always lands even when the model runs a little over, while still bounding
-    // output if it ignores the cap entirely. send-push's MAX_BODY is sized
-    // above the longest output this can produce.
-    maxTokens = 120;
+    // The prompt caps roasts at ~70 words / four sentences. 250 tokens is ~2.5x
+    // that budget, so the signature always lands even when the model runs a
+    // little over. This is the Claude path's ceiling; Grok uses GROK_MAX_TOKENS.
+    // Either way ROAST_MAX_CHARS is the hard bound that keeps a runaway inside
+    // send-push's MAX_BODY.
+    maxTokens = 250;
   } else {
     // breakdown needs both fighters — guard before the non-null assertions in buildBreakdownPrompt
     if (!body.f1?.n || !body.f2?.n) {
@@ -857,7 +861,7 @@ Deno.serve(async (req) => {
   let textProvider: Provider = provider;
   let textFellBack = fellBack;
   // The angle is the one instruction worth spending a second call on: if the
-  // sender's own words didn't survive, ask again with the miss named. Only one
+  // roast walked away from it entirely, ask again with the miss named. Only one
   // retry, and whatever comes back is used either way — a roast without the
   // angle still beats no roast when the card is live.
   //
@@ -872,7 +876,7 @@ Deno.serve(async (req) => {
     const retry = await callModel(`${prompt}
 
 Your last attempt was: "${text.trim()}"
-It dropped ${body.myNickname || "the sender"}'s actual words. Write it again and put the angle's own wording in the line — as close to "${trashHint}" as ${body.persona || "the persona"}'s voice allows. Same length cap, same signature.`);
+It walked away from ${body.myNickname || "the sender"}'s angle entirely. Write it again and make "${trashHint}" what the roast is about — reword and escalate it however ${body.persona || "the persona"} would, but it has to be recognisably that angle. Same length cap, same signature.`);
     if (retry.ok && retry.text && usesAngle(retry.text, trashHint)) {
       text = retry.text;
       textProvider = provider;
