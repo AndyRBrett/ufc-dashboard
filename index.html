@@ -7816,18 +7816,23 @@ function drawWrappedCard(canvas,w){
   c.globalAlpha=1;
   return canvas;
 }
-var _wrFile=null;
+// "pending" while drawing, "ready" once _wrFile holds the PNG, "failed" if the
+// canvas or File couldn't be made — then Share goes straight to the text
+// fallback instead of saying "still drawing" forever.
+var _wrFile=null,_wrFileState="pending";
 function _wrPrepareImage(w){
-  _wrFile=null;
+  _wrFile=null;_wrFileState="pending";
   var ready=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve();
   return ready.then(function(){
     var cv=drawWrappedCard(document.createElement("canvas"),w);
     return new Promise(function(res){cv.toBlob(res,"image/png");});
   }).then(function(b){
-    if(!b||_wrData!==w)return null;
-    try{_wrFile=new File([b],"ufc-wrapped-"+w.year+".png",{type:"image/png"});}catch(e){_wrFile=null;}
+    if(_wrData!==w)return null;              // a newer Wrapped replaced this one
+    if(!b)throw new Error("no blob");
+    _wrFile=new File([b],"ufc-wrapped-"+w.year+".png",{type:"image/png"});
+    _wrFileState="ready";
     return _wrFile;
-  }).catch(function(){return null;});
+  }).catch(function(){if(_wrData===w){_wrFile=null;_wrFileState="failed";}return null;});
 }
 function _wrShareTextOnly(){
   var txt=_wrShareText(_wrData),url=location.origin+location.pathname;
@@ -7841,21 +7846,32 @@ function _wrShareTextOnly(){
 function shareWrapped(){
   if(!_wrData)return;
   var f=_wrFile;
-  if(!f){toast("Still drawing your card — tap Share again in a second");return;}
+  if(!f){
+    if(_wrFileState==="failed"){_wrShareTextOnly();return;}   // no image to give: text + link
+    toast("Still drawing your card — tap Share again in a second");return;
+  }
   if(navigator.share&&navigator.canShare&&navigator.canShare({files:[f]})){
     navigator.share({files:[f],title:_wrData.year+" Wrapped"}).catch(function(e){
       if(e&&e.name==="AbortError")return;          // they closed the sheet
-      _wrShareTextOnly();
+      // That call spent the tap's user activation, so a second navigator.share
+      // would be rejected silently. Fall back to something that needs none.
+      _wrDownload(f);
     });
     return;
   }
-  // No file sharing (most desktops): save the image instead.
+  _wrDownload(f);                                   // no file sharing (most desktops)
+}
+function _wrDownload(f){
   try{
     var u=URL.createObjectURL(f),a=document.createElement("a");
     a.href=u;a.download=f.name;document.body.appendChild(a);a.click();a.remove();
     setTimeout(function(){URL.revokeObjectURL(u);},4000);
     toast("Saved your Wrapped image");
-  }catch(e){_wrShareTextOnly();}
+  }catch(e){
+    var txt=_wrShareText(_wrData)+"\n"+location.origin+location.pathname;
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(function(){toast("Copied your Wrapped");},function(){toast("Couldn't share your Wrapped");});
+    else toast("Couldn't share your Wrapped");
+  }
 }
 function _wrRender(){
   var sl=_wrSlides[_wrIdx];if(!sl)return;

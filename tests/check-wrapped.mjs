@@ -293,7 +293,16 @@ check("nemesis is the lowest agreement rate (Bob)", ann.nemesis && /Bob/.test(an
     /navigator\.canShare\(\{files:\[f\]\}\)/.test(sw) && /navigator\.share\(\{files:\[f\]/.test(sw));
   check("nothing async sits between the tap and navigator.share",
     !/toBlob|_wrPrepareImage|\bawait\b|\.then\(/.test(sw.slice(0, sw.indexOf("navigator.share("))));
-  check("no file sharing (desktop): the image downloads instead", /a\.download=f\.name/.test(sw));
+  check("no file sharing (desktop): the image downloads instead", /_wrDownload\(f\)/.test(sw) && /a\.download=f\.name/.test(fn("_wrDownload")));
+  check("a failed image draw falls back to text, not 'still drawing' forever",
+    /_wrFileState==="failed"\)\{_wrShareTextOnly\(\)/.test(sw) && /_wrFileState="failed"/.test(fn("_wrPrepareImage")));
+  {
+    // After navigator.share rejects, the tap's activation is spent: the
+    // fallback must not call navigator.share again.
+    const onFail = sw.slice(sw.indexOf(".catch("), sw.indexOf("});", sw.indexOf(".catch("))).replace(/\/\/[^\n]*/g, "");
+    check("a rejected image share falls back without a second navigator.share",
+      /_wrDownload\(f\)/.test(onFail) && !/_wrShareTextOnly|navigator\.share/.test(onFail));
+  }
   check("the card is story-sized (1080×1920)", /WR_CARD_W=1080,WR_CARD_H=1920/.test(html));
   check("reachable from the More menu", /id="wrappedBtn"[^>]*openWrapped\(\)/.test(html));
   check("reachable from the leaderboard", /wrappedYear\(rows,/.test(fn("loadLeaderboard")) && /openWrapped\(\)/.test(fn("loadLeaderboard")));
