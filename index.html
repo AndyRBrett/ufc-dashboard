@@ -74,18 +74,18 @@ body[data-theme="usa"]{--bg:#070a13;--card:#0e1322;--card2:#161d33;--surface:#16
    double border. Like .silver-tag it sits after the sticky header, so it
    scrolls away and the header stays compact once you're into the cards. */
 .usa-tag,.us-flag{display:none}
-body[data-theme="usa"] .usa-tag{display:block;position:relative;background:#0a1430;
+body[data-theme="usa"] .usa-tag{display:block;position:relative;z-index:6;background:#0a1430;
   border-bottom:1px solid rgba(91,140,255,.22)}
-body[data-theme="usa"] .us-flag{display:block;position:relative;height:22px;overflow:hidden;pointer-events:none;
+body[data-theme="usa"] .us-flag{display:block;position:relative;height:28px;overflow:hidden;pointer-events:none;
   background:
-    radial-gradient(circle,#fff .85px,transparent 1.35px) 0 0/10px 7.4px,
-    radial-gradient(circle,#fff .85px,transparent 1.35px) 5px 3.7px/10px 7.4px,
+    radial-gradient(circle,#fff 1px,transparent 1.5px) 0 0/10px 8px,
+    radial-gradient(circle,#fff 1px,transparent 1.5px) 5px 4px/10px 8px,
     linear-gradient(#0a3161,#0a3161);
   background-repeat:repeat,repeat,no-repeat}
 /* stripes live on ::before, covering everything right of the union, so the
    star layers can tile freely and only ever show inside the union's box */
-body[data-theme="usa"] .us-flag::before{content:"";position:absolute;top:0;bottom:0;left:74px;right:0;
-  background:repeating-linear-gradient(180deg,#b31942 0 3.143px,#eef1f8 3.143px 6.286px)}
+body[data-theme="usa"] .us-flag::before{content:"";position:absolute;top:0;bottom:0;left:84px;right:0;
+  background:repeating-linear-gradient(180deg,#b31942 0 4px,#eef1f8 4px 8px)}
 /* Wind. usBuildFlags() cuts the band into thin vertical slices, each carrying
    its own piece of the flag and bobbing on a staggered delay, so a ripple
    travels hoist-to-fly instead of the band sitting flat. The fly end swings
@@ -97,11 +97,11 @@ body[data-theme="usa"] .us-flag::before{content:"";position:absolute;top:0;botto
 body[data-theme="usa"] .us-flag.built{background:none}
 body[data-theme="usa"] .us-flag.built::before{display:none}
 .us-flag>i{position:absolute;top:0;height:100%;display:block;
-  background:repeating-linear-gradient(180deg,#b31942 0 3.143px,#eef1f8 3.143px 6.286px);
+  background:repeating-linear-gradient(180deg,#b31942 0 4px,#eef1f8 4px 8px);
   animation:usFlutter 1.9s ease-in-out infinite;will-change:transform}
 .us-flag>i.u{background:
-    radial-gradient(circle,#fff .85px,transparent 1.35px) 0 0/10px 7.4px,
-    radial-gradient(circle,#fff .85px,transparent 1.35px) 5px 3.7px/10px 7.4px,
+    radial-gradient(circle,#fff 1px,transparent 1.5px) 0 0/10px 8px,
+    radial-gradient(circle,#fff 1px,transparent 1.5px) 5px 4px/10px 8px,
     #0a3161}
 @keyframes usFlutter{0%,100%{transform:translateY(calc(var(--a) * -1))}50%{transform:translateY(var(--a))}}
 /* light and shadow riding the same wave: one crest per 120px, drifting at the
@@ -118,7 +118,7 @@ body[data-theme="usa"] .usa-tag-row svg{width:11px;height:11px;display:block;fle
 /* The ranks header carries the same band, inside its own box the way Silver's
    ridge does — height grows by exactly the band, taken as padding — so it can
    never overlap the panel content. */
-body[data-theme="usa"] .lb-hdr{position:relative;height:78px;padding-bottom:22px}
+body[data-theme="usa"] .lb-hdr{position:relative;height:84px;padding-bottom:28px}
 body[data-theme="usa"] .lb-hdr .us-flag{position:absolute;left:0;right:0;bottom:0}
 @media (prefers-reduced-motion:reduce){body[data-theme="usa"] .us-flag::after,.us-flag>i{animation:none}}
 @media (max-width:350px){body[data-theme="usa"] .usa-tag-row{letter-spacing:.16em;font-size:9px}}
@@ -2989,7 +2989,7 @@ function applyTheme(t){
    Each slice's phase comes from its x on a US_WAVE px wavelength, so the ripple
    travels; slices overlap by a pixel so no seam opens between neighbours
    mid-swing. Rebuilt on resize, like the Silver ridge, so it always spans. */
-var US_UNION=72,US_WAVE=120,US_PERIOD=1.9;
+var US_UNION=84,US_WAVE=120,US_PERIOD=1.9;
 function usBuildFlags(){
   var hosts=document.querySelectorAll(".us-flag");
   for(var h=0;h<hosts.length;h++){
@@ -2999,10 +2999,10 @@ function usBuildFlags(){
     var step=Math.max(4,Math.ceil(w/160)),out="";
     for(var x=0;x<w;x+=step){
       var u=x<US_UNION,sw=u?Math.min(step,US_UNION-x):step;
-      var amp=(0.5+1.3*Math.min(x/Math.max(w,1),1)).toFixed(2);
+      var amp=(0.6+1.6*Math.min(x/Math.max(w,1),1)).toFixed(2);
       var d=(-(x%US_WAVE)/US_WAVE*US_PERIOD).toFixed(3);
       out+='<i'+(u?' class="u"':'')+' style="left:'+x+'px;width:'+(sw+1)+'px;--a:'+amp+
-        'px;animation-delay:'+d+'s'+(u?';background-position:'+(-x)+'px 0,'+(5-x)+'px 3.7px,0 0':'')+'"></i>';
+        'px;animation-delay:'+d+'s'+(u?';background-position:'+(-x)+'px 0,'+(5-x)+'px 4px,0 0':'')+'"></i>';
       if(u&&sw<step)x-=step-sw;   // land the next slice exactly on the union edge
     }
     host.innerHTML=out;
