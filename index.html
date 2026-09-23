@@ -1260,19 +1260,9 @@ body[data-theme="silver"] .logo-silver{display:block;animation:eagleBreathe 3.6s
 body[data-theme="silver"] .logo-text{font-family:'Great Vibes',cursive;font-size:30px;letter-spacing:0;
   line-height:.8;padding:7px 6px 0 0;color:#a30d24;text-shadow:0 1px 0 #fff;
   -webkit-text-stroke:.9px #a30d24;paint-order:stroke fill}
-body[data-theme="silver"] .logo-text span{color:#a30d24}
-/* On a phone the one-line wordmark (~210px at 26px) plus the three header
-   buttons (~180px) is wider than the header at every width up to ~450px, so
-   the More button was pushed off the right edge. Shrinking the script until
-   it fits on one line takes it to ~20px, where Great Vibes stops reading.
-   Stacking it instead ("The Silver" over an indented "Bullet", the way a can
-   label sets it) halves the width at the same size. The header is 62px and
-   two lines at line-height .8 are ~46px, so nothing grows. */
-@media (max-width:460px){
-  body[data-theme="silver"] .logo-text{font-size:28px;line-height:.82;padding-top:4px;white-space:nowrap}
-  body[data-theme="silver"] .logo-text span{display:block;margin-left:1.1em}}
-@media (max-width:380px){body[data-theme="silver"] .logo-text{font-size:25px;-webkit-text-stroke-width:.8px}}
+@media (max-width:400px){body[data-theme="silver"] .logo-text{font-size:26px;-webkit-text-stroke-width:.8px}}
 @media (max-width:350px){body[data-theme="silver"] .logo-text{font-size:22px;-webkit-text-stroke-width:.7px}}
+body[data-theme="silver"] .logo-text span{color:#a30d24}
 /* tagline strip, hidden on every other theme */
 .silver-tag{display:none}
 body[data-theme="silver"] .silver-tag{display:block;position:relative;padding-top:22px;background:#0d1418}
