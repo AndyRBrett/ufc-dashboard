@@ -183,5 +183,15 @@ const res = (date, a, b) => ctx._findFightResult(date, a, b);
   check("the old 1–3 star picker is gone", !/\[1,2,3\]\.forEach\(function\(n\)\{\s*var sb=/.test(html));
 }
 
+// --- the server-side cap agrees with the app ----------------------------------
+{
+  const sql = readFileSync(join(ROOT, "supabase/migrations/0005_picks_lock_cap.sql"), "utf8");
+  const m = sql.match(/new\.event_date < '(\d{4}-\d{2}-\d{2})'/);
+  check("the DB lock cap starts on the same card as LOCKS_START", !!m && m[1] === LOCKS_START);
+  check("the DB lock cap allows exactly LOCKS_PER_CARD", new RegExp(`others >= ${LOCKS_PER_CARD}\\b`).test(sql));
+  check("the DB clamps an extra lock instead of rejecting the pick",
+    /new\.confidence := 0/.test(sql) && !/raise exception/i.test(sql));
+}
+
 if (failures) { console.error(`\n${failures} lock check(s) failed`); process.exit(1); }
 console.log("Lock checks passed");

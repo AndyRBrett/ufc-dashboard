@@ -502,8 +502,13 @@ Those stars never scored, and old cards are full of them (one player starred
 seven bouts on a card), so `isLockPick` ignores anything dated before
 `LOCKS_START` — drop that gate and every past standing and the belt's
 history rewrite themselves. Every per-pick scorer goes through `pickPts`;
-the board sums `u.lockPts` into `userPts`. The cap is enforced where locks are
-set (`toggleLock`), not in scoring. `npm run check:locks` holds all of this.
+the board sums `u.lockPts` into `userPts`. The cap lives in two places, never in
+scoring: `toggleLock` in the app, and the `picks_cap_locks` trigger
+(`supabase/migrations/0005_picks_lock_cap.sql`) for two phones on one account.
+The trigger **clamps** a third lock to 0 rather than rejecting the row —
+`syncPick` upserts pick, method and lock together, so a rejection would drop
+the pick over a lock that was never going to count. Its date must match
+`LOCKS_START`. `npm run check:locks` holds all of this.
 
 ## Other conventions
 
