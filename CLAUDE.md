@@ -39,6 +39,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:lock`  | a bout still pickable after its own segment has started (or locked before it) |
 | `npm run check:recap` | the post-card recap crediting a title, rank or score the board and belt don't |
 | `npm run check:wrapped` | Year Wrapped reporting a rank, score, upset or reign the year-scoped board and belt don't |
+| `npm run check:locks` | a 🔒 lock scoring differently on the board, belt or challenges, legacy stars scoring, or a third lock on a card |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -491,6 +492,23 @@ the article's section headings — `parse_upcoming_card` reads `{{MMAevent bout}
 templates and throws the headings away. `_MAIN_CARD_SIZE` and
 `_PRELIM_CARD_SIZE` pin the exceptions to the standard 5 / 4 / rest shape. When
 the parser learns to read the headings, both tables retire together.
+
+## Locks 🔒 ride in the old `confidence` column — and only count from `LOCKS_START`
+
+A lock is +1 on a winner, −1 on a loser, on top of whatever the pick earns;
+two per card, closing with the bout's own segment. It is stored as
+`picks.confidence > 0`, the column the retired 1–3 "confidence stars" wrote to.
+Those stars never scored, and old cards are full of them (one player starred
+seven bouts on a card), so `isLockPick` ignores anything dated before
+`LOCKS_START` — drop that gate and every past standing and the belt's
+history rewrite themselves. Every per-pick scorer goes through `pickPts`;
+the board sums `u.lockPts` into `userPts`. The cap lives in two places, never in
+scoring: `toggleLock` in the app, and the `picks_cap_locks` trigger
+(`supabase/migrations/0005_picks_lock_cap.sql`) for two phones on one account.
+The trigger **clamps** a third lock to 0 rather than rejecting the row —
+`syncPick` upserts pick, method and lock together, so a rejection would drop
+the pick over a lock that was never going to count. Its date must match
+`LOCKS_START`. `npm run check:locks` holds all of this.
 
 ## Other conventions
 
