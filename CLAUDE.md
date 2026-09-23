@@ -25,7 +25,7 @@ runs the full gate set (all fast, all local):
 | `npm run smoke`       | the app failing to **boot** — loads it headlessly and opens the leaderboard |
 | `npm run check:tap`   | a tapped push notification not surfacing its message            |
 | `npm run check:audience` | trash talk reaching the wrong people (roast targets vs. push recipients) |
-| `npm run check:prompt` | a typed roast angle getting diluted by the rest of the prompt |
+| `npm run check:prompt` | a typed roast angle losing its place as the roast's subject, or the length cap drifting |
 | `npm run check:provider` | the roast losing its unfiltered model, or analysis drifting onto it |
 | `npm run check:dedup` | the three result senders drifting apart and double-pushing a fight |
 | `npm run check:model` | the fight model posting a confident number off missing data |
@@ -321,10 +321,10 @@ is why `provider`, `model` and `fellBack` come back in the response.
    `grok-4.20-0309-reasoning` / `-non-reasoning`), so don't infer it.
 2. **A reasoning model returns HTTP 200 with empty content** if the token budget
    is tight, because on the OpenAI-shaped API that budget covers the model's
-   internal reasoning, not just the reply. The roast's prompt-level cap (~30
-   words) made 120 tokens a natural ceiling, and 120 is nowhere near enough for
+   internal reasoning, not just the reply. The roast's prompt-level cap (~70
+   words) makes 250 tokens a natural ceiling, and 250 is nowhere near enough for
    a model that thinks first. Hence `GROK_MAX_TOKENS` at 1000, separate from the
-   120 the Claude path still uses: **it buys reasoning room, it does not permit a
+   250 the Claude path still uses: **it buys reasoning room, it does not permit a
    longer roast** — length is the prompt's job. A loose ceiling costs nothing
    when the model doesn't reason, since billing is per token produced.
 
@@ -336,7 +336,7 @@ is why `provider`, `model` and `fellBack` come back in the response.
 correctness property here.** The shipped default,
 `grok-4.20-0309-non-reasoning`, is the only Grok model that has actually served
 a roast on this workload: **1.7s** end to end, against roughly 2s for the Claude
-path it replaced. A burn of under 30 words has nothing to reason about, so a
+path it replaced. A burn of a few sentences has nothing to reason about, so a
 thinking budget buys latency and no quality. Three things hold that, and
 `check:provider` holds all three:
 
@@ -359,7 +359,8 @@ thinking budget buys latency and no quality. Three things hold that, and
    return.
 3. **The angle retry is a second full model call**, so it is skipped when the
    first one already spent `ROAST_RETRY_BUDGET_MS`. That was half of the 23
-   seconds. A roast that drops the typed angle is worse; a roast that takes half
+   seconds. It also only fires when the roast carries *none* of the angle's
+   content words — see "The typed angle is a springboard" below. A roast that drops the typed angle is worse; a roast that takes half
    a minute is a worse *feature*, and the sender can retype and regenerate.
 
 `RETRY_BACKOFF_MS` exists so the gate can exercise the retry paths without
@@ -399,20 +400,33 @@ aimed at making roasts rawer should not silently re-tighten the floor either.
 Worth knowing when weighing where it sits: the sender reads the roast on screen
 and taps send, so this governs what gets **generated**, not what reaches a phone.
 
+**The typed angle is a springboard, not a script — and the roast is a riff,
+not a one-liner.** Both used to be clamped hard because of Claude: it kept
+trading a typed angle for its own tamer burn, so the prompt demanded the
+sender's words back near-verbatim and `usesAngle` retried unless ~60% of them
+survived; and the cap was one or two sentences under 30 words. On Grok neither
+fight exists, and both clamps made the roast read like the sender's line
+parroted back. Now the angle must be what the roast is *about* — the model may
+reword, exaggerate and build on it — and the cap is two to four sentences under
+70 words. `usesAngle` passes on a single content word, so it only retries a roast
+that walked away from the angle entirely; raising that threshold again would
+reject exactly the reworded riffs the prompt asks for. `check:prompt` holds all
+of this, including that the verbatim wording hasn't crept back.
+
 **What the rule does NOT relax.** The length cap, `FACTS ARE STRICT` and the
 signature rule are untouched by it, and `check:provider` asserts all three
 survive.
 
 **The roast's length has a hard bound in code, not just in the prompt
-(`ROAST_MAX_CHARS`, 600).** It used to be safe to lean on the prompt, because
+(`ROAST_MAX_CHARS`, 900).** It used to be safe to lean on the prompt, because
 120 max_tokens could not produce more than ~480 characters and `send-push`
 rejects a body over `MAX_BODY` (1600) — the headroom made the question moot.
 `GROK_MAX_TOKENS` at 1000 ends that: ~4000 characters of prose clears `MAX_BODY`
 easily, and the resulting failure splits the feature in half — `ai-breakdown`
 returns 200, the sender reads a roast on screen, taps send, and gets a 400 they
 can do nothing about. So the clamp runs server-side, **before** `enforceSignature`
-so the trailing `— Persona` the client parses always survives the cut. 600 never
-fires on a compliant roast (30 words is ~180 chars) and always leaves room for
+so the trailing `— Persona` the client parses always survives the cut. 900 never
+fires on a compliant roast (70 words is ~420 chars) and always leaves room for
 the signature. `check:provider` reads `MAX_BODY` out of `send-push` and asserts
 clamp + longest-possible signature still fits, so the two files can't drift.
 
