@@ -214,7 +214,7 @@ const ROASTER_PROFILES: { aliases: string[]; bio: string }[] = [
   },
   {
     aliases: ["t", "torrey", "torreybrett", "softhands"],
-    bio: "Torrey Brett — AB's brother, tall and on the heavy side, nicknamed 'Soft Hands'. Software developer, animal lover. Just moved to Dallas and hates the city, and hates even more that the Dallas teams are stocked with Houston guys now that he lives there. Dallas is only ever something to insult: any Dallas reference trashes the city or its teams, and he never defends, praises or sticks up for Dallas — not when he's the one talking, not when he's the target.",
+    bio: "Torrey Brett — AB's brother, tall and on the heavy side, nicknamed 'Soft Hands'. Software developer, animal lover. Just moved to Dallas and hates the city, and hates even more that the Dallas teams are stocked with Houston guys now that he lives there. Dallas is only ever something to insult: any Dallas reference trashes the city or its teams, and never defends, praises or sticks up for Dallas.",
   },
   {
     aliases: ["ab", "andy", "andybrett"],
@@ -235,44 +235,48 @@ function profileFor(nickname: string): string | null {
   return _profileIndex.get(normNick(nickname)) ?? null;
 }
 
-// One optional paragraph of who-these-people-are, appended to the roast prompt.
+// One optional paragraph of who-this-person-is, appended to the roast prompt.
 // Deliberately framed as something the persona already knows rather than data
-// to report: without the "never recite / at most one" rule the model reads the
-// dossier back as a list of facts, which is the opposite of a burn.
+// to report: without the "never recite" rule the model reads it back as a list
+// of facts, which is the opposite of a burn.
+//
+// It carries ONE target's profile, picked at random, and never the sender's.
+// Both are structural on purpose, after prompt rules alone kept losing:
+//
+//   - The sender's own profile was the source of every leak. Torrey's "Soft
+//     Hands" came back as a brag from the top of the board; then his Dallas
+//     move was pinned on the whole group, twice ("soft-handed Dallas
+//     transplants", "hiding in Dallas like the rest of you cowards") — with a
+//     rule forbidding exactly that sitting in the prompt. A roast aimed at
+//     other people has no use for the sender's details, so it doesn't get them.
+//   - Handing over every target's profile invited the model to stack them and
+//     cross-wire them into one smear. The prompt only ever allowed one detail
+//     per roast; now only one person's details exist to use, so there is
+//     nothing to mix up, and the random pick keeps roasts varied across sends.
 function buildDossier(myName: string, targets: string[], hasHint: boolean): string {
-  const lines: string[] = [];
-  const mine = profileFor(myName);
-  if (mine) lines.push(`${myName} (the one talking): ${mine}`);
+  const me = normNick(myName);
+  const profiled: { name: string; bio: string }[] = [];
   const seen = new Set<string>();
   for (const t of targets) {
     const key = normNick(t);
-    if (!key || seen.has(key)) continue;
+    if (!key || key === me || seen.has(key)) continue;
     seen.add(key);
     const bio = profileFor(t);
-    if (bio) lines.push(`${t} (target): ${bio}`);
+    if (bio) profiled.push({ name: t, bio });
   }
-  if (!lines.length) return "";
-  // With an angle on the table the dossier backs it up: a personal detail that
-  // piles onto what the sender asked for is welcome, one that drags the roast
-  // somewhere else entirely is not.
+  if (!profiled.length) return "";
+  const { name, bio } = profiled[Math.floor(Math.random() * profiled.length)];
+  // With an angle on the table the detail backs it up: one that piles onto
+  // what the sender asked for is welcome, one that drags the roast somewhere
+  // else entirely is not.
   const use = hasHint
-    ? "Use AT MOST ONE of those details, and only if it builds on the angle you were given — if it drags the roast somewhere else entirely, leave it out."
-    : "Use AT MOST ONE of those details, and only when it makes the burn funnier than the picks would; ignore the lot if the roast is sharper without.";
-  // Every detail in a profile is a flaw, a quirk or a grudge — ammunition,
-  // never praise. Left unsaid, the model spins them around: Torrey's "Soft
-  // Hands" came back as a flex ("laughing his soft-handed ass off" from the top
-  // of the board) because he was the one talking and the roast was flattering
-  // him. The sender's own details say what they'd rant about; never a brag.
-  const polarity = mine
-    ? ` Every one of those details is a weakness or a grudge, never a strength — do not spin any of them into a compliment, a boast or a badge of honour. That goes for ${myName} too: ${myName}'s own details are their hang-ups and things they'd rant about, never something to brag with; if you touch one of their flaws, it's at their own expense.`
-    : " Every one of those details is a weakness or a grudge, never a strength — do not spin any of them into a compliment, a boast or a badge of honour.";
-  // Every detail belongs to the person it describes. Without this the model
-  // treats the dossier as a shared pool of insults: a roast sent by Torrey
-  // buried the whole board as "soft-handed Dallas transplants" — his nickname
-  // and his city, thrown at four people who are neither, so the burn missed
-  // everyone it was aimed at.
-  const ownership = " Each detail belongs ONLY to the person it describes — aim it at that person and nobody else. Never pin one person's nickname, looks, job, city or history on someone else, and never smear one person's detail across a whole group: calling everyone something only one of them is doesn't land on anybody.";
-  return ` YOU KNOW THESE PEOPLE personally — background, not material to report: ${lines.join(" | ")} ${use}${polarity}${ownership} Never list them, never explain them, never let on that you were handed them.`;
+    ? "Use AT MOST ONE detail from it, and only if it builds on the angle you were given — if it drags the roast somewhere else entirely, leave it out."
+    : "Use AT MOST ONE detail from it, and only when it makes the burn funnier than the picks would; ignore it if the roast is sharper without.";
+  // Every detail is a flaw, a quirk or a grudge — ammunition, never praise.
+  const polarity = " Every detail there is a weakness or a grudge, never a strength — do not spin it into a compliment, a boast or a badge of honour.";
+  // It belongs to that one person: nobody else on the board shares it.
+  const ownership = ` That background is about ${name} and ${name} ONLY — aim any of it at ${name} alone. Nobody else on the board shares any of it: never pin it on anyone else, and never spread it across the group.`;
+  return ` YOU KNOW ${name} personally — background, not material to report: ${bio} ${use}${polarity}${ownership} Never list it, never explain it, never let on that you were handed it.`;
 }
 
 // Assembles the full roast prompt from the short variable parts the client
