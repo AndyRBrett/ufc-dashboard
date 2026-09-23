@@ -131,8 +131,14 @@ assert("profile details are framed as weaknesses, never spun into a boast",
   /never a strength/.test(bySoftHands.system) && /compliment, a boast or a badge of honour/.test(bySoftHands.system));
 assert("the sender's own profile is never material to brag with",
   /T's own details are their hang-ups[^.]*never something to brag with/.test(bySoftHands.system));
+assert("each profile detail is aimed only at the person it describes",
+  /Each detail belongs ONLY to the person it describes/.test(bySoftHands.system) && /never smear one person's detail across a whole group/.test(bySoftHands.system));
+// Ownership holds even when only a target has a profile — the sender's own
+// absence doesn't make a target's detail fair game for the rest of the board.
+const targetOnly = buildTrashTalk({ ...base, myNickname: "Nobody", targets: ["T", "Somebody"], hint: "" });
+assert("ownership applies when only a target has a profile", /Each detail belongs ONLY to the person it describes/.test(targetOnly.system));
 const byStranger = buildTrashTalk({ ...base, myNickname: "Nobody", targets: ["Nobody Else"], hint: "" });
-assert("no profile, no dossier (and no polarity rule)", !/YOU KNOW THESE PEOPLE|never a strength/.test(byStranger.system));
+assert("no profile, no dossier (and no polarity or ownership rule)", !/YOU KNOW THESE PEOPLE|never a strength|belongs ONLY/.test(byStranger.system));
 
 let bad = 0;
 for (const c of checks) { console.log(`  ${c.cond ? "✓" : "✗"} ${c.name}`); if (!c.cond) bad++; }
