@@ -2408,7 +2408,7 @@ var _trashText="",_trashPersona="",_trashMe=null,_trashOpponents=[],_trashMyRank
 // the board except the sender, while the roast stays written about the targets.
 var _trashAudience="targets";
 // Which leaderboard the trash talk is about, captured when the sheet opens.
-var _trashLbMode="current",_trashLbEvName=null,_lbCtxEvName=null;
+var _trashLbMode="current",_trashLbEvName=null,_lbCtxEvName=null,_lbCtxEvDate=null;
 var _trashPersonas=["Conor McGregor","Chael Sonnen","Colby Covington","Sean Strickland","Nate Diaz","Jorge Masvidal","Israel Adesanya","Jon Jones","Michael Bisping","Dominick Cruz","Daniel Cormier","Rampage Jackson","Tito Ortiz","Kevin Holland","Paddy Pimblett","Sean O'Malley","Dustin Poirier","Justin Gaethje","Kamaru Usman","Henry Cejudo","Ben Askren","Matt Serra","Donald Cerrone","Khabib Nurmagomedov","Max Holloway","Muhammad Ali","Mike Tyson","Floyd Mayweather Jr.","Tyson Fury","Deontay Wilder","Shannon Briggs","Ric Flair","Dwayne Johnson","Stone Cold Steve Austin","John Cena","CM Punk","Triple H","The Miz","MJF","Paul Heyman","Randy Savage","Roddy Piper","Hulk Hogan","Kurt Angle","Booker T","Chris Jericho","Kevin Garnett","Gary Payton","Charles Barkley","Draymond Green","Richard Sherman","Deion Sanders","Terrell Owens","Chad Johnson","Dennis Rodman","Pat McAfee","Marshawn Lynch","Cam Newton","Jalen Ramsey","Shannon Sharpe","Joe Rogan","Bill Burr","Andrew Schulz","Kevin Hart","Theo Von","Don Rickles","Larry David","Howard Stern","Gordon Ramsay","Simon Cowell","Samuel L. Jackson","Katt Williams","Tony Stark","Deadpool","Ron Swanson","Tyler Durden","Trevor Philips","Kratos","Duke Nukem","Sterling Archer","The Joker","Captain Jack Sparrow","Johnny Lawrence","Homelander","Bender Bending Rodríguez","Kenny Powers","Ron Burgundy","Ricky Bobby","Shooter McGavin","Happy Gilmore","Eric Cartman","Rick Sanchez","Stewie Griffin","Saul Goodman","Walter White","Tony Montana","Dave Chappelle","Ricky Gervais","Yosemite Sam","Patrick Bateman","Frank Reynolds","Dr. Cox","Michael Scott","GOB Bluth","Bugs Bunny","Daffy Duck","Foghorn Leghorn","Marvin the Martian","Taz"];
 var _scrollY=0;
 function lockScroll(){_scrollY=window.scrollY;document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.width='100%';document.body.style.top='-'+_scrollY+'px';}
@@ -7077,16 +7077,28 @@ function showIncomingTrashTalk(text,sender){
 // card join flagged noEventPicks with zeroed event stats: "hasn't even picked
 // yet" is true, and the facts say so instead of inventing a record for them.
 var TRASH_ACTIVE_DAYS=60;   // same window _slackersFor uses for "still around"
-function _trashPool(eventSorted,allSorted,cutoffDate){
+function _trashNoPicks(nickname,user_id,isMe){
+  return {nickname:nickname,user_id:user_id,isMe:!!isMe,noEventPicks:true,picks:[],
+    correct:0,total:0,methods:0,fotn:0,dogPts:0,lockPts:0,currentStreak:0,accuracy:null};
+}
+// `eventSorted` is the board as shown, which is also filtered by the Main Card
+// scope. "Absent from it" therefore does NOT mean "hasn't picked": someone whose
+// picks on this card are all prelims is off the main-card board but has picked.
+// `eventAll` is the same card unscoped, and is what decides noEventPicks; those
+// people join with their real picks, only the genuinely absent get the flag.
+function _trashPool(eventSorted,eventAll,allSorted,cutoffDate){
   var out=(eventSorted||[]).slice(),seen={};
   function keys(u){return [u.user_id?"id:"+u.user_id:"","nm:"+_lbBaseName(u.nickname)];}
-  out.forEach(function(u){keys(u).forEach(function(k){if(k)seen[k]=1;});});
+  function isSeen(u){return keys(u).some(function(k){return k&&seen[k];});}
+  function mark(u){keys(u).forEach(function(k){if(k)seen[k]=1;});}
+  out.forEach(mark);
+  (eventAll||[]).forEach(function(u){if(isSeen(u))return;mark(u);out.push(u);});
   (allSorted||[]).forEach(function(u){
-    if(keys(u).some(function(k){return k&&seen[k];}))return;
+    if(isSeen(u))return;
     var last=(u.picks||[]).reduce(function(m,p){return p.evDate>m?p.evDate:m;},"");
     if(!u.isMe&&cutoffDate&&last<cutoffDate)return;
-    out.push({nickname:u.nickname,user_id:u.user_id,isMe:u.isMe,noEventPicks:true,picks:[],
-      correct:0,total:0,methods:0,fotn:0,dogPts:0,lockPts:0,currentStreak:0,accuracy:null});
+    mark(u);
+    out.push(_trashNoPicks(u.nickname,u.user_id,u.isMe));
   });
   return out;
 }
@@ -7095,7 +7107,8 @@ function openTrashTalk(){
   var pool=_lbSorted||[];
   if(lbMode==="current"){
     var cutoff=new Date(Date.now()-TRASH_ACTIVE_DAYS*DAY_MS).toISOString().slice(0,10);
-    pool=_trashPool(pool,_lbScoreUsers(_lbRows,null),cutoff);
+    var evAll=_lbCtxEvDate?_lbScoreUsers(_lbRows,function(p){return p.event_date===_lbCtxEvDate;}):[];
+    pool=_trashPool(pool,evAll,_lbScoreUsers(_lbRows,null),cutoff);
   }
   var me=null,myRank=0,opponents=[];
   pool.forEach(function(u,i){
@@ -7104,7 +7117,10 @@ function openTrashTalk(){
     if(u.isMe){me=u;myRank=u.noEventPicks?0:i+1;}
     else{opponents.push({nickname:u.nickname,user_id:u.user_id,rank:i+1,points:pts,accuracy:u.accuracy,streak:u.currentStreak,currentStreak:u.currentStreak,correct:u.correct,total:u.total,methods:u.methods,fotn:u.fotn,picks:u.picks||[],noEventPicks:!!u.noEventPicks});}
   });
-  if(!me){toast("Make some picks to trash talk!");return;}
+  // Someone who has never picked anything has no row anywhere, but can still
+  // talk: they join as a no-picks sender under the name they set.
+  if(!me&&String(userName||"").trim())me=_trashNoPicks(userName,USER_ID,true);
+  if(!me){toast("Set your name to trash talk!");return;}
   if(!opponents.length){toast("Nobody else on the board to roast yet!");return;}
   _trashMe=me;_trashOpponents=opponents;_trashMyRank=myRank;_trashPersona="";
   _trashLbMode=lbMode;_trashLbEvName=_lbCtxEvName;
@@ -7200,7 +7216,9 @@ var _trashGenerating=false;
 // recycling the same username/rank/emoji jokes every time.
 function _trashPairKey(p){return [p.f1,p.f2].sort().join("|");}
 function _trashRecord(u){
-  if(u.noEventPicks)return "hasn't made a single pick for "+(_trashLbEvName||"this card")+" yet";
+  if(u.noEventPicks)return _trashLbMode==="current"
+    ? "hasn't made a single pick for "+(_trashLbEvName||"this card")+" yet"
+    : "hasn't made a single pick yet";
   var resolved=(u.picks||[]).filter(function(p){return p.result!==null;}).length;
   // Nothing decided yet → say exactly that. This used to fall back to the total
   // pick count ("0 of "+u.total+" right"), so on a card that had not started the
@@ -8525,6 +8543,7 @@ function loadLeaderboard(isLive){
     // persist through the live main event instead of vanishing the moment it begins.
     var nextEv=EVENTS.filter(function(e){return _evStartMs(e)>nowMs-DAY_MS;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);})[0]||null;
     _lbCtxEvName=nextEv?nextEv.name:null;
+    _lbCtxEvDate=nextEv?nextEv.date:null;
     var nextMainFights=nextEv?nextEv.fights.slice().reverse():[];
     if(lbMode==="current"&&!nextEv){
       body.innerHTML='<div class="lb-empty">No active event right now.<br>Switch to All-Time to see standings.</div>';

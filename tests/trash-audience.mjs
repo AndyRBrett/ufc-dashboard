@@ -158,6 +158,8 @@ async function main() {
       window.USER_ID = "me";
       window.lbMode = "current";
       window._lbCtxEvName = "UFC 999";
+      window._lbCtxEvDate = EV;
+      window.userName = "T";
       window._lbRows = [
         senderPicked ? row("me", "T", EV, "Alpha") : row("me", "T", recent, "Old"),
         row("u-ab", "AB", recent, "Bravo"),
@@ -192,6 +194,35 @@ async function main() {
       /No picks yet for UFC 999: AB, Dereko/.test(r.note) && /roast them for it/.test(r.note));
     assert("early week: the facts say they haven't picked, and forbid inventing a record",
       /AB — hasn't made a single pick for UFC 999 yet/.test(r.facts) && /do NOT invent picks/.test(r.facts));
+
+    // Main Card scope drops prelim-only pickers from the shown board. They
+    // HAVE picked this card, so they must not be labelled as not having picked.
+    r = await page.evaluate(`(function(){
+      const EV = "2099-01-01";
+      const row = (uid, nick, date, f1) => ({ user_id: uid, nickname: nick, event_date: date, f1, f2: f1 + "-opp", pick: f1, method: "", confidence: 0, updated_at: date + "T00:00:00Z", bonus_pick: null });
+      window._lbRows = [row("me", "T", EV, "Alpha"), row("u-tris", "Tristin", EV, "Prelim"), row("u-ab", "AB", new Date().toISOString().slice(0,10), "Bravo")];
+      window._lbSorted = window._lbScoreUsers(window._lbRows, (p) => p.event_date === EV && p.user_id !== "u-tris");
+      window.__toasts = [];
+      window.openTrashTalk(); window.selectTrashPersona("Chael Sonnen");
+      const tris = window._trashOpponents.find((o) => o.nickname === "Tristin");
+      return { tris: tris && { flagged: !!tris.noEventPicks, picks: tris.picks.length },
+               note: document.getElementById("trashNoPicksNote").textContent };
+    })()`);
+    assert("a prelim-only picker hidden by Main Card scope is still roastable", !!r.tris);
+    assert("a prelim-only picker is not labelled as having no picks",
+      r.tris && !r.tris.flagged && r.tris.picks === 1 && !/Tristin/.test(r.note) && /AB/.test(r.note));
+
+    // Someone who has never picked anything at all has no row anywhere.
+    r = await page.evaluate(`(function(){
+      const row = (uid, nick, date, f1) => ({ user_id: uid, nickname: nick, event_date: date, f1, f2: f1 + "-opp", pick: f1, method: "", confidence: 0, updated_at: date + "T00:00:00Z", bonus_pick: null });
+      const recent = new Date().toISOString().slice(0,10);
+      window._lbRows = [row("u-ab", "AB", recent, "Bravo")];
+      window._lbSorted = [];
+      window.__toasts = []; window._trashMe = null;
+      window.openTrashTalk();
+      return { me: window._trashMe && window._trashMe.nickname, toasts: window.__toasts };
+    })()`);
+    assert("a first-time player with no picks anywhere can still roast", r.me === "T" && !r.toasts.length);
 
     r = await page.evaluate(`(${EARLY})(false)`);
     assert("a sender with no picks on the card can still roast", r.opened && !r.toasts.length && r.chips.includes("AB"));
