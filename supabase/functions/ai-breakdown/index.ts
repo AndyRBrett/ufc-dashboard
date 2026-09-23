@@ -210,7 +210,7 @@ Answer only the question — no preamble, no sign-off.`;
 const ROASTER_PROFILES: { aliases: string[]; bio: string }[] = [
   {
     aliases: ["jpeso", "jordan", "jordansalinas"],
-    bio: "Jordan Salinas — late to absolutely everything, parties way too hard, die-hard Houston sports fan, and takes men's fashion a little too seriously.",
+    bio: "Jordan Salinas — late to absolutely everything, parties way too hard, die-hard Houston sports fan, and takes men's fashion a little too seriously. Once flipped his car and totaled it.",
   },
   {
     aliases: ["t", "torrey", "torreybrett", "softhands"],
