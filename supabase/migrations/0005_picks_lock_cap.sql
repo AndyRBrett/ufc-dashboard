@@ -14,6 +14,9 @@
 -- count locks, and older cards still carry legacy star values up to 3 that must
 -- stay untouched. Keep this date in step with LOCKS_START in index.html.
 --
+-- The server has the last word: syncPick reads the row back when it carries a
+-- lock and reverts the device's local lock if it came back clamped.
+--
 -- The advisory lock serialises concurrent writes for the same user + card, so
 -- two simultaneous upserts can't both see "one lock so far" and both land.
 
@@ -34,8 +37,14 @@ begin
    where p.user_id = new.user_id
      and p.event_date = new.event_date
      and coalesce(p.confidence, 0) > 0
-     -- the same bout (either corner order) is this row, not another lock
-     and not ((p.f1 = new.f1 and p.f2 = new.f2) or (p.f1 = new.f2 and p.f2 = new.f1));
+     -- Any row sharing a fighter with this one is the SAME bout, not another
+     -- lock: a fighter is on a card once. Matching the exact pair instead
+     -- misread a rename ("Sean King III" -> "Sean King"): the client upserts
+     -- the re-spelled row before pruning the old alias, the alias counted as
+     -- a second lock, and the re-spelled row was clamped to 0 — then the
+     -- prune deleted the only locked copy.
+     and p.f1 not in (new.f1, new.f2)
+     and p.f2 not in (new.f1, new.f2);
   if others >= 2 then
     new.confidence := 0;
   end if;

@@ -2496,12 +2496,17 @@ function syncPick(ev,fight,notifyFriends){
   var key=pk(ev,fight);var myPick=preds[key];
   if(!myPick){deleteSbPick(ev,fight);return Promise.resolve(null);}
   var data={user_id:USER_ID,nickname:userName,event_date:ev.date,event_name:ev.name,f1:fight.f1.n,f2:fight.f2.n,pick:myPick,method:preds_method[key]||"",confidence:preds_conf[key]||0,updated_at:new Date().toISOString(),bonus_pick:preds_fotn["fotn_"+ev.date]||null};
+  // A lock asks for the stored row back: the picks_cap_locks trigger clamps a
+  // lock past LOCKS_PER_CARD to 0 (another device on this account may already
+  // hold two), and this device must show what the standings will score.
+  var wantLock=data.confidence>0;
   return _authReady.then(function(){
-    var hdrs=Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return=minimal"});
+    var hdrs=Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return="+(wantLock?"representation":"minimal")});
     return fetch(SUPABASE_URL+"/rest/v1/picks?on_conflict=user_id,event_date,f1,f2",{method:"POST",headers:hdrs,body:JSON.stringify(data)})
       .then(function(r){
         if(!r.ok)r.text().then(function(t){console.error("syncPick failed",r.status,t);});
         else{
+          if(wantLock)r.json().then(function(rows){_lockClampCheck(key,rows);}).catch(function(){});
           _rtBroadcast();
           // Heal fighter-order flips: the upsert key is (user_id,event_date,f1,f2), so a
           // pick re-synced under a new order would otherwise sit beside the old-order row.
@@ -4396,6 +4401,15 @@ function toggleLock(ev,fight){
   saveConf();render();
   toast(preds_conf[k]?"🔒 Locked: "+preds[k].split(" ").pop()+" (+"+LOCK_HIT+" / "+LOCK_MISS+")":"Lock removed");
   syncPick(ev,fight);
+}
+
+// The server clamped a lock we sent (already LOCKS_PER_CARD elsewhere on this
+// account): drop it locally so the card, badge and share image stop claiming it.
+function _lockClampCheck(key,rows){
+  var row=Array.isArray(rows)?rows[0]:null;
+  if(!row||(row.confidence||0)>0||!(preds_conf[key]>0))return;
+  preds_conf[key]=0;saveConf();render();
+  toast("🔒 Lock not saved — you already have "+LOCKS_PER_CARD+" locks on this card");
 }
 
 function undoPick(ev,fight){

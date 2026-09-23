@@ -59,6 +59,7 @@ vm.runInContext(fn("computeBeltLineage"), ctx);
 vm.runInContext(fn("_lbScoreUsers"), ctx);
 vm.runInContext(fn("cardLocksUsed"), ctx);
 vm.runInContext(fn("toggleLock"), ctx);
+vm.runInContext(fn("_lockClampCheck"), ctx);
 
 const { LOCKS_START, LOCK_HIT, LOCK_MISS, LOCKS_PER_CARD } = vm.runInContext(
   "({LOCKS_START,LOCK_HIT,LOCK_MISS,LOCKS_PER_CARD})", ctx);
@@ -191,6 +192,26 @@ const res = (date, a, b) => ctx._findFightResult(date, a, b);
   check("the DB lock cap allows exactly LOCKS_PER_CARD", new RegExp(`others >= ${LOCKS_PER_CARD}\\b`).test(sql));
   check("the DB clamps an extra lock instead of rejecting the pick",
     /new\.confidence := 0/.test(sql) && !/raise exception/i.test(sql));
+  // A rename re-spells ONE corner and the client upserts the new row before
+  // pruning the old alias; an exact-pair match counted that alias as a second
+  // lock and clamped the renamed row. Same bout = shares either fighter.
+  check("the DB treats a row sharing either fighter as the same bout (rename-safe)",
+    /p\.f1 not in \(new\.f1, new\.f2\)/.test(sql) && /p\.f2 not in \(new\.f1, new\.f2\)/.test(sql));
+}
+
+// --- a clamped lock is reverted on the device -------------------------------
+{
+  ctx.preds_conf = { K: 1, J: 1 };
+  toasts.length = 0;
+  ctx._lockClampCheck("J", [{ confidence: 1 }]);
+  check("a lock the server kept stays locked", ctx.preds_conf.J === 1 && toasts.length === 0);
+  ctx._lockClampCheck("K", [{ confidence: 0 }]);
+  check("a lock the server clamped is dropped locally, with a toast", ctx.preds_conf.K === 0 && toasts.length === 1);
+  ctx._lockClampCheck("J", []);
+  ctx._lockClampCheck("J", null);
+  check("an empty/odd response never unlocks", ctx.preds_conf.J === 1);
+  check("syncPick asks for the row back when it sends a lock and checks it",
+    /return="\+\(wantLock\?"representation":"minimal"\)/.test(html) && /_lockClampCheck\(key,rows\)/.test(html));
 }
 
 if (failures) { console.error(`\n${failures} lock check(s) failed`); process.exit(1); }
