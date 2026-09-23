@@ -270,7 +270,13 @@ function buildDossier(myName: string, targets: string[], hasHint: boolean): stri
   const polarity = mine
     ? ` Every one of those details is a weakness or a grudge, never a strength — do not spin any of them into a compliment, a boast or a badge of honour. That goes for ${myName} too: ${myName}'s own details are their hang-ups and things they'd rant about, never something to brag with; if you touch one of their flaws, it's at their own expense.`
     : " Every one of those details is a weakness or a grudge, never a strength — do not spin any of them into a compliment, a boast or a badge of honour.";
-  return ` YOU KNOW THESE PEOPLE personally — background, not material to report: ${lines.join(" | ")} ${use}${polarity} Never list them, never explain them, never let on that you were handed them.`;
+  // Every detail belongs to the person it describes. Without this the model
+  // treats the dossier as a shared pool of insults: a roast sent by Torrey
+  // buried the whole board as "soft-handed Dallas transplants" — his nickname
+  // and his city, thrown at four people who are neither, so the burn missed
+  // everyone it was aimed at.
+  const ownership = " Each detail belongs ONLY to the person it describes — aim it at that person and nobody else. Never pin one person's nickname, looks, job, city or history on someone else, and never smear one person's detail across a whole group: calling everyone something only one of them is doesn't land on anybody.";
+  return ` YOU KNOW THESE PEOPLE personally — background, not material to report: ${lines.join(" | ")} ${use}${polarity}${ownership} Never list them, never explain them, never let on that you were handed them.`;
 }
 
 // Assembles the full roast prompt from the short variable parts the client
