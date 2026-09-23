@@ -221,10 +221,6 @@ const ROASTER_PROFILES: { aliases: string[]; bio: string }[] = [
     bio: "Andy Brett — Torrey's brother, the short skinny one. Teaches kids' martial arts. Easy-going and thoughtful, but leans into a challenge way too hard.",
   },
   {
-    aliases: ["dereko", "derek"],
-    bio: "Derek — could be mistaken for Eminem, or B-Rabbit out of 8 Mile. Obsessed with cliff jumping.",
-  },
-  {
     aliases: ["tristin", "tris"],
     bio: "Tristin — AB's wife. Smart, beautiful and ruthless past the point of necessity. Her sense of humour is darker than anyone expects.",
   },
@@ -510,8 +506,8 @@ function enforceSignature(text: string, persona: string): string {
 // ordinary roast material off the table:
 //
 //   - the blanket "don't touch race, religion, sex, gender, disability or
-//     sexuality". Too broad by a mile. It caught Derek's Eminem likeness and
-//     any joke about AB and Tristin being married — which is exactly the
+//     sexuality". Too broad by a mile. It caught jokes about someone's looks
+//     and any joke about AB and Tristin being married — which is exactly the
 //     material the board exists for.
 //   - "no threat meant literally". This prompt LISTS comedic menace as one of
 //     its rhetorical forms ("a cold quiet threat delivered like a calm
