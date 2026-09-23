@@ -1105,10 +1105,65 @@ body[data-season="sep"]{--se-bg:#0e1c11;--se-card:#16301d;--se-card2:#1e4526;--s
 body[data-season="oct"]{--se-bg:#08050e;--se-card:#160b1f;--se-card2:#25102f;--se-ink:#f6ecff;--se-mut:#9a83ad;--se-mut2:#d3c1e2;--se-accent:#6a2c9e;--se-accent2:#ff7518;--se-glow:rgba(255,117,24,.45)}
 body[data-season="nov"]{--se-bg:#140d06;--se-card:#241608;--se-card2:#35200d;--se-ink:#fdf1e0;--se-mut:#b3946f;--se-mut2:#e2cbac;--se-accent:#8c3b1b;--se-accent2:#e8a33d;--se-glow:rgba(232,163,61,.42)}
 body[data-season="dec"]{--se-bg:#05110b;--se-card:#0b2014;--se-card2:#11301d;--se-ink:#f2fbf5;--se-mut:#8bae9a;--se-mut2:#c4dfd0;--se-accent:#c1272d;--se-accent2:#f2d06b;--se-glow:rgba(242,208,107,.42)}
-/* chrome: a two-tone bar under the header, the way the flag stripe works for USA */
-body[data-theme="seasonal"] .hdr::after,body[data-theme="seasonal"] .lb-hdr::after{content:"";position:absolute;
-  left:0;right:0;bottom:-1px;height:3px;background:linear-gradient(90deg,var(--se-accent2) 0 30%,var(--se-accent) 30% 100%)}
-body[data-theme="seasonal"] .lb-hdr{position:relative}
+/* chrome: a design bar under the header — the seasonal answer to Stars &
+   Stripes' flag and Silver Bullet's ridge. A 28px band drawn in the month's
+   own motif (fireworks, hearts, shamrocks, rain, fiesta bunting, surf, the
+   flag, flames, a football field, jack-o'-lantern teeth and bats, flannel,
+   candy cane) over a tagline strip that carries the month's line. It replaced
+   a 3px two-tone rule that read as a border, not as chrome.
+
+   Each month sets two things: .se-band's static base (gradients that must not
+   move) and .se-band::before's repeating motif. The motif layer is wider than
+   the band by exactly one tile (--se-tile) and slides left by that tile, so it
+   drifts forever without a seam; every layer's horizontal size divides the
+   tile. A month with nothing that should move (July's union sits at the
+   hoist) sets --se-tile to 0 and switches the drift off. The ::after gloss is
+   shared, so every band reads as a ribbon rather than a flat fill. */
+.season-tag,.se-band{display:none}
+body[data-theme="seasonal"] .season-tag{display:block;
+  background:linear-gradient(rgba(0,0,0,.42),rgba(0,0,0,.42)),var(--se-bg);border-bottom:1px solid var(--border2)}
+body[data-theme="seasonal"] .se-band{display:block;position:relative;height:28px;overflow:hidden;pointer-events:none}
+body[data-theme="seasonal"] .se-band::before{content:"";position:absolute;top:0;bottom:0;left:0;
+  right:calc(var(--se-tile,0px) * -1);animation:seBandDrift 9s linear infinite}
+body[data-theme="seasonal"] .se-band::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 38%,rgba(0,0,0,0) 62%,rgba(0,0,0,.28))}
+@keyframes seBandDrift{from{transform:translateX(0)}to{transform:translateX(calc(var(--se-tile,0px) * -1))}}
+body[data-season="jan"] .se-band{background:linear-gradient(90deg,#2a0f52,#7b2cbf 50%,#2a0f52)}
+body[data-season="jan"] .se-band::before{background:radial-gradient(circle at 7px 8px,#f4d35e 0 1.3px,transparent 2px) 0 0/34px 28px,radial-gradient(circle at 24px 19px,#fff 0 1.1px,transparent 1.8px) 0 0/34px 28px,radial-gradient(circle at 16px 5px,rgba(244,211,94,.7) 0 .8px,transparent 1.4px) 0 0/17px 14px;--se-tile:34px}
+body[data-season="feb"] .se-band{background:linear-gradient(180deg,#b3174c,#6e0b30)}
+body[data-season="feb"] .se-band::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='28'%3E%3Cg fill='%23ff9dbb'%3E%3Cpath transform='translate%289 15%29 scale%281.25%29' d='M0 -3.5C0 -6 -4 -7 -5.5 -4.5S-4 1 0 4.5C4 1 7 -2 5.5 -4.5S0 -6 0 -3.5z'/%3E%3C/g%3E%3Cg fill='%23ffe3ec' opacity='.8'%3E%3Cpath transform='translate%2825 9%29 scale%28.7%29' d='M0 -3.5C0 -6 -4 -7 -5.5 -4.5S-4 1 0 4.5C4 1 7 -2 5.5 -4.5S0 -6 0 -3.5z'/%3E%3C/g%3E%3C/svg%3E") 0 0/32px 28px;--se-tile:32px}
+body[data-season="mar"] .se-band{background:linear-gradient(180deg,#23843b,#0f4a22)}
+body[data-season="mar"] .se-band::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='28'%3E%3Cg fill='%23bdf2c8' stroke='%23bdf2c8' transform='translate%2811 13%29'%3E%3Ccircle cx='0' cy='-3.4' r='3.2'/%3E%3Ccircle cx='-3.2' cy='0.6' r='3.2'/%3E%3Ccircle cx='3.2' cy='0.6' r='3.2'/%3E%3Cpath d='M0 1 Q1 6 3 8' stroke-width='1.3' fill='none'/%3E%3C/g%3E%3Ccircle cx='28' cy='20' r='1.4' fill='%23f2c744'/%3E%3Ccircle cx='26' cy='6' r='.9' fill='%23f2c744' opacity='.8'/%3E%3C/svg%3E") 0 0/36px 28px;--se-tile:36px}
+body[data-season="apr"] .se-band{background:linear-gradient(180deg,#4aa3c6,#1b3039)}
+body[data-season="apr"] .se-band::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='28'%3E%3Cg stroke='%23d9f1fb' stroke-width='1.2' stroke-linecap='round' opacity='.75'%3E%3Cpath d='M8 3 5 11'/%3E%3Cpath d='M20 12 17 20'/%3E%3Cpath d='M33 4 30 12'/%3E%3Cpath d='M44 15 41 23'/%3E%3Cpath d='M12 19 10 25'/%3E%3C/g%3E%3Cg fill='%23ffb3c7'%3E%3Ccircle cx='27' cy='22' r='2.4'/%3E%3Ccircle cx='27' cy='22' r='.9' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E") 0 0/48px 28px;--se-tile:48px}
+body[data-season="may"] .se-band{background:linear-gradient(180deg,#3d1533,#1c0918)}
+body[data-season="may"] .se-band::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='28'%3E%3Cpath d='M0 3Q32 7 64 3' stroke='%23fff3e6' stroke-width='1' fill='none' opacity='.7'/%3E%3Cpath d='M2 4H14L8 17z' fill='%23e8175d'/%3E%3Cpath d='M18 5H30L24 19z' fill='%23ffc42e'/%3E%3Cpath d='M34 5H46L40 19z' fill='%2319b5a5'/%3E%3Cpath d='M50 4H62L56 17z' fill='%23ff7a1a'/%3E%3C/svg%3E") 0 0/64px 28px;--se-tile:64px}
+body[data-season="jun"] .se-band{background:linear-gradient(180deg,#ffd166 0,#f4a340 28%,#0a6f86 52%,#04171f)}
+body[data-season="jun"] .se-band::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='28'%3E%3Cpath d='M0 15Q14 8 28 15T56 15V28H0z' fill='%230691ad'/%3E%3Cpath d='M0 20Q14 14 28 20T56 20V28H0z' fill='%2305566b'/%3E%3Cpath d='M4 14Q10 11 16 12' stroke='%23eafaff' stroke-width='1.1' fill='none' opacity='.8' stroke-linecap='round'/%3E%3Cpath d='M34 19Q40 16 46 17' stroke='%23eafaff' stroke-width='1' fill='none' opacity='.6' stroke-linecap='round'/%3E%3C/svg%3E") 0 0/56px 28px;--se-tile:56px}
+body[data-season="jul"] .se-band{background:repeating-linear-gradient(180deg,#b31942 0 4px,#eef1f8 4px 8px)}
+body[data-season="jul"] .se-band::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='28'%3E%3Cdefs%3E%3Cpattern id='s' width='10' height='8' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='3' cy='2.5' r='1.1' fill='%23fff'/%3E%3Ccircle cx='8' cy='6.5' r='1.1' fill='%23fff'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='84' height='28' fill='%230a3161'/%3E%3Crect width='84' height='28' fill='url%28%23s%29'/%3E%3C/svg%3E") 0 0/84px 28px no-repeat;--se-tile:0px;animation:none}
+body[data-season="aug"] .se-band{background:linear-gradient(180deg,#5a1a05,#2a0c02)}
+body[data-season="aug"] .se-band::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='28'%3E%3Cpath d='M0 28 3 17 6 22 10 6 14 22 18 14 21 20 24 28z' fill='%23ef6f2c'/%3E%3Cpath d='M4 28 7 21 10 13 13 21 16 28z' fill='%23ffd166'/%3E%3C/svg%3E") 0 0/24px 28px;--se-tile:24px}
+body[data-season="sep"] .se-band{background:#1e6b2e}
+body[data-season="sep"] .se-band::before{background:linear-gradient(90deg,rgba(255,255,255,.75) 0 1px,transparent 1px) 0 0/8px 4px repeat-x,linear-gradient(90deg,rgba(255,255,255,.75) 0 1px,transparent 1px) 0 100%/8px 4px repeat-x,linear-gradient(90deg,rgba(255,255,255,.9) 0 2px,transparent 2px) 0 0/40px 100%,repeating-linear-gradient(90deg,#2a8a3c 0 40px,#237a33 40px 80px) 0 0/80px 100%;--se-tile:80px}
+body[data-season="oct"] .se-band{background:linear-gradient(180deg,#25102f,#4a1a6b 50%,#25102f)}
+body[data-season="oct"] .se-band::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='28'%3E%3Cpath d='M0 0H60V2L55 7 50 2 45 7 40 2 35 7 30 2 25 7 20 2 15 7 10 2 5 7 0 2z' fill='%23ff7518'/%3E%3Cpath d='M0 28H60V26L55 21 50 26 45 21 40 26 35 21 30 26 25 21 20 26 15 21 10 26 5 21 0 26z' fill='%23ff7518'/%3E%3Cg fill='%23120818' transform='translate%2830 14%29'%3E%3Cpath d='M-8 0Q-5 -4 -2 -1Q-1 -4 0 -2Q1 -4 2 -1Q5 -4 8 0Q4 -1 3 2Q1 0 0 3Q-1 0 -3 2Q-4 -1 -8 0z'/%3E%3C/g%3E%3C/svg%3E") 0 0/60px 28px;--se-tile:60px}
+body[data-season="nov"] .se-band{background:#7a3317}
+body[data-season="nov"] .se-band::before{background:repeating-linear-gradient(90deg,rgba(232,163,61,.38) 0 7px,transparent 7px 14px,rgba(20,8,2,.3) 14px 18px,transparent 18px 28px) 0 0/28px 100%,repeating-linear-gradient(180deg,rgba(232,163,61,.3) 0 5px,transparent 5px 9px,rgba(20,8,2,.35) 9px 12px,transparent 12px 14px);--se-tile:28px}
+body[data-season="dec"] .se-band{background:#f4f1ec}
+body[data-season="dec"] .se-band::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='28'%3E%3Cg fill='%23c1272d'%3E%3Cpath d='M-24 0H-12L16 28H4z'/%3E%3Cpath d='M0 0H12L40 28H28z'/%3E%3C/g%3E%3C/svg%3E") 0 0/24px 28px;--se-tile:24px}
+body[data-theme="seasonal"] .season-tag-row{display:flex;align-items:center;justify-content:center;gap:9px;
+  color:var(--se-ink);font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.26em;
+  text-transform:uppercase;padding:6px 10px;white-space:nowrap;overflow:hidden}
+body[data-theme="seasonal"] .season-tag-row b{color:var(--se-accent2);font-weight:500}
+/* September's accent2 is chalk white, which doesn't read as a highlight on text */
+body[data-season="sep"] .season-tag-row b{color:#e8a35c}
+body[data-theme="seasonal"] .season-tag-row i{font-style:normal;font-size:12px;letter-spacing:0;line-height:1}
+/* the ranks header carries the same band inside its own box, like the other two */
+body[data-theme="seasonal"] .lb-hdr{position:relative;height:84px;padding-bottom:28px}
+body[data-theme="seasonal"] .lb-hdr .se-band{position:absolute;left:0;right:0;bottom:0}
+@media (prefers-reduced-motion:reduce){body[data-theme="seasonal"] .se-band::before{animation:none}}
+@media (max-width:350px){body[data-theme="seasonal"] .season-tag-row{letter-spacing:.16em;font-size:9px}}
 body[data-theme="seasonal"] .hero{background:radial-gradient(120% 78% at 50% 0%,var(--se-card2) 0%,transparent 68%)}
 /* mascot takes the octagon's place, exactly like the eagle does */
 .logo-season{background:none;border:none;font-size:31px;line-height:1;cursor:pointer;padding:0;display:none}
@@ -1266,8 +1321,8 @@ body[data-theme="silver"] .logo-text span{color:#a30d24}
 /* tagline strip, hidden on every other theme */
 .silver-tag{display:none}
 body[data-theme="silver"] .silver-tag{display:block;position:relative;padding-top:22px;background:#0d1418}
-/* Theme tag bars stay pinned. Stars & Stripes' flag + tagline and Silver
-   Bullet's ridge + tagline stick directly under the sticky header instead of
+/* Theme tag bars stay pinned. Stars & Stripes' flag + tagline, Silver
+   Bullet's ridge + tagline and the seasonal band + tagline stick directly under the sticky header instead of
    scrolling away, the way Noche's papel picado rides along with the header.
    They stay in normal flow (not hung off the header like the papel) so they
    still reserve their own space and never cover the countdown at the top.
@@ -1277,7 +1332,8 @@ body[data-theme="silver"] .silver-tag{display:block;position:relative;padding-to
    ambient overlays (z 5) and every card while staying below sheets, modals
    and the header's own dropdowns. The leaderboard needs none of this: its
    header never scrolls (only .lb-body does), so its band is always in view. */
-body[data-theme="usa"] .usa-tag,body[data-theme="silver"] .silver-tag{
+body[data-theme="usa"] .usa-tag,body[data-theme="silver"] .silver-tag,
+body[data-theme="seasonal"] .season-tag{
   position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px);z-index:98}
 body[data-theme="silver"] .silver-tag-row{display:flex;align-items:center;justify-content:center;gap:9px;
   color:#e8eef2;font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.26em;
@@ -1684,6 +1740,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
   </div>
 </header>
 <div class="silver-tag" aria-hidden="true"><div class="sv-ridge"></div><span class="silver-tag-row"><svg viewBox="0 0 40 64" aria-hidden="true"><rect x="5" y="7" width="30" height="51" rx="5" fill="#d5dee5"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/></svg><span>As cold as the <b>Rockies</b></span><svg viewBox="0 0 40 64" aria-hidden="true"><rect x="5" y="7" width="30" height="51" rx="5" fill="#d5dee5"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/></svg></span></div>
+<div class="season-tag" aria-hidden="true"><div class="se-band"></div><span class="season-tag-row"></span></div>
 <div class="usa-tag" aria-hidden="true"><div class="us-flag"></div><span class="usa-tag-row"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z"/></svg><span>Land of the free &middot; Home of the <b>brave</b></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z"/></svg></span></div>
 <section class="hero">
   <h1 class="sr-only">Upcoming Fight Cards</h1>
@@ -3056,29 +3113,29 @@ function setTheme(t){
      shipped as a dozen mp3s, so there is nothing new for the service worker
      to precache and it all still works offline. */
 var SEASONS=[
- {k:"jan",nm:"NEW YEAR",em:"🎆",snd:"burst", bar:"#0a0a12",amb:{cls:"spark",dir:"rise",gap:170,cap:26,dur:[2.4,4.2]},
+ {k:"jan",tag:"New year, new <b>record</b>",nm:"NEW YEAR",em:"🎆",snd:"burst", bar:"#0a0a12",amb:{cls:"spark",dir:"rise",gap:170,cap:26,dur:[2.4,4.2]},
   ph:["NEW YEAR, NEW RECORD","ROUND ONE","RESOLUTIONS BREAK. YOU DON'T"]},
- {k:"feb",nm:"LOVE HURTS",em:"💘",snd:"thump", bar:"#190711",amb:{cls:"em",dir:"fall",gap:360,cap:14,dur:[5,8],glyph:"💗"},
+ {k:"feb",tag:"Be mine, be <b>ready</b>",nm:"LOVE HURTS",em:"💘",snd:"thump", bar:"#190711",amb:{cls:"em",dir:"fall",gap:360,cap:14,dur:[5,8],glyph:"💗"},
   ph:["LOVE HURTS","BE MINE, BE READY","HEARTBREAKER"]},
- {k:"mar",nm:"THE LUCK",em:"☘️",snd:"pluck", bar:"#04140c",amb:{cls:"em",dir:"fall",gap:330,cap:15,dur:[4.5,7.5],glyph:"☘️"},
+ {k:"mar",tag:"No luck <b>needed</b>",nm:"THE LUCK",em:"☘️",snd:"pluck", bar:"#04140c",amb:{cls:"em",dir:"fall",gap:330,cap:15,dur:[4.5,7.5],glyph:"☘️"},
   ph:["LUCK OF THE IRISH","NO LUCK NEEDED","SLÁINTE"]},
- {k:"apr",nm:"APRIL SHOWERS",em:"🌧️",snd:"rain",  bar:"#0b1418",amb:{cls:"rain",dir:"fall",gap:90,cap:36,dur:[1.1,1.9]},
+ {k:"apr",tag:"Rain doesn't <b>stop it</b>",nm:"APRIL SHOWERS",em:"🌧️",snd:"rain",  bar:"#0b1418",amb:{cls:"rain",dir:"fall",gap:90,cap:36,dur:[1.1,1.9]},
   ph:["APRIL SHOWERS","BLOOM OR BUST","RAIN DOESN'T STOP IT"]},
- {k:"may",nm:"CINCO",em:"🎺",snd:"bell",  bar:"#190a15",amb:{cls:"conf",dir:"fall",gap:210,cap:26,dur:[3.4,5.6],conf:1},
+ {k:"may",tag:"¡Dale, dale, <b>dale</b>!",nm:"CINCO",em:"🎺",snd:"bell",  bar:"#190a15",amb:{cls:"conf",dir:"fall",gap:210,cap:26,dur:[3.4,5.6],conf:1},
   ph:["¡ARRIBA!","¡DALE, DALE, DALE!","CINCO DE KNOCKOUT"]},
- {k:"jun",nm:"HIGH SUMMER",em:"🌊",snd:"surf",  bar:"#04171f",amb:{cls:"bub",dir:"rise",gap:300,cap:18,dur:[4.5,8]},
+ {k:"jun",tag:"Make <b>waves</b>",nm:"HIGH SUMMER",em:"🌊",snd:"surf",  bar:"#04171f",amb:{cls:"bub",dir:"rise",gap:300,cap:18,dur:[4.5,8]},
   ph:["MAKE WAVES","SUMMER HEAT","RIDE IT OUT"]},
- {k:"jul",nm:"JULY 4TH",em:"🗽",snd:"boom",  bar:"#070a13",amb:{cls:"star",dir:"fall",gap:360,cap:14,dur:[4,7]},
+ {k:"jul",tag:"Land of the free &middot; Home of the <b>brave</b>",nm:"JULY 4TH",em:"🗽",snd:"boom",  bar:"#070a13",amb:{cls:"star",dir:"fall",gap:360,cap:14,dur:[4,7]},
   ph:["LAND OF THE FREE","HOME OF THE BRAVE","FOURTH OF JULY"]},
- {k:"aug",nm:"DOG DAYS",em:"🔥",snd:"buzz",  bar:"#180d04",amb:{cls:"heat",dir:"rise",gap:220,cap:22,dur:[3.5,6]},
+ {k:"aug",tag:"Too hot to <b>quit</b>",nm:"DOG DAYS",em:"🔥",snd:"buzz",  bar:"#180d04",amb:{cls:"heat",dir:"rise",gap:220,cap:22,dur:[3.5,6]},
   ph:["DOG DAYS","HEAT WAVE","TOO HOT TO QUIT"]},
- {k:"sep",nm:"KICKOFF",em:"🏈",snd:"whistle",bar:"#0e1c11",amb:{cls:"em",dir:"fall",gap:440,cap:10,dur:[5,8],glyph:"🏈"},
+ {k:"sep",tag:"First down, first <b>blood</b>",nm:"KICKOFF",em:"🏈",snd:"whistle",bar:"#0e1c11",amb:{cls:"em",dir:"fall",gap:440,cap:10,dur:[5,8],glyph:"🏈"},
   ph:["SEASON'S BACK","GAME ON","FIRST DOWN, FIRST BLOOD"]},
- {k:"oct",nm:"HALLOWEEN",em:"🎃",snd:"ghost", bar:"#08050e",amb:{cls:"em",dir:"fall",gap:560,cap:8,dur:[6,10],glyph:"🦇"},
+ {k:"oct",tag:"Trick or <b>tap out</b>",nm:"HALLOWEEN",em:"🎃",snd:"ghost", bar:"#08050e",amb:{cls:"em",dir:"fall",gap:560,cap:8,dur:[6,10],glyph:"🦇"},
   ph:["TRICK OR TAP OUT","SPOOKY SEASON","NO MERCY, NO CANDY"]},
- {k:"nov",nm:"THANKSGIVING",em:"🦃",snd:"warble",bar:"#140d06",amb:{cls:"em",dir:"fall",gap:280,cap:16,dur:[5,8.5],glyph:"🍁"},
+ {k:"nov",tag:"Stuffed and still <b>standing</b>",nm:"THANKSGIVING",em:"🦃",snd:"warble",bar:"#140d06",amb:{cls:"em",dir:"fall",gap:280,cap:16,dur:[5,8.5],glyph:"🍁"},
   ph:["GOBBLE 'EM UP","PASS THE PLATE","STUFFED AND STILL STANDING"]},
- {k:"dec",nm:"CHRISTMAS",em:"🎄",snd:"jingle",bar:"#05110b",amb:{cls:"snow",dir:"fall",gap:190,cap:30,dur:[5,9]},
+ {k:"dec",tag:"Santa's on the <b>card</b>",nm:"CHRISTMAS",em:"🎄",snd:"jingle",bar:"#05110b",amb:{cls:"snow",dir:"fall",gap:190,cap:30,dur:[5,9]},
   ph:["SANTA'S ON THE CARD","DECK THE HALLS","NAUGHTY LIST"]}
 ];
 function curSeason(){return SEASONS[new Date().getMonth()];}
@@ -3100,6 +3157,9 @@ function applySeason(){
   }
   var t=document.querySelector(".logo-text");
   if(t)t.innerHTML=seasonLogo(S.nm);
+  // the tagline strip under the band: the month's line, flanked by its mascot
+  var row=document.querySelector(".season-tag-row");
+  if(row)row.innerHTML='<i>'+S.em+'</i><span>'+S.tag+'</span><i>'+S.em+'</i>';
   seasonPrefetch(S.k);
 }
 function restoreLogo(){
@@ -9613,6 +9673,7 @@ document.addEventListener("DOMContentLoaded",function(){
     <button class="btn-icon" onclick="closeLeaderboard()" title="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
     <div class="sv-ridge"></div>
     <div class="us-flag" aria-hidden="true"></div>
+    <div class="se-band" aria-hidden="true"></div>
     <div class="lb-title">Leaderboard <button class="lb-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><button class="lb-season" onclick="seasonCry(this)" aria-label="Play the seasonal sound"></button><button class="lb-silver" onclick="silverCrack(this)" aria-label="Crack a cold one"><svg viewBox="0 0 40 64" aria-hidden="true"><defs><linearGradient id="svcanlb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d99a3"/><stop offset=".16" stop-color="#eef2f5"/><stop offset=".42" stop-color="#c3cdd6"/><stop offset=".62" stop-color="#f6f9fb"/><stop offset=".86" stop-color="#aab6c0"/><stop offset="1" stop-color="#7f8b95"/></linearGradient></defs><rect x="5" y="7" width="30" height="51" rx="5" fill="url(#svcanlb)"/><ellipse cx="20" cy="8" rx="15" ry="3.6" fill="#c9d3db"/><ellipse cx="20" cy="8" rx="11" ry="2.4" fill="#aeb9c3"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><path d="M5 39 12 29l4.5 5 5.5-7.5 5 6.5 3.5-3 6 8z" fill="#fff" opacity=".92"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/><ellipse cx="20" cy="57.6" rx="15" ry="3.2" fill="#9aa6b0"/><rect x="9" y="9" width="3" height="47" fill="#fff" opacity=".45" rx="1.5"/></svg></button><button class="lb-noche" onclick="nocheGrito(this)" aria-label="Play the grito"><svg viewBox="0 0 200 240" aria-hidden="true"><use href="#noche-calavera"/></svg></button></div>
     <svg class="noche-papel" aria-hidden="true" preserveAspectRatio="none"><rect width="100%" height="100%" fill="url(#noche-papel-pattern)"/></svg>
     <button class="lb-info-btn" onclick="document.getElementById('lbInfoModal').classList.toggle('open')" title="How scoring works">ℹ</button>
