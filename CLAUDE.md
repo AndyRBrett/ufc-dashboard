@@ -55,7 +55,10 @@ Pushing to `main` deploys automatically, so the gates also run in CI and
 - `.github/workflows/pages.yml` → GitHub Pages. `deploy` **needs** the
   `validate` job (the `validate-web.yml` reusable workflow = the checks above).
 - `.github/workflows/deploy-functions.yml` → Supabase. `deploy` **needs** a
-  `check:functions` + `check:provider` gate.
+  `check:functions` + `check:provider` gate. Every deploy line carries
+  `--use-api` (server-side bundling): without it the runner pulls Supabase's
+  build image from ghcr.io, whose shared rate limit failed four deploys in a
+  row on 2026-09-23. Keep it on any new function's deploy line.
 - `.github/workflows/ci.yml` runs everything on every push/PR for visibility.
 
 CI is a backstop, not a substitute: run `verify` locally first so you never
@@ -408,8 +411,8 @@ being debugged as a prompt problem — the client only reads `breakdown`.
 subject is off-limits; the rule names specific words and nothing else. Two
 earlier bans came out because they were confiscating ordinary roast material: a
 blanket "don't touch race, religion, sex, gender, disability or sexuality"
-(which caught Derek's Eminem likeness and any joke about AB and Tristin being
-married), and "no threat meant literally" (which contradicted the comedic-menace
+(which caught jokes about someone's looks and any joke about AB and Tristin
+being married), and "no threat meant literally" (which contradicted the comedic-menace
 shape this same prompt offers as a rhetorical form). `check:provider` asserts
 the slur line survives *and* that neither ban has crept back — a prompt tweak
 aimed at making roasts rawer should not silently re-tighten the floor either.

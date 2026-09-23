@@ -75,7 +75,7 @@ assert("the rule is spoken in the sender's persona", rule.includes("Johnny Lawre
 assert("slurs stay ruled out", /no slurs/i.test(rule));
 assert("the slur rule is the ONLY rule", /ONE rule, and it is the only one/i.test(rule));
 // The topic bans deliberately came out: they were catching ordinary roast
-// material (the Eminem likeness, AB and Tristin being married) and the threat
+// material (jokes about looks, AB and Tristin being married) and the threat
 // ban contradicted the comedic-menace form this same prompt offers. If either
 // reappears, someone has re-tightened the floor without saying so.
 assert("no blanket topic ban came back",
