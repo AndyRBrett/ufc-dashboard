@@ -71,10 +71,11 @@ body[data-theme="usa"]{--bg:#070a13;--card:#0e1322;--card2:#161d33;--surface:#16
    union with a staggered star field, seven red/white stripes) over a navy
    tagline strip. It replaced the 4px ribbon that used to hang off .hdr::after
    and .lb-hdr::after — the two stacked on top of each other read as a
-   double border. Like .silver-tag it sits after the sticky header, so it
-   scrolls away and the header stays compact once you're into the cards. */
+   double border. Like .silver-tag it sits right after the header and sticks
+   under it (see "Theme tag bars stay pinned" below), so the flag and the
+   tagline stay on screen while you scroll the cards. */
 .usa-tag,.us-flag{display:none}
-body[data-theme="usa"] .usa-tag{display:block;position:relative;z-index:6;background:#0a1430;
+body[data-theme="usa"] .usa-tag{display:block;background:#0a1430;
   border-bottom:1px solid rgba(91,140,255,.22)}
 body[data-theme="usa"] .us-flag{display:block;position:relative;height:28px;overflow:hidden;pointer-events:none;
   background:
@@ -1265,6 +1266,19 @@ body[data-theme="silver"] .logo-text span{color:#a30d24}
 /* tagline strip, hidden on every other theme */
 .silver-tag{display:none}
 body[data-theme="silver"] .silver-tag{display:block;position:relative;padding-top:22px;background:#0d1418}
+/* Theme tag bars stay pinned. Stars & Stripes' flag + tagline and Silver
+   Bullet's ridge + tagline stick directly under the sticky header instead of
+   scrolling away, the way Noche's papel picado rides along with the header.
+   They stay in normal flow (not hung off the header like the papel) so they
+   still reserve their own space and never cover the countdown at the top.
+   top is the header's own sticky offset plus its 62px border-box height; if
+   .hdr's height changes, this has to move with it or a gap / overlap opens.
+   z-index sits just under the header's 99, which keeps them above the page's
+   ambient overlays (z 5) and every card while staying below sheets, modals
+   and the header's own dropdowns. The leaderboard needs none of this: its
+   header never scrolls (only .lb-body does), so its band is always in view. */
+body[data-theme="usa"] .usa-tag,body[data-theme="silver"] .silver-tag{
+  position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px);z-index:98}
 body[data-theme="silver"] .silver-tag-row{display:flex;align-items:center;justify-content:center;gap:9px;
   color:#e8eef2;font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.26em;
   text-transform:uppercase;padding:6px 10px;white-space:nowrap;overflow:hidden}
