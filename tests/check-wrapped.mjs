@@ -58,7 +58,7 @@ vm.runInContext(block("year-wrapped"), ctx);
 // The slide builder is pure (strings in, strings out); the rest of the UI
 // block touches the DOM and is only checked for wiring below.
 vm.runInContext(fn("_wrShort") + fn("_wrPlural") + 'var _WR_METHOD={"KO/TKO":"KO/TKO","Sub":"Submission","Dec":"Decision"};' +
-  fn("wrappedSlides") + fn("_wrShareText"), ctx);
+  fn("_wrLineTxt") + fn("_wrNailedHow") + fn("wrappedSlides") + fn("_wrShareText"), ctx);
 
 const bout = (a, b, winner, odds, method) => ({
   f1: { n: a }, f2: { n: b }, winner: winner || "", state: winner ? "post" : "pre",
@@ -159,8 +159,60 @@ check("ride-or-die is the fighter backed most (A1 ×3, 2–1)", ann.ride && ann.
 {
   // Dee backs two different fighters once each and misses her only dog (+130).
   const dee = wrap(rows.concat([pick("Dee", C1, "A1", "B1", "A1"), pick("Dee", C1, "A3", "B3", "B3")]), "2026", "dee");
-  check("a fighter backed once is nobody's ride-or-die", dee.ride === null && wrap(rows, "2026", "cat").ride.name === "A1");
+  check("a fighter backed once is nobody's ride-or-die", dee.ride === null);
   check("a missed underdog is not an upset", dee.upset === null && dee.dogs === 1);
+}
+{
+  // Fighters appear about twice a year, so "backed most" is usually a tie across
+  // many 2-for-2s. A ride-or-die needs WRAPPED_RIDE_MIN picks and a clear lead.
+  check("backed twice isn't a ride-or-die (Cat: A1 ×2)", wrap(rows, "2026", "cat").ride === null);
+  const tie = rows.concat([
+    pick("Ann", "2026-09-26", "E3", "G1", "E3"), pick("Ann", "2026-10-03", "E3", "G2", "E3"),
+  ]);
+  ctx.EVENTS = [card1, card2, card3,
+    { name: "UFC Four", date: "2026-09-26", fights: [bout("E3", "G1", "E3")] },
+    { name: "UFC Five", date: "2026-10-03", fights: [bout("E3", "G2", "E3")] }];
+  // Ann now backs A1 ×3 (2–1) and E3 ×3 (3–0): no clear leader, so nobody —
+  // not whichever of them the pick rows happen to reach first.
+  check("a tie at the top is no ride-or-die, however the wins split", wrap(tie, "2026", "ann").ride === null);
+  ctx.EVENTS = [card1, card2, card3];
+}
+// Nailed it: winner AND method, longest line. Ann's method hits are A1 KO (-200),
+// A3 Dec (-150), A1 KO (-400) and C4 KO (unpriced): A3 at -150 is the longest.
+check("nailed it is the winner+method call at the longest line", ann.nailed && ann.nailed.pick === "A3" &&
+  ann.nailed.method === "Dec" && ann.nailed.line === -150 && ann.nailed.opp === "B3");
+check("no method hits, nothing nailed", wrap(rows, "2026", "cat").nailed === null);
+{
+  // Unpriced ties: Eve's three method hits are all on unpriced bouts. The rarer
+  // finish wins (Sub over KO/TKO), then the newer card (C3 over C2) — in any
+  // row order.
+  const ev = [
+    pick("Eve", C2, "C4", "D4", "C4", { method: "KO/TKO" }),
+    pick("Eve", C3, "E3", "F3", "E3", { method: "KO/TKO" }),
+  ];
+  const n1 = wrap(ev, "2026", "eve").nailed, n2 = wrap(ev.slice().reverse(), "2026", "eve").nailed;
+  check("unpriced ties go to the most recent card, whatever the row order", n1.pick === "E3" && n2.pick === "E3");
+  // The submission is on the OLDER card, so recency alone would pick the KO.
+  ctx.EVENTS = [card1, Object.assign({}, card2, { fights: card2.fights.map((f) => f.f1.n === "C4" ? Object.assign({}, f, { method: "Submission" }) : f) }), card3];
+  const subRows = [pick("Eve", C2, "C4", "D4", "C4", { method: "Sub" }), pick("Eve", C3, "E3", "F3", "E3", { method: "KO/TKO" })];
+  check("a submission call outranks a newer KO/TKO call at the same (missing) line, in either row order",
+    [subRows, subRows.slice().reverse()].every((r) => { const n = wrap(r, "2026", "eve").nailed; return n.pick === "C4" && n.method === "Sub"; }));
+  ctx.EVENTS = [card1, card2, card3];
+}
+{
+  // Cat's only winner+method hit is B2 by KO at +260 — already her biggest
+  // upset, which has its own row. Nailed it must not repeat it.
+  const cr = rows.map((p) => /Cat/.test(p.nickname) && p.f2 === "B2" ? Object.assign({}, p, { method: "KO/TKO" }) : p);
+  const c = wrap(cr, "2026", "cat");
+  check("nailed it never repeats the biggest upset", c.upset && c.upset.pick === "B2" && c.nailed === null);
+}
+{
+  const s = ctx.wrappedSlides(Object.assign({}, ann, { ride: null }));
+  const n = s.find((x) => /exactly/.test(x.kicker));
+  check("without a ride-or-die the slide becomes 'You called it exactly'",
+    n && n.big === "A3" && /by decision over B3 at -150/.test(n.sub) && !s.some((x) => /ride-or-die/.test(x.kicker)));
+  check("with a ride-or-die there's no separate nailed-it slide",
+    !ctx.wrappedSlides(ann).some((x) => /exactly/.test(x.kicker)));
 }
 check("go-to finish is the most-called method", ann.goTo === "KO/TKO" && ann.methodPicks === 7 && ann.methodHits === 4);
 check("pick twin is the highest agreement rate (Cat, 5 of 6)", ann.twin && /Cat/.test(ann.twin.name) && ann.twin.pct === 83 && ann.twin.shared === 6);
@@ -227,10 +279,10 @@ check("nemesis is the lowest agreement rate (Bob)", ann.nemesis && /Bob/.test(an
   const s = ctx.wrappedSlides(ann);
   check("slides open on an intro and close on the summary", /Wrapped/.test(s[0].kicker) && s[s.length - 1].summary === true);
   check("every non-summary slide has a headline", s.every((x) => x.summary || (x.big && String(x.big).length)));
-  const sparse = Object.assign({}, bob, { upset: null, ride: null, twin: null, nemesis: null, goTo: null, bestStreak: 1 });
+  const sparse = Object.assign({}, bob, { upset: null, ride: null, nailed: null, twin: null, nemesis: null, goTo: null, bestStreak: 1 });
   const ss = ctx.wrappedSlides(sparse);
   check("slides with nothing to say are skipped, not shown blank",
-    !ss.some((x) => /upset|ride-or-die|twin|heater|go-to/i.test(x.kicker)));
+    !ss.some((x) => /upset|ride-or-die|exactly|twin|heater|go-to/i.test(x.kicker)));
   check("share text carries rank, points and personality",
     /#\d+ of 3/.test(ctx._wrShareText(ann)) && ctx._wrShareText(ann).includes(ann.archetype.name));
 }
