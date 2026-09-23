@@ -7631,6 +7631,10 @@ function _recapAfterWn(){
 // computeBeltLineage, never from a private copy of either, so the Wrapped
 // can't tell someone they finished #2 while the board says #3.
 var WRAPPED_TWIN_MIN=5;    // shared bouts before a pick twin / nemesis counts
+// A ride-or-die is ONE fighter backed at least this often, more than any other.
+// With fighters appearing about twice a year, "most backed" without it was a tie
+// across a dozen 2-for-2s, settled by whichever pick row came first.
+var WRAPPED_RIDE_MIN=3;
 function _wrYearOf(d){return String(d||"").slice(0,4);}
 // Newest year in which this player has a SCORED pick — the year to wrap.
 function wrappedYear(rows,myBase){
@@ -7664,7 +7668,29 @@ function _wrLine(date,f1,f2,pick){
   var l=nmEq(pick,f.f1.n)?f.odds.f1:nmEq(pick,f.f2.n)?f.odds.f2:null;
   return typeof l==="number"&&isFinite(l)&&l!==0?l:null;
 }
+// Where a bout sits on its card (0 = main event), for tie-breaks: EVENTS first,
+// then the archive, which keeps the card's bout order. Unknown sorts last.
+function _wrBoutIdx(date,f1,f2){
+  var i,j;
+  for(i=0;i<EVENTS.length;i++){
+    if(EVENTS[i].date!==date)continue;
+    for(j=0;j<EVENTS[i].fights.length;j++)if(nmBout(EVENTS[i].fights[j],f1,f2))return j;
+  }
+  var a=RESULTS_ARCHIVE[date];
+  if(a&&a.fights)for(j=0;j<a.fights.length;j++){
+    var af=a.fights[j];
+    if((nmEq(af.f1,f1)&&nmEq(af.f2,f2))||(nmEq(af.f1,f2)&&nmEq(af.f2,f1)))return j;
+  }
+  return 999;
+}
 function _wrBoutKey(date,a,b){var x=nmKey(a),y=nmKey(b);return date+"|"+(x<y?x+"|"+y:y+"|"+x);}
+function _wrNailedBeats(c,n){
+  if(c.rank!==n.rank)return c.rank>n.rank;
+  if(c.rare!==n.rare)return c.rare>n.rare;
+  if(c.date!==n.date)return c.date>n.date;
+  if(c.idx!==n.idx)return c.idx<n.idx;
+  return c.key<n.key;
+}
 function _wrFotnHit(u,date){
   var bp=u.bonusPicks&&u.bonusPicks[date];
   if(!bp)return false;
@@ -7736,11 +7762,28 @@ function computeYearWrapped(rows,year,myBase){
   });
   var goTo=null;
   Object.keys(methodTally).forEach(function(m){if(!goTo||methodTally[m]>methodTally[goTo])goTo=m;});
-  var ride=null;
+  var ride=null,rideTied=false;
   Object.keys(fighters).forEach(function(k){
     var f=fighters[k];
-    if(f.n<2)return;
-    if(!ride||f.n>ride.n||(f.n===ride.n&&f.w>ride.w))ride=f;
+    if(!ride||f.n>ride.n){ride=f;rideTied=false;}
+    else if(f.n===ride.n)rideTied=true;
+  });
+  if(!ride||ride.n<WRAPPED_RIDE_MIN||rideTied)ride=null;
+  // Nailed it: winner AND method right, at the longest line on record (unpriced
+  // bouts rank last). Archived cards carry no lines, so ties are common: the
+  // rarer finish wins them (submission, KO/TKO, decision), then the most recent
+  // card, then the bigger fight (higher on the card), then the fighter's name —
+  // never "whichever row came first", the ride-or-die bug this replaces.
+  // The biggest upset has its own row, so its bout is skipped.
+  var nailed=null,METHOD_RARITY={Sub:3,"KO/TKO":2,Dec:1};
+  resolved.forEach(function(p){
+    if(p.result!==true||!p.methodCorrect)return;
+    if(upset&&nmEq(p.pick,upset.pick)&&_recapEvName(p.evDate)===upset.evName)return;
+    var line=_wrLine(p.evDate,p.f1,p.f2,p.pick);
+    var c={pick:p.pick,opp:nmEq(p.pick,p.f1)?p.f2:p.f1,method:p.method,line:line,evName:_recapEvName(p.evDate),
+           rank:line===null?-Infinity:line,rare:METHOD_RARITY[p.method]||0,date:p.evDate,
+           idx:_wrBoutIdx(p.evDate,p.f1,p.f2),key:nmKey(p.pick)};
+    if(!nailed||_wrNailedBeats(c,nailed))nailed=c;
   });
 
   // Pick twin and nemesis: agreement rate on the bouts you both picked.
@@ -7794,7 +7837,7 @@ function computeYearWrapped(rows,year,myBase){
     groupAccuracy:grpT?Math.round(grpC/grpT*100):null,groupPicks:grpT,
     bestCard:best,perfectCards:perfect,upset:upset,bestStreak:me.bestStreak||0,
     methodPicks:methodPicks,methodHits:me.methods,goTo:goTo,dogs:dogs,priced:priced,
-    ride:ride,twin:twin,nemesis:nemesis,title:title,
+    ride:ride,nailed:nailed,twin:twin,nemesis:nemesis,title:title,
     archetype:_wrArchetype(stats)
   };
 }
@@ -7818,6 +7861,8 @@ var _wrSlides=[],_wrIdx=0,_wrData=null,_wrPrevFocus=null,_wrLocked=false;
 function _wrShort(n){return String(n||"").replace("UFC Fight Night: ","");}
 function _wrPlural(n,one,many){return n+" "+(n===1?one:(many||one+"s"));}
 var _WR_METHOD={"KO/TKO":"KO/TKO","Sub":"Submission","Dec":"Decision"};
+function _wrLineTxt(l){return l>0?"+"+l:String(l);}
+function _wrNailedHow(n){return "by "+({"KO/TKO":"KO/TKO","Sub":"submission","Dec":"decision"}[n.method]||n.method);}
 function wrappedSlides(w){
   var s=[];
   s.push({bg:"wr-bg1",kicker:"🥊 "+w.year+" Wrapped",big:splitNick(w.name).name||w.name,
@@ -7836,6 +7881,9 @@ function wrappedSlides(w){
           sub:"winners in a row, without a miss in between."});
   if(w.ride)s.push({bg:"wr-bg7",kicker:"Your ride-or-die",big:w.ride.name,
           sub:"Backed "+_wrPlural(w.ride.n,"time")+" · "+w.ride.w+"–"+(w.ride.n-w.ride.w)+(w.ride.w===w.ride.n?". Never let you down.":w.ride.w===0?". Loyalty, not profit.":".")});
+  else if(w.nailed)s.push({bg:"wr-bg7",kicker:"You called it exactly",big:w.nailed.pick,
+          sub:"Winner and method: "+_wrNailedHow(w.nailed)+" over "+w.nailed.opp+(w.nailed.line!==null?" at "+_wrLineTxt(w.nailed.line):"")+
+              (w.nailed.evName?" · "+_wrShort(w.nailed.evName):"")+"."});
   if(w.goTo)s.push({bg:"wr-bg8",kicker:"Your go-to finish",big:_WR_METHOD[w.goTo]||w.goTo,
           sub:w.methodHits+" of "+w.methodPicks+" method calls landed"+(w.methodPicks?" ("+Math.round(w.methodHits/w.methodPicks*100)+"%).":".")});
   if(w.twin)s.push({bg:"wr-bg9",kicker:"Your pick twin",big:splitNick(w.twin.name).name||w.twin.name,
@@ -7909,7 +7957,8 @@ function drawWrappedCard(canvas,w){
     ["Longest heater",w.bestStreak+" straight"],
     ["Best night",w.bestCard?w.bestCard.pts+" pts · "+_wrShort(w.bestCard.evName||w.bestCard.date):"—"],
     ["Biggest upset",w.upset?w.upset.pick+" +"+w.upset.line:"—"],
-    ["Ride-or-die",w.ride?w.ride.name+" ("+w.ride.w+"–"+(w.ride.n-w.ride.w)+")":"—"],
+    w.ride?["Ride-or-die",w.ride.name+" ("+w.ride.w+"–"+(w.ride.n-w.ride.w)+")"]
+          :["Nailed it",w.nailed?w.nailed.pick+" "+_wrNailedHow(w.nailed):"—"],
     ["Pick twin",w.twin?(splitNick(w.twin.name).name||w.twin.name)+" · "+w.twin.pct+"%":"—"],
     ["Title",w.title.reigns||w.title.defenses?(w.title.holding?"Champion 🏆":_wrPlural(w.title.reigns,"reign")+", "+_wrPlural(w.title.defenses,"defence")):"—"]];
   var y=960,rowH=100;
