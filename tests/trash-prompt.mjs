@@ -124,21 +124,36 @@ assert("the rest of a name-bearing angle still counts",
   usesAngle("Bet you sob at every dog movie. — Johnny Lawrence", "Torrey cries at dog movies", ["AB", "Torrey"]));
 assert("an angle with no content words can't fail the check", usesAngle("anything at all", "the and but"));
 
-// Profile details are ammunition, never praise — including the sender's own.
-// Torrey's "Soft Hands" once came back as a flex from the top of the board.
-const bySoftHands = buildTrashTalk({ ...base, myNickname: "T", targets: ["AB", "Dereko"], hint: "" });
+// Profiles: ONE target's, picked at random, and never the sender's. Prompt
+// rules alone kept losing — Torrey's own "Soft Hands" came back as a brag, and
+// his Dallas move was pinned on the whole board twice with a rule against it
+// in the prompt. What the model isn't given, it can't misattribute.
+const BIOS = { T: /Soft Hands|Dallas/, AB: /kids' martial arts/, Tristin: /AB's wife/, JPeso: /flipped his car/ };
+const biosIn = (sys) => Object.keys(BIOS).filter((k) => BIOS[k].test(sys));
+let senderLeaked = false, multi = false, seenTargets = new Set();
+for (let i = 0; i < 40; i++) {
+  const r = buildTrashTalk({ ...base, myNickname: "T", targets: ["AB", "Tristin", "JPeso", "Dereko"], hint: "" });
+  const got = biosIn(r.system);
+  if (got.includes("T")) senderLeaked = true;
+  if (got.length > 1) multi = true;
+  got.forEach((g) => seenTargets.add(g));
+}
+assert("the sender's own profile is never sent", !senderLeaked);
+assert("a group roast carries exactly one target's profile", !multi && seenTargets.size > 0);
+assert("the one profile is picked at random across targets", seenTargets.size >= 2);
+const bySoftHands = buildTrashTalk({ ...base, myNickname: "T", targets: ["AB"], hint: "" });
 assert("profile details are framed as weaknesses, never spun into a boast",
   /never a strength/.test(bySoftHands.system) && /compliment, a boast or a badge of honour/.test(bySoftHands.system));
-assert("the sender's own profile is never material to brag with",
-  /T's own details are their hang-ups[^.]*never something to brag with/.test(bySoftHands.system));
-assert("each profile detail is aimed only at the person it describes",
-  /Each detail belongs ONLY to the person it describes/.test(bySoftHands.system) && /never smear one person's detail across a whole group/.test(bySoftHands.system));
-// Ownership holds even when only a target has a profile — the sender's own
-// absence doesn't make a target's detail fair game for the rest of the board.
+assert("the profile is tied to its owner by name and kept off everyone else",
+  /about AB and AB ONLY/.test(bySoftHands.system) && /never pin it on anyone else, and never spread it across the group/.test(bySoftHands.system));
+// A target who is profiled still gets their profile when the sender isn't.
 const targetOnly = buildTrashTalk({ ...base, myNickname: "Nobody", targets: ["T", "Somebody"], hint: "" });
-assert("ownership applies when only a target has a profile", /Each detail belongs ONLY to the person it describes/.test(targetOnly.system));
+assert("a profiled target's details arrive when roasted by someone else", /Soft Hands/.test(targetOnly.system) && /about T and T ONLY/.test(targetOnly.system));
+// Roasting only yourself-adjacent names: no profiled target, no dossier at all.
+const selfOnly = buildTrashTalk({ ...base, myNickname: "T", targets: ["Dereko"], hint: "" });
+assert("no profiled target, no dossier — even when the sender has a profile", !/YOU KNOW|Soft Hands|Dallas/.test(selfOnly.system));
 const byStranger = buildTrashTalk({ ...base, myNickname: "Nobody", targets: ["Nobody Else"], hint: "" });
-assert("no profile, no dossier (and no polarity or ownership rule)", !/YOU KNOW THESE PEOPLE|never a strength|belongs ONLY/.test(byStranger.system));
+assert("no profile, no dossier (and no polarity or ownership rule)", !/YOU KNOW|never a strength|ONLY — aim/.test(byStranger.system));
 
 let bad = 0;
 for (const c of checks) { console.log(`  ${c.cond ? "✓" : "✗"} ${c.name}`); if (!c.cond) bad++; }
