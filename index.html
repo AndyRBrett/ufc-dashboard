@@ -74,23 +74,42 @@ body[data-theme="usa"]{--bg:#070a13;--card:#0e1322;--card2:#161d33;--surface:#16
    double border. Like .silver-tag it sits after the sticky header, so it
    scrolls away and the header stays compact once you're into the cards. */
 .usa-tag,.us-flag{display:none}
-body[data-theme="usa"] .usa-tag{display:block;position:relative;background:#0a1430;
+body[data-theme="usa"] .usa-tag{display:block;position:relative;z-index:6;background:#0a1430;
   border-bottom:1px solid rgba(91,140,255,.22)}
-body[data-theme="usa"] .us-flag{display:block;position:relative;height:22px;overflow:hidden;pointer-events:none;
+body[data-theme="usa"] .us-flag{display:block;position:relative;height:28px;overflow:hidden;pointer-events:none;
   background:
-    radial-gradient(circle,#fff .85px,transparent 1.35px) 0 0/10px 7.4px,
-    radial-gradient(circle,#fff .85px,transparent 1.35px) 5px 3.7px/10px 7.4px,
+    radial-gradient(circle,#fff 1px,transparent 1.5px) 0 0/10px 8px,
+    radial-gradient(circle,#fff 1px,transparent 1.5px) 5px 4px/10px 8px,
     linear-gradient(#0a3161,#0a3161);
   background-repeat:repeat,repeat,no-repeat}
 /* stripes live on ::before, covering everything right of the union, so the
    star layers can tile freely and only ever show inside the union's box */
-body[data-theme="usa"] .us-flag::before{content:"";position:absolute;top:0;bottom:0;left:74px;right:0;
-  background:repeating-linear-gradient(180deg,#b31942 0 3.143px,#eef1f8 3.143px 6.286px)}
-/* cloth folds drifting across the band — the flag waves instead of sitting flat */
-body[data-theme="usa"] .us-flag::after{content:"";position:absolute;inset:0;
-  background:repeating-linear-gradient(90deg,rgba(0,0,0,.2) 0,rgba(255,255,255,.1) 45px,rgba(0,0,0,.2) 90px);
-  background-size:90px 100%;animation:usWave 3.2s linear infinite}
-@keyframes usWave{from{background-position:0 0}to{background-position:90px 0}}
+body[data-theme="usa"] .us-flag::before{content:"";position:absolute;top:0;bottom:0;left:84px;right:0;
+  background:repeating-linear-gradient(180deg,#b31942 0 4px,#eef1f8 4px 8px)}
+/* Wind. usBuildFlags() cuts the band into thin vertical slices, each carrying
+   its own piece of the flag and bobbing on a staggered delay, so a ripple
+   travels hoist-to-fly instead of the band sitting flat. The fly end swings
+   harder than the hoist (--a grows along the band), the way cloth pinned on
+   one side moves. Transforms only, so it stays on the compositor. The static
+   background above is the fallback until the slices exist; once they do it's
+   dropped, so the gaps a crest opens at the band's edge show the dark behind
+   it — that moving edge is most of what reads as "waving". */
+body[data-theme="usa"] .us-flag.built{background:none}
+body[data-theme="usa"] .us-flag.built::before{display:none}
+.us-flag>i{position:absolute;top:0;height:100%;display:block;
+  background:repeating-linear-gradient(180deg,#b31942 0 4px,#eef1f8 4px 8px);
+  animation:usFlutter 1.9s ease-in-out infinite;will-change:transform}
+.us-flag>i.u{background:
+    radial-gradient(circle,#fff 1px,transparent 1.5px) 0 0/10px 8px,
+    radial-gradient(circle,#fff 1px,transparent 1.5px) 5px 4px/10px 8px,
+    #0a3161}
+@keyframes usFlutter{0%,100%{transform:translateY(calc(var(--a) * -1))}50%{transform:translateY(var(--a))}}
+/* light and shadow riding the same wave: one crest per 120px, drifting at the
+   ripple's own speed (120px per 1.9s) so the folds stay on the crests */
+body[data-theme="usa"] .us-flag::after{content:"";position:absolute;inset:0;z-index:1;
+  background:repeating-linear-gradient(90deg,rgba(0,0,0,.24) 0,rgba(255,255,255,.12) 60px,rgba(0,0,0,.24) 120px);
+  background-size:120px 100%;animation:usWave 1.9s linear infinite}
+@keyframes usWave{from{background-position:0 0}to{background-position:120px 0}}
 body[data-theme="usa"] .usa-tag-row{display:flex;align-items:center;justify-content:center;gap:9px;
   color:#e8eef9;font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.26em;
   text-transform:uppercase;padding:6px 10px;white-space:nowrap;overflow:hidden}
@@ -99,9 +118,9 @@ body[data-theme="usa"] .usa-tag-row svg{width:11px;height:11px;display:block;fle
 /* The ranks header carries the same band, inside its own box the way Silver's
    ridge does — height grows by exactly the band, taken as padding — so it can
    never overlap the panel content. */
-body[data-theme="usa"] .lb-hdr{position:relative;height:78px;padding-bottom:22px}
+body[data-theme="usa"] .lb-hdr{position:relative;height:84px;padding-bottom:28px}
 body[data-theme="usa"] .lb-hdr .us-flag{position:absolute;left:0;right:0;bottom:0}
-@media (prefers-reduced-motion:reduce){body[data-theme="usa"] .us-flag::after{animation:none}}
+@media (prefers-reduced-motion:reduce){body[data-theme="usa"] .us-flag::after,.us-flag>i{animation:none}}
 @media (max-width:350px){body[data-theme="usa"] .usa-tag-row{letter-spacing:.16em;font-size:9px}}
 body[data-theme="usa"] .hero{background:
   repeating-linear-gradient(180deg,rgba(255,46,68,.05) 0 7px,transparent 7px 14px),
@@ -2952,6 +2971,7 @@ function applyTheme(t){
   if(t==="seasonal")applySeason();
   else{document.body.removeAttribute("data-season");try{seasonStop();}catch(e){}
     if(t==="silver")applySilver();else restoreLogo();}
+  if(t==="usa"){usBuildFlags();requestAnimationFrame(usBuildFlags);}
   // Replace the node rather than setting its attribute: several engines only
   // pick up theme-color when the element is inserted, so mutating it in place
   // left the previous theme's colour on the status bar.
@@ -2964,6 +2984,43 @@ function applyTheme(t){
   var items=document.querySelectorAll(".theme-item");
   for(var i=0;i<items.length;i++)items[i].classList.toggle("active",items[i].getAttribute("data-theme")===t);
 }
+/* Stars & Stripes flag band, sliced so it can wave (see the .us-flag CSS).
+   Slice geometry: US_UNION px of navy union at the hoist, stripes after it.
+   Each slice's phase comes from its x on a US_WAVE px wavelength, so the ripple
+   travels; slices overlap by a pixel so no seam opens between neighbours
+   mid-swing. Rebuilt on resize, like the Silver ridge, so it always spans. */
+var US_UNION=84,US_WAVE=120,US_PERIOD=1.9;
+function usBuildFlags(){
+  var hosts=document.querySelectorAll(".us-flag");
+  for(var h=0;h<hosts.length;h++){
+    var host=hosts[h];
+    var w=host.clientWidth||window.innerWidth;
+    if(!w)continue;
+    var step=Math.max(4,Math.ceil(w/160)),out="";
+    for(var x=0;x<w;x+=step){
+      var u=x<US_UNION,sw=u?Math.min(step,US_UNION-x):step;
+      var amp=(0.6+1.6*Math.min(x/Math.max(w,1),1)).toFixed(2);
+      var d=(-(x%US_WAVE)/US_WAVE*US_PERIOD).toFixed(3);
+      out+='<i'+(u?' class="u"':'')+' style="left:'+x+'px;width:'+(sw+1)+'px;--a:'+amp+
+        'px;animation-delay:'+d+'s'+(u?';background-position:'+(-x)+'px 0,'+(5-x)+'px 4px,0 0':'')+'"></i>';
+      if(u&&sw<step)x-=step-sw;   // land the next slice exactly on the union edge
+    }
+    host.innerHTML=out;
+    host.classList.add("built");
+  }
+}
+// The boot-time applyTheme runs before the leaderboard markup is parsed, so
+// its band would never get sliced without a second pass once the DOM is in.
+document.addEventListener("DOMContentLoaded",function(){
+  if(document.body.getAttribute("data-theme")==="usa")usBuildFlags();
+});
+var _usFlagT=null;
+window.addEventListener("resize",function(){
+  clearTimeout(_usFlagT);
+  _usFlagT=setTimeout(function(){
+    if(document.body.getAttribute("data-theme")==="usa")usBuildFlags();
+  },200);
+});
 var _themeFadeT=null;
 function setTheme(t){
   document.body.classList.add("theme-fade");
