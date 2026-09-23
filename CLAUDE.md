@@ -250,9 +250,24 @@ large array shows an unbounded backlog — dismissing checkpoints the newest
 entry currently defined, not just the newest one shown, so entries the cap
 pushes out of view still clear.
 
-Fires once per boot, ~1.2s after the initial `render()`, and skips entirely
-if a real overlay is already open — a tap-driven deep link (trash talk,
-challenge inbox) always wins. "Real overlay" means listed in `_escClosers`
+Fires once per boot, ~1.2s after the initial `render()`, and **waits** while
+a real overlay is open or a notification tap is on its way — a tap-driven deep
+link (trash talk, challenge inbox) always goes first, and the popup follows
+once it's closed. It used to skip outright, which is half of how a user lost a
+roast to it: a tap that landed *after* the popup was already up got buried.
+Now `_routeTap` steps an open popup aside **without checkpointing** and
+`checkWhatsNew` re-checks every 1.5s until the way is clear, so the user gets
+both.
+
+**A tapped roast survives a reload.** The other half: opening the app from a
+push right after a deploy installs the new service worker, whose
+`controllerchange` reloads the page — and the `ufc-tap` stash was already
+consumed by the first load, so the reload came back empty with What's New in
+the roast's place. `pagehide` now hands a still-live tap (not yet shown, or
+its sheet still open) to the next page through `sessionStorage`
+(`ufc_tap_replay`); a fresh tap in the stash or URL always wins over it, and a
+roast the user closed is never replayed. `npm run check:tap` holds all of
+this, mutation-tested. "Real overlay" means listed in `_escClosers`
 (the same array Escape-to-close trusts), checked by `_anyOverlayOpen()` —
 **never** a blanket `.open[id]` DOM query. Several ordinary, persisted UI
 states (`#activityFeed`, restored `.open` from `localStorage` on every boot

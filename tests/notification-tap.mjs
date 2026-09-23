@@ -128,6 +128,56 @@ async function main() {
     await page.waitForTimeout(1600);
     const legacy = await sheet(page);
     assert("legacy ?trash= param still shows", legacy.open && legacy.text === "legacy 100% path");
+
+    // 7. A service-worker update reloads the page (controllerchange) moments
+    //    after a cold launch from a tap. The stash was consumed by the first
+    //    load, so the reload used to come back empty — and What's New took the
+    //    roast's place. The live tap must survive the reload.
+    const wnOpen = (p) => p.evaluate(() => !!document.getElementById("wn-overlay")?.classList.contains("open"));
+    await page.evaluate(() => { try { localStorage.removeItem("ufc_whatsnew_seen"); } catch (e) {} });
+    await stashTap(page, { kind: "", fullMessage: ROAST, sender: "Andy", ts: Date.now() });
+    await page.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 });
+    await page.waitForTimeout(1600);
+    assert("cold launch before the SW reload shows the roast", (await sheet(page)).open);
+    await page.reload({ waitUntil: "load", timeout: 20000 });
+    await page.waitForTimeout(2200);
+    const afterReload = await sheet(page);
+    assert("the roast survives an SW-update reload", afterReload.open && afterReload.text === ROAST);
+    assert("What's New does not open over the replayed roast", !(await wnOpen(page)));
+
+    // 8. Reloaded in the gap between reading the stash and the sheet opening.
+    await page.evaluate(() => closeTrashSheet());
+    await stashTap(page, { kind: "", fullMessage: "gap roast — Joe Rogan", sender: "Andy", ts: Date.now() });
+    await page.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 });
+    await page.waitForTimeout(150);          // stash read, 800ms route timer not fired yet
+    await page.reload({ waitUntil: "load", timeout: 20000 });
+    await page.waitForTimeout(1800);
+    assert("a tap reloaded before its sheet opened still shows", (await sheet(page)).text === "gap roast — Joe Rogan");
+
+    // 9. Once the user closes it, it is done — a later reload must not replay it.
+    await page.evaluate(() => closeTrashSheet());
+    await page.reload({ waitUntil: "load", timeout: 20000 });
+    await page.waitForTimeout(1800);
+    assert("a roast the user closed is not replayed on reload", !(await sheet(page)).open);
+
+    // 10. The user gets BOTH: What's New is up, a tap arrives on top of it.
+    //     The popup steps aside without checkpointing, the roast shows, and the
+    //     popup comes back once the roast and the leaderboard are closed.
+    await page.evaluate(() => { try { localStorage.removeItem("ufc_whatsnew_seen"); } catch (e) {} });
+    await page.reload({ waitUntil: "load", timeout: 20000 });
+    await page.waitForTimeout(2000);
+    assert("What's New opens on a normal launch", await wnOpen(page));
+    await stashTap(page, { kind: "", fullMessage: ROAST, sender: "Andy", ts: Date.now() });
+    await foreground(page);
+    assert("a tap steps What's New aside", !(await wnOpen(page)));
+    assert("and the roast shows", (await sheet(page)).open);
+    assert("stepping aside does not checkpoint the popup",
+      (await page.evaluate(() => localStorage.getItem("ufc_whatsnew_seen"))) === null);
+    await page.waitForTimeout(2000);
+    assert("What's New stays away while the roast is open", !(await wnOpen(page)));
+    await page.evaluate(() => { closeTrashSheet(); closeLeaderboard(); });
+    await page.waitForTimeout(2000);
+    assert("What's New comes back once the roast is closed", await wnOpen(page));
   } catch (e) {
     fatal.push("Tap test failed to run: " + e.message);
   } finally {

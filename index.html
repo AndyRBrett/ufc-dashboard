@@ -5875,11 +5875,25 @@ function _anyOverlayOpen(){
   }
   return false;
 }
+// Set while a notification tap is on its way to the screen (see _routeTap), so
+// the popup doesn't open in the gap between the tap being read and its sheet
+// appearing.
+var _wnTapIncoming=false;
+var _wnRetry=null;
 function checkWhatsNew(){
+  _wnRetry=null;
   if(!WHATS_NEW.length)return;
   // Never compete with a tap-driven deep link (trash talk / challenge inbox)
-  // or any overlay a faster path already opened on this same boot.
-  if(_anyOverlayOpen())return;
+  // or any overlay a faster path already opened on this same boot — but WAIT
+  // for it rather than giving up. Skipping outright meant a user who opened
+  // the app from a roast never saw the announcement that boot, and the tap and
+  // the popup racing each other lost the roast outright. Re-checked until the
+  // way is clear, so the user gets the roast first and the popup after.
+  var rc=document.getElementById("recap-overlay");
+  if(_wnTapIncoming||_anyOverlayOpen()||(rc&&rc.classList.contains("open"))){
+    _wnRetry=setTimeout(checkWhatsNew,1500);
+    return;
+  }
   var seen=null;
   try{seen=localStorage.getItem(WHATS_NEW_SEEN_KEY);}catch(e){}
   var unseen=unseenWhatsNew(WHATS_NEW,seen);
@@ -9507,15 +9521,66 @@ function clearPendingTap(){
 // rather than dedupe it, since showing a sheet twice is invisible (same text,
 // same already-open sheet) but dropping a tap is the bug we're fixing.
 var _tapSeen={};
+// The tap currently on screen (or about to be). A service-worker update
+// reloads the page (controllerchange), and the stash was already consumed on
+// the first load, so a roast opened from a notification right after a deploy
+// was wiped by the reload and the What's New popup took its place. pagehide
+// hands a still-live tap to the reloaded page via sessionStorage; see
+// _TAP_REPLAY_KEY below.
+var _liveTap=null;
+var _TAP_REPLAY_KEY="ufc_tap_replay";
 function _routeTap(kind,msg,sender,ts,delay){
   if(ts){
     if(_tapSeen[ts])return;
     _tapSeen[ts]=1;
   }
+  if(kind!=='challenge'&&!msg)return;
+  var tap={kind:kind,fullMessage:msg,sender:sender||"",ts:ts||0,at:Date.now(),shown:false};
+  _liveTap=tap;
+  // A tap always beats the What's New popup: hold it off while this is on its
+  // way, and if it is already up, step it aside WITHOUT checkpointing — it
+  // comes back once the roast (and anything under it) is closed.
+  _wnTapIncoming=true;
+  var wn=document.getElementById("wn-overlay");
+  if(wn&&wn.classList.contains("open")){
+    wn.classList.remove("open");
+    if(!_wnRetry)_wnRetry=setTimeout(checkWhatsNew,1500);
+  }
   setTimeout(function(){
+    tap.shown=true;
+    _wnTapIncoming=false;
     if(kind==='challenge')openChallengeInbox();
-    else if(msg)showIncomingTrashTalk(msg,sender||"");
+    else showIncomingTrashTalk(msg,sender||"");
   },delay||0);
+}
+// Is the live tap still something the user hasn't finished with — either not
+// shown yet, or its sheet still open?
+function _tapStillLive(){
+  var t=_liveTap;if(!t)return false;
+  if(!t.shown)return true;
+  var el=document.getElementById(t.kind==='challenge'?"chalSheet":"trashSheet");
+  if(!el||!el.classList.contains("open"))return false;
+  if(t.kind==='challenge')return true;
+  var tx=document.getElementById("trashText");
+  return !!tx&&tx.textContent===t.fullMessage;
+}
+window.addEventListener('pagehide',function(){
+  try{
+    if(_tapStillLive())sessionStorage.setItem(_TAP_REPLAY_KEY,JSON.stringify(_liveTap));
+    else sessionStorage.removeItem(_TAP_REPLAY_KEY);
+  }catch(e){}
+});
+// Read (and always drop) a tap handed over by the previous page. Same 5-minute
+// freshness bound as the stash.
+function _takeTapReplay(){
+  var t=null;
+  try{
+    var raw=sessionStorage.getItem(_TAP_REPLAY_KEY);
+    sessionStorage.removeItem(_TAP_REPLAY_KEY);
+    if(raw)t=JSON.parse(raw);
+  }catch(e){t=null;}
+  if(!t||Date.now()-(t.at||0)>=300000)return null;
+  return t;
 }
 // Read and route the stashed tap, if there is a fresh one. delete() resolving
 // true is the mutex: whichever caller wins the delete is the one that shows it.
@@ -9541,11 +9606,18 @@ function consumePendingTap(delay){
   var params=new URLSearchParams(window.location.search);
   var pTrash=params.get('trash'),pFrom=params.get('from'),pInbox=params.get('inbox');
   if(pTrash||pInbox)history.replaceState(null,'',window.location.pathname);
+  // A tap the previous page was still showing when it reloaded (an SW update,
+  // most often). A fresh tap — stash or URL — always wins over it.
+  var replay=_takeTapReplay();
   var fromParams=function(){
     if(pTrash)_routeTap('',pTrash,pFrom,0,800);
     else if(pInbox)_routeTap('challenge','','',0,800);
+    else if(replay)_routeTap(replay.kind,replay.fullMessage,replay.sender,replay.ts,800);
   };
   if(!window.caches){fromParams();return;}
+  // Mark the tap as incoming before the async stash read, so What's New
+  // can't slip in while the cache is being read on a slow cold start.
+  if(replay||pTrash||pInbox)_wnTapIncoming=true;
   consumePendingTap(800).then(function(shown){if(!shown)fromParams();});
   // Tapping a notification for an app that's merely backgrounded resumes the
   // existing page — no reload, so the on-load consumer above never runs again.

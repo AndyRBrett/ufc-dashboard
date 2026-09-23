@@ -159,6 +159,9 @@ function makeRegistry(doc, openSet) {
 // closeWhatsNew must restore.
 function runUi({ openIds = [], escCloserIds = ["trashSheet"], storage = {}, startFocusOn = "page-body", stubRender = true }) {
   const rendered = [];
+  // checkWhatsNew re-schedules itself while something is in the way; timers
+  // are queued here and fired by hand so the test controls the clock.
+  const timers = [];
   const store = { ...storage };
   const openSet = new Set(openIds);
   const doc = {};
@@ -170,6 +173,7 @@ function runUi({ openIds = [], escCloserIds = ["trashSheet"], storage = {}, star
   doc.activeElement = startFocusOn ? els.get(startFocusOn) : null;
   const uiCtx = vm.createContext({
     console, String, Object, Array, JSON,
+    setTimeout: (fn) => { timers.push(fn); return timers.length; },
     document: doc,
     localStorage: {
       getItem: (k) => (k in store ? store[k] : null),
@@ -199,7 +203,8 @@ function runUi({ openIds = [], escCloserIds = ["trashSheet"], storage = {}, star
   }
   vm.runInContext(src, uiCtx);
   return {
-    rendered, store, doc, els,
+    rendered, store, doc, els, timers, openSet,
+    tick: () => { const q = timers.splice(0); q.forEach((fn) => fn()); },
     run: (fn, ...args) => vm.runInContext(`${fn}(${args.map(JSON.stringify).join(",")})`, uiCtx),
     dispatchTab: (opts) => {
       uiCtx.__evt = { key: "Tab", shiftKey: !!(opts && opts.shift), preventDefault() {} };
@@ -214,6 +219,35 @@ function runUi({ openIds = [], escCloserIds = ["trashSheet"], storage = {}, star
   r.run("checkWhatsNew");
   check("checkWhatsNew never renders while a real, known overlay is already open",
     r.rendered.length === 0);
+  // ...but it waits rather than giving up: a user who opened the app from a
+  // roast must still see the popup once they've read it.
+  check("checkWhatsNew re-schedules itself while an overlay is in the way",
+    r.timers.length === 1);
+  r.tick();
+  check("still held while the overlay stays open", r.rendered.length === 0 && r.timers.length === 1);
+  r.openSet.delete("trashSheet");
+  r.tick();
+  check("renders once the overlay closes — the user gets both",
+    r.rendered.length === 1 && r.timers.length === 0);
+}
+
+{
+  // A tap on its way to the screen (read from the stash, sheet not up yet)
+  // holds the popup off too — that gap is where the race lost the roast.
+  const r = runUi({ openIds: [] });
+  r.run("(function(){_wnTapIncoming=true;})");
+  r.run("checkWhatsNew");
+  check("checkWhatsNew waits while a notification tap is incoming", r.rendered.length === 0 && r.timers.length === 1);
+  r.run("(function(){_wnTapIncoming=false;})");
+  r.tick();
+  check("and renders once the tap has landed", r.rendered.length === 1);
+}
+
+{
+  // The Card Recap isn't on _escClosers but is still a real overlay.
+  const r = runUi({ openIds: ["recap-overlay"] });
+  r.run("checkWhatsNew");
+  check("checkWhatsNew waits for an open Card Recap", r.rendered.length === 0 && r.timers.length === 1);
 }
 
 {
