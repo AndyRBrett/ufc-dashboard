@@ -7668,7 +7668,29 @@ function _wrLine(date,f1,f2,pick){
   var l=nmEq(pick,f.f1.n)?f.odds.f1:nmEq(pick,f.f2.n)?f.odds.f2:null;
   return typeof l==="number"&&isFinite(l)&&l!==0?l:null;
 }
+// Where a bout sits on its card (0 = main event), for tie-breaks: EVENTS first,
+// then the archive, which keeps the card's bout order. Unknown sorts last.
+function _wrBoutIdx(date,f1,f2){
+  var i,j;
+  for(i=0;i<EVENTS.length;i++){
+    if(EVENTS[i].date!==date)continue;
+    for(j=0;j<EVENTS[i].fights.length;j++)if(nmBout(EVENTS[i].fights[j],f1,f2))return j;
+  }
+  var a=RESULTS_ARCHIVE[date];
+  if(a&&a.fights)for(j=0;j<a.fights.length;j++){
+    var af=a.fights[j];
+    if((nmEq(af.f1,f1)&&nmEq(af.f2,f2))||(nmEq(af.f1,f2)&&nmEq(af.f2,f1)))return j;
+  }
+  return 999;
+}
 function _wrBoutKey(date,a,b){var x=nmKey(a),y=nmKey(b);return date+"|"+(x<y?x+"|"+y:y+"|"+x);}
+function _wrNailedBeats(c,n){
+  if(c.rank!==n.rank)return c.rank>n.rank;
+  if(c.rare!==n.rare)return c.rare>n.rare;
+  if(c.date!==n.date)return c.date>n.date;
+  if(c.idx!==n.idx)return c.idx<n.idx;
+  return c.key<n.key;
+}
 function _wrFotnHit(u,date){
   var bp=u.bonusPicks&&u.bonusPicks[date];
   if(!bp)return false;
@@ -7750,7 +7772,8 @@ function computeYearWrapped(rows,year,myBase){
   // Nailed it: winner AND method right, at the longest line on record (unpriced
   // bouts rank last). Archived cards carry no lines, so ties are common: the
   // rarer finish wins them (submission, KO/TKO, decision), then the most recent
-  // card — never "whichever row came first", the ride-or-die bug this replaces.
+  // card, then the bigger fight (higher on the card), then the fighter's name —
+  // never "whichever row came first", the ride-or-die bug this replaces.
   // The biggest upset has its own row, so its bout is skipped.
   var nailed=null,METHOD_RARITY={Sub:3,"KO/TKO":2,Dec:1};
   resolved.forEach(function(p){
@@ -7758,8 +7781,9 @@ function computeYearWrapped(rows,year,myBase){
     if(upset&&nmEq(p.pick,upset.pick)&&_recapEvName(p.evDate)===upset.evName)return;
     var line=_wrLine(p.evDate,p.f1,p.f2,p.pick);
     var c={pick:p.pick,opp:nmEq(p.pick,p.f1)?p.f2:p.f1,method:p.method,line:line,evName:_recapEvName(p.evDate),
-           rank:line===null?-Infinity:line,rare:METHOD_RARITY[p.method]||0,date:p.evDate};
-    if(!nailed||c.rank>nailed.rank||(c.rank===nailed.rank&&(c.rare>nailed.rare||(c.rare===nailed.rare&&c.date>nailed.date))))nailed=c;
+           rank:line===null?-Infinity:line,rare:METHOD_RARITY[p.method]||0,date:p.evDate,
+           idx:_wrBoutIdx(p.evDate,p.f1,p.f2),key:nmKey(p.pick)};
+    if(!nailed||_wrNailedBeats(c,nailed))nailed=c;
   });
 
   // Pick twin and nemesis: agreement rate on the bouts you both picked.

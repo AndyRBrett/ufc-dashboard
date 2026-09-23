@@ -197,6 +197,17 @@ check("no method hits, nothing nailed", wrap(rows, "2026", "cat").nailed === nul
   const subRows = [pick("Eve", C2, "C4", "D4", "C4", { method: "Sub" }), pick("Eve", C3, "E3", "F3", "E3", { method: "KO/TKO" })];
   check("a submission call outranks a newer KO/TKO call at the same (missing) line, in either row order",
     [subRows, subRows.slice().reverse()].every((r) => { const n = wrap(r, "2026", "eve").nailed; return n.pick === "C4" && n.method === "Sub"; }));
+  // Same card, same finish, both unpriced: the bigger fight (higher on the
+  // card) wins, then the name — in either row order.
+  // Names are chosen so alphabetical order would pick the OTHER bout.
+  ctx.EVENTS = [card1, card2, { name: "UFC Six", date: C3, fights: [bout("H1", "J1", "H1"), bout("Zed", "J2", "Zed"), bout("Abe", "J3", "Abe")] }];
+  const same = [pick("Eve", C3, "Abe", "J3", "Abe", { method: "KO/TKO" }), pick("Eve", C3, "Zed", "J2", "Zed", { method: "KO/TKO" })];
+  check("same card, same finish: the fight higher on the card wins, in either row order",
+    [same, same.slice().reverse()].every((r) => wrap(r, "2026", "eve").nailed.pick === "Zed"));
+  // Last resort (bout not found anywhere): the name, so row order still can't decide.
+  check("with nothing else to go on, the fighter's name decides — not row order",
+    ctx._wrNailedBeats({ rank: -Infinity, rare: 2, date: C3, idx: 999, key: "pp" }, { rank: -Infinity, rare: 2, date: C3, idx: 999, key: "qq" }) &&
+    !ctx._wrNailedBeats({ rank: -Infinity, rare: 2, date: C3, idx: 999, key: "qq" }, { rank: -Infinity, rare: 2, date: C3, idx: 999, key: "pp" }));
   ctx.EVENTS = [card1, card2, card3];
 }
 {
