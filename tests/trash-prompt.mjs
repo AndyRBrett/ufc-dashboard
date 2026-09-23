@@ -124,6 +124,16 @@ assert("the rest of a name-bearing angle still counts",
   usesAngle("Bet you sob at every dog movie. — Johnny Lawrence", "Torrey cries at dog movies", ["AB", "Torrey"]));
 assert("an angle with no content words can't fail the check", usesAngle("anything at all", "the and but"));
 
+// Profile details are ammunition, never praise — including the sender's own.
+// Torrey's "Soft Hands" once came back as a flex from the top of the board.
+const bySoftHands = buildTrashTalk({ ...base, myNickname: "T", targets: ["AB", "Dereko"], hint: "" });
+assert("profile details are framed as weaknesses, never spun into a boast",
+  /never a strength/.test(bySoftHands.system) && /compliment, a boast or a badge of honour/.test(bySoftHands.system));
+assert("the sender's own profile is never material to brag with",
+  /T's own details are their hang-ups[^.]*never something to brag with/.test(bySoftHands.system));
+const byStranger = buildTrashTalk({ ...base, myNickname: "Nobody", targets: ["Nobody Else"], hint: "" });
+assert("no profile, no dossier (and no polarity rule)", !/YOU KNOW THESE PEOPLE|never a strength/.test(byStranger.system));
+
 let bad = 0;
 for (const c of checks) { console.log(`  ${c.cond ? "✓" : "✗"} ${c.name}`); if (!c.cond) bad++; }
 if (bad) { console.error(`\ntrash-prompt: FAILED (${bad} assertion(s)) — DO NOT deploy.`); process.exit(1); }

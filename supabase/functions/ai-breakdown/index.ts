@@ -262,7 +262,15 @@ function buildDossier(myName: string, targets: string[], hasHint: boolean): stri
   const use = hasHint
     ? "Use AT MOST ONE of those details, and only if it builds on the angle you were given — if it drags the roast somewhere else entirely, leave it out."
     : "Use AT MOST ONE of those details, and only when it makes the burn funnier than the picks would; ignore the lot if the roast is sharper without.";
-  return ` YOU KNOW THESE PEOPLE personally — background, not material to report: ${lines.join(" | ")} ${use} Never list them, never explain them, never let on that you were handed them.`;
+  // Every detail in a profile is a flaw, a quirk or a grudge — ammunition,
+  // never praise. Left unsaid, the model spins them around: Torrey's "Soft
+  // Hands" came back as a flex ("laughing his soft-handed ass off" from the top
+  // of the board) because he was the one talking and the roast was flattering
+  // him. The sender's own details say what they'd rant about; never a brag.
+  const polarity = mine
+    ? ` Every one of those details is a weakness or a grudge, never a strength — do not spin any of them into a compliment, a boast or a badge of honour. That goes for ${myName} too: ${myName}'s own details are their hang-ups and things they'd rant about, never something to brag with; if you touch one of their flaws, it's at their own expense.`
+    : " Every one of those details is a weakness or a grudge, never a strength — do not spin any of them into a compliment, a boast or a badge of honour.";
+  return ` YOU KNOW THESE PEOPLE personally — background, not material to report: ${lines.join(" | ")} ${use}${polarity} Never list them, never explain them, never let on that you were handed them.`;
 }
 
 // Assembles the full roast prompt from the short variable parts the client
