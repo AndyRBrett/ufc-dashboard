@@ -5771,7 +5771,9 @@ var WHATS_NEW=[
   {id:"2026-09-22-year-wrapped",emoji:"🎁",title:"Your Year Wrapped",
    desc:"Your year of picks as a swipe-through story: cards played, hit rate against the group, best night, biggest upset, longest heater, your ride-or-die fighter, pick twin and nemesis, title reigns, and your pick personality. It pops up by itself once every December; any time before that, More → Year Wrapped or Ranks → Your Wrapped. Tap Share on the last slide to brag."},
   {id:"2026-09-23-longer-roasts",emoji:"🔥",title:"Roasts got room to breathe",
-   desc:"Trash talk is a proper riff now — a few sentences that build, not a single line. Your typed angle is a starting point rather than a script: the roast runs with the idea and takes it further instead of reading your words back."}
+   desc:"Trash talk is a proper riff now — a few sentences that build, not a single line. Your typed angle is a starting point rather than a script: the roast runs with the idea and takes it further instead of reading your words back."},
+  {id:"2026-09-23-wrapped-share-image",emoji:"🖼️",title:"Share your Wrapped as an image",
+   desc:"Share on the last Wrapped slide now sends a story-sized picture of your year — rank, points, hit rate, best night, biggest upset, ride-or-die and more — ready for Messages, Instagram or your camera roll. On a computer it downloads the image."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -7755,13 +7757,105 @@ function _wrShareText(w){
     "Longest streak: "+w.bestStreak+"\n"+
     "Personality: "+w.archetype.em+" "+w.archetype.name;
 }
-function shareWrapped(){
-  if(!_wrData)return;
+// The share card: the summary drawn onto a 1080×1920 canvas (story size), so
+// Share hands the share sheet an IMAGE people can post or save, not a link.
+// Drawn with fillText from the same Wrapped object the slides read, so the
+// picture can't say something the summary slide doesn't.
+var WR_CARD_W=1080,WR_CARD_H=1920;
+var _WR_FONT="Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif";
+function _wrFit(ctx,txt,maxW,size,weight,min){
+  txt=String(txt==null?"":txt);
+  for(;size>(min||24);size-=2){ctx.font=weight+" "+size+"px "+_WR_FONT;if(ctx.measureText(txt).width<=maxW)return txt;}
+  ctx.font=weight+" "+size+"px "+_WR_FONT;
+  while(txt.length>1&&ctx.measureText(txt+"…").width>maxW)txt=txt.slice(0,-1);
+  return txt+"…";
+}
+function drawWrappedCard(canvas,w){
+  canvas.width=WR_CARD_W;canvas.height=WR_CARD_H;
+  var c=canvas.getContext("2d"),W=WR_CARD_W,H=WR_CARD_H,L=90,R=W-90,maxW=R-L;
+  var g=c.createLinearGradient(0,0,W*0.55,H);
+  g.addColorStop(0,"#e8192c");g.addColorStop(0.45,"#6d0514");g.addColorStop(1,"#0b0206");
+  c.fillStyle=g;c.fillRect(0,0,W,H);
+  // A soft glow top-right, so the flat gradient reads less like a template.
+  var rg=c.createRadialGradient(W*0.9,H*0.08,0,W*0.9,H*0.08,W*0.7);
+  rg.addColorStop(0,"rgba(255,160,120,.35)");rg.addColorStop(1,"rgba(255,160,120,0)");
+  c.fillStyle=rg;c.fillRect(0,0,W,H);
+  c.textBaseline="alphabetic";c.textAlign="left";c.fillStyle="#fff";
+  c.globalAlpha=.85;c.font="700 40px "+_WR_FONT;c.fillText("🥊 UFC PICKS",L,150);
+  c.globalAlpha=1;c.font="800 64px "+_WR_FONT;c.fillText(w.year+" WRAPPED",L,300);
+  c.fillText(_wrFit(c,splitNick(w.name).name||w.name,maxW,150,"800",60),L,470);
+  c.font="700 52px "+_WR_FONT;c.fillText(_wrFit(c,w.archetype.em+" "+w.archetype.name,maxW,52,"700",32),L,560);
+  // Two hero numbers.
+  function hero(x,label,val){
+    c.globalAlpha=.7;c.font="600 34px "+_WR_FONT;c.fillText(label,x,700);
+    c.globalAlpha=1;c.fillText(_wrFit(c,val,maxW/2-20,120,"800",48),x,820);
+  }
+  hero(L,"RANK","#"+w.rank+" of "+w.of);
+  hero(L+maxW/2+20,"POINTS",String(w.pts));
+  var rows=[["Winners called",w.correct+"/"+w.picks+" ("+w.accuracy+"%)"],["Cards played",String(w.cards)],
+    ["Longest heater",w.bestStreak+" straight"],
+    ["Best night",w.bestCard?w.bestCard.pts+" pts · "+_wrShort(w.bestCard.evName||w.bestCard.date):"—"],
+    ["Biggest upset",w.upset?w.upset.pick+" +"+w.upset.line:"—"],
+    ["Ride-or-die",w.ride?w.ride.name+" ("+w.ride.w+"–"+(w.ride.n-w.ride.w)+")":"—"],
+    ["Pick twin",w.twin?(splitNick(w.twin.name).name||w.twin.name)+" · "+w.twin.pct+"%":"—"],
+    ["Title",w.title.reigns||w.title.defenses?(w.title.holding?"Champion 🏆":_wrPlural(w.title.reigns,"reign")+", "+_wrPlural(w.title.defenses,"defence")):"—"]];
+  var y=960,rowH=100;
+  c.fillStyle="rgba(0,0,0,.28)";
+  if(c.roundRect){c.beginPath();c.roundRect(L-30,y-20,maxW+60,rows.length*rowH+30,36);c.fill();}
+  else c.fillRect(L-30,y-20,maxW+60,rows.length*rowH+30);
+  c.fillStyle="#fff";
+  rows.forEach(function(r,i){
+    var by=y+i*rowH+68;
+    c.textAlign="left";c.globalAlpha=.7;c.font="500 38px "+_WR_FONT;c.fillText(r[0],L,by);
+    c.textAlign="right";c.globalAlpha=1;c.fillText(_wrFit(c,r[1],maxW*0.58,42,"700",26),R,by);
+    if(i<rows.length-1){c.globalAlpha=.12;c.fillRect(L,y+(i+1)*rowH+4,maxW,2);c.globalAlpha=1;}
+  });
+  c.textAlign="left";c.globalAlpha=.75;c.font="600 34px "+_WR_FONT;
+  var host=String(location.host+location.pathname).replace(/\/(index\.html)?$/,"");
+  c.fillText(_wrFit(c,"Make your picks → "+host,maxW,34,"600",22),L,H-70);
+  c.globalAlpha=1;
+  return canvas;
+}
+var _wrFile=null;
+function _wrPrepareImage(w){
+  _wrFile=null;
+  var ready=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve();
+  return ready.then(function(){
+    var cv=drawWrappedCard(document.createElement("canvas"),w);
+    return new Promise(function(res){cv.toBlob(res,"image/png");});
+  }).then(function(b){
+    if(!b||_wrData!==w)return null;
+    try{_wrFile=new File([b],"ufc-wrapped-"+w.year+".png",{type:"image/png"});}catch(e){_wrFile=null;}
+    return _wrFile;
+  }).catch(function(){return null;});
+}
+function _wrShareTextOnly(){
   var txt=_wrShareText(_wrData),url=location.origin+location.pathname;
   if(navigator.share){navigator.share({title:_wrData.year+" Wrapped",text:txt,url:url}).catch(function(){});return;}
-  var full=txt+"\n"+url;
-  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(full).then(function(){toast("Copied your Wrapped");},function(){toast("Couldn't copy");});
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt+"\n"+url).then(function(){toast("Copied your Wrapped");},function(){toast("Couldn't copy");});
   else toast("Sharing isn't supported here");
+}
+// The image is drawn when Wrapped opens, so by the time anyone reaches Share
+// it's a ready File and navigator.share runs synchronously inside the tap —
+// iOS drops the share sheet if an await sits between the tap and the call.
+function shareWrapped(){
+  if(!_wrData)return;
+  var f=_wrFile;
+  if(!f){toast("Still drawing your card — tap Share again in a second");return;}
+  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[f]})){
+    navigator.share({files:[f],title:_wrData.year+" Wrapped"}).catch(function(e){
+      if(e&&e.name==="AbortError")return;          // they closed the sheet
+      _wrShareTextOnly();
+    });
+    return;
+  }
+  // No file sharing (most desktops): save the image instead.
+  try{
+    var u=URL.createObjectURL(f),a=document.createElement("a");
+    a.href=u;a.download=f.name;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(u);},4000);
+    toast("Saved your Wrapped image");
+  }catch(e){_wrShareTextOnly();}
 }
 function _wrRender(){
   var sl=_wrSlides[_wrIdx];if(!sl)return;
@@ -7776,7 +7870,7 @@ function _wrRender(){
     inner.appendChild(_rcEl("div","wr-name",_wrData.name));
     inner.appendChild(_wrSummary(_wrData));
     var acts=_rcEl("div","wr-acts");
-    var sh=_rcEl("button","wr-act","Share");sh.type="button";sh.onclick=function(e){e.stopPropagation();shareWrapped();};
+    var sh=_rcEl("button","wr-act","Share image");sh.type="button";sh.onclick=function(e){e.stopPropagation();shareWrapped();};
     var dn=_rcEl("button","wr-act wr-act-2","Done");dn.type="button";dn.onclick=function(e){e.stopPropagation();closeWrapped();};
     acts.appendChild(sh);acts.appendChild(dn);inner.appendChild(acts);
   }else{
@@ -7816,6 +7910,7 @@ function openWrapped(){
   var w=year?computeYearWrapped(rows,year,base):null;
   if(!w){toast("No scored picks yet — your Wrapped fills in once a card finishes");return;}
   _wrData=w;_wrSlides=wrappedSlides(w);_wrIdx=0;
+  _wrPrepareImage(w);
   _wrPrevFocus=document.activeElement;
   document.getElementById("wr-overlay").classList.add("open");
   // The board may already hold the scroll lock; lockScroll doesn't nest, so

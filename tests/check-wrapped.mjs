@@ -285,6 +285,16 @@ check("nemesis is the lowest agreement rate (Bob)", ann.nemesis && /Bob/.test(an
   check("focus returns to where it was on close", /_wrPrevFocus\.focus\(\)/.test(cl));
   check("Wrapped reads the polled community rows before the board's snapshot",
     /return _commRows\|\|_lbRows/.test(fn("_wrRows")));
+  // Share hands over an IMAGE. It's drawn when Wrapped opens so the share call
+  // itself runs synchronously inside the tap — iOS drops the sheet otherwise.
+  check("the share image is drawn up front, when Wrapped opens", /_wrPrepareImage\(w\)/.test(ow));
+  const sw = fn("shareWrapped");
+  check("Share sends the card as a PNG file where files can be shared",
+    /navigator\.canShare\(\{files:\[f\]\}\)/.test(sw) && /navigator\.share\(\{files:\[f\]/.test(sw));
+  check("nothing async sits between the tap and navigator.share",
+    !/toBlob|_wrPrepareImage|\bawait\b|\.then\(/.test(sw.slice(0, sw.indexOf("navigator.share("))));
+  check("no file sharing (desktop): the image downloads instead", /a\.download=f\.name/.test(sw));
+  check("the card is story-sized (1080×1920)", /WR_CARD_W=1080,WR_CARD_H=1920/.test(html));
   check("reachable from the More menu", /id="wrappedBtn"[^>]*openWrapped\(\)/.test(html));
   check("reachable from the leaderboard", /wrappedYear\(rows,/.test(fn("loadLeaderboard")) && /openWrapped\(\)/.test(fn("loadLeaderboard")));
 }

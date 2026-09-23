@@ -84,6 +84,21 @@ async function main() {
       });
       assert("leaderboard panel opens", lbOpen);
     }
+    // Year Wrapped's share card: a real canvas draw in a real browser, with
+    // long names that have to be shrunk/ellipsised to fit.
+    const card = await page.evaluate(() => {
+      if (typeof window.drawWrappedCard !== "function") return null;
+      const w = { year: "2026", name: "🐺 Somebody With A Really Very Long Nickname Indeed", rank: 2, of: 5, pts: 132.5,
+        correct: 90, picks: 140, accuracy: 64, cards: 14, bestStreak: 9,
+        bestCard: { pts: 14.5, evName: "UFC Fight Night: Nurmagomedov vs. Song", date: "2026-08-29" },
+        upset: { pick: "Nina Nikolija Milosevic", line: 455 }, ride: { name: "Alonzo Menifield", n: 3, w: 2 },
+        twin: { name: "🦅 Tristin", pct: 71 }, title: { reigns: 2, defenses: 3, holding: true },
+        archetype: { em: "🐺", name: "Underdog Hunter" } };
+      const cv = window.drawWrappedCard(document.createElement("canvas"), w);
+      const px = cv.getContext("2d").getImageData(540, 1300, 1, 1).data;
+      return { w: cv.width, h: cv.height, png: cv.toDataURL("image/png").length, painted: px[3] === 255 };
+    });
+    assert("Wrapped share card draws a 1080×1920 image", card && card.w === 1080 && card.h === 1920 && card.painted && card.png > 20000);
   } catch (e) {
     fatal.push("Navigation/boot failed: " + e.message);
   } finally {
