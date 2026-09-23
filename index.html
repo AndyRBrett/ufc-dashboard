@@ -66,8 +66,43 @@ body[data-theme="usa"]{--bg:#070a13;--card:#0e1322;--card2:#161d33;--surface:#16
 /* USA flourishes: Old Glory ribbon under the header (blue union + repeating red/white
    stripes, NOT three solid bands which reads French), tiled faded white stars in the
    page + hero backgrounds, and an eagle beside the wordmark. */
-body[data-theme="usa"] .hdr::after,body[data-theme="usa"] .lb-hdr::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:linear-gradient(90deg,#3c6dd6 0 17%,transparent 17%),repeating-linear-gradient(90deg,#b31942 0 13px,#e7ebf5 13px 26px)}
-body[data-theme="usa"] .lb-hdr{position:relative}
+/* Design bar under the header, the Stars & Stripes answer to Silver Bullet's
+   ridge + tagline and Noche's papel picado: a waving Old Glory band (navy
+   union with a staggered star field, seven red/white stripes) over a navy
+   tagline strip. It replaced the 4px ribbon that used to hang off .hdr::after
+   and .lb-hdr::after — the two stacked on top of each other read as a
+   double border. Like .silver-tag it sits after the sticky header, so it
+   scrolls away and the header stays compact once you're into the cards. */
+.usa-tag,.us-flag{display:none}
+body[data-theme="usa"] .usa-tag{display:block;position:relative;background:#0a1430;
+  border-bottom:1px solid rgba(91,140,255,.22)}
+body[data-theme="usa"] .us-flag{display:block;position:relative;height:22px;overflow:hidden;pointer-events:none;
+  background:
+    radial-gradient(circle,#fff .85px,transparent 1.35px) 0 0/10px 7.4px,
+    radial-gradient(circle,#fff .85px,transparent 1.35px) 5px 3.7px/10px 7.4px,
+    linear-gradient(#0a3161,#0a3161);
+  background-repeat:repeat,repeat,no-repeat}
+/* stripes live on ::before, covering everything right of the union, so the
+   star layers can tile freely and only ever show inside the union's box */
+body[data-theme="usa"] .us-flag::before{content:"";position:absolute;top:0;bottom:0;left:74px;right:0;
+  background:repeating-linear-gradient(180deg,#b31942 0 3.143px,#eef1f8 3.143px 6.286px)}
+/* cloth folds drifting across the band — the flag waves instead of sitting flat */
+body[data-theme="usa"] .us-flag::after{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,rgba(0,0,0,.2) 0,rgba(255,255,255,.1) 45px,rgba(0,0,0,.2) 90px);
+  background-size:90px 100%;animation:usWave 3.2s linear infinite}
+@keyframes usWave{from{background-position:0 0}to{background-position:90px 0}}
+body[data-theme="usa"] .usa-tag-row{display:flex;align-items:center;justify-content:center;gap:9px;
+  color:#e8eef9;font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.26em;
+  text-transform:uppercase;padding:6px 10px;white-space:nowrap;overflow:hidden}
+body[data-theme="usa"] .usa-tag-row b{color:#ff4d5e;font-weight:500}
+body[data-theme="usa"] .usa-tag-row svg{width:11px;height:11px;display:block;flex:0 0 auto;fill:#fff;opacity:.95}
+/* The ranks header carries the same band, inside its own box the way Silver's
+   ridge does — height grows by exactly the band, taken as padding — so it can
+   never overlap the panel content. */
+body[data-theme="usa"] .lb-hdr{position:relative;height:78px;padding-bottom:22px}
+body[data-theme="usa"] .lb-hdr .us-flag{position:absolute;left:0;right:0;bottom:0}
+@media (prefers-reduced-motion:reduce){body[data-theme="usa"] .us-flag::after{animation:none}}
+@media (max-width:350px){body[data-theme="usa"] .usa-tag-row{letter-spacing:.16em;font-size:9px}}
 body[data-theme="usa"] .hero{background:
   repeating-linear-gradient(180deg,rgba(255,46,68,.05) 0 7px,transparent 7px 14px),
   linear-gradient(180deg,rgba(91,140,255,.09) 0%,transparent 100%)}
@@ -1616,6 +1651,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
   </div>
 </header>
 <div class="silver-tag" aria-hidden="true"><div class="sv-ridge"></div><span class="silver-tag-row"><svg viewBox="0 0 40 64" aria-hidden="true"><rect x="5" y="7" width="30" height="51" rx="5" fill="#d5dee5"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/></svg><span>As cold as the <b>Rockies</b></span><svg viewBox="0 0 40 64" aria-hidden="true"><rect x="5" y="7" width="30" height="51" rx="5" fill="#d5dee5"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/></svg></span></div>
+<div class="usa-tag" aria-hidden="true"><div class="us-flag"></div><span class="usa-tag-row"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z"/></svg><span>Land of the free &middot; Home of the <b>brave</b></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z"/></svg></span></div>
 <section class="hero">
   <h1 class="sr-only">Upcoming Fight Cards</h1>
   <div class="cd-wrap" id="cd-wrap" style="display:none">
@@ -9505,6 +9541,7 @@ document.addEventListener("DOMContentLoaded",function(){
   <div class="lb-hdr">
     <button class="btn-icon" onclick="closeLeaderboard()" title="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
     <div class="sv-ridge"></div>
+    <div class="us-flag" aria-hidden="true"></div>
     <div class="lb-title">Leaderboard <button class="lb-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><button class="lb-season" onclick="seasonCry(this)" aria-label="Play the seasonal sound"></button><button class="lb-silver" onclick="silverCrack(this)" aria-label="Crack a cold one"><svg viewBox="0 0 40 64" aria-hidden="true"><defs><linearGradient id="svcanlb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d99a3"/><stop offset=".16" stop-color="#eef2f5"/><stop offset=".42" stop-color="#c3cdd6"/><stop offset=".62" stop-color="#f6f9fb"/><stop offset=".86" stop-color="#aab6c0"/><stop offset="1" stop-color="#7f8b95"/></linearGradient></defs><rect x="5" y="7" width="30" height="51" rx="5" fill="url(#svcanlb)"/><ellipse cx="20" cy="8" rx="15" ry="3.6" fill="#c9d3db"/><ellipse cx="20" cy="8" rx="11" ry="2.4" fill="#aeb9c3"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><path d="M5 39 12 29l4.5 5 5.5-7.5 5 6.5 3.5-3 6 8z" fill="#fff" opacity=".92"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/><ellipse cx="20" cy="57.6" rx="15" ry="3.2" fill="#9aa6b0"/><rect x="9" y="9" width="3" height="47" fill="#fff" opacity=".45" rx="1.5"/></svg></button><button class="lb-noche" onclick="nocheGrito(this)" aria-label="Play the grito"><svg viewBox="0 0 200 240" aria-hidden="true"><use href="#noche-calavera"/></svg></button></div>
     <svg class="noche-papel" aria-hidden="true" preserveAspectRatio="none"><rect width="100%" height="100%" fill="url(#noche-papel-pattern)"/></svg>
     <button class="lb-info-btn" onclick="document.getElementById('lbInfoModal').classList.toggle('open')" title="How scoring works">ℹ</button>
