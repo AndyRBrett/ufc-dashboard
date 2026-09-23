@@ -143,6 +143,92 @@ async function main() {
       return window._trashAudience;
     })()`);
     assert("re-opening the picker resets to 'just them'", r === "targets");
+
+    // ── Early fight week on "This Event": only the sender has picked the card.
+    // The sheet used to take its cast from the event board alone, so "Roast
+    // who?" came up empty with no way forward. Everyone still active on the
+    // all-time board must be roastable, flagged as not having picked, and a
+    // long-gone player must not be dragged back in.
+    const EARLY = (senderPicked) => {
+      const today = new Date().toISOString().slice(0, 10);
+      const recent = new Date(Date.now() - 20 * 864e5).toISOString().slice(0, 10);
+      const ancient = new Date(Date.now() - 300 * 864e5).toISOString().slice(0, 10);
+      const row = (uid, nick, date, f1) => ({ user_id: uid, nickname: nick, event_date: date, f1, f2: f1 + "-opp", pick: f1, method: "", confidence: 0, updated_at: date + "T00:00:00Z", bonus_pick: null });
+      const EV = "2099-01-01";
+      window.USER_ID = "me";
+      window.lbMode = "current";
+      window._lbCtxEvName = "UFC 999";
+      window._lbCtxEvDate = EV;
+      window.userName = "T";
+      window._lbRows = [
+        senderPicked ? row("me", "T", EV, "Alpha") : row("me", "T", recent, "Old"),
+        row("u-ab", "AB", recent, "Bravo"),
+        row("u-dereko", "Dereko", recent, "Charlie"),
+        row("u-gone", "Ghost", ancient, "Delta"),
+      ];
+      window._lbSorted = window._lbScoreUsers(window._lbRows, (p) => p.event_date === EV);
+      window.__toasts = [];
+      window.toast = (m) => window.__toasts.push(m);
+      document.getElementById("trashSheet").classList.remove("open");
+      window.openTrashTalk();
+      if (!window._trashMe) return { opened: false, toasts: window.__toasts };
+      window.selectTrashPersona("Chael Sonnen");
+      const chips = Array.from(document.querySelectorAll("#trashChips .lb-trash-chip")).map((c) => c.dataset.label);
+      const note = document.getElementById("trashNoPicksNote");
+      return {
+        opened: document.getElementById("trashSheet").classList.contains("open"),
+        toasts: window.__toasts,
+        chips,
+        note: note.style.display === "none" ? "" : note.textContent,
+        myRank: window._trashMyRank,
+        facts: window._trashFacts(window._trashMe, window._trashOpponents),
+        myRecord: window._trashRecord(window._trashMe),
+      };
+    };
+    r = await page.evaluate(`(${EARLY})(true)`);
+    assert("early week: the sheet opens with the sender as the only picker", r.opened && !r.toasts.length);
+    assert("early week: players who haven't picked the card are roastable",
+      r.chips.includes("AB") && r.chips.includes("Dereko"));
+    assert("early week: a player gone past the active window is not dragged back in", !r.chips.includes("Ghost"));
+    assert("early week: the sheet says who hasn't picked, and that it's fair game",
+      /No picks yet for UFC 999: AB, Dereko/.test(r.note) && /roast them for it/.test(r.note));
+    assert("early week: the facts say they haven't picked, and forbid inventing a record",
+      /AB — hasn't made a single pick for UFC 999 yet/.test(r.facts) && /do NOT invent picks/.test(r.facts));
+
+    // Main Card scope drops prelim-only pickers from the shown board. They
+    // HAVE picked this card, so they must not be labelled as not having picked.
+    r = await page.evaluate(`(function(){
+      const EV = "2099-01-01";
+      const row = (uid, nick, date, f1) => ({ user_id: uid, nickname: nick, event_date: date, f1, f2: f1 + "-opp", pick: f1, method: "", confidence: 0, updated_at: date + "T00:00:00Z", bonus_pick: null });
+      window._lbRows = [row("me", "T", EV, "Alpha"), row("u-tris", "Tristin", EV, "Prelim"), row("u-ab", "AB", new Date().toISOString().slice(0,10), "Bravo")];
+      window._lbSorted = window._lbScoreUsers(window._lbRows, (p) => p.event_date === EV && p.user_id !== "u-tris");
+      window.__toasts = [];
+      window.openTrashTalk(); window.selectTrashPersona("Chael Sonnen");
+      const tris = window._trashOpponents.find((o) => o.nickname === "Tristin");
+      return { tris: tris && { flagged: !!tris.noEventPicks, picks: tris.picks.length },
+               note: document.getElementById("trashNoPicksNote").textContent };
+    })()`);
+    assert("a prelim-only picker hidden by Main Card scope is still roastable", !!r.tris);
+    assert("a prelim-only picker is not labelled as having no picks",
+      r.tris && !r.tris.flagged && r.tris.picks === 1 && !/Tristin/.test(r.note) && /AB/.test(r.note));
+
+    // Someone who has never picked anything at all has no row anywhere.
+    r = await page.evaluate(`(function(){
+      const row = (uid, nick, date, f1) => ({ user_id: uid, nickname: nick, event_date: date, f1, f2: f1 + "-opp", pick: f1, method: "", confidence: 0, updated_at: date + "T00:00:00Z", bonus_pick: null });
+      const recent = new Date().toISOString().slice(0,10);
+      window._lbRows = [row("u-ab", "AB", recent, "Bravo")];
+      window._lbSorted = [];
+      window.__toasts = []; window._trashMe = null;
+      window.openTrashTalk();
+      return { me: window._trashMe && window._trashMe.nickname, toasts: window.__toasts };
+    })()`);
+    assert("a first-time player with no picks anywhere can still roast", r.me === "T" && !r.toasts.length);
+
+    r = await page.evaluate(`(${EARLY})(false)`);
+    assert("a sender with no picks on the card can still roast", r.opened && !r.toasts.length && r.chips.includes("AB"));
+    assert("a sender with no picks on the card gets no rank for it", r.myRank === 0);
+    assert("a sender with no picks on the card is described that way, not as 0-for-anything",
+      /hasn't made a single pick for UFC 999/.test(r.myRecord));
   } catch (e) {
     fatal.push("Run failed: " + e.message);
   } finally {
