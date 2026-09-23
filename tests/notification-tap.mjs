@@ -167,9 +167,22 @@ async function main() {
     await page.reload({ waitUntil: "load", timeout: 20000 });
     await page.waitForTimeout(2000);
     assert("What's New opens on a normal launch", await wnOpen(page));
+    // Where the user was before the popup grabbed focus — what its eventual
+    // dismissal must return them to, even after a tap suspended it.
+    await page.evaluate(() => {
+      const b = document.createElement("button"); b.id = "orig-focus"; document.body.appendChild(b);
+      _wnPrevFocus = b;
+    });
     await stashTap(page, { kind: "", fullMessage: ROAST, sender: "Andy", ts: Date.now() });
     await foreground(page);
     assert("a tap steps What's New aside", !(await wnOpen(page)));
+    await page.waitForTimeout(300);
+    assert("focus leaves the hidden popup for the roast's sheet",
+      await page.evaluate(() => {
+        const a = document.activeElement;
+        return !document.getElementById("wn-overlay").contains(a)
+          && !!a && a.classList.contains("lb-trash-close") && document.getElementById("trashSheet").contains(a);
+      }));
     assert("and the roast shows", (await sheet(page)).open);
     assert("stepping aside does not checkpoint the popup",
       (await page.evaluate(() => localStorage.getItem("ufc_whatsnew_seen"))) === null);
@@ -178,6 +191,14 @@ async function main() {
     await page.evaluate(() => { closeTrashSheet(); closeLeaderboard(); });
     await page.waitForTimeout(2000);
     assert("What's New comes back once the roast is closed", await wnOpen(page));
+    assert("re-shown popup takes focus again", await page.evaluate(() => document.activeElement?.id === "wn-gotit-btn"));
+    assert("its original focus target survived the suspension",
+      await page.evaluate(() => _wnPrevFocus && _wnPrevFocus.id === "orig-focus"));
+    await page.evaluate(() => closeWhatsNew());
+    assert("dismissing it returns focus to where the user was",
+      await page.evaluate(() => document.activeElement?.id === "orig-focus"));
+    assert("dismissing it after all that checkpoints normally",
+      (await page.evaluate(() => localStorage.getItem("ufc_whatsnew_seen"))) !== null);
   } catch (e) {
     fatal.push("Tap test failed to run: " + e.message);
   } finally {

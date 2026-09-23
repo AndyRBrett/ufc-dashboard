@@ -5802,6 +5802,9 @@ function unseenWhatsNew(list,seen){
 // keyboard/screen-reader user to where they were rather than dropping focus
 // back to <body>.
 var _wnPrevFocus=null;
+// True while the popup is stepped aside for a notification tap (see
+// _suspendWhatsNew); keeps _wnPrevFocus pointing at where the user was.
+var _wnSuspended=false;
 function renderWhatsNew(items){
   var list=document.getElementById("wn-list");
   if(!list)return;
@@ -5823,7 +5826,11 @@ function renderWhatsNew(items){
   // have to tab through the entire app body to reach either dismiss control.
   // Move focus onto the popup itself, and restore it on close.
   try{
-    _wnPrevFocus=document.activeElement;
+    // A popup re-shown after a tap suspended it keeps the focus target from
+    // its FIRST opening — by now activeElement may be a control inside the
+    // tap's sheet, or one of this popup's own hidden buttons.
+    if(!_wnSuspended)_wnPrevFocus=document.activeElement;
+    _wnSuspended=false;
     var gotBtn=document.getElementById("wn-gotit-btn");
     if(gotBtn)gotBtn.focus();
   }catch(e){}
@@ -5856,6 +5863,23 @@ function closeWhatsNew(){
   }catch(e){}
   _wnPrevFocus=null;
   if(typeof _recapAfterWn==="function")_recapAfterWn();
+}
+// Steps the popup aside for a notification tap WITHOUT checkpointing it (it
+// comes back via checkWhatsNew). Focus is the part that isn't cosmetic: the
+// popup had moved it onto "Got it", and leaving it on a now-hidden button
+// would keep _wnTrapFocus cycling the invisible controls. So focus leaves the
+// popup here, and the tap's sheet takes it once it opens (_focusTapSheet).
+// _wnPrevFocus is kept for the eventual real dismissal.
+function _suspendWhatsNew(){
+  var ov=document.getElementById("wn-overlay");
+  if(!ov||!ov.classList.contains("open"))return false;
+  ov.classList.remove("open");
+  _wnSuspended=true;
+  try{
+    var a=document.activeElement;
+    if(a&&ov.contains&&ov.contains(a)&&a.blur)a.blur();
+  }catch(e){}
+  return true;
 }
 // True if any REAL overlay is open. Deliberately checks only the ids
 // _escClosers already treats as dismissible overlays, not a blanket
@@ -9541,17 +9565,24 @@ function _routeTap(kind,msg,sender,ts,delay){
   // way, and if it is already up, step it aside WITHOUT checkpointing — it
   // comes back once the roast (and anything under it) is closed.
   _wnTapIncoming=true;
-  var wn=document.getElementById("wn-overlay");
-  if(wn&&wn.classList.contains("open")){
-    wn.classList.remove("open");
-    if(!_wnRetry)_wnRetry=setTimeout(checkWhatsNew,1500);
-  }
+  var suspended=_suspendWhatsNew();
+  if(suspended&&!_wnRetry)_wnRetry=setTimeout(checkWhatsNew,1500);
   setTimeout(function(){
     tap.shown=true;
     _wnTapIncoming=false;
     if(kind==='challenge')openChallengeInbox();
     else showIncomingTrashTalk(msg,sender||"");
+    if(suspended)_focusTapSheet(kind);
   },delay||0);
+}
+// Hands focus to the sheet a tap just opened — its close button, the one
+// control every tap sheet has — when the What's New popup had been holding it.
+function _focusTapSheet(kind){
+  try{
+    var sh=document.getElementById(kind==='challenge'?"chalSheet":"trashSheet");
+    var btn=sh&&sh.querySelector(".lb-trash-close");
+    if(btn)btn.focus();
+  }catch(e){}
 }
 // Is the live tap still something the user hasn't finished with — either not
 // shown yet, or its sheet still open?
