@@ -26,6 +26,7 @@ function loadLab() {
   return g;
 }
 const { PE, FL } = loadLab();
+export { PE, FL };
 
 function readJSON(name, fallback) {
   const p = join(ROOT, name);
@@ -107,13 +108,15 @@ function boutView(s, ev, b) {
     result: b.result ? { winner: b.result.winner, method: b.result.method, round: b.result.round } : null,
   };
 }
-function resolvePlayer(rows, who) {
+function resolvePlayer(rows, who, s) {
   if (!who) return null;
   const want = String(who).trim().toLowerCase();
   const byId = {};
   rows.forEach((r) => { const id = r.user_id || r.nickname; if (!byId[id]) byId[id] = r.nickname || ""; else if (!byId[id] && r.nickname) byId[id] = r.nickname; });
   const ids = Object.keys(byId);
-  const base = (n) => String(n || "").replace(/^\S+\s+/, "").toLowerCase();
+  // The app's own splitNick: strips a leading emoji avatar only when there is
+  // one, so a legacy name like "Adam B" stays "Adam B" and "🥊Andy" is "Andy".
+  const base = (n) => s.kernel.splitNick(n).name.toLowerCase();
   return ids.find((id) => id.toLowerCase() === want) || ids.find((id) => base(byId[id]) === want)
     || ids.find((id) => base(byId[id]).includes(want)) || null;
 }
@@ -213,7 +216,7 @@ export const TOOLS = {
       const s = load(), ev = s.engine.nextEvent(new Date(), "ufc");
       if (!ev) return { note: "No upcoming card." };
       let group = [], mine = [], picksNote = null;
-      try { const rows = await picks(s); group = s.engine.resolvePicks(rows); const id = resolvePlayer(rows, a.player); mine = id ? group.filter((p) => p.player === id) : []; }
+      try { const rows = await picks(s); group = s.engine.resolvePicks(rows); const id = resolvePlayer(rows, a.player, s); mine = id ? group.filter((p) => p.player === id) : []; }
       catch (e) { picksNote = e.message; }
       const raw = s.env.EVENTS.find((e) => e.date === ev.date && e.name === ev.name);
       const intel = raw && s.intel ? s.kernel.intelItemsFor(s.intel, raw) : [];
@@ -238,7 +241,7 @@ export const TOOLS = {
     description: "One player's picks (by nickname), optionally for one card, with each result and points.",
     inputSchema: { type: "object", properties: { player: { type: "string" }, date: { type: "string" } }, required: ["player"] },
     async run(a) {
-      const s = load(), rows = await picks(s), id = resolvePlayer(rows, a.player);
+      const s = load(), rows = await picks(s), id = resolvePlayer(rows, a.player, s);
       if (!id) return { error: `No player matching "${a.player}".`, players: playerList(rows) };
       const list = s.engine.resolvePicks(rows).filter((p) => p.player === id && (!a.date || p.date === a.date));
       return { player: list[0] ? list[0].nickname : a.player, picks: list.slice(0, 60).map((p) => ({ date: p.date,
@@ -251,7 +254,7 @@ export const TOOLS = {
     description: "A player's Fight IQ scouting report: picker archetype, record and points, splits by division / favorite vs underdog / style / locks, head-to-head record against each friend, closing-line value, and the insights that stand out.",
     inputSchema: { type: "object", properties: { player: { type: "string" } }, required: ["player"] },
     async run(a) {
-      const s = load(), rows = await picks(s), id = resolvePlayer(rows, a.player);
+      const s = load(), rows = await picks(s), id = resolvePlayer(rows, a.player, s);
       if (!id) return { error: `No player matching "${a.player}".`, players: playerList(rows) };
       const all = s.engine.resolvePicks(rows), iq = FL.fightIQ(all.filter((p) => p.player === id), { odds: s.odds, stats: s.env.FIGHTER_STATS, group: all });
       return { archetype: `${iq.archetype.emoji} ${iq.archetype.name} — ${iq.archetype.blurb}`, record: `${iq.record.w}-${iq.record.l}`,
@@ -262,19 +265,31 @@ export const TOOLS = {
     },
   },
   why_did_my_pick_lose: {
-    description: "For a player's losing picks on a card: the result, the price they took, how the line moved, and what the tape and model said beforehand.",
+    description: "For a player's losing picks on a card: the result, the price they took (the line at their pick), how the line moved after, and what the tape and model show. Each loss says whether that analysis is pre-fight or retrospective (stats fetched after the fight already include the result).",
     inputSchema: { type: "object", properties: { player: { type: "string" }, date: { type: "string", description: "Card date; default the most recent card with results." } }, required: ["player"] },
     async run(a) {
-      const s = load(), rows = await picks(s), id = resolvePlayer(rows, a.player);
+      const s = load(), rows = await picks(s), id = resolvePlayer(rows, a.player, s);
       if (!id) return { error: `No player matching "${a.player}".`, players: playerList(rows) };
       const done = s.engine.concluded("ufc"), date = a.date || (done[done.length - 1] || {}).date;
       const lost = s.engine.resolvePicks(rows).filter((p) => p.player === id && p.date === date && p.correct === false && p.side !== null);
       return { date, losses: lost.map((p) => {
         const c = p.bout.competitors, mine = c[p.side] ? c[p.side].name : p.pick, other = c[1 - p.side] ? c[1 - p.side].name : "";
-        const m = FL.matchup(mine, other, { stats: s.env.FIGHTER_STATS, rankings: s.env.RANKINGS, archive: s.env.RESULTS_ARCHIVE, kernel: s.kernel });
+        // Pre-fight inputs as far as we have them: only earlier cards replayed
+        // into the ratings, no rankings (today's can reflect this result). The
+        // stats cache is a snapshot, so say plainly when it postdates the fight.
+        const prior = {};
+        Object.keys(s.env.RESULTS_ARCHIVE).forEach((d) => { if (d < date) prior[d] = s.env.RESULTS_ARCHIVE[d]; });
+        const t = Date.parse(date + "T00:00:00Z"), S = s.env.FIGHTER_STATS;
+        const preFight = !!(S[mine] && S[other] && Date.parse(S[mine].fetched_at) < t && Date.parse(S[other].fetched_at) < t);
+        const m = FL.matchup(mine, other, { stats: S, rankings: {}, archive: prior, kernel: s.kernel, now: new Date(t) });
         const clv = FL.pickCLV(p, s.odds);
+        const cardPrice = typeof c[p.side].odds === "number" ? c[p.side].odds : null;
         return { bout: `${c[0].name} vs ${c[1].name}`, you_picked: mine, winner: p.bout.result.winner, method: p.bout.result.method,
-          your_price: typeof c[p.side].odds === "number" ? fmtOdds(c[p.side].odds) : null, line_move_after_pick_pts: clv ? clv.pp : null,
+          your_price: clv ? fmtOdds(clv.atPick) : cardPrice !== null ? fmtOdds(cardPrice) : null,
+          your_price_basis: clv ? "line at your pick" : cardPrice !== null ? "closing line (no history at your pick)" : null,
+          closing_price: clv ? fmtOdds(clv.close) : cardPrice !== null ? fmtOdds(cardPrice) : null,
+          line_move_after_pick_pts: clv ? clv.pp : null,
+          analysis_basis: preFight ? "pre-fight" : "retrospective — fighter stats were fetched after this fight and include its result",
           opponent_edges: m.rows ? m.rows.filter((r) => r.edge === 2).map((r) => r.label) : [], model_had_your_fighter_pct: m.model ? pct(m.model.p1) : null };
       }), note: lost.length ? null : "No losing picks on that card." };
     },

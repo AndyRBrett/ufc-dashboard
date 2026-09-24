@@ -24,6 +24,10 @@ d.EVENTS.filter((e) => e.fights.some((f) => f.winner)).forEach((e) => e.fights.f
   ["Andy", "Tristin"].forEach((who, j) => rows.push({ user_id: "u-" + who, nickname: "🥊 " + who, event_date: e.date, f1: f.f1.n, f2: f.f2.n,
     pick: (i + j) % 2 ? f.f1.n : f.f2.n, method: "KO/TKO", confidence: 0, updated_at: e.date + "T10:00:00Z", event_name: e.name, bonus_pick: null }));
 }));
+// A legacy nickname with no emoji avatar must resolve by its whole name.
+const e0 = d.EVENTS.find((e) => e.fights.some((f) => f.winner)), f0 = e0.fights[0];
+rows.push({ user_id: "u-adam", nickname: "Adam B", event_date: e0.date, f1: f0.f1.n, f2: f0.f2.n, pick: f0.f1.n, method: "", confidence: 0,
+  updated_at: e0.date + "T10:00:00Z", event_name: e0.name, bonus_pick: null });
 const dir = mkdtempSync(join(tmpdir(), "fightbot-"));
 const picksFile = join(dir, "picks.json");
 writeFileSync(picksFile, JSON.stringify(rows));
@@ -62,7 +66,7 @@ try {
   const next = await call("get_next_card", {});
   check("get_next_card returns the upcoming card's bouts", !next.isError && next.data.bouts && next.data.bouts.length > 0);
   const lb = await call("get_leaderboard", {});
-  check("get_leaderboard ranks both fixture players", !lb.isError && lb.data.standings.length === 2);
+  check("get_leaderboard ranks every fixture player", !lb.isError && lb.data.standings.length === 3);
   // Parity: the board's code, run here directly, gives the same points.
   const { load } = await import(join(ROOT, "fightbot/core.mjs"));
   const s = load();
@@ -73,7 +77,9 @@ try {
   const up = await call("get_user_picks", { player: "Tristin" });
   check("get_user_picks returns graded picks", !up.isError && up.data.picks.length > 0 && up.data.picks.some((p) => p.result !== "pending"));
   const who = await call("fight_iq", { player: "nobody-here" });
-  check("an unknown player is an isError result that lists who exists", who.isError && who.data.players.length === 2);
+  check("an unknown player is an isError result that lists who exists", who.isError && who.data.players.length === 3);
+const adam = await call("get_user_picks", { player: "Adam B" });
+check("a legacy nickname without an emoji resolves by its whole name", !adam.isError && adam.data.player === "Adam B");
   const names2 = Object.keys(d.FIGHTER_STATS);
   const cmp = await call("compare_fighters", { a: names2[0], b: names2[1] });
   check("compare_fighters works for any two cached fighters", !cmp.isError && cmp.data.tape.length > 5);
@@ -87,6 +93,19 @@ try {
   check("fight_week_brief returns headlines", !brief.isError && brief.data.headlines && brief.data.headlines.length > 0);
   const why = await call("why_did_my_pick_lose", { player: "Andy" });
   check("why_did_my_pick_lose explains each loss on the latest card", !why.isError && why.data.losses.length > 0 && why.data.losses.every((l) => l.winner && l.you_picked !== l.winner));
+check("every loss says whether its analysis is pre-fight or retrospective", why.data.losses.every((l) => /^(pre-fight|retrospective)/.test(l.analysis_basis)));
+// The price is the one at the pick: re-derive it from the engine for each loss.
+{
+  const { load: ld, FL: FLx } = await import(join(ROOT, "fightbot/core.mjs"));
+  const st = ld();
+  const ok = why.data.losses.every((l) => {
+    const p = st.engine.resolvePicks(rows).find((q) => q.player === "u-Andy" && q.date === why.data.date && q.bout &&
+      `${q.bout.competitors[0].name} vs ${q.bout.competitors[1].name}` === l.bout);
+    const clv = p ? FLx.pickCLV(p, st.odds) : null;
+    return !clv || (l.your_price === (clv.atPick > 0 ? "+" + clv.atPick : String(clv.atPick)) && l.your_price_basis === "line at your pick");
+  });
+  check("your_price is the line at the pick, not the closing line", ok);
+}
   const bad = await rpc("tools/call", { name: "nope", arguments: {} });
   check("an unknown tool is a JSON-RPC error", bad.error && bad.error.code === -32602);
   const unk = await rpc("no/such/method", {});

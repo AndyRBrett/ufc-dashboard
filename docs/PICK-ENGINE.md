@@ -152,7 +152,7 @@ claude mcp add fightbot -- node /path/to/ufc-dashboard/fightbot/server.mjs
 | `get_leaderboard` | Standings, by the board's own code |
 | `get_user_picks` | One player's graded picks |
 | `fight_iq` | A player's scouting report |
-| `why_did_my_pick_lose` | Each loss on a card: price, line move, the tape and model beforehand |
+| `why_did_my_pick_lose` | Each loss on a card: the line at the pick, the move after it, the tape and model (earlier cards only, no rankings), each labelled `pre-fight` or `retrospective` by whether the stats predate the fight |
 
 It reads the repo's committed data files (rebuilt when they change on disk, so
 `git pull` refreshes a running server) and the same public picks read the app
