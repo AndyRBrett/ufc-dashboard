@@ -47,6 +47,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:iq` | the AI Fight IQ write-up stating a number it wasn't given, drifting onto Grok, repeating one voice, or escaping its daily cap |
 | `npm run check:parity` | any score moving during the engine migration: board, main-card board, per-card, Belt lineage, recaps, Year Wrapped |
 | `npm run check:promotion` | a picks query without `promotion=eq.ufc`, letting another sport's picks onto the UFC board, Belt, restore or result pushes |
+| `npm run check:sports` | the sport switcher showing with nothing to pick, a PFL pick saved untagged or after its lock, or another sport scored on the UFC board |
 | `npm run check:rooms` | a room's board scoring differently from the main board, an anonymous device joining a room, or an invite link re-joining / re-prompting |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
@@ -623,6 +624,20 @@ short allow-list of account-wide calls (account delete, nickname rename, name
 checks, the upsert that names its promotion in the body); `check:parity` proves
 PFL rows leave every UFC output byte-identical. A new picks query needs the
 filter, or an allow-list entry that says why it spans every sport.
+
+## The sport switcher sits beside UFC, never inside it
+
+`// sports:start … :end` in `index.html` adds a UFC | PFL | … switcher (on the
+home page and on Ranks). It appears **only** when the validated feed
+(`events-extra.json` → `PickEngine.validateFeed`) has a card with ≥2 bouts in
+the window, so until `extra.py` publishes, nobody sees it. Another sport never
+touches the UFC path: its own view (`#sportApp`), its own local picks
+(`ufc_sport_picks`), rows tagged with its promotion, and its own board
+(`sportStandings` in `scoring.js`: 1 point per correct winner, no locks, no
+dog bonus, no method). `loadLeaderboard` hands off to `renderSportBoard`
+before reading any UFC rows. Picks close at the feed's `time` (ET) if given,
+else `SPORT_LOCK_UTC_H` on the card's date. Feed text is rendered with
+`textContent` only. `check:sports` holds all of it.
 
 ## Non-UFC cards start in shadow mode
 

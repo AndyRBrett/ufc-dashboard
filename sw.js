@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = "2026-09-24-10";
+const SW_VERSION = "2026-09-24-12";
 const CACHE = 'ufc-' + SW_VERSION;
 // Handoff caches that must survive SW upgrades: 'ufc-push-id' carries the push
 // identity used by pushsubscriptionchange while the app is closed, 'ufc-tap'
@@ -14,7 +14,7 @@ self.addEventListener('install', function(e) {
   // Precache the app shell so the PWA opens offline. Each URL is cached
   // independently — one miss must not block install.
   e.waitUntil(caches.open(CACHE).then(function(c) {
-    var core = ['./', './data.js', './scoring.js?v=2026-09-24-4', './lab/engine.js', './manifest.json', './icon-192-v2.png', './sounds/eagle-1.mp3', './sounds/eagle-2.mp3'];
+    var core = ['./', './data.js', './scoring.js?v=2026-09-24-6', './lab/engine.js', './manifest.json', './icon-192-v2.png', './sounds/eagle-1.mp3', './sounds/eagle-2.mp3'];
     // Seasonal cues: precache only THIS month's file. All twelve together are
     // ~5.7MB, which is not worth forcing down every install for eleven sounds
     // nobody can reach yet — the fetch handler below already runtime-caches

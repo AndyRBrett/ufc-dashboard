@@ -21,10 +21,12 @@ const read = (f) => readFileSync(join(ROOT, f), "utf8");
 let failures = 0;
 const check = (name, ok) => { if (ok) console.log("  ✓ " + name); else { failures++; console.error("  ✗ " + name); } };
 
-const FILTER = /promotion=eq\.ufc|PICKS_UFC/;
+// UFC readers say ufc; the sport switcher's readers say their own promotion.
+const FILTER = /promotion=eq\.ufc|PICKS_UFC|_picksFor\(/;
 // Account-wide by design. Each entry must match exactly one call site.
 const ALLOW = [
-  { file: "index.html", re: /\/rest\/v1\/picks\?on_conflict=user_id,event_date,f1,f2"/, why: "the pick upsert (sends promotion:\"ufc\" in its body)" },
+  { file: "index.html", re: /\/rest\/v1\/picks\?on_conflict=user_id,event_date,f1,f2",\{method:"POST",headers:hdrs,body:JSON\.stringify\(data\)\}/, why: "the UFC pick upsert (sends promotion:\"ufc\" in its body)" },
+  { file: "index.html", re: /\/rest\/v1\/picks\?on_conflict=user_id,event_date,f1,f2",\{method:"POST",headers:hdrs,body:JSON\.stringify\(row\)\}/, why: "the sport pick upsert (sends its promotion in its body)" },
   { file: "index.html", re: /\/rest\/v1\/picks\?select=user_id&limit=1"/, why: "the connectivity probe" },
   { file: "index.html", re: /\/rest\/v1\/picks\?user_id=eq\."\+encodeURIComponent\(USER_ID\),\{method:"DELETE",headers:h\}/, why: "Delete my account (every promotion)" },
   { file: "index.html", re: /\/rest\/v1\/picks\?select=event_date&nickname=ilike\./, why: "name availability (names are account-wide)" },
@@ -36,6 +38,7 @@ const VIA = [
   { re: /\/rest\/v1\/picks"\+_sbQ\(/, def: /function _sbQ\(ev,fight\)\{[^\n]*PICKS_UFC;\}/ },
   { re: /\/rest\/v1\/picks"\+_rq,/, def: /var _rq="[^\n]*\+PICKS_UFC;/ },
   { re: /\/rest\/v1\/picks"\+q,/, def: /var q="\?user_id=eq\."[^\n]*\+PICKS_UFC;/ },
+  { re: /\/rest\/v1\/picks"\+(?:sq|flip),/, def: /function _sportRowQ\(promo,date,f1,f2\)\{[^}]*\+_picksFor\(promo\);\s*\}/ },
 ];
 
 const FILES = ["index.html", "lab.html", "fightbot/core.mjs", "scrape.py",
@@ -65,6 +68,8 @@ for (const a of ALLOW) check(`allow-list entry matches exactly one call: ${a.why
 
 const html = read("index.html");
 check("the pick upsert names its promotion", /var data=\{user_id:USER_ID,promotion:"ufc",/.test(html));
+check("a sport pick's upsert names its promotion", /var row=\{user_id:USER_ID,promotion:promo,/.test(html));
+check("_picksFor is exactly the per-promotion filter", /function _picksFor\(promo\)\{return "&promotion=eq\."\+encodeURIComponent\(promo\);\}/.test(html));
 check("PICKS_UFC is exactly the filter", /var PICKS_UFC="&promotion=eq\.ufc";/.test(html));
 const scoring = read("scoring.js");
 check("scoring.js skips non-UFC rows on the board and the Belt",

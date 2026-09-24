@@ -26,6 +26,7 @@
 #   check:parity    — board, belt, recaps and Wrapped are byte-identical to the pre-migration golden
 #   check:rooms     — a room's board is the main board filtered; only email accounts join; invites work
 #   check:promotion — every UFC picks query is scoped to promotion=eq.ufc (other sports never reach the UFC board)
+#   check:sports    — the sport switcher: hidden with nothing to pick, PFL picks tagged pfl, its own board and locks
 name: Validate Web
 
 on:
@@ -103,3 +104,5 @@ jobs:
         run: npm run check:rooms
       - name: Picks scoped by promotion
         run: npm run check:promotion
+      - name: Sport switcher
+        run: npm run check:sports
