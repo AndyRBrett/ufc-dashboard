@@ -73,7 +73,12 @@ def discover(promo, wikitext, now):
     Returns [{name, slug or None, date, venue, location}], soonest first, within
     [-WINDOW_PAST_DAYS, +WINDOW_AHEAD_DAYS] of now.
     """
-    section = _section(wikitext, r"Scheduled|Upcoming") or wikitext
+    # Upcoming AND past rows: a card that just finished has usually already
+    # moved to the Past table, and it must stay (and pick up its results) for
+    # WINDOW_PAST_DAYS. The date window below decides what's kept; duplicates
+    # across tables collapse on (date, name).
+    parts = [_section(wikitext, r"Scheduled|Upcoming"), _section(wikitext, r"Past|Previous|Completed")]
+    section = "\n|-\n".join(p for p in parts if p) or wikitext
     link_re = re.compile(r"\[\[([^\]\|#]*%s[^\]\|#]*)(?:\|([^\]]+))?\]\]" % promo["name_re"], re.IGNORECASE)
     plain_re = re.compile(r"(?:^|\|)\s*(%s[^\n|]*)" % promo["name_re"], re.IGNORECASE | re.MULTILINE)
     out, seen = [], set()
@@ -136,14 +141,45 @@ def card_from_wikitext(wikitext):
     return bouts
 
 
+def _name_tokens(s):
+    toks = re.findall(r"[A-Za-z0-9]+", s)
+    words = {t.lower() for t in toks if len(t) > 2 and not t.isdigit() and t.upper() != "PFL"}
+    nums = {t.lstrip("0") or "0" for t in toks if t.isdigit()}
+    return words, nums
+
+
 def section_for_event(year_wikitext, name):
-    """An event without its own article is usually a section of the year page."""
-    words = [w for w in re.split(r"[^A-Za-z0-9]+", name) if len(w) > 2 and w.upper() not in ("PFL",)]
+    """An event without its own article is usually a section of the year page.
+
+    Numbers are identity, not noise: "World Tournament 1" and "World
+    Tournament 5" differ ONLY by their number, so a heading must carry exactly
+    the event's numbers (and every one of its words). "PFL 1" has no words at
+    all and still matches on its number.
+    """
+    words, nums = _name_tokens(name)
+    if not words and not nums:
+        return ""
+    best = None
     for m in re.finditer(r"^(=+)\s*([^=\n]+?)\s*\1\s*$", year_wikitext, re.MULTILINE):
         title = m.group(2)
-        if words and all(re.search(r"\b%s\b" % re.escape(w), title, re.IGNORECASE) for w in words):
-            return _section(year_wikitext, re.escape(title))
-    return ""
+        tw, tn = _name_tokens(title)
+        # Same numbers, and one name's words contain the other's ("PFL Chicago"
+        # vs "PFL Chicago: Carmouche vs. Bishop"). The closest wins, so bare
+        # "PFL 1" picks the "PFL 1" heading over "PFL World Tournament 1".
+        if tn != nums or not (words <= tw or tw <= words) or not (tw or tn):
+            continue
+        score = len(words ^ tw)
+        if best is None or score < best[0]:
+            best = (score, m)
+    if not best:
+        return ""
+    # Slice from THIS heading's position, never re-search by title: a prefix
+    # search for "PFL 1" would land on "PFL 10".
+    m = best[1]
+    level = len(m.group(1))
+    tail = year_wikitext[m.end():]
+    end = re.search(r"^={1,%d}[^=\n].*?=+\s*$" % level, tail, re.MULTILINE)
+    return tail[:end.start()] if end else tail
 
 
 # ------------------------------------------------------------------- build --
@@ -204,9 +240,13 @@ def _in_window(d, now):
 
 
 # ------------------------------------------------------------------ cadence --
-def should_fetch(state, previous, now):
+def should_fetch(state, previous, now, publish=False):
     if os.environ.get("EXTRA_FORCE"):
         return True, "forced"
+    # Switching shadow <-> publish reads a different previous file; the
+    # shadow run's timestamp must not delay filling the live one.
+    if "publish" in state and bool(state.get("publish")) != bool(publish):
+        return True, "publish mode changed"
     try:
         last = datetime.strptime(state.get("last_fetch", ""), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
     except ValueError:
@@ -231,7 +271,7 @@ def main():
     publish = os.environ.get("EXTRA_PUBLISH") == "1"
     state = _read(STATE_JSON)
     previous = _read(LIVE_JSON if publish else CANDIDATE_JSON)
-    go, why = should_fetch(state, previous, now)
+    go, why = should_fetch(state, previous, now, publish)
     if not go:
         print("extra: skipped (%s)" % why)
         return 0

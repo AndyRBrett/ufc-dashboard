@@ -181,3 +181,64 @@ def test_shadow_mode_never_touches_the_live_file(tmp_path, monkeypatch):
     monkeypatch.setenv("EXTRA_PUBLISH", "1")
     assert extra.main() == 0
     assert json.loads(live.read_text())["events"]
+
+
+def test_a_just_finished_card_in_the_past_table_is_kept():
+    listing = LIST.replace("| [[PFL Old Card]] || {{dts|2026|8|1}}",
+                           "| [[PFL Last Night]] || {{dts|2026|9|23}} || Arena || City\n|-\n| [[PFL Old Card]] || {{dts|2026|8|1}}")
+    names = [e["name"] for e in extra.discover(extra.PROMOTIONS[0], listing, NOW)]
+    assert "PFL Last Night" in names and "PFL Old Card" not in names
+
+
+YEARS = """
+== PFL World Tournament 1 ==
+{{MMAevent bout
+|Lightweight
+|One A
+|vs.
+|One B
+}}
+{{MMAevent bout
+|Lightweight
+|One C
+|vs.
+|One D
+}}
+== PFL World Tournament 5 ==
+{{MMAevent bout
+|Welterweight
+|Five A
+|vs.
+|Five B
+}}
+== PFL 10 ==
+{{MMAevent bout
+|Heavyweight
+|Ten A
+|vs.
+|Ten B
+}}
+== PFL 1 ==
+{{MMAevent bout
+|Heavyweight
+|Uno A
+|vs.
+|Uno B
+}}
+"""
+
+
+def test_year_page_sections_are_told_apart_by_their_numbers():
+    first = lambda name: extra.card_from_wikitext(extra.section_for_event(YEARS, name))[0]["a"]
+    assert first("PFL World Tournament 5") == "Five A"      # not Tournament 1's card
+    assert first("PFL World Tournament 1") == "One A"
+    assert first("PFL 1") == "Uno A"                         # not PFL 10's
+    assert first("PFL 10") == "Ten A"
+    assert extra.section_for_event(YEARS, "PFL World Tournament 7") == ""
+
+
+def test_switching_on_publish_is_due_immediately(monkeypatch):
+    monkeypatch.delenv("EXTRA_FORCE", raising=False)
+    recent = {"last_fetch": "2026-09-24T11:00:00Z", "publish": False}
+    assert not extra.should_fetch(recent, {}, NOW, publish=False)[0]
+    assert extra.should_fetch(recent, {}, NOW, publish=True) == (True, "publish mode changed")
