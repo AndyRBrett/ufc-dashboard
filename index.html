@@ -1688,6 +1688,13 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           <span id="acctBtnLbl">Sign In / Link Email</span>
         </button>
+        <!-- Fight Lab: a separate, read-only page (lab.html) — Fight IQ, market,
+             fight-week brief, matchup lab, watch-party ticker. A plain link, so
+             nothing on this page depends on it loading. -->
+        <a class="btn-more-item" id="labBtn" href="lab.html" onclick="closeMoreMenu()" title="Fight IQ, odds movement, matchups and more" style="text-decoration:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"/><path d="M7 15h10"/></svg>
+          <span>Fight Lab</span>
+        </a>
         <button class="btn-more-item" id="wrappedBtn" onclick="closeMoreMenu();openWrapped()" title="Your year of picks, Wrapped">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8c-1.5-3-5-4-5-1.5S10 8 12 8zm0 0c1.5-3 5-4 5-1.5S14 8 12 8z"/></svg>
           <span>Year Wrapped</span>
@@ -5992,7 +5999,9 @@ var WHATS_NEW=[
   {id:"2026-09-24-locks",emoji:"🔒",title:"Locks now score",
    desc:"Pick your two surest things on each card and tap 🔓 Lock it. A lock that hits is worth +1 on top of the pick; a lock that misses costs you 1. Two per card, and they close with the bout. Starts with Rosas Jr. vs. Barcelos."},
   {id:"2026-09-24-roast-before-picks",emoji:"🎤",title:"Roast anyone, picks or not",
-   desc:"Trash talk on This Event no longer needs everyone to have picked. Friends who haven't made their picks yet show up under Roast who? — and not picking is exactly what they get roasted for. You can fire one off before making your own picks, too."}
+   desc:"Trash talk on This Event no longer needs everyone to have picked. Friends who haven't made their picks yet show up under Roast who? — and not picking is exactly what they get roasted for. You can fire one off before making your own picks, too."},
+  {id:"2026-09-25-fight-lab",emoji:"🧪",title:"Fight Lab",
+   desc:"Your Fight IQ and picker type, how your picks stack up against the betting market, the biggest line moves, a fight-week brief, and a matchup lab for any two fighters. Find it in the ⋯ menu."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;

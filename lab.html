@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://gkccophrdqtqcowmblre.supabase.co; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Fight Lab</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#e8192c">
+<!--
+  Fight Lab — the read-only analytics side of the app: Fight IQ, Fight Market,
+  the Fight Week brief, Matchup Lab, the Watch Party ticker and the promotions
+  hub. It never writes a pick, a lock or a pref: everything here is derived from
+  data.js, odds-series.json, intel.json, events-extra.json and the public picks
+  read the app already makes. If this page breaks, the app is untouched.
+
+  Scoring and the fight model are NOT reimplemented here: lab/engine.js lifts
+  them out of index.html at load (loadKernel), so every number matches the board.
+-->
+<style>
+@font-face{font-family:'Bebas Neue';font-display:swap;src:url('fonts/bebas-neue-latin.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-weight:100 900;font-display:swap;src:url('fonts/inter-latin.woff2') format('woff2')}
+:root{--red:#e8192c;--red-dim:rgba(232,25,44,.12);--gold:#c9a84c;--bg:#07070a;--card:#0f0f14;--card2:#171720;--text:#ededef;--muted:#8a8f98;--muted2:#b0b5c0;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);--green:#2ecc71;--green-dim:rgba(46,204,113,.12);--loss:#d65a68;--loss-dim:rgba(214,90,104,.12);color-scheme:dark}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f4f4f6;--card:#fff;--card2:#f0f0f3;--text:#15151a;--muted:#5f6470;--muted2:#454a55;--border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.14);--green:#15803d;--green-dim:rgba(21,128,61,.1);--loss:#b42336;--loss-dim:rgba(180,35,54,.08);--red:#c8102e;color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--border);padding:12px 16px 0}
+.top{display:flex;align-items:center;gap:12px;max-width:880px;margin:0 auto}
+.back{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted2);font-size:14px;padding:6px 10px;border:1px solid var(--border2);border-radius:999px}
+h1{font:400 30px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.5px;margin:0;flex:1}
+h1 span{color:var(--red)}
+nav{display:flex;gap:4px;overflow-x:auto;max-width:880px;margin:10px auto 0;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:none;background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);font:600 14px Inter,system-ui,sans-serif;padding:10px 12px;cursor:pointer}
+nav button[aria-selected="true"]{color:var(--text);border-bottom-color:var(--red)}
+main{max-width:880px;margin:0 auto;padding:16px 16px 64px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h2{font:400 22px/1.1 'Bebas Neue',Impact,sans-serif;letter-spacing:.4px;margin:0 0 10px}
+.card h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:14px 0 8px}
+.muted{color:var(--muted)}.small{font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+select,input[type=text]{background:var(--card2);color:var(--text);border:1px solid var(--border2);border-radius:10px;padding:9px 12px;font:inherit;min-width:0;max-width:100%}
+button.act{background:var(--red);color:#fff;border:0;border-radius:10px;padding:9px 14px;font:600 14px Inter,system-ui,sans-serif;cursor:pointer}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.tile{background:var(--card2);border-radius:12px;padding:12px}
+.tile .v{font:400 30px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.3px}
+.tile .l{font-size:12px;color:var(--muted);margin-top:4px}
+.arch{display:flex;gap:14px;align-items:center}
+.arch .e{font-size:44px;line-height:1}
+.arch .n{font:400 28px/1 'Bebas Neue',Impact,sans-serif}
+ul.list{list-style:none;margin:0;padding:0}
+ul.list li{padding:9px 0;border-top:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
+ul.list li:first-child{border-top:0}
+.ico{flex:none;width:22px;text-align:center}
+.good{color:var(--green)}.bad{color:var(--loss)}
+.pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:var(--red-dim);color:var(--red)}
+.pill.g{background:var(--green-dim);color:var(--green)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 6px;border-top:1px solid var(--border);text-align:left;vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:600;border-top:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.cmp td{text-align:center}.cmp td:first-child,.cmp td:last-child{width:34%}
+.cmp td.lbl{color:var(--muted);font-size:13px}
+.cmp .edge{font-weight:700}
+.bar{height:8px;border-radius:4px;background:var(--card2);overflow:hidden;display:flex;gap:2px}
+.bar i{display:block;height:100%;border-radius:4px}
+.spark{display:block;width:100%;height:44px}
+.spark circle.hit{fill:transparent}
+.tip{position:fixed;pointer-events:none;background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:6px 9px;font-size:12px;z-index:20;display:none}
+.empty{color:var(--muted);text-align:center;padding:24px 8px}
+.err{background:var(--loss-dim);color:var(--loss);border-radius:10px;padding:10px 12px;font-size:14px}
+.wrap-scroll{overflow-x:auto}
+@media (max-width:560px){h1{font-size:26px}.tile .v{font-size:26px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <a class="back" href="./" aria-label="Back to fight cards">&#8592; Cards</a>
+    <h1>Fight <span>Lab</span></h1>
+  </div>
+  <nav role="tablist" id="tabs">
+    <button role="tab" data-tab="iq">🧠 Fight IQ</button>
+    <button role="tab" data-tab="market">📈 Market</button>
+    <button role="tab" data-tab="week">📰 Fight Week</button>
+    <button role="tab" data-tab="matchup">🔬 Matchup</button>
+    <button role="tab" data-tab="party">🍻 Watch Party</button>
+    <button role="tab" data-tab="hub">🥊 Hub</button>
+  </nav>
+</header>
+<main id="main"><div class="empty">Loading the lab…</div></main>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script src="data.js"></script>
+<script src="lab/engine.js"></script>
+<script src="lab/analytics.js"></script>
+<script>
+// lab:start
+var SUPABASE_URL="https://gkccophrdqtqcowmblre.supabase.co";
+// The same public anon key index.html ships; picks reads are public by RLS.
+var SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrY2NvcGhyZHF0cWNvd21ibHJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAyMTAsImV4cCI6MjA5NTA0NjIxMH0.zSi-PcQL_ti5KXRq3YRQX4RbsP6HhQ5bAqh5x5kKkbE";
+var PE=window.PickEngine,FL=window.FightLab;
+var L={kernel:null,engine:null,odds:null,oddsRaw:null,intel:null,feed:null,feedProblems:[],rows:[],picks:[],me:null,myName:"",errors:[],tab:"iq",player:null,partyTimer:null};
+
+function h(tag,attrs){
+  var el=document.createElement(tag);
+  if(attrs)Object.keys(attrs).forEach(function(k){
+    var v=attrs[k];
+    if(v==null||v===false)return;
+    if(k==="text")el.textContent=v;
+    else if(k==="class")el.className=v;
+    else if(k.slice(0,2)==="on")el.addEventListener(k.slice(2),v);
+    else el.setAttribute(k,v===true?"":v);
+  });
+  for(var i=2;i<arguments.length;i++){
+    var c=arguments[i];
+    if(c==null||c===false)continue;
+    if(Array.isArray(c))c.forEach(function(x){if(x!=null&&x!==false)el.appendChild(typeof x==="string"?document.createTextNode(x):x);});
+    else el.appendChild(typeof c==="string"||typeof c==="number"?document.createTextNode(String(c)):c);
+  }
+  return el;
+}
+function card(title){var c=h("div",{class:"card"});if(title)c.appendChild(h("h2",{text:title}));for(var i=1;i<arguments.length;i++)if(arguments[i])c.appendChild(arguments[i]);return c;}
+function tile(v,l,cls){return h("div",{class:"tile"},h("div",{class:"v"+(cls?" "+cls:""),text:v==null?"—":String(v)}),h("div",{class:"l",text:l}));}
+function pctTxt(x){return x==null?"—":x+"%";}
+function recTxt(r){return r&&r.n?r.w+"–"+r.l:"—";}
+function signed(x,suf){return x==null?"—":(x>0?"+":"")+x+(suf||"");}
+function nameOnly(nick){return L.kernel?L.kernel.splitNick(nick).name:String(nick||"");}
+function fmtDate(d){return new Date(d+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});}
+function safeHref(u){return typeof u==="string"&&u.indexOf("https://")===0?u:null;}
+
+// ---------------------------------------------------------------- loading --
+function getJSON(url){
+  return fetch(url,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error(url+" HTTP "+r.status);return r.json();});
+}
+// Compile the kernel through an inline <script> rather than new Function, so
+// this page's CSP needs no 'unsafe-eval'.
+var _kSeq=0;
+function compileInline(params,body){
+  var id="__labKernel"+(++_kSeq);
+  var s=document.createElement("script");
+  s.textContent="window."+id+"=function("+params.join(",")+"){"+body+"\n};";
+  document.head.appendChild(s);s.remove();
+  var f=window[id];delete window[id];
+  if(typeof f!=="function")throw new Error("kernel failed to compile");
+  return f;
+}
+function myIdentity(){
+  var id=null,name="";
+  try{var s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");if(s&&s.user_id)id=s.user_id;}catch(e){}
+  try{if(!id)id=localStorage.getItem("ufc_uid");name=localStorage.getItem("ufc_name")||"";}catch(e){}
+  return {id:id,name:name};
+}
+function fetchPicks(){
+  var PAGE=1000,q="/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc";
+  function page(from,acc){
+    return fetch(SUPABASE_URL+q,{headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+SUPABASE_ANON,Range:from+"-"+(from+PAGE-1)}})
+      .then(function(r){if(!r.ok)throw new Error("picks HTTP "+r.status);return r.json();})
+      .then(function(rows){acc=acc.concat(Array.isArray(rows)?rows:[]);return rows.length<PAGE?acc:page(from+PAGE,acc);});
+  }
+  return page(0,[]);
+}
+function buildEngine(){
+  var env={EVENTS:EVENTS,RESULTS_ARCHIVE:RESULTS_ARCHIVE,FIGHTER_STATS:FIGHTER_STATS,RANKINGS:RANKINGS,USER_ID:L.me};
+  L.kernel=PE.loadKernel(L.html,env,compileInline);
+  var adapters=[PE.ufcAdapter(env)];
+  L.feedProblems=[];
+  if(L.feed){var fa=PE.feedAdapter(L.feed);L.feedProblems=fa.problems;adapters.push(fa);}
+  L.engine=PE.createEngine({adapters:adapters,rules:{ufc:PE.ufcRules(L.kernel)}});
+  L.picks=L.engine.resolvePicks(L.rows);
+}
+function load(){
+  var id=myIdentity();L.me=id.id;L.myName=id.name;
+  var jobs=[
+    fetch("./index.html",{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("index.html HTTP "+r.status);return r.text();}).then(function(t){L.html=t;}),
+    getJSON("./odds-series.json").then(function(j){L.oddsRaw=j;L.odds=FL.oddsIndex(j);}).catch(function(e){L.errors.push("Odds history unavailable ("+e.message+").");L.odds=FL.oddsIndex(null);}),
+    getJSON("./intel.json").then(function(j){L.intel=j;}).catch(function(){L.intel=null;}),
+    getJSON("./events-extra.json").then(function(j){L.feed=j;}).catch(function(){L.feed=null;}),
+    fetchPicks().then(function(r){L.rows=r;}).catch(function(e){L.errors.push("Couldn't load picks ("+e.message+") — pick-based views are empty.");})
+  ];
+  return Promise.all(jobs).then(buildEngine);
+}
+
+// ------------------------------------------------------------------ views --
+function players(){
+  var by={};
+  L.picks.forEach(function(p){
+    var u=by[p.player]=by[p.player]||{player:p.player,nickname:p.nickname,n:0};
+    u.n++;if(p.nickname)u.nickname=p.nickname;
+  });
+  return Object.keys(by).map(function(k){return by[k];}).sort(function(a,b){return b.n-a.n;});
+}
+function defaultPlayer(list){
+  if(L.me&&list.some(function(u){return u.player===L.me;}))return L.me;
+  var base=nameOnly(L.myName).toLowerCase();
+  var hit=base&&list.filter(function(u){return nameOnly(u.nickname).toLowerCase()===base;})[0];
+  return hit?hit.player:(list[0]&&list[0].player)||null;
+}
+function playerPicker(onchange){
+  var list=players();
+  if(!L.player||!list.some(function(u){return u.player===L.player;}))L.player=defaultPlayer(list);
+  var sel=h("select",{"aria-label":"Player",onchange:function(){L.player=this.value;onchange();}},
+    list.map(function(u){return h("option",{value:u.player,selected:u.player===L.player,text:(u.nickname||"Unknown")+(u.player===L.me?" (you)":"")});}));
+  return sel;
+}
+function edgeFor(b){
+  return b.raw&&b.raw.f1&&b.raw.f1.n?L.kernel.modelEdge(b.raw,FIGHTER_STATS,RANKINGS,RESULTS_ARCHIVE):null;
+}
+
+function viewIQ(root){
+  var body=h("div");
+  var picker=playerPicker(function(){body.textContent="";draw();});
+  root.appendChild(card(null,h("div",{class:"row"},h("span",{class:"muted small",text:"Scouting report for"}),picker)));
+  root.appendChild(body);
+  function draw(){
+    var mine=L.picks.filter(function(p){return p.player===L.player;});
+    if(!mine.length){body.appendChild(card(null,h("div",{class:"empty",text:"No picks yet — make some on the cards and your Fight IQ builds itself."})));return;}
+    var iq=FL.fightIQ(mine,{odds:L.odds,stats:FIGHTER_STATS,group:L.picks});
+    body.appendChild(card(null,
+      h("div",{class:"arch"},h("div",{class:"e",text:iq.archetype.emoji}),
+        h("div",null,h("div",{class:"n",text:iq.archetype.name}),h("div",{class:"muted small",text:iq.archetype.blurb})))));
+    body.appendChild(card("The numbers",h("div",{class:"tiles"},
+      tile(recTxt(iq.record),"Record ("+pctTxt(iq.record.pct)+")"),
+      tile(iq.points,"Points (board scoring)"),
+      tile(iq.methods.called?pctTxt(iq.methods.pct):"—","Method calls hit ("+iq.methods.hit+"/"+iq.methods.called+")"),
+      tile(recTxt(iq.locks),"Locks 🔒"),
+      tile(iq.clv.n?signed(iq.clv.avg," pts"):"—","Avg line move after your pick"))));
+    var ins=h("ul",{class:"list"});
+    if(!iq.insights.length)ins.appendChild(h("li",null,h("span",{class:"muted",text:"Nothing stands out yet — insights need at least "+FL.MIN_SAMPLE+" decided picks in a split."})));
+    iq.insights.forEach(function(i){ins.appendChild(h("li",null,h("span",{class:"ico",text:i.good?"✅":"⚠️"}),h("span",{text:i.text})));});
+    body.appendChild(card("What your picks say",ins));
+    var t=h("table",null,h("tr",null,h("th",{text:"Split"}),h("th",{class:"num",text:"Record"}),h("th",{class:"num",text:"Hit %"})));
+    iq.splits.slice().sort(function(a,b){return a.kind<b.kind?-1:a.kind>b.kind?1:b.rec.n-a.rec.n;}).forEach(function(s){
+      t.appendChild(h("tr",null,h("td",{text:s.key}),h("td",{class:"num",text:recTxt(s.rec)}),h("td",{class:"num",text:pctTxt(s.rec.pct)})));
+    });
+    body.appendChild(card("Every split",h("div",{class:"wrap-scroll"},t),
+      h("p",{class:"muted small",text:"Style tags come from UFCStats career averages; streaks count only fights before the bout. Splits under "+FL.MIN_SAMPLE+" picks aren't used for insights."})));
+    if(iq.rivals.length){
+      var rv=h("table",null,h("tr",null,h("th",{text:"When you disagree with"}),h("th",{class:"num",text:"Your record"})));
+      iq.rivals.forEach(function(r){rv.appendChild(h("tr",null,h("td",{text:r.nickname}),h("td",{class:"num "+(r.rec.w>=r.rec.l?"good":"bad"),text:recTxt(r.rec)})));});
+      body.appendChild(card("Head to head",rv));
+    }
+  }
+  draw();
+}
+
+function spark(series,side,label){
+  var pts=series.map(function(p){return {at:p.at,prob:FL.probOf(p,side),odds:side===0?p.a:p.b};}).filter(function(p){return p.prob!==null;});
+  if(pts.length<2)return null;
+  var W=300,H=44,pad=4,min=1,max=0;
+  pts.forEach(function(p){min=Math.min(min,p.prob);max=Math.max(max,p.prob);});
+  if(max-min<0.04){var mid=(max+min)/2;min=mid-0.02;max=mid+0.02;}
+  var t0=Date.parse(pts[0].at),t1=Date.parse(pts[pts.length-1].at)||t0+1;
+  function x(p){return pad+(Date.parse(p.at)-t0)/Math.max(1,t1-t0)*(W-2*pad);}
+  function y(p){return H-pad-(p.prob-min)/(max-min)*(H-2*pad);}
+  var NS="http://www.w3.org/2000/svg",svg=document.createElementNS(NS,"svg");
+  svg.setAttribute("viewBox","0 0 "+W+" "+H);svg.setAttribute("class","spark");svg.setAttribute("preserveAspectRatio","none");
+  svg.setAttribute("role","img");svg.setAttribute("aria-label",label+": implied win probability from "+Math.round(pts[0].prob*100)+"% to "+Math.round(pts[pts.length-1].prob*100)+"%");
+  var path=document.createElementNS(NS,"polyline");
+  path.setAttribute("points",pts.map(function(p){return x(p).toFixed(1)+","+y(p).toFixed(1);}).join(" "));
+  path.setAttribute("fill","none");path.setAttribute("stroke","var(--red)");path.setAttribute("stroke-width","2");path.setAttribute("vector-effect","non-scaling-stroke");path.setAttribute("stroke-linejoin","round");
+  svg.appendChild(path);
+  var tip=document.getElementById("tip");
+  pts.forEach(function(p){
+    var c=document.createElementNS(NS,"circle");
+    c.setAttribute("cx",x(p));c.setAttribute("cy",y(p));c.setAttribute("r","9");c.setAttribute("class","hit");
+    c.addEventListener("pointerenter",function(e){tip.textContent=label+" "+FL.fmtOdds(p.odds)+" · "+Math.round(p.prob*100)+"% · "+new Date(p.at).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric"});tip.style.display="block";tip.style.left=(e.clientX+12)+"px";tip.style.top=(e.clientY-30)+"px";});
+    c.addEventListener("pointerleave",function(){tip.style.display="none";});
+    svg.appendChild(c);
+  });
+  return svg;
+}
+function viewMarket(root){
+  var now=new Date();
+  var up=L.engine.upcoming(now,"ufc");
+  var movers=FL.marketMovers(up,L.odds,now);
+  var mv=h("div");
+  if(!movers.length)mv.appendChild(h("div",{class:"empty",text:"No line history for upcoming cards yet."}));
+  movers.slice(0,8).forEach(function(m){
+    var side=m.move>=0?0:1,c=m.bout.competitors;
+    var hist=L.odds.lookup(m.event.date,c[0].name,c[1].name);
+    mv.appendChild(h("div",{style:"padding:10px 0;border-top:1px solid var(--border)"},
+      h("div",{class:"row",style:"justify-content:space-between"},
+        h("div",null,h("strong",{text:c[side].name}),h("span",{class:"muted small",text:" vs "+c[1-side].name+" · "+fmtDate(m.event.date)})),
+        h("div",{class:"row"},m.steam?h("span",{class:"pill",text:"steam "+m.steam}):null,m.dogGaining?h("span",{class:"pill g",text:"dog gaining"}):null,
+          h("strong",{class:"num",text:FL.fmtOdds(side===0?m.open.a:m.open.b)+" → "+FL.fmtOdds(side===0?m.current.a:m.current.b)}))),
+      hist?spark(hist.series,side,c[side].name):null,
+      h("div",{class:"muted small",text:"Implied win chance +"+Math.abs(m.move)+" pts toward "+c[side].name+" since open · "+m.points+" snapshots"})));
+  });
+  root.appendChild(card("Biggest movers",mv,h("p",{class:"muted small",text:"Moves are de-vigged implied probability, open → latest. Steam = a 4+ point swing inside 24 hours."})));
+
+  var crowd=FL.crowdVsMarket(up,L.picks,L.odds);
+  if(crowd.length){
+    var ul=h("ul",{class:"list"});
+    crowd.forEach(function(x){ul.appendChild(h("li",null,h("span",{class:"ico",text:"🤔"}),h("span",{text:"The group is "+x.share+"% on "+x.crowd+"; the market makes "+x.market+" a "+x.marketProb+"% favorite."})));});
+    root.appendChild(card("The market disagrees with you all",ul));
+  }
+
+  var body=h("div");
+  var picker=playerPicker(function(){body.textContent="";drawMe();});
+  root.appendChild(card(null,h("div",{class:"row"},h("span",{class:"muted small",text:"Versus the market:"}),picker)));
+  root.appendChild(body);
+  function drawMe(){
+    var mine=L.picks.filter(function(p){return p.player===L.player;});
+    var v=FL.versusMarket(mine,L.odds);
+    if(!v.n){body.appendChild(card(null,h("div",{class:"empty",text:"No decided, priced picks yet."})));return;}
+    var who=nameOnly((players().filter(function(u){return u.player===L.player;})[0]||{}).nickname)||"You";
+    body.appendChild(card(who+" vs The Market",h("div",{class:"tiles"},
+      tile(pctTxt(v.accuracy),"Your pick accuracy"),
+      tile(pctTxt(v.expected),"What the closing line expected"),
+      tile(signed(v.edge," pts"),"Beat the market by",v.edge>=0?"good":"bad"),
+      tile(v.dogs.n?signed(v.dogs.vsExpected," pts"):"—","Underdogs vs expected ("+v.dogs.n+")"),
+      tile(v.avgClv==null?"—":signed(v.avgClv," pts"),"Avg CLV"),
+      tile(recTxt(v.againstMove),"Picking against line movement")),
+      h("p",{class:"muted small",text:"Expected = the average de-vigged closing probability of the side you picked. CLV = how far the price moved toward your fighter between your pick (its last edit) and the close."})));
+    if(v.clvRows.length){
+      var t=h("table",null,h("tr",null,h("th",{text:"Pick"}),h("th",{class:"num",text:"At pick"}),h("th",{class:"num",text:"Close"}),h("th",{class:"num",text:"CLV"})));
+      v.clvRows.forEach(function(r){
+        t.appendChild(h("tr",null,h("td",null,h("span",{text:r.p.pick+" "}),h("span",{class:r.p.correct?"good":"bad",text:r.p.correct?"✓":"✗"})),
+          h("td",{class:"num",text:FL.fmtOdds(r.clv.atPick)}),h("td",{class:"num",text:FL.fmtOdds(r.clv.close)}),
+          h("td",{class:"num "+(r.clv.pp>=0?"good":"bad"),text:signed(r.clv.pp)})));
+      });
+      body.appendChild(card("Biggest line moves on your picks",h("div",{class:"wrap-scroll"},t)));
+    }
+  }
+  drawMe();
+}
+
+function viewWeek(root){
+  var ev=L.engine.nextEvent(new Date(),"ufc");
+  if(!ev){root.appendChild(card(null,h("div",{class:"empty",text:"No upcoming card on the schedule."})));return;}
+  var raw=null;EVENTS.forEach(function(e){if(e.date===ev.date&&e.name===ev.name)raw=e;});
+  var intel=raw&&L.intel?L.kernel.intelItemsFor(L.intel,raw):[];
+  var mine=L.picks.filter(function(p){return p.player===(L.player||defaultPlayer(players()));});
+  var b=FL.fightWeekBrief(ev,{odds:L.odds,intel:intel,group:L.picks,mine:mine,edgeFor:edgeFor,now:new Date()});
+  var when=b.days===0?"Tonight":b.days===1?"Tomorrow":b.days>1?b.days+" days out":"This weekend";
+  var ul=h("ul",{class:"list"});
+  b.items.forEach(function(i){ul.appendChild(h("li",null,h("span",{class:"ico",text:i.icon}),h("span",{text:i.text})));});
+  root.appendChild(card(ev.name,h("div",{class:"muted small",style:"margin:-4px 0 10px",text:fmtDate(ev.date)+" · "+when+(ev.location?" · "+ev.location:"")}),ul));
+  if(b.study.length){
+    var su=h("ul",{class:"list"});
+    b.study.forEach(function(s){
+      var c=s.bout.competitors;
+      su.appendChild(h("li",null,h("span",{class:"ico",text:"🔍"}),h("span",null,
+        h("strong",{text:c[0].name+" vs "+c[1].name}),h("br"),
+        h("span",{class:"muted small",text:"The app's model has "+c[s.side-1].name+" at "+Math.round((s.side===1?s.model.p1:s.model.p2)*100)+"%, the market at "+Math.round((s.side===1?s.market.p1:s.market.p2)*100)+"% — a "+s.edge+"-point gap."}))));
+    });
+    root.appendChild(card("Three fights worth studying",su,h("p",{class:"muted small",text:"Picked by the gap between the app's fight model and the de-vigged market — a reason to look closer, not a tip."})));
+  }
+  if(b.intel.length){
+    var iu=h("ul",{class:"list"});
+    b.intel.forEach(function(it){
+      var href=safeHref(it.url);
+      iu.appendChild(h("li",null,h("span",{class:"ico",text:"📰"}),h("span",null,
+        href?h("a",{href:href,target:"_blank",rel:"noopener noreferrer",text:it.title}):h("span",{text:it.title}),
+        h("div",{class:"muted small",text:(it.source||"")+(it.fighters&&it.fighters.length?" · "+it.fighters.join(", "):"")}))));
+    });
+    root.appendChild(card("Fight Week Intel",iu));
+  }
+}
+
+function viewMatchup(root){
+  var names=Object.keys(FIGHTER_STATS).sort();
+  var dl=h("datalist",{id:"fighters"},names.map(function(n){return h("option",{value:n});}));
+  var ev=L.engine.nextEvent(new Date(),"ufc"),mainB=ev&&ev.bouts[0];
+  var a=h("input",{type:"text",list:"fighters","aria-label":"Fighter A",placeholder:"Fighter A",value:mainB?mainB.competitors[0].name:""});
+  var b=h("input",{type:"text",list:"fighters","aria-label":"Fighter B",placeholder:"Fighter B",value:mainB?mainB.competitors[1].name:""});
+  var out=h("div");
+  function resolveName(v){v=String(v||"").trim();if(FIGHTER_STATS[v])return v;var hit=names.filter(function(n){return L.kernel.nmEq(n,v);})[0];return hit||v;}
+  function go(){
+    out.textContent="";
+    var m=FL.matchup(resolveName(a.value),resolveName(b.value),{stats:FIGHTER_STATS,rankings:RANKINGS,archive:RESULTS_ARCHIVE,kernel:L.kernel,fighterOdds:L.oddsRaw&&L.oddsRaw.fighters});
+    if(m.missing){out.appendChild(card(null,h("div",{class:"err",text:"No UFCStats profile cached for "+m.missing.join(" and ")+". Only fighters who've appeared on a recent card are in the stats cache."})));return;}
+    var t=h("table",{class:"cmp"},h("tr",null,h("th",{style:"text-align:center",text:m.a}),h("th"),h("th",{style:"text-align:center",text:m.b})));
+    m.rows.forEach(function(r){t.appendChild(h("tr",null,h("td",{class:r.edge===1?"edge good":"",text:String(r.a)}),h("td",{class:"lbl",text:r.label}),h("td",{class:r.edge===2?"edge good":"",text:String(r.b)})));});
+    t.appendChild(h("tr",null,h("td",{text:m.formA||"—"}),h("td",{class:"lbl",text:"Last 5 (newest first)"}),h("td",{text:m.formB||"—"})));
+    out.appendChild(card("Tale of the tape",h("div",{class:"wrap-scroll"},t)));
+    if(m.model){
+      var p1=Math.round(m.model.p1*100);
+      out.appendChild(card("The model's estimate",
+        h("div",{class:"row",style:"justify-content:space-between;font-weight:700"},h("span",{text:m.a+" "+p1+"%"}),h("span",{text:(100-p1)+"% "+m.b})),
+        h("div",{class:"bar",style:"margin:8px 0","aria-hidden":"true"},h("i",{style:"width:"+p1+"%;background:var(--red)"}),h("i",{style:"flex:1;background:var(--muted)"})),
+        h("p",{class:"muted small",text:"The same Elo-plus-style model that sits under the moneyline on the cards (confidence "+m.model.confidence+"). An estimate, not a truth — see the backtest below."})));
+    }
+    if(m.notes.length){var nu=h("ul",{class:"list"});m.notes.forEach(function(n){nu.appendChild(h("li",null,h("span",{class:"ico",text:"•"}),h("span",{text:n})));});out.appendChild(card("What stands out",nu));}
+    var hist=[["a",m.a],["b",m.b]].filter(function(x){return m.history[x[0]].length;});
+    if(hist.length){
+      var ht=h("table",null,h("tr",null,h("th",{text:"Fighter"}),h("th",{text:"Opponent"}),h("th",{class:"num",text:"Open"}),h("th",{class:"num",text:"Close"})));
+      hist.forEach(function(x){m.history[x[0]].slice(-4).forEach(function(r){ht.appendChild(h("tr",null,h("td",{text:x[1]}),h("td",{text:r.opponent}),h("td",{class:"num",text:FL.fmtOdds(r.open)}),h("td",{class:"num",text:r.close==null?"open":FL.fmtOdds(r.close)})));});});
+      out.appendChild(card("Betting history",h("div",{class:"wrap-scroll"},ht)));
+    }
+  }
+  root.appendChild(card("Pick any two fighters",dl,h("div",{class:"row"},a,h("span",{class:"muted",text:"vs"}),b,h("button",{class:"act",onclick:go,text:"Compare"}))));
+  root.appendChild(out);
+  var bt=FL.backtest({stats:FIGHTER_STATS,rankings:RANKINGS,archive:RESULTS_ARCHIVE,kernel:L.kernel,odds:L.odds});
+  if(bt)root.appendChild(card("Model backtest",h("div",{class:"tiles"},
+      tile(bt.n,"Clean bouts scored"),tile(pctTxt(bt.pct),"Model picked the winner"),
+      tile(bt.vsMarket.n?pctTxt(bt.vsMarket.market):"—","Closing favorite won (same bouts)"),tile(bt.brier==null?"—":bt.brier,"Brier score (lower is better)")),
+    h("p",{class:"muted small",text:"Only bouts where both fighters' stats were fetched before fight night count — "+bt.excluded+" archived bouts are left out because their stats already include the result. The sample grows every card."})));
+  if(a.value&&b.value)go();
+}
+
+function viewParty(root){
+  var now=new Date(),evs=L.engine.events("ufc").filter(function(e){return e.date<=PE.isoDate(now)&&e.bouts.some(function(b){return b.result;});});
+  var ev=evs[evs.length-1];
+  if(!ev){root.appendChild(card(null,h("div",{class:"empty",text:"No results yet."})));return;}
+  var feed=FL.activityTicker(ev,L.picks);
+  var live=ev.bouts.some(function(b){return !b.result;})&&ev.date>=PE.isoDate(new Date(now-86400000));
+  var ul=h("ul",{class:"list"});
+  if(!feed.length)ul.appendChild(h("li",null,h("span",{class:"muted",text:"Nobody picked this card."})));
+  feed.forEach(function(x){ul.appendChild(h("li",null,h("span",{class:"ico",text:x.icon}),h("span",{text:x.text})));});
+  root.appendChild(card(ev.name,h("div",{class:"row muted small",style:"margin:-4px 0 10px"},live?h("span",{class:"pill",text:"live"}):null,h("span",{text:fmtDate(ev.date)+(live?" · refreshes every minute":" · replay, newest first")})),ul));
+  var board=L.kernel._lbScoreUsers(L.rows.filter(function(r){return r.event_date===ev.date;}));
+  if(board.length){
+    var t=h("table",null,h("tr",null,h("th",{text:"#"}),h("th",{text:"Player"}),h("th",{class:"num",text:"Card"}),h("th",{class:"num",text:"Pts"})));
+    board.forEach(function(u,i){t.appendChild(h("tr",null,h("td",{text:String(i+1)}),h("td",{text:u.nickname}),h("td",{class:"num",text:u.correct+"/"+u.total}),h("td",{class:"num",text:String(L.kernel.userPts(u))})));});
+    root.appendChild(card("Card standings",t,h("p",{class:"muted small",text:"Scored by the board's own code."})));
+  }
+  if(live&&!L.partyTimer)L.partyTimer=setInterval(refreshLive,60000);
+}
+function refreshLive(){
+  if(L.tab!=="party"){clearInterval(L.partyTimer);L.partyTimer=null;return;}
+  var s=document.createElement("script");s.src="data.js?t="+Date.now();
+  s.onload=function(){fetchPicks().then(function(r){L.rows=r;}).catch(function(){}).then(function(){buildEngine();render();});};
+  document.body.appendChild(s);
+}
+
+function viewHub(root){
+  var promos=L.engine.promotions(),now=new Date();
+  var feedN=L.feed&&Array.isArray(L.feed.events)?L.feed.events.length:0;
+  promos.forEach(function(p){
+    var up=L.engine.upcoming(now,p.id),ul=h("ul",{class:"list"});
+    if(!up.length)ul.appendChild(h("li",null,h("span",{class:"muted",text:"No upcoming events."})));
+    up.slice(0,6).forEach(function(ev){
+      var me=ev.bouts[0],c=me&&me.competitors;
+      ul.appendChild(h("li",null,h("span",{class:"ico",text:"📅"}),h("span",null,h("strong",{text:ev.name}),h("div",{class:"muted small",text:fmtDate(ev.date)+" · "+ev.bouts.length+" bouts"+(c?" · "+c[0].name+" vs "+c[1].name:"")}))));
+    });
+    root.appendChild(card(p.name+(p.sport&&p.sport!=="mma"?" · "+p.sport:""),ul));
+  });
+  var notes=h("div",null,h("p",{class:"small muted",text:"The UFC card comes from the live scraper. Other promotions come from a curated feed (events-extra.json) that the engine validates before showing — "+feedN+" event(s) in it right now."}));
+  if(L.feedProblems.length)notes.appendChild(h("div",{class:"err",text:"Feed entries skipped: "+L.feedProblems.join("; ")}));
+  root.appendChild(card("About the hub",notes));
+}
+
+var VIEWS={iq:viewIQ,market:viewMarket,week:viewWeek,matchup:viewMatchup,party:viewParty,hub:viewHub};
+function render(){
+  var main=document.getElementById("main");main.textContent="";
+  L.errors.forEach(function(e){main.appendChild(h("div",{class:"err",style:"margin-bottom:12px",text:e}));});
+  try{VIEWS[L.tab](main);}
+  catch(e){console.error(e);main.appendChild(card(null,h("div",{class:"err",text:"This view hit an error: "+e.message})));}
+  document.querySelectorAll("#tabs button").forEach(function(b){b.setAttribute("aria-selected",b.dataset.tab===L.tab?"true":"false");});
+}
+function setTab(t){if(!VIEWS[t])t="iq";L.tab=t;try{history.replaceState(null,"","#"+t);}catch(e){}try{localStorage.setItem("ufc_lab_tab",t);}catch(e){}render();window.scrollTo(0,0);}
+document.getElementById("tabs").addEventListener("click",function(e){var b=e.target.closest("button[data-tab]");if(b)setTab(b.dataset.tab);});
+(function boot(){
+  var t=(location.hash||"").slice(1);
+  if(!VIEWS[t]){try{t=localStorage.getItem("ufc_lab_tab")||"iq";}catch(e){t="iq";}}
+  L.tab=VIEWS[t]?t:"iq";
+  if(typeof EVENTS==="undefined"||!PE||!FL){document.getElementById("main").innerHTML='<div class="err">The lab could not load its data. Head back to the cards and try again.</div>';return;}
+  load().then(render).catch(function(e){
+    console.error(e);
+    var m=document.getElementById("main");m.textContent="";
+    m.appendChild(h("div",{class:"err",text:"The lab couldn't start: "+e.message+". The fight cards are unaffected."}));
+  });
+})();
+// lab:end
+</script>
+</body>
+</html>
