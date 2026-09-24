@@ -1,5 +1,275 @@
 {
-  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
-  "promotions": [],
-  "events": []
+ "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
+ "generated_at": "2026-09-24T23:06:35Z",
+ "promotions": [
+  {
+   "id": "pfl",
+   "name": "PFL",
+   "sport": "mma"
+  }
+ ],
+ "events": [
+  {
+   "promotion": "pfl",
+   "name": "PFL Chicago: Carmouche vs. Bishop 2",
+   "date": "2026-10-16",
+   "venue": "Wintrust Arena",
+   "location": "Chicago",
+   "broadcast": "",
+   "bouts": [
+    {
+     "a": "Liz Carmouche",
+     "b": "Jena Bishop",
+     "label": "Main Event",
+     "division": "Women's Flyweight",
+     "title": true,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Timur Khizriev",
+     "b": "Gabriel Braga",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Alexandr Shabliy",
+     "b": "Landry Ward",
+     "label": "",
+     "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Denis Goltsov",
+     "b": "Maxwell Djantou Nana",
+     "label": "",
+     "division": "Heavyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Emiliano Sordi",
+     "b": "Abraham Bably",
+     "label": "",
+     "division": "Light Heavyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Oualy Tandia",
+     "b": "J.P. Saint Louis",
+     "label": "",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Rafael do Nascimento",
+     "b": "Sarvarjon Khamidov",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Shannon Clark",
+     "b": "Lucero Acosta",
+     "label": "",
+     "division": "Women's Flyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Eliezer Kubanza",
+     "b": "Trey Waters",
+     "label": "",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Gamid Khizriev",
+     "b": "Michael Boylan",
+     "label": "",
+     "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Cassio Barao Jr.",
+     "b": "Kevin Pease",
+     "label": "",
+     "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Paulina Wisniewska",
+     "b": "Chelsea Hackett",
+     "label": "",
+     "division": "Women's Flyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Cobey Fehr",
+     "b": "Rosario Romero",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Levan Khabalaev",
+     "b": "Morquez Forest",
+     "label": "",
+     "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    }
+   ]
+  },
+  {
+   "promotion": "pfl",
+   "name": "PFL Dubai: Nemkov vs. Bilostenniy",
+   "date": "2026-11-14",
+   "venue": "Coca-Cola Arena",
+   "location": "Dubai",
+   "broadcast": "",
+   "bouts": [
+    {
+     "a": "Vadim Nemkov",
+     "b": "Sergey Bilostenniy",
+     "label": "Main Event",
+     "division": "Heavyweight",
+     "title": true,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Patrick Habirora",
+     "b": "Omar El Dafrawy",
+     "label": "",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Oleg Popov",
+     "b": "Pouya Rahmani",
+     "label": "",
+     "division": "Heavyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Sergio Pettis",
+     "b": "Joji Goto",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Rhys McKee",
+     "b": "Ernesto Rodriguez",
+     "label": "",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Abubakar Nurmagomedov",
+     "b": "David Martinez",
+     "label": "",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Khasan Magomedsharipov",
+     "b": "Adam Borics",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Asael Adjoudj",
+     "b": "Movlid Khaybulaev",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    }
+   ]
+  }
+ ]
 }
