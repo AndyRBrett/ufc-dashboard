@@ -21,7 +21,7 @@
 @font-face{font-family:'Bebas Neue';font-display:swap;src:url('fonts/bebas-neue-latin.woff2') format('woff2')}
 @font-face{font-family:'Inter';font-weight:100 900;font-display:swap;src:url('fonts/inter-latin.woff2') format('woff2')}
 :root{--red:#e8192c;--red-dim:rgba(232,25,44,.12);--gold:#c9a84c;--bg:#07070a;--card:#0f0f14;--card2:#171720;--text:#ededef;--muted:#8a8f98;--muted2:#b0b5c0;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);--green:#2ecc71;--green-dim:rgba(46,204,113,.12);--loss:#d65a68;--loss-dim:rgba(214,90,104,.12);color-scheme:dark}
-@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f4f4f6;--card:#fff;--card2:#f0f0f3;--text:#15151a;--muted:#5f6470;--muted2:#454a55;--border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.14);--green:#15803d;--green-dim:rgba(21,128,61,.1);--loss:#b42336;--loss-dim:rgba(180,35,54,.08);--red:#c8102e;color-scheme:light}}
+body[data-theme="silver"]{color-scheme:light}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:inherit}
@@ -75,6 +75,21 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
+<style id="appTheme"></style>
+<script>
+// The app's theme, before first paint: same attribute stamping as index.html's
+// bootstrap, plus the theme colours lifted from index.html on a previous visit
+// (see appThemeCss), so a themed Lab never flashes Octagon red first.
+try{var _t=localStorage.getItem("ufc_theme");
+if(!{octagon:1,neon:1,fire:1,usa:1,seasonal:1,silver:1,noche:1}[_t])_t="octagon";
+document.body.setAttribute("data-theme",_t);
+if(_t==="seasonal")document.body.setAttribute("data-season",["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"][new Date().getMonth()]);
+var _css=localStorage.getItem("ufc_lab_theme_css")||"";
+document.getElementById("appTheme").textContent=_css;
+if(!_css&&_t!=="octagon"){document.documentElement.style.visibility="hidden";
+  setTimeout(function(){document.documentElement.style.visibility="";},1500);}  // LAB_THEME_WAIT_MS
+}catch(e){}
+</script>
 <header>
   <div class="top">
     <a class="back" href="./" aria-label="Back to fight cards">&#8592; Cards</a>
@@ -101,6 +116,60 @@ var SUPABASE_URL="https://gkccophrdqtqcowmblre.supabase.co";
 // The same public anon key index.html ships; picks reads are public by RLS.
 var SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrY2NvcGhyZHF0cWNvd21ibHJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzAyMTAsImV4cCI6MjA5NTA0NjIxMH0.zSi-PcQL_ti5KXRq3YRQX4RbsP6HhQ5bAqh5x5kKkbE";
 var PE=window.PickEngine,FL=window.FightLab;
+// lab-theme:start
+// The app's themes, lifted from index.html rather than copied, so a new or
+// changed theme reaches the Lab without anyone remembering to update it. Only
+// the colour variables the Lab uses are taken, from plain
+// body[data-theme="…"] / body[data-season="…"] rules. The app's ornaments
+// (flags, papel picado, ridges) stay the app's.
+var LAB_THEME_VARS=/^--(bg|card|card2|surface|text|muted|muted2|border|border2|sep|red|red-dim|red-border|gold|gold-dim|green|green-dim|green-border|loss|loss-dim|loss-border|btn-bg|pill-bg|bar-bg|hdr-bg|on-accent|se-[a-z0-9-]+)$/;
+function appThemeCss(html){
+  // :root is Octagon, the app's default; then each theme and each month.
+  var out=[],re=/(^:root|body\[data-(?:theme|season)="[a-z]+"\])\s*\{([^{}]*)\}/gm,m;
+  while((m=re.exec(html))){
+    var decls=[],d,dre=/(--[a-z0-9-]+)\s*:\s*([^;{}]+)/g;
+    while((d=dre.exec(m[2]))){if(LAB_THEME_VARS.test(d[1])&&d[2].indexOf("url(")<0)decls.push(d[1]+":"+d[2].trim());}
+    if(decls.length)out.push(m[1]+"{"+decls.join(";")+"}");
+  }
+  return out.join("\n");
+}
+// The status-bar colour for a theme, from index.html's THEMES map (parsed,
+// not evaluated: this page's CSP has no 'unsafe-eval').
+function appThemeColor(html,theme,month){
+  // Seasonal's bar is the month's own colour (the app's curSeason().bar), not
+  // the THEMES placeholder.
+  if(theme==="seasonal"){
+    var mk=["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"][month==null?new Date().getMonth():month];
+    var sm=new RegExp("\\{k:\""+mk+"\"[^\\n]*?bar:\"(#[0-9a-fA-F]{3,8})\"").exec(html);
+    if(sm)return sm[1];
+  }
+  var m=/var THEMES=\{([^}]*)\}/.exec(html);
+  if(!m)return null;
+  var r=new RegExp("(?:^|,)\\s*"+theme+"\\s*:\\s*\"(#[0-9a-fA-F]{3,8})\"").exec(m[1]);
+  return r?r[1]:null;
+}
+// lab-theme:end
+function applyAppTheme(html){
+  var css=appThemeCss(html);
+  if(!css){labReveal();return;}
+  document.getElementById("appTheme").textContent=css;
+  try{localStorage.setItem("ufc_lab_theme_css",css);}catch(e){}
+  var col=appThemeColor(html,document.body.getAttribute("data-theme")||"octagon");
+  if(col){
+    // Replace the node rather than set its attribute, exactly as the app's
+    // applyTheme does: several engines only read theme-color on insertion.
+    var old=document.querySelector('meta[name="theme-color"]');
+    if(old&&old.parentNode)old.parentNode.removeChild(old);
+    var m=document.createElement("meta");m.setAttribute("name","theme-color");m.setAttribute("content",col);
+    document.head.appendChild(m);
+  }
+  labReveal();
+}
+// First visit with a non-default theme and nothing cached: the Lab has no
+// rules for that theme until index.html arrives, so it stays hidden rather
+// than flash Octagon, and shows the moment the theme lands (or after
+// LAB_THEME_WAIT_MS regardless, so a failed fetch never leaves a blank page).
+function labReveal(){document.documentElement.style.visibility="";}
 var L={kernel:null,engine:null,odds:null,oddsRaw:null,intel:null,feed:null,feedProblems:[],rows:[],picks:[],me:null,myName:"",errors:[],tab:"iq",player:null,partyTimer:null};
 
 function h(tag,attrs){
@@ -175,7 +244,7 @@ function buildEngine(){
 function load(){
   var id=myIdentity();L.me=id.id;L.myName=id.name;
   var jobs=[
-    fetch("./index.html",{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("index.html HTTP "+r.status);return r.text();}).then(function(t){L.html=t;}),
+    fetch("./index.html",{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("index.html HTTP "+r.status);return r.text();}).then(function(t){L.html=t;applyAppTheme(t);}),
     getJSON("./odds-series.json").then(function(j){L.oddsRaw=j;L.odds=FL.oddsIndex(j);}).catch(function(e){L.errors.push("Odds history unavailable ("+e.message+").");L.odds=FL.oddsIndex(null);}),
     getJSON("./intel.json").then(function(j){L.intel=j;}).catch(function(){L.intel=null;}),
     getJSON("./events-extra.json").then(function(j){L.feed=j;}).catch(function(){L.feed=null;}),
