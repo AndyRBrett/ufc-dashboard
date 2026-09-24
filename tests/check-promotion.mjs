@@ -73,5 +73,17 @@ check("scoring.js skips non-UFC rows on the board and the Belt",
 const sql = read("supabase/migrations/0007_picks_promotion.sql");
 check("0007 defaults every row to 'ufc' (older clients stay correct)", /add column if not exists promotion text not null default 'ufc'/.test(sql));
 
+// The 2-lock cap is per card, and a card belongs to a promotion. The live
+// trigger is 0007's (it replaced 0005's): it must count, and serialise, per
+// promotion, and keep 0005's LOCKS_START gate.
+{
+  const fnSql = sql.slice(sql.indexOf("create or replace function public.picks_cap_locks()"));
+  const lockStart = (/LOCKS_START\s*=\s*"(\d{4}-\d{2}-\d{2})"/.exec(scoring) || [])[1];
+  check("the lock cap counts only locks of the same promotion", /and p\.promotion = new\.promotion/.test(fnSql));
+  check("...serialises per promotion (advisory-lock key)", /hashtext\('picks_lock:' \|\| new\.user_id \|\| '\|' \|\| new\.event_date \|\| '\|' \|\| new\.promotion\)/.test(fnSql));
+  check("...re-checks when a row's promotion changes", /before insert or update of confidence, event_date, f1, f2, user_id, promotion on public\.picks/.test(fnSql));
+  check("...and keeps the LOCKS_START gate (" + lockStart + ")", !!lockStart && fnSql.includes("new.event_date < '" + lockStart + "'"));
+}
+
 if (failures) { console.error(`\ncheck:promotion — ${failures} failure(s)`); process.exit(1); }
 console.log(`\ncheck:promotion — every UFC picks query is scoped (${sites} call sites)`);
