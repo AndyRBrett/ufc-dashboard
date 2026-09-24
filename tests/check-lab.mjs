@@ -374,13 +374,19 @@ else {
     // purge-and-reload self-heal a missing data.js does, rather than a dead page.
     {
       const sc = await browser.newPage();
-      let loads = 0;
-      sc.on("load", () => loads++);
+      // Count main-frame navigations from the very first one: the self-heal can
+      // reload before the first load event even fires (a fast cache purge), so
+      // waiting for "another" load after goto() races it. Poll until a second
+      // navigation has happened, with a generous ceiling for slow CI runners.
+      let navs = 0;
+      sc.on("framenavigated", (fr) => { if (fr === sc.mainFrame()) navs++; });
       await sc.route(/scoring\.js/, (r) => r.fulfill({ status: 404, body: "" }));
-      await sc.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 });
-      await sc.waitForTimeout(3500);
-      const healed = await sc.evaluate(() => { try { return sessionStorage.getItem("_selfHealed"); } catch (e) { return null; } });
-      check("with scoring.js unreachable the app self-heals (purge + one reload), like a missing data.js", healed === "1" && loads >= 2);
+      await sc.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 }).catch(() => {});
+      for (let t = 0; t < 150 && navs < 2; t++) await sc.waitForTimeout(100);
+      await sc.waitForLoadState("load").catch(() => {});
+      const reloaded = navs >= 2;
+      const healed = await sc.evaluate(() => { try { return sessionStorage.getItem("_selfHealed"); } catch (e) { return null; } }).catch(() => null);
+      check("with scoring.js unreachable the app self-heals (purge + one reload), like a missing data.js", healed === "1" && reloaded);
       await sc.close();
     }
 
