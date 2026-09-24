@@ -135,7 +135,48 @@ def odds_budget_exhausted(path=ODDS_STATE_PATH):
         state = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return False
-    return state.get("last_status") in (401, 403) and state.get("requests_remaining") == 0
+    if not (state.get("last_status") in (401, 403) and state.get("requests_remaining") == 0):
+        return False
+    # The top-level fields only describe the PRIMARY key. A spent primary with a
+    # backup key still answering (ODDS_API_KEY_SECONDARY, #94) means lines ARE
+    # refreshing: the banner claiming otherwise was a false alarm on 2026-09-24,
+    # and an unpriced card is back to being our failure, since a fetch could
+    # have delivered it.
+    return not backup_quota_serving(state)
+
+
+def _iso(value):
+    """An aware datetime from an ISO string, or None when absent/unparseable."""
+    try:
+        at = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    return at if at.tzinfo else at.replace(tzinfo=timezone.utc)
+
+
+def backup_quota_serving(state):
+    """True when a non-primary quota bucket's last call succeeded with budget left.
+
+    The call must belong to the LATEST pull. With ODDS_API_KEY_SECONDARY removed,
+    the backup provider returns without recording anything, but its bucket stays
+    in odds-state.json with its old 200. Trusting that would hide the banner
+    for good while no key can fetch anything. Both timestamps are written from
+    the same `now` in one pull, so an older one means the backup sat that pull out.
+    """
+    state = state or {}
+    pulled_at = _iso(state.get("last_fetch_at"))
+    providers = state.get("providers") or {}
+    for quota, entry in providers.items():
+        if quota == "the-odds-api" or not isinstance(entry, dict):
+            continue
+        fetched_at = _iso(entry.get("last_fetch_at"))
+        if pulled_at is None or fetched_at is None or fetched_at < pulled_at:
+            continue
+        if (entry.get("last_status") == 200
+                and not entry.get("exhausted_at")
+                and entry.get("requests_remaining") != 0):
+            return True
+    return False
 
 # How long the market snapshot in odds-state.json stays trustworthy. The pull
 # cadence stretches to 24h on a far-out card and backs off further on a dormant
