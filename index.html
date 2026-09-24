@@ -1861,7 +1861,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <script src="data.js"></script>
 <!-- The app's scoring (scoring.js, engine migration stage 3). Required, like
      data.js: the self-heal below covers it failing to load too. -->
-<script src="scoring.js?v=2026-09-24-5"></script>
+<script src="scoring.js?v=2026-09-24-6"></script>
 <!-- The Pick Engine (engine migration, docs/MIGRATION.md). Optional by design:
      if it fails to load, _boutLookup falls back to the app's own loops and
      every score comes out the same (check:parity runs both paths). -->
@@ -1878,7 +1878,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 // …and it must be the rulebook THIS page shipped with: a previous release's
 // scoring.js (an old cached copy, a network drop mid-upgrade) is treated as
 // missing rather than silently scoring with old rules.
-var SCORING_EXPECT="2026-09-24-5";
+var SCORING_EXPECT="2026-09-24-6";
 function _scoringOk(){return typeof pickPts==="function"&&typeof _lbScoreUsers==="function"&&typeof SCORING_VERSION!=="undefined"&&SCORING_VERSION===SCORING_EXPECT;}
 if(typeof EVENTS==="undefined"||!_scoringOk()){
   (function(){
@@ -8481,9 +8481,17 @@ var _sportPicks=(function(){try{return JSON.parse(localStorage.getItem("ufc_spor
 function _sportSave(){try{localStorage.setItem("ufc_sport_picks",JSON.stringify(_sportPicks));}catch(e){}}
 function _picksFor(promo){return "&promotion=eq."+encodeURIComponent(promo);}
 function sportKey(promo,date,a,b){return promo+"|"+date+"|"+a+"|"+b;}
+// Eastern offset ON a given date (4 = EDT, 5 = EST), not today's: a November
+// card looked at in September is on EST. Same rule as etOffset().
+function _etOffsetAt(y,mo,d){
+  var dow=function(m,day){return new Date(Date.UTC(y,m,day)).getUTCDay();};
+  var s=8+(7-dow(2,8))%7,e=1+(7-dow(10,1))%7;       // 2nd Sunday of March, 1st Sunday of November
+  var n=mo*100+d;
+  return (n>=200+s&&n<1000+e)?4:5;
+}
 function sportLockMs(ev){
   var d=ev.date.split("-"),m=/^(\d{1,2}):(\d{2})$/.exec(ev.time||"");
-  if(m)return Date.UTC(+d[0],+d[1]-1,+d[2],+m[1]+etOffset(),+m[2]);
+  if(m)return Date.UTC(+d[0],+d[1]-1,+d[2],+m[1]+_etOffsetAt(+d[0],+d[1]-1,+d[2]),+m[2]);
   return Date.UTC(+d[0],+d[1]-1,+d[2],SPORT_LOCK_UTC_H,0);
 }
 function sportLocked(ev,b){return !!b.winner||Date.now()>=sportLockMs(ev);}
@@ -8565,16 +8573,28 @@ function sportPick(promo,ev,b,name){
     _sportSync(promo,ev,b,unpick?null:name);
   });
 }
+// The row for (a, b) in one corner order. The upsert key is ordered, so a
+// feed that flips the corners would otherwise leave the old row beside the new
+// one: every write also clears the other order (sportStandings counts one pick
+// per bout as a second guard, and re-spellings rely on it).
+function _sportRowQ(promo,date,f1,f2){
+  return "?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(date)+
+         "&f1=eq."+encodeURIComponent(f1)+"&f2=eq."+encodeURIComponent(f2)+_picksFor(promo);
+}
 function _sportSync(promo,ev,b,name){
   return _authReady.then(function(){
+    var flip=_sportRowQ(promo,ev.date,b.b,b.a);
     if(!name){
-      var sq="?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(ev.date)+
-            "&f1=eq."+encodeURIComponent(b.a)+"&f2=eq."+encodeURIComponent(b.b)+_picksFor(promo);
-      return fetch(SUPABASE_URL+"/rest/v1/picks"+sq,{method:"DELETE",headers:_sbHeaders()});
+      var sq=_sportRowQ(promo,ev.date,b.a,b.b);
+      return Promise.all([fetch(SUPABASE_URL+"/rest/v1/picks"+sq,{method:"DELETE",headers:_sbHeaders()}),
+                          fetch(SUPABASE_URL+"/rest/v1/picks"+flip,{method:"DELETE",headers:_sbHeaders()})]).then(function(rs){return rs[0];});
     }
     var row={user_id:USER_ID,promotion:promo,nickname:userName,event_date:ev.date,event_name:ev.name,f1:b.a,f2:b.b,pick:name,method:"",confidence:0,updated_at:new Date().toISOString()};
     var hdrs=Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return=minimal"});
-    return fetch(SUPABASE_URL+"/rest/v1/picks?on_conflict=user_id,event_date,f1,f2",{method:"POST",headers:hdrs,body:JSON.stringify(row)});
+    return fetch(SUPABASE_URL+"/rest/v1/picks?on_conflict=user_id,event_date,f1,f2",{method:"POST",headers:hdrs,body:JSON.stringify(row)}).then(function(r){
+      if(r.ok)fetch(SUPABASE_URL+"/rest/v1/picks"+flip,{method:"DELETE",headers:_sbHeaders()}).catch(function(){});
+      return r;
+    });
   }).then(function(r){if(r&&!r.ok)toast("Couldn't save that pick — check your connection");})
     .catch(function(){toast("Couldn't save that pick — check your connection");});
 }
@@ -8595,11 +8615,17 @@ function _sportRestore(){
     }).catch(function(){});
   }));
 }
+// Every board load takes a ticket; a response that comes back after a newer
+// load started (the user switched sport, or a refresh overtook it) is dropped
+// instead of painting the wrong promotion's standings over the right one.
+var _lbGen=0;
 // The Ranks board when another sport is selected. Rooms still apply.
-function renderSportBoard(){
+function renderSportBoard(gen){
   var body=document.getElementById("lbBody"),promo=curSport();
+  gen=gen||++_lbGen;
   body.innerHTML='<div class="lb-loading">Loading picks...</div>';
   return _sbFetchAll("/rest/v1/picks?select=user_id,nickname,event_date,f1,f2,pick,promotion,updated_at&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+_picksFor(promo)).then(function(rows){
+    if(gen!==_lbGen)return null;
     var room=typeof _curRoom==="function"?_curRoom():null,inRoom=room?roomHas(room):null;
     if(inRoom)rows=(rows||[]).filter(function(r){return inRoom(r.user_id||r.nickname);});
     var users=sportStandings(rows,_sportFeed.events,promo);
@@ -8615,7 +8641,7 @@ function renderSportBoard(){
       body.appendChild(r);
     });
     return users;
-  }).catch(function(){body.innerHTML='<div class="lb-empty">Couldn\'t load the board — try again.</div>';});
+  }).catch(function(){if(gen===_lbGen)body.innerHTML='<div class="lb-empty">Couldn\'t load the board — try again.</div>';});
 }
 // The feed is untrusted input: validated by the Pick Engine or not used at
 // all. No engine, no feed, a bad feed, or nothing to pick = UFC only.
@@ -8630,11 +8656,13 @@ function sportsBoot(){
 }
 // sports:end
 function loadLeaderboard(isLive){
+  var _gen=++_lbGen;
   // Another sport selected: its own board (sports block), never the UFC one.
-  if(typeof curSport==="function"&&curSport()!=="ufc"){renderSportBoard();return;}
+  if(typeof curSport==="function"&&curSport()!=="ufc"){renderSportBoard(_gen);return;}
   var body=document.getElementById("lbBody");
   if(!isLive)body.innerHTML='<div class="lb-loading">Loading picks...</div>';
   _sbFetchAll("/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+PICKS_UFC).then(function(rows){
+    if(_gen!==_lbGen)return;          // a newer load (e.g. a sport switch) owns the board now
     if(!Array.isArray(rows)||rows.length===0){
       body.innerHTML='<div class="lb-empty">No picks submitted yet.<br>Make some picks to appear here!</div>';
       return;

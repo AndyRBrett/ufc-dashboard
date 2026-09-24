@@ -51,6 +51,15 @@ const check = (name, ok) => { if (ok) console.log("  ✓ " + name); else { failu
   check("a player named after an Object.prototype key scores normally", by["constructor"] && by["constructor"].pts === 1);
   check("ranked by points, then accuracy", s[0].nickname === "🥊 Ann");
   check("a different promotion's board is empty for these rows", ctx.sportStandings(rows, events, "one").length === 0);
+  // Flipped corners / a re-spelling leave a second row for the same bout
+  // (the upsert key is ordered): one pick per player per bout, newest wins.
+  const dup = [
+    r("u9", "🐯 Dee", "Jena Bishop", "Liz Carmouche", "Jena Bishop"),            // newest (rows are newest-first)
+    r("u9", "🐯 Dee", "Liz Carmouche", "Jena Bishop", "Liz Carmouche"),          // older, other corner order
+    r("u9", "🐯 Dee", "Liz Carmouche", "Jéna Bishop", "Liz Carmouche"),          // older, old spelling
+  ];
+  const d = ctx.sportStandings(dup, events, "pfl")[0];
+  check("one pick per player per bout (flip / re-spelling rows don't double-count), newest wins", d.total === 1 && d.pts === 1);
 }
 
 // --- the app ---------------------------------------------------------------------------
@@ -85,6 +94,7 @@ else {
   const base = `http://127.0.0.1:${server.address().port}`;
   const exe = process.env.PLAYWRIGHT_BROWSERS_PATH ? join(process.env.PLAYWRIGHT_BROWSERS_PATH, "chromium") : undefined;
   const browser = await chromium.launch(exe && existsSync(exe) ? { executablePath: exe } : {});
+  let slowUfc = false;
   const boot = async (feed) => {
     const page = await browser.newPage();
     const errors = [], writes = [], reads = [];
@@ -92,8 +102,13 @@ else {
     page.on("dialog", (d) => { errors.push("dialog: " + d.message()); d.dismiss(); });   // an XSS would alert
     await page.addInitScript(() => { try { localStorage.setItem("ufc_uid", "u-Andy"); localStorage.setItem("ufc_name", "🥊 Andy"); localStorage.setItem("ufc_whatsnew_seen", "9999"); } catch (e) {} });
     if (feed) await page.route(/events-extra\.json/, (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(feed) }));
-    await page.route(/supabase\.co/, (route) => {
+    await page.route(/supabase\.co/, async (route) => {
       const req = route.request(), url = req.url();
+      if (slowUfc && /promotion=eq\.ufc/.test(url) && /select=user_id,event_name/.test(url)) {
+        await new Promise((r) => setTimeout(r, 1500));
+        return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify([
+          { user_id: "u-ufc", nickname: "🥊 UfcGuy", promotion: "ufc", event_date: "2026-01-01", f1: "X", f2: "Y", pick: "X", method: "", confidence: 0, updated_at: "2026-01-01T00:00:00Z" }]) });
+      }
       if (/\/rest\/v1\/picks/.test(url)) {
         if (req.method() === "GET") reads.push(url);
         else writes.push({ method: req.method(), url, body: req.postData() });
@@ -156,10 +171,22 @@ else {
       const row = post ? JSON.parse(post.body) : {};
       check("a PFL pick is saved with promotion 'pfl'", row.promotion === "pfl" && row.pick === "Jena Bishop" && row.f1 === "Liz Carmouche" && row.f2 === "Jena Bishop" && row.confidence === 0);
       check("...kept locally apart from UFC picks (UFC's untouched)", /Jena Bishop/.test(s.picks || "") && s.ufcPreds === ufcBefore);
+      check("a pick also clears the same bout's row in the other corner order",
+        writes.some((w) => w.method === "DELETE" && /promotion=eq\.pfl/.test(w.url) && /f1=eq\.Jena%20Bishop&f2=eq\.Liz%20Carmouche/.test(w.url)));
+      writes.length = 0;
       await page.click("text=Jena Bishop");
       await page.waitForTimeout(400);
-      const del = writes.find((w) => w.method === "DELETE");
-      check("un-picking deletes only that promotion's row", del && /promotion=eq\.pfl/.test(del.url) && /f1=eq\.Liz%20Carmouche/.test(del.url));
+      const dels = writes.filter((w) => w.method === "DELETE");
+      check("un-picking deletes only that promotion's rows, both corner orders",
+        dels.length === 2 && dels.every((w) => /promotion=eq\.pfl/.test(w.url)) &&
+        dels.some((w) => /f1=eq\.Liz%20Carmouche/.test(w.url)) && dels.some((w) => /f1=eq\.Jena%20Bishop/.test(w.url)));
+      const lock = await page.evaluate(() => ({
+        nov: sportLockMs({ date: "2026-11-14", time: "18:00" }), oct: sportLockMs({ date: "2026-10-16", time: "18:00" }),
+        mar: sportLockMs({ date: "2027-03-13", time: "18:00" }), mar2: sportLockMs({ date: "2027-03-14", time: "18:00" }),
+        none: sportLockMs({ date: "2026-11-14" }) }));
+      check("a timed card locks at its own date's ET offset (EST after the November change, EDT from March's)",
+        lock.nov === Date.UTC(2026, 10, 14, 23, 0) && lock.oct === Date.UTC(2026, 9, 16, 22, 0) &&
+        lock.mar === Date.UTC(2027, 2, 13, 23, 0) && lock.mar2 === Date.UTC(2027, 2, 14, 22, 0) && lock.none === Date.UTC(2026, 10, 14, 10, 0));
       const locked = await page.evaluate(() => [...document.querySelectorAll("#sportApp .sport-pick")].filter((b) => /Done/.test(b.textContent)).every((b) => b.disabled));
       check("a card past its lock time can't be picked", locked);
       const won = await page.evaluate(() => [...document.querySelectorAll("#sportApp .sport-pick.won")].map((b) => b.textContent));
@@ -169,6 +196,17 @@ else {
       const board = await page.evaluate(() => ({ text: document.getElementById("lbBody").textContent, lbSportBar: !document.getElementById("lbSportBar").hidden }));
       check("Ranks shows the PFL board, scored by sportStandings", /PFL standings/.test(board.text) && /Bob1\/11 pt(?!s)/.test(board.text) && /Cat0\/10 pts/.test(board.text));
       check("...read with promotion=eq.pfl, and the switcher is on Ranks too", reads.some((u) => /promotion=eq\.pfl/.test(u) && /select=user_id,nickname/.test(u)) && board.lbSportBar);
+      await page.click("#lbSportBar .sport-tab:nth-child(1)");
+      await page.waitForTimeout(600);
+      // Switch to PFL while the (slow) UFC board is still loading: the UFC
+      // response lands last and must not paint over the PFL board.
+      slowUfc = true;
+      await page.evaluate(() => loadLeaderboard());
+      await page.click("#lbSportBar .sport-tab:nth-child(2)");
+      await page.waitForTimeout(2600);
+      const late = await page.evaluate(() => document.getElementById("lbBody").textContent);
+      check("a stale UFC response can't overwrite the PFL board it lost the race to", /PFL standings/.test(late));
+      slowUfc = false;
       await page.click("#lbSportBar .sport-tab:nth-child(1)");
       await page.waitForTimeout(600);
       s = await state(page);
@@ -183,7 +221,8 @@ else {
 {
   const html = readFileSync(join(ROOT, "index.html"), "utf8");
   check("the UFC board hands off to the sport board before touching UFC rows",
-    /function loadLeaderboard\(isLive\)\{\s*\/\/[^\n]*\n\s*if\(typeof curSport==="function"&&curSport\(\)!=="ufc"\)\{renderSportBoard\(\);return;\}/.test(html));
+    /function loadLeaderboard\(isLive\)\{\s*var _gen=\+\+_lbGen;\s*\/\/[^\n]*\n\s*if\(typeof curSport==="function"&&curSport\(\)!=="ufc"\)\{renderSportBoard\(_gen\);return;\}/.test(html));
+  check("the UFC board drops a response a newer load overtook", /\+PICKS_UFC\)\.then\(function\(rows\)\{\s*if\(_gen!==_lbGen\)return;/.test(html));
   check("the feed is only used after PickEngine.validateFeed", /var v=PickEngine\.validateFeed\(j\);\s*_sportFeed=\{promotions:v\.promotions,events:v\.events\};/.test(html));
 }
 

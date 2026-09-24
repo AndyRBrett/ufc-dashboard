@@ -38,7 +38,7 @@ const VIA = [
   { re: /\/rest\/v1\/picks"\+_sbQ\(/, def: /function _sbQ\(ev,fight\)\{[^\n]*PICKS_UFC;\}/ },
   { re: /\/rest\/v1\/picks"\+_rq,/, def: /var _rq="[^\n]*\+PICKS_UFC;/ },
   { re: /\/rest\/v1\/picks"\+q,/, def: /var q="\?user_id=eq\."[^\n]*\+PICKS_UFC;/ },
-  { re: /\/rest\/v1\/picks"\+sq,/, def: /var sq="\?user_id=eq\."[^;]*\+_picksFor\(promo\);/ },
+  { re: /\/rest\/v1\/picks"\+(?:sq|flip),/, def: /function _sportRowQ\(promo,date,f1,f2\)\{[^}]*\+_picksFor\(promo\);\s*\}/ },
 ];
 
 const FILES = ["index.html", "lab.html", "fightbot/core.mjs", "scrape.py",
