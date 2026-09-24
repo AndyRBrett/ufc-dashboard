@@ -1,0 +1,6317 @@
+{
+ "rows": 1372,
+ "board_all": [
+  {
+   "nickname": "😀 Torrey",
+   "user_id": "u-torrey",
+   "pts": 125,
+   "correct": 106,
+   "total": 226,
+   "methods": 30,
+   "fotn": 1,
+   "dogPts": 4,
+   "lockPts": -1,
+   "accuracy": 61,
+   "bestStreak": 8,
+   "currentStreak": 1
+  },
+  {
+   "nickname": "🥊 Dereko",
+   "user_id": "u-derek",
+   "pts": 123.5,
+   "correct": 109,
+   "total": 225,
+   "methods": 25,
+   "fotn": 0,
+   "dogPts": 2,
+   "lockPts": 0,
+   "accuracy": 62,
+   "bestStreak": 11,
+   "currentStreak": 1
+  },
+  {
+   "nickname": "👑 Tristin",
+   "user_id": "u-tristin",
+   "pts": 120,
+   "correct": 103,
+   "total": 233,
+   "methods": 27,
+   "fotn": 1,
+   "dogPts": 2.5,
+   "lockPts": 0,
+   "accuracy": 59,
+   "bestStreak": 7,
+   "currentStreak": 0
+  },
+  {
+   "nickname": "🥋 AB",
+   "user_id": "u-andy",
+   "pts": 106.5,
+   "correct": 90,
+   "total": 226,
+   "methods": 21,
+   "fotn": 0,
+   "dogPts": 5,
+   "lockPts": 1,
+   "accuracy": 51,
+   "bestStreak": 11,
+   "currentStreak": 0
+  },
+  {
+   "nickname": "🦂 JPe$o",
+   "user_id": "u-jp",
+   "pts": 102,
+   "correct": 89,
+   "total": 229,
+   "methods": 20,
+   "fotn": 1,
+   "dogPts": 3,
+   "lockPts": -1,
+   "accuracy": 50,
+   "bestStreak": 5,
+   "currentStreak": 2
+  },
+  {
+   "nickname": "🦍 T",
+   "user_id": "u-t",
+   "pts": 93.5,
+   "correct": 81,
+   "total": 229,
+   "methods": 20,
+   "fotn": 0,
+   "dogPts": 2.5,
+   "lockPts": 0,
+   "accuracy": 47,
+   "bestStreak": 7,
+   "currentStreak": 0
+  },
+  {
+   "nickname": "🐺 Tie",
+   "user_id": "u-tie-b",
+   "pts": 0,
+   "correct": 0,
+   "total": 1,
+   "methods": 0,
+   "fotn": 0,
+   "dogPts": 0,
+   "lockPts": 0,
+   "accuracy": 0,
+   "bestStreak": 0,
+   "currentStreak": 0
+  }
+ ],
+ "board_main_card": [
+  {
+   "nickname": "😀 Torrey",
+   "user_id": "u-torrey",
+   "pts": 55,
+   "correct": 45,
+   "total": 96,
+   "methods": 16,
+   "fotn": 1,
+   "dogPts": 2,
+   "lockPts": -1,
+   "accuracy": 63,
+   "bestStreak": 6,
+   "currentStreak": 1
+  },
+  {
+   "nickname": "👑 Tristin",
+   "user_id": "u-tristin",
+   "pts": 52.5,
+   "correct": 44,
+   "total": 95,
+   "methods": 11,
+   "fotn": 1,
+   "dogPts": 2,
+   "lockPts": 0,
+   "accuracy": 65,
+   "bestStreak": 5,
+   "currentStreak": 0
+  },
+  {
+   "nickname": "🦂 JPe$o",
+   "user_id": "u-jp",
+   "pts": 50.5,
+   "correct": 42,
+   "total": 97,
+   "methods": 10,
+   "fotn": 1,
+   "dogPts": 2.5,
+   "lockPts": 0,
+   "accuracy": 58,
+   "bestStreak": 4,
+   "currentStreak": 2
+  },
+  {
+   "nickname": "🥋 AB",
+   "user_id": "u-andy",
+   "pts": 48,
+   "correct": 39,
+   "total": 97,
+   "methods": 10,
+   "fotn": 0,
+   "dogPts": 3,
+   "lockPts": 1,
+   "accuracy": 54,
+   "bestStreak": 8,
+   "currentStreak": 0
+  },
+  {
+   "nickname": "🥊 Dereko",
+   "user_id": "u-derek",
+   "pts": 46.5,
+   "correct": 43,
+   "total": 100,
+   "methods": 6,
+   "fotn": 0,
+   "dogPts": 0.5,
+   "lockPts": 0,
+   "accuracy": 58,
+   "bestStreak": 6,
+   "currentStreak": 1
+  },
+  {
+   "nickname": "🦍 T",
+   "user_id": "u-t",
+   "pts": 32.5,
+   "correct": 27,
+   "total": 97,
+   "methods": 9,
+   "fotn": 0,
+   "dogPts": 1,
+   "lockPts": 0,
+   "accuracy": 39,
+   "bestStreak": 3,
+   "currentStreak": 0
+  },
+  {
+   "nickname": "🐺 Tie",
+   "user_id": "u-tie-b",
+   "pts": 0,
+   "correct": 0,
+   "total": 1,
+   "methods": 0,
+   "fotn": 0,
+   "dogPts": 0,
+   "lockPts": 0,
+   "accuracy": 0,
+   "bestStreak": 0,
+   "currentStreak": 0
+  }
+ ],
+ "per_card": {
+  "2026-05-30": [
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 11.5,
+    "correct": 9,
+    "total": 11,
+    "methods": 5,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 82,
+    "bestStreak": 7,
+    "currentStreak": 7
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 9.5,
+    "correct": 8,
+    "total": 12,
+    "methods": 3,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 67,
+    "bestStreak": 3,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 8.5,
+    "correct": 8,
+    "total": 11,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 73,
+    "bestStreak": 6,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 8.5,
+    "correct": 8,
+    "total": 12,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 67,
+    "bestStreak": 5,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 7.5,
+    "correct": 7,
+    "total": 9,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 78,
+    "bestStreak": 5,
+    "currentStreak": 5
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 7.5,
+    "correct": 7,
+    "total": 11,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 64,
+    "bestStreak": 2,
+    "currentStreak": 1
+   }
+  ],
+  "2026-06-06": [
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 9,
+    "correct": 8,
+    "total": 9,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 89,
+    "bestStreak": 4,
+    "currentStreak": 4
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 9,
+    "correct": 7,
+    "total": 11,
+    "methods": 4,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 64,
+    "bestStreak": 2,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 7.5,
+    "correct": 6,
+    "total": 11,
+    "methods": 3,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 55,
+    "bestStreak": 2,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 6.5,
+    "correct": 6,
+    "total": 11,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 55,
+    "bestStreak": 2,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 5.5,
+    "correct": 5,
+    "total": 9,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 56,
+    "bestStreak": 2,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 3,
+    "correct": 3,
+    "total": 9,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 33,
+    "bestStreak": 2,
+    "currentStreak": 0
+   }
+  ],
+  "2026-06-14": [
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 7,
+    "correct": 6,
+    "total": 7,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 86,
+    "bestStreak": 3,
+    "currentStreak": 3
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 5.5,
+    "correct": 4,
+    "total": 5,
+    "methods": 3,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 80,
+    "bestStreak": 2,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 3.5,
+    "correct": 3,
+    "total": 6,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 50,
+    "bestStreak": 1,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 3.5,
+    "correct": 3,
+    "total": 6,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 50,
+    "bestStreak": 2,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 3,
+    "correct": 3,
+    "total": 7,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 43,
+    "bestStreak": 2,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 2,
+    "correct": 2,
+    "total": 6,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 33,
+    "bestStreak": 1,
+    "currentStreak": 0
+   }
+  ],
+  "2026-06-20": [
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 8,
+    "correct": 7,
+    "total": 11,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 64,
+    "bestStreak": 3,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 6.5,
+    "correct": 5,
+    "total": 9,
+    "methods": 3,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 56,
+    "bestStreak": 2,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 6,
+    "correct": 6,
+    "total": 10,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 60,
+    "bestStreak": 4,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 5.5,
+    "correct": 5,
+    "total": 10,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 50,
+    "bestStreak": 3,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 4.5,
+    "correct": 4,
+    "total": 11,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 36,
+    "bestStreak": 1,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 3.5,
+    "correct": 3,
+    "total": 11,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 27,
+    "bestStreak": 1,
+    "currentStreak": 0
+   }
+  ],
+  "2026-06-27": [
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 7.5,
+    "correct": 6,
+    "total": 13,
+    "methods": 3,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 46,
+    "bestStreak": 2,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 7,
+    "correct": 6,
+    "total": 10,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 60,
+    "bestStreak": 4,
+    "currentStreak": 4
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 7,
+    "correct": 6,
+    "total": 11,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 55,
+    "bestStreak": 5,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 6,
+    "correct": 6,
+    "total": 10,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 60,
+    "bestStreak": 3,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 6,
+    "correct": 6,
+    "total": 12,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 50,
+    "bestStreak": 5,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 1,
+    "correct": 1,
+    "total": 12,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 8,
+    "bestStreak": 1,
+    "currentStreak": 0
+   }
+  ],
+  "2026-07-11": [
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 9.5,
+    "correct": 7,
+    "total": 12,
+    "methods": 5,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 58,
+    "bestStreak": 3,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 9,
+    "correct": 8,
+    "total": 13,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 62,
+    "bestStreak": 3,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 8,
+    "correct": 7,
+    "total": 13,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 54,
+    "bestStreak": 4,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 7.5,
+    "correct": 7,
+    "total": 11,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 64,
+    "bestStreak": 4,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 5,
+    "correct": 5,
+    "total": 11,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 45,
+    "bestStreak": 2,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 3,
+    "correct": 3,
+    "total": 13,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 23,
+    "bestStreak": 1,
+    "currentStreak": 0
+   }
+  ],
+  "2026-07-18": [
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 11.5,
+    "correct": 10,
+    "total": 12,
+    "methods": 3,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 83,
+    "bestStreak": 6,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 7.5,
+    "correct": 6,
+    "total": 11,
+    "methods": 3,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 55,
+    "bestStreak": 3,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 7,
+    "correct": 7,
+    "total": 10,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 70,
+    "bestStreak": 3,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 6.5,
+    "correct": 6,
+    "total": 10,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 60,
+    "bestStreak": 4,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 6.5,
+    "correct": 6,
+    "total": 11,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 55,
+    "bestStreak": 2,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 5.5,
+    "correct": 5,
+    "total": 11,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 45,
+    "bestStreak": 3,
+    "currentStreak": 0
+   }
+  ],
+  "2026-07-25": [
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 8,
+    "correct": 7,
+    "total": 10,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 70,
+    "bestStreak": 5,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 7,
+    "correct": 7,
+    "total": 7,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 100,
+    "bestStreak": 7,
+    "currentStreak": 7
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 7,
+    "correct": 6,
+    "total": 11,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 55,
+    "bestStreak": 2,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 6,
+    "correct": 6,
+    "total": 8,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 75,
+    "bestStreak": 3,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 4,
+    "correct": 4,
+    "total": 11,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 36,
+    "bestStreak": 2,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 2.5,
+    "correct": 2,
+    "total": 11,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 18,
+    "bestStreak": 1,
+    "currentStreak": 0
+   }
+  ],
+  "2026-08-01": [
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 9,
+    "correct": 7,
+    "total": 11,
+    "methods": 4,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 64,
+    "bestStreak": 5,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 9,
+    "correct": 7,
+    "total": 12,
+    "methods": 4,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 58,
+    "bestStreak": 6,
+    "currentStreak": 6
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 8.5,
+    "correct": 8,
+    "total": 12,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 67,
+    "bestStreak": 4,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 7.5,
+    "correct": 7,
+    "total": 11,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 64,
+    "bestStreak": 4,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 7.5,
+    "correct": 7,
+    "total": 13,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 54,
+    "bestStreak": 2,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 6,
+    "correct": 5,
+    "total": 11,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 45,
+    "bestStreak": 2,
+    "currentStreak": 1
+   }
+  ],
+  "2026-08-08": [
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 9,
+    "correct": 9,
+    "total": 12,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 75,
+    "bestStreak": 6,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 8,
+    "correct": 7,
+    "total": 9,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 78,
+    "bestStreak": 3,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 7,
+    "correct": 6,
+    "total": 11,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 55,
+    "bestStreak": 2,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 6,
+    "correct": 6,
+    "total": 12,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 50,
+    "bestStreak": 3,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 5,
+    "correct": 5,
+    "total": 10,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 50,
+    "bestStreak": 2,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 2.5,
+    "correct": 2,
+    "total": 8,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 25,
+    "bestStreak": 1,
+    "currentStreak": 0
+   }
+  ],
+  "2026-08-15": [
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 8,
+    "correct": 8,
+    "total": 10,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 80,
+    "bestStreak": 6,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 6.5,
+    "correct": 5,
+    "total": 9,
+    "methods": 3,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 56,
+    "bestStreak": 3,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 6,
+    "correct": 6,
+    "total": 12,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 50,
+    "bestStreak": 3,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 6,
+    "correct": 5,
+    "total": 11,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 45,
+    "bestStreak": 2,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 6,
+    "correct": 5,
+    "total": 11,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 45,
+    "bestStreak": 3,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 6,
+    "correct": 5,
+    "total": 12,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 42,
+    "bestStreak": 2,
+    "currentStreak": 2
+   }
+  ],
+  "2026-08-22": [
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 8,
+    "correct": 7,
+    "total": 10,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 70,
+    "bestStreak": 4,
+    "currentStreak": 3
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 6.5,
+    "correct": 6,
+    "total": 11,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 55,
+    "bestStreak": 5,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 5.5,
+    "correct": 5,
+    "total": 11,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 45,
+    "bestStreak": 3,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 5.5,
+    "correct": 5,
+    "total": 12,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 42,
+    "bestStreak": 2,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 4.5,
+    "correct": 4,
+    "total": 12,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 33,
+    "bestStreak": 2,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 2,
+    "correct": 2,
+    "total": 9,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 22,
+    "bestStreak": 1,
+    "currentStreak": 0
+   }
+  ],
+  "2026-08-29": [
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 11.5,
+    "correct": 9,
+    "total": 12,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 1.5,
+    "lockPts": 0,
+    "accuracy": 75,
+    "bestStreak": 5,
+    "currentStreak": 3
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 10,
+    "correct": 7,
+    "total": 11,
+    "methods": 3,
+    "fotn": 0,
+    "dogPts": 1.5,
+    "lockPts": 0,
+    "accuracy": 64,
+    "bestStreak": 3,
+    "currentStreak": 3
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 9.5,
+    "correct": 7,
+    "total": 11,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 1.5,
+    "lockPts": 0,
+    "accuracy": 64,
+    "bestStreak": 4,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 9,
+    "correct": 6,
+    "total": 11,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 2,
+    "lockPts": 0,
+    "accuracy": 55,
+    "bestStreak": 3,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 8,
+    "correct": 7,
+    "total": 12,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 58,
+    "bestStreak": 3,
+    "currentStreak": 3
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 7.5,
+    "correct": 6,
+    "total": 10,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0.5,
+    "lockPts": 0,
+    "accuracy": 60,
+    "bestStreak": 5,
+    "currentStreak": 1
+   }
+  ],
+  "2026-09-05": [
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 12,
+    "correct": 10,
+    "total": 14,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 1,
+    "lockPts": 0,
+    "accuracy": 71,
+    "bestStreak": 4,
+    "currentStreak": 3
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 10.5,
+    "correct": 10,
+    "total": 12,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0.5,
+    "lockPts": 0,
+    "accuracy": 83,
+    "bestStreak": 9,
+    "currentStreak": 9
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 9,
+    "correct": 8,
+    "total": 11,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 73,
+    "bestStreak": 4,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 7.5,
+    "correct": 6,
+    "total": 13,
+    "methods": 3,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 46,
+    "bestStreak": 2,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 4,
+    "correct": 3,
+    "total": 13,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 23,
+    "bestStreak": 2,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 2.5,
+    "correct": 2,
+    "total": 12,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 17,
+    "bestStreak": 1,
+    "currentStreak": 0
+   }
+  ],
+  "2026-09-12": [
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 11,
+    "correct": 9,
+    "total": 11,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 1,
+    "lockPts": 0,
+    "accuracy": 82,
+    "bestStreak": 5,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 8.5,
+    "correct": 7,
+    "total": 10,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0.5,
+    "lockPts": 0,
+    "accuracy": 70,
+    "bestStreak": 3,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 8,
+    "correct": 7,
+    "total": 11,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 1,
+    "lockPts": 0,
+    "accuracy": 64,
+    "bestStreak": 3,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 6.5,
+    "correct": 5,
+    "total": 13,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 1,
+    "lockPts": 0,
+    "accuracy": 38,
+    "bestStreak": 3,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 5.5,
+    "correct": 4,
+    "total": 11,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0.5,
+    "lockPts": 0,
+    "accuracy": 36,
+    "bestStreak": 2,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 2,
+    "correct": 2,
+    "total": 10,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 20,
+    "bestStreak": 1,
+    "currentStreak": 0
+   }
+  ],
+  "2026-09-19": [
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 8.5,
+    "correct": 8,
+    "total": 11,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0.5,
+    "lockPts": 0,
+    "accuracy": 73,
+    "bestStreak": 5,
+    "currentStreak": 3
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 8,
+    "correct": 7,
+    "total": 12,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 58,
+    "bestStreak": 4,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 7.5,
+    "correct": 6,
+    "total": 10,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0.5,
+    "lockPts": 0,
+    "accuracy": 60,
+    "bestStreak": 2,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 7.5,
+    "correct": 7,
+    "total": 12,
+    "methods": 1,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 58,
+    "bestStreak": 2,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 6,
+    "correct": 5,
+    "total": 10,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 1,
+    "lockPts": 0,
+    "accuracy": 50,
+    "bestStreak": 2,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 5.5,
+    "correct": 4,
+    "total": 11,
+    "methods": 2,
+    "fotn": 0,
+    "dogPts": 0.5,
+    "lockPts": 0,
+    "accuracy": 36,
+    "bestStreak": 2,
+    "currentStreak": 0
+   }
+  ],
+  "2026-09-26": [
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 0,
+    "correct": 0,
+    "total": 10,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 0,
+    "correct": 0,
+    "total": 10,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 0,
+    "correct": 0,
+    "total": 9,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 0,
+    "correct": 0,
+    "total": 9,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 0,
+    "correct": 0,
+    "total": 9,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 0,
+    "correct": 0,
+    "total": 8,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   }
+  ],
+  "2026-10-03": [
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 0,
+    "correct": 0,
+    "total": 13,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 0,
+    "correct": 0,
+    "total": 12,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 0,
+    "correct": 0,
+    "total": 12,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 0,
+    "correct": 0,
+    "total": 11,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 0,
+    "correct": 0,
+    "total": 11,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 0,
+    "correct": 0,
+    "total": 10,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   }
+  ],
+  "2026-10-10": [
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 0,
+    "correct": 0,
+    "total": 1,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 0,
+    "correct": 0,
+    "total": 1,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 0,
+    "correct": 0,
+    "total": 1,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 0,
+    "correct": 0,
+    "total": 1,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   }
+  ],
+  "2026-10-17": [
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 0,
+    "correct": 0,
+    "total": 12,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 0,
+    "correct": 0,
+    "total": 12,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 0,
+    "correct": 0,
+    "total": 11,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 0,
+    "correct": 0,
+    "total": 10,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 0,
+    "correct": 0,
+    "total": 10,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 0,
+    "correct": 0,
+    "total": 9,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   }
+  ],
+  "2026-10-24": [
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 0,
+    "correct": 0,
+    "total": 8,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 0,
+    "correct": 0,
+    "total": 7,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 0,
+    "correct": 0,
+    "total": 7,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 0,
+    "correct": 0,
+    "total": 5,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 0,
+    "correct": 0,
+    "total": 5,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 0,
+    "correct": 0,
+    "total": 4,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   }
+  ],
+  "2026-10-31": [
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 0,
+    "correct": 0,
+    "total": 3,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 0,
+    "correct": 0,
+    "total": 3,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 0,
+    "correct": 0,
+    "total": 3,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 0,
+    "correct": 0,
+    "total": 3,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 0,
+    "correct": 0,
+    "total": 2,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 0,
+    "correct": 0,
+    "total": 2,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   }
+  ],
+  "2026-11-07": [
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 0,
+    "correct": 0,
+    "total": 1,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 0,
+    "correct": 0,
+    "total": 1,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 0,
+    "correct": 0,
+    "total": 1,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 0,
+    "correct": 0,
+    "total": 1,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 0,
+    "correct": 0,
+    "total": 1,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   }
+  ],
+  "2026-11-14": [
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 0,
+    "correct": 0,
+    "total": 12,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 0,
+    "correct": 0,
+    "total": 12,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 0,
+    "correct": 0,
+    "total": 11,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 0,
+    "correct": 0,
+    "total": 11,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 0,
+    "correct": 0,
+    "total": 11,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 0,
+    "correct": 0,
+    "total": 11,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": null,
+    "bestStreak": 0,
+    "currentStreak": 0
+   }
+  ],
+  "2026-12-19": [
+   {
+    "nickname": "👑 Tristin",
+    "user_id": "u-tristin",
+    "pts": 6,
+    "correct": 3,
+    "total": 5,
+    "methods": 1,
+    "fotn": 1,
+    "dogPts": 1.5,
+    "lockPts": 0,
+    "accuracy": 60,
+    "bestStreak": 3,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🦂 JPe$o",
+    "user_id": "u-jp",
+    "pts": 5,
+    "correct": 3,
+    "total": 5,
+    "methods": 2,
+    "fotn": 1,
+    "dogPts": 1,
+    "lockPts": -1,
+    "accuracy": 60,
+    "bestStreak": 2,
+    "currentStreak": 2
+   },
+   {
+    "nickname": "🥋 AB",
+    "user_id": "u-andy",
+    "pts": 5,
+    "correct": 3,
+    "total": 5,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 1,
+    "lockPts": 1,
+    "accuracy": 60,
+    "bestStreak": 2,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "😀 Torrey",
+    "user_id": "u-torrey",
+    "pts": 2.5,
+    "correct": 2,
+    "total": 3,
+    "methods": 1,
+    "fotn": 1,
+    "dogPts": 0,
+    "lockPts": -1,
+    "accuracy": 67,
+    "bestStreak": 1,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🥊 Dereko",
+    "user_id": "u-derek",
+    "pts": 2.5,
+    "correct": 2,
+    "total": 5,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0.5,
+    "lockPts": 0,
+    "accuracy": 40,
+    "bestStreak": 1,
+    "currentStreak": 1
+   },
+   {
+    "nickname": "🦍 T",
+    "user_id": "u-t",
+    "pts": 1,
+    "correct": 1,
+    "total": 3,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 33,
+    "bestStreak": 1,
+    "currentStreak": 0
+   },
+   {
+    "nickname": "🐺 Tie",
+    "user_id": "u-tie-b",
+    "pts": 0,
+    "correct": 0,
+    "total": 1,
+    "methods": 0,
+    "fotn": 0,
+    "dogPts": 0,
+    "lockPts": 0,
+    "accuracy": 0,
+    "bestStreak": 0,
+    "currentStreak": 0
+   }
+  ]
+ },
+ "belt": {
+  "holderBase": "tristin",
+  "holderName": "👑 Tristin",
+  "defenses": 1,
+  "reigns": [
+   {
+    "base": "tristin",
+    "name": "👑 Tristin",
+    "evName": "UFC Fight Night: Song vs. Figueiredo",
+    "date": "2026-05-30",
+    "defenses": 0,
+    "end": {
+     "evName": "UFC Fight Night: Muhammad vs. Bonfim",
+     "takenBy": "🥊 Dereko"
+    },
+    "pts": 11.5,
+    "via": null,
+    "defDates": []
+   },
+   {
+    "base": "dereko",
+    "name": "🥊 Dereko",
+    "evName": "UFC Fight Night: Muhammad vs. Bonfim",
+    "date": "2026-06-06",
+    "defenses": 0,
+    "end": {
+     "evName": "UFC Freedom 250",
+     "takenBy": "🦍 T"
+    },
+    "pts": 9,
+    "via": {
+     "tied": 2,
+     "by": "accuracy",
+     "val": "76%"
+    },
+    "defDates": []
+   },
+   {
+    "base": "t",
+    "name": "🦍 T",
+    "evName": "UFC Freedom 250",
+    "date": "2026-06-14",
+    "defenses": 0,
+    "end": {
+     "evName": "UFC Fight Night: Kape vs. Horiguchi",
+     "takenBy": "🥊 Dereko"
+    },
+    "pts": 7,
+    "via": null,
+    "defDates": []
+   },
+   {
+    "base": "dereko",
+    "name": "🥊 Dereko",
+    "evName": "UFC Fight Night: Kape vs. Horiguchi",
+    "date": "2026-06-20",
+    "defenses": 0,
+    "end": {
+     "evName": "UFC Fight Night: Fiziev vs. Torres",
+     "takenBy": "🦍 T"
+    },
+    "pts": 8,
+    "via": null,
+    "defDates": []
+   },
+   {
+    "base": "t",
+    "name": "🦍 T",
+    "evName": "UFC Fight Night: Fiziev vs. Torres",
+    "date": "2026-06-27",
+    "defenses": 0,
+    "end": {
+     "evName": "UFC 329: McGregor vs. Holloway 2",
+     "takenBy": "🥊 Dereko"
+    },
+    "pts": 7.5,
+    "via": null,
+    "defDates": []
+   },
+   {
+    "base": "dereko",
+    "name": "🥊 Dereko",
+    "evName": "UFC 329: McGregor vs. Holloway 2",
+    "date": "2026-07-11",
+    "defenses": 0,
+    "end": {
+     "evName": "UFC Fight Night: du Plessis vs. Usman",
+     "takenBy": "👑 Tristin"
+    },
+    "pts": 9.5,
+    "via": null,
+    "defDates": []
+   },
+   {
+    "base": "tristin",
+    "name": "👑 Tristin",
+    "evName": "UFC Fight Night: du Plessis vs. Usman",
+    "date": "2026-07-18",
+    "defenses": 0,
+    "end": {
+     "evName": "UFC Fight Night: Ankalaev vs. Guskov",
+     "takenBy": "🦂 JPe$o"
+    },
+    "pts": 11.5,
+    "via": null,
+    "defDates": []
+   },
+   {
+    "base": "jpe$o",
+    "name": "🦂 JPe$o",
+    "evName": "UFC Fight Night: Ankalaev vs. Guskov",
+    "date": "2026-07-25",
+    "defenses": 0,
+    "end": {
+     "evName": "UFC Fight Night: Medic vs. Rodriguez",
+     "takenBy": "👑 Tristin"
+    },
+    "pts": 8,
+    "via": null,
+    "defDates": []
+   },
+   {
+    "base": "tristin",
+    "name": "👑 Tristin",
+    "evName": "UFC Fight Night: Medic vs. Rodriguez",
+    "date": "2026-08-01",
+    "defenses": 0,
+    "end": {
+     "evName": "UFC Fight Night: Gamrot vs. Salkilld",
+     "takenBy": "🥊 Dereko"
+    },
+    "pts": 9,
+    "via": {
+     "tied": 2,
+     "by": "accuracy",
+     "val": "62%"
+    },
+    "defDates": []
+   },
+   {
+    "base": "dereko",
+    "name": "🥊 Dereko",
+    "evName": "UFC Fight Night: Gamrot vs. Salkilld",
+    "date": "2026-08-08",
+    "defenses": 1,
+    "end": {
+     "evName": "UFC Fight Night: Hernandez vs. Rodrigues",
+     "takenBy": "👑 Tristin"
+    },
+    "pts": 9,
+    "via": null,
+    "defDates": [
+     "2026-08-15"
+    ]
+   },
+   {
+    "base": "tristin",
+    "name": "👑 Tristin",
+    "evName": "UFC Fight Night: Hernandez vs. Rodrigues",
+    "date": "2026-08-22",
+    "defenses": 0,
+    "end": {
+     "evName": "UFC Fight Night: Nurmagomedov vs. Song",
+     "takenBy": "🦂 JPe$o"
+    },
+    "pts": 8,
+    "via": null,
+    "defDates": []
+   },
+   {
+    "base": "jpe$o",
+    "name": "🦂 JPe$o",
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song",
+    "date": "2026-08-29",
+    "defenses": 0,
+    "end": {
+     "evName": "UFC Fight Night: Hooker vs. Parnasse",
+     "takenBy": "😀 Torrey"
+    },
+    "pts": 13.5,
+    "via": null,
+    "defDates": []
+   },
+   {
+    "base": "torrey",
+    "name": "😀 Torrey",
+    "evName": "UFC Fight Night: Hooker vs. Parnasse",
+    "date": "2026-09-05",
+    "defenses": 1,
+    "end": {
+     "evName": "UFC 331: Van vs. Pantoja 2",
+     "takenBy": "👑 Tristin"
+    },
+    "pts": 12,
+    "via": null,
+    "defDates": [
+     "2026-09-12"
+    ]
+   },
+   {
+    "base": "tristin",
+    "name": "👑 Tristin",
+    "evName": "UFC 331: Van vs. Pantoja 2",
+    "date": "2026-09-19",
+    "defenses": 1,
+    "end": null,
+    "pts": 8.5,
+    "via": null,
+    "defDates": [
+     "2026-12-19"
+    ]
+   }
+  ]
+ },
+ "recaps": {
+  "2026-05-30": {
+   "ab": null,
+   "tristin": null,
+   "dereko": null,
+   "jpe$o": null,
+   "t": null,
+   "torrey": null
+  },
+  "2026-06-06": {
+   "ab": null,
+   "tristin": null,
+   "dereko": null,
+   "jpe$o": null,
+   "t": null,
+   "torrey": null
+  },
+  "2026-06-14": {
+   "ab": null,
+   "tristin": null,
+   "dereko": null,
+   "jpe$o": null,
+   "t": null,
+   "torrey": null
+  },
+  "2026-06-20": {
+   "ab": null,
+   "tristin": null,
+   "dereko": null,
+   "jpe$o": null,
+   "t": null,
+   "torrey": null
+  },
+  "2026-06-27": {
+   "ab": null,
+   "tristin": null,
+   "dereko": null,
+   "jpe$o": null,
+   "t": null,
+   "torrey": null
+  },
+  "2026-07-11": {
+   "ab": null,
+   "tristin": null,
+   "dereko": null,
+   "jpe$o": null,
+   "t": null,
+   "torrey": null
+  },
+  "2026-07-18": {
+   "ab": null,
+   "tristin": null,
+   "dereko": null,
+   "jpe$o": null,
+   "t": null,
+   "torrey": null
+  },
+  "2026-07-25": {
+   "ab": null,
+   "tristin": null,
+   "dereko": null,
+   "jpe$o": null,
+   "t": null,
+   "torrey": null
+  },
+  "2026-08-01": {
+   "ab": null,
+   "tristin": null,
+   "dereko": null,
+   "jpe$o": null,
+   "t": null,
+   "torrey": null
+  },
+  "2026-08-08": {
+   "ab": null,
+   "tristin": null,
+   "dereko": null,
+   "jpe$o": null,
+   "t": null,
+   "torrey": null
+  },
+  "2026-08-15": {
+   "ab": null,
+   "tristin": null,
+   "dereko": null,
+   "jpe$o": null,
+   "t": null,
+   "torrey": null
+  },
+  "2026-08-22": {
+   "ab": null,
+   "tristin": null,
+   "dereko": null,
+   "jpe$o": null,
+   "t": null,
+   "torrey": null
+  },
+  "2026-08-29": {
+   "ab": {
+    "date": "2026-08-29",
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song",
+    "standings": [
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 11.5,
+      "correct": 9,
+      "total": 12,
+      "rank": 1,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 10,
+      "correct": 7,
+      "total": 11,
+      "rank": 2,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 9.5,
+      "correct": 7,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 9,
+      "correct": 6,
+      "total": 11,
+      "rank": 4,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 8,
+      "correct": 7,
+      "total": 12,
+      "rank": 5,
+      "upset": {
+       "pick": "Denise Gomes",
+       "opp": "Yan Xiaonan",
+       "line": 130
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 10,
+      "rank": 6,
+      "upset": {
+       "pick": "Francesco Nuzzi",
+       "opp": "Xiao Long",
+       "line": 150
+      },
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 9.5,
+     "correct": 7,
+     "total": 11,
+     "perfect": false,
+     "upset": {
+      "pick": "Song Yadong",
+      "opp": "Umar Nurmagomedov",
+      "line": 455
+     },
+     "cardRank": 3,
+     "of": 6,
+     "rankBefore": 5,
+     "rankAfter": 5
+    },
+    "title": {
+     "kind": "taken",
+     "name": "🦂 JPe$o",
+     "pts": 13.5,
+     "from": "👑 Tristin",
+     "via": null
+    }
+   },
+   "tristin": {
+    "date": "2026-08-29",
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song",
+    "standings": [
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 11.5,
+      "correct": 9,
+      "total": 12,
+      "rank": 1,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 10,
+      "correct": 7,
+      "total": 11,
+      "rank": 2,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 9.5,
+      "correct": 7,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 9,
+      "correct": 6,
+      "total": 11,
+      "rank": 4,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 8,
+      "correct": 7,
+      "total": 12,
+      "rank": 5,
+      "upset": {
+       "pick": "Denise Gomes",
+       "opp": "Yan Xiaonan",
+       "line": 130
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 10,
+      "rank": 6,
+      "upset": {
+       "pick": "Francesco Nuzzi",
+       "opp": "Xiao Long",
+       "line": 150
+      },
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 8,
+     "correct": 7,
+     "total": 12,
+     "perfect": false,
+     "upset": {
+      "pick": "Denise Gomes",
+      "opp": "Yan Xiaonan",
+      "line": 130
+     },
+     "cardRank": 5,
+     "of": 6,
+     "rankBefore": 2,
+     "rankAfter": 2
+    },
+    "title": {
+     "kind": "taken",
+     "name": "🦂 JPe$o",
+     "pts": 13.5,
+     "from": "👑 Tristin",
+     "via": null
+    }
+   },
+   "dereko": {
+    "date": "2026-08-29",
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song",
+    "standings": [
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 11.5,
+      "correct": 9,
+      "total": 12,
+      "rank": 1,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 10,
+      "correct": 7,
+      "total": 11,
+      "rank": 2,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 9.5,
+      "correct": 7,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 9,
+      "correct": 6,
+      "total": 11,
+      "rank": 4,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 8,
+      "correct": 7,
+      "total": 12,
+      "rank": 5,
+      "upset": {
+       "pick": "Denise Gomes",
+       "opp": "Yan Xiaonan",
+       "line": 130
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 10,
+      "rank": 6,
+      "upset": {
+       "pick": "Francesco Nuzzi",
+       "opp": "Xiao Long",
+       "line": 150
+      },
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 7.5,
+     "correct": 6,
+     "total": 10,
+     "perfect": false,
+     "upset": {
+      "pick": "Francesco Nuzzi",
+      "opp": "Xiao Long",
+      "line": 150
+     },
+     "cardRank": 6,
+     "of": 6,
+     "rankBefore": 1,
+     "rankAfter": 1
+    },
+    "title": {
+     "kind": "taken",
+     "name": "🦂 JPe$o",
+     "pts": 13.5,
+     "from": "👑 Tristin",
+     "via": null
+    }
+   },
+   "jpe$o": {
+    "date": "2026-08-29",
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song",
+    "standings": [
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 11.5,
+      "correct": 9,
+      "total": 12,
+      "rank": 1,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 10,
+      "correct": 7,
+      "total": 11,
+      "rank": 2,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 9.5,
+      "correct": 7,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 9,
+      "correct": 6,
+      "total": 11,
+      "rank": 4,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 8,
+      "correct": 7,
+      "total": 12,
+      "rank": 5,
+      "upset": {
+       "pick": "Denise Gomes",
+       "opp": "Yan Xiaonan",
+       "line": 130
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 10,
+      "rank": 6,
+      "upset": {
+       "pick": "Francesco Nuzzi",
+       "opp": "Xiao Long",
+       "line": 150
+      },
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 11.5,
+     "correct": 9,
+     "total": 12,
+     "perfect": false,
+     "upset": {
+      "pick": "Song Yadong",
+      "opp": "Umar Nurmagomedov",
+      "line": 455
+     },
+     "cardRank": 1,
+     "of": 6,
+     "rankBefore": 6,
+     "rankAfter": 6
+    },
+    "title": {
+     "kind": "taken",
+     "name": "🦂 JPe$o",
+     "pts": 13.5,
+     "from": "👑 Tristin",
+     "via": null
+    }
+   },
+   "t": {
+    "date": "2026-08-29",
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song",
+    "standings": [
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 11.5,
+      "correct": 9,
+      "total": 12,
+      "rank": 1,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 10,
+      "correct": 7,
+      "total": 11,
+      "rank": 2,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 9.5,
+      "correct": 7,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 9,
+      "correct": 6,
+      "total": 11,
+      "rank": 4,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 8,
+      "correct": 7,
+      "total": 12,
+      "rank": 5,
+      "upset": {
+       "pick": "Denise Gomes",
+       "opp": "Yan Xiaonan",
+       "line": 130
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 10,
+      "rank": 6,
+      "upset": {
+       "pick": "Francesco Nuzzi",
+       "opp": "Xiao Long",
+       "line": 150
+      },
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 9,
+     "correct": 6,
+     "total": 11,
+     "perfect": false,
+     "upset": {
+      "pick": "Song Yadong",
+      "opp": "Umar Nurmagomedov",
+      "line": 455
+     },
+     "cardRank": 4,
+     "of": 6,
+     "rankBefore": 4,
+     "rankAfter": 4
+    },
+    "title": {
+     "kind": "taken",
+     "name": "🦂 JPe$o",
+     "pts": 13.5,
+     "from": "👑 Tristin",
+     "via": null
+    }
+   },
+   "torrey": {
+    "date": "2026-08-29",
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song",
+    "standings": [
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 11.5,
+      "correct": 9,
+      "total": 12,
+      "rank": 1,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 10,
+      "correct": 7,
+      "total": 11,
+      "rank": 2,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 9.5,
+      "correct": 7,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 9,
+      "correct": 6,
+      "total": 11,
+      "rank": 4,
+      "upset": {
+       "pick": "Song Yadong",
+       "opp": "Umar Nurmagomedov",
+       "line": 455
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 8,
+      "correct": 7,
+      "total": 12,
+      "rank": 5,
+      "upset": {
+       "pick": "Denise Gomes",
+       "opp": "Yan Xiaonan",
+       "line": 130
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 10,
+      "rank": 6,
+      "upset": {
+       "pick": "Francesco Nuzzi",
+       "opp": "Xiao Long",
+       "line": 150
+      },
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 10,
+     "correct": 7,
+     "total": 11,
+     "perfect": false,
+     "upset": {
+      "pick": "Song Yadong",
+      "opp": "Umar Nurmagomedov",
+      "line": 455
+     },
+     "cardRank": 2,
+     "of": 6,
+     "rankBefore": 3,
+     "rankAfter": 3
+    },
+    "title": {
+     "kind": "taken",
+     "name": "🦂 JPe$o",
+     "pts": 13.5,
+     "from": "👑 Tristin",
+     "via": null
+    }
+   }
+  },
+  "2026-09-05": {
+   "ab": {
+    "date": "2026-09-05",
+    "evName": "UFC Fight Night: Hooker vs. Parnasse",
+    "standings": [
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 12,
+      "correct": 10,
+      "total": 14,
+      "rank": 1,
+      "upset": {
+       "pick": "Pavel Andrusca",
+       "opp": "Nathaniel Wood",
+       "line": 242
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 10.5,
+      "correct": 10,
+      "total": 12,
+      "rank": 2,
+      "upset": {
+       "pick": "Modestas Bukauskas",
+       "opp": "Oumar Sy",
+       "line": 157
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 9,
+      "correct": 8,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Axel Sola",
+       "opp": "Fares Ziam",
+       "line": 130
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 13,
+      "rank": 4,
+      "upset": {
+       "pick": "Fabia Sintes",
+       "opp": "Michael Aljarouj",
+       "line": 107
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 4,
+      "correct": 3,
+      "total": 13,
+      "rank": 5,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 12,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 10.5,
+     "correct": 10,
+     "total": 12,
+     "perfect": false,
+     "upset": {
+      "pick": "Modestas Bukauskas",
+      "opp": "Oumar Sy",
+      "line": 157
+     },
+     "cardRank": 2,
+     "of": 6,
+     "rankBefore": 5,
+     "rankAfter": 4
+    },
+    "title": {
+     "kind": "taken",
+     "name": "😀 Torrey",
+     "pts": 12,
+     "from": "🦂 JPe$o",
+     "via": null
+    }
+   },
+   "tristin": {
+    "date": "2026-09-05",
+    "evName": "UFC Fight Night: Hooker vs. Parnasse",
+    "standings": [
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 12,
+      "correct": 10,
+      "total": 14,
+      "rank": 1,
+      "upset": {
+       "pick": "Pavel Andrusca",
+       "opp": "Nathaniel Wood",
+       "line": 242
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 10.5,
+      "correct": 10,
+      "total": 12,
+      "rank": 2,
+      "upset": {
+       "pick": "Modestas Bukauskas",
+       "opp": "Oumar Sy",
+       "line": 157
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 9,
+      "correct": 8,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Axel Sola",
+       "opp": "Fares Ziam",
+       "line": 130
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 13,
+      "rank": 4,
+      "upset": {
+       "pick": "Fabia Sintes",
+       "opp": "Michael Aljarouj",
+       "line": 107
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 4,
+      "correct": 3,
+      "total": 13,
+      "rank": 5,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 12,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 7.5,
+     "correct": 6,
+     "total": 13,
+     "perfect": false,
+     "upset": {
+      "pick": "Fabia Sintes",
+      "opp": "Michael Aljarouj",
+      "line": 107
+     },
+     "cardRank": 4,
+     "of": 6,
+     "rankBefore": 2,
+     "rankAfter": 3
+    },
+    "title": {
+     "kind": "taken",
+     "name": "😀 Torrey",
+     "pts": 12,
+     "from": "🦂 JPe$o",
+     "via": null
+    }
+   },
+   "dereko": {
+    "date": "2026-09-05",
+    "evName": "UFC Fight Night: Hooker vs. Parnasse",
+    "standings": [
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 12,
+      "correct": 10,
+      "total": 14,
+      "rank": 1,
+      "upset": {
+       "pick": "Pavel Andrusca",
+       "opp": "Nathaniel Wood",
+       "line": 242
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 10.5,
+      "correct": 10,
+      "total": 12,
+      "rank": 2,
+      "upset": {
+       "pick": "Modestas Bukauskas",
+       "opp": "Oumar Sy",
+       "line": 157
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 9,
+      "correct": 8,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Axel Sola",
+       "opp": "Fares Ziam",
+       "line": 130
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 13,
+      "rank": 4,
+      "upset": {
+       "pick": "Fabia Sintes",
+       "opp": "Michael Aljarouj",
+       "line": 107
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 4,
+      "correct": 3,
+      "total": 13,
+      "rank": 5,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 12,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 9,
+     "correct": 8,
+     "total": 11,
+     "perfect": false,
+     "upset": {
+      "pick": "Axel Sola",
+      "opp": "Fares Ziam",
+      "line": 130
+     },
+     "cardRank": 3,
+     "of": 6,
+     "rankBefore": 1,
+     "rankAfter": 1
+    },
+    "title": {
+     "kind": "taken",
+     "name": "😀 Torrey",
+     "pts": 12,
+     "from": "🦂 JPe$o",
+     "via": null
+    }
+   },
+   "jpe$o": {
+    "date": "2026-09-05",
+    "evName": "UFC Fight Night: Hooker vs. Parnasse",
+    "standings": [
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 12,
+      "correct": 10,
+      "total": 14,
+      "rank": 1,
+      "upset": {
+       "pick": "Pavel Andrusca",
+       "opp": "Nathaniel Wood",
+       "line": 242
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 10.5,
+      "correct": 10,
+      "total": 12,
+      "rank": 2,
+      "upset": {
+       "pick": "Modestas Bukauskas",
+       "opp": "Oumar Sy",
+       "line": 157
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 9,
+      "correct": 8,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Axel Sola",
+       "opp": "Fares Ziam",
+       "line": 130
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 13,
+      "rank": 4,
+      "upset": {
+       "pick": "Fabia Sintes",
+       "opp": "Michael Aljarouj",
+       "line": 107
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 4,
+      "correct": 3,
+      "total": 13,
+      "rank": 5,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 12,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 4,
+     "correct": 3,
+     "total": 13,
+     "perfect": false,
+     "upset": null,
+     "cardRank": 5,
+     "of": 6,
+     "rankBefore": 6,
+     "rankAfter": 6
+    },
+    "title": {
+     "kind": "taken",
+     "name": "😀 Torrey",
+     "pts": 12,
+     "from": "🦂 JPe$o",
+     "via": null
+    }
+   },
+   "t": {
+    "date": "2026-09-05",
+    "evName": "UFC Fight Night: Hooker vs. Parnasse",
+    "standings": [
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 12,
+      "correct": 10,
+      "total": 14,
+      "rank": 1,
+      "upset": {
+       "pick": "Pavel Andrusca",
+       "opp": "Nathaniel Wood",
+       "line": 242
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 10.5,
+      "correct": 10,
+      "total": 12,
+      "rank": 2,
+      "upset": {
+       "pick": "Modestas Bukauskas",
+       "opp": "Oumar Sy",
+       "line": 157
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 9,
+      "correct": 8,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Axel Sola",
+       "opp": "Fares Ziam",
+       "line": 130
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 13,
+      "rank": 4,
+      "upset": {
+       "pick": "Fabia Sintes",
+       "opp": "Michael Aljarouj",
+       "line": 107
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 4,
+      "correct": 3,
+      "total": 13,
+      "rank": 5,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 12,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 2.5,
+     "correct": 2,
+     "total": 12,
+     "perfect": false,
+     "upset": null,
+     "cardRank": 6,
+     "of": 6,
+     "rankBefore": 4,
+     "rankAfter": 5
+    },
+    "title": {
+     "kind": "taken",
+     "name": "😀 Torrey",
+     "pts": 12,
+     "from": "🦂 JPe$o",
+     "via": null
+    }
+   },
+   "torrey": {
+    "date": "2026-09-05",
+    "evName": "UFC Fight Night: Hooker vs. Parnasse",
+    "standings": [
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 12,
+      "correct": 10,
+      "total": 14,
+      "rank": 1,
+      "upset": {
+       "pick": "Pavel Andrusca",
+       "opp": "Nathaniel Wood",
+       "line": 242
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 10.5,
+      "correct": 10,
+      "total": 12,
+      "rank": 2,
+      "upset": {
+       "pick": "Modestas Bukauskas",
+       "opp": "Oumar Sy",
+       "line": 157
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 9,
+      "correct": 8,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Axel Sola",
+       "opp": "Fares Ziam",
+       "line": 130
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 13,
+      "rank": 4,
+      "upset": {
+       "pick": "Fabia Sintes",
+       "opp": "Michael Aljarouj",
+       "line": 107
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 4,
+      "correct": 3,
+      "total": 13,
+      "rank": 5,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 12,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 12,
+     "correct": 10,
+     "total": 14,
+     "perfect": false,
+     "upset": {
+      "pick": "Pavel Andrusca",
+      "opp": "Nathaniel Wood",
+      "line": 242
+     },
+     "cardRank": 1,
+     "of": 6,
+     "rankBefore": 3,
+     "rankAfter": 2
+    },
+    "title": {
+     "kind": "taken",
+     "name": "😀 Torrey",
+     "pts": 12,
+     "from": "🦂 JPe$o",
+     "via": null
+    }
+   }
+  },
+  "2026-09-12": {
+   "ab": {
+    "date": "2026-09-12",
+    "evName": "UFC Fight Night: Silva vs. Delgado",
+    "standings": [
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 11,
+      "correct": 9,
+      "total": 11,
+      "rank": 1,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 8.5,
+      "correct": 7,
+      "total": 10,
+      "rank": 2,
+      "upset": {
+       "pick": "Curtis Blaydes",
+       "opp": "Waldo Cortes-Acosta",
+       "line": 159
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 8,
+      "correct": 7,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 6.5,
+      "correct": 5,
+      "total": 13,
+      "rank": 4,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 5.5,
+      "correct": 4,
+      "total": 11,
+      "rank": 5,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 2,
+      "correct": 2,
+      "total": 10,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 8,
+     "correct": 7,
+     "total": 11,
+     "perfect": false,
+     "upset": {
+      "pick": "Alexa Grasso",
+      "opp": "Manon Fiorot",
+      "line": 225
+     },
+     "cardRank": 3,
+     "of": 6,
+     "rankBefore": 4,
+     "rankAfter": 4
+    },
+    "title": {
+     "kind": "defended",
+     "name": "😀 Torrey",
+     "defenses": 1
+    }
+   },
+   "tristin": {
+    "date": "2026-09-12",
+    "evName": "UFC Fight Night: Silva vs. Delgado",
+    "standings": [
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 11,
+      "correct": 9,
+      "total": 11,
+      "rank": 1,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 8.5,
+      "correct": 7,
+      "total": 10,
+      "rank": 2,
+      "upset": {
+       "pick": "Curtis Blaydes",
+       "opp": "Waldo Cortes-Acosta",
+       "line": 159
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 8,
+      "correct": 7,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 6.5,
+      "correct": 5,
+      "total": 13,
+      "rank": 4,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 5.5,
+      "correct": 4,
+      "total": 11,
+      "rank": 5,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 2,
+      "correct": 2,
+      "total": 10,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 5.5,
+     "correct": 4,
+     "total": 11,
+     "perfect": false,
+     "upset": {
+      "pick": "Alexa Grasso",
+      "opp": "Manon Fiorot",
+      "line": 225
+     },
+     "cardRank": 5,
+     "of": 6,
+     "rankBefore": 3,
+     "rankAfter": 3
+    },
+    "title": {
+     "kind": "defended",
+     "name": "😀 Torrey",
+     "defenses": 1
+    }
+   },
+   "dereko": {
+    "date": "2026-09-12",
+    "evName": "UFC Fight Night: Silva vs. Delgado",
+    "standings": [
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 11,
+      "correct": 9,
+      "total": 11,
+      "rank": 1,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 8.5,
+      "correct": 7,
+      "total": 10,
+      "rank": 2,
+      "upset": {
+       "pick": "Curtis Blaydes",
+       "opp": "Waldo Cortes-Acosta",
+       "line": 159
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 8,
+      "correct": 7,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 6.5,
+      "correct": 5,
+      "total": 13,
+      "rank": 4,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 5.5,
+      "correct": 4,
+      "total": 11,
+      "rank": 5,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 2,
+      "correct": 2,
+      "total": 10,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 6.5,
+     "correct": 5,
+     "total": 13,
+     "perfect": false,
+     "upset": {
+      "pick": "Alexa Grasso",
+      "opp": "Manon Fiorot",
+      "line": 225
+     },
+     "cardRank": 4,
+     "of": 6,
+     "rankBefore": 1,
+     "rankAfter": 2
+    },
+    "title": {
+     "kind": "defended",
+     "name": "😀 Torrey",
+     "defenses": 1
+    }
+   },
+   "jpe$o": {
+    "date": "2026-09-12",
+    "evName": "UFC Fight Night: Silva vs. Delgado",
+    "standings": [
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 11,
+      "correct": 9,
+      "total": 11,
+      "rank": 1,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 8.5,
+      "correct": 7,
+      "total": 10,
+      "rank": 2,
+      "upset": {
+       "pick": "Curtis Blaydes",
+       "opp": "Waldo Cortes-Acosta",
+       "line": 159
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 8,
+      "correct": 7,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 6.5,
+      "correct": 5,
+      "total": 13,
+      "rank": 4,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 5.5,
+      "correct": 4,
+      "total": 11,
+      "rank": 5,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 2,
+      "correct": 2,
+      "total": 10,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 8.5,
+     "correct": 7,
+     "total": 10,
+     "perfect": false,
+     "upset": {
+      "pick": "Curtis Blaydes",
+      "opp": "Waldo Cortes-Acosta",
+      "line": 159
+     },
+     "cardRank": 2,
+     "of": 6,
+     "rankBefore": 6,
+     "rankAfter": 5
+    },
+    "title": {
+     "kind": "defended",
+     "name": "😀 Torrey",
+     "defenses": 1
+    }
+   },
+   "t": {
+    "date": "2026-09-12",
+    "evName": "UFC Fight Night: Silva vs. Delgado",
+    "standings": [
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 11,
+      "correct": 9,
+      "total": 11,
+      "rank": 1,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 8.5,
+      "correct": 7,
+      "total": 10,
+      "rank": 2,
+      "upset": {
+       "pick": "Curtis Blaydes",
+       "opp": "Waldo Cortes-Acosta",
+       "line": 159
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 8,
+      "correct": 7,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 6.5,
+      "correct": 5,
+      "total": 13,
+      "rank": 4,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 5.5,
+      "correct": 4,
+      "total": 11,
+      "rank": 5,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 2,
+      "correct": 2,
+      "total": 10,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 2,
+     "correct": 2,
+     "total": 10,
+     "perfect": false,
+     "upset": null,
+     "cardRank": 6,
+     "of": 6,
+     "rankBefore": 5,
+     "rankAfter": 6
+    },
+    "title": {
+     "kind": "defended",
+     "name": "😀 Torrey",
+     "defenses": 1
+    }
+   },
+   "torrey": {
+    "date": "2026-09-12",
+    "evName": "UFC Fight Night: Silva vs. Delgado",
+    "standings": [
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 11,
+      "correct": 9,
+      "total": 11,
+      "rank": 1,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 8.5,
+      "correct": 7,
+      "total": 10,
+      "rank": 2,
+      "upset": {
+       "pick": "Curtis Blaydes",
+       "opp": "Waldo Cortes-Acosta",
+       "line": 159
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 8,
+      "correct": 7,
+      "total": 11,
+      "rank": 3,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 6.5,
+      "correct": 5,
+      "total": 13,
+      "rank": 4,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 5.5,
+      "correct": 4,
+      "total": 11,
+      "rank": 5,
+      "upset": {
+       "pick": "Alexa Grasso",
+       "opp": "Manon Fiorot",
+       "line": 225
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 2,
+      "correct": 2,
+      "total": 10,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 11,
+     "correct": 9,
+     "total": 11,
+     "perfect": false,
+     "upset": {
+      "pick": "Alexa Grasso",
+      "opp": "Manon Fiorot",
+      "line": 225
+     },
+     "cardRank": 1,
+     "of": 6,
+     "rankBefore": 2,
+     "rankAfter": 1
+    },
+    "title": {
+     "kind": "defended",
+     "name": "😀 Torrey",
+     "defenses": 1
+    }
+   }
+  },
+  "2026-09-19": {
+   "ab": {
+    "date": "2026-09-19",
+    "evName": "UFC 331: Van vs. Pantoja 2",
+    "standings": [
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 8.5,
+      "correct": 8,
+      "total": 11,
+      "rank": 1,
+      "upset": {
+       "pick": "Patricio Pitbull",
+       "opp": "Choi Doo-ho",
+       "line": 222
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 8,
+      "correct": 7,
+      "total": 12,
+      "rank": 2,
+      "upset": {
+       "pick": "Michael Aswell Jr.",
+       "opp": "Yoo Joo-sang",
+       "line": 146
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 10,
+      "rank": 3,
+      "upset": {
+       "pick": "Marlon Vera",
+       "opp": "Charles Jourdain",
+       "line": 170
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 7.5,
+      "correct": 7,
+      "total": 12,
+      "rank": 3,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 6,
+      "correct": 5,
+      "total": 10,
+      "rank": 5,
+      "upset": {
+       "pick": "Patricio Pitbull",
+       "opp": "Choi Doo-ho",
+       "line": 222
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 5.5,
+      "correct": 4,
+      "total": 11,
+      "rank": 6,
+      "upset": {
+       "pick": "Marlon Vera",
+       "opp": "Charles Jourdain",
+       "line": 170
+      },
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 6,
+     "correct": 5,
+     "total": 10,
+     "perfect": false,
+     "upset": {
+      "pick": "Patricio Pitbull",
+      "opp": "Choi Doo-ho",
+      "line": 222
+     },
+     "cardRank": 5,
+     "of": 6,
+     "rankBefore": 4,
+     "rankAfter": 4
+    },
+    "title": {
+     "kind": "taken",
+     "name": "👑 Tristin",
+     "pts": 8.5,
+     "from": "😀 Torrey",
+     "via": null
+    }
+   },
+   "tristin": {
+    "date": "2026-09-19",
+    "evName": "UFC 331: Van vs. Pantoja 2",
+    "standings": [
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 8.5,
+      "correct": 8,
+      "total": 11,
+      "rank": 1,
+      "upset": {
+       "pick": "Patricio Pitbull",
+       "opp": "Choi Doo-ho",
+       "line": 222
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 8,
+      "correct": 7,
+      "total": 12,
+      "rank": 2,
+      "upset": {
+       "pick": "Michael Aswell Jr.",
+       "opp": "Yoo Joo-sang",
+       "line": 146
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 10,
+      "rank": 3,
+      "upset": {
+       "pick": "Marlon Vera",
+       "opp": "Charles Jourdain",
+       "line": 170
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 7.5,
+      "correct": 7,
+      "total": 12,
+      "rank": 3,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 6,
+      "correct": 5,
+      "total": 10,
+      "rank": 5,
+      "upset": {
+       "pick": "Patricio Pitbull",
+       "opp": "Choi Doo-ho",
+       "line": 222
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 5.5,
+      "correct": 4,
+      "total": 11,
+      "rank": 6,
+      "upset": {
+       "pick": "Marlon Vera",
+       "opp": "Charles Jourdain",
+       "line": 170
+      },
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 8.5,
+     "correct": 8,
+     "total": 11,
+     "perfect": false,
+     "upset": {
+      "pick": "Patricio Pitbull",
+      "opp": "Choi Doo-ho",
+      "line": 222
+     },
+     "cardRank": 1,
+     "of": 6,
+     "rankBefore": 3,
+     "rankAfter": 3
+    },
+    "title": {
+     "kind": "taken",
+     "name": "👑 Tristin",
+     "pts": 8.5,
+     "from": "😀 Torrey",
+     "via": null
+    }
+   },
+   "dereko": {
+    "date": "2026-09-19",
+    "evName": "UFC 331: Van vs. Pantoja 2",
+    "standings": [
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 8.5,
+      "correct": 8,
+      "total": 11,
+      "rank": 1,
+      "upset": {
+       "pick": "Patricio Pitbull",
+       "opp": "Choi Doo-ho",
+       "line": 222
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 8,
+      "correct": 7,
+      "total": 12,
+      "rank": 2,
+      "upset": {
+       "pick": "Michael Aswell Jr.",
+       "opp": "Yoo Joo-sang",
+       "line": 146
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 10,
+      "rank": 3,
+      "upset": {
+       "pick": "Marlon Vera",
+       "opp": "Charles Jourdain",
+       "line": 170
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 7.5,
+      "correct": 7,
+      "total": 12,
+      "rank": 3,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 6,
+      "correct": 5,
+      "total": 10,
+      "rank": 5,
+      "upset": {
+       "pick": "Patricio Pitbull",
+       "opp": "Choi Doo-ho",
+       "line": 222
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 5.5,
+      "correct": 4,
+      "total": 11,
+      "rank": 6,
+      "upset": {
+       "pick": "Marlon Vera",
+       "opp": "Charles Jourdain",
+       "line": 170
+      },
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 7.5,
+     "correct": 7,
+     "total": 12,
+     "perfect": false,
+     "upset": null,
+     "cardRank": 3,
+     "of": 6,
+     "rankBefore": 2,
+     "rankAfter": 2
+    },
+    "title": {
+     "kind": "taken",
+     "name": "👑 Tristin",
+     "pts": 8.5,
+     "from": "😀 Torrey",
+     "via": null
+    }
+   },
+   "jpe$o": {
+    "date": "2026-09-19",
+    "evName": "UFC 331: Van vs. Pantoja 2",
+    "standings": [
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 8.5,
+      "correct": 8,
+      "total": 11,
+      "rank": 1,
+      "upset": {
+       "pick": "Patricio Pitbull",
+       "opp": "Choi Doo-ho",
+       "line": 222
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 8,
+      "correct": 7,
+      "total": 12,
+      "rank": 2,
+      "upset": {
+       "pick": "Michael Aswell Jr.",
+       "opp": "Yoo Joo-sang",
+       "line": 146
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 10,
+      "rank": 3,
+      "upset": {
+       "pick": "Marlon Vera",
+       "opp": "Charles Jourdain",
+       "line": 170
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 7.5,
+      "correct": 7,
+      "total": 12,
+      "rank": 3,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 6,
+      "correct": 5,
+      "total": 10,
+      "rank": 5,
+      "upset": {
+       "pick": "Patricio Pitbull",
+       "opp": "Choi Doo-ho",
+       "line": 222
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 5.5,
+      "correct": 4,
+      "total": 11,
+      "rank": 6,
+      "upset": {
+       "pick": "Marlon Vera",
+       "opp": "Charles Jourdain",
+       "line": 170
+      },
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 8,
+     "correct": 7,
+     "total": 12,
+     "perfect": false,
+     "upset": {
+      "pick": "Michael Aswell Jr.",
+      "opp": "Yoo Joo-sang",
+      "line": 146
+     },
+     "cardRank": 2,
+     "of": 6,
+     "rankBefore": 5,
+     "rankAfter": 5
+    },
+    "title": {
+     "kind": "taken",
+     "name": "👑 Tristin",
+     "pts": 8.5,
+     "from": "😀 Torrey",
+     "via": null
+    }
+   },
+   "t": {
+    "date": "2026-09-19",
+    "evName": "UFC 331: Van vs. Pantoja 2",
+    "standings": [
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 8.5,
+      "correct": 8,
+      "total": 11,
+      "rank": 1,
+      "upset": {
+       "pick": "Patricio Pitbull",
+       "opp": "Choi Doo-ho",
+       "line": 222
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 8,
+      "correct": 7,
+      "total": 12,
+      "rank": 2,
+      "upset": {
+       "pick": "Michael Aswell Jr.",
+       "opp": "Yoo Joo-sang",
+       "line": 146
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 10,
+      "rank": 3,
+      "upset": {
+       "pick": "Marlon Vera",
+       "opp": "Charles Jourdain",
+       "line": 170
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 7.5,
+      "correct": 7,
+      "total": 12,
+      "rank": 3,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 6,
+      "correct": 5,
+      "total": 10,
+      "rank": 5,
+      "upset": {
+       "pick": "Patricio Pitbull",
+       "opp": "Choi Doo-ho",
+       "line": 222
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 5.5,
+      "correct": 4,
+      "total": 11,
+      "rank": 6,
+      "upset": {
+       "pick": "Marlon Vera",
+       "opp": "Charles Jourdain",
+       "line": 170
+      },
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 5.5,
+     "correct": 4,
+     "total": 11,
+     "perfect": false,
+     "upset": {
+      "pick": "Marlon Vera",
+      "opp": "Charles Jourdain",
+      "line": 170
+     },
+     "cardRank": 6,
+     "of": 6,
+     "rankBefore": 6,
+     "rankAfter": 6
+    },
+    "title": {
+     "kind": "taken",
+     "name": "👑 Tristin",
+     "pts": 8.5,
+     "from": "😀 Torrey",
+     "via": null
+    }
+   },
+   "torrey": {
+    "date": "2026-09-19",
+    "evName": "UFC 331: Van vs. Pantoja 2",
+    "standings": [
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 8.5,
+      "correct": 8,
+      "total": 11,
+      "rank": 1,
+      "upset": {
+       "pick": "Patricio Pitbull",
+       "opp": "Choi Doo-ho",
+       "line": 222
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 8,
+      "correct": 7,
+      "total": 12,
+      "rank": 2,
+      "upset": {
+       "pick": "Michael Aswell Jr.",
+       "opp": "Yoo Joo-sang",
+       "line": 146
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 7.5,
+      "correct": 6,
+      "total": 10,
+      "rank": 3,
+      "upset": {
+       "pick": "Marlon Vera",
+       "opp": "Charles Jourdain",
+       "line": 170
+      },
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 7.5,
+      "correct": 7,
+      "total": 12,
+      "rank": 3,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 6,
+      "correct": 5,
+      "total": 10,
+      "rank": 5,
+      "upset": {
+       "pick": "Patricio Pitbull",
+       "opp": "Choi Doo-ho",
+       "line": 222
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 5.5,
+      "correct": 4,
+      "total": 11,
+      "rank": 6,
+      "upset": {
+       "pick": "Marlon Vera",
+       "opp": "Charles Jourdain",
+       "line": 170
+      },
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 7.5,
+     "correct": 6,
+     "total": 10,
+     "perfect": false,
+     "upset": {
+      "pick": "Marlon Vera",
+      "opp": "Charles Jourdain",
+      "line": 170
+     },
+     "cardRank": 3,
+     "of": 6,
+     "rankBefore": 1,
+     "rankAfter": 1
+    },
+    "title": {
+     "kind": "taken",
+     "name": "👑 Tristin",
+     "pts": 8.5,
+     "from": "😀 Torrey",
+     "via": null
+    }
+   }
+  },
+  "2026-12-19": {
+   "ab": {
+    "date": "2026-12-19",
+    "evName": "UFC 999: Parity vs. Fixture",
+    "standings": [
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 6,
+      "correct": 3,
+      "total": 5,
+      "rank": 1,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 5,
+      "correct": 3,
+      "total": 5,
+      "rank": 2,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 5,
+      "correct": 3,
+      "total": 5,
+      "rank": 2,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 3,
+      "rank": 4,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 5,
+      "rank": 4,
+      "upset": {
+       "pick": "José Accent",
+       "opp": "Jr Suffix Jr.",
+       "line": 170
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 1,
+      "correct": 1,
+      "total": 3,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "tie",
+      "name": "🐺 Tie",
+      "pts": 0,
+      "correct": 0,
+      "total": 1,
+      "rank": 7,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 5,
+     "correct": 3,
+     "total": 5,
+     "perfect": false,
+     "upset": {
+      "pick": "Huge Dog",
+      "opp": "Big Fav",
+      "line": 320
+     },
+     "cardRank": 2,
+     "of": 7,
+     "rankBefore": 4,
+     "rankAfter": 4
+    },
+    "title": {
+     "kind": "defended",
+     "name": "👑 Tristin",
+     "defenses": 1
+    }
+   },
+   "tristin": {
+    "date": "2026-12-19",
+    "evName": "UFC 999: Parity vs. Fixture",
+    "standings": [
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 6,
+      "correct": 3,
+      "total": 5,
+      "rank": 1,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 5,
+      "correct": 3,
+      "total": 5,
+      "rank": 2,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 5,
+      "correct": 3,
+      "total": 5,
+      "rank": 2,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 3,
+      "rank": 4,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 5,
+      "rank": 4,
+      "upset": {
+       "pick": "José Accent",
+       "opp": "Jr Suffix Jr.",
+       "line": 170
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 1,
+      "correct": 1,
+      "total": 3,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "tie",
+      "name": "🐺 Tie",
+      "pts": 0,
+      "correct": 0,
+      "total": 1,
+      "rank": 7,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 6,
+     "correct": 3,
+     "total": 5,
+     "perfect": false,
+     "upset": {
+      "pick": "Huge Dog",
+      "opp": "Big Fav",
+      "line": 320
+     },
+     "cardRank": 1,
+     "of": 7,
+     "rankBefore": 3,
+     "rankAfter": 3
+    },
+    "title": {
+     "kind": "defended",
+     "name": "👑 Tristin",
+     "defenses": 1
+    }
+   },
+   "dereko": {
+    "date": "2026-12-19",
+    "evName": "UFC 999: Parity vs. Fixture",
+    "standings": [
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 6,
+      "correct": 3,
+      "total": 5,
+      "rank": 1,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 5,
+      "correct": 3,
+      "total": 5,
+      "rank": 2,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 5,
+      "correct": 3,
+      "total": 5,
+      "rank": 2,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 3,
+      "rank": 4,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 5,
+      "rank": 4,
+      "upset": {
+       "pick": "José Accent",
+       "opp": "Jr Suffix Jr.",
+       "line": 170
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 1,
+      "correct": 1,
+      "total": 3,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "tie",
+      "name": "🐺 Tie",
+      "pts": 0,
+      "correct": 0,
+      "total": 1,
+      "rank": 7,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 2.5,
+     "correct": 2,
+     "total": 5,
+     "perfect": false,
+     "upset": {
+      "pick": "José Accent",
+      "opp": "Jr Suffix Jr.",
+      "line": 170
+     },
+     "cardRank": 4,
+     "of": 7,
+     "rankBefore": 2,
+     "rankAfter": 2
+    },
+    "title": {
+     "kind": "defended",
+     "name": "👑 Tristin",
+     "defenses": 1
+    }
+   },
+   "jpe$o": {
+    "date": "2026-12-19",
+    "evName": "UFC 999: Parity vs. Fixture",
+    "standings": [
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 6,
+      "correct": 3,
+      "total": 5,
+      "rank": 1,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 5,
+      "correct": 3,
+      "total": 5,
+      "rank": 2,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 5,
+      "correct": 3,
+      "total": 5,
+      "rank": 2,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 3,
+      "rank": 4,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 5,
+      "rank": 4,
+      "upset": {
+       "pick": "José Accent",
+       "opp": "Jr Suffix Jr.",
+       "line": 170
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 1,
+      "correct": 1,
+      "total": 3,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "tie",
+      "name": "🐺 Tie",
+      "pts": 0,
+      "correct": 0,
+      "total": 1,
+      "rank": 7,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 5,
+     "correct": 3,
+     "total": 5,
+     "perfect": false,
+     "upset": {
+      "pick": "Huge Dog",
+      "opp": "Big Fav",
+      "line": 320
+     },
+     "cardRank": 2,
+     "of": 7,
+     "rankBefore": 5,
+     "rankAfter": 5
+    },
+    "title": {
+     "kind": "defended",
+     "name": "👑 Tristin",
+     "defenses": 1
+    }
+   },
+   "t": {
+    "date": "2026-12-19",
+    "evName": "UFC 999: Parity vs. Fixture",
+    "standings": [
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 6,
+      "correct": 3,
+      "total": 5,
+      "rank": 1,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 5,
+      "correct": 3,
+      "total": 5,
+      "rank": 2,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 5,
+      "correct": 3,
+      "total": 5,
+      "rank": 2,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 3,
+      "rank": 4,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 5,
+      "rank": 4,
+      "upset": {
+       "pick": "José Accent",
+       "opp": "Jr Suffix Jr.",
+       "line": 170
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 1,
+      "correct": 1,
+      "total": 3,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "tie",
+      "name": "🐺 Tie",
+      "pts": 0,
+      "correct": 0,
+      "total": 1,
+      "rank": 7,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 1,
+     "correct": 1,
+     "total": 3,
+     "perfect": false,
+     "upset": null,
+     "cardRank": 6,
+     "of": 7,
+     "rankBefore": 6,
+     "rankAfter": 6
+    },
+    "title": {
+     "kind": "defended",
+     "name": "👑 Tristin",
+     "defenses": 1
+    }
+   },
+   "torrey": {
+    "date": "2026-12-19",
+    "evName": "UFC 999: Parity vs. Fixture",
+    "standings": [
+     {
+      "base": "tristin",
+      "name": "👑 Tristin",
+      "pts": 6,
+      "correct": 3,
+      "total": 5,
+      "rank": 1,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "jpe$o",
+      "name": "🦂 JPe$o",
+      "pts": 5,
+      "correct": 3,
+      "total": 5,
+      "rank": 2,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "ab",
+      "name": "🥋 AB",
+      "pts": 5,
+      "correct": 3,
+      "total": 5,
+      "rank": 2,
+      "upset": {
+       "pick": "Huge Dog",
+       "opp": "Big Fav",
+       "line": 320
+      },
+      "perfect": false
+     },
+     {
+      "base": "torrey",
+      "name": "😀 Torrey",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 3,
+      "rank": 4,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "dereko",
+      "name": "🥊 Dereko",
+      "pts": 2.5,
+      "correct": 2,
+      "total": 5,
+      "rank": 4,
+      "upset": {
+       "pick": "José Accent",
+       "opp": "Jr Suffix Jr.",
+       "line": 170
+      },
+      "perfect": false
+     },
+     {
+      "base": "t",
+      "name": "🦍 T",
+      "pts": 1,
+      "correct": 1,
+      "total": 3,
+      "rank": 6,
+      "upset": null,
+      "perfect": false
+     },
+     {
+      "base": "tie",
+      "name": "🐺 Tie",
+      "pts": 0,
+      "correct": 0,
+      "total": 1,
+      "rank": 7,
+      "upset": null,
+      "perfect": false
+     }
+    ],
+    "me": {
+     "pts": 2.5,
+     "correct": 2,
+     "total": 3,
+     "perfect": false,
+     "upset": null,
+     "cardRank": 4,
+     "of": 7,
+     "rankBefore": 1,
+     "rankAfter": 1
+    },
+    "title": {
+     "kind": "defended",
+     "name": "👑 Tristin",
+     "defenses": 1
+    }
+   }
+  }
+ },
+ "wrapped_2026": {
+  "ab": {
+   "year": "2026",
+   "name": "🥋 AB",
+   "cards": 17,
+   "picks": 176,
+   "correct": 90,
+   "accuracy": 51,
+   "pts": 106.5,
+   "rank": 4,
+   "of": 7,
+   "groupAccuracy": 55,
+   "groupPicks": 1052,
+   "bestCard": {
+    "date": "2026-09-05",
+    "evName": "UFC Fight Night: Hooker vs. Parnasse",
+    "correct": 10,
+    "total": 12,
+    "pts": 10.5
+   },
+   "perfectCards": 0,
+   "upset": {
+    "pick": "Song Yadong",
+    "opp": "Umar Nurmagomedov",
+    "line": 455,
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song"
+   },
+   "bestStreak": 11,
+   "methodPicks": 135,
+   "methodHits": 21,
+   "goTo": "KO/TKO",
+   "dogs": 19,
+   "priced": 45,
+   "ride": null,
+   "nailed": {
+    "pick": "Sean Woodson",
+    "opp": "Jack Jenkins",
+    "method": "Dec",
+    "line": -148,
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song",
+    "rank": -148,
+    "rare": 1,
+    "date": "2026-08-29",
+    "idx": 8,
+    "key": "sean woodson"
+   },
+   "twin": {
+    "name": "👑 Tristin",
+    "shared": 203,
+    "agree": 111,
+    "pct": 55
+   },
+   "nemesis": {
+    "name": "🦂 JPe$o",
+    "shared": 194,
+    "agree": 95,
+    "pct": 49
+   },
+   "title": {
+    "reigns": 0,
+    "defenses": 0,
+    "holding": false,
+    "king": {
+     "name": "👑 Tristin",
+     "cards": 6
+    }
+   },
+   "archetype": {
+    "id": "hunter",
+    "em": "🐺",
+    "name": "Underdog Hunter",
+    "desc": "Favourites bore you. You went looking for plus money all year and you weren't shy about it."
+   }
+  },
+  "tristin": {
+   "year": "2026",
+   "name": "👑 Tristin",
+   "cards": 17,
+   "picks": 176,
+   "correct": 103,
+   "accuracy": 59,
+   "pts": 120,
+   "rank": 3,
+   "of": 7,
+   "groupAccuracy": 55,
+   "groupPicks": 1052,
+   "bestCard": {
+    "date": "2026-07-18",
+    "evName": "UFC Fight Night: du Plessis vs. Usman",
+    "correct": 10,
+    "total": 12,
+    "pts": 11.5
+   },
+   "perfectCards": 0,
+   "upset": {
+    "pick": "Huge Dog",
+    "opp": "Big Fav",
+    "line": 320,
+    "evName": "UFC 999: Parity vs. Fixture"
+   },
+   "bestStreak": 7,
+   "methodPicks": 132,
+   "methodHits": 27,
+   "goTo": "KO/TKO",
+   "dogs": 22,
+   "priced": 49,
+   "ride": null,
+   "nailed": {
+    "pick": "Cameron Nelson",
+    "opp": "Ding Meng",
+    "method": "Dec",
+    "line": 120,
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song",
+    "rank": 120,
+    "rare": 1,
+    "date": "2026-08-29",
+    "idx": 12,
+    "key": "cameron nelson"
+   },
+   "twin": {
+    "name": "🥋 AB",
+    "shared": 203,
+    "agree": 111,
+    "pct": 55
+   },
+   "nemesis": {
+    "name": "🦍 T",
+    "shared": 201,
+    "agree": 101,
+    "pct": 50
+   },
+   "title": {
+    "reigns": 5,
+    "defenses": 1,
+    "holding": true,
+    "king": {
+     "name": "👑 Tristin",
+     "cards": 6
+    }
+   },
+   "archetype": {
+    "id": "hunter",
+    "em": "🐺",
+    "name": "Underdog Hunter",
+    "desc": "Favourites bore you. You went looking for plus money all year and you weren't shy about it."
+   }
+  },
+  "dereko": {
+   "year": "2026",
+   "name": "🥊 Dereko",
+   "cards": 17,
+   "picks": 175,
+   "correct": 109,
+   "accuracy": 62,
+   "pts": 123.5,
+   "rank": 2,
+   "of": 7,
+   "groupAccuracy": 55,
+   "groupPicks": 1052,
+   "bestCard": {
+    "date": "2026-05-30",
+    "evName": "UFC Fight Night: Song vs. Figueiredo",
+    "correct": 8,
+    "total": 12,
+    "pts": 9.5
+   },
+   "perfectCards": 1,
+   "upset": {
+    "pick": "Alexa Grasso",
+    "opp": "Manon Fiorot",
+    "line": 225,
+    "evName": "UFC Fight Night: Silva vs. Delgado"
+   },
+   "bestStreak": 11,
+   "methodPicks": 129,
+   "methodHits": 25,
+   "goTo": "Dec",
+   "dogs": 18,
+   "priced": 47,
+   "ride": null,
+   "nailed": {
+    "pick": "Fabia Sintes",
+    "opp": "Michael Aljarouj",
+    "method": "Dec",
+    "line": 107,
+    "evName": "UFC Fight Night: Hooker vs. Parnasse",
+    "rank": 107,
+    "rare": 1,
+    "date": "2026-09-05",
+    "idx": 10,
+    "key": "fabia sintes"
+   },
+   "twin": {
+    "name": "👑 Tristin",
+    "shared": 200,
+    "agree": 107,
+    "pct": 54
+   },
+   "nemesis": {
+    "name": "🦍 T",
+    "shared": 198,
+    "agree": 96,
+    "pct": 48
+   },
+   "title": {
+    "reigns": 4,
+    "defenses": 1,
+    "holding": false,
+    "king": {
+     "name": "👑 Tristin",
+     "cards": 6
+    }
+   },
+   "archetype": {
+    "id": "hunter",
+    "em": "🐺",
+    "name": "Underdog Hunter",
+    "desc": "Favourites bore you. You went looking for plus money all year and you weren't shy about it."
+   }
+  },
+  "jpe$o": {
+   "year": "2026",
+   "name": "🦂 JPe$o",
+   "cards": 17,
+   "picks": 177,
+   "correct": 89,
+   "accuracy": 50,
+   "pts": 102,
+   "rank": 5,
+   "of": 7,
+   "groupAccuracy": 55,
+   "groupPicks": 1052,
+   "bestCard": {
+    "date": "2026-08-29",
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song",
+    "correct": 9,
+    "total": 12,
+    "pts": 11.5
+   },
+   "perfectCards": 0,
+   "upset": {
+    "pick": "Song Yadong",
+    "opp": "Umar Nurmagomedov",
+    "line": 455,
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song"
+   },
+   "bestStreak": 5,
+   "methodPicks": 128,
+   "methodHits": 20,
+   "goTo": "Dec",
+   "dogs": 17,
+   "priced": 47,
+   "ride": null,
+   "nailed": {
+    "pick": "Curtis Blaydes",
+    "opp": "Waldo Cortes-Acosta",
+    "method": "Dec",
+    "line": 159,
+    "evName": "UFC Fight Night: Silva vs. Delgado",
+    "rank": 159,
+    "rare": 1,
+    "date": "2026-09-12",
+    "idx": 4,
+    "key": "curtis blaydes"
+   },
+   "twin": {
+    "name": "👑 Tristin",
+    "shared": 199,
+    "agree": 106,
+    "pct": 53
+   },
+   "nemesis": {
+    "name": "🥋 AB",
+    "shared": 194,
+    "agree": 95,
+    "pct": 49
+   },
+   "title": {
+    "reigns": 2,
+    "defenses": 0,
+    "holding": false,
+    "king": {
+     "name": "👑 Tristin",
+     "cards": 6
+    }
+   },
+   "archetype": {
+    "id": "hunter",
+    "em": "🐺",
+    "name": "Underdog Hunter",
+    "desc": "Favourites bore you. You went looking for plus money all year and you weren't shy about it."
+   }
+  },
+  "t": {
+   "year": "2026",
+   "name": "🦍 T",
+   "cards": 17,
+   "picks": 173,
+   "correct": 81,
+   "accuracy": 47,
+   "pts": 93.5,
+   "rank": 6,
+   "of": 7,
+   "groupAccuracy": 55,
+   "groupPicks": 1052,
+   "bestCard": {
+    "date": "2026-08-29",
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song",
+    "correct": 6,
+    "total": 11,
+    "pts": 9
+   },
+   "perfectCards": 0,
+   "upset": {
+    "pick": "Song Yadong",
+    "opp": "Umar Nurmagomedov",
+    "line": 455,
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song"
+   },
+   "bestStreak": 7,
+   "methodPicks": 125,
+   "methodHits": 20,
+   "goTo": "Sub",
+   "dogs": 24,
+   "priced": 42,
+   "ride": null,
+   "nailed": {
+    "pick": "Cameron Nelson",
+    "opp": "Ding Meng",
+    "method": "Dec",
+    "line": 120,
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song",
+    "rank": 120,
+    "rare": 1,
+    "date": "2026-08-29",
+    "idx": 12,
+    "key": "cameron nelson"
+   },
+   "twin": {
+    "name": "🦂 JPe$o",
+    "shared": 197,
+    "agree": 103,
+    "pct": 52
+   },
+   "nemesis": {
+    "name": "😀 Torrey",
+    "shared": 197,
+    "agree": 85,
+    "pct": 43
+   },
+   "title": {
+    "reigns": 2,
+    "defenses": 0,
+    "holding": false,
+    "king": {
+     "name": "👑 Tristin",
+     "cards": 6
+    }
+   },
+   "archetype": {
+    "id": "hunter",
+    "em": "🐺",
+    "name": "Underdog Hunter",
+    "desc": "Favourites bore you. You went looking for plus money all year and you weren't shy about it."
+   }
+  },
+  "torrey": {
+   "year": "2026",
+   "name": "😀 Torrey",
+   "cards": 17,
+   "picks": 174,
+   "correct": 106,
+   "accuracy": 61,
+   "pts": 125,
+   "rank": 1,
+   "of": 7,
+   "groupAccuracy": 55,
+   "groupPicks": 1052,
+   "bestCard": {
+    "date": "2026-09-05",
+    "evName": "UFC Fight Night: Hooker vs. Parnasse",
+    "correct": 10,
+    "total": 14,
+    "pts": 12
+   },
+   "perfectCards": 0,
+   "upset": {
+    "pick": "Song Yadong",
+    "opp": "Umar Nurmagomedov",
+    "line": 455,
+    "evName": "UFC Fight Night: Nurmagomedov vs. Song"
+   },
+   "bestStreak": 8,
+   "methodPicks": 124,
+   "methodHits": 30,
+   "goTo": "KO/TKO",
+   "dogs": 19,
+   "priced": 45,
+   "ride": null,
+   "nailed": {
+    "pick": "Pavel Andrusca",
+    "opp": "Nathaniel Wood",
+    "method": "Dec",
+    "line": 242,
+    "evName": "UFC Fight Night: Hooker vs. Parnasse",
+    "rank": 242,
+    "rare": 1,
+    "date": "2026-09-05",
+    "idx": 9,
+    "key": "pavel andrusca"
+   },
+   "twin": {
+    "name": "🥊 Dereko",
+    "shared": 192,
+    "agree": 103,
+    "pct": 54
+   },
+   "nemesis": {
+    "name": "🦍 T",
+    "shared": 197,
+    "agree": 85,
+    "pct": 43
+   },
+   "title": {
+    "reigns": 1,
+    "defenses": 1,
+    "holding": false,
+    "king": {
+     "name": "👑 Tristin",
+     "cards": 6
+    }
+   },
+   "archetype": {
+    "id": "hunter",
+    "em": "🐺",
+    "name": "Underdog Hunter",
+    "desc": "Favourites bore you. You went looking for plus money all year and you weren't shy about it."
+   }
+  }
+ }
+}

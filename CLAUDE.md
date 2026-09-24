@@ -44,6 +44,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:fightbot` | FightBot's MCP stream corrupted by stray stdout, a tool crashing the session, or its standings drifting from the board |
 | `npm run check:brief` | the Friday Fight Week Brief push firing at the wrong time, twice, after the bell, off the Lab's numbers, or not at all |
 | `npm run check:iq` | the AI Fight IQ write-up stating a number it wasn't given, drifting onto Grok, repeating one voice, or escaping its daily cap |
+| `npm run check:parity` | any score moving during the engine migration: board, main-card board, per-card, Belt lineage, recaps, Year Wrapped |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -553,6 +554,18 @@ day in the Lab (`IQ_WRITEUPS_PER_DAY`), `IQ_DAILY_CAP` per viewer per day on the
 server (in-memory, best-effort — a cold start resets it), and the existing
 per-IP / global rate limits; inputs are capped (`MAX_IQ_LINES`, `MAX_IQ_LINE`).
 It runs on `MODEL`, like the other analysis actions. `check:iq` holds all of it.
+
+## The engine migration moves code, never numbers
+
+`index.html` is being moved onto the Pick Engine in stages (`docs/MIGRATION.md`).
+`check:parity` pins every scoring output to a golden taken before it started,
+on frozen data (`tests/fixtures/parity-data.json`) and seeded synthetic picks:
+real picks never go in the repo. **Never regenerate the golden
+(`--update`) to make a migration stage pass**; only for an intended scoring
+change, called out in the PR. Nothing in the migration merges on a card day.
+If a stage goes wrong: `docs/ROLLBACK.md` (known-good branch
+`backup/pre-engine-migration-2026-09-24`, picks snapshot
+`picks_backup_2026_09_24`).
 
 ## Other conventions
 
