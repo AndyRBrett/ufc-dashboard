@@ -97,6 +97,15 @@ Feed promotions score on `simpleRules()`: 1 for the winner, +0.5 for the
 method. Pass your own rules object to `createEngine({ rules: { pfl: … } })` to
 change that.
 
+**Where the feed comes from:** `extra.py`, in `update.yml` after the intel
+step. It reads PFL's events list and each event's article (or its section of
+the year page) from Wikipedia with `scrape.py`'s own parsers, keeps only cards
+with at least two real bouts, and never drops a card on a failed fetch. It
+starts in **shadow mode**: output goes to `events-extra.candidate.json` and a
+report to `extra-state.json`, and `events-extra.json` is untouched until
+`EXTRA_PUBLISH=1` is set on that step after a real run has been checked
+against the actual card. `tests/test_extra.py` holds it.
+
 Picks on feed promotions are **not** wired into the app. The Hub is read-only
 until a promotion has a real, maintained source. Hand-curated cards go stale,
 and nothing here should state a card that isn't happening.
