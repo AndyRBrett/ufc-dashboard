@@ -132,8 +132,17 @@ const both = PE.createEngine({ adapters: [PE.ufcAdapter(env), feed], rules: { uf
 check("feed events are namespaced and findable per promotion", both.findBout("2026-10-10", "Q1", "P1", "pfl") && !both.findBout("2026-10-10", "Q1", "P1", "ufc"));
 const pflPick = both.resolvePicks([{ user_id: "x", event_date: "2026-10-10", f1: "P1", f2: "Q1", pick: "P1", method: "KO/TKO" }], "pfl")[0];
 check("feed picks score on the simple rules (1 + 0.5 method)", pflPick.points === 1.5);
-const repo = JSON.parse(readFileSync(join(ROOT, "events-extra.json"), "utf8"));
-check("committed events-extra.json validates with no problems", PE.validateFeed(repo).problems.length === 0);
+// The committed feed is LIVE data (extra.py publishes to it every few hours),
+// so this is advisory, like check:intel's data.js cross-check: a failure here
+// runs in the deploy gate and would block every publish, live UFC results
+// included, over a data gap the app already handles (validateFeed drops a bad
+// card at render). It reports; the fixture assertions above hold the contract.
+try {
+  const repo = JSON.parse(readFileSync(join(ROOT, "events-extra.json"), "utf8"));
+  const probs = PE.validateFeed(repo).problems;
+  if (probs.length) console.log("  ⚠ advisory: committed events-extra.json has cards the app will drop: " + probs.join("; "));
+  else console.log("  ✓ (advisory) committed events-extra.json validates cleanly");
+} catch (e) { console.log("  ⚠ advisory: committed events-extra.json unreadable: " + e.message); }
 
 // 3. Odds history: orientation, surname-only names, CLV sign.
 const series = { events: [{ event_id: "2026-09-27:two", concluded: true, bouts: [{
