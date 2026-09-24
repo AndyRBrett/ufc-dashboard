@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T02:08:01Z",
+  "generated_at": "2026-09-24T03:13:34Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -10113,7 +10113,7 @@
           "f1": "Brady Hiestand",
           "f2": "Rinya Nakamura",
           "lbl": "Main Card",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10169,6 +10169,11 @@
               "at": "2026-09-23T19:38:39Z",
               "f1_odds": 278,
               "f2_odds": -357
+            },
+            {
+              "at": "2026-09-24T03:13:33Z",
+              "f1_odds": 280,
+              "f2_odds": -358
             }
           ],
           "open": {
@@ -10183,7 +10188,7 @@
           "f1": "Rodolfo Bellato",
           "f2": "Christian Edwards",
           "lbl": "Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10254,6 +10259,11 @@
               "at": "2026-09-23T19:38:39Z",
               "f1_odds": -179,
               "f2_odds": 148
+            },
+            {
+              "at": "2026-09-24T03:13:33Z",
+              "f1_odds": -180,
+              "f2_odds": 149
             }
           ],
           "open": {
@@ -10688,7 +10698,7 @@
           "f1": "Mickey Gall",
           "f2": "Sedriques Dumas",
           "lbl": "Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -10709,6 +10719,11 @@
               "at": "2026-09-24T01:04:35Z",
               "f1_odds": -151,
               "f2_odds": 125
+            },
+            {
+              "at": "2026-09-24T03:13:33Z",
+              "f1_odds": -149,
+              "f2_odds": 124
             }
           ],
           "open": {
@@ -15001,7 +15016,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rinya Nakamura",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": 265,
         "close": null,
         "clv": null
@@ -15012,7 +15027,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Brady Hiestand",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -325,
         "close": null,
         "clv": null
@@ -15023,7 +15038,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Christian Edwards",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -160,
         "close": null,
         "clv": null
@@ -15034,7 +15049,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rodolfo Bellato",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 136,
         "close": null,
         "clv": null
@@ -15177,7 +15192,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Sedriques Dumas",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -164,
         "close": null,
         "clv": null
@@ -15188,7 +15203,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Mickey Gall",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 136,
         "close": null,
         "clv": null
