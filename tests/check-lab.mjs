@@ -128,6 +128,16 @@ check("CLV is positive when the price moved toward the pick after it was made", 
 // 4. Fight IQ: no claims under the sample floor, no leaking the result.
 const iq = FL.fightIQ(res.filter((p) => p.player === "u-Andy"), { odds: idx, stats: {}, group: res });
 check("Fight IQ calls a thin history Casual", iq.archetype.key === "casual");
+const andyBoard = board.find((u) => u.user_id === "u-Andy");
+check("Fight IQ points include the FOTN bonus and equal the board total", andyBoard.fotn === 1 && iq.points === K.userPts(andyBoard));
+// Two locks on one card: the main event (order 0) lands after the prelim-side
+// bout (order 1), so a hit main event ends a skid a missed undercard lock started.
+const skid = FL.fightIQ([
+  { player: "p", date: C2, decided: true, correct: true, locked: true, side: 0, points: 2, bout: { order: 0, id: "m", competitors: [{ name: "C1" }, { name: "D1" }], result: { winner: "C1" } } },
+  { player: "p", date: C2, decided: true, correct: false, locked: true, side: 0, points: -1, bout: { order: 1, id: "u", competitors: [{ name: "C2" }, { name: "D2" }], result: { winner: "D2" } } },
+  { player: "p", date: C1, decided: true, correct: false, locked: true, side: 0, points: -1, bout: { order: 0, id: "o", competitors: [{ name: "A1" }, { name: "B1" }], result: { winner: "B1" } } },
+], {});
+check("lock skid orders same-card locks by when the result landed", skid.lockSkid === 0);
 check("Fight IQ makes no split insight under MIN_SAMPLE", iq.insights.every((i) => i.kind === "clv" || i.kind === "locks" || i.kind === "rival"));
 const st = { form: [{ r: "W" }, { r: "W" }, { r: "W" }, { r: "L" }], opp: ["ThisOpp", "O2", "O3", "O4"] };
 check("win streak going in excludes the bout's own result", FL.streakBefore(st, "ThisOpp") === false);
@@ -141,6 +151,9 @@ const bt = FL.backtest({ stats: S, rankings: {}, archive: ARCHIVE, kernel: K });
 check("backtest excludes a bout scored with post-fight stats", bt.n === 0 && bt.excluded === 1);
 S.Z1.fetched_at = S.Y1.fetched_at = "2026-06-01T00:00:00Z";
 check("backtest scores a bout with pre-fight stats", FL.backtest({ stats: S, rankings: {}, archive: ARCHIVE, kernel: K }).n === 1);
+const noRk = FL.backtest({ stats: S, rankings: {}, archive: ARCHIVE, kernel: K });
+const withRk = FL.backtest({ stats: S, rankings: { Y1: 1 }, archive: ARCHIVE, kernel: K });
+check("backtest ignores today's rankings (they can reflect the result)", noRk.brier === withRk.brier);
 
 // 6. Watch Party ticker replays the card in result order.
 const card2 = eng.events("ufc").find((e) => e.date === C2);

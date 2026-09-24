@@ -27,7 +27,6 @@
     "check:wrapped": "node tests/check-wrapped.mjs",
     "check:locks": "node tests/check-locks.mjs",
     "check:lab": "node tests/check-lab.mjs",
-    "fightbot": "node fightbot/server.mjs",
     "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:provider && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew && npm run check:prefs && npm run check:picks && npm run check:kick && npm run check:lock && npm run check:recap && npm run check:wrapped && npm run check:locks && npm run check:lab"
   },
   "devDependencies": {

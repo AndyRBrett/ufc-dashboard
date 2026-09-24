@@ -122,6 +122,15 @@
     var decided = mine.filter(function (p) { return p.decided && p.side !== null; });
     var all = rec(decided);
     var pts = 0; mine.forEach(function (p) { pts += p.points || 0; });
+    // Card bonus (Fight of the Night), once per card, the way _lbScoreUsers
+    // adds it: the player's bonus_pick for that date against the event's fotn.
+    // Rows come in the board's order and the last one seen for a date wins,
+    // exactly as the board's bonusPicks[date] assignment does.
+    var bonusBy = {}, evBy = {};
+    mine.forEach(function (p) { if (p.raw && p.raw.bonus_pick) { bonusBy[p.date] = p.raw.bonus_pick; if (p.event) evBy[p.date] = p.event; } });
+    var fotn = 0;
+    Object.keys(bonusBy).forEach(function (d) { var ev = evBy[d]; if (ev && ev.fotn && bonusBy[d] === ev.fotn) fotn++; });
+    pts += fotn;
     var splits = [];
     function split(kind, key, list) { var r = rec(list); if (r.n) splits.push({ kind: kind, key: key, rec: r }); }
     function groupBy(fn) {
@@ -187,7 +196,13 @@
 
     // Worst active lock skid.
     var lockSkid = 0;
-    locks.slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; }).some(function (p) { if (p.correct) return true; lockSkid++; return false; });
+    // Newest first: by card date, then — for two locks on one card — by when
+    // the result landed. Results arrive prelims first, main event last, so a
+    // lower bout order is the later result.
+    locks.slice().sort(function (a, b) {
+      if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+      return a.bout.order - b.bout.order;
+    }).some(function (p) { if (p.correct) return true; lockSkid++; return false; });
 
     // Insights: splits that differ from the player's own baseline, by enough
     // and on enough picks to be worth a sentence.
@@ -217,7 +232,7 @@
       grappler: decided.length ? decided.filter(function (p) { return styleOf(stats[p.bout.competitors[p.side].name]) === "grappler"; }).length / decided.length : 0
     };
     return {
-      record: all, points: Math.round(pts * 10) / 10, picks: mine.length, splits: splits,
+      record: all, points: Math.round(pts * 10) / 10, fotn: fotn, picks: mine.length, splits: splits,
       methods: { called: meth.length, hit: methHit, pct: pct(methHit, meth.length) },
       locks: rec(locks), lockSkid: lockSkid, clv: { avg: avgClv, n: clvs.length },
       rivals: rivalry, shares: shares, insights: insights.slice(0, 8),
@@ -461,7 +476,8 @@
         // hit rate is the model reading the answer back (it scored 87% that way).
         var t = Date.parse(date + "T00:00:00Z");
         if (!(Date.parse(S[f.f1].fetched_at) < t && Date.parse(S[f.f2].fetched_at) < t)) { leaked++; return; }
-        var m = k.modelProb(f.f1, f.f2, S, ctx.rankings || {}, prior, new Date(t));
+        // No rankings: today's rankings can already reflect this very result.
+        var m = k.modelProb(f.f1, f.f2, S, {}, prior, new Date(t));
         if (!m || m.p1 === 0.5) return;
         var fav = m.p1 > 0.5 ? f.f1 : f.f2;
         var h = ctx.odds && ctx.odds.lookup(date, f.f1, f.f2), line = h && (h.close || h.current);
