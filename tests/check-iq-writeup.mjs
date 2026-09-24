@@ -73,6 +73,10 @@ r = await ask();
 check("a write-up that invents twice fails cleanly instead of shipping the number", r.status === 502 && !r.json.breakdown);
 check("numbersInvented: stated figures pass, strays are caught", M.numbersInvented("You're 111-58 at 65.7% with 142.5 points.", user).length === 0 &&
   JSON.stringify(M.numbersInvented("You hit 20% and 7 of 9.", user)) === JSON.stringify(["20", "9"]));
+check("numbersInvented: a flipped sign is a different number", JSON.stringify(M.numbersInvented("You gained +0.4 points.", user)) === JSON.stringify(["0.4"]) &&
+  M.numbersInvented("The market moved -0.4 against you.", user).length === 0);
+check("numbersInvented: a record's hyphen is not a minus sign", M.numbersInvented("A 111-58 record.", user).length === 0);
+check("the prompt asks for numbers exactly as given, sign included", /sign included/.test(sys) && /negative = the market moved against/.test(user));
 check("numbersInvented: small counting numbers are ordinary phrasing", M.numbersInvented("Your top 3 and round 1.", user).length === 0);
 
 // 4. The daily cap.

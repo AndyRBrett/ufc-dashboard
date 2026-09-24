@@ -98,12 +98,13 @@ export function briefUtc(cardDate: string): number | null {
   return phaseUtc(fri, `${BRIEF_HOUR_ET}:00`);
 }
 // Due now? Inside the window, and before the card's first segment starts —
-// a Friday card whose prelims start at 18:00 gets no "brief" after its bell.
+// judged at the moment of sending, not the scheduled 19:00: a late scheduler
+// run inside the window must still never announce a card that has begun.
 export function briefDue(ev: Ev, now: number): boolean {
   const t = briefUtc(ev.date);
   if (t === null || now < t || now >= t + BRIEF_WINDOW_MS) return false;
   const first = phaseUtc(ev.date, ev.prelimTime) ?? phaseUtc(ev.date, ev.time);
-  return first === null || t < first;
+  return first === null || now < first;
 }
 
 function to12(t: string): string {

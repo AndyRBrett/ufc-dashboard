@@ -706,7 +706,7 @@ function iqFactsText(q: IqFacts): string {
   ];
   if (q.locks) lines.push(`Locks: ${q.locks}`);
   if (q.methodPct != null) lines.push(`Method calls correct: ${q.methodPct}%`);
-  if (q.clv != null) lines.push(`Average line move after their pick: ${q.clv} points`);
+  if (q.clv != null) lines.push(`Average line move after their pick: ${q.clv} points (negative = the market moved against their picks)`);
   q.insights.forEach((t) => lines.push(`- ${t}`));
   (q.rivals ?? []).forEach((t) => lines.push(`- ${t}`));
   return lines.join("\n");
@@ -714,7 +714,7 @@ function iqFactsText(q: IqFacts): string {
 export function buildIqWriteup(q: IqFacts, tone: string): { system: string; user: string } {
   return {
     system: `You write short, funny scouting reports about one member of a group of friends who pick UFC fights together, in the voice of ${tone}.
-FACTS ARE STRICT: use only the facts given. Never state a number, record, percentage or name that isn't in them — rephrase in words if you need to. Don't predict future results.
+FACTS ARE STRICT: use only the facts given. Never state a number, record, percentage or name that isn't in them — rephrase in words if you need to. Write any number exactly as given, sign included. Don't predict future results.
 Write 3 to 5 sentences, under 90 words, plain text, no headings or lists. Address the player as "you".`,
     user: `Facts about ${q.player}'s picking:\n${iqFactsText(q)}\n\nWrite the scouting report.`,
   };
@@ -722,10 +722,15 @@ Write 3 to 5 sentences, under 90 words, plain text, no headings or lists. Addres
 // Every figure in the write-up must appear in the facts. Small counting words
 // ("two locks") are words, not digits, and pass; a bare 1–3 is allowed for
 // ordinary phrasing ("round 1", "top 3").
+//
+// Signs count: a CLV of -0.4 restated as +0.4 is the opposite claim, so a
+// leading +/−/- is part of the number — but only where it can be a sign, not
+// between two digits, so a record like "111-58" stays two positive numbers.
+const NUM_RE = /(?<![\d.])[+\-\u2212]?\d[\d,]*(?:\.\d+)?/g;
 export function numbersInvented(text: string, facts: string): string[] {
-  const norm = (n: string) => String(Number(n.replace(/,/g, "")));
-  const known = new Set((facts.match(/\d[\d,]*(?:\.\d+)?/g) ?? []).map(norm));
-  return (text.match(/\d[\d,]*(?:\.\d+)?/g) ?? []).map(norm)
+  const norm = (n: string) => String(Number(n.replace(/,/g, "").replace("\u2212", "-")));
+  const known = new Set((facts.match(NUM_RE) ?? []).map(norm));
+  return (text.match(NUM_RE) ?? []).map(norm)
     .filter((n) => !known.has(n) && !(Number(n) >= 1 && Number(n) <= 3 && Number.isInteger(Number(n))));
 }
 

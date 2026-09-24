@@ -116,6 +116,9 @@ missing = new Set();
 const ET = (d, t) => ({ name: "UFC X", date: d, time: t, prelimTime: "" });
 check("a Saturday card's brief is the Friday before at 19:00 ET", new RealDate(mod.briefUtc("2026-09-26")).toISOString() === "2026-09-25T23:00:00.000Z");
 check("a Friday card whose first bell is before 19:00 gets no brief", mod.briefDue({ name: "UFC F", date: "2026-09-25", time: "18:00", prelimTime: "16:00" }, RealDate.parse("2026-09-25T23:05:00Z")) === false);
+check("a late run after a Friday card's first bell sends nothing, even inside the window",
+  mod.briefDue({ name: "UFC F", date: "2026-09-25", time: "22:00", prelimTime: "21:00" }, RealDate.parse("2026-09-26T02:00:00Z")) === false &&
+  mod.briefDue({ name: "UFC F", date: "2026-09-25", time: "22:00", prelimTime: "21:00" }, RealDate.parse("2026-09-26T00:30:00Z")) === true);
 check("a Friday card starting after 19:00 still gets its brief that evening", mod.briefDue(ET("2026-09-25", "21:00"), RealDate.parse("2026-09-25T23:05:00Z")) === true);
 
 // 4. send-push accepts it and keeps the link — and still refuses anything else.
