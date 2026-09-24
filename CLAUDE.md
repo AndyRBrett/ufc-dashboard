@@ -40,6 +40,8 @@ runs the full gate set (all fast, all local):
 | `npm run check:recap` | the post-card recap crediting a title, rank or score the board and belt don't |
 | `npm run check:wrapped` | Year Wrapped reporting a rank, score, upset or reign the year-scoped board and belt don't |
 | `npm run check:locks` | a 🔒 lock scoring differently on the board, belt or challenges, legacy stars scoring, or a third lock on a card |
+| `npm run check:lab`   | the Fight Lab scoring differently from the board, reading a result it claims to predict, or failing to boot |
+| `npm run check:fightbot` | FightBot's MCP stream corrupted by stray stdout, a tool crashing the session, or its standings drifting from the board |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -512,6 +514,17 @@ The trigger **clamps** a third lock to 0 rather than rejecting the row —
 `syncPick` upserts pick, method and lock together, so a rejection would drop
 the pick over a lock that was never going to count. Its date must match
 `LOCKS_START`. `npm run check:locks` holds all of this.
+
+## Fight Lab, the pick engine and FightBot are readers — keep them that way
+
+`lab.html`, `lab/*.js` and `fightbot/` never write a pick, a lock or a pref. They
+score through `PickEngine.loadKernel`, which lifts the board's own code out of
+`index.html` by its `// name:start … :end` markers, so **renaming one of those
+markers or a lifted function (`_lbScoreUsers`, `intelItemsFor`, …) breaks the
+Lab and FightBot** — `check:lab` / `check:fightbot` will say so. Never paste a
+copy of scoring into them to "fix" that; the whole point is that they can't
+drift from the board. Architecture, the curated-feed format for other
+promotions, and the analytics' leak guards: `docs/PICK-ENGINE.md`.
 
 ## Other conventions
 
