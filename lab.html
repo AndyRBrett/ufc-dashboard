@@ -526,7 +526,7 @@ function viewParty(root){
   if(!feed.length)ul.appendChild(h("li",null,h("span",{class:"muted",text:"Nobody picked this card."})));
   feed.forEach(function(x){ul.appendChild(h("li",null,h("span",{class:"ico",text:x.icon}),h("span",{text:x.text})));});
   root.appendChild(card(ev.name,h("div",{class:"row muted small",style:"margin:-4px 0 10px"},live?h("span",{class:"pill",text:"live"}):null,h("span",{text:fmtDate(ev.date)+(live?" · refreshes every minute":" · replay, newest first")})),ul));
-  var board=L.kernel._lbScoreUsers(L.boardRows.filter(function(r){return r.event_date===ev.date;}));
+  var board=L.kernel.boardStandings(L.boardRows,{date:ev.date});
   if(board.length){
     var t=h("table",null,h("tr",null,h("th",{text:"#"}),h("th",{text:"Player"}),h("th",{class:"num",text:"Card"}),h("th",{class:"num",text:"Pts"})));
     board.forEach(function(u,i){t.appendChild(h("tr",null,h("td",{text:String(i+1)}),h("td",{text:u.nickname}),h("td",{class:"num",text:u.correct+"/"+u.total}),h("td",{class:"num",text:String(L.kernel.userPts(u))})));});

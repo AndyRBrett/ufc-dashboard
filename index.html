@@ -1805,7 +1805,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <script src="data.js"></script>
 <!-- The app's scoring (scoring.js, engine migration stage 3). Required, like
      data.js: the self-heal below covers it failing to load too. -->
-<script src="scoring.js?v=2026-09-24-1"></script>
+<script src="scoring.js?v=2026-09-24-2"></script>
 <!-- The Pick Engine (engine migration, docs/MIGRATION.md). Optional by design:
      if it fails to load, _boutLookup falls back to the app's own loops and
      every score comes out the same (check:parity runs both paths). -->
@@ -1822,7 +1822,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 // …and it must be the rulebook THIS page shipped with: a previous release's
 // scoring.js (an old cached copy, a network drop mid-upgrade) is treated as
 // missing rather than silently scoring with old rules.
-var SCORING_EXPECT="2026-09-24-1";
+var SCORING_EXPECT="2026-09-24-2";
 function _scoringOk(){return typeof pickPts==="function"&&typeof _lbScoreUsers==="function"&&typeof SCORING_VERSION!=="undefined"&&SCORING_VERSION===SCORING_EXPECT;}
 if(typeof EVENTS==="undefined"||!_scoringOk()){
   (function(){
@@ -7069,8 +7069,8 @@ function openTrashTalk(){
   var pool=_lbSorted||[];
   if(lbMode==="current"){
     var cutoff=new Date(Date.now()-TRASH_ACTIVE_DAYS*DAY_MS).toISOString().slice(0,10);
-    var evAll=_lbCtxEvDate?_lbScoreUsers(_lbRows,function(p){return p.event_date===_lbCtxEvDate;}):[];
-    pool=_trashPool(pool,evAll,_lbScoreUsers(_lbRows,null),cutoff);
+    var evAll=_lbCtxEvDate?boardStandings(_lbRows,{date:_lbCtxEvDate}):[];
+    pool=_trashPool(pool,evAll,boardStandings(_lbRows),cutoff);
   }
   var me=null,myRank=0,opponents=[];
   pool.forEach(function(u,i){
@@ -7343,91 +7343,7 @@ function generateTrashTalk(){
 // caps the swing so one lucky longshot can't run away with the card.
 // pick-match (pickPts, locks, dog bonus, _boutLookup, _findFightResult, _eventFinished): moved to scoring.js
 
-// The Belt 🏆 — a lineal king-of-the-hill title replayed deterministically from
-// everyone's pick history, so every phone computes the same champion. Rules:
-// the belt is decided per finished event; the champion must defend on every
-// card (skipping scores 0) and RETAINS on ties; a challenger takes the belt
-// only by strictly outscoring the champion. When the belt is vacant or the
-// champ is beaten by challengers tied on points, cumulative accuracy (then
-// total picks) breaks the tie — a dead heat leaves the belt vacant.
-function computeBeltLineage(rows){
-  var evScores={};   // date -> base name -> {name,pts,correct,total}
-  rows.forEach(function(p){
-    var base=_lbBaseName(p.nickname);
-    if(!base)return;
-    var res=_findFightResult(p.event_date,p.f1,p.f2);
-    if(!res)return;
-    var d=evScores[p.event_date]||(evScores[p.event_date]={});
-    var u=d[base]||(d[base]={name:p.nickname,pts:0,correct:0,total:0});
-    u.total++;
-    if(nmEq(res.winner,p.pick))u.correct++;
-    u.pts+=pickPts(p,res);
-  });
-  // Finished events, oldest first
-  var evNames={},dates=[];
-  EVENTS.forEach(function(ev){
-    if(_eventFinished(ev.date)){dates.push(ev.date);evNames[ev.date]=ev.name;}
-  });
-  // The archive is re-snapshotted on every scrape while an event is still in
-  // EVENTS, so a card that is HALFWAY THROUGH already has an archive entry
-  // holding only the bouts decided so far. The EVENTS loop above screens those
-  // out with _eventFinished; this loop had no such check and added them anyway,
-  // which crowned a champion off a partial card — the belt changed hands on
-  // Gamrot vs. Salkilld while the main event and co-main were still to come.
-  // Only fall back to the archive for dates EVENTS no longer carries at all.
-  var liveDates={};
-  EVENTS.forEach(function(ev){if(!_eventFinished(ev.date))liveDates[ev.date]=true;});
-  Object.keys(RESULTS_ARCHIVE).forEach(function(d){
-    if(!evNames[d]&&!liveDates[d]){dates.push(d);evNames[d]=RESULTS_ARCHIVE[d].name;}
-  });
-  dates.sort();
-  var holder=null,reigns=[],cum={};   // cum accuracy per base for tiebreaks
-  dates.forEach(function(date){
-    var scores=evScores[date]||{};
-    var entries=Object.keys(scores).map(function(b){var s=scores[b];return{base:b,name:s.name,pts:s.pts,correct:s.correct,total:s.total};});
-    entries.forEach(function(e){var c=cum[e.base]||(cum[e.base]={correct:0,total:0});c.correct+=e.correct;c.total+=e.total;});
-    entries.sort(function(a,b){return b.pts-a.pts;});
-    if(!entries.length||entries[0].pts<=0)return;          // nobody scored — no contest
-    var top=entries[0],tiedTop=entries.filter(function(e){return e.pts===top.pts;});
-    var champPts=holder&&scores[holder.base]?scores[holder.base].pts:0;
-    if(holder&&champPts>=top.pts){                          // ties go to the champion
-      reigns[reigns.length-1].defenses++;
-      reigns[reigns.length-1].defDates.push(date);   // Year Wrapped counts defences by when they happened
-      return;
-    }
-    // How the belt was won, recorded so the title history can SAY so. A reign
-    // that started on a tiebreak is indistinguishable from an outright win
-    // otherwise, which makes a legitimate result look arbitrary to whoever
-    // didn't get it.
-    var wonVia=null;
-    if(tiedTop.length>1){
-      tiedTop.sort(function(a,b){
-        var ca=cum[a.base],cb=cum[b.base];
-        var aa=ca.total?ca.correct/ca.total:0,ab=cb.total?cb.correct/cb.total:0;
-        if(aa!==ab)return ab-aa;
-        return cb.total-ca.total;
-      });
-      var c0=cum[tiedTop[0].base],c1=cum[tiedTop[1].base];
-      var a0=c0.total?c0.correct/c0.total:0,a1=c1.total?c1.correct/c1.total:0;
-      if(a0===a1&&c0.total===c1.total){
-        if(holder){reigns[reigns.length-1].end={evName:evNames[date],vacated:true};holder=null;}
-        return;                                             // dead heat — belt goes vacant
-      }
-      wonVia=(a0!==a1)
-        ? {tied:tiedTop.length,by:"accuracy",val:Math.round(a0*100)+"%"}
-        : {tied:tiedTop.length,by:"picks",val:c0.total+" picks"};
-    }
-    var wn=tiedTop[0];
-    if(holder)reigns[reigns.length-1].end={evName:evNames[date],takenBy:wn.name};
-    holder={base:wn.base,name:wn.name};
-    reigns.push({base:wn.base,name:wn.name,evName:evNames[date],date:date,defenses:0,end:null,
-                 pts:wn.pts,via:wonVia,defDates:[]});
-  });
-  if(!reigns.length)return null;
-  var cur=reigns[reigns.length-1];
-  return {holderBase:holder?holder.base:null,holderName:holder?holder.name:null,
-          defenses:holder?cur.defenses:0,reigns:reigns};
-}
+// computeBeltLineage — the Belt's lineage: moved to scoring.js (stage 4)
 
 // card-recap:start
 // Post-card recap: once a card is finished, each player sees how their night
@@ -7489,7 +7405,7 @@ function computeCardRecap(rows,date,myBase){
   var ev=_recapEvent(date);
   if(!ev)return null;
   var ordered=_recapBoardOrder(rows);
-  var card=_lbScoreUsers(ordered,function(p){return p.event_date===date;});
+  var card=boardStandings(ordered,{date:date});
   if(!card.length)return null;
   var cardRank=_recapRanks(card);
   var standings=card.map(function(u){
@@ -7516,8 +7432,8 @@ function computeCardRecap(rows,date,myBase){
   });
   var me=null,mine=myBase?standings.filter(function(u){return u.base===myBase;})[0]:null;
   if(mine){
-    var after=_recapRanks(_lbScoreUsers(ordered,function(p){return p.event_date<=date;}));
-    var before=_recapRanks(_lbScoreUsers(ordered,function(p){return p.event_date<date;}));
+    var after=_recapRanks(boardStandings(ordered,{through:date}));
+    var before=_recapRanks(boardStandings(ordered,{before:date}));
     me={pts:mine.pts,correct:mine.correct,total:mine.total,perfect:mine.perfect,upset:mine.upset,
         cardRank:mine.rank,of:standings.length,
         rankBefore:before[myBase]||null,rankAfter:after[myBase]||null};
@@ -7536,7 +7452,7 @@ function computeCardRecap(rows,date,myBase){
 // What happened to the belt on this card, replayed with only the picks up to
 // and including it — so an old card's recap still says who won THAT night.
 function recapTitle(rows,date,evName){
-  var belt=computeBeltLineage((rows||[]).filter(function(p){return p.event_date<=date;}));
+  var belt=computeBeltLineage(rows||[],{through:date});
   if(!belt||!belt.reigns.length)return {kind:"none"};
   var rs=belt.reigns,last=rs[rs.length-1];
   if(last.date===date){
@@ -7772,7 +7688,7 @@ function _wrArchetype(s){
 function computeYearWrapped(rows,year,myBase){
   if(!year||!myBase)return null;
   var ordered=_recapBoardOrder(rows);
-  var users=_lbScoreUsers(ordered,function(p){return _wrYearOf(p.event_date)===year;});
+  var users=boardStandings(ordered,{year:year});
   var me=users.filter(function(u){return _lbBaseName(u.nickname)===myBase;})[0];
   if(!me)return null;
   var resolved=me.picks.filter(function(p){return p.result!==null;});
@@ -8263,13 +8179,10 @@ function loadLeaderboard(isLive){
       body.innerHTML='<div class="lb-empty">No active event right now.<br>Switch to All-Time to see standings.</div>';
       return;
     }
-    var sorted=_lbScoreUsers(rows,function(p){
-      if(lbMode==="current"&&p.event_date!==nextEv.date)return false;
-      // Scope filter runs before the user object exists, so someone whose only
-      // picks are prelims drops off the main-card board entirely rather than
-      // appearing on it with a zero.
-      return _pickInScope(p);
-    });
+    // Scope filter runs before the user object exists, so someone whose only
+    // picks are prelims drops off the main-card board entirely rather than
+    // appearing on it with a zero.
+    var sorted=boardStandings(rows,{date:lbMode==="current"?nextEv.date:null,mainCard:lbScope==="main"});
     // Index picks per fight (from the DEDUPED users) for Fight Night LIVE fans, and publish
     // _lbSorted now so the live view has data even when a panel early-return fires below.
     _fnPicksByFight={};

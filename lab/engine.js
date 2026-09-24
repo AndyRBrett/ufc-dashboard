@@ -35,7 +35,7 @@
     "nmKey", "nmEq", "nmBout", "splitNick",
     "dogPtsFor", "dogPtsForPick", "userPts", "locksOn", "isLockPick", "lockPtsFor",
     "pickPts", "scoreMethod", "_findFightResult", "_isMainCardPick", "_eventFinished",
-    "_lbScoreUsers", "isMainCardBout", "isEarlyPrelimBout", "intelKey", "intelItemsFor",
+    "_lbScoreUsers", "boardStandings", "standingsKeep", "computeBeltLineage", "isMainCardBout", "isEarlyPrelimBout", "intelKey", "intelItemsFor",
     "modelProb", "modelImplied", "modelDeVig", "modelEdge",
     "DOG_TIERS", "LOCKS_PER_CARD", "LOCK_HIT", "LOCK_MISS", "LOCKS_START"
   ];

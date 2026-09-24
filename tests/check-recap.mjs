@@ -65,6 +65,7 @@ vm.runInContext(block("pick-match"), ctx);
 vm.runInContext(fn("_eventFinished"), ctx);
 vm.runInContext(fn("computeBeltLineage"), ctx);
 vm.runInContext(fn("_lbScoreUsers"), ctx);
+vm.runInContext(fn("standingsKeep") + fn("boardStandings"), ctx);
 vm.runInContext(block("card-recap"), ctx);
 
 const bout = (a, b, winner, odds) => ({
@@ -237,11 +238,14 @@ setEvents([card1, card2]);
 // --- one scorer, not two ---------------------------------------------------
 {
   const lb = fn("loadLeaderboard");
-  check("the leaderboard scores through _lbScoreUsers (no private copy to drift)",
-    /_lbScoreUsers\(rows,/.test(lb) && !/var users=\{\};/.test(lb));
+  check("the leaderboard scores through boardStandings() (no private copy to drift)",
+    /boardStandings\(rows,/.test(lb) && !/var users=\{\};/.test(lb));
   const cr = fn("computeCardRecap");
-  check("the recap's standings and ranks come from _lbScoreUsers",
-    (cr.match(/_lbScoreUsers\(/g) || []).length === 3);
+  check("the recap's standings and ranks come from boardStandings()",
+    (cr.match(/boardStandings\(/g) || []).length === 3 && !/_lbScoreUsers\(/.test(cr));
+  const sd = fn("boardStandings");
+  check("boardStandings() is the board scorer, scoped — not a second copy",
+    /_lbScoreUsers\(rows,/.test(sd) && !/users\[/.test(sd));
 }
 
 // --- wiring ---------------------------------------------------------------

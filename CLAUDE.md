@@ -577,7 +577,14 @@ It runs on `MODEL`, like the other analysis actions. `check:iq` holds all of it.
 Every function that decides a number — name matching (`nmEq`), nickname identity
 (`splitNick`), segment labels, `pickPts` / `userPts` / locks / the dog bonus /
 method matching, the bout lookup, `_eventFinished` and the board scorer
-`_lbScoreUsers` — lives **once**, in `scoring.js` (engine-migration stage 3). The
+`_lbScoreUsers` — lives **once**, in `scoring.js` (engine-migration stage 3),
+along with the Belt (`computeBeltLineage`) and the one scoped entry point every
+standings view uses, `boardStandings(rows, scope)` (stage 4; scopes `date`,
+`through`, `before`, `year`, `mainCard`, `users`). Add a scope there rather than
+passing `_lbScoreUsers` a new predicate. **Never name a local after a
+`scoring.js` function**: it shadows the global inside that function (the first
+name tried, `standings`, broke every card recap that way), and `check:lab`
+fails on it. The
 app, the Fight Lab, FightBot, the Friday brief and the tests all run that file;
 nothing slices scoring out of HTML any more, and `check:lab` fails if any of
 those functions is defined in `index.html` again.
