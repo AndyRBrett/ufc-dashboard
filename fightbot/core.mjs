@@ -75,7 +75,7 @@ export async function picks(s) {
   if (process.env.FIGHTBOT_PICKS_FILE) return JSON.parse(readFileSync(process.env.FIGHTBOT_PICKS_FILE, "utf8"));
   if (picksCache.rows && Date.now() - picksCache.at < PICKS_TTL_MS) return picksCache.rows;
   if (!s.supabase) throw new Error("no Supabase config found in index.html");
-  const PAGE = 1000, q = "/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc";
+  const PAGE = 1000, q = "/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc&promotion=eq.ufc";
   let all = [];
   for (let from = 0; ; from += PAGE) {
     const r = await fetch(s.supabase.url + q, { headers: { apikey: s.supabase.key, Authorization: "Bearer " + s.supabase.key, Range: `${from}-${from + PAGE - 1}` } });

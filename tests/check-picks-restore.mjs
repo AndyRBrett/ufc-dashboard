@@ -67,6 +67,8 @@ function run(src, { rows, local = {}, method = {}, conf = {}, fotn = {}, ok = tr
   const ctx = vm.createContext({
     console, JSON, Object, String, Array, Promise, Date, encodeURIComponent,
     EVENTS: events, PICKS_CUTOFF: CUT,
+    // The app's own constant, read from its source (not restated here).
+    PICKS_UFC: (html.match(/var PICKS_UFC="([^"]*)";/) || [])[1],
     SUPABASE_URL: "https://x", USER_ID: userId,
     _authReady: Promise.resolve(),
     _sbHeaders: () => ({}),
@@ -255,6 +257,12 @@ const T = {
     const o = await run(src, { rows: [] });
     return /user_id=eq\.u1/.test(o.url || "");
   },
+  // UFC picks only: another sport's picks must never be restored into the
+  // UFC card (0007_picks_promotion.sql).
+  async scopedToUfc(src) {
+    const o = await run(src, { rows: [] });
+    return /[?&]promotion=eq\.ufc(&|$)/.test(o.url || "");
+  },
 };
 
 console.log("picks restore:");
@@ -287,6 +295,9 @@ const MUT = [
   ["retriesWithoutIdentity: missing identity burns the one-shot",
     "if(!USER_ID){_restoreRan=false;return;}", "if(!USER_ID){return;}",
     ["retriesWithoutIdentity"]],
+  ["scopedToUfc: restore reads every promotion's picks",
+    "encodeURIComponent(USER_ID)+PICKS_UFC+", "encodeURIComponent(USER_ID)+",
+    ["scopedToUfc"]],
   ["repaints: restore does not repaint",
     "if(typeof render===\"function\")render();", "",
     ["repaints"]],

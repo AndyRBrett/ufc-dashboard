@@ -26,7 +26,7 @@
 // even offline with an old copy cached. Bump it on ANY change to this file, in
 // all three places (index.html's script src + SCORING_EXPECT, sw.js's precache);
 // check:lab fails if they disagree.
-var SCORING_VERSION="2026-09-24-3";
+var SCORING_VERSION="2026-09-24-4";
 
 // fighter-names:start
 var _NM_SUFFIX_RE=/\b(?:jr|sr|ii|iii|iv)\b/g;
@@ -276,12 +276,18 @@ function _eventFinished(date){
 // scored archived cards the board doesn't). `keep(p)` is the row filter: the
 // board passes its mode/scope, the recap passes a date cutoff. Returns the
 // deduped users sorted exactly as the board sorts them.
+// A picks row belongs to the UFC board unless it says otherwise: rows written
+// before 0007_picks_promotion.sql, and fixtures, carry no promotion at all.
+function _isUfcRow(p){return !p.promotion||p.promotion==="ufc";}
 function _lbScoreUsers(rows,keep){
   // Keyed by user_id, nickname and base name, which are player-chosen strings:
   // prototype-free, or a player called "Constructor" or "toString" collides
   // with Object.prototype and crashes (or silently corrupts) the board.
   var users=Object.create(null);
   rows.forEach(function(p){
+    // UFC standings only: another promotion's pick (sport switcher) never
+    // counts here, even if a reader forgot promotion=eq.ufc.
+    if(!_isUfcRow(p))return;
     if(keep&&!keep(p))return;
     var uid=p.user_id||p.nickname||"unknown";
     if(!users[uid])users[uid]={nickname:p.nickname||"",user_id:p.user_id||null,correct:0,total:0,methods:0,fotn:0,dogPts:0,lockPts:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
@@ -417,6 +423,7 @@ function computeBeltLineage(rows,scope){
   if(scope)rows=rows.filter(standingsKeep(scope));
   var evScores=Object.create(null);   // date -> base name -> {name,pts,correct,total}; prototype-free (see _lbScoreUsers)
   rows.forEach(function(p){
+    if(!_isUfcRow(p))return;   // UFC belt only (see _lbScoreUsers)
     var base=_lbBaseName(p.nickname);
     if(!base)return;
     var res=_findFightResult(p.event_date,p.f1,p.f2);

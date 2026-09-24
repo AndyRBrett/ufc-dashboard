@@ -244,6 +244,27 @@ let failures = 0;
   if (bad) { failures++; console.error("  ✗ players named after Object.prototype properties: " + bad); }
   else console.log(`  ✓ players named ${names.join(", ")} score like anyone else (board + belt)`);
 }
+// Sport switcher: the picks table also holds other promotions' picks. Adding
+// PFL rows (same dates and even the same fighters, same and new players) must
+// leave every UFC output identical — board, main-card board, per card, Belt,
+// recaps, Wrapped.
+{
+  const pfl = rows.map((r, i) => ({ ...r, promotion: "pfl", user_id: i % 3 ? r.user_id : "u-pfl-only-" + (i % 5), pick: r.f2 }));
+  const both = rows.concat(pfl).sort((x, y) => (x.updated_at < y.updated_at ? 1 : -1));
+  const k = kernel("all", true);
+  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  const dates = [...new Set(rows.map((r) => r.event_date))].sort();
+  const bases = [...new Set(players.map(([, n]) => k.splitNick(n).name.toLowerCase()))];
+  let bad = null;
+  if (!same(boardView(k, both), boardView(k, rows))) bad = "all-time board";
+  else if (!same(boardView(k, both, { mainCard: true }), boardView(k, rows, { mainCard: true }))) bad = "main-card board";
+  else if (dates.some((d) => !same(boardView(k, both, { date: d }), boardView(k, rows, { date: d })))) bad = "a per-card board";
+  else if (!same(k.computeBeltLineage(both), k.computeBeltLineage(rows))) bad = "the Belt";
+  else if (dates.filter((d) => k._eventFinished(d)).some((d) => bases.some((b) => !same(k.computeCardRecap(both, d, b), k.computeCardRecap(rows, d, b))))) bad = "a card recap";
+  else if (bases.some((b) => !same(k.computeYearWrapped(both, "2026", b), k.computeYearWrapped(rows, "2026", b)))) bad = "Year Wrapped";
+  if (bad) { failures++; console.error("  ✗ another promotion's picks moved the UFC " + bad); }
+  else console.log(`  ✓ ${pfl.length} PFL picks leave every UFC output identical (board, main card, per card, Belt, recaps, Wrapped)`);
+}
 for (const part of Object.keys(want)) {
   const d = diff(want[part], now[part], part);
   if (d) { failures++; console.error("  ✗ " + d); }

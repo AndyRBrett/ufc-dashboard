@@ -46,6 +46,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:brief` | the Friday Fight Week Brief push firing at the wrong time, twice, after the bell, off the Lab's numbers, or not at all |
 | `npm run check:iq` | the AI Fight IQ write-up stating a number it wasn't given, drifting onto Grok, repeating one voice, or escaping its daily cap |
 | `npm run check:parity` | any score moving during the engine migration: board, main-card board, per-card, Belt lineage, recaps, Year Wrapped |
+| `npm run check:promotion` | a picks query without `promotion=eq.ufc`, letting another sport's picks onto the UFC board, Belt, restore or result pushes |
 | `npm run check:rooms` | a room's board scoring differently from the main board, an anonymous device joining a room, or an invite link re-joining / re-prompting |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
@@ -608,6 +609,20 @@ stale copy is refused.
 A scoring change is an app change: `verify`, bump `SW_VERSION` and
 `SCORING_VERSION`, and expect `check:parity` to fail until the golden is
 regenerated **on purpose**.
+
+## The picks table holds every sport; UFC readers say so
+
+`picks.promotion` (`0007_picks_promotion.sql`, default `'ufc'`) is what lets
+the sport switcher store PFL (then ONE, boxing, …) picks beside UFC ones. The
+rule that keeps the UFC board exactly as it was: **every UFC read or
+UFC-scoped delete of `picks` carries `promotion=eq.ufc`** (`PICKS_UFC` in
+`index.html`), in the app, the Lab, FightBot, the edge functions and
+`scrape.py`; and `scoring.js` skips any other row (`_isUfcRow`) on the board and
+the Belt as a second guard. `check:promotion` walks every call site against a
+short allow-list of account-wide calls (account delete, nickname rename, name
+checks, the upsert that names its promotion in the body); `check:parity` proves
+PFL rows leave every UFC output byte-identical. A new picks query needs the
+filter, or an allow-list entry that says why it spans every sport.
 
 ## Non-UFC cards start in shadow mode
 
