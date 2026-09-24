@@ -195,6 +195,29 @@ else {
       check("a card past its lock time can't be picked", locked);
       const won = await page.evaluate(() => [...document.querySelectorAll("#sportApp .sport-pick.won")].map((b) => b.textContent));
       check("results show on the card", won.some((t) => /Done A/.test(t)) && won.some((t) => /Done D/.test(t)));
+      // The hero counts down to the next card's lock. When that lock passes
+      // with another card still open, the page moves on by itself: the hero
+      // names the next card and the closed card's buttons lock, with no
+      // reload, and the re-render doesn't duplicate the view.
+      const adv = await page.evaluate(() => {
+        const first = sportEvents("pfl").find((e) => Date.now() < sportLockMs(e));
+        const d = new Date(Date.parse(first.date + "T00:00:00Z") + 7 * 864e5).toISOString().slice(0, 10);
+        _sportFeed.events.push(Object.assign({}, first, { name: "PFL Later Card", date: d }));
+        renderSportView();
+        const before = document.querySelector("#sportApp .cd-event").textContent;
+        const real = Date.now, t = sportLockMs(first) + 1000;
+        Date.now = () => t;
+        try { _sportTick(); } finally { Date.now = real; }
+        const box = [...document.querySelectorAll("#sportApp .sport-ev")].find((x) => x.textContent.includes(first.name));
+        const out = { before, after: document.querySelector("#sportApp .cd-event").textContent,
+          heroes: document.querySelectorAll("#sportApp .sport-hero").length,
+          names: [...document.querySelectorAll("#sportApp .sport-ev-name")].map((x) => x.textContent),
+          locked: [...box.querySelectorAll(".sport-pick")].every((b) => b.disabled) };
+        _sportFeed.events.pop(); renderSportView();
+        return out;
+      });
+      check("when the hero's card locks, the hero moves to the next card and that card's picks lock",
+        adv.before === "PFL Test Card" && adv.after === "PFL Later Card" && adv.locked && adv.heroes === 1 && new Set(adv.names).size === adv.names.length && adv.names.includes("PFL Later Card"));
       await page.evaluate(() => openLeaderboard());
       await page.waitForTimeout(800);
       const board = await page.evaluate(() => ({ text: document.getElementById("lbBody").textContent, lbSportBar: !document.getElementById("lbSportBar").hidden }));

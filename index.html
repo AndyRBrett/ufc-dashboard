@@ -8583,8 +8583,13 @@ function _sportCdHtml(ms){
   var d=Math.floor(left/DAY_MS),h=Math.floor(left%DAY_MS/HOUR_MS),m=Math.floor(left%HOUR_MS/MIN_MS);
   return [[d,"Days"],[h,"Hrs"],[m,"Min"]];
 }
+// A lock passing changes the page, not just the timer: the hero moves on to
+// the next card and that card's buttons lock. Re-render once per lock crossed
+// (the re-render starts a timer on the same lock, which must not loop).
+var _sportLockDone=0;
 function _sportTick(){
   var t=document.getElementById("sportCdTimer");if(!t||!t._lock)return;
+  if(Date.now()>=t._lock&&_sportLockDone!==t._lock){_sportLockDone=t._lock;renderSportView();return;}
   var parts=_sportCdHtml(t._lock);t.innerHTML="";
   if(!parts){t.appendChild(_spEl("span","cd-live","Picks closed"));return;}
   parts.forEach(function(p,i){
@@ -8607,7 +8612,6 @@ function renderSportView(){
     cd.appendChild(info);
     var tm=_spEl("div","cd-timer");tm.id="sportCdTimer";tm._lock=sportLockMs(next);
     cd.appendChild(tm);hero.appendChild(cd);app.appendChild(hero);
-    _sportTick();
   }
   var nB=0,nT=0,nMine=0;
   evs.forEach(function(ev){ev.bouts.forEach(function(b){nB++;if(b.title)nT++;if(_sportPicks[sportKey(promo,ev.date,b.a,b.b)])nMine++;});});
@@ -8657,6 +8661,7 @@ function renderSportView(){
     });
     app.appendChild(box);
   });
+  _sportTick();          // last: it may re-render the whole view
 }
 function sportPick(promo,ev,b,name){
   if(sportLocked(ev,b)){toast("Picks are closed for this fight");return;}
