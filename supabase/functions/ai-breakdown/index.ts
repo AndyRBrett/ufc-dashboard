@@ -124,6 +124,7 @@ function globalRateLimited(): boolean {
 const MAX_QUESTION = 400, MAX_CARD = 4000, MAX_USER_PICKS = 2000;
 const MAX_PERSONA = 100, MAX_NICKNAME = 60, MAX_TARGETS = 20;
 const MAX_HINT = 160, MAX_RECORD = 200, MAX_EVNAME = 120;
+const MAX_IQ_LINES = 8, MAX_IQ_LINE = 200;
 function inputTooLarge(d: ReqBody): boolean {
   if ((d.question ?? "").length > MAX_QUESTION) return true;
   if ((d.card ?? "").length > MAX_CARD) return true;
@@ -133,6 +134,15 @@ function inputTooLarge(d: ReqBody): boolean {
   if ((d.hint ?? "").length > MAX_HINT) return true;
   if ((d.myRecord ?? "").length > MAX_RECORD) return true;
   if ((d.evName ?? "").length > MAX_EVNAME) return true;
+  if (d.iq) {
+    const q = d.iq;
+    if (typeof q !== "object") return true;
+    if ((q.player ?? "").length > MAX_NICKNAME || (q.archetype ?? "").length > 40 || (q.blurb ?? "").length > 120) return true;
+    if ((q.record ?? "").length > 20 || (q.locks ?? "").length > 20) return true;
+    if (!Array.isArray(q.insights) || q.insights.length > MAX_IQ_LINES || q.insights.some((t) => typeof t !== "string" || t.length > MAX_IQ_LINE)) return true;
+    if (q.rivals && (!Array.isArray(q.rivals) || q.rivals.length > 5 || q.rivals.some((t) => typeof t !== "string" || t.length > MAX_IQ_LINE))) return true;
+  }
+  if ((d.viewerId ?? "").length > 80) return true;
   if (d.targets) {
     if (d.targets.length > MAX_TARGETS) return true;
     if (d.targets.some((t) => (t ?? "").length > MAX_NICKNAME)) return true;
@@ -162,6 +172,16 @@ interface ReqBody {
   lbMode?: string;                  // "current" (this week's event) or all-time
   evName?: string | null;           // event name when lbMode === "current"
   hint?: string;                    // optional user-supplied angle
+  // fight-iq fields — the Fight Lab's deterministic Fight IQ, already computed
+  // in the browser (lab/analytics.js). The model only writes prose around it.
+  iq?: IqFacts;
+  viewerId?: string;                // whose daily write-up budget this spends
+}
+interface IqFacts {
+  player: string; archetype: string; blurb?: string;
+  record: string; accuracy: number | null; points: number;
+  locks?: string; methodPct?: number | null; clv?: number | null;
+  insights: string[]; rivals?: string[];
 }
 
 function buildBreakdownPrompt(d: ReqBody): string {
@@ -647,6 +667,68 @@ function parseJson(body: string): Record<string, unknown> | null {
   }
 }
 
+// ── Fight IQ write-up ───────────────────────────────────────────────────────
+// A scouting report written around the Fight Lab's own numbers. The numbers
+// are computed deterministically in the browser; the model's only job is the
+// prose, in a voice picked at random so it doesn't read the same twice.
+//
+// "Never invent a number" is enforced, not just asked for: numbersInvented()
+// rejects a write-up containing any figure that isn't in the facts it was
+// given, and the handler retries once and then fails cleanly. A Fight IQ that
+// makes up a record is the app stating something false about someone's picks.
+export const IQ_TONES = [
+  "a blunt old-school boxing trainer giving a fighter the honest truth",
+  "a hyped-up hype man who thinks this picker is the greatest of all time, however the numbers look",
+  "a dry nature-documentary narrator observing a strange creature in its habitat",
+  "a sports-radio caller who has Opinions and one minute before the break",
+  "a scout's cold, clinical report to a team's front office",
+  "a friend roasting them in the group chat — affectionate, merciless",
+];
+export const IQ_DAILY_CAP = Number(Deno.env.get("IQ_DAILY_CAP") ?? "3");
+const _iqUses = new Map<string, { day: string; n: number }>();
+// Best-effort, per edge-function instance: the app also caps on the device,
+// and the per-IP rate limit above still applies. It bounds spend, it isn't a
+// ledger — a cold start resets it, which at worst allows a few extra.
+export function iqCapReached(viewer: string, now = Date.now()): boolean {
+  const day = new Date(now).toISOString().slice(0, 10);
+  const u = _iqUses.get(viewer);
+  if (!u || u.day !== day) { _iqUses.set(viewer, { day, n: 1 }); return false; }
+  if (u.n >= IQ_DAILY_CAP) return true;
+  u.n++;
+  return false;
+}
+function iqFactsText(q: IqFacts): string {
+  const lines = [
+    `Player: ${q.player}`,
+    `Picker type: ${q.archetype}${q.blurb ? ` — ${q.blurb}` : ""}`,
+    `Record: ${q.record}${q.accuracy != null ? ` (${q.accuracy}%)` : ""}`,
+    `Points: ${q.points}`,
+  ];
+  if (q.locks) lines.push(`Locks: ${q.locks}`);
+  if (q.methodPct != null) lines.push(`Method calls correct: ${q.methodPct}%`);
+  if (q.clv != null) lines.push(`Average line move after their pick: ${q.clv} points`);
+  q.insights.forEach((t) => lines.push(`- ${t}`));
+  (q.rivals ?? []).forEach((t) => lines.push(`- ${t}`));
+  return lines.join("\n");
+}
+export function buildIqWriteup(q: IqFacts, tone: string): { system: string; user: string } {
+  return {
+    system: `You write short, funny scouting reports about one member of a group of friends who pick UFC fights together, in the voice of ${tone}.
+FACTS ARE STRICT: use only the facts given. Never state a number, record, percentage or name that isn't in them — rephrase in words if you need to. Don't predict future results.
+Write 3 to 5 sentences, under 90 words, plain text, no headings or lists. Address the player as "you".`,
+    user: `Facts about ${q.player}'s picking:\n${iqFactsText(q)}\n\nWrite the scouting report.`,
+  };
+}
+// Every figure in the write-up must appear in the facts. Small counting words
+// ("two locks") are words, not digits, and pass; a bare 1–3 is allowed for
+// ordinary phrasing ("round 1", "top 3").
+export function numbersInvented(text: string, facts: string): string[] {
+  const norm = (n: string) => String(Number(n.replace(/,/g, "")));
+  const known = new Set((facts.match(/\d[\d,]*(?:\.\d+)?/g) ?? []).map(norm));
+  return (text.match(/\d[\d,]*(?:\.\d+)?/g) ?? []).map(norm)
+    .filter((n) => !known.has(n) && !(Number(n) >= 1 && Number(n) <= 3 && Number.isInteger(Number(n))));
+}
+
 async function callAnthropic(
   apiKey: string,
   { system, user, maxTokens }: { system?: string; user: string; maxTokens: number },
@@ -801,11 +883,27 @@ Deno.serve(async (req) => {
   // Kept so the Grok→Claude fallback can re-send the same prompt minus the
   // gloves-off suffix. See unfilteredRule.
   let claudeSystem: string | undefined;
+  let iqTone = "", iqFacts = "";
   if (action === "chat") {
     prompt = buildChatPrompt(body);
     maxTokens = 180;
   } else if (action === "parlay") {
     prompt = buildParlayPrompt(body);
+    maxTokens = 300;
+  } else if (action === "fight-iq") {
+    const q = body.iq;
+    if (!q || !q.player || !q.record || !Array.isArray(q.insights)) {
+      return new Response(JSON.stringify({ error: "Missing Fight IQ facts" }), { status: 400, headers: CORS });
+    }
+    const viewer = (body.viewerId || clientIp(req)).trim();
+    if (iqCapReached(viewer)) {
+      return new Response(JSON.stringify({ error: "daily-cap", cap: IQ_DAILY_CAP }), { status: 429, headers: CORS });
+    }
+    iqTone = IQ_TONES[Math.floor(Math.random() * IQ_TONES.length)];
+    const built = buildIqWriteup(q, iqTone);
+    system = built.system;
+    prompt = built.user;
+    iqFacts = iqFactsText(q);
     maxTokens = 300;
   } else if (action === "trash-talk") {
     provider = trashTalkProvider(grokKey);
@@ -879,6 +977,19 @@ Deno.serve(async (req) => {
   }
 
   let text: string = first.text;
+  if (action === "fight-iq") {
+    let bad = numbersInvented(text, iqFacts);
+    if (bad.length) {
+      const again = await callModel(`${prompt}
+
+Your last draft used figures that aren't in the facts (${bad.join(", ")}). Write it again using only the facts given — say it in words instead.`);
+      if (again.ok) { text = again.text; bad = numbersInvented(text, iqFacts); }
+    }
+    if (!text.trim() || bad.length) {
+      return new Response(JSON.stringify({ error: "Couldn't write it without making something up — try again." }), { status: 502, headers: CORS });
+    }
+    return new Response(JSON.stringify({ breakdown: text.trim(), tone: iqTone, model: MODEL }), { status: 200, headers: CORS });
+  }
   // Which provider produced the text actually being returned — NOT simply the
   // last one called. `provider` and `fellBack` track the most recent call, and
   // the angle retry below can fail over to Claude and still have its output

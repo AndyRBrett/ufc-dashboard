@@ -221,7 +221,8 @@ function viewIQ(root){
     var iq=FL.fightIQ(mine,{odds:L.odds,stats:FIGHTER_STATS,group:L.picks});
     body.appendChild(card(null,
       h("div",{class:"arch"},h("div",{class:"e",text:iq.archetype.emoji}),
-        h("div",null,h("div",{class:"n",text:iq.archetype.name}),h("div",{class:"muted small",text:iq.archetype.blurb})))));
+        h("div",null,h("div",{class:"n",text:iq.archetype.name}),h("div",{class:"muted small",text:iq.archetype.blurb}))),
+      writeupBlock(iq)));
     body.appendChild(card("The numbers",h("div",{class:"tiles"},
       tile(recTxt(iq.record),"Record ("+pctTxt(iq.record.pct)+")"),
       tile(iq.points,"Points (board scoring)"),
@@ -245,6 +246,48 @@ function viewIQ(root){
     }
   }
   draw();
+}
+
+// ✍️ The AI scouting report. The numbers above are computed here, in the
+// browser; the ai-breakdown "fight-iq" action only writes prose around them,
+// in a voice it picks at random, and refuses to state a number it wasn't given.
+// Capped per device per day (IQ_WRITEUPS_PER_DAY) — each one is a paid call —
+// and again, best-effort, on the server.
+var IQ_WRITEUPS_PER_DAY=3;
+function _iqUsage(){var t=PE.isoDate(new Date()),u=null;try{u=JSON.parse(localStorage.getItem("ufc_iq_writeups")||"null");}catch(e){}return u&&u.day===t?u:{day:t,n:0};}
+function _iqSpend(){var u=_iqUsage();u.n++;try{localStorage.setItem("ufc_iq_writeups",JSON.stringify(u));}catch(e){}}
+function iqFactsFor(iq){
+  var nick=(players().filter(function(u){return u.player===L.player;})[0]||{}).nickname||"";
+  var clip=function(t){return String(t).slice(0,200);};
+  return {player:nameOnly(nick).slice(0,60)||"This picker",archetype:iq.archetype.name,blurb:iq.archetype.blurb,
+    record:iq.record.w+"-"+iq.record.l,accuracy:iq.record.pct,points:iq.points,
+    locks:iq.locks.n?iq.locks.w+"-"+iq.locks.l:"",methodPct:iq.methods.called?iq.methods.pct:null,
+    clv:iq.clv.n>=FL.MIN_SAMPLE?iq.clv.avg:null,insights:iq.insights.slice(0,8).map(function(i){return clip(i.text);})};
+}
+function writeupBlock(iq){
+  var out=h("div",{class:"small",style:"margin-top:12px;line-height:1.55"});
+  var btn=h("button",{class:"act",style:"margin-top:12px",text:"✍️ Write the scouting report"});
+  if(iq.record.n<5){btn.disabled=true;btn.title="Needs at least 5 decided picks";}
+  btn.addEventListener("click",function(){
+    if(_iqUsage().n>=IQ_WRITEUPS_PER_DAY){out.textContent="That's "+IQ_WRITEUPS_PER_DAY+" scouting reports today — the scouts are off until tomorrow.";return;}
+    btn.disabled=true;btn.textContent="Writing…";out.textContent="";
+    fetch(SUPABASE_URL+"/functions/v1/ai-breakdown",{method:"POST",
+      headers:{"Content-Type":"application/json",Authorization:"Bearer "+SUPABASE_ANON},
+      body:JSON.stringify({action:"fight-iq",iq:iqFactsFor(iq),viewerId:L.me||""})})
+      .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
+      .then(function(x){
+        if(x.ok&&x.j.breakdown){
+          _iqSpend();
+          out.textContent="";
+          out.appendChild(h("p",{style:"margin:0",text:x.j.breakdown}));
+          if(x.j.tone)out.appendChild(h("div",{class:"muted",style:"margin-top:6px;font-size:12px",text:"Voice: "+x.j.tone}));
+        }else if(x.j&&x.j.error==="daily-cap"){out.textContent="That's today's scouting reports used up — back tomorrow.";}
+        else out.textContent=(x.j&&x.j.error)||"Couldn't write it right now — try again.";
+      })
+      .catch(function(){out.textContent="Couldn't reach the scouts — check your connection.";})
+      .then(function(){btn.disabled=iq.record.n<5;btn.textContent="✍️ Write another";});
+  });
+  return h("div",null,btn,out);
 }
 
 function spark(series,side,label){

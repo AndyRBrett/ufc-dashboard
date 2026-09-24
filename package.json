@@ -29,8 +29,9 @@
     "check:lab": "node tests/check-lab.mjs",
     "check:fightbot": "node tests/check-fightbot.mjs",
     "check:brief": "node tests/check-brief.mjs",
+    "check:iq": "node tests/check-iq-writeup.mjs",
     "fightbot": "node fightbot/server.mjs",
-    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:provider && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew && npm run check:prefs && npm run check:picks && npm run check:kick && npm run check:lock && npm run check:recap && npm run check:wrapped && npm run check:locks && npm run check:lab && npm run check:fightbot && npm run check:brief"
+    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:provider && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew && npm run check:prefs && npm run check:picks && npm run check:kick && npm run check:lock && npm run check:recap && npm run check:wrapped && npm run check:locks && npm run check:lab && npm run check:fightbot && npm run check:brief && npm run check:iq"
   },
   "devDependencies": {
     "esbuild": "^0.24.0",

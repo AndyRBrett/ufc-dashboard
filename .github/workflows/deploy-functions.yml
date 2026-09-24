@@ -30,6 +30,8 @@ jobs:
         run: npm run check:provider
       - name: Friday brief push test
         run: npm run check:brief
+      - name: Fight IQ write-up test
+        run: npm run check:iq
 
   deploy:
     needs: validate
