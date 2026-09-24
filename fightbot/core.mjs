@@ -232,7 +232,7 @@ export const TOOLS = {
     inputSchema: { type: "object", properties: { date: { type: "string", description: "One card (YYYY-MM-DD); omit for all-time." } } },
     async run(a) {
       const s = load(), rows = PE.boardRows(s.kernel, await picks(s));
-      const board = s.kernel._lbScoreUsers(a.date ? rows.filter((r) => r.event_date === a.date) : rows);
+      const board = s.kernel.boardStandings(rows, a.date ? { date: a.date } : null);
       return { scope: a.date || "all-time", standings: board.map((u, i) => ({ rank: i + 1, player: u.nickname, points: s.kernel.userPts(u),
         record: `${u.correct}-${u.total - u.correct}`, accuracy_pct: u.accuracy, current_streak: u.currentStreak, best_streak: u.bestStreak })) };
     },

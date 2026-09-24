@@ -53,12 +53,12 @@ function kernel(lbScope, withEngine) {
     lbScope, MAIN_CARD_BOUTS: 5, USER_ID: null, userName: "", _lbRows: null, _commRows: null,
   });
   // Stage 3: every scoring function lives in scoring.js, run whole — exactly as
-  // the app loads it. The Belt, recap and Wrapped still live in index.html.
+  // the app loads it. Stage 4 moved the Belt there too; the recap and Wrapped
+  // still live in index.html.
   // The engine path vs the fallback path (stage 2): with lab/engine.js loaded,
   // _boutLookup answers through the engine; without it, through its own loops.
   if (withEngine) vm.runInContext(ENGINE_SRC, ctx, { filename: "lab/engine.js" });
   vm.runInContext(SCORING_SRC, ctx, { filename: "scoring.js" });
-  vm.runInContext(fn("computeBeltLineage"), ctx);
   vm.runInContext(block("card-recap"), ctx);
   vm.runInContext(block("year-wrapped"), ctx);
   return ctx;
@@ -111,8 +111,11 @@ rows.sort((x, y) => (x.updated_at < y.updated_at ? 1 : -1));
 
 // --- the outputs --------------------------------------------------------------
 const round = (x) => (typeof x === "number" ? Math.round(x * 1000) / 1000 : x);
-function boardView(k, rs, keep) {
-  return k._lbScoreUsers(rs, keep).map((u) => ({
+// Stage 4: every board view is read through boardStandings(rows, scope), the one
+// scoped call the app uses — the golden was taken with hand-rolled keep()
+// predicates, so a match proves each scope means exactly what it replaced.
+function boardView(k, rs, scope) {
+  return k.boardStandings(rs, scope).map((u) => ({
     nickname: u.nickname, user_id: u.user_id, pts: round(k.userPts(u)), correct: u.correct, total: u.total,
     methods: u.methods, fotn: u.fotn, dogPts: round(u.dogPts), lockPts: u.lockPts,
     accuracy: u.accuracy, bestStreak: u.bestStreak, currentStreak: u.currentStreak,
@@ -127,8 +130,8 @@ function snapshot(withEngine) {
   return {
     rows: rows.length,
     board_all: boardView(all, rows),
-    board_main_card: boardView(main, rows, main._pickInScope),
-    per_card: Object.fromEntries(dates.map((d) => [d, boardView(all, rows.filter((r) => r.event_date === d))])),
+    board_main_card: boardView(all, rows, { mainCard: true }),
+    per_card: Object.fromEntries(dates.map((d) => [d, boardView(all, rows, { date: d })])),
     belt: JSON.parse(JSON.stringify(all.computeBeltLineage(rows))),
     recaps: Object.fromEntries(dates.filter((d) => all._eventFinished(d)).map((d) => [d,
       Object.fromEntries(bases.map((b) => [b, JSON.parse(JSON.stringify(all.computeCardRecap(rows, d, b) ?? null))]))])),
@@ -182,6 +185,42 @@ let failures = 0;
   else console.log("  ✓ a bout missing from its live card falls back to that date's archive");
   if (bad) { failures++; console.error("  ✗ lookup mismatch — " + bad); }
   else console.log(`  ✓ engine and fallback find the identical bout object for all ${checked} lookups (incl. flipped corners and misses)`);
+}
+// Stage 4: each standings scope against the predicate it replaced, on every
+// date in the fixture (the golden only pins the ones the snapshot uses).
+{
+  const k = kernel("all", true), m = kernel("main", true);
+  const view = (us) => JSON.stringify(us.map((u) => [u.user_id, u.nickname, k.userPts(u), u.correct, u.total, u.accuracy]));
+  const dates = [...new Set(rows.map((r) => r.event_date))].sort();
+  let bad = null;
+  const same = (name, a, b) => { if (!bad && view(a) !== view(b)) bad = name; };
+  same("all-time", k.boardStandings(rows), k._lbScoreUsers(rows, null));
+  same("all-time ({})", k.boardStandings(rows, {}), k._lbScoreUsers(rows, null));
+  same("main card", k.boardStandings(rows, { mainCard: true }), m._lbScoreUsers(rows, m._pickInScope));
+  for (const d of dates) {
+    same("date " + d, k.boardStandings(rows, { date: d }), k._lbScoreUsers(rows, (p) => p.event_date === d));
+    same("through " + d, k.boardStandings(rows, { through: d }), k._lbScoreUsers(rows, (p) => p.event_date <= d));
+    same("before " + d, k.boardStandings(rows, { before: d }), k._lbScoreUsers(rows, (p) => p.event_date < d));
+    same("current card, main only " + d, k.boardStandings(rows, { date: d, mainCard: true }),
+      m._lbScoreUsers(rows, (p) => p.event_date === d && m._pickInScope(p)));
+  }
+  for (const y of ["2025", "2026", 2026]) same("year " + y, k.boardStandings(rows, { year: y }), k._lbScoreUsers(rows, (p) => p.event_date.slice(0, 4) === String(y)));
+  // A room: only its members' picks, scored by the same rules.
+  const members = ["u-andy", "u-jp"], inRoom = (r) => members.includes(r.user_id || r.nickname);
+  const room = k.boardStandings(rows, { users: members });
+  same("room", room, k._lbScoreUsers(rows.filter(inRoom), null));
+  if (!room.length || room.some((u) => !members.includes(u.user_id))) bad = bad || "room admits a non-member";
+  same("room + card", k.boardStandings(rows, { users: members, date: dates[dates.length - 1] }),
+    k._lbScoreUsers(rows.filter((r) => inRoom(r) && r.event_date === dates[dates.length - 1]), null));
+  const beltRoom = JSON.stringify(k.computeBeltLineage(rows, { users: members }));
+  if (beltRoom !== JSON.stringify(k.computeBeltLineage(rows.filter(inRoom)))) bad = bad || "room belt";
+  // A legacy nickname-keyed pick named after an Object.prototype property is
+  // not a member of a room that doesn't list it.
+  const proto = [{ ...rows[0], user_id: null, nickname: "constructor" }, { ...rows[0], user_id: null, nickname: "toString" }];
+  if (k.boardStandings(proto, { users: members }).length) bad = bad || "a prototype-named nickname passes as a room member";
+  if (JSON.stringify(k.computeBeltLineage(rows, null)) !== JSON.stringify(k.computeBeltLineage(rows))) bad = bad || "unscoped belt";
+  if (bad) { failures++; console.error("  ✗ standings scope disagrees with the predicate it replaced: " + bad); }
+  else console.log(`  ✓ every standings scope (all, main card, ${dates.length} dates × date/through/before, years, a room) matches the predicate it replaced`);
 }
 for (const part of Object.keys(want)) {
   const d = diff(want[part], now[part], part);

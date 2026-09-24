@@ -55,6 +55,7 @@ vm.runInContext(block("pick-match"), ctx);
 vm.runInContext(fn("_eventFinished"), ctx);
 vm.runInContext(fn("computeBeltLineage"), ctx);
 vm.runInContext(fn("_lbScoreUsers"), ctx);
+vm.runInContext(fn("standingsKeep") + fn("boardStandings"), ctx);
 vm.runInContext(block("card-recap"), ctx);
 vm.runInContext(block("year-wrapped"), ctx);
 // The slide builder is pure (strings in, strings out); the rest of the UI
@@ -326,8 +327,8 @@ check("nemesis is the lowest agreement rate (Bob)", ann.nemesis && /Bob/.test(an
 // --- one scorer, not three -------------------------------------------------
 {
   const cw = fn("computeYearWrapped");
-  check("Wrapped scores through _lbScoreUsers and replays the belt via computeBeltLineage",
-    /_lbScoreUsers\(/.test(cw) && /computeBeltLineage\(/.test(cw) && !/users\[uid\]/.test(cw));
+  check("Wrapped scores through boardStandings() and replays the belt via computeBeltLineage",
+    /boardStandings\(ordered,\{year:year\}\)/.test(cw) && /computeBeltLineage\(/.test(cw) && !/users\[uid\]/.test(cw));
 }
 
 // --- wiring ----------------------------------------------------------------

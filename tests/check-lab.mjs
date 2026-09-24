@@ -200,8 +200,16 @@ check("de-vig of -110/-110 is exactly 50/50", Math.abs(dv.a - 0.5) < 1e-12 && Ma
   const idx = readFileSync(join(ROOT, "index.html"), "utf8");
   const dupes = ["nmKey", "nmEq", "nmBout", "splitNick", "dogPtsFor", "dogPtsForPick", "userPts", "locksOn", "isLockPick",
     "lockPtsFor", "pickPts", "scoreMethod", "_boutLookup", "_findFightResult", "_isMainCardPick", "_eventFinished",
-    "_lbScoreUsers", "isMainCardBout", "isEarlyPrelimBout"].filter((f) => idx.includes(`function ${f}(`) || (SCORING.split(`function ${f}(`).length - 1) !== 1);
+    "_lbScoreUsers", "boardStandings", "standingsKeep", "computeBeltLineage", "isMainCardBout", "isEarlyPrelimBout"].filter((f) => idx.includes(`function ${f}(`) || (SCORING.split(`function ${f}(`).length - 1) !== 1);
   check("each scoring function is defined exactly once, in scoring.js", dupes.length === 0 || (console.error("    " + dupes.join(", ")), false));
+  // A local of the same name in index.html shadows the global inside that
+  // function — stage 4 first called its scoped board "standings", which
+  // computeCardRecap's own `var standings` hid, breaking every recap.
+  const globals = [...SCORING.matchAll(/^function ([\w$]+)\(/gm)].map((m) => m[1]);
+  const code = idx.replace(/^\s*\/\/.*$/gm, "");
+  const params = new Set([...code.matchAll(/function\s*[\w$]*\s*\(([^)]*)\)/g)].flatMap((m) => m[1].split(",").map((x) => x.trim())));
+  const shadowed = globals.filter((g) => params.has(g) || new RegExp(`(?:\\bvar|\\blet|\\bconst)\\s+${g.replace(/\$/g, "\\$")}\\b`).test(code));
+  check("no index.html local shadows a scoring.js function", shadowed.length === 0 || (console.error("    " + shadowed.join(", ")), false));
   check("index.html loads scoring.js after data.js and before its own script",
     /<script src="data\.js"><\/script>[\s\S]*?<script src="scoring\.js\?v=[^"]+"><\/script>/.test(idx) && idx.indexOf('src="scoring.js') < idx.indexOf("var SUPABASE_URL="));
   // One version, three places: scoring.js's own, the page's request + expectation, the SW precache.
