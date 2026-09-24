@@ -45,7 +45,11 @@ git rm -r -q .                            # clear the tree (files added since go
 git checkout origin/backup/pre-engine-migration-2026-09-24 -- .
 # keep today's generated data rather than the backup's week-old copy:
 git checkout origin/main -- data.js odds-series.json odds-snapshots.jsonl odds-state.json intel.json intel-state.json health-report.json overseer-status.json
-# bump SW_VERSION in sw.js so installed PWAs update
+# bump SW_VERSION in sw.js so installed PWAs update: the backup's sw.js
+# carries an OLD version, so set a value newer than the one on main now
+git show origin/main:sw.js | grep "const SW_VERSION"   # the value to beat
+$EDITOR sw.js
+git add sw.js                              # checkout staged the old copy; stage the bump
 npm run verify
 git commit -m "Restore main to backup/pre-engine-migration-2026-09-24" && git push
 ```
