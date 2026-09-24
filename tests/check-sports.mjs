@@ -137,7 +137,11 @@ else {
   }));
   try {
     {
-      const { page, errors } = await boot(null);       // the repo's own feed: empty
+      // An explicitly empty feed, never the repo's own events-extra.json: that
+      // file is live data (extra.py publishes to it), so a test that assumed
+      // it was empty broke the first time a card was published and blocked
+      // every deploy, live UFC updates included.
+      const { page, errors } = await boot({ promotions: [], events: [] });
       const s = await state(page);
       check("empty feed: no switcher, UFC exactly as before", !s.bar && !s.other && s.appShown && !s.sportShown);
       check("empty feed: no page errors", errors.length === 0 || (console.error("    " + errors.join("\n    ")), false));
