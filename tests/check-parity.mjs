@@ -43,7 +43,8 @@ function fn(name) {
 }
 
 // The app's scoring, lifted exactly as check:recap / check:wrapped lift it.
-function kernel(lbScope) {
+const ENGINE_SRC = readFileSync(join(ROOT, "lab/engine.js"), "utf8");
+function kernel(lbScope, withEngine) {
   const ctx = vm.createContext({
     console: { log() {}, warn() {}, error: console.error },
     String, Object, Array, JSON, Math, Date, isFinite, Number,
@@ -51,6 +52,10 @@ function kernel(lbScope) {
     lbScope, MAIN_CARD_BOUTS: 5, USER_ID: null, userName: "", _lbRows: null, _commRows: null,
   });
   const splitNickSrc = html.slice(html.indexOf("var _EMOJI_HEAD="), html.indexOf("function splitNick(")) + fn("splitNick");
+  // Stage 2+: the app answers bout lookups through the Pick Engine when
+  // lab/engine.js loaded, and through its original loops when it didn't. Both
+  // paths are snapshotted against the same golden.
+  if (withEngine) vm.runInContext(ENGINE_SRC, ctx, { filename: "lab/engine.js" });
   vm.runInContext(splitNickSrc, ctx);
   vm.runInContext(block("fighter-names"), ctx);
   vm.runInContext(fn("isMainCardBout") + fn("isEarlyPrelimBout"), ctx);
@@ -117,8 +122,10 @@ function boardView(k, rs, keep) {
     accuracy: u.accuracy, bestStreak: u.bestStreak, currentStreak: u.currentStreak,
   }));
 }
-function snapshot() {
-  const all = kernel("all"), main = kernel("main");
+function snapshot(withEngine) {
+  const all = kernel("all", withEngine), main = kernel("main", withEngine);
+  if (withEngine && !all._appEngine()) { console.error("  ✗ the engine path never engaged — _appEngine() is null with lab/engine.js loaded"); process.exit(1); }
+  if (!withEngine && all._appEngine()) { console.error("  ✗ the fallback path used an engine it shouldn't have"); process.exit(1); }
   const dates = [...new Set(rows.map((r) => r.event_date))].sort();
   const bases = [...new Set(players.map(([, n]) => all.splitNick(n).name.toLowerCase()))];
   return {
@@ -133,7 +140,8 @@ function snapshot() {
   };
 }
 
-const now = snapshot();
+const now = snapshot(true);          // the engine path — what users run
+const fallback = snapshot(false);    // lab/engine.js failed to load
 if (process.argv.includes("--update")) {
   writeFileSync(GOLDEN, JSON.stringify(now, null, 1) + "\n");
   console.log(`check-parity: golden rewritten (${now.rows} synthetic picks, ${Object.keys(now.per_card).length} cards). Say why in the PR.`);
@@ -154,6 +162,31 @@ function diff(a, b, path = "") {
   return null;
 }
 let failures = 0;
+{
+  const d = diff(now, fallback, "engine-vs-fallback");
+  if (d) { failures++; console.error("  ✗ the engine and fallback paths disagree: " + d); }
+  else console.log("  ✓ the engine path and the fallback path produce identical outputs");
+}
+// Every pick's bout, both ways: the SAME fight object (not just the same score).
+{
+  const e = kernel("all", true), f = kernel("all", false);
+  let checked = 0, bad = null;
+  const probe = rows.concat(rows.slice(0, 50).map((r) => ({ ...r, f1: r.f2, f2: r.f1 })),
+    [{ event_date: "2026-12-19", f1: "Nobody", f2: "Lock Winner" }, { event_date: "1999-01-01", f1: "A", f2: "B" },
+     // on a date the live window still holds, but only in that date's archive
+     { event_date: "2026-12-19", f1: "Gone From Card", f2: "Archive Only" }]);
+  for (const r of probe) {
+    const x = e._boutLookup(r.event_date, r.f1, r.f2), y = f._boutLookup(r.event_date, r.f1, r.f2);
+    checked++;
+    const same = (!x && !y) || (x && y && x.live === y.live && x.fight === y.fight && x.k === y.k);
+    if (!same && !bad) bad = `${r.event_date} ${r.f1} vs ${r.f2}: engine ${JSON.stringify(x && { live: x.live, k: x.k })} / fallback ${JSON.stringify(y && { live: y.live, k: y.k })}`;
+  }
+  const arcOnly = e._boutLookup("2026-12-19", "Gone From Card", "Archive Only");
+  if (!arcOnly || arcOnly.live !== false || arcOnly.k !== 0) { failures++; console.error("  ✗ a bout missing from its live card isn't found in that date's archive"); }
+  else console.log("  ✓ a bout missing from its live card falls back to that date's archive");
+  if (bad) { failures++; console.error("  ✗ lookup mismatch — " + bad); }
+  else console.log(`  ✓ engine and fallback find the identical bout object for all ${checked} lookups (incl. flipped corners and misses)`);
+}
 for (const part of Object.keys(want)) {
   const d = diff(want[part], now[part], part);
   if (d) { failures++; console.error("  ✗ " + d); }
