@@ -20,6 +20,14 @@
 // the same one-shot purge-and-reload self-heal a missing data.js does.
 // check:parity pins every score it produces to the pre-migration golden.
 
+// The rulebook's version. index.html requests scoring.js?v=<this> and refuses
+// (self-heals) a file whose version doesn't match, and sw.js caches it under
+// that versioned URL — so a page can never run on a previous release's rules,
+// even offline with an old copy cached. Bump it on ANY change to this file, in
+// all three places (index.html's script src + SCORING_EXPECT, sw.js's precache);
+// check:lab fails if they disagree.
+var SCORING_VERSION="2026-09-24-1";
+
 // fighter-names:start
 var _NM_SUFFIX_RE=/\b(?:jr|sr|ii|iii|iv)\b/g;
 function nmKey(n){

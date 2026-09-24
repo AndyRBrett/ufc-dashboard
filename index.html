@@ -1805,7 +1805,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <script src="data.js"></script>
 <!-- The app's scoring (scoring.js, engine migration stage 3). Required, like
      data.js: the self-heal below covers it failing to load too. -->
-<script src="scoring.js"></script>
+<script src="scoring.js?v=2026-09-24-1"></script>
 <!-- The Pick Engine (engine migration, docs/MIGRATION.md). Optional by design:
      if it fails to load, _boutLookup falls back to the app's own loops and
      every score comes out the same (check:parity runs both paths). -->
@@ -1819,7 +1819,12 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 // once per session, so it cannot loop.
 // scoring.js is required the same way (stage 3): a stale or missing copy is the
 // same failure, with the same fix.
-if(typeof EVENTS==="undefined"||typeof pickPts!=="function"||typeof _lbScoreUsers!=="function"){
+// …and it must be the rulebook THIS page shipped with: a previous release's
+// scoring.js (an old cached copy, a network drop mid-upgrade) is treated as
+// missing rather than silently scoring with old rules.
+var SCORING_EXPECT="2026-09-24-1";
+function _scoringOk(){return typeof pickPts==="function"&&typeof _lbScoreUsers==="function"&&typeof SCORING_VERSION!=="undefined"&&SCORING_VERSION===SCORING_EXPECT;}
+if(typeof EVENTS==="undefined"||!_scoringOk()){
   (function(){
     try{if(sessionStorage.getItem("_selfHealed"))return;sessionStorage.setItem("_selfHealed","1");}catch(_){}
     var done=function(){location.reload();};
@@ -9096,7 +9101,7 @@ document.addEventListener("DOMContentLoaded",function(){
     // bad copy, so self-heal instead: purge caches + unregister the SW, then reload
     // once. The sessionStorage guard makes this fire at most once per session, so it
     // cannot loop — if a fresh load still fails, fall through to the static message.
-    if((typeof EVENTS==="undefined"||typeof pickPts!=="function")&&!sessionStorage.getItem("_selfHealed")){
+    if((typeof EVENTS==="undefined"||!_scoringOk())&&!sessionStorage.getItem("_selfHealed")){
       try{sessionStorage.setItem("_selfHealed","1");}catch(_){}
       var _bust=function(){location.reload();};
       try{

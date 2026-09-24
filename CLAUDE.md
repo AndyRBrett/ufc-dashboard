@@ -588,8 +588,18 @@ those functions is defined in `index.html` again.
 asset); and if it fails to load, both self-heal checks (the early one and the
 render-failure one) run the same one-shot purge-and-reload as a missing
 `data.js`. `check:lab` boots the app with `scoring.js` 404ing to prove it.
-A scoring change is an app change: `verify`, bump `SW_VERSION`, and expect
-`check:parity` to fail until the golden is regenerated **on purpose**.
+**The page and its rulebook are version-pinned.** `scoring.js` declares
+`SCORING_VERSION`; `index.html` requests `scoring.js?v=<it>` and checks
+`SCORING_EXPECT` against it (`_scoringOk`); `sw.js` precaches that versioned URL
+and caches it under the full URL. A previous release's `scoring.js` — an old
+cached copy, a network drop mid-upgrade — is refused and self-heals instead of
+quietly scoring with old rules. **On any change to `scoring.js`, bump the
+version in all four places**; `check:lab` fails if they disagree and proves a
+stale copy is refused.
+
+A scoring change is an app change: `verify`, bump `SW_VERSION` and
+`SCORING_VERSION`, and expect `check:parity` to fail until the golden is
+regenerated **on purpose**.
 
 ## The engine migration moves code, never numbers
 

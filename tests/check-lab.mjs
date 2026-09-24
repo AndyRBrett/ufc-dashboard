@@ -203,7 +203,14 @@ check("de-vig of -110/-110 is exactly 50/50", Math.abs(dv.a - 0.5) < 1e-12 && Ma
     "_lbScoreUsers", "isMainCardBout", "isEarlyPrelimBout"].filter((f) => idx.includes(`function ${f}(`) || (SCORING.split(`function ${f}(`).length - 1) !== 1);
   check("each scoring function is defined exactly once, in scoring.js", dupes.length === 0 || (console.error("    " + dupes.join(", ")), false));
   check("index.html loads scoring.js after data.js and before its own script",
-    /<script src="data\.js"><\/script>[\s\S]*?<script src="scoring\.js"><\/script>/.test(idx) && idx.indexOf('src="scoring.js"') < idx.indexOf("var SUPABASE_URL="));
+    /<script src="data\.js"><\/script>[\s\S]*?<script src="scoring\.js\?v=[^"]+"><\/script>/.test(idx) && idx.indexOf('src="scoring.js') < idx.indexOf("var SUPABASE_URL="));
+  // One version, three places: scoring.js's own, the page's request + expectation, the SW precache.
+  const vFile = (/var SCORING_VERSION="([^"]+)"/.exec(SCORING) || [])[1];
+  const vSrc = (/<script src="scoring\.js\?v=([^"]+)">/.exec(idx) || [])[1];
+  const vExpect = (/var SCORING_EXPECT="([^"]+)"/.exec(idx) || [])[1];
+  const vSw = (/'\.\/scoring\.js\?v=([^']+)'/.exec(readFileSync(join(ROOT, "sw.js"), "utf8")) || [])[1];
+  check(`scoring.js version agrees in all four places (${vFile})`, !!vFile && vFile === vSrc && vFile === vExpect && vFile === vSw ||
+    (console.error(`    file=${vFile} src=${vSrc} expect=${vExpect} sw=${vSw}`), false));
   check("the kernel runs scoring.js rather than slicing scoring from index.html",
     !PE.KERNEL_BLOCKS.includes("pick-match") && !PE.KERNEL_BLOCKS.includes("fighter-names") && !PE.KERNEL_FNS.includes("_lbScoreUsers"));
 }
@@ -214,7 +221,8 @@ const sw = readFileSync(join(ROOT, "sw.js"), "utf8");
 check("sw.js caches lab.html under its own key (never over the app shell './')", /lab\.html/.test(sw) && /'\.\/lab\.html'/.test(sw));
 check("sw.js keeps the lab's data network-first", /odds-series\.json/.test(sw) && /\/lab\//.test(sw));
 check("sw.js precaches scoring.js and serves it network-first (it must match the page)",
-  /'\.\/scoring\.js'/.test(sw.slice(sw.indexOf("var core"), sw.indexOf("var core") + 200)) && /isScoring/.test(sw) && /\|\| isScoring \|\|/.test(sw));
+  /'\.\/scoring\.js\?v=[^']+'/.test(sw.slice(sw.indexOf("var core"), sw.indexOf("var core") + 200)) && /isScoring/.test(sw) && /\|\| isScoring \|\|/.test(sw)
+  && /isScoring \? req\.url/.test(sw));
 
 // ---------------------------------------------------------------- browser --
 const require = createRequire(import.meta.url);
@@ -388,6 +396,22 @@ else {
       const healed = await sc.evaluate(() => { try { return sessionStorage.getItem("_selfHealed"); } catch (e) { return null; } }).catch(() => null);
       check("with scoring.js unreachable the app self-heals (purge + one reload), like a missing data.js", healed === "1" && reloaded);
       await sc.close();
+    }
+
+    // A stale rulebook — scoring.js from a previous release — is refused, not run:
+    // the page self-heals exactly as if the file were missing.
+    {
+      const st = await browser.newPage();
+      let navs = 0;
+      st.on("framenavigated", (fr) => { if (fr === st.mainFrame()) navs++; });
+      const stale = readFileSync(join(ROOT, "scoring.js"), "utf8").replace(/var SCORING_VERSION="[^"]+"/, 'var SCORING_VERSION="1999-01-01-0"');
+      await st.route(/scoring\.js/, (r) => r.fulfill({ status: 200, contentType: "text/javascript", body: stale }));
+      await st.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 }).catch(() => {});
+      for (let t = 0; t < 150 && navs < 2; t++) await st.waitForTimeout(100);
+      await st.waitForLoadState("load").catch(() => {});
+      const healed = await st.evaluate(() => { try { return sessionStorage.getItem("_selfHealed"); } catch (e) { return null; } }).catch(() => null);
+      check("a stale scoring.js (previous release) is refused and self-heals instead of scoring", navs >= 2 && healed === "1");
+      await st.close();
     }
 
     // If lab/engine.js can't load (404, a first launch offline), the app must
