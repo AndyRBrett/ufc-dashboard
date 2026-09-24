@@ -47,8 +47,13 @@ stages 3–4 run through. What stands in for that soak instead:
 - the UFC path is isolated from everything stage 6 added: `check:parity`
   proves 1,372 PFL rows leave every UFC output byte-identical, and
   `check:promotion` fails on any UFC picks query without the filter;
-- the switcher can't appear until PFL is published, so Saturday's card runs on
-  exactly the UFC code stages 1–4 produced;
+- the switcher can't appear until PFL is published. Saturday's card is not
+  pure stage 1–4 code, though: stage 6 paths it DOES exercise are #184's
+  `promotion=eq.ufc` filter and `promotion:"ufc"` tag on every UFC read and
+  write (sync, restore, community picks, the board, the Lab, the brief and
+  result pushes), the per-promotion lock-cap trigger, and `sportsBoot()`
+  fetching and validating the (empty) feed at startup. Those are the parts to
+  watch on that card; the sport view, sport picks and sport board stay dormant;
 - **publishing PFL is held until after that card**, so the first multi-sport
   production test starts from a UFC path that has already survived a live card.
 
