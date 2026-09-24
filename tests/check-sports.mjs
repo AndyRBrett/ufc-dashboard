@@ -168,7 +168,7 @@ else {
       check("switching to PFL hides the UFC card and shows PFL's", s.other && !s.appShown && s.sportShown && /PFL Test Card/.test(s.sportText) && s.sport === "pfl");
       check("an invalid feed card (one fighter twice) is dropped", !/Bad Card/.test(s.sportText));
       check("feed text is rendered as text, never HTML", s.imgs === 0 && /<img src=x onerror=alert\(1\)>/.test(s.sportText));
-      await page.click("text=Jena Bishop");
+      await page.click('#sportApp .sport-pick:has-text("Jena Bishop")');
       await page.waitForTimeout(400);
       s = await state(page);
       const post = writes.find((w) => w.method === "POST");
@@ -178,7 +178,7 @@ else {
       check("a pick also clears the same bout's row in the other corner order",
         writes.some((w) => w.method === "DELETE" && /promotion=eq\.pfl/.test(w.url) && /f1=eq\.Jena%20Bishop&f2=eq\.Liz%20Carmouche/.test(w.url)));
       writes.length = 0;
-      await page.click("text=Jena Bishop");
+      await page.click('#sportApp .sport-pick:has-text("Jena Bishop")');
       await page.waitForTimeout(400);
       const dels = writes.filter((w) => w.method === "DELETE");
       check("un-picking deletes only that promotion's rows, both corner orders",
@@ -195,10 +195,33 @@ else {
       check("a card past its lock time can't be picked", locked);
       const won = await page.evaluate(() => [...document.querySelectorAll("#sportApp .sport-pick.won")].map((b) => b.textContent));
       check("results show on the card", won.some((t) => /Done A/.test(t)) && won.some((t) => /Done D/.test(t)));
+      // The hero counts down to the next card's lock. When that lock passes
+      // with another card still open, the page moves on by itself: the hero
+      // names the next card and the closed card's buttons lock, with no
+      // reload, and the re-render doesn't duplicate the view.
+      const adv = await page.evaluate(() => {
+        const first = sportEvents("pfl").find((e) => Date.now() < sportLockMs(e));
+        const d = new Date(Date.parse(first.date + "T00:00:00Z") + 7 * 864e5).toISOString().slice(0, 10);
+        _sportFeed.events.push(Object.assign({}, first, { name: "PFL Later Card", date: d }));
+        renderSportView();
+        const before = document.querySelector("#sportApp .cd-event").textContent;
+        const real = Date.now, t = sportLockMs(first) + 1000;
+        Date.now = () => t;
+        try { _sportTick(); } finally { Date.now = real; }
+        const box = [...document.querySelectorAll("#sportApp .sport-ev")].find((x) => x.textContent.includes(first.name));
+        const out = { before, after: document.querySelector("#sportApp .cd-event").textContent,
+          heroes: document.querySelectorAll("#sportApp .sport-hero").length,
+          names: [...document.querySelectorAll("#sportApp .sport-ev-name")].map((x) => x.textContent),
+          locked: [...box.querySelectorAll(".sport-pick")].every((b) => b.disabled) };
+        _sportFeed.events.pop(); renderSportView();
+        return out;
+      });
+      check("when the hero's card locks, the hero moves to the next card and that card's picks lock",
+        adv.before === "PFL Test Card" && adv.after === "PFL Later Card" && adv.locked && adv.heroes === 1 && new Set(adv.names).size === adv.names.length && adv.names.includes("PFL Later Card"));
       await page.evaluate(() => openLeaderboard());
       await page.waitForTimeout(800);
       const board = await page.evaluate(() => ({ text: document.getElementById("lbBody").textContent, lbSportBar: !document.getElementById("lbSportBar").hidden }));
-      check("Ranks shows the PFL board, scored by sportStandings", /PFL standings/.test(board.text) && /Bob1\/11 pt(?!s)/.test(board.text) && /Cat0\/10 pts/.test(board.text));
+      check("Ranks shows the PFL board, scored by sportStandings", /PFL standings/.test(board.text) && /Bob1\/1 correct1 pt(?!s)/.test(board.text) && /Cat0\/1 correct0 pts/.test(board.text));
       check("...read with promotion=eq.pfl, and the switcher is on Ranks too", reads.some((u) => /promotion=eq\.pfl/.test(u) && /select=user_id,nickname/.test(u)) && board.lbSportBar);
       await page.click("#lbSportBar .sport-tab:nth-child(1)");
       await page.waitForTimeout(600);
