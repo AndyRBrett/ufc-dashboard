@@ -1,16 +1,42 @@
 {
-  "generated_at": "2026-09-24T14:12:44Z",
+  "generated_at": "2026-09-24T15:13:34Z",
   "events_tracked": 12,
   "stale_events": 0,
   "parse_failure_events": 0,
   "awaiting_card_events": 4,
   "odds_unavailable_events": 0,
-  "odds_budget_exhausted": false,
+  "odds_budget_exhausted": true,
   "odds_budget": {
-    "exhausted": false,
+    "exhausted": true,
     "reset_day": 1,
     "resets_in_days": 7,
-    "most_affected": []
+    "most_affected": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "days_out": 2,
+        "status": "ok"
+      },
+      {
+        "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+        "days_out": 9,
+        "status": "ok"
+      },
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "days_out": 16,
+        "status": "awaiting-card"
+      },
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "days_out": 23,
+        "status": "awaiting-card"
+      },
+      {
+        "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
+        "days_out": 30,
+        "status": "ok"
+      }
+    ]
   },
   "stale_threshold_hours": 48,
   "movement_alert_threshold": 10,
@@ -95,7 +121,7 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "ok",
-      "last_changed_at": "2026-09-24T12:38:51Z",
+      "last_changed_at": "2026-09-24T15:13:34Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -115,7 +141,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T14:12:44Z",
+      "last_changed_at": "2026-09-24T15:13:34Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -125,7 +151,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T14:12:44Z",
+      "last_changed_at": "2026-09-24T15:13:34Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -145,7 +171,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T14:12:44Z",
+      "last_changed_at": "2026-09-24T15:13:34Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -155,7 +181,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T14:12:44Z",
+      "last_changed_at": "2026-09-24T15:13:34Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -194,17 +220,17 @@
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Vanessa Demopoulos",
       "f2": "Yazmin Jauregui",
-      "f1_movement": 166,
-      "f2_movement": -353,
-      "magnitude": 353,
+      "f1_movement": 157,
+      "f2_movement": -337,
+      "magnitude": 337,
       "main_event": false,
       "tier": "prelim",
       "threshold": 110,
       "low_confidence": false,
       "wc": "Women's Strawweight",
-      "f1_prob_shift": -4.2,
-      "f2_prob_shift": 4.8,
-      "priority": 706.0
+      "f1_prob_shift": -4.0,
+      "f2_prob_shift": 4.6,
+      "priority": 674.0
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
@@ -242,17 +268,17 @@
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Rodolfo Vieira",
       "f2": "Robert Bryczek",
-      "f1_movement": -52,
-      "f2_movement": 240,
-      "magnitude": 240,
+      "f1_movement": -49,
+      "f2_movement": 237,
+      "magnitude": 237,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 9.6,
-      "f2_prob_shift": -8.8,
-      "priority": 480.0
+      "f1_prob_shift": 9.2,
+      "f2_prob_shift": -8.3,
+      "priority": 474.0
     },
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
