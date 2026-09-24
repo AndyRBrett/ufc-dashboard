@@ -281,7 +281,9 @@ def test_odds_budget_exhausted_distinguishes_quota_from_a_dead_key(
     assert ws.odds_budget_exhausted(p) is expected
 
 
-SPENT_PRIMARY = {"last_status": 401, "requests_remaining": 0, "providers": {
+PULL_AT = "2026-09-24T17:20:25+00:00"
+SPENT_PRIMARY = {"last_status": 401, "requests_remaining": 0,
+                 "last_fetch_at": PULL_AT, "providers": {
     "the-odds-api": {"last_status": 401, "requests_remaining": 0,
                      "exhausted_at": "2026-09-24T15:10:23+00:00"}}}
 
@@ -289,7 +291,13 @@ SPENT_PRIMARY = {"last_status": 401, "requests_remaining": 0, "providers": {
 @pytest.mark.parametrize("backup,expected", [
     # 2026-09-24: the backup key priced 46 bouts with 420 calls left while the
     # banner told everyone lines weren't refreshing.
-    ({"last_status": 200, "requests_remaining": 420, "bouts": 46}, False),
+    ({"last_status": 200, "requests_remaining": 420, "bouts": 46,
+      "last_fetch_at": PULL_AT},                                   False),
+    # Stale 200: ODDS_API_KEY_SECONDARY was removed, so the backup sat out the
+    # latest pull and its old success proves nothing about this one.
+    ({"last_status": 200, "requests_remaining": 420, "bouts": 46,
+      "last_fetch_at": "2026-09-20T09:00:00+00:00"},               True),
+    ({"last_status": 200, "requests_remaining": 420, "bouts": 46}, True),
     # Backup spent too — now nothing refreshes, and the banner is right.
     ({"last_status": 401, "requests_remaining": 0,
       "exhausted_at": "2026-09-24T16:00:00+00:00"},                True),
