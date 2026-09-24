@@ -300,6 +300,9 @@ else {
         const lp = await ctxT.newPage(); await lp.goto(base + "/lab.html", { waitUntil: "load" });
         await lp.waitForFunction(() => !/Loading the lab/.test(document.getElementById("main").textContent), null, { timeout: 15000 });
         const A = await read(ap), B = await read(lp);
+        const metaA = await ap.evaluate(() => document.querySelector('meta[name="theme-color"]').getAttribute("content"));
+        const metaB = await lp.evaluate(() => [...document.querySelectorAll('meta[name="theme-color"]')].map((m) => m.content));
+        if (metaB.length !== 1 || metaB[0].toLowerCase() !== metaA.toLowerCase()) mism.push(`${t}: status bar app=${metaA} lab=${metaB.join("|")}`);
         const bad = VARS.filter((v) => A.vars[v] !== B.vars[v]);
         if (A.theme !== t || B.theme !== t || bad.length || A.bg !== B.bg) mism.push(`${t}: ${bad.map((v) => `${v} app=${A.vars[v]} lab=${B.vars[v]}`).join(", ") || "bg " + A.bg + " vs " + B.bg}`);
         // Second visit, index.html unreachable: the cached theme still paints.
@@ -312,6 +315,41 @@ else {
       }
       check("the Fight Lab wears the app's theme — identical colours for all 7 themes", mism.length === 0 || (console.error("    " + mism.join("\n    ")), false));
       check("…and paints it before index.html arrives, from the cached theme", !mism.some((m) => /cached/.test(m)));
+      check("…with the app's status-bar colour, via a replaced meta node", !mism.some((m) => /status bar/.test(m)));
+      // First visit, nothing cached: hidden until themed (no Octagon flash)…
+      {
+        const c1 = await browser.newContext();
+        await c1.addInitScript(() => { try { localStorage.setItem("ufc_theme", "neon"); } catch (e) {} });
+        await c1.route(/supabase\.co/, (r) => r.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
+        let release; const gate = new Promise((r) => (release = r));
+        await c1.route(/index\.html/, async (r) => { await gate; r.continue(); });   // hold the theme source
+        const p1 = await c1.newPage();
+        await p1.goto(base + "/lab.html", { waitUntil: "domcontentloaded" });
+        const hiddenEarly = await p1.evaluate(() => document.documentElement.style.visibility === "hidden");
+        release();
+        await p1.waitForFunction(() => document.documentElement.style.visibility === "" && getComputedStyle(document.body).getPropertyValue("--bg").trim() !== "#07070a", null, { timeout: 5000 });
+        check("a first, uncached visit is hidden until the theme lands — no Octagon flash", hiddenEarly);
+        await c1.close();
+        // …and never left blank when index.html can't be fetched.
+        const c2 = await browser.newContext();
+        await c2.addInitScript(() => { try { localStorage.setItem("ufc_theme", "fire"); } catch (e) {} });
+        await c2.route(/index\.html/, (r) => r.fulfill({ status: 503, body: "" }));
+        const p2 = await c2.newPage();
+        await p2.goto(base + "/lab.html", { waitUntil: "domcontentloaded" });
+        await p2.waitForTimeout(1700);
+        check("…and shown anyway within the wait if the theme can't be fetched", await p2.evaluate(() => document.documentElement.style.visibility !== "hidden"));
+        await c2.close();
+      }
+      // Seasonal: the month's own bar colour, every month, as the app's SEASONS has it.
+      {
+        const lab = readFileSync(join(ROOT, "lab.html"), "utf8");
+        const a = lab.indexOf("// lab-theme:start"), b = lab.indexOf("// lab-theme:end");
+        const f = new Function(lab.slice(a, b) + ";return appThemeColor;")();
+        const ap = await browser.newPage(); await ap.goto(base + "/index.html", { waitUntil: "load" });
+        const bars = await ap.evaluate(() => SEASONS.map((x) => x.bar)); await ap.close();
+        const labBars = bars.map((_, i) => f(html, "seasonal", i));
+        check("the seasonal status bar is the month's own colour for all 12 months", JSON.stringify(bars) === JSON.stringify(labBars));
+      }
     }
 
     // If lab/engine.js can't load (404, a first launch offline), the app must
