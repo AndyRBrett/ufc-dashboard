@@ -24,6 +24,7 @@ Supabase backend holds picks and fans out push notifications.
 - [Notifications](#notifications)
 - [Local development](#local-development)
 - [Deployment](#deployment)
+  - [Auth email (Brevo SMTP)](#auth-email-brevo-smtp)
 - [Security](#security)
 - [Further reading](#further-reading)
 
@@ -396,6 +397,35 @@ production.
 
 Edge-function changes go live only after the Supabase deploy runs — not on git
 push alone.
+
+### Auth email (Brevo SMTP)
+
+Sign-up confirmation and sign-in emails are sent by Supabase Auth through
+**Brevo** as a custom SMTP provider. None of this is in the repo, so a code
+search for "brevo" or "smtp" finds nothing. It is configured only in the
+Supabase dashboard under **Authentication → Emails → SMTP Settings**:
+
+| Setting | Value |
+| --- | --- |
+| Custom SMTP | Enabled |
+| Host | `smtp-relay.brevo.com` |
+| Port | `587` |
+| Sender name | `UFC Picks` |
+| Password | the Brevo SMTP key named **UFC Picks** |
+
+The Brevo account has two SMTP keys, and only one is in use:
+
+- **UFC Picks**: the live credential. Don't delete or rotate it without
+  pasting the new key into Supabase first, or auth emails stop sending.
+- **Master Password**: has never been used. It isn't connected to anything,
+  so it's safe to let it expire or to delete it.
+
+Brevo emails a warning ("SMTP Keys will be marked inactive in 7 days") for any
+key that has gone unused for 3 months, then deactivates it. That warning is
+expected for Master Password and needs no action. **If it ever names UFC
+Picks**, auth emails haven't gone out in 3 months. That can happen in a quiet
+off-season. Trigger one (a sign-up or password reset) before the 7 days are up
+to keep the key active.
 
 ---
 
