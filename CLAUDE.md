@@ -529,6 +529,14 @@ copy of scoring into them to "fix" that; the whole point is that they can't
 drift from the board. Architecture, the curated-feed format for other
 promotions, and the analytics' leak guards: `docs/PICK-ENGINE.md`.
 
+**Since migration stage 2, `lab/engine.js` also runs inside the app itself**:
+`index.html` loads it and answers every bout lookup through it
+(`_boutLookup` → `_appEngine`). A change to `lab/engine.js` is an app change:
+run `verify`, bump `SW_VERSION`. The app never *depends* on it, though: if it
+fails to load, `_boutLookup` falls back to the original loops, `check:parity`
+proves both paths produce identical scores, and `check:lab` boots the app with
+the file 404ing.
+
 ## The Friday Fight Week Brief push
 
 `send-reminders` (already on the 5-minute `scheduled-push.yml` cadence) sends one

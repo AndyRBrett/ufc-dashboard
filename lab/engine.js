@@ -189,6 +189,28 @@
           });
         });
         return out;
+      },
+      // Archived bout for a date whose card is still in the live window. Only
+      // reached when the live card doesn't carry the bout (see findBout).
+      fallback: function (date, a, b, same) {
+        var arc = (env.RESULTS_ARCHIVE || {})[date];
+        if (!arc || !arc.fights) return null;
+        for (var k = 0; k < arc.fights.length; k++) {
+          var f = arc.fights[k];
+          if ((same(f.f1, a) && same(f.f2, b)) || (same(f.f1, b) && same(f.f2, a))) {
+            var id = "ufc:" + date + ":archive";
+            var ev = { id: id, promotion: "ufc", name: arc.name || ("UFC — " + date), date: date, venue: "", location: "",
+              broadcast: "", segments: [{ id: "main", name: "Main Card", time: null }], source: "archive", fotn: null, slug: "", bouts: [] };
+            var bt = makeBout(id, k, {
+              label: f.lbl || (k < 5 ? "Main Card" : "Prelim"), division: f.wc || "", winner: f.winner,
+              method: f.method, state: f.winner ? "post" : "pre", raw: f,
+              a: { name: f.f1, record: "", rank: "", odds: f.odds ? f.odds.f1 : null },
+              b: { name: f.f2, record: "", rank: "", odds: f.odds ? f.odds.f2 : null }
+            });
+            return { event: ev, bout: bt };
+          }
+        }
+        return null;
       }
     };
   }
@@ -294,7 +316,8 @@
     events.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
     events.forEach(function (ev) {
       ev.bouts.forEach(function (b) {
-        index[ev.promotion + "|" + ev.date + "|" + pairKey(b.competitors[0].name, b.competitors[1].name)] = { event: ev, bout: b };
+        var k = ev.promotion + "|" + ev.date + "|" + pairKey(b.competitors[0].name, b.competitors[1].name);
+        if (!index[k]) index[k] = { event: ev, bout: b };   // first card wins, as the app's own loops do
       });
     });
     function rulesFor(promo) { return rulesBy[promo] || rulesBy["default"] || simpleRules(); }
@@ -314,6 +337,15 @@
           if ((same(c[0].name, a) && same(c[1].name, b)) || (same(c[0].name, b) && same(c[1].name, a)))
             return { event: ev, bout: ev.bouts[j] };
         }
+      }
+      // Last resort: a bout missing from its live card but present in that
+      // date's results archive (the app has always checked the archive after
+      // the live window, even for a date the window still holds).
+      for (var f = 0; f < adapters.length; f++) {
+        var ad = adapters[f];
+        if (!ad.fallback || !ad.promotion || ad.promotion.id !== promo) continue;
+        var fb = ad.fallback(date, a, b, same);
+        if (fb) return fb;
       }
       return null;
     }

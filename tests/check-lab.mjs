@@ -102,6 +102,18 @@ check("boardRows keeps exactly the identities the board keeps (one per person)",
   JSON.stringify(ids) === JSON.stringify(K._lbScoreUsers(ghosts).map((u) => u.user_id).sort()) && ids.length === 2);
 check("boardRows drops the ghost's rows rather than merging them", !kept.some((r) => r.user_id === "u-Andy-old" || r.user_id === "u-tristin-2"));
 
+// 1c. Two cards on one date carrying the same pairing (a rebooked bout): the app
+//     has always taken the FIRST card in EVENTS order; so must the engine.
+{
+  const dup = { EVENTS: [
+    { name: "First", date: "2026-11-01", fights: [bout("X1", "Y1", "X1")] },
+    { name: "Second", date: "2026-11-01", fights: [bout("X1", "Y1", "Y1")] },
+  ], RESULTS_ARCHIVE: {} };
+  const de = PE.createEngine({ adapters: [PE.ufcAdapter(dup)], rules: { ufc: PE.ufcRules(K) } });
+  const hit = de.findBout("2026-11-01", "Y1", "X1");
+  check("a pairing on two same-date cards resolves to the first card, as the app's loops do", hit && hit.event.name === "First");
+}
+
 // 2. Feed adapter: untrusted input, validated whole.
 const feed = PE.feedAdapter({
   promotions: [{ id: "pfl", name: "PFL" }, { id: "ufc", name: "Fake UFC" }],
@@ -266,8 +278,27 @@ else {
     await app.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 });
     await app.waitForTimeout(500);
     check("the app's More menu carries the Fight Lab link", await app.evaluate(() => { const a = document.getElementById("labBtn"); return !!a && a.getAttribute("href") === "lab.html"; }));
+    check("the app answers bout lookups through the Pick Engine (migration stage 2)",
+      await app.evaluate(() => typeof PickEngine !== "undefined" && typeof _appEngine === "function" && _appEngine() !== null));
     check("the app boots with the link added (no uncaught errors)", appErrs.length === 0 || (console.error(appErrs.join("\n")), false));
     await app.close();
+
+    // If lab/engine.js can't load (404, a first launch offline), the app must
+    // still boot and score through its own loops.
+    const bare = await browser.newPage();
+    const bareErrs = [];
+    bare.on("pageerror", (e) => bareErrs.push(e.message));
+    await bare.route(/lab\/engine\.js/, (r) => r.fulfill({ status: 404, body: "" }));
+    await bare.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 });
+    await bare.waitForTimeout(500);
+    const bareState = await bare.evaluate(() => ({
+      noEngine: typeof PickEngine === "undefined" && _appEngine() === null,
+      lookupWorks: (() => { const e = EVENTS.find((x) => x.fights.length); const f = e.fights[0];
+        const h = _boutLookup(e.date, f.f2.n, f.f1.n); return !!h && h.live && h.fight === f; })(),
+    }));
+    check("with lab/engine.js unreachable the app falls back to its own lookups", bareState.noEngine && bareState.lookupWorks);
+    check("…and boots without an uncaught error", bareErrs.length === 0 || (console.error(bareErrs.join("\n")), false));
+    await bare.close();
   } finally { await browser.close(); server.close(); }
 }
 
