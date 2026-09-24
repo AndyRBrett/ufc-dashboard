@@ -22,8 +22,8 @@ deploy before the next stage starts. **Nothing merges on a card day.**
 | # | Stage | What moves | Risk |
 | - | ----- | ---------- | ---- |
 | 1 ✅ merged | Safety net | `check:parity` + golden, `docs/ROLLBACK.md`, this plan. No app change. | none |
-| 2 | Engine in the app | `index.html` loads `lab/engine.js`; scoring's bout lookups (`_findFightResult`, `_isMainCardPick`, the lookup loop in `_lbScoreUsers`) go through one `_boutLookup` → `engine.findBout`, with the original loops as a fallback if the engine didn't load | low: lookups only |
-| 3 | Scoring owned by the engine | `pickPts` / `userPts` / locks / dog tiers / method matching move into `ufcRules` natively. `index.html` calls the engine, and `loadKernel` stops lifting scoring out of `index.html` | medium: every number, held by parity |
+| 2 ✅ merged | Engine in the app | `index.html` loads `lab/engine.js`; scoring's bout lookups (`_findFightResult`, `_isMainCardPick`, the lookup loop in `_lbScoreUsers`) go through one `_boutLookup` → `engine.findBout`, with the original loops as a fallback if the engine didn't load | low: lookups only |
+| 3 | One scoring rulebook (option A) | Every scoring function moves out of `index.html` into a standalone `scoring.js` that the app loads (required, self-healing like `data.js`) and the Lab, FightBot, the Friday brief and the tests all run. `loadKernel` stops lifting scoring out of HTML. The alternatives were the engine owning scoring natively (a second implementation to keep in step) or bundling at deploy (changes the deploy); A is one real source with no build step | medium: every number, held by parity |
 | 4 | Standings consumers | the Belt, card recap and Year Wrapped read engine standings instead of calling `_lbScoreUsers` directly; `_fightIndex` (the exact-name index pick sync uses) moves onto the engine | medium |
 | 5 | Segments and locks | `fightLocked` / `boutSegmentTime` read the engine's segments (`check:lock` must stay green) | medium: lock timing |
 | 6 | Open it up | picks on feed promotions; a standings scope parameter, which rooms plugs into | new behavior, own tests |

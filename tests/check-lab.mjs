@@ -51,7 +51,8 @@ const ARCHIVE = { "2026-06-06": { name: "UFC Old", fights: [{ f1: "Z1", f2: "Y1"
 const env = { EVENTS, RESULTS_ARCHIVE: ARCHIVE, FIGHTER_STATS: {}, RANKINGS: {} };
 
 let K;
-try { K = PE.loadKernel(html, env); check("kernel lifts scoring + model + intel out of index.html", true); }
+const SCORING = readFileSync(join(ROOT, "scoring.js"), "utf8");
+try { K = PE.loadKernel(html, env, undefined, SCORING); check("kernel runs scoring.js and lifts the model + intel out of index.html", true); }
 catch (e) { fail("kernel failed to load from index.html: " + e.message); process.exit(1); }
 check("kernel's LOCKS_START is the fixture's assumption (2026-09-26)", K.LOCKS_START === C2);
 
@@ -192,11 +193,28 @@ check("ticker lists the latest bout first, its result line leading", /^C1 def\. 
 const dv = PE.deVig(-110, -110);
 check("de-vig of -110/-110 is exactly 50/50", Math.abs(dv.a - 0.5) < 1e-12 && Math.abs(dv.b - 0.5) < 1e-12);
 
+// 7b. Stage 3: one scoring rulebook. Every scoring function is defined once, in
+//     scoring.js — never again inline in index.html, where a second copy could
+//     drift — and the kernel runs that file rather than slicing it from HTML.
+{
+  const idx = readFileSync(join(ROOT, "index.html"), "utf8");
+  const dupes = ["nmKey", "nmEq", "nmBout", "splitNick", "dogPtsFor", "dogPtsForPick", "userPts", "locksOn", "isLockPick",
+    "lockPtsFor", "pickPts", "scoreMethod", "_boutLookup", "_findFightResult", "_isMainCardPick", "_eventFinished",
+    "_lbScoreUsers", "isMainCardBout", "isEarlyPrelimBout"].filter((f) => idx.includes(`function ${f}(`) || (SCORING.split(`function ${f}(`).length - 1) !== 1);
+  check("each scoring function is defined exactly once, in scoring.js", dupes.length === 0 || (console.error("    " + dupes.join(", ")), false));
+  check("index.html loads scoring.js after data.js and before its own script",
+    /<script src="data\.js"><\/script>[\s\S]*?<script src="scoring\.js"><\/script>/.test(idx) && idx.indexOf('src="scoring.js"') < idx.indexOf("var SUPABASE_URL="));
+  check("the kernel runs scoring.js rather than slicing scoring from index.html",
+    !PE.KERNEL_BLOCKS.includes("pick-match") && !PE.KERNEL_BLOCKS.includes("fighter-names") && !PE.KERNEL_FNS.includes("_lbScoreUsers"));
+}
+
 // 8. Wiring: the app links to the lab, and the SW never serves one page as the other.
 check("index.html links to lab.html from the More menu", /id="labBtn"[^>]*href="lab\.html"|href="lab\.html"[^>]*id="labBtn"/.test(html));
 const sw = readFileSync(join(ROOT, "sw.js"), "utf8");
 check("sw.js caches lab.html under its own key (never over the app shell './')", /lab\.html/.test(sw) && /'\.\/lab\.html'/.test(sw));
 check("sw.js keeps the lab's data network-first", /odds-series\.json/.test(sw) && /\/lab\//.test(sw));
+check("sw.js precaches scoring.js and serves it network-first (it must match the page)",
+  /'\.\/scoring\.js'/.test(sw.slice(sw.indexOf("var core"), sw.indexOf("var core") + 200)) && /isScoring/.test(sw) && /\|\| isScoring \|\|/.test(sw));
 
 // ---------------------------------------------------------------- browser --
 const require = createRequire(import.meta.url);
@@ -350,6 +368,20 @@ else {
         const labBars = bars.map((_, i) => f(html, "seasonal", i));
         check("the seasonal status bar is the month's own colour for all 12 months", JSON.stringify(bars) === JSON.stringify(labBars));
       }
+    }
+
+    // scoring.js is required: if it can't load, the app runs the same one-shot
+    // purge-and-reload self-heal a missing data.js does, rather than a dead page.
+    {
+      const sc = await browser.newPage();
+      let loads = 0;
+      sc.on("load", () => loads++);
+      await sc.route(/scoring\.js/, (r) => r.fulfill({ status: 404, body: "" }));
+      await sc.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 });
+      await sc.waitForTimeout(3500);
+      const healed = await sc.evaluate(() => { try { return sessionStorage.getItem("_selfHealed"); } catch (e) { return null; } });
+      check("with scoring.js unreachable the app self-heals (purge + one reload), like a missing data.js", healed === "1" && loads >= 2);
+      await sc.close();
     }
 
     // If lab/engine.js can't load (404, a first launch offline), the app must

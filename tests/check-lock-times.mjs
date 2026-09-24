@@ -32,10 +32,21 @@ if (a < 0 || b < 0 || b <= a) {
   fail("index.html: could not locate the lock-clock block (etOffset … lockReason)");
   process.exit(1);
 }
-const src = html.slice(a, b);
+// The segment labels (isMainCardBout / isEarlyPrelimBout) are shared with
+// scoring, so since engine-migration stage 3 they live once, in scoring.js —
+// the clock block calls them. Evaluate both, as the page does.
+const scoring = readFileSync(join(ROOT, "scoring.js"), "utf8");
+const labelFn = (name) => {
+  const i = scoring.indexOf(`function ${name}(`);
+  if (i < 0) { fail(`scoring.js no longer defines ${name}()`); process.exit(1); }
+  let j = scoring.indexOf("{", i), d = 0;
+  for (; j < scoring.length; j++) { if (scoring[j] === "{") d++; else if (scoring[j] === "}" && --d === 0) break; }
+  return scoring.slice(i, j + 1);
+};
+const src = labelFn("isMainCardBout") + "\n" + labelFn("isEarlyPrelimBout") + "\n" + html.slice(a, b);
 
-for (const fn of ["_segPassed", "cardStartTime", "boutSegmentTime", "isEarlyPrelimBout"]) {
-  if (!src.includes("function " + fn)) fail(`lock block no longer defines ${fn}()`);
+for (const fn of ["_segPassed", "cardStartTime", "boutSegmentTime"]) {
+  if (!html.slice(a, b).includes("function " + fn)) fail(`lock block no longer defines ${fn}()`);
 }
 
 // Freeze the clock so "now" is a parameter, not the wall clock.

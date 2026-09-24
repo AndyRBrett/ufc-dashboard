@@ -29,7 +29,9 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const html = readFileSync(join(ROOT, "index.html"), "utf8");
+// The app's source: index.html plus scoring.js, where the scoring blocks this
+// test lifts have lived since engine-migration stage 3.
+const html = readFileSync(join(ROOT, "index.html"), "utf8") + "\n" + readFileSync(join(ROOT, "scoring.js"), "utf8");
 function block(name) {
   const a = html.indexOf(`// ${name}:start`), b = html.indexOf(`// ${name}:end`);
   if (a < 0 || b < 0) {
