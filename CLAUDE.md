@@ -609,6 +609,18 @@ A scoring change is an app change: `verify`, bump `SW_VERSION` and
 `SCORING_VERSION`, and expect `check:parity` to fail until the golden is
 regenerated **on purpose**.
 
+## Non-UFC cards start in shadow mode
+
+`extra.py` builds PFL cards for the Fight Lab hub from Wikipedia (free, same
+parsers as `scrape.py`). It was written without being able to see PFL's real
+pages, so it publishes nothing until a real run is checked: output lands in
+`events-extra.candidate.json` + `extra-state.json`, and only `EXTRA_PUBLISH=1`
+on its `update.yml` step makes it write `events-extra.json`. Don't flip that
+without comparing a candidate to the actual card: the engine's rule is that
+nothing may state a card that isn't happening. A card needs `MIN_BOUTS` real
+bouts to be listed, and a failed fetch keeps the previous version, never an
+empty one.
+
 ## Rooms are for accounts, and a room's board is the main board filtered
 
 Watch Party rooms (`// rooms:start … :end` in `index.html`,
