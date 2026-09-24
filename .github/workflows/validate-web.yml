@@ -24,6 +24,7 @@
 #   check:brief     — the Friday Fight Week Brief push goes out once, Friday 7pm ET, linking to the Lab
 #   check:iq        — the AI Fight IQ write-up never states a number it wasn't given, stays on Claude, is capped
 #   check:parity    — board, belt, recaps and Wrapped are byte-identical to the pre-migration golden
+#   check:rooms     — a room's board is the main board filtered; only email accounts join; invites work
 name: Validate Web
 
 on:
@@ -97,3 +98,5 @@ jobs:
         run: npm run check:iq
       - name: Scoring parity (engine migration)
         run: npm run check:parity
+      - name: Watch Party rooms
+        run: npm run check:rooms

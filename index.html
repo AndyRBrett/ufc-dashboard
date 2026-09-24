@@ -574,6 +574,20 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 /* One bar, two dimensions: the time tabs pick a period, the scope button is an
    independent on/off filter. The divider keeps them from reading as one group of
    four mutually-exclusive tabs. */
+.lb-roombar{display:flex;justify-content:center;padding:4px 14px 0;flex-shrink:0}
+.lb-room-btn{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.room-list{display:flex;flex-direction:column;gap:6px;margin:4px 0 6px}
+.room-item{display:flex;flex-direction:column;gap:4px}
+.room-row{display:flex;flex-direction:column;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);cursor:pointer;font:600 14px Inter,sans-serif}
+.room-row.on{border-color:var(--red)}
+.room-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.room-sub{font:500 11.5px Inter,sans-serif;color:var(--muted);margin-top:2px}
+.room-acts{display:flex;gap:6px;justify-content:flex-end}
+.room-act{background:none;border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:4px 10px;font:600 12px Inter,sans-serif;cursor:pointer}
+.room-act-quiet{color:var(--muted)}
+.room-form{display:flex;gap:8px;margin-top:10px}
+.room-form .nm-input{flex:1;margin:0;min-width:0}
+.room-form .nm-btn{width:auto;padding:0 16px;flex-shrink:0}
 .lb-bar-sep{width:1px;align-self:stretch;margin:3px 2px;background:var(--border2);opacity:.7;flex-shrink:0}
 .lb-modebar .ftab{white-space:nowrap}
 /* Outlined when on, rather than filled like a selected tab. Two solid red pills
@@ -1617,6 +1631,21 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
       <input class="nm-input" id="acctCode" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="Code from email" maxlength="10" aria-label="Verification code from email" style="margin-top:12px" oninput="document.getElementById('acctErr').style.display='none'">
       <button class="nm-btn" id="acctVerifyBtn" onclick="acctVerify()">Verify code</button>
       <button class="nm-del-link" onclick="acctSend()">Resend code</button>
+    </div>
+  </div>
+</div>
+<div class="nm-bg" id="roomBg" onclick="if(event.target===this)closeRoomSheet()">
+  <div class="nm-box" role="dialog" aria-modal="true" aria-labelledby="roomTitle">
+    <div class="nm-top"><h3 id="roomTitle">👥 Rooms</h3><button class="nm-xbtn" onclick="closeRoomSheet()" aria-label="Close">x</button></div>
+    <p>A private board for your group: same picks, same scoring, just the people in the room — with its own 🏆 belt.</p>
+    <div id="roomList" class="room-list"></div>
+    <div id="roomNoAcct" style="display:none">
+      <p style="margin-top:14px">Rooms need an email account so you stay in them on any phone. Linking keeps your picks.</p>
+      <button class="nm-btn" onclick="closeRoomSheet();openAcct()">Link an email</button>
+    </div>
+    <div id="roomForms" style="display:none">
+      <div class="room-form"><input class="nm-input" id="roomJoinCode" placeholder="Invite code" maxlength="8" autocapitalize="characters" autocomplete="off" aria-label="Room invite code"><button class="nm-btn" onclick="roomJoinSubmit()">Join</button></div>
+      <div class="room-form"><input class="nm-input" id="roomNewName" placeholder="New room name" maxlength="40" autocomplete="off" aria-label="New room name"><button class="nm-btn" onclick="roomCreateSubmit()">Create</button></div>
     </div>
   </div>
 </div>
@@ -3963,7 +3992,16 @@ function deleteAccount(){
           // that matches no rows returns 204, so 404 really does mean "no
           // such table" -- there is nothing there to leave behind.
           if(!r.ok&&r.status!==404)throw new Error("delete prefs "+r.status);
-        });
+        })
+        // Rooms: the ones this account owns go (only an owner can delete a
+        // room, so nobody else could clean them up), and so does its seat in
+        // anyone else's. Same rules as prefs: a failure is reported, and 404
+        // (0006 not applied) means there is nothing to leave behind.
+        .then(function(){return fetch(SUPABASE_URL+"/rest/v1/rooms?owner_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h});})
+        .then(function(r){if(!r.ok&&r.status!==404)throw new Error("delete rooms "+r.status);
+          return fetch(SUPABASE_URL+"/rest/v1/room_members?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h});})
+        .then(function(r){if(!r.ok&&r.status!==404)throw new Error("delete room seats "+r.status);
+          try{localStorage.removeItem("ufc_lb_room");localStorage.removeItem("ufc_room_join");}catch(e){}});
     });
   }).then(function(){
     // Best-effort: drop the browser push subscription, then wipe all local state.
@@ -4122,6 +4160,7 @@ function acctVerify(){
     .catch(function(){btn.disabled=false;btn.textContent="Verify code";errEl.textContent="Wrong or expired code — try again";errEl.style.display="block";});
 }
 function _postSignIn(prevId,email){
+  _roomsAfterSignIn();
   if(email){try{var s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");if(s&&!s.email){s.email=email;_saveSession(s);}}catch(e){}}
   var changed=(prevId&&USER_ID&&prevId!==USER_ID)||(!userName&&!!USER_ID);
   // Cleared HERE rather than in finish(): a different account is a different
@@ -5954,7 +5993,9 @@ var WHATS_NEW=[
   {id:"2026-09-25-weekly-brief",emoji:"📰",title:"Friday Fight Week Brief",
    desc:"Every Friday at 7pm ET before a card, a quick brief lands with notifications on: the biggest line move, the fight your group is most split on, and the one worth studying. Tap it to open the full brief in the Fight Lab."},
   {id:"2026-09-26-scouting-report",emoji:"✍️",title:"Your scouting report",
-   desc:"In the Fight Lab's Fight IQ tab, tap ✍️ for a write-up of how you pick — in a different voice every time, from a blunt old trainer to a nature documentary. It only uses your real numbers. Three a day."}
+   desc:"In the Fight Lab's Fight IQ tab, tap ✍️ for a write-up of how you pick — in a different voice every time, from a blunt old trainer to a nature documentary. It only uses your real numbers. Three a day."},
+  {id:"2026-09-27-rooms",emoji:"👥",title:"Rooms",
+   desc:"A private board for your group. On Ranks, tap 👥 to create a room and share the invite link. Same picks, same scoring, just the people in the room, with its own 🏆 belt. Rooms need an email account (⋯ → Sign In / Link Email), so you stay in them on any phone."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -8151,6 +8192,240 @@ function _reconcileMyMethods(rows){
 
 // _lbScoreUsers — the board scorer: moved to scoring.js
 var _lbRows=null;   // raw picks rows from the last leaderboard fetch
+// rooms:start
+// Watch Party rooms: a private board for a group of friends. A room's board is
+// the SAME boardStandings() everyone's board uses, scoped to its members
+// ({users:[...]}), and its Belt is computeBeltLineage over the same scope, so a
+// room can never score a pick differently from the main board.
+//
+// Rooms belong to email-linked ACCOUNTS, never to a device: the database
+// refuses an anonymous session outright (supabase/migrations/0006_rooms.sql,
+// is_account()). An anonymous user_id dies with the phone's storage and would
+// leave a ghost member behind; an account's user_id comes back on any phone.
+// So joining without an email opens the existing "Link an email" sheet first
+// (linking keeps the same user_id, so picks come along) and resumes the join
+// once the code is verified.
+//
+// Invite links are ?join=CODE. The code is the only way in: rooms aren't
+// listable, and RLS hides every room from non-members.
+var ROOM_CODE_RE=/^[0-9A-F]{6}$/;
+var _rooms=[];            // [{id,name,code,owner_id,members:[user_id]}], mine only
+var _roomsFor=null;       // the USER_ID _rooms was loaded for: another account's rooms never show
+var _roomsAt=0;           // when the roster was last fetched (board refreshes re-read it)
+var lbRoom=(function(){try{return localStorage.getItem("ufc_lb_room")||null;}catch(e){return null;}})();
+function _roomById(id){if(_roomsFor!==USER_ID)return null;for(var i=0;i<_rooms.length;i++)if(_rooms[i].id===id)return _rooms[i];return null;}
+function roomHas(r){var m=Object.create(null);r.members.forEach(function(u){m[u]=true;});return function(uid){return !!m[uid];};}
+function _roomSig(r){return r?r.members.slice().sort().join(","):"";}
+// The selected room, or null for Everyone. A room you've left, or that its
+// owner deleted, falls back to Everyone rather than an empty board.
+function _curRoom(){return lbRoom?_roomById(lbRoom):null;}
+// Add the selected room's members to a standings scope (a copy: the caller's
+// object is never mutated). Everyone = the scope unchanged.
+function roomScope(scope){
+  var r=_curRoom(),s={};
+  scope=scope||{};
+  for(var k in scope)if(Object.prototype.hasOwnProperty.call(scope,k))s[k]=scope[k];
+  if(r)s.users=r.members.slice();
+  return s;
+}
+function normRoomCode(c){return String(c==null?"":c).trim().toUpperCase().replace(/[^0-9A-Z]/g,"");}
+function roomInviteUrl(r){return location.origin+location.pathname+"?join="+encodeURIComponent(r.code);}
+function _roomApi(path,opts){
+  opts=opts||{};
+  var h={apikey:SUPABASE_ANON,Authorization:_authBearer(),"Content-Type":"application/json"};
+  return fetch(SUPABASE_URL+path,{method:opts.method||"GET",headers:h,body:opts.body?JSON.stringify(opts.body):undefined})
+    .then(function(r){return r.text().then(function(t){
+      var j=null;try{j=t?JSON.parse(t):null;}catch(e){}
+      if(!r.ok)throw new Error((j&&(j.message||j.msg))||("rooms "+r.status));
+      return j;
+    });});
+}
+// An email-linked session whose access token was minted while it was still
+// anonymous carries is_anonymous:true until it refreshes, and the database
+// would refuse it. One refresh + retry, only for that refusal.
+function _roomRpc(fn,args){
+  var call=function(){return _roomApi("/rest/v1/rpc/"+fn,{method:"POST",body:args});};
+  return _authReady.then(call).catch(function(err){
+    if(!/link an email/i.test((err&&err.message)||"")||!_sessEmail())throw err;
+    var s=null;try{s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");}catch(e){}
+    if(!s||!s.refresh_token)throw err;
+    return _refreshToken(s.refresh_token).then(function(raw){_adoptSession(raw,s);}).then(call);
+  });
+}
+function _lbPanelOpen(){var p=document.getElementById("lbPanel");return !!(p&&p.classList.contains("open"));}
+function roomsLoad(){
+  // Account A's rooms must never be shown to account B: drop the cache the
+  // moment the identity changes, before the request, and keep it empty if
+  // the request fails.
+  if(_roomsFor!==USER_ID){_rooms=[];_roomsFor=USER_ID;}
+  if(!_sessEmail()){_rooms=[];_syncRoomBtn();return Promise.resolve(_rooms);}
+  var had=!!_curRoom(),sig=_roomSig(_curRoom()),who=USER_ID;
+  _roomsAt=Date.now();
+  return _authReady.then(function(){
+    return _roomApi("/rest/v1/rooms?select=id,name,code,owner_id,room_members(user_id)&order=created_at.asc");
+  }).then(function(rows){
+    if(who!==USER_ID)return _rooms;   // signed into someone else meanwhile
+    _rooms=(Array.isArray(rows)?rows:[]).map(function(r){
+      return {id:r.id,name:r.name,code:r.code,owner_id:r.owner_id,
+              members:(r.room_members||[]).map(function(m){return m.user_id;})};
+    });
+    _syncRoomBtn();
+    // Re-render when the board on screen is now wrong: it rendered before the
+    // rooms arrived (as Everyone), or the room's roster changed since.
+    var now=_curRoom();
+    if(_lbPanelOpen()&&((!had&&now)||(had&&(!now||_roomSig(now)!==sig))))loadLeaderboard();
+    if(document.getElementById("roomBg")&&document.getElementById("roomBg").classList.contains("open"))renderRoomSheet();
+    return _rooms;
+  }).catch(function(){if(_roomsFor!==USER_ID)_rooms=[];_syncRoomBtn();return _rooms;});
+}
+// Board refreshes (manual, live, the 2-minute timer) re-read the roster of the
+// room on screen, at most once a minute, so a member who joins or leaves shows
+// up without reopening the sheet. roomsLoad re-renders only if it changed.
+function roomsRefreshForBoard(){
+  if(!_curRoom()||Date.now()-_roomsAt<60000)return;
+  roomsLoad();
+}
+function _syncRoomBtn(){
+  var b=document.getElementById("lbRoomBtn");if(!b)return;
+  var r=_curRoom();
+  b.textContent="👥 "+(r?r.name:"Everyone");
+  b.classList.toggle("active",!!r);
+  b.setAttribute("aria-label","Board: "+(r?r.name:"Everyone")+". Change room");
+}
+function selectRoom(id){
+  lbRoom=id||null;
+  try{if(lbRoom)localStorage.setItem("ufc_lb_room",lbRoom);else localStorage.removeItem("ufc_lb_room");}catch(e){}
+  _syncRoomBtn();
+  if(_lbPanelOpen())loadLeaderboard();
+}
+function _needAccount(why){
+  openAcct();
+  var d=document.getElementById("acctDesc");
+  if(d)d.textContent=why+" Rooms are for email accounts, so you stay in them on any phone — and linking keeps your picks.";
+}
+function joinRoom(code){
+  code=normRoomCode(code);
+  if(!ROOM_CODE_RE.test(code)){toast("That invite code doesn't look right");return Promise.resolve(null);}
+  if(!_sessEmail()){
+    try{localStorage.setItem("ufc_room_join",code);}catch(e){}
+    _needAccount("Link an email to join room "+code+".");
+    return Promise.resolve(null);
+  }
+  var forget=function(){try{localStorage.removeItem("ufc_room_join");}catch(e){}};
+  return _roomRpc("join_room",{p_code:code}).then(function(r){
+    forget();
+    return roomsLoad().then(function(){selectRoom(r.id);toast("Joined "+r.name+" 👥");return r;});
+  }).catch(function(e){
+    var m=(e&&e.message)||"";
+    // A dead code stays dead: don't re-prompt on every boot.
+    if(/no such room|room full/i.test(m))forget();
+    toast(/no such room/i.test(m)?"No room with that code":/room full/i.test(m)?"That room is full":"Couldn't join — try again");
+    return null;
+  });
+}
+function createRoom(name){
+  name=String(name||"").trim().slice(0,40);
+  if(!name){toast("Give the room a name");return Promise.resolve(null);}
+  if(!_sessEmail()){_needAccount("Link an email to create a room.");return Promise.resolve(null);}
+  return _roomRpc("create_room",{p_name:name}).then(function(r){
+    return roomsLoad().then(function(){selectRoom(r.id);toast("Room created — share the invite 👥");return r;});
+  }).catch(function(e){
+    toast(/room limit/i.test((e&&e.message)||"")?"You can own up to 10 rooms":"Couldn't create the room — try again");
+    return null;
+  });
+}
+function leaveRoom(id){
+  var r=_roomById(id);if(!r)return Promise.resolve(false);
+  var mine=r.owner_id===USER_ID;
+  if(!confirm(mine?"Delete "+r.name+" for everyone in it?":"Leave "+r.name+"?"))return Promise.resolve(false);
+  var path=mine?"/rest/v1/rooms?id=eq."+encodeURIComponent(r.id)
+               :"/rest/v1/room_members?room_id=eq."+encodeURIComponent(r.id)+"&user_id=eq."+encodeURIComponent(USER_ID);
+  return _roomApi(path,{method:"DELETE"}).then(function(){
+    if(lbRoom===id)selectRoom(null);
+    return roomsLoad().then(function(){toast(mine?"Room deleted":"Left "+r.name);return true;});
+  }).catch(function(){toast("Couldn't update the room — try again");return false;});
+}
+function shareRoom(id){
+  var r=_roomById(id);if(!r)return;
+  var url=roomInviteUrl(r),text="Join my UFC picks room “"+r.name+"” (code "+r.code+")";
+  if(navigator.share){navigator.share({title:"Join "+r.name,text:text,url:url}).catch(function(){});return;}
+  var done=function(){toast("Invite link copied");};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text+": "+url).then(done,function(){prompt("Copy this invite link:",url);});
+  else prompt("Copy this invite link:",url);
+}
+function _rmEl(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+// Built with textContent throughout: room names are other people's input.
+function renderRoomSheet(){
+  var box=document.getElementById("roomList");if(!box)return;
+  box.innerHTML="";
+  var signed=!!_sessEmail();
+  document.getElementById("roomNoAcct").style.display=signed?"none":"block";
+  document.getElementById("roomForms").style.display=signed?"block":"none";
+  var row=function(id,label,sub){
+    var b=_rmEl("button","room-row"+((lbRoom||null)===id||(!id&&!_curRoom())?" on":""));
+    b.appendChild(_rmEl("span","room-name",label));
+    if(sub)b.appendChild(_rmEl("span","room-sub",sub));
+    b.onclick=function(){selectRoom(id);closeRoomSheet();};
+    return b;
+  };
+  box.appendChild(row(null,"🌍 Everyone","the whole board"));
+  _rooms.forEach(function(r){
+    var wrap=_rmEl("div","room-item");
+    wrap.appendChild(row(r.id,"👥 "+r.name,r.members.length+" member"+(r.members.length===1?"":"s")+" · code "+r.code));
+    var acts=_rmEl("div","room-acts");
+    var inv=_rmEl("button","room-act","Invite");inv.onclick=function(){shareRoom(r.id);};
+    var lv=_rmEl("button","room-act room-act-quiet",r.owner_id===USER_ID?"Delete":"Leave");lv.onclick=function(){leaveRoom(r.id).then(renderRoomSheet);};
+    acts.appendChild(inv);acts.appendChild(lv);wrap.appendChild(acts);
+    box.appendChild(wrap);
+  });
+}
+function openRoomSheet(){
+  document.getElementById("roomBg").classList.add("open");
+  renderRoomSheet();
+  roomsLoad();
+}
+function closeRoomSheet(){document.getElementById("roomBg").classList.remove("open");}
+function roomCreateSubmit(){var i=document.getElementById("roomNewName");createRoom(i.value).then(function(r){if(r){i.value="";closeRoomSheet();}});}
+function roomJoinSubmit(){var i=document.getElementById("roomJoinCode");joinRoom(i.value).then(function(r){if(r){i.value="";closeRoomSheet();}});}
+// After a sign-in: load this account's rooms, and finish a join the invite
+// link started before there was an account to join with.
+function _roomsAfterSignIn(){
+  roomsLoad().then(function(){
+    var code=null;try{code=localStorage.getItem("ufc_room_join");}catch(e){}
+    if(code&&_sessEmail())joinRoom(code);
+  });
+}
+// Boot: pick up ?join=CODE (then drop it from the URL so a reload doesn't
+// re-join), load my rooms, and offer the join once nothing else is on screen —
+// a first-time visitor's name prompt goes first.
+function _roomsBoot(){
+  var code=null;
+  try{
+    var u=new URL(location.href),j=u.searchParams.get("join");
+    if(j!=null){
+      u.searchParams.delete("join");
+      history.replaceState(null,"",u.pathname+(u.searchParams.toString()?"?"+u.searchParams.toString():"")+u.hash);
+      code=normRoomCode(j);
+      if(ROOM_CODE_RE.test(code))localStorage.setItem("ufc_room_join",code);else code=null;
+    }
+  }catch(e){}
+  if(!code){try{code=localStorage.getItem("ufc_room_join");}catch(e){}}
+  _authReady.then(function(){
+    roomsLoad().then(function(){
+      if(!code)return;
+      // Already a member (a re-tapped link): just show that room.
+      for(var i=0;i<_rooms.length;i++)if(_rooms[i].code===code){try{localStorage.removeItem("ufc_room_join");}catch(e){}selectRoom(_rooms[i].id);return;}
+      var tries=0;
+      (function attempt(){
+        var wn=document.getElementById("wn-overlay");
+        var busy=(typeof _anyOverlayOpen==="function"&&_anyOverlayOpen())||!!(wn&&wn.classList.contains("open"));
+        if(busy&&tries++<200){setTimeout(attempt,1500);return;}
+        joinRoom(code);
+      })();
+    });
+  });
+}
+// rooms:end
 function loadLeaderboard(isLive){
   var body=document.getElementById("lbBody");
   if(!isLive)body.innerHTML='<div class="lb-loading">Loading picks...</div>';
@@ -8163,8 +8438,11 @@ function loadLeaderboard(isLive){
     _lbRows=rows;            // challenge resolution reads the same row set
     updateChalBadge();
     // The belt is inherently all-time, so it's computed from the full row set
-    // regardless of which leaderboard mode is active.
-    var belt=computeBeltLineage(rows);
+    // regardless of which leaderboard mode is active. In a room it is the
+    // room's own belt: the same lineage, replayed over its members' picks.
+    var _room=_curRoom();
+    roomsRefreshForBoard();
+    var belt=computeBeltLineage(rows,_room?{users:_room.members}:null);
     // Find the current/active event up front so "This Event" mode can scope scoring to it.
     var nowMs=Date.now();
     var _eto=etOffset();
@@ -8182,7 +8460,7 @@ function loadLeaderboard(isLive){
     // Scope filter runs before the user object exists, so someone whose only
     // picks are prelims drops off the main-card board entirely rather than
     // appearing on it with a zero.
-    var sorted=boardStandings(rows,{date:lbMode==="current"?nextEv.date:null,mainCard:lbScope==="main"});
+    var sorted=boardStandings(rows,roomScope({date:lbMode==="current"?nextEv.date:null,mainCard:lbScope==="main"}));
     // Index picks per fight (from the DEDUPED users) for Fight Night LIVE fans, and publish
     // _lbSorted now so the live view has data even when a panel early-return fires below.
     _fnPicksByFight={};
@@ -8205,6 +8483,7 @@ function loadLeaderboard(isLive){
       body.innerHTML=lbScope==="main"
         ? '<div class="lb-empty">No main-card picks'+(lbMode==="current"?" yet for "+_evTxt:" on record")+'.<br>Switch to All Bouts to include prelims.</div>'
         : '<div class="lb-empty">No picks yet for '+_evTxt+'.<br>Make your picks to appear here!</div>';
+      if(_room){var _re=body.querySelector(".lb-empty");if(_re){_re.textContent="";_re.appendChild(document.createTextNode("Nobody in "+_room.name+" has picks here yet."));_re.appendChild(document.createElement("br"));_re.appendChild(document.createTextNode("Share the invite from 👥 to fill the room."));}}
       return;
     }
     var anyResolved=sorted.some(function(u){return u.correct>0||u.picks.some(function(p){return p.result===false;});});
@@ -8236,7 +8515,9 @@ function loadLeaderboard(isLive){
       // main-card picks stayed open for hours. The activity feed kept pointing
       // at a leaderboard that no longer had any nudge buttons on it.
       if(!mainCardLocked(nextEv)){
-        var slackers=_slackersFor(nextEv,rows).filter(function(u){return u.user_id;});
+        // In a room, only its members: never list (or push) someone outside it.
+        var _inRoom=_room?roomHas(_room):null;
+        var slackers=_slackersFor(nextEv,rows).filter(function(u){return u.user_id&&(!_inRoom||_inRoom(u.user_id));});
         if(slackers.length){
           var nr=document.createElement("div");
           nr.style.cssText="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:0 2px 12px";
@@ -8973,6 +9254,7 @@ var _escClosers=[
   ["statsModal",function(){closeModal();}],
   ["delBg",function(){closeDeleteConfirm();}],
   ["acctBg",function(){closeAcct();}],
+  ["roomBg",function(){closeRoomSheet();}],
   ["nmBg",function(){closeNameModal();}],
   ["install-overlay",function(){closeInstall();}],
   ["fnMode",function(){closeFN();}],
@@ -9391,6 +9673,8 @@ document.addEventListener("DOMContentLoaded",function(){
     <div style="font-size:11px;color:var(--muted);margin-top:8px"><b>Locks:</b> up to 2 per card, set on a pick until that bout's segment starts. A lock is on top of everything else the pick earns — a locked underdog that hits by the right method stacks all of it. A cancelled bout or no contest leaves a lock at 0.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">🏆 The Belt</div>
     <div style="font-size:11px;color:var(--muted)">Top scorer of each card takes the belt. The champ defends every event — skip a card and anyone who scores can steal it. A challenger has to <b>beat</b> the champ's score, not match it: a tie involving the champ is a successful defence.<br><br>If the champ is out of it and challengers finish level, the belt goes to the highest <b>career accuracy</b> (the % on your row), then to whoever has made the most picks. If two are identical on both, the belt is vacated. Tap Title History at the bottom of the board for the full lineage — a belt won on a tiebreak says so.</div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">👥 Rooms</div>
+    <div style="font-size:11px;color:var(--muted)">Tap 👥 under the tabs to switch between Everyone and a room: a private board for your group, scored exactly like this one, with its own 🏆 belt. Create one and share the invite link, or join with a code. Rooms need an email account so you stay in them on any phone.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">⚔️ Challenges</div>
     <div style="font-size:11px;color:var(--muted)">Tap ⚔️ on a rival's row to call them out on one fight or the whole card, with stakes (wheel spin, $5, or your own). They accept or decline; results settle automatically when fights finish. No pick on the contested fight = forfeit. Tie = push, nobody pays. Losers of wheel stakes get a "spin now" button in the inbox.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">⏰ Nudges</div>
@@ -9410,6 +9694,7 @@ document.addEventListener("DOMContentLoaded",function(){
     <button class="ftab lb-scope-btn" id="lbScopeBtn" onclick="toggleLbScope()"
             title="Score main-card bouts only">Main Card</button>
   </div>
+  <div class="lb-roombar"><button class="ftab lb-room-btn" id="lbRoomBtn" onclick="openRoomSheet()" aria-haspopup="dialog">👥 Everyone</button></div>
   <div class="lb-body" id="lbBody"><div class="lb-loading">Loading picks...</div></div>
   <div class="lb-trash-sheet" id="trashSheet">
     <button class="lb-trash-close" onclick="closeTrashSheet()">✕</button>
@@ -9736,6 +10021,8 @@ function consumePendingTap(delay){
     return true;
   }).catch(function(){return false;});
 }
+// Rooms read ?join= before the tap router below rewrites the URL.
+_roomsBoot();
 (function(){
   var params=new URLSearchParams(window.location.search);
   var pTrash=params.get('trash'),pFrom=params.get('from'),pInbox=params.get('inbox');

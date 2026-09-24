@@ -46,6 +46,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:brief` | the Friday Fight Week Brief push firing at the wrong time, twice, after the bell, off the Lab's numbers, or not at all |
 | `npm run check:iq` | the AI Fight IQ write-up stating a number it wasn't given, drifting onto Grok, repeating one voice, or escaping its daily cap |
 | `npm run check:parity` | any score moving during the engine migration: board, main-card board, per-card, Belt lineage, recaps, Year Wrapped |
+| `npm run check:rooms` | a room's board scoring differently from the main board, an anonymous device joining a room, or an invite link re-joining / re-prompting |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -607,6 +608,30 @@ stale copy is refused.
 A scoring change is an app change: `verify`, bump `SW_VERSION` and
 `SCORING_VERSION`, and expect `check:parity` to fail until the golden is
 regenerated **on purpose**.
+
+## Rooms are for accounts, and a room's board is the main board filtered
+
+Watch Party rooms (`// rooms:start … :end` in `index.html`,
+`supabase/migrations/0006_rooms.sql`) give a group its own board and 🏆 belt.
+Two rules hold it together:
+
+- **A room never scores anything itself.** Its board is `boardStandings(rows,
+  roomScope(scope))`, i.e. the main board's own scope plus `users:` the members,
+  and its belt is `computeBeltLineage(rows, {users})`. Don't add a room-specific
+  scorer; add a scope. `check:rooms` asserts members score exactly what the
+  main board gives them.
+- **Only email-linked accounts can create, join or even see a room**, enforced
+  in the database (`is_account()`: a missing `is_anonymous` claim fails
+  closed), not just in the app. An anonymous `user_id` dies with the phone's
+  storage and would leave a ghost member behind; an account's comes back on any
+  phone. The app sends an account-less invite tap to "Link an email" first
+  (linking keeps the same `user_id`), holds the code in `ufc_room_join`, and
+  `_postSignIn` resumes it. A token minted before the link still says
+  anonymous, so a refusal of exactly that kind gets one refresh + retry.
+
+Inserts happen only through the `create_room` / `join_room` RPCs (caps: 10 owned
+rooms, 50 members). Room names are other people's input: render them with
+`textContent`, never `innerHTML` (`check:rooms` holds that too).
 
 ## The engine migration moves code, never numbers
 
