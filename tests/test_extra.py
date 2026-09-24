@@ -242,3 +242,34 @@ def test_switching_on_publish_is_due_immediately(monkeypatch):
     recent = {"last_fetch": "2026-09-24T11:00:00Z", "publish": False}
     assert not extra.should_fetch(recent, {}, NOW, publish=False)[0]
     assert extra.should_fetch(recent, {}, NOW, publish=True) == (True, "publish mode changed")
+
+
+def test_an_inaugural_title_is_a_title_fight_and_eliminators_are_not():
+    wt = """
+{{MMAevent bout
+|Women's Flyweight
+|Liz Carmouche
+|vs.
+|Jena Bishop
+|For the inaugural PFL Women's Flyweight World Championship.
+}}
+{{MMAevent bout
+|Featherweight
+|Timur Khizriev
+|vs.
+|Gabriel Braga
+|Winner earns a championship shot (title eliminator).
+}}
+{{MMAevent bout
+|Welteweight
+|Patrick Habirora
+|vs.
+|Omar El Dafrawy
+}}
+"""
+    bouts = extra.card_from_wikitext(wt)
+    by = {b["a"]: b for b in bouts}
+    assert by["Liz Carmouche"]["title"] is True
+    assert by["Timur Khizriev"]["title"] is False
+    assert by["Patrick Habirora"]["title"] is False
+    assert by["Patrick Habirora"]["division"] == "Welterweight"

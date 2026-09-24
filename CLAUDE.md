@@ -630,7 +630,7 @@ filter, or an allow-list entry that says why it spans every sport.
 `// sports:start … :end` in `index.html` adds a UFC | PFL | … switcher (on the
 home page and on Ranks). It appears **only** when the validated feed
 (`events-extra.json` → `PickEngine.validateFeed`) has a card with ≥2 bouts in
-the window, so until `extra.py` publishes, nobody sees it. Another sport never
+the window, so it vanishes by itself when a promotion has nothing to pick. Another sport never
 touches the UFC path: its own view (`#sportApp`), its own local picks
 (`ufc_sport_picks`), rows tagged with its promotion, and its own board
 (`sportStandings` in `scoring.js`: 1 point per correct winner, no locks, no
@@ -639,15 +639,20 @@ before reading any UFC rows. Picks close at the feed's `time` (ET) if given,
 else `SPORT_LOCK_UTC_H` on the card's date. Feed text is rendered with
 `textContent` only. `check:sports` holds all of it.
 
-## Non-UFC cards start in shadow mode
+## Non-UFC cards: checked in shadow mode, now published
 
-`extra.py` builds PFL cards for the Fight Lab hub from Wikipedia (free, same
-parsers as `scrape.py`). It was written without being able to see PFL's real
-pages, so it publishes nothing until a real run is checked: output lands in
-`events-extra.candidate.json` + `extra-state.json`, and only `EXTRA_PUBLISH=1`
-on its `update.yml` step makes it write `events-extra.json`. Don't flip that
-without comparing a candidate to the actual card: the engine's rule is that
-nothing may state a card that isn't happening. A card needs `MIN_BOUTS` real
+`extra.py` builds PFL cards from Wikipedia (free, same parsers as `scrape.py`)
+for the sport switcher and the Fight Lab hub. It was written without being able
+to see PFL's real pages, so it ran in shadow mode first; its first real run's
+PFL Chicago card was checked against the published card (12 of 14 bouts
+independently confirmed, none contradicted) and `EXTRA_PUBLISH=1` was set on
+its `update.yml` step on 2026-09-24. Remove that to drop back to shadow mode
+(output to `events-extra.candidate.json` only). **A new promotion added to
+`PROMOTIONS` gets the same treatment**: publish its cards only after a real
+candidate has been compared to the actual card, since the engine's rule is
+that nothing may state a card that isn't happening. Title fights are read from
+a champion's "(c)" or the bout's own text ("championship", "for the … title";
+not eliminators), since an inaugural belt has no champion. A card needs `MIN_BOUTS` real
 bouts to be listed, and a failed fetch keeps the previous version, never an
 empty one.
 

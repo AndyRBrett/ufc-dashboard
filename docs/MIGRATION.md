@@ -34,8 +34,8 @@ deploy before the next stage starts. **Nothing merges on a card day.**
 | ----- | -- | ----- |
 | Rooms: a `users` scope on `boardStandings`, a room's own Belt, email accounts only (`0006_rooms.sql`) | #181 | ✅ live |
 | Picks tagged by promotion (`0007_picks_promotion.sql`); every UFC reader says `promotion=eq.ufc`; the lock cap counts per promotion | #184 | ✅ live |
-| Sport switcher: UFC \| PFL \| …, its own view, local picks, board (`sportStandings`), locks | #185 | ✅ deployed, **hidden** until the feed publishes |
-| PFL cards from Wikipedia (`extra.py`) | #183 | ✅ running in **shadow mode**. First real run (2026-09-24 22:03 UTC): PFL Chicago (14 bouts, 12 independently confirmed, none contradicted) and PFL Dubai (8); two cards without articles correctly withheld. Publishing (`EXTRA_PUBLISH=1`) is the remaining step |
+| Sport switcher: UFC \| PFL \| …, its own view, local picks, board (`sportStandings`), locks | #185 | ✅ live once the feed publishes a card (see below) |
+| PFL cards from Wikipedia (`extra.py`) | #183 | ✅ **published** (2026-09-24, Andy's call). The first shadow run (22:03 UTC) was checked first: PFL Chicago (14 bouts, 12 independently confirmed, none contradicted) and PFL Dubai (8); two cards without articles correctly withheld |
 
 ### The sequencing changed, on purpose
 
@@ -47,15 +47,17 @@ stages 3–4 run through. What stands in for that soak instead:
 - the UFC path is isolated from everything stage 6 added: `check:parity`
   proves 1,372 PFL rows leave every UFC output byte-identical, and
   `check:promotion` fails on any UFC picks query without the filter;
-- the switcher can't appear until PFL is published. Saturday's card is not
-  pure stage 1–4 code, though: stage 6 paths it DOES exercise are #184's
+- the switcher appears only when the feed has a card to pick. Saturday's card
+  is not pure stage 1–4 code, though: stage 6 paths it DOES exercise are #184's
   `promotion=eq.ufc` filter and `promotion:"ufc"` tag on every UFC read and
   write (sync, restore, community picks, the board, the Lab, the brief and
   result pushes), the per-promotion lock-cap trigger, and `sportsBoot()`
-  fetching and validating the (empty) feed at startup. Those are the parts to
-  watch on that card; the sport view, sport picks and sport board stay dormant;
-- **publishing PFL is held until after that card**, so the first multi-sport
-  production test starts from a UFC path that has already survived a live card.
+  fetching and validating the feed at startup. Those are the parts to watch on
+  that card;
+- publishing PFL was first planned for after that card; Andy chose to publish
+  on 2026-09-24 instead, so Saturday's card is also the first with the switcher
+  live. The UFC-side isolation above is what holds that apart; the sport view,
+  sport picks and sport board are now active beside it.
 
 Stages 2–4 changed no behavior; `check:parity` holds that on every push.
 

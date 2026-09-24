@@ -96,13 +96,18 @@ jobs:
       - name: Curate fight-week intel (free feeds, no metered API)
         continue-on-error: true
         run: python intel.py
-      # Non-UFC cards (PFL first) for the Fight Lab hub, from Wikipedia with
-      # scrape.py's own parsers. Free (no key, no quota), cadence-gated like
-      # intel.py, never fatal. SHADOW MODE until EXTRA_PUBLISH is set here: it
-      # writes events-extra.candidate.json + extra-state.json for review and
-      # leaves events-extra.json (what the app reads) alone. See extra.py.
-      - name: Non-UFC cards for the Hub (shadow mode, free source)
+      # Non-UFC cards (PFL first) for the sport switcher and the Fight Lab hub,
+      # from Wikipedia with scrape.py's own parsers. Free (no key, no quota),
+      # cadence-gated like intel.py, never fatal. PUBLISHING since 2026-09-24,
+      # after the first shadow run's PFL Chicago card was checked against the
+      # published card (12 of 14 bouts independently confirmed, none
+      # contradicted). Remove EXTRA_PUBLISH to drop back to shadow mode (writes
+      # events-extra.candidate.json only; the switcher hides once the live
+      # file's cards age out). See extra.py.
+      - name: Non-UFC cards (PFL), published to events-extra.json
         continue-on-error: true
+        env:
+          EXTRA_PUBLISH: "1"
         run: python extra.py
       # Warnings don't block the publish, so they need somewhere to land that
       # isn't a workflow log nobody opens. One long-lived issue, rewritten in

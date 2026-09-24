@@ -118,10 +118,32 @@ def _real(name):
     return bool(name) and len(name) >= 2 and name.strip().upper() != "TBD"
 
 
+# scrape.parse_upcoming_card marks a title fight by a champion's "(c)". An
+# inaugural or vacant title has no champion yet (PFL Chicago's women's
+# flyweight belt, 2026-10-16, is exactly that), so also read the bout's own
+# text for a championship; "eliminator" / "#1 contender" bouts aren't titles.
+_TITLE_RE = re.compile(r"\bchampionship\b|\btitle\s+(?:bout|fight)\b|\bfor the [^|\n}]*\btitle\b", re.I)
+_NOT_TITLE_RE = re.compile(r"\beliminator\b|\bcontender\b", re.I)
+
+
+def _title_pairs(wikitext):
+    pairs = []
+    for block in re.finditer(r"\{\{MMAevent bout\s*\n(.*?)\}\}", wikitext, re.DOTALL | re.IGNORECASE):
+        text = block.group(1)
+        if _TITLE_RE.search(text) and not _NOT_TITLE_RE.search(text):
+            pairs.append(scrape.clean_wiki(text))
+    return pairs
+
+
+# Wikipedia's own typos, so the card doesn't repeat them.
+_DIVISION_FIX = {"welteweight": "Welterweight", "welterwieght": "Welterweight", "lightwieght": "Lightweight"}
+
+
 def card_from_wikitext(wikitext):
     """Bouts from an event's wikitext, main event first, with any results."""
     fights = scrape.parse_upcoming_card(wikitext)
     results = scrape.parse_results(wikitext)
+    titled = _title_pairs(wikitext)
     bouts = []
     for i, f in enumerate(fights):
         a, b = f["f1"], f["f2"]
@@ -135,8 +157,11 @@ def card_from_wikitext(wikitext):
                 winner = a if scrape.names_match(r["winner"], a) else b
                 method, rnd = r["method"], r["round"]
                 break
+        div = f.get("wc") or ""
+        div = _DIVISION_FIX.get(div.strip().lower(), div)
+        title = bool(f.get("title")) or any(a in t and b in t for t in titled)
         bouts.append({"a": a, "b": b, "label": "Main Event" if not bouts else "",
-                      "division": f.get("wc") or "", "title": bool(f.get("title")),
+                      "division": div, "title": title,
                       "odds": None, "winner": winner, "method": method, "round": rnd})
     return bouts
 
