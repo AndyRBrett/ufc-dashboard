@@ -1,42 +1,16 @@
 {
-  "generated_at": "2026-09-24T17:23:27Z",
+  "generated_at": "2026-09-24T18:04:17Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
   "awaiting_card_events": 4,
   "odds_unavailable_events": 0,
-  "odds_budget_exhausted": true,
+  "odds_budget_exhausted": false,
   "odds_budget": {
-    "exhausted": true,
+    "exhausted": false,
     "reset_day": 1,
     "resets_in_days": 7,
-    "most_affected": [
-      {
-        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
-        "days_out": 2,
-        "status": "ok"
-      },
-      {
-        "event_id": "2026-10-03:ufc-332-silva-vs-wang",
-        "days_out": 9,
-        "status": "ok"
-      },
-      {
-        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
-        "days_out": 16,
-        "status": "awaiting-card"
-      },
-      {
-        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
-        "days_out": 23,
-        "status": "awaiting-card"
-      },
-      {
-        "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
-        "days_out": 30,
-        "status": "ok"
-      }
-    ]
+    "most_affected": []
   },
   "stale_threshold_hours": 48,
   "movement_alert_threshold": 10,
@@ -141,7 +115,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T17:23:27Z",
+      "last_changed_at": "2026-09-24T18:04:17Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -151,7 +125,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T17:23:27Z",
+      "last_changed_at": "2026-09-24T18:04:17Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -171,7 +145,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T17:23:27Z",
+      "last_changed_at": "2026-09-24T18:04:17Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -181,7 +155,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T17:23:27Z",
+      "last_changed_at": "2026-09-24T18:04:17Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
