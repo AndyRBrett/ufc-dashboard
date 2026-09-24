@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T19:08:27Z",
+  "generated_at": "2026-09-24T19:56:16Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,11 +95,11 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "ok",
-      "last_changed_at": "2026-09-24T17:23:27Z",
+      "last_changed_at": "2026-09-24T19:56:16Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
-      "line_movement": 17,
+      "line_movement": 22,
       "odds_market_priced": true
     },
     {
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T19:08:27Z",
+      "last_changed_at": "2026-09-24T19:56:16Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T19:08:27Z",
+      "last_changed_at": "2026-09-24T19:56:16Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T19:08:27Z",
+      "last_changed_at": "2026-09-24T19:56:16Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -155,7 +155,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T19:08:27Z",
+      "last_changed_at": "2026-09-24T19:56:16Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -242,17 +242,17 @@
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Rodolfo Vieira",
       "f2": "Robert Bryczek",
-      "f1_movement": -49,
-      "f2_movement": 237,
-      "magnitude": 237,
+      "f1_movement": -52,
+      "f2_movement": 240,
+      "magnitude": 240,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 9.2,
-      "f2_prob_shift": -8.3,
-      "priority": 474.0
+      "f1_prob_shift": 9.6,
+      "f2_prob_shift": -8.8,
+      "priority": 480.0
     },
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
@@ -434,33 +434,33 @@
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Brady Hiestand",
       "f2": "Rinya Nakamura",
-      "f1_movement": 32,
-      "f2_movement": -58,
-      "magnitude": 58,
+      "f1_movement": 33,
+      "f2_movement": -62,
+      "magnitude": 62,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Bantamweight",
-      "f1_prob_shift": -2.2,
-      "f2_prob_shift": 2.8,
-      "priority": 116.0
+      "f1_prob_shift": -2.3,
+      "f2_prob_shift": 3.0,
+      "priority": 124.0
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Raul Rosas Jr.",
       "f2": "Raoni Barcelos",
-      "f1_movement": 17,
-      "f2_movement": -18,
-      "magnitude": 18,
+      "f1_movement": 22,
+      "f2_movement": -21,
+      "magnitude": 22,
       "main_event": true,
       "tier": "main-event",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Bantamweight",
-      "f1_prob_shift": -2.3,
-      "f2_prob_shift": 3.0,
-      "priority": 90.0
+      "f1_prob_shift": -3.0,
+      "f2_prob_shift": 3.6,
+      "priority": 110.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
