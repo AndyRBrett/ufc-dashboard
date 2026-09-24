@@ -21,10 +21,16 @@
   "use strict";
 
   // ---------------------------------------------------------------- kernel --
-  // Blocks and functions pulled out of index.html. Everything listed here is
-  // pure: it reads only its arguments and the data.js globals passed in below.
-  var KERNEL_BLOCKS = ["fighter-names", "pick-match", "model"];
-  var KERNEL_FNS = ["isMainCardBout", "isEarlyPrelimBout", "_eventFinished", "_lbScoreUsers", "intelKey", "intelItemsFor"];
+  // The app's own code, run here rather than re-implemented, so a score, a
+  // model number or an intel filter can never drift from the board:
+  //   * scoring.js, WHOLE — every scoring function lives there (stage 3). No
+  //     slicing: it's a plain script whose functions become the kernel's.
+  //   * from index.html, by the same `// name:start … :end` markers the tests
+  //     drive: the fight model block and the two Fight Week Intel filters,
+  //     which aren't scoring and still live in the page.
+  // check:lab / check:fightbot fail the build if any of it goes missing.
+  var KERNEL_BLOCKS = ["model"];
+  var KERNEL_FNS = ["intelKey", "intelItemsFor"];
   var KERNEL_EXPORTS = [
     "nmKey", "nmEq", "nmBout", "splitNick",
     "dogPtsFor", "dogPtsForPick", "userPts", "locksOn", "isLockPick", "lockPtsFor",
@@ -52,21 +58,18 @@
     }
     throw new Error("kernel: unbalanced function " + name);
   }
-  function sliceSplitNick(html) {
-    var a = html.indexOf("var _EMOJI_HEAD=");
-    if (a < 0) throw new Error("kernel: index.html has no _EMOJI_HEAD");
-    var fnSrc = sliceFn(html, "splitNick");
-    var b = html.indexOf("function splitNick(");
-    return html.slice(a, b) + fnSrc;
-  }
 
-  // env: { EVENTS, RESULTS_ARCHIVE, FIGHTER_STATS, RANKINGS, USER_ID? }
-  // compile(params, body) → function. Defaults to new Function (node, tests,
-  // FightBot); lab.html passes one that injects an inline <script> instead, so
-  // the page keeps a CSP without 'unsafe-eval'.
-  function loadKernel(html, env, compile) {
+  // loadKernel(indexHtml, env, compile?, scoringSrc)
+  //   env: { EVENTS, RESULTS_ARCHIVE, FIGHTER_STATS, RANKINGS, USER_ID? }
+  //   compile(params, body) → function. Defaults to new Function (node, tests,
+  //   FightBot); lab.html passes one that injects an inline <script> instead, so
+  //   the page keeps a CSP without 'unsafe-eval'.
+  //   scoringSrc: the text of scoring.js (required).
+  function loadKernel(html, env, compile, scoringSrc) {
     env = env || {};
-    var src = [sliceSplitNick(html)]
+    if (typeof scoringSrc !== "string" || scoringSrc.indexOf("function pickPts(") < 0)
+      throw new Error("kernel: scoring.js source is required (loadKernel's 4th argument)");
+    var src = [scoringSrc]
       .concat(KERNEL_BLOCKS.map(function (n) { return sliceBlock(html, n); }))
       .concat(KERNEL_FNS.map(function (n) { return sliceFn(html, n); }))
       .join("\n;\n");
@@ -81,7 +84,7 @@
     var k = factory(env.EVENTS || [], env.RESULTS_ARCHIVE || {}, env.FIGHTER_STATS || {},
                     env.RANKINGS || {}, env.USER_ID || null, 5, 86400000, "all", "", null, null, quiet);
     KERNEL_EXPORTS.forEach(function (n) {
-      if (k[n] === undefined) throw new Error("kernel: " + n + " missing after load — renamed in index.html?");
+      if (k[n] === undefined) throw new Error("kernel: " + n + " missing after load — renamed in scoring.js / index.html?");
     });
     return k;
   }

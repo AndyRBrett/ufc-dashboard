@@ -39,17 +39,21 @@ async function run() {
   await writeFile(`${OUT}/index.html`, minHtml);
 
   // Standalone JS — compress only, no mangling (data.js is data; sw.js needs its names).
-  for (const f of ["data.js", "sw.js"]) {
+  // scoring.js (required since engine-migration stage 3) defines globals the
+  // page calls by name, so it's compressed but never mangled either.
+  for (const f of ["data.js", "sw.js", "scoring.js"]) {
     const code = await readFile(f, "utf8");
     const res = await minifyJs(code, { compress: true, mangle: false });
     await writeFile(`${OUT}/${f}`, res.code ?? code);
   }
 
   // Static assets copied verbatim.
-  for (const f of ["manifest.json", "icon-192-v2.png", "icon-512-v2.png"]) {
+  // …and the Fight Lab's page, modules and data, which the app links to.
+  for (const f of ["manifest.json", "icon-192-v2.png", "icon-512-v2.png", "lab.html",
+                   "odds-series.json", "intel.json", "events-extra.json"]) {
     if (existsSync(f)) await cp(f, `${OUT}/${f}`);
   }
-  for (const d of ["fonts", "sounds"]) {
+  for (const d of ["fonts", "sounds", "lab"]) {
     if (existsSync(d)) await cp(d, `${OUT}/${d}`, { recursive: true });
   }
 

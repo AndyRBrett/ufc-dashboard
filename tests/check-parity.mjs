@@ -44,6 +44,7 @@ function fn(name) {
 
 // The app's scoring, lifted exactly as check:recap / check:wrapped lift it.
 const ENGINE_SRC = readFileSync(join(ROOT, "lab/engine.js"), "utf8");
+const SCORING_SRC = readFileSync(join(ROOT, "scoring.js"), "utf8");
 function kernel(lbScope, withEngine) {
   const ctx = vm.createContext({
     console: { log() {}, warn() {}, error: console.error },
@@ -51,18 +52,13 @@ function kernel(lbScope, withEngine) {
     DAY_MS: 86400000, EVENTS: data.EVENTS, RESULTS_ARCHIVE: data.RESULTS_ARCHIVE,
     lbScope, MAIN_CARD_BOUTS: 5, USER_ID: null, userName: "", _lbRows: null, _commRows: null,
   });
-  const splitNickSrc = html.slice(html.indexOf("var _EMOJI_HEAD="), html.indexOf("function splitNick(")) + fn("splitNick");
-  // Stage 2+: the app answers bout lookups through the Pick Engine when
-  // lab/engine.js loaded, and through its original loops when it didn't. Both
-  // paths are snapshotted against the same golden.
+  // Stage 3: every scoring function lives in scoring.js, run whole — exactly as
+  // the app loads it. The Belt, recap and Wrapped still live in index.html.
+  // The engine path vs the fallback path (stage 2): with lab/engine.js loaded,
+  // _boutLookup answers through the engine; without it, through its own loops.
   if (withEngine) vm.runInContext(ENGINE_SRC, ctx, { filename: "lab/engine.js" });
-  vm.runInContext(splitNickSrc, ctx);
-  vm.runInContext(block("fighter-names"), ctx);
-  vm.runInContext(fn("isMainCardBout") + fn("isEarlyPrelimBout"), ctx);
-  vm.runInContext(block("pick-match"), ctx);
-  vm.runInContext(fn("_eventFinished"), ctx);
+  vm.runInContext(SCORING_SRC, ctx, { filename: "scoring.js" });
   vm.runInContext(fn("computeBeltLineage"), ctx);
-  vm.runInContext(fn("_lbScoreUsers"), ctx);
   vm.runInContext(block("card-recap"), ctx);
   vm.runInContext(block("year-wrapped"), ctx);
   return ctx;

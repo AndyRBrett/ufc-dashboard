@@ -40,7 +40,7 @@ function supabaseConfig(html) {
 
 // State is rebuilt when any source file changes on disk, so a long-running
 // server picks up the scraper's next data.js after a `git pull`.
-const SOURCES = ["data.js", "index.html", "odds-series.json", "intel.json", "events-extra.json"];
+const SOURCES = ["data.js", "index.html", "scoring.js", "odds-series.json", "intel.json", "events-extra.json"];
 let state = null, stamp = "";
 function fingerprint() {
   return SOURCES.map((f) => { try { return statSync(join(ROOT, f)).mtimeMs; } catch { return 0; } }).join("|");
@@ -52,7 +52,7 @@ export function load(force) {
   vm.runInContext(readFileSync(join(ROOT, "data.js"), "utf8"), dctx, { filename: "data.js" });
   const html = readFileSync(join(ROOT, "index.html"), "utf8");
   const env = { EVENTS: dctx.EVENTS, RESULTS_ARCHIVE: dctx.RESULTS_ARCHIVE || {}, FIGHTER_STATS: dctx.FIGHTER_STATS || {}, RANKINGS: dctx.RANKINGS || {} };
-  const kernel = PE.loadKernel(html, env);
+  const kernel = PE.loadKernel(html, env, undefined, readFileSync(join(ROOT, "scoring.js"), "utf8"));
   const feedRaw = readJSON("events-extra.json", null);
   const adapters = [PE.ufcAdapter(env)];
   if (feedRaw) adapters.push(PE.feedAdapter(feedRaw));

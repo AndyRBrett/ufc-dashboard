@@ -40,6 +40,18 @@ else if (!failures) ok(`index.html — ${inline} inline script block(s) compile`
 try { new vm.Script(readFileSync(join(ROOT, "sw.js"), "utf8"), { filename: "sw.js" }); ok("sw.js compiles"); }
 catch (e) { fail(`sw.js: ${e.message}`); }
 
+// 2b. scoring.js — the app's scoring, loaded as a required script since
+// engine-migration stage 3. A syntax error there white-pages the app exactly
+// like one inline, so it gets the same check, plus its core entry points.
+try {
+  const sc = readFileSync(join(ROOT, "scoring.js"), "utf8");
+  new vm.Script(sc, { filename: "scoring.js" });
+  const missing = ["nmEq", "splitNick", "pickPts", "userPts", "_boutLookup", "_lbScoreUsers", "_eventFinished", "isMainCardBout"]
+    .filter((f) => !sc.includes(`function ${f}(`));
+  if (missing.length) fail(`scoring.js no longer defines ${missing.join(", ")}`);
+  else ok("scoring.js compiles and defines the scoring entry points");
+} catch (e) { fail(`scoring.js: ${e.message}`); }
+
 // 3. data.js must compile and yield a usable EVENTS array.
 const dataSrc = readFileSync(join(ROOT, "data.js"), "utf8");
 try {

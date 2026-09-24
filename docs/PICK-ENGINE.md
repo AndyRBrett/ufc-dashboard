@@ -23,18 +23,20 @@ and never writes to it:
 | `fightbot/server.mjs` | Zero-dependency MCP server over stdio |
 | `events-extra.json` | Curated non-UFC cards for the Hub (ships empty) |
 
-## The one rule: scoring is lifted, never copied
+## The one rule: scoring is shared, never copied
 
-`PickEngine.loadKernel(indexHtmlSource, env)` slices the app's own code out of
-`index.html` by the same `// name:start … // name:end` markers the test suite
-already drives (`fighter-names`, `pick-match`, `model`), plus a few named
-functions (`_lbScoreUsers`, `_eventFinished`, `intelItemsFor`, …), and compiles
-them against the data.js globals. Every score the Lab or FightBot shows is
-therefore the board's score, and the fight model is the model under the
-moneyline on the cards.
+`PickEngine.loadKernel(indexHtml, env, compile, scoringSrc)` runs the app's own
+**`scoring.js`** whole: every scoring function (name matching, `pickPts`,
+`userPts`, locks, the dog bonus, `_boutLookup`, `_eventFinished`,
+`_lbScoreUsers`) lives there and nowhere else, and the app loads the same file.
+From `index.html` it lifts only what isn't scoring: the fight model
+(`// model:start … :end`) and the two Fight Week Intel filters (`intelKey`,
+`intelItemsFor`). Everything is compiled against the data.js globals, so every
+score the Lab, FightBot or the Friday brief shows is the board's score, and the
+fight model is the model under the moneyline on the cards.
 
-If one of those markers or functions is renamed, `loadKernel` throws and
-`check:lab` / `check:fightbot` fail the build. Rename both together.
+If a scoring function, the model markers or an intel filter is renamed,
+`loadKernel` throws and `check:lab` / `check:fightbot` fail the build.
 
 In the browser the kernel is compiled through an injected inline `<script>`
 (`compileInline` in `lab.html`) rather than `new Function`, so the page's CSP

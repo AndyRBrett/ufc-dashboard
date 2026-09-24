@@ -232,7 +232,7 @@ function fetchPicks(){
 }
 function buildEngine(){
   var env={EVENTS:EVENTS,RESULTS_ARCHIVE:RESULTS_ARCHIVE,FIGHTER_STATS:FIGHTER_STATS,RANKINGS:RANKINGS,USER_ID:L.me};
-  L.kernel=PE.loadKernel(L.html,env,compileInline);
+  L.kernel=PE.loadKernel(L.html,env,compileInline,L.scoring);
   var adapters=[PE.ufcAdapter(env)];
   L.feedProblems=[];
   if(L.feed){var fa=PE.feedAdapter(L.feed);L.feedProblems=fa.problems;adapters.push(fa);}
@@ -245,6 +245,7 @@ function load(){
   var id=myIdentity();L.me=id.id;L.myName=id.name;
   var jobs=[
     fetch("./index.html",{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("index.html HTTP "+r.status);return r.text();}).then(function(t){L.html=t;applyAppTheme(t);}),
+    fetch("./scoring.js",{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("scoring.js HTTP "+r.status);return r.text();}).then(function(t){L.scoring=t;}),
     getJSON("./odds-series.json").then(function(j){L.oddsRaw=j;L.odds=FL.oddsIndex(j);}).catch(function(e){L.errors.push("Odds history unavailable ("+e.message+").");L.odds=FL.oddsIndex(null);}),
     getJSON("./intel.json").then(function(j){L.intel=j;}).catch(function(){L.intel=null;}),
     getJSON("./events-extra.json").then(function(j){L.feed=j;}).catch(function(){L.feed=null;}),

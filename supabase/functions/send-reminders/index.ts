@@ -128,8 +128,8 @@ export async function composeBrief(ev: Ev, js: string, sb: { url: string; key: s
       if (!r.ok) throw new Error(`${f} HTTP ${r.status}`);
       return r.text();
     };
-    const [engineJs, analyticsJs, html, oddsTxt, intelTxt] = await Promise.all([
-      get("lab/engine.js"), get("lab/analytics.js"), get("index.html"),
+    const [engineJs, analyticsJs, html, scoringJs, oddsTxt, intelTxt] = await Promise.all([
+      get("lab/engine.js"), get("lab/analytics.js"), get("index.html"), get("scoring.js"),
       get("odds-series.json"), get("intel.json").catch(() => "null"),
     ]);
     const root: Record<string, any> = {};
@@ -137,7 +137,7 @@ export async function composeBrief(ev: Ev, js: string, sb: { url: string; key: s
     new Function("globalThis", analyticsJs)(root);
     const PE = root.PickEngine, FL = root.FightLab;
     const env = new Function(js + "\n;return {EVENTS:EVENTS,RESULTS_ARCHIVE:typeof RESULTS_ARCHIVE!=='undefined'?RESULTS_ARCHIVE:{},FIGHTER_STATS:typeof FIGHTER_STATS!=='undefined'?FIGHTER_STATS:{},RANKINGS:typeof RANKINGS!=='undefined'?RANKINGS:{}};")();
-    const kernel = PE.loadKernel(html, env);
+    const kernel = PE.loadKernel(html, env, undefined, scoringJs);
     const engine = PE.createEngine({ adapters: [PE.ufcAdapter(env)], rules: { ufc: PE.ufcRules(kernel) } });
     const nev = engine.events("ufc").find((e: any) => e.date === ev.date && e.name === ev.name);
     if (!nev) return plain;

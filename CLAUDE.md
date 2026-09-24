@@ -1,7 +1,8 @@
 # UFC Dashboard — working notes for Claude / contributors
 
-A vanilla PWA: the entire app is **`index.html`** (HTML + inline CSS + ~5,600
-lines of inline JS), fed by **`data.js`** (the generated `EVENTS` array) and
+A vanilla PWA: the app is **`index.html`** (HTML + inline CSS + ~5,600 lines
+of inline JS) plus **`scoring.js`** (every function that decides a score — see
+"One scoring rulebook" below), fed by **`data.js`** (the generated `EVENTS` array) and
 served **raw from the repo root** to GitHub Pages. Backend logic lives in
 **`supabase/functions/*/index.ts`** (Deno edge functions; `ai-breakdown` calls
 the paid Anthropic API). Python (`scrape.py`) generates the data.
@@ -521,12 +522,12 @@ the pick over a lock that was never going to count. Its date must match
 ## Fight Lab, the pick engine and FightBot are readers — keep them that way
 
 `lab.html`, `lab/*.js` and `fightbot/` never write a pick, a lock or a pref. They
-score through `PickEngine.loadKernel`, which lifts the board's own code out of
-`index.html` by its `// name:start … :end` markers, so **renaming one of those
-markers or a lifted function (`_lbScoreUsers`, `intelItemsFor`, …) breaks the
-Lab and FightBot** — `check:lab` / `check:fightbot` will say so. Never paste a
-copy of scoring into them to "fix" that; the whole point is that they can't
-drift from the board. Architecture, the curated-feed format for other
+score through `PickEngine.loadKernel`, which runs **`scoring.js` whole** and lifts
+only the fight model and the two intel filters out of `index.html` by their
+`// name:start … :end` markers, so **renaming a scoring function or one of those
+markers breaks the Lab and FightBot** — `check:lab` / `check:fightbot` will say
+so. Never paste a copy of scoring into them to "fix" that; the whole point is
+that they can't drift from the board. Architecture, the curated-feed format for other
 promotions, and the analytics' leak guards: `docs/PICK-ENGINE.md`.
 
 **The Lab wears the app's theme the same way: lifted, not copied.** `lab.html`'s
@@ -570,6 +571,35 @@ day in the Lab (`IQ_WRITEUPS_PER_DAY`), `IQ_DAILY_CAP` per viewer per day on the
 server (in-memory, best-effort — a cold start resets it), and the existing
 per-IP / global rate limits; inputs are capped (`MAX_IQ_LINES`, `MAX_IQ_LINE`).
 It runs on `MODEL`, like the other analysis actions. `check:iq` holds all of it.
+
+## One scoring rulebook: `scoring.js`
+
+Every function that decides a number — name matching (`nmEq`), nickname identity
+(`splitNick`), segment labels, `pickPts` / `userPts` / locks / the dog bonus /
+method matching, the bout lookup, `_eventFinished` and the board scorer
+`_lbScoreUsers` — lives **once**, in `scoring.js` (engine-migration stage 3). The
+app, the Fight Lab, FightBot, the Friday brief and the tests all run that file;
+nothing slices scoring out of HTML any more, and `check:lab` fails if any of
+those functions is defined in `index.html` again.
+
+**It is required, like `data.js`.** `index.html` loads it right after `data.js`;
+`sw.js` precaches it and serves it **network-first** (it must always match the
+`index.html` it shipped with, so it's treated as part of the page, not an
+asset); and if it fails to load, both self-heal checks (the early one and the
+render-failure one) run the same one-shot purge-and-reload as a missing
+`data.js`. `check:lab` boots the app with `scoring.js` 404ing to prove it.
+**The page and its rulebook are version-pinned.** `scoring.js` declares
+`SCORING_VERSION`; `index.html` requests `scoring.js?v=<it>` and checks
+`SCORING_EXPECT` against it (`_scoringOk`); `sw.js` precaches that versioned URL
+and caches it under the full URL. A previous release's `scoring.js` — an old
+cached copy, a network drop mid-upgrade — is refused and self-heals instead of
+quietly scoring with old rules. **On any change to `scoring.js`, bump the
+version in all four places**; `check:lab` fails if they disagree and proves a
+stale copy is refused.
+
+A scoring change is an app change: `verify`, bump `SW_VERSION` and
+`SCORING_VERSION`, and expect `check:parity` to fail until the golden is
+regenerated **on purpose**.
 
 ## The engine migration moves code, never numbers
 
