@@ -377,13 +377,15 @@ function _lbScoreUsers(rows,keep){
 //   year: "YYYY"          that calendar year
 //   mainCard: true        main-card bouts only (the board's Main Card toggle)
 //   users: [ids]          only these players, by the board's identity key
-//                         (user_id, else nickname) — a room's members
+//                         (user_id, else nickname) — a room's members.
+//                         Prototype-free, so a legacy nickname like
+//                         "constructor" can't pass as a member.
 // No scope (or {}) is the all-time board. Date fields are checked before
 // mainCard, so the bout lookup only runs for picks the dates already admit.
 function standingsKeep(scope){
   scope=scope||{};
   var users=null;
-  if(scope.users){users={};scope.users.forEach(function(u){users[u]=true;});}
+  if(scope.users){users=Object.create(null);scope.users.forEach(function(u){users[u]=true;});}
   return function(p){
     if(scope.date!=null&&p.event_date!==scope.date)return false;
     if(scope.through!=null&&!(p.event_date<=scope.through))return false;

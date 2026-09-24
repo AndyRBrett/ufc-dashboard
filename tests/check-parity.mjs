@@ -214,6 +214,10 @@ let failures = 0;
     k._lbScoreUsers(rows.filter((r) => inRoom(r) && r.event_date === dates[dates.length - 1]), null));
   const beltRoom = JSON.stringify(k.computeBeltLineage(rows, { users: members }));
   if (beltRoom !== JSON.stringify(k.computeBeltLineage(rows.filter(inRoom)))) bad = bad || "room belt";
+  // A legacy nickname-keyed pick named after an Object.prototype property is
+  // not a member of a room that doesn't list it.
+  const proto = [{ ...rows[0], user_id: null, nickname: "constructor" }, { ...rows[0], user_id: null, nickname: "toString" }];
+  if (k.boardStandings(proto, { users: members }).length) bad = bad || "a prototype-named nickname passes as a room member";
   if (JSON.stringify(k.computeBeltLineage(rows, null)) !== JSON.stringify(k.computeBeltLineage(rows))) bad = bad || "unscoped belt";
   if (bad) { failures++; console.error("  ✗ standings scope disagrees with the predicate it replaced: " + bad); }
   else console.log(`  ✓ every standings scope (all, main card, ${dates.length} dates × date/through/before, years, a room) matches the predicate it replaced`);
