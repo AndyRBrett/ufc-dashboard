@@ -26,7 +26,7 @@
 // even offline with an old copy cached. Bump it on ANY change to this file, in
 // all three places (index.html's script src + SCORING_EXPECT, sw.js's precache);
 // check:lab fails if they disagree.
-var SCORING_VERSION="2026-09-24-4";
+var SCORING_VERSION="2026-09-24-5";
 
 // fighter-names:start
 var _NM_SUFFIX_RE=/\b(?:jr|sr|ii|iii|iv)\b/g;
@@ -371,6 +371,50 @@ function _lbScoreUsers(rows,keep){
     return b.total-a.total;                                   // 3) then more picks made
   });
 }
+
+// sport-standings:start
+// The board for a non-UFC promotion (sport switcher). Its cards come from the
+// curated feed (events-extra.json, validated by PickEngine.validateFeed), not
+// data.js, and its picks are the rows with that promotion — never mixed with
+// UFC (0007_picks_promotion.sql). Rules are deliberately plain until a
+// promotion earns more: 1 point per correct winner, no underdog bonus (the
+// feed carries no reliable line), no locks, no method. Identity and name
+// matching are the board's own (user_id else nickname; nmEq), and every map
+// is prototype-free for the same reason as _lbScoreUsers'.
+function sportBout(events,promo,date,f1,f2){
+  for(var i=0;i<(events||[]).length;i++){
+    var ev=events[i];
+    if(ev.promotion!==promo||ev.date!==date)continue;
+    for(var j=0;j<ev.bouts.length;j++){
+      var b=ev.bouts[j];
+      if((nmEq(b.a,f1)&&nmEq(b.b,f2))||(nmEq(b.a,f2)&&nmEq(b.b,f1)))return {ev:ev,bout:b};
+    }
+  }
+  return null;
+}
+function sportStandings(rows,events,promo){
+  var users=Object.create(null);
+  (rows||[]).forEach(function(p){
+    if(p.promotion!==promo)return;
+    var hit=sportBout(events,promo,p.event_date,p.f1,p.f2);
+    if(!hit)return;                                     // a card that left the feed doesn't score
+    var uid=p.user_id||p.nickname||"unknown";
+    var u=users[uid]||(users[uid]={user_id:p.user_id||null,nickname:p.nickname||"",correct:0,resolved:0,total:0,pts:0});
+    if(!String(u.nickname||"").trim()&&p.nickname)u.nickname=p.nickname;
+    u.total++;
+    var w=hit.bout.winner;
+    if(w){u.resolved++;if(nmEq(w,p.pick)){u.correct++;u.pts++;}}
+  });
+  return Object.keys(users).map(function(k){
+    var u=users[k];u.accuracy=u.resolved?Math.round(u.correct/u.resolved*100):null;return u;
+  }).sort(function(a,b){
+    if(a.pts!==b.pts)return b.pts-a.pts;
+    var aa=a.accuracy==null?-1:a.accuracy,ab=b.accuracy==null?-1:b.accuracy;
+    if(aa!==ab)return ab-aa;
+    return b.total-a.total;
+  });
+}
+// sport-standings:end
 
 // standings:start
 // Standings by scope (engine migration stage 4). Every standings consumer —

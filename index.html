@@ -574,6 +574,31 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 /* One bar, two dimensions: the time tabs pick a period, the scope button is an
    independent on/off filter. The divider keeps them from reading as one group of
    four mutually-exclusive tabs. */
+.sport-bar{display:flex;gap:6px;justify-content:center;padding:8px 14px 2px;flex-wrap:wrap}
+.sport-bar[hidden]{display:none}
+.sport-tab{background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:999px;padding:6px 16px;font:700 12.5px Inter,sans-serif;letter-spacing:.04em;cursor:pointer}
+.sport-tab.active{background:var(--red);border-color:var(--red);color:#fff}
+body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #app,body.sport-other .stats,body.sport-other #cd-wrap,body.sport-other .lb-modebar{display:none!important}
+#sportApp{padding:6px 14px 40px;max-width:760px;margin:0 auto}
+#sportApp[hidden]{display:none}
+.sport-ev{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin:10px 0}
+.sport-ev-name{font:800 16px Inter,sans-serif;color:var(--text)}
+.sport-ev-meta{font:500 12px Inter,sans-serif;color:var(--muted);margin:3px 0 10px}
+.sport-bout{padding:8px 0;border-top:1px solid var(--border)}
+.sport-bout-lbl{font:600 11px Inter,sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.sport-bout-btns{display:flex;align-items:center;gap:8px}
+.sport-pick{flex:1;min-width:0;background:var(--bg);border:1px solid var(--border2);border-radius:9px;color:var(--text);padding:9px 8px;font:600 13.5px Inter,sans-serif;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sport-pick.on{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
+.sport-pick.won{color:#3fb950}
+.sport-pick:disabled{opacity:.6;cursor:default}
+.sport-vs{font:700 11px Inter,sans-serif;color:var(--muted)}
+.sport-board-hdr{font:800 14px Inter,sans-serif;color:var(--text);text-align:center;margin:6px 0 10px}
+.sport-board-row{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:9px 12px;margin:6px 0}
+.sport-board-row.me{border-color:var(--red)}
+.sport-board-rank{font:800 13px Inter,sans-serif;width:22px;color:var(--muted)}
+.sport-board-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:600 14px Inter,sans-serif}
+.sport-board-rec{font:500 12px Inter,sans-serif;color:var(--muted)}
+.sport-board-pts{font:800 13px Inter,sans-serif}
 .lb-roombar{display:flex;justify-content:center;padding:4px 14px 0;flex-shrink:0}
 .lb-room-btn{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .room-list{display:flex;flex-direction:column;gap:6px;margin:4px 0 6px}
@@ -1804,6 +1829,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
   </div>
   <div class="feed-body" id="feedBody"></div>
 </div>
+<div class="sport-bar" id="sportBar" role="tablist" aria-label="Sport" hidden></div>
 <div class="filter-wrap">
   <button class="ftab active" data-f="all" onclick="setFilter(this)">All</button>
   <button class="ftab" data-f="Heavyweight" onclick="setFilter(this)">Heavyweight</button>
@@ -1831,10 +1857,11 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
   <div class="picks-body" id="picksBody"></div>
 </div>
 <div id="app"></div>
+<div id="sportApp" hidden></div>
 <script src="data.js"></script>
 <!-- The app's scoring (scoring.js, engine migration stage 3). Required, like
      data.js: the self-heal below covers it failing to load too. -->
-<script src="scoring.js?v=2026-09-24-4"></script>
+<script src="scoring.js?v=2026-09-24-5"></script>
 <!-- The Pick Engine (engine migration, docs/MIGRATION.md). Optional by design:
      if it fails to load, _boutLookup falls back to the app's own loops and
      every score comes out the same (check:parity runs both paths). -->
@@ -1851,7 +1878,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 // …and it must be the rulebook THIS page shipped with: a previous release's
 // scoring.js (an old cached copy, a network drop mid-upgrade) is treated as
 // missing rather than silently scoring with old rules.
-var SCORING_EXPECT="2026-09-24-4";
+var SCORING_EXPECT="2026-09-24-5";
 function _scoringOk(){return typeof pickPts==="function"&&typeof _lbScoreUsers==="function"&&typeof SCORING_VERSION!=="undefined"&&SCORING_VERSION===SCORING_EXPECT;}
 if(typeof EVENTS==="undefined"||!_scoringOk()){
   (function(){
@@ -8433,7 +8460,178 @@ function _roomsBoot(){
   });
 }
 // rooms:end
+// sports:start
+// Sport switcher: UFC plus whatever promotions the curated feed publishes
+// (events-extra.json: PFL first, from extra.py). Hidden entirely until the
+// feed has a card worth picking, so UFC-only users see no change.
+//
+// Kept apart from the UFC card on purpose: UFC's render(), preds, locks,
+// scoring and board are untouched. Another promotion has its own view
+// (#sportApp), its own local picks (ufc_sport_picks), rows tagged with its
+// promotion in `picks` (every UFC reader filters promotion=eq.ufc), and its own
+// board, scored by scoring.js's sportStandings. check:sports holds all of it.
+//
+// Picks close at the card's `time` (ET) when the feed gives one, else at
+// SPORT_LOCK_UTC_H on the card's date: early enough for a card in Riyadh or
+// Singapore, and never after a bell (the feed rarely knows start times).
+var SPORT_LOCK_UTC_H=10;
+var SPORT=(function(){try{return localStorage.getItem("ufc_sport")||"ufc";}catch(e){return "ufc";}})();
+var _sportFeed=null;      // {promotions, events} after PickEngine.validateFeed
+var _sportPicks=(function(){try{return JSON.parse(localStorage.getItem("ufc_sport_picks")||"{}")||{};}catch(e){return {};}})();
+function _sportSave(){try{localStorage.setItem("ufc_sport_picks",JSON.stringify(_sportPicks));}catch(e){}}
+function _picksFor(promo){return "&promotion=eq."+encodeURIComponent(promo);}
+function sportKey(promo,date,a,b){return promo+"|"+date+"|"+a+"|"+b;}
+function sportLockMs(ev){
+  var d=ev.date.split("-"),m=/^(\d{1,2}):(\d{2})$/.exec(ev.time||"");
+  if(m)return Date.UTC(+d[0],+d[1]-1,+d[2],+m[1]+etOffset(),+m[2]);
+  return Date.UTC(+d[0],+d[1]-1,+d[2],SPORT_LOCK_UTC_H,0);
+}
+function sportLocked(ev,b){return !!b.winner||Date.now()>=sportLockMs(ev);}
+function sportEvents(promo){
+  var now=Date.now();
+  return (_sportFeed?_sportFeed.events:[]).filter(function(e){
+    var t=Date.parse(e.date+"T00:00:00Z");
+    return e.promotion===promo&&e.bouts.length>=2&&t>=now-2*DAY_MS&&t<=now+65*DAY_MS;
+  }).sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0;});
+}
+function sportPromos(){return _sportFeed?_sportFeed.promotions.filter(function(p){return sportEvents(p.id).length>0;}):[];}
+function _sportName(id){var p=(_sportFeed?_sportFeed.promotions:[]).filter(function(x){return x.id===id;})[0];return p?p.name:String(id).toUpperCase();}
+// The sport on screen: the saved choice if it has a card, else UFC.
+function curSport(){return SPORT!=="ufc"&&sportPromos().some(function(p){return p.id===SPORT;})?SPORT:"ufc";}
+function _spEl(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+function renderSportBar(){
+  var bars=[document.getElementById("sportBar"),document.getElementById("lbSportBar")];
+  var promos=sportPromos(),cur=curSport();
+  bars.forEach(function(bar){
+    if(!bar)return;
+    bar.innerHTML="";
+    bar.hidden=!promos.length;
+    if(!promos.length)return;
+    [{id:"ufc",name:"UFC"}].concat(promos).forEach(function(p){
+      var b=_spEl("button","sport-tab"+(p.id===cur?" active":""),p.name);
+      b.setAttribute("role","tab");b.setAttribute("aria-selected",p.id===cur?"true":"false");
+      b.onclick=function(){setSport(p.id);};
+      bar.appendChild(b);
+    });
+  });
+  document.body.classList.toggle("sport-other",cur!=="ufc");
+}
+function setSport(id){
+  SPORT=id||"ufc";
+  try{localStorage.setItem("ufc_sport",SPORT);}catch(e){}
+  renderSportBar();
+  renderSportView();
+  if(typeof _lbPanelOpen==="function"&&_lbPanelOpen())loadLeaderboard();
+}
+// Card names and fighters are feed data: textContent only.
+function renderSportView(){
+  var app=document.getElementById("sportApp");if(!app)return;
+  var promo=curSport();
+  app.hidden=promo==="ufc";
+  app.innerHTML="";
+  if(promo==="ufc")return;
+  sportEvents(promo).forEach(function(ev){
+    var box=_spEl("div","sport-ev");
+    box.appendChild(_spEl("div","sport-ev-name",ev.name));
+    var locked=Date.now()>=sportLockMs(ev);
+    box.appendChild(_spEl("div","sport-ev-meta",fmtDate(ev.date)+(ev.venue?" · "+ev.venue:"")+(ev.location?", "+ev.location:"")+(locked?" · picks closed":" · picks close "+new Date(sportLockMs(ev)).toLocaleString([], {weekday:"short",hour:"numeric",minute:"2-digit"}))));
+    ev.bouts.forEach(function(b){
+      var row=_spEl("div","sport-bout");
+      if(b.label||b.division)row.appendChild(_spEl("div","sport-bout-lbl",[b.label,b.division].filter(Boolean).join(" · ")+(b.title?" 🏆":"")));
+      var btns=_spEl("div","sport-bout-btns"),k=sportKey(promo,ev.date,b.a,b.b),mine=_sportPicks[k]||null,lk=sportLocked(ev,b);
+      [b.a,b.b].forEach(function(name,i){
+        if(i===1)btns.appendChild(_spEl("span","sport-vs","vs"));
+        var won=b.winner&&nmEq(b.winner,name);
+        var btn=_spEl("button","sport-pick"+(mine&&nmEq(mine,name)?" on":"")+(won?" won":""),(won?"✓ ":"")+name);
+        btn.disabled=lk;
+        btn.setAttribute("aria-pressed",mine&&nmEq(mine,name)?"true":"false");
+        btn.onclick=function(){sportPick(promo,ev,b,name);};
+        btns.appendChild(btn);
+      });
+      row.appendChild(btns);
+      box.appendChild(row);
+    });
+    app.appendChild(box);
+  });
+}
+function sportPick(promo,ev,b,name){
+  if(sportLocked(ev,b)){toast("Picks are closed for this fight");return;}
+  checkName(function(){
+    var k=sportKey(promo,ev.date,b.a,b.b);
+    var unpick=_sportPicks[k]&&nmEq(_sportPicks[k],name);
+    if(unpick)delete _sportPicks[k];else _sportPicks[k]=name;
+    _sportSave();renderSportView();
+    toast(unpick?"Pick removed":"Picked: "+name.split(" ").pop());
+    _sportSync(promo,ev,b,unpick?null:name);
+  });
+}
+function _sportSync(promo,ev,b,name){
+  return _authReady.then(function(){
+    if(!name){
+      var sq="?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(ev.date)+
+            "&f1=eq."+encodeURIComponent(b.a)+"&f2=eq."+encodeURIComponent(b.b)+_picksFor(promo);
+      return fetch(SUPABASE_URL+"/rest/v1/picks"+sq,{method:"DELETE",headers:_sbHeaders()});
+    }
+    var row={user_id:USER_ID,promotion:promo,nickname:userName,event_date:ev.date,event_name:ev.name,f1:b.a,f2:b.b,pick:name,method:"",confidence:0,updated_at:new Date().toISOString()};
+    var hdrs=Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return=minimal"});
+    return fetch(SUPABASE_URL+"/rest/v1/picks?on_conflict=user_id,event_date,f1,f2",{method:"POST",headers:hdrs,body:JSON.stringify(row)});
+  }).then(function(r){if(r&&!r.ok)toast("Couldn't save that pick — check your connection");})
+    .catch(function(){toast("Couldn't save that pick — check your connection");});
+}
+// A device that lost its storage gets its picks back. Additive, like the UFC
+// restore: a pick made on this device always wins.
+function _sportRestore(){
+  if(!USER_ID)return Promise.resolve();
+  return Promise.all(sportPromos().map(function(p){
+    return _sbFetchAll("/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID)+_picksFor(p.id)+
+      "&select=event_date,f1,f2,pick&order=updated_at.desc,event_date.desc,f1.asc,f2.asc").then(function(rows){
+      var added=0;
+      (rows||[]).forEach(function(r){
+        var hit=sportBout(_sportFeed.events,p.id,r.event_date,r.f1,r.f2);if(!hit)return;
+        var k=sportKey(p.id,hit.ev.date,hit.bout.a,hit.bout.b);
+        if(_sportPicks[k]===undefined&&(nmEq(r.pick,hit.bout.a)||nmEq(r.pick,hit.bout.b))){_sportPicks[k]=nmEq(r.pick,hit.bout.a)?hit.bout.a:hit.bout.b;added++;}
+      });
+      if(added){_sportSave();renderSportView();}
+    }).catch(function(){});
+  }));
+}
+// The Ranks board when another sport is selected. Rooms still apply.
+function renderSportBoard(){
+  var body=document.getElementById("lbBody"),promo=curSport();
+  body.innerHTML='<div class="lb-loading">Loading picks...</div>';
+  return _sbFetchAll("/rest/v1/picks?select=user_id,nickname,event_date,f1,f2,pick,promotion,updated_at&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+_picksFor(promo)).then(function(rows){
+    var room=typeof _curRoom==="function"?_curRoom():null,inRoom=room?roomHas(room):null;
+    if(inRoom)rows=(rows||[]).filter(function(r){return inRoom(r.user_id||r.nickname);});
+    var users=sportStandings(rows,_sportFeed.events,promo);
+    body.innerHTML="";
+    body.appendChild(_spEl("div","sport-board-hdr",_sportName(promo)+" standings"+(room?" · "+room.name:"")));
+    if(!users.length){body.appendChild(_spEl("div","lb-empty","No "+_sportName(promo)+" picks yet. Pick a card to get on the board."));return users;}
+    users.forEach(function(u,i){
+      var r=_spEl("div","sport-board-row"+(u.user_id&&u.user_id===USER_ID?" me":""));
+      r.appendChild(_spEl("span","sport-board-rank",String(i+1)));
+      r.appendChild(_spEl("span","sport-board-name",u.nickname||"?"));
+      r.appendChild(_spEl("span","sport-board-rec",u.correct+"/"+u.resolved+(u.total>u.resolved?" · "+(u.total-u.resolved)+" open":"")));
+      r.appendChild(_spEl("span","sport-board-pts",u.pts+" pt"+(u.pts===1?"":"s")));
+      body.appendChild(r);
+    });
+    return users;
+  }).catch(function(){body.innerHTML='<div class="lb-empty">Couldn\'t load the board — try again.</div>';});
+}
+// The feed is untrusted input: validated by the Pick Engine or not used at
+// all. No engine, no feed, a bad feed, or nothing to pick = UFC only.
+function sportsBoot(){
+  return fetch("events-extra.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():null;}).then(function(j){
+    if(!j||typeof PickEngine==="undefined"||!PickEngine.validateFeed)return;
+    var v=PickEngine.validateFeed(j);
+    _sportFeed={promotions:v.promotions,events:v.events};
+    renderSportBar();renderSportView();
+    _authReady.then(_sportRestore);
+  }).catch(function(){});
+}
+// sports:end
 function loadLeaderboard(isLive){
+  // Another sport selected: its own board (sports block), never the UFC one.
+  if(typeof curSport==="function"&&curSport()!=="ufc"){renderSportBoard();return;}
   var body=document.getElementById("lbBody");
   if(!isLive)body.innerHTML='<div class="lb-loading">Loading picks...</div>';
   _sbFetchAll("/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+PICKS_UFC).then(function(rows){
@@ -9701,6 +9899,7 @@ document.addEventListener("DOMContentLoaded",function(){
     <button class="ftab lb-scope-btn" id="lbScopeBtn" onclick="toggleLbScope()"
             title="Score main-card bouts only">Main Card</button>
   </div>
+  <div class="sport-bar lb-sport-bar" id="lbSportBar" role="tablist" aria-label="Sport" hidden></div>
   <div class="lb-roombar"><button class="ftab lb-room-btn" id="lbRoomBtn" onclick="openRoomSheet()" aria-haspopup="dialog">👥 Everyone</button></div>
   <div class="lb-body" id="lbBody"><div class="lb-loading">Loading picks...</div></div>
   <div class="lb-trash-sheet" id="trashSheet">
@@ -10028,6 +10227,8 @@ function consumePendingTap(delay){
     return true;
   }).catch(function(){return false;});
 }
+// Other sports: fetched once, shown only if the feed has a card to pick.
+sportsBoot();
 // Rooms read ?join= before the tap router below rewrites the URL.
 _roomsBoot();
 (function(){

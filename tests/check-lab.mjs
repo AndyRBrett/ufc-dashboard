@@ -200,7 +200,7 @@ check("de-vig of -110/-110 is exactly 50/50", Math.abs(dv.a - 0.5) < 1e-12 && Ma
   const idx = readFileSync(join(ROOT, "index.html"), "utf8");
   const dupes = ["nmKey", "nmEq", "nmBout", "splitNick", "dogPtsFor", "dogPtsForPick", "userPts", "locksOn", "isLockPick",
     "lockPtsFor", "pickPts", "scoreMethod", "_boutLookup", "_findFightResult", "_isMainCardPick", "_eventFinished",
-    "_lbScoreUsers", "boardStandings", "standingsKeep", "computeBeltLineage", "isMainCardBout", "isEarlyPrelimBout"].filter((f) => idx.includes(`function ${f}(`) || (SCORING.split(`function ${f}(`).length - 1) !== 1);
+    "_lbScoreUsers", "boardStandings", "standingsKeep", "computeBeltLineage", "sportBout", "sportStandings", "isMainCardBout", "isEarlyPrelimBout"].filter((f) => idx.includes(`function ${f}(`) || (SCORING.split(`function ${f}(`).length - 1) !== 1);
   check("each scoring function is defined exactly once, in scoring.js", dupes.length === 0 || (console.error("    " + dupes.join(", ")), false));
   // A local of the same name in index.html shadows the global inside that
   // function — stage 4 first called its scoped board "standings", which
