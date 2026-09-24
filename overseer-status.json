@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T09:25:20Z",
+  "generated_at": "2026-09-24T10:28:54Z",
   "events_tracked": 12,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "ok",
-      "last_changed_at": "2026-09-24T08:18:08Z",
+      "last_changed_at": "2026-09-24T10:28:54Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T09:25:20Z",
+      "last_changed_at": "2026-09-24T10:28:54Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T09:25:20Z",
+      "last_changed_at": "2026-09-24T10:28:54Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T09:25:20Z",
+      "last_changed_at": "2026-09-24T10:28:54Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -155,7 +155,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-24T09:25:20Z",
+      "last_changed_at": "2026-09-24T10:28:54Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -242,17 +242,17 @@
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Rodolfo Vieira",
       "f2": "Robert Bryczek",
-      "f1_movement": -49,
-      "f2_movement": 239,
-      "magnitude": 239,
+      "f1_movement": -52,
+      "f2_movement": 240,
+      "magnitude": 240,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 9.2,
-      "f2_prob_shift": -8.6,
-      "priority": 478.0
+      "f1_prob_shift": 9.6,
+      "f2_prob_shift": -8.8,
+      "priority": 480.0
     },
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",

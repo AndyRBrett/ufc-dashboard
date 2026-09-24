@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T09:25:20Z",
+  "generated_at": "2026-09-24T10:28:54Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -10048,7 +10048,7 @@
           "f1": "Rodolfo Vieira",
           "f2": "Robert Bryczek",
           "lbl": "Co-Main",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10109,6 +10109,11 @@
               "at": "2026-09-24T06:12:11Z",
               "f1_odds": -157,
               "f2_odds": 131
+            },
+            {
+              "at": "2026-09-24T10:28:54Z",
+              "f1_odds": -160,
+              "f2_odds": 132
             }
           ],
           "open": {
@@ -10453,7 +10458,7 @@
           "f1": "Norma Dumont",
           "f2": "Ailin Perez",
           "lbl": "Prelim",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10539,6 +10544,11 @@
               "at": "2026-09-24T01:04:35Z",
               "f1_odds": 119,
               "f2_odds": -142
+            },
+            {
+              "at": "2026-09-24T10:28:54Z",
+              "f1_odds": 120,
+              "f2_odds": -143
             }
           ],
           "open": {
@@ -10628,7 +10638,7 @@
           "f1": "Mehemmedeli Osmanli",
           "f2": "Ilimbek Akylbek uulu",
           "lbl": "Main Card",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-20T11:58:20Z",
@@ -10649,6 +10659,11 @@
               "at": "2026-09-22T17:08:06Z",
               "f1_odds": -292,
               "f2_odds": 233
+            },
+            {
+              "at": "2026-09-24T10:28:54Z",
+              "f1_odds": -294,
+              "f2_odds": 235
             }
           ],
           "open": {
@@ -10723,7 +10738,7 @@
           "f1": "Mickey Gall",
           "f2": "Sedriques Dumas",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -10749,6 +10764,11 @@
               "at": "2026-09-24T03:13:33Z",
               "f1_odds": -149,
               "f2_odds": 124
+            },
+            {
+              "at": "2026-09-24T10:28:54Z",
+              "f1_odds": -151,
+              "f2_odds": 125
             }
           ],
           "open": {
@@ -15019,7 +15039,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Robert Bryczek",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -108,
         "close": null,
         "clv": null
@@ -15030,7 +15050,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rodolfo Vieira",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -108,
         "close": null,
         "clv": null
@@ -15129,7 +15149,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Ailin Perez",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": 111,
         "close": null,
         "clv": null
@@ -15140,7 +15160,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Norma Dumont",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": -130,
         "close": null,
         "clv": null
@@ -15173,7 +15193,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Ilimbek Akylbek uulu",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -283,
         "close": null,
         "clv": null
@@ -15184,7 +15204,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Mehemmedeli Osmanli",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 228,
         "close": null,
         "clv": null
@@ -15217,7 +15237,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Sedriques Dumas",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -164,
         "close": null,
         "clv": null
@@ -15228,7 +15248,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Mickey Gall",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 136,
         "close": null,
         "clv": null
