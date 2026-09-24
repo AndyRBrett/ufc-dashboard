@@ -529,6 +529,14 @@ copy of scoring into them to "fix" that; the whole point is that they can't
 drift from the board. Architecture, the curated-feed format for other
 promotions, and the analytics' leak guards: `docs/PICK-ENGINE.md`.
 
+**The Lab wears the app's theme the same way: lifted, not copied.** `lab.html`'s
+`appThemeCss` takes the colour variables from index.html's `:root` and
+`body[data-theme|data-season="…"]` rules at load (caching them so the next visit
+paints themed before the fetch), so a new or recoloured theme reaches the Lab
+by itself. Keep themes as plain `body[data-theme="x"]{--var:…}` rules for that
+to keep working; `check:lab` compares the resolved colours app-vs-Lab for every
+theme.
+
 **Since migration stage 2, `lab/engine.js` also runs inside the app itself**:
 `index.html` loads it and answers every bout lookup through it
 (`_boutLookup` → `_appEngine`). A change to `lab/engine.js` is an app change:

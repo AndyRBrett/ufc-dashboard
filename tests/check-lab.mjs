@@ -283,6 +283,37 @@ else {
     check("the app boots with the link added (no uncaught errors)", appErrs.length === 0 || (console.error(appErrs.join("\n")), false));
     await app.close();
 
+    // The Lab wears the app's theme: same resolved colours, every theme.
+    {
+      const VARS = ["--bg", "--card", "--card2", "--text", "--muted", "--red", "--green", "--border"];
+      const read = (pg) => pg.evaluate((vars) => {
+        const cs = getComputedStyle(document.body);
+        return { theme: document.body.getAttribute("data-theme"), bg: cs.backgroundColor,
+          vars: Object.fromEntries(vars.map((v) => [v, cs.getPropertyValue(v).trim()])) };
+      }, VARS);
+      const mism = [];
+      for (const t of ["octagon", "neon", "fire", "usa", "seasonal", "silver", "noche"]) {
+        const ctxT = await browser.newContext();
+        await ctxT.addInitScript((th) => { try { localStorage.setItem("ufc_theme", th); } catch (e) {} }, t);
+        await ctxT.route(/supabase\.co/, (r) => r.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
+        const ap = await ctxT.newPage(); await ap.goto(base + "/index.html", { waitUntil: "load" }); await ap.waitForTimeout(300);
+        const lp = await ctxT.newPage(); await lp.goto(base + "/lab.html", { waitUntil: "load" });
+        await lp.waitForFunction(() => !/Loading the lab/.test(document.getElementById("main").textContent), null, { timeout: 15000 });
+        const A = await read(ap), B = await read(lp);
+        const bad = VARS.filter((v) => A.vars[v] !== B.vars[v]);
+        if (A.theme !== t || B.theme !== t || bad.length || A.bg !== B.bg) mism.push(`${t}: ${bad.map((v) => `${v} app=${A.vars[v]} lab=${B.vars[v]}`).join(", ") || "bg " + A.bg + " vs " + B.bg}`);
+        // Second visit, index.html unreachable: the cached theme still paints.
+        const lp2 = await ctxT.newPage();
+        await lp2.route(/index\.html/, (r) => r.fulfill({ status: 503, body: "" }));
+        await lp2.goto(base + "/lab.html", { waitUntil: "domcontentloaded" });
+        const C = await read(lp2);
+        if (C.vars["--bg"] !== A.vars["--bg"]) mism.push(`${t} (cached, pre-paint): --bg app=${A.vars["--bg"]} lab=${C.vars["--bg"]}`);
+        await ctxT.close();
+      }
+      check("the Fight Lab wears the app's theme — identical colours for all 7 themes", mism.length === 0 || (console.error("    " + mism.join("\n    ")), false));
+      check("…and paints it before index.html arrives, from the cached theme", !mism.some((m) => /cached/.test(m)));
+    }
+
     // If lab/engine.js can't load (404, a first launch offline), the app must
     // still boot and score through its own loops.
     const bare = await browser.newPage();
