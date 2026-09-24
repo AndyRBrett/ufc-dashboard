@@ -102,12 +102,15 @@ async function main() {
     assert("note names the target for a 'just them' send", /Only JPeso/.test(r.note));
 
     // Default routing: only the roasted party gets the push.
+    let before = await page.evaluate("window.__pushes.length");
     r = await page.evaluate(`(function(){
       window._trashText = "You pick like you're still asleep — Chael Sonnen";
       window.fireTrashTalk();
       return {btn: document.getElementById("trashSendBtn").textContent};
     })()`);
-    await page.waitForTimeout(300);
+    // The send is async (auth, then fetch): wait for the push itself. A fixed
+    // 300ms sleep read an empty list on a slow CI runner and failed the deploy.
+    await page.waitForFunction((n) => window.__pushes.length > n, before, { timeout: 10000 });
     let push = (await page.evaluate("window.__pushes")).slice(-1)[0];
     assert("'just them' sends only to the target", JSON.stringify(push.include_user_ids) === JSON.stringify(["u-jpeso"]));
     assert("'just them' still excludes the sender", push.exclude_user_id !== undefined);
@@ -121,8 +124,9 @@ async function main() {
     assert("note says the group gets it but it's about the target", /Everyone on the board/.test(r.note) && /JPeso/.test(r.note));
     assert("send button reads as a broadcast", /everyone/i.test(r.btn));
 
+    before = await page.evaluate("window.__pushes.length");
     await page.evaluate(`window.fireTrashTalk()`);
-    await page.waitForTimeout(300);
+    await page.waitForFunction((n) => window.__pushes.length > n, before, { timeout: 10000 });
     push = (await page.evaluate("window.__pushes")).slice(-1)[0];
     assert("'whole group' broadcasts (no include list)", !push.include_user_ids);
     assert("'whole group' still excludes the sender", !!push.exclude_user_id);
