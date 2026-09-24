@@ -23,6 +23,7 @@
 #   check:fightbot  — the FightBot MCP server speaks clean JSON-RPC and answers with the board's numbers
 #   check:brief     — the Friday Fight Week Brief push goes out once, Friday 7pm ET, linking to the Lab
 #   check:iq        — the AI Fight IQ write-up never states a number it wasn't given, stays on Claude, is capped
+#   check:parity    — board, belt, recaps and Wrapped are byte-identical to the pre-migration golden
 name: Validate Web
 
 on:
@@ -94,3 +95,5 @@ jobs:
         run: npm run check:brief
       - name: Fight IQ write-up test
         run: npm run check:iq
+      - name: Scoring parity (engine migration)
+        run: npm run check:parity
