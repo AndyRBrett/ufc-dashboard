@@ -25,6 +25,7 @@
 #   check:iq        — the AI Fight IQ write-up never states a number it wasn't given, stays on Claude, is capped
 #   check:parity    — board, belt, recaps and Wrapped are byte-identical to the pre-migration golden
 #   check:rooms     — a room's board is the main board filtered; only email accounts join; invites work
+#   check:promotion — every UFC picks query is scoped to promotion=eq.ufc (other sports never reach the UFC board)
 name: Validate Web
 
 on:
@@ -100,3 +101,5 @@ jobs:
         run: npm run check:parity
       - name: Watch Party rooms
         run: npm run check:rooms
+      - name: Picks scoped by promotion
+        run: npm run check:promotion

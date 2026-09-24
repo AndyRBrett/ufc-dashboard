@@ -63,6 +63,7 @@ const ctx = vm.createContext({
 vm.runInContext(block("fighter-names"), ctx);
 vm.runInContext(block("pick-match"), ctx);
 vm.runInContext(fn("_eventFinished"), ctx);
+vm.runInContext(fn("_isUfcRow"), ctx);
 vm.runInContext(fn("computeBeltLineage"), ctx);
 vm.runInContext(fn("_lbScoreUsers"), ctx);
 vm.runInContext(fn("standingsKeep") + fn("boardStandings"), ctx);

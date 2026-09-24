@@ -231,7 +231,7 @@ Deno.serve(async (req) => {
 
   // 1. Recent events that people actually picked (the only possible audience).
   const evRes = await fetch(
-    `${SUPABASE_URL}/rest/v1/picks?select=event_date,event_name&event_date=gte.${lo}&event_date=lte.${hi}`,
+    `${SUPABASE_URL}/rest/v1/picks?select=event_date,event_name&event_date=gte.${lo}&event_date=lte.${hi}&promotion=eq.ufc`,
     { headers: anonHeaders },
   );
   if (!evRes.ok) {
@@ -285,7 +285,7 @@ Deno.serve(async (req) => {
     let picks: Pick[] = [];
     try {
       const pRes = await fetch(
-        `${SUPABASE_URL}/rest/v1/picks?select=user_id,f1,f2,pick&event_date=eq.${encodeURIComponent(eventDate)}`,
+        `${SUPABASE_URL}/rest/v1/picks?select=user_id,f1,f2,pick&event_date=eq.${encodeURIComponent(eventDate)}&promotion=eq.ufc`,
         { headers: anonHeaders },
       );
       if (pRes.ok) picks = await pRes.json();

@@ -1834,7 +1834,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <script src="data.js"></script>
 <!-- The app's scoring (scoring.js, engine migration stage 3). Required, like
      data.js: the self-heal below covers it failing to load too. -->
-<script src="scoring.js?v=2026-09-24-3"></script>
+<script src="scoring.js?v=2026-09-24-4"></script>
 <!-- The Pick Engine (engine migration, docs/MIGRATION.md). Optional by design:
      if it fails to load, _boutLookup falls back to the app's own loops and
      every score comes out the same (check:parity runs both paths). -->
@@ -1851,7 +1851,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 // …and it must be the rulebook THIS page shipped with: a previous release's
 // scoring.js (an old cached copy, a network drop mid-upgrade) is treated as
 // missing rather than silently scoring with old rules.
-var SCORING_EXPECT="2026-09-24-3";
+var SCORING_EXPECT="2026-09-24-4";
 function _scoringOk(){return typeof pickPts==="function"&&typeof _lbScoreUsers==="function"&&typeof SCORING_VERSION!=="undefined"&&SCORING_VERSION===SCORING_EXPECT;}
 if(typeof EVENTS==="undefined"||!_scoringOk()){
   (function(){
@@ -2599,7 +2599,12 @@ function _reconcilePickOrder(){
 // pick-reconcile:end
 
 function _sbHeaders(){return{apikey:SUPABASE_ANON,Authorization:_authBearer(),"Content-Type":"application/json"};}
-function _sbQ(ev,fight){return"?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(ev.date)+"&f1=eq."+encodeURIComponent(fight.f1.n)+"&f2=eq."+encodeURIComponent(fight.f2.n);}
+// Every UFC read/delete of `picks` carries this: the table also holds other
+// promotions' picks (sport switcher, 0007_picks_promotion.sql), which must
+// never reach the UFC board, the Belt, restore or dedupe. check:promotion
+// fails on a picks query without it (outside its short allow-list).
+var PICKS_UFC="&promotion=eq.ufc";
+function _sbQ(ev,fight){return"?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(ev.date)+"&f1=eq."+encodeURIComponent(fight.f1.n)+"&f2=eq."+encodeURIComponent(fight.f2.n)+PICKS_UFC;}
 function findByKey(key){if(!_fightIndex)_buildFightIndex();return _fightIndex[key]||null;}
 
 function syncPick(ev,fight,notifyFriends){
@@ -2610,7 +2615,7 @@ function syncPick(ev,fight,notifyFriends){
   if(ev.date<PICKS_CUTOFF)return Promise.resolve(null);
   var key=pk(ev,fight);var myPick=preds[key];
   if(!myPick){deleteSbPick(ev,fight);return Promise.resolve(null);}
-  var data={user_id:USER_ID,nickname:userName,event_date:ev.date,event_name:ev.name,f1:fight.f1.n,f2:fight.f2.n,pick:myPick,method:preds_method[key]||"",confidence:preds_conf[key]||0,updated_at:new Date().toISOString(),bonus_pick:preds_fotn["fotn_"+ev.date]||null};
+  var data={user_id:USER_ID,promotion:"ufc",nickname:userName,event_date:ev.date,event_name:ev.name,f1:fight.f1.n,f2:fight.f2.n,pick:myPick,method:preds_method[key]||"",confidence:preds_conf[key]||0,updated_at:new Date().toISOString(),bonus_pick:preds_fotn["fotn_"+ev.date]||null};
   // A lock asks for the stored row back: the picks_cap_locks trigger clamps a
   // lock past LOCKS_PER_CARD to 0 (another device on this account may already
   // hold two), and this device must show what the standings will score.
@@ -2626,7 +2631,7 @@ function syncPick(ev,fight,notifyFriends){
           // Heal fighter-order flips: the upsert key is (user_id,event_date,f1,f2), so a
           // pick re-synced under a new order would otherwise sit beside the old-order row.
           // Drop any reverse-order row for this same bout so exactly one row survives.
-          var _rq="?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(ev.date)+"&f1=eq."+encodeURIComponent(fight.f2.n)+"&f2=eq."+encodeURIComponent(fight.f1.n);
+          var _rq="?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(ev.date)+"&f1=eq."+encodeURIComponent(fight.f2.n)+"&f2=eq."+encodeURIComponent(fight.f1.n)+PICKS_UFC;
           fetch(SUPABASE_URL+"/rest/v1/picks"+_rq,{method:"DELETE",headers:_sbHeaders()}).catch(function(){});
           if(notifyFriends&&daysOut(ev.date)>=0){
               var evShort=ev.name.replace("UFC Fight Night: ","").split(":")[0];
@@ -2666,7 +2671,7 @@ var _dedupeRan=false;
 function _dedupeMyPicks(){
   if(_dedupeRan||!userName||!USER_ID)return;_dedupeRan=true;
   _authReady.then(function(){
-    fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID)+"&select=event_date,f1,f2,updated_at&order=updated_at.desc",{headers:_sbHeaders()})
+    fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID)+"&select=event_date,f1,f2,updated_at&order=updated_at.desc"+PICKS_UFC,{headers:_sbHeaders()})
       .then(function(r){return r.ok?r.json():[];})
       .then(function(rows){
         if(!Array.isArray(rows)||rows.length<2)return;
@@ -2695,7 +2700,7 @@ function _dedupeMyPicks(){
         });
         if(!del.length)return;
         Promise.all(del.map(function(p){
-          var q="?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(p.event_date)+"&f1=eq."+encodeURIComponent(p.f1)+"&f2=eq."+encodeURIComponent(p.f2);
+          var q="?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(p.event_date)+"&f1=eq."+encodeURIComponent(p.f1)+"&f2=eq."+encodeURIComponent(p.f2)+PICKS_UFC;
           return fetch(SUPABASE_URL+"/rest/v1/picks"+q,{method:"DELETE",headers:_sbHeaders()}).catch(function(){});
         })).then(function(){console.log("[dedupe] removed "+del.length+" duplicate pick row(s)");_rtBroadcast();if(typeof loadLeaderboard==="function"&&document.getElementById("lbPanel")&&document.getElementById("lbPanel").classList.contains("open"))loadLeaderboard(true);});
       }).catch(function(){});
@@ -2802,7 +2807,7 @@ function _restoreMyPicks(){
     // would restore the superseded pick and the additive checks would then
     // ignore the real one. The order ends in a unique column combo, which
     // _sbFetchAll requires or rows shift between pages.
-    return _sbFetchAll("/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID)+
+    return _sbFetchAll("/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID)+PICKS_UFC+
       "&select=event_date,f1,f2,pick,method,confidence,bonus_pick"+
       "&order=updated_at.desc,event_date.desc,f1.asc,f2.asc")
       .then(function(rows){
@@ -2921,7 +2926,7 @@ function _sbFetchAll(query){
   return _ensureFreshToken().then(function(){return page(0,[],false);});
 }
 function fetchCommunityPicks(){
-  _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,method,nickname,user_id,updated_at,bonus_pick&order=updated_at.asc,event_date.asc,f1.asc,f2.asc").then(function(rows){
+  _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,method,nickname,user_id,updated_at,bonus_pick&order=updated_at.asc,event_date.asc,f1.asc,f2.asc"+PICKS_UFC).then(function(rows){
     if(!Array.isArray(rows))return;
     _commRows=rows;   // activity feed derives lock-ins/streaks/belt from the same rows
     try{checkCardRecap(rows);}catch(e){console.warn("[recap]",e);}
@@ -4606,7 +4611,9 @@ function _cpDelta(ev,fight,oldName,newName){
 function resetPicks(){
   if(!Object.keys(preds).length)return;
   if(!confirm("Reset all picks?"))return;
-  _authReady.then(function(){fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:_sbHeaders()}).catch(function(){});});
+  // UFC picks only: this clears the UFC card's local picks, so it must not
+  // wipe the same account's picks on another promotion.
+  _authReady.then(function(){fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID)+PICKS_UFC,{method:"DELETE",headers:_sbHeaders()}).catch(function(){});});
   preds={};preds_method={};preds_conf={};save();saveMethod();saveConf();render();updatePicksWidget();toast("All picks cleared");
 }
 
@@ -8429,7 +8436,7 @@ function _roomsBoot(){
 function loadLeaderboard(isLive){
   var body=document.getElementById("lbBody");
   if(!isLive)body.innerHTML='<div class="lb-loading">Loading picks...</div>';
-  _sbFetchAll("/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc").then(function(rows){
+  _sbFetchAll("/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+PICKS_UFC).then(function(rows){
     if(!Array.isArray(rows)||rows.length===0){
       body.innerHTML='<div class="lb-empty">No picks submitted yet.<br>Make some picks to appear here!</div>';
       return;
@@ -9534,7 +9541,7 @@ document.addEventListener("DOMContentLoaded",function(){
     // send-push simultaneously — the first to claim the notif_log row wins and
     // the rest get {skipped:true}.
     setTimeout(function(){
-      _sbFetchAll("/rest/v1/picks?select=user_id,f1,f2,pick&event_date=eq."+encodeURIComponent(ev.date)).then(function(picks){
+      _sbFetchAll("/rest/v1/picks?select=user_id,f1,f2,pick&event_date=eq."+encodeURIComponent(ev.date)+PICKS_UFC).then(function(picks){
         var winners=[],losers=[];
         (picks||[]).forEach(function(p){
           if(!p.user_id)return;

@@ -144,7 +144,7 @@ export async function composeBrief(ev: Ev, js: string, sb: { url: string; key: s
     let group: any[] = [];
     if (sb) {
       try {
-        const r = await fetch(`${sb.url}/rest/v1/picks?select=user_id,nickname,event_date,f1,f2,pick,method,confidence,updated_at,bonus_pick&event_date=eq.${ev.date}`,
+        const r = await fetch(`${sb.url}/rest/v1/picks?select=user_id,nickname,event_date,f1,f2,pick,method,confidence,updated_at,bonus_pick&event_date=eq.${ev.date}&promotion=eq.ufc`,
           { headers: { apikey: sb.key, Authorization: `Bearer ${sb.key}` } });
         if (r.ok) group = engine.resolvePicks(PE.boardRows(kernel, await r.json()));
       } catch (_e) { /* no group line; the rest of the brief stands */ }

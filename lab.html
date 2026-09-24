@@ -222,7 +222,7 @@ function myIdentity(){
   return {id:id,name:name};
 }
 function fetchPicks(){
-  var PAGE=1000,q="/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc";
+  var PAGE=1000,q="/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc&promotion=eq.ufc";
   function page(from,acc){
     return fetch(SUPABASE_URL+q,{headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+SUPABASE_ANON,Range:from+"-"+(from+PAGE-1)}})
       .then(function(r){if(!r.ok)throw new Error("picks HTTP "+r.status);return r.json();})

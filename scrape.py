@@ -3121,7 +3121,7 @@ def send_push_notifications(new_results):
     if not SUPABASE_ANON:
         print("Push skipped: SUPABASE_ANON not set", file=sys.stderr)
         return
-    picks = sb_get("/rest/v1/picks?select=user_id,f1,f2,pick")
+    picks = sb_get("/rest/v1/picks?select=user_id,f1,f2,pick&promotion=eq.ufc")
     if not picks:
         print("Push skipped: no picks available (Supabase empty or unreachable)", file=sys.stderr)
         return
