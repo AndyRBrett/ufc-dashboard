@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T07:13:53Z",
+  "generated_at": "2026-09-24T08:18:09Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -10198,7 +10198,7 @@
           "f1": "Rodolfo Bellato",
           "f2": "Christian Edwards",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10279,6 +10279,11 @@
               "at": "2026-09-24T06:12:11Z",
               "f1_odds": -179,
               "f2_odds": 148
+            },
+            {
+              "at": "2026-09-24T08:18:08Z",
+              "f1_odds": -180,
+              "f2_odds": 149
             }
           ],
           "open": {
@@ -10368,7 +10373,7 @@
           "f1": "John Castaneda",
           "f2": "Alateng Heili",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10429,6 +10434,11 @@
               "at": "2026-09-23T19:38:39Z",
               "f1_odds": -355,
               "f2_odds": 278
+            },
+            {
+              "at": "2026-09-24T08:18:08Z",
+              "f1_odds": -362,
+              "f2_odds": 282
             }
           ],
           "open": {
@@ -15053,7 +15063,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Christian Edwards",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -160,
         "close": null,
         "clv": null
@@ -15064,7 +15074,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rodolfo Bellato",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 136,
         "close": null,
         "clv": null
@@ -15097,7 +15107,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Alateng Heili",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -280,
         "close": null,
         "clv": null
@@ -15108,7 +15118,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "John Castaneda",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 232,
         "close": null,
         "clv": null

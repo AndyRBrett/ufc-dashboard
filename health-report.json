@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-24T07:13:53Z",
+  "generated_at": "2026-09-24T08:18:08Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 3
+    "warn": 4
   },
   "findings": [
     {
@@ -24,8 +24,13 @@
     },
     {
       "severity": "WARN",
+      "check": "odds-api-error",
+      "message": "last Odds API call returned HTTP 401 \u2014 lines are frozen at their previous values"
+    },
+    {
+      "severity": "WARN",
       "check": "odds-quota",
-      "message": "Odds API quota down to 4 requests \u2014 lines will freeze silently when it hits zero"
+      "message": "Odds API quota down to 3 requests \u2014 lines will freeze silently when it hits zero"
     }
   ]
 }
