@@ -19,6 +19,7 @@
 #   check:recap     — the post-card recap scores the night the way the board and belt do
 #   check:wrapped   — Year Wrapped reports the year the way the board and belt scored it
 #   check:locks     — a 🔒 lock scores the same on the board, belt and challenges; ≤2 per card
+#   check:lab       — the Fight Lab scores exactly like the board, never leaks a result, and boots
 name: Validate Web
 
 on:
@@ -82,3 +83,5 @@ jobs:
         run: npm run check:wrapped
       - name: Lock scoring test
         run: npm run check:locks
+      - name: Fight Lab test
+        run: npm run check:lab
