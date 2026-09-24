@@ -89,6 +89,19 @@ const andyLocks = res.filter((p) => p.player === "u-Andy" && p.locked);
 check("a lock on/after LOCKS_START is a lock; a pre-LOCKS_START star is not",
   andyLocks.length === 3 && !res.find((p) => p.player === "u-Tristin" && p.raw.confidence === 3).locked);
 
+// 1b. Ghost identities: a device reset leaves a second user_id under the same
+//     nickname (or a different case of it). The board shows one row per person;
+//     so must every reader.
+const ghosts = rows.concat([
+  pick("Andy", C1, "A1", "B1", "B1", { user_id: "u-Andy-old" }),                    // same name, stale id, fewer picks
+  Object.assign(pick("tristin", C1, "A3", "B3", "B3"), { user_id: "u-tristin-2", nickname: "👑 tristin" }), // case + emoji differ
+]);
+const kept = PE.boardRows(K, ghosts);
+const ids = [...new Set(kept.map((r) => r.user_id))].sort();
+check("boardRows keeps exactly the identities the board keeps (one per person)",
+  JSON.stringify(ids) === JSON.stringify(K._lbScoreUsers(ghosts).map((u) => u.user_id).sort()) && ids.length === 2);
+check("boardRows drops the ghost's rows rather than merging them", !kept.some((r) => r.user_id === "u-Andy-old" || r.user_id === "u-tristin-2"));
+
 // 2. Feed adapter: untrusted input, validated whole.
 const feed = PE.feedAdapter({
   promotions: [{ id: "pfl", name: "PFL" }, { id: "ufc", name: "Fake UFC" }],
@@ -201,6 +214,10 @@ else {
         f1: f.f1.n, f2: f.f2.n, pick: (i + j) % 3 ? f.f1.n : f.f2.n, method: ["KO/TKO", "Sub", "Dec"][(i + j) % 3], confidence: 0,
         updated_at: e.date + "T10:00:00Z", event_name: e.name, bonus_pick: null }));
     }));
+    // Ghosts, as seen in production: a second "T" and a different-case "Jpe$o".
+    const firstBout = stub[0];
+    stub.push(Object.assign({}, firstBout, { user_id: "u-Andy-ghost", nickname: "🦍 Andy" }));
+    stub.push(Object.assign({}, firstBout, { user_id: "u-torrey-ghost", nickname: "🚀 torrey" }));
     const page = await browser.newPage();
     const errs = [];
     page.on("pageerror", (e) => errs.push("Uncaught: " + e.message));
@@ -219,6 +236,9 @@ else {
     await page.click('#tabs button[data-tab="iq"]');
     const iqTxt = await page.evaluate(() => document.getElementById("main").innerText);
     check("Fight IQ opens on the viewer's own picks and shows an archetype", /\(you\)/.test(await page.evaluate(() => document.querySelector("select").selectedOptions[0].textContent)) && /Record/.test(iqTxt));
+    const opts = await page.evaluate(() => [...document.querySelectorAll("select option")].map((o) => o.textContent.replace(/\s*\(you\)$/, "")));
+    const bases = opts.map((o) => o.replace(/^\S+\s+/, "").toLowerCase());
+    check("the player picker lists each person once (no ghost identities)", opts.length === 3 && new Set(bases).size === bases.length);
     check("lab page boots under its CSP with no uncaught or console errors", errs.length === 0 || (console.error(errs.join("\n")), false));
     await page.close();
 

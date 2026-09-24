@@ -28,6 +28,9 @@ d.EVENTS.filter((e) => e.fights.some((f) => f.winner)).forEach((e) => e.fights.f
 const e0 = d.EVENTS.find((e) => e.fights.some((f) => f.winner)), f0 = e0.fights[0];
 rows.push({ user_id: "u-adam", nickname: "Adam B", event_date: e0.date, f1: f0.f1.n, f2: f0.f2.n, pick: f0.f1.n, method: "", confidence: 0,
   updated_at: e0.date + "T10:00:00Z", event_name: e0.name, bonus_pick: null });
+// Ghost identities (device resets): a stale "Andy" and a different-case "tristin".
+rows.push(Object.assign({}, rows[0], { user_id: "u-Andy-ghost", nickname: "🦍 Andy" }));
+rows.push(Object.assign({}, rows[1], { user_id: "u-tristin-ghost", nickname: "🚀 tristin" }));
 const dir = mkdtempSync(join(tmpdir(), "fightbot-"));
 const picksFile = join(dir, "picks.json");
 writeFileSync(picksFile, JSON.stringify(rows));
@@ -78,6 +81,8 @@ try {
   check("get_user_picks returns graded picks", !up.isError && up.data.picks.length > 0 && up.data.picks.some((p) => p.result !== "pending"));
   const who = await call("fight_iq", { player: "nobody-here" });
   check("an unknown player is an isError result that lists who exists", who.isError && who.data.players.length === 3);
+check("the player list names each person once (ghost identities collapsed like the board)",
+  new Set(who.data.players.map((n) => n.replace(/^\S+\s+/, "").toLowerCase())).size === who.data.players.length);
 const adam = await call("get_user_picks", { player: "Adam B" });
 check("a legacy nickname without an emoji resolves by its whole name", !adam.isError && adam.data.player === "Adam B");
   const names2 = Object.keys(d.FIGHTER_STATS);

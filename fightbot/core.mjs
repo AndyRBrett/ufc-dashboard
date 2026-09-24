@@ -216,7 +216,7 @@ export const TOOLS = {
       const s = load(), ev = s.engine.nextEvent(new Date(), "ufc");
       if (!ev) return { note: "No upcoming card." };
       let group = [], mine = [], picksNote = null;
-      try { const rows = await picks(s); group = s.engine.resolvePicks(rows); const id = resolvePlayer(rows, a.player, s); mine = id ? group.filter((p) => p.player === id) : []; }
+      try { const rows = PE.boardRows(s.kernel, await picks(s)); group = s.engine.resolvePicks(rows); const id = resolvePlayer(rows, a.player, s); mine = id ? group.filter((p) => p.player === id) : []; }
       catch (e) { picksNote = e.message; }
       const raw = s.env.EVENTS.find((e) => e.date === ev.date && e.name === ev.name);
       const intel = raw && s.intel ? s.kernel.intelItemsFor(s.intel, raw) : [];
@@ -231,7 +231,7 @@ export const TOOLS = {
     description: "The group standings, scored by the app's own leaderboard code (points, record, accuracy, streaks). Optionally one card's standings.",
     inputSchema: { type: "object", properties: { date: { type: "string", description: "One card (YYYY-MM-DD); omit for all-time." } } },
     async run(a) {
-      const s = load(), rows = await picks(s);
+      const s = load(), rows = PE.boardRows(s.kernel, await picks(s));
       const board = s.kernel._lbScoreUsers(a.date ? rows.filter((r) => r.event_date === a.date) : rows);
       return { scope: a.date || "all-time", standings: board.map((u, i) => ({ rank: i + 1, player: u.nickname, points: s.kernel.userPts(u),
         record: `${u.correct}-${u.total - u.correct}`, accuracy_pct: u.accuracy, current_streak: u.currentStreak, best_streak: u.bestStreak })) };
@@ -241,7 +241,7 @@ export const TOOLS = {
     description: "One player's picks (by nickname), optionally for one card, with each result and points.",
     inputSchema: { type: "object", properties: { player: { type: "string" }, date: { type: "string" } }, required: ["player"] },
     async run(a) {
-      const s = load(), rows = await picks(s), id = resolvePlayer(rows, a.player, s);
+      const s = load(), rows = PE.boardRows(s.kernel, await picks(s)), id = resolvePlayer(rows, a.player, s);
       if (!id) return { error: `No player matching "${a.player}".`, players: playerList(rows) };
       const list = s.engine.resolvePicks(rows).filter((p) => p.player === id && (!a.date || p.date === a.date));
       return { player: list[0] ? list[0].nickname : a.player, picks: list.slice(0, 60).map((p) => ({ date: p.date,
@@ -254,7 +254,7 @@ export const TOOLS = {
     description: "A player's Fight IQ scouting report: picker archetype, record and points, splits by division / favorite vs underdog / style / locks, head-to-head record against each friend, closing-line value, and the insights that stand out.",
     inputSchema: { type: "object", properties: { player: { type: "string" } }, required: ["player"] },
     async run(a) {
-      const s = load(), rows = await picks(s), id = resolvePlayer(rows, a.player, s);
+      const s = load(), rows = PE.boardRows(s.kernel, await picks(s)), id = resolvePlayer(rows, a.player, s);
       if (!id) return { error: `No player matching "${a.player}".`, players: playerList(rows) };
       const all = s.engine.resolvePicks(rows), iq = FL.fightIQ(all.filter((p) => p.player === id), { odds: s.odds, stats: s.env.FIGHTER_STATS, group: all });
       return { archetype: `${iq.archetype.emoji} ${iq.archetype.name} — ${iq.archetype.blurb}`, record: `${iq.record.w}-${iq.record.l}`,
@@ -268,7 +268,7 @@ export const TOOLS = {
     description: "For a player's losing picks on a card: the result, the price they took (the line at their pick), how the line moved after, and what the tape and model show. Each loss says whether that analysis is pre-fight or retrospective (stats fetched after the fight already include the result).",
     inputSchema: { type: "object", properties: { player: { type: "string" }, date: { type: "string", description: "Card date; default the most recent card with results." } }, required: ["player"] },
     async run(a) {
-      const s = load(), rows = await picks(s), id = resolvePlayer(rows, a.player, s);
+      const s = load(), rows = PE.boardRows(s.kernel, await picks(s)), id = resolvePlayer(rows, a.player, s);
       if (!id) return { error: `No player matching "${a.player}".`, players: playerList(rows) };
       const done = s.engine.concluded("ufc"), date = a.date || (done[done.length - 1] || {}).date;
       const lost = s.engine.resolvePicks(rows).filter((p) => p.player === id && p.date === date && p.correct === false && p.side !== null);

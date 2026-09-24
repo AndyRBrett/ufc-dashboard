@@ -365,6 +365,19 @@
     };
   }
 
+  // The board shows one row per person. A device reset leaves a ghost
+  // identity (new user_id, same nickname — sometimes a different case or
+  // emoji), and _lbScoreUsers collapses those by base name, keeping the
+  // identity with more picks (yours, when it's you). Every reader of the
+  // picks table goes through this so the Lab and FightBot list the same
+  // people the board does — never "T" twice. The board's own code decides.
+  function boardRows(kernel, rows) {
+    rows = rows || [];
+    var keep = {};
+    kernel._lbScoreUsers(rows).forEach(function (u) { keep[u.user_id || u.nickname || "unknown"] = true; });
+    return rows.filter(function (r) { return keep[r.user_id || r.nickname || "unknown"]; });
+  }
+
   function isoDate(d) {
     var dt = d instanceof Date ? d : new Date(d);
     return dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0") + "-" + String(dt.getDate()).padStart(2, "0");
@@ -374,7 +387,7 @@
     loadKernel: loadKernel, sliceBlock: sliceBlock, sliceFn: sliceFn,
     KERNEL_BLOCKS: KERNEL_BLOCKS, KERNEL_FNS: KERNEL_FNS,
     ufcAdapter: ufcAdapter, feedAdapter: feedAdapter, validateFeed: validateFeed,
-    ufcRules: ufcRules, simpleRules: simpleRules, createEngine: createEngine,
+    ufcRules: ufcRules, simpleRules: simpleRules, createEngine: createEngine, boardRows: boardRows,
     americanToProb: americanToProb, deVig: deVig, simpleKey: simpleKey, simpleEq: simpleEq,
     surname: surname, pairKey: pairKey, segmentOf: segmentOf, divisionGroup: divisionGroup,
     methodGroup: methodGroup, isoDate: isoDate
