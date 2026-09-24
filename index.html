@@ -3992,7 +3992,16 @@ function deleteAccount(){
           // that matches no rows returns 204, so 404 really does mean "no
           // such table" -- there is nothing there to leave behind.
           if(!r.ok&&r.status!==404)throw new Error("delete prefs "+r.status);
-        });
+        })
+        // Rooms: the ones this account owns go (only an owner can delete a
+        // room, so nobody else could clean them up), and so does its seat in
+        // anyone else's. Same rules as prefs: a failure is reported, and 404
+        // (0006 not applied) means there is nothing to leave behind.
+        .then(function(){return fetch(SUPABASE_URL+"/rest/v1/rooms?owner_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h});})
+        .then(function(r){if(!r.ok&&r.status!==404)throw new Error("delete rooms "+r.status);
+          return fetch(SUPABASE_URL+"/rest/v1/room_members?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h});})
+        .then(function(r){if(!r.ok&&r.status!==404)throw new Error("delete room seats "+r.status);
+          try{localStorage.removeItem("ufc_lb_room");localStorage.removeItem("ufc_room_join");}catch(e){}});
     });
   }).then(function(){
     // Best-effort: drop the browser push subscription, then wipe all local state.
@@ -8201,8 +8210,12 @@ var _lbRows=null;   // raw picks rows from the last leaderboard fetch
 // listable, and RLS hides every room from non-members.
 var ROOM_CODE_RE=/^[0-9A-F]{6}$/;
 var _rooms=[];            // [{id,name,code,owner_id,members:[user_id]}], mine only
+var _roomsFor=null;       // the USER_ID _rooms was loaded for: another account's rooms never show
+var _roomsAt=0;           // when the roster was last fetched (board refreshes re-read it)
 var lbRoom=(function(){try{return localStorage.getItem("ufc_lb_room")||null;}catch(e){return null;}})();
-function _roomById(id){for(var i=0;i<_rooms.length;i++)if(_rooms[i].id===id)return _rooms[i];return null;}
+function _roomById(id){if(_roomsFor!==USER_ID)return null;for(var i=0;i<_rooms.length;i++)if(_rooms[i].id===id)return _rooms[i];return null;}
+function roomHas(r){var m=Object.create(null);r.members.forEach(function(u){m[u]=true;});return function(uid){return !!m[uid];};}
+function _roomSig(r){return r?r.members.slice().sort().join(","):"";}
 // The selected room, or null for Everyone. A room you've left, or that its
 // owner deleted, falls back to Everyone rather than an empty board.
 function _curRoom(){return lbRoom?_roomById(lbRoom):null;}
@@ -8241,21 +8254,36 @@ function _roomRpc(fn,args){
 }
 function _lbPanelOpen(){var p=document.getElementById("lbPanel");return !!(p&&p.classList.contains("open"));}
 function roomsLoad(){
+  // Account A's rooms must never be shown to account B: drop the cache the
+  // moment the identity changes, before the request, and keep it empty if
+  // the request fails.
+  if(_roomsFor!==USER_ID){_rooms=[];_roomsFor=USER_ID;}
   if(!_sessEmail()){_rooms=[];_syncRoomBtn();return Promise.resolve(_rooms);}
-  var had=!!_curRoom();
+  var had=!!_curRoom(),sig=_roomSig(_curRoom()),who=USER_ID;
+  _roomsAt=Date.now();
   return _authReady.then(function(){
     return _roomApi("/rest/v1/rooms?select=id,name,code,owner_id,room_members(user_id)&order=created_at.asc");
   }).then(function(rows){
+    if(who!==USER_ID)return _rooms;   // signed into someone else meanwhile
     _rooms=(Array.isArray(rows)?rows:[]).map(function(r){
       return {id:r.id,name:r.name,code:r.code,owner_id:r.owner_id,
               members:(r.room_members||[]).map(function(m){return m.user_id;})};
     });
     _syncRoomBtn();
-    // The board may have rendered before the rooms arrived (as Everyone).
-    if(!had&&_curRoom()&&_lbPanelOpen())loadLeaderboard();
+    // Re-render when the board on screen is now wrong: it rendered before the
+    // rooms arrived (as Everyone), or the room's roster changed since.
+    var now=_curRoom();
+    if(_lbPanelOpen()&&((!had&&now)||(had&&(!now||_roomSig(now)!==sig))))loadLeaderboard();
     if(document.getElementById("roomBg")&&document.getElementById("roomBg").classList.contains("open"))renderRoomSheet();
     return _rooms;
-  }).catch(function(){_syncRoomBtn();return _rooms;});
+  }).catch(function(){if(_roomsFor!==USER_ID)_rooms=[];_syncRoomBtn();return _rooms;});
+}
+// Board refreshes (manual, live, the 2-minute timer) re-read the roster of the
+// room on screen, at most once a minute, so a member who joins or leaves shows
+// up without reopening the sheet. roomsLoad re-renders only if it changed.
+function roomsRefreshForBoard(){
+  if(!_curRoom()||Date.now()-_roomsAt<60000)return;
+  roomsLoad();
 }
 function _syncRoomBtn(){
   var b=document.getElementById("lbRoomBtn");if(!b)return;
@@ -8413,6 +8441,7 @@ function loadLeaderboard(isLive){
     // regardless of which leaderboard mode is active. In a room it is the
     // room's own belt: the same lineage, replayed over its members' picks.
     var _room=_curRoom();
+    roomsRefreshForBoard();
     var belt=computeBeltLineage(rows,_room?{users:_room.members}:null);
     // Find the current/active event up front so "This Event" mode can scope scoring to it.
     var nowMs=Date.now();
@@ -8486,7 +8515,9 @@ function loadLeaderboard(isLive){
       // main-card picks stayed open for hours. The activity feed kept pointing
       // at a leaderboard that no longer had any nudge buttons on it.
       if(!mainCardLocked(nextEv)){
-        var slackers=_slackersFor(nextEv,rows).filter(function(u){return u.user_id;});
+        // In a room, only its members: never list (or push) someone outside it.
+        var _inRoom=_room?roomHas(_room):null;
+        var slackers=_slackersFor(nextEv,rows).filter(function(u){return u.user_id&&(!_inRoom||_inRoom(u.user_id));});
         if(slackers.length){
           var nr=document.createElement("div");
           nr.style.cssText="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:0 2px 12px";

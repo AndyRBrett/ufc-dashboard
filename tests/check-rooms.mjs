@@ -235,6 +235,46 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   check("...and offers the join once that sheet closes", ctx.__acct === 1);
 }
 
+// --- another account's rooms never show ------------------------------------------
+{
+  const ctx = makeCtx({ email: "a@x.test", rooms: [R1], USER_ID: "u-me" });
+  await ctx.roomsLoad(); ctx.selectRoom("r1");
+  check("(setup) account A sees its room", !!ctx._curRoom());
+  ctx.USER_ID = "u-b";                       // signed into account B
+  check("switching accounts hides A's room at once, before any request", ctx._curRoom() === null && !("users" in ctx.roomScope({})));
+  ctx.fetch = () => Promise.reject(new Error("network"));
+  const got = await ctx.roomsLoad();
+  check("a failed load for account B returns nothing of A's", got.length === 0 && ctx._rooms.length === 0 && ctx._curRoom() === null);
+}
+// --- the roster refreshes with the board ---------------------------------------------
+{
+  const rooms = [JSON.parse(JSON.stringify(R1))];
+  const ctx = makeCtx({ email: "me@x.test", rooms });
+  ctx.__els.lbPanel = undefined;
+  await ctx.roomsLoad(); ctx.selectRoom("r1");
+  ctx.document.getElementById("lbPanel").classList.add("open");
+  ctx.__lb = 0;
+  ctx.roomsRefreshForBoard();
+  await settle();
+  check("a board refresh within a minute doesn't re-read the roster", ctx.__lb === 0 && ctx.__calls.filter((c) => /rest\/v1\/rooms/.test(c.url || "")).length === 1);
+  ctx._roomsAt = 0;
+  ctx.roomsRefreshForBoard();
+  await settle();
+  check("an unchanged roster doesn't re-render the board", ctx.__lb === 0);
+  rooms[0].room_members.push({ user_id: "u-new" });
+  ctx._roomsAt = 0;
+  ctx.roomsRefreshForBoard();
+  await settle();
+  check("a member who joined shows up: the board re-renders with them", ctx.__lb === 1 && ctx._curRoom().members.includes("u-new"));
+  rooms.length = 0;
+  ctx._roomsAt = 0; ctx.__lb = 0;
+  ctx.roomsRefreshForBoard();
+  await settle();
+  check("a room deleted under you falls back to Everyone and re-renders", ctx.__lb === 1 && ctx._curRoom() === null);
+  const inR = ctx.roomHas({ members: ["u-me"] });
+  check("roomHas matches members only (prototype-free)", inR("u-me") && !inR("u-x") && !inR("constructor"));
+}
+
 // --- wiring in the page -------------------------------------------------------------
 {
   const lb = fn("loadLeaderboard");
@@ -244,6 +284,11 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   check("room names reach the page as text, never HTML", !/innerHTML\s*=\s*[^"'\s]/.test(rs) && /textContent/.test(fn("_rmEl")) && !/innerHTML/.test(fn("_syncRoomBtn")));
   const empty = lb.slice(lb.indexOf("if(_room){var _re"), lb.indexOf("if(_room){var _re") + 400);
   check("the empty-room message uses text nodes", /createTextNode\("Nobody in "\+_room\.name/.test(empty) && !/innerHTML[^=]*=[^"]*_room\.name/.test(empty));
+  check("nudges on a room's board list (and push) members only", /var _inRoom=_room\?roomHas\(_room\):null;\s*var slackers=_slackersFor\(nextEv,rows\)\.filter\(function\(u\)\{return u\.user_id&&\(!_inRoom\|\|_inRoom\(u\.user_id\)\);\}\)/.test(lb));
+  check("every board render re-reads the room's roster (throttled)", /roomsRefreshForBoard\(\);/.test(lb));
+  const del = fn("deleteAccount");
+  check("deleting an account deletes the rooms it owns and its seats in others", /"\/rest\/v1\/rooms\?owner_id=eq\."/.test(del) && /"\/rest\/v1\/room_members\?user_id=eq\."/.test(del));
+  check("...and a failure there is reported, not swallowed", /throw new Error\("delete rooms "/.test(del) && /throw new Error\("delete room seats "/.test(del));
   check("the room sheet is a real overlay (Escape closes it, What's New waits for it)", /\["roomBg",function\(\)\{closeRoomSheet\(\);\}\]/.test(html));
   check("a sign-in resumes a pending join", /function _postSignIn\(prevId,email\)\{\s*_roomsAfterSignIn\(\);/.test(html));
   check("?join= is read before the tap router rewrites the URL", html.indexOf("_roomsBoot();\n(function(){\n  var params=new URLSearchParams") > 0);
