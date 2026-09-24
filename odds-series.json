@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T05:08:10Z",
+  "generated_at": "2026-09-24T06:12:11Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -9928,7 +9928,7 @@
           "f1": "Raul Rosas Jr.",
           "f2": "Raoni Barcelos",
           "lbl": "Main Event",
-          "points": 20,
+          "points": 21,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10029,6 +10029,11 @@
               "at": "2026-09-24T01:04:35Z",
               "f1_odds": -166,
               "f2_odds": 137
+            },
+            {
+              "at": "2026-09-24T06:12:11Z",
+              "f1_odds": -167,
+              "f2_odds": 138
             }
           ],
           "open": {
@@ -10043,7 +10048,7 @@
           "f1": "Rodolfo Vieira",
           "f2": "Robert Bryczek",
           "lbl": "Co-Main",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10098,6 +10103,11 @@
             {
               "at": "2026-09-23T12:38:07Z",
               "f1_odds": -159,
+              "f2_odds": 131
+            },
+            {
+              "at": "2026-09-24T06:12:11Z",
+              "f1_odds": -157,
               "f2_odds": 131
             }
           ],
@@ -10188,7 +10198,7 @@
           "f1": "Rodolfo Bellato",
           "f2": "Christian Edwards",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10264,6 +10274,11 @@
               "at": "2026-09-24T03:13:33Z",
               "f1_odds": -180,
               "f2_odds": 149
+            },
+            {
+              "at": "2026-09-24T06:12:11Z",
+              "f1_odds": -179,
+              "f2_odds": 148
             }
           ],
           "open": {
@@ -14972,7 +14987,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Raoni Barcelos",
         "side": "f1",
-        "points": 20,
+        "points": 21,
         "open": -180,
         "close": null,
         "clv": null
@@ -14983,7 +14998,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Raul Rosas Jr.",
         "side": "f2",
-        "points": 20,
+        "points": 21,
         "open": 153,
         "close": null,
         "clv": null
@@ -14994,7 +15009,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Robert Bryczek",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -108,
         "close": null,
         "clv": null
@@ -15005,7 +15020,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rodolfo Vieira",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -108,
         "close": null,
         "clv": null
@@ -15038,7 +15053,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Christian Edwards",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -160,
         "close": null,
         "clv": null
@@ -15049,7 +15064,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rodolfo Bellato",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 136,
         "close": null,
         "clv": null
