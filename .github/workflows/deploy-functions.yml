@@ -28,6 +28,8 @@ jobs:
       # voice, so it gates the deploy alongside the syntax check.
       - name: Trash-talk model routing test
         run: npm run check:provider
+      - name: Friday brief push test
+        run: npm run check:brief
 
   deploy:
     needs: validate

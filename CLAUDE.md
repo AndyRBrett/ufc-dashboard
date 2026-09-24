@@ -42,6 +42,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:locks` | a 🔒 lock scoring differently on the board, belt or challenges, legacy stars scoring, or a third lock on a card |
 | `npm run check:lab`   | the Fight Lab scoring differently from the board, reading a result it claims to predict, or failing to boot |
 | `npm run check:fightbot` | FightBot's MCP stream corrupted by stray stdout, a tool crashing the session, or its standings drifting from the board |
+| `npm run check:brief` | the Friday Fight Week Brief push firing at the wrong time, twice, after the bell, off the Lab's numbers, or not at all |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -525,6 +526,19 @@ Lab and FightBot** — `check:lab` / `check:fightbot` will say so. Never paste a
 copy of scoring into them to "fix" that; the whole point is that they can't
 drift from the board. Architecture, the curated-feed format for other
 promotions, and the analytics' leak guards: `docs/PICK-ENGINE.md`.
+
+## The Friday Fight Week Brief push
+
+`send-reminders` (already on the 5-minute `scheduled-push.yml` cadence) sends one
+`brief` push per card, **Friday 19:00 ET** before it (`BRIEF_HOUR_ET`), within a
+4-hour window because GitHub's scheduler runs late (`BRIEF_WINDOW_MS`), and never
+after the card's first bell. Audience is everyone with the 🔔 bell on — on by
+default, no separate toggle. `notif_log` dedups it on `(event_date, "brief")`.
+It taps through to `./lab.html#week`: `send-push`'s link allow-list admits
+exactly that page by tab, and `sw.js` navigates to it instead of stashing an
+empty tap for `index.html`. The copy is composed by the Lab's own code, fetched
+from Pages at send time; if that fails it still sends a plain teaser — never
+nothing. `check:brief` holds all of it, mutation-tested.
 
 ## Other conventions
 

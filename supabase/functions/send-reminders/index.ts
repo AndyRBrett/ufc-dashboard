@@ -68,6 +68,110 @@ function parseEvents(js: string): Ev[] {
   return out;
 }
 
+// ── Fight Week Brief ────────────────────────────────────────────────────────
+// Friday 19:00 ET before each card, one push to everyone with notifications on
+// (the 🔔 bell — the same audience as the reminders; no separate opt-in, by
+// design). Deduped by send-push's notif_log on (event_date, "brief"), so the
+// 5-minute cadence sends it once. It deep-links to the Fight Lab's Fight Week
+// tab, where the full brief lives.
+//
+// The copy is built by the Lab's own code (lab/engine.js + lab/analytics.js,
+// with the board's scoring lifted out of index.html), fetched from the same
+// Pages origin as data.js — so the push can't say something the Lab doesn't.
+// If any of that fails, a plain teaser still goes out: a brief that arrives
+// without its headline beats no brief.
+const PAGES_BASE = DATA_URL.replace(/data\.js(\?.*)?$/, "");
+export const BRIEF_HOUR_ET = 19;
+// GitHub's scheduler runs late (see scheduled-push.yml), so the brief may land
+// any time in this window; after 23:00 ET it's a late-night buzz, not a brief.
+export const BRIEF_WINDOW_MS = 4 * 60 * 60 * 1000;
+export const BRIEF_URL = "./lab.html#week";
+
+// The Friday on or before the card date (ET calendar), 19:00 ET, as UTC ms.
+export function briefUtc(cardDate: string): number | null {
+  const dp = cardDate.split("-").map(Number);
+  if (dp.length !== 3 || dp.some(isNaN)) return null;
+  const d = new Date(Date.UTC(dp[0], dp[1] - 1, dp[2]));
+  const back = (d.getUTCDay() - 5 + 7) % 7;          // 5 = Friday
+  d.setUTCDate(d.getUTCDate() - back);
+  const fri = d.toISOString().slice(0, 10);
+  return phaseUtc(fri, `${BRIEF_HOUR_ET}:00`);
+}
+// Due now? Inside the window, and before the card's first segment starts —
+// a Friday card whose prelims start at 18:00 gets no "brief" after its bell.
+export function briefDue(ev: Ev, now: number): boolean {
+  const t = briefUtc(ev.date);
+  if (t === null || now < t || now >= t + BRIEF_WINDOW_MS) return false;
+  const first = phaseUtc(ev.date, ev.prelimTime) ?? phaseUtc(ev.date, ev.time);
+  return first === null || t < first;
+}
+
+function to12(t: string): string {
+  const [h, m] = t.split(":").map(Number);
+  if (isNaN(h)) return t;
+  return `${((h + 11) % 12) + 1}${m ? ":" + String(m).padStart(2, "0") : ""}${h < 12 ? "am" : "pm"}`;
+}
+const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+export async function composeBrief(ev: Ev, js: string, sb: { url: string; key: string } | null, now: number):
+  Promise<{ title: string; body: string; rich: boolean }> {
+  const dp = ev.date.split("-").map(Number);
+  const day = DAY_NAMES[new Date(Date.UTC(dp[0], dp[1] - 1, dp[2])).getUTCDay()];
+  const headline = ev.name.includes(":") ? ev.name.split(":").slice(1).join(":").trim() : ev.name;
+  const title = `📰 ${day} Brief: ${headline}`.slice(0, 118);
+  const when = ev.time && ev.time.toUpperCase() !== "TBD" ? ` Main card ${to12(ev.time)} ET.` : "";
+  const plain = { title, body: `Fight week is here.${when} Tap for the lines, the stories and the fights worth studying.`, rich: false };
+  try {
+    const get = async (f: string) => {
+      const r = await fetch(`${PAGES_BASE}${f}?t=${now}`);
+      if (!r.ok) throw new Error(`${f} HTTP ${r.status}`);
+      return r.text();
+    };
+    const [engineJs, analyticsJs, html, oddsTxt, intelTxt] = await Promise.all([
+      get("lab/engine.js"), get("lab/analytics.js"), get("index.html"),
+      get("odds-series.json"), get("intel.json").catch(() => "null"),
+    ]);
+    const root: Record<string, any> = {};
+    new Function("globalThis", engineJs)(root);
+    new Function("globalThis", analyticsJs)(root);
+    const PE = root.PickEngine, FL = root.FightLab;
+    const env = new Function(js + "\n;return {EVENTS:EVENTS,RESULTS_ARCHIVE:typeof RESULTS_ARCHIVE!=='undefined'?RESULTS_ARCHIVE:{},FIGHTER_STATS:typeof FIGHTER_STATS!=='undefined'?FIGHTER_STATS:{},RANKINGS:typeof RANKINGS!=='undefined'?RANKINGS:{}};")();
+    const kernel = PE.loadKernel(html, env);
+    const engine = PE.createEngine({ adapters: [PE.ufcAdapter(env)], rules: { ufc: PE.ufcRules(kernel) } });
+    const nev = engine.events("ufc").find((e: any) => e.date === ev.date && e.name === ev.name);
+    if (!nev) return plain;
+    let group: any[] = [];
+    if (sb) {
+      try {
+        const r = await fetch(`${sb.url}/rest/v1/picks?select=user_id,nickname,event_date,f1,f2,pick,method,confidence,updated_at,bonus_pick&event_date=eq.${ev.date}`,
+          { headers: { apikey: sb.key, Authorization: `Bearer ${sb.key}` } });
+        if (r.ok) group = engine.resolvePicks(PE.boardRows(kernel, await r.json()));
+      } catch (_e) { /* no group line; the rest of the brief stands */ }
+    }
+    const raw = env.EVENTS.find((e: any) => e.date === ev.date && e.name === ev.name);
+    const intel = raw && intelTxt !== "null" ? kernel.intelItemsFor(JSON.parse(intelTxt), raw) : [];
+    const edgeFor = (b: any) => b.raw && b.raw.f1 ? kernel.modelEdge(b.raw, env.FIGHTER_STATS, env.RANKINGS, env.RESULTS_ARCHIVE) : null;
+    const brief = FL.fightWeekBrief(nev, { odds: FL.oddsIndex(JSON.parse(oddsTxt)), intel, group, mine: [], edgeFor, now: new Date(now) });
+    // Everyone gets the same push, so the per-user "You've picked" line stays in the Lab.
+    const lines: string[] = brief.items.filter((i: any) => !/^You've picked/.test(i.text)).map((i: any) => `${i.icon} ${i.text}`);
+    if (brief.study.length) {
+      const s = brief.study[0], c = s.bout.competitors;
+      lines.push(`🔍 Worth a look: ${c[0].name} vs ${c[1].name}`);
+    }
+    if (!lines.length) return plain;
+    // A lock screen shows a few lines, so lead with what's worth opening for:
+    // the line move, the group's split, the fight to study, then the reading.
+    const PRIORITY = ["📉", "🔥", "🔍", "📰", "♨️", "⏳"];
+    const rank = (l: string) => { const i = PRIORITY.findIndex((p) => l.startsWith(p)); return i < 0 ? PRIORITY.length : i; };
+    lines.sort((a, b) => rank(a) - rank(b));
+    const body = (lines.slice(0, 4).join("\n") + (when ? "\n🕘" + when : "")).slice(0, 900);
+    return { title, body, rich: true };
+  } catch (e) {
+    console.warn("[brief] falling back to the plain teaser:", (e as Error).message);
+    return plain;
+  }
+}
+
 // Constant-time comparison. `!==` on a secret returns at the first differing
 // byte, so response timing across enough requests leaks the secret prefix by
 // prefix. Length is still observable; that is standard and not worth hiding.
@@ -154,8 +258,26 @@ Deno.serve(async (req) => {
     }
   }
 
+  // The Fight Week Brief (see briefDue). At most one card is due at a time.
+  let brief: unknown = null;
+  const due = events.find((ev) => briefDue(ev, now));
+  if (due) {
+    fired++;
+    const b = await composeBrief(due, js, { url: SUPABASE_URL, key: SB_ANON_KEY }, now);
+    try {
+      const r = await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
+        method: "POST",
+        headers: pushHeaders,
+        body: JSON.stringify({ event_date: due.date, type: "brief", title: b.title, body: b.body, url: BRIEF_URL }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (j && typeof j.sent === "number") sent += j.sent;
+      brief = { event_date: due.date, rich: b.rich, result: j };
+    } catch (_e) { /* best-effort; the next run retries and notif_log dedups */ }
+  }
+
   return new Response(
-    JSON.stringify({ events: events.length, fired, sent, reminders: out }),
+    JSON.stringify({ events: events.length, fired, sent, reminders: out, brief }),
     { status: 200, headers: { "Content-Type": "application/json" } },
   );
 });
