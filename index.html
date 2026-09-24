@@ -1834,7 +1834,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <script src="data.js"></script>
 <!-- The app's scoring (scoring.js, engine migration stage 3). Required, like
      data.js: the self-heal below covers it failing to load too. -->
-<script src="scoring.js?v=2026-09-24-2"></script>
+<script src="scoring.js?v=2026-09-24-3"></script>
 <!-- The Pick Engine (engine migration, docs/MIGRATION.md). Optional by design:
      if it fails to load, _boutLookup falls back to the app's own loops and
      every score comes out the same (check:parity runs both paths). -->
@@ -1851,7 +1851,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 // …and it must be the rulebook THIS page shipped with: a previous release's
 // scoring.js (an old cached copy, a network drop mid-upgrade) is treated as
 // missing rather than silently scoring with old rules.
-var SCORING_EXPECT="2026-09-24-2";
+var SCORING_EXPECT="2026-09-24-3";
 function _scoringOk(){return typeof pickPts==="function"&&typeof _lbScoreUsers==="function"&&typeof SCORING_VERSION!=="undefined"&&SCORING_VERSION===SCORING_EXPECT;}
 if(typeof EVENTS==="undefined"||!_scoringOk()){
   (function(){

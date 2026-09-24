@@ -222,6 +222,28 @@ let failures = 0;
   if (bad) { failures++; console.error("  ✗ standings scope disagrees with the predicate it replaced: " + bad); }
   else console.log(`  ✓ every standings scope (all, main card, ${dates.length} dates × date/through/before, years, a room) matches the predicate it replaced`);
 }
+// Player-chosen strings (user_id, nickname) key the board's and the Belt's
+// maps. Named after an Object.prototype property, they used to crash the board
+// ("constructor", "toString") or silently corrupt it — now they score like
+// anyone else.
+{
+  const k = kernel("all", true);
+  const d = "2026-12-19", bts = bouts.filter((b) => b.date === d).slice(0, 3);
+  const names = ["constructor", "toString", "__proto__", "hasOwnProperty", "valueOf"];
+  const odd = [];
+  names.forEach((n, i) => bts.forEach((bt) => odd.push({ user_id: i % 2 ? null : n, nickname: "🥊 " + n, event_date: d, event_name: bt.name,
+    f1: bt.a, f2: bt.b, pick: bt.a, method: "", confidence: 0, bonus_pick: null, updated_at: "2026-05-03T00:00:00.000Z" })));
+  let bad = null, board = null, belt = null;
+  try { board = k.boardStandings(odd); belt = k.computeBeltLineage(odd); } catch (e) { bad = "threw: " + e.message; }
+  if (!bad && board.length !== names.length) bad = `${board.length} rows for ${names.length} players`;
+  if (!bad && board.some((u) => u.total !== bts.length)) bad = "a prototype-named player's pick count is wrong";
+  if (!bad && JSON.stringify(board.map((u) => k.userPts(u))) !== JSON.stringify(board.map(() => k.userPts(board[0])))) bad = "identical picks scored differently";
+  if (!bad && belt && belt.reigns.some((r) => typeof r.pts !== "number" || Number.isNaN(r.pts))) bad = "belt points corrupted";
+  const mixed = rows.concat(odd);
+  try { if (!bad && k.boardStandings(mixed).length !== k.boardStandings(rows).length + names.length) bad = "mixed board lost or merged a player"; } catch (e) { bad = bad || "mixed board threw: " + e.message; }
+  if (bad) { failures++; console.error("  ✗ players named after Object.prototype properties: " + bad); }
+  else console.log(`  ✓ players named ${names.join(", ")} score like anyone else (board + belt)`);
+}
 for (const part of Object.keys(want)) {
   const d = diff(want[part], now[part], part);
   if (d) { failures++; console.error("  ✗ " + d); }
