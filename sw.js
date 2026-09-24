@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = "2026-09-24-01";
+const SW_VERSION = "2026-09-24-03";
 const CACHE = 'ufc-' + SW_VERSION;
 // Handoff caches that must survive SW upgrades: 'ufc-push-id' carries the push
 // identity used by pushsubscriptionchange while the app is closed, 'ufc-tap'
@@ -235,6 +235,21 @@ self.addEventListener('notificationclick', function(e) {
       }
       if (clients.openWindow) return clients.openWindow(url);
     });
+  }
+
+  // A push that links to another page (the Friday brief → lab.html#week) has
+  // nothing to hand the app: no roast, no inbox. Stashing a tap for it would
+  // leave an empty payload for index.html to find later, and focusing an open
+  // app window without navigating would drop the user on the fight cards. So
+  // navigate the open window there, or open one.
+  if (/^\.\/lab\.html(#[a-z]+)?$/.test(baseUrl)) {
+    e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(cs) {
+      var t = cs.filter(function(c) { return 'navigate' in c && 'focus' in c; })[0];
+      if (!t) return clients.openWindow && clients.openWindow(baseUrl);
+      return t.focus().then(function(c) { return (c || t).navigate(baseUrl); })
+        .catch(function() { return clients.openWindow && clients.openWindow(baseUrl); });
+    }));
+    return;
   }
 
   e.waitUntil(stashTap().then(function() {

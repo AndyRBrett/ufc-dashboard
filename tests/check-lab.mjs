@@ -223,6 +223,12 @@ else {
     page.on("pageerror", (e) => errs.push("Uncaught: " + e.message));
     page.on("console", (m) => { if (m.type() === "error") errs.push("Console: " + m.text()); });
     await page.route(/supabase\.co/, (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(stub) }));
+    // The ✍️ scouting report: stub the model's answer, record what was asked.
+    const iqCalls = [];
+    await page.route(/functions\/v1\/ai-breakdown/, (route) => {
+      iqCalls.push(JSON.parse(route.request().postData() || "{}"));
+      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ breakdown: "You pick like a nature documentary.", tone: "a dry narrator" }) });
+    });
     await page.addInitScript(() => { try { localStorage.setItem("ufc_uid", "u-Andy"); localStorage.setItem("ufc_name", "🥊 Andy"); } catch (e) {} });
     await page.goto(base + "/lab.html#iq", { waitUntil: "load", timeout: 20000 });
     await page.waitForFunction(() => !/Loading the lab/.test(document.getElementById("main").textContent), null, { timeout: 15000 });
@@ -239,6 +245,17 @@ else {
     const opts = await page.evaluate(() => [...document.querySelectorAll("select option")].map((o) => o.textContent.replace(/\s*\(you\)$/, "")));
     const bases = opts.map((o) => o.replace(/^\S+\s+/, "").toLowerCase());
     check("the player picker lists each person once (no ghost identities)", opts.length === 3 && new Set(bases).size === bases.length);
+    await page.click('#tabs button[data-tab="iq"]');
+    const recTile = await page.evaluate(() => document.querySelector(".tile .v").textContent.replace("–", "-"));
+    for (let i = 0; i < 4; i++) {
+      await page.click("text=✍️");
+      await page.waitForFunction(() => !/Writing…/.test(document.body.innerText), null, { timeout: 5000 });
+    }
+    const iqTxt2 = await page.evaluate(() => document.getElementById("main").innerText);
+    check("the scouting report shows the write-up and its voice", /nature documentary/.test(iqTxt2) || /scouts are off until tomorrow/.test(iqTxt2));
+    check("the request is the fight-iq action carrying the Lab's own computed numbers",
+      iqCalls.length > 0 && iqCalls[0].action === "fight-iq" && iqCalls[0].iq.record === recTile && Array.isArray(iqCalls[0].iq.insights) && iqCalls[0].viewerId === "u-Andy");
+    check("the device cap stops the 4th write-up before any network call", iqCalls.length === 3 && /scouts are off until tomorrow/.test(iqTxt2));
     check("lab page boots under its CSP with no uncaught or console errors", errs.length === 0 || (console.error(errs.join("\n")), false));
     await page.close();
 

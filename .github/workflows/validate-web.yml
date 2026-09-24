@@ -21,6 +21,8 @@
 #   check:locks     — a 🔒 lock scores the same on the board, belt and challenges; ≤2 per card
 #   check:lab       — the Fight Lab scores exactly like the board, never leaks a result, and boots
 #   check:fightbot  — the FightBot MCP server speaks clean JSON-RPC and answers with the board's numbers
+#   check:brief     — the Friday Fight Week Brief push goes out once, Friday 7pm ET, linking to the Lab
+#   check:iq        — the AI Fight IQ write-up never states a number it wasn't given, stays on Claude, is capped
 name: Validate Web
 
 on:
@@ -88,3 +90,7 @@ jobs:
         run: npm run check:lab
       - name: FightBot MCP server test
         run: npm run check:fightbot
+      - name: Friday brief push test
+        run: npm run check:brief
+      - name: Fight IQ write-up test
+        run: npm run check:iq

@@ -68,7 +68,7 @@ function globalRateLimited(): boolean {
 
 // Only notification types the app actually sends. Anything else is rejected so
 // the public anon key can't be used to mint arbitrary notification streams.
-const TYPE_RE = /^(main|prelim|register|result:.+|pick-(first|done)-.+|trash-talk-\d+|chal(-resp)?-[\w-]+|nudge-[\w-]+)$/;
+const TYPE_RE = /^(main|prelim|brief|register|result:.+|pick-(first|done)-.+|trash-talk-\d+|chal(-resp)?-[\w-]+|nudge-[\w-]+)$/;
 // MAX_BODY must comfortably exceed the longest message any client can send.
 // The AI trash-talk roast is now capped at 120 tokens (~500 chars of English),
 // but 1600 is kept: it also covers roasts generated before the cap that a
@@ -372,7 +372,9 @@ Deno.serve(async (req) => {
 
   // Only relative same-app URLs may be forwarded — a push must never be able
   // to deep-link the PWA to a foreign origin.
-  const safeUrl = body.url && /^\.\/(\?[\w=&-]*)?$/.test(body.url) ? body.url : undefined;
+  // The one other page is the Fight Lab, and only by its known tabs (the
+  // Friday brief links to #week).
+  const safeUrl = body.url && /^\.\/((\?[\w=&-]*)?|lab\.html(#[a-z]+)?)$/.test(body.url) ? body.url : undefined;
   const routing = { url: safeUrl, kind: body.kind || undefined };
   const livePayload = JSON.stringify({ title: body.title, body: body.body, ...routing });
   // When a spoiler-free variant is supplied, it is the default; the full

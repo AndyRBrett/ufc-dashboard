@@ -42,6 +42,8 @@ runs the full gate set (all fast, all local):
 | `npm run check:locks` | a 🔒 lock scoring differently on the board, belt or challenges, legacy stars scoring, or a third lock on a card |
 | `npm run check:lab`   | the Fight Lab scoring differently from the board, reading a result it claims to predict, or failing to boot |
 | `npm run check:fightbot` | FightBot's MCP stream corrupted by stray stdout, a tool crashing the session, or its standings drifting from the board |
+| `npm run check:brief` | the Friday Fight Week Brief push firing at the wrong time, twice, after the bell, off the Lab's numbers, or not at all |
+| `npm run check:iq` | the AI Fight IQ write-up stating a number it wasn't given, drifting onto Grok, repeating one voice, or escaping its daily cap |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -303,9 +305,9 @@ mutation-tested individually.
 
 ## The roast runs on Grok; everything else runs on Claude
 
-`ai-breakdown` serves four actions. Three of them — `breakdown`, `chat`,
-`parlay` — make claims about real fights people are betting picks on, and those
-stay on Claude. The fourth, `trash-talk`, is a joke between five friends, and
+`ai-breakdown` serves five actions. Four of them — `breakdown`, `chat`,
+`parlay`, and the Fight Lab's `fight-iq` scouting report — make claims about real
+fights or real people's picks, and those stay on Claude. The fourth, `trash-talk`, is a joke between five friends, and
 Claude would not stop sanding the edges off it: the burn came back PG no matter
 how the prompt was phrased, which is the one thing the feature cannot be. So the
 roast calls xAI's Grok instead.
@@ -525,6 +527,32 @@ Lab and FightBot** — `check:lab` / `check:fightbot` will say so. Never paste a
 copy of scoring into them to "fix" that; the whole point is that they can't
 drift from the board. Architecture, the curated-feed format for other
 promotions, and the analytics' leak guards: `docs/PICK-ENGINE.md`.
+
+## The Friday Fight Week Brief push
+
+`send-reminders` (already on the 5-minute `scheduled-push.yml` cadence) sends one
+`brief` push per card, **Friday 19:00 ET** before it (`BRIEF_HOUR_ET`), within a
+4-hour window because GitHub's scheduler runs late (`BRIEF_WINDOW_MS`), and never
+after the card's first bell. Audience is everyone with the 🔔 bell on — on by
+default, no separate toggle. `notif_log` dedups it on `(event_date, "brief")`.
+It taps through to `./lab.html#week`: `send-push`'s link allow-list admits
+exactly that page by tab, and `sw.js` navigates to it instead of stashing an
+empty tap for `index.html`. The copy is composed by the Lab's own code, fetched
+from Pages at send time; if that fails it still sends a plain teaser — never
+nothing. `check:brief` holds all of it, mutation-tested.
+
+## The Fight IQ write-up states only numbers it was given
+
+The Lab's ✍️ scouting report (`ai-breakdown` action `fight-iq`) is prose around
+the deterministic Fight IQ the browser already computed — the model never does
+arithmetic. `numbersInvented` rejects any figure in the reply that isn't in the
+facts sent (bare 1–3 excepted, for "top 3"); one retry names the strays, then
+it fails with a 502 rather than ship a made-up record. The voice is picked at
+random from `IQ_TONES` per request. Cost is bounded three ways: 3 per device per
+day in the Lab (`IQ_WRITEUPS_PER_DAY`), `IQ_DAILY_CAP` per viewer per day on the
+server (in-memory, best-effort — a cold start resets it), and the existing
+per-IP / global rate limits; inputs are capped (`MAX_IQ_LINES`, `MAX_IQ_LINE`).
+It runs on `MODEL`, like the other analysis actions. `check:iq` holds all of it.
 
 ## Other conventions
 
