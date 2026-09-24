@@ -168,7 +168,7 @@ else {
       check("switching to PFL hides the UFC card and shows PFL's", s.other && !s.appShown && s.sportShown && /PFL Test Card/.test(s.sportText) && s.sport === "pfl");
       check("an invalid feed card (one fighter twice) is dropped", !/Bad Card/.test(s.sportText));
       check("feed text is rendered as text, never HTML", s.imgs === 0 && /<img src=x onerror=alert\(1\)>/.test(s.sportText));
-      await page.click("text=Jena Bishop");
+      await page.click('#sportApp .sport-pick:has-text("Jena Bishop")');
       await page.waitForTimeout(400);
       s = await state(page);
       const post = writes.find((w) => w.method === "POST");
@@ -178,7 +178,7 @@ else {
       check("a pick also clears the same bout's row in the other corner order",
         writes.some((w) => w.method === "DELETE" && /promotion=eq\.pfl/.test(w.url) && /f1=eq\.Jena%20Bishop&f2=eq\.Liz%20Carmouche/.test(w.url)));
       writes.length = 0;
-      await page.click("text=Jena Bishop");
+      await page.click('#sportApp .sport-pick:has-text("Jena Bishop")');
       await page.waitForTimeout(400);
       const dels = writes.filter((w) => w.method === "DELETE");
       check("un-picking deletes only that promotion's rows, both corner orders",
@@ -198,7 +198,7 @@ else {
       await page.evaluate(() => openLeaderboard());
       await page.waitForTimeout(800);
       const board = await page.evaluate(() => ({ text: document.getElementById("lbBody").textContent, lbSportBar: !document.getElementById("lbSportBar").hidden }));
-      check("Ranks shows the PFL board, scored by sportStandings", /PFL standings/.test(board.text) && /Bob1\/11 pt(?!s)/.test(board.text) && /Cat0\/10 pts/.test(board.text));
+      check("Ranks shows the PFL board, scored by sportStandings", /PFL standings/.test(board.text) && /Bob1\/1 correct1 pt(?!s)/.test(board.text) && /Cat0\/1 correct0 pts/.test(board.text));
       check("...read with promotion=eq.pfl, and the switcher is on Ranks too", reads.some((u) => /promotion=eq\.pfl/.test(u) && /select=user_id,nickname/.test(u)) && board.lbSportBar);
       await page.click("#lbSportBar .sport-tab:nth-child(1)");
       await page.waitForTimeout(600);

@@ -570,37 +570,72 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .ftab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;color:var(--muted);border:1px solid var(--border);background:none;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:Inter,sans-serif}
 .ftab:hover{color:var(--muted2);border-color:var(--border2)}
 .ftab.active{background:var(--red);color:var(--on-accent);border-color:var(--red);box-shadow:0 2px 8px var(--accent-glow)}
-.lb-modebar{display:flex;gap:8px;justify-content:center;padding:10px 14px 4px;flex-shrink:0}
+.lb-modebar{display:flex;gap:8px;align-items:stretch;flex-shrink:0}
+.lb-modebar .lb-scope-btn{border-radius:12px;padding:0 14px;flex-shrink:0}
 /* One bar, two dimensions: the time tabs pick a period, the scope button is an
    independent on/off filter. The divider keeps them from reading as one group of
    four mutually-exclusive tabs. */
-.sport-bar{display:flex;gap:6px;justify-content:center;padding:8px 14px 2px;flex-wrap:wrap}
+/* Sport switcher: one segmented control, the first thing under the header on
+   home and under the Ranks tabs, so changing sport reads as changing the whole
+   page rather than as one more filter row. */
+.sport-bar{display:flex;gap:3px;padding:3px;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-card)}
 .sport-bar[hidden]{display:none}
-.sport-tab{background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:999px;padding:6px 16px;font:700 12.5px Inter,sans-serif;letter-spacing:.04em;cursor:pointer}
-.sport-tab.active{background:var(--red);border-color:var(--red);color:#fff}
-body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #app,body.sport-other .stats,body.sport-other #cd-wrap,body.sport-other .lb-modebar{display:none!important}
-#sportApp{padding:6px 14px 40px;max-width:760px;margin:0 auto}
+#sportBar{margin:10px 16px 0}
+.sport-tab{flex:1;min-width:0;background:none;border:none;border-radius:9px;color:var(--muted);padding:7px 10px 6px;font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:.1em;line-height:1.1;cursor:pointer;transition:background .15s,color .15s}
+.sport-tab:hover{color:var(--muted2)}
+.sport-tab.active{background:var(--red);color:var(--on-accent);box-shadow:0 2px 10px var(--accent-glow)}
+body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #app,body.sport-other .stats,body.sport-other .hero,body.sport-other #activityFeed,body.sport-other .lb-modebar{display:none!important}
+#sportApp{padding:0 0 40px}
 #sportApp[hidden]{display:none}
-.sport-ev{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin:10px 0}
-.sport-ev-name{font:800 16px Inter,sans-serif;color:var(--text)}
-.sport-ev-meta{font:500 12px Inter,sans-serif;color:var(--muted);margin:3px 0 10px}
-.sport-bout{padding:8px 0;border-top:1px solid var(--border)}
-.sport-bout-lbl{font:600 11px Inter,sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-.sport-bout-btns{display:flex;align-items:center;gap:8px}
-.sport-pick{flex:1;min-width:0;background:var(--bg);border:1px solid var(--border2);border-radius:9px;color:var(--text);padding:9px 8px;font:600 13.5px Inter,sans-serif;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sport-pick.on{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
-.sport-pick.won{color:#3fb950}
-.sport-pick:disabled{opacity:.6;cursor:default}
-.sport-vs{font:700 11px Inter,sans-serif;color:var(--muted)}
-.sport-board-hdr{font:800 14px Inter,sans-serif;color:var(--text);text-align:center;margin:6px 0 10px}
-.sport-board-row{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:9px 12px;margin:6px 0}
-.sport-board-row.me{border-color:var(--red)}
-.sport-board-rank{font:800 13px Inter,sans-serif;width:22px;color:var(--muted)}
-.sport-board-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:600 14px Inter,sans-serif}
-.sport-board-rec{font:500 12px Inter,sans-serif;color:var(--muted)}
-.sport-board-pts{font:800 13px Inter,sans-serif}
-.lb-roombar{display:flex;justify-content:center;padding:4px 14px 0;flex-shrink:0}
-.lb-room-btn{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* The other sport's page mirrors UFC's: countdown hero, stat strip, then one
+   band per card with its bouts in corners. */
+.sport-hero{padding:12px 16px 4px}
+.sport-hero .cd-wrap{display:flex}
+.sport-stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-top:10px}
+.sport-ev{margin:14px 12px 0;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--red);border-radius:14px;overflow:hidden;box-shadow:var(--shadow-card)}
+.sport-ev.later{border-top-color:var(--future-border)}
+.sport-ev-hd{padding:14px 16px 12px}
+.sport-ev-num{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:5px;font-weight:600}
+.sport-ev-name{font-family:Bebas Neue,sans-serif;font-size:23px;letter-spacing:.05em;line-height:1.05;margin-bottom:8px;color:var(--text);overflow-wrap:break-word}
+.sport-ev-meta{font-size:12px;color:var(--muted2);display:flex;flex-wrap:wrap;gap:4px 14px;margin-bottom:8px}
+.sport-ev-badges{display:flex;gap:6px;flex-wrap:wrap}
+.sport-badge{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border-radius:4px;border:1px solid var(--border2);color:var(--muted2)}
+.sport-badge.hot{background:var(--red-dim);border-color:var(--red-border);color:var(--red)}
+.sport-badge.gold{background:var(--gold-dim);border-color:var(--gold-border);color:var(--gold)}
+.sport-bout{padding:12px 14px 14px;border-top:1px solid var(--border);border-left:3px solid transparent}
+.sport-bout.main{border-left-color:var(--red);background:linear-gradient(135deg,color-mix(in srgb,var(--red) 6%,transparent),transparent)}
+.sport-bout.done{border-left-color:var(--green)}
+.sport-bout-lbl{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:9px}
+.sport-bout.main .sport-bout-lbl{color:var(--red)}
+.sport-bout-btns{display:flex;align-items:stretch;gap:8px}
+.sport-pick{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--btn-bg);border:1px solid var(--border2);border-radius:12px;color:var(--text);padding:8px 8px 9px;cursor:pointer;text-align:center;font-family:Inter,sans-serif;transition:border-color .15s,background .15s}
+.sport-pick:hover{border-color:var(--muted)}
+.sport-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--card2);border:2px solid var(--border2);font:700 12px Inter,sans-serif;color:var(--muted2);flex-shrink:0}
+.sport-name{font-family:Bebas Neue,sans-serif;font-size:19px;letter-spacing:.04em;line-height:1.05;overflow-wrap:anywhere}
+.sport-sub{font-size:11px;color:var(--muted);line-height:14px}
+.sport-sub:empty{display:none}
+.sport-pick.on{background:var(--red-dim);border-color:var(--red)}
+.sport-pick.on .sport-av{border-color:var(--red);color:var(--red)}
+.sport-pick.on .sport-sub{color:var(--red);font-weight:700;letter-spacing:.06em}
+.sport-pick.won{background:var(--green-dim);border-color:var(--green-border)}
+.sport-pick.won .sport-sub{color:var(--green);font-weight:700;letter-spacing:.06em}
+.sport-pick.lost{opacity:.45}
+.sport-pick:disabled{cursor:default}
+.sport-pick:disabled:not(.won):not(.on){opacity:.55}
+.sport-vs{align-self:center;font-family:Bebas Neue,sans-serif;font-size:18px;color:var(--red);opacity:.8;flex-shrink:0}
+.sport-res{font-size:11.5px;color:var(--muted2);margin-top:8px;text-align:center}
+/* Ranks: sport + room on one row, the UFC-only period tabs beneath it. */
+.lb-ctl{padding:10px 12px 2px;display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+.lb-ctl-row{display:flex;align-items:center;gap:8px}
+.lb-ctl-row .sport-bar{flex:1;min-width:0}
+.lb-room-btn{flex:0 1 auto;max-width:48%;margin-left:auto;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:0 12px;height:40px;font:600 13px Inter,sans-serif;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-room-btn::after{content:" ▾";color:var(--muted);font-size:11px}
+.lb-ctl-row .sport-bar:not([hidden])+.lb-room-btn{max-width:44%}
+.lb-ctl-row .sport-bar[hidden]+.lb-room-btn{margin:0 auto}
+.lb-seg{display:flex;flex:1;gap:3px;padding:3px;background:var(--card);border:1px solid var(--border);border-radius:12px}
+.lb-seg .ftab{flex:1;border:none;border-radius:9px;padding:7px 6px}
+.sport-board-hdr{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:2px 4px 10px;font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.06em;color:var(--text)}
+.sport-board-hdr small{font:500 11.5px Inter,sans-serif;letter-spacing:0;color:var(--muted)}
 .room-list{display:flex;flex-direction:column;gap:6px;margin:4px 0 6px}
 .room-item{display:flex;flex-direction:column;gap:4px}
 .room-row{display:flex;flex-direction:column;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);cursor:pointer;font:600 14px Inter,sans-serif}
@@ -613,7 +648,6 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .room-form{display:flex;gap:8px;margin-top:10px}
 .room-form .nm-input{flex:1;margin:0;min-width:0}
 .room-form .nm-btn{width:auto;padding:0 16px;flex-shrink:0}
-.lb-bar-sep{width:1px;align-self:stretch;margin:3px 2px;background:var(--border2);opacity:.7;flex-shrink:0}
 .lb-modebar .ftab{white-space:nowrap}
 /* Outlined when on, rather than filled like a selected tab. Two solid red pills
    side by side read as one group of four tabs where only one can be chosen —
@@ -1803,6 +1837,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <div class="silver-tag" aria-hidden="true"><div class="sv-ridge"></div><span class="silver-tag-row"><svg viewBox="0 0 40 64" aria-hidden="true"><rect x="5" y="7" width="30" height="51" rx="5" fill="#d5dee5"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/></svg><span>As cold as the <b>Rockies</b></span><svg viewBox="0 0 40 64" aria-hidden="true"><rect x="5" y="7" width="30" height="51" rx="5" fill="#d5dee5"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/></svg></span></div>
 <div class="season-tag" aria-hidden="true"><div class="se-band"></div><span class="season-tag-row"></span></div>
 <div class="usa-tag" aria-hidden="true"><div class="us-flag"></div><span class="usa-tag-row"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z"/></svg><span>Land of the free &middot; Home of the <b>brave</b></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z"/></svg></span></div>
+<div class="sport-bar" id="sportBar" role="tablist" aria-label="Sport" hidden></div>
 <section class="hero">
   <h1 class="sr-only">Upcoming Fight Cards</h1>
   <div class="cd-wrap" id="cd-wrap" style="display:none">
@@ -1829,7 +1864,6 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
   </div>
   <div class="feed-body" id="feedBody"></div>
 </div>
-<div class="sport-bar" id="sportBar" role="tablist" aria-label="Sport" hidden></div>
 <div class="filter-wrap">
   <button class="ftab active" data-f="all" onclick="setFilter(this)">All</button>
   <button class="ftab" data-f="Heavyweight" onclick="setFilter(this)">Heavyweight</button>
@@ -6031,7 +6065,9 @@ var WHATS_NEW=[
   {id:"2026-09-27-rooms",emoji:"👥",title:"Rooms",
    desc:"A private board for your group. On Ranks, tap 👥 to create a room and share the invite link. Same picks, same scoring, just the people in the room, with its own 🏆 belt. Rooms need an email account (⋯ → Sign In / Link Email), so you stay in them on any phone."},
   {id:"2026-09-28-sports",emoji:"🥋",title:"PFL picks",
-   desc:"New switcher at the top: UFC | PFL. Pick PFL cards and climb a separate PFL board on Ranks (1 point per correct winner). Your UFC picks, locks and standings don't change. More promotions can slot in later."}
+   desc:"New switcher at the top: UFC | PFL. Pick PFL cards and climb a separate PFL board on Ranks (1 point per correct winner). Your UFC picks, locks and standings don't change. More promotions can slot in later."},
+  {id:"2026-09-29-sport-redesign",emoji:"🎛️",title:"A cleaner UFC | PFL switch",
+   desc:"The sport switch now sits right under the header, and PFL gets the full treatment: its own countdown, stats and fight cards laid out like UFC's. On Ranks, sport and room share one row, with the UFC tabs underneath."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -8525,6 +8561,8 @@ function renderSportBar(){
     });
   });
   document.body.classList.toggle("sport-other",cur!=="ufc");
+  // The header's octagon names the sport on screen.
+  var oct=document.querySelector(".hdr .logo-oct");if(oct)oct.textContent=cur==="ufc"?"UFC":_sportName(cur).slice(0,4);
 }
 function setSport(id){
   SPORT=id||"ufc";
@@ -8534,31 +8572,87 @@ function setSport(id){
   if(typeof _lbPanelOpen==="function"&&_lbPanelOpen())loadLeaderboard();
 }
 // Card names and fighters are feed data: textContent only.
+function _spInitials(n){var w=String(n||"").replace(/[^\p{L}\s'-]/gu,"").trim().split(/\s+/);return ((w[0]||"")[0]||"").concat(w.length>1?(w[w.length-1][0]||""):"").toUpperCase()||"?";}
+function _spOdds(x){return typeof x==="number"&&isFinite(x)?(x>0?"+":"")+Math.round(x):"";}
+function _spDays(date){var d=Math.round((Date.parse(date+"T12:00:00Z")-Date.now())/DAY_MS);return d>1?"in "+d+" days":d===1?"tomorrow":d===0?"today":"";}
+// The hero's countdown runs to the next card's pick lock: that is the moment
+// that matters to someone picking, and the feed rarely knows a bell time.
+function _sportCdHtml(ms){
+  var left=ms-Date.now();
+  if(left<=0)return null;
+  var d=Math.floor(left/DAY_MS),h=Math.floor(left%DAY_MS/HOUR_MS),m=Math.floor(left%HOUR_MS/MIN_MS);
+  return [[d,"Days"],[h,"Hrs"],[m,"Min"]];
+}
+function _sportTick(){
+  var t=document.getElementById("sportCdTimer");if(!t||!t._lock)return;
+  var parts=_sportCdHtml(t._lock);t.innerHTML="";
+  if(!parts){t.appendChild(_spEl("span","cd-live","Picks closed"));return;}
+  parts.forEach(function(p,i){
+    if(i)t.appendChild(_spEl("span","cd-sep",":"));
+    var u=_spEl("div","cd-unit");u.appendChild(_spEl("div","cd-num",i?("0"+p[0]).slice(-2):String(p[0])));u.appendChild(_spEl("div","cd-lbl",p[1]));t.appendChild(u);
+  });
+}
 function renderSportView(){
   var app=document.getElementById("sportApp");if(!app)return;
   var promo=curSport();
   app.hidden=promo==="ufc";
   app.innerHTML="";
   if(promo==="ufc")return;
-  sportEvents(promo).forEach(function(ev){
-    var box=_spEl("div","sport-ev");
-    box.appendChild(_spEl("div","sport-ev-name",ev.name));
-    var locked=Date.now()>=sportLockMs(ev);
-    box.appendChild(_spEl("div","sport-ev-meta",fmtDate(ev.date)+(ev.venue?" · "+ev.venue:"")+(ev.location?", "+ev.location:"")+(locked?" · picks closed":" · picks close "+new Date(sportLockMs(ev)).toLocaleString([], {weekday:"short",hour:"numeric",minute:"2-digit"}))));
-    ev.bouts.forEach(function(b){
-      var row=_spEl("div","sport-bout");
-      if(b.label||b.division)row.appendChild(_spEl("div","sport-bout-lbl",[b.label,b.division].filter(Boolean).join(" · ")+(b.title?" 🏆":"")));
-      var btns=_spEl("div","sport-bout-btns"),k=sportKey(promo,ev.date,b.a,b.b),mine=_sportPicks[k]||null,lk=sportLocked(ev,b);
-      [b.a,b.b].forEach(function(name,i){
+  var evs=sportEvents(promo),name=_sportName(promo);
+  var next=evs.filter(function(e){return Date.now()<sportLockMs(e);})[0]||evs[0];
+  if(next){
+    var hero=_spEl("div","sport-hero"),cd=_spEl("div","cd-wrap"),info=_spEl("div","cd-info");
+    info.appendChild(_spEl("div","cd-label",Date.now()<sportLockMs(next)?name+" picks close in":"Next "+name+" card"));
+    info.appendChild(_spEl("div","cd-event",next.name));
+    cd.appendChild(info);
+    var tm=_spEl("div","cd-timer");tm.id="sportCdTimer";tm._lock=sportLockMs(next);
+    cd.appendChild(tm);hero.appendChild(cd);app.appendChild(hero);
+    _sportTick();
+  }
+  var nB=0,nT=0,nMine=0;
+  evs.forEach(function(ev){ev.bouts.forEach(function(b){nB++;if(b.title)nT++;if(_sportPicks[sportKey(promo,ev.date,b.a,b.b)])nMine++;});});
+  var st=_spEl("div","sport-stats");
+  [[evs.length,"Cards"],[nT,"Titles"],[nB,"Bouts"],[nMine,"My Picks"]].forEach(function(x){
+    var c=_spEl("div","stat");c.appendChild(_spEl("div","sv",String(x[0])));c.appendChild(_spEl("div","sl",x[1]));st.appendChild(c);
+  });
+  app.appendChild(st);
+  evs.forEach(function(ev,ei){
+    var box=_spEl("div","sport-ev"+(ev===next?"":" later")),hd=_spEl("div","sport-ev-hd");
+    var locked=Date.now()>=sportLockMs(ev),days=_spDays(ev.date);
+    hd.appendChild(_spEl("div","sport-ev-num","Card "+(ei+1)+" of "+evs.length+" · "+fmtDate(ev.date)+(days?" · "+days:"")));
+    hd.appendChild(_spEl("div","sport-ev-name",ev.name));
+    var meta=_spEl("div","sport-ev-meta");
+    var where=[ev.venue,ev.location].filter(Boolean).join(", ");
+    if(where)meta.appendChild(_spEl("span",null,"📍 "+where));
+    meta.appendChild(_spEl("span",null,locked?"🔒 Picks closed":"🔒 Picks close "+new Date(sportLockMs(ev)).toLocaleString([], {weekday:"short",hour:"numeric",minute:"2-digit"})));
+    hd.appendChild(meta);
+    var mine=ev.bouts.filter(function(b){return _sportPicks[sportKey(promo,ev.date,b.a,b.b)];}).length;
+    var badges=_spEl("div","sport-ev-badges");
+    if(ev===next&&!locked)badges.appendChild(_spEl("span","sport-badge hot","Next up"));
+    if(ev.bouts.some(function(b){return b.title;}))badges.appendChild(_spEl("span","sport-badge gold","🏆 Title fight"));
+    badges.appendChild(_spEl("span","sport-badge",mine+"/"+ev.bouts.length+" picked"));
+    hd.appendChild(badges);
+    box.appendChild(hd);
+    ev.bouts.forEach(function(b,bi){
+      var row=_spEl("div","sport-bout"+(bi===0||b.title?" main":"")+(b.winner?" done":""));
+      if(b.label||b.division)row.appendChild(_spEl("div","sport-bout-lbl",[b.label,b.division].filter(Boolean).join(" · ")+(b.title?" · 🏆 Title":"")));
+      var btns=_spEl("div","sport-bout-btns"),k=sportKey(promo,ev.date,b.a,b.b),pick=_sportPicks[k]||null,lk=sportLocked(ev,b);
+      var odds=b.odds||{},recs=[b.aRecord,b.bRecord];
+      [b.a,b.b].forEach(function(nm,i){
         if(i===1)btns.appendChild(_spEl("span","sport-vs","vs"));
-        var won=b.winner&&nmEq(b.winner,name);
-        var btn=_spEl("button","sport-pick"+(mine&&nmEq(mine,name)?" on":"")+(won?" won":""),(won?"✓ ":"")+name);
+        var on=!!(pick&&nmEq(pick,nm)),won=!!(b.winner&&nmEq(b.winner,nm)),lost=!!(b.winner&&!won);
+        var btn=_spEl("button","sport-pick"+(on?" on":"")+(won?" won":"")+(lost?" lost":""));
+        btn.appendChild(_spEl("span","sport-av",_spInitials(nm)));
+        btn.appendChild(_spEl("span","sport-name",(won?"✓ ":"")+nm));
+        var sub=won?(on?"Won · your pick":"Won"):on?"Your pick":[typeof recs[i]==="string"?recs[i]:"",_spOdds(i?odds.b:odds.a)].filter(Boolean).join(" · ");
+        btn.appendChild(_spEl("span","sport-sub",sub));
         btn.disabled=lk;
-        btn.setAttribute("aria-pressed",mine&&nmEq(mine,name)?"true":"false");
-        btn.onclick=function(){sportPick(promo,ev,b,name);};
+        btn.setAttribute("aria-pressed",on?"true":"false");
+        btn.onclick=function(){sportPick(promo,ev,b,nm);};
         btns.appendChild(btn);
       });
       row.appendChild(btns);
+      if(b.winner&&b.method)row.appendChild(_spEl("div","sport-res",b.method+(b.round?" · R"+b.round:"")));
       box.appendChild(row);
     });
     app.appendChild(box);
@@ -8632,14 +8726,28 @@ function renderSportBoard(gen){
     if(inRoom)rows=(rows||[]).filter(function(r){return inRoom(r.user_id||r.nickname);});
     var users=sportStandings(rows,_sportFeed.events,promo);
     body.innerHTML="";
-    body.appendChild(_spEl("div","sport-board-hdr",_sportName(promo)+" standings"+(room?" · "+room.name:"")));
+    var hdr=_spEl("div","sport-board-hdr",_sportName(promo)+" standings");
+    hdr.appendChild(_spEl("small",null,(room?room.name+" · ":"")+"1 pt per correct winner"));
+    body.appendChild(hdr);
     if(!users.length){body.appendChild(_spEl("div","lb-empty","No "+_sportName(promo)+" picks yet. Pick a card to get on the board."));return users;}
+    // Same row as the UFC board (lb-row), so switching sport changes the
+    // numbers, not the look. Ties share a rank, like the UFC board.
+    var medals=["🥇","🥈","🥉"],rank=0,anyResolved=users.some(function(u){return u.resolved>0;});
     users.forEach(function(u,i){
-      var r=_spEl("div","sport-board-row"+(u.user_id&&u.user_id===USER_ID?" me":""));
-      r.appendChild(_spEl("span","sport-board-rank",String(i+1)));
-      r.appendChild(_spEl("span","sport-board-name",u.nickname||"?"));
-      r.appendChild(_spEl("span","sport-board-rec",u.correct+"/"+u.resolved+(u.total>u.resolved?" · "+(u.total-u.resolved)+" open":"")));
-      r.appendChild(_spEl("span","sport-board-pts",u.pts+" pt"+(u.pts===1?"":"s")));
+      if(!i||u.pts!==users[i-1].pts)rank=i+1;
+      var tied=users.filter(function(x){return x.pts===u.pts;}).length>1,me=!!(u.user_id&&u.user_id===USER_ID);
+      var r=_spEl("div","lb-row sport-board-row"+(me?" lb-me":""));
+      r.appendChild(anyResolved&&rank<=3&&!tied?_spEl("div","lb-medal",medals[rank-1]):_spEl("div","lb-rank",anyResolved?(tied?"T":"")+rank:String(i+1)));
+      var main=_spEl("div","lb-main"),nl=_spEl("div","lb-nameline");
+      nl.appendChild(_spEl("span","lb-name-txt",u.nickname||"?"));
+      if(me)nl.appendChild(_spEl("span","lb-you","YOU"));
+      main.appendChild(nl);
+      var ml=_spEl("div","lb-metaline");
+      ml.appendChild(_spEl("div","lb-detail",anyResolved?u.correct+"/"+u.resolved+" correct"+(u.total>u.resolved?" · "+(u.total-u.resolved)+" open":""):u.total+" pending"));
+      main.appendChild(ml);
+      r.appendChild(main);
+      var right=_spEl("div","lb-right");right.appendChild(_spEl("div","lb-pts",anyResolved?u.pts+" pt"+(u.pts===1?"":"s"):u.total+(u.total===1?" pick":" picks")));
+      r.appendChild(right);
       body.appendChild(r);
     });
     return users;
@@ -8653,6 +8761,7 @@ function sportsBoot(){
     var v=PickEngine.validateFeed(j);
     _sportFeed={promotions:v.promotions,events:v.events};
     renderSportBar();renderSportView();
+    setInterval(_sportTick,30000);
     _authReady.then(_sportRestore);
   }).catch(function(){});
 }
@@ -9909,7 +10018,7 @@ document.addEventListener("DOMContentLoaded",function(){
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">🏆 The Belt</div>
     <div style="font-size:11px;color:var(--muted)">Top scorer of each card takes the belt. The champ defends every event — skip a card and anyone who scores can steal it. A challenger has to <b>beat</b> the champ's score, not match it: a tie involving the champ is a successful defence.<br><br>If the champ is out of it and challengers finish level, the belt goes to the highest <b>career accuracy</b> (the % on your row), then to whoever has made the most picks. If two are identical on both, the belt is vacated. Tap Title History at the bottom of the board for the full lineage — a belt won on a tiebreak says so.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">👥 Rooms</div>
-    <div style="font-size:11px;color:var(--muted)">Tap 👥 under the tabs to switch between Everyone and a room: a private board for your group, scored exactly like this one, with its own 🏆 belt. Create one and share the invite link, or join with a code. Rooms need an email account so you stay in them on any phone.</div>
+    <div style="font-size:11px;color:var(--muted)">Tap 👥 at the top of Ranks to switch between Everyone and a room: a private board for your group, scored exactly like this one, with its own 🏆 belt. Create one and share the invite link, or join with a code. Rooms need an email account so you stay in them on any phone.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">⚔️ Challenges</div>
     <div style="font-size:11px;color:var(--muted)">Tap ⚔️ on a rival's row to call them out on one fight or the whole card, with stakes (wheel spin, $5, or your own). They accept or decline; results settle automatically when fights finish. No pick on the contested fight = forfeit. Tie = push, nobody pays. Losers of wheel stakes get a "spin now" button in the inbox.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">⏰ Nudges</div>
@@ -9922,15 +10031,20 @@ document.addEventListener("DOMContentLoaded",function(){
     <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">🎡</span><div><div style="font-size:12px;font-weight:600">Wheel</div><div style="font-size:11px;color:var(--muted)">Random forfeit picker for losers</div></div></div>
     <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:16px;width:22px;text-align:center;flex-shrink:0">✏️</span><div><div style="font-size:12px;font-weight:600">Profile</div><div style="font-size:11px;color:var(--muted)">Change your name & emoji</div></div></div>
   </div>
-  <div class="lb-modebar" data-bar="mode">
-    <button class="ftab" data-lbmode="current" onclick="setLbMode(this)">This Event</button>
-    <button class="ftab" data-lbmode="all" onclick="setLbMode(this)">All-Time</button>
-    <span class="lb-bar-sep" aria-hidden="true"></span>
-    <button class="ftab lb-scope-btn" id="lbScopeBtn" onclick="toggleLbScope()"
-            title="Score main-card bouts only">Main Card</button>
+  <div class="lb-ctl">
+    <div class="lb-ctl-row">
+      <div class="sport-bar lb-sport-bar" id="lbSportBar" role="tablist" aria-label="Sport" hidden></div>
+      <button class="lb-room-btn" id="lbRoomBtn" onclick="openRoomSheet()" aria-haspopup="dialog">👥 Everyone</button>
+    </div>
+    <div class="lb-modebar" data-bar="mode">
+      <div class="lb-seg">
+        <button class="ftab" data-lbmode="current" onclick="setLbMode(this)">This Event</button>
+        <button class="ftab" data-lbmode="all" onclick="setLbMode(this)">All-Time</button>
+      </div>
+      <button class="ftab lb-scope-btn" id="lbScopeBtn" onclick="toggleLbScope()"
+              title="Score main-card bouts only">Main Card</button>
+    </div>
   </div>
-  <div class="sport-bar lb-sport-bar" id="lbSportBar" role="tablist" aria-label="Sport" hidden></div>
-  <div class="lb-roombar"><button class="ftab lb-room-btn" id="lbRoomBtn" onclick="openRoomSheet()" aria-haspopup="dialog">👥 Everyone</button></div>
   <div class="lb-body" id="lbBody"><div class="lb-loading">Loading picks...</div></div>
   <div class="lb-trash-sheet" id="trashSheet">
     <button class="lb-trash-close" onclick="closeTrashSheet()">✕</button>
