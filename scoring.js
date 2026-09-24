@@ -26,7 +26,7 @@
 // even offline with an old copy cached. Bump it on ANY change to this file, in
 // all three places (index.html's script src + SCORING_EXPECT, sw.js's precache);
 // check:lab fails if they disagree.
-var SCORING_VERSION="2026-09-24-2";
+var SCORING_VERSION="2026-09-24-3";
 
 // fighter-names:start
 var _NM_SUFFIX_RE=/\b(?:jr|sr|ii|iii|iv)\b/g;
@@ -277,7 +277,10 @@ function _eventFinished(date){
 // board passes its mode/scope, the recap passes a date cutoff. Returns the
 // deduped users sorted exactly as the board sorts them.
 function _lbScoreUsers(rows,keep){
-  var users={};
+  // Keyed by user_id, nickname and base name, which are player-chosen strings:
+  // prototype-free, or a player called "Constructor" or "toString" collides
+  // with Object.prototype and crashes (or silently corrupts) the board.
+  var users=Object.create(null);
   rows.forEach(function(p){
     if(keep&&!keep(p))return;
     var uid=p.user_id||p.nickname||"unknown";
@@ -319,7 +322,7 @@ function _lbScoreUsers(rows,keep){
     if(p.bonus_pick)users[uid].bonusPicks[p.event_date]=p.bonus_pick;
   });
   // De-duplicate by name (keep higher pick count)
-  var seenNames={};
+  var seenNames=Object.create(null);
   Object.keys(users).forEach(function(uid){
     var base=_lbBaseName(users[uid].nickname);
     if(!seenNames[base]){seenNames[base]=uid;}
@@ -412,13 +415,13 @@ function computeBeltLineage(rows,scope){
   // A scoped belt (a room's own title) replays the same rules over that
   // scope's picks only; no scope is the app's belt, unchanged.
   if(scope)rows=rows.filter(standingsKeep(scope));
-  var evScores={};   // date -> base name -> {name,pts,correct,total}
+  var evScores=Object.create(null);   // date -> base name -> {name,pts,correct,total}; prototype-free (see _lbScoreUsers)
   rows.forEach(function(p){
     var base=_lbBaseName(p.nickname);
     if(!base)return;
     var res=_findFightResult(p.event_date,p.f1,p.f2);
     if(!res)return;
-    var d=evScores[p.event_date]||(evScores[p.event_date]={});
+    var d=evScores[p.event_date]||(evScores[p.event_date]=Object.create(null));
     var u=d[base]||(d[base]={name:p.nickname,pts:0,correct:0,total:0});
     u.total++;
     if(nmEq(res.winner,p.pick))u.correct++;
@@ -442,9 +445,9 @@ function computeBeltLineage(rows,scope){
     if(!evNames[d]&&!liveDates[d]){dates.push(d);evNames[d]=RESULTS_ARCHIVE[d].name;}
   });
   dates.sort();
-  var holder=null,reigns=[],cum={};   // cum accuracy per base for tiebreaks
+  var holder=null,reigns=[],cum=Object.create(null);   // cum accuracy per base for tiebreaks
   dates.forEach(function(date){
-    var scores=evScores[date]||{};
+    var scores=evScores[date]||Object.create(null);
     var entries=Object.keys(scores).map(function(b){var s=scores[b];return{base:b,name:s.name,pts:s.pts,correct:s.correct,total:s.total};});
     entries.forEach(function(e){var c=cum[e.base]||(cum[e.base]={correct:0,total:0});c.correct+=e.correct;c.total+=e.total;});
     entries.sort(function(a,b){return b.pts-a.pts;});
