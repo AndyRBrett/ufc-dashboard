@@ -21,7 +21,7 @@ and never writes to it:
 | `lab.html` | The Fight Lab page (⋯ menu → Fight Lab) |
 | `fightbot/core.mjs` | FightBot's tools, built on the two modules above |
 | `fightbot/server.mjs` | Zero-dependency MCP server over stdio |
-| `events-extra.json` | Curated non-UFC cards for the Hub (ships empty) |
+| `events-extra.json` | Non-UFC cards (PFL first), built by `extra.py`; empty until publishing is switched on |
 
 ## The one rule: scoring is shared, never copied
 
@@ -106,9 +106,12 @@ report to `extra-state.json`, and `events-extra.json` is untouched until
 `EXTRA_PUBLISH=1` is set on that step after a real run has been checked
 against the actual card. `tests/test_extra.py` holds it.
 
-Picks on feed promotions are **not** wired into the app. The Hub is read-only
-until a promotion has a real, maintained source. Hand-curated cards go stale,
-and nothing here should state a card that isn't happening.
+Picks on feed promotions **are** wired into the app (#184, #185): the sport
+switcher shows a promotion's cards, stores its picks tagged with its
+promotion, and scores them on their own board (`sportStandings`). It stays
+hidden until `events-extra.json` has a card worth picking, which is why
+publishing is gated on checking a real candidate first: nothing here should
+state a card that isn't happening.
 
 ## Rules
 
