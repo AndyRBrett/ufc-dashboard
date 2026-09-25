@@ -75,6 +75,13 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .empty{color:var(--muted);text-align:center;padding:24px 8px}
 .err{background:var(--loss-dim);color:var(--loss);border-radius:10px;padding:10px 12px;font-size:14px}
 .wrap-scroll{overflow-x:auto}
+.mu-field{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.mu-field:first-of-type{margin-top:0}
+.mu-sel{width:100%;font-size:16px}
+.mu-pair{display:flex;align-items:center;gap:8px}
+.mu-pair .mu-sel{flex:1;min-width:0}
+.mu-swap{flex:none;width:40px;height:40px;border-radius:10px;border:1px solid var(--border2);background:var(--card2);color:var(--text);font-size:18px;cursor:pointer}
+@media (max-width:560px){.mu-pair{flex-direction:column;align-items:stretch}.mu-swap{align-self:center;transform:rotate(90deg)}}
 @media (max-width:560px){h1{font-size:26px}.tile .v{font-size:26px}}
 </style>
 </head>
@@ -504,15 +511,49 @@ function viewWeek(root){
 }
 
 function viewMatchup(root){
-  var names=Object.keys(FIGHTER_STATS).sort();
-  var dl=h("datalist",{id:"fighters"},names.map(function(n){return h("option",{value:n});}));
-  var ev=L.engine.nextEvent(new Date(),"ufc"),mainB=ev&&ev.bouts[0];
-  var a=h("input",{type:"text",list:"fighters","aria-label":"Fighter A",placeholder:"Fighter A",value:mainB?mainB.competitors[0].name:""});
-  var b=h("input",{type:"text",list:"fighters","aria-label":"Fighter B",placeholder:"Fighter B",value:mainB?mainB.competitors[1].name:""});
+  // Menus, not free text: every name offered has a UFCStats profile, so a
+  // comparison can't fail on a typo. Fighters are grouped by the weight class
+  // they last appeared at on a card; the rest sit A-Z under "Other fighters".
+  var names=Object.keys(FIGHTER_STATS).sort(function(x,y){return x.localeCompare(y);});
+  var WC_ORDER=["Heavyweight","Light Heavyweight","Middleweight","Welterweight","Lightweight","Featherweight","Bantamweight","Flyweight","Women's Featherweight","Women's Bantamweight","Women's Flyweight","Women's Strawweight"];
+  var wcOf={};
+  EVENTS.slice().sort(function(x,y){return x.date<y.date?1:-1;}).forEach(function(e){(e.fights||[]).forEach(function(f){
+    [f.f1&&f.f1.n,f.f2&&f.f2.n].forEach(function(n){if(n&&f.wc&&!wcOf[n]&&FIGHTER_STATS[n])wcOf[n]=f.wc;});
+  });});
+  var groups={};names.forEach(function(n){var w=wcOf[n]||"Other fighters";(groups[w]=groups[w]||[]).push(n);});
+  var gOrder=WC_ORDER.filter(function(w){return groups[w];}).concat(Object.keys(groups).filter(function(w){return WC_ORDER.indexOf(w)<0&&w!=="Other fighters";}).sort()).concat(groups["Other fighters"]?["Other fighters"]:[]);
+  function fighterSelect(label,val){
+    var sel=h("select",{"aria-label":label,class:"mu-sel",onchange:function(){bout.value="";go();}},
+      h("option",{value:"",text:label+"…",disabled:true,selected:!val}));
+    gOrder.forEach(function(w){sel.appendChild(h("optgroup",{label:w},groups[w].map(function(n){return h("option",{value:n,text:n,selected:n===val});})));});
+    return sel;
+  }
+  // Quick picks: every upcoming UFC bout where both fighters have a profile.
+  var now=new Date(),upcoming=L.engine.upcoming(now,"ufc");
+  var bout=h("select",{"aria-label":"Pick a bout from an upcoming card",class:"mu-sel mu-bout",onchange:function(){
+    if(!this.value)return;var pr=this.value.split("\n");setSel(a,pr[0]);setSel(b,pr[1]);go();}},
+    h("option",{value:"",text:"Choose a bout…"}));
+  var first=null;
+  upcoming.forEach(function(ev){
+    var og=h("optgroup",{label:ev.name+" · "+fmtDate(ev.date)}),n=0;
+    ev.bouts.forEach(function(bt){
+      var c=bt.competitors;if(!c||!FIGHTER_STATS[c[0].name]||!FIGHTER_STATS[c[1].name])return;
+      var v=c[0].name+"\n"+c[1].name;if(!first)first=v;
+      og.appendChild(h("option",{value:v,text:c[0].name+" vs "+c[1].name}));n++;
+    });
+    if(n)bout.appendChild(og);
+  });
+  var start=first?first.split("\n"):[null,null];
+  var a=fighterSelect("Fighter A",start[0]),b=fighterSelect("Fighter B",start[1]);
+  if(first)bout.value=first;
+  function setSel(sel,v){sel.value=v;}
+  var swap=h("button",{class:"mu-swap","aria-label":"Swap fighters",title:"Swap",text:"⇄",onclick:function(){var t=a.value;a.value=b.value;b.value=t;go();}});
   var out=h("div");
   function resolveName(v){v=String(v||"").trim();if(FIGHTER_STATS[v])return v;var hit=names.filter(function(n){return L.kernel.nmEq(n,v);})[0];return hit||v;}
   function go(){
     out.textContent="";
+    if(!a.value||!b.value)return;
+    if(a.value===b.value){out.appendChild(card(null,h("div",{class:"err",text:"Pick two different fighters."})));return;}
     var m=FL.matchup(resolveName(a.value),resolveName(b.value),{stats:FIGHTER_STATS,rankings:RANKINGS,archive:RESULTS_ARCHIVE,kernel:L.kernel,fighterOdds:L.oddsRaw&&L.oddsRaw.fighters});
     if(m.missing){out.appendChild(card(null,h("div",{class:"err",text:"No UFCStats profile cached for "+m.missing.join(" and ")+". Only fighters who've appeared on a recent card are in the stats cache."})));return;}
     var t=h("table",{class:"cmp"},h("tr",null,h("th",{style:"text-align:center",text:m.a}),h("th"),h("th",{style:"text-align:center",text:m.b})));
@@ -534,14 +575,17 @@ function viewMatchup(root){
       out.appendChild(card("Betting history",h("div",{class:"wrap-scroll"},ht)));
     }
   }
-  root.appendChild(card("Pick any two fighters",dl,h("div",{class:"row"},a,h("span",{class:"muted",text:"vs"}),b,h("button",{class:"act",onclick:go,text:"Compare"}))));
+  root.appendChild(card("Pick a matchup",
+    bout.options.length>1?h("div",{class:"mu-field"},h("label",{class:"muted small",text:"From an upcoming card"}),bout):null,
+    h("div",{class:"mu-field"},h("label",{class:"muted small",text:bout.options.length>1?"Or any two fighters":"Any two fighters"}),
+      h("div",{class:"mu-pair"},a,swap,b))));
   root.appendChild(out);
   var bt=FL.backtest({stats:FIGHTER_STATS,rankings:RANKINGS,archive:RESULTS_ARCHIVE,kernel:L.kernel,odds:L.odds});
   if(bt)root.appendChild(card("Model backtest",h("div",{class:"tiles"},
       tile(bt.n,"Clean bouts scored"),tile(pctTxt(bt.pct),"Model picked the winner"),
       tile(bt.vsMarket.n?pctTxt(bt.vsMarket.market):"—","Closing favorite won (same bouts)"),tile(bt.brier==null?"—":bt.brier,"Brier score (lower is better)")),
     h("p",{class:"muted small",text:"Only bouts where both fighters' stats were fetched before fight night count — "+bt.excluded+" archived bouts are left out because their stats already include the result. The sample grows every card."})));
-  if(a.value&&b.value)go();
+  go();
 }
 
 function viewParty(root){
