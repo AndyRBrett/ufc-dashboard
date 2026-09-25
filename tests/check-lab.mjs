@@ -206,6 +206,14 @@ check("lock skid orders same-card locks by when the result landed", skid.lockSki
   const favOnly = [mk(60, true, -200), mk(61, false, 150)];
   const fo = FL.fightCard(favOnly, FL.fightIQ(favOnly, { stats: {}, group: favOnly }), { group: favOnly });
   check("best call and worst miss come from every priced win and loss", fo.bestCall && fo.bestCall.odds === -200 && fo.worstMiss && fo.worstMiss.odds === 150);
+  // Every archetype has its artwork in the repo (scripts/card_art.py → lab/cards/<key>.jpg)
+  // and lab.html points its card class at that file.
+  {
+    const labHtml = readFileSync(join(ROOT, "lab.html"), "utf8");
+    const missing = Object.keys(FL.ARCHETYPES).filter((k) => !existsSync(join(ROOT, "lab/cards", k + ".jpg")) ||
+      !labHtml.includes(`.fc-${k}{--fc-art:url("lab/cards/${k}.jpg")`));
+    check("every archetype has its card artwork, and its card class uses it" + (missing.length ? " (missing: " + missing.join(", ") + ")" : ""), missing.length === 0);
+  }
   check("every archetype has a quip for the card", Object.keys(FL.ARCHETYPES).every((k) => FL.CARD_QUIPS[k]));
   const sniper = FL.archetype({ n: 40, pct: 55 }, { dog: 0, fav: 0.5, contrarian: 0, finish: 0.5, grappler: 0 }, { n: 0 }, 20, 45);
   check("Method Sniper: 15+ methods called at 40%+", sniper.key === "method");
@@ -354,6 +362,13 @@ else {
     const iqTxt = await page.evaluate(() => document.getElementById("main").innerText);
     check("Fight IQ opens on the viewer's own picks and shows an archetype", /\(you\)/.test(await page.evaluate(() => document.querySelector("select").selectedOptions[0].textContent)) && /Record/.test(iqTxt));
     const fcard = await page.evaluate(() => { const c = document.querySelector("#main .fcard"); return c ? { cls: c.className, traits: c.querySelectorAll(".fc-trait").length, text: c.textContent } : null; });
+    const art = await page.evaluate(() => new Promise((res) => {
+      const c = document.querySelector("#main .fcard"), bg = c ? getComputedStyle(c).backgroundImage : "";
+      const m = /url\("?([^")]+\.jpg)"?\)/.exec(bg);
+      if (!m) return res({ bg, ok: false });
+      const im = new Image(); im.onload = () => res({ bg, ok: im.naturalWidth === 1080 }); im.onerror = () => res({ bg, ok: false }); im.src = m[1];
+    }));
+    check("the card wears its archetype's artwork, and the image loads", art.ok && /lab\/cards\/[a-z]+\.jpg/.test(art.bg));
     check("Fight IQ opens on the viewer's collectible card, themed by archetype, six traits",
       !!fcard && /\bfc-[a-z]+\b/.test(fcard.cls) && fcard.traits === 6 && /Fight IQ/.test(fcard.text));
     // Share hands over the card itself (a PNG), not a link to the page.
