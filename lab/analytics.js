@@ -337,8 +337,13 @@
     // Wins against the wins the odds expected; 50 = exactly what the market said.
     var w = 0, exp = 0, n = 0;
     list.forEach(function (p) { var q = pickedFairProb(p, idx); if (q === null) return; n++; exp += q; if (p.correct) w++; });
-    return n >= MIN_SAMPLE && exp > 0 ? { rating: clamp99(50 * w / exp), n: n, w: w, l: n - w } : { rating: null, n: n, w: w, l: n - w };
+    return n >= MIN_SAMPLE && exp > 0 ? { rating: clamp99(50 * w / exp), n: n, w: w, l: n - w, exp: exp } : { rating: null, n: n, w: w, l: n - w, exp: exp };
   }
+  // Plain-English reading of a 1–99 rating, where 50 is exactly what was expected.
+  function parWord(r) {
+    return r == null ? null : r >= 70 ? "Well above par" : r >= 58 ? "Above par" : r >= 43 ? "On par" : r >= 31 ? "Below par" : "Well below par";
+  }
+  function expWins(x) { return "odds expected ~" + (x < 10 ? Math.round(x * 10) / 10 : Math.round(x)) + " win" + (Math.round(x * 10) / 10 === 1 ? "" : "s"); }
   function fightCard(mine, iq, ctx) {
     ctx = ctx || {};
     var idx = ctx.odds || null, group = ctx.group || [];
@@ -347,8 +352,12 @@
     var priced = decided.map(function (p) { return { p: p, o: pickedOdds(p, idx) }; }).filter(function (x) { return typeof x.o === "number"; });
     var dogs = vsExpected(priced.filter(function (x) { return x.o > 0; }).map(function (x) { return x.p; }), idx);
     var favs = vsExpected(priced.filter(function (x) { return x.o < 0; }).map(function (x) { return x.p; }), idx);
-    traits.push({ key: "upset", emoji: "💥", label: "Upset Sense", rating: dogs.rating, detail: dogs.n ? dogs.w + "W–" + dogs.l + "L on underdogs" : "no priced underdog picks" });
-    traits.push({ key: "chalk", emoji: "🧱", label: "Chalk Handling", rating: favs.rating, detail: favs.n ? favs.w + "W–" + favs.l + "L on favorites" : "no priced favorite picks" });
+    // Each trait: detail = what you did, vs = what it was compared with,
+    // verdict = the rating in words (50 = par, exactly what was expected).
+    traits.push({ key: "upset", emoji: "💥", label: "Upset Sense", rating: dogs.rating, detail: dogs.n ? dogs.w + "W–" + dogs.l + "L on underdogs" : "no priced underdog picks",
+      vs: dogs.rating != null ? expWins(dogs.exp) : null });
+    traits.push({ key: "chalk", emoji: "🧱", label: "Chalk Handling", rating: favs.rating, detail: favs.n ? favs.w + "W–" + favs.l + "L on favorites" : "no priced favorite picks",
+      vs: favs.rating != null ? expWins(favs.exp) : null });
     // Group baselines: every decided pick in the Lab, all players.
     var gDec = group.filter(function (g) { return g.decided && g.side !== null && g.bout; });
     var gMeth = gDec.filter(function (g) { return g.method; });
@@ -356,14 +365,17 @@
     var m = iq.methods;
     traits.push({ key: "method", emoji: "🎯", label: "Method Calling",
       rating: m.called >= MIN_SAMPLE && gMethPct ? clamp99(50 * (m.hit / m.called) / gMethPct) : null,
-      detail: m.called ? m.hit + " of " + m.called + " methods right" : "no methods called" });
+      detail: m.called ? m.hit + " of " + m.called + " methods right" : "no methods called",
+      vs: m.called >= MIN_SAMPLE && gMethPct ? Math.round(100 * m.hit / m.called) + "% vs the group's " + Math.round(100 * gMethPct) + "%" : null });
     var gLocks = rec(gDec.filter(function (g) { return g.locked; }));
     traits.push({ key: "lock", emoji: "🔒", label: "Lock Accuracy",
       rating: iq.locks.n >= MIN_SAMPLE && gLocks.pct ? clamp99(50 * iq.locks.pct / gLocks.pct) : null,
-      detail: iq.locks.n ? iq.locks.w + "W–" + iq.locks.l + "L on locks" : "no locks yet" });
+      detail: iq.locks.n ? iq.locks.w + "W–" + iq.locks.l + "L on locks" : "no locks yet",
+      vs: iq.locks.n >= MIN_SAMPLE && gLocks.pct ? Math.round(iq.locks.pct) + "% vs the group's " + Math.round(gLocks.pct) + "%" : null });
     traits.push({ key: "market", emoji: "📈", label: "Market Timing",
       rating: iq.clv.n >= MIN_SAMPLE ? clamp99(50 + 5 * iq.clv.avg) : null,
-      detail: iq.clv.n ? (iq.clv.avg > 0 ? "+" : "") + iq.clv.avg + " pts CLV over " + iq.clv.n + " picks" : "needs picks timestamped before the close" });
+      detail: iq.clv.n ? "lines moved " + (iq.clv.avg > 0 ? "+" : "") + iq.clv.avg + " pts your way after " + iq.clv.n + " picks" : "can't measure yet: needs picks saved before the lines close",
+      vs: null });
     // Consistency: spread of per-card hit rate over cards with 3+ decided picks.
     var byCard = {};
     decided.forEach(function (p) { var c = byCard[p.date] = byCard[p.date] || { w: 0, n: 0 }; c.n++; if (p.correct) c.w++; });
@@ -373,7 +385,9 @@
     if (rates.length >= 3) { var mu = rates.reduce(function (a, b) { return a + b; }, 0) / rates.length;
       sd = Math.sqrt(rates.reduce(function (a, r) { return a + (r - mu) * (r - mu); }, 0) / rates.length); }
     traits.push({ key: "consistency", emoji: "📊", label: "Consistency", rating: sd === null ? null : clamp99(100 - 2.5 * sd),
-      detail: rates.length ? "across " + rates.length + " card" + (rates.length === 1 ? "" : "s") : "needs 3 cards of 3+ picks" });
+      detail: rates.length ? "across " + rates.length + " card" + (rates.length === 1 ? "" : "s") : "needs 3 cards of 3+ picks",
+      vs: sd === null ? null : "hit rate swings ±" + Math.round(sd) + " pts card to card" });
+    traits.forEach(function (t) { t.verdict = parWord(t.rating); });
 
     // Signature stat and weakness: the splits furthest from the player's own
     // baseline, on enough picks. Segment splits are too broad to be a tell.

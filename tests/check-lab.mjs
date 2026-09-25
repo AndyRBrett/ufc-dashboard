@@ -194,6 +194,11 @@ check("lock skid orders same-card locks by when the result landed", skid.lockSki
   const tr = Object.fromEntries(qc.traits.map((t) => [t.key, t]));
   check("Upset Sense compares wins to what the odds expected (50 = the market)", tr.upset.rating === 99 && tr.upset.detail === "5W–5L on underdogs");
   check("Chalk Handling falls below 50 when favorites win less than priced", tr.chalk.rating === 33);
+  // Every rating says what it means: a verdict in words, and what it was compared with.
+  check("a rating reads as a verdict (99 → well above par, 33 → below par)", tr.upset.verdict === "Well above par" && tr.chalk.verdict === "Below par");
+  check("a rating says what the odds expected (~2.5 underdog wins, ~7.5 favorite wins)",
+    tr.upset.vs === "odds expected ~2.5 wins" && tr.chalk.vs === "odds expected ~7.5 wins");
+  check("an unrated trait has no verdict and no comparison", qc.traits.filter((t) => t.rating == null).every((t) => t.verdict === null && t.vs === null));
   check("the best call is the longest-priced winner, the worst miss the shortest-priced loss", qc.bestCall.odds === 300 && qc.worstMiss.odds === -300);
   check("belt history counts only this player's reigns", qc.belt.reigns === 2 && qc.belt.defenses === 2 && qc.belt.longest === 3 && qc.belt.holding === true);
   check("recent form is the last five cards, W at half or better", qc.form.length === 5 && qc.form.every((f) => "WL".includes(f.r)));
@@ -202,6 +207,7 @@ check("lock skid orders same-card locks by when the result landed", skid.lockSki
     result: { winner: i < 5 ? "A" + i : "B" + i, method: "Dec" }, competitors: [{ name: "A" + i, odds: -110 }, { name: "B" + i, odds: -110 }] } }));
   const ec = FL.fightCard(even, FL.fightIQ(even, { stats: {}, group: even }), { group: even });
   check("ratings take the bookmaker's margin out: a coin-flip market at .500 rates exactly 50", ec.traits.find((t) => t.key === "chalk").rating === 50);
+  check("exactly what the odds expected reads as on par", ec.traits.find((t) => t.key === "chalk").verdict === "On par");
   // Only favorites ever won, and only underdogs ever lost: both cells still fill.
   const favOnly = [mk(60, true, -200), mk(61, false, 150)];
   const fo = FL.fightCard(favOnly, FL.fightIQ(favOnly, { stats: {}, group: favOnly }), { group: favOnly });
@@ -369,6 +375,18 @@ else {
       const im = new Image(); im.onload = () => res({ bg, ok: im.naturalWidth === 1080 }); im.onerror = () => res({ bg, ok: false }); im.src = m[1];
     }));
     check("the card wears its assigned artwork, and the image loads", art.ok && /lab\/cards\/[a-z]+(-[23])?\.jpg/.test(art.bg));
+    const legible = await page.evaluate(() => {
+      const c = document.querySelector("#main .fcard"), panel = getComputedStyle(c.querySelector(".fc-traits")).backgroundColor;
+      const a = (col) => { const m = /rgba?\(([^)]+)\)/.exec(col); const p = m ? m[1].split(",").map(Number) : []; return p.length === 4 ? p[3] : 1; };
+      const mut = Object.keys(FightLab.ARCHETYPES).map((k) => { const el = document.createElement("div"); el.className = "fcard fc-" + k; document.body.appendChild(el);
+        const v = getComputedStyle(el).getPropertyValue("--fc-mut"); el.remove(); return a(v.trim()); });
+      const rated = [...c.querySelectorAll(".fc-trait")].filter((t) => t.querySelector(".rt").textContent !== "—");
+      return { panel: a(panel), mutMin: Math.min(...mut), rated: rated.length,
+        verdicts: rated.every((t) => /^(Well above|Above|On|Below|Well below) par$/.test((t.querySelector(".dt b") || {}).textContent || "")),
+        key: /50 = par/.test(c.querySelector(".fc-foot").textContent) };
+    });
+    check("the ratings sit on a dark panel and every palette's subtext is ≥90% opaque", legible.panel >= 0.45 && legible.mutMin >= 0.9);
+    check("every rated trait on the card leads with its verdict, and the footnote explains 50 = par", legible.rated >= 1 && legible.verdicts && legible.key);
     check("Fight IQ opens on the viewer's collectible card, themed by archetype, six traits",
       !!fcard && /\bfc-[a-z]+\b/.test(fcard.cls) && fcard.traits === 6 && /Fight IQ/.test(fcard.text));
     // Share hands over the card itself (a PNG), not a link to the page.
