@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T23:12:43Z",
+  "generated_at": "2026-09-25T00:13:57Z",
   "summary": {
     "events": 12,
     "block": 0,
@@ -9,18 +9,18 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Rosas Jr. vs. Barcelos (2d out): 2 of 12 bouts have no odds",
+      "message": "UFC Fight Night: Rosas Jr. vs. Barcelos (1d out): 1 of 12 bouts have no odds",
       "event": "UFC Fight Night: Rosas Jr. vs. Barcelos",
       "date": "2026-09-26",
-      "days_out": 2
+      "days_out": 1
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC 332: Silva vs. Wang (9d out): 2 of 13 bouts have no odds",
+      "message": "UFC 332: Silva vs. Wang (8d out): 2 of 13 bouts have no odds",
       "event": "UFC 332: Silva vs. Wang",
       "date": "2026-10-03",
-      "days_out": 9
+      "days_out": 8
     },
     {
       "severity": "WARN",

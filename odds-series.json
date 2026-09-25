@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T23:12:43Z",
+  "generated_at": "2026-09-25T00:13:57Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -10057,7 +10057,7 @@
         {
           "f1": "Rodolfo Vieira",
           "f2": "Robert Bryczek",
-          "lbl": "Co-Main",
+          "lbl": "Prelim",
           "points": 15,
           "series": [
             {
@@ -10147,7 +10147,7 @@
         {
           "f1": "Brady Hiestand",
           "f2": "Rinya Nakamura",
-          "lbl": "Main Card",
+          "lbl": "Prelim",
           "points": 15,
           "series": [
             {
@@ -10512,7 +10512,7 @@
         {
           "f1": "Norma Dumont",
           "f2": "Ailin Perez",
-          "lbl": "Prelim",
+          "lbl": "Co-Main",
           "points": 19,
           "series": [
             {
@@ -10883,6 +10883,26 @@
           },
           "close": null,
           "clv": null
+        },
+        {
+          "f1": "Luis Hernandez",
+          "f2": "Sedriques Dumas",
+          "lbl": "Main Card",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-25T00:13:57Z",
+              "f1_odds": -222,
+              "f2_odds": 182
+            }
+          ],
+          "open": {
+            "at": "2026-09-25T00:13:57Z",
+            "f1_odds": -222,
+            "f2_odds": 182
+          },
+          "close": null,
+          "clv": null
         }
       ]
     },
@@ -11091,12 +11111,17 @@
           "f1": "King Green",
           "f2": "Esteban Ribovics",
           "lbl": "Main Card",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
               "f1_odds": 245,
               "f2_odds": -300
+            },
+            {
+              "at": "2026-09-25T00:13:57Z",
+              "f1_odds": 252,
+              "f2_odds": -310
             }
           ],
           "open": {
@@ -11111,12 +11136,17 @@
           "f1": "Ateba Gautier",
           "f2": "Roman Kopylov",
           "lbl": "Main Card",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
               "f1_odds": -175,
               "f2_odds": 153
+            },
+            {
+              "at": "2026-09-25T00:13:57Z",
+              "f1_odds": -190,
+              "f2_odds": 165
             }
           ],
           "open": {
@@ -11131,12 +11161,17 @@
           "f1": "Imanol Rodriguez",
           "f2": "Alden Coria",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
               "f1_odds": -150,
               "f2_odds": 130
+            },
+            {
+              "at": "2026-09-25T00:13:57Z",
+              "f1_odds": -160,
+              "f2_odds": 140
             }
           ],
           "open": {
@@ -11171,12 +11206,17 @@
           "f1": "Marcus McGhee",
           "f2": "Bernardo Sopaj",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
               "f1_odds": -155,
               "f2_odds": 135
+            },
+            {
+              "at": "2026-09-25T00:13:57Z",
+              "f1_odds": -165,
+              "f2_odds": 145
             }
           ],
           "open": {
@@ -11191,12 +11231,17 @@
           "f1": "Johnny Walker",
           "f2": "Mick Parkin",
           "lbl": "Early Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
               "f1_odds": -110,
               "f2_odds": -110
+            },
+            {
+              "at": "2026-09-25T00:13:57Z",
+              "f1_odds": -142,
+              "f2_odds": 122
             }
           ],
           "open": {
@@ -11378,7 +11423,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -11394,6 +11439,11 @@
               "at": "2026-09-24T22:03:12Z",
               "f1_odds": -273,
               "f2_odds": 219
+            },
+            {
+              "at": "2026-09-25T00:13:57Z",
+              "f1_odds": -289,
+              "f2_odds": 232
             }
           ],
           "open": {
@@ -11921,7 +11971,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Bernardo Sopaj",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -155,
         "close": null,
         "clv": null
@@ -12111,7 +12161,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -272,
         "close": null,
         "clv": null
@@ -12164,7 +12214,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 219,
         "close": null,
         "clv": null
@@ -12978,7 +13028,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Esteban Ribovics",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 245,
         "close": null,
         "clv": null
@@ -13404,7 +13454,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Imanol Rodriguez",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 130,
         "close": null,
         "clv": null
@@ -13959,7 +14009,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "King Green",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -300,
         "close": null,
         "clv": null
@@ -15605,6 +15655,26 @@
         "open": 136,
         "close": null,
         "clv": null
+      },
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Luis Hernandez",
+        "side": "f2",
+        "points": 1,
+        "open": 182,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Luis Hernandez": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Sedriques Dumas",
+        "side": "f1",
+        "points": 1,
+        "open": -222,
+        "close": null,
+        "clv": null
       }
     ],
     "Payton Talbott": [
@@ -15661,7 +15731,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Roman Kopylov",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -175,
         "close": null,
         "clv": null
@@ -15672,7 +15742,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Ateba Gautier",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 153,
         "close": null,
         "clv": null
@@ -15683,7 +15753,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Alden Coria",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -150,
         "close": null,
         "clv": null
@@ -15694,7 +15764,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Marcus McGhee",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 135,
         "close": null,
         "clv": null
@@ -15705,7 +15775,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Mick Parkin",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -110,
         "close": null,
         "clv": null
@@ -15716,7 +15786,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Johnny Walker",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -110,
         "close": null,
         "clv": null
