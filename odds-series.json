@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T17:48:39Z",
+  "generated_at": "2026-09-25T18:53:35Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -10058,7 +10058,7 @@
           "f1": "Rodolfo Vieira",
           "f2": "Robert Bryczek",
           "lbl": "Prelim",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10144,6 +10144,11 @@
               "at": "2026-09-25T16:43:22Z",
               "f1_odds": -162,
               "f2_odds": 134
+            },
+            {
+              "at": "2026-09-25T18:53:35Z",
+              "f1_odds": -163,
+              "f2_odds": 135
             }
           ],
           "open": {
@@ -10158,7 +10163,7 @@
           "f1": "Brady Hiestand",
           "f2": "Rinya Nakamura",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10234,6 +10239,11 @@
               "at": "2026-09-24T19:56:16Z",
               "f1_odds": 298,
               "f2_odds": -387
+            },
+            {
+              "at": "2026-09-25T18:53:35Z",
+              "f1_odds": 290,
+              "f2_odds": -375
             }
           ],
           "open": {
@@ -10818,7 +10828,7 @@
           "f1": "Melissa Amaya",
           "f2": "Valesca Machado",
           "lbl": "Main Card",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-09-20T11:58:20Z",
@@ -10894,6 +10904,11 @@
               "at": "2026-09-25T11:53:10Z",
               "f1_odds": 188,
               "f2_odds": -233
+            },
+            {
+              "at": "2026-09-25T18:53:35Z",
+              "f1_odds": 182,
+              "f2_odds": -223
             }
           ],
           "open": {
@@ -10963,7 +10978,7 @@
           "f1": "Luis Hernandez",
           "f2": "Sedriques Dumas",
           "lbl": "Main Card",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-25T00:13:57Z",
@@ -10984,6 +10999,11 @@
               "at": "2026-09-25T14:39:35Z",
               "f1_odds": -236,
               "f2_odds": 192
+            },
+            {
+              "at": "2026-09-25T18:53:35Z",
+              "f1_odds": -243,
+              "f2_odds": 197
             }
           ],
           "open": {
@@ -11206,7 +11226,7 @@
           "f1": "King Green",
           "f2": "Esteban Ribovics",
           "lbl": "Main Card",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11222,6 +11242,11 @@
               "at": "2026-09-25T14:39:35Z",
               "f1_odds": 245,
               "f2_odds": -300
+            },
+            {
+              "at": "2026-09-25T18:53:35Z",
+              "f1_odds": 230,
+              "f2_odds": -280
             }
           ],
           "open": {
@@ -11236,7 +11261,7 @@
           "f1": "Ateba Gautier",
           "f2": "Roman Kopylov",
           "lbl": "Main Card",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11247,6 +11272,11 @@
               "at": "2026-09-25T00:13:57Z",
               "f1_odds": -190,
               "f2_odds": 165
+            },
+            {
+              "at": "2026-09-25T18:53:35Z",
+              "f1_odds": -200,
+              "f2_odds": 174
             }
           ],
           "open": {
@@ -11391,12 +11421,17 @@
           "f1": "Marvin Vettori",
           "f2": "Ismail Naurdiev",
           "lbl": "Early Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
               "f1_odds": 115,
               "f2_odds": -135
+            },
+            {
+              "at": "2026-09-25T18:53:35Z",
+              "f1_odds": 100,
+              "f2_odds": -120
             }
           ],
           "open": {
@@ -13153,7 +13188,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Esteban Ribovics",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": 245,
         "close": null,
         "clv": null
@@ -14134,7 +14169,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "King Green",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -300,
         "close": null,
         "clv": null
@@ -15567,7 +15602,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Robert Bryczek",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": -108,
         "close": null,
         "clv": null
@@ -15578,7 +15613,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rodolfo Vieira",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": -108,
         "close": null,
         "clv": null
@@ -15589,7 +15624,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rinya Nakamura",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": 265,
         "close": null,
         "clv": null
@@ -15600,7 +15635,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Brady Hiestand",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": -325,
         "close": null,
         "clv": null
@@ -15743,7 +15778,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Valesca Machado",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": 162,
         "close": null,
         "clv": null
@@ -15754,7 +15789,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Melissa Amaya",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": -195,
         "close": null,
         "clv": null
@@ -15785,7 +15820,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Luis Hernandez",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 182,
         "close": null,
         "clv": null
@@ -15796,7 +15831,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Sedriques Dumas",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -222,
         "close": null,
         "clv": null
@@ -15856,7 +15891,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Roman Kopylov",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -175,
         "close": null,
         "clv": null
@@ -15867,7 +15902,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Ateba Gautier",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 153,
         "close": null,
         "clv": null
@@ -15944,7 +15979,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Ismail Naurdiev",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 115,
         "close": null,
         "clv": null
@@ -15955,7 +15990,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Marvin Vettori",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -135,
         "close": null,
         "clv": null
