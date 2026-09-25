@@ -304,11 +304,14 @@ else {
       const pick = names.find((n) => n !== fighters[0].value);
       if (pick) { fighters[1].value = pick; fighters[1].dispatchEvent(new Event("change")); }
       const head = [...document.querySelectorAll("#main table.cmp th")].map((t) => t.textContent);
-      return { text: document.querySelectorAll("#main input[type=text]").length, fighters: fighters.length,
+      const cards = document.querySelectorAll("#main select.mu-bout optgroup").length;
+      const withBouts = L.engine.upcoming(new Date(), "ufc").filter((ev) => ev.bouts.some((b) => b.competitors && FIGHTER_STATS[b.competitors[0].name] && FIGHTER_STATS[b.competitors[1].name])).length;
+      return { text: document.querySelectorAll("#main input[type=text]").length, fighters: fighters.length, cards, withBouts,
         allProfiled: names.every((n) => !!FIGHTER_STATS[n]), n: names.length, updated: !!pick && head.includes(pick) };
     });
     check("Matchup picks fighters from menus (no free-text boxes), each name a stats profile, and re-compares on change",
       mu.text === 0 && mu.fighters === 2 && mu.n > 0 && mu.allProfiled && mu.updated);
+    check("...and the bout menu offers every upcoming card with a comparable bout (" + mu.withBouts + ")", mu.cards === mu.withBouts);
     await page.click('#tabs button[data-tab="iq"]');
     const iqTxt = await page.evaluate(() => document.getElementById("main").innerText);
     check("Fight IQ opens on the viewer's own picks and shows an archetype", /\(you\)/.test(await page.evaluate(() => document.querySelector("select").selectedOptions[0].textContent)) && /Record/.test(iqTxt));

@@ -529,7 +529,7 @@ function viewMatchup(root){
     return sel;
   }
   // Quick picks: every upcoming UFC bout where both fighters have a profile.
-  var now=new Date(),upcoming=L.engine.upcoming(now,"ufc").slice(0,4);
+  var now=new Date(),upcoming=L.engine.upcoming(now,"ufc");
   var bout=h("select",{"aria-label":"Pick a bout from an upcoming card",class:"mu-sel mu-bout",onchange:function(){
     if(!this.value)return;var pr=this.value.split("\n");setSel(a,pr[0]);setSel(b,pr[1]);go();}},
     h("option",{value:"",text:"Choose a bout…"}));
