@@ -85,7 +85,15 @@
     if (!p.bout || p.side === null || !idx) return null;
     var h = idx.lookup(p.date, p.bout.competitors[0].name, p.bout.competitors[1].name);
     if (!h) return null;
-    var at = lineAt(h, p.updatedAt), close = h.close || (p.decided ? h.current : null);
+    var close = h.close || (p.decided ? h.current : null);
+    // The pick's timestamp stands in for when it was made, so it has to come
+    // before the close. A row stamped at or after it (rewritten after the
+    // fight, e.g. by a nickname rename or a restore) says nothing about when
+    // the pick was made; lineAt would hand back the closing line itself and
+    // report a flat 0 that reads as "moves with the market". Every priced
+    // pick in the 2026-09-24 backup was stamped that way.
+    if (!p.updatedAt || !close || Date.parse(p.updatedAt) >= Date.parse(close.at)) return null;
+    var at = lineAt(h, p.updatedAt);
     var pa = probOf(at, p.side), pc = probOf(close, p.side);
     if (pa === null || pc === null) return null;
     return { atPick: p.side === 0 ? at.a : at.b, close: p.side === 0 ? close.a : close.b, pp: round1((pc - pa) * 100) };
@@ -236,7 +244,7 @@
       methods: { called: meth.length, hit: methHit, pct: pct(methHit, meth.length) },
       locks: rec(locks), lockSkid: lockSkid, clv: { avg: avgClv, n: clvs.length },
       rivals: rivalry, shares: shares, insights: insights.slice(0, 8),
-      archetype: archetype(all, shares, rec(locks), meth.length)
+      archetype: archetype(all, shares, rec(locks), meth.length, pct(methHit, meth.length))
     };
   }
   function describe(s, gap) {
@@ -262,13 +270,15 @@
     contrarian: { emoji: "🙃", name: "Contrarian", blurb: "If the group likes it, you don't." },
     grappling: { emoji: "🤼", name: "Grappling Nerd", blurb: "Trusts the wrestler, every time." },
     chaos: { emoji: "💥", name: "Chaos Merchant", blurb: "Expects every fight to end early." },
-    solid: { emoji: "🥋", name: "Student of the Game", blurb: "Balanced picker — no single tell." }
+    solid: { emoji: "🥋", name: "Student of the Game", blurb: "Balanced picker — no single tell." },
+    method: { emoji: "🎯", name: "Method Sniper", blurb: "Calls how it ends, not just who wins." }
   };
-  function archetype(all, s, locks, methodsCalled) {
+  function archetype(all, s, locks, methodsCalled, methodPct) {
     var key;
     if (all.n < 10) key = "casual";
     else if (all.pct >= 65 && all.n >= 20) key = "oracle";
     else if (locks.n >= 4 && locks.pct >= 70) key = "lock";
+    else if (methodsCalled >= 15 && methodPct >= 40) key = "method";
     else if (s.dog >= 0.35) key = "dog";
     else if (s.contrarian >= 0.35) key = "contrarian";
     else if (s.fav >= 0.85) key = "chalk";
@@ -277,6 +287,142 @@
     else key = "solid";
     var a = ARCHETYPES[key];
     return { key: key, emoji: a.emoji, name: a.name, blurb: a.blurb };
+  }
+
+  // ------------------------------------------------------- Fight IQ card --
+  // A picker as a collectible card. Deterministic, like everything here: each
+  // line is computed from the same resolved picks, odds history and Belt the
+  // rest of the Lab uses, and anything under MIN_SAMPLE shows as "—" rather
+  // than a number that sounds like it means something.
+  //
+  // Trait ratings are 1-99 with 50 as the honest baseline, never an invented
+  // "skill": Upset Sense and Chalk Handling compare wins to what the odds said
+  // (the market's expected wins = 50), Method Calling and Lock Accuracy
+  // compare to the group's own hit rate (the group = 50), Market Timing is
+  // closing-line value, and Consistency is how little a player's per-card hit
+  // rate swings.
+  var CARD_QUIPS = {
+    casual: "Still warming up. The card fills in as the picks do.",
+    oracle: "Quietly right more often than is polite.",
+    lock: "Says 'lock' like it's a legal term.",
+    method: "Doesn't just pick the winner. Picks how, and when.",
+    dog: "Will absolutely convince themselves a +240 underdog has value.",
+    contrarian: "Sees the group chat agree and immediately gets suspicious.",
+    chalk: "Has never met a -400 favorite they didn't trust.",
+    grappling: "Believes every fight ends up on the mat eventually.",
+    chaos: "Nobody is making it to the judges on their watch.",
+    solid: "No tells. Very annoying to play poker against."
+  };
+  var CARD_TIERS = [[150, "Legend"], [75, "Veteran"], [30, "Contender"], [10, "Prospect"], [0, "Rookie"]];
+  function impliedProb(o) { return typeof o !== "number" || !o ? null : o > 0 ? 100 / (o + 100) : -o / (-o + 100); }
+  function clamp99(x) { return Math.max(1, Math.min(99, Math.round(x))); }
+  // The picked side's fair probability: both sides of the same line, with the
+  // bookmaker's margin taken out. A single side's implied price overstates it
+  // (-110/-110 reads 52.4% each), which would pull a perfectly average picker
+  // below 50. One side only (no opposite price on record) falls back to its
+  // raw implied probability.
+  function pickedFairProb(p, idx) {
+    if (!p.bout || p.side === null) return null;
+    var cs = p.bout.competitors, mine = cs[p.side].odds, other = cs[1 - p.side].odds;
+    if (typeof mine !== "number" || typeof other !== "number") {
+      var h = idx && idx.lookup(p.date, cs[0].name, cs[1].name), line = h && (h.close || h.current);
+      if (typeof mine !== "number" && line) { mine = p.side === 0 ? line.a : line.b; other = p.side === 0 ? line.b : line.a; }
+      else if (line && typeof other !== "number") other = p.side === 0 ? line.b : line.a;
+    }
+    var a = impliedProb(mine), b = impliedProb(other);
+    if (a === null) return null;
+    return b === null ? a : a / (a + b);
+  }
+  function vsExpected(list, idx) {
+    // Wins against the wins the odds expected; 50 = exactly what the market said.
+    var w = 0, exp = 0, n = 0;
+    list.forEach(function (p) { var q = pickedFairProb(p, idx); if (q === null) return; n++; exp += q; if (p.correct) w++; });
+    return n >= MIN_SAMPLE && exp > 0 ? { rating: clamp99(50 * w / exp), n: n, w: w, l: n - w } : { rating: null, n: n, w: w, l: n - w };
+  }
+  function fightCard(mine, iq, ctx) {
+    ctx = ctx || {};
+    var idx = ctx.odds || null, group = ctx.group || [];
+    var decided = mine.filter(function (p) { return p.decided && p.side !== null && p.bout; });
+    var key = iq.archetype.key, traits = [];
+    var priced = decided.map(function (p) { return { p: p, o: pickedOdds(p, idx) }; }).filter(function (x) { return typeof x.o === "number"; });
+    var dogs = vsExpected(priced.filter(function (x) { return x.o > 0; }).map(function (x) { return x.p; }), idx);
+    var favs = vsExpected(priced.filter(function (x) { return x.o < 0; }).map(function (x) { return x.p; }), idx);
+    traits.push({ key: "upset", emoji: "💥", label: "Upset Sense", rating: dogs.rating, detail: dogs.n ? dogs.w + "W–" + dogs.l + "L on underdogs" : "no priced underdog picks" });
+    traits.push({ key: "chalk", emoji: "🧱", label: "Chalk Handling", rating: favs.rating, detail: favs.n ? favs.w + "W–" + favs.l + "L on favorites" : "no priced favorite picks" });
+    // Group baselines: every decided pick in the Lab, all players.
+    var gDec = group.filter(function (g) { return g.decided && g.side !== null && g.bout; });
+    var gMeth = gDec.filter(function (g) { return g.method; });
+    var gMethPct = gMeth.length ? gMeth.filter(function (g) { return g.correct && PE.methodGroup(g.bout.result.method) === g.method; }).length / gMeth.length : null;
+    var m = iq.methods;
+    traits.push({ key: "method", emoji: "🎯", label: "Method Calling",
+      rating: m.called >= MIN_SAMPLE && gMethPct ? clamp99(50 * (m.hit / m.called) / gMethPct) : null,
+      detail: m.called ? m.hit + " of " + m.called + " methods right" : "no methods called" });
+    var gLocks = rec(gDec.filter(function (g) { return g.locked; }));
+    traits.push({ key: "lock", emoji: "🔒", label: "Lock Accuracy",
+      rating: iq.locks.n >= MIN_SAMPLE && gLocks.pct ? clamp99(50 * iq.locks.pct / gLocks.pct) : null,
+      detail: iq.locks.n ? iq.locks.w + "W–" + iq.locks.l + "L on locks" : "no locks yet" });
+    traits.push({ key: "market", emoji: "📈", label: "Market Timing",
+      rating: iq.clv.n >= MIN_SAMPLE ? clamp99(50 + 5 * iq.clv.avg) : null,
+      detail: iq.clv.n ? (iq.clv.avg > 0 ? "+" : "") + iq.clv.avg + " pts CLV over " + iq.clv.n + " picks" : "needs picks timestamped before the close" });
+    // Consistency: spread of per-card hit rate over cards with 3+ decided picks.
+    var byCard = {};
+    decided.forEach(function (p) { var c = byCard[p.date] = byCard[p.date] || { w: 0, n: 0 }; c.n++; if (p.correct) c.w++; });
+    var cards = Object.keys(byCard).sort();
+    var rates = cards.filter(function (d) { return byCard[d].n >= 3; }).map(function (d) { return 100 * byCard[d].w / byCard[d].n; });
+    var sd = null;
+    if (rates.length >= 3) { var mu = rates.reduce(function (a, b) { return a + b; }, 0) / rates.length;
+      sd = Math.sqrt(rates.reduce(function (a, r) { return a + (r - mu) * (r - mu); }, 0) / rates.length); }
+    traits.push({ key: "consistency", emoji: "📊", label: "Consistency", rating: sd === null ? null : clamp99(100 - 2.5 * sd),
+      detail: rates.length ? "across " + rates.length + " card" + (rates.length === 1 ? "" : "s") : "needs 3 cards of 3+ picks" });
+
+    // Signature stat and weakness: the splits furthest from the player's own
+    // baseline, on enough picks. Segment splits are too broad to be a tell.
+    var base = iq.record.pct || 0;
+    var scored = iq.splits.filter(function (s) { return s.rec.n >= MIN_SAMPLE && s.kind !== "segment"; })
+      .map(function (s) { return { s: s, w: (s.rec.pct - base) * Math.sqrt(s.rec.n) }; });
+    var best = scored.slice().sort(function (a, b) { return b.w - a.w; })[0];
+    var worst = scored.slice().sort(function (a, b) { return a.w - b.w; })[0];
+    var signature = best && best.w > 0 ? { text: fmtRec(best.s.rec) + " — " + best.s.key, pct: best.s.rec.pct } : null;
+    var weakness = worst && worst.w < 0 && (!best || worst.s !== best.s) ? { text: fmtRec(worst.s.rec) + " — " + worst.s.key, pct: worst.s.rec.pct } : null;
+
+    // Nemesis: the fighter who has cost the most picks, backed or faded.
+    var burned = {};
+    decided.forEach(function (p) {
+      if (p.correct) return;
+      [p.bout.competitors[p.side].name, p.bout.competitors[1 - p.side].name].forEach(function (n) { burned[n] = (burned[n] || 0) + 1; });
+    });
+    var nemName = Object.keys(burned).sort(function (a, b) { return burned[b] - burned[a] || (a < b ? -1 : 1); })[0];
+    var nemesis = nemName && burned[nemName] >= 2 ? { name: nemName, n: burned[nemName] } : null;
+
+    var rival = iq.rivals[0] ? { nickname: iq.rivals[0].nickname, you: iq.rivals[0].rec.w, them: iq.rivals[0].rec.l } : null;
+    // Longest-priced winner and shortest-priced loser, from every priced pick:
+    // a picker who only ever wins on favorites still has a best call.
+    var hits = priced.filter(function (x) { return x.p.correct; }).sort(function (a, b) { return b.o - a.o; });
+    var misses = priced.filter(function (x) { return !x.p.correct; }).sort(function (a, b) { return a.o - b.o; });
+    var callOf = function (x) { return { pick: x.p.bout.competitors[x.p.side].name, over: x.p.bout.competitors[1 - x.p.side].name, odds: x.o, date: x.p.date, event: x.p.event ? x.p.event.name : "" }; };
+    var bestCall = hits[0] ? callOf(hits[0]) : null;
+    var worstMiss = misses[0] ? callOf(misses[0]) : null;
+
+    var market = null;
+    if (iq.clv.n >= MIN_SAMPLE) market = iq.clv.avg >= 1 ? { label: "Beats the close", detail: "Lines move toward their picks after they make them." }
+      : iq.clv.avg <= -1 ? { label: "Late to the move", detail: "Lines tend to drift away from their picks." }
+      : { label: "Moves with the market", detail: "Picks land about where the line settles." };
+
+    var belt = null;
+    if (ctx.belt && ctx.belt.reigns && ctx.baseName) {
+      var mineR = ctx.belt.reigns.filter(function (r) { return r.base === ctx.baseName; });
+      if (mineR.length) belt = { reigns: mineR.length, defenses: mineR.reduce(function (a, r) { return a + r.defenses; }, 0),
+        longest: Math.max.apply(null, mineR.map(function (r) { return r.defenses + 1; })), holding: ctx.belt.holderBase === ctx.baseName };
+    }
+
+    // Recent form: the last five cards, W when they hit at least half.
+    var form = cards.slice(-5).map(function (d) { var c = byCard[d]; return { date: d, r: c.w * 2 >= c.n ? "W" : "L", w: c.w, n: c.n }; });
+    var n = iq.record.n, tier = CARD_TIERS.filter(function (t) { return n >= t[0]; })[0][1];
+    return {
+      archetype: iq.archetype, quip: CARD_QUIPS[key] || "", tier: tier, decided: n, record: iq.record,
+      traits: traits, signature: signature, weakness: weakness, nemesis: nemesis, rival: rival,
+      bestCall: bestCall, worstMiss: worstMiss, market: market, belt: belt, form: form
+    };
   }
 
   // ------------------------------------------------------------ Fight Market --
@@ -553,6 +699,7 @@
   root.FightLab = {
     MIN_SAMPLE: MIN_SAMPLE, oddsIndex: oddsIndex, pickCLV: pickCLV, lineAt: lineAt, probOf: probOf,
     styleOf: styleOf, streakBefore: streakBefore, fmtOdds: fmtOdds, fightIQ: fightIQ, archetype: archetype, ARCHETYPES: ARCHETYPES,
+    fightCard: fightCard, CARD_QUIPS: CARD_QUIPS,
     marketMovers: marketMovers, versusMarket: versusMarket, crowdVsMarket: crowdVsMarket,
     fightWeekBrief: fightWeekBrief, matchup: matchup, backtest: backtest, activityTicker: activityTicker
   };
