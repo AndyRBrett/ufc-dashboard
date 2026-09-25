@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T10:48:15Z",
+  "generated_at": "2026-09-25T11:53:11Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -10058,7 +10058,7 @@
           "f1": "Rodolfo Vieira",
           "f2": "Robert Bryczek",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10134,6 +10134,11 @@
               "at": "2026-09-24T19:56:16Z",
               "f1_odds": -160,
               "f2_odds": 132
+            },
+            {
+              "at": "2026-09-25T11:53:10Z",
+              "f1_odds": -159,
+              "f2_odds": 131
             }
           ],
           "open": {
@@ -10428,7 +10433,7 @@
           "f1": "John Castaneda",
           "f2": "Alateng Heili",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10509,6 +10514,11 @@
               "at": "2026-09-24T19:56:16Z",
               "f1_odds": -368,
               "f2_odds": 287
+            },
+            {
+              "at": "2026-09-25T11:53:10Z",
+              "f1_odds": -370,
+              "f2_odds": 288
             }
           ],
           "open": {
@@ -10763,7 +10773,7 @@
           "f1": "Melissa Amaya",
           "f2": "Valesca Machado",
           "lbl": "Main Card",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-09-20T11:58:20Z",
@@ -10834,6 +10844,11 @@
               "at": "2026-09-25T05:23:10Z",
               "f1_odds": 187,
               "f2_odds": -230
+            },
+            {
+              "at": "2026-09-25T11:53:10Z",
+              "f1_odds": 188,
+              "f2_odds": -233
             }
           ],
           "open": {
@@ -11236,7 +11251,7 @@
           "f1": "Marcus McGhee",
           "f2": "Bernardo Sopaj",
           "lbl": "Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11252,6 +11267,11 @@
               "at": "2026-09-25T02:23:23Z",
               "f1_odds": -150,
               "f2_odds": 130
+            },
+            {
+              "at": "2026-09-25T11:53:10Z",
+              "f1_odds": -140,
+              "f2_odds": 120
             }
           ],
           "open": {
@@ -11336,12 +11356,17 @@
           "f1": "Court McGee",
           "f2": "Eric Nolan",
           "lbl": "Early Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
               "f1_odds": 226,
               "f2_odds": -275
+            },
+            {
+              "at": "2026-09-25T11:53:10Z",
+              "f1_odds": 207,
+              "f2_odds": -250
             }
           ],
           "open": {
@@ -12011,7 +12036,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Bernardo Sopaj",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -155,
         "close": null,
         "clv": null
@@ -12759,7 +12784,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Court McGee",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -275,
         "close": null,
         "clv": null
@@ -15482,7 +15507,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Robert Bryczek",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -108,
         "close": null,
         "clv": null
@@ -15493,7 +15518,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rodolfo Vieira",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": -108,
         "close": null,
         "clv": null
@@ -15570,7 +15595,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Alateng Heili",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -280,
         "close": null,
         "clv": null
@@ -15581,7 +15606,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "John Castaneda",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 232,
         "close": null,
         "clv": null
@@ -15658,7 +15683,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Valesca Machado",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": 162,
         "close": null,
         "clv": null
@@ -15669,7 +15694,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Melissa Amaya",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -195,
         "close": null,
         "clv": null
@@ -15804,7 +15829,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Marcus McGhee",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 135,
         "close": null,
         "clv": null
@@ -15881,7 +15906,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Eric Nolan",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 226,
         "close": null,
         "clv": null
