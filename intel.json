@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-25T06:28:10Z",
+ "generated_at": "2026-09-25T09:43:27Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 404,
-   "items": 0
+   "status": 200,
+   "items": 15
   },
   {
    "id": "yt-mmaf",
@@ -45,6 +45,32 @@
    "date": "2026-09-26",
    "items": [
     {
+     "title": "\"I Am Looking Forward To Putting On A Show! | UFC Vegas 121 Media Day",
+     "url": "https://www.youtube.com/watch?v=MnIOz5NWe1g",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-09-23T20:38:12Z",
+     "thumb": "https://i2.ytimg.com/vi/MnIOz5NWe1g/hqdefault.jpg",
+     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Listen to Raul Rosas Jr and Raoni Barcelos answer questions from the press ahead of their matchup at UFC Vegas 121. Subscribe to get all the latest UFC content:…",
+     "fighters": [
+      "Raoni Barcelos",
+      "Raul Rosas Jr."
+     ]
+    },
+    {
+     "title": "Raoni Barcelos vs Khalid Taha | FULL FIGHT | UFC Vegas 121",
+     "url": "https://www.youtube.com/watch?v=ag2DmZQO7MM",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-09-23T16:00:26Z",
+     "thumb": "https://i2.ytimg.com/vi/ag2DmZQO7MM/hqdefault.jpg",
+     "blurb": "Rewatch the full fight between Raoni Barcelos and Khalid Taha ahead of Barcelos' main event match up against Raul Rosas Jr at UFC Vegas 121. Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the…",
+     "fighters": [
+      "Raoni Barcelos",
+      "Raul Rosas Jr."
+     ]
+    },
+    {
      "title": "UFC Vegas 121 odds: Rosas Jr. favored, Jauregui opens at -1000",
      "url": "https://www.sherdog.com/news/news/UFC-Vegas-121-odds-Rosas-Jr-favored-Jauregui-opens-at-1000-202947",
      "source": "Sherdog",
@@ -55,6 +81,20 @@
      "fighters": [
       "Raoni Barcelos",
       "Raul Rosas Jr."
+     ]
+    },
+    {
+     "title": "The Ultimate Fighter Finale | UFC Vegas 121",
+     "url": "https://www.youtube.com/watch?v=U0JVGEfL9XA",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-09-24T17:45:08Z",
+     "thumb": "https://i2.ytimg.com/vi/U0JVGEfL9XA/hqdefault.jpg",
+     "blurb": "Preview The Ultimate Fighter Finale fights Mehemmedeli Osmanli vs Ilimbek Akylbek Uulu and Melissa Amaya vs Tina Black at UFC Vegas 121 this weekend. Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to…",
+     "fighters": [
+      "Ilimbek Akylbek uulu",
+      "Mehemmedeli Osmanli",
+      "Melissa Amaya"
      ]
     },
     {
@@ -82,18 +122,6 @@
       "Ailin Perez",
       "Norma Dumont"
      ]
-    },
-    {
-     "title": "Will Raul Rosas Jr. retire at 25? Plan to break Jon Jones record and walk away on top revealed",
-     "url": "https://bloodyelbow.com/2026/09/24/will-raul-rosas-jr-retire-at-25-plan-to-break-jon-jones-record-and-walk-away-on-top-revealed/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-09-24T11:00:00Z",
-     "thumb": null,
-     "blurb": "Raul Rosas Jr. keeps talking about retirement despite being one of the youngest fighters on the UFC roster. Last September, the 21-year-old bantamweight revealed his ...",
-     "fighters": [
-      "Raul Rosas Jr."
-     ]
     }
    ]
   },
@@ -101,6 +129,19 @@
    "name": "UFC 332: Silva vs. Wang",
    "date": "2026-10-03",
    "items": [
+    {
+     "title": "Payton Talbott vs Henry Cejudo | FULL FIGHT | UFC 332",
+     "url": "https://www.youtube.com/watch?v=a4Q81kbvOXk",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-09-23T14:00:30Z",
+     "thumb": "https://i2.ytimg.com/vi/a4Q81kbvOXk/hqdefault.jpg",
+     "blurb": "Rewatch the full fight between Payton Talbott and Henry Cejudo ahead of Talbott's co-main event match up against Deiveson Figueiredo at UFC 332. Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all…",
+     "fighters": [
+      "Deiveson Figueiredo",
+      "Payton Talbott"
+     ]
+    },
     {
      "title": "Natalia Silva’s coach makes bold claim about UFC 332 title fight",
      "url": "https://www.sherdog.com/news/news/Natalia-Silvas-coach-makes-bold-claim-about-UFC-332-title-fight-202949",
@@ -111,6 +152,19 @@
      "blurb": "Natalia Silva ’s team believes her upcoming title bout will be a treat for fans.",
      "fighters": [
       "Natalia Silva"
+     ]
+    },
+    {
+     "title": "King Green vs Daniel Zellhuber | Full Fight",
+     "url": "https://www.youtube.com/watch?v=4jCfhpKS4Wg",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-09-24T11:45:12Z",
+     "thumb": "https://i1.ytimg.com/vi/4jCfhpKS4Wg/hqdefault.jpg",
+     "blurb": "Rewatch the full fight between King Green and Daniel Zellhuber before Green's matchup against Esteban Ribovics at UFC 332. Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC…",
+     "fighters": [
+      "Esteban Ribovics",
+      "King Green"
      ]
     }
    ]
