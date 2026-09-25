@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T06:28:10Z",
+  "generated_at": "2026-09-25T07:33:38Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -10338,7 +10338,7 @@
           "f1": "Montel Jackson",
           "f2": "Ricky Simon",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10404,6 +10404,11 @@
               "at": "2026-09-24T15:13:34Z",
               "f1_odds": -205,
               "f2_odds": 169
+            },
+            {
+              "at": "2026-09-25T07:33:38Z",
+              "f1_odds": -207,
+              "f2_odds": 170
             }
           ],
           "open": {
@@ -15533,7 +15538,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Ricky Simon",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -176,
         "close": null,
         "clv": null
@@ -15544,7 +15549,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Montel Jackson",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 149,
         "close": null,
         "clv": null
