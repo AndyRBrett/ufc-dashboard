@@ -159,6 +159,10 @@ const c1 = res.find((p) => p.player === "u-Andy" && p.date === C2 && p.pick === 
 c1.updatedAt = "2026-09-21T00:00:00Z";
 const clv = FL.pickCLV(c1, idx);
 check("CLV is positive when the price moved toward the pick after it was made", clv && clv.atPick === -130 && clv.close === -180 && clv.pp > 0);
+// A row stamped at or after the close (rewritten after the fight by a rename
+// or a restore) can't say when the pick was made: no CLV, never a flat 0.
+check("no CLV for a pick stamped at or after the closing line", FL.pickCLV(Object.assign({}, c1, { updatedAt: "2026-09-27T00:00:00Z" }), idx) === null &&
+  FL.pickCLV(Object.assign({}, c1, { updatedAt: null }), idx) === null);
 
 // 4. Fight IQ: no claims under the sample floor, no leaking the result.
 const iq = FL.fightIQ(res.filter((p) => p.player === "u-Andy"), { odds: idx, stats: {}, group: res });
@@ -173,6 +177,30 @@ const skid = FL.fightIQ([
   { player: "p", date: C1, decided: true, correct: false, locked: true, side: 0, points: -1, bout: { order: 0, id: "o", competitors: [{ name: "A1" }, { name: "B1" }], result: { winner: "B1" } } },
 ], {});
 check("lock skid orders same-card locks by when the result landed", skid.lockSkid === 0);
+// Fight IQ card: deterministic, honest ratings, nothing under the floor.
+{
+  const thin = FL.fightCard(res.filter((p) => p.player === "u-Andy"), iq, { odds: idx, group: res });
+  check("a thin history's card rates nothing it can't back (every trait is — below MIN_SAMPLE)", thin.traits.length === 6 && thin.traits.every((t) => t.rating === null) && thin.tier === "Rookie");
+  // 10 underdog picks at +300 (market expects 2.5 wins); 5 hit -> Upset Sense 50 * 5 / 2.5 = 99 (cap).
+  const mk = (i, win, odds, extra) => Object.assign({ player: "q", nickname: "🐶 Q", date: "2026-0" + (1 + (i % 5)) + "-10", decided: true, side: 0, correct: win,
+    method: "", locked: false, points: win ? 1 : 0, event: { name: "E" + i },
+    bout: { id: "b" + i, order: 0, division: "Lightweight", segment: "main", result: { winner: win ? "A" + i : "B" + i, method: "KO/TKO" },
+            competitors: [{ name: "A" + i, odds }, { name: "B" + i, odds: -odds }] } }, extra || {});
+  const dogPicks = Array.from({ length: 10 }, (_, i) => mk(i, i < 5, 300));
+  const favPicks = Array.from({ length: 10 }, (_, i) => mk(10 + i, i < 5, -300));   // expected 7.5 wins, got 5 -> 33
+  const all = dogPicks.concat(favPicks);
+  const qiq = FL.fightIQ(all, { stats: {}, group: all });
+  const qc = FL.fightCard(all, qiq, { group: all, belt: { holderBase: "q", reigns: [{ base: "q", defenses: 2 }, { base: "z", defenses: 0 }, { base: "q", defenses: 0 }] }, baseName: "q" });
+  const tr = Object.fromEntries(qc.traits.map((t) => [t.key, t]));
+  check("Upset Sense compares wins to what the odds expected (50 = the market)", tr.upset.rating === 99 && tr.upset.detail === "5W–5L on underdogs");
+  check("Chalk Handling falls below 50 when favorites win less than priced", tr.chalk.rating === 33);
+  check("the best call is the longest-priced winner, the worst miss the shortest-priced loss", qc.bestCall.odds === 300 && qc.worstMiss.odds === -300);
+  check("belt history counts only this player's reigns", qc.belt.reigns === 2 && qc.belt.defenses === 2 && qc.belt.longest === 3 && qc.belt.holding === true);
+  check("recent form is the last five cards, W at half or better", qc.form.length === 5 && qc.form.every((f) => "WL".includes(f.r)));
+  check("every archetype has a quip for the card", Object.keys(FL.ARCHETYPES).every((k) => FL.CARD_QUIPS[k]));
+  const sniper = FL.archetype({ n: 40, pct: 55 }, { dog: 0, fav: 0.5, contrarian: 0, finish: 0.5, grappler: 0 }, { n: 0 }, 20, 45);
+  check("Method Sniper: 15+ methods called at 40%+", sniper.key === "method");
+}
 check("Fight IQ makes no split insight under MIN_SAMPLE", iq.insights.every((i) => i.kind === "clv" || i.kind === "locks" || i.kind === "rival"));
 const st = { form: [{ r: "W" }, { r: "W" }, { r: "W" }, { r: "L" }], opp: ["ThisOpp", "O2", "O3", "O4"] };
 check("win streak going in excludes the bout's own result", FL.streakBefore(st, "ThisOpp") === false);
@@ -316,6 +344,9 @@ else {
     await page.click('#tabs button[data-tab="iq"]');
     const iqTxt = await page.evaluate(() => document.getElementById("main").innerText);
     check("Fight IQ opens on the viewer's own picks and shows an archetype", /\(you\)/.test(await page.evaluate(() => document.querySelector("select").selectedOptions[0].textContent)) && /Record/.test(iqTxt));
+    const fcard = await page.evaluate(() => { const c = document.querySelector("#main .fcard"); return c ? { cls: c.className, traits: c.querySelectorAll(".fc-trait").length, text: c.textContent } : null; });
+    check("Fight IQ opens on the viewer's collectible card, themed by archetype, six traits",
+      !!fcard && /\bfc-[a-z]+\b/.test(fcard.cls) && fcard.traits === 6 && /Fight IQ/.test(fcard.text));
     const opts = await page.evaluate(() => [...document.querySelectorAll("select option")].map((o) => o.textContent.replace(/\s*\(you\)$/, "")));
     const bases = opts.map((o) => o.replace(/^\S+\s+/, "").toLowerCase());
     check("the player picker lists each person once (no ghost identities)", opts.length === 3 && new Set(bases).size === bases.length);

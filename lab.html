@@ -75,6 +75,49 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .empty{color:var(--muted);text-align:center;padding:24px 8px}
 .err{background:var(--loss-dim);color:var(--loss);border-radius:10px;padding:10px 12px;font-size:14px}
 .wrap-scroll{overflow-x:auto}
+/* Fight IQ card: a collectible, one look per archetype. Its colours are its
+   own (like a printed card) rather than the app theme's, so every value here
+   is picked for contrast against its own background. */
+.fcard{--fc-bg1:#1f2937;--fc-bg2:#374151;--fc-ac:#e5e7eb;--fc-tx:#f9fafb;--fc-mut:rgba(249,250,251,.72);--fc-line:rgba(255,255,255,.14);
+  position:relative;border-radius:18px;padding:18px 18px 14px;margin-bottom:14px;color:var(--fc-tx);
+  background:linear-gradient(155deg,var(--fc-bg1) 0%,var(--fc-bg2) 100%);border:2px solid var(--fc-ac);
+  box-shadow:0 10px 30px rgba(0,0,0,.45),inset 0 0 0 4px rgba(0,0,0,.18);overflow:hidden}
+.fcard::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.07) 45%,transparent 60%)}
+.fc-dog{--fc-bg1:#0b0b0b;--fc-bg2:#2e2408;--fc-ac:#f2c14e;--fc-tx:#fff6db;--fc-mut:rgba(255,246,219,.72)}
+.fc-chalk{--fc-bg1:#0b3d91;--fc-bg2:#1e6fd9;--fc-ac:#dbe8ff;--fc-tx:#ffffff;--fc-mut:rgba(255,255,255,.78)}
+.fc-lock{--fc-bg1:#111316;--fc-bg2:#3a3f47;--fc-ac:#c9ced6;--fc-tx:#f3f4f6;--fc-mut:rgba(243,244,246,.7)}
+.fc-lock .fc-name,.fc-lock .fc-arch{font-family:Georgia,'Times New Roman',serif;letter-spacing:.14em;text-transform:uppercase}
+.fc-oracle{--fc-bg1:#1d0b3f;--fc-bg2:#5b3fa8;--fc-ac:#e0c3fc;--fc-tx:#fbf7ff;--fc-mut:rgba(251,247,255,.74)}
+.fc-contrarian{--fc-bg1:#0f3d3e;--fc-bg2:#6b1d5c;--fc-ac:#ff8adf;--fc-tx:#fff5fc;--fc-mut:rgba(255,245,252,.74)}
+.fc-grappling{--fc-bg1:#0b2e18;--fc-bg2:#1f6b36;--fc-ac:#a8f0bf;--fc-tx:#f2fff6;--fc-mut:rgba(242,255,246,.74)}
+.fc-chaos{--fc-bg1:#3b0a0a;--fc-bg2:#b8400b;--fc-ac:#ffd166;--fc-tx:#fff8ec;--fc-mut:rgba(255,248,236,.76)}
+.fc-method{--fc-bg1:#101a0c;--fc-bg2:#2c4520;--fc-ac:#9be15d;--fc-tx:#f4ffe9;--fc-mut:rgba(244,255,233,.72)}
+.fc-casual{--fc-bg1:#262626;--fc-bg2:#4a4a4a;--fc-ac:#bdbdbd;--fc-tx:#fafafa;--fc-mut:rgba(250,250,250,.7)}
+.fc-top{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--fc-mut)}
+.fc-name{font:400 38px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.04em;margin:10px 0 2px;overflow-wrap:anywhere}
+.fc-arch{display:flex;align-items:center;gap:8px;font:400 22px/1.1 'Bebas Neue',Impact,sans-serif;letter-spacing:.08em;color:var(--fc-ac)}
+.fc-arch .e{font-size:26px}
+.fc-rec{margin-top:8px;font-size:13px;color:var(--fc-mut)}
+.fc-rec b{color:var(--fc-tx);font-size:15px}
+.fc-traits{margin:14px 0 4px;display:grid;gap:8px}
+.fc-trait{display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:4px 8px}
+.fc-trait .lb{font-size:13px;font-weight:600}
+.fc-trait .rt{font:400 22px/1 'Bebas Neue',Impact,sans-serif;min-width:30px;text-align:right}
+.fc-trait .bar{grid-column:2/4;height:6px;border-radius:3px;background:rgba(255,255,255,.14)}
+.fc-trait .bar i{display:block;height:100%;border-radius:3px;background:var(--fc-ac)}
+.fc-trait .dt{grid-column:2/4;font-size:11px;color:var(--fc-mut);margin-top:-2px}
+.fc-quip{margin:14px 0 12px;padding:10px 12px;border-left:3px solid var(--fc-ac);background:rgba(0,0,0,.22);border-radius:0 10px 10px 0;font-style:italic;font-size:14px}
+.fc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fc-cell{background:rgba(0,0,0,.24);border:1px solid var(--fc-line);border-radius:10px;padding:8px 10px;min-width:0}
+.fc-cell .k{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--fc-mut)}
+.fc-cell .v{font-size:13.5px;font-weight:600;margin-top:3px;overflow-wrap:anywhere}
+.fc-cell .s{font-size:11px;color:var(--fc-mut);margin-top:2px}
+.fc-form{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--fc-mut)}
+.fc-form .chip{width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font:400 16px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:0}
+.fc-form .chip.W{background:#2ecc71;color:#06260f}.fc-form .chip.L{background:#d65a68;color:#2a0508}
+.fc-foot{margin-top:12px;font-size:10.5px;color:var(--fc-mut);line-height:1.4}
+.fc-actions{display:flex;gap:8px;flex-wrap:wrap;margin:-4px 0 14px}
+@media (max-width:360px){.fc-grid{grid-template-columns:1fr}.fc-name{font-size:32px}}
 .mu-sel{width:100%;font-size:16px}
 
 @media (max-width:560px){h1{font-size:26px}.tile .v{font-size:26px}}
@@ -303,10 +346,13 @@ function viewIQ(root){
     var mine=L.picks.filter(function(p){return p.player===L.player;});
     if(!mine.length){body.appendChild(card(null,h("div",{class:"empty",text:"No picks yet — make some on the cards and your Fight IQ builds itself."})));return;}
     var iq=FL.fightIQ(mine,{odds:L.odds,stats:FIGHTER_STATS,group:L.picks});
-    body.appendChild(card(null,
-      h("div",{class:"arch"},h("div",{class:"e",text:iq.archetype.emoji}),
-        h("div",null,h("div",{class:"n",text:iq.archetype.name}),h("div",{class:"muted small",text:iq.archetype.blurb}))),
-      writeupBlock(iq)));
+    var nick=(players().filter(function(u){return u.player===L.player;})[0]||{}).nickname||"";
+    if(L.belt===undefined){try{L.belt=L.kernel.computeBeltLineage(L.boardRows);}catch(e){L.belt=null;}}
+    var sn=L.kernel.splitNick(nick);
+    var fc=FL.fightCard(mine,iq,{odds:L.odds,group:L.picks,belt:L.belt,baseName:sn.name.toLowerCase()});
+    body.appendChild(fightCardEl(fc,sn));
+    body.appendChild(h("div",{class:"fc-actions"},h("button",{class:"act",text:"📤 Share card",onclick:function(){shareCard(fc,sn,this);}})));
+    body.appendChild(card(null,h("div",{class:"muted small",text:fc.archetype.blurb}),writeupBlock(iq)));
     body.appendChild(card("The numbers",h("div",{class:"tiles"},
       recTile(iq.record,"Record ("+pctTxt(iq.record.pct)+" right)"),
       tile(iq.points,"Points (board scoring)"),
@@ -346,6 +392,53 @@ function viewIQ(root){
       h("p",{class:"muted small",text:"W = picks you got right, L = picks you got wrong. Style tags come from UFCStats career averages; streaks count only fights before the bout. Splits under "+FL.MIN_SAMPLE+" picks aren't used for insights."})));
   }
   draw();
+}
+
+// The Fight IQ card (FightLab.fightCard's numbers, laid out as a collectible).
+// Every string is set with textContent via h(); nothing here is HTML.
+function fightCardEl(fc,sn){
+  var el=h("div",{class:"fcard fc-"+fc.archetype.key,role:"group","aria-label":"Fight IQ card for "+(sn.name||"this player")});
+  el.appendChild(h("div",{class:"fc-top"},h("span",{text:"🧠 Fight IQ · "+fc.tier}),h("span",{text:fc.decided+" decided pick"+(fc.decided===1?"":"s")})));
+  el.appendChild(h("div",{class:"fc-name",text:((sn.emoji?sn.emoji+" ":"")+(sn.name||"Unknown")).toUpperCase()}));
+  el.appendChild(h("div",{class:"fc-arch"},h("span",{class:"e",text:fc.archetype.emoji}),h("span",{text:fc.archetype.name})));
+  if(fc.record.n)el.appendChild(h("div",{class:"fc-rec"},h("b",{text:fc.record.w+"W–"+fc.record.l+"L"}),h("span",{text:" · "+fc.record.pct+"% right"})));
+  var tr=h("div",{class:"fc-traits"});
+  fc.traits.forEach(function(t){
+    tr.appendChild(h("div",{class:"fc-trait"},h("span",{text:t.emoji,"aria-hidden":"true"}),h("span",{class:"lb",text:t.label}),
+      h("span",{class:"rt",text:t.rating==null?"—":String(t.rating)}),
+      h("div",{class:"bar","aria-hidden":"true"},t.rating==null?null:h("i",{style:"width:"+t.rating+"%"})),
+      h("div",{class:"dt",text:t.detail})));
+  });
+  el.appendChild(tr);
+  if(fc.quip)el.appendChild(h("div",{class:"fc-quip",text:"“"+fc.quip+"”"}));
+  var cells=[];
+  function cell(k,v,sub){cells.push(h("div",{class:"fc-cell"},h("div",{class:"k",text:k}),h("div",{class:"v",text:v}),sub?h("div",{class:"s",text:sub}):null));}
+  if(fc.signature)cell("⭐ Signature",fc.signature.text,fc.signature.pct+"% right");
+  if(fc.weakness)cell("🪫 Weakness",fc.weakness.text,fc.weakness.pct+"% right");
+  if(fc.nemesis)cell("😈 Nemesis",fc.nemesis.name,"cost "+fc.nemesis.n+" picks");
+  if(fc.rival)cell("⚔️ Rival",fc.rival.nickname,"split picks: you "+fc.rival.you+" · them "+fc.rival.them);
+  if(fc.bestCall)cell("💰 Best call",fc.bestCall.pick+" ("+FL.fmtOdds(fc.bestCall.odds)+")","over "+fc.bestCall.over);
+  if(fc.worstMiss)cell("🤡 Worst miss",fc.worstMiss.pick+" ("+FL.fmtOdds(fc.worstMiss.odds)+")","lost to "+fc.worstMiss.over);
+  if(fc.market)cell("📈 Market rep",fc.market.label,fc.market.detail);
+  if(fc.belt)cell("🏆 Belt",fc.belt.reigns+" reign"+(fc.belt.reigns===1?"":"s")+" · "+fc.belt.defenses+" defense"+(fc.belt.defenses===1?"":"s"),
+    (fc.belt.holding?"champ now · ":"")+"longest: "+fc.belt.longest+" card"+(fc.belt.longest===1?"":"s"));
+  if(cells.length)el.appendChild(h("div",{class:"fc-grid"},cells));
+  if(fc.form.length){
+    var hot=fc.form.length>=3&&fc.form.slice(-3).every(function(f){return f.r==="W";});
+    el.appendChild(h("div",{class:"fc-form"},h("span",{text:(hot?"🔥 ":"")+(fc.form.length===1?"Last card":"Last "+fc.form.length+" cards")}),
+      fc.form.map(function(f){return h("span",{class:"chip "+f.r,title:f.date+": "+f.w+" of "+f.n+" right",text:f.r});})));
+  }
+  el.appendChild(h("div",{class:"fc-foot",text:"Ratings 1–99: 50 is what the odds (upsets, chalk) or the group (methods, locks) would expect. — means not enough picks yet. Updates after every card."}));
+  return el;
+}
+function shareCard(fc,sn,btn){
+  var lines=[(sn.name||"Picker")+" — "+fc.archetype.emoji+" "+fc.archetype.name,"🧠 Fight IQ: "+fc.tier+(fc.record.n?" · "+fc.record.w+"W–"+fc.record.l+"L":"")];
+  fc.traits.forEach(function(t){if(t.rating!=null)lines.push(t.emoji+" "+t.label+": "+t.rating);});
+  if(fc.belt)lines.push("🏆 Belt reigns: "+fc.belt.reigns);
+  if(fc.quip)lines.push("“"+fc.quip+"”");
+  var text=lines.join("\n"),url=location.origin+location.pathname+"#iq";
+  if(navigator.share){navigator.share({title:"Fight IQ card",text:text,url:url}).catch(function(){});return;}
+  try{navigator.clipboard.writeText(text+"\n"+url).then(function(){btn.textContent="✅ Copied — paste it in the chat";});}catch(e){}
 }
 
 // ✍️ The AI scouting report. The numbers above are computed here, in the

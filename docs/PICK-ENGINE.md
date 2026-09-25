@@ -17,7 +17,7 @@ and never writes to it:
 | file | what it is |
 | ---- | ---------- |
 | `lab/engine.js` | The sport-agnostic core: normalized model, adapters, rules, pick resolution |
-| `lab/analytics.js` | Fight IQ, market movers / CLV, fight-week brief, matchup, backtest, watch-party ticker. All deterministic |
+| `lab/analytics.js` | Fight IQ and the Fight IQ player card (`fightCard`), market movers / CLV, fight-week brief, matchup, backtest, watch-party ticker. All deterministic |
 | `lab.html` | The Fight Lab page (⋯ menu → Fight Lab) |
 | `fightbot/core.mjs` | FightBot's tools, built on the two modules above |
 | `fightbot/server.mjs` | Zero-dependency MCP server over stdio |
