@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-25T11:53:10Z",
+  "generated_at": "2026-09-25T12:58:32Z",
   "events_tracked": 12,
-  "stale_events": 0,
+  "stale_events": 1,
   "parse_failure_events": 0,
   "awaiting_card_events": 4,
   "odds_unavailable_events": 0,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-25T11:53:10Z",
+      "last_changed_at": "2026-09-25T12:58:32Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-25T11:53:10Z",
+      "last_changed_at": "2026-09-25T12:58:32Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -136,7 +136,7 @@
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "ok",
       "last_changed_at": "2026-09-23T12:38:07Z",
-      "is_stale": false,
+      "is_stale": true,
       "has_data": true,
       "bout_count": 8,
       "line_movement": 1,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-25T11:53:10Z",
+      "last_changed_at": "2026-09-25T12:58:32Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -155,7 +155,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-25T11:53:10Z",
+      "last_changed_at": "2026-09-25T12:58:32Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
