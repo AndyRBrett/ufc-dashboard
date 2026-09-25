@@ -206,7 +206,7 @@ check("lock skid orders same-card locks by when the result landed", skid.lockSki
   const favOnly = [mk(60, true, -200), mk(61, false, 150)];
   const fo = FL.fightCard(favOnly, FL.fightIQ(favOnly, { stats: {}, group: favOnly }), { group: favOnly });
   check("best call and worst miss come from every priced win and loss", fo.bestCall && fo.bestCall.odds === -200 && fo.worstMiss && fo.worstMiss.odds === 150);
-  // Every archetype has its artwork in the repo (scripts/card_art.py → lab/cards/<key>.jpg)
+  // Every archetype has its artwork in the repo (art/fight-iq/archetypes → scripts/card_art.py → lab/cards/<key>.jpg)
   // and lab.html points its card class at that file.
   {
     const labHtml = readFileSync(join(ROOT, "lab.html"), "utf8");
