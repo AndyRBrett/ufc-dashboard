@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T19:59:44Z",
+  "generated_at": "2026-09-25T21:03:44Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -10163,7 +10163,7 @@
           "f1": "Brady Hiestand",
           "f2": "Rinya Nakamura",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10244,6 +10244,11 @@
               "at": "2026-09-25T18:53:35Z",
               "f1_odds": 290,
               "f2_odds": -375
+            },
+            {
+              "at": "2026-09-25T21:03:44Z",
+              "f1_odds": 288,
+              "f2_odds": -372
             }
           ],
           "open": {
@@ -10568,7 +10573,7 @@
           "f1": "Norma Dumont",
           "f2": "Ailin Perez",
           "lbl": "Co-Main",
-          "points": 21,
+          "points": 22,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10674,6 +10679,11 @@
               "at": "2026-09-25T16:43:22Z",
               "f1_odds": 126,
               "f2_odds": -151
+            },
+            {
+              "at": "2026-09-25T21:03:44Z",
+              "f1_odds": 128,
+              "f2_odds": -154
             }
           ],
           "open": {
@@ -10978,7 +10988,7 @@
           "f1": "Luis Hernandez",
           "f2": "Sedriques Dumas",
           "lbl": "Main Card",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-09-25T00:13:57Z",
@@ -11004,6 +11014,11 @@
               "at": "2026-09-25T18:53:35Z",
               "f1_odds": -243,
               "f2_odds": 197
+            },
+            {
+              "at": "2026-09-25T21:03:44Z",
+              "f1_odds": -243,
+              "f2_odds": 196
             }
           ],
           "open": {
@@ -15624,7 +15639,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rinya Nakamura",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": 265,
         "close": null,
         "clv": null
@@ -15635,7 +15650,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Brady Hiestand",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": -325,
         "close": null,
         "clv": null
@@ -15712,7 +15727,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Ailin Perez",
         "side": "f1",
-        "points": 21,
+        "points": 22,
         "open": 111,
         "close": null,
         "clv": null
@@ -15723,7 +15738,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Norma Dumont",
         "side": "f2",
-        "points": 21,
+        "points": 22,
         "open": -130,
         "close": null,
         "clv": null
@@ -15820,7 +15835,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Luis Hernandez",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 182,
         "close": null,
         "clv": null
@@ -15831,7 +15846,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Sedriques Dumas",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -222,
         "close": null,
         "clv": null
