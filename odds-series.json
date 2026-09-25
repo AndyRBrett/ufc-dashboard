@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T22:08:17Z",
+  "generated_at": "2026-09-25T23:15:13Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -10163,7 +10163,7 @@
           "f1": "Brady Hiestand",
           "f2": "Rinya Nakamura",
           "lbl": "Prelim",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10249,6 +10249,11 @@
               "at": "2026-09-25T21:03:44Z",
               "f1_odds": 288,
               "f2_odds": -372
+            },
+            {
+              "at": "2026-09-25T23:15:13Z",
+              "f1_odds": 295,
+              "f2_odds": -382
             }
           ],
           "open": {
@@ -10463,7 +10468,7 @@
           "f1": "John Castaneda",
           "f2": "Alateng Heili",
           "lbl": "Prelim",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10559,6 +10564,11 @@
               "at": "2026-09-25T16:43:22Z",
               "f1_odds": -390,
               "f2_odds": 302
+            },
+            {
+              "at": "2026-09-25T23:15:13Z",
+              "f1_odds": -392,
+              "f2_odds": 303
             }
           ],
           "open": {
@@ -10573,7 +10583,7 @@
           "f1": "Norma Dumont",
           "f2": "Ailin Perez",
           "lbl": "Co-Main",
-          "points": 22,
+          "points": 23,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10684,6 +10694,11 @@
               "at": "2026-09-25T21:03:44Z",
               "f1_odds": 128,
               "f2_odds": -154
+            },
+            {
+              "at": "2026-09-25T23:15:13Z",
+              "f1_odds": 129,
+              "f2_odds": -156
             }
           ],
           "open": {
@@ -10838,7 +10853,7 @@
           "f1": "Melissa Amaya",
           "f2": "Valesca Machado",
           "lbl": "Main Card",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-09-20T11:58:20Z",
@@ -10919,6 +10934,11 @@
               "at": "2026-09-25T18:53:35Z",
               "f1_odds": 182,
               "f2_odds": -223
+            },
+            {
+              "at": "2026-09-25T23:15:13Z",
+              "f1_odds": 178,
+              "f2_odds": -218
             }
           ],
           "open": {
@@ -11276,7 +11296,7 @@
           "f1": "Ateba Gautier",
           "f2": "Roman Kopylov",
           "lbl": "Main Card",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11292,6 +11312,11 @@
               "at": "2026-09-25T18:53:35Z",
               "f1_odds": -200,
               "f2_odds": 174
+            },
+            {
+              "at": "2026-09-25T23:15:13Z",
+              "f1_odds": -180,
+              "f2_odds": 157
             }
           ],
           "open": {
@@ -15639,7 +15664,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rinya Nakamura",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": 265,
         "close": null,
         "clv": null
@@ -15650,7 +15675,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Brady Hiestand",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": -325,
         "close": null,
         "clv": null
@@ -15705,7 +15730,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Alateng Heili",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": -280,
         "close": null,
         "clv": null
@@ -15716,7 +15741,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "John Castaneda",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": 232,
         "close": null,
         "clv": null
@@ -15727,7 +15752,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Ailin Perez",
         "side": "f1",
-        "points": 22,
+        "points": 23,
         "open": 111,
         "close": null,
         "clv": null
@@ -15738,7 +15763,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Norma Dumont",
         "side": "f2",
-        "points": 22,
+        "points": 23,
         "open": -130,
         "close": null,
         "clv": null
@@ -15793,7 +15818,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Valesca Machado",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": 162,
         "close": null,
         "clv": null
@@ -15804,7 +15829,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Melissa Amaya",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": -195,
         "close": null,
         "clv": null
@@ -15906,7 +15931,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Roman Kopylov",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -175,
         "close": null,
         "clv": null
@@ -15917,7 +15942,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Ateba Gautier",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 153,
         "close": null,
         "clv": null
