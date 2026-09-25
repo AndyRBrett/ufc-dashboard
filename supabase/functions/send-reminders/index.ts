@@ -188,8 +188,11 @@ export async function composeBrief(ev: Ev, js: string, sb: { url: string; key: s
 // brief's Lab code: a pick the board still scores (a renamed "Jr.", an accent)
 // must never be announced as a replaced fight.
 
-// More vanished bouts than this on one card is a bad parse, not a run of
-// pull-outs: send nothing for that card and report it instead.
+// A bad parse garbles most of a card at once; real pull-outs leave most of it in
+// place. So a card is suspect only when more than this many bouts vanished AND
+// they outnumber the picked bouts still on it. A bare count isn't enough: old
+// picks on a vanished bout never go away, so every past change on a card would
+// count against the next real one.
 export const SWAP_MAX_PER_CARD = 3;
 // How far ahead a card is watched. data.js lists cards weeks out; a withdrawal
 // three weeks away is still worth telling people about, once.
@@ -210,12 +213,19 @@ function swapType(nmKey: (s: string) => string, a: string, b: string): string {
   return ("swap-" + slug).slice(0, 80);
 }
 
-// A different spelling of the same person that nmEq can't fold ("Ilimbek
-// Akylbek uulu" → "Ilimbek Akylbek") shares a name token with the old one; a
-// real replacement almost never does. Treat that as a rename and stay quiet.
-function sharesNameToken(nmKey: (s: string) => string, a: string, b: string): boolean {
-  const ta = new Set(nmKey(a).split(" ").filter((t) => t.length >= 3));
-  return nmKey(b).split(" ").some((t) => t.length >= 3 && ta.has(t));
+// A different spelling of the same person that nmEq can't fold. One shared
+// token is NOT enough: "John Smith" → "John Doe", or one Silva for another, is a
+// real replacement. A rename is either one name inside the other with at least
+// two tokens in common ("Ilimbek Akylbek uulu" → "Ilimbek Akylbek", a dropped
+// middle name), or the same surname and first initial with a respelled first
+// name ("Mahammadali Osmanli" → "Mehemmedeli Osmanli").
+export function looksLikeRename(nmKey: (s: string) => string, a: string, b: string): boolean {
+  const ta = nmKey(a).split(" ").filter(Boolean), tb = nmKey(b).split(" ").filter(Boolean);
+  if (!ta.length || !tb.length) return false;
+  const [short, long] = ta.length <= tb.length ? [ta, tb] : [tb, ta];
+  const inLong = new Set(long);
+  if (short.length >= 2 && short.every((t) => inLong.has(t))) return true;
+  return ta.length >= 2 && tb.length >= 2 && ta[ta.length - 1] === tb[tb.length - 1] && ta[0][0] === tb[0][0];
 }
 
 // Pure: given the card and the picks made on it, which bouts vanished and who
@@ -236,7 +246,13 @@ export function findSwaps(
     g.users.add(p.user_id);
     byBout.set(type, g);
   }
-  if (!fights.length || byBout.size > SWAP_MAX_PER_CARD) return { swaps: [], suspect: byBout.size > 0 };
+  const onCard = new Set<string>();
+  for (const p of picks) {
+    if (!p || !p.f1 || !p.f2) continue;
+    if (fights.some((f) => k.nmBout(f, p.f1, p.f2))) onCard.add(swapType(k.nmKey, p.f1, p.f2));
+  }
+  const suspect = byBout.size > SWAP_MAX_PER_CARD && byBout.size >= onCard.size;
+  if (!fights.length || suspect) return { swaps: [], suspect: byBout.size > 0 };
   const swaps: Swap[] = [];
   for (const [type, g] of byBout) {
     const [a, b] = g.old;
@@ -247,7 +263,7 @@ export function findSwaps(
         if (side && !hit) hit = { f, stays: side === 1 ? f.f1.n : f.f2.n, out, newOpp: side === 1 ? f.f2.n : f.f1.n };
       }
     }
-    if (hit && sharesNameToken(k.nmKey, hit.out, hit.newOpp)) continue; // a rename, not a replacement
+    if (hit && looksLikeRename(k.nmKey, hit.out, hit.newOpp)) continue; // a rename, not a replacement
     let users = [...g.users];
     // Anyone who has already picked the new bout knows about it.
     if (hit) {
@@ -404,10 +420,18 @@ Deno.serve(async (req) => {
       })();
       const k = new Function(scoringJs + "\n;return {nmKey:nmKey,nmEq:nmEq,nmBout:nmBout};")();
       const dates = cards.map((e) => e.date).join(",");
-      const pr = await fetch(`${SUPABASE_URL}/rest/v1/picks?select=user_id,event_date,f1,f2&event_date=in.(${dates})&promotion=eq.ufc`,
-        { headers: { apikey: SB_ANON_KEY, Authorization: `Bearer ${SB_ANON_KEY}` } });
-      if (!pr.ok) throw new Error(`picks HTTP ${pr.status}`);
-      const rows: any[] = await pr.json();
+      // Paged: PostgREST caps a response at 1,000 rows, and a partial audience is
+      // unrecoverable, since send-push's notif_log dedup then stops every later run
+      // from reaching the pickers the first one missed.
+      const rows: any[] = [];
+      for (let from = 0, PAGE = 1000; ; from += PAGE) {
+        const pr = await fetch(`${SUPABASE_URL}/rest/v1/picks?select=user_id,event_date,f1,f2&event_date=in.(${dates})&promotion=eq.ufc&order=event_date.asc,user_id.asc,f1.asc,f2.asc`,
+          { headers: { apikey: SB_ANON_KEY, Authorization: `Bearer ${SB_ANON_KEY}`, Range: `${from}-${from + PAGE - 1}` } });
+        if (!pr.ok) throw new Error(`picks HTTP ${pr.status}`);
+        const page: any[] = await pr.json();
+        rows.push(...page);
+        if (page.length < PAGE || from >= 50 * PAGE) break;
+      }
       for (const ev of cards) {
         const lockFor = (f: any | null) => {
           const t = !f ? (ev.earlyPrelimTime || ev.prelimTime || ev.time)

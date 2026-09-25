@@ -32,6 +32,7 @@ class FakeDate extends RealDate {
   static now() { return NOW; }
 }
 let pushes = [], missing = new Set(), picksRows = [], picksUrls = [];
+const PAGE_CAP = 1000;
 globalThis.fetch = async (url, init) => {
   url = String(url);
   if (url.startsWith(PAGES)) {
@@ -39,7 +40,13 @@ globalThis.fetch = async (url, init) => {
     if (missing.has(f) || !existsSync(join(ROOT, f))) return new Response("nope", { status: 404 });
     return new Response(readFileSync(join(ROOT, f), "utf8"), { status: 200 });
   }
-  if (url.startsWith(SB + "/rest/v1/picks")) { picksUrls.push(url); return new Response(JSON.stringify(picksRows), { status: 200 }); }
+  if (url.startsWith(SB + "/rest/v1/picks")) {
+    picksUrls.push(url);
+    // PostgREST's cap, scaled down: at most PAGE_CAP rows per response, windowed by Range.
+    const m = /^(\d+)-(\d+)$/.exec((init && init.headers && init.headers.Range) || "");
+    const from = m ? +m[1] : 0, to = m ? Math.min(+m[2], from + PAGE_CAP - 1) : PAGE_CAP - 1;
+    return new Response(JSON.stringify(picksRows.slice(from, to + 1)), { status: 200 });
+  }
   if (url === SB + "/functions/v1/send-push") {
     pushes.push(JSON.parse(init.body));
     return new Response(JSON.stringify({ sent: 1 }), { status: 200 });
@@ -108,10 +115,17 @@ check("a prelim swap stops at the prelims' bell", r.swaps.length === 0);
 picksRows = [...onCard,
   row("uR", ev.fights[0].f1.n.replace(/ Jr\.?$/, ""), ev.fights[0].f2.n), // suffix fold
   row("uR", ev.fights[0].f2.n.toUpperCase(), ev.fights[0].f1.n),         // case + corner swap
-  row("uR", main.f1.n.split(" ")[0] + " Zzz", main.f2.n),               // same first name, new spelling
+  row("uR", main.f1.n.split(" ")[0] + " Middle " + main.f1.n.split(" ").slice(1).join(" "), main.f2.n), // a dropped middle name
 ];
 r = await runAt("2026-09-25T20:00:00Z");
 check("renames and corner swaps send nothing", r.swaps.length === 0);
+// …but one shared token is a different fighter: "John Smith" → "John Doe".
+picksRows = [...onCard, row("uS", main.f1.n.split(" ")[0] + " Zzzyx", main.f2.n)];
+r = await runAt("2026-09-25T20:00:00Z");
+check("a replacement sharing only a first name is still announced", r.swaps.length === 1 && /Zzzyx is out/.test(r.swaps[0].title));
+check("looksLikeRename: a dropped trailing name part", mod.looksLikeRename((x) => x.toLowerCase(), "Ilimbek Akylbek uulu", "Ilimbek Akylbek") === true);
+check("looksLikeRename: respelled first name, same surname and initial", mod.looksLikeRename((x) => x.toLowerCase(), "Mahammadali Osmanli", "Mehemmedeli Osmanli") === true);
+check("looksLikeRename: same surname, different first name is not a rename", mod.looksLikeRename((x) => x.toLowerCase(), "Jose Silva", "Thiago Silva") === false);
 // Spelling variants must not even count as vanished: four of them would trip the
 // bad-parse cap and hide a real replacement on the same card.
 picksRows = [...onCard, ...ev.fights.slice(0, 4).map((f) => row("uV", f.f2.n.toUpperCase(), f.f1.n.toLowerCase())), row("uT", "Mickey Gall", stays)];
@@ -123,11 +137,24 @@ picksRows = [...onCard, row("uC", "Nobody Atall", "Someone Else")];
 r = await runAt("2026-09-25T20:00:00Z");
 check("a cancelled bout gets a ❌ push to its picker", r.swaps.length === 1 && /^❌ Nobody Atall vs Someone Else/.test(r.swaps[0].title) && JSON.stringify(r.swaps[0].include_user_ids) === '["uC"]');
 
-// 5. A bad parse is not four pull-outs.
-picksRows = [...onCard, ...[1, 2, 3, 4].map((i) => row("uP", "Ghost " + i, "Phantom " + i))];
+// 5. A bad parse is not a run of pull-outs: it takes most of the card with it.
+const ghosts = (n) => Array.from({ length: n }, (_, i) => row("uP", "Ghost " + i, "Phantom " + i));
+picksRows = [...onCard.slice(0, 3), ...ghosts(4)];
 r = await runAt("2026-09-25T20:00:00Z");
-check("more than SWAP_MAX_PER_CARD vanished bouts sends nothing", r.swaps.length === 0 && mod.SWAP_MAX_PER_CARD === 3);
+check("more vanished bouts than picked bouts left on the card sends nothing", r.swaps.length === 0 && mod.SWAP_MAX_PER_CARD === 3);
 check("…and says why", JSON.stringify(r.json.swaps).includes("bad parse"));
+// Old picks on vanished bouts never go away, so four real changes on a full card
+// must not read as a bad parse and silence the fourth.
+picksRows = [...onCard, ...ghosts(4)];
+r = await runAt("2026-09-25T20:00:00Z");
+check("four real changes on a full card all get their alert", r.swaps.length === 4);
+
+// 5b. More picks than one response holds: nobody past the first page is dropped
+//     (a partial audience is unrecoverable once notif_log has the key).
+picksRows = [...Array.from({ length: 2 * PAGE_CAP + 5 }, (_, i) => row("f" + i, ev.fights[i % ev.fights.length].f1.n, ev.fights[i % ev.fights.length].f2.n)),
+  row("uLate", "Mickey Gall", stays)];
+r = await runAt("2026-09-25T20:00:00Z");
+check("the picks read is paged past the row cap", picksUrls.length >= 3 && r.swaps.length === 1 && JSON.stringify(r.swaps[0].include_user_ids) === '["uLate"]');
 
 // 6. Never an untargeted push: send-push would broadcast it to everyone.
 picksRows = [...onCard, row("uT", "Mickey Gall", stays), row("uT", newcomer, stays)];

@@ -573,10 +573,16 @@ with `include_user_ids`** at the people who picked it and haven't already
 re-picked the new bout. It names who is out and who now faces whom, or says the
 bout was cancelled. Three guards, all held by `npm run check:swap` (mutation-tested):
 
-- **Name matching is `scoring.js`'s `nmEq`/`nmBout`**, fetched from Pages, plus a
-  shared-name-token check, so a rename the board still scores is never announced.
-- **More than `SWAP_MAX_PER_CARD` (3) vanished bouts on one card is a bad parse**:
-  nothing is sent for that card and the response says so.
+- **Name matching is `scoring.js`'s `nmEq`/`nmBout`**, fetched from Pages, plus
+  `looksLikeRename` (one name inside the other with ≥2 shared tokens, or same
+  surname + first initial), so a rename is never announced. One shared token is
+  NOT a rename: "John Smith" → "John Doe" is a real replacement.
+- **A bad parse takes most of the card**: more than `SWAP_MAX_PER_CARD` (3)
+  vanished bouts that also outnumber the picked bouts still on it sends nothing
+  for that card. Never a bare count: old picks on a vanished bout never go away,
+  so every past change would count against the next real one.
+- **The picks read is paged** (1,000-row PostgREST cap). A partial audience is
+  unrecoverable: `notif_log` then dedups every later run away from the missed.
 - **Nothing after the new bout's own segment locks** (a cancellation: after the
   card's first bell). A card is watched until its last segment starts.
 
