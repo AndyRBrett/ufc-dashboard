@@ -30,6 +30,8 @@ jobs:
         run: npm run check:provider
       - name: Friday brief push test
         run: npm run check:brief
+      - name: Replaced-bout alert test
+        run: npm run check:swap
       - name: Fight IQ write-up test
         run: npm run check:iq
 

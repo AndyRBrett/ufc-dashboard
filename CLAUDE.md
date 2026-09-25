@@ -44,6 +44,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:lab`   | the Fight Lab scoring differently from the board, reading a result it claims to predict, or failing to boot |
 | `npm run check:fightbot` | FightBot's MCP stream corrupted by stray stdout, a tool crashing the session, or its standings drifting from the board |
 | `npm run check:brief` | the Friday Fight Week Brief push firing at the wrong time, twice, after the bell, off the Lab's numbers, or not at all |
+| `npm run check:swap` | a pulled bout's pickers not told, told twice or after it locks, a rename announced as a replacement, or the alert reaching anyone else |
 | `npm run check:iq` | the AI Fight IQ write-up stating a number it wasn't given, drifting onto Grok, repeating one voice, or escaping its daily cap |
 | `npm run check:parity` | any score moving during the engine migration: board, main-card board, per-card, Belt lineage, recaps, Year Wrapped |
 | `npm run check:promotion` | a picks query without `promotion=eq.ufc`, letting another sport's picks onto the UFC board, Belt, restore or result pushes |
@@ -561,6 +562,26 @@ exactly that page by tab, and `sw.js` navigates to it instead of stashing an
 empty tap for `index.html`. The copy is composed by the Lab's own code, fetched
 from Pages at send time; if that fails it still sends a plain teaser — never
 nothing. `check:brief` holds all of it, mutation-tested.
+
+## Fight change alerts: a vanished bout tells exactly who picked it
+
+Picks are stored by fighter name, so a withdrawal leaves every pick on the old
+bout matching nothing: it silently never scores. `send-reminders` (5-minute
+cadence) now compares each upcoming card's UFC picks with `data.js` and sends
+one `swap-<old bout>` push per vanished bout (`notif_log` dedups it), **targeted
+with `include_user_ids`** at the people who picked it and haven't already
+re-picked the new bout. It names who is out and who now faces whom, or says the
+bout was cancelled. Three guards, all held by `npm run check:swap` (mutation-tested):
+
+- **Name matching is `scoring.js`'s `nmEq`/`nmBout`**, fetched from Pages, plus a
+  shared-name-token check, so a rename the board still scores is never announced.
+- **More than `SWAP_MAX_PER_CARD` (3) vanished bouts on one card is a bad parse**:
+  nothing is sent for that card and the response says so.
+- **Nothing after the new bout's own segment locks** (a cancellation: after the
+  card's first bell). A card is watched until its last segment starts.
+
+**Never send a swap push with an empty `include_user_ids`**: `send-push` treats
+an untargeted push as a broadcast to every subscriber.
 
 ## The Fight IQ write-up states only numbers it was given
 

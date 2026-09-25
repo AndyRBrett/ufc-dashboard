@@ -173,6 +173,112 @@ export async function composeBrief(ev: Ev, js: string, sb: { url: string; key: s
   }
 }
 
+// ── Replaced-bout alerts ────────────────────────────────────────────────────
+// Picks are stored by fighter name, so when a fighter withdraws and the card
+// changes, the old pick simply stops matching any bout: it never scores, and
+// nothing tells the picker. This pass finds picks on an upcoming card whose bout
+// is no longer on it, and sends ONE targeted push per vanished bout to exactly
+// the people who picked it: who replaced whom (so they can re-pick while the new
+// bout is still open), or that the bout was cancelled outright.
+//
+// Dedup is send-push's notif_log on (event_date, "swap-<old bout>"): one push
+// per vanished bout, however many 5-minute runs see it.
+//
+// Name matching is scoring.js's own nmEq/nmBout, fetched from Pages like the
+// brief's Lab code: a pick the board still scores (a renamed "Jr.", an accent)
+// must never be announced as a replaced fight.
+
+// More vanished bouts than this on one card is a bad parse, not a run of
+// pull-outs: send nothing for that card and report it instead.
+export const SWAP_MAX_PER_CARD = 3;
+// How far ahead a card is watched. data.js lists cards weeks out; a withdrawal
+// three weeks away is still worth telling people about, once.
+const SWAP_HORIZON_MS = 21 * 864e5;
+const MAIN_LBL = /^(Main Event|Co-Main|Main Card)$/;
+
+export interface Swap {
+  event_date: string; event_name: string; type: string;
+  old: [string, string];
+  // Set when one side of the old bout is still on the card, facing someone new.
+  stays?: string; out?: string; newOpp?: string;
+  users: string[]; lockUtc: number | null;
+}
+
+// A stable, send-push-safe key for the vanished bout (TYPE_RE: swap-[\w-]+).
+function swapType(nmKey: (s: string) => string, a: string, b: string): string {
+  const slug = [nmKey(a), nmKey(b)].sort().join("-").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return ("swap-" + slug).slice(0, 80);
+}
+
+// A different spelling of the same person that nmEq can't fold ("Ilimbek
+// Akylbek uulu" → "Ilimbek Akylbek") shares a name token with the old one; a
+// real replacement almost never does. Treat that as a rename and stay quiet.
+function sharesNameToken(nmKey: (s: string) => string, a: string, b: string): boolean {
+  const ta = new Set(nmKey(a).split(" ").filter((t) => t.length >= 3));
+  return nmKey(b).split(" ").some((t) => t.length >= 3 && ta.has(t));
+}
+
+// Pure: given the card and the picks made on it, which bouts vanished and who
+// picked them. `ev` is a raw data.js event; picks are raw rows.
+export function findSwaps(
+  ev: any,
+  picks: { user_id: string; f1: string; f2: string }[],
+  k: { nmKey: (s: string) => string; nmEq: (a: string, b: string) => boolean; nmBout: (f: any, a: string, b: string) => boolean },
+  lockFor: (f: any | null) => number | null,
+): { swaps: Swap[]; suspect: boolean } {
+  const fights: any[] = (ev && ev.fights) || [];
+  const byBout = new Map<string, { old: [string, string]; users: Set<string> }>();
+  for (const p of picks) {
+    if (!p || !p.f1 || !p.f2 || !p.user_id) continue;
+    if (fights.some((f) => k.nmBout(f, p.f1, p.f2))) continue;
+    const type = swapType(k.nmKey, p.f1, p.f2);
+    const g = byBout.get(type) ?? { old: [p.f1, p.f2] as [string, string], users: new Set<string>() };
+    g.users.add(p.user_id);
+    byBout.set(type, g);
+  }
+  if (!fights.length || byBout.size > SWAP_MAX_PER_CARD) return { swaps: [], suspect: byBout.size > 0 };
+  const swaps: Swap[] = [];
+  for (const [type, g] of byBout) {
+    const [a, b] = g.old;
+    let hit: { f: any; stays: string; out: string; newOpp: string } | null = null;
+    for (const f of fights) {
+      for (const [stays, out] of [[a, b], [b, a]]) {
+        const side = k.nmEq(f.f1.n, stays) ? 1 : k.nmEq(f.f2.n, stays) ? 2 : 0;
+        if (side && !hit) hit = { f, stays: side === 1 ? f.f1.n : f.f2.n, out, newOpp: side === 1 ? f.f2.n : f.f1.n };
+      }
+    }
+    if (hit && sharesNameToken(k.nmKey, hit.out, hit.newOpp)) continue; // a rename, not a replacement
+    let users = [...g.users];
+    // Anyone who has already picked the new bout knows about it.
+    if (hit) {
+      const f = hit.f;
+      const repicked = new Set(picks.filter((p) => p && k.nmBout(f, p.f1, p.f2)).map((p) => p.user_id));
+      users = users.filter((u) => !repicked.has(u));
+    }
+    if (!users.length) continue;
+    swaps.push({
+      event_date: ev.date, event_name: ev.name, type, old: g.old, users,
+      ...(hit ? { stays: hit.stays, out: hit.out, newOpp: hit.newOpp } : {}),
+      lockUtc: lockFor(hit ? hit.f : null),
+    });
+  }
+  return { swaps, suspect: false };
+}
+
+export function swapCopy(s: Swap): { title: string; body: string } {
+  const card = s.event_name.split(":")[0];
+  if (s.stays) {
+    return {
+      title: `🔄 Fight change: ${s.out} is out`.slice(0, 118),
+      body: `${s.newOpp} now faces ${s.stays} at ${card}. Your ${s.stays} vs ${s.out} pick won't count, so re-pick the new fight before it locks.`,
+    };
+  }
+  return {
+    title: `❌ ${s.old[0]} vs ${s.old[1]} is off the card`.slice(0, 118),
+    body: `That fight at ${card} was cancelled, so your pick on it won't count. Your other picks are unchanged.`,
+  };
+}
+
 // Constant-time comparison. `!==` on a secret returns at the first differing
 // byte, so response timing across enough requests leaks the secret prefix by
 // prefix. Length is still observable; that is standard and not worth hiding.
@@ -277,8 +383,65 @@ Deno.serve(async (req) => {
     } catch (_e) { /* best-effort; the next run retries and notif_log dedups */ }
   }
 
+  // Replaced-bout alerts (see findSwaps). Best-effort end to end: nothing here
+  // may stop the reminders or the brief above from having gone out.
+  const swaps: unknown[] = [];
+  try {
+    const cards: any[] = (new Function(js + "\n;return typeof EVENTS!=='undefined'?EVENTS:[];")() as any[])
+      .filter((e) => {
+        // Watched until its LAST segment starts: a main-card replacement is still
+        // pickable while the prelims run. Each alert is then gated on its own bout's lock.
+        const bells = [e.earlyPrelimTime, e.prelimTime, e.time].map((t) => phaseUtc(e.date, t)).filter((t) => t !== null) as number[];
+        const last = bells.length ? Math.max(...bells) : null;
+        return last !== null && last > now && last < now + SWAP_HORIZON_MS && Array.isArray(e.fights);
+      })
+      .slice(0, MAX_EVENTS);
+    if (cards.length) {
+      const scoringJs = await (async () => {
+        const r = await fetch(`${PAGES_BASE}scoring.js?t=${now}`);
+        if (!r.ok) throw new Error(`scoring.js HTTP ${r.status}`);
+        return r.text();
+      })();
+      const k = new Function(scoringJs + "\n;return {nmKey:nmKey,nmEq:nmEq,nmBout:nmBout};")();
+      const dates = cards.map((e) => e.date).join(",");
+      const pr = await fetch(`${SUPABASE_URL}/rest/v1/picks?select=user_id,event_date,f1,f2&event_date=in.(${dates})&promotion=eq.ufc`,
+        { headers: { apikey: SB_ANON_KEY, Authorization: `Bearer ${SB_ANON_KEY}` } });
+      if (!pr.ok) throw new Error(`picks HTTP ${pr.status}`);
+      const rows: any[] = await pr.json();
+      for (const ev of cards) {
+        const lockFor = (f: any | null) => {
+          const t = !f ? (ev.earlyPrelimTime || ev.prelimTime || ev.time)
+            : MAIN_LBL.test(f.lbl || "") ? ev.time
+            : f.lbl === "Early Prelim" ? (ev.earlyPrelimTime || ev.prelimTime)
+            : (ev.prelimTime || ev.time);
+          return phaseUtc(ev.date, t);
+        };
+        const { swaps: found, suspect } = findSwaps(ev, rows.filter((p) => p.event_date === ev.date), k, lockFor);
+        if (suspect) { swaps.push({ event_date: ev.date, skipped: "too many vanished bouts; likely a bad parse" }); continue; }
+        for (const s of found) {
+          // Past the new bout's lock there is nothing left to act on.
+          if (s.lockUtc !== null && now >= s.lockUtc) continue;
+          fired++;
+          const c = swapCopy(s);
+          try {
+            const r = await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
+              method: "POST",
+              headers: pushHeaders,
+              body: JSON.stringify({ event_date: s.event_date, type: s.type, title: c.title, body: c.body, include_user_ids: s.users, url: "./" }),
+            });
+            const j = await r.json().catch(() => ({}));
+            if (j && typeof j.sent === "number") sent += j.sent;
+            swaps.push({ event_date: s.event_date, type: s.type, users: s.users.length, result: j });
+          } catch (_e) { /* best-effort; the next run retries and notif_log dedups */ }
+        }
+      }
+    }
+  } catch (e) {
+    console.warn("[swap] skipped this run:", (e as Error).message);
+  }
+
   return new Response(
-    JSON.stringify({ events: events.length, fired, sent, reminders: out, brief }),
+    JSON.stringify({ events: events.length, fired, sent, reminders: out, brief, swaps }),
     { status: 200, headers: { "Content-Type": "application/json" } },
   );
 });

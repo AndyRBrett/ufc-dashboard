@@ -68,7 +68,7 @@ function globalRateLimited(): boolean {
 
 // Only notification types the app actually sends. Anything else is rejected so
 // the public anon key can't be used to mint arbitrary notification streams.
-const TYPE_RE = /^(main|prelim|brief|register|result:.+|pick-(first|done)-.+|trash-talk-\d+|chal(-resp)?-[\w-]+|nudge-[\w-]+)$/;
+const TYPE_RE = /^(main|prelim|brief|register|result:.+|pick-(first|done)-.+|trash-talk-\d+|chal(-resp)?-[\w-]+|nudge-[\w-]+|swap-[\w-]+)$/;
 // MAX_BODY must comfortably exceed the longest message any client can send.
 // The AI trash-talk roast is now capped at 120 tokens (~500 chars of English),
 // but 1600 is kept: it also covers roasts generated before the cap that a

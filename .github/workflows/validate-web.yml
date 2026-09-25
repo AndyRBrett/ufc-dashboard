@@ -22,6 +22,7 @@
 #   check:lab       — the Fight Lab scores exactly like the board, never leaks a result, and boots
 #   check:fightbot  — the FightBot MCP server speaks clean JSON-RPC and answers with the board's numbers
 #   check:brief     — the Friday Fight Week Brief push goes out once, Friday 7pm ET, linking to the Lab
+#   check:swap      — a bout pulled from a card alerts exactly the people who picked it, once, before it locks
 #   check:iq        — the AI Fight IQ write-up never states a number it wasn't given, stays on Claude, is capped
 #   check:parity    — board, belt, recaps and Wrapped are byte-identical to the pre-migration golden
 #   check:rooms     — a room's board is the main board filtered; only email accounts join; invites work
@@ -96,6 +97,8 @@ jobs:
         run: npm run check:fightbot
       - name: Friday brief push test
         run: npm run check:brief
+      - name: Replaced-bout alert test
+        run: npm run check:swap
       - name: Fight IQ write-up test
         run: npm run check:iq
       - name: Scoring parity (engine migration)
