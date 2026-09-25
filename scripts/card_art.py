@@ -216,12 +216,21 @@ def casual(rng):
     return defs, body
 
 
+# Archetypes whose lab/cards/<key>.jpg is supplied artwork (1024x1536 PNGs
+# from the owner, resized to 1080x1620) rather than drawn here. They are
+# skipped, and their SVG removed, so a re-run of this script plus the
+# renderer can never overwrite the supplied image with the drawn one.
+SUPPLIED = {"oracle", "chaos", "method"}
+
 SCENES = {"oracle": oracle, "dog": dog, "lock": lock, "chalk": chalk, "contrarian": contrarian,
           "grappling": grappling, "chaos": chaos, "method": method, "solid": solid, "casual": casual}
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     for key, fn in SCENES.items():
+        if key in SUPPLIED:
+            (OUT / f"{key}.svg").unlink(missing_ok=True)
+            continue
         defs, body = fn(random.Random(key))      # seeded: the art is reproducible
         (OUT / f"{key}.svg").write_text(svg(key, defs, body), encoding="utf-8")
         print("wrote", key)
