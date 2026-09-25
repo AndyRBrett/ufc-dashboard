@@ -356,6 +356,17 @@ else {
     const fcard = await page.evaluate(() => { const c = document.querySelector("#main .fcard"); return c ? { cls: c.className, traits: c.querySelectorAll(".fc-trait").length, text: c.textContent } : null; });
     check("Fight IQ opens on the viewer's collectible card, themed by archetype, six traits",
       !!fcard && /\bfc-[a-z]+\b/.test(fcard.cls) && fcard.traits === 6 && /Fight IQ/.test(fcard.text));
+    // Share hands over the card itself (a PNG), not a link to the page.
+    await page.evaluate(() => { window.__shared = null; navigator.canShare = () => true; navigator.share = (d) => { window.__shared = d; return Promise.resolve(); }; });
+    await page.waitForFunction(() => document.querySelector("#main .fc-actions button"), null, { timeout: 5000 });
+    let shared = null;
+    for (let i = 0; i < 20 && !(shared && shared.files); i++) {
+      await page.click("#main .fc-actions button");
+      await page.waitForTimeout(150);
+      shared = await page.evaluate(() => { const d = window.__shared; return d ? { files: d.files ? d.files.map((f) => ({ type: f.type, size: f.size, name: f.name })) : null, url: d.url || null } : null; });
+    }
+    check("Share card sends the card as a PNG image, not a link",
+      !!shared && !!shared.files && shared.files.length === 1 && shared.files[0].type === "image/png" && shared.files[0].size > 20000 && /\.png$/.test(shared.files[0].name) && !shared.url);
     const opts = await page.evaluate(() => [...document.querySelectorAll("select option")].map((o) => o.textContent.replace(/\s*\(you\)$/, "")));
     const bases = opts.map((o) => o.replace(/^\S+\s+/, "").toLowerCase());
     check("the player picker lists each person once (no ghost identities)", opts.length === 3 && new Set(bases).size === bases.length);
