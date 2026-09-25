@@ -38,7 +38,12 @@ concurrency:
 
 jobs:
   implement:
-    uses: AndyRBrett/overseer/.github/workflows/implementer.yml@main
+    # Pinned to a commit, not @main: this job hands the reusable workflow the
+    # Anthropic key and the PR App's private key, so whatever lands on the
+    # overseer's main would otherwise run here with them the next time an issue
+    # is dispatched. Moving it is a deliberate edit to this line (overseer#97,
+    # "only trusted text reaches the agent", is what this SHA includes).
+    uses: AndyRBrett/overseer/.github/workflows/implementer.yml@34f51ab46ea2d20aff2ce001a761038193d062b9 # overseer#97
     with:
       issue: ${{ github.event.client_payload.issue || inputs.issue }}
       tier: ${{ github.event.client_payload.tier || inputs.tier }}
