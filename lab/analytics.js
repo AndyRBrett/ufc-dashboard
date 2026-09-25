@@ -316,10 +316,27 @@
   var CARD_TIERS = [[150, "Legend"], [75, "Veteran"], [30, "Contender"], [10, "Prospect"], [0, "Rookie"]];
   function impliedProb(o) { return typeof o !== "number" || !o ? null : o > 0 ? 100 / (o + 100) : -o / (-o + 100); }
   function clamp99(x) { return Math.max(1, Math.min(99, Math.round(x))); }
+  // The picked side's fair probability: both sides of the same line, with the
+  // bookmaker's margin taken out. A single side's implied price overstates it
+  // (-110/-110 reads 52.4% each), which would pull a perfectly average picker
+  // below 50. One side only (no opposite price on record) falls back to its
+  // raw implied probability.
+  function pickedFairProb(p, idx) {
+    if (!p.bout || p.side === null) return null;
+    var cs = p.bout.competitors, mine = cs[p.side].odds, other = cs[1 - p.side].odds;
+    if (typeof mine !== "number" || typeof other !== "number") {
+      var h = idx && idx.lookup(p.date, cs[0].name, cs[1].name), line = h && (h.close || h.current);
+      if (typeof mine !== "number" && line) { mine = p.side === 0 ? line.a : line.b; other = p.side === 0 ? line.b : line.a; }
+      else if (line && typeof other !== "number") other = p.side === 0 ? line.b : line.a;
+    }
+    var a = impliedProb(mine), b = impliedProb(other);
+    if (a === null) return null;
+    return b === null ? a : a / (a + b);
+  }
   function vsExpected(list, idx) {
     // Wins against the wins the odds expected; 50 = exactly what the market said.
     var w = 0, exp = 0, n = 0;
-    list.forEach(function (p) { var q = impliedProb(pickedOdds(p, idx)); if (q === null) return; n++; exp += q; if (p.correct) w++; });
+    list.forEach(function (p) { var q = pickedFairProb(p, idx); if (q === null) return; n++; exp += q; if (p.correct) w++; });
     return n >= MIN_SAMPLE && exp > 0 ? { rating: clamp99(50 * w / exp), n: n, w: w, l: n - w } : { rating: null, n: n, w: w, l: n - w };
   }
   function fightCard(mine, iq, ctx) {
@@ -378,11 +395,13 @@
     var nemesis = nemName && burned[nemName] >= 2 ? { name: nemName, n: burned[nemName] } : null;
 
     var rival = iq.rivals[0] ? { nickname: iq.rivals[0].nickname, you: iq.rivals[0].rec.w, them: iq.rivals[0].rec.l } : null;
-    var hits = priced.filter(function (x) { return x.p.correct && x.o > 0; }).sort(function (a, b) { return b.o - a.o; });
-    var misses = priced.filter(function (x) { return !x.p.correct && x.o < 0; }).sort(function (a, b) { return a.o - b.o; });
+    // Longest-priced winner and shortest-priced loser, from every priced pick:
+    // a picker who only ever wins on favorites still has a best call.
+    var hits = priced.filter(function (x) { return x.p.correct; }).sort(function (a, b) { return b.o - a.o; });
+    var misses = priced.filter(function (x) { return !x.p.correct; }).sort(function (a, b) { return a.o - b.o; });
     var callOf = function (x) { return { pick: x.p.bout.competitors[x.p.side].name, over: x.p.bout.competitors[1 - x.p.side].name, odds: x.o, date: x.p.date, event: x.p.event ? x.p.event.name : "" }; };
     var bestCall = hits[0] ? callOf(hits[0]) : null;
-    var worstMiss = misses[0] && misses[0].o <= -150 ? callOf(misses[0]) : null;
+    var worstMiss = misses[0] ? callOf(misses[0]) : null;
 
     var market = null;
     if (iq.clv.n >= MIN_SAMPLE) market = iq.clv.avg >= 1 ? { label: "Beats the close", detail: "Lines move toward their picks after they make them." }

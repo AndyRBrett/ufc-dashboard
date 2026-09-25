@@ -197,6 +197,15 @@ check("lock skid orders same-card locks by when the result landed", skid.lockSki
   check("the best call is the longest-priced winner, the worst miss the shortest-priced loss", qc.bestCall.odds === 300 && qc.worstMiss.odds === -300);
   check("belt history counts only this player's reigns", qc.belt.reigns === 2 && qc.belt.defenses === 2 && qc.belt.longest === 3 && qc.belt.holding === true);
   check("recent form is the last five cards, W at half or better", qc.form.length === 5 && qc.form.every((f) => "WL".includes(f.r)));
+  // A standard -110/-110 market: ten picks, five wins, is exactly average (50), not 48.
+  const even = Array.from({ length: 10 }, (_, i) => mk(40 + i, i < 5, -110, { bout: { id: "e" + i, order: 0, division: "Lightweight", segment: "main",
+    result: { winner: i < 5 ? "A" + i : "B" + i, method: "Dec" }, competitors: [{ name: "A" + i, odds: -110 }, { name: "B" + i, odds: -110 }] } }));
+  const ec = FL.fightCard(even, FL.fightIQ(even, { stats: {}, group: even }), { group: even });
+  check("ratings take the bookmaker's margin out: a coin-flip market at .500 rates exactly 50", ec.traits.find((t) => t.key === "chalk").rating === 50);
+  // Only favorites ever won, and only underdogs ever lost: both cells still fill.
+  const favOnly = [mk(60, true, -200), mk(61, false, 150)];
+  const fo = FL.fightCard(favOnly, FL.fightIQ(favOnly, { stats: {}, group: favOnly }), { group: favOnly });
+  check("best call and worst miss come from every priced win and loss", fo.bestCall && fo.bestCall.odds === -200 && fo.worstMiss && fo.worstMiss.odds === 150);
   check("every archetype has a quip for the card", Object.keys(FL.ARCHETYPES).every((k) => FL.CARD_QUIPS[k]));
   const sniper = FL.archetype({ n: 40, pct: 55 }, { dog: 0, fav: 0.5, contrarian: 0, finish: 0.5, grappler: 0 }, { n: 0 }, 20, 45);
   check("Method Sniper: 15+ methods called at 40%+", sniper.key === "method");
