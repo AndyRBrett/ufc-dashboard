@@ -350,8 +350,16 @@ function viewIQ(root){
     if(L.belt===undefined){try{L.belt=L.kernel.computeBeltLineage(L.boardRows);}catch(e){L.belt=null;}}
     var sn=L.kernel.splitNick(nick);
     var fc=FL.fightCard(mine,iq,{odds:L.odds,group:L.picks,belt:L.belt,baseName:sn.name.toLowerCase()});
-    body.appendChild(fightCardEl(fc,sn));
-    body.appendChild(h("div",{class:"fc-actions"},h("button",{class:"act",text:"📤 Share card",onclick:function(){shareCard(fc,sn,this);}})));
+    var cardEl=fightCardEl(fc,sn);
+    body.appendChild(cardEl);
+    // The image is drawn ahead of the tap: iOS only lets navigator.share
+    // run straight off the gesture, and drawing + encoding a PNG in the click
+    // handler spends that before share() is reached.
+    var img={blob:null};
+    renderCardImage(fc,sn,cardEl).then(function(b){img.blob=b;}).catch(function(){img.blob=null;});
+    body.appendChild(h("div",{class:"fc-actions"},
+      h("button",{class:"act",text:"📤 Share card",onclick:function(){shareCard(fc,sn,img,this);}}),
+      h("button",{class:"act",style:"background:var(--card2);color:var(--text)",text:"⬇️ Save image",onclick:function(){saveCard(fc,sn,img,this);}})));
     body.appendChild(card(null,h("div",{class:"muted small",text:fc.archetype.blurb}),writeupBlock(iq)));
     body.appendChild(card("The numbers",h("div",{class:"tiles"},
       recTile(iq.record,"Record ("+pctTxt(iq.record.pct)+" right)"),
@@ -431,14 +439,129 @@ function fightCardEl(fc,sn){
   el.appendChild(h("div",{class:"fc-foot",text:"Ratings 1–99: 50 is what the odds (upsets, chalk) or the group (methods, locks) would expect. — means not enough picks yet. Updates after every card."}));
   return el;
 }
-function shareCard(fc,sn,btn){
+// The card as a PNG, drawn on a canvas from the same numbers (not a
+// screenshot: this page's CSP loads no third-party script, and a DOM snapshot
+// through SVG foreignObject taints the canvas on Safari). Colours come from
+// the rendered card's own --fc-* variables, so the image matches the card's
+// archetype look without a second copy of the palette.
+var CARD_W=1080;
+function _cardText(fc,sn){
   var lines=[(sn.name||"Picker")+" — "+fc.archetype.emoji+" "+fc.archetype.name,"🧠 Fight IQ: "+fc.tier+(fc.record.n?" · "+fc.record.w+"W–"+fc.record.l+"L":"")];
   fc.traits.forEach(function(t){if(t.rating!=null)lines.push(t.emoji+" "+t.label+": "+t.rating);});
   if(fc.belt)lines.push("🏆 Belt reigns: "+fc.belt.reigns);
   if(fc.quip)lines.push("“"+fc.quip+"”");
-  var text=lines.join("\n"),url=location.origin+location.pathname+"#iq";
-  if(navigator.share){navigator.share({title:"Fight IQ card",text:text,url:url}).catch(function(){});return;}
-  try{navigator.clipboard.writeText(text+"\n"+url).then(function(){btn.textContent="✅ Copied — paste it in the chat";});}catch(e){}
+  return lines.join("\n");
+}
+function drawFightCard(ctx,fc,sn,pal){
+  var W=CARD_W,P=64,y=0,BEBAS="'Bebas Neue',Impact,sans-serif",INTER="Inter,system-ui,sans-serif";
+  function font(sz,wt,fam){ctx.font=(wt||400)+" "+sz+"px "+(fam||INTER);}
+  function wrap(text,x,maxW,lh,maxLines){
+    var words=String(text).split(/\s+/),line="",n=0;
+    for(var i=0;i<words.length;i++){
+      var t=line?line+" "+words[i]:words[i];
+      if(ctx.measureText(t).width>maxW&&line){ctx.fillText(line,x,y);y+=lh;n++;line=words[i];
+        if(maxLines&&n>=maxLines-1){var rest=words.slice(i).join(" ");while(rest&&ctx.measureText(rest+"…").width>maxW)rest=rest.slice(0,-1);ctx.fillText(rest+(rest.length<words.slice(i).join(" ").length?"…":""),x,y);y+=lh;return;}}
+      else line=t;
+    }
+    if(line){ctx.fillText(line,x,y);y+=lh;}
+  }
+  function rr(x,yy,w,hh,r){ctx.beginPath();ctx.moveTo(x+r,yy);ctx.arcTo(x+w,yy,x+w,yy+hh,r);ctx.arcTo(x+w,yy+hh,x,yy+hh,r);ctx.arcTo(x,yy+hh,x,yy,r);ctx.arcTo(x,yy,x+w,yy,r);ctx.closePath();}
+  ctx.textBaseline="top";
+  y=P;
+  font(26,700);ctx.fillStyle=pal.mut;ctx.textAlign="left";ctx.fillText(("🧠 FIGHT IQ · "+fc.tier).toUpperCase(),P,y);
+  ctx.textAlign="right";ctx.fillText((fc.decided+" DECIDED PICK"+(fc.decided===1?"":"S")),W-P,y);ctx.textAlign="left";
+  y+=58;
+  font(128,400,BEBAS);ctx.fillStyle=pal.tx;wrap(((sn.emoji?sn.emoji+" ":"")+(sn.name||"Unknown")).toUpperCase(),P,W-2*P,120,2);y+=22;
+  font(66,400,BEBAS);ctx.fillStyle=pal.ac;ctx.fillText(fc.archetype.emoji+" "+fc.archetype.name.toUpperCase(),P,y);y+=82;
+  if(fc.record.n){font(34,700);ctx.fillStyle=pal.tx;var rt=fc.record.w+"W–"+fc.record.l+"L";ctx.fillText(rt,P,y);
+    var rw=ctx.measureText(rt).width;font(34,400);ctx.fillStyle=pal.mut;ctx.fillText("  ·  "+fc.record.pct+"% right",P+rw,y);y+=62;}
+  y+=10;
+  fc.traits.forEach(function(t){
+    font(34,600);ctx.fillStyle=pal.tx;ctx.fillText(t.emoji+"  "+t.label,P,y);
+    font(56,400,BEBAS);ctx.textAlign="right";ctx.fillText(t.rating==null?"—":String(t.rating),W-P,y-8);ctx.textAlign="left";
+    y+=50;ctx.fillStyle="rgba(255,255,255,.16)";rr(P,y,W-2*P,12,6);ctx.fill();
+    if(t.rating!=null){ctx.fillStyle=pal.ac;rr(P,y,(W-2*P)*t.rating/100,12,6);ctx.fill();}
+    y+=22;font(24,400);ctx.fillStyle=pal.mut;ctx.fillText(t.detail,P,y);y+=46;
+  });
+  if(fc.quip){
+    y+=6;font(34,400);ctx.font="italic "+ctx.font;
+    var qTop=y;y+=22;var save=y;
+    // measure the wrapped height first, then paint the panel behind it
+    var probe=document.createElement("canvas").getContext("2d");probe.font=ctx.font;
+    var words=("“"+fc.quip+"”").split(" "),lines=1,ln="";words.forEach(function(w){var t=ln?ln+" "+w:w;if(probe.measureText(t).width>W-2*P-60&&ln){lines++;ln=w;}else ln=t;});
+    var boxH=lines*46+44;
+    ctx.fillStyle="rgba(0,0,0,.25)";rr(P,qTop,W-2*P,boxH,18);ctx.fill();ctx.fillStyle=pal.ac;ctx.fillRect(P,qTop,8,boxH);
+    ctx.fillStyle=pal.tx;y=save;wrap("“"+fc.quip+"”",P+36,W-2*P-60,46);y=qTop+boxH+28;
+  }
+  var cells=[];
+  if(fc.signature)cells.push(["⭐ SIGNATURE",fc.signature.text,fc.signature.pct+"% right"]);
+  if(fc.weakness)cells.push(["🪫 WEAKNESS",fc.weakness.text,fc.weakness.pct+"% right"]);
+  if(fc.nemesis)cells.push(["😈 NEMESIS",fc.nemesis.name,"cost "+fc.nemesis.n+" picks"]);
+  if(fc.rival)cells.push(["⚔️ RIVAL",fc.rival.nickname,"you "+fc.rival.you+" · them "+fc.rival.them]);
+  if(fc.bestCall)cells.push(["💰 BEST CALL",fc.bestCall.pick+" ("+FL.fmtOdds(fc.bestCall.odds)+")","over "+fc.bestCall.over]);
+  if(fc.worstMiss)cells.push(["🤡 WORST MISS",fc.worstMiss.pick+" ("+FL.fmtOdds(fc.worstMiss.odds)+")","lost to "+fc.worstMiss.over]);
+  if(fc.belt)cells.push(["🏆 BELT",fc.belt.reigns+" reign"+(fc.belt.reigns===1?"":"s")+" · "+fc.belt.defenses+" def.",(fc.belt.holding?"champ now · ":"")+"longest "+fc.belt.longest+" card"+(fc.belt.longest===1?"":"s")]);
+  if(fc.market)cells.push(["📈 MARKET",fc.market.label,""]);
+  var gap=20,cw=(W-2*P-gap)/2,ch=176;
+  for(var i=0;i<cells.length;i+=2){
+    for(var j=0;j<2&&i+j<cells.length;j++){
+      var c=cells[i+j],cx=P+j*(cw+gap),top=y;
+      ctx.fillStyle="rgba(0,0,0,.26)";rr(cx,top,cw,ch,18);ctx.fill();ctx.strokeStyle=pal.line;ctx.lineWidth=2;rr(cx,top,cw,ch,18);ctx.stroke();
+      var sy=y;y=top+20;font(21,700);ctx.fillStyle=pal.mut;ctx.fillText(c[0],cx+22,y);y+=38;
+      font(30,600);ctx.fillStyle=pal.tx;wrap(c[1],cx+22,cw-44,36,2);
+      if(c[2]){font(22,400);ctx.fillStyle=pal.mut;ctx.fillText(c[2].length>34?c[2].slice(0,33)+"…":c[2],cx+22,top+ch-44);}
+      y=sy;
+    }
+    y+=ch+gap;
+  }
+  if(fc.form.length){
+    y+=6;font(24,700);ctx.fillStyle=pal.mut;
+    var hot=fc.form.length>=3&&fc.form.slice(-3).every(function(f){return f.r==="W";});
+    var lab=((hot?"🔥 ":"")+(fc.form.length===1?"LAST CARD":"LAST "+fc.form.length+" CARDS"));ctx.fillText(lab,P,y+14);
+    var fx=P+ctx.measureText(lab).width+24;
+    fc.form.forEach(function(f){ctx.fillStyle=f.r==="W"?"#2ecc71":"#d65a68";rr(fx,y,52,52,10);ctx.fill();
+      font(40,400,BEBAS);ctx.fillStyle=f.r==="W"?"#06260f":"#2a0508";ctx.textAlign="center";ctx.fillText(f.r,fx+26,y+8);ctx.textAlign="left";fx+=64;});
+    y+=84;
+  }
+  font(22,600);ctx.fillStyle=pal.mut;ctx.fillText("UFC FIGHT CARDS · FIGHT LAB",P,y);
+  font(20,400);ctx.textAlign="right";ctx.fillText("50 = what the odds or the group expected",W-P,y+2);ctx.textAlign="left";
+  return y+22+P;
+}
+function renderCardImage(fc,sn,cardEl){
+  var cs=getComputedStyle(cardEl),v=function(n,d){return (cs.getPropertyValue(n)||"").trim()||d;};
+  var pal={bg1:v("--fc-bg1","#1f2937"),bg2:v("--fc-bg2","#374151"),ac:v("--fc-ac","#e5e7eb"),tx:v("--fc-tx","#f9fafb"),mut:v("--fc-mut","rgba(249,250,251,.72)"),line:v("--fc-line","rgba(255,255,255,.14)")};
+  var ready=document.fonts&&document.fonts.load?Promise.all([document.fonts.load("400 60px 'Bebas Neue'"),document.fonts.load("600 30px Inter")]).catch(function(){}):Promise.resolve();
+  return ready.then(function(){
+    // Draw once on a tall scratch canvas to learn the height, then again at size.
+    var scratch=document.createElement("canvas");scratch.width=CARD_W;scratch.height=3200;
+    var H=Math.ceil(drawFightCard(scratch.getContext("2d"),fc,sn,pal));
+    var cv=document.createElement("canvas");cv.width=CARD_W;cv.height=H;var ctx=cv.getContext("2d");
+    var g=ctx.createLinearGradient(0,0,CARD_W*.6,H);g.addColorStop(0,pal.bg1);g.addColorStop(1,pal.bg2);
+    ctx.fillStyle=g;ctx.fillRect(0,0,CARD_W,H);
+    ctx.strokeStyle=pal.ac;ctx.lineWidth=10;ctx.strokeRect(5,5,CARD_W-10,H-10);
+    drawFightCard(ctx,fc,sn,pal);
+    return new Promise(function(res,rej){cv.toBlob(function(b){b?res(b):rej(new Error("no image"));},"image/png");});
+  });
+}
+function _cardFileName(sn){return "fight-iq-"+(String(sn.name||"card").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"card")+".png";}
+function saveCard(fc,sn,img,btn){
+  if(!img.blob){btn.textContent="⏳ Still drawing — tap again";return;}
+  var a=document.createElement("a");a.href=URL.createObjectURL(img.blob);a.download=_cardFileName(sn);
+  document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},4000);
+}
+function shareCard(fc,sn,img,btn){
+  var text=_cardText(fc,sn);
+  // The image itself where the device can share files (phones), the PNG saved
+  // where it can't (most desktops): never a bare link standing in for the card.
+  if(img.blob&&typeof File==="function"){
+    var file=new File([img.blob],_cardFileName(sn),{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:"Fight IQ card",text:text}).catch(function(){});
+      return;
+    }
+    saveCard(fc,sn,img,btn);btn.textContent="✅ Card saved — send the image";return;
+  }
+  if(!img.blob){btn.textContent="⏳ Still drawing — tap again";return;}
 }
 
 // ✍️ The AI scouting report. The numbers above are computed here, in the
