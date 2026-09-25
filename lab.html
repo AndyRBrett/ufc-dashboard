@@ -407,27 +407,31 @@ function viewIQ(root){
 // Card art: every archetype has three pictures (lab/cards/<key>.jpg,
 // <key>-2.jpg, <key>-3.jpg, built by scripts/card_art.py), and players who
 // share an archetype are dealt different ones, so up to three people with the
-// same archetype never share a card. Within an archetype, players are dealt in
-// join order, each starting at a version hashed from their id and taking the
-// next free one, so a newcomer to an archetype takes a free version and nobody
-// already there has theirs change. Join order is the player's smallest
-// picks.id: an identity column, so it is the true insert order and an upsert
-// never rewrites it (event dates tie for everyone who joined on the same card;
+// same archetype never share a card. Within an archetype, incumbents (players
+// who already had it as of the previous card) are dealt first, then arrivals,
+// each group in join order; each player starts at a version hashed from their
+// id and takes the next free one. So someone arriving in an archetype, new to
+// the app or moving over from another one, takes a free version and never
+// moves an incumbent. Join order is the player's smallest picks.id: an
+// identity column, so it is the true insert order and an upsert never
+// rewrites it (event dates tie for everyone who joined on the same card;
 // updated_at is rewritten by re-syncs). A fourth player on one archetype
 // repeats a version, and a player whose archetype changes takes a picture of
 // the new one.
 var CARD_VERSIONS=3;
 function cardArtPath(key,v){return "lab/cards/"+key+(v?"-"+(v+1):"")+".jpg";}
 function _artHash(s){var x=2166136261;for(var i=0;i<s.length;i++){x^=s.charCodeAt(i);x=Math.imul(x,16777619)>>>0;}return x;}
-// people: [{id, arch, joined, first}] (joined = smallest picks.id or null,
-// first = earliest card date as a fallback). Returns {id: version 0..2}.
+// people: [{id, arch, prev, joined, first}] (prev = archetype as of the
+// previous card, or null; joined = smallest picks.id or null; first =
+// earliest card date as a fallback). Returns {id: version 0..2}.
 function assignCardArt(people){
   var n=CARD_VERSIONS,out={},groups={};
   var j=function(p){return typeof p.joined==="number"&&isFinite(p.joined)?p.joined:Infinity;};
   people.forEach(function(p){(groups[p.arch]=groups[p.arch]||[]).push(p);});
   Object.keys(groups).forEach(function(g){
     var taken={};
-    groups[g].sort(function(a,b){return j(a)-j(b)||(a.first<b.first?-1:a.first>b.first?1:0)||(a.id<b.id?-1:a.id>b.id?1:0);})
+    var inc=function(p){return p.prev===p.arch?0:1;};
+    groups[g].sort(function(a,b){return inc(a)-inc(b)||j(a)-j(b)||(a.first<b.first?-1:a.first>b.first?1:0)||(a.id<b.id?-1:a.id>b.id?1:0);})
       .forEach(function(p,i){
         var k=_artHash(String(p.id))%n;
         if(i<n){while(taken[k])k=(k+1)%n;taken[k]=true;}
@@ -437,25 +441,31 @@ function assignCardArt(people){
   return out;
 }
 // Every player's archetype, read with the same inputs viewIQ uses, so the
-// deal agrees with the card on screen. Cached per load of L.picks.
-function _archetypes(){
-  if(L._arch&&L._arch.src===L.picks)return L._arch.map;
+// deal agrees with the card on screen; and as of the previous card (the
+// same read over picks dated before the latest decided card), which is what
+// tells an incumbent from an arrival. Cached per load of L.picks.
+function _archOf(picks){
   var by={},map={};
-  L.picks.forEach(function(p){(by[p.player]=by[p.player]||[]).push(p);});
+  picks.forEach(function(p){(by[p.player]=by[p.player]||[]).push(p);});
   Object.keys(by).forEach(function(id){
-    try{map[id]=FL.fightIQ(by[id],{odds:L.odds,stats:FIGHTER_STATS,group:L.picks}).archetype.key;}catch(e){map[id]="casual";}
+    try{map[id]=FL.fightIQ(by[id],{odds:L.odds,stats:FIGHTER_STATS,group:picks}).archetype.key;}catch(e){map[id]="casual";}
   });
-  L._arch={src:L.picks,map:map};
   return map;
 }
+function _archetypes(){
+  if(L._arch&&L._arch.src===L.picks)return L._arch;
+  var last="";L.picks.forEach(function(p){if(p.decided&&p.date>last)last=p.date;});
+  L._arch={src:L.picks,map:_archOf(L.picks),prev:last?_archOf(L.picks.filter(function(p){return p.date<last;})):{}};
+  return L._arch;
+}
 function cardArtFor(player,archKey){
-  var first={},joined={},arch=_archetypes();
+  var first={},joined={},A=_archetypes(),arch=A.map;
   L.picks.forEach(function(p){var d=p.date||"9999",r=+((p.raw||{}).id);
     if(!(p.player in first)||d<first[p.player])first[p.player]=d;
     if(isFinite(r)&&r>0&&!(joined[p.player]<=r))joined[p.player]=r;});
   var key=archKey||arch[player]||"casual";
   var map=assignCardArt(Object.keys(first).map(function(id){
-    return {id:id,arch:id===player?key:arch[id],joined:id in joined?joined[id]:null,first:first[id]};}));
+    return {id:id,arch:id===player?key:arch[id],prev:A.prev[id]||null,joined:id in joined?joined[id]:null,first:first[id]};}));
   return cardArtPath(key,map[player]!=null?map[player]:_artHash(String(player))%CARD_VERSIONS);
 }
 // Points the card at its picture and returns that file's path; the share

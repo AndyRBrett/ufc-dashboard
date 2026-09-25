@@ -391,7 +391,7 @@ else {
     check("all 30 card pictures (3 per archetype) load at card width" + (bad.filter(Boolean).length ? " (bad: " + bad.filter(Boolean).join(", ") + ")" : ""),
       bad.length === 30 && !bad.some(Boolean));
     const deal = await page.evaluate(() => {
-      const board = players().map((u) => ({ arch: _archetypes()[u.player], path: cardArtFor(u.player) }));
+      const board = players().map((u) => ({ arch: _archetypes().map[u.player], path: cardArtFor(u.player) }));
       const h = (x) => _artHash(x) % CARD_VERSIONS;
       const clash = []; for (let i = 0; clash.length < 3 && i < 5000; i++) if (h("c" + i) === h("c0")) clash.push("c" + i);   // all want one slot
       const three = assignCardArt(clash.map((id, i) => ({ id, arch: "dog", joined: i + 1, first: "2026-01-01" })));
@@ -401,7 +401,11 @@ else {
       let rival = null; for (let i = 0; i < 5000 && !rival; i++) if (h("a" + i) === h("u68")) rival = "a" + i;   // "a…" sorts before "u68"
       const solo = assignCardArt([{ id: "u68", arch: "dog", joined: 100, first: "2026-10-04" }]);
       const duo = assignCardArt([{ id: "u68", arch: "dog", joined: 100, first: "2026-10-04" }, { id: rival, arch: "dog", joined: 250, first: "2026-10-04" }]);
-      return { board, three: new Set(Object.values(three)).size, mixedOk: mixed[clash[0]] === h(clash[0]) && mixed[clash[1]] === h(clash[1]),
+      // An early joiner moving INTO an archetype never displaces its incumbent.
+      const held = assignCardArt([{ id: "u68", arch: "dog", prev: "dog", joined: 100, first: "2026-10-04" }]);
+      const moved = assignCardArt([{ id: "u68", arch: "dog", prev: "dog", joined: 100, first: "2026-10-04" },
+        { id: rival, arch: "dog", prev: "oracle", joined: 5, first: "2026-01-01" }]);
+      return { migrant: !!rival && held.u68 === moved.u68 && moved[rival] !== moved.u68, board, three: new Set(Object.values(three)).size, mixedOk: mixed[clash[0]] === h(clash[0]) && mixed[clash[1]] === h(clash[1]),
         tie: !!rival && solo.u68 === duo.u68 && duo[rival] !== duo.u68 };
     });
     const sameArch = {}; deal.board.forEach((b) => (sameArch[b.arch] = sameArch[b.arch] || []).push(b.path));
@@ -410,6 +414,7 @@ else {
     check("players who share an archetype get different pictures", Object.values(sameArch).every((ps) => new Set(ps).size === Math.min(ps.length, 3)));
     check("three players on one archetype get all three pictures; different archetypes don't compete", deal.three === 3 && deal.mixedOk);
     check("a newcomer to an archetype never takes an existing player's picture (join order = picks.id)", deal.tie);
+    check("a player switching into an archetype never takes its incumbent's picture, however early they joined", deal.migrant);
     const own = await page.evaluate(() => { const c = document.querySelector("#main .fcard");
       return { art: c.getAttribute("data-art"), want: cardArtFor(L.player), bg: getComputedStyle(c).backgroundImage, key: (c.className.match(/\bfc-([a-z]+)\b/) || [])[1] }; });
     check("the card wears the viewer's own picture, of their own archetype",
