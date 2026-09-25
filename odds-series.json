@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T04:19:18Z",
+  "generated_at": "2026-09-25T05:23:10Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -10753,7 +10753,7 @@
           "f1": "Melissa Amaya",
           "f2": "Valesca Machado",
           "lbl": "Main Card",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-09-20T11:58:20Z",
@@ -10819,6 +10819,11 @@
               "at": "2026-09-24T22:03:12Z",
               "f1_odds": 185,
               "f2_odds": -227
+            },
+            {
+              "at": "2026-09-25T05:23:10Z",
+              "f1_odds": 187,
+              "f2_odds": -230
             }
           ],
           "open": {
@@ -10888,7 +10893,7 @@
           "f1": "Luis Hernandez",
           "f2": "Sedriques Dumas",
           "lbl": "Main Card",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-09-25T00:13:57Z",
@@ -10899,6 +10904,11 @@
               "at": "2026-09-25T02:23:23Z",
               "f1_odds": -219,
               "f2_odds": 178
+            },
+            {
+              "at": "2026-09-25T05:23:10Z",
+              "f1_odds": -221,
+              "f2_odds": 180
             }
           ],
           "open": {
@@ -11071,7 +11081,7 @@
           "f1": "Deiveson Figueiredo",
           "f2": "Payton Talbott",
           "lbl": "Co-Main",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-09-06T12:52:36Z",
@@ -11102,6 +11112,11 @@
               "at": "2026-09-21T21:18:26Z",
               "f1_odds": 467,
               "f2_odds": -688
+            },
+            {
+              "at": "2026-09-25T05:23:10Z",
+              "f1_odds": 463,
+              "f2_odds": -680
             }
           ],
           "open": {
@@ -11554,7 +11569,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Payton Talbott",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": 412,
         "close": null,
         "clv": null
@@ -15628,7 +15643,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Valesca Machado",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 162,
         "close": null,
         "clv": null
@@ -15639,7 +15654,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Melissa Amaya",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -195,
         "close": null,
         "clv": null
@@ -15670,7 +15685,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Luis Hernandez",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 182,
         "close": null,
         "clv": null
@@ -15681,7 +15696,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Sedriques Dumas",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -222,
         "close": null,
         "clv": null
@@ -15710,7 +15725,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Deiveson Figueiredo",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": -550,
         "close": null,
         "clv": null
