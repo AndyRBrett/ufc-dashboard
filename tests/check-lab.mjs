@@ -368,7 +368,7 @@ else {
       if (!m) return res({ bg, ok: false });
       const im = new Image(); im.onload = () => res({ bg, ok: im.naturalWidth === 1080 }); im.onerror = () => res({ bg, ok: false }); im.src = m[1];
     }));
-    check("the card wears its archetype's artwork, and the image loads", art.ok && /lab\/cards\/[a-z]+\.jpg/.test(art.bg));
+    check("the card wears its assigned artwork, and the image loads", art.ok && /lab\/cards\/(themes\/)?[a-z-]+\.jpg/.test(art.bg));
     check("Fight IQ opens on the viewer's collectible card, themed by archetype, six traits",
       !!fcard && /\bfc-[a-z]+\b/.test(fcard.cls) && fcard.traits === 6 && /Fight IQ/.test(fcard.text));
     // Share hands over the card itself (a PNG), not a link to the page.
@@ -382,6 +382,31 @@ else {
     }
     check("Share card sends the card as a PNG image, not a link",
       !!shared && !!shared.files && shared.files.length === 1 && shared.files[0].type === "image/png" && shared.files[0].size > 20000 && /\.png$/.test(shared.files[0].name) && !shared.url);
+    // Card art: all 30 pictures load at card width; every player on the board
+    // has a different one; a newcomer never moves anyone else's; and the card
+    // (and so the shared image, which draws the same path) wears the player's own.
+    const bad = await page.evaluate(() => Promise.all(CARD_ART.map((a) => new Promise((res) => {
+      const im = new Image(); im.onload = () => res(im.naturalWidth === 1080 ? null : a.path); im.onerror = () => res(a.path); im.src = a.path; }))));
+    check("all 30 card pictures load at card width" + (bad.filter(Boolean).length ? " (bad: " + bad.filter(Boolean).join(", ") + ")" : ""),
+      bad.length === 30 && !bad.some(Boolean));
+    const deal = await page.evaluate(() => {
+      const board = players().map((u) => cardArtFor(u.player).path);
+      const ppl = Array.from({ length: 30 }, (_, i) => ({ id: "u" + i, first: i === 29 ? "2026-12-01" : "2026-0" + (1 + (i % 9)) + "-01" }));   // u29 joins last
+      const before = assignCardArt(ppl.slice(0, 29)), after = assignCardArt(ppl);
+      // Same first card, colliding hash slots: whoever joined first (smaller
+      // picks.id) keeps their picture, whatever the ids sort as.
+      const n = CARD_ART.length, h = (s) => _artHash(s) % n;
+      let rival = null; for (let i = 0; i < 5000 && !rival; i++) if (h("a" + i) === h("u68")) rival = "a" + i;   // "a…" sorts before "u68"
+      const solo = assignCardArt([{ id: "u68", joined: 100, first: "2026-10-04" }]);
+      const duo = assignCardArt([{ id: "u68", joined: 100, first: "2026-10-04" }, { id: rival, joined: 250, first: "2026-10-04" }]);
+      return { board, full: new Set(Object.values(after)).size, kept: ppl.slice(0, 29).every((p) => before[p.id] === after[p.id]),
+        tie: !!rival && solo.u68 === duo.u68 && duo[rival] !== duo.u68 };
+    });
+    check("no two players on the board share a card picture (" + deal.board.length + " players)", deal.board.length >= 2 && new Set(deal.board).size === deal.board.length);
+    check("30 players get all 30 pictures, and a newcomer leaves everyone else's alone", deal.full === 30 && deal.kept);
+    check("a newcomer on the same card as an existing player never takes their picture (join order = picks.id)", deal.tie);
+    const own = await page.evaluate(() => { const c = document.querySelector("#main .fcard"); return { art: c.getAttribute("data-art"), want: cardArtFor(L.player).path, bg: getComputedStyle(c).backgroundImage }; });
+    check("the card wears the viewer's own assigned picture", own.art === own.want && own.bg.includes(own.want));
     const opts = await page.evaluate(() => [...document.querySelectorAll("select option")].map((o) => o.textContent.replace(/\s*\(you\)$/, "")));
     const bases = opts.map((o) => o.replace(/^\S+\s+/, "").toLowerCase());
     check("the player picker lists each person once (no ghost identities)", opts.length === 3 && new Set(bases).size === bases.length);
