@@ -393,10 +393,18 @@ else {
       const board = players().map((u) => cardArtFor(u.player).path);
       const ppl = Array.from({ length: 30 }, (_, i) => ({ id: "u" + i, first: i === 29 ? "2026-12-01" : "2026-0" + (1 + (i % 9)) + "-01" }));   // u29 joins last
       const before = assignCardArt(ppl.slice(0, 29)), after = assignCardArt(ppl);
-      return { board, full: new Set(Object.values(after)).size, kept: ppl.slice(0, 29).every((p) => before[p.id] === after[p.id]) };
+      // Same first card, colliding hash slots: whoever joined first (smaller
+      // picks.id) keeps their picture, whatever the ids sort as.
+      const n = CARD_ART.length, h = (s) => _artHash(s) % n;
+      let rival = null; for (let i = 0; i < 5000 && !rival; i++) if (h("a" + i) === h("u68")) rival = "a" + i;   // "a…" sorts before "u68"
+      const solo = assignCardArt([{ id: "u68", joined: 100, first: "2026-10-04" }]);
+      const duo = assignCardArt([{ id: "u68", joined: 100, first: "2026-10-04" }, { id: rival, joined: 250, first: "2026-10-04" }]);
+      return { board, full: new Set(Object.values(after)).size, kept: ppl.slice(0, 29).every((p) => before[p.id] === after[p.id]),
+        tie: !!rival && solo.u68 === duo.u68 && duo[rival] !== duo.u68 };
     });
     check("no two players on the board share a card picture (" + deal.board.length + " players)", deal.board.length >= 2 && new Set(deal.board).size === deal.board.length);
     check("30 players get all 30 pictures, and a newcomer leaves everyone else's alone", deal.full === 30 && deal.kept);
+    check("a newcomer on the same card as an existing player never takes their picture (join order = picks.id)", deal.tie);
     const own = await page.evaluate(() => { const c = document.querySelector("#main .fcard"); return { art: c.getAttribute("data-art"), want: cardArtFor(L.player).path, bg: getComputedStyle(c).backgroundImage }; });
     check("the card wears the viewer's own assigned picture", own.art === own.want && own.bg.includes(own.want));
     const opts = await page.evaluate(() => [...document.querySelectorAll("select option")].map((o) => o.textContent.replace(/\s*\(you\)$/, "")));
