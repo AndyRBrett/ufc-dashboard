@@ -294,24 +294,25 @@ else {
       const txt = await page.evaluate(() => document.getElementById("main").innerText);
       check(`lab tab "${t}" renders without an error panel`, txt.length > 40 && !/hit an error|couldn't start|could not load/.test(txt));
     }
-    // Matchup is picked from menus, never typed: every name offered has a
-    // stats profile, and changing a menu re-compares on its own.
+    // Matchup is picked from a menu of real, upcoming bouts, never typed:
+    // every pair offered has two stats profiles, and a choice re-compares.
     await page.click('#tabs button[data-tab="matchup"]');
     const mu = await page.evaluate(() => {
-      const sels = [...document.querySelectorAll("#main select.mu-sel")];
-      const fighters = sels.filter((x) => /Fighter/.test(x.getAttribute("aria-label")));
-      const names = fighters.length ? [...fighters[1].querySelectorAll("option")].map((o) => o.value).filter(Boolean) : [];
-      const pick = names.find((n) => n !== fighters[0].value);
-      if (pick) { fighters[1].value = pick; fighters[1].dispatchEvent(new Event("change")); }
-      const head = [...document.querySelectorAll("#main table.cmp th")].map((t) => t.textContent);
-      const cards = document.querySelectorAll("#main select.mu-bout optgroup").length;
+      const menu = document.querySelector("#main select.mu-bout");
+      const opts = menu ? [...menu.querySelectorAll("option")].map((o) => o.value) : [];
+      const pairs = opts.map((v) => v.split("\n"));
+      const cards = menu ? menu.querySelectorAll("optgroup").length : 0;
       const withBouts = L.engine.upcoming(new Date(), "ufc").filter((ev) => ev.bouts.some((b) => b.competitors && FIGHTER_STATS[b.competitors[0].name] && FIGHTER_STATS[b.competitors[1].name])).length;
-      return { text: document.querySelectorAll("#main input[type=text]").length, fighters: fighters.length, cards, withBouts,
-        allProfiled: names.every((n) => !!FIGHTER_STATS[n]), n: names.length, updated: !!pick && head.includes(pick) };
+      const next = opts.find((v) => v !== menu.value);
+      if (next) { menu.value = next; menu.dispatchEvent(new Event("change")); }
+      const head = [...document.querySelectorAll("#main table.cmp th")].map((t) => t.textContent);
+      return { text: document.querySelectorAll("#main input[type=text]").length, selects: document.querySelectorAll("#main select").length,
+        n: opts.length, allProfiled: pairs.every((p) => p.length === 2 && FIGHTER_STATS[p[0]] && FIGHTER_STATS[p[1]]),
+        cards, withBouts, updated: !!next && next.split("\n").every((n) => head.includes(n)) };
     });
-    check("Matchup picks fighters from menus (no free-text boxes), each name a stats profile, and re-compares on change",
-      mu.text === 0 && mu.fighters === 2 && mu.n > 0 && mu.allProfiled && mu.updated);
-    check("...and the bout menu offers every upcoming card with a comparable bout (" + mu.withBouts + ")", mu.cards === mu.withBouts);
+    check("Matchup is one menu of upcoming bouts (no free text, no any-two-fighters menus), each pair profiled, re-comparing on change",
+      mu.text === 0 && mu.selects === 1 && mu.n > 0 && mu.allProfiled && mu.updated);
+    check("...and it offers every upcoming card with a comparable bout (" + mu.withBouts + ")", mu.cards === mu.withBouts);
     await page.click('#tabs button[data-tab="iq"]');
     const iqTxt = await page.evaluate(() => document.getElementById("main").innerText);
     check("Fight IQ opens on the viewer's own picks and shows an archetype", /\(you\)/.test(await page.evaluate(() => document.querySelector("select").selectedOptions[0].textContent)) && /Record/.test(iqTxt));
