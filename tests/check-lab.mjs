@@ -301,7 +301,7 @@ else {
     const bases = opts.map((o) => o.replace(/^\S+\s+/, "").toLowerCase());
     check("the player picker lists each person once (no ghost identities)", opts.length === 3 && new Set(bases).size === bases.length);
     await page.click('#tabs button[data-tab="iq"]');
-    const recTile = await page.evaluate(() => document.querySelector(".tile .v").textContent.replace("–", "-"));
+    const recTile = await page.evaluate(() => document.querySelector(".tile .v").textContent.replace(/^(\d+)W(\d+)L$/, "$1-$2"));
     for (let i = 0; i < 4; i++) {
       await page.click("text=✍️");
       await page.waitForFunction(() => !/Writing…/.test(document.body.innerText), null, { timeout: 5000 });

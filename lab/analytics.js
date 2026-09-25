@@ -22,7 +22,7 @@
     return { w: w, l: l, n: w + l, pct: pct(w, w + l) };
   }
   function round1(x) { return Math.round(x * 10) / 10; }
-  function fmtRec(r) { return r.w + "–" + r.l; }
+  function fmtRec(r) { return r.w + "W–" + r.l + "L"; }   // labelled: "7–16" read as a fighter record was taken backwards
 
   // ---------------------------------------------------------- odds history --
   // odds-series.json keys events as "YYYY-MM-DD:slug" in UTC, and sometimes

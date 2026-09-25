@@ -30,10 +30,10 @@ header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px so
 .back{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted2);font-size:14px;padding:6px 10px;border:1px solid var(--border2);border-radius:999px}
 h1{font:400 30px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.5px;margin:0;flex:1}
 h1 span{color:var(--red)}
-nav{display:flex;gap:4px;overflow-x:auto;max-width:880px;margin:10px auto 0;scrollbar-width:none}
-nav::-webkit-scrollbar{display:none}
-nav button{flex:none;background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);font:600 14px Inter,system-ui,sans-serif;padding:10px 12px;cursor:pointer}
-nav button[aria-selected="true"]{color:var(--text);border-bottom-color:var(--red)}
+nav{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;max-width:880px;margin:10px auto 0;padding-bottom:10px}
+nav button{background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--muted);font:600 13px Inter,system-ui,sans-serif;padding:8px 4px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+nav button[aria-selected="true"]{color:#fff;background:var(--red);border-color:var(--red)}
+@media (max-width:560px){nav{grid-template-columns:repeat(3,1fr)}}
 main{max-width:880px;margin:0 auto;padding:16px 16px 64px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
 .card h2{font:400 22px/1.1 'Bebas Neue',Impact,sans-serif;letter-spacing:.4px;margin:0 0 10px}
@@ -46,6 +46,10 @@ button.act{background:var(--red);color:#fff;border:0;border-radius:10px;padding:
 .tile{background:var(--card2);border-radius:12px;padding:12px}
 .tile .v{font:400 30px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.3px}
 .tile .l{font-size:12px;color:var(--muted);margin-top:4px}
+.tile .v small{font-size:.55em;color:var(--muted);margin:0 6px 0 2px;letter-spacing:.05em}
+.wl .good,.wl .bad{font-weight:700}
+.split-kind td{color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding-top:14px;border-top:0}
+.h2h td.num{width:64px}
 .arch{display:flex;gap:14px;align-items:center}
 .arch .e{font-size:44px;line-height:1}
 .arch .n{font:400 28px/1 'Bebas Neue',Impact,sans-serif}
@@ -193,7 +197,15 @@ function h(tag,attrs){
 function card(title){var c=h("div",{class:"card"});if(title)c.appendChild(h("h2",{text:title}));for(var i=1;i<arguments.length;i++)if(arguments[i])c.appendChild(arguments[i]);return c;}
 function tile(v,l,cls){return h("div",{class:"tile"},h("div",{class:"v"+(cls?" "+cls:""),text:v==null?"—":String(v)}),h("div",{class:"l",text:l}));}
 function pctTxt(x){return x==null?"—":x+"%";}
-function recTxt(r){return r&&r.n?r.w+"–"+r.l:"—";}
+function recTxt(r){return r&&r.n?r.w+"W–"+r.l+"L":"—";}
+// A record as a tile: wins in green, losses in red, each one labelled, so
+// "111–58" can't be read the wrong way round.
+function recTile(r,label){
+  var t=tile(null,label),v=t.firstChild;
+  if(r&&r.n){v.textContent="";v.appendChild(h("span",{class:"good",text:String(r.w)}));v.appendChild(h("small",{text:"W"}));
+    v.appendChild(h("span",{class:"bad",text:String(r.l)}));v.appendChild(h("small",{text:"L"}));}
+  return t;
+}
 function signed(x,suf){return x==null?"—":(x>0?"+":"")+x+(suf||"");}
 function nameOnly(nick){return L.kernel?L.kernel.splitNick(nick).name:String(nick||"");}
 function fmtDate(d){return new Date(d+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});}
@@ -294,26 +306,42 @@ function viewIQ(root){
         h("div",null,h("div",{class:"n",text:iq.archetype.name}),h("div",{class:"muted small",text:iq.archetype.blurb}))),
       writeupBlock(iq)));
     body.appendChild(card("The numbers",h("div",{class:"tiles"},
-      tile(recTxt(iq.record),"Record ("+pctTxt(iq.record.pct)+")"),
+      recTile(iq.record,"Record ("+pctTxt(iq.record.pct)+" right)"),
       tile(iq.points,"Points (board scoring)"),
       tile(iq.methods.called?pctTxt(iq.methods.pct):"—","Method calls hit ("+iq.methods.hit+"/"+iq.methods.called+")"),
-      tile(recTxt(iq.locks),"Locks 🔒"),
+      recTile(iq.locks,"Locks 🔒"),
       tile(iq.clv.n?signed(iq.clv.avg," pts"):"—","Avg line move after your pick"))));
+    // Head to head: on a bout you split, exactly one of you was right, so
+    // the rival's wins are your losses. Two named columns, not one "16–20".
+    if(iq.rivals.length){
+      var rv=h("table",{class:"h2h"},h("tr",null,h("th",{text:"When you split a pick with"}),h("th",{class:"num",text:"You right"}),h("th",{class:"num",text:"They right"})));
+      iq.rivals.forEach(function(r){
+        var up=r.rec.w>r.rec.l,dn=r.rec.w<r.rec.l;
+        rv.appendChild(h("tr",null,h("td",{text:r.nickname}),
+          h("td",{class:"num"+(up?" good":""),text:String(r.rec.w)}),
+          h("td",{class:"num"+(dn?" bad":""),text:String(r.rec.l)})));
+      });
+      body.appendChild(card("Head to head",rv,h("p",{class:"muted small",text:"Only fights where you two picked opposite sides. Rivals need "+FL.MIN_SAMPLE+"+ of them to show."})));
+    }
     var ins=h("ul",{class:"list"});
     if(!iq.insights.length)ins.appendChild(h("li",null,h("span",{class:"muted",text:"Nothing stands out yet — insights need at least "+FL.MIN_SAMPLE+" decided picks in a split."})));
     iq.insights.forEach(function(i){ins.appendChild(h("li",null,h("span",{class:"ico",text:i.good?"✅":"⚠️"}),h("span",{text:i.text})));});
     body.appendChild(card("What your picks say",ins));
-    var t=h("table",null,h("tr",null,h("th",{text:"Split"}),h("th",{class:"num",text:"Record"}),h("th",{class:"num",text:"Hit %"})));
-    iq.splits.slice().sort(function(a,b){return a.kind<b.kind?-1:a.kind>b.kind?1:b.rec.n-a.rec.n;}).forEach(function(s){
-      t.appendChild(h("tr",null,h("td",{text:s.key}),h("td",{class:"num",text:recTxt(s.rec)}),h("td",{class:"num",text:pctTxt(s.rec.pct)})));
+    // Every split, grouped by what it splits on, biggest sample first.
+    var KINDS=[["division","Weight class"],["segment","Card position"],["market","Betting line"],["style","Style matchup"],["form","Form"],["locks","Locks"],["crowd","The group"]];
+    var t=h("table",{class:"wl"},h("tr",null,h("th",{text:"Split"}),h("th",{class:"num",text:"W"}),h("th",{class:"num",text:"L"}),h("th",{class:"num",text:"Hit %"})));
+    var seen={};
+    KINDS.concat(iq.splits.map(function(x){return [x.kind,x.kind];})).forEach(function(k){
+      if(seen[k[0]])return;seen[k[0]]=1;
+      var rows=iq.splits.filter(function(x){return x.kind===k[0];}).sort(function(a,b){return b.rec.n-a.rec.n;});
+      if(!rows.length)return;
+      t.appendChild(h("tr",{class:"split-kind"},h("td",{colspan:"4",text:k[1]})));
+      rows.forEach(function(x){
+        t.appendChild(h("tr",null,h("td",{text:x.key}),h("td",{class:"num good",text:String(x.rec.w)}),h("td",{class:"num bad",text:String(x.rec.l)}),h("td",{class:"num",text:pctTxt(x.rec.pct)})));
+      });
     });
     body.appendChild(card("Every split",h("div",{class:"wrap-scroll"},t),
-      h("p",{class:"muted small",text:"Style tags come from UFCStats career averages; streaks count only fights before the bout. Splits under "+FL.MIN_SAMPLE+" picks aren't used for insights."})));
-    if(iq.rivals.length){
-      var rv=h("table",null,h("tr",null,h("th",{text:"When you disagree with"}),h("th",{class:"num",text:"Your record"})));
-      iq.rivals.forEach(function(r){rv.appendChild(h("tr",null,h("td",{text:r.nickname}),h("td",{class:"num "+(r.rec.w>=r.rec.l?"good":"bad"),text:recTxt(r.rec)})));});
-      body.appendChild(card("Head to head",rv));
-    }
+      h("p",{class:"muted small",text:"W = picks you got right, L = picks you got wrong. Style tags come from UFCStats career averages; streaks count only fights before the bout. Splits under "+FL.MIN_SAMPLE+" picks aren't used for insights."})));
   }
   draw();
 }
