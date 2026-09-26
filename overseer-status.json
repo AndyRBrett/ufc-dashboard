@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T23:15:13Z",
+  "generated_at": "2026-09-26T00:03:16Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -9,7 +9,7 @@
   "odds_budget": {
     "exhausted": false,
     "reset_day": 1,
-    "resets_in_days": 6,
+    "resets_in_days": 5,
     "most_affected": []
   },
   "stale_threshold_hours": 48,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-25T23:15:13Z",
+      "last_changed_at": "2026-09-26T00:03:16Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-25T23:15:13Z",
+      "last_changed_at": "2026-09-26T00:03:16Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-25T23:15:13Z",
+      "last_changed_at": "2026-09-26T00:03:16Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -155,7 +155,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-25T23:15:13Z",
+      "last_changed_at": "2026-09-26T00:03:16Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -271,6 +271,22 @@
       "priority": 325.0
     },
     {
+      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+      "f1": "Johnny Walker",
+      "f2": "Mick Parkin",
+      "f1_movement": -32,
+      "f2_movement": 232,
+      "magnitude": 232,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 110,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": 6.3,
+      "f2_prob_shift": -7.3,
+      "priority": 324.8
+    },
+    {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
       "f1": "Bilal Hasan",
       "f2": "Nilson Rojas",
@@ -317,22 +333,6 @@
       "f1_prob_shift": 13.4,
       "f2_prob_shift": -13.9,
       "priority": 270.0
-    },
-    {
-      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
-      "f1": "Johnny Walker",
-      "f2": "Mick Parkin",
-      "f1_movement": -32,
-      "f2_movement": 232,
-      "magnitude": 232,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 110,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": 6.3,
-      "f2_prob_shift": -7.3,
-      "priority": 255.2
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
@@ -415,6 +415,22 @@
       "priority": 200.0
     },
     {
+      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+      "f1": "Deiveson Figueiredo",
+      "f2": "Payton Talbott",
+      "f1_movement": 51,
+      "f2_movement": -130,
+      "magnitude": 130,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Bantamweight",
+      "f1_prob_shift": -1.8,
+      "f2_prob_shift": 2.6,
+      "priority": 182.0
+    },
+    {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "f1": "Joanderson Brito",
       "f2": "Giga Chikadze",
@@ -447,22 +463,6 @@
       "priority": 150.0
     },
     {
-      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
-      "f1": "Deiveson Figueiredo",
-      "f2": "Payton Talbott",
-      "f1_movement": 51,
-      "f2_movement": -130,
-      "magnitude": 130,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Bantamweight",
-      "f1_prob_shift": -1.8,
-      "f2_prob_shift": 2.6,
-      "priority": 143.0
-    },
-    {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Raul Rosas Jr.",
       "f2": "Raoni Barcelos",
@@ -492,7 +492,7 @@
       "wc": "Women's Flyweight",
       "f1_prob_shift": -2.7,
       "f2_prob_shift": 3.6,
-      "priority": 77.0
+      "priority": 98.0
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",

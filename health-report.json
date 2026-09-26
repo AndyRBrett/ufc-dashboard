@@ -1,26 +1,34 @@
 {
-  "generated_at": "2026-09-25T23:15:12Z",
+  "generated_at": "2026-09-26T00:03:16Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 4
+    "warn": 5
   },
   "findings": [
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Rosas Jr. vs. Barcelos (1d out): 1 of 12 bouts have no odds",
+      "message": "UFC Fight Night: Rosas Jr. vs. Barcelos (0d out): 1 of 12 bouts have no odds",
       "event": "UFC Fight Night: Rosas Jr. vs. Barcelos",
       "date": "2026-09-26",
-      "days_out": 1
+      "days_out": 0
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC 332: Silva vs. Wang (8d out): 2 of 13 bouts have no odds",
+      "message": "UFC 332: Silva vs. Wang (7d out): 2 of 13 bouts have no odds",
       "event": "UFC 332: Silva vs. Wang",
       "date": "2026-10-03",
-      "days_out": 8
+      "days_out": 7
+    },
+    {
+      "severity": "WARN",
+      "check": "odds-missing-all",
+      "message": "UFC Fight Night: Allen vs. Duncan (14d out) has no odds on any of its 1 bouts",
+      "event": "UFC Fight Night: Allen vs. Duncan",
+      "date": "2026-10-10",
+      "days_out": 14
     },
     {
       "severity": "WARN",
