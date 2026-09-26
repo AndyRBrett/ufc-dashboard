@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T23:41:38Z",
+  "generated_at": "2026-09-26T23:47:51Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "ok",
-      "last_changed_at": "2026-09-26T23:38:32Z",
+      "last_changed_at": "2026-09-26T23:47:51Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-26T23:41:38Z",
+      "last_changed_at": "2026-09-26T23:47:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-26T23:41:38Z",
+      "last_changed_at": "2026-09-26T23:47:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-26T23:41:38Z",
+      "last_changed_at": "2026-09-26T23:47:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -155,7 +155,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-26T23:41:38Z",
+      "last_changed_at": "2026-09-26T23:47:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -189,22 +189,6 @@
       "f1_prob_shift": 16.4,
       "f2_prob_shift": -16.9,
       "priority": 38500.0
-    },
-    {
-      "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
-      "f1": "Rodolfo Vieira",
-      "f2": "Robert Bryczek",
-      "f1_movement": -574,
-      "f2_movement": 511,
-      "magnitude": 574,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 110,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 35.3,
-      "f2_prob_shift": -32.0,
-      "priority": 1148.0
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
