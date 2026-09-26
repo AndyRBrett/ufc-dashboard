@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-25T23:15:13Z",
+ "generated_at": "2026-09-26T02:18:31Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -58,19 +58,6 @@
      ]
     },
     {
-     "title": "\"I Am Looking Forward To Putting On A Show! | UFC Vegas 121 Media Day",
-     "url": "https://www.youtube.com/watch?v=MnIOz5NWe1g",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-09-23T20:38:12Z",
-     "thumb": "https://i2.ytimg.com/vi/MnIOz5NWe1g/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Listen to Raul Rosas Jr and Raoni Barcelos answer questions from the press ahead of their matchup at UFC Vegas 121. Subscribe to get all the latest UFC content:…",
-     "fighters": [
-      "Raoni Barcelos",
-      "Raul Rosas Jr."
-     ]
-    },
-    {
      "title": "Ailin Perez details heated UFC PI run-in with Norma Dumont: ‘Everything’ must go viral",
      "url": "https://www.sherdog.com/news/news/Ailin-Perez-details-heated-UFC-PI-runin-with-Norma-Dumont-Everything-must-go-viral-202950",
      "source": "Sherdog",
@@ -81,20 +68,6 @@
      "fighters": [
       "Ailin Perez",
       "Norma Dumont"
-     ]
-    },
-    {
-     "title": "The Ultimate Fighter Finale | UFC Vegas 121",
-     "url": "https://www.youtube.com/watch?v=U0JVGEfL9XA",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-09-24T17:45:08Z",
-     "thumb": "https://i2.ytimg.com/vi/U0JVGEfL9XA/hqdefault.jpg",
-     "blurb": "Preview The Ultimate Fighter Finale fights Mehemmedeli Osmanli vs Ilimbek Akylbek Uulu and Melissa Amaya vs Tina Black at UFC Vegas 121 this weekend. Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to…",
-     "fighters": [
-      "Ilimbek Akylbek uulu",
-      "Mehemmedeli Osmanli",
-      "Melissa Amaya"
      ]
     },
     {
@@ -126,19 +99,6 @@
      "blurb": "Natalia Silva ’s team believes her upcoming title bout will be a treat for fans.",
      "fighters": [
       "Natalia Silva"
-     ]
-    },
-    {
-     "title": "King Green vs Daniel Zellhuber | Full Fight",
-     "url": "https://www.youtube.com/watch?v=4jCfhpKS4Wg",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-09-24T11:45:12Z",
-     "thumb": "https://i1.ytimg.com/vi/4jCfhpKS4Wg/hqdefault.jpg",
-     "blurb": "Rewatch the full fight between King Green and Daniel Zellhuber before Green's matchup against Esteban Ribovics at UFC 332. Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC…",
-     "fighters": [
-      "Esteban Ribovics",
-      "King Green"
      ]
     }
    ]

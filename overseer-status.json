@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T02:09:24Z",
+  "generated_at": "2026-09-26T02:18:30Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,11 +95,11 @@
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "status": "ok",
-      "last_changed_at": "2026-09-25T23:15:13Z",
+      "last_changed_at": "2026-09-26T02:18:30Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
-      "line_movement": 22,
+      "line_movement": 26,
       "odds_market_priced": true
     },
     {
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-26T02:09:24Z",
+      "last_changed_at": "2026-09-26T02:18:30Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-26T02:09:24Z",
+      "last_changed_at": "2026-09-26T02:18:30Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-26T02:09:24Z",
+      "last_changed_at": "2026-09-26T02:18:30Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -155,7 +155,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-26T02:09:24Z",
+      "last_changed_at": "2026-09-26T02:18:30Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -242,17 +242,17 @@
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Rodolfo Vieira",
       "f2": "Robert Bryczek",
-      "f1_movement": -55,
-      "f2_movement": 243,
-      "magnitude": 243,
+      "f1_movement": -59,
+      "f2_movement": 246,
+      "magnitude": 246,
       "main_event": false,
       "tier": "prelim",
       "threshold": 110,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 10.1,
-      "f2_prob_shift": -9.4,
-      "priority": 486.0
+      "f1_prob_shift": 10.6,
+      "f2_prob_shift": -9.9,
+      "priority": 492.0
     },
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
@@ -335,22 +335,6 @@
       "priority": 270.0
     },
     {
-      "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
-      "f1": "John Castaneda",
-      "f2": "Alateng Heili",
-      "f1_movement": -112,
-      "f2_movement": 71,
-      "magnitude": 112,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 110,
-      "low_confidence": false,
-      "wc": "Bantamweight",
-      "f1_prob_shift": 6.0,
-      "f2_prob_shift": -5.3,
-      "priority": 224.0
-    },
-    {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
       "f1": "Ignacio Bahamondes",
       "f2": "Muslim Salikhov",
@@ -365,6 +349,22 @@
       "f1_prob_shift": 7.3,
       "f2_prob_shift": -6.8,
       "priority": 222.0
+    },
+    {
+      "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+      "f1": "John Castaneda",
+      "f2": "Alateng Heili",
+      "f1_movement": -110,
+      "f2_movement": 70,
+      "magnitude": 110,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 110,
+      "low_confidence": false,
+      "wc": "Bantamweight",
+      "f1_prob_shift": 5.9,
+      "f2_prob_shift": -5.2,
+      "priority": 220.0
     },
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
@@ -466,17 +466,17 @@
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Raul Rosas Jr.",
       "f2": "Raoni Barcelos",
-      "f1_movement": 22,
-      "f2_movement": -21,
-      "magnitude": 22,
+      "f1_movement": 26,
+      "f2_movement": -24,
+      "magnitude": 26,
       "main_event": true,
       "tier": "main-event",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Bantamweight",
-      "f1_prob_shift": -3.0,
-      "f2_prob_shift": 3.6,
-      "priority": 110.0
+      "f1_prob_shift": -3.7,
+      "f2_prob_shift": 4.1,
+      "priority": 130.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
