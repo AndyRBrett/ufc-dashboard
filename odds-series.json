@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T14:24:12Z",
+  "generated_at": "2026-09-26T14:33:46Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -9928,7 +9928,7 @@
           "f1": "Raul Rosas Jr.",
           "f2": "Raoni Barcelos",
           "lbl": "Main Event",
-          "points": 25,
+          "points": 26,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10054,6 +10054,11 @@
               "at": "2026-09-26T11:29:27Z",
               "f1_odds": -153,
               "f2_odds": 128
+            },
+            {
+              "at": "2026-09-26T14:33:46Z",
+              "f1_odds": -151,
+              "f2_odds": 125
             }
           ],
           "open": {
@@ -10403,7 +10408,7 @@
           "f1": "Montel Jackson",
           "f2": "Ricky Simon",
           "lbl": "Prelim",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10499,6 +10504,11 @@
               "at": "2026-09-26T11:29:27Z",
               "f1_odds": -228,
               "f2_odds": 185
+            },
+            {
+              "at": "2026-09-26T14:33:46Z",
+              "f1_odds": -230,
+              "f2_odds": 187
             }
           ],
           "open": {
@@ -10918,7 +10928,7 @@
           "f1": "Melissa Amaya",
           "f2": "Valesca Machado",
           "lbl": "Main Card",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-09-20T11:58:20Z",
@@ -11014,6 +11024,11 @@
               "at": "2026-09-26T11:29:27Z",
               "f1_odds": 180,
               "f2_odds": -221
+            },
+            {
+              "at": "2026-09-26T14:33:46Z",
+              "f1_odds": 179,
+              "f2_odds": -219
             }
           ],
           "open": {
@@ -11501,7 +11516,7 @@
           "f1": "Johnny Walker",
           "f2": "Mick Parkin",
           "lbl": "Early Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11517,6 +11532,11 @@
               "at": "2026-09-26T05:19:51Z",
               "f1_odds": -152,
               "f2_odds": 132
+            },
+            {
+              "at": "2026-09-26T14:33:46Z",
+              "f1_odds": -146,
+              "f2_odds": 126
             }
           ],
           "open": {
@@ -11556,7 +11576,7 @@
           "f1": "Marvin Vettori",
           "f2": "Ismail Naurdiev",
           "lbl": "Early Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11572,6 +11592,11 @@
               "at": "2026-09-26T08:24:29Z",
               "f1_odds": 125,
               "f2_odds": -145
+            },
+            {
+              "at": "2026-09-26T14:33:46Z",
+              "f1_odds": 110,
+              "f2_odds": -130
             }
           ],
           "open": {
@@ -15725,7 +15750,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Raoni Barcelos",
         "side": "f1",
-        "points": 25,
+        "points": 26,
         "open": -180,
         "close": null,
         "clv": null
@@ -15736,7 +15761,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Raul Rosas Jr.",
         "side": "f2",
-        "points": 25,
+        "points": 26,
         "open": 153,
         "close": null,
         "clv": null
@@ -15813,7 +15838,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Ricky Simon",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": -176,
         "close": null,
         "clv": null
@@ -15824,7 +15849,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Montel Jackson",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": 149,
         "close": null,
         "clv": null
@@ -15923,7 +15948,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Valesca Machado",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": 162,
         "close": null,
         "clv": null
@@ -15934,7 +15959,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Melissa Amaya",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": -195,
         "close": null,
         "clv": null
@@ -16080,7 +16105,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Mick Parkin",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -110,
         "close": null,
         "clv": null
@@ -16091,7 +16116,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Johnny Walker",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -110,
         "close": null,
         "clv": null
@@ -16124,7 +16149,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Ismail Naurdiev",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": 115,
         "close": null,
         "clv": null
@@ -16135,7 +16160,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Marvin Vettori",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -135,
         "close": null,
         "clv": null
