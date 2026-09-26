@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T08:19:09Z",
+  "generated_at": "2026-09-26T08:24:29Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -10063,7 +10063,7 @@
           "f1": "Rodolfo Vieira",
           "f2": "Robert Bryczek",
           "lbl": "Prelim",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10159,6 +10159,11 @@
               "at": "2026-09-26T02:18:30Z",
               "f1_odds": -167,
               "f2_odds": 138
+            },
+            {
+              "at": "2026-09-26T08:24:29Z",
+              "f1_odds": -166,
+              "f2_odds": 137
             }
           ],
           "open": {
@@ -10383,7 +10388,7 @@
           "f1": "Montel Jackson",
           "f2": "Ricky Simon",
           "lbl": "Prelim",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10469,6 +10474,11 @@
               "at": "2026-09-26T02:18:30Z",
               "f1_odds": -217,
               "f2_odds": 178
+            },
+            {
+              "at": "2026-09-26T08:24:29Z",
+              "f1_odds": -225,
+              "f2_odds": 183
             }
           ],
           "open": {
@@ -10603,7 +10613,7 @@
           "f1": "Norma Dumont",
           "f2": "Ailin Perez",
           "lbl": "Co-Main",
-          "points": 23,
+          "points": 24,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10719,6 +10729,11 @@
               "at": "2026-09-25T23:15:13Z",
               "f1_odds": 129,
               "f2_odds": -156
+            },
+            {
+              "at": "2026-09-26T08:24:29Z",
+              "f1_odds": 133,
+              "f2_odds": -161
             }
           ],
           "open": {
@@ -11501,7 +11516,7 @@
           "f1": "Marvin Vettori",
           "f2": "Ismail Naurdiev",
           "lbl": "Early Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11512,6 +11527,11 @@
               "at": "2026-09-25T18:53:35Z",
               "f1_odds": 100,
               "f2_odds": -120
+            },
+            {
+              "at": "2026-09-26T08:24:29Z",
+              "f1_odds": 125,
+              "f2_odds": -145
             }
           ],
           "open": {
@@ -11658,7 +11678,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -11684,6 +11704,11 @@
               "at": "2026-09-25T14:39:35Z",
               "f1_odds": -276,
               "f2_odds": 222
+            },
+            {
+              "at": "2026-09-26T08:24:29Z",
+              "f1_odds": -271,
+              "f2_odds": 218
             }
           ],
           "open": {
@@ -12401,7 +12426,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -272,
         "close": null,
         "clv": null
@@ -12454,7 +12479,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 219,
         "close": null,
         "clv": null
@@ -15682,7 +15707,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Robert Bryczek",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": -108,
         "close": null,
         "clv": null
@@ -15693,7 +15718,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rodolfo Vieira",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": -108,
         "close": null,
         "clv": null
@@ -15748,7 +15773,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Ricky Simon",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": -176,
         "close": null,
         "clv": null
@@ -15759,7 +15784,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Montel Jackson",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": 149,
         "close": null,
         "clv": null
@@ -15792,7 +15817,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Ailin Perez",
         "side": "f1",
-        "points": 23,
+        "points": 24,
         "open": 111,
         "close": null,
         "clv": null
@@ -15803,7 +15828,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Norma Dumont",
         "side": "f2",
-        "points": 23,
+        "points": 24,
         "open": -130,
         "close": null,
         "clv": null
@@ -16059,7 +16084,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Ismail Naurdiev",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": 115,
         "close": null,
         "clv": null
@@ -16070,7 +16095,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Marvin Vettori",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": -135,
         "close": null,
         "clv": null
