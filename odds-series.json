@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T17:28:19Z",
+  "generated_at": "2026-09-26T17:33:40Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -9928,7 +9928,7 @@
           "f1": "Raul Rosas Jr.",
           "f2": "Raoni Barcelos",
           "lbl": "Main Event",
-          "points": 26,
+          "points": 27,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10059,6 +10059,11 @@
               "at": "2026-09-26T14:33:46Z",
               "f1_odds": -151,
               "f2_odds": 125
+            },
+            {
+              "at": "2026-09-26T17:33:40Z",
+              "f1_odds": -147,
+              "f2_odds": 122
             }
           ],
           "open": {
@@ -10193,7 +10198,7 @@
           "f1": "Brady Hiestand",
           "f2": "Rinya Nakamura",
           "lbl": "Prelim",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10284,6 +10289,11 @@
               "at": "2026-09-25T23:15:13Z",
               "f1_odds": 295,
               "f2_odds": -382
+            },
+            {
+              "at": "2026-09-26T17:33:40Z",
+              "f1_odds": 307,
+              "f2_odds": -398
             }
           ],
           "open": {
@@ -10298,7 +10308,7 @@
           "f1": "Rodolfo Bellato",
           "f2": "Christian Edwards",
           "lbl": "Prelim",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-09-18T00:53:46Z",
@@ -10394,6 +10404,11 @@
               "at": "2026-09-26T11:29:27Z",
               "f1_odds": -180,
               "f2_odds": 149
+            },
+            {
+              "at": "2026-09-26T17:33:40Z",
+              "f1_odds": -179,
+              "f2_odds": 148
             }
           ],
           "open": {
@@ -10873,7 +10888,7 @@
           "f1": "Mehemmedeli Osmanli",
           "f2": "Ilimbek Akylbek uulu",
           "lbl": "Main Card",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-09-20T11:58:20Z",
@@ -10914,6 +10929,11 @@
               "at": "2026-09-25T14:39:35Z",
               "f1_odds": -294,
               "f2_odds": 235
+            },
+            {
+              "at": "2026-09-26T17:33:40Z",
+              "f1_odds": -300,
+              "f2_odds": 240
             }
           ],
           "open": {
@@ -10928,7 +10948,7 @@
           "f1": "Melissa Amaya",
           "f2": "Valesca Machado",
           "lbl": "Main Card",
-          "points": 20,
+          "points": 21,
           "series": [
             {
               "at": "2026-09-20T11:58:20Z",
@@ -11029,6 +11049,11 @@
               "at": "2026-09-26T14:33:46Z",
               "f1_odds": 179,
               "f2_odds": -219
+            },
+            {
+              "at": "2026-09-26T17:33:40Z",
+              "f1_odds": 175,
+              "f2_odds": -215
             }
           ],
           "open": {
@@ -15750,7 +15775,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Raoni Barcelos",
         "side": "f1",
-        "points": 26,
+        "points": 27,
         "open": -180,
         "close": null,
         "clv": null
@@ -15761,7 +15786,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Raul Rosas Jr.",
         "side": "f2",
-        "points": 26,
+        "points": 27,
         "open": 153,
         "close": null,
         "clv": null
@@ -15794,7 +15819,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rinya Nakamura",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": 265,
         "close": null,
         "clv": null
@@ -15805,7 +15830,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Brady Hiestand",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": -325,
         "close": null,
         "clv": null
@@ -15816,7 +15841,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Christian Edwards",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": -160,
         "close": null,
         "clv": null
@@ -15827,7 +15852,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Rodolfo Bellato",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": 136,
         "close": null,
         "clv": null
@@ -15926,7 +15951,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Ilimbek Akylbek uulu",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -283,
         "close": null,
         "clv": null
@@ -15937,7 +15962,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Mehemmedeli Osmanli",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 228,
         "close": null,
         "clv": null
@@ -15948,7 +15973,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Valesca Machado",
         "side": "f1",
-        "points": 20,
+        "points": 21,
         "open": 162,
         "close": null,
         "clv": null
@@ -15959,7 +15984,7 @@
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
         "opponent": "Melissa Amaya",
         "side": "f2",
-        "points": 20,
+        "points": 21,
         "open": -195,
         "close": null,
         "clv": null
