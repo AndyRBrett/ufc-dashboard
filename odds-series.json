@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T05:14:30Z",
+  "generated_at": "2026-09-26T05:19:51Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -11286,7 +11286,7 @@
           "f1": "King Green",
           "f2": "Esteban Ribovics",
           "lbl": "Main Card",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11307,6 +11307,11 @@
               "at": "2026-09-25T18:53:35Z",
               "f1_odds": 230,
               "f2_odds": -280
+            },
+            {
+              "at": "2026-09-26T05:19:51Z",
+              "f1_odds": 222,
+              "f2_odds": -270
             }
           ],
           "open": {
@@ -11401,7 +11406,7 @@
           "f1": "Marcus McGhee",
           "f2": "Bernardo Sopaj",
           "lbl": "Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11422,6 +11427,11 @@
               "at": "2026-09-25T11:53:10Z",
               "f1_odds": -140,
               "f2_odds": 120
+            },
+            {
+              "at": "2026-09-26T05:19:51Z",
+              "f1_odds": -155,
+              "f2_odds": 135
             }
           ],
           "open": {
@@ -11436,7 +11446,7 @@
           "f1": "Johnny Walker",
           "f2": "Mick Parkin",
           "lbl": "Early Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11447,6 +11457,11 @@
               "at": "2026-09-25T00:13:57Z",
               "f1_odds": -142,
               "f2_odds": 122
+            },
+            {
+              "at": "2026-09-26T05:19:51Z",
+              "f1_odds": -152,
+              "f2_odds": 132
             }
           ],
           "open": {
@@ -12196,7 +12211,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Bernardo Sopaj",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -155,
         "close": null,
         "clv": null
@@ -13253,7 +13268,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Esteban Ribovics",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 245,
         "close": null,
         "clv": null
@@ -14234,7 +14249,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "King Green",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -300,
         "close": null,
         "clv": null
@@ -15989,7 +16004,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Marcus McGhee",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 135,
         "close": null,
         "clv": null
@@ -16000,7 +16015,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Mick Parkin",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -110,
         "close": null,
         "clv": null
@@ -16011,7 +16026,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Johnny Walker",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": -110,
         "close": null,
         "clv": null
