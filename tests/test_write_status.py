@@ -798,3 +798,48 @@ def test_load_odds_series_survives_a_missing_or_corrupt_file(tmp_path):
     bad = tmp_path / "odds-series.json"
     bad.write_text("{not json", encoding="utf-8")
     assert ws.load_odds_series(bad) == {}
+
+
+# --- a spent primary quota: the backup's partial view is the only evidence ----
+#
+# 2026-09-27: the primary key's quota ran out on 09-24, so every pull was
+# partial and no complete snapshot could be written. The last one aged out,
+# the day threshold took over, and a one-bout card 13 days out failed the run
+# every 5 minutes until the monthly reset.
+
+def _spent(partial_priced, fighters=None, at=None, date="2026-10-10"):
+    at = at or datetime.now(timezone.utc)
+    return {
+        "last_status": 401, "requests_remaining": 0,
+        "markets": {"2026-09-26": {"listed": 12, "priced": 12, "fighters": []}},
+        "markets_at": (datetime.now(timezone.utc) - timedelta(days=4)).isoformat(),
+        "markets_partial": {date: {"listed": partial_priced, "priced": partial_priced,
+                                   "fighters": fighters or []}},
+        "markets_partial_at": at.isoformat(),
+    }
+
+
+def test_partial_view_excuses_an_unpriced_card_only_while_the_primary_is_spent():
+    st = _spent(0)
+    assert ws.market_priced(st, "2026-10-10") is None          # complete snapshot stale
+    assert ws.partial_market_priced(st, "2026-10-10", ["allen", "duncan"]) is False
+    # Same partial view, but the primary is NOT spent (a transient error):
+    # no excuse, the conservative reading stands.
+    st["last_status"], st["requests_remaining"] = 500, 312
+    assert ws.partial_market_priced(st, "2026-10-10", ["allen", "duncan"]) is None
+
+
+def test_partial_view_that_prices_our_bout_keeps_an_empty_card_a_failure():
+    st = _spent(1, fighters=["allen", "duncan"])
+    assert ws.partial_market_priced(st, "2026-10-10", ["allen", "duncan"]) is True
+
+
+def test_partial_view_goes_stale_like_the_complete_one():
+    old = datetime.now(timezone.utc) - timedelta(hours=ws.MARKET_SIGNAL_MAX_AGE_H + 1)
+    assert ws.partial_market_priced(_spent(0, at=old), "2026-10-10", ["allen"]) is None
+
+
+def test_partial_view_never_decides_without_one():
+    st = _spent(0)
+    del st["markets_partial"], st["markets_partial_at"]
+    assert ws.partial_market_priced(st, "2026-10-10", ["allen"]) is None

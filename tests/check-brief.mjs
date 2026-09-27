@@ -13,6 +13,17 @@ import { fileURLToPath } from "node:url";
 import { transform } from "esbuild";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+// The live data files (data.js, odds-series.json, intel.json) are rewritten
+// by the scraper every few minutes, so a test anchored on them rots: once the
+// anchor card's results landed, the Lab skipped its finished bouts, the brief
+// lost its 📉 line, and this gate blocked every Pages deploy from 03:15 UTC on
+// 2026-09-27 — the live site froze mid-card while the repo kept updating. The
+// card would also have aged out of EVENTS eventually and failed it again.
+// So they are served from a frozen fight-week snapshot: the 2026-09-26 card as
+// it stood before its first bell. Code files are still read live from the repo.
+const FIX = join(ROOT, "tests/fixtures/fight-week");
+const DATA_FILES = new Set(["data.js", "odds-series.json", "intel.json"]);
+const served = (f) => join(DATA_FILES.has(f) ? FIX : ROOT, f);
 let failures = 0;
 const check = (name, cond) => cond ? console.log("  ✓ " + name) : (failures++, console.error("  ✗ " + name));
 
@@ -32,16 +43,8 @@ globalThis.fetch = async (url, init) => {
   url = String(url);
   if (url.startsWith(PAGES)) {
     const f = url.slice(PAGES.length).split("?")[0];
-    if (missing.has(f) || !existsSync(join(ROOT, f))) return new Response("nope", { status: 404 });
-    let body = readFileSync(join(ROOT, f), "utf8");
-    // The clock here is the Friday BEFORE the anchor card, when none of its
-    // bouts had a result. The committed data.js keeps updating after the card
-    // runs, and once its results land every bout counts as finished: the Lab
-    // skips finished bouts for line moves, so the brief lost its 📉 line and
-    // this gate went red on main (2026-09-27) with no code change at all.
-    // Serve the card as it stood on Friday.
-    if (f === "data.js") body += `\n;EVENTS.forEach(function(e){if(e.date===${JSON.stringify(CARD)})e.fights.forEach(function(x){x.winner="";x.method="";x.state="pre";});});`;
-    return new Response(body, { status: 200 });
+    if (missing.has(f) || !existsSync(served(f))) return new Response("nope", { status: 404 });
+    return new Response(readFileSync(served(f), "utf8"), { status: 200 });
   }
   if (url.startsWith(SB + "/rest/v1/picks")) return new Response(JSON.stringify(picksRows), { status: 200 });
   if (url === SB + "/functions/v1/send-push") {
@@ -71,12 +74,12 @@ async function runAt(iso) {
 // The committed card this is anchored on: Saturday 2026-09-26, prelims 17:00 ET.
 // Friday 19:00 EDT = 23:00 UTC.
 const CARD = "2026-09-26";
-const card = (() => { const m = /name:"([^"]+)",\s*date:"2026-09-26"/.exec(readFileSync(join(ROOT, "data.js"), "utf8")); return m && m[1]; })();
+const card = (() => { const m = /name:"([^"]+)",\s*date:"2026-09-26"/.exec(readFileSync(served("data.js"), "utf8")); return m && m[1]; })();
 if (!card) { console.error("  ✗ fixture: data.js no longer carries the 2026-09-26 card — re-anchor this test"); process.exit(1); }
 
 // A little group disagreement, so the brief has a "most disputed" line to find.
 const vm = await import("node:vm");
-const dctx = vm.createContext({}); vm.runInContext(readFileSync(join(ROOT, "data.js"), "utf8"), dctx);
+const dctx = vm.createContext({}); vm.runInContext(readFileSync(served("data.js"), "utf8"), dctx);
 const ev = dctx.EVENTS.find((e) => e.date === CARD);
 const b0 = ev.fights[1];
 picksRows = ["A", "B", "C", "D"].map((w, i) => ({ user_id: "u" + w, nickname: "🥊 " + w, event_date: CARD, f1: b0.f1.n, f2: b0.f2.n,
@@ -108,7 +111,7 @@ check("no brief on Thursday", r.briefs.length === 0);
   const thin = dctx.EVENTS.filter((e) => e.date > CARD && e.fights.length <= 3).pop();
   if (thin) {
     NOW = RealDate.parse(thin.date + "T00:00:00Z") - 86400000; globalThis.Date = FakeDate;
-    const t = await mod.composeBrief({ name: thin.name, date: thin.date, time: thin.time, prelimTime: thin.prelimTime }, readFileSync(join(ROOT, "data.js"), "utf8"), null, NOW);
+    const t = await mod.composeBrief({ name: thin.name, date: thin.date, time: thin.time, prelimTime: thin.prelimTime }, readFileSync(served("data.js"), "utf8"), null, NOW);
     globalThis.Date = RealDate;
     check("a thin card's brief still carries no per-user line", t.rich && !/You've picked/.test(t.body));
   } else check("fixture: a thin upcoming card exists for the per-user-line check", false);

@@ -392,10 +392,27 @@ def test_record_market_state_refuses_to_publish_a_partial_view():
     from datetime import datetime, timezone
     prev = {"markets": {"2026-06-28": {"listed": 11, "priced": 11}},
             "markets_at": "2026-06-21T09:00:00+00:00"}
+    now = datetime.now(timezone.utc)
+    state = scrape.record_market_state(
+        dict(prev), now,
+        {"2026-06-28": {"listed": 4, "priced": 4, "fighters": ["x"]}}, partial=True)
+    # The complete snapshot is untouched...
+    assert state["markets"] == prev["markets"]
+    assert state["markets_at"] == prev["markets_at"]
+    # ...and the partial view is kept apart, for write_status's spent-primary case.
+    assert state["markets_partial"]["2026-06-28"]["priced"] == 4
+    assert state["markets_partial_at"] == now.isoformat()
+
+
+def test_a_complete_market_snapshot_supersedes_a_partial_one():
+    from datetime import datetime, timezone
+    prev = {"markets_partial": {"2026-06-28": {"listed": 4, "priced": 4}},
+            "markets_partial_at": "2026-06-21T09:00:00+00:00"}
     state = scrape.record_market_state(
         dict(prev), datetime.now(timezone.utc),
-        {"2026-06-28": {"listed": 4, "priced": 4, "fighters": ["x"]}}, partial=True)
-    assert state == prev
+        {"2026-06-28": {"listed": 11, "priced": 11, "fighters": []}}, partial=False)
+    assert "markets_partial" not in state and "markets_partial_at" not in state
+    assert state["markets"]["2026-06-28"]["priced"] == 11
 
 
 def test_a_failed_provider_marks_the_run_partial(monkeypatch):

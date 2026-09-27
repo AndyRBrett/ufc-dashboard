@@ -18,6 +18,17 @@ import vm from "node:vm";
 import { transform } from "esbuild";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+// The live data files (data.js, odds-series.json, intel.json) are rewritten
+// by the scraper every few minutes, so a test anchored on them rots: once the
+// anchor card's results landed, the Lab skipped its finished bouts, the brief
+// lost its 📉 line, and this gate blocked every Pages deploy from 03:15 UTC on
+// 2026-09-27 — the live site froze mid-card while the repo kept updating. The
+// card would also have aged out of EVENTS eventually and failed it again.
+// So they are served from a frozen fight-week snapshot: the 2026-09-26 card as
+// it stood before its first bell. Code files are still read live from the repo.
+const FIX = join(ROOT, "tests/fixtures/fight-week");
+const DATA_FILES = new Set(["data.js", "odds-series.json", "intel.json"]);
+const served = (f) => join(DATA_FILES.has(f) ? FIX : ROOT, f);
 let failures = 0;
 const check = (name, cond) => cond ? console.log("  ✓ " + name) : (failures++, console.error("  ✗ " + name));
 
@@ -37,8 +48,8 @@ globalThis.fetch = async (url, init) => {
   url = String(url);
   if (url.startsWith(PAGES)) {
     const f = url.slice(PAGES.length).split("?")[0];
-    if (missing.has(f) || !existsSync(join(ROOT, f))) return new Response("nope", { status: 404 });
-    return new Response(readFileSync(join(ROOT, f), "utf8"), { status: 200 });
+    if (missing.has(f) || !existsSync(served(f))) return new Response("nope", { status: 404 });
+    return new Response(readFileSync(served(f), "utf8"), { status: 200 });
   }
   if (url.startsWith(SB + "/rest/v1/picks")) {
     picksUrls.push(url);
@@ -73,7 +84,7 @@ async function runAt(iso) {
 
 // Anchored on the committed Saturday 2026-09-26 card: prelims 17:00 ET, main 20:00 ET.
 const CARD = "2026-09-26";
-const dctx = vm.createContext({}); vm.runInContext(readFileSync(join(ROOT, "data.js"), "utf8"), dctx);
+const dctx = vm.createContext({}); vm.runInContext(readFileSync(served("data.js"), "utf8"), dctx);
 const ev = dctx.EVENTS.find((e) => e.date === CARD);
 if (!ev || ev.fights.length < 6) { console.error("  ✗ fixture: data.js no longer carries the 2026-09-26 card — re-anchor this test"); process.exit(1); }
 const main = ev.fights.find((f) => f.lbl === "Main Card");

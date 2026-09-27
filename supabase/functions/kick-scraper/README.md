@@ -69,7 +69,7 @@ hourly, and an idle week must not dispatch.
 | `GH_REPO`           | Optional, default `AndyRBrett/ufc-dashboard`.            |
 | `GH_WORKFLOW`       | Optional, default `update.yml`.                          |
 | `GH_REF`            | Optional, default `main`.                                |
-| `DATA_URL`          | Optional, schedule source for the cadence gate.          |
+| `DATA_URL`          | Optional, schedule source for the cadence gate. Defaults to the committed `data.js` on `main` (raw.githubusercontent), NOT the Pages copy: a blocked deploy must not hold a finished card at the live cadence. Leave unset. |
 | `FIGHT_WEEK_DAYS`   | Optional, default `7`. How far out counts as fight week. |
 | `FIGHT_WEEK_MIN_GAP_MIN` | Optional, default `60`. Minimum minutes between fight-week dispatches. |
 | `FORCE_SECRET`      | Optional. Separate operator credential for `?force=1`; unset disables forcing. |

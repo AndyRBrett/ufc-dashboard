@@ -14,10 +14,20 @@
 //
 // Deployed with --no-verify-jwt; inbound auth is enforced here via CRON_SECRET.
 
-// Schedule source used only to decide how hard to drive the scraper. Same file
-// the PWA loads.
+// Schedule source used only to decide how hard to drive the scraper: the
+// data.js the scraper itself last COMMITTED, not the copy on GitHub Pages.
+//
+// It used to be the Pages copy (the file the PWA loads), which made a feedback
+// loop: when the deploy gate blocked a publish, Pages kept a card that was
+// still mid-fight, this read it as "live", and every ping dispatched another
+// run that failed the same gate. On 2026-09-27 a broken test blocked deploys
+// from 03:15 UTC; the card finished in the repo within hours but Pages still
+// showed it unfinished, so the scraper ran (and emailed a failure) every 5
+// minutes all morning instead of dropping to the hourly fight-week cadence.
+// The repo is where the scraper's own view of the card lives, so a blocked
+// deploy can no longer hold it at the live-card cadence.
 const DATA_URL = Deno.env.get("DATA_URL") ??
-  "https://andyrbrett.github.io/ufc-dashboard/data.js";
+  "https://raw.githubusercontent.com/AndyRBrett/ufc-dashboard/main/data.js";
 
 // A card this far out is "fight week": the days when withdrawals, replacements
 // and the real line movement land. Ortega/Moicano came off UFC 331 four days

@@ -248,6 +248,47 @@ def market_priced(state, event_date, roster=None, now=None):
         return bool(set(fighters) & set(roster))
     return True
 
+def primary_budget_spent(state):
+    """True when the PRIMARY key's last call failed because its quota is spent.
+
+    Unlike odds_budget_exhausted this ignores the backup: it answers "are some
+    of our regions out of reach until the monthly reset?", which stays true
+    while the backup key keeps pulling its own (narrower) book set.
+    """
+    state = state or {}
+    return (state.get("last_status") in (401, 403)
+            and state.get("requests_remaining") == 0)
+
+
+def partial_market_priced(state, event_date, roster=None, now=None):
+    """What the last PARTIAL odds pull says about a card, while the primary is spent.
+
+    True  — the surviving provider priced a bout of ours on that date: lines
+            existed to read, so a card with none is still our failure.
+    False — it priced nothing of ours, AND the primary key's quota is spent,
+            so the regions only the primary covers could not have been asked.
+            That is the known, self-healing consequence of the spent quota, the
+            same thing classify_event already excuses as "odds-unavailable".
+    None  — no fresh partial view, or the primary is not the reason it was
+            partial (a transient error self-heals on the next complete pull, so
+            it keeps the conservative day-threshold reading).
+
+    Only consulted when market_priced() has no fresh complete snapshot. Without
+    it, a spent primary meant a complete snapshot could never be written again,
+    the old one aged out after MARKET_SIGNAL_MAX_AGE_H, and every imminent card
+    the backup does not price failed the run every 5 minutes until the reset
+    (2026-09-27: UFC Fight Night Allen vs. Duncan, one bout announced, 13 days out).
+    """
+    state = state or {}
+    view = {"markets": state.get("markets_partial"),
+            "markets_at": state.get("markets_partial_at", "")}
+    answer = market_priced(view, event_date, roster, now)
+    if answer is True:
+        return True
+    if answer is False and primary_budget_spent(state):
+        return False
+    return None
+
 # A single serialised fight: odds literal followed by both fighters' names.
 # Matches scrape.fight_js output, which emits each fight on one line.
 FIGHT_RE = re.compile(
@@ -847,7 +888,18 @@ def main():
         data_ok  = has_data(ev["fights"]) and fp != EMPTY_SHA
         ev_hist  = history.get(ev["event_id"], [])
         priced   = market_priced(odds_state, ev["date"], ev.get("roster"), now)
-        status_  = classify_event(ev, ev_hist, today, budget_dead, priced)
+        ev_budget_dead = budget_dead
+        if priced is None:
+            # No fresh complete snapshot. With the primary quota spent, the
+            # backup's partial view is the only evidence there is: a bout of
+            # ours it priced still makes an empty card our failure; nothing of
+            # ours priced means the card is out of reach until the reset.
+            partial = partial_market_priced(odds_state, ev["date"], ev.get("roster"), now)
+            if partial is True:
+                priced = True
+            elif partial is False:
+                ev_budget_dead = True
+        status_  = classify_event(ev, ev_hist, today, ev_budget_dead, priced)
         changed  = last_changed_at(ev_hist, ev["fights"], now_iso)
 
         try:

@@ -1,0 +1,183 @@
+{
+ "generated_at": "2026-09-27T11:58:14Z",
+ "window_days": 10,
+ "sources": [
+  {
+   "id": "mmajunkie",
+   "name": "MMA Junkie",
+   "status": 404,
+   "items": 0
+  },
+  {
+   "id": "mmafighting",
+   "name": "MMA Fighting",
+   "status": 404,
+   "items": 0
+  },
+  {
+   "id": "sherdog",
+   "name": "Sherdog",
+   "status": 200,
+   "items": 50
+  },
+  {
+   "id": "bloodyelbow",
+   "name": "Bloody Elbow",
+   "status": 200,
+   "items": 20
+  },
+  {
+   "id": "yt-ufc",
+   "name": "UFC",
+   "status": 200,
+   "items": 15
+  },
+  {
+   "id": "yt-mmaf",
+   "name": "MMA Fighting",
+   "status": 404,
+   "items": 0
+  }
+ ],
+ "events": {
+  "UFC_Fight_Night:_Rosas_Jr._vs._Barcelos": {
+   "name": "UFC Fight Night: Rosas Jr. vs. Barcelos",
+   "date": "2026-09-26",
+   "items": [
+    {
+     "title": "Raul Rosas Jr. gets $100K UFC bonus after frightening Barcelos finish",
+     "url": "https://www.sherdog.com/news/news/Raul-Rosas-Jr-gets-36100K-UFC-bonus-after-frightening-Barcelos-finish-202963",
+     "source": "Sherdog",
+     "kind": "article",
+     "published": "2026-09-26T23:57:12Z",
+     "thumb": null,
+     "blurb": "Despite a bizarre and frightening conclusion, Raul Rosas Jr. and Raoni Barcelos earned Fight of the Night honors for their bout at UFC Vegas 121 , highlighting the promotion’s post-fight bonus recipients. Rosas defeated…",
+     "fighters": [
+      "Raoni Barcelos",
+      "Raul Rosas Jr."
+     ]
+    },
+    {
+     "title": "Raul Rosas Jr. scores bizarre finish in UFC Vegas 121 main event",
+     "url": "https://www.sherdog.com/news/news/Raul-Rosas-Jr-scores-bizarre-finish-in-UFC-Vegas-121-main-event-202962",
+     "source": "Sherdog",
+     "kind": "article",
+     "published": "2026-09-26T23:57:08Z",
+     "thumb": null,
+     "blurb": "Raul Rosas Jr. scored a dramatic fifth-round knockout of Raoni Barcelos in his first UFC main event, extending his winning streak to six at UFC Vegas 121.",
+     "fighters": [
+      "Raoni Barcelos",
+      "Raul Rosas Jr."
+     ]
+    },
+    {
+     "title": "Raoni Barcelos’ coach offers positive update after frightening KO to Raul Rosas Jr… ‘Everyone can relax’",
+     "url": "https://bloodyelbow.com/2026/09/27/raoni-barcelos-coach-offers-positive-update-after-frightening-ko-to-raul-rosas-jr-everyone-can-relax/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-09-27T05:18:18Z",
+     "thumb": null,
+     "blurb": "It’s good news from Raoni Barcelos’ camp after his worrying knockout tonight in Las Vegas against Raul Rosas Jr. Barcelos was up on all three ...",
+     "fighters": [
+      "Raoni Barcelos",
+      "Raul Rosas Jr."
+     ]
+    },
+    {
+     "title": "Raul Rosas Jr pleads with fans to pray for rival Raoni Barcelos after wild UFC Vegas 121 finish",
+     "url": "https://bloodyelbow.com/2026/09/26/raul-rosas-jr-pleads-with-fans-to-pray-for-rival-raoni-barcelos-after-wild-ufc-vegas-121-finish/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-09-27T03:24:43Z",
+     "thumb": null,
+     "blurb": "Raul Rosas Jr’s latest UFC win ended in bizarre fashion – and he made sure to keep his celebration classy. After four rounds of war, ...",
+     "fighters": [
+      "Raoni Barcelos",
+      "Raul Rosas Jr."
+     ]
+    },
+    {
+     "title": "UFC Vegas 121 odds: Rosas Jr. favored, Jauregui opens at -1000",
+     "url": "https://www.sherdog.com/news/news/UFC-Vegas-121-odds-Rosas-Jr-favored-Jauregui-opens-at-1000-202947",
+     "source": "Sherdog",
+     "kind": "article",
+     "published": "2026-09-25T03:54:50Z",
+     "thumb": null,
+     "blurb": "The betting lines for UFC Vegas 121 have been released, with Raul Rosas Jr. favored against Raoni Barcelos in the main event.",
+     "fighters": [
+      "Raoni Barcelos",
+      "Raul Rosas Jr."
+     ]
+    },
+    {
+     "title": "Raul Rosas Jr. finishes Barcelos #ufcvegas121",
+     "url": "https://www.youtube.com/shorts/IuRvqcEmJr0",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-09-27T02:43:03Z",
+     "thumb": "https://i2.ytimg.com/vi/IuRvqcEmJr0/hqdefault.jpg",
+     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS, the digital subscription service of the UFC. Visit…",
+     "fighters": [
+      "Raul Rosas Jr."
+     ]
+    },
+    {
+     "title": "UFC Vegas 121 star happy to finally get her hands on bitter rival ‘without getting arrested’",
+     "url": "https://bloodyelbow.com/2026/09/26/ufc-vegas-121-star-happy-to-finally-get-her-hands-on-bitter-rival-without-getting-arrested/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-09-26T20:00:00Z",
+     "thumb": null,
+     "blurb": "It’s safe to say there is no love lost between Norma Dumont and Ailin Perez. The two top five women’s bantamweight contenders will co-headline Saturday’s ...",
+     "fighters": [
+      "Ailin Perez",
+      "Norma Dumont"
+     ]
+    },
+    {
+     "title": "Raul Rosas Jr. Octagon Interview | UFC Vegas 121",
+     "url": "https://www.youtube.com/watch?v=2MV-QMvjSBA",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-09-27T02:56:12Z",
+     "thumb": "https://i3.ytimg.com/vi/2MV-QMvjSBA/hqdefault.jpg",
+     "blurb": "Listen to Raul Rosas Jr. talk with Paul Felder after his win at UFC Vegas 121. UFC Vegas 121 RESULTS: https://ufc.ac/46LHl2N Watch UFC on Paramount Plus ➡️ https://www.paramountplus.com/ Subscribe to get all the latest…",
+     "fighters": [
+      "Raul Rosas Jr."
+     ]
+    }
+   ]
+  },
+  "UFC_332": {
+   "name": "UFC 332: Silva vs. Wang",
+   "date": "2026-10-03",
+   "items": [
+    {
+     "title": "UFC 332 Countdown - Full Episode",
+     "url": "https://www.youtube.com/watch?v=2v1rKTFJ8_0",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-09-27T11:45:30Z",
+     "thumb": "https://i3.ytimg.com/vi/2v1rKTFJ8_0/hqdefault.jpg",
+     "blurb": "UFC 332 Countdown previews the promotion’s return to Salt Lake City, where Brazil’s Natalia Silva and China’s Wang Cong battle for undisputed flyweight gold in the main event.. Watch UFC on Paramount Plus ➡️…",
+     "fighters": [
+      "Natalia Silva",
+      "Wang Cong"
+     ]
+    },
+    {
+     "title": "Natalia Silva’s coach makes bold claim about UFC 332 title fight",
+     "url": "https://www.sherdog.com/news/news/Natalia-Silvas-coach-makes-bold-claim-about-UFC-332-title-fight-202949",
+     "source": "Sherdog",
+     "kind": "article",
+     "published": "2026-09-25T04:20:18Z",
+     "thumb": null,
+     "blurb": "Natalia Silva ’s team believes her upcoming title bout will be a treat for fans.",
+     "fighters": [
+      "Natalia Silva"
+     ]
+    }
+   ]
+  }
+ }
+}

@@ -1590,16 +1590,33 @@ def record_market_state(state, now, dates=None, partial=None):
       a card priced only in the regions the failed provider covers would be
       absent from the surviving one's payload and read as unpriced. Timestamping
       that as fresh would hide the gap for the full staleness window.
+
+    A partial view is still kept — as `markets_partial`, never as `markets`.
+    It cannot say a card is UNpriced (the failed provider's regions are
+    missing), but it is the only evidence left while the primary key's monthly
+    quota is spent: that failure lasts until the reset, so the complete snapshot
+    ages out after MARKET_SIGNAL_MAX_AGE_H and write_status would otherwise be
+    back to guessing by date. It did exactly that on 2026-09-27 — primary spent
+    since 09-24, backup pricing every run, and a lone announced bout 13 days out
+    failed the run every 5 minutes. write_status reads the partial view only
+    for that case; see partial_market_priced.
     """
     dates = _market_dates if dates is None else dates
     partial = _market_partial if partial is None else partial
-    if not dates or partial:
-        if partial:
-            print("Odds market snapshot: not published — partial provider view",
-                  file=sys.stderr)
+    if not dates:
         return state
-    state["markets"] = {d: dict(c) for d, c in sorted(dates.items())}
+    snap = {d: dict(c) for d, c in sorted(dates.items())}
+    if partial:
+        print("Odds market snapshot: partial provider view — kept as "
+              "markets_partial, not published as complete", file=sys.stderr)
+        state["markets_partial"] = snap
+        state["markets_partial_at"] = now.isoformat()
+        return state
+    state["markets"] = snap
     state["markets_at"] = now.isoformat()
+    # A complete view supersedes any partial one.
+    state.pop("markets_partial", None)
+    state.pop("markets_partial_at", None)
     return state
 
 
