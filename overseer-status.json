@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-27T06:08:27Z",
+  "generated_at": "2026-09-27T06:13:33Z",
   "events_tracked": 12,
   "stale_events": 0,
-  "parse_failure_events": 0,
-  "awaiting_card_events": 4,
+  "parse_failure_events": 1,
+  "awaiting_card_events": 3,
   "odds_unavailable_events": 0,
   "odds_budget_exhausted": false,
   "odds_budget": {
@@ -60,7 +60,7 @@
       "has_data": true,
       "bout_count": 13,
       "line_movement": 132,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
@@ -70,7 +70,7 @@
       "has_data": true,
       "bout_count": 14,
       "line_movement": 130,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
@@ -80,7 +80,7 @@
       "has_data": true,
       "bout_count": 13,
       "line_movement": 0,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
@@ -90,7 +90,7 @@
       "has_data": true,
       "bout_count": 12,
       "line_movement": -45,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
@@ -100,7 +100,7 @@
       "has_data": true,
       "bout_count": 12,
       "line_movement": 32,
-      "odds_market_priced": true
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
@@ -110,27 +110,27 @@
       "has_data": true,
       "bout_count": 13,
       "line_movement": 26,
-      "odds_market_priced": true
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
-      "status": "awaiting-card",
-      "last_changed_at": "2026-09-27T06:08:27Z",
+      "status": "parse-failure",
+      "last_changed_at": "2026-09-27T06:13:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
       "line_movement": 0,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-27T06:08:27Z",
+      "last_changed_at": "2026-09-27T06:13:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
       "line_movement": 0,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
@@ -140,27 +140,27 @@
       "has_data": true,
       "bout_count": 8,
       "line_movement": 2,
-      "odds_market_priced": true
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-27T06:08:27Z",
+      "last_changed_at": "2026-09-27T06:13:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
       "line_movement": 0,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-27T06:08:27Z",
+      "last_changed_at": "2026-09-27T06:13:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
       "line_movement": 0,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
@@ -170,7 +170,7 @@
       "has_data": true,
       "bout_count": 12,
       "line_movement": 1,
-      "odds_market_priced": false
+      "odds_market_priced": null
     }
   ],
   "alerts": [
@@ -511,5 +511,7 @@
       "priority": 55.0
     }
   ],
-  "errors": []
+  "errors": [
+    "odds missing on an announced card (bouts parsed, zero priced): 2026-10-10:ufc-fight-night-allen-vs-duncan"
+  ]
 }
