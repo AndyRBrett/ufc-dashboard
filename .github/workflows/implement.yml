@@ -52,7 +52,7 @@ jobs:
       # toolchains are installed rather than guessing which one it needs.
       python_version: "3.12"
       node_version: "20"
-      install: pip install requests beautifulsoup4 pytest && npm ci
+      install: pip install --require-hashes -r requirements.txt -r requirements-dev.txt && npm ci
       test_command: python -m pytest -q
       test_note: >-
         If you touched the dashboard, data files, or edge functions, also run the

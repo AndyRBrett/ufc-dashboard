@@ -801,6 +801,12 @@ If a stage goes wrong: `docs/ROLLBACK.md` (known-good branch
   deploy serves raw source, so a change isn't "shipped" via the build.
 - Edge-function edits only go live after a Supabase deploy (the workflow above),
   not merely on git push.
+- **CI dependencies are pinned.** Python packages come from `requirements.txt`
+  (scraper) and `requirements-dev.txt` (pytest), installed with
+  `--require-hashes`; edit the `.in` files and regenerate with `pip-compile
+  --generate-hashes` (command in each file's header). Actions are pinned by
+  commit SHA, and the Supabase CLI by version in `deploy-functions.yml`: bump
+  any of them on purpose, in a commit that says so, never back to `latest`.
 
 ## Codex PR review
 
