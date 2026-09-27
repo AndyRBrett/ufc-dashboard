@@ -42,7 +42,9 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: supabase/setup-cli@ab058987d8d6c725971f6cf9d0b5c98467e30bd1 # v1
         with:
-          version: latest
+          # Pinned, not `latest`: a new CLI release shouldn't change how a
+          # function deploys without a commit saying so. Bump on purpose.
+          version: 2.118.0
       # --use-api: Supabase bundles each function server-side. Without it the
       # CLI pulls supabase/edge-runtime from ghcr.io on the runner, and that
       # registry's shared rate limit ("toomanyrequests") failed every deploy
