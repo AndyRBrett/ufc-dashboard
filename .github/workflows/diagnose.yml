@@ -2,6 +2,11 @@ name: Diagnose Wikipedia Access
 
 on:
   workflow_dispatch:
+    inputs:
+      pages:
+        description: "Comma-separated article titles to dump (default UFC_328)"
+        required: false
+        default: "UFC_328"
 
 jobs:
   diagnose:
@@ -13,35 +18,28 @@ jobs:
           python-version: "3.12"
       - run: pip install --require-hashes -r requirements.txt
       - name: Dump raw Wikipedia wikitext
+        env:
+          PAGES: ${{ inputs.pages }}
         run: |
           python3 << 'PYEOF'
           import requests, json
 
           AGENT = "UFC-Dashboard/1.0 (https://github.com/AndyRBrett/ufc-dashboard; andyrbrett@gmail.com)"
 
-          r = requests.get(
-              "https://en.wikipedia.org/w/api.php",
-              params={"action":"parse","page":"UFC_328","prop":"wikitext","format":"json"},
-              headers={"User-Agent": AGENT},
-              timeout=15
-          )
-          print("Status:", r.status_code)
-          wt = r.json().get("parse",{}).get("wikitext",{}).get("*","")
-          print("Length:", len(wt))
-
-          # Write full wikitext to file for artifact
+          import os, re
+          pages = [p.strip() for p in (os.environ.get("PAGES") or "UFC_328").split(",") if p.strip()]
           with open("wikitext_dump.txt", "w", encoding="utf-8") as f:
-              f.write(wt)
-
-          # Print the results section only
-          # Find anything that looks like fight results
-          import re
-          for keyword in ["fight results", "wikitable", "def.", "Decision", "TKO", "Submission"]:
-              idx = wt.find(keyword)
-              if idx > -1:
-                  print(f"\nFound '{keyword}' at pos {idx}:")
-                  print(repr(wt[max(0,idx-100):idx+400]))
-                  break
+              for page in pages:
+                  r = requests.get(
+                      "https://en.wikipedia.org/w/api.php",
+                      params={"action":"parse","page":page,"prop":"wikitext","format":"json"},
+                      headers={"User-Agent": AGENT},
+                      timeout=15
+                  )
+                  wt = r.json().get("parse",{}).get("wikitext",{}).get("*","")
+                  print(f"===== {page}: status {r.status_code}, length {len(wt)} =====")
+                  print(wt)
+                  f.write(f"===== {page} =====\n{wt}\n")
           PYEOF
       - name: Upload wikitext dump
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
