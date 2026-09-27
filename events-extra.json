@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-09-24T23:12:45Z",
+ "generated_at": "2026-09-27T12:08:13Z",
  "promotions": [
   {
    "id": "pfl",
@@ -40,32 +40,10 @@
      "round": null
     },
     {
-     "a": "Alexandr Shabliy",
-     "b": "Landry Ward",
+     "a": "Rafael do Nascimento",
+     "b": "Sarvarjon Khamidov",
      "label": "",
-     "division": "Lightweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Denis Goltsov",
-     "b": "Maxwell Djantou Nana",
-     "label": "",
-     "division": "Heavyweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Emiliano Sordi",
-     "b": "Abraham Bably",
-     "label": "",
-     "division": "Light Heavyweight",
+     "division": "Bantamweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -84,32 +62,10 @@
      "round": null
     },
     {
-     "a": "Rafael do Nascimento",
-     "b": "Sarvarjon Khamidov",
+     "a": "Emiliano Sordi",
+     "b": "Abraham Bably",
      "label": "",
-     "division": "Bantamweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Shannon Clark",
-     "b": "Lucero Acosta",
-     "label": "",
-     "division": "Women's Flyweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Eliezer Kubanza",
-     "b": "Trey Waters",
-     "label": "",
-     "division": "Welterweight",
+     "division": "Light Heavyweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -128,10 +84,43 @@
      "round": null
     },
     {
+     "a": "Shannon Clark",
+     "b": "Lucero Acosta",
+     "label": "",
+     "division": "Women's Flyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
      "a": "Cassio Barao Jr.",
      "b": "Kevin Pease",
      "label": "",
      "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Eliezer Kubanza",
+     "b": "Trey Waters",
+     "label": "",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Cobey Fehr",
+     "b": "Rosario Romero",
+     "label": "",
+     "division": "Bantamweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -150,10 +139,21 @@
      "round": null
     },
     {
-     "a": "Cobey Fehr",
-     "b": "Rosario Romero",
+     "a": "Noah Hermosillo",
+     "b": "Caden Cox",
      "label": "",
-     "division": "Bantamweight",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Benita van Rooij",
+     "b": "Giuliany Perea",
+     "label": "",
+     "division": "Women's Strawweight",
      "title": false,
      "odds": null,
      "winner": "",
