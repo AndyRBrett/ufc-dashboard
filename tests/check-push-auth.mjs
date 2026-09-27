@@ -59,20 +59,22 @@ const CHALS = {
     f1: null, f2: null, stake: "Dinner", status: "accepted", event_date: "2026-10-03" },
 };
 
-let sent = [], log = new Set();
+let sent = [], log = new Set(), dataReads = 0, picksReads = 0;
+const PRESENT = new Set();   // notif_log rows that already exist
 globalThis.__webpush = { setVapidDetails() {}, sendNotification: async (sub, payload) => { sent.push({ to: sub.endpoint.split("/").pop(), ...JSON.parse(payload) }); } };
 const inFilter = (url) => { const m = /user_id=in\.\(([^)]*)\)/.exec(decodeURIComponent(url)); return m ? m[1].split(",") : null; };
 globalThis.fetch = async (url, init = {}) => {
   url = String(url);
   const json = (b, status = 200) => new Response(JSON.stringify(b), { status });
-  if (url.startsWith(DATA)) return new Response(CARD, { status: 200 });
+  if (url.startsWith(DATA)) { dataReads++; return new Response(CARD, { status: 200 }); }
   if (url === SB + "/auth/v1/user") {
     const tok = (init.headers.Authorization || "").replace("Bearer ", "");
     return USERS[tok] ? json({ id: USERS[tok] }) : json({ msg: "bad jwt" }, 401);
   }
   if (url.startsWith(SB + "/rest/v1/notif_log")) {
     if ((init.method || "GET") === "POST") { log.add(init.body); return new Response("", { status: 201 }); }
-    return json([]);
+    const ty = decodeURIComponent((/type=eq\.([^&]+)/.exec(url) || [])[1] || "");
+    return json(PRESENT.has(ty) ? [{ event_date: "x" }] : []);
   }
   if (url.startsWith(SB + "/rest/v1/push_subs")) {
     const u = decodeURIComponent(url);
@@ -84,6 +86,7 @@ globalThis.fetch = async (url, init = {}) => {
     return json(rows);
   }
   if (url.startsWith(SB + "/rest/v1/picks")) {
+    picksReads++;
     const u = decodeURIComponent(url);
     if (!/promotion=eq\.ufc/.test(u)) return json({ error: "picks read without promotion=eq.ufc" }, 400);
     const eq = /user_id=eq\.([^&]+)/.exec(u);
@@ -147,6 +150,11 @@ for (const t of ["brief", "swap-old-bout"]) {
   check("...with the server's own text: '<winner> def. <loser>'", clean(r) && r.sent[0].title === "Your pick WON! 🔥" && r.sent[0].body === "José Aldo def. Sean O'Malley — you called it!");
   const l = await send({ event_date: "2026-10-03", type: "result:jose-aldo-sean-o-malley:loss" });
   check("...and the loss push to the people who picked the loser", l.status === 200 && l.to.join() === "b0b00000-0000-4000-8000-000000000002");
+  PRESENT.add("result:jose-aldo-sean-o-malley:win"); dataReads = 0; picksReads = 0;
+  const dup = await send({ event_date: "2026-10-03", type: "result:jose-aldo-sean-o-malley:win" });
+  check("an already-sent result is answered from the log before any rebuild (no data.js or picks read)",
+    dup.status === 200 && dup.j && dup.j.skipped === true && dataReads === 0 && picksReads === 0 && dup.sent.length === 0);
+  PRESENT.clear();
   const early = await send({ event_date: "2026-10-03", type: "result:ann-a-bea-b:win", ...FORGED });
   check("a result the committed data doesn't have yet is refused (409), not guessed", early.status === 409 && early.sent.length === 0);
 }
@@ -189,6 +197,10 @@ for (const t of ["brief", "swap-old-bout"]) {
   check("a nudge must be from its sender (Carol can't send Bob's)", spoof.status === 403);
   const fourth = await send({ event_date: "2026-10-03", type: "nudge-a11ce000-ca201000-4", include_user_ids: ["a11ce000-0000-4000-8000-000000000001"] }, { auth: jwt("carol") });
   check("...and at most the 3rd of the day", fourth.status === 403);
+  const otherDay = await send({ event_date: "2026-10-02", type: "nudge-a11ce000-ca201000-1", include_user_ids: ["a11ce000-0000-4000-8000-000000000001"] }, { auth: jwt("carol") });
+  check("...dated today only (another date would mint a fresh dedup key)", otherDay.status === 403 && otherDay.sent.length === 0);
+  const shortPrefix = await send({ event_date: "2026-10-03", type: "nudge-a11ce-ca201000-1", include_user_ids: ["a11ce000-0000-4000-8000-000000000001"] }, { auth: jwt("carol") });
+  check("...and naming the target's exact 8-char prefix (a shorter one would too)", shortPrefix.status === 403 && shortPrefix.sent.length === 0);
   const nudge = await send({ event_date: "2026-10-03", type: "nudge-a11ce000-ca201000-1", ...FORGED, include_user_ids: ["a11ce000-0000-4000-8000-000000000001"] }, { auth: jwt("carol") });
   check("a valid nudge reaches only its one target, with server text", nudge.status === 200 && nudge.to.join() === "a11ce000-0000-4000-8000-000000000001" && clean(nudge) && /^carol noticed/.test(nudge.sent[0].body));
 

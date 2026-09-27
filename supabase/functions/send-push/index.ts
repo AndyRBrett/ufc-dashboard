@@ -352,11 +352,16 @@ async function buildMsg(
       : { title: `🥊 ${nick} is locked in!`, body: `${nick} completed all main card picks for ${shortName(card)}`, exclude_user_id: me } };
   }
 
-  // Nudge: from you, to the one person the type names, at most 3 a day.
+  // Nudge: from you, to the one person the type names, at most 3 a day. The
+  // cap is the dedup key itself, so every part of it is pinned: today's date
+  // (UTC, as the app sends it), the target's and sender's exact 8-char id
+  // prefixes, and a slot of 1-3. Otherwise a new date or a shorter prefix
+  // would mint a fresh key and a 4th, 5th... nudge.
   const nm = /^nudge-([\w]{1,8})-([\w]{1,8})-(\d+)$/.exec(t);
   if (nm) {
     const to = Array.isArray(body.include_user_ids) ? body.include_user_ids : [];
-    if (nm[2] !== me.slice(0, 8) || to.length !== 1 || !UID_RE.test(to[0]) || !to[0].startsWith(nm[1]) || +nm[3] < 1 || +nm[3] > 3) {
+    if (date !== new Date(now).toISOString().slice(0, 10) || nm[2] !== me.slice(0, 8) || to.length !== 1 ||
+        !UID_RE.test(to[0]) || nm[1] !== to[0].slice(0, 8) || !/^[1-3]$/.test(nm[3])) {
       return { ok: false, status: 403, error: "Bad nudge" };
     }
     const card = (await loadCards()).filter((c) => c.date >= date && c.fights.some((f) => f.state === "pre"))
@@ -398,6 +403,12 @@ async function buildMsg(
     if (!to.length) return { ok: false, status: 400, error: "No valid targets" };
   }
   return { ok: true, msg: { title: `🎤 ${persona} (via ${nick})`, body: text, include_user_ids: to, exclude_user_id: me } };
+}
+
+async function alreadySent(sb: string, h: Record<string, string>, date: string, type: string): Promise<boolean> {
+  const r = await fetch(`${sb}/rest/v1/notif_log?event_date=eq.${encodeURIComponent(date)}&type=eq.${encodeURIComponent(type)}&select=event_date`, { headers: h });
+  const rows = await r.json().catch(() => null);
+  return Array.isArray(rows) && rows.length > 0;
 }
 
 interface ReqBody {
@@ -578,6 +589,12 @@ Deno.serve(async (req) => {
     if (SERVICE_ONLY.test(body.type)) {
       return new Response(JSON.stringify({ error: "Not allowed for this caller" }), { status: 403, headers: CORS });
     }
+    // Already sent? Answer before the rebuild: every phone that sees a result
+    // asks for the same push, and rebuilding reads data.js and a card's picks.
+    // (The atomic claim below still decides the race.)
+    if (await alreadySent(SUPABASE_URL, sbHeaders, body.event_date, body.type)) {
+      return new Response(JSON.stringify({ sent: 0, skipped: true }), { status: 200, headers: CORS });
+    }
     let built: Built;
     try { built = await buildMsg(body, caller, SUPABASE_URL, sbHeaders, Date.now()); }
     catch (e) { return new Response(JSON.stringify({ error: "Could not build notification", detail: String(e).slice(0, 200) }), { status: 502, headers: CORS }); }
@@ -590,12 +607,7 @@ Deno.serve(async (req) => {
   }
 
   // Deduplicate: check if already sent for this event + type
-  const logCheck = await fetch(
-    `${SUPABASE_URL}/rest/v1/notif_log?event_date=eq.${encodeURIComponent(body.event_date)}&type=eq.${encodeURIComponent(body.type)}&select=event_date`,
-    { headers: sbHeaders }
-  );
-  const logRows = await logCheck.json();
-  if (Array.isArray(logRows) && logRows.length > 0) {
+  if (await alreadySent(SUPABASE_URL, sbHeaders, body.event_date, body.type)) {
     return new Response(JSON.stringify({ sent: 0, skipped: true }), { status: 200, headers: CORS });
   }
 
