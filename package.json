@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "UFC Picks PWA \u2014 optional static-asset minification build",
+  "description": "UFC Picks PWA — optional static-asset minification build",
   "scripts": {
     "build": "node build.mjs",
     "check:web": "node tests/check-web.mjs",
@@ -36,12 +36,14 @@
     "check:pushauth": "node tests/check-push-auth.mjs",
     "build:fn": "node scripts/build-fn-bundle.mjs",
     "check:bundle": "node scripts/build-fn-bundle.mjs --check",
+    "check:picklock": "node tests/check-pick-lock.mjs",
     "check:promotion": "node tests/check-promotion.mjs",
     "check:sports": "node tests/check-sports.mjs",
     "fightbot": "node fightbot/server.mjs",
-    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:provider && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew && npm run check:prefs && npm run check:picks && npm run check:kick && npm run check:lock && npm run check:recap && npm run check:wrapped && npm run check:locks && npm run check:lab && npm run check:fightbot && npm run check:brief && npm run check:swap && npm run check:iq && npm run check:parity && npm run check:rooms && npm run check:promotion && npm run check:sports && npm run check:pushauth && npm run check:bundle"
+    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:provider && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew && npm run check:prefs && npm run check:picks && npm run check:kick && npm run check:lock && npm run check:recap && npm run check:wrapped && npm run check:locks && npm run check:lab && npm run check:fightbot && npm run check:brief && npm run check:swap && npm run check:iq && npm run check:parity && npm run check:rooms && npm run check:promotion && npm run check:sports && npm run check:pushauth && npm run check:bundle && npm run check:picklock"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
     "esbuild": "^0.24.0",
     "html-minifier-terser": "^7.2.0",
     "playwright": "^1.56.0",
