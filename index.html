@@ -2987,9 +2987,13 @@ function _sbFetchAll(query){
   return _ensureFreshToken().then(function(){return page(0,[],false);});
 }
 function fetchCommunityPicks(){
-  _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,method,nickname,user_id,updated_at,bonus_pick&order=updated_at.asc,event_date.asc,f1.asc,f2.asc"+PICKS_UFC).then(function(rows){
+  _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,method,confidence,nickname,user_id,updated_at,bonus_pick&order=updated_at.asc,event_date.asc,f1.asc,f2.asc"+PICKS_UFC).then(function(rows){
     if(!Array.isArray(rows))return;
-    _commRows=rows;   // activity feed derives lock-ins/streaks/belt from the same rows
+    // activity feed derives lock-ins/streaks/belt from the same rows, and the
+    // card recap + Year Wrapped score them — so this select must carry every
+    // column pickPts reads (method, confidence = 🔒 lock, bonus_pick = FOTN).
+    // Without `confidence` the recap dropped every lock the board counted.
+    _commRows=rows;
     try{checkCardRecap(rows);}catch(e){console.warn("[recap]",e);}
     try{checkWrappedPopup(rows);}catch(e){console.warn("[wrapped]",e);}
     // One name = one vote per fight. Stale duplicate identities (a user whose
