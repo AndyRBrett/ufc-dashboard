@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-27T13:13:01Z",
+  "generated_at": "2026-09-27T13:28:39Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -11522,7 +11522,7 @@
           "f1": "Deiveson Figueiredo",
           "f2": "Payton Talbott",
           "lbl": "Co-Main",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-09-06T12:52:36Z",
@@ -11563,6 +11563,11 @@
               "at": "2026-09-27T05:43:27Z",
               "f1_odds": 460,
               "f2_odds": -687
+            },
+            {
+              "at": "2026-09-27T13:28:38Z",
+              "f1_odds": 463,
+              "f2_odds": -695
             }
           ],
           "open": {
@@ -11832,7 +11837,7 @@
           "f1": "Rafael dos Anjos",
           "f2": "Alexander Hernandez",
           "lbl": "Early Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11848,6 +11853,11 @@
               "at": "2026-09-27T05:43:27Z",
               "f1_odds": 202,
               "f2_odds": -248
+            },
+            {
+              "at": "2026-09-27T13:28:38Z",
+              "f1_odds": 208,
+              "f2_odds": -258
             }
           ],
           "open": {
@@ -12195,7 +12205,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Payton Talbott",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": 412,
         "close": null,
         "clv": null
@@ -16371,7 +16381,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Deiveson Figueiredo",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": -550,
         "close": null,
         "clv": null
@@ -16468,7 +16478,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Alexander Hernandez",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": 186,
         "close": null,
         "clv": null
@@ -16479,7 +16489,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Rafael dos Anjos",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -220,
         "close": null,
         "clv": null

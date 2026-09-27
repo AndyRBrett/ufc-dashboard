@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-09-27T13:13:01Z",
+  "generated_at": "2026-09-27T13:28:38Z",
   "events_tracked": 12,
   "stale_events": 0,
-  "parse_failure_events": 1,
+  "parse_failure_events": 0,
   "awaiting_card_events": 3,
-  "odds_unavailable_events": 0,
+  "odds_unavailable_events": 1,
   "odds_budget_exhausted": false,
   "odds_budget": {
     "exhausted": false,
@@ -105,17 +105,17 @@
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "status": "ok",
-      "last_changed_at": "2026-09-27T11:48:36Z",
+      "last_changed_at": "2026-09-27T13:28:38Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
       "line_movement": 26,
-      "odds_market_priced": null
+      "odds_market_priced": true
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
-      "status": "parse-failure",
-      "last_changed_at": "2026-09-27T13:13:01Z",
+      "status": "odds-unavailable",
+      "last_changed_at": "2026-09-27T13:28:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-27T13:13:01Z",
+      "last_changed_at": "2026-09-27T13:28:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -140,12 +140,12 @@
       "has_data": true,
       "bout_count": 8,
       "line_movement": 2,
-      "odds_market_priced": null
+      "odds_market_priced": true
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-27T13:13:01Z",
+      "last_changed_at": "2026-09-27T13:28:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -155,7 +155,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-27T13:13:01Z",
+      "last_changed_at": "2026-09-27T13:28:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -367,6 +367,22 @@
       "priority": 203.0
     },
     {
+      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+      "f1": "Deiveson Figueiredo",
+      "f2": "Payton Talbott",
+      "f1_movement": 51,
+      "f2_movement": -145,
+      "magnitude": 145,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 45,
+      "low_confidence": false,
+      "wc": "Bantamweight",
+      "f1_prob_shift": -1.8,
+      "f2_prob_shift": 2.8,
+      "priority": 203.0
+    },
+    {
       "event_id": "2026-08-29:ufc-fight-night-nurmagomedov-vs-song",
       "f1": "Rei Tsuruya",
       "f2": "Kevin Borjas",
@@ -381,22 +397,6 @@
       "f1_prob_shift": 2.8,
       "f2_prob_shift": -2.7,
       "priority": 200.0
-    },
-    {
-      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
-      "f1": "Deiveson Figueiredo",
-      "f2": "Payton Talbott",
-      "f1_movement": 48,
-      "f2_movement": -137,
-      "magnitude": 137,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 45,
-      "low_confidence": false,
-      "wc": "Bantamweight",
-      "f1_prob_shift": -1.7,
-      "f2_prob_shift": 2.7,
-      "priority": 191.8
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
@@ -511,7 +511,5 @@
       "priority": 55.0
     }
   ],
-  "errors": [
-    "odds missing on an announced card (bouts parsed, zero priced): 2026-10-10:ufc-fight-night-allen-vs-duncan"
-  ]
+  "errors": []
 }
