@@ -273,6 +273,16 @@ check("closeWhatsNew releases a recap queued behind it",
   const f = fn("fetchCommunityPicks");
   check("community fetch selects bonus_pick (FOTN) and feeds checkCardRecap",
     /select=[^"]*bonus_pick/.test(f) && /checkCardRecap\(rows\)/.test(f));
+  // The recap (and Year Wrapped) score these boot rows with the board's own
+  // pickPts, so every column it reads must be fetched. The first card with
+  // 🔒 locks showed AB 9.5 on the board and less in the recap: the select
+  // had no `confidence`, so every lock silently scored as no lock.
+  const sel = (f.match(/select=([^&"]*)/) || [])[1] || "";
+  const cols = sel.split(",");
+  const missing = ["pick", "method", "confidence", "bonus_pick", "event_date", "f1", "f2", "nickname", "updated_at"]
+    .filter((c) => !cols.includes(c));
+  check("community fetch selects every column scoring reads (missing: " + (missing.join(",") || "none") + ")",
+    missing.length === 0);
 }
 check("checkCardRecap waits for What's New instead of stacking on it",
   /wn-overlay[\s\S]*?_recapQueued=date/.test(fn("checkCardRecap")));

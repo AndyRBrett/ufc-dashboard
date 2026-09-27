@@ -33,7 +33,15 @@ globalThis.fetch = async (url, init) => {
   if (url.startsWith(PAGES)) {
     const f = url.slice(PAGES.length).split("?")[0];
     if (missing.has(f) || !existsSync(join(ROOT, f))) return new Response("nope", { status: 404 });
-    return new Response(readFileSync(join(ROOT, f), "utf8"), { status: 200 });
+    let body = readFileSync(join(ROOT, f), "utf8");
+    // The clock here is the Friday BEFORE the anchor card, when none of its
+    // bouts had a result. The committed data.js keeps updating after the card
+    // runs, and once its results land every bout counts as finished: the Lab
+    // skips finished bouts for line moves, so the brief lost its 📉 line and
+    // this gate went red on main (2026-09-27) with no code change at all.
+    // Serve the card as it stood on Friday.
+    if (f === "data.js") body += `\n;EVENTS.forEach(function(e){if(e.date===${JSON.stringify(CARD)})e.fights.forEach(function(x){x.winner="";x.method="";x.state="pre";});});`;
+    return new Response(body, { status: 200 });
   }
   if (url.startsWith(SB + "/rest/v1/picks")) return new Response(JSON.stringify(picksRows), { status: 200 });
   if (url === SB + "/functions/v1/send-push") {
