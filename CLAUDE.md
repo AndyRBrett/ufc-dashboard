@@ -124,6 +124,23 @@ just a push. Its three modes (`live` every ping, `fight-week` hourly, `idle`
 never) are held by `npm run check:kick`; widening `idle` is what let a cancelled
 bout sit on UFC 331 for days.
 
+**The gate reads the COMMITTED `data.js` (raw.githubusercontent, `main`), never
+the Pages copy.** Reading Pages made a loop: a blocked deploy left Pages showing
+a card still mid-fight, the gate read it as `live`, and every ping dispatched
+another run that failed the same gate. On 2026-09-27 a broken test blocked
+deploys from 03:15 UTC and the scraper ran, and emailed a failure, every 5
+minutes all morning instead of hourly. Don't point `DATA_URL` back at Pages.
+
+**A test must never anchor on the live data files.** `data.js`,
+`odds-series.json` and `intel.json` change every few minutes, and `verify` gates
+every Pages deploy, so a test that reads a real card from them breaks the moment
+that card's results land or it ages out, and it freezes the live site mid-card.
+That is what happened with `check:brief` above. Tests that need a real card read
+the frozen snapshot in `tests/fixtures/fight-week/` (the 2026-09-26 card before
+its first bell). Only checks that validate the data itself (`check:web`,
+`fighter-rename`'s collision scan, `check:intel`'s advisory block) read the live
+files.
+
 Two budgets to respect when changing cadence:
 
 - **Odds API calls are quota-metered.** `should_fetch_odds` gates them on elapsed
@@ -173,6 +190,15 @@ could quietly stop working:
 
 The signal ages out (`MARKET_SIGNAL_MAX_AGE_H`, 72h) back to the day threshold,
 which errs loud.
+
+**Except while the primary key's quota is spent.** That lasts until the monthly
+reset, so no complete snapshot can be written and the old one always ages out.
+A partial run is therefore kept as `markets_partial` (never as `markets`), and
+`write_status.partial_market_priced` reads it only when the primary is spent. If
+the backup priced a bout of ours, an empty card is still a parse failure. If it
+priced nothing of ours, the card is `odds-unavailable` (a warning): its regions
+could not be asked. Without this, a one-bout card 13 days out failed every run
+from 2026-09-27 06:08 UTC until the reset.
 
 ## Fight Week Intel costs nothing — keep it that way
 
