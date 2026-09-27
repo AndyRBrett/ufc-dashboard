@@ -51,6 +51,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:sports` | the sport switcher showing with nothing to pick, a PFL pick saved untagged or after its lock, or another sport scored on the UFC board |
 | `npm run check:rooms` | a room's board scoring differently from the main board, an anonymous device joining a room, or an invite link re-joining / re-prompting |
 | `npm run check:bundle` | send-reminders running last release's Lab code (a stale `_shared/lab-bundle.js`), or `parseDataJs` reading data.js differently from running it |
+| `npm run check:picklock` | the database accepting a pick, a changed pick or a deleted pick after its bout's segment started, or send-reminders writing lock times off the app's rule |
 | `npm run check:pushauth` | a push sent with text or an audience the server didn't build, a user sending as someone else, or the anon key sending anything but the rebuilt backups |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
@@ -533,6 +534,40 @@ the article's section headings — `parse_upcoming_card` reads `{{MMAevent bout}
 templates and throws the headings away. `_MAIN_CARD_SIZE` and
 `_PRELIM_CARD_SIZE` pin the exceptions to the standard 5 / 4 / rest shape. When
 the parser learns to read the headings, both tables retire together.
+
+## The database enforces the pick lock too
+
+The app's `fightLocked` only stops the app. `0010_picks_lock.sql` adds the
+`picks_enforce_lock` trigger, so a direct REST call can't do it either. For
+anon/authenticated callers on UFC rows, once a bout's lock time plus
+`LOCK_GRACE` (5 minutes) has passed:
+
+- **INSERT is skipped** (returns NULL), never an error: `syncPick` upserts, and
+  one late row must not fail the rest of a batch. An upsert on a locked bout
+  therefore never reaches its UPDATE half.
+- **UPDATE keeps** the pick, method, 🔒, bout and owner as they were; anything
+  else (the nickname rename across every row) still applies.
+- **DELETE is skipped**, so a losing 🔒 can't be deleted to dodge its −1.
+  "Delete account" goes through the `delete_my_picks()` RPC, which runs as the
+  owner and so is let through.
+- `bonus_pick` freezes at the card's first bell.
+
+**The lock times come from send-reminders**, because the card lives in
+`data.js`: every run, `lockRows` writes each nearby card's per-bout times to
+`pick_locks` (names lower-cased and sorted) and its bells to `card_bells`, by
+the app's own rule and the bundled `isMainCardBout` / `isEarlyPrelimBout`. A
+bout with no row falls back to its card's **first** bell; a card with no row at
+all locks at midnight ET after its date. So a broken sync fails open only until
+the card is over, and a past card is always locked. First, not last: rows match
+on lower-cased trimmed names, but `nmKey` also forgives accents, hyphens,
+suffixes and inner spacing, so a respelled name finds no row yet still scores.
+The app always writes `data.js`'s exact names, so real picks match their row.
+An UPDATE is out of scope only if the row is non-UFC before *and* after, or a
+locked pick could be moved to another promotion and then deleted. Our own functions
+(service_role) and the SQL editor bypass the trigger. A phone that was offline
+through the bell loses the picks it never uploaded: that trade was accepted
+when this shipped (2026-09-27). `check:picklock` runs the real migration in
+PGlite (Postgres in WASM), mutation-tested.
 
 ## Locks 🔒 ride in the old `confidence` column — and only count from `LOCKS_START`
 

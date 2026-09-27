@@ -36,6 +36,9 @@ jobs:
         run: npm run check:brief
       - name: Replaced-bout alert test
         run: npm run check:swap
+      # send-reminders writes the lock times the pick-lock trigger reads.
+      - name: Server-side pick lock test
+        run: npm run check:picklock
       - name: Fight IQ write-up test
         run: npm run check:iq
 

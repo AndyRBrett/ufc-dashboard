@@ -4041,7 +4041,13 @@ function deleteAccount(){
   _authReady.then(function(){
     var h=_sbHeaders();
     // Delete the user's own rows first, using the current authenticated session.
-    return fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h}).then(function(r){
+    // Through delete_my_picks (0010): the pick-lock trigger refuses a plain
+    // DELETE of any bout whose segment has started, which is every past card.
+    // A 404 means the RPC isn't there yet, and then nothing refuses the delete.
+    return fetch(SUPABASE_URL+"/rest/v1/rpc/delete_my_picks",{method:"POST",headers:Object.assign({"Content-Type":"application/json"},h),body:"{}"}).then(function(r){
+      if(r.status!==404)return r;
+      return fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h});
+    }).then(function(r){
       if(!r.ok)throw new Error("delete "+r.status);
       return fetch(SUPABASE_URL+"/rest/v1/push_subs?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h}).catch(function(){})
         // The delete dialog promises to remove "notification settings", and

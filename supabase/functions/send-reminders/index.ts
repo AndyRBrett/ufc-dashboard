@@ -181,6 +181,47 @@ export async function composeBrief(ev: Ev, js: string, sb: { url: string; key: s
   }
 }
 
+// ── Pick locks for the database ─────────────────────────────────────────────
+// migrations/0010_picks_lock.sql refuses a pick once its bout's segment has
+// started, but the card lives in data.js, not the database. So every run
+// writes each nearby card's per-bout lock times (pick_locks) and its first and
+// last bells (card_bells), by the app's own rule (fightLocked in index.html):
+// a main-card bout locks at the main card, an early prelim at the early
+// prelims when the card has them, anything else at the prelims, and a bout
+// with no segment time at the card's first bell. isMainCardBout /
+// isEarlyPrelimBout come from the bundled scoring.js, so the two can't differ.
+// Names are stored lower-cased and sorted, as the trigger looks them up.
+export const LOCK_WINDOW_PAST_MS = 2 * 864e5;   // a card that just ended
+export const LOCK_WINDOW_AHEAD_MS = 8 * 864e5;  // fight week and a bit
+export function lockRows(events: any[], k: any, now: number) {
+  const bouts: { event_date: string; a: string; b: string; lock_at: string }[] = [];
+  const cards: { event_date: string; first_bell: string; last_bell: string }[] = [];
+  const iso = (t: number) => new Date(t).toISOString();
+  const seen = new Set<string>();
+  for (const e of events || []) {
+    if (!e || typeof e.date !== "string" || !Array.isArray(e.fights)) continue;
+    const bells = [e.earlyPrelimTime, e.prelimTime, e.time].map((t) => phaseUtc(e.date, t)).filter((t) => t !== null) as number[];
+    if (!bells.length) continue;
+    const first = Math.min(...bells), last = Math.max(...bells);
+    if (last < now - LOCK_WINDOW_PAST_MS || first > now + LOCK_WINDOW_AHEAD_MS) continue;
+    cards.push({ event_date: e.date, first_bell: iso(first), last_bell: iso(last) });
+    for (const f of e.fights) {
+      const n1 = f && f.f1 && f.f1.n, n2 = f && f.f2 && f.f2.n;
+      if (typeof n1 !== "string" || typeof n2 !== "string" || !n1.trim() || !n2.trim()) continue;
+      const t = k.isMainCardBout(f) ? phaseUtc(e.date, e.time)
+        : k.isEarlyPrelimBout(f) && e.earlyPrelimTime ? phaseUtc(e.date, e.earlyPrelimTime)
+        : phaseUtc(e.date, e.prelimTime || e.time);
+      const x = n1.trim().toLowerCase(), y = n2.trim().toLowerCase();
+      const [a, b] = x < y ? [x, y] : [y, x];
+      const key = e.date + "|" + a + "|" + b;
+      if (seen.has(key)) continue;                // one upsert may not touch a row twice
+      seen.add(key);
+      bouts.push({ event_date: e.date, a, b, lock_at: iso(t ?? first) });
+    }
+  }
+  return { bouts, cards };
+}
+
 // ── Replaced-bout alerts ────────────────────────────────────────────────────
 // Picks are stored by fighter name, so when a fighter withdraws and the card
 // changes, the old pick simply stops matching any bout: it never scores, and
@@ -365,6 +406,27 @@ Deno.serve(async (req) => {
     })
     .slice(0, MAX_EVENTS);
 
+  // Pick lock times for the database trigger (see lockRows). Best-effort: a
+  // failure leaves the last written times in place, and the trigger falls back
+  // to locking a card from midnight ET after its date.
+  let locks: unknown = null;
+  if (SB_SERVICE_ROLE_KEY) {
+    try {
+      const { bouts, cards } = lockRows(parseDataJs(js).EVENTS || [], bundledKernel({}), now);
+      const h = { "Content-Type": "application/json", apikey: SB_SERVICE_ROLE_KEY, Authorization: `Bearer ${SB_SERVICE_ROLE_KEY}`,
+                  Prefer: "resolution=merge-duplicates,return=minimal" };
+      const stamp = new Date(now).toISOString();
+      const put = (table: string, conflict: string, rows: any[]) => rows.length
+        ? fetch(`${SUPABASE_URL}/rest/v1/${table}?on_conflict=${conflict}`, { method: "POST", headers: h, body: JSON.stringify(rows.map((r) => ({ ...r, updated_at: stamp }))) })
+            .then((r) => r.status)
+        : Promise.resolve(204);
+      const [bs, cs] = await Promise.all([put("pick_locks", "event_date,a,b", bouts), put("card_bells", "event_date", cards)]);
+      locks = { bouts: bouts.length, cards: cards.length, status: [bs, cs] };
+    } catch (e) {
+      locks = { error: (e as Error).message };
+    }
+  }
+
   // Phase → push copy, byte-for-byte from index.html `checkNotifSchedule`.
   const short = (name: string) => name.split(":")[0];
   let sent = 0, fired = 0;
@@ -474,7 +536,7 @@ Deno.serve(async (req) => {
   }
 
   return new Response(
-    JSON.stringify({ events: events.length, fired, sent, reminders: out, brief, swaps }),
+    JSON.stringify({ events: events.length, fired, sent, reminders: out, brief, swaps, locks }),
     { status: 200, headers: { "Content-Type": "application/json" } },
   );
 });
