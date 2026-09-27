@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T23:59:30Z",
+  "generated_at": "2026-09-27T00:05:01Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -9922,7 +9922,7 @@
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Raul Rosas Jr.",
@@ -10076,8 +10076,15 @@
             "f1_odds": -180,
             "f2_odds": 153
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-26T20:35:00Z",
+            "f1_odds": -148,
+            "f2_odds": 123
+          },
+          "clv": {
+            "f1_odds": 32,
+            "f2_odds": -30
+          }
         },
         {
           "f1": "Rodolfo Vieira",
@@ -10206,8 +10213,15 @@
             "f1_odds": -108,
             "f2_odds": -108
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-26T23:38:32Z",
+            "f1_odds": -682,
+            "f2_odds": 403
+          },
+          "clv": {
+            "f1_odds": -574,
+            "f2_odds": 511
+          }
         },
         {
           "f1": "Brady Hiestand",
@@ -10326,8 +10340,15 @@
             "f1_odds": 265,
             "f2_odds": -325
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-26T23:38:32Z",
+            "f1_odds": 293,
+            "f2_odds": -380
+          },
+          "clv": {
+            "f1_odds": 28,
+            "f2_odds": -55
+          }
         },
         {
           "f1": "Rodolfo Bellato",
@@ -10446,8 +10467,15 @@
             "f1_odds": -160,
             "f2_odds": 136
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-26T20:35:00Z",
+            "f1_odds": -177,
+            "f2_odds": 147
+          },
+          "clv": {
+            "f1_odds": -17,
+            "f2_odds": 11
+          }
         },
         {
           "f1": "Montel Jackson",
@@ -10566,8 +10594,15 @@
             "f1_odds": -176,
             "f2_odds": 149
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-26T20:35:00Z",
+            "f1_odds": -228,
+            "f2_odds": 186
+          },
+          "clv": {
+            "f1_odds": -52,
+            "f2_odds": 37
+          }
         },
         {
           "f1": "John Castaneda",
@@ -10691,8 +10726,15 @@
             "f1_odds": -280,
             "f2_odds": 232
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-26T20:35:00Z",
+            "f1_odds": -347,
+            "f2_odds": 272
+          },
+          "clv": {
+            "f1_odds": -67,
+            "f2_odds": 40
+          }
         },
         {
           "f1": "Norma Dumont",
@@ -10841,8 +10883,15 @@
             "f1_odds": 111,
             "f2_odds": -130
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-26T23:38:32Z",
+            "f1_odds": 136,
+            "f2_odds": -166
+          },
+          "clv": {
+            "f1_odds": 25,
+            "f2_odds": -36
+          }
         },
         {
           "f1": "Vanessa Demopoulos",
@@ -10936,8 +10985,15 @@
             "f1_odds": 451,
             "f2_odds": -600
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-26T20:35:00Z",
+            "f1_odds": 600,
+            "f2_odds": -920
+          },
+          "clv": {
+            "f1_odds": 149,
+            "f2_odds": -320
+          }
         },
         {
           "f1": "Mehemmedeli Osmanli",
@@ -11006,8 +11062,15 @@
             "f1_odds": -283,
             "f2_odds": 228
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-26T23:38:32Z",
+            "f1_odds": -312,
+            "f2_odds": 248
+          },
+          "clv": {
+            "f1_odds": -29,
+            "f2_odds": 20
+          }
         },
         {
           "f1": "Melissa Amaya",
@@ -11131,8 +11194,15 @@
             "f1_odds": 162,
             "f2_odds": -195
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-26T20:35:00Z",
+            "f1_odds": 170,
+            "f2_odds": -208
+          },
+          "clv": {
+            "f1_odds": 8,
+            "f2_odds": -13
+          }
         },
         {
           "f1": "Mickey Gall",
@@ -11186,8 +11256,15 @@
             "f1_odds": -164,
             "f2_odds": 136
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-24T15:13:34Z",
+            "f1_odds": -145,
+            "f2_odds": 121
+          },
+          "clv": {
+            "f1_odds": 19,
+            "f2_odds": -15
+          }
         },
         {
           "f1": "Luis Hernandez",
@@ -11241,8 +11318,15 @@
             "f1_odds": -222,
             "f2_odds": 182
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-26T23:38:32Z",
+            "f1_odds": -235,
+            "f2_odds": 189
+          },
+          "clv": {
+            "f1_odds": -13,
+            "f2_odds": 7
+          }
         }
       ]
     },
@@ -15862,8 +15946,8 @@
         "side": "f1",
         "points": 28,
         "open": -180,
-        "close": null,
-        "clv": null
+        "close": -148,
+        "clv": 32
       }
     ],
     "Raoni Barcelos": [
@@ -15873,8 +15957,8 @@
         "side": "f2",
         "points": 28,
         "open": 153,
-        "close": null,
-        "clv": null
+        "close": 123,
+        "clv": -30
       }
     ],
     "Rodolfo Vieira": [
@@ -15884,8 +15968,8 @@
         "side": "f1",
         "points": 23,
         "open": -108,
-        "close": null,
-        "clv": null
+        "close": -682,
+        "clv": -574
       }
     ],
     "Robert Bryczek": [
@@ -15895,8 +15979,8 @@
         "side": "f2",
         "points": 23,
         "open": -108,
-        "close": null,
-        "clv": null
+        "close": 403,
+        "clv": 511
       }
     ],
     "Brady Hiestand": [
@@ -15906,8 +15990,8 @@
         "side": "f1",
         "points": 21,
         "open": 265,
-        "close": null,
-        "clv": null
+        "close": 293,
+        "clv": 28
       }
     ],
     "Rinya Nakamura": [
@@ -15917,8 +16001,8 @@
         "side": "f2",
         "points": 21,
         "open": -325,
-        "close": null,
-        "clv": null
+        "close": -380,
+        "clv": -55
       }
     ],
     "Rodolfo Bellato": [
@@ -15928,8 +16012,8 @@
         "side": "f1",
         "points": 21,
         "open": -160,
-        "close": null,
-        "clv": null
+        "close": -177,
+        "clv": -17
       }
     ],
     "Christian Edwards": [
@@ -15939,8 +16023,8 @@
         "side": "f2",
         "points": 21,
         "open": 136,
-        "close": null,
-        "clv": null
+        "close": 147,
+        "clv": 11
       }
     ],
     "Montel Jackson": [
@@ -15950,8 +16034,8 @@
         "side": "f1",
         "points": 21,
         "open": -176,
-        "close": null,
-        "clv": null
+        "close": -228,
+        "clv": -52
       }
     ],
     "Ricky Simon": [
@@ -15961,8 +16045,8 @@
         "side": "f2",
         "points": 21,
         "open": 149,
-        "close": null,
-        "clv": null
+        "close": 186,
+        "clv": 37
       }
     ],
     "John Castaneda": [
@@ -15972,8 +16056,8 @@
         "side": "f1",
         "points": 22,
         "open": -280,
-        "close": null,
-        "clv": null
+        "close": -347,
+        "clv": -67
       }
     ],
     "Alateng Heili": [
@@ -15983,8 +16067,8 @@
         "side": "f2",
         "points": 22,
         "open": 232,
-        "close": null,
-        "clv": null
+        "close": 272,
+        "clv": 40
       }
     ],
     "Norma Dumont": [
@@ -15994,8 +16078,8 @@
         "side": "f1",
         "points": 27,
         "open": 111,
-        "close": null,
-        "clv": null
+        "close": 136,
+        "clv": 25
       }
     ],
     "Ailin Perez": [
@@ -16005,8 +16089,8 @@
         "side": "f2",
         "points": 27,
         "open": -130,
-        "close": null,
-        "clv": null
+        "close": -166,
+        "clv": -36
       }
     ],
     "Vanessa Demopoulos": [
@@ -16016,8 +16100,8 @@
         "side": "f1",
         "points": 16,
         "open": 451,
-        "close": null,
-        "clv": null
+        "close": 600,
+        "clv": 149
       }
     ],
     "Yazmin Jauregui": [
@@ -16027,8 +16111,8 @@
         "side": "f2",
         "points": 16,
         "open": -600,
-        "close": null,
-        "clv": null
+        "close": -920,
+        "clv": -320
       }
     ],
     "Mehemmedeli Osmanli": [
@@ -16038,8 +16122,8 @@
         "side": "f1",
         "points": 11,
         "open": -283,
-        "close": null,
-        "clv": null
+        "close": -312,
+        "clv": -29
       }
     ],
     "Ilimbek Akylbek uulu": [
@@ -16049,8 +16133,8 @@
         "side": "f2",
         "points": 11,
         "open": 228,
-        "close": null,
-        "clv": null
+        "close": 248,
+        "clv": 20
       }
     ],
     "Melissa Amaya": [
@@ -16060,8 +16144,8 @@
         "side": "f1",
         "points": 22,
         "open": 162,
-        "close": null,
-        "clv": null
+        "close": 170,
+        "clv": 8
       }
     ],
     "Valesca Machado": [
@@ -16071,8 +16155,8 @@
         "side": "f2",
         "points": 22,
         "open": -195,
-        "close": null,
-        "clv": null
+        "close": -208,
+        "clv": -13
       }
     ],
     "Mickey Gall": [
@@ -16082,8 +16166,8 @@
         "side": "f1",
         "points": 8,
         "open": -164,
-        "close": null,
-        "clv": null
+        "close": -145,
+        "clv": 19
       }
     ],
     "Sedriques Dumas": [
@@ -16093,8 +16177,8 @@
         "side": "f2",
         "points": 8,
         "open": 136,
-        "close": null,
-        "clv": null
+        "close": 121,
+        "clv": -15
       },
       {
         "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
@@ -16102,8 +16186,8 @@
         "side": "f2",
         "points": 8,
         "open": 182,
-        "close": null,
-        "clv": null
+        "close": 189,
+        "clv": 7
       }
     ],
     "Luis Hernandez": [
@@ -16113,8 +16197,8 @@
         "side": "f1",
         "points": 8,
         "open": -222,
-        "close": null,
-        "clv": null
+        "close": -235,
+        "clv": -13
       }
     ],
     "Payton Talbott": [
