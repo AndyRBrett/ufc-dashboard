@@ -13,7 +13,7 @@
 // hands to send-push.
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import vm from "node:vm";
 import { transform } from "esbuild";
 
@@ -42,12 +42,13 @@ class FakeDate extends RealDate {
   constructor(...a) { super(...(a.length ? a : [NOW])); }
   static now() { return NOW; }
 }
-let pushes = [], missing = new Set(), picksRows = [], picksUrls = [];
+let pagesFetched = [], pushes = [], missing = new Set(), picksRows = [], picksUrls = [];
 const PAGE_CAP = 1000;
 globalThis.fetch = async (url, init) => {
   url = String(url);
   if (url.startsWith(PAGES)) {
     const f = url.slice(PAGES.length).split("?")[0];
+    pagesFetched.push(f);
     if (missing.has(f) || !existsSync(served(f))) return new Response("nope", { status: 404 });
     return new Response(readFileSync(served(f), "utf8"), { status: 200 });
   }
@@ -69,7 +70,11 @@ let handler = null;
 globalThis.Deno = { env: { get: (k) => ENV[k] }, serve: (h) => { handler = h; } };
 const src = readFileSync(join(ROOT, "supabase/functions/send-reminders/index.ts"), "utf8");
 const { code } = await transform(src, { loader: "ts", format: "esm" });
-const mod = await import("data:text/javascript;base64," + Buffer.from(code).toString("base64"));
+// A data: URL has no base to resolve ../_shared/ against, so point those imports at the files.
+const linked = code.replace(/from "\.\.\/_shared\/([\w-]+\.js)"/g,
+  (_m, f) => `from "${pathToFileURL(join(ROOT, "supabase/functions/_shared", f)).href}"`);
+check("send-reminders imports the bundled Lab code (nothing to fetch and run)", /_shared\/lab-bundle\.js/.test(src) && linked !== code);
+const mod = await import("data:text/javascript;base64," + Buffer.from(linked).toString("base64"));
 check("send-reminders exports the swap finder", typeof handler === "function" && typeof mod.findSwaps === "function");
 
 async function runAt(iso) {
@@ -173,11 +178,12 @@ r = await runAt("2026-09-25T20:00:00Z");
 check("nobody left to tell means no push at all", r.swaps.length === 0);
 check("every swap send the handler can make carries include_user_ids", /include_user_ids: s\.users/.test(src) && /if \(!users\.length\) continue;/.test(src));
 
-// 7. It can't take the reminders down with it.
-missing = new Set(["scoring.js"]);
+// 7. Name matching is bundled: nothing from Pages is fetched to run.
+missing = new Set(["scoring.js", "index.html", "lab/engine.js", "lab/analytics.js"]);
+pagesFetched = [];
 picksRows = [...onCard, row("uT", "Mickey Gall", stays)];
 r = await runAt("2026-09-25T20:00:00Z");
-check("with scoring.js unreachable: no swap push, still 200", r.status === 200 && r.swaps.length === 0);
+check("swap alerts need no code from Pages", r.status === 200 && r.swaps.length === 1 && pagesFetched.every((f) => f === "data.js" || /\.json$/.test(f)));
 missing = new Set();
 
 if (failures) { console.error(`\ncheck-swap: ${failures} failure(s).`); process.exit(1); }
