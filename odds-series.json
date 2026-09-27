@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-27T08:03:17Z",
+  "generated_at": "2026-09-27T08:08:23Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -11327,6 +11327,33 @@
             "f1_odds": -13,
             "f2_odds": 7
           }
+        },
+        {
+          "f1": "Ilimbek Akylbek Uulu",
+          "f2": "Mehemmedeli Osmanli",
+          "lbl": "Main Card",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-09-27T08:08:23Z",
+              "f1_odds": 248,
+              "f2_odds": -312
+            }
+          ],
+          "open": {
+            "at": "2026-09-27T08:08:23Z",
+            "f1_odds": 248,
+            "f2_odds": -312
+          },
+          "close": {
+            "at": "2026-09-27T08:08:23Z",
+            "f1_odds": 248,
+            "f2_odds": -312
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         }
       ]
     },
@@ -16189,6 +16216,15 @@
         "open": -283,
         "close": -312,
         "clv": -29
+      },
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Ilimbek Akylbek Uulu",
+        "side": "f2",
+        "points": 1,
+        "open": -312,
+        "close": -312,
+        "clv": 0
       }
     ],
     "Ilimbek Akylbek uulu": [
@@ -16264,6 +16300,17 @@
         "open": -222,
         "close": -235,
         "clv": -13
+      }
+    ],
+    "Ilimbek Akylbek Uulu": [
+      {
+        "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
+        "opponent": "Mehemmedeli Osmanli",
+        "side": "f1",
+        "points": 1,
+        "open": 248,
+        "close": 248,
+        "clv": 0
       }
     ],
     "Payton Talbott": [
