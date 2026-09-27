@@ -28,6 +28,10 @@ jobs:
       # voice, so it gates the deploy alongside the syntax check.
       - name: Trash-talk model routing test
         run: npm run check:provider
+      # send-reminders runs the Lab's code from _shared/lab-bundle.js; a stale
+      # bundle would compose the brief with last release's rules.
+      - name: Edge-function Lab bundle is fresh
+        run: npm run check:bundle
       - name: Friday brief push test
         run: npm run check:brief
       - name: Replaced-bout alert test

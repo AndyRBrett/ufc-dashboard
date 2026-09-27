@@ -9,7 +9,7 @@
 // files, and records exactly what it hands to send-push.
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { transform } from "esbuild";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -38,11 +38,12 @@ class FakeDate extends RealDate {
   constructor(...a) { super(...(a.length ? a : [NOW])); }
   static now() { return NOW; }
 }
-let pushes = [], missing = new Set(), picksRows = [];
+let pagesFetched = [], pushes = [], missing = new Set(), picksRows = [];
 globalThis.fetch = async (url, init) => {
   url = String(url);
   if (url.startsWith(PAGES)) {
     const f = url.slice(PAGES.length).split("?")[0];
+    pagesFetched.push(f);
     if (missing.has(f) || !existsSync(served(f))) return new Response("nope", { status: 404 });
     return new Response(readFileSync(served(f), "utf8"), { status: 200 });
   }
@@ -58,7 +59,11 @@ let handler = null;
 globalThis.Deno = { env: { get: (k) => ENV[k] }, serve: (h) => { handler = h; } };
 const src = readFileSync(join(ROOT, "supabase/functions/send-reminders/index.ts"), "utf8");
 const { code } = await transform(src, { loader: "ts", format: "esm" });
-const mod = await import("data:text/javascript;base64," + Buffer.from(code).toString("base64"));
+// A data: URL has no base to resolve ../_shared/ against, so point those imports at the files.
+const linked = code.replace(/from "\.\.\/_shared\/([\w-]+\.js)"/g,
+  (_m, f) => `from "${pathToFileURL(join(ROOT, "supabase/functions/_shared", f)).href}"`);
+check("send-reminders imports the bundled Lab code (nothing to fetch and run)", /_shared\/lab-bundle\.js/.test(src) && linked !== code);
+const mod = await import("data:text/javascript;base64," + Buffer.from(linked).toString("base64"));
 check("send-reminders registers a handler and exports the brief gate", typeof handler === "function" && typeof mod.briefDue === "function");
 
 async function runAt(iso) {
@@ -118,10 +123,25 @@ check("no brief on Thursday", r.briefs.length === 0);
 }
 
 // 2. It degrades to a plain teaser rather than sending nothing.
-missing = new Set(["lab/analytics.js"]);
+missing = new Set(["odds-series.json"]);
 r = await runAt("2026-09-25T23:10:00Z");
-check("with the Lab code unreachable, a plain teaser still goes out", r.briefs.length === 1 && r.json.brief.rich === false && /Main card 8pm ET/.test(r.briefs[0].body));
+check("with the odds file unreachable, a plain teaser still goes out", r.briefs.length === 1 && r.json.brief.rich === false && /Main card 8pm ET/.test(r.briefs[0].body));
 missing = new Set();
+
+// 2b. Nothing from Pages is ever run: the service-role key lives in this isolate.
+pagesFetched = [];
+r = await runAt("2026-09-25T23:05:00Z");
+check("the rich brief fetches only data from Pages, never code",
+  r.json.brief && r.json.brief.rich === true && pagesFetched.length > 0 && pagesFetched.every((f) => f === "data.js" || /\.json$/.test(f)));
+check("send-reminders has no new Function / eval", !/new Function|\beval\(/.test(src));
+{
+  globalThis.__pwned = false;
+  const evil = readFileSync(served("data.js"), "utf8") + "\nvar X=(globalThis.__pwned=true);";
+  NOW = RealDate.parse("2026-09-25T23:05:00Z"); globalThis.Date = FakeDate;
+  const t = await mod.composeBrief({ name: card, date: CARD, time: ev.time, prelimTime: ev.prelimTime }, evil, null, NOW);
+  globalThis.Date = RealDate;
+  check("a data.js carrying code is refused, not run (plain teaser)", globalThis.__pwned === false && t.rich === false);
+}
 
 // 3. The gate itself.
 const ET = (d, t) => ({ name: "UFC X", date: d, time: t, prelimTime: "" });

@@ -28,6 +28,7 @@
 #   check:rooms     — a room's board is the main board filtered; only email accounts join; invites work
 #   check:promotion — every UFC picks query is scoped to promotion=eq.ufc (other sports never reach the UFC board)
 #   check:sports    — the sport switcher: hidden with nothing to pick, PFL picks tagged pfl, its own board and locks
+#   check:bundle    — send-reminders' bundled Lab code matches lab/, scoring.js and index.html
 name: Validate Web
 
 on:
@@ -109,3 +110,5 @@ jobs:
         run: npm run check:promotion
       - name: Sport switcher
         run: npm run check:sports
+      - name: Edge-function Lab bundle is fresh
+        run: npm run check:bundle
