@@ -330,7 +330,13 @@ Deno.serve(async (req) => {
   if (!SUPABASE_URL || !SB_ANON_KEY) {
     return new Response(JSON.stringify({ error: "Server misconfigured" }), { status: 500, headers: { "Content-Type": "application/json" } });
   }
-  const pushHeaders = { "Content-Type": "application/json", "Authorization": `Bearer ${SB_ANON_KEY}` };
+  // X-Service-Key tells send-push this is one of our own functions: the brief
+  // and swap alerts are service-only, and their copy is sent as given. Without
+  // it those two are refused (main/prelim reminders still go, rebuilt there).
+  const SB_SERVICE_ROLE_KEY = Deno.env.get("SB_SERVICE_ROLE_KEY") ?? "";
+  if (!SB_SERVICE_ROLE_KEY) console.error("send-reminders: SB_SERVICE_ROLE_KEY unset; brief and swap pushes will be refused");
+  const pushHeaders: Record<string, string> = { "Content-Type": "application/json", "Authorization": `Bearer ${SB_ANON_KEY}` };
+  if (SB_SERVICE_ROLE_KEY) pushHeaders["X-Service-Key"] = SB_SERVICE_ROLE_KEY;
 
   let js: string;
   try {

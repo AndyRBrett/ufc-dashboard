@@ -223,7 +223,11 @@ Deno.serve(async (req) => {
   const SB_SERVICE_ROLE_KEY = Deno.env.get("SB_SERVICE_ROLE_KEY") ?? "";
 
   const anonHeaders = { "apikey": SB_ANON_KEY, "Authorization": `Bearer ${SB_ANON_KEY}` };
-  const pushHeaders = { "Content-Type": "application/json", "Authorization": `Bearer ${SB_ANON_KEY}` };
+  // X-Service-Key tells send-push this is one of our own functions, so it sends
+  // the text and audience given (from anyone else it rebuilds them). Without
+  // the key a result still goes out, rebuilt from data.js, once that has it.
+  const pushHeaders: Record<string, string> = { "Content-Type": "application/json", "Authorization": `Bearer ${SB_ANON_KEY}` };
+  if (SB_SERVICE_ROLE_KEY) pushHeaders["X-Service-Key"] = SB_SERVICE_ROLE_KEY;
 
   const now = Date.now();
   const lo = ymd(new Date(now - LOOKBACK_DAYS * 864e5));

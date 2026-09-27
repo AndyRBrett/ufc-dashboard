@@ -5302,17 +5302,26 @@ function mainCardChallengeOpen(ev){
 // opts: {includeIds:[uid,…] target specific users, url:"./?…" tap deep-link,
 // kind:"challenge"|… SW tap routing}. Resolves to the server's JSON ({sent}
 // or {skipped:true} when the event_date+type pair was already sent).
+// Every client send goes through here. It carries the session JWT: send-push
+// now sends social pushes only as the verified sender and builds their text
+// itself (title/body below are ignored unless the server can't read a JWT).
+// One retry with the anon key on a 401 covers the minutes a Pages deploy can
+// run ahead of the send-push deploy, and a token that expired mid-session
+// (reminders and results still go on the anon key; social pushes need sign-in).
+function _pushPost(req){
+  var go=function(auth){return fetch(SUPABASE_URL+"/functions/v1/send-push",{method:"POST",headers:{"Content-Type":"application/json","Authorization":auth},body:JSON.stringify(req)});};
+  return Promise.resolve(_authReady).catch(function(){}).then(function(){
+    var auth=_authBearer(),anon="Bearer "+SUPABASE_ANON;
+    return go(auth).then(function(r){return r.status===401&&auth!==anon?go(anon):r;});
+  });
+}
 function _triggerPush(evDate,type,title,body,excludeUid,opts){
   var req={event_date:evDate,type:type,title:title,body:body,exclude_user_id:excludeUid||null};
   if(opts&&opts.includeIds)req.include_user_ids=opts.includeIds;
   if(opts&&opts.url)req.url=opts.url;
   if(opts&&opts.kind)req.kind=opts.kind;
   var send=function(){
-    return fetch(SUPABASE_URL+"/functions/v1/send-push",{
-      method:"POST",
-      headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-      body:JSON.stringify(req)
-    }).then(function(r){return r.json();}).catch(function(){return null;});
+    return _pushPost(req).then(function(r){return r.json();}).catch(function(){return null;});
   };
   // Also exclude this device's own push endpoint. When the sender is excluding
   // themselves (excludeUid is this user), their push_subs row may be registered
@@ -7118,10 +7127,7 @@ function fireTrashTalk(){
     title:"🎤 "+fxPersona+" (via "+fxSender+")",body:pushBody,exclude_user_id:USER_ID};
   if(includeIds)req.include_user_ids=includeIds;
   var send=function(){
-    fetch(SUPABASE_URL+"/functions/v1/send-push",{
-      method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-      body:JSON.stringify(req)
-    }).then(function(r){
+    _pushPost(req).then(function(r){
       // Don't claim success on a server rejection (e.g. 400/429) — surface it
       // and re-enable the button so the user knows the trash talk didn't send.
       if(!r.ok){r.text().then(function(t){console.error("trash-talk push failed",r.status,t);});btn.disabled=false;toast("⚠️ Trash talk didn't send ("+r.status+")");return;}
@@ -9910,15 +9916,11 @@ document.addEventListener("DOMContentLoaded",function(){
         [["win",winners,"Your pick WON! 🔥",winner+" def. "+loser+" — you called it!"],
          ["loss",losers,"Tough luck ❌",winner+" def. "+loser]].forEach(function(g){
           if(!g[1].length)return;
-          fetch(SUPABASE_URL+"/functions/v1/send-push",{
-            method:"POST",
-            headers:{"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
-            body:JSON.stringify({event_date:ev.date,type:"result:"+fightKey+":"+g[0],
+          _pushPost({event_date:ev.date,type:"result:"+fightKey+":"+g[0],
               title:g[2],body:g[3],
               safe_title:"🥊 Fight result is in",
               safe_body:"A fight you picked is final — open the app to see how you did. (No spoilers here!)",
-              include_user_ids:g[1]})
-          }).then(function(r){return r.json();}).then(function(j){
+              include_user_ids:g[1]}).then(function(r){return r.json();}).then(function(j){
             console.log("[UFC live poll] result push",g[0],fightKey,j);
           }).catch(function(){});
         });
