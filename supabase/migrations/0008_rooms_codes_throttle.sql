@@ -63,6 +63,10 @@ declare me text := auth.uid()::text; r rooms; misses int; want text;
 begin
   if me is null then raise exception 'not signed in'; end if;
   if not public.is_account() then raise exception 'link an email first'; end if;
+  -- One join at a time per account: without this, a burst of concurrent wrong
+  -- guesses each counts the same committed misses before any of their own rows
+  -- is visible, and every one of them gets past the cap. Released at commit.
+  perform pg_advisory_xact_lock(hashtext('room_join:' || me));
   select count(*) into misses from room_join_misses where user_id = me and at > now() - interval '1 hour';
   if misses >= 10 then raise exception 'too many attempts'; end if;
   want := upper(regexp_replace(coalesce(p_code, ''), '[^0-9A-Za-z]', '', 'g'));

@@ -210,6 +210,8 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   check("0008: a miss is recorded and returned as null, never raised (a raise would roll the record back)",
     /if r\.id is null then\s+insert into room_join_misses[\s\S]*?return null;/.test(jr) && !/raise exception 'no such room'/.test(jr));
   check("0008: the throttle is checked before the lookup", jr.indexOf("too many attempts") < jr.indexOf("from rooms where"));
+  check("0008: joins are serialised per account before the miss count (a concurrent burst can't all pass it)",
+    /pg_advisory_xact_lock\(hashtext\('room_join:' \|\| me\)\)/.test(jr) && jr.indexOf("pg_advisory_xact_lock") < jr.indexOf("select count(*) into misses"));
   check("0008: codes skip the UUID's fixed version/variant bytes (6 and 8)", /array\[0, 1, 2, 3, 4, 5, 7, 9, 10, 11\]/.test(sql));
 }
 {
