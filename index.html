@@ -7603,7 +7603,7 @@ function _recapLine(n){return n>0?"+"+n:String(n);}
 function _recapTitleText(t){
   var em="🏆",main="",sub="";
   if(t.kind==="won"){main=t.name+" won the title";sub=t.pts+" pts on the night";}
-  else if(t.kind==="taken"){main=t.name+" took the title";sub="from "+t.from+" with "+t.pts+" pts";}
+  else if(t.kind==="taken"){main=t.name+" took the title";sub="from "+t.from+" · "+t.pts+" pts on the night";}
   else if(t.kind==="defended"){main=t.name+" defended the title";sub=t.defenses+(t.defenses===1?" defence":" defences")+" in this reign";}
   else if(t.kind==="vacated"){em="🫥";main="The title is vacant";sub=t.name+" lost it and the challengers finished dead level";}
   else {em="🥊";main="No title change";sub="Nobody scored on this card";}
