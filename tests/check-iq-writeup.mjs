@@ -63,7 +63,7 @@ async function ask(over = {}, viewer, extra = {}) {
   const who = viewer ?? "viewer-" + (seq + 1);
   const res = await handler(new Request("https://fn/ai-breakdown", {
     method: "POST",
-    headers: { Authorization: extra.auth ?? "Bearer tok." + who + ".sig", "Content-Type": "application/json", "x-forwarded-for": "10.0.0." + (++seq % 250) },
+    headers: { Authorization: extra.auth ?? "Bearer tok." + who + ".sig", "Content-Type": "application/json", "x-forwarded-for": extra.ip ?? "10.0.0." + (++seq % 250) },
     body: JSON.stringify({ action: extra.action ?? "fight-iq", iq: { ...facts, ...over }, ...(extra.body || {}) }),
   }));
   return { status: res.status, json: await res.json(), calls };
@@ -120,6 +120,26 @@ DB.rows.set("greedy|all", M.AI_DAILY_CAP);
 r = await ask({}, "greedy", { action: "trash-talk", body: { persona: "Joe Rogan", targets: ["Bob"] } });
 check(`every action spends one daily budget (AI_DAILY_CAP ${M.AI_DAILY_CAP}); spent means 429, no model call`,
   r.status === 429 && r.json.error === "daily-cap" && r.calls.length === 0);
+// Fresh accounts are free (anonymous sign-in), so the account budget isn't the
+// only one: a lasting per-IP budget and a global ceiling can't be minted around.
+DB.rows.set("ip:10.9.9.9|all", M.AI_IP_DAILY_CAP);
+r = await ask({}, "brand-new-anon-" + Date.now(), { ip: "10.9.9.9" });
+check(`a brand-new account on a spent IP is still capped (AI_IP_DAILY_CAP ${M.AI_IP_DAILY_CAP})`, r.status === 429 && r.calls.length === 0);
+DB.rows.set("*|global", M.AI_GLOBAL_DAILY_CAP);
+r = await ask({}, "another-new-anon", { ip: "10.8.8.8" });
+check(`...and a global daily ceiling bounds the whole function (AI_GLOBAL_DAILY_CAP ${M.AI_GLOBAL_DAILY_CAP})`, r.status === 429 && r.calls.length === 0);
+DB.rows.delete("*|global");
+check("every accepted call is counted per IP and globally", (DB.rows.get("*|global") ?? 0) === 0 &&
+  (await ask({}, "counted-viewer", { ip: "10.7.7.7" })).status === 200 && DB.rows.get("ip:10.7.7.7|all") === 1 && DB.rows.get("*|global") === 1);
+
+// The outage escape hatch serves the Lab too (it only ever sends a session token).
+ENV.REQUIRE_SESSION = "0";
+r = await ask({}, undefined, { auth: "Bearer eyJhbGciOiJIUzI1NiJ9.an-unverifiable-session-token-payload.sig" });
+check("REQUIRE_SESSION=0: a session bearer is accepted without GoTrue (which may be what's down)", r.status === 200 && r.calls.length === 1);
+check("REQUIRE_SESSION=0: the anon key works again", (await ask({}, undefined, { auth: "Bearer anon" })).status === 200);
+check("REQUIRE_SESSION=0: anything else is still refused", (await ask({}, undefined, { auth: "Bearer junk" })).status === 401);
+delete ENV.REQUIRE_SESSION;
+
 DB.down = true;
 const fb = [];
 for (let i = 0; i < M.IQ_DAILY_CAP + 1; i++) fb.push((await ask({}, "db-down-viewer")).status);

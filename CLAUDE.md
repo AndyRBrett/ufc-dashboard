@@ -658,8 +658,14 @@ The anon key identifies nobody, so the function requires the caller's session
 JWT (checked with GoTrue; `REQUIRE_SESSION=0` is the outage escape hatch) and
 takes from `ai_quota_take` (`0009_ai_quota.sql`): one atomic row per account,
 UTC day and bucket, `all` (`AI_DAILY_CAP`, every action) and `fight-iq`
-(`IQ_DAILY_CAP`). If that table can't answer, the in-memory caps decide: fail
-to memory, never open. A client-sent `viewerId` is ignored. The app sends
+(`IQ_DAILY_CAP`). **An account is not a limit on its own**: anonymous sign-in
+is open, so a fresh uid (and budget) is one signup call away. Every call also
+takes from a lasting per-IP bucket (`AI_IP_DAILY_CAP`, right-most
+X-Forwarded-For) and one global ceiling (`AI_GLOBAL_DAILY_CAP`), which no new
+account resets. If that table can't answer, the in-memory caps decide: fail
+to memory, never open. With `REQUIRE_SESSION=0` a session bearer is accepted
+unverified (GoTrue may be what's down), and the IP and global buckets still
+apply. A client-sent `viewerId` is ignored. The app sends
 through `_aiFetch` (fresh token first); the Lab borrows the app's saved token
 but never refreshes it (refresh tokens rotate, so that would sign the app out)
 and asks the user to open the app once if it has expired.
