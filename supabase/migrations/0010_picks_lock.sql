@@ -9,9 +9,16 @@
 -- so send-reminders (every few minutes, service key) writes each upcoming
 -- card's per-bout lock times into pick_locks and its first and last bells into
 -- card_bells, computed by the app's own isMainCardBout / isEarlyPrelimBout from
--- the bundled scoring.js. A bout with no row falls back to its card's last
+-- the bundled scoring.js. A bout with no row falls back to its card's FIRST
 -- bell, and a card with no row at all locks at midnight ET after its date, so
 -- a missing sync fails open only until the card is over.
+--
+-- Why the first bell. Rows are matched on lower-cased, trimmed names, while
+-- scoring.js's nmKey also forgives accents, hyphens, suffixes and inner
+-- spacing. So a respelled name ("Jose  Aldo", "José Aldo Jr.") finds no row
+-- here yet still scores. Falling back to the card's first bell means such a
+-- spelling can never outlast its bout's own segment. The app always writes
+-- data.js's exact names, which lockRows stores, so real picks match their row.
 --
 -- What "refuse" means, per operation, for anon/authenticated callers only
 -- (our own functions and the SQL editor are trusted):
@@ -60,7 +67,7 @@ returns timestamptz language sql stable security definer set search_path = publi
       where l.event_date = p_date
         and l.a = least(lower(btrim(p_f1)), lower(btrim(p_f2)))
         and l.b = greatest(lower(btrim(p_f1)), lower(btrim(p_f2)))),
-    (select c.last_bell from card_bells c where c.event_date = p_date),
+    (select c.first_bell from card_bells c where c.event_date = p_date),   -- unmatched name: see header
     -- No schedule at all: locked from midnight ET after the card date.
     case when p_date ~ '^\d{4}-\d{2}-\d{2}$'
          then ((p_date::date + 1)::timestamp at time zone 'America/New_York') end,
@@ -91,7 +98,11 @@ begin
     return case when tg_op = 'DELETE' then old else new end;
   end if;
   r := case when tg_op = 'DELETE' then old else new end;
-  if coalesce(r.promotion, 'ufc') <> 'ufc' then
+  -- Out of scope only if the row is not UFC before OR after: an UPDATE that
+  -- moves a locked UFC pick to another promotion would otherwise skip every
+  -- check, drop off the UFC board, and then be deletable as a non-UFC row.
+  if coalesce(r.promotion, 'ufc') <> 'ufc'
+     and (tg_op <> 'UPDATE' or coalesce(old.promotion, 'ufc') <> 'ufc') then
     return case when tg_op = 'DELETE' then old else new end;
   end if;
 

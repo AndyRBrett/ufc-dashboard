@@ -556,9 +556,14 @@ anon/authenticated callers on UFC rows, once a bout's lock time plus
 `data.js`: every run, `lockRows` writes each nearby card's per-bout times to
 `pick_locks` (names lower-cased and sorted) and its bells to `card_bells`, by
 the app's own rule and the bundled `isMainCardBout` / `isEarlyPrelimBout`. A
-bout with no row falls back to its card's last bell; a card with no row at all
-locks at midnight ET after its date. So a broken sync fails open only until
-the card is over, and a past card is always locked. Our own functions
+bout with no row falls back to its card's **first** bell; a card with no row at
+all locks at midnight ET after its date. So a broken sync fails open only until
+the card is over, and a past card is always locked. First, not last: rows match
+on lower-cased trimmed names, but `nmKey` also forgives accents, hyphens,
+suffixes and inner spacing, so a respelled name finds no row yet still scores.
+The app always writes `data.js`'s exact names, so real picks match their row.
+An UPDATE is out of scope only if the row is non-UFC before *and* after, or a
+locked pick could be moved to another promotion and then deleted. Our own functions
 (service_role) and the SQL editor bypass the trigger. A phone that was offline
 through the bell loses the picks it never uploaded: that trade was accepted
 when this shipped (2026-09-27). `check:picklock` runs the real migration in

@@ -69,6 +69,7 @@ await db.exec(`
     ('${LIVE}', 'alpha one', 'bravo two', now() - interval '20 minutes'),   -- prelim, well past
     ('${LIVE}', 'charlie three', 'delta four', now() - interval '2 minutes'),-- just started: inside grace
     ('${LIVE}', 'echo five', 'foxtrot six', now() + interval '2 hours'),     -- main card, open
+    ('${LIVE}', 'india nine', 'juliet ten', now() + interval '2 hours'),
     ('${NEXT}', 'golf seven', 'hotel eight', now() + interval '6 days');
   insert into card_bells (event_date, first_bell, last_bell) values
     ('${LIVE}', now() - interval '20 minutes', now() + interval '2 hours'),
@@ -101,6 +102,8 @@ check("a batch with one locked row still saves the rest", !!(await one(`user_id=
 // Names match regardless of case, spacing and corner order.
 await pick(U2, LIVE, "  bravo TWO ", "Alpha one", "Alpha one");
 check("a locked bout is found whatever the case, spacing or corner order", !(await one(`user_id='${U2}' and f2='Alpha one'`)));
+await pick(U2, LIVE, " foxtrot SIX", "Echo five ", "Echo five ");
+check("an open bout is found whatever the case, spacing or corner order (so it stays open)", !!(await one(`user_id='${U2}' and f1=' foxtrot SIX'`)));
 
 // 2. An existing pick on a locked bout can't be changed, but a rename still applies.
 await pick(U1, LIVE, "Alpha One", "Bravo Two", "Bravo Two", { method: "SUB", conf: 0, nick: "🥊 Andy" });
@@ -141,13 +144,19 @@ await pick(U1, LIVE, "India Nine", "Juliet Ten", "India Nine", { bonus: "Juliet 
 r = await one(`user_id='${U1}' and f1='India Nine'`);
 check("a new row after the first bell carries the bonus already held, not a new one", r && r.bonus_pick === "Echo Five");
 
-// 5. Missing schedule rows.
-check("an unscheduled bout on a scheduled card falls back to its last bell (open)", r && r.pick === "India Nine");
+// 5. Missing schedule rows. A name that matches no row (a respelling scoring's
+// nmKey would still accept) answers to the card's FIRST bell, so it can't
+// outlast its bout's own segment.
+check("a new pick on an open bout after the first bell still lands", r && r.pick === "India Nine");
+await pick(U2, LIVE, "Alpha  One", "Bravo-Two", "Alpha  One");
+check("a respelled locked bout falls back to the card's first bell (locked)", !(await one(`user_id='${U2}' and f1='Alpha  One'`)));
+await pick(U2, NEXT, "Unlisted A", "Unlisted B", "Unlisted A");
+check("an unlisted bout on a card that hasn't started is open", !!(await one(`user_id='${U2}' and f1='Unlisted A'`)));
 await pick(U2, PAST, "New A", "New B", "New A");
 check("an unscheduled bout on a past card falls back to its last bell (locked)", !(await one(`user_id='${U2}' and event_date='${PAST}'`)));
-await db.exec(`insert into card_bells (event_date, first_bell, last_bell) values ('2099-01-02', now() - interval '3 hours', now() - interval '1 hour')`);
+await db.exec(`insert into card_bells (event_date, first_bell, last_bell) values ('2099-01-02', now() - interval '1 hour', now() + interval '2 hours')`);
 await pick(U2, "2099-01-02", "Late A", "Late B", "Late A");
-check("an unscheduled bout is locked once its card's last bell has passed, whatever the date", !(await one(`user_id='${U2}' and event_date='2099-01-02'`)));
+check("an unscheduled bout is locked once its card's first bell has passed, whatever the date", !(await one(`user_id='${U2}' and event_date='2099-01-02'`)));
 await pick(U2, PAST_NONE, "Z A", "Z B", "Z A");
 check("a card with no schedule at all is locked once its date is over", !(await one(`user_id='${U2}' and event_date='${PAST_NONE}'`)));
 await pick(U2, "2099-12-31", "Far A", "Far B", "Far A");
@@ -156,6 +165,13 @@ check("a card with no schedule yet, still ahead, is open", !!(await one(`user_id
 // 6. Other sports keep their own lock.
 await pick(U2, LIVE, "Alpha One", "Bravo Two", "Bravo Two", { promo: "pfl" });
 check("another promotion's rows are not policed here", !!(await one(`user_id='${U2}' and promotion='pfl'`)));
+await as("service_role", null, upsert, [U2, "🥊 B", LIVE, "Charlie Three", "Delta Four", "Charlie Three", "", 1, null, "ufc"]);
+await db.exec(`update pick_locks set lock_at = now() - interval '1 hour' where a = 'charlie three'`);
+await as("authenticated", U2, `update picks set promotion = 'pfl', pick = 'Delta Four' where user_id = $1 and f1 = 'Charlie Three' and promotion = 'ufc'`, [U2]);
+r = await one(`user_id='${U2}' and f1='Charlie Three'`);
+check("a locked UFC pick can't be moved to another promotion (or re-picked on the way)", r && r.promotion === "ufc" && r.pick === "Charlie Three");
+await as("authenticated", U2, `delete from picks where user_id = $1 and f1 = 'Charlie Three'`, [U2]);
+check("…so it still can't be deleted", !!(await one(`user_id='${U2}' and f1='Charlie Three'`)));
 
 // 7. The 🔒 cap still works alongside it.
 await pick(U2, NEXT, "K1 A", "K1 B", "K1 A", { conf: 1 });
