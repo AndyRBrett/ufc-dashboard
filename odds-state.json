@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-09-27T13:25:58.886397+00:00",
+  "last_fetch_at": "2026-09-27T19:32:52.449666+00:00",
   "last_status": 401,
-  "lines_digest": "aab4f55dad966a37ae9e496beabbd8b932f75773",
+  "lines_digest": "9cec988a988823048a895f286b11ea1a88b04b3b",
   "markets": {
     "2026-09-25": {
       "fighters": [
@@ -186,8 +186,6 @@
         "hernandez",
         "pinas",
         "pulyaev",
-        "gautier",
-        "kopylov",
         "mcghee",
         "sopaj",
         "mcgee",
@@ -198,6 +196,8 @@
         "naurdiev",
         "walker",
         "parkin",
+        "gautier",
+        "kopylov",
         "figueiredo",
         "talbott"
       ],
@@ -305,13 +305,13 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-09-27T13:25:58.886397+00:00",
+  "markets_partial_at": "2026-09-27T19:32:52.449666+00:00",
   "next_event_days_out": 6,
   "providers": {
     "the-odds-api": {
       "bouts": 46,
       "exhausted_at": "2026-09-24T15:10:23.113952+00:00",
-      "last_fetch_at": "2026-09-27T13:25:58.886397+00:00",
+      "last_fetch_at": "2026-09-27T19:32:52.449666+00:00",
       "last_ok_at": "2026-09-24T15:10:23.113952+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
@@ -319,11 +319,11 @@
     },
     "the-odds-api-backup": {
       "bouts": 29,
-      "last_fetch_at": "2026-09-27T13:25:58.886397+00:00",
-      "last_ok_at": "2026-09-27T13:25:58.886397+00:00",
+      "last_fetch_at": "2026-09-27T19:32:52.449666+00:00",
+      "last_ok_at": "2026-09-27T19:32:52.449666+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 389
+      "requests_remaining": 388
     }
   },
   "requests_remaining": 0

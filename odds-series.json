@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-27T19:08:27Z",
+  "generated_at": "2026-09-27T19:35:34Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -11682,7 +11682,7 @@
           "f1": "Imanol Rodriguez",
           "f2": "Alden Coria",
           "lbl": "Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11703,6 +11703,11 @@
               "at": "2026-09-27T11:48:36Z",
               "f1_odds": -167,
               "f2_odds": 137
+            },
+            {
+              "at": "2026-09-27T19:35:33Z",
+              "f1_odds": -168,
+              "f2_odds": 139
             }
           ],
           "open": {
@@ -11742,7 +11747,7 @@
           "f1": "Marcus McGhee",
           "f2": "Bernardo Sopaj",
           "lbl": "Prelim",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11778,6 +11783,11 @@
               "at": "2026-09-27T11:48:36Z",
               "f1_odds": -151,
               "f2_odds": 126
+            },
+            {
+              "at": "2026-09-27T19:35:33Z",
+              "f1_odds": -155,
+              "f2_odds": 129
             }
           ],
           "open": {
@@ -11792,7 +11802,7 @@
           "f1": "Johnny Walker",
           "f2": "Mick Parkin",
           "lbl": "Early Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11823,6 +11833,11 @@
               "at": "2026-09-27T05:43:27Z",
               "f1_odds": -142,
               "f2_odds": 122
+            },
+            {
+              "at": "2026-09-27T19:35:33Z",
+              "f1_odds": -148,
+              "f2_odds": 126
             }
           ],
           "open": {
@@ -11872,7 +11887,7 @@
           "f1": "Marvin Vettori",
           "f2": "Ismail Naurdiev",
           "lbl": "Early Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11903,6 +11918,11 @@
               "at": "2026-09-27T11:48:36Z",
               "f1_odds": 108,
               "f2_odds": -130
+            },
+            {
+              "at": "2026-09-27T19:35:33Z",
+              "f1_odds": 107,
+              "f2_odds": -129
             }
           ],
           "open": {
@@ -11917,7 +11937,7 @@
           "f1": "Court McGee",
           "f2": "Eric Nolan",
           "lbl": "Early Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11938,6 +11958,11 @@
               "at": "2026-09-27T11:48:36Z",
               "f1_odds": 205,
               "f2_odds": -253
+            },
+            {
+              "at": "2026-09-27T19:35:33Z",
+              "f1_odds": 195,
+              "f2_odds": -240
             }
           ],
           "open": {
@@ -12632,7 +12657,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Bernardo Sopaj",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -155,
         "close": null,
         "clv": null
@@ -13380,7 +13405,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Court McGee",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -275,
         "close": null,
         "clv": null
@@ -14115,7 +14140,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Imanol Rodriguez",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 130,
         "close": null,
         "clv": null
@@ -16434,7 +16459,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Alden Coria",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -150,
         "close": null,
         "clv": null
@@ -16445,7 +16470,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Marcus McGhee",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 135,
         "close": null,
         "clv": null
@@ -16456,7 +16481,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Mick Parkin",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -110,
         "close": null,
         "clv": null
@@ -16467,7 +16492,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Johnny Walker",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": -110,
         "close": null,
         "clv": null
@@ -16500,7 +16525,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Ismail Naurdiev",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": 115,
         "close": null,
         "clv": null
@@ -16511,7 +16536,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Marvin Vettori",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": -135,
         "close": null,
         "clv": null
@@ -16522,7 +16547,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Eric Nolan",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 226,
         "close": null,
         "clv": null
