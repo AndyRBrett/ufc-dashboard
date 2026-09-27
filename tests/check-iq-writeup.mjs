@@ -16,13 +16,31 @@ let failures = 0;
 const check = (name, cond) => cond ? console.log("  ✓ " + name) : (failures++, console.error("  ✗ " + name));
 
 // A Grok key is set on purpose: the write-up is analysis and must stay on Claude.
-const ENV = { SB_ANON_KEY: "anon", ANTHROPIC_API_KEY: "sk-test", GROK_API_KEY: "xai-test", RETRY_BACKOFF_MS: "1" };
+const ENV = { SB_ANON_KEY: "anon", ANTHROPIC_API_KEY: "sk-test", GROK_API_KEY: "xai-test", RETRY_BACKOFF_MS: "1",
+  SUPABASE_URL: "https://sb.test", SB_SERVICE_ROLE_KEY: "service" };
 let handler = null;
 globalThis.Deno = { env: { get: (k) => ENV[k] }, serve: (h) => { handler = h; } };
 
 let replies = [], calls = [];
+// The account behind a token (GoTrue), and the quota table (ai_quota_take),
+// simulated: DB.down makes the RPC fail so the in-memory fallback decides.
+const DB = { rows: new Map(), down: false, rpcCalls: 0 };
 globalThis.fetch = async (url, init) => {
-  calls.push({ url: String(url), body: JSON.parse(init.body) });
+  url = String(url);
+  if (url === "https://sb.test/auth/v1/user") {
+    const m = /^Bearer tok\.(.+)\.sig$/.exec(init.headers.Authorization || "");
+    return m ? new Response(JSON.stringify({ id: m[1] }), { status: 200 }) : new Response("{}", { status: 401 });
+  }
+  if (url === "https://sb.test/rest/v1/rpc/ai_quota_take") {
+    DB.rpcCalls++;
+    if (DB.down) return new Response("{}", { status: 404 });
+    const { p_user, p_bucket, p_cap } = JSON.parse(init.body), k = p_user + "|" + p_bucket;
+    const n = DB.rows.get(k) || 0;
+    if (n >= p_cap) return new Response("false", { status: 200 });
+    DB.rows.set(k, n + 1);
+    return new Response("true", { status: 200 });
+  }
+  calls.push({ url, body: JSON.parse(init.body) });
   const text = replies.length ? replies.shift() : "You pick like a man who has read one wrestling book.";
   if (String(url).includes("x.ai")) return new Response(JSON.stringify({ choices: [{ message: { content: text } }] }), { status: 200 });
   return new Response(JSON.stringify({ content: [{ type: "text", text }] }), { status: 200 });
@@ -39,12 +57,14 @@ const facts = {
   insights: ["Picking underdogs: you hit 31.8% of them (7–15).", "When you and Tristin disagree, you're 4–17."],
 };
 let seq = 0;
-async function ask(over = {}, viewer) {
+// Every request is signed in: the account is whoever the session token says.
+async function ask(over = {}, viewer, extra = {}) {
   calls = [];
+  const who = viewer ?? "viewer-" + (seq + 1);
   const res = await handler(new Request("https://fn/ai-breakdown", {
     method: "POST",
-    headers: { Authorization: "Bearer anon", "Content-Type": "application/json", "x-forwarded-for": "10.0.0." + (++seq % 250) },
-    body: JSON.stringify({ action: "fight-iq", iq: { ...facts, ...over }, viewerId: viewer ?? "viewer-" + seq }),
+    headers: { Authorization: extra.auth ?? "Bearer tok." + who + ".sig", "Content-Type": "application/json", "x-forwarded-for": "10.0.0." + (++seq % 250) },
+    body: JSON.stringify({ action: extra.action ?? "fight-iq", iq: { ...facts, ...over }, ...(extra.body || {}) }),
   }));
   return { status: res.status, json: await res.json(), calls };
 }
@@ -87,6 +107,25 @@ check(`a viewer gets ${M.IQ_DAILY_CAP} a day, then 429 daily-cap`, codes.slice(0
 r = await ask({}, who);
 check("a capped request never reaches the model", r.calls.length === 0 && r.json.error === "daily-cap");
 check("another viewer is unaffected", (await ask({}, "someone-else")).status === 200);
+check("the cap is the verified account's: claiming another viewerId doesn't reset it",
+  (await ask({}, who, { body: { viewerId: "fresh-viewer" } })).status === 429);
+check("...and it lasts: it is kept in the database (ai_quota_take), not only in memory", DB.rows.get(who + "|fight-iq") === M.IQ_DAILY_CAP);
+
+// 4b. Signed-in only, and a lasting budget across every action.
+r = await ask({}, undefined, { auth: "Bearer anon" });
+check("the anon key alone is refused (401 sign-in-required) before any model call", r.status === 401 && r.json.error === "sign-in-required" && r.calls.length === 0);
+r = await ask({}, undefined, { auth: "Bearer not-a-session" });
+check("a token GoTrue doesn't recognise is refused too", r.status === 401 && r.calls.length === 0);
+DB.rows.set("greedy|all", M.AI_DAILY_CAP);
+r = await ask({}, "greedy", { action: "trash-talk", body: { persona: "Joe Rogan", targets: ["Bob"] } });
+check(`every action spends one daily budget (AI_DAILY_CAP ${M.AI_DAILY_CAP}); spent means 429, no model call`,
+  r.status === 429 && r.json.error === "daily-cap" && r.calls.length === 0);
+DB.down = true;
+const fb = [];
+for (let i = 0; i < M.IQ_DAILY_CAP + 1; i++) fb.push((await ask({}, "db-down-viewer")).status);
+check("with the quota table unreachable, the in-memory caps still bound it (fail to memory, not open)",
+  fb.slice(0, M.IQ_DAILY_CAP).every((c) => c === 200) && fb[M.IQ_DAILY_CAP] === 429);
+DB.down = false;
 check("the cap resets on a new UTC day", M.iqCapReached("day-roll", Date.parse("2026-09-24T12:00:00Z")) === false &&
   [0, 1].every(() => M.iqCapReached("day-roll", Date.parse("2026-09-24T13:00:00Z")) === false) &&
   M.iqCapReached("day-roll", Date.parse("2026-09-24T14:00:00Z")) === true &&

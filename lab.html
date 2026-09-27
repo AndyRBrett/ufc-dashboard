@@ -694,17 +694,29 @@ function iqFactsFor(iq){
     locks:iq.locks.n?iq.locks.w+"-"+iq.locks.l:"",methodPct:iq.methods.called?iq.methods.pct:null,
     clv:iq.clv.n>=FL.MIN_SAMPLE?iq.clv.avg:null,insights:iq.insights.slice(0,8).map(function(i){return clip(i.text);})};
 }
+// The app's saved session token, if it is still good for another minute.
+function _labSessionToken(){
+  try{var s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");
+    if(s&&s.access_token&&(s.expires_at||0)>Math.floor(Date.now()/1000)+60)return s.access_token;}catch(e){}
+  return null;
+}
 function writeupBlock(iq){
   var out=h("div",{class:"small",style:"margin-top:12px;line-height:1.55"});
   var btn=h("button",{class:"act",style:"margin-top:12px",text:"✍️ Write the scouting report"});
   if(iq.record.n<5){btn.disabled=true;btn.title="Needs at least 5 decided picks";}
   btn.addEventListener("click",function(){
     if(_iqUsage().n>=IQ_WRITEUPS_PER_DAY){out.textContent="That's "+IQ_WRITEUPS_PER_DAY+" scouting reports today — the scouts are off until tomorrow.";return;}
+    // ai-breakdown answers only to a signed-in account (session JWT). The Lab
+    // borrows the app's saved session but never refreshes it itself: refresh
+    // tokens rotate, and a refresh here would strand the app's copy and sign
+    // it out. A stale token means opening the app once, which refreshes it.
+    var tok=_labSessionToken();
+    if(!tok){out.textContent="Open the app once to refresh your sign-in, then come back for the scouting report.";return;}
     btn.disabled=true;btn.textContent="Writing…";out.textContent="";
     fetch(SUPABASE_URL+"/functions/v1/ai-breakdown",{method:"POST",
-      headers:{"Content-Type":"application/json",Authorization:"Bearer "+SUPABASE_ANON},
-      body:JSON.stringify({action:"fight-iq",iq:iqFactsFor(iq),viewerId:L.me||""})})
-      .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
+      headers:{"Content-Type":"application/json",Authorization:"Bearer "+tok},
+      body:JSON.stringify({action:"fight-iq",iq:iqFactsFor(iq)})})
+      .then(function(r){return r.json().then(function(j){return {ok:r.ok,status:r.status,j:j};});})
       .then(function(x){
         if(x.ok&&x.j.breakdown){
           _iqSpend();
@@ -712,6 +724,7 @@ function writeupBlock(iq){
           out.appendChild(h("p",{style:"margin:0",text:x.j.breakdown}));
           if(x.j.tone)out.appendChild(h("div",{class:"muted",style:"margin-top:6px;font-size:12px",text:"Voice: "+x.j.tone}));
         }else if(x.j&&x.j.error==="daily-cap"){out.textContent="That's today's scouting reports used up — back tomorrow.";}
+        else if(x.status===401){out.textContent="Open the app once to refresh your sign-in, then come back for the scouting report.";}
         else out.textContent=(x.j&&x.j.error)||"Couldn't write it right now — try again.";
       })
       .catch(function(){out.textContent="Couldn't reach the scouts — check your connection.";})

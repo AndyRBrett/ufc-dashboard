@@ -685,6 +685,59 @@ export const IQ_TONES = [
   "a friend roasting them in the group chat — affectionate, merciless",
 ];
 export const IQ_DAILY_CAP = Number(Deno.env.get("IQ_DAILY_CAP") ?? "3");
+// Every action, per account per UTC day. Generous for a person (a card night
+// is a few breakdowns, a chat, a roast or two), small for a script.
+export const AI_DAILY_CAP = Number(Deno.env.get("AI_DAILY_CAP") ?? "60");
+
+// ---- Who is asking, and how much they have left ---------------------------
+//
+// The anon key ships in index.html, so it identifies nobody: with it alone,
+// anyone could spend this function's paid model budget, bounded only by
+// per-instance memory. Every call now carries the caller's own session JWT,
+// checked against GoTrue (signature, expiry, revocation in one call), and
+// spends from a per-account daily quota kept in the database (0009_ai_quota:
+// ai_quota_take, atomic). Escape hatch, not a default: REQUIRE_SESSION=0
+// restores the anon key without a deploy if auth itself is what breaks.
+const REQUIRE_SESSION = (Deno.env.get("REQUIRE_SESSION") ?? "1") !== "0";
+async function verifyUser(sb: string, anonKey: string, token: string): Promise<string | null> {
+  if (!sb || !token) return null;
+  try {
+    const r = await fetch(`${sb}/auth/v1/user`, { headers: { "apikey": anonKey, "Authorization": `Bearer ${token}` } });
+    if (!r.ok) return null;
+    const u = await r.json();
+    return u && typeof u.id === "string" && u.id ? u.id : null;
+  } catch {
+    return null;
+  }
+}
+// "taken" / "over" from the database; "unavailable" when it can't answer (the
+// migration not applied yet, an outage), in which case the in-memory caps
+// below decide instead: a lost quota row must not take the roast down on a
+// card night, and the per-IP / global limits still bound the burst.
+export async function quotaTake(sb: string, serviceKey: string, user: string, bucket: string, cap: number): Promise<"taken" | "over" | "unavailable"> {
+  if (!sb || !serviceKey) return "unavailable";
+  try {
+    const r = await fetch(`${sb}/rest/v1/rpc/ai_quota_take`, {
+      method: "POST",
+      headers: { "apikey": serviceKey, "Authorization": `Bearer ${serviceKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ p_user: user, p_bucket: bucket, p_cap: cap }),
+    });
+    if (!r.ok) { console.error(`ai_quota_take HTTP ${r.status}: falling back to in-memory caps`); return "unavailable"; }
+    return (await r.json()) === true ? "taken" : "over";
+  } catch (e) {
+    console.error(`ai_quota_take failed (${String(e).slice(0, 120)}): falling back to in-memory caps`);
+    return "unavailable";
+  }
+}
+const _memUses = new Map<string, { day: string; n: number }>();
+function memCapReached(key: string, cap: number, now = Date.now()): boolean {
+  const day = new Date(now).toISOString().slice(0, 10);
+  const u = _memUses.get(key);
+  if (!u || u.day !== day) { _memUses.set(key, { day, n: 1 }); return false; }
+  if (u.n >= cap) return true;
+  u.n++;
+  return false;
+}
 const _iqUses = new Map<string, { day: string; n: number }>();
 // Best-effort, per edge-function instance: the app also caps on the device,
 // and the per-IP rate limit above still applies. It bounds spend, it isn't a
@@ -851,8 +904,17 @@ Deno.serve(async (req) => {
   }
 
   const ANON_KEY = Deno.env.get("SB_ANON_KEY") ?? "";
-  const auth = req.headers.get("Authorization") ?? "";
-  if (ANON_KEY && auth !== `Bearer ${ANON_KEY}`) {
+  const SB_URL = Deno.env.get("SUPABASE_URL") ?? "";
+  const bearer = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
+  // The verified account every call now answers to (see "Who is asking").
+  let uid: string | null = null;
+  if (REQUIRE_SESSION) {
+    if (!bearer || bearer === ANON_KEY) {
+      return new Response(JSON.stringify({ error: "sign-in-required" }), { status: 401, headers: CORS });
+    }
+    uid = await verifyUser(SB_URL, ANON_KEY, bearer);
+    if (!uid) return new Response(JSON.stringify({ error: "sign-in-required" }), { status: 401, headers: CORS });
+  } else if (ANON_KEY && bearer !== ANON_KEY) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: CORS });
   }
 
@@ -900,8 +962,10 @@ Deno.serve(async (req) => {
     if (!q || !q.player || !q.record || !Array.isArray(q.insights)) {
       return new Response(JSON.stringify({ error: "Missing Fight IQ facts" }), { status: 400, headers: CORS });
     }
-    const viewer = (body.viewerId || clientIp(req)).trim();
-    if (iqCapReached(viewer)) {
+    // The write-up budget is the verified account's, never a claimed viewerId.
+    const viewer = uid ?? (body.viewerId || clientIp(req)).trim();
+    const took = uid ? await quotaTake(SB_URL, Deno.env.get("SB_SERVICE_ROLE_KEY") ?? "", uid, "fight-iq", IQ_DAILY_CAP) : "unavailable";
+    if (took === "over" || (took === "unavailable" && iqCapReached(viewer))) {
       return new Response(JSON.stringify({ error: "daily-cap", cap: IQ_DAILY_CAP }), { status: 429, headers: CORS });
     }
     iqTone = IQ_TONES[Math.floor(Math.random() * IQ_TONES.length)];
@@ -941,6 +1005,15 @@ Deno.serve(async (req) => {
   if (provider === "claude" && !apiKey) {
     return new Response(JSON.stringify({ error: "Server misconfigured: missing API key" }), { status: 500, headers: CORS });
   }
+  // The account's daily budget across every action, taken only once the
+  // request is known to be valid (a malformed one shouldn't cost a call).
+  if (uid) {
+    const took = await quotaTake(SB_URL, Deno.env.get("SB_SERVICE_ROLE_KEY") ?? "", uid, "all", AI_DAILY_CAP);
+    if (took === "over" || (took === "unavailable" && memCapReached(uid, AI_DAILY_CAP))) {
+      return new Response(JSON.stringify({ error: "daily-cap", cap: AI_DAILY_CAP }), { status: 429, headers: CORS });
+    }
+  }
+
 
   // One call, whichever model is live. On a Grok failure this falls back to
   // Claude rather than surfacing an error: the roast is generated while someone

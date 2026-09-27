@@ -332,10 +332,11 @@ else {
     // The ✍️ scouting report: stub the model's answer, record what was asked.
     const iqCalls = [];
     await page.route(/functions\/v1\/ai-breakdown/, (route) => {
-      iqCalls.push(JSON.parse(route.request().postData() || "{}"));
+      iqCalls.push(Object.assign(JSON.parse(route.request().postData() || "{}"), { __auth: route.request().headers()["authorization"] }));
       route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ breakdown: "You pick like a nature documentary.", tone: "a dry narrator" }) });
     });
-    await page.addInitScript(() => { try { localStorage.setItem("ufc_uid", "u-Andy"); localStorage.setItem("ufc_name", "🥊 Andy"); } catch (e) {} });
+    await page.addInitScript(() => { try { localStorage.setItem("ufc_uid", "u-Andy"); localStorage.setItem("ufc_name", "🥊 Andy");
+      localStorage.setItem("ufc_sb_session", JSON.stringify({ access_token: "tok-andy", refresh_token: "rt", expires_at: Math.floor(Date.now() / 1000) + 3600, user_id: "u-Andy" })); } catch (e) {} });
     await page.goto(base + "/lab.html#iq", { waitUntil: "load", timeout: 20000 });
     await page.waitForFunction(() => !/Loading the lab/.test(document.getElementById("main").textContent), null, { timeout: 15000 });
     const tabs = ["iq", "market", "week", "matchup", "party", "hub"];
@@ -455,7 +456,13 @@ else {
     const iqTxt2 = await page.evaluate(() => document.getElementById("main").innerText);
     check("the scouting report shows the write-up and its voice", /nature documentary/.test(iqTxt2) || /scouts are off until tomorrow/.test(iqTxt2));
     check("the request is the fight-iq action carrying the Lab's own computed numbers",
-      iqCalls.length > 0 && iqCalls[0].action === "fight-iq" && iqCalls[0].iq.record === recTile && Array.isArray(iqCalls[0].iq.insights) && iqCalls[0].viewerId === "u-Andy");
+      iqCalls.length > 0 && iqCalls[0].action === "fight-iq" && iqCalls[0].iq.record === recTile && Array.isArray(iqCalls[0].iq.insights));
+    check("...signed with the app's session token, not the anon key (the budget is the account's)",
+      iqCalls.length > 0 && iqCalls.every((c) => c.__auth === "Bearer tok-andy") && !("viewerId" in iqCalls[0]));
+    check("an expiring saved session isn't used (the Lab never refreshes it: that would sign the app out)",
+      await page.evaluate(() => { const k = "ufc_sb_session", keep = localStorage.getItem(k);
+        localStorage.setItem(k, JSON.stringify({ access_token: "old", expires_at: Math.floor(Date.now() / 1000) + 30 }));
+        const t = _labSessionToken(); localStorage.setItem(k, keep); return t === null && _labSessionToken() === "tok-andy"; }));
     check("the device cap stops the 4th write-up before any network call", iqCalls.length === 3 && /scouts are off until tomorrow/.test(iqTxt2));
     check("lab page boots under its CSP with no uncaught or console errors", errs.length === 0 || (console.error(errs.join("\n")), false));
     await page.close();
