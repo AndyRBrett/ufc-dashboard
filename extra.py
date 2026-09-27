@@ -207,6 +207,51 @@ def section_for_event(year_wikitext, name):
     return tail[:end.start()] if end else tail
 
 
+# How far the year page's date may sit from the events list's for the same card.
+# The two pages are edited separately and drift (PFL Chicago: Oct 16 on one,
+# Oct 17 on the other); a same-named card a year away never comes close.
+LINK_DATE_SLACK_DAYS = 3
+
+
+def link_from_year_page(year_wikitext, name, date):
+    """The article for an event the events list names without linking.
+
+    The list page often carries a new card as plain text ("PFL MENA 11") while
+    the year page's own events table links it ("[[PFL MENA 11|PFL MENA 11: Last
+    Man Standing]]", "[[PFL Africa 3 (2026)|PFL Africa 3: Morocco]]"). A row
+    matches on the same rules as section_for_event (exactly the event's numbers,
+    one name's words inside the other's), judged on the link's display text,
+    since the target can carry a disambiguating year, AND on a date within
+    LINK_DATE_SLACK_DAYS: "PFL Africa 3" was also a 2025 card.
+    """
+    words, nums = _name_tokens(name)
+    if not (words or nums):
+        return None
+    try:
+        want = datetime.strptime(date, "%Y-%m-%d")
+    except (TypeError, ValueError):
+        return None
+    best = None
+    for row in re.split(r"^\s*\|-", year_wikitext, flags=re.MULTILINE):
+        d = scrape.parse_date_wiki(row)
+        if not d:
+            continue
+        try:
+            gap = abs((datetime.strptime(d, "%Y-%m-%d") - want).days)
+        except ValueError:
+            continue
+        if gap > LINK_DATE_SLACK_DAYS:
+            continue
+        for lm in re.finditer(r"\[\[([^\]\|#]+)(?:\|([^\]]+))?\]\]", row):
+            tw, tn = _name_tokens(scrape.clean_wiki(lm.group(2) or lm.group(1)))
+            if tn != nums or not (words <= tw or tw <= words) or not (tw or tn):
+                continue
+            score = (gap, len(words ^ tw))
+            if best is None or score < best[0]:
+                best = (score, lm.group(1).strip().replace(" ", "_"))
+    return best[1] if best else None
+
+
 # ------------------------------------------------------------------- build --
 def build(fetch, now, previous=None):
     """Build the feed. `fetch(slug) -> wikitext or ""` (scrape.fetch_wikitext
@@ -224,15 +269,22 @@ def build(fetch, now, previous=None):
                           if e.get("promotion") == p["id"] and _in_window(e.get("date"), now))
             continue
         years = {}
+        def year_page(d):
+            y = d[:4]
+            if y not in years:
+                years[y] = fetch(p["year_page"].format(year=y)) or ""
+            return years[y]
         for ev in discover(p, listing, now):
-            wt = fetch(ev["slug"]) if ev["slug"] else ""
+            slug = ev["slug"]
+            if not slug:
+                # Listed as plain text: the year page's events table may link it.
+                slug = link_from_year_page(year_page(ev["date"]), ev["name"], ev["date"])
+            wt = fetch(slug) if slug else ""
             source = "article" if wt else ""
             bouts = card_from_wikitext(wt) if wt else []
             if len(bouts) < MIN_BOUTS:
-                y = ev["date"][:4]
-                if y not in years:
-                    years[y] = fetch(p["year_page"].format(year=y)) or ""
-                sec = section_for_event(years[y], ev["name"]) if years[y] else ""
+                yp = year_page(ev["date"])
+                sec = section_for_event(yp, ev["name"]) if yp else ""
                 if sec:
                     bouts, source = card_from_wikitext(sec), "year page"
             entry = {"promotion": p["id"], "name": ev["name"], "date": ev["date"],

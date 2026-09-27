@@ -273,3 +273,99 @@ def test_an_inaugural_title_is_a_title_fight_and_eliminators_are_not():
     assert by["Timur Khizriev"]["title"] is False
     assert by["Patrick Habirora"]["title"] is False
     assert by["Patrick Habirora"]["division"] == "Welterweight"
+
+
+# The real 2026-09-27 shape (checked against Wikipedia via the Diagnose
+# workflow): the events list names two new cards as plain text, while the year
+# page's events table links their articles, one with a disambiguating year.
+# Both cards used to be dropped as "only 0 bout(s) parsed".
+PLAIN_LIST = """
+==Scheduled events==
+{| class="sortable wikitable succession-box"
+! Event !! Date !! Venue !! Location
+|-
+|PFL Africa 3
+|{{dts|2026|October|10}}
+|[[Salle Mohammed V|Mohammed V Sports Complex]]
+|[[Casablanca]], Morocco
+|-
+|PFL MENA 11
+|{{dts|2026|October|02}}
+|[[Boulevard City]]
+|[[Riyadh]], Saudi Arabia
+|}
+"""
+
+YEAR_TABLE = """
+==Events list==
+{| class="wikitable"
+|-
+|19
+|[[PFL MENA 11|PFL MENA 11: Last Man Standing]]
+|{{dts|2026|Oct|2}}
+|[[Boulevard City]]
+|[[Riyadh]], Saudi Arabia
+|
+|-
+|20
+|[[PFL Africa 3 (2026)|PFL Africa 3: Morocco]]
+|{{dts|2026|Oct|10}}
+|[[Salle Mohammed V|Mohammed V Sports Complex]]
+|[[Casablanca]], Morocco
+|
+|}
+"""
+
+MENA_11 = """==Fight card==
+{{MMAevent}}
+{{MMAevent card|Main card (YouTube / Vice TV)}}
+{{MMAevent bout
+|Light Heavyweight
+|Mostafa Rashed Neda
+|vs.
+|Osama Elsaidy
+|
+|
+|
+|
+}}
+{{MMAevent bout
+|Welterweight
+|Badreddine Diani
+|vs.
+|Hazem Kayyali
+|
+|
+|
+|[[2026 in Professional Fighters League#2026 PFL MENA Welterweight Tournament|2026 PFL MENA Welterweight Tournament]] Semifinal.
+}}
+{{MMAevent end|notes=yes}}
+"""
+
+AFRICA_3 = MENA_11.replace("Mostafa Rashed Neda", "Abdoulaye Kane").replace("Osama Elsaidy", "Badr Medkouri") \
+                  .replace("Badreddine Diani", "Karim Henniène").replace("Hazem Kayyali", "Raphael Uchegbu")
+
+
+def test_an_unlinked_list_row_finds_its_article_through_the_year_page():
+    fetch = fetcher({"List_of_Professional_Fighters_League_events": PLAIN_LIST,
+                     "2026_in_Professional_Fighters_League": YEAR_TABLE,
+                     "PFL_MENA_11": MENA_11, "PFL_Africa_3_(2026)": AFRICA_3})
+    feed, report = extra.build(fetch, NOW)
+    got = {e["name"]: e for e in feed["events"]}
+    assert set(got) == {"PFL MENA 11", "PFL Africa 3"}
+    assert got["PFL MENA 11"]["bouts"][0]["a"] == "Mostafa Rashed Neda"
+    assert got["PFL Africa 3"]["bouts"][0]["a"] == "Abdoulaye Kane"
+    assert all(r.get("source") == "article" for r in report)
+    assert fetch.calls.count("2026_in_Professional_Fighters_League") == 1   # one year-page fetch per year
+
+
+def test_the_year_page_link_needs_the_same_numbers_and_a_close_date():
+    link = extra.link_from_year_page
+    assert link(YEAR_TABLE, "PFL MENA 11", "2026-10-02") == "PFL_MENA_11"
+    # The year page and the list drift by a day or so (PFL Chicago: Oct 16 vs 17).
+    assert link(YEAR_TABLE, "PFL Africa 3", "2026-10-11") == "PFL_Africa_3_(2026)"
+    # "PFL Africa 3" was also a 2025 card; a name alone is not an identity.
+    assert link(YEAR_TABLE, "PFL Africa 3", "2025-10-18") is None
+    # A different number is a different card, however close the date.
+    assert link(YEAR_TABLE, "PFL MENA 1", "2026-10-02") is None
+    assert link(YEAR_TABLE, "PFL MENA 11", "not a date") is None
