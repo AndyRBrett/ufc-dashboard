@@ -19,8 +19,8 @@
 //   node scripts/build-fn-bundle.mjs           write the bundle
 //   node scripts/build-fn-bundle.mjs --check   fail if it's stale (check:bundle)
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join, dirname, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import vm from "node:vm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -89,7 +89,9 @@ export function buildBundle() {
   ].join("\n");
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Compare as URLs: a path with spaces (or a Windows path) is percent-encoded in
+// import.meta.url, and a string compare would silently skip the build and the check.
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const next = buildBundle();
   if (process.argv.includes("--check")) {
     const cur = existsSync(OUT) ? readFileSync(OUT, "utf8") : "";
