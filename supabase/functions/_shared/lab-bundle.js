@@ -737,7 +737,7 @@ export function analyticsInto(globalThis) {
   // than a number that sounds like it means something.
   //
   // Trait ratings are 1-99 with 50 as the honest baseline, never an invented
-  // "skill": Upset Sense and Chalk Handling compare wins to what the odds said
+  // "skill": Picking Underdogs and Picking Favorites compare wins to what the odds said
   // (the market's expected wins = 50), Method Calling and Lock Accuracy
   // compare to the group's own hit rate (the group = 50), Market Timing is
   // closing-line value, and Consistency is how little a player's per-card hit
@@ -795,9 +795,9 @@ export function analyticsInto(globalThis) {
     var favs = vsExpected(priced.filter(function (x) { return x.o < 0; }).map(function (x) { return x.p; }), idx);
     // Each trait: detail = what you did, vs = what it was compared with,
     // verdict = the rating in words (50 = par, exactly what was expected).
-    traits.push({ key: "upset", emoji: "💥", label: "Upset Sense", rating: dogs.rating, detail: dogs.n ? dogs.w + "W–" + dogs.l + "L on underdogs" : "no priced underdog picks",
+    traits.push({ key: "upset", emoji: "💥", label: "Picking Underdogs", rating: dogs.rating, detail: dogs.n ? dogs.w + "W–" + dogs.l + "L on underdogs" : "no priced underdog picks",
       vs: dogs.rating != null ? expWins(dogs.exp) : null });
-    traits.push({ key: "chalk", emoji: "🧱", label: "Chalk Handling", rating: favs.rating, detail: favs.n ? favs.w + "W–" + favs.l + "L on favorites" : "no priced favorite picks",
+    traits.push({ key: "chalk", emoji: "🧱", label: "Picking Favorites", rating: favs.rating, detail: favs.n ? favs.w + "W–" + favs.l + "L on favorites" : "no priced favorite picks",
       vs: favs.rating != null ? expWins(favs.exp) : null });
     // Group baselines: every decided pick in the Lab, all players.
     var gDec = group.filter(function (g) { return g.decided && g.side !== null && g.bout; });

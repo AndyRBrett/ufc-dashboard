@@ -181,7 +181,7 @@ check("lock skid orders same-card locks by when the result landed", skid.lockSki
 {
   const thin = FL.fightCard(res.filter((p) => p.player === "u-Andy"), iq, { odds: idx, group: res });
   check("a thin history's card rates nothing it can't back (every trait is — below MIN_SAMPLE)", thin.traits.length === 6 && thin.traits.every((t) => t.rating === null) && thin.tier === "Rookie");
-  // 10 underdog picks at +300 (market expects 2.5 wins); 5 hit -> Upset Sense 50 * 5 / 2.5 = 99 (cap).
+  // 10 underdog picks at +300 (market expects 2.5 wins); 5 hit -> Picking Underdogs 50 * 5 / 2.5 = 99 (cap).
   const mk = (i, win, odds, extra) => Object.assign({ player: "q", nickname: "🐶 Q", date: "2026-0" + (1 + (i % 5)) + "-10", decided: true, side: 0, correct: win,
     method: "", locked: false, points: win ? 1 : 0, event: { name: "E" + i },
     bout: { id: "b" + i, order: 0, division: "Lightweight", segment: "main", result: { winner: win ? "A" + i : "B" + i, method: "KO/TKO" },
@@ -192,8 +192,8 @@ check("lock skid orders same-card locks by when the result landed", skid.lockSki
   const qiq = FL.fightIQ(all, { stats: {}, group: all });
   const qc = FL.fightCard(all, qiq, { group: all, belt: { holderBase: "q", reigns: [{ base: "q", defenses: 2 }, { base: "z", defenses: 0 }, { base: "q", defenses: 0 }] }, baseName: "q" });
   const tr = Object.fromEntries(qc.traits.map((t) => [t.key, t]));
-  check("Upset Sense compares wins to what the odds expected (50 = the market)", tr.upset.rating === 99 && tr.upset.detail === "5W–5L on underdogs");
-  check("Chalk Handling falls below 50 when favorites win less than priced", tr.chalk.rating === 33);
+  check("Picking Underdogs compares wins to what the odds expected (50 = the market)", tr.upset.rating === 99 && tr.upset.detail === "5W–5L on underdogs");
+  check("Picking Favorites falls below 50 when favorites win less than priced", tr.chalk.rating === 33);
   // Every rating says what it means: a verdict in words, and what it was compared with.
   check("a rating reads as a verdict (99 → well above par, 33 → below par)", tr.upset.verdict === "Well above par" && tr.chalk.verdict === "Below par");
   check("a rating says what the odds expected (~2.5 underdog wins, ~7.5 favorite wins)",
