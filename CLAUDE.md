@@ -50,6 +50,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:promotion` | a picks query without `promotion=eq.ufc`, letting another sport's picks onto the UFC board, Belt, restore or result pushes |
 | `npm run check:sports` | the sport switcher showing with nothing to pick, a PFL pick saved untagged or after its lock, or another sport scored on the UFC board |
 | `npm run check:rooms` | a room's board scoring differently from the main board, an anonymous device joining a room, or an invite link re-joining / re-prompting |
+| `npm run check:pushauth` | a push sent with text or an audience the server didn't build, a user sending as someone else, or the anon key sending anything but the rebuilt backups |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -588,6 +589,31 @@ exactly that page by tab, and `sw.js` navigates to it instead of stashing an
 empty tap for `index.html`. The copy is composed by the Lab's own code, fetched
 from Pages at send time; if that fails it still sends a plain teaser — never
 nothing. `check:brief` holds all of it, mutation-tested.
+
+## send-push sends only what it can vouch for
+
+The anon key ships in `index.html`, so it proves nothing, and it used to be
+enough to push any title and body to every subscriber. Now each caller is one of:
+
+- **service**: our own functions (`check-results`, `send-reminders`) send
+  `X-Service-Key: <SB_SERVICE_ROLE_KEY>` and are trusted as given. The key rides
+  in its own header so `Authorization` keeps the anon key the gateway expects.
+  `brief` and `swap-*` are service-only: their copy can't be rebuilt.
+- **user**: a session JWT checked against GoTrue. Social pushes (`pick-*`,
+  `nudge-*`, `chal-*`, `chal-resp-*`, `trash-talk-*`) are sent **as the verified
+  sender only**, with server-written text: a challenge is read from its row
+  (only its challenger announces it, only its target accepts it), a nudge must
+  name its sender and one target (≤3 a day), and a roast's text is the
+  sender's but its title names them. Per-sender cap `SENDER_LIMIT`/hour.
+- **anon**: may only trigger `main`, `prelim` and `result:*`, the app's backups
+  for the cron senders. The server rebuilds them from the committed `data.js`
+  (read with patterns in `parseCards`, never executed) and reads a result's
+  audience from `picks` itself; a result `data.js` doesn't have yet is a 409
+  (check-results sends it once it lands).
+
+The app sends through `_pushPost`: session JWT first, one retry with the anon
+key on a 401 (a Pages deploy running ahead of the function deploy, or an
+expired token). `check:pushauth` runs the real handler and holds all of it.
 
 ## Fight change alerts: a vanished bout tells exactly who picked it
 
