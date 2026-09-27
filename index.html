@@ -1703,7 +1703,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
       <button class="nm-btn" onclick="closeRoomSheet();openAcct()">Link an email</button>
     </div>
     <div id="roomForms" style="display:none">
-      <div class="room-form"><input class="nm-input" id="roomJoinCode" placeholder="Invite code" maxlength="8" autocapitalize="characters" autocomplete="off" aria-label="Room invite code"><button class="nm-btn" onclick="roomJoinSubmit()">Join</button></div>
+      <div class="room-form"><input class="nm-input" id="roomJoinCode" placeholder="Invite code" maxlength="14" autocapitalize="characters" autocomplete="off" aria-label="Room invite code"><button class="nm-btn" onclick="roomJoinSubmit()">Join</button></div>
       <div class="room-form"><input class="nm-input" id="roomNewName" placeholder="New room name" maxlength="40" autocomplete="off" aria-label="New room name"><button class="nm-btn" onclick="roomCreateSubmit()">Create</button></div>
     </div>
   </div>
@@ -8302,7 +8302,9 @@ var _lbRows=null;   // raw picks rows from the last leaderboard fetch
 //
 // Invite links are ?join=CODE. The code is the only way in: rooms aren't
 // listable, and RLS hides every room from non-members.
-var ROOM_CODE_RE=/^[0-9A-F]{6}$/;
+// Codes minted since migration 0008 are 10 chars of Crockford base32 (no I, L,
+// O, U); the 6-hex-digit codes handed out before it still work.
+var ROOM_CODE_RE=/^([0-9A-F]{6}|[0-9A-HJKMNP-TV-Z]{10})$/;
 var _rooms=[];            // [{id,name,code,owner_id,members:[user_id]}], mine only
 var _roomsFor=null;       // the USER_ID _rooms was loaded for: another account's rooms never show
 var _roomsAt=0;           // when the roster was last fetched (board refreshes re-read it)
@@ -8407,13 +8409,16 @@ function joinRoom(code){
   }
   var forget=function(){try{localStorage.removeItem("ufc_room_join");}catch(e){}};
   return _roomRpc("join_room",{p_code:code}).then(function(r){
+    // A wrong code comes back empty rather than as an error, so the database
+    // can count the miss (an exception would roll that count back).
+    if(!r||!r.id)throw new Error("no such room");
     forget();
     return roomsLoad().then(function(){selectRoom(r.id);toast("Joined "+r.name+" 👥");return r;});
   }).catch(function(e){
     var m=(e&&e.message)||"";
     // A dead code stays dead: don't re-prompt on every boot.
     if(/no such room|room full/i.test(m))forget();
-    toast(/no such room/i.test(m)?"No room with that code":/room full/i.test(m)?"That room is full":"Couldn't join — try again");
+    toast(/no such room/i.test(m)?"No room with that code":/room full/i.test(m)?"That room is full":/too many attempts/i.test(m)?"Too many wrong codes — try again in an hour":"Couldn't join — try again");
     return null;
   });
 }

@@ -184,6 +184,34 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   check("any other refusal is not retried", ctx.__calls.filter((c) => /rpc\/join_room/.test(c.url || "")).length === 1 && !ctx.__calls.some((c) => c.refresh));
   check("a dead code is forgotten (no re-prompt on every boot)", !ctx.__store.has("ufc_room_join") && ctx.__toasts.some((t) => /No room with that code/.test(t)));
 }
+// --- migration 0008: long codes, and a wrong code comes back empty ---------------------
+{
+  const ctx = makeCtx({ email: "me@x.test", rooms: [R1], replies: { "/rest/v1/rpc/join_room POST": ({ body }) => ({ status: 200, json: { id: "r1", name: "Fight Club", code: body.p_code } }) } });
+  await ctx.joinRoom("7k3m-9pqr-2x");
+  const rpc = ctx.__calls.find((c) => /rpc\/join_room/.test(c.url || ""));
+  check("a 10-char base32 code is accepted and normalised", rpc && rpc.body.p_code === "7K3M9PQR2X");
+  const n = ctx.__calls.length;
+  await ctx.joinRoom("7K3M9PQRIX");
+  check("...but not with a letter Crockford base32 leaves out (I)", ctx.__calls.length === n && ctx.__toasts.some((t) => /doesn't look right/.test(t)));
+}
+{
+  const replies = { "/rest/v1/rpc/join_room POST": { status: 200, json: null } };
+  const ctx = makeCtx({ email: "me@x.test", replies, storage: { ufc_room_join: "AB12CD" } });
+  const r = await ctx.joinRoom("AB12CD");
+  check("an empty reply (how the database answers a wrong code) reads as no such room, and the code is forgotten",
+    r === null && !ctx.__store.has("ufc_room_join") && ctx.__toasts.some((t) => /No room with that code/.test(t)));
+  const ctx2 = makeCtx({ email: "me@x.test", replies: { "/rest/v1/rpc/join_room POST": { status: 400, json: { message: "too many attempts" } } } });
+  await ctx2.joinRoom("AB12CD");
+  check("a throttled account is told to wait", ctx2.__toasts.some((t) => /Too many wrong codes/.test(t)));
+}
+{
+  const sql = readFileSync(join(ROOT, "supabase/migrations/0008_rooms_codes_throttle.sql"), "utf8");
+  const jr = sql.slice(sql.indexOf("function public.join_room"));
+  check("0008: a miss is recorded and returned as null, never raised (a raise would roll the record back)",
+    /if r\.id is null then\s+insert into room_join_misses[\s\S]*?return null;/.test(jr) && !/raise exception 'no such room'/.test(jr));
+  check("0008: the throttle is checked before the lookup", jr.indexOf("too many attempts") < jr.indexOf("from rooms where"));
+  check("0008: codes skip the UUID's fixed version/variant bytes (6 and 8)", /array\[0, 1, 2, 3, 4, 5, 7, 9, 10, 11\]/.test(sql));
+}
 {
   const ctx = makeCtx({ email: "me@x.test", replies: { "/rest/v1/rpc/join_room POST": { reject: true } }, storage: { ufc_room_join: "AB12CD" } });
   await ctx.joinRoom("AB12CD");
