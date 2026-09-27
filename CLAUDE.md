@@ -756,7 +756,12 @@ Two rules hold it together:
   anonymous, so a refusal of exactly that kind gets one refresh + retry.
 
 Inserts happen only through the `create_room` / `join_room` RPCs (caps: 10 owned
-rooms, 50 members). Room names are other people's input: render them with
+rooms, 50 members). Since `0008_rooms_codes_throttle.sql`, new invite codes are
+10 characters of Crockford base32 (the old 6-hex codes still work), and each
+account gets 10 wrong codes an hour. **`join_room` returns NULL for a wrong code
+rather than raising**: an exception would roll back the row that records the
+miss, so the throttle would never count anything. The app reads an empty reply
+as "no such room"; `check:rooms` holds both halves. Room names are other people's input: render them with
 `textContent`, never `innerHTML` (`check:rooms` holds that too).
 
 ## The engine migration moves code, never numbers
