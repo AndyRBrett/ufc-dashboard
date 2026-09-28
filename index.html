@@ -6117,7 +6117,9 @@ var WHATS_NEW=[
   {id:"2026-10-08-fight-night-xp",emoji:"⭐",title:"Fight Night XP",
    desc:"Your Fight IQ card now levels up. Correct picks, underdog wins, methods, locks, perfect cards and belt reigns earn XP, badges unlock at milestones, and the card's frame goes bronze, silver, gold and diamond as you climb. Pure bragging rights: it never touches the leaderboard."},
   {id:"2026-10-09-room-tale-of-the-tape",emoji:"🥊",title:"Tale of the Tape, for pickers",
-   desc:"Before every card, a room's board opens with its top two head to head: accuracy, underdogs, locks, methods, streak, head-to-head record and titles, plus a verdict on who has the edge."}
+   desc:"Before every card, a room's board opens with its top two head to head: accuracy, underdogs, locks, methods, streak, head-to-head record and titles, plus a verdict on who has the edge."},
+  {id:"2026-10-10-rizin-dwcs",emoji:"🌏",title:"RIZIN and Contender Series picks",
+   desc:"The sport switch now has RIZIN and Dana White's Contender Series beside UFC and PFL. Same pick'em as PFL, with its own board: RIZIN picks close before Japan's first bell, DWCS picks an hour before Tuesday night's show."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -8750,7 +8752,16 @@ function roomTapeEl(rows,room,belt,ev){
 // Picks close at the card's `time` (ET) when the feed gives one, else at
 // SPORT_LOCK_UTC_H on the card's date: early enough for a card in Riyadh or
 // Singapore, and never after a bell (the feed rarely knows start times).
+// A promotion whose bells ring earlier in the UTC day gets its own hour:
+// RIZIN runs from Japan, first bell about 13:00-14:00 JST (04:00-05:00 UTC),
+// so 10:00 UTC would leave its first five hours pickable. 02:00 UTC is 11:00
+// JST, before doors. DWCS goes the other way: one Tuesday-night show from Las
+// Vegas, first bell 19:00 ET (23:00 UTC while its Aug-Oct season is on EDT),
+// so 10:00 UTC would close it at 6am, a whole day early; 22:00 UTC is an hour
+// before the bell.
 var SPORT_LOCK_UTC_H=10;
+var SPORT_LOCK_UTC_H_BY={rizin:2,dwcs:22};
+function _sportLockH(ev){var h=ev&&Object.prototype.hasOwnProperty.call(SPORT_LOCK_UTC_H_BY,ev.promotion)?SPORT_LOCK_UTC_H_BY[ev.promotion]:null;return h==null?SPORT_LOCK_UTC_H:h;}
 var SPORT=(function(){try{return localStorage.getItem("ufc_sport")||"ufc";}catch(e){return "ufc";}})();
 var _sportFeed=null;      // {promotions, events} after PickEngine.validateFeed
 var _sportPicks=(function(){try{return JSON.parse(localStorage.getItem("ufc_sport_picks")||"{}")||{};}catch(e){return {};}})();
@@ -8768,7 +8779,7 @@ function _etOffsetAt(y,mo,d){
 function sportLockMs(ev){
   var d=ev.date.split("-"),m=/^(\d{1,2}):(\d{2})$/.exec(ev.time||"");
   if(m)return Date.UTC(+d[0],+d[1]-1,+d[2],+m[1]+_etOffsetAt(+d[0],+d[1]-1,+d[2]),+m[2]);
-  return Date.UTC(+d[0],+d[1]-1,+d[2],SPORT_LOCK_UTC_H,0);
+  return Date.UTC(+d[0],+d[1]-1,+d[2],_sportLockH(ev),0);
 }
 function sportLocked(ev,b){return !!b.winner||Date.now()>=sportLockMs(ev);}
 function sportEvents(promo){

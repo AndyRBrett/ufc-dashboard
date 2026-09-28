@@ -101,10 +101,12 @@ jobs:
       # cadence-gated like intel.py, never fatal. PUBLISHING since 2026-09-24,
       # after the first shadow run's PFL Chicago card was checked against the
       # published card (12 of 14 bouts independently confirmed, none
-      # contradicted). Remove EXTRA_PUBLISH to drop back to shadow mode (writes
-      # events-extra.candidate.json only; the switcher hides once the live
-      # file's cards age out). See extra.py.
-      - name: Non-UFC cards (PFL), published to events-extra.json
+      # contradicted). RIZIN and DWCS followed on 2026-09-28. Publishing is
+      # also per promotion (`publish` in extra.py's PROMOTIONS): the candidate
+      # file always carries every promotion, the live file only the published
+      # ones. Remove EXTRA_PUBLISH to drop them all back to shadow mode (the
+      # switcher hides once the live file's cards age out). See extra.py.
+      - name: Non-UFC cards (PFL, RIZIN, DWCS), published to events-extra.json
         continue-on-error: true
         env:
           EXTRA_PUBLISH: "1"

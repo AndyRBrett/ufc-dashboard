@@ -21,7 +21,7 @@ and never writes to it:
 | `lab.html` | The Fight Lab page (⋯ menu → Fight Lab) |
 | `fightbot/core.mjs` | FightBot's tools, built on the two modules above |
 | `fightbot/server.mjs` | Zero-dependency MCP server over stdio |
-| `events-extra.json` | Non-UFC cards (PFL first), built by `extra.py`; empty until publishing is switched on |
+| `events-extra.json` | Non-UFC cards (PFL, RIZIN, DWCS), built by `extra.py`; only promotions marked `publish` reach it |
 
 ## The one rule: scoring is shared, never copied
 
@@ -104,7 +104,11 @@ with at least two real bouts, and never drops a card on a failed fetch. It
 starts in **shadow mode**: output goes to `events-extra.candidate.json` and a
 report to `extra-state.json`, and `events-extra.json` is untouched until
 `EXTRA_PUBLISH=1` is set on that step after a real run has been checked
-against the actual card. `tests/test_extra.py` holds it.
+against the actual card. That switch is also per promotion: each
+`PROMOTIONS` entry carries `publish`, the live file gets only the published
+ones, and the candidate always gets all of them. RIZIN (cards are sections of
+its year page) and DWCS (one card per week of a season page) are read the
+same way with small discovery variants. `tests/test_extra.py` holds it.
 
 Picks on feed promotions **are** wired into the app (#184, #185): the sport
 switcher shows a promotion's cards, stores its picks tagged with its

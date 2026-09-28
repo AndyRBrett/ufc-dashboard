@@ -187,7 +187,15 @@ else {
       const lock = await page.evaluate(() => ({
         nov: sportLockMs({ date: "2026-11-14", time: "18:00" }), oct: sportLockMs({ date: "2026-10-16", time: "18:00" }),
         mar: sportLockMs({ date: "2027-03-13", time: "18:00" }), mar2: sportLockMs({ date: "2027-03-14", time: "18:00" }),
-        none: sportLockMs({ date: "2026-11-14" }) }));
+        none: sportLockMs({ date: "2026-11-14" }),
+        rizin: sportLockMs({ promotion: "rizin", date: "2026-12-31" }),
+        dwcs: sportLockMs({ promotion: "dwcs", date: "2026-08-04" }),
+        proto: sportLockMs({ promotion: "__proto__", date: "2026-11-14" }) }));
+      check("a RIZIN card (Japan, first bell ~04:00 UTC) locks at 02:00 UTC, before its bell, not the 10:00 default",
+        lock.rizin === Date.UTC(2026, 11, 31, 2, 0));
+      check("DWCS (first bell 19:00 ET = 23:00 UTC) locks at 22:00 UTC, an hour before it, not at 6am",
+        lock.dwcs === Date.UTC(2026, 7, 4, 22, 0));
+      check("an unknown promotion (even '__proto__') keeps the default hour", lock.proto === Date.UTC(2026, 10, 14, 10, 0));
       check("a timed card locks at its own date's ET offset (EST after the November change, EDT from March's)",
         lock.nov === Date.UTC(2026, 10, 14, 23, 0) && lock.oct === Date.UTC(2026, 9, 16, 22, 0) &&
         lock.mar === Date.UTC(2027, 2, 13, 23, 0) && lock.mar2 === Date.UTC(2027, 2, 14, 22, 0) && lock.none === Date.UTC(2026, 10, 14, 10, 0));
