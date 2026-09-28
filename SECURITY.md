@@ -19,12 +19,14 @@ that the security posture is reviewable, and explains how to rotate keys.
 |---|---|---|---|
 | Supabase **anon** key | `index.html` | ✅ Yes | **Public by design.** Anon keys are meant to be shipped to clients. Data is protected by Row-Level Security (RLS), not by hiding this key. |
 | `ANTHROPIC_API_KEY` | `ai-breakdown` edge function env | ❌ No | Server-side only. The browser calls the edge function, never Anthropic directly. |
-| `GROK_API_KEY` (or `XAI_API_KEY`) | `ai-breakdown` edge function env | ❌ No | xAI key for the trash-talk roast only. Unset = the roast stays on Claude. |
-| Supabase **service_role** key (`SB_SERVICE_ROLE_KEY`) | env of `send-push`, `check-results`, `send-reminders`, `ai-breakdown` | ❌ No | Bypasses RLS — must never reach the client. `send-push` uses it for its own tables; `check-results` and `send-reminders` send it as `X-Service-Key` to prove to `send-push` that a push is ours; `send-reminders` also writes pick lock times with it; `ai-breakdown` uses it for the daily-quota RPC. |
+| `GROK_API_KEY` (or `XAI_API_KEY`) | `ai-breakdown` edge function env | ❌ No | xAI key for the trash-talk action only. Unset = the roast stays on Claude. |
+| Supabase **service_role** key (`SB_SERVICE_ROLE_KEY`) | `send-push`, `check-results`, `send-reminders`, `ai-breakdown` edge function envs | ❌ No | Bypasses RLS — must never reach the client. `check-results` and `send-reminders` send it to `send-push` in an `X-Service-Key` header (see **send-push** below); `ai-breakdown` uses it only for the `ai_quota_take` RPC. |
 | `VAPID_PRIVATE_KEY` | `send-push` edge function env | ❌ No | Web Push signing key. The matching public key is safe to ship. All web-push delivery happens in the edge function — `scrape.py` never holds this key. |
 | `ODDS_API_KEY` | GitHub Actions secret | ❌ No | Used only by `scrape.py` in CI. |
-| `CRON_SECRET` | GitHub Actions secret, the three `--no-verify-jwt` edge function envs, and the three cron-job.org jobs | ❌ No | Inbound auth for `check-results`, `send-reminders` and `kick-scraper`, which the Supabase gateway does not JWT-check. Header only (`Authorization: Bearer`), never in a URL — see the cron bullet under **Defenses in place**. |
+| `ODDS_API_KEY_SECONDARY` | GitHub Actions secret | ❌ No | Backup Odds API key with its own quota, used by `scrape.py` when the primary's is spent. Unset = no backup provider. |
+| `CRON_SECRET` | GitHub Actions secret + the three `--no-verify-jwt` edge function envs | ❌ No | Inbound auth for `check-results`, `send-reminders` and `kick-scraper`, which the Supabase gateway does not JWT-check. Send it as a header, never in a URL — see the cron bullet under **Defenses in place**. |
 | `GH_DISPATCH_TOKEN` | `kick-scraper` edge function env | ❌ No | GitHub PAT used only to fire `update.yml` via `workflow_dispatch`. Anyone holding this can trigger workflows in this repo, so it should be scoped to that one workflow rather than repo-wide `actions: write`. |
+| `FORCE_SECRET` | `kick-scraper` edge function env | ❌ No | Manual-operator credential for `force=1` (dispatch regardless of the cadence gate). Never sent by the cron. Unset = forced dispatches are disabled. |
 
 **The anon key is not a leak.** In Supabase, the anon key identifies the project
 and grants whatever the `anon` role's RLS policies allow — nothing more. The
@@ -51,16 +53,23 @@ enabled with least-privilege policies:
     clamps a third 🔒 on a card to none.
 - `push_subs` / `notif_log` — no anon access; written only by the `send-push`
   edge function using the service_role key (which bypasses RLS).
-- `challenges` — readable by all; only the challenger can create one, and only
-  its target can answer it.
-- `user_prefs` — each account reads and writes only its own row.
-- `rooms` / `room_members` — visible only to a room's members, and created or
-  joined only through the `create_room` / `join_room` RPCs, which refuse
-  anonymous sessions (`is_account()`). Invite codes are 10 characters of
-  Crockford base32, and each account gets 10 wrong codes an hour
-  (`room_join_misses`, [`0008`](supabase/migrations/0008_rooms_codes_throttle.sql)).
-- `ai_usage` — no client access; `ai_quota_take()` is executable by
-  service_role only ([`0009`](supabase/migrations/0009_ai_quota.sql)).
+- `picks` also carries a **server-side pick lock** (`0010_picks_lock.sql`): the
+  `picks_enforce_lock` trigger refuses an insert, a changed pick/method/🔒 or a
+  delete once the bout's segment has started (plus a 5-minute grace), so a
+  direct REST call can't change a pick after the bell either. The lock times
+  (`pick_locks`, `card_bells`) are revoked from `anon`/`authenticated` and
+  written only by `send-reminders` with the service_role key. "Delete account"
+  goes through the owner-only `delete_my_picks()` RPC.
+- `rooms` / `room_members` (`0006`, `0008`) — only email-linked accounts can
+  create, join or see a room, enforced in the database by `is_account()`
+  (a missing `is_anonymous` claim fails closed). Inserts happen only through the
+  `create_room` / `join_room` RPCs. Invite codes are 10 characters of Crockford
+  base32, and each account gets 10 wrong codes an hour (`room_join_misses`,
+  revoked from every client role).
+- `ai_usage` (`0009_ai_quota.sql`) — revoked from every client role; only
+  `ai_quota_take`, executable by `service_role` alone, touches it.
+- `challenges` (`0003`) and `user_prefs` (`0004`) — RLS on with explicit
+  grants; see those migrations.
 
 ### Per-user identity via anonymous auth
 Because the picks table needs per-user writes but the app has no login, each
@@ -69,9 +78,12 @@ enabled in Authentication settings). The browser stores the returned session in
 `localStorage` (`ufc_sb_session`), uses the user's JWT — not the raw anon key —
 for all REST/realtime calls, and `USER_ID` is the auth `uid`. This lets RLS
 enforce `auth.uid()::text = user_id`, so a user can only modify their own picks.
-The same session JWT is what proves identity to the edge functions:
-`ai-breakdown` requires it for every call, and `send-push` requires it for every
-push a user sends. The anon key alone identifies nobody.
+Edge-function calls send the user's session JWT too: `ai-breakdown` requires it
+(checked against GoTrue), and `send-push` accepts it first and falls back to the
+anon key only for the few backup types an anonymous caller may trigger (see
+below). **Anonymous sign-in is open, so an account is not a rate limit on its
+own:** a fresh `uid` is one signup call away, which is why every per-account
+budget is paired with a per-IP and a global one.
 
 See [`supabase/migrations/0001_rls_baseline.sql`](supabase/migrations/0001_rls_baseline.sql)
 for the authoritative policy definitions. Keep RLS in version control: run
@@ -98,31 +110,57 @@ for the authoritative policy definitions. Keep RLS in version control: run
   roast angles, structure rules) is assembled server-side in `ai-breakdown`'s
   `trash-talk` action — the client only sends short variable fields, never a
   pre-built prompt.
-- **`ai-breakdown` is a signed-in account spending its own budget.** Every call
-  needs the caller's session JWT, checked against GoTrue (`REQUIRE_SESSION=0` is
-  the outage escape hatch). Each call takes from lasting daily buckets in
-  `ai_usage`: per account (`AI_DAILY_CAP`, and `IQ_DAILY_CAP` for Fight IQ
-  write-ups), per IP (`AI_IP_DAILY_CAP`) and one global ceiling
-  (`AI_GLOBAL_DAILY_CAP`). The IP and global buckets matter because anonymous
-  sign-in is open, so a fresh account is one signup away. If that table can't
-  answer, the in-memory limits decide: it fails to memory, never open. A
-  client-sent `viewerId` is ignored.
-- **`send-push` sends only what it can vouch for.** It enforces a
-  notification-type allowlist, title/body length caps and relative same-app
-  `url`s, and every caller is one of three kinds:
-  - **service:** our own functions, proved by `X-Service-Key` (the service_role
-    key, compared in constant time). Only they may send `brief` and `swap-*`.
-  - **user:** a session JWT verified with GoTrue. Social pushes (picks, nudges,
-    challenges, roasts) go out as the verified sender only, with a per-sender
-    hourly cap. Pick, nudge and challenge text is written by the server (a
-    challenge is read from its row). ⚠️ A roast's **body is the sender's own
-    text** (length-capped, not moderated), and with no target list it reaches
-    every subscriber but the sender. Only its title, which names the verified
-    sender, is server-written, so a roast can't pose as someone else but can
-    say anything.
-  - **anon:** may only trigger the fight reminders and result pushes, which the
-    server rebuilds from the committed `data.js` (parsed, never run), with the
-    result audience read from `picks` itself.
+  `send-push` additionally enforces
+  a notification-type allowlist, title/body length caps, and only forwards
+  relative same-app `url` values into push payloads.
+- **send-push sends only what it can vouch for.** This closed the old gap where
+  anyone holding the public anon key could push crafted text to every
+  subscriber, except for trash talk (below). Each caller is one of three kinds:
+  - **service**: our own functions, proven by the service_role key in
+    `X-Service-Key`. Trusted as given. `brief` and `swap-*` are service-only.
+  - **user**: a session JWT verified with GoTrue. Social pushes go out as the
+    verified sender only and are capped per sender per hour (`SENDER_LIMIT`,
+    30). Pick announcements, nudges and challenges carry server-written text,
+    built from the sender's own picks, the one nudge target, or the challenge
+    row.
+    ⚠️ **Trash talk is the exception**: the roast *is* the message, so its body
+    is the sender's text (capped at `MAX_BODY`). The persona in its title is
+    also read from that text, and the title names the verified sender
+    (`… (via <nickname>)`). If the caller sends no `include_user_ids`, it goes
+    to **every subscriber but the sender**. Anonymous sign-up is open, so anyone
+    can mint an account and broadcast arbitrary text this way, attributed to
+    whatever nickname that account sets, at up to 30 pushes an hour per account.
+    Possible hardening, not yet done: require targets (the app's group of
+    friends), or cap an untargeted roast to accounts that have picks.
+  - **anon**: may only trigger the `main`, `prelim` and `result:*` backups. The
+    server rebuilds their text and audience from the committed `data.js` (read
+    with patterns, never executed) and from `picks` itself.
+
+  `npm run check:pushauth` runs the real handler against all of this.
+- **ai-breakdown spends a signed-in account's own budget.** It requires the
+  caller's session JWT and takes from `ai_quota_take`: a per-account daily cap
+  (`AI_DAILY_CAP`, plus `IQ_DAILY_CAP` for the Fight IQ write-up), a lasting
+  per-IP bucket (`AI_IP_DAILY_CAP`) and one global ceiling
+  (`AI_GLOBAL_DAILY_CAP`). If the quota table can't answer, the in-memory caps
+  decide: it fails to memory, never open. A client-sent `viewerId` is ignored.
+  `REQUIRE_SESSION=0` is the outage escape hatch (a bearer is then accepted
+  unverified; the IP and global buckets still apply).
+- **send-reminders never runs code it fetched.** It holds the service_role
+  key, and it used to fetch `lab/*.js`, `scoring.js`, `index.html` and
+  `data.js` from Pages and run them with `new Function`, one Pages change away
+  from handing the key out. The Lab code is now bundled at build time
+  (`supabase/functions/_shared/lab-bundle.js`, `npm run build:fn`,
+  `check:bundle`), and `data.js` is read by `parseDataJs`, which accepts only
+  the literals `scrape.py` writes and throws on anything else. Only JSON is
+  fetched besides `data.js`.
+- **kick-scraper reads the committed `data.js`, never runs it.** It fetches
+  `data.js` from `main` on raw.githubusercontent.com (the repo is public) and
+  reads it with a regex only to pick its cadence. Changed on 2026-09-27 from the
+  Pages copy, which let a blocked deploy hold the scraper at the every-ping
+  cadence (a feedback loop, not a security issue). Anyone who could change that
+  file could already push to `main`. An unreadable file fails open to
+  "dispatch", which only costs Actions minutes: the endpoint still needs
+  `CRON_SECRET`, and `scrape.py` meters the Odds API itself.
 - **Registering for push proves identity.** `push_subs` is keyed on `user_id`
   and `register` upserts on conflict, so whoever picks `user_id` owns that
   person's notifications from then on. The anon key cannot establish who is
@@ -164,17 +202,11 @@ for the authoritative policy definitions. Keep RLS in version control: run
   as a trailing comment. `.github/dependabot.yml` keeps them moving, since a pin
   nobody updates is its own stale-dependency risk. (`supabase/setup-cli@v1` was
   a *branch*, not a tag — every push to it changed what the deploy job ran.)
-- **Dependencies are pinned too.** Python packages install from
-  `requirements.txt` / `requirements-dev.txt` with `--require-hashes`, so a
-  package republished under the same version, or a new unpinned dependency,
-  fails the install instead of running with `contents: write`. The Supabase CLI
-  is pinned by version in `deploy-functions.yml`, and PGlite (which runs the
-  real migrations in `check:picklock`) by exact version in `package.json`. Bump
-  any of them on purpose, never back to `latest`. ⚠️ Not yet pinned:
-  `send-push` imports `npm:web-push` with no version and there is no Deno
-  lockfile, so a function deploy can pick up a new release unasked. The other
-  npm dev dependencies use caret ranges, but they only run in tests and builds,
-  never in production.
+- **CI dependencies are pinned too.** Python packages install from
+  `requirements.txt` / `requirements-dev.txt` with `--require-hashes` (edit the
+  `.in` files and regenerate with `pip-compile --generate-hashes`), and the
+  Supabase CLI is pinned by version in `deploy-functions.yml`. Bump them on
+  purpose, in a commit that says so, never back to `latest`.
 
 ## The automated implementer
 
@@ -205,25 +237,24 @@ an issue, it does not authenticate one.
 
 - **Supabase anon / service_role:** rotate in the Supabase dashboard
   (Settings → API). Update the `SUPABASE_ANON` GitHub Actions secret and the
-  embedded value in `index.html` for the anon key. For the service_role key,
-  update `SB_SERVICE_ROLE_KEY` in all four functions that hold it (`send-push`,
-  `check-results`, `send-reminders`, `ai-breakdown`) together: a function left
-  on the old key has its pushes refused by `send-push`. Update the allowlist
-  regex in `.gitleaks.toml`.
-- **`ANTHROPIC_API_KEY`, `GROK_API_KEY`, `VAPID_*`, `ODDS_API_KEY`:** rotate at
-  the provider, then update the corresponding edge function env vars and/or
-  GitHub Actions secrets.
-- **`CRON_SECRET`:** it is our own value, so "rotating" means picking a new
-  random string (`openssl rand -hex 32`) and setting it everywhere it is
-  checked or sent, in one sitting: Supabase's Edge Function secrets (read by all
-  three `--no-verify-jwt` functions), the `CRON_SECRET` GitHub Actions secret
-  (`scheduled-push.yml`), and the `Authorization: Bearer` header of all three
-  cron-job.org jobs (`kick-scraper`, `send-reminders`, `check-results`). A
-  missed caller gets 401s until it is updated, so check the function logs
-  afterwards. Leave `CRON_ALLOW_QUERY_KEY` at `0`.
+  embedded value in `index.html` for the anon key; update the edge function env
+  for the service_role key (`SB_SERVICE_ROLE_KEY` in all four functions that
+  hold it: `send-push`, `check-results`, `send-reminders`, `ai-breakdown`). A
+  partial update breaks the `X-Service-Key` handshake, and the Friday brief and
+  swap alerts stop sending. Update the allowlist regex in `.gitleaks.toml`.
+- **`ANTHROPIC_API_KEY`, `GROK_API_KEY`, `VAPID_*`, `ODDS_API_KEY` /
+  `ODDS_API_KEY_SECONDARY`:** rotate at the provider, then update the
+  corresponding edge function env vars and/or GitHub Actions secrets.
+- **`CRON_SECRET`:** it is our own value, so "rotating" means picking a new random
+  string and setting it in BOTH places at once — the GitHub Actions secret and the
+  env of all three `--no-verify-jwt` functions — plus the external cron job that
+  calls `kick-scraper`. They are checked against the same secret, so a partial
+  update locks out whichever caller was missed.
 - **`GH_DISPATCH_TOKEN`:** reissue the PAT on GitHub and update the `kick-scraper`
   env. Scope it to `workflow_dispatch` on `update.yml` rather than repo-wide
   `actions: write` while you are there.
+- **`FORCE_SECRET`:** our own value; set a new random string in the
+  `kick-scraper` env. Only people who trigger forced runs by hand need it.
 
 ## Reporting a vulnerability
 
