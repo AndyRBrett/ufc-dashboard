@@ -173,9 +173,13 @@ setEvents([card1, card2]);
 
 // --- unfinished cards never get a recap -----------------------------------
 {
-  const live = { name: "UFC 999", date: C3, fights: [bout("E1", "F1", "E1"), bout("E2", "F2")] };
+  // Dated TODAY, not C3: _eventFinished treats any card over two days old
+  // with a result as finished, so a fixed date made this check start failing
+  // on 2026-09-28 and blocked every deploy (tests must not depend on the clock).
+  const TODAY = new Date().toISOString().slice(0, 10);
+  const live = { name: "UFC 999", date: TODAY, fights: [bout("E1", "F1", "E1"), bout("E2", "F2")] };
   setEvents([card1, card2, live]);
-  const rows = rows2.concat([pick("Ann", C3, "E1", "F1", "E1")]);
+  const rows = rows2.concat([pick("Ann", TODAY, "E1", "F1", "E1")]);
   check("a card still in progress is not recapped", ctx.latestRecapDate(rows) === C2);
   setEvents([card1, card2]);
 }
