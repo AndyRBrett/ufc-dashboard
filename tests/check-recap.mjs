@@ -335,6 +335,21 @@ check("closing checkpoints the card so it never auto-repeats",
   check("stories: an upset that was also a lone call isn't repeated as the lone call",
     solo.some((t) => /^💣 Ann landed the biggest upset: H2/.test(t)) &&
     solo.some((t) => /^🦄 Only Dee had G1/.test(t)) && !solo.some((t) => /^🦄 Only Ann/.test(t)));
+  // Identity maps are prototype-free: a player called "constructor" who sat
+  // tonight out must not pass for one of tonight's pickers (their 3-streak
+  // from card 1 would otherwise be eligible).
+  {
+    const CZ = "2026-09-20";
+    const cardZ = { name: "UFC Fight Night: Z", date: CZ, fights: [0, 1, 2, 3, 4].map((i) => bout("Z" + i, "Y" + i, "Z" + i)) };
+    setEvents([card1, cardZ, card4]);
+    // 8 straight for "constructor" (3 on card 1, 5 on card Z), none tonight.
+    const proto = rows.concat(["A1", "A2", "A3"].map((a, i) => pick("constructor", C1, a, "B" + (i + 1), i === 1 ? "B2" : a)))
+      .concat([0, 1, 2, 3, 4].map((i) => pick("constructor", CZ, "Z" + i, "Y" + i, "Z" + i)));
+    const pst = stories(proto, C4).map((x) => x.em + " " + x.text);
+    check("stories: a player named after an Object.prototype key isn't counted as tonight's picker",
+      !pst.some((t) => /constructor/.test(t)) && pst.some((t) => /^🔥 Eve has hit 6/.test(t)));
+    setEvents([card1, card4]);
+  }
   // A quiet night says nothing it can't back up.
   check("stories: a quiet night invents nothing (no locks, no 3-picker bouts, no streak of 5)",
     stories(rows1, C1).every((x) => /^💣|^💯/.test(x.em + " ")));

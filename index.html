@@ -7628,7 +7628,7 @@ function recapStories(card,ev,ordered,date,standings){
   var lones=[],bust=null;
   ev.fights.forEach(function(f){
     if(!f.winner)return;
-    var pickers=[],right=[],wrongBy={};
+    var pickers=[],right=[],wrongBy=Object.create(null);
     card.forEach(function(u){
       u.picks.forEach(function(p){
         if(p.result===null||!nmBout(f,p.f1,p.f2))return;
@@ -7673,7 +7673,7 @@ function recapStories(card,ev,ordered,date,standings){
   if(mBest>=2)out.push({em:"🎯",text:_rcNames(mWho)+" nailed "+mBest+" methods"});
   if(bust)out.push({em:"😬",text:bust.wrong+" of "+bust.of+" had "+bust.loser+". "+bust.winner+" had other ideas."});
   // 🔥 Longest live streak after the card, among tonight's pickers (the board's own count).
-  var here={};card.forEach(function(u){here[_lbBaseName(u.nickname)]=true;});
+  var here=Object.create(null);card.forEach(function(u){here[_lbBaseName(u.nickname)]=true;});
   var sBest=0,sWho=[];
   boardStandings(ordered,{through:date}).forEach(function(u){
     if(!here[_lbBaseName(u.nickname)])return;
