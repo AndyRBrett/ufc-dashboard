@@ -778,7 +778,12 @@ export function analyticsInto(globalThis) {
     { key: "champ", emoji: "🏆", name: "Title Holder", desc: "Held the belt", need: function (t) { return t.reigns >= 1; } },
     { key: "defender", emoji: "🛡️", name: "Defender", desc: "3 title defenses", need: function (t) { return t.defenses >= 3; } }
   ];
-  function fightXP(decided, idx, belt) {
+  // `all` is every pick the player has (decided or not), so a card still
+  // being fought can't award Perfect Night off its first few wins and then
+  // take it back: that would make XP go down. A card counts once none of its
+  // picks is pending, or once it is 2 days old (the app's own _eventFinished
+  // rule), so a cancelled bout with no result can't block it forever.
+  function fightXP(decided, idx, belt, all, now) {
     var t = { wins: 0, dogs: 0, bigDogs: 0, longest: 0, methods: 0, locks: 0, cards: 0, perfect: 0, streak: 0,
               reigns: belt ? belt.reigns : 0, defenses: belt ? belt.defenses : 0 };
     var byCard = {};
@@ -791,9 +796,19 @@ export function analyticsInto(globalThis) {
       if (p.method && p.bout.result && PE.methodGroup(p.bout.result.method) === p.method) t.methods++;
       if (p.locked) t.locks++;
     });
-    Object.keys(byCard).forEach(function (d) { t.cards++; if (byCard[d].n >= 3 && byCard[d].w === byCard[d].n) t.perfect++; });
+    var pending = Object.create(null), nowMs = now instanceof Date ? now.getTime() : (typeof now === "number" ? now : Date.now());
+    (all || []).forEach(function (p) {
+      if (p.bout && !p.decided && Date.parse(p.date) >= nowMs - 2 * DAY) pending[p.date] = true;
+    });
+    Object.keys(byCard).forEach(function (d) { t.cards++; if (!pending[d] && byCard[d].n >= 3 && byCard[d].w === byCard[d].n) t.perfect++; });
     var cur = 0;
-    decided.slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; })
+    // Oldest first: by card date, then by when the result landed. Results
+    // arrive prelims first, main event last, so a HIGHER bout order is the
+    // earlier result (the lock skid's convention, reversed).
+    decided.slice().sort(function (a, b) {
+      if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+      return ((b.bout && b.bout.order) || 0) - ((a.bout && a.bout.order) || 0);
+    })
       .forEach(function (p) { cur = p.correct ? cur + 1 : 0; if (cur > t.streak) t.streak = cur; });
     var parts = [
       ["Correct picks", t.wins * XP.win], ["Underdog wins", t.dogs * XP.dog + t.bigDogs * XP.bigDog],
@@ -932,7 +947,7 @@ export function analyticsInto(globalThis) {
       archetype: iq.archetype, quip: CARD_QUIPS[key] || "", tier: tier, decided: n, record: iq.record,
       traits: traits, signature: signature, weakness: weakness, nemesis: nemesis, rival: rival,
       bestCall: bestCall, worstMiss: worstMiss, market: market, belt: belt, form: form,
-      xp: fightXP(decided, idx, belt)
+      xp: fightXP(decided, idx, belt, mine, ctx.now)
     };
   }
 

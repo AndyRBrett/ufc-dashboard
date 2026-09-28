@@ -218,6 +218,26 @@ check("lock skid orders same-card locks by when the result landed", skid.lockSki
     check("every pick-driven badge unlocks on the night that earns it",
       ["first-blood", "perfect", "odds", "dogs", "sniper", "locks", "streak"].every((k) => mx.badges.some((b) => b.key === k)));
     check("a monster night's XP: 10x(10+20+15+10) + 25 + 50 = 625", mx.total === 625, mx.total);
+    // Streaks run in result order: an early-prelim loss (high bout order)
+    // came BEFORE the main-card wins on the same card, whatever order the
+    // rows arrived in (Supabase serves them newest-saved first).
+    const cardA = Array.from({ length: 5 }, (_, i) => mk(40 + i, true, -150, { date: "2026-07-01", bout: Object.assign({}, mk(40 + i, true, -150).bout, { order: i }) }));
+    const cardB = Array.from({ length: 5 }, (_, i) => mk(50 + i, true, -150, { date: "2026-07-08", bout: Object.assign({}, mk(50 + i, true, -150).bout, { order: i }) }))
+      .concat([mk(59, false, -150, { date: "2026-07-08", bout: Object.assign({}, mk(59, false, -150).bout, { order: 9 }) })]);
+    const st = cardA.concat(cardB);
+    const sx = FL.fightCard(st, FL.fightIQ(st, { stats: {}, group: st }), { group: st }).xp;
+    check("On Fire reads streaks in result order, not row order (5, then a prelim loss, then 5 is no 10-streak)",
+      sx.tallies.streak === 5 && !sx.badges.some((b) => b.key === "streak"), sx.tallies.streak);
+    // Perfect Night waits for the card: 3 wins in, 1 still pending.
+    const today = new Date().toISOString().slice(0, 10);
+    const live = Array.from({ length: 3 }, (_, i) => mk(60 + i, true, -150, { date: today }))
+      .concat([mk(63, true, -150, { date: today, decided: false, correct: null })]);
+    const decidedOnly = live.filter((p) => p.decided);
+    const lx = FL.fightXP(decidedOnly, null, null, live, Date.now());
+    const lxLater = FL.fightXP(decidedOnly, null, null, live, Date.now() + 3 * 86400000);
+    check("Perfect Night isn't awarded while a pick on that card is still pending (so XP can't later drop)",
+      lx.tallies.perfect === 0 && !lx.badges.some((b) => b.key === "perfect"));
+    check("…and a card over 2 days old counts even if a bout never got a result (cancelled)", lxLater.tallies.perfect === 1);
     check("frames follow level (LV 4 is still the standard frame)", x.frame.key === "plain" && FL.levelFor(FL.xpForLevel(5)) === 5);
   }
   {
