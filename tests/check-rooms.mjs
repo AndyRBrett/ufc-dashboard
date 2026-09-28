@@ -137,6 +137,32 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   check("every member scores exactly what the main board gives them", Object.entries(pts(room)).every(([k, v]) => pts(all)[k] === v));
   const belt = ctx.computeBeltLineage(rows, { users: ctx._curRoom().members });
   check("the room's belt is contested only by members", belt && belt.reigns.every((r) => r.base !== "outsider"));
+
+  // --- the pickers' Tale of the Tape: the room's top two, off the room's board ---
+  {
+    const t = ctx.taleOfTheTape(rows, ctx._curRoom().members, belt);
+    const row = (l) => t.rows.find((r) => r.label === l);
+    check("tape: the room's #1 and #2 on its own all-time board, members only",
+      t && /Me/.test(t.a.name) && /JP/.test(t.b.name) && !/Outsider/.test(t.a.name + t.b.name) && t.a.pts === ctx.userPts(room.find((u) => u.user_id === "u-me")));
+    check("tape: accuracy is the board's (100% vs 0%), with the edge marked", row("Accuracy").a === "100%" && row("Accuracy").b === "0%" && row("Accuracy").edge === 1);
+    // Me called Delta Four at +250 (1/1); JP's only pick, Bravo Two at +130, lost (0/1).
+    check("tape: underdog records read each bout's own line", row("Underdogs").a === "100% (1/1)" && row("Underdogs").b === "0% (0/1)");
+    check("tape: head to head counts the cards both scored (1-0 here)", t.h2h.a === 1 && t.h2h.b === 0 && t.h2h.draw === 0);
+    check("tape: no data reads as a dash, not a zero, and never takes the edge", row("Locks").a === "—" && row("Locks").edge === 0);
+    check("tape: the verdict names who leads, from the numbers", /Me leads every column/.test(t.verdict));
+    check("tape: the belt's reigns are credited to their holder", row("Titles").a === "1" && row("Titles").b === "0");
+    // Identical picks: a drawn card, level columns, and the verdict says so.
+    const same = rows.filter((r) => r.user_id !== "u-jp").concat(rows.filter((r) => r.user_id === "u-me").map((r) => ({ ...r, user_id: "u-jp", nickname: "🦂 JP" })));
+    const tt = ctx.taleOfTheTape(same, ctx._curRoom().members, null);
+    check("tape: a card both scored level is a draw, not a win", tt.h2h.draw === 1 && tt.h2h.a === 0 && tt.h2h.b === 0);
+    check("tape: dead level on paper says so", /Dead level/.test(tt.verdict) && tt.rows.every((r) => r.edge === 0));
+    // A number against no data isn't an edge: Me called a method, JP never has.
+    const meth = rows.map((r) => r.user_id === "u-me" && r.f1 === "Alpha One" ? { ...r, method: "KO/TKO" } : r);
+    const tm = ctx.taleOfTheTape(meth, ctx._curRoom().members, belt).rows.find((r) => r.label === "Methods");
+    check("tape: a record against a dash takes no edge", tm.a !== "—" && tm.b === "—" && tm.edge === 0);
+    check("tape: a room with fewer than two scored members gets no tape",
+      ctx.taleOfTheTape(rows.filter((r) => r.user_id !== "u-jp"), ctx._curRoom().members, belt) === null);
+  }
 }
 
 // --- joining needs an account -----------------------------------------------------
@@ -310,6 +336,10 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   const lb = fn("loadLeaderboard");
   check("the board scores a room through boardStandings + roomScope (no second scorer)", /boardStandings\(rows,roomScope\(/.test(lb) && !/_lbScoreUsers\(/.test(lb));
   check("the board's belt is the room's belt when a room is selected", /computeBeltLineage\(rows,_room\?\{users:_room\.members\}:null\)/.test(lb));
+  check("the Tale of the Tape shows only in a room, only before the card starts, and can't break the board",
+    /if\(_room&&_allPre\)\{\s*try\{var _tape=taleOfTheTape\(rows,_room\.members,belt\)/.test(lb) && /catch\(e\)\{console\.warn\("\[tape\]"/.test(lb));
+  check("the tape reaches the page as text (nicknames are other people's input)", !/innerHTML/.test(fn("taleEl")) && /_rmEl\(/.test(fn("taleEl")));
+  check("the tape scores nothing itself: boardStandings and the belt only", !/_lbScoreUsers\(|pickPts\(/.test(fn("taleOfTheTape")) && /boardStandings\(rows,\{users:members\}\)/.test(fn("taleOfTheTape")));
   const rs = fn("renderRoomSheet");
   check("room names reach the page as text, never HTML", !/innerHTML\s*=\s*[^"'\s]/.test(rs) && /textContent/.test(fn("_rmEl")) && !/innerHTML/.test(fn("_syncRoomBtn")));
   const empty = lb.slice(lb.indexOf("if(_room){var _re"), lb.indexOf("if(_room){var _re") + 400);
