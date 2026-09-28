@@ -1,6 +1,6 @@
 // Uses the runtime's built-in Deno.serve — no deno.land/std import, so deploys
 // don't depend on deno.land being up.
-import webpush from "npm:web-push";
+import webpush from "npm:web-push@3.6.7";
 // v3 — spoiler-free by default: safe_title/safe_body go to everyone except
 // subscribers with live_results = true (also supports include_user_ids targeting)
 
@@ -145,7 +145,8 @@ function allowedEndpoint(raw: string): boolean {
 //            gateway's JWT check expects, whatever format the service key has.
 //   user     a signed-in app user, proven by their own session JWT (checked
 //            against GoTrue). May send the social pushes (picks, nudges,
-//            challenges, trash talk) AS THEMSELVES, and the result/reminder
+//            challenges, trash talk) AS THEMSELVES, once they have played
+//            SOCIAL_MIN_CARDS finished cards (below), and the result/reminder
 //            backups below. The server writes every title and body except the
 //            trash-talk roast itself (which is the message), and resolves every
 //            audience it can from the database rather than the request.
@@ -179,6 +180,17 @@ function sameSecret(a: string, b: string): boolean {
 // instance, like the others.
 const SENDER_LIMIT = Number(Deno.env.get("SENDER_LIMIT") ?? "30");          // pushes...
 const SENDER_WINDOW_MS = Number(Deno.env.get("SENDER_WINDOW_MS") ?? "3600000"); // ...per hour
+// A social push reaches other people's phones with text the sender chose (the
+// roast, a nickname, a challenge's stake), and anonymous sign-up is open, so a
+// verified JWT alone only proves "somebody with a fresh account". The sender
+// must also have UFC picks on SOCIAL_MIN_CARDS cards that are already over.
+// That can't be minted: picks_enforce_lock (0010) refuses a pick once its bout
+// has started, so a stranger would have to play real cards for weeks first.
+// SOCIAL_MIN_CARDS=0 turns the gate off.
+const SOCIAL_MIN_CARDS = Number(Deno.env.get("SOCIAL_MIN_CARDS") ?? "2");
+// A card counts once its date is this many days behind today (UTC): by then
+// every segment has locked, even a US prime-time card running past midnight.
+const SOCIAL_CARD_AGE_DAYS = 2;
 const _senderHits = new Map<string, number[]>();
 function senderLimited(uid: string): boolean {
   const now = Date.now();
@@ -339,6 +351,17 @@ async function buildMsg(
   const me = caller.uid;
   if (!DATE_RE.test(date)) return { ok: false, status: 400, error: "Bad event_date" };
   if (senderLimited(me)) return { ok: false, status: 429, error: "Too many pushes — slow down" };
+  if (SOCIAL_MIN_CARDS > 0) {
+    // Fails closed: if the history can't be read, nothing is sent.
+    const cutoff = new Date(now - SOCIAL_CARD_AGE_DAYS * 86400_000).toISOString().slice(0, 10);
+    let played: { event_date: string }[];
+    try {
+      played = await get(`picks?user_id=eq.${encodeURIComponent(me)}&promotion=eq.ufc&event_date=lt.${cutoff}&select=event_date&limit=1000`);
+    } catch { return { ok: false, status: 503, error: "Could not check sender history" }; }
+    if (new Set(played.map((p) => p.event_date)).size < SOCIAL_MIN_CARDS) {
+      return { ok: false, status: 403, error: `Social pushes unlock after picking ${SOCIAL_MIN_CARDS} cards` };
+    }
+  }
   const nick = await nickOf(me);
 
   // "X is picking!" / "X is locked in!": only about yourself.

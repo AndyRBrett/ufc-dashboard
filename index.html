@@ -7155,7 +7155,7 @@ function fireTrashTalk(){
     _pushPost(req).then(function(r){
       // Don't claim success on a server rejection (e.g. 400/429) — surface it
       // and re-enable the button so the user knows the trash talk didn't send.
-      if(!r.ok){r.text().then(function(t){console.error("trash-talk push failed",r.status,t);});btn.disabled=false;toast("⚠️ Trash talk didn't send ("+r.status+")");return;}
+      if(!r.ok){r.text().then(function(t){console.error("trash-talk push failed",r.status,t);});btn.disabled=false;toast(r.status===403?"🔒 Trash talk unlocks once you've picked 2 cards":"⚠️ Trash talk didn't send ("+r.status+")");return;}
       document.getElementById("trashSendSection").style.display="none";
       document.getElementById("trashSent").style.display="block";
     }).catch(function(){btn.disabled=false;toast("⚠️ Trash talk didn't send — check connection");});

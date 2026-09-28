@@ -25,7 +25,7 @@ that the security posture is reviewable, and explains how to rotate keys.
 | `ODDS_API_KEY` | GitHub Actions secret | ❌ No | Used only by `scrape.py` in CI. |
 | `ODDS_API_KEY_SECONDARY` | GitHub Actions secret | ❌ No | Backup Odds API key with its own quota, used by `scrape.py` when the primary's is spent. Unset = no backup provider. |
 | `CRON_SECRET` | GitHub Actions secret, the three `--no-verify-jwt` edge function envs, and the three cron-job.org jobs | ❌ No | Inbound auth for `check-results`, `send-reminders` and `kick-scraper`, which the Supabase gateway does not JWT-check. Header only (`Authorization: Bearer`), never in a URL — see the cron bullet under **Defenses in place**. |
-| `GH_DISPATCH_TOKEN` | `kick-scraper` edge function env | ❌ No | GitHub PAT used only to fire `update.yml` via `workflow_dispatch`. Anyone holding this can trigger workflows in this repo, so it should be scoped to that one workflow rather than repo-wide `actions: write`. |
+| `GH_DISPATCH_TOKEN` | `kick-scraper` edge function env | ❌ No | GitHub PAT used only to fire `update.yml` via `workflow_dispatch`. Anyone holding this can trigger workflows in this repo, so make it a fine-grained token for this one repo with only **Actions: read and write**, and an expiry date. GitHub can't narrow a token to a single workflow, so this is the tightest it gets. |
 | `FORCE_SECRET` | `kick-scraper` edge function env | ❌ No | Manual-operator credential for `force=1` (dispatch regardless of the cadence gate). Never sent by the cron. Unset = forced dispatches are disabled. |
 
 **The anon key is not a leak.** In Supabase, the anon key identifies the project
@@ -38,17 +38,27 @@ security boundary is RLS, documented as code in
 Because the anon key is public, every table the frontend touches must have RLS
 enabled with least-privilege policies:
 
-- `picks` — `SELECT` is public (the leaderboard is public by design). Writes
-  (`INSERT`/`UPDATE`/`DELETE`) are restricted to the `authenticated` role and
-  scoped to the owner via `auth.uid()::text = user_id`.
+- `picks` — `SELECT` is public (the leaderboard is public by design): one
+  policy per role, `picks_select` (anon) and `picks_select_auth`
+  (authenticated), since `0011_picks_read_policies.sql` removed two duplicates
+  that had been made in the dashboard. Writes (`INSERT`/`UPDATE`/`DELETE`) are
+  restricted to the `authenticated` role and scoped to the owner via
+  `auth.uid()::text = user_id`.
 - `push_subs` / `notif_log` — no anon access; written only by the `send-push`
-  edge function using the service_role key (which bypasses RLS).
+  edge function using the service_role key (which bypasses RLS). The one
+  client policy is `push_subs_delete`: a signed-in user (anonymous sign-ins
+  included) may delete their **own** subscription rows.
 - `picks` also carries a **server-side pick lock** (`0010_picks_lock.sql`): the
   `picks_enforce_lock` trigger refuses an insert, a changed pick/method/🔒 or a
   delete once the bout's segment has started (plus a 5-minute grace), so a
   direct REST call can't change a pick after the bell either. The lock times
   (`pick_locks`, `card_bells`) are revoked from `anon`/`authenticated` and
-  written only by `send-reminders` with the service_role key. "Delete account"
+  written only by `send-reminders` with the service_role key. They can still be
+  *read* through two `SECURITY DEFINER` functions, `pick_lock_at` and
+  `card_first_bell`, which anyone can call over `/rest/v1/rpc`. That is on
+  purpose: the trigger runs as the caller, so the caller must be able to run
+  them. They return only a bout's lock time, which the app shows anyway, and
+  Supabase's advisor flags them for that reason. "Delete account"
   goes through the owner-only `delete_my_picks()` RPC.
 - `rooms` / `room_members` (`0006`, `0008`) — only email-linked accounts can
   create, join or see a room, enforced in the database by `is_account()`
@@ -106,23 +116,31 @@ for the authoritative policy definitions. Keep RLS in version control: run
   relative same-app `url` values into push payloads.
 - **send-push sends only what it can vouch for.** This closed the old gap where
   anyone holding the public anon key could push crafted text to every
-  subscriber, except for trash talk (below). Each caller is one of three kinds:
+  subscriber. Each caller is one of three kinds:
   - **service**: our own functions, proven by the service_role key in
     `X-Service-Key`. Trusted as given. `brief` and `swap-*` are service-only.
   - **user**: a session JWT verified with GoTrue. Social pushes go out as the
     verified sender only and are capped per sender per hour (`SENDER_LIMIT`,
     30). Pick announcements, nudges and challenges carry server-written text,
     built from the sender's own picks, the one nudge target, or the challenge
-    row.
-    ⚠️ **Trash talk is the exception**: the roast *is* the message, so its body
-    is the sender's text (capped at `MAX_BODY`). The persona in its title is
-    also read from that text, and the title names the verified sender
-    (`… (via <nickname>)`). If the caller sends no `include_user_ids`, it goes
-    to **every subscriber but the sender**. Anonymous sign-up is open, so anyone
-    can mint an account and broadcast arbitrary text this way, attributed to
-    whatever nickname that account sets, at up to 30 pushes an hour per account.
-    Possible hardening, not yet done: require targets (the app's group of
-    friends), or cap an untargeted roast to accounts that have picks.
+    row. Trash talk differs: the roast *is* the message, so its body is the
+    sender's text (capped at `MAX_BODY`), the persona in its title is read from
+    that text, and the title names the verified sender (`… (via <nickname>)`).
+    Without `include_user_ids` it goes to every subscriber but the sender; with
+    them, to any user IDs named (up to 60), and user IDs are public because
+    `picks` is.
+
+    **Only established players may send any social push.** Every one of them
+    puts text the sender chose in front of other people (the roast, a
+    self-chosen nickname, a challenge's stake), and anonymous sign-up is open,
+    so a verified JWT alone proves only "somebody made an account". The sender
+    must also have UFC picks on `SOCIAL_MIN_CARDS` (2) cards dated at least two
+    days ago; otherwise it is a 403. That history can't be minted: the pick lock
+    (`0010`) refuses a pick once its bout has started, so a stranger has to play
+    real cards for weeks first. The check fails closed (503 if `picks` can't be
+    read). `SOCIAL_MIN_CARDS=0` turns it off.
+    What it does not cover: an established player can still set any nickname,
+    including another player's. That is a friend-group problem, not a public one.
   - **anon**: may only trigger the `main`, `prelim` and `result:*` backups. The
     server rebuilds their text and audience from the committed `data.js` (read
     with patterns, never executed) and from `picks` itself.
@@ -192,10 +210,33 @@ for the authoritative policy definitions. Keep RLS in version control: run
   Supabase CLI is pinned by version in `deploy-functions.yml`, and PGlite
   (which runs the real migrations in `check:picklock`) by exact version in
   `package.json`. Bump them on purpose, in a commit that says so, never back to
-  `latest`. ⚠️ Not yet pinned: `send-push` imports `npm:web-push` with no
-  version and there is no Deno lockfile, so a function deploy can pick up a new
-  release unasked. The other npm dev dependencies use caret ranges, but they
-  only run in tests and builds, never in production.
+  `latest`. The edge functions' one npm import, `npm:web-push@3.6.7` in
+  `send-push`, is pinned in the import itself (`check:pushauth` fails on an
+  unversioned one), since there is no Deno lockfile. The npm dev dependencies
+  use caret ranges, but they only run in tests and builds, never in production.
+
+## Settings outside the repo
+
+Some defenses are dashboard settings, not code, so nothing here can check them.
+Review them when you rotate keys:
+
+- **Two-factor sign-in** on the GitHub and Supabase accounts, with a passkey or
+  an authenticator app. Either account can change the live app, so these
+  logins are the real perimeter.
+- **Branch protection on `main`:** require a pull request and the CI checks to
+  pass. A push to `main` deploys the site.
+- **Provider spending caps:** a monthly limit in the Anthropic and xAI
+  consoles. It is the backstop if every rate limit in `ai-breakdown` fails at
+  once.
+- **CAPTCHA on sign-up and email codes** (Supabase → Authentication → Bot and
+  Abuse Protection, with Cloudflare Turnstile). Not on yet. Without it, anyone
+  can script anonymous accounts in bulk and use "Link an email" to send codes to
+  other people's inboxes; Supabase's built-in email rate limits are the only
+  brake. Turning it on also needs an app change: `index.html` has to render the
+  Turnstile widget, send its token as `captcha_token` on `/auth/v1/signup` and
+  `/auth/v1/otp`, and the CSP must allow `challenges.cloudflare.com`. Turn the
+  setting on only after that change ships, or every new visitor's sign-in
+  fails.
 
 ## The automated implementer
 
@@ -243,8 +284,9 @@ an issue, it does not authenticate one.
   missed caller gets 401s until it is updated, so check the function logs
   afterwards. Leave `CRON_ALLOW_QUERY_KEY` at `0`.
 - **`GH_DISPATCH_TOKEN`:** reissue the PAT on GitHub and update the `kick-scraper`
-  env. Scope it to `workflow_dispatch` on `update.yml` rather than repo-wide
-  `actions: write` while you are there.
+  env. Make it fine-grained: this repo only, **Actions: read and write** only,
+  with an expiry. GitHub can't limit a token to one workflow, so that is the
+  narrowest possible.
 - **`FORCE_SECRET`:** our own value; set a new random string in the
   `kick-scraper` env. Only people who trigger forced runs by hand need it.
 

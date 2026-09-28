@@ -26,7 +26,8 @@ const ANON = "anon-key", SERVICE = "service-key";
 const ENV = { SB_ANON_KEY: ANON, SB_SERVICE_ROLE_KEY: SERVICE, SUPABASE_URL: SB, DATA_URL: DATA,
   VAPID_PRIVATE_KEY: "v", VAPID_PUBLIC_KEY: "v", VAPID_SUBJECT: "mailto:x@y.z", RATE_LIMIT: "100000", GLOBAL_RATE_LIMIT: "100000" };
 const jwt = (who) => "eyJhbGciOiJIUzI1NiJ9." + Buffer.from(who).toString("base64url") + ".signature-signature";
-const USERS = { [jwt("alice")]: "a11ce000-0000-4000-8000-000000000001", [jwt("bob")]: "b0b00000-0000-4000-8000-000000000002", [jwt("carol")]: "ca201000-0000-4000-8000-000000000003" };
+const USERS = { [jwt("alice")]: "a11ce000-0000-4000-8000-000000000001", [jwt("bob")]: "b0b00000-0000-4000-8000-000000000002", [jwt("carol")]: "ca201000-0000-4000-8000-000000000003",
+  [jwt("eve")]: "e7e00000-0000-4000-8000-000000000005" };
 
 // A card in scrape.py's exact layout: two bouts final, one still to come.
 const CARD = `// UFC Dashboard data
@@ -49,6 +50,17 @@ const PICKS = [
   { user_id: "a11ce000-0000-4000-8000-000000000001", f1: "José Aldo", f2: "Sean O'Malley", pick: "Jose Aldo", nickname: "🥋 Alice" },
   { user_id: "b0b00000-0000-4000-8000-000000000002", f1: "José Aldo", f2: "Sean O'Malley", pick: "Sean O'Malley", nickname: "Bob" },
   { user_id: "ca201000-0000-4000-8000-000000000003", f1: "Ann A", f2: "Bea B", pick: "Ann A", nickname: "Carol" },
+].map((p) => ({ ...p, event_date: "2026-10-03" }));
+// Past cards, for the social-push gate (SOCIAL_MIN_CARDS, default 2). Alice, Bob
+// and Carol have played two finished cards; Eve has one finished card, plus a
+// pick on a card 1 day old (not yet counted), plus this week's.
+const EVE = "e7e00000-0000-4000-8000-000000000005";
+const HISTORY = [
+  ...["a11ce000-0000-4000-8000-000000000001", "b0b00000-0000-4000-8000-000000000002", "ca201000-0000-4000-8000-000000000003"]
+    .flatMap((u) => ["2026-09-19", "2026-09-26"].map((d) => ({ user_id: u, event_date: d, f1: "Old A", f2: "Old B", pick: "Old A", nickname: "x" }))),
+  { user_id: EVE, event_date: "2026-09-26", f1: "Old A", f2: "Old B", pick: "Old A", nickname: "Eve" },
+  { user_id: EVE, event_date: "2026-10-02", f1: "Old A", f2: "Old B", pick: "Old A", nickname: "Eve" },
+  { user_id: EVE, event_date: "2026-10-03", f1: "Ann A", f2: "Bea B", pick: "Ann A", nickname: "Eve" },
 ];
 const SUBS = ["a11ce000-0000-4000-8000-000000000001", "b0b00000-0000-4000-8000-000000000002", "ca201000-0000-4000-8000-000000000003", "da7e0000-0000-4000-8000-000000000004"]
   .map((u, i) => ({ user_id: u, nickname: ["alice", "bob", "carol", "dave"][i], endpoint: "https://fcm.googleapis.com/" + u, p256dh: "k", auth: "a", live_results: true }));
@@ -59,7 +71,7 @@ const CHALS = {
     f1: null, f2: null, stake: "Dinner", status: "accepted", event_date: "2026-10-03" },
 };
 
-let sent = [], log = new Set(), dataReads = 0, picksReads = 0;
+let sent = [], log = new Set(), dataReads = 0, picksReads = 0, picksDown = false;
 const PRESENT = new Set();   // notif_log rows that already exist
 globalThis.__webpush = { setVapidDetails() {}, sendNotification: async (sub, payload) => { sent.push({ to: sub.endpoint.split("/").pop(), ...JSON.parse(payload) }); } };
 const inFilter = (url) => { const m = /user_id=in\.\(([^)]*)\)/.exec(decodeURIComponent(url)); return m ? m[1].split(",") : null; };
@@ -89,8 +101,13 @@ globalThis.fetch = async (url, init = {}) => {
     picksReads++;
     const u = decodeURIComponent(url);
     if (!/promotion=eq\.ufc/.test(u)) return json({ error: "picks read without promotion=eq.ufc" }, 400);
-    const eq = /user_id=eq\.([^&]+)/.exec(u);
-    return json(eq ? PICKS.filter((p) => p.user_id === eq[1]) : PICKS);
+    if (picksDown) return json({ error: "down" }, 500);
+    const eq = /user_id=eq\.([^&]+)/.exec(u), deq = /event_date=eq\.([^&]+)/.exec(u), dlt = /event_date=lt\.([^&]+)/.exec(u);
+    let rows = [...PICKS, ...HISTORY];
+    if (eq) rows = rows.filter((p) => p.user_id === eq[1]);
+    if (deq) rows = rows.filter((p) => p.event_date === deq[1]);
+    if (dlt) rows = rows.filter((p) => p.event_date < dlt[1]);
+    return json(rows);
   }
   if (url.startsWith(SB + "/rest/v1/challenges")) {
     const id = /id=eq\.([^&]+)/.exec(url)[1];
@@ -102,7 +119,7 @@ globalThis.fetch = async (url, init = {}) => {
 let handler = null;
 globalThis.Deno = { env: { get: (k) => ENV[k] }, serve: (h) => { handler = h; } };
 const src = readFileSync(join(ROOT, "supabase/functions/send-push/index.ts"), "utf8")
-  .replace(/^import webpush from "npm:web-push";$/m, "const webpush = globalThis.__webpush;");
+  .replace(/^import webpush from "npm:web-push@[\d.]+";$/m, "const webpush = globalThis.__webpush;");
 const { code } = await transform(src, { loader: "ts", format: "esm" });
 const mod = await import("data:text/javascript;base64," + Buffer.from(code).toString("base64"));
 
@@ -208,6 +225,31 @@ for (const t of ["brief", "swap-old-bout"]) {
     include_user_ids: ["b0b00000-0000-4000-8000-000000000002", "bad id!"] }, { auth: jwt("alice") });
   check("trash talk: the roast is the sender's, the title is the server's and names the real sender",
     roast.status === 200 && roast.to.join() === "b0b00000-0000-4000-8000-000000000002" && roast.sent[0].title === "🎤 Joe Rogan (via alice)" && /raccoon/.test(roast.sent[0].body));
+}
+
+// A fresh account is not a sender: social pushes need picks on SOCIAL_MIN_CARDS
+// finished cards, which the pick lock makes impossible to backfill.
+{
+  const src = readFileSync(join(ROOT, "supabase/functions/send-push/index.ts"), "utf8");
+  check("web-push is imported at an exact version", /^import webpush from "npm:web-push@\d+\.\d+\.\d+";$/m.test(src));
+  check("the shipped gate is on (SOCIAL_MIN_CARDS defaults to 2)", /Deno\.env\.get\("SOCIAL_MIN_CARDS"\) \?\? "2"/.test(src));
+  const reqs = {
+    roast: { type: "trash-talk-18", body: "HACKED evil.example — Joe Rogan" },
+    "roast to targets": { type: "trash-talk-19", body: "HACKED evil.example — Joe Rogan", include_user_ids: ["a11ce000-0000-4000-8000-000000000001", "b0b00000-0000-4000-8000-000000000002"] },
+    "pick announcement": { type: "pick-first-" + EVE },
+    nudge: { type: "nudge-a11ce000-e7e00000-1", include_user_ids: ["a11ce000-0000-4000-8000-000000000001"] },
+  };
+  for (const [what, b] of Object.entries(reqs)) {
+    const r = await send({ event_date: "2026-10-03", ...b }, { auth: jwt("eve") });
+    check(`an account with one finished card cannot send a ${what} (403, nothing sent)`, r.status === 403 && r.sent.length === 0);
+  }
+  HISTORY.push({ user_id: EVE, event_date: "2026-09-19", f1: "Old A", f2: "Old B", pick: "Old A", nickname: "Eve" });
+  const ok = await send({ event_date: "2026-10-03", type: "trash-talk-20", body: "Nice pick. — Joe Rogan" }, { auth: jwt("eve") });
+  check("...and can once a second finished card is on record (to every other subscriber)", ok.status === 200 && ok.sent.length === SUBS.length && !ok.to.includes(EVE));
+  picksDown = true;
+  const down = await send({ event_date: "2026-10-03", type: "trash-talk-21", body: "Nice pick. — Joe Rogan" }, { auth: jwt("alice") });
+  check("the gate fails closed: an unreadable history sends nothing", down.status === 503 && down.sent.length === 0);
+  picksDown = false;
 }
 
 // Our own functions are trusted as given, and only with the right key.

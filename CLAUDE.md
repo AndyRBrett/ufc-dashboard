@@ -672,6 +672,12 @@ enough to push any title and body to every subscriber. Now each caller is one of
   (only its challenger announces it, only its target accepts it), a nudge must
   name its sender and one target (≤3 a day), and a roast's text is the
   sender's but its title names them. Per-sender cap `SENDER_LIMIT`/hour.
+  **And only from an established player**: UFC picks on `SOCIAL_MIN_CARDS` (2)
+  cards dated ≥2 days ago, else 403 (503 if `picks` can't be read: fail
+  closed). Anonymous sign-up is open, so a JWT alone lets a stranger mint an
+  account and put their own text (a roast, a nickname, a stake) on every
+  phone. The pick lock makes that history impossible to backfill. Don't
+  loosen it to "has any pick": a pick on tonight's card is free.
 - **anon**: may only trigger `main`, `prelim` and `result:*`, the app's backups
   for the cron senders. The server rebuilds them from the committed `data.js`
   (read with patterns in `parseCards`, never executed) and reads a result's
