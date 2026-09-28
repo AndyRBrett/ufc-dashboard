@@ -160,6 +160,10 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
     const meth = rows.map((r) => r.user_id === "u-me" && r.f1 === "Alpha One" ? { ...r, method: "KO/TKO" } : r);
     const tm = ctx.taleOfTheTape(meth, ctx._curRoom().members, belt).rows.find((r) => r.label === "Methods");
     check("tape: a record against a dash takes no edge", tm.a !== "—" && tm.b === "—" && tm.edge === 0);
+    check("tape: none outside a room, none once the card has started",
+      ctx.roomTapeEl(rows, null, belt, { name: "UFC 333", fights: [{ state: "pre" }] }) === null &&
+      ctx.roomTapeEl(rows, ctx._curRoom(), belt, { name: "UFC 333", fights: [{ state: "pre" }, { state: "live" }] }) === null &&
+      ctx.roomTapeEl(rows, ctx._curRoom(), belt, null) === null);
     check("tape: a room with fewer than two scored members gets no tape",
       ctx.taleOfTheTape(rows.filter((r) => r.user_id !== "u-jp"), ctx._curRoom().members, belt) === null);
   }
@@ -336,8 +340,14 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   const lb = fn("loadLeaderboard");
   check("the board scores a room through boardStandings + roomScope (no second scorer)", /boardStandings\(rows,roomScope\(/.test(lb) && !/_lbScoreUsers\(/.test(lb));
   check("the board's belt is the room's belt when a room is selected", /computeBeltLineage\(rows,_room\?\{users:_room\.members\}:null\)/.test(lb));
+  const te = fn("roomTapeEl");
   check("the Tale of the Tape shows only in a room, only before the card starts, and can't break the board",
-    /if\(_room&&_allPre\)\{\s*try\{var _tape=taleOfTheTape\(rows,_room\.members,belt\)/.test(lb) && /catch\(e\)\{console\.warn\("\[tape\]"/.test(lb));
+    /if\(!room\|\|!ev/.test(te) && /every\(function\(f\)\{return f\.state==="pre";\}\)/.test(te) && /catch\(e\)\{console\.warn\("\[tape\]"/.test(te));
+  // Codex: the empty "nobody in the room has picked this card" board returned
+  // before the tape, which is exactly when a pre-card tape matters most.
+  const early = lb.slice(lb.indexOf("if(_room){var _re"), lb.indexOf("if(_room){var _re") + 700);
+  check("the tape also shows when nobody in the room has picked the card yet (the early-return path)",
+    /roomTapeEl\(rows,_room,belt,nextEv\)[\s\S]*?return;/.test(early) && (lb.match(/roomTapeEl\(rows,_room,belt,nextEv\)/g) || []).length === 2);
   check("the tape reaches the page as text (nicknames are other people's input)", !/innerHTML/.test(fn("taleEl")) && /_rmEl\(/.test(fn("taleEl")));
   check("the tape scores nothing itself: boardStandings and the belt only", !/_lbScoreUsers\(|pickPts\(/.test(fn("taleOfTheTape")) && /boardStandings\(rows,\{users:members\}\)/.test(fn("taleOfTheTape")));
   const rs = fn("renderRoomSheet");

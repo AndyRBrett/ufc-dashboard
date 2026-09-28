@@ -8726,6 +8726,15 @@ function taleEl(t,evName){
   box.appendChild(_rmEl("div","tape-v",t.verdict));
   return box;
 }
+// The board's tape: only in a room, only while the next card hasn't started,
+// and never able to break the board. Both board paths call it: the normal one
+// and the "nobody has picked this card yet" one, which is exactly when a
+// pre-card tape matters most.
+function roomTapeEl(rows,room,belt,ev){
+  if(!room||!ev||!ev.fights||!ev.fights.length||!ev.fights.every(function(f){return f.state==="pre";}))return null;
+  try{var t=taleOfTheTape(rows,room.members,belt);return t?taleEl(t,ev.name):null;}
+  catch(e){console.warn("[tape]",e);return null;}
+}
 // rooms:end
 // sports:start
 // Sport switcher: UFC plus whatever promotions the curated feed publishes
@@ -9061,6 +9070,8 @@ function loadLeaderboard(isLive){
         ? '<div class="lb-empty">No main-card picks'+(lbMode==="current"?" yet for "+_evTxt:" on record")+'.<br>Switch to All Bouts to include prelims.</div>'
         : '<div class="lb-empty">No picks yet for '+_evTxt+'.<br>Make your picks to appear here!</div>';
       if(_room){var _re=body.querySelector(".lb-empty");if(_re){_re.textContent="";_re.appendChild(document.createTextNode("Nobody in "+_room.name+" has picks here yet."));_re.appendChild(document.createElement("br"));_re.appendChild(document.createTextNode("Share the invite from 👥 to fill the room."));}}
+      // Nobody has picked this card yet: the all-time tape still has a story.
+      var _tapeE=roomTapeEl(rows,_room,belt,nextEv);if(_tapeE)body.insertBefore(_tapeE,body.firstChild);
       return;
     }
     var anyResolved=sorted.some(function(u){return u.correct>0||u.picks.some(function(p){return p.result===false;});});
@@ -9081,10 +9092,7 @@ function loadLeaderboard(isLive){
       evHdr.textContent=_hdrLbl+": "+nextEv.name.replace("UFC Fight Night: ","").replace("UFC ","UFC ");
       body.appendChild(evHdr);
       // A room's pre-card Tale of the Tape: its top two, head to head.
-      if(_room&&_allPre){
-        try{var _tape=taleOfTheTape(rows,_room.members,belt);if(_tape)body.appendChild(taleEl(_tape,nextEv.name));}
-        catch(e){console.warn("[tape]",e);}
-      }
+      var _tapeEl=roomTapeEl(rows,_room,belt,nextEv);if(_tapeEl)body.appendChild(_tapeEl);
       // Slacker nudges — call out anyone who hasn't picked before lock-in.
       // Gated ONLY on the main-card clock. _slackersFor counts main-card bouts
       // and nothing else, so the window that matters is "can these picks still
