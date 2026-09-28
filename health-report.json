@@ -1,11 +1,18 @@
 {
-  "generated_at": "2026-09-28T01:09:31Z",
+  "generated_at": "2026-09-28T02:12:39Z",
   "summary": {
     "events": 11,
     "block": 0,
-    "warn": 4
+    "warn": 5
   },
   "findings": [
+    {
+      "severity": "WARN",
+      "check": "card-shrink",
+      "message": "UFC Fight Night: Buckley vs. Malott dropped from 13 bouts to 12 \u2014 publishing it as a withdrawal; confirm the bout really came off the card",
+      "event": "UFC Fight Night: Buckley vs. Malott",
+      "date": "2026-10-17"
+    },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
