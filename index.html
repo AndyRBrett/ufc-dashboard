@@ -293,6 +293,14 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .rc-title-em{font-size:26px;line-height:1}
 .rc-title-main{font:700 15px Inter,sans-serif;color:var(--text)}
 .rc-sub{font-size:12px;color:var(--muted2);line-height:1.4;margin-top:2px}
+.tape{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:10px 12px;margin:0 0 12px}
+.tape-hd{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;text-align:center}
+.tape-row{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px}
+.tape-row .tape-a{text-align:right}.tape-row .tape-b{text-align:left}
+.tape-row .tape-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;text-align:center;min-width:84px}
+.tape-row .edge{font-weight:700;color:var(--gold)}
+.tape-names{font-weight:700;font-size:13px;border-bottom:1px solid var(--border2)}
+.tape-v{font-size:12px;color:var(--text);margin-top:8px;line-height:1.4;font-style:italic}
 .rc-story{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.4;color:var(--text);margin:0 0 6px}
 .rc-story-em{flex:0 0 auto}
 .rc-sec{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
@@ -6107,7 +6115,9 @@ var WHATS_NEW=[
   {id:"2026-10-07-fight-night-report",emoji:"📰",title:"Fight Night Report",
    desc:"The Card Recap now tells the night's stories: who landed the biggest upset, who was the only one to call a fight, perfect cards, 2–0 and 0–2 lock nights, method snipers, the fight the whole room got wrong, and the longest win streak going."},
   {id:"2026-10-08-fight-night-xp",emoji:"⭐",title:"Fight Night XP",
-   desc:"Your Fight IQ card now levels up. Correct picks, underdog wins, methods, locks, perfect cards and belt reigns earn XP, badges unlock at milestones, and the card's frame goes bronze, silver, gold and diamond as you climb. Pure bragging rights: it never touches the leaderboard."}
+   desc:"Your Fight IQ card now levels up. Correct picks, underdog wins, methods, locks, perfect cards and belt reigns earn XP, badges unlock at milestones, and the card's frame goes bronze, silver, gold and diamond as you climb. Pure bragging rights: it never touches the leaderboard."},
+  {id:"2026-10-09-room-tale-of-the-tape",emoji:"🥊",title:"Tale of the Tape, for pickers",
+   desc:"Before every card, a room's board opens with its top two head to head: accuracy, underdogs, locks, methods, streak, head-to-head record and titles, plus a verdict on who has the edge."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -8638,6 +8648,93 @@ function _roomsBoot(){
     });
   });
 }
+// Tale of the Tape, for the pickers: before a card, a room's top two on its
+// all-time board, side by side. Every number is read off the room's own
+// boardStandings (u.picks: result, locked, method, methodCorrect;
+// u.accuracy, u.currentStreak) and its belt, never a second scorer.
+// Underdog calls read the bout's own line (_findFightResult), H2H compares
+// the two on every card both scored, with the board's own card scope.
+function _tapeRec(n,w){return {n:n,w:w,pct:n?Math.round(100*w/n):null};}
+function _tapeStats(u){
+  var dog=[0,0],lock=[0,0],meth=[0,0];
+  u.picks.forEach(function(p){
+    if(p.result===null)return;
+    var win=p.result===true?1:0;
+    if(p.locked){lock[0]++;lock[1]+=win;}
+    if(p.method){meth[0]++;meth[1]+=p.methodCorrect?1:0;}
+    var f=_findFightResult(p.evDate,p.f1,p.f2),o=f&&f.odds;
+    var line=o?(nmEq(p.pick,f.f1n)?o.f1:nmEq(p.pick,f.f2n)?o.f2:null):null;   // archived bouts carry no line
+    if(typeof line==="number"&&line>0){dog[0]++;dog[1]+=win;}
+  });
+  return {acc:u.accuracy,dog:_tapeRec(dog[0],dog[1]),lock:_tapeRec(lock[0],lock[1]),meth:_tapeRec(meth[0],meth[1]),streak:u.currentStreak||0};
+}
+function taleOfTheTape(rows,members,belt){
+  var board=boardStandings(rows,{users:members}).filter(function(u){return u.picks.some(function(p){return p.result!==null;});});
+  if(board.length<2)return null;
+  var a=board[0],b=board[1],sa=_tapeStats(a),sb=_tapeStats(b);
+  // Head to head: every card both scored on, each card's board points.
+  var da=Object.create(null),db=Object.create(null);
+  a.picks.forEach(function(p){if(p.result!==null)da[p.evDate]=true;});
+  b.picks.forEach(function(p){if(p.result!==null)db[p.evDate]=true;});
+  var h2h={a:0,b:0,draw:0};
+  Object.keys(da).filter(function(d){return db[d];}).forEach(function(d){
+    var c=boardStandings(rows,{date:d,users:[a.user_id,b.user_id]}),pa=null,pb=null;
+    c.forEach(function(u){if(u.user_id===a.user_id)pa=userPts(u);else if(u.user_id===b.user_id)pb=userPts(u);});
+    if(pa===null||pb===null)return;
+    if(pa>pb)h2h.a++;else if(pb>pa)h2h.b++;else h2h.draw++;
+  });
+  var reigns=function(u){var base=_lbBaseName(u.nickname);return belt?belt.reigns.filter(function(r){return _lbBaseName(r.name)===base;}).length:0;};
+  var pctTxt=function(r){return r.pct===null?"—":r.pct+"% ("+r.w+"/"+r.n+")";};
+  // [label, a text, b text, a value, b value, name in the verdict]; higher is better.
+  var rows_=[
+    ["Accuracy",sa.acc===null?"—":sa.acc+"%",sb.acc===null?"—":sb.acc+"%",sa.acc,sb.acc,"picks"],
+    ["Underdogs",pctTxt(sa.dog),pctTxt(sb.dog),sa.dog.pct,sb.dog.pct,"underdog record"],
+    ["Locks",pctTxt(sa.lock),pctTxt(sb.lock),sa.lock.pct,sb.lock.pct,"locks"],
+    ["Methods",pctTxt(sa.meth),pctTxt(sb.meth),sa.meth.pct,sb.meth.pct,"method calls"],
+    ["Streak",String(sa.streak),String(sb.streak),sa.streak,sb.streak,"streak"],
+    ["Head to head",String(h2h.a),String(h2h.b),h2h.a,h2h.b,"head-to-head record"],
+    ["Titles",String(reigns(a)),String(reigns(b)),reigns(a),reigns(b),"trophy case"]
+  ].map(function(r){
+    var edge=(r[3]==null||r[4]==null||r[3]===r[4])?0:(r[3]>r[4]?1:2);
+    return {label:r[0],a:r[1],b:r[2],edge:edge,gap:edge?Math.abs(r[3]-r[4]):0,what:r[5]};
+  });
+  var na=splitNick(a.nickname).name,nb=splitNick(b.nickname).name;
+  var ea=rows_.filter(function(r){return r.edge===1;}),eb=rows_.filter(function(r){return r.edge===2;});
+  var big=function(l){return l.slice().sort(function(x,y){return y.gap-x.gap;})[0];};
+  var verdict;
+  if(!ea.length&&!eb.length)verdict="Dead level on paper. This card decides it.";
+  else if(!eb.length)verdict=na+" leads every column that has a number. "+nb+" needs a big night.";
+  else if(!ea.length)verdict=nb+" leads every column that has a number, from second place. Something has to give.";
+  else verdict=nb+" has the better "+big(eb).what+", but "+na+" has the better "+big(ea).what+". "+
+    (ea.length>eb.length?na+" takes "+ea.length+" of the columns.":eb.length>ea.length?nb+" takes "+eb.length+" of the columns.":"Even on columns.");
+  return {a:{name:a.nickname,pts:userPts(a)},b:{name:b.nickname,pts:userPts(b)},rows:rows_,h2h:h2h,verdict:verdict};
+}
+// The tape as an element (textContent only: nicknames are other people's input).
+function taleEl(t,evName){
+  var box=_rmEl("div","tape");
+  box.appendChild(_rmEl("div","tape-hd","🥊 Tale of the Tape"+(evName?" · "+evName.replace("UFC Fight Night: ",""):"")));
+  var names=_rmEl("div","tape-row tape-names");
+  names.appendChild(_rmEl("span","tape-a",t.a.name));names.appendChild(_rmEl("span","tape-l","vs"));names.appendChild(_rmEl("span","tape-b",t.b.name));
+  box.appendChild(names);
+  t.rows.forEach(function(r){
+    var row=_rmEl("div","tape-row");
+    row.appendChild(_rmEl("span","tape-a"+(r.edge===1?" edge":""),r.a));
+    row.appendChild(_rmEl("span","tape-l",r.label));
+    row.appendChild(_rmEl("span","tape-b"+(r.edge===2?" edge":""),r.b));
+    box.appendChild(row);
+  });
+  box.appendChild(_rmEl("div","tape-v",t.verdict));
+  return box;
+}
+// The board's tape: only in a room, only while the next card hasn't started,
+// and never able to break the board. Both board paths call it: the normal one
+// and the "nobody has picked this card yet" one, which is exactly when a
+// pre-card tape matters most.
+function roomTapeEl(rows,room,belt,ev){
+  if(!room||!ev||!ev.fights||!ev.fights.length||!ev.fights.every(function(f){return f.state==="pre";}))return null;
+  try{var t=taleOfTheTape(rows,room.members,belt);return t?taleEl(t,ev.name):null;}
+  catch(e){console.warn("[tape]",e);return null;}
+}
 // rooms:end
 // sports:start
 // Sport switcher: UFC plus whatever promotions the curated feed publishes
@@ -8973,6 +9070,8 @@ function loadLeaderboard(isLive){
         ? '<div class="lb-empty">No main-card picks'+(lbMode==="current"?" yet for "+_evTxt:" on record")+'.<br>Switch to All Bouts to include prelims.</div>'
         : '<div class="lb-empty">No picks yet for '+_evTxt+'.<br>Make your picks to appear here!</div>';
       if(_room){var _re=body.querySelector(".lb-empty");if(_re){_re.textContent="";_re.appendChild(document.createTextNode("Nobody in "+_room.name+" has picks here yet."));_re.appendChild(document.createElement("br"));_re.appendChild(document.createTextNode("Share the invite from 👥 to fill the room."));}}
+      // Nobody has picked this card yet: the all-time tape still has a story.
+      var _tapeE=roomTapeEl(rows,_room,belt,nextEv);if(_tapeE)body.insertBefore(_tapeE,body.firstChild);
       return;
     }
     var anyResolved=sorted.some(function(u){return u.correct>0||u.picks.some(function(p){return p.result===false;});});
@@ -8992,6 +9091,8 @@ function loadLeaderboard(isLive){
       var _hdrLbl=_allPre?"Next up":_allPost?"Latest":"Live";
       evHdr.textContent=_hdrLbl+": "+nextEv.name.replace("UFC Fight Night: ","").replace("UFC ","UFC ");
       body.appendChild(evHdr);
+      // A room's pre-card Tale of the Tape: its top two, head to head.
+      var _tapeEl=roomTapeEl(rows,_room,belt,nextEv);if(_tapeEl)body.appendChild(_tapeEl);
       // Slacker nudges — call out anyone who hasn't picked before lock-in.
       // Gated ONLY on the main-card clock. _slackersFor counts main-card bouts
       // and nothing else, so the window that matters is "can these picks still
