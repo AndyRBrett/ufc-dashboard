@@ -293,6 +293,8 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .rc-title-em{font-size:26px;line-height:1}
 .rc-title-main{font:700 15px Inter,sans-serif;color:var(--text)}
 .rc-sub{font-size:12px;color:var(--muted2);line-height:1.4;margin-top:2px}
+.rc-story{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.4;color:var(--text);margin:0 0 6px}
+.rc-story-em{flex:0 0 auto}
 .rc-sec{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
 .rc-stat{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--text);padding:5px 0;border-bottom:1px solid var(--border)}
 .rc-stat span:last-child{font-weight:600;text-align:right}
@@ -6099,7 +6101,9 @@ var WHATS_NEW=[
   {id:"2026-10-05-card-ratings-explained",emoji:"📏",title:"Fight IQ ratings, explained",
    desc:"Each rating on your Fight IQ card now says what it means (on par, above par, below par) and what it was compared with, like how many wins the odds expected. 50 is par. The card's text is easier to read over the artwork too."},
   {id:"2026-10-06-plain-rating-names",emoji:"🏷️",title:"Plainer rating names",
-   desc:"Two Fight IQ ratings got names that say what they measure: Upset Sense is now Picking Underdogs, and Chalk Handling is now Picking Favorites. The numbers haven't changed."}
+   desc:"Two Fight IQ ratings got names that say what they measure: Upset Sense is now Picking Underdogs, and Chalk Handling is now Picking Favorites. The numbers haven't changed."},
+  {id:"2026-10-07-fight-night-report",emoji:"📰",title:"Fight Night Report",
+   desc:"The Card Recap now tells the night's stories: who landed the biggest upset, who was the only one to call a fight, perfect cards, 2–0 and 0–2 lock nights, method snipers, the fight the whole room got wrong, and the longest win streak going."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -7587,6 +7591,98 @@ function computeCardRecap(rows,date,myBase){
   var title=contest?recapTitle(rows,date,evName):{kind:"none"};
   return {date:date,evName:evName,standings:standings,me:me,title:title};
 }
+// Kept apart from computeCardRecap's object, whose every field check:parity
+// pins to its golden: the stories are an addition, not a scoring change.
+function cardStories(rows,date,standings){
+  var ev=_recapEvent(date);
+  if(!ev)return [];
+  var ordered=_recapBoardOrder(rows);
+  return recapStories(boardStandings(ordered,{date:date}),ev,ordered,date,standings);
+}
+// The Fight Night Report: the night's headlines for the whole group, read off
+// the same board rows as everything above (u.picks: result, locked,
+// methodCorrect), never a second scoring. Each story appears only when the
+// night actually produced it, most notable first, capped at RECAP_STORIES_MAX.
+var RECAP_STORIES_MAX=8;
+function _rcNames(list){
+  var n=list.map(function(u){return splitNick(u.nickname||u.name).name;});
+  if(n.length<=1)return n[0]||"";
+  if(n.length<=3)return n.slice(0,-1).join(", ")+" and "+n[n.length-1];
+  return n.slice(0,2).join(", ")+" and "+(n.length-2)+" others";
+}
+function _rcLine(l){return typeof l==="number"?(l>0?"+"+l:String(l)):"";}
+function recapStories(card,ev,ordered,date,standings){
+  var out=[];
+  if(!card||!card.length||!ev)return out;
+  // 💣 Biggest upset: the longest-priced winner anyone called.
+  var top=null;
+  (standings||[]).forEach(function(s){if(s.upset&&(!top||s.upset.line>top.line))top=s.upset;});
+  if(top){
+    var callers=(standings||[]).filter(function(s){return s.upset&&s.upset.line===top.line&&nmEq(s.upset.pick,top.pick);});
+    out.push({em:"💣",text:_rcNames(callers)+(callers.length>1?" called":" landed")+" the biggest upset: "+top.pick+" ("+_rcLine(top.line)+") over "+top.opp});
+  }
+  // 💯 Perfect cards (the recap's own definition: every scored pick, at least 3).
+  var perfect=(standings||[]).filter(function(s){return s.perfect;});
+  if(perfect.length)out.push({em:"💯",text:"Perfect card: "+_rcNames(perfect)});
+  // Per-bout tallies: who picked it, who got it right.
+  var lones=[],bust=null;
+  ev.fights.forEach(function(f){
+    if(!f.winner)return;
+    var pickers=[],right=[],wrongBy=Object.create(null);
+    card.forEach(function(u){
+      u.picks.forEach(function(p){
+        if(p.result===null||!nmBout(f,p.f1,p.f2))return;
+        pickers.push(u);
+        if(p.result===true)right.push(u);
+        else{var k=nmEq(p.pick,f.f1.n)?f.f1.n:f.f2.n;wrongBy[k]=(wrongBy[k]||0)+1;}
+      });
+    });
+    if(pickers.length<3)return;
+    var line=f.odds?(nmEq(f.winner,f.f1.n)?f.odds.f1:f.odds.f2):null;
+    // 🦄 The lone call: the only one of 3+ pickers who had the winner.
+    if(right.length===1)lones.push({u:right[0],pick:f.winner,line:line,of:pickers.length});
+    // 😬 The crowd bust: most of the room on the loser.
+    var wrong=pickers.length-right.length;
+    if(wrong/pickers.length>=0.6&&(!bust||wrong>bust.wrong)){
+      var fav=Object.keys(wrongBy).sort(function(a,b){return wrongBy[b]-wrongBy[a];})[0];
+      bust={wrong:wrong,of:pickers.length,loser:fav,winner:f.winner};
+    }
+  });
+  // The most-picked lone call (then the longest price), unless it IS the
+  // biggest upset already headlined above.
+  var lone=lones.filter(function(l){return !(top&&nmEq(l.pick,top.pick));})
+    .sort(function(a,b){return b.of-a.of||(b.line||0)-(a.line||0);})[0];
+  if(lone)
+    out.push({em:"🦄",text:"Only "+_rcNames([lone.u])+" had "+lone.pick+(typeof lone.line==="number"?" ("+_rcLine(lone.line)+")":"")+", out of "+lone.of+" who picked it"});
+  // 🔒 / 🤡 Locks: a clean sweep either way, two or more locks.
+  var sweep=[],wiped=[];
+  card.forEach(function(u){
+    var h=0,m=0;
+    u.picks.forEach(function(p){if(p.locked&&p.result!==null){if(p.result===true)h++;else m++;}});
+    if(h>=2&&!m)sweep.push({u:u,n:h});
+    if(m>=2&&!h)wiped.push({u:u,n:m});
+  });
+  if(sweep.length)out.push({em:"🔒",text:_rcNames(sweep.map(function(x){return x.u;}))+" went "+sweep[0].n+"–0 on locks"+(sweep.length>1&&sweep.some(function(x){return x.n!==sweep[0].n;})?" (or better)":"")});
+  if(wiped.length)out.push({em:"🤡",text:_rcNames(wiped.map(function(x){return x.u;}))+" went 0–"+wiped[0].n+" on locks"+(wiped.length>1&&wiped.some(function(x){return x.n!==wiped[0].n;})?" (or worse)":"")});
+  // 🎯 Method sniper: most methods nailed, two or more.
+  var mBest=0,mWho=[];
+  card.forEach(function(u){
+    var n=u.picks.filter(function(p){return p.methodCorrect;}).length;
+    if(n>mBest){mBest=n;mWho=[u];}else if(n===mBest&&n>0)mWho.push(u);
+  });
+  if(mBest>=2)out.push({em:"🎯",text:_rcNames(mWho)+" nailed "+mBest+" methods"});
+  if(bust)out.push({em:"😬",text:bust.wrong+" of "+bust.of+" had "+bust.loser+". "+bust.winner+" had other ideas."});
+  // 🔥 Longest live streak after the card, among tonight's pickers (the board's own count).
+  var here=Object.create(null);card.forEach(function(u){here[_lbBaseName(u.nickname)]=true;});
+  var sBest=0,sWho=[];
+  boardStandings(ordered,{through:date}).forEach(function(u){
+    if(!here[_lbBaseName(u.nickname)])return;
+    var n=u.currentStreak||0;
+    if(n>sBest){sBest=n;sWho=[u];}else if(n===sBest&&n>0)sWho.push(u);
+  });
+  if(sBest>=5)out.push({em:"🔥",text:_rcNames(sWho)+(sWho.length>1?" have":" has")+" hit "+sBest+" picks in a row"});
+  return out.slice(0,RECAP_STORIES_MAX);
+}
 // What happened to the belt on this card, replayed with only the picks up to
 // and including it — so an old card's recap still says who won THAT night.
 function recapTitle(rows,date,evName){
@@ -7634,6 +7730,15 @@ function renderCardRecap(rc){
   var tx=_rcEl("div");tx.appendChild(_rcEl("div","rc-title-main",tt.main));tx.appendChild(_rcEl("div","rc-sub",tt.sub));
   tb.appendChild(tx);body.appendChild(tb);
 
+  if(rc.stories&&rc.stories.length){
+    var sr=_rcEl("div");sr.appendChild(_rcEl("div","rc-sec","The night's stories"));
+    rc.stories.forEach(function(s){
+      var r=_rcEl("div","rc-story");r.appendChild(_rcEl("span","rc-story-em",s.em));
+      r.appendChild(_rcEl("span","",s.text));sr.appendChild(r);
+    });
+    body.appendChild(sr);
+  }
+
   var you=_rcEl("div");you.appendChild(_rcEl("div","rc-sec","Your night"));
   var m=rc.me;
   if(!m){you.appendChild(_rcEl("div","rc-sub","You sat this one out — no picks on this card."));}
@@ -7677,7 +7782,9 @@ function openCardRecap(date){
   var rows=_recapRows||_lbRows||_commRows;
   if(!rows)return;
   var rc=computeCardRecap(rows,date||latestRecapDate(rows),userName?_lbBaseName(userName):"");
-  if(rc)renderCardRecap(rc);
+  if(!rc)return;
+  try{rc.stories=cardStories(rows,rc.date,rc.standings);}catch(e){console.warn("[recap stories]",e);rc.stories=[];}
+  renderCardRecap(rc);
 }
 function closeCardRecap(){
   var ov=document.getElementById("recap-overlay");
