@@ -183,12 +183,14 @@ const SENDER_WINDOW_MS = Number(Deno.env.get("SENDER_WINDOW_MS") ?? "3600000"); 
 // A social push reaches other people's phones with text the sender chose (the
 // roast, a nickname, a challenge's stake), and anonymous sign-up is open, so a
 // verified JWT alone only proves "somebody with a fresh account". The sender
-// must also have UFC picks on SOCIAL_MIN_CARDS cards that are already over.
-// That can't be minted: picks_enforce_lock (0010) refuses a pick once its bout
-// has started, so a stranger would have to play real cards for weeks first.
+// must also have UFC picks on SOCIAL_MIN_CARDS real cards (listed in data.js)
+// that are already over. That can't be minted: picks_enforce_lock (0010)
+// refuses a pick once its bout has started, so a stranger would have to play
+// real cards for weeks first. data.js keeps only the last few finished cards,
+// so in practice this means two of those.
 // SOCIAL_MIN_CARDS=0 turns the gate off.
 const SOCIAL_MIN_CARDS = Number(Deno.env.get("SOCIAL_MIN_CARDS") ?? "2");
-// A card counts once its date is this many days behind today (UTC): by then
+// A card counts once its date is at least this many days behind today (UTC): by then
 // every segment has locked, even a US prime-time card running past midnight.
 const SOCIAL_CARD_AGE_DAYS = 2;
 const _senderHits = new Map<string, number[]>();
@@ -352,13 +354,21 @@ async function buildMsg(
   if (!DATE_RE.test(date)) return { ok: false, status: 400, error: "Bad event_date" };
   if (senderLimited(me)) return { ok: false, status: 429, error: "Too many pushes — slow down" };
   if (SOCIAL_MIN_CARDS > 0) {
-    // Fails closed: if the history can't be read, nothing is sent.
+    // Only real cards count: the dates the committed data.js lists, dated at
+    // least SOCIAL_CARD_AGE_DAYS ago. A pick on a made-up date isn't refused
+    // (it just locks at midnight after that date), so without this a new
+    // account could pick "today" and "tomorrow" and qualify a few days later.
+    // A real card's picks close at its bell, so each one means the account
+    // was there before that card. Fails closed: if the cards or the history
+    // can't be read, nothing is sent.
     const cutoff = new Date(now - SOCIAL_CARD_AGE_DAYS * 86400_000).toISOString().slice(0, 10);
-    let played: { event_date: string }[];
+    let played: { event_date: string }[], real: Set<string>;
     try {
-      played = await get(`picks?user_id=eq.${encodeURIComponent(me)}&promotion=eq.ufc&event_date=lt.${cutoff}&select=event_date&limit=1000`);
+      real = new Set((await loadCards()).map((c) => c.date).filter((d) => d <= cutoff));
+      played = real.size < SOCIAL_MIN_CARDS ? [] :
+        await get(`picks?user_id=eq.${encodeURIComponent(me)}&promotion=eq.ufc&event_date=in.(${[...real].join(",")})&select=event_date&limit=1000`);
     } catch { return { ok: false, status: 503, error: "Could not check sender history" }; }
-    if (new Set(played.map((p) => p.event_date)).size < SOCIAL_MIN_CARDS) {
+    if (new Set(played.map((p) => p.event_date).filter((d) => real.has(d))).size < SOCIAL_MIN_CARDS) {
       return { ok: false, status: 403, error: `Social pushes unlock after picking ${SOCIAL_MIN_CARDS} cards` };
     }
   }

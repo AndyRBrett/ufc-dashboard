@@ -134,11 +134,15 @@ for the authoritative policy definitions. Keep RLS in version control: run
     puts text the sender chose in front of other people (the roast, a
     self-chosen nickname, a challenge's stake), and anonymous sign-up is open,
     so a verified JWT alone proves only "somebody made an account". The sender
-    must also have UFC picks on `SOCIAL_MIN_CARDS` (2) cards dated at least two
-    days ago; otherwise it is a 403. That history can't be minted: the pick lock
-    (`0010`) refuses a pick once its bout has started, so a stranger has to play
-    real cards for weeks first. The check fails closed (503 if `picks` can't be
-    read). `SOCIAL_MIN_CARDS=0` turns it off.
+    must also have UFC picks on `SOCIAL_MIN_CARDS` (2) **real** cards dated at
+    least two days ago; otherwise it is a 403. Real means listed in the
+    committed `data.js`: a pick on a made-up date isn't refused (it locks at
+    midnight after that date), so counting any old date would let a new account
+    pick "today" and "tomorrow" and qualify days later. A real card's picks close
+    at its bell (`0010`), so its history can't be minted: a stranger has to play
+    real cards for weeks first. `data.js` keeps only the last few finished
+    cards, so in practice this is two of those. The check fails closed (503 if
+    `picks` or `data.js` can't be read). `SOCIAL_MIN_CARDS=0` turns it off.
     What it does not cover: an established player can still set any nickname,
     including another player's. That is a friend-group problem, not a public one.
   - **anon**: may only trigger the `main`, `prelim` and `result:*` backups. The
