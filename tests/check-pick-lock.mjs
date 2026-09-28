@@ -222,6 +222,14 @@ const fn = { ...ev, earlyPrelimTime: undefined, prelimTime: "18:00", time: "20:0
   fights: [{ f1: { n: "X A" }, f2: { n: "X B" }, lbl: "Early Prelim" }] };
 check("lockRows: an early prelim with no early clock answers to the prelims",
   mod.lockRows([fn], k, now).bouts[0].lock_at === et(18));
+// The ET offset is the CARD's, not today's: a November card written from
+// October must lock on EST (21:00 ET = 02:00 UTC), or it locks an hour early.
+{
+  const novNow = Date.UTC(2026, 9, 31, 12), novEv = { ...ev, date: "2026-11-07" };
+  const nb = mod.lockRows([novEv], k, novNow).bouts;
+  check("lockRows: a November card written in October locks on EST",
+    nb.find((b) => b.a === "main a" || b.b === "main a")?.lock_at === new Date(Date.UTC(2026, 10, 8, 2)).toISOString());
+}
 check("lockRows: a card weeks away or long gone is not written",
   mod.lockRows([{ ...ev, date: "2026-12-12" }, { ...ev, date: "2026-08-01" }], k, now).cards.length === 0);
 check("send-reminders writes locks only with the service key", /if \(SB_SERVICE_ROLE_KEY\) \{\s*try \{\s*const \{ bouts, cards \} = lockRows/.test(src));

@@ -174,12 +174,12 @@ def test_shadow_mode_never_touches_the_live_file(tmp_path, monkeypatch):
     monkeypatch.setattr(extra.scrape, "fetch_wikitext", fetcher({extra.PROMOTIONS[0]["list_page"]: LIST, "PFL_Chicago": CHICAGO}))
     monkeypatch.delenv("EXTRA_PUBLISH", raising=False)
     monkeypatch.setenv("EXTRA_FORCE", "1")
-    assert extra.main() == 0
+    assert extra.main(NOW) == 0
     assert live.read_text() == '{"promotions": [], "events": []}\n'
     assert json.loads(cand.read_text())["events"]
     assert json.loads(state.read_text())["publish"] is False
     monkeypatch.setenv("EXTRA_PUBLISH", "1")
-    assert extra.main() == 0
+    assert extra.main(NOW) == 0
     assert json.loads(live.read_text())["events"]
 
 

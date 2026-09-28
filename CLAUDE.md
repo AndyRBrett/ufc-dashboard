@@ -144,6 +144,24 @@ its first bell). Only checks that validate the data itself (`check:web`,
 `fighter-rename`'s collision scan, `check:intel`'s advisory block) read the live
 files.
 
+**Nor on the wall clock.** A test that pairs a real date with `Date.now()` /
+`datetime.now()` is a countdown to a red deploy. `check:recap`'s "in-progress"
+card was dated 2026-09-26 and became a finished card at 00:00 UTC on 09-28,
+blocking every Pages deploy hourly. The same sweep found `test_extra` would fail
+`update.yml`'s pytest guard, stopping every data update, once its 2026-10-16
+fixture card passed, and that `etOffset()` read DST off today instead of the
+card's date, so `check:brief` and `check:picklock` would have gone red at the
+November change. Pin the clock (`load(nowMs)`, `runAt(iso)`, `main(now)`) or date
+fixtures relative to it. To audit: rerun the suite with `Date` / `datetime`
+shifted forward by 3, 30, 60 and 365 days (a `--require` shim for Node,
+`time-machine` for pytest). Browser tests need the page's clock shifted too, so
+a Node-only shim reports false failures there.
+
+**Eastern offsets come from the card's date.** `etOffset(date)` in the app and
+`etOffset(y, mo, d)` in `send-reminders` both apply the rule to the date passed
+in; `send-push` uses `Intl` with `America/New_York`, and `scrape.py` uses
+`ZoneInfo`. Never derive a card's clock from today's offset.
+
 Two budgets to respect when changing cadence:
 
 - **Odds API calls are quota-metered.** `should_fetch_odds` gates them on elapsed

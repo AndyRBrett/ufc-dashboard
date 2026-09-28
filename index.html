@@ -3845,7 +3845,7 @@ function updateCountdown(){
   // etOffset(), not a hardcoded 4: ET is UTC-5 from November to March, so a
   // literal +4 puts every countdown an hour off for a third of the season —
   // including disagreeing with picksLocked(), which does use etOffset().
-  var target=Date.UTC(parseInt(dp[0],10),parseInt(dp[1],10)-1,parseInt(dp[2],10),h+etOffset(),m,0);
+  var target=Date.UTC(parseInt(dp[0],10),parseInt(dp[1],10)-1,parseInt(dp[2],10),h+etOffset(ev.date),m,0);
   var diff=target-now;
   var wrap=document.getElementById("cd-wrap");
   if(!wrap)return;
@@ -5224,12 +5224,15 @@ function fireNotif(title,body){
   if(Notification.permission!=="granted")return;
   try{new Notification(title,{body:body,icon:"https://andyrbrett.github.io/ufc-dashboard/icon.png"});}catch(e){}
 }
-function etOffset(){
-  // Eastern Time: UTC-4 (EDT, Mar-Nov) or UTC-5 (EST, Nov-Mar)
-  var d=new Date(),y=d.getFullYear();
-  var s=new Date(y,2,8);s.setDate(8+(7-s.getDay())%7); // 2nd Sunday March
-  var e=new Date(y,10,1);e.setDate(1+(7-e.getDay())%7); // 1st Sunday November
-  return(d>=s&&d<e)?4:5;
+// Eastern offset (4 = EDT, 5 = EST) ON the card's date ("YYYY-MM-DD"), not
+// today's. It used to read today's clock and apply that to every card: a
+// November card looked at in October locked an hour early, and every test
+// pinned to a September card would have gone red at the November change,
+// blocking deploys. No argument = today (for code that has no card date).
+function etOffset(ds){
+  var p=ds?String(ds).split("-"):null,d=new Date();
+  if(p&&p.length===3&&!isNaN(+p[0]))return _etOffsetAt(+p[0],+p[1]-1,+p[2]);
+  return _etOffsetAt(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate());
 }
 // Has ET time *t* (an "HH:MM" on ev's date) already passed? null when the event
 // carries no usable clock, so callers can pick their own fallback — a restored
@@ -5239,7 +5242,7 @@ function _segPassed(ev,t){
   var pp=String(t).split(":"),h=parseInt(pp[0],10);
   if(isNaN(h))return null;
   var dp=ev.date.split("-");
-  return Date.now()>=Date.UTC(+dp[0],+dp[1]-1,+dp[2],h+etOffset(),+(pp[1]||0),0);
+  return Date.now()>=Date.UTC(+dp[0],+dp[1]-1,+dp[2],h+etOffset(ev.date),+(pp[1]||0),0);
 }
 // The card's own start, which is its EARLIEST segment — early prelims when the
 // card runs them, otherwise the prelims. Before earlyPrelimTime existed this
@@ -5347,9 +5350,8 @@ function _triggerPush(evDate,type,title,body,excludeUid,opts){
 function checkNotifSchedule(){
   if(!notifActive||Notification.permission!=="granted")return;
   var now=Date.now();
-  var eto=etOffset();
   EVENTS.forEach(function(ev){
-    var dp=ev.date.split("-");
+    var dp=ev.date.split("-"),eto=etOffset(ev.date);
     function evTime(t){var p=(t||"0:0").split(":");return Date.UTC(+dp[0],+dp[1]-1,+dp[2],+p[0]+eto,+(p[1]||0),0);}
     var mainT=evTime(ev.time);var diff=mainT-now;
     if(diff>0&&diff<=HOUR_MS&&!ev._notifMain){ev._notifMain=true;setTimeout(function(){fireNotif("UFC Main Card Starting",ev.name+" main card begins in 30 min!");},Math.max(0,diff-30*MIN_MS));_triggerPush(ev.date,"main","🥊 "+ev.name.split(":")[0]+" — Main Card","Starting in under 1 hour. Lock in your picks!");}
@@ -8657,7 +8659,7 @@ function _sportSave(){try{localStorage.setItem("ufc_sport_picks",JSON.stringify(
 function _picksFor(promo){return "&promotion=eq."+encodeURIComponent(promo);}
 function sportKey(promo,date,a,b){return promo+"|"+date+"|"+a+"|"+b;}
 // Eastern offset ON a given date (4 = EDT, 5 = EST), not today's: a November
-// card looked at in September is on EST. Same rule as etOffset().
+// card looked at in September is on EST. etOffset(date) is this rule.
 function _etOffsetAt(y,mo,d){
   var dow=function(m,day){return new Date(Date.UTC(y,m,day)).getUTCDay();};
   var s=8+(7-dow(2,8))%7,e=1+(7-dow(10,1))%7;       // 2nd Sunday of March, 1st Sunday of November
@@ -8931,8 +8933,7 @@ function loadLeaderboard(isLive){
     var belt=computeBeltLineage(rows,_room?{users:_room.members}:null);
     // Find the current/active event up front so "This Event" mode can scope scoring to it.
     var nowMs=Date.now();
-    var _eto=etOffset();
-    function _evStartMs(e){var dp=e.date.split("-");var t=e.prelimTime||e.time||"";var pp=t.split(":");var h=parseInt(pp[0],10);if(isNaN(h))return new Date(e.date).getTime()+DAY_MS;return Date.UTC(+dp[0],+dp[1]-1,+dp[2],h+_eto,+(pp[1]||0),0);}
+    function _evStartMs(e){var dp=e.date.split("-"),_eto=etOffset(e.date);var t=e.prelimTime||e.time||"";var pp=t.split(":");var h=parseInt(pp[0],10);if(isNaN(h))return new Date(e.date).getTime()+DAY_MS;return Date.UTC(+dp[0],+dp[1]-1,+dp[2],h+_eto,+(pp[1]||0),0);}
     // Keep an event's pick chips visible until ~a day after its (prelim) start, so they
     // persist through the live main event instead of vanishing the moment it begins.
     var nextEv=EVENTS.filter(function(e){return _evStartMs(e)>nowMs-DAY_MS;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);})[0]||null;
