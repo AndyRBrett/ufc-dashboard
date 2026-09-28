@@ -79,7 +79,13 @@ function setEvents(evs) { ctx.EVENTS = evs; }
 const recap = (rows, date, me) => ctx.computeCardRecap(rows, date, me);
 
 // --- card 1: Ann goes perfect and wins the vacant belt --------------------
-const C1 = "2026-09-12", C2 = "2026-09-19", C3 = "2026-09-26";
+const C1 = "2026-09-12", C2 = "2026-09-19";
+// The in-progress card must be RECENT on the real clock: _eventFinished treats
+// any card more than 2 days old with a result as finished (results that never
+// got a final state). It was pinned to "2026-09-26", so at 00:00 UTC on
+// 2026-09-28 the "live" card became a finished one and this gate blocked every
+// Pages deploy. Today's date keeps it live whenever the suite runs.
+const C3 = new Date().toISOString().slice(0, 10);
 const card1 = { name: "UFC Fight Night: One", date: C1, fights: [
   bout("A1", "B1", "A1", { f1: -200, f2: 170 }),
   bout("A2", "B2", "B2", { f1: -300, f2: 260 }),   // B2 is a +260 dog

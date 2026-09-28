@@ -343,8 +343,12 @@ def _read(path):
         return {}
 
 
-def main():
-    now = datetime.now(timezone.utc)
+def main(now=None):
+    # `now` is injectable so tests can pin the clock: their fixture cards have
+    # real dates, and on the wall clock they age out of the window and fail
+    # update.yml's pytest guard, which runs before the scrape and would stop
+    # every data update, live results included.
+    now = now or datetime.now(timezone.utc)
     publish = os.environ.get("EXTRA_PUBLISH") == "1"
     state = _read(STATE_JSON)
     previous = _read(LIVE_JSON if publish else CANDIDATE_JSON)

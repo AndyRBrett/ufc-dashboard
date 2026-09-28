@@ -40,16 +40,18 @@ const MAX_EVENTS = 8; // hard cap on events considered per run
 
 interface Ev { name: string; date: string; time: string; prelimTime: string; }
 
-// Eastern Time → UTC offset in hours, replicated from index.html `etOffset()`:
-// UTC-4 (EDT, 2nd Sun Mar → 1st Sun Nov) else UTC-5 (EST). Event times in
-// data.js are wall-clock ET, exactly as the client interprets them.
-function etOffset(): number {
-  const d = new Date(), y = d.getUTCFullYear();
-  const s = new Date(Date.UTC(y, 2, 8));
-  s.setUTCDate(8 + ((7 - s.getUTCDay()) % 7)); // 2nd Sunday March
-  const e = new Date(Date.UTC(y, 10, 1));
-  e.setUTCDate(1 + ((7 - e.getUTCDay()) % 7)); // 1st Sunday November
-  return (d >= s && d < e) ? 4 : 5;
+// Eastern Time → UTC offset in hours ON a given date: UTC-4 (EDT, 2nd Sun Mar →
+// 1st Sun Nov) else UTC-5 (EST), the same rule as index.html's etOffset(date).
+// Event times in data.js are wall-clock ET on the card's date, so the offset
+// must be the card's, not today's: reading today's wrote a November card's
+// pick locks an hour early from October, and pinned-date tests would have gone
+// red at the November change, blocking every deploy.
+function etOffset(y: number, mo: number, d: number): number {
+  const dow = (m: number, day: number) => new Date(Date.UTC(y, m, day)).getUTCDay();
+  const s = 8 + ((7 - dow(2, 8)) % 7);   // 2nd Sunday of March
+  const e = 1 + ((7 - dow(10, 1)) % 7);  // 1st Sunday of November
+  const n = mo * 100 + d;
+  return (n >= 200 + s && n < 1000 + e) ? 4 : 5;
 }
 
 // Wall-clock ET "HH:MM" on event date → absolute UTC ms, or null for TBD/blank.
@@ -58,7 +60,7 @@ function phaseUtc(date: string, time: string): number | null {
   const dp = date.split("-").map(Number);
   const tp = time.split(":").map(Number);
   if (dp.length !== 3 || isNaN(dp[0]) || isNaN(tp[0])) return null;
-  return Date.UTC(dp[0], dp[1] - 1, dp[2], tp[0] + etOffset(), tp[1] || 0, 0);
+  return Date.UTC(dp[0], dp[1] - 1, dp[2], tp[0] + etOffset(dp[0], dp[1] - 1, dp[2]), tp[1] || 0, 0);
 }
 
 // Pull name/date/time/prelimTime out of data.js's `var EVENTS=[…]`. The fight

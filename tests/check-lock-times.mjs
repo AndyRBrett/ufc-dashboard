@@ -26,7 +26,7 @@ const check = (name, cond) => cond ? console.log("  ✓ " + name) : fail(name);
 
 // Anchored slice: index.html carries several date helpers and an unanchored
 // grab reads the wrong one.
-const a = html.indexOf("function etOffset(){");
+const a = html.indexOf("function etOffset(");
 const b = html.indexOf("// A challenge rides on specific main-card fights");
 if (a < 0 || b < 0 || b <= a) {
   fail("index.html: could not locate the lock-clock block (etOffset … lockReason)");
@@ -43,7 +43,16 @@ const labelFn = (name) => {
   for (; j < scoring.length; j++) { if (scoring[j] === "{") d++; else if (scoring[j] === "}" && --d === 0) break; }
   return scoring.slice(i, j + 1);
 };
-const src = labelFn("isMainCardBout") + "\n" + labelFn("isEarlyPrelimBout") + "\n" + html.slice(a, b);
+// etOffset(date) answers from _etOffsetAt, the date-based DST rule (it lives
+// with the sport switcher); lift it the same brace-matched way.
+const htmlFn = (name) => {
+  const i = html.indexOf(`function ${name}(`);
+  if (i < 0) { fail(`index.html no longer defines ${name}()`); process.exit(1); }
+  let j = html.indexOf("{", i), d = 0;
+  for (; j < html.length; j++) { if (html[j] === "{") d++; else if (html[j] === "}" && --d === 0) break; }
+  return html.slice(i, j + 1);
+};
+const src = labelFn("isMainCardBout") + "\n" + labelFn("isEarlyPrelimBout") + "\n" + htmlFn("_etOffsetAt") + "\n" + html.slice(a, b);
 
 for (const fn of ["_segPassed", "cardStartTime", "boutSegmentTime"]) {
   if (!html.slice(a, b).includes("function " + fn)) fail(`lock block no longer defines ${fn}()`);
@@ -74,7 +83,22 @@ const lockedAt = (ms, f, ev = EV) => load(ms).fightLocked(ev, f);
 
 // --- DST sanity: the whole thing hangs off this offset ---------------------
 check("19 Sep 2026 resolves to EDT (UTC-4), so 21:00 ET is 01:00 UTC",
-  load(ET(12)).etOffset() === 4);
+  load(ET(12)).etOffset() === 4 && load(ET(12)).etOffset(EV.date) === 4);
+// The offset belongs to the CARD's date, not today's. It used to read today's,
+// so a November card looked at in September locked an hour early, and a test
+// pinned to a September card went red at the November change.
+{
+  const nov = { date: "2026-11-14", time: "21:00", prelimTime: "19:00" };
+  const novMain = Date.UTC(2026, 10, 15, 2, 0);            // 21:00 EST = 02:00 UTC
+  const septNow = ET(12), decNow = Date.UTC(2026, 11, 20, 12);
+  check("a November card is on EST even when viewed from September",
+    load(septNow).etOffset(nov.date) === 5 && lockedAt(novMain - 60000, MAIN, nov) === false && lockedAt(novMain, MAIN, nov) === true);
+  check("a September card stays on EDT when checked from December",
+    load(decNow).etOffset(EV.date) === 4 && lockedAt(ET(21, 0) - 60000, MAIN) === false && lockedAt(ET(21, 0), MAIN) === true);
+  check("the change days: 31 Oct 2026 EDT, 1 Nov EST; 13 Mar 2027 EST, 14 Mar EDT",
+    load(septNow).etOffset("2026-11-01") === 5 && load(septNow).etOffset("2026-10-31") === 4 &&
+    load(septNow).etOffset("2027-03-13") === 5 && load(septNow).etOffset("2027-03-14") === 4);
+}
 
 // --- early prelims: the bug this file exists for ---------------------------
 check("an early prelim is pickable at 16:59, a minute before its bell",
