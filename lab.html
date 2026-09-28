@@ -116,6 +116,17 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .fc-cell .k{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--fc-mut)}
 .fc-cell .v{font-size:13.5px;font-weight:600;margin-top:3px;overflow-wrap:anywhere}
 .fc-cell .s{font-size:11px;color:var(--fc-mut);margin-top:2px}
+.fc-lv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:center;margin:8px 0 2px}
+.fc-lv .lvn{font:400 26px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.04em;color:var(--fc-ac)}
+.fc-lv .lvbar{height:8px;border-radius:4px;background:rgba(255,255,255,.18);overflow:hidden}
+.fc-lv .lvbar i{display:block;height:100%;border-radius:4px;background:var(--fc-ac)}
+.fc-lv .lvx{grid-column:2;font-size:11px;color:var(--fc-mut)}
+.fc-badges{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--fc-mut)}
+.fc-badges .bdg{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.32);border:1px solid var(--fc-line);color:var(--fc-tx);font-weight:600;letter-spacing:0;text-transform:none}
+.fcard.fc-frame-bronze{box-shadow:0 0 0 3px #cd7f32}
+.fcard.fc-frame-silver{box-shadow:0 0 0 3px #c9d1db}
+.fcard.fc-frame-gold{box-shadow:0 0 0 3px #f5c542,0 0 18px rgba(245,197,66,.45)}
+.fcard.fc-frame-diamond{box-shadow:0 0 0 3px #8be9ff,0 0 24px rgba(139,233,255,.6)}
 .fc-form{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--fc-mut)}
 .fc-form .chip{width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font:400 16px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:0}
 .fc-form .chip.W{background:#2ecc71;color:#06260f}.fc-form .chip.L{background:#d65a68;color:#2a0508}
@@ -487,10 +498,14 @@ function traitLine(t,afterVerdict){return (afterVerdict?" · ":"")+t.detail+(t.v
 // The Fight IQ card (FightLab.fightCard's numbers, laid out as a collectible).
 // Every string is set with textContent via h(); nothing here is HTML.
 function fightCardEl(fc,sn){
-  var el=h("div",{class:"fcard fc-"+fc.archetype.key,role:"group","aria-label":"Fight IQ card for "+(sn.name||"this player")});
+  var xp=fc.xp;
+  var el=h("div",{class:"fcard fc-"+fc.archetype.key+(xp?" fc-frame-"+xp.frame.key:""),role:"group","aria-label":"Fight IQ card for "+(sn.name||"this player")});
   el.appendChild(h("div",{class:"fc-top"},h("span",{text:"🧠 Fight IQ · "+fc.tier}),h("span",{text:fc.decided+" decided pick"+(fc.decided===1?"":"s")})));
   el.appendChild(h("div",{class:"fc-name",text:((sn.emoji?sn.emoji+" ":"")+(sn.name||"Unknown")).toUpperCase()}));
   el.appendChild(h("div",{class:"fc-arch"},h("span",{class:"e",text:fc.archetype.emoji}),h("span",{text:fc.archetype.name})));
+  if(xp)el.appendChild(h("div",{class:"fc-lv",title:xpBreakdown(xp)},h("span",{class:"lvn",text:"LV "+xp.level}),
+    h("div",{class:"lvbar",role:"progressbar","aria-valuemin":"0","aria-valuemax":"100","aria-valuenow":String(xp.pct),"aria-label":"Progress to level "+(xp.level+1)},h("i",{style:"width:"+xp.pct+"%"})),
+    h("span",{class:"lvx",text:fmtXP(xp.total)+" XP · "+fmtXP(xp.need)+" to LV "+(xp.level+1)+(xp.frame.key!=="plain"?" · "+xp.frame.name+" frame":"")})));
   if(fc.record.n)el.appendChild(h("div",{class:"fc-rec"},h("b",{text:fc.record.w+"W–"+fc.record.l+"L"}),h("span",{text:" · "+fc.record.pct+"% right"})));
   var tr=h("div",{class:"fc-traits"});
   fc.traits.forEach(function(t){
@@ -518,9 +533,16 @@ function fightCardEl(fc,sn){
     el.appendChild(h("div",{class:"fc-form"},h("span",{text:(hot?"🔥 ":"")+(fc.form.length===1?"Last card":"Last "+fc.form.length+" cards")}),
       fc.form.map(function(f){return h("span",{class:"chip "+f.r,title:f.date+": "+f.w+" of "+f.n+" right",text:f.r});})));
   }
-  el.appendChild(h("div",{class:"fc-foot",text:CARD_KEY}));
+  if(xp&&xp.badges.length)el.appendChild(h("div",{class:"fc-badges"},h("span",{text:"Badges "+xp.badges.length+"/"+(xp.badges.length+xp.locked.length)}),
+    xp.badges.map(function(b){return h("span",{class:"bdg",title:b.desc},h("span",{text:b.emoji,"aria-hidden":"true"}),h("span",{text:b.name}));})));
+  el.appendChild(h("div",{class:"fc-foot",text:CARD_KEY+" XP and levels are for fun: they never touch the leaderboard."}));
   return el;
 }
+function fmtXP(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,",");}
+// Where the XP came from, as the level row's tooltip.
+function xpBreakdown(xp){return xp.parts.map(function(p){return p.label+": "+fmtXP(p.xp);}).join(" · ")||"No XP yet";}
+// Share-image frame colours, matching the .fc-frame-* rings.
+var FRAME_COLORS={bronze:"#cd7f32",silver:"#c9d1db",gold:"#f5c542",diamond:"#8be9ff"};
 // The card as a PNG, drawn on a canvas from the same numbers (not a
 // screenshot: this page's CSP loads no third-party script, and a DOM snapshot
 // through SVG foreignObject taints the canvas on Safari). Colours come from
@@ -531,6 +553,7 @@ function _cardText(fc,sn){
   var lines=[(sn.name||"Picker")+" — "+fc.archetype.emoji+" "+fc.archetype.name,"🧠 Fight IQ: "+fc.tier+(fc.record.n?" · "+fc.record.w+"W–"+fc.record.l+"L":"")];
   fc.traits.forEach(function(t){if(t.rating!=null)lines.push(t.emoji+" "+t.label+": "+t.rating);});
   if(fc.belt)lines.push("🏆 Belt reigns: "+fc.belt.reigns);
+  if(fc.xp)lines.push("⭐ Level "+fc.xp.level+" · "+fmtXP(fc.xp.total)+" XP"+(fc.xp.badges.length?" · "+fc.xp.badges.map(function(b){return b.emoji;}).join(""):""));
   if(fc.quip)lines.push("“"+fc.quip+"”");
   return lines.join("\n");
 }
@@ -555,6 +578,14 @@ function drawFightCard(ctx,fc,sn,pal){
   y+=58;
   font(128,400,BEBAS);ctx.fillStyle=pal.tx;wrap(((sn.emoji?sn.emoji+" ":"")+(sn.name||"Unknown")).toUpperCase(),P,W-2*P,120,2);y+=22;
   font(66,400,BEBAS);ctx.fillStyle=pal.ac;ctx.fillText(fc.archetype.emoji+" "+fc.archetype.name.toUpperCase(),P,y);y+=82;
+  if(fc.xp){
+    font(52,400,BEBAS);ctx.fillStyle=pal.ac;var lv="LV "+fc.xp.level;ctx.fillText(lv,P,y);
+    var lx=P+ctx.measureText(lv).width+24,lw=W-P-lx;
+    ctx.fillStyle="rgba(255,255,255,.18)";rr(lx,y+8,lw,16,8);ctx.fill();
+    ctx.fillStyle=pal.ac;if(fc.xp.pct>0){rr(lx,y+8,Math.max(16,lw*fc.xp.pct/100),16,8);ctx.fill();}
+    font(24,400);ctx.fillStyle=pal.mut;ctx.fillText(fmtXP(fc.xp.total)+" XP · "+fmtXP(fc.xp.need)+" to LV "+(fc.xp.level+1)+(fc.xp.frame.key!=="plain"?" · "+fc.xp.frame.name.toUpperCase()+" FRAME":""),lx,y+34);
+    y+=78;
+  }
   if(fc.record.n){font(34,700);ctx.fillStyle=pal.tx;var rt=fc.record.w+"W–"+fc.record.l+"L";ctx.fillText(rt,P,y);
     var rw=ctx.measureText(rt).width;font(34,400);ctx.fillStyle=pal.mut;ctx.fillText("  ·  "+fc.record.pct+"% right",P+rw,y);y+=62;}
   y+=10;
@@ -630,6 +661,14 @@ function drawFightCard(ctx,fc,sn,pal){
       font(40,400,BEBAS);ctx.fillStyle=f.r==="W"?"#06260f":"#2a0508";ctx.textAlign="center";ctx.fillText(f.r,fx+26,y+8);ctx.textAlign="left";fx+=64;});
     y+=84;
   }
+  if(fc.xp&&fc.xp.badges.length){
+    font(24,700);ctx.fillStyle=pal.mut;ctx.fillText("BADGES",P,y);y+=40;
+    font(26,600);var bx=P;
+    fc.xp.badges.forEach(function(b){var t=b.emoji+" "+b.name,bw=ctx.measureText(t).width+32;
+      if(bx+bw>W-P){bx=P;y+=58;}
+      ctx.fillStyle="rgba(0,0,0,.32)";rr(bx,y,bw,46,23);ctx.fill();ctx.fillStyle=pal.tx;ctx.fillText(t,bx+16,y+9);bx+=bw+12;});
+    y+=78;
+  }
   font(22,600);ctx.fillStyle=pal.mut;ctx.fillText("UFC FIGHT CARDS · FIGHT LAB",P,y);
   font(20,400);ctx.textAlign="right";ctx.fillText("50 = par · higher is better",W-P,y+2);ctx.textAlign="left";
   return y+22+P;
@@ -652,7 +691,7 @@ function renderCardImage(fc,sn,cardEl,artPath){
     else{var g=ctx.createLinearGradient(0,0,CARD_W*.6,H);g.addColorStop(0,pal.bg1);g.addColorStop(1,pal.bg2);ctx.fillStyle=g;ctx.fillRect(0,0,CARD_W,H);}
     var sc=ctx.createLinearGradient(0,0,0,H);sc.addColorStop(0,"rgba(0,0,0,.14)");sc.addColorStop(.4,"rgba(0,0,0,.42)");sc.addColorStop(1,"rgba(0,0,0,.22)");
     ctx.fillStyle=sc;ctx.fillRect(0,0,CARD_W,H);
-    ctx.strokeStyle=pal.ac;ctx.lineWidth=10;ctx.strokeRect(5,5,CARD_W-10,H-10);
+    ctx.strokeStyle=(fc.xp&&FRAME_COLORS[fc.xp.frame.key])||pal.ac;ctx.lineWidth=10;ctx.strokeRect(5,5,CARD_W-10,H-10);
     drawFightCard(ctx,fc,sn,pal);
     return new Promise(function(res,rej){cv.toBlob(function(b){b?res(b):rej(new Error("no image"));},"image/png");});
   });
