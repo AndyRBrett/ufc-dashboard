@@ -1,4 +1,4 @@
-"""Non-UFC cards (PFL first) for the Fight Lab hub — SHADOW MODE.
+"""Non-UFC cards (PFL, RIZIN, DWCS) for the sport switcher and Fight Lab hub.
 
 Builds the curated feed the Pick Engine already reads (events-extra.json, format
 in docs/PICK-ENGINE.md) from Wikipedia, the same free, keyless source scrape.py
@@ -12,6 +12,9 @@ found to events-extra.candidate.json and a report to extra-state.json, and
 leaves events-extra.json — the file the app reads — alone. Once a real run's
 candidate has been checked against the actual card, publishing is switched on
 with EXTRA_PUBLISH=1 in update.yml. Nothing about the app changes until then.
+PFL was checked and published 2026-09-24. Since then the switch is also per
+promotion (`publish` in PROMOTIONS): the candidate file always carries every
+promotion, the live file only the published ones.
 
 Budget, same premise as intel.py: no key, no quota, no model call, no new
 dependency. A cadence gate keeps it off most 5-minute fight-night runs:
@@ -45,26 +48,68 @@ ABOUT = ("Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built 
          "invalid event with a reason. The UFC card never comes from here - 'ufc' is "
          "reserved for data.js. Format: docs/PICK-ENGINE.md.")
 
+# `publish` is per promotion. EXTRA_PUBLISH=1 switches the live file on at
+# all; within it, only promotions marked publish=True reach events-extra.json.
+# The rest stay in shadow: every run writes the FULL feed to
+# events-extra.candidate.json, so a new promotion's first real cards can be
+# checked against the actual card before its flag is flipped. Adding a
+# promotion never publishes it by itself.
+#
+# `list_page` may carry {year}: the page is then read for this year and, when
+# the window reaches into it, next year (a December run needs January's cards).
+# `list_section` names the events table's heading when the page carries more
+# than the table (RIZIN's year page is the list AND every card's section).
 PROMOTIONS = [
     {
-        "id": "pfl", "name": "PFL", "sport": "mma",
+        "id": "pfl", "name": "PFL", "sport": "mma", "publish": True,
         "list_page": "List_of_Professional_Fighters_League_events",
         "year_page": "{year}_in_Professional_Fighters_League",
         # An event link or plain name that is a PFL card.
         "name_re": r"(?:PFL|Professional Fighters League)\b",
     },
+    {
+        # One page per year: an events table under "List of events" whose rows
+        # link to in-page anchors ([[#Rizin 55|Rizin 55]]), then one section
+        # per card with the usual {{MMAevent bout}} templates. Checked against
+        # the real 2026 page on 2026-09-28: Landmark 16's parsed card had 8 of
+        # its 13 bouts independently confirmed and none contradicted (one bout
+        # the page hadn't added yet was missing, which is a gap, not a lie).
+        "id": "rizin", "name": "RIZIN", "sport": "mma", "publish": True,
+        "list_page": "{year}_in_Rizin_Fighting_Federation",
+        "list_section": r"List of events",
+        "year_page": "{year}_in_Rizin_Fighting_Federation",
+        "name_re": r"(?:Super\s+)?Rizin\b",
+    },
+    {
+        # Dana White's Contender Series: no article per card. The main article
+        # lists seasons (start and end dates, linked season page); a season
+        # page has one "== Week 8 – September 29 ==" section per Tuesday, each
+        # with an infobox (name, date, venue) and {{MMAevent bout}} templates.
+        # Checked against the real season 10 page on 2026-09-28; its week 8
+        # card matched UFC.com's and Sherdog's bout for bout (5 of 5).
+        "id": "dwcs", "name": "DWCS", "sport": "mma", "publish": True,
+        "list_page": "Dana_White's_Contender_Series",
+        "seasons": True,
+    },
 ]
 
 
 # --------------------------------------------------------------- discovery --
+def _sections(wt, heading_re):
+    """Every section under a heading matching heading_re (a list page read for
+    two years is two pages, each with its own events table)."""
+    out = []
+    for m in re.finditer(r"^(=+)\s*(?:%s)[^=\n]*\1\s*$" % heading_re, wt, re.IGNORECASE | re.MULTILINE):
+        level = len(m.group(1))
+        tail = wt[m.end():]
+        end = re.search(r"^={1,%d}[^=\n].*?=+\s*$" % level, tail, re.MULTILINE)
+        out.append(tail[:end.start()] if end else tail)
+    return out
+
+
 def _section(wt, heading_re):
-    m = re.search(r"^(=+)\s*(?:%s)[^=\n]*\1\s*$" % heading_re, wt, re.IGNORECASE | re.MULTILINE)
-    if not m:
-        return ""
-    level = len(m.group(1))
-    tail = wt[m.end():]
-    end = re.search(r"^={1,%d}[^=\n].*?=+\s*$" % level, tail, re.MULTILINE)
-    return tail[:end.start()] if end else tail
+    found = _sections(wt, heading_re)
+    return found[0] if found else ""
 
 
 def discover(promo, wikitext, now):
@@ -77,12 +122,21 @@ def discover(promo, wikitext, now):
     # moved to the Past table, and it must stay (and pick up its results) for
     # WINDOW_PAST_DAYS. The date window below decides what's kept; duplicates
     # across tables collapse on (date, name).
-    parts = [_section(wikitext, r"Scheduled|Upcoming"), _section(wikitext, r"Past|Previous|Completed")]
-    section = "\n|-\n".join(p for p in parts if p) or wikitext
+    if promo.get("list_section"):
+        # A page that is more than its events table: never read dates out of
+        # the rest of it (an infobox date plus any "Rizin" mention is a row).
+        parts = _sections(wikitext, promo["list_section"])
+    else:
+        parts = [_section(wikitext, r"Scheduled|Upcoming"), _section(wikitext, r"Past|Previous|Completed")]
+    section = "\n|-\n".join(p for p in parts if p) or ("" if promo.get("list_section") else wikitext)
     link_re = re.compile(r"\[\[([^\]\|#]*%s[^\]\|#]*)(?:\|([^\]]+))?\]\]" % promo["name_re"], re.IGNORECASE)
     plain_re = re.compile(r"(?:^|\|)\s*(%s[^\n|]*)" % promo["name_re"], re.IGNORECASE | re.MULTILINE)
     out, seen = [], set()
     for row in re.split(r"^\s*\|-", section, flags=re.MULTILINE):
+        # A link to an anchor on the same page ([[#Rizin 55|Rizin 55]]) is not
+        # an article: keep its text, so the card is found by its section.
+        row = re.sub(r"\[\[#[^\]\|]*\|([^\]]+)\]\]", r"\1", row)
+        row = re.sub(r"\[\[#([^\]\|]+)\]\]", r"\1", row)
         d = scrape.parse_date_wiki(row)
         if not d:
             continue
@@ -113,9 +167,78 @@ def discover(promo, wikitext, now):
     return out[:MAX_EVENTS]
 
 
+# ------------------------------------------------------------ season shows --
+_SEASON_LINK_RE = re.compile(r"\[\[([^\]\|#]*\bseason\b[^\]\|#]*)(?:\|[^\]]*)?\]\]", re.IGNORECASE)
+_WEEK_RE = re.compile(r"^==\s*(Week\s+(\d+)\b[^=\n]*?)\s*==\s*$", re.IGNORECASE | re.MULTILINE)
+_H2_RE = re.compile(r"^==[^=\n].*?==\s*$", re.MULTILINE)
+
+
+def _field(section, name):
+    m = re.search(r"^\|\s*%s\s*=(.*)$" % name, section, re.IGNORECASE | re.MULTILINE)
+    return scrape.clean_wiki(m.group(1)).strip() if m else ""
+
+
+def current_seasons(listing, now):
+    """Season pages whose run overlaps the window, from the "List of seasons"
+    table: [{slug, start, end}]. A row carries its season link, then its
+    start date, then its end date (an end not known yet reads as open)."""
+    out = []
+    table = _section(listing, r"List of seasons") or listing
+    for row in re.split(r"^\s*\|-", table, flags=re.MULTILINE):
+        lm = _SEASON_LINK_RE.search(row)
+        if not lm:
+            continue
+        dates = re.findall(r"\{\{dts\|[^}]*\}\}", row)
+        start = scrape.parse_date_wiki(dates[0]) if dates else None
+        end = scrape.parse_date_wiki(dates[1]) if len(dates) > 1 else None
+        if not start:
+            continue
+        try:
+            s_ = datetime.strptime(start, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            e_ = datetime.strptime(end, "%Y-%m-%d").replace(tzinfo=timezone.utc) if end else s_ + timedelta(days=120)
+        except ValueError:
+            continue
+        if s_ > now + timedelta(days=WINDOW_AHEAD_DAYS) or e_ < now - timedelta(days=WINDOW_PAST_DAYS):
+            continue
+        out.append({"slug": lm.group(1).strip().replace(" ", "_"), "start": start, "end": end})
+    return out
+
+
+def season_weeks(season_wikitext, start, now):
+    """One card per "Week N" section of a season page, within the window:
+    [{name, slug: None, date, venue, location, wt}], soonest first.
+
+    The date is the section's own infobox |date=, never the first date found
+    anywhere in it (a reference's publish date comes later in the same text).
+    Failing that, the heading's "September 29" plus the season's year."""
+    out = []
+    heads = list(_WEEK_RE.finditer(season_wikitext))
+    for m in heads:
+        tail = season_wikitext[m.end():]
+        nxt = _H2_RE.search(tail)
+        sec = tail[:nxt.start()] if nxt else tail
+        d = scrape.parse_date_wiki(_field(sec, "date"))
+        if not d:
+            hm = re.search(r"([A-Za-z]+)\s+(\d{1,2})\s*$", m.group(1))
+            mo = scrape.MONTH_MAP.get(hm.group(1).lower(), 0) if hm else 0
+            if mo:
+                y = int(start[:4]) + (1 if mo < int(start[5:7]) else 0)
+                d = "%04d-%02d-%02d" % (y, mo, int(hm.group(2)))
+        if not d:
+            continue
+        when = datetime.strptime(d, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        if when < now - timedelta(days=WINDOW_PAST_DAYS) or when > now + timedelta(days=WINDOW_AHEAD_DAYS):
+            continue
+        name = _field(sec, "name") or "Dana White's Contender Series, %s" % scrape.clean_wiki(re.split(r"\s*[–—-]\s*", m.group(1))[0]).strip()
+        out.append({"name": scrape.asc(name), "slug": None, "date": d,
+                    "venue": _field(sec, "venue"), "location": _field(sec, "city"), "wt": sec})
+    out.sort(key=lambda e: e["date"])
+    return out[:MAX_EVENTS]
+
+
 # ------------------------------------------------------------------- cards --
 def _real(name):
-    return bool(name) and len(name) >= 2 and name.strip().upper() != "TBD"
+    return bool(name) and len(name) >= 2 and name.strip().upper() not in ("TBD", "TBA")
 
 
 # scrape.parse_upcoming_card marks a title fight by a champion's "(c)". An
@@ -258,10 +381,22 @@ def build(fetch, now, previous=None):
     in production, a dict lookup in the tests)."""
     prev_events = {(e.get("promotion"), e.get("date"), e.get("name")): e
                    for e in (previous or {}).get("events", [])}
+    # One fetch per page per run: RIZIN's list page IS its year page.
+    pages = {}
+    def get(slug):
+        if slug not in pages:
+            pages[slug] = fetch(slug) or ""
+        return pages[slug]
     events, report, promos = [], [], []
     for p in PROMOTIONS:
         promos.append({"id": p["id"], "name": p["name"], "sport": p["sport"]})
-        listing = fetch(p["list_page"])
+        if p.get("seasons"):
+            listing = get(p["list_page"])
+        elif "{year}" in p["list_page"]:
+            yrs = sorted({now.year, (now + timedelta(days=WINDOW_AHEAD_DAYS)).year})
+            listing = "\n".join(get(p["list_page"].format(year=y)) for y in yrs).strip()
+        else:
+            listing = get(p["list_page"])
         if not listing:
             report.append({"promotion": p["id"], "problem": "events list unavailable"})
             # Keep what we had: a failed fetch is not a cancelled card.
@@ -272,14 +407,45 @@ def build(fetch, now, previous=None):
         def year_page(d):
             y = d[:4]
             if y not in years:
-                years[y] = fetch(p["year_page"].format(year=y)) or ""
+                years[y] = get(p["year_page"].format(year=y))
             return years[y]
-        for ev in discover(p, listing, now):
+        if p.get("seasons"):
+            found, missing = [], []
+            for season in current_seasons(listing, now):
+                swt = get(season["slug"])
+                if swt:
+                    found.extend(season_weeks(swt, season["start"], now))
+                else:
+                    missing.append(season["slug"])
+            if missing:
+                report.append({"promotion": p["id"], "problem": "season page unavailable: %s" % ", ".join(missing)})
+                # Keep what we had: a failed fetch is not a cancelled card.
+                have = {(e["date"], e["name"]) for e in found}
+                found.extend(dict(e, wt=None) for e in (previous or {}).get("events", [])
+                             if e.get("promotion") == p["id"] and _in_window(e.get("date"), now)
+                             and (e.get("date"), e.get("name")) not in have)
+            listed = sorted(found, key=lambda e: e["date"])
+        else:
+            listed = discover(p, listing, now)
+        for ev in listed:
+            if "wt" in ev:
+                # A season show's card came with its own section, or (wt=None)
+                # is a previous card kept through a failed fetch.
+                if ev["wt"] is None:
+                    events.append({k: v for k, v in ev.items() if k != "wt"})
+                    continue
+                bouts = card_from_wikitext(ev["wt"])
+                source = "season page"
+                entry = {"promotion": p["id"], "name": ev["name"], "date": ev["date"],
+                         "venue": ev["venue"], "location": ev["location"], "broadcast": "",
+                         "bouts": bouts}
+                _publishable(p, ev, bouts, entry, source, prev_events, events, report)
+                continue
             slug = ev["slug"]
             if not slug:
                 # Listed as plain text: the year page's events table may link it.
                 slug = link_from_year_page(year_page(ev["date"]), ev["name"], ev["date"])
-            wt = fetch(slug) if slug else ""
+            wt = get(slug) if slug else ""
             source = "article" if wt else ""
             bouts = card_from_wikitext(wt) if wt else []
             if len(bouts) < MIN_BOUTS:
@@ -290,22 +456,28 @@ def build(fetch, now, previous=None):
             entry = {"promotion": p["id"], "name": ev["name"], "date": ev["date"],
                      "venue": ev["venue"], "location": ev["location"], "broadcast": "",
                      "bouts": bouts}
-            if len(bouts) < MIN_BOUTS:
-                old = prev_events.get((p["id"], ev["date"], ev["name"]))
-                report.append({"promotion": p["id"], "event": ev["name"], "date": ev["date"],
-                               "problem": "only %d bout(s) parsed" % len(bouts),
-                               "kept_previous": bool(old)})
-                if old:
-                    events.append(old)
-                continue
-            events.append(entry)
-            report.append({"promotion": p["id"], "event": ev["name"], "date": ev["date"],
-                           "bouts": len(bouts), "source": source,
-                           "main_event": "%s vs %s" % (bouts[0]["a"], bouts[0]["b"])})
+            _publishable(p, ev, bouts, entry, source, prev_events, events, report)
     events.sort(key=lambda e: (e["date"], e["promotion"]))
     feed = {"about": ABOUT, "generated_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "promotions": promos, "events": events}
     return feed, report
+
+
+def _publishable(p, ev, bouts, entry, source, prev_events, events, report):
+    """Add the card, or, if it parsed to a stub, the previous version of it."""
+    if len(bouts) < MIN_BOUTS:
+        old = prev_events.get((p["id"], ev["date"], ev["name"]))
+        report.append({"promotion": p["id"], "event": ev["name"], "date": ev["date"],
+                       "problem": "only %d bout(s) parsed" % len(bouts),
+                       "kept_previous": bool(old)})
+        if old:
+            events.append(old)
+        return False
+    events.append(entry)
+    report.append({"promotion": p["id"], "event": ev["name"], "date": ev["date"],
+                   "bouts": len(bouts), "source": source,
+                   "main_event": "%s vs %s" % (bouts[0]["a"], bouts[0]["b"])})
+    return True
 
 
 def _in_window(d, now):
@@ -351,7 +523,13 @@ def main(now=None):
     now = now or datetime.now(timezone.utc)
     publish = os.environ.get("EXTRA_PUBLISH") == "1"
     state = _read(STATE_JSON)
-    previous = _read(LIVE_JSON if publish else CANDIDATE_JSON)
+    live_ids = published_ids() if publish else set()
+    # What we had, per promotion, from the file each one is written to: a
+    # published promotion's cards from the live file, a shadowed one's from the
+    # candidate. That is what a failed fetch falls back to.
+    live_prev, cand_prev = _read(LIVE_JSON), _read(CANDIDATE_JSON)
+    previous = {"events": [e for e in live_prev.get("events", []) if e.get("promotion") in live_ids] +
+                          [e for e in cand_prev.get("events", []) if e.get("promotion") not in live_ids]}
     go, why = should_fetch(state, previous, now, publish)
     if not go:
         print("extra: skipped (%s)" % why)
@@ -366,15 +544,37 @@ def main(now=None):
     if not feed["events"] and not previous.get("events"):
         print("extra: nothing found; nothing written")
         return 0
-    out = LIVE_JSON if publish else CANDIDATE_JSON
+    # The candidate always gets everything, so a shadowed promotion can be
+    # checked; the live file only ever gets promotions marked publish=True.
+    _write(CANDIDATE_JSON, feed)
+    print("extra: %d event(s) -> %s (shadow: all promotions)" % (len(feed["events"]), CANDIDATE_JSON.name))
+    if publish:
+        live = only(feed, live_ids)
+        if live["events"] or live_prev.get("events"):
+            _write(LIVE_JSON, live)
+        print("extra: %d event(s) -> %s (%s)" % (len(live["events"]), LIVE_JSON.name,
+                                                 ", ".join(sorted(live_ids)) or "none published"))
+    return 0
+
+
+def published_ids():
+    return {p["id"] for p in PROMOTIONS if p.get("publish")}
+
+
+def only(feed, ids):
+    """The feed cut down to the given promotions: their cards AND their entries
+    in `promotions`, so the switcher never offers a sport with nothing behind it."""
+    return dict(feed, promotions=[p for p in feed["promotions"] if p["id"] in ids],
+                events=[e for e in feed["events"] if e["promotion"] in ids])
+
+
+def _write(path, feed):
     body = json.dumps(feed, indent=1, ensure_ascii=False) + "\n"
-    old = out.read_text(encoding="utf-8") if out.exists() else ""
+    old = path.read_text(encoding="utf-8") if path.exists() else ""
     # generated_at alone changing is not worth a commit.
     strip = lambda s: re.sub(r'"generated_at": "[^"]*"', "", s)
     if strip(old) != strip(body):
-        out.write_text(body, encoding="utf-8")
-    print("extra: %d event(s) -> %s%s" % (len(feed["events"]), out.name, "" if publish else " (shadow)"))
-    return 0
+        path.write_text(body, encoding="utf-8")
 
 
 if __name__ == "__main__":

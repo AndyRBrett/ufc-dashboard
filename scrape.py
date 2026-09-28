@@ -233,6 +233,8 @@ def norm_wc(raw):
         return "Women's Flyweight"
     if "strawweight" in r:
         return "Women's Strawweight"
+    if "super atomweight" in r:     # RIZIN's 49 kg class: not the 48 kg atomweight
+        return "Women's Super Atomweight"
     if "atomweight" in r:
         return "Women's Atomweight"
     return r.title() if r else "TBD"

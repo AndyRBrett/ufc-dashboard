@@ -821,7 +821,25 @@ its `update.yml` step on 2026-09-24. Remove that to drop back to shadow mode
 (output to `events-extra.candidate.json` only). **A new promotion added to
 `PROMOTIONS` gets the same treatment**: publish its cards only after a real
 candidate has been compared to the actual card, since the engine's rule is
-that nothing may state a card that isn't happening. Title fights are read from
+that nothing may state a card that isn't happening. The switch is **per
+promotion** (`publish` on its `PROMOTIONS` entry; add it as `False`):
+`EXTRA_PUBLISH=1` turns the live file on, the live file carries only the
+published promotions (their cards and their `promotions` entries), and the
+candidate file always carries every promotion so a shadowed one can be
+checked. Before that split, adding a promotion published it on its first run.
+RIZIN and DWCS were checked and published on 2026-09-28 (DWCS week 8: 5 of 5
+bouts matched UFC.com; RIZIN Landmark 16: 8 of 13 confirmed, none
+contradicted). Their pages are unlike PFL's: RIZIN's year page is both the
+events list (rows link to in-page `[[#anchor|…]]`, read only under
+`list_section`) and every card's section; DWCS has no article per card, so
+`seasons` reads the main article's season table and one card per
+`== Week N – Month D ==` section of the season page, dated by that section's
+own infobox. **Each promotion's lock hour is a fact about where it fights**:
+`SPORT_LOCK_UTC_H_BY` in `index.html` (RIZIN 02:00 UTC, since Japan's first
+bell is ~04:00 UTC and the 10:00 default would leave five hours pickable;
+DWCS 22:00 UTC, an hour before its 19:00 ET bell). A new promotion that fights
+before 10:00 UTC needs an entry before it is published; `check:sports` holds
+both. Title fights are read from
 a champion's "(c)" or the bout's own text ("championship", "for the … title";
 not eliminators), since an inaugural belt has no champion. A card needs `MIN_BOUTS` real
 bouts to be listed, and a failed fetch keeps the previous version, never an
