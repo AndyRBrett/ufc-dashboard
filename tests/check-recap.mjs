@@ -293,5 +293,58 @@ check("checkCardRecap waits for What's New instead of stacking on it",
 check("closing checkpoints the card so it never auto-repeats",
   /RECAP_SEEN_KEY/.test(fn("closeCardRecap")));
 
+// --- the Fight Night Report: the night's stories --------------------------
+{
+  const C4 = "2026-10-03";   // on/after LOCKS_START, so 🔒 counts
+  const card4 = { name: "UFC 400: Stories", date: C4, fights: [
+    bout("G1", "H1", "G1", { f1: -150, f2: 130 }),
+    bout("G2", "H2", "H2", { f1: -380, f2: 300 }),
+    bout("G3", "H3", "G3"),
+    bout("G4", "H4", "G4"),
+  ] };
+  setEvents([card1, card4]);
+  const L = { confidence: 1 }, KO = { method: "KO/TKO" };
+  const rows = rows1.concat([
+    // Eve: 3/3 on card 1 as well, so 6 correct in a row after tonight.
+    pick("Eve", C1, "A1", "B1", "A1"), pick("Eve", C1, "A2", "B2", "B2"), pick("Eve", C1, "A3", "B3", "A3"),
+    pick("Ann", C4, "G1", "H1", "H1"), pick("Ann", C4, "G2", "H2", "H2"), pick("Ann", C4, "G3", "H3", "G3"),
+    pick("Bob", C4, "G1", "H1", "H1"), pick("Bob", C4, "G2", "H2", "G2"), pick("Bob", C4, "G3", "H3", "G3", KO), pick("Bob", C4, "G4", "H4", "G4", KO),
+    pick("Cat", C4, "G1", "H1", "H1", L), pick("Cat", C4, "G2", "H2", "G2", L), pick("Cat", C4, "G3", "H3", "G3", KO),
+    pick("Dee", C4, "G1", "H1", "G1", L), pick("Dee", C4, "G2", "H2", "G2"), pick("Dee", C4, "G3", "H3", "G3", L),
+    pick("Eve", C4, "G2", "H2", "H2"), pick("Eve", C4, "G3", "H3", "G3"), pick("Eve", C4, "G4", "H4", "G4"),
+  ]);
+  const stories = (rs, d) => { const x = recap(rs, d, "ann"); return ctx.cardStories(rs, d, x.standings); };
+  const st = stories(rows, C4).map((x) => x.em + " " + x.text);
+  const has = (re) => st.some((t) => re.test(t));
+  check("stories: the biggest upset names everyone who called it",
+    has(/^💣 (Ann and Eve|Eve and Ann) called the biggest upset: H2 \(\+300\) over G2$/));   // board order
+  check("stories: a perfect card is headlined", has(/^💯 Perfect card: Eve$/));
+  check("stories: the lone call skips the upset already headlined and finds the next",
+    has(/^🦄 Only Dee had G1 \(-150\), out of 4 who picked it$/));
+  check("stories: a 2–0 lock night", has(/^🔒 Dee went 2–0 on locks$/));
+  check("stories: a 0–2 lock night", has(/^🤡 Cat went 0–2 on locks$/));
+  check("stories: the method sniper (2+ methods)", has(/^🎯 Bob nailed 2 methods$/));
+  check("stories: the crowd bust (most of the room on the loser)", has(/^😬 3 of 4 had H1\. G1 had other ideas\.$/));
+  check("stories: the longest live streak, by the board's own count", has(/^🔥 Eve has hit 6 picks in a row$/));
+  check("stories: most notable first (upset, then perfect card)", /^💣/.test(st[0]) && /^💯/.test(st[1]));
+  check("stories: capped at RECAP_STORIES_MAX", st.length <= ctx.RECAP_STORIES_MAX);
+  // When the biggest upset is ALSO a lone call, it isn't told twice: the lone
+  // call goes to the next one (Ann alone on H2 at +300, Dee alone on G1).
+  const soloRows = rows.filter((p) => !(p.nickname === "🥊 Eve" && p.f1 === "G2"));
+  const solo = stories(soloRows, C4).map((x) => x.em + " " + x.text);
+  check("stories: an upset that was also a lone call isn't repeated as the lone call",
+    solo.some((t) => /^💣 Ann landed the biggest upset: H2/.test(t)) &&
+    solo.some((t) => /^🦄 Only Dee had G1/.test(t)) && !solo.some((t) => /^🦄 Only Ann/.test(t)));
+  // A quiet night says nothing it can't back up.
+  check("stories: a quiet night invents nothing (no locks, no 3-picker bouts, no streak of 5)",
+    stories(rows1, C1).every((x) => /^💣|^💯/.test(x.em + " ")));
+  setEvents([card1]);
+}
+check("the recap renders the stories with textContent only",
+  /rc\.stories/.test(fn("renderCardRecap")) && !/innerHTML/.test(fn("renderCardRecap")));
+check("opening a recap attaches its stories, and a stories failure can't block the recap",
+  /rc\.stories=cardStories\(/.test(fn("openCardRecap")) && /catch\(e\)/.test(fn("openCardRecap")));
+check("computeCardRecap's object is unchanged (check:parity pins it)", !/stories/.test(fn("computeCardRecap")));
+
 if (failures) { console.error(`\ncheck:recap — ${failures} failure(s)`); process.exit(1); }
 console.log("\ncheck:recap — all good");
