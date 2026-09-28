@@ -113,9 +113,13 @@ for the authoritative policy definitions. Keep RLS in version control: run
   - **service:** our own functions, proved by `X-Service-Key` (the service_role
     key, compared in constant time). Only they may send `brief` and `swap-*`.
   - **user:** a session JWT verified with GoTrue. Social pushes (picks, nudges,
-    challenges, roasts) go out as the verified sender only, with server-written
-    titles and text (a challenge is read from its row), and a per-sender hourly
-    cap.
+    challenges, roasts) go out as the verified sender only, with a per-sender
+    hourly cap. Pick, nudge and challenge text is written by the server (a
+    challenge is read from its row). ⚠️ A roast's **body is the sender's own
+    text** (length-capped, not moderated), and with no target list it reaches
+    every subscriber but the sender. Only its title, which names the verified
+    sender, is server-written, so a roast can't pose as someone else but can
+    say anything.
   - **anon:** may only trigger the fight reminders and result pushes, which the
     server rebuilds from the committed `data.js` (parsed, never run), with the
     result audience read from `picks` itself.
@@ -166,7 +170,11 @@ for the authoritative policy definitions. Keep RLS in version control: run
   fails the install instead of running with `contents: write`. The Supabase CLI
   is pinned by version in `deploy-functions.yml`, and PGlite (which runs the
   real migrations in `check:picklock`) by exact version in `package.json`. Bump
-  any of them on purpose, never back to `latest`.
+  any of them on purpose, never back to `latest`. ⚠️ Not yet pinned:
+  `send-push` imports `npm:web-push` with no version and there is no Deno
+  lockfile, so a function deploy can pick up a new release unasked. The other
+  npm dev dependencies use caret ranges, but they only run in tests and builds,
+  never in production.
 
 ## The automated implementer
 
