@@ -115,3 +115,5 @@ jobs:
         run: npm run check:bundle
       - name: Server-side pick lock
         run: npm run check:picklock
+      - name: No outside text reaches the page as HTML
+        run: npm run check:html
