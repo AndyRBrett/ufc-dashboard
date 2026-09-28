@@ -9066,9 +9066,16 @@ function loadLeaderboard(isLive){
       // Say which filter emptied the board — "no picks yet" is misleading when
       // the picks exist but are all prelims.
       var _evTxt=nextEv?nextEv.name.replace("UFC Fight Night: ","").replace("UFC ","UFC "):"this event";
-      body.innerHTML=lbScope==="main"
-        ? '<div class="lb-empty">No main-card picks'+(lbMode==="current"?" yet for "+_evTxt:" on record")+'.<br>Switch to All Bouts to include prelims.</div>'
-        : '<div class="lb-empty">No picks yet for '+_evTxt+'.<br>Make your picks to appear here!</div>';
+      // The card name is scraped from Wikipedia, so it goes in as text, never
+      // as HTML: an unclosed "<img … onerror=" in a title would borrow the
+      // <br>'s ">" and run in every visitor's browser.
+      var _le=document.createElement("div");_le.className="lb-empty";
+      _le.appendChild(document.createTextNode(lbScope==="main"
+        ? "No main-card picks"+(lbMode==="current"?" yet for "+_evTxt:" on record")+"."
+        : "No picks yet for "+_evTxt+"."));
+      _le.appendChild(document.createElement("br"));
+      _le.appendChild(document.createTextNode(lbScope==="main"?"Switch to All Bouts to include prelims.":"Make your picks to appear here!"));
+      body.innerHTML="";body.appendChild(_le);
       if(_room){var _re=body.querySelector(".lb-empty");if(_re){_re.textContent="";_re.appendChild(document.createTextNode("Nobody in "+_room.name+" has picks here yet."));_re.appendChild(document.createElement("br"));_re.appendChild(document.createTextNode("Share the invite from 👥 to fill the room."));}}
       // Nobody has picked this card yet: the all-time tape still has a story.
       var _tapeE=roomTapeEl(rows,_room,belt,nextEv);if(_tapeE)body.insertBefore(_tapeE,body.firstChild);
@@ -10671,15 +10678,19 @@ _roomsBoot();
       var b = s && s.odds_budget;
       if (!b || !b.exhausted) return;
       var days = b.resets_in_days;
-      var when = (typeof days === "number")
-        ? ("resets in <b>" + days + " day" + (days === 1 ? "" : "s") + "</b>")
-        : "reset date unknown";
+      // Card names come from another process's JSON: text nodes only.
       var hit = (b.most_affected || []).slice(0, 3).map(function(e){
         var name = String(e.event_id || "").split(":")[1] || e.event_id;
         return name + " (" + e.days_out + "d)";
       });
-      el.innerHTML = "\u26A0\uFE0F Odds API budget exhausted \u2014 lines are not refreshing, " + when +
-        (hit.length ? ". Most affected: " + hit.join(", ") : "");
+      el.textContent = "\u26A0\uFE0F Odds API budget exhausted \u2014 lines are not refreshing, ";
+      if (typeof days === "number") {
+        el.appendChild(document.createTextNode("resets in "));
+        var bold = document.createElement("b");
+        bold.textContent = days + " day" + (days === 1 ? "" : "s");
+        el.appendChild(bold);
+      } else el.appendChild(document.createTextNode("reset date unknown"));
+      if (hit.length) el.appendChild(document.createTextNode(". Most affected: " + hit.join(", ")));
       el.classList.add("show");
     })
     .catch(function(){ /* see above: no banner is the right answer */ });

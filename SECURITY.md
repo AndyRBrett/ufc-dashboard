@@ -3,15 +3,27 @@
 This document describes how secrets and data access work in the UFC Dashboard so
 that the security posture is reviewable, and explains how to rotate keys.
 
+**Last reviewed 2026-09-28.** Every table in `public` has RLS on, and
+Supabase's security advisor reports nothing above WARN. Its WARNs are all
+explained below: the lock-time RPCs, anonymous sign-ins being on (by design),
+and the pg_cron defaults. The open items are under
+[**Known gaps and accepted risks**](#known-gaps-and-accepted-risks).
+
 ## Architecture
 
 - **Frontend:** a static `index.html` (vanilla, inline JS) plus a generated
   `data.js` (fight cards, odds, stats), served from the repo root via GitHub
   Pages. App code and data are separate files so a bad data write can never
   corrupt the app.
-- **Backend:** Supabase (managed Postgres + Edge Functions).
-- **Pipeline:** `scrape.py` runs in GitHub Actions to rebuild `data.js` and
-  trigger result push notifications via the `send-push` edge function.
+- **Backend:** Supabase (managed Postgres + Edge Functions): `send-push`,
+  `ai-breakdown`, `check-results`, `send-reminders` and `kick-scraper`.
+- **Pipeline:** cron-job.org calls `kick-scraper`, which dispatches
+  `update.yml`; `scrape.py` rebuilds `data.js` from Wikipedia and the Odds API
+  and asks `send-push` for result pushes. It sends only the anon key, so
+  `send-push` rebuilds those pushes' text and audience itself (see
+  **send-push** below) rather than trusting what `scrape.py` sent.
+- **Readers:** the Fight Lab (`lab.html`, `lab/*.js`) and FightBot
+  (`fightbot/`) read picks and cards but never write a pick, a lock or a pref.
 
 ## What is exposed to the browser — and why it's safe
 
@@ -68,13 +80,23 @@ enabled with least-privilege policies:
   revoked from every client role).
 - `ai_usage` (`0009_ai_quota.sql`) — revoked from every client role; only
   `ai_quota_take`, executable by `service_role` alone, touches it.
-- `challenges` (`0003`) and `user_prefs` (`0004`) — RLS on with explicit
-  grants; see those migrations.
+- `challenges` (`0003`) — readable by anyone, like `picks`: both names, the
+  fight and the stake are public. Only the challenger can insert one (as
+  themselves, never against themselves), and only its target can accept or
+  decline a pending one.
+- `user_prefs` (`0004`) — owner-only for every operation.
+- **Tables with no client policy at all** (`ai_usage`, `card_bells`,
+  `notif_log`, `pick_locks`, `room_join_misses`, `picks_backup_2026_09_24`):
+  RLS on and no policy means the browser can't read or write them; only our
+  functions (service_role) can. Supabase's advisor lists these as INFO, which
+  is expected.
 
 ### Per-user identity via anonymous auth
-Because the picks table needs per-user writes but the app has no login, each
-visitor is signed in through **Supabase anonymous auth** (`/auth/v1/signup`,
-enabled in Authentication settings). The browser stores the returned session in
+Because the picks table needs per-user writes but the app has no password
+login, each visitor is signed in through **Supabase anonymous auth**
+(`/auth/v1/signup`, enabled in Authentication settings). "Link an email" is
+optional: it sends a one-time code (`/auth/v1/otp`), keeps the same `user_id`,
+and is what rooms require. The browser stores the returned session in
 `localStorage` (`ufc_sb_session`), uses the user's JWT — not the raw anon key —
 for all REST/realtime calls, and `USER_ID` is the auth `uid`. This lets RLS
 enforce `auth.uid()::text = user_id`, so a user can only modify their own picks.
@@ -97,6 +119,18 @@ for the authoritative policy definitions. Keep RLS in version control: run
   inline-JS file on a static host; externalizing the JS to drop `'unsafe-inline'`
   is a future improvement. Note: `frame-ancestors` (clickjacking) can't be set via
   a `<meta>` tag — it requires an HTTP header, which GitHub Pages doesn't allow.
+- **Outside text never becomes HTML.** Card and fighter names are scraped from
+  Wikipedia, which anyone can edit; nicknames, room names, roasts and stakes
+  are other users' input; `intel.json`, `events-extra.json` and
+  `overseer-status.json` are written by other processes. All of it is shown
+  with `textContent` or text nodes, never `innerHTML`, which matters because
+  the CSP allows inline scripts, so an injected `onerror=` handler would run.
+  `npm run check:html` fails on any HTML insertion that isn't a string literal
+  or one of a few reviewed expressions built from the app's own constants.
+  It was added on 2026-09-28, after a card name was found reaching `innerHTML`
+  in the leaderboard's empty state (an unclosed `<img … onerror=` in a title
+  would have survived `scrape.py`'s tag stripping), and a card name from
+  `overseer-status.json` in the odds banner. Both now use text nodes.
 - **Edge functions:** CORS allowlist and per-IP + global rate limiting on
   `ai-breakdown` and `send-push`; who a caller is comes from its session JWT or
   service key (below), never from the anon key. The per-IP key is
@@ -241,6 +275,34 @@ Review them when you rotate keys:
   `/auth/v1/otp`, and the CSP must allow `challenges.cloudflare.com`. Turn the
   setting on only after that change ships, or every new visitor's sign-in
   fails.
+
+## Known gaps and accepted risks
+
+What is still open, and why. Revisit this list at each review.
+
+- **No CAPTCHA yet.** See **Settings outside the repo**. Until it is on, bulk
+  anonymous accounts are possible. What they can reach is limited: every
+  per-account budget has a per-IP and global one beside it, and social pushes
+  need an established player.
+- **`'unsafe-inline'` in the CSP, and no `frame-ancestors`.** The app is one
+  inline-JS file on GitHub Pages, which can't send headers. The mitigation is
+  the rule above: outside text never becomes HTML (`check:html`). Moving the JS
+  into files, or hosting behind a CDN that sets headers, would close both.
+- **An established player can set any nickname**, including another player's,
+  and push as it. That is a friend-group problem, not an outsider one.
+- **Public by design:** picks, nicknames, user IDs and challenges can be read
+  by anyone holding the anon key (the leaderboard needs them), and the repo,
+  including `data.js`, is public. Don't put anything private in those tables.
+- **`kick-scraper` fails open** on an unreadable `data.js`: it dispatches the
+  scraper, which costs only Actions minutes, since the endpoint still needs
+  `CRON_SECRET`.
+- **`picks_backup_2026_09_24`** is a full copy of every pick, kept for the
+  engine-migration rollback (`docs/ROLLBACK.md`). No client can read it. Drop it
+  once that rollback window is closed.
+- **pg_cron's own policies** (`cron.job`, `cron.job_run_details`) show as
+  advisor WARNs. They are Supabase's defaults and scope rows to the job's owner,
+  and neither `anon` nor `authenticated` has usage on the `cron` schema, so the
+  browser can't reach those tables at all.
 
 ## The automated implementer
 
