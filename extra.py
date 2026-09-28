@@ -55,8 +55,9 @@ ABOUT = ("Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built 
 # checked against the actual card before its flag is flipped. Adding a
 # promotion never publishes it by itself.
 #
-# `list_page` may carry {year}: the page is then read for this year and, when
-# the window reaches into it, next year (a December run needs January's cards).
+# `list_page` may carry {year}: the page is then read for every year the window
+# touches: next year's in December, last year's on Jan 1-2 (a New Year's Eve
+# card keeps its results).
 # `list_section` names the events table's heading when the page carries more
 # than the table (RIZIN's year page is the list AND every card's section).
 PROMOTIONS = [
@@ -393,7 +394,10 @@ def build(fetch, now, previous=None):
         if p.get("seasons"):
             listing = get(p["list_page"])
         elif "{year}" in p["list_page"]:
-            yrs = sorted({now.year, (now + timedelta(days=WINDOW_AHEAD_DAYS)).year})
+            # Last year's page too while its cards are still in the past window:
+            # a New Year's Eve card must stay (and take its results) on Jan 1-2.
+            yrs = sorted({(now - timedelta(days=WINDOW_PAST_DAYS)).year, now.year,
+                          (now + timedelta(days=WINDOW_AHEAD_DAYS)).year})
             listing = "\n".join(get(p["list_page"].format(year=y)) for y in yrs).strip()
         else:
             listing = get(p["list_page"])

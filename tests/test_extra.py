@@ -502,6 +502,29 @@ def test_rizin_reads_next_years_page_once_the_window_reaches_it():
     assert fetch.calls.count("2026_in_Rizin_Fighting_Federation") == 1   # list page = year page: one fetch
 
 
+def test_a_new_years_eve_rizin_card_survives_the_year_boundary():
+    nye = RIZIN_YEAR + """
+==Rizin: New Year's Eve Event==
+{{MMAevent bout
+|Lightweight
+|Nye A
+|vs.
+|Nye B
+}}
+{{MMAevent bout
+|Featherweight
+|Nye C
+|vs.
+|Nye D
+}}
+"""
+    jan1 = datetime(2027, 1, 1, 12, 0, tzinfo=timezone.utc)
+    fetch = fetcher({"2026_in_Rizin_Fighting_Federation": nye, "2027_in_Rizin_Fighting_Federation": "== List of events ==\n"})
+    feed, _ = extra.build(fetch, jan1)
+    assert "2026_in_Rizin_Fighting_Federation" in fetch.calls
+    assert [e["name"] for e in feed["events"] if e["promotion"] == "rizin"] == ["Rizin: New Year's Eve Event"]
+
+
 # ----------------------------------------------------------------- DWCS --
 # Trimmed from the real main article and season 10 page (2026-09-28).
 DWCS_MAIN = """
