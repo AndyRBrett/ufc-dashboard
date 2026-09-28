@@ -105,12 +105,23 @@ for the authoritative policy definitions. Keep RLS in version control: run
   relative same-app `url` values into push payloads.
 - **send-push sends only what it can vouch for.** This closed the old gap where
   anyone holding the public anon key could push crafted text to every
-  subscriber. Each caller is one of three kinds:
+  subscriber, except for trash talk (below). Each caller is one of three kinds:
   - **service**: our own functions, proven by the service_role key in
     `X-Service-Key`. Trusted as given. `brief` and `swap-*` are service-only.
-  - **user**: a session JWT verified with GoTrue. Social pushes (picks, nudges,
-    challenges, trash talk) go out as the verified sender only, with
-    server-written text, and are capped per sender per hour (`SENDER_LIMIT`).
+  - **user**: a session JWT verified with GoTrue. Social pushes go out as the
+    verified sender only and are capped per sender per hour (`SENDER_LIMIT`,
+    30). Pick announcements, nudges and challenges carry server-written text,
+    built from the sender's own picks, the one nudge target, or the challenge
+    row.
+    ⚠️ **Trash talk is the exception**: the roast *is* the message, so its body
+    is the sender's text (capped at `MAX_BODY`). The persona in its title is
+    also read from that text, and the title names the verified sender
+    (`… (via <nickname>)`). If the caller sends no `include_user_ids`, it goes
+    to **every subscriber but the sender**. Anonymous sign-up is open, so anyone
+    can mint an account and broadcast arbitrary text this way, attributed to
+    whatever nickname that account sets, at up to 30 pushes an hour per account.
+    Possible hardening, not yet done: require targets (the app's group of
+    friends), or cap an untargeted roast to accounts that have picks.
   - **anon**: may only trigger the `main`, `prelim` and `result:*` backups. The
     server rebuilds their text and audience from the committed `data.js` (read
     with patterns, never executed) and from `picks` itself.
