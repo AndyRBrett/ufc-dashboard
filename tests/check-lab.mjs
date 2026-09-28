@@ -196,6 +196,57 @@ check("lock skid orders same-card locks by when the result landed", skid.lockSki
   check("Picking Favorites falls below 50 when favorites win less than priced", tr.chalk.rating === 33);
   // Every rating says what it means: a verdict in words, and what it was compared with.
   check("a rating reads as a verdict (99 → well above par, 33 → below par)", tr.upset.verdict === "Well above par" && tr.chalk.verdict === "Below par");
+  // Fight Night XP: progression only. Q, by hand: 10 wins x10 + 5 wins at +300
+  // x20 + 5 cards x25 + 2 reigns x100 + 2 defenses x40 = 605 -> LV 4 (600).
+  {
+    const x = qc.xp;
+    check("XP adds up by the published rules (605 for Q)", x && x.total === 605, x && x.total);
+    check("XP levels: 605 is LV 4, 395 short of LV 5", x.level === 4 && x.need === 395 && x.into === 5 && x.pct === 1);
+    check("the level curve is 0, 100, 300, 600, 1000…", FL.levelFor(99) === 1 && FL.levelFor(100) === 2 && FL.levelFor(299) === 2 && FL.levelFor(300) === 3 && FL.xpForLevel(5) === 1000);
+    check("badges: Q has First Blood and Title Holder, and nothing it didn't earn",
+      JSON.stringify(x.badges.map((b) => b.key)) === '["first-blood","champ"]' && x.locked.length === FL.BADGES.length - 2);
+    check("the XP breakdown names every source that paid", x.parts.map((p) => p.label).join("|") === "Correct picks|Underdog wins|Cards played|Title reigns|Title defenses");
+    // Never goes down: a loss on a card already played costs nothing.
+    const plus = all.concat([mk(20, false, -200, { date: "2026-01-10" })]);
+    const noBelt = FL.fightCard(all, qiq, { group: all }).xp.total;
+    check("XP never drops for a miss (a loss on a card already played adds 0)",
+      noBelt === 325 && FL.fightCard(plus, FL.fightIQ(plus, { stats: {}, group: plus }), { group: plus }).xp.total === noBelt);
+    // A monster night: 10 locked, method-right wins at +450 on one card.
+    const grp = PE.methodGroup("KO/TKO");
+    const mon = Array.from({ length: 10 }, (_, i) => mk(30 + i, true, 450, { date: "2026-06-06", locked: true, method: grp }));
+    const mx = FL.fightCard(mon, FL.fightIQ(mon, { stats: {}, group: mon }), { group: mon }).xp;
+    check("every pick-driven badge unlocks on the night that earns it",
+      ["first-blood", "perfect", "odds", "dogs", "sniper", "locks", "streak"].every((k) => mx.badges.some((b) => b.key === k)));
+    check("a monster night's XP: 10x(10+20+15+10) + 25 + 50 = 625", mx.total === 625, mx.total);
+    // Streaks run in result order: an early-prelim loss (high bout order)
+    // came BEFORE the main-card wins on the same card, whatever order the
+    // rows arrived in (Supabase serves them newest-saved first).
+    const cardA = Array.from({ length: 5 }, (_, i) => mk(40 + i, true, -150, { date: "2026-07-01", bout: Object.assign({}, mk(40 + i, true, -150).bout, { order: i }) }));
+    const cardB = Array.from({ length: 5 }, (_, i) => mk(50 + i, true, -150, { date: "2026-07-08", bout: Object.assign({}, mk(50 + i, true, -150).bout, { order: i }) }))
+      .concat([mk(59, false, -150, { date: "2026-07-08", bout: Object.assign({}, mk(59, false, -150).bout, { order: 9 }) })]);
+    const st = cardA.concat(cardB);
+    const sx = FL.fightCard(st, FL.fightIQ(st, { stats: {}, group: st }), { group: st }).xp;
+    check("On Fire reads streaks in result order, not row order (5, then a prelim loss, then 5 is no 10-streak)",
+      sx.tallies.streak === 5 && !sx.badges.some((b) => b.key === "streak"), sx.tallies.streak);
+    // Perfect Night waits for the card: 3 wins in, 1 still pending.
+    const today = new Date().toISOString().slice(0, 10);
+    const live = Array.from({ length: 3 }, (_, i) => mk(60 + i, true, -150, { date: today }))
+      .concat([mk(63, true, -150, { date: today, decided: false, correct: null })]);
+    const decidedOnly = live.filter((p) => p.decided);
+    const lx = FL.fightXP(decidedOnly, null, null, live, Date.now());
+    const lxLater = FL.fightXP(decidedOnly, null, null, live, Date.now() + 3 * 86400000);
+    check("Perfect Night isn't awarded while a pick on that card is still pending (so XP can't later drop)",
+      lx.tallies.perfect === 0 && !lx.badges.some((b) => b.key === "perfect"));
+    check("…and a card over 2 days old counts even if a bout never got a result (cancelled)", lxLater.tallies.perfect === 1);
+    check("frames follow level (LV 4 is still the standard frame)", x.frame.key === "plain" && FL.levelFor(FL.xpForLevel(5)) === 5);
+  }
+  {
+    const src = readFileSync(join(ROOT, "lab.html"), "utf8");
+    const card = src.slice(src.indexOf("function fightCardEl("), src.indexOf("function fmtXP("));
+    check("the card shows the level, XP bar and badges, built with h() (textContent) only",
+      /fc-lv/.test(card) && /fc-badges/.test(card) && !/innerHTML/.test(card));
+    check("the card says XP never touches the leaderboard", /never touch the leaderboard/.test(card));
+  }
   check("a rating says what the odds expected (~2.5 underdog wins, ~7.5 favorite wins)",
     tr.upset.vs === "odds expected ~2.5 wins" && tr.chalk.vs === "odds expected ~7.5 wins");
   check("an unrated trait has no verdict and no comparison", qc.traits.filter((t) => t.rating == null).every((t) => t.verdict === null && t.vs === null));

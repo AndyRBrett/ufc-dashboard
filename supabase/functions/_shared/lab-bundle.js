@@ -755,6 +755,76 @@ export function analyticsInto(globalThis) {
     solid: "No tells. Very annoying to play poker against."
   };
   var CARD_TIERS = [[150, "Legend"], [75, "Veteran"], [30, "Contender"], [10, "Prospect"], [0, "Rookie"]];
+
+  // Fight Night XP: game progression, never scoring. It is read off the same
+  // decided picks as the card, only ever goes up (no penalty for a miss or a
+  // lost lock), and changes no standing, belt or rating anywhere.
+  var XP = { win: 10, dog: 10, bigDog: 20, method: 15, lock: 10, card: 25, perfect: 50, reign: 100, defense: 40 };
+  // XP needed to REACH a level: 0, 100, 300, 600, 1000, … (50·L·(L−1)).
+  function xpForLevel(L) { return 50 * L * (L - 1); }
+  function levelFor(xp) { var L = 1; while (xpForLevel(L + 1) <= xp) L++; return L; }
+  // Card frames by level: rarity tiers, purely cosmetic.
+  var FRAMES = [[30, "diamond", "Diamond"], [20, "gold", "Gold"], [10, "silver", "Silver"], [5, "bronze", "Bronze"], [1, "plain", "Standard"]];
+  // Milestone badges, each earned once. `need` reads the tallies below.
+  var BADGES = [
+    { key: "first-blood", emoji: "🩸", name: "First Blood", desc: "Your first correct pick", need: function (t) { return t.wins >= 1; } },
+    { key: "perfect", emoji: "💯", name: "Perfect Night", desc: "Every pick right on a card of 3+", need: function (t) { return t.perfect >= 1; } },
+    { key: "odds", emoji: "🎲", name: "Never Tell Me The Odds", desc: "Won a pick at +400 or longer", need: function (t) { return t.longest >= 400; } },
+    { key: "dogs", emoji: "💥", name: "Upset Artist", desc: "10 wins at +150 or longer", need: function (t) { return t.bigDogs >= 10; } },
+    { key: "sniper", emoji: "🎯", name: "Sniper", desc: "10 methods called right", need: function (t) { return t.methods >= 10; } },
+    { key: "locks", emoji: "🔒", name: "Lock Master", desc: "10 locks landed", need: function (t) { return t.locks >= 10; } },
+    { key: "streak", emoji: "🔥", name: "On Fire", desc: "10 correct picks in a row", need: function (t) { return t.streak >= 10; } },
+    { key: "ironman", emoji: "🗓️", name: "Ironman", desc: "Picked 20 cards", need: function (t) { return t.cards >= 20; } },
+    { key: "champ", emoji: "🏆", name: "Title Holder", desc: "Held the belt", need: function (t) { return t.reigns >= 1; } },
+    { key: "defender", emoji: "🛡️", name: "Defender", desc: "3 title defenses", need: function (t) { return t.defenses >= 3; } }
+  ];
+  // `all` is every pick the player has (decided or not), so a card still
+  // being fought can't award Perfect Night off its first few wins and then
+  // take it back: that would make XP go down. A card counts once none of its
+  // picks is pending, or once it is 2 days old (the app's own _eventFinished
+  // rule), so a cancelled bout with no result can't block it forever.
+  function fightXP(decided, idx, belt, all, now) {
+    var t = { wins: 0, dogs: 0, bigDogs: 0, longest: 0, methods: 0, locks: 0, cards: 0, perfect: 0, streak: 0,
+              reigns: belt ? belt.reigns : 0, defenses: belt ? belt.defenses : 0 };
+    var byCard = {};
+    decided.forEach(function (p) {
+      var c = byCard[p.date] = byCard[p.date] || { w: 0, n: 0 }; c.n++;
+      if (!p.correct) return;
+      c.w++; t.wins++;
+      var o = pickedOdds(p, idx);
+      if (typeof o === "number" && o > 0) { if (o >= 150) t.bigDogs++; else t.dogs++; if (o > t.longest) t.longest = o; }
+      if (p.method && p.bout.result && PE.methodGroup(p.bout.result.method) === p.method) t.methods++;
+      if (p.locked) t.locks++;
+    });
+    var pending = Object.create(null), nowMs = now instanceof Date ? now.getTime() : (typeof now === "number" ? now : Date.now());
+    (all || []).forEach(function (p) {
+      if (p.bout && !p.decided && Date.parse(p.date) >= nowMs - 2 * DAY) pending[p.date] = true;
+    });
+    Object.keys(byCard).forEach(function (d) { t.cards++; if (!pending[d] && byCard[d].n >= 3 && byCard[d].w === byCard[d].n) t.perfect++; });
+    var cur = 0;
+    // Oldest first: by card date, then by when the result landed. Results
+    // arrive prelims first, main event last, so a HIGHER bout order is the
+    // earlier result (the lock skid's convention, reversed).
+    decided.slice().sort(function (a, b) {
+      if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+      return ((b.bout && b.bout.order) || 0) - ((a.bout && a.bout.order) || 0);
+    })
+      .forEach(function (p) { cur = p.correct ? cur + 1 : 0; if (cur > t.streak) t.streak = cur; });
+    var parts = [
+      ["Correct picks", t.wins * XP.win], ["Underdog wins", t.dogs * XP.dog + t.bigDogs * XP.bigDog],
+      ["Methods", t.methods * XP.method], ["Locks landed", t.locks * XP.lock], ["Cards played", t.cards * XP.card],
+      ["Perfect cards", t.perfect * XP.perfect], ["Title reigns", t.reigns * XP.reign], ["Title defenses", t.defenses * XP.defense]
+    ].filter(function (x) { return x[1] > 0; }).map(function (x) { return { label: x[0], xp: x[1] }; });
+    var total = parts.reduce(function (a, x) { return a + x.xp; }, 0);
+    var level = levelFor(total), from = xpForLevel(level), to = xpForLevel(level + 1);
+    var frame = FRAMES.filter(function (f) { return level >= f[0]; })[0];
+    return {
+      total: total, level: level, into: total - from, need: to - total, pct: Math.floor(100 * (total - from) / (to - from)),
+      frame: { key: frame[1], name: frame[2] }, parts: parts, tallies: t,
+      badges: BADGES.filter(function (b) { return b.need(t); }).map(function (b) { return { key: b.key, emoji: b.emoji, name: b.name, desc: b.desc }; }),
+      locked: BADGES.filter(function (b) { return !b.need(t); }).map(function (b) { return { key: b.key, emoji: b.emoji, name: b.name, desc: b.desc }; })
+    };
+  }
   function impliedProb(o) { return typeof o !== "number" || !o ? null : o > 0 ? 100 / (o + 100) : -o / (-o + 100); }
   function clamp99(x) { return Math.max(1, Math.min(99, Math.round(x))); }
   // The picked side's fair probability: both sides of the same line, with the
@@ -876,7 +946,8 @@ export function analyticsInto(globalThis) {
     return {
       archetype: iq.archetype, quip: CARD_QUIPS[key] || "", tier: tier, decided: n, record: iq.record,
       traits: traits, signature: signature, weakness: weakness, nemesis: nemesis, rival: rival,
-      bestCall: bestCall, worstMiss: worstMiss, market: market, belt: belt, form: form
+      bestCall: bestCall, worstMiss: worstMiss, market: market, belt: belt, form: form,
+      xp: fightXP(decided, idx, belt, mine, ctx.now)
     };
   }
 
@@ -1154,7 +1225,7 @@ export function analyticsInto(globalThis) {
   root.FightLab = {
     MIN_SAMPLE: MIN_SAMPLE, oddsIndex: oddsIndex, pickCLV: pickCLV, lineAt: lineAt, probOf: probOf,
     styleOf: styleOf, streakBefore: streakBefore, fmtOdds: fmtOdds, fightIQ: fightIQ, archetype: archetype, ARCHETYPES: ARCHETYPES,
-    fightCard: fightCard, CARD_QUIPS: CARD_QUIPS,
+    fightCard: fightCard, CARD_QUIPS: CARD_QUIPS, fightXP: fightXP, levelFor: levelFor, xpForLevel: xpForLevel, XP: XP, BADGES: BADGES,
     marketMovers: marketMovers, versusMarket: versusMarket, crowdVsMarket: crowdVsMarket,
     fightWeekBrief: fightWeekBrief, matchup: matchup, backtest: backtest, activityTicker: activityTicker
   };
