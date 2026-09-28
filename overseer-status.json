@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T14:52:42Z",
+  "generated_at": "2026-09-28T15:57:41Z",
   "events_tracked": 11,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "status": "ok",
-      "last_changed_at": "2026-09-28T09:07:55Z",
+      "last_changed_at": "2026-09-28T15:57:41Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -105,7 +105,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-09-28T14:52:42Z",
+      "last_changed_at": "2026-09-28T15:57:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-28T14:52:42Z",
+      "last_changed_at": "2026-09-28T15:57:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -135,7 +135,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-28T14:52:42Z",
+      "last_changed_at": "2026-09-28T15:57:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-28T14:52:42Z",
+      "last_changed_at": "2026-09-28T15:57:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -213,22 +213,6 @@
       "priority": 325.0
     },
     {
-      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
-      "f1": "Johnny Walker",
-      "f2": "Mick Parkin",
-      "f1_movement": -32,
-      "f2_movement": 232,
-      "magnitude": 232,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 120,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": 6.3,
-      "f2_prob_shift": -7.3,
-      "priority": 324.8
-    },
-    {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Yazmin Jauregui",
       "f2": "Vanessa Demopoulos",
@@ -243,6 +227,22 @@
       "f1_prob_shift": 4.5,
       "f2_prob_shift": -3.9,
       "priority": 320.0
+    },
+    {
+      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+      "f1": "Johnny Walker",
+      "f2": "Mick Parkin",
+      "f1_movement": -26,
+      "f2_movement": 225,
+      "magnitude": 225,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 120,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": 5.2,
+      "f2_prob_shift": -5.9,
+      "priority": 315.0
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T14:52:42Z",
+  "generated_at": "2026-09-28T15:57:41Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -11707,7 +11707,7 @@
           "f1": "Imanol Rodriguez",
           "f2": "Alden Coria",
           "lbl": "Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11738,6 +11738,11 @@
               "at": "2026-09-28T09:07:55Z",
               "f1_odds": -169,
               "f2_odds": 139
+            },
+            {
+              "at": "2026-09-28T15:57:41Z",
+              "f1_odds": -167,
+              "f2_odds": 137
             }
           ],
           "open": {
@@ -11847,7 +11852,7 @@
           "f1": "Johnny Walker",
           "f2": "Mick Parkin",
           "lbl": "Early Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11893,6 +11898,11 @@
               "at": "2026-09-28T09:07:55Z",
               "f1_odds": -142,
               "f2_odds": 122
+            },
+            {
+              "at": "2026-09-28T15:57:41Z",
+              "f1_odds": -136,
+              "f2_odds": 115
             }
           ],
           "open": {
@@ -11952,7 +11962,7 @@
           "f1": "Marvin Vettori",
           "f2": "Ismail Naurdiev",
           "lbl": "Early Prelim",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11993,6 +12003,11 @@
               "at": "2026-09-28T09:07:55Z",
               "f1_odds": 113,
               "f2_odds": -135
+            },
+            {
+              "at": "2026-09-28T15:57:41Z",
+              "f1_odds": 114,
+              "f2_odds": -137
             }
           ],
           "open": {
@@ -14225,7 +14240,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Imanol Rodriguez",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 130,
         "close": null,
         "clv": null
@@ -16544,7 +16559,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Alden Coria",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -150,
         "close": null,
         "clv": null
@@ -16566,7 +16581,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Mick Parkin",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -110,
         "close": null,
         "clv": null
@@ -16577,7 +16592,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Johnny Walker",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": -110,
         "close": null,
         "clv": null
@@ -16610,7 +16625,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Ismail Naurdiev",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": 115,
         "close": null,
         "clv": null
@@ -16621,7 +16636,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Marvin Vettori",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": -135,
         "close": null,
         "clv": null
