@@ -1,21 +1,23 @@
 {
- "last_fetch": "2026-09-27T12:08:13Z",
+ "last_fetch": "2026-09-28T00:38:18Z",
  "publish": true,
- "events": 2,
+ "events": 4,
  "report": [
   {
    "promotion": "pfl",
    "event": "PFL MENA 11",
    "date": "2026-10-02",
-   "problem": "only 0 bout(s) parsed",
-   "kept_previous": false
+   "bouts": 10,
+   "source": "article",
+   "main_event": "Mostafa Rashed Neda vs Osama Elsaidy"
   },
   {
    "promotion": "pfl",
    "event": "PFL Africa 3",
    "date": "2026-10-10",
-   "problem": "only 0 bout(s) parsed",
-   "kept_previous": false
+   "bouts": 13,
+   "source": "article",
+   "main_event": "Abdoulaye Kane vs Badr Medkouri"
   },
   {
    "promotion": "pfl",
