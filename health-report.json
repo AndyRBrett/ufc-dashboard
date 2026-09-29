@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T22:57:59Z",
+  "generated_at": "2026-09-29T00:03:22Z",
   "summary": {
     "events": 11,
     "block": 0,
@@ -9,18 +9,18 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC 332: Silva vs. Wang (5d out): 1 of 13 bouts have no odds",
+      "message": "UFC 332: Silva vs. Wang (4d out): 1 of 13 bouts have no odds",
       "event": "UFC 332: Silva vs. Wang",
       "date": "2026-10-03",
-      "days_out": 5
+      "days_out": 4
     },
     {
       "severity": "WARN",
       "check": "odds-missing-all",
-      "message": "UFC Fight Night: Allen vs. Duncan (12d out) has no odds on any of its 1 bouts",
+      "message": "UFC Fight Night: Allen vs. Duncan (11d out) has no odds on any of its 1 bouts",
       "event": "UFC Fight Night: Allen vs. Duncan",
       "date": "2026-10-10",
-      "days_out": 12
+      "days_out": 11
     },
     {
       "severity": "WARN",
