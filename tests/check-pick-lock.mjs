@@ -1,4 +1,4 @@
-// The server-side pick lock (supabase/migrations/0010_picks_lock.sql), run for
+// The server-side pick lock (migrations 0010 for UFC, 0012 for the other sports), run for
 // real: PGlite is Postgres compiled to WASM, so the trigger, RLS and roles
 // behave exactly as they do on Supabase. Also checks send-reminders' lockRows,
 // which writes the lock times the trigger reads, against the app's own rule.
@@ -11,7 +11,10 @@
 //   - bonus_pick freezes at the card's first bell
 //   - no schedule row: a bout falls back to its card's last bell, a card with
 //     none at all locks from midnight ET after its date, never before
-//   - other promotions, our own functions and delete_my_picks() pass through
+//   - the other sports (PFL, RIZIN, DWCS) are held to the same rule, each against
+//     its own promotion's times; a bout name UFC has locked is open under another
+//     promotion, and never the other way round
+//   - our own functions and delete_my_picks() pass through
 //   - the 🔒 cap (0005) still clamps, and can't be used to move a locked lock
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -49,7 +52,7 @@ await db.exec(`
   grant select, insert, update, delete on public.picks to anon, authenticated, service_role;
   grant usage on sequence public.picks_id_seq to authenticated, service_role;
 `);
-for (const m of ["0005_picks_lock_cap.sql", "0010_picks_lock.sql"]) {
+for (const m of ["0005_picks_lock_cap.sql", "0010_picks_lock.sql", "0012_sport_pick_locks.sql"]) {
   await db.exec(readFileSync(join(ROOT, "supabase/migrations", m), "utf8"));
 }
 
@@ -162,16 +165,88 @@ check("a card with no schedule at all is locked once its date is over", !(await 
 await pick(U2, "2099-12-31", "Far A", "Far B", "Far A");
 check("a card with no schedule yet, still ahead, is open", !!(await one(`user_id='${U2}' and event_date='2099-12-31'`)));
 
-// 6. Other sports keep their own lock.
-await pick(U2, LIVE, "Alpha One", "Bravo Two", "Bravo Two", { promo: "pfl" });
-check("another promotion's rows are not policed here", !!(await one(`user_id='${U2}' and promotion='pfl'`)));
+// 6. The other sports follow the same lock (0012), each against its own
+// promotion's lock times.
+await db.exec(`
+  insert into sport_pick_locks (promotion, event_date, a, b, lock_at) values
+    ('pfl',   '${LIVE}', 'sa one',    'sb two',   now() - interval '20 minutes'),  -- started, well past
+    ('pfl',   '${LIVE}', 'sc three',  'sd four',  now() - interval '2 minutes'),   -- just started: inside grace
+    ('pfl',   '${LIVE}', 'se five',   'sf six',   now() + interval '2 hours'),     -- open
+    ('rizin', '${LIVE}', 'alpha one', 'bravo two', now() + interval '2 hours');    -- UFC has these two locked
+  insert into sport_card_bells (promotion, event_date, first_bell) values
+    ('pfl',   '${LIVE}', now() - interval '20 minutes'),
+    ('rizin', '${LIVE}', now() + interval '2 hours'),
+    ('dwcs',  '2099-01-02', now() - interval '1 hour');
+`);
+const sport = (uid, date, f1, f2, p, promo, extra = {}) => pick(uid, date, f1, f2, p, { promo, ...extra });
+await sport(U2, LIVE, "SA One", "SB Two", "SB Two", "pfl");
+check("a new PFL pick after its bout started is not added", !(await one(`user_id='${U2}' and f1='SA One'`)));
+await sport(U2, LIVE, "SE Five", "SF Six", "SE Five", "pfl");
+check("a PFL pick on an open bout lands", (await one(`user_id='${U2}' and f1='SE Five'`))?.pick === "SE Five");
+await sport(U2, LIVE, "SC Three", "SD Four", "SD Four", "pfl");
+check("a PFL pick inside the 5-minute grace still lands", (await one(`user_id='${U2}' and f1='SC Three'`))?.pick === "SD Four");
+await sport(U2, LIVE, " sb TWO ", "Sa one", "Sa one", "pfl");
+check("a locked PFL bout is found whatever the case, spacing or corner order", !(await one(`user_id='${U2}' and f2='Sa one'`)));
+await sport(U2, LIVE, "Alpha One", "Bravo Two", "Bravo Two", "rizin");
+check("a bout UFC has locked is open under another promotion's own times", (await one(`user_id='${U2}' and promotion='rizin'`))?.pick === "Bravo Two");
+await sport(U2, LIVE, "SA One", "SB Two", "SB Two", "rizin");
+check("...and a PFL-locked bout is open under RIZIN (locks are per promotion)", !!(await one(`user_id='${U2}' and promotion='rizin' and f1='SA One'`)));
+// An existing pick on a locked PFL bout, made before the bell (service_role).
+await as("service_role", null, upsert, [U1, "🥊 Andy", LIVE, "SA One", "SB Two", "SA One", "KO/TKO", 1, null, "pfl"]);
+await as("authenticated", U1, `update picks set pick = 'SB Two', method = 'Sub', confidence = 0 where user_id = $1 and f1 = 'SA One'`, [U1]);
+r = await one(`user_id='${U1}' and f1='SA One'`);
+check("a direct PATCH can't switch a locked PFL pick, its method or its 🔒", r.pick === "SA One" && r.method === "KO/TKO" && r.confidence === 1);
+await pick(U1, LIVE, "SA One", "SB Two", "SB Two", { promo: "pfl", method: "Sub", conf: 0 });
+r = await one(`user_id='${U1}' and f1='SA One'`);
+check("an upsert on a locked PFL bout changes nothing", r.pick === "SA One" && r.method === "KO/TKO" && r.confidence === 1);
+await as("authenticated", U1, `update picks set nickname = '🦅 Andy' where user_id = $1 and promotion = 'pfl'`, [U1]);
+check("a nickname rename still reaches locked PFL rows", (await one(`user_id='${U1}' and f1='SA One'`)).nickname === "🦅 Andy");
+await as("authenticated", U1, `delete from picks where user_id = $1 and f1 = 'SA One'`, [U1]);
+check("a locked PFL 🔒 can't be deleted to dodge its -1", !!(await one(`user_id='${U1}' and f1='SA One'`)));
+await as("authenticated", U2, `delete from picks where user_id = $1 and f1 = 'SE Five' and promotion = 'pfl'`, [U2]);
+check("an open PFL pick can still be deleted", !(await one(`user_id='${U2}' and f1='SE Five' and promotion='pfl'`)));
+await as("authenticated", U1, `update picks set f1 = 'SE Five', f2 = 'SF Six', pick = 'SE Five' where user_id = $1 and f1 = 'SA One'`, [U1]);
+check("a locked PFL row can't be moved onto another bout", !!(await one(`user_id='${U1}' and f1='SA One' and pick='SA One'`)));
+await as("authenticated", U1, `update picks set promotion = 'rizin' where user_id = $1 and f1 = 'SA One'`, [U1]);
+check("a locked PFL pick can't be moved to another promotion", (await one(`user_id='${U1}' and f1='SA One'`)).promotion === "pfl");
+await sport(U1, LIVE, "SE Five", "SF Six", "SE Five", "pfl");
+await as("authenticated", U1, `update picks set f1 = 'SA One', f2 = 'SB Two', pick = 'SB Two' where user_id = $1 and f1 = 'SE Five'`, [U1]);
+check("an open PFL row can't be moved onto a locked bout", (await one(`user_id='${U1}' and f1='SE Five'`))?.pick === "SE Five");
+await as("authenticated", U2, `update picks set promotion = 'ufc' where user_id = $1 and promotion = 'rizin' and f1 = 'Alpha One'`, [U2]);
+check("an open row can't be walked onto a bout another promotion has locked (Alpha One is locked under UFC)", (await one(`user_id='${U2}' and f1='Alpha One'`))?.promotion === "rizin");
+// And the other direction, which 0010 already guarded: a locked UFC pick can't leave UFC.
 await as("service_role", null, upsert, [U2, "🥊 B", LIVE, "Charlie Three", "Delta Four", "Charlie Three", "", 1, null, "ufc"]);
 await db.exec(`update pick_locks set lock_at = now() - interval '1 hour' where a = 'charlie three'`);
 await as("authenticated", U2, `update picks set promotion = 'pfl', pick = 'Delta Four' where user_id = $1 and f1 = 'Charlie Three' and promotion = 'ufc'`, [U2]);
-r = await one(`user_id='${U2}' and f1='Charlie Three'`);
+r = await one(`user_id='${U2}' and f1='Charlie Three' and promotion='ufc'`);
 check("a locked UFC pick can't be moved to another promotion (or re-picked on the way)", r && r.promotion === "ufc" && r.pick === "Charlie Three");
-await as("authenticated", U2, `delete from picks where user_id = $1 and f1 = 'Charlie Three'`, [U2]);
-check("…so it still can't be deleted", !!(await one(`user_id='${U2}' and f1='Charlie Three'`)));
+await as("authenticated", U2, `delete from picks where user_id = $1 and f1 = 'Charlie Three' and promotion = 'ufc'`, [U2]);
+check("…so it still can't be deleted", !!(await one(`user_id='${U2}' and f1='Charlie Three' and promotion='ufc'`)));
+// Missing rows fall back the way UFC's do.
+await sport(U2, LIVE, "S  A  One", "SB-Two", "S  A  One", "pfl");
+check("a respelled locked PFL bout falls back to the card's bell (locked)", !(await one(`user_id='${U2}' and f1='S  A  One'`)));
+await sport(U2, NEXT, "Sx A", "Sx B", "Sx A", "pfl");
+check("an unlisted PFL bout on a card that hasn't started is open", !!(await one(`user_id='${U2}' and f1='Sx A'`)));
+await sport(U2, "2020-01-04", "Old S A", "Old S B", "Old S A", "pfl");
+check("a PFL card with no schedule at all is locked once its date is over", !(await one(`user_id='${U2}' and event_date='2020-01-04' and promotion='pfl'`)));
+await sport(U2, "2099-01-02", "Late S A", "Late S B", "Late S A", "dwcs");
+check("an unlisted DWCS bout is locked once its card's bell has passed, whatever the date", !(await one(`user_id='${U2}' and promotion='dwcs'`)));
+await sport(U2, "2099-12-31", "Far S A", "Far S B", "Far S A", "dwcs");
+check("a DWCS card with no schedule yet, still ahead, is open", !!(await one(`user_id='${U2}' and f1='Far S A'`)));
+await sport(U2, "2099-12-31", "Nor A", "Nor B", "Nor A", "unheard-of");
+check("a promotion the database has never heard of is held to the same fallback (open until its date is over)", !!(await one(`user_id='${U2}' and promotion='unheard-of'`)));
+await sport(U2, "2020-03-03", "Nor C", "Nor D", "Nor C", "unheard-of");
+check("...and locked once it is over", !(await one(`user_id='${U2}' and event_date='2020-03-03'`)));
+let sportRefused = 0;
+for (const sql of ["select * from sport_pick_locks", "select * from sport_card_bells",
+  "insert into sport_pick_locks values ('pfl','2099-01-01','a','b',now())", "update sport_card_bells set first_bell = now()"]) {
+  try { await as("authenticated", U1, sql); } catch (_e) { sportRefused++; }
+  try { await as("anon", null, sql); } catch (_e) { sportRefused++; }
+}
+check("the sport lock tables aren't readable or writable by app users", sportRefused === 8);
+await db.exec(`update sport_pick_locks set lock_at = now() - interval '1 hour' where a = 'se five'`);
+await sport(U1, LIVE, "SE Five", "SF Six", "SF Six", "pfl", { method: "Dec" });
+check("once its lock row says the bout began, an open PFL bout closes (times are read live)", (await one(`user_id='${U1}' and f1='SE Five' and promotion='pfl'`)).pick === "SE Five");
 
 // 7. The 🔒 cap still works alongside it.
 await pick(U2, NEXT, "K1 A", "K1 B", "K1 A", { conf: 1 });
@@ -232,6 +307,70 @@ check("lockRows: an early prelim with no early clock answers to the prelims",
 }
 check("lockRows: a card weeks away or long gone is not written",
   mod.lockRows([{ ...ev, date: "2026-12-12" }, { ...ev, date: "2026-08-01" }], k, now).cards.length === 0);
+// 9b. The other sports (0012): send-reminders writes their lock times by the
+// APP's rule, sportLockMs in index.html. Lifted from the page and compared over
+// every promotion, both DST offsets and with and without a feed `time`, so the
+// two copies of the rule and of the per-promotion hours can't drift apart.
+{
+  const html0 = readFileSync(join(ROOT, "index.html"), "utf8");
+  const fnSrc = (name) => {
+    const i = html0.indexOf(`function ${name}(`);
+    if (i < 0) throw new Error(`index.html no longer defines ${name}()`);
+    let j = html0.indexOf("{", i), d = 0;
+    for (; j < html0.length; j++) { if (html0[j] === "{") d++; else if (html0[j] === "}" && --d === 0) break; }
+    return html0.slice(i, j + 1);
+  };
+  const hours = /var SPORT_LOCK_UTC_H=(\d+);/.exec(html0), by = /var SPORT_LOCK_UTC_H_BY=(\{[^}]*\});/.exec(html0);
+  check("index.html declares the sport lock hours", !!hours && !!by);
+  const vm = await import("node:vm");
+  const ctx = vm.createContext({ Date, Object, Number, RegExp });
+  vm.runInContext(`var SPORT_LOCK_UTC_H=${hours[1]};var SPORT_LOCK_UTC_H_BY=${by[1]};\n` +
+    ["_etOffsetAt", "_sportLockH", "sportLockMs"].map(fnSrc).join("\n"), ctx);
+  check("the default hour matches the app's", mod.SPORT_LOCK_UTC_H === ctx.SPORT_LOCK_UTC_H);
+  check("the per-promotion hours match the app's (RIZIN, DWCS, and no others)",
+    JSON.stringify(Object.entries(mod.SPORT_LOCK_UTC_H_BY).sort()) === JSON.stringify(Object.entries(ctx.SPORT_LOCK_UTC_H_BY).sort()));
+  let same = true, n = 0;
+  for (const promotion of ["pfl", "rizin", "dwcs", "one", "__proto__", "constructor", "toString"])
+    for (const date of ["2026-03-07", "2026-03-08", "2026-03-09", "2026-10-03", "2026-10-31", "2026-11-01", "2026-11-02", "2027-03-14"])
+      for (const time of [undefined, null, "", "18:00", "19:30", "9:05", "bogus", "25:99"]) {
+        n++;
+        if (mod.sportLockAt({ promotion, date, time }) !== ctx.sportLockMs({ promotion, date, time })) { same = false; console.error("    differs:", promotion, date, time); }
+      }
+  check(`send-reminders' sport lock instant equals the app's for all ${n} combinations`, same);
+  check("a card in Japan (RIZIN) and a Vegas Tuesday show (DWCS) get their own hours, not one shared default",
+    mod.sportLockAt({ promotion: "rizin", date: "2026-10-03" }) === Date.UTC(2026, 9, 3, 2) &&
+    mod.sportLockAt({ promotion: "dwcs", date: "2026-09-29" }) === Date.UTC(2026, 8, 29, 22) &&
+    mod.sportLockAt({ promotion: "pfl", date: "2026-10-16" }) === Date.UTC(2026, 9, 16, 10));
+
+  const feed = { promotions: [{ id: "pfl", name: "PFL" }, { id: "dwcs", name: "DWCS" }, { id: "ufc", name: "Fake" }], events: [
+    { promotion: "pfl", name: "PFL X", date: "2026-10-03", bouts: [
+      { a: "Ann One", b: "Ann Two" }, { a: "Ann Two", b: "Ann One" }, { a: " Bea One ", b: "Bea Two" } ] },
+    { promotion: "dwcs", name: "DWCS 95", date: "2026-10-03", time: "19:00", bouts: [{ a: "Cat One", b: "Cat Two" }] },
+    { promotion: "ufc", name: "Claims UFC", date: "2026-10-03", bouts: [{ a: "U A", b: "U B" }] },           // a feed can't claim 'ufc'
+    { promotion: "pfl", name: "Bad", date: "2026-10-03", bouts: [{ a: "Same", b: "Same" }] },               // one fighter twice
+    { promotion: "pfl", name: "Far", date: "2026-12-12", bouts: [{ a: "Far A", b: "Far B" }] },
+    { promotion: "pfl", name: "Gone", date: "2026-08-01", bouts: [{ a: "Old A", b: "Old B" }] } ] };
+  const sr = mod.sportLockRows(feed, Date.UTC(2026, 9, 3, 12));
+  const at = (promo, a) => sr.bouts.find((b) => b.promotion === promo && (b.a === a || b.b === a))?.lock_at;
+  check("sportLockRows: each feed bout is written once, lower-cased and sorted, under its promotion",
+    sr.bouts.length === 3 && sr.bouts.every((b) => b.a < b.b && b.a === b.a.toLowerCase()) &&
+    sr.bouts.filter((b) => b.a === "ann one").length === 1 && !!at("pfl", "bea one"));
+  check("sportLockRows: a card locks at the app's instant (PFL default hour; DWCS's own `time` in ET)",
+    at("pfl", "ann one") === new Date(Date.UTC(2026, 9, 3, 10)).toISOString() && at("dwcs", "cat one") === new Date(Date.UTC(2026, 9, 3, 23)).toISOString());
+  check("sportLockRows: one card row per promotion and date, carrying that instant",
+    sr.cards.length === 2 && sr.cards.every((c) => c.promotion && c.event_date === "2026-10-03") &&
+    sr.cards.find((c) => c.promotion === "dwcs").first_bell === new Date(Date.UTC(2026, 9, 3, 23)).toISOString());
+  check("sportLockRows: a card the app would drop (claims 'ufc', one fighter twice) gets no lock row",
+    !at("ufc", "u a") && !sr.bouts.some((b) => b.a === "same"));
+  check("sportLockRows: a card weeks away or long gone is not written", !at("pfl", "far a") && !at("pfl", "old a"));
+  check("sportLockRows: garbage in is an empty result, not a throw",
+    mod.sportLockRows(null, Date.now()).bouts.length === 0 && mod.sportLockRows({ events: "x" }, Date.now()).bouts.length === 0);
+  const src2 = readFileSync(join(ROOT, "supabase/functions/send-reminders/index.ts"), "utf8");
+  check("send-reminders writes sport locks only with the service key, into the two sport tables",
+    /if \(SB_SERVICE_ROLE_KEY\) \{\s*try \{\s*const fr = await fetch\(`\$\{PAGES_BASE\}events-extra\.json/.test(src2) &&
+    /put\("sport_pick_locks", "promotion,event_date,a,b", bouts\)/.test(src2) && /put\("sport_card_bells", "promotion,event_date", cards\)/.test(src2));
+  check("...and a bad feed cannot cost UFC its lock times (separate try/catch, separate result)", /sportLocks = \{ error:/.test(src2) && /locks = \{ error:/.test(src2));
+}
 check("send-reminders writes locks only with the service key", /if \(SB_SERVICE_ROLE_KEY\) \{\s*try \{\s*const \{ bouts, cards \} = lockRows/.test(src));
 
 // 10. The app deletes an account through the RPC.

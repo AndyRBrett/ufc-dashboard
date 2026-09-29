@@ -559,8 +559,9 @@ the parser learns to read the headings, both tables retire together.
 
 The app's `fightLocked` only stops the app. `0010_picks_lock.sql` adds the
 `picks_enforce_lock` trigger, so a direct REST call can't do it either. For
-anon/authenticated callers on UFC rows, once a bout's lock time plus
-`LOCK_GRACE` (5 minutes) has passed:
+anon/authenticated callers, once a bout's lock time plus `LOCK_GRACE`
+(5 minutes) has passed (since `0012_sport_pick_locks.sql` **every promotion is
+held to it**, each against its own lock times: see below):
 
 - **INSERT is skipped** (returns NULL), never an error: `syncPick` upserts, and
   one late row must not fail the rest of a batch. An upsert on a locked bout
@@ -582,12 +583,36 @@ the card is over, and a past card is always locked. First, not last: rows match
 on lower-cased trimmed names, but `nmKey` also forgives accents, hyphens,
 suffixes and inner spacing, so a respelled name finds no row yet still scores.
 The app always writes `data.js`'s exact names, so real picks match their row.
-An UPDATE is out of scope only if the row is non-UFC before *and* after, or a
-locked pick could be moved to another promotion and then deleted. Our own functions
-(service_role) and the SQL editor bypass the trigger. A phone that was offline
+An UPDATE moving a row to another promotion is judged against **both**
+promotions' lock times, so a locked pick can't be moved and then deleted. Our
+own functions (service_role) and the SQL editor bypass the trigger. A phone that was offline
 through the bell loses the picks it never uploaded: that trade was accepted
 when this shipped (2026-09-27). `check:picklock` runs the real migration in
 PGlite (Postgres in WASM), mutation-tested.
+
+**PFL, RIZIN and DWCS are policed the same way, from their own tables.** Until
+2026-09-29 the trigger skipped every non-UFC row ("other sports keep their own
+client-side lock"), which was tolerable while they scored one point a win and
+stopped being once method and 🔒 scored (Codex on #228: a direct REST call after
+a result could rewrite the board). `0012` adds `sport_pick_locks` and
+`sport_card_bells`, keyed by promotion, and `pick_lock_for(promotion, …)` picks
+UFC's function or `sport_pick_lock_at`, with UFC's fallbacks (the card's bell for
+an unmatched name; midnight ET after the date for a card with no row; `-infinity`
+for a date it can't read). **They are new tables, not a promotion column on
+`pick_locks` / `card_bells`**: those primary keys are the `ON CONFLICT` targets
+the live UFC upsert uses, and changing them breaks it until the function is
+redeployed. The times come from `send-reminders`' `sportLockRows`, which reads
+`events-extra.json` (JSON only, validated by the bundled
+`PickEngine.validateFeed`, the app's own validator) and computes each card's
+instant with `sportLockAt`, the app's `sportLockMs`: the feed's `time` in ET, else
+`SPORT_LOCK_UTC_H_BY`. **That table of hours lives in `index.html` and in
+`send-reminders`; `check:picklock` lifts the app's and fails if they differ**, over
+every promotion, both DST offsets and with or without a `time`. A feed card has one
+segment, so all its bouts lock together. Two promotions can hold the same two
+names on one date independently; `bonus_pick` stays UFC-only. Deploy order doesn't
+matter (no rows yet means the fallback; a function deployed first just gets a 404 on
+the new tables and reports it in `sportLocks`), but **the migration is applied to
+Supabase by hand and the function needs a Supabase deploy**, not just a push.
 
 ## Locks 🔒 ride in the old `confidence` column — and only count from `LOCKS_START`
 

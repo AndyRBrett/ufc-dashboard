@@ -60,11 +60,13 @@ enabled with least-privilege policies:
   edge function using the service_role key (which bypasses RLS). The one
   client policy is `push_subs_delete`: a signed-in user (anonymous sign-ins
   included) may delete their **own** subscription rows.
-- `picks` also carries a **server-side pick lock** (`0010_picks_lock.sql`): the
+- `picks` also carries a **server-side pick lock** (`0010_picks_lock.sql`, extended
+  to every promotion by `0012_sport_pick_locks.sql`): the
   `picks_enforce_lock` trigger refuses an insert, a changed pick/method/🔒 or a
   delete once the bout's segment has started (plus a 5-minute grace), so a
   direct REST call can't change a pick after the bell either. The lock times
-  (`pick_locks`, `card_bells`) are revoked from `anon`/`authenticated` and
+  (`pick_locks`, `card_bells`, and for PFL/RIZIN/DWCS `sport_pick_locks`,
+  `sport_card_bells`) are revoked from `anon`/`authenticated` and
   written only by `send-reminders` with the service_role key. They can still be
   *read* through two `SECURITY DEFINER` functions, `pick_lock_at` and
   `card_first_bell`, which anyone can call over `/rest/v1/rpc`. That is on
@@ -86,7 +88,8 @@ enabled with least-privilege policies:
   decline a pending one.
 - `user_prefs` (`0004`) — owner-only for every operation.
 - **Tables with no client policy at all** (`ai_usage`, `card_bells`,
-  `notif_log`, `pick_locks`, `room_join_misses`, `picks_backup_2026_09_24`):
+  `notif_log`, `pick_locks`, `sport_card_bells`, `sport_pick_locks`,
+  `room_join_misses`, `picks_backup_2026_09_24`):
   RLS on and no policy means the browser can't read or write them; only our
   functions (service_role) can. Supabase's advisor lists these as INFO, which
   is expected.
