@@ -301,6 +301,12 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .tape-row .edge{font-weight:700;color:var(--gold)}
 .tape-names{font-weight:700;font-size:13px;border-bottom:1px solid var(--border2)}
 .tape-v{font-size:12px;color:var(--text);margin-top:8px;line-height:1.4;font-style:italic}
+.tape-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.bot-call{margin-top:8px}
+.bot-call-btn,.tape-poster-btn{background:var(--card2);border:1px solid var(--border2);color:var(--text);border-radius:999px;padding:5px 11px;font:600 12px Inter,sans-serif;cursor:pointer}
+.bot-call-btn:disabled{opacity:.6;cursor:default}
+.bot-call-line{font-size:13px;line-height:1.45;color:var(--text);background:var(--card2);border-left:3px solid var(--gold);border-radius:8px;padding:7px 10px}
+.tape-acts .bot-call{margin-top:0}
 .rc-story{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.4;color:var(--text);margin:0 0 6px}
 .rc-story-em{flex:0 0 auto}
 .rc-sec{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
@@ -2269,6 +2275,62 @@ function sendBot(){
   });
 }
 // fightbot-guide:end
+// fightbot-call:start
+// FightBot's call: one AI line under a Tale of the Tape or a Fight Night
+// Report, only when someone taps for it (it spends the daily AI allowance).
+// The facts sent are the lines the app already shows, and the server refuses a
+// line with a number that isn't in them (ai-breakdown `verdict`). A call is
+// kept for the session, so reopening the board or the recap doesn't ask again.
+var BOT_CALL_MAX_FACTS=14,BOT_CALL_MAX_FACT=200;
+var _botCalls=(function(){var m=Object.create(null);try{var s=JSON.parse(sessionStorage.getItem("ufc_bot_calls")||"{}");Object.keys(s).forEach(function(k){if(typeof s[k]==="string")m[k]=s[k];});}catch(e){}return m;})();
+function fightBotCallEl(key,kind,title,facts,onLine){
+  var box=document.createElement("div");box.className="bot-call";
+  function show(t){
+    box.textContent="";
+    var l=document.createElement("div");l.className="bot-call-line";l.textContent="🤖 "+t;box.appendChild(l);
+    if(onLine){try{onLine(t);}catch(e){}}
+  }
+  if(_botCalls[key]){show(_botCalls[key]);return box;}
+  var b=document.createElement("button");b.type="button";b.className="bot-call-btn";b.textContent="🤖 FightBot's call";
+  b.onclick=function(e){
+    if(e)e.stopPropagation();
+    if(b.disabled)return;
+    b.disabled=true;b.textContent="🤖 Calling it…";
+    var fs=(facts||[]).map(function(f){return String(f==null?"":f).trim().slice(0,BOT_CALL_MAX_FACT);}).filter(Boolean).slice(0,BOT_CALL_MAX_FACTS);
+    _aiFetch(JSON.stringify({action:"verdict",verdict:{kind:kind,title:String(title||"").slice(0,120),facts:fs}}))
+    .then(function(r){return r.json().catch(function(){return {};}).then(function(d){return {ok:r.ok,status:r.status,data:d};});})
+    .then(function(res){
+      var t=res.ok&&res.data&&typeof res.data.breakdown==="string"?res.data.breakdown.trim():"";
+      if(t){
+        _botCalls[key]=t;
+        try{sessionStorage.setItem("ufc_bot_calls",JSON.stringify(_botCalls));}catch(e){}
+        show(t);return;
+      }
+      b.disabled=false;
+      b.textContent=res.status===429&&res.data&&res.data.error==="daily-cap"?"🤖 Today's AI limit is used up"
+        :res.status===401?"🤖 Sign-in expired, reopen the app":"🤖 Couldn't call it, tap to try again";
+    }).catch(function(){b.disabled=false;b.textContent="🤖 Couldn't call it, tap to try again";});
+  };
+  box.appendChild(b);
+  return box;
+}
+// Share a drawn image: the share sheet where files can be shared, else a download.
+function _shareImageFile(f,title,label){
+  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[f]})){
+    navigator.share({files:[f],title:title}).catch(function(e){if(e&&e.name==="AbortError")return;_saveImageFile(f,label);});
+    return;
+  }
+  _saveImageFile(f,label);
+}
+function _saveImageFile(f,label){
+  try{
+    var u=URL.createObjectURL(f),a=document.createElement("a");
+    a.href=u;a.download=f.name;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(u);},4000);
+    toast("Saved the "+label);
+  }catch(e){toast("Couldn't save the "+label);}
+}
+// fightbot-call:end
 
 // ── Parlay risk calculator (#90) ────────────────────────────────────────
 // The AI suggester below names parlays; this prices the one YOU built. Three
@@ -6247,7 +6309,9 @@ var WHATS_NEW=[
   {id:"2026-10-13-card-badges",emoji:"🎟️",title:"Picks and locks at a glance",
    desc:"Every card now shows how many fights you've picked (7/12 picked) and how many of your two 🔒 locks you've used. PFL, RIZIN and DWCS cards also look and work exactly like UFC cards."},
   {id:"2026-10-14-fightbot-guide",emoji:"🤖",title:"Ask FightBot",
-   desc:"Not sure how something works? ⋯ More → FightBot Help (or the ℹ on Ranks) answers questions about the app in plain words: scoring, locks, the belt, rooms, challenges, the Fight Lab, notifications and more."}
+   desc:"Not sure how something works? ⋯ More → FightBot Help (or the ℹ on Ranks) answers questions about the app in plain words: scoring, locks, the belt, rooms, challenges, the Fight Lab, notifications and more."},
+  {id:"2026-10-15-fightbot-call",emoji:"🖼️",title:"FightBot's call and the tape poster",
+   desc:"A room's Tale of the Tape now has 🤖 FightBot's call, a one-line verdict on who has the edge, and 🖼️ Share poster, the head to head as a fight poster for the group chat. The Card Recap's stories get FightBot's call on the night too."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -7886,6 +7950,11 @@ function renderCardRecap(rc){
       var r=_rcEl("div","rc-story");r.appendChild(_rcEl("span","rc-story-em",s.em));
       r.appendChild(_rcEl("span","",s.text));sr.appendChild(r);
     });
+    // FightBot's call on the night, told only the title line and the stories above.
+    if(typeof fightBotCallEl==="function"){
+      var rf=[tt.main+(tt.sub?". "+tt.sub:"")].concat(rc.stories.map(function(s){return s.text;}));
+      sr.appendChild(fightBotCallEl("report|"+rc.date+"|"+rf.join("|"),"report",rc.evName||rc.date,rf));
+    }
     body.appendChild(sr);
   }
 
@@ -8860,8 +8929,104 @@ function taleEl(t,evName){
     box.appendChild(row);
   });
   box.appendChild(_rmEl("div","tape-v",t.verdict));
+  // FightBot's call and the poster. Optional extras: the tape never depends on
+  // them (check-rooms loads this block without them).
+  if(typeof fightBotCallEl==="function"&&typeof drawTapePoster==="function"){
+    var acts=_rmEl("div","tape-acts"),call=null,file=null,drawn=0;
+    var prep=function(){
+      // The old image is stale from here on (a call just arrived): Share waits
+      // for the redraw rather than sending a poster without the call.
+      file=null;
+      var n=++drawn,ready=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve();
+      ready.then(function(){
+        var cv=drawTapePoster(document.createElement("canvas"),t,evName,call);
+        cv.toBlob(function(b){if(b&&n===drawn)file=new File([b],"tale-of-the-tape.png",{type:"image/png"});},"image/png");
+      }).catch(function(){});
+    };
+    var pb=_rmEl("button","tape-poster-btn","🖼️ Share poster");pb.type="button";
+    // Drawn ahead of the tap: iOS drops a share sheet that waits on a toBlob.
+    pb.onclick=function(e){if(e)e.stopPropagation();if(!file){toast("Drawing the poster, tap again in a second");return;}_shareImageFile(file,"Tale of the Tape","poster");};
+    acts.appendChild(fightBotCallEl(tapeCallKey(t,evName),"tape",evName||"",tapeFacts(t),function(l){call=l;prep();}));
+    acts.appendChild(pb);
+    box.appendChild(acts);
+    setTimeout(prep,0);
+  }
   return box;
 }
+// What FightBot is told about a tape: exactly the lines the tape shows.
+function tapeFacts(t){
+  var na=splitNick(t.a.name).name||t.a.name,nb=splitNick(t.b.name).name||t.b.name;
+  var f=[na+" is first on the board with "+t.a.pts+" points; "+nb+" is second with "+t.b.pts+"."];
+  t.rows.forEach(function(r){f.push(r.label+": "+na+" "+r.a+", "+nb+" "+r.b+(r.edge===1?" (edge "+na+")":r.edge===2?" (edge "+nb+")":""));});
+  f.push("The app's read: "+t.verdict);
+  return f;
+}
+// A call belongs to exactly the tape it was told about: the card plus every
+// fact sent. Any column changing (a point, a restored pick moving accuracy, a
+// title) asks again rather than reusing a call about the old numbers.
+function tapeCallKey(t,evName){
+  return "tape|"+(evName||"")+"|"+tapeFacts(t).join("|");
+}
+// tape-poster:start
+// The Tale of the Tape as a fight poster: the room's top two face off with the
+// columns between them, and the verdict (FightBot's call once there is one).
+// Drawn in the browser from the tape the board already shows, like the
+// Wrapped card, so it costs nothing and nothing is uploaded.
+var TP_W=1080,TP_H=1350;
+function _tpWrap(c,txt,maxW,maxLines){
+  var words=String(txt||"").split(/\s+/),lines=[],cur="";
+  words.forEach(function(w){var t=cur?cur+" "+w:w;if(c.measureText(t).width>maxW&&cur){lines.push(cur);cur=w;}else cur=t;});
+  if(cur)lines.push(cur);
+  if(lines.length>maxLines){lines=lines.slice(0,maxLines);var l=lines[maxLines-1];while(l.length>1&&c.measureText(l+"…").width>maxW)l=l.slice(0,-1);lines[maxLines-1]=l+"…";}
+  return lines;
+}
+function drawTapePoster(canvas,t,evName,call){
+  canvas.width=TP_W;canvas.height=TP_H;
+  var c=canvas.getContext("2d"),W=TP_W,H=TP_H,L=70,R=W-70,mid=W/2,colW=mid-L-70;
+  var g=c.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,"#1a0508");g.addColorStop(.48,"#7a0a18");g.addColorStop(.52,"#0d1a33");g.addColorStop(1,"#050a14");
+  c.fillStyle=g;c.fillRect(0,0,W,H);
+  var gl=c.createRadialGradient(mid,360,0,mid,360,W*.55);
+  gl.addColorStop(0,"rgba(255,200,90,.22)");gl.addColorStop(1,"rgba(255,200,90,0)");
+  c.fillStyle=gl;c.fillRect(0,0,W,H);
+  c.textBaseline="alphabetic";c.textAlign="center";c.fillStyle="#fff";
+  c.globalAlpha=.9;c.font="800 40px "+_WR_FONT;c.fillText("TALE OF THE TAPE",mid,112);
+  c.globalAlpha=.7;c.fillText(_wrFit(c,evName?"Before "+evName:"",W-2*L,32,"600",22),mid,162);
+  c.globalAlpha=1;
+  var side=function(x,align,u,place){
+    var sn=splitNick(u.name);
+    c.textAlign=align;
+    if(sn.emoji){c.font="96px "+_WR_FONT;c.fillText(sn.emoji,x,330);}
+    c.fillStyle="#fff";c.fillText(_wrFit(c,sn.name||u.name,colW,76,"800",34),x,430);
+    c.fillStyle="#ffc63d";c.font="700 36px "+_WR_FONT;c.fillText(place+" · "+u.pts+" pts",x,486);
+    c.fillStyle="#fff";
+  };
+  side(L,"left",t.a,"#1");side(R,"right",t.b,"#2");
+  c.textAlign="center";c.fillStyle="#ffc63d";c.font="900 92px "+_WR_FONT;c.fillText("VS",mid,420);c.fillStyle="#fff";
+  var y0=560,rowH=76;
+  c.fillStyle="rgba(0,0,0,.32)";
+  if(c.roundRect){c.beginPath();c.roundRect(L-20,y0-10,W-2*L+40,t.rows.length*rowH+20,30);c.fill();}
+  else c.fillRect(L-20,y0-10,W-2*L+40,t.rows.length*rowH+20);
+  t.rows.forEach(function(r,i){
+    var by=y0+i*rowH+50;
+    c.textAlign="center";c.fillStyle="#fff";c.globalAlpha=.6;c.font="600 24px "+_WR_FONT;c.fillText(r.label.toUpperCase(),mid,by-4);
+    c.globalAlpha=1;
+    c.textAlign="right";c.fillStyle=r.edge===1?"#ffc63d":"#fff";c.fillText(_wrFit(c,r.a,colW-40,r.edge===1?38:34,r.edge===1?"800":"600",20),mid-130,by);
+    c.textAlign="left";c.fillStyle=r.edge===2?"#ffc63d":"#fff";c.fillText(_wrFit(c,r.b,colW-40,r.edge===2?38:34,r.edge===2?"800":"600",20),mid+130,by);
+    c.fillStyle="#fff";
+    if(i<t.rows.length-1){c.globalAlpha=.1;c.fillRect(L,y0+(i+1)*rowH,W-2*L,2);c.globalAlpha=1;}
+  });
+  var vy=y0+t.rows.length*rowH+70;
+  c.textAlign="center";c.fillStyle="#fff";
+  c.font=(call?"700 ":"italic 600 ")+"34px "+_WR_FONT;
+  _tpWrap(c,call?"🤖 "+call:t.verdict,W-2*L,3).forEach(function(l,i){c.fillText(l,mid,vy+i*46);});
+  c.globalAlpha=.7;c.font="600 28px "+_WR_FONT;
+  var host=String(location.host+location.pathname).replace(/\/(index\.html)?$/,"");
+  c.fillText(_wrFit(c,"🥊 UFC PICKS · "+host,W-2*L,28,"600",20),mid,H-50);
+  c.globalAlpha=1;
+  return canvas;
+}
+// tape-poster:end
 // The board's tape: only in a room, only while the next card hasn't started,
 // and never able to break the board. Both board paths call it: the normal one
 // and the "nobody has picked this card yet" one, which is exactly when a

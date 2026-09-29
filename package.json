@@ -33,6 +33,8 @@
     "check:iq": "node tests/check-iq-writeup.mjs",
     "check:guide": "node tests/check-guide.mjs",
     "check:guide:fn": "node tests/check-guide.mjs --no-browser",
+    "check:verdict": "node tests/check-verdict.mjs",
+    "check:verdict:fn": "node tests/check-verdict.mjs --no-browser",
     "check:parity": "node tests/check-parity.mjs",
     "check:rooms": "node tests/check-rooms.mjs",
     "check:pushauth": "node tests/check-push-auth.mjs",
@@ -44,7 +46,7 @@
     "check:sports": "node tests/check-sports.mjs",
     "check:photos": "node tests/check-photos.mjs",
     "fightbot": "node fightbot/server.mjs",
-    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:provider && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew && npm run check:prefs && npm run check:picks && npm run check:kick && npm run check:lock && npm run check:recap && npm run check:wrapped && npm run check:locks && npm run check:lab && npm run check:fightbot && npm run check:brief && npm run check:swap && npm run check:iq && npm run check:guide && npm run check:parity && npm run check:rooms && npm run check:promotion && npm run check:sports && npm run check:pushauth && npm run check:bundle && npm run check:picklock && npm run check:html && npm run check:photos"
+    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:provider && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew && npm run check:prefs && npm run check:picks && npm run check:kick && npm run check:lock && npm run check:recap && npm run check:wrapped && npm run check:locks && npm run check:lab && npm run check:fightbot && npm run check:brief && npm run check:swap && npm run check:iq && npm run check:guide && npm run check:verdict && npm run check:parity && npm run check:rooms && npm run check:promotion && npm run check:sports && npm run check:pushauth && npm run check:bundle && npm run check:picklock && npm run check:html && npm run check:photos"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8",
