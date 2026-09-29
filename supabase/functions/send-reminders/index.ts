@@ -224,6 +224,57 @@ export function lockRows(events: any[], k: any, now: number) {
   return { bouts, cards };
 }
 
+// ── Pick locks for the other sports ─────────────────────────────────────────
+// migrations/0012_sport_pick_locks.sql polices PFL / RIZIN / DWCS picks the way
+// 0010 polices UFC's, from two tables this fills. The cards live in
+// events-extra.json (the same curated feed the app validates), so the times are
+// the app's own rule for them, sportLockMs in index.html: the card's `time` as
+// wall-clock ET on its date when it has one, else a UTC hour per promotion (a
+// card in Japan and a Tuesday-night show from Las Vegas can't share one).
+// Those two tables of hours are a fact about where each promotion fights and
+// live in both places; check:picklock reads index.html and fails if they differ.
+// One instant per card: a feed card has one segment, so every bout locks with it.
+export const SPORT_LOCK_UTC_H = 10;
+export const SPORT_LOCK_UTC_H_BY: Record<string, number> = { rizin: 2, dwcs: 22 };
+export function sportLockAt(ev: { promotion: string; date: string; time?: string | null }): number {
+  const [y, mo, d] = ev.date.split("-").map(Number);
+  const m = /^(\d{1,2}):(\d{2})$/.exec(ev.time || "");
+  if (m) return Date.UTC(y, mo - 1, d, +m[1] + etOffset(y, mo - 1, d), +m[2]);
+  const h = Object.prototype.hasOwnProperty.call(SPORT_LOCK_UTC_H_BY, ev.promotion)
+    ? SPORT_LOCK_UTC_H_BY[ev.promotion] : SPORT_LOCK_UTC_H;
+  return Date.UTC(y, mo - 1, d, h, 0);
+}
+// `feed` is the parsed events-extra.json. It is validated by the bundled
+// PickEngine.validateFeed, the very function the app runs, so a card the app
+// would drop (a bad date, one fighter twice, 'ufc' claimed by a feed) gets no
+// lock row here either. Names are stored lower-cased and sorted, as the trigger
+// looks them up.
+export function sportLockRows(feed: unknown, now: number) {
+  const bouts: { promotion: string; event_date: string; a: string; b: string; lock_at: string }[] = [];
+  const cards: { promotion: string; event_date: string; first_bell: string }[] = [];
+  const root: Record<string, any> = {};
+  engineInto(root);
+  const events = root.PickEngine.validateFeed(feed).events as any[];
+  const iso = (t: number) => new Date(t).toISOString();
+  const seen = new Set<string>();
+  for (const e of events) {
+    const at = sportLockAt(e);
+    if (at < now - LOCK_WINDOW_PAST_MS || at > now + LOCK_WINDOW_AHEAD_MS) continue;
+    const cardKey = e.promotion + "|" + e.date;
+    if (!seen.has(cardKey)) { seen.add(cardKey); cards.push({ promotion: e.promotion, event_date: e.date, first_bell: iso(at) }); }
+    for (const b of e.bouts) {
+      const x = String(b.a).trim().toLowerCase(), y = String(b.b).trim().toLowerCase();
+      if (!x || !y) continue;
+      const [a, bb] = x < y ? [x, y] : [y, x];
+      const key = cardKey + "|" + a + "|" + bb;
+      if (seen.has(key)) continue;                // one upsert may not touch a row twice
+      seen.add(key);
+      bouts.push({ promotion: e.promotion, event_date: e.date, a, b: bb, lock_at: iso(at) });
+    }
+  }
+  return { bouts, cards };
+}
+
 // ── Replaced-bout alerts ────────────────────────────────────────────────────
 // Picks are stored by fighter name, so when a fighter withdraws and the card
 // changes, the old pick simply stops matching any bout: it never scores, and
@@ -429,6 +480,29 @@ Deno.serve(async (req) => {
     }
   }
 
+  // The same for the other sports (0012): their own tables, their own failure,
+  // so a bad feed never costs UFC its lock times. Best-effort like the above:
+  // until the rows exist the trigger locks a card from midnight ET after its date.
+  let sportLocks: unknown = null;
+  if (SB_SERVICE_ROLE_KEY) {
+    try {
+      const fr = await fetch(`${PAGES_BASE}events-extra.json?t=${now}`);
+      if (!fr.ok) throw new Error(`events-extra.json HTTP ${fr.status}`);
+      const { bouts, cards } = sportLockRows(await fr.json(), now);
+      const h = { "Content-Type": "application/json", apikey: SB_SERVICE_ROLE_KEY, Authorization: `Bearer ${SB_SERVICE_ROLE_KEY}`,
+                  Prefer: "resolution=merge-duplicates,return=minimal" };
+      const stamp = new Date(now).toISOString();
+      const put = (table: string, conflict: string, rows: any[]) => rows.length
+        ? fetch(`${SUPABASE_URL}/rest/v1/${table}?on_conflict=${conflict}`, { method: "POST", headers: h, body: JSON.stringify(rows.map((r) => ({ ...r, updated_at: stamp }))) })
+            .then((r) => r.status)
+        : Promise.resolve(204);
+      const [bs, cs] = await Promise.all([put("sport_pick_locks", "promotion,event_date,a,b", bouts), put("sport_card_bells", "promotion,event_date", cards)]);
+      sportLocks = { bouts: bouts.length, cards: cards.length, status: [bs, cs] };
+    } catch (e) {
+      sportLocks = { error: (e as Error).message };
+    }
+  }
+
   // Phase → push copy, byte-for-byte from index.html `checkNotifSchedule`.
   const short = (name: string) => name.split(":")[0];
   let sent = 0, fired = 0;
@@ -538,7 +612,7 @@ Deno.serve(async (req) => {
   }
 
   return new Response(
-    JSON.stringify({ events: events.length, fired, sent, reminders: out, brief, swaps, locks }),
+    JSON.stringify({ events: events.length, fired, sent, reminders: out, brief, swaps, locks, sportLocks }),
     { status: 200, headers: { "Content-Type": "application/json" } },
   );
 });
