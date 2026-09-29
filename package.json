@@ -32,6 +32,7 @@
     "check:swap": "node tests/check-swap.mjs",
     "check:iq": "node tests/check-iq-writeup.mjs",
     "check:guide": "node tests/check-guide.mjs",
+    "check:guide:fn": "node tests/check-guide.mjs --no-browser",
     "check:parity": "node tests/check-parity.mjs",
     "check:rooms": "node tests/check-rooms.mjs",
     "check:pushauth": "node tests/check-push-auth.mjs",

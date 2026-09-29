@@ -141,6 +141,14 @@ check("the app sends at most the turns the server accepts", cT && +cT[1] <= M.GU
 check("FightBot is first in _escClosers (Escape closes it before the board under it)", /var _escClosers=\[[^\]]*?\n\s*\["botModal"/.test(html) &&
   html.indexOf('["botModal"') < html.indexOf('["lbPanel"') && html.indexOf('["botModal"') < html.indexOf('["lbInfoModal"'));
 
+// --no-browser: everything above, without the Chromium half. deploy-functions.yml
+// gates the ai-breakdown deploy on it (that job installs no browser), so a guide
+// that misstates scoring can't go live while the web gate is still failing.
+if (process.argv.includes("--no-browser")) {
+  if (failures) { console.error(`\ncheck-guide: ${failures} failure(s).`); process.exit(1); }
+  console.log("\ncheck-guide (no browser): the guide matches scoring.js and the app's buttons.");
+  process.exit(0);
+}
 let chromium;
 try { ({ chromium } = require("playwright")); } catch { ({ chromium } = require("playwright-core")); }
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".json": "application/json" };
