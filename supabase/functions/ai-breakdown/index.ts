@@ -1110,6 +1110,79 @@ export function guideFactsText(d: ReqBody): string {
     ...(d.history ?? []).map((t) => String(t.text ?? ""))].join("\n");
 }
 
+// A number must also belong to the fighter it is said about. numbersInvented
+// only asks whether a figure appears ANYWHERE in the facts, and a real card is
+// full of numbers: "Volkanovski has 14 title defences" would pass whenever any
+// other fighter's record, rank, odds or stats held a 14. So each fighter gets
+// their own facts: their side of the bout line (record, rank, odds), their
+// bout's shared parts (weight class, result, round) and their stats line. A
+// sentence that names fighters may only use those fighters' numbers, plus a
+// small general set (the question, the earlier turns, the user's picks, the
+// card headers, the scoring rules and MMA basics). A sentence naming nobody
+// still answers to numbersInvented. It can't follow a pronoun ("he has 14"),
+// which is why the whole-facts check stays underneath it.
+const NAME_SUFFIX = /^(jr\.?|sr\.?|ii|iii|iv)$/i;
+function guideSection(title: string): string {
+  const i = APP_GUIDE.indexOf(`\n${title}\n`);
+  if (i < 0) return "";
+  const rest = APP_GUIDE.slice(i + title.length + 2);
+  // A section is its "- " lines; the next blank line starts another header.
+  const end = rest.search(/\n\n(?!- )/);
+  return end < 0 ? rest : rest.slice(0, end);
+}
+export function fighterFacts(card: string): Map<string, { keys: string[]; facts: string }> {
+  const out = new Map<string, { keys: string[]; facts: string }>();
+  const add = (name: string, facts: string) => {
+    const n = name.trim();
+    if (!n) return;
+    const toks = n.split(/\s+/).filter((t) => !NAME_SUFFIX.test(t));
+    const sur = toks[toks.length - 1] || n;
+    const e = out.get(n) ?? { keys: [n, ...(sur.length >= 3 && sur !== n ? [sur] : [])], facts: "" };
+    e.facts += "\n" + facts;
+    out.set(n, e);
+  };
+  const SIDE = String.raw`(.+?)(?: \(([^)]*)\))?`;
+  const BOUT = new RegExp(String.raw`^\[[^\]]+\] ${SIDE} vs ${SIDE}(?: · (.*))?$`);
+  for (const line of card.split("\n")) {
+    const m = BOUT.exec(line);
+    if (m) {
+      const shared = m[5] ?? "";
+      add(m[1], `${m[2] ?? ""} ${shared}`);
+      add(m[3], `${m[4] ?? ""} ${shared}`);
+      continue;
+    }
+    const s = /^ {2}(.+?): (.*)$/.exec(line);
+    if (s) add(s[1], s[2]);
+  }
+  return out;
+}
+export function numbersMisattributed(text: string, d: ReqBody): string[] {
+  const card = d.card ?? "";
+  if (!card) return [];
+  const fighters = fighterFacts(card);
+  if (!fighters.size) return [];
+  const headers = card.split("\n").filter((l) => /^(NEXT|LAST|LATER) CARD/.test(l)).join("\n");
+  const general = [d.question ?? "", d.userPicks ?? "", ...(d.history ?? []).map((t) => String(t.text ?? "")),
+    headers, guideSection("SCORING (the ℹ button on Ranks shows this too)"), guideSection("MMA BASICS")].join("\n");
+  const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const strays: string[] = [];
+  // Sentences: split after . ! ? or a line break, but not inside a number (4.81).
+  for (const sentence of text.split(/(?<=[!?\n])|(?<=\.)(?!\d)/)) {
+    const named = [...fighters.values()].filter((f) => f.keys.some((k) => new RegExp(`(^|[^\\p{L}])${esc(k)}($|[^\\p{L}])`, "iu").test(sentence)));
+    if (!named.length) continue;
+    const allowed = general + "\n" + named.map((f) => f.facts).join("\n");
+    numbersInvented(sentence, allowed).forEach((n) => { if (!strays.includes(n)) strays.push(n); });
+  }
+  return strays;
+}
+// Everything wrong with a guide answer's numbers: made up, or pinned on the
+// wrong fighter.
+export function guideStrays(text: string, d: ReqBody, facts: string): string[] {
+  const bad = numbersInvented(text, facts);
+  numbersMisattributed(text, d).forEach((n) => { if (!bad.includes(n)) bad.push(n); });
+  return bad;
+}
+
 Deno.serve(async (req) => {
   const CORS = corsHeaders(req);
   if (req.method === "OPTIONS") {
@@ -1304,12 +1377,12 @@ Deno.serve(async (req) => {
   // fight data, the user's picks or what the user said. One retry naming the
   // strays, then a clean failure. (Lenient on bare 1–3: "3 rounds", "top 3".)
   if (action === "guide") {
-    let bad = numbersInvented(text, iqFacts);
+    let bad = guideStrays(text, body, iqFacts);
     if (bad.length) {
       const again = await callModel(`${prompt}
 
-Your last answer used figures that aren't in the app guide or the fight data (${bad.join(", ")}). Answer again using only figures given there, and leave out anything you don't have.`);
-      if (again.ok) { text = again.text; bad = numbersInvented(text, iqFacts); }
+Your last answer used figures that aren't in the app guide or the fight data, or gave a fighter a figure that belongs to someone else (${bad.join(", ")}). Answer again using only figures given there, each about the fighter it belongs to, and leave out anything you don't have.`);
+      if (again.ok) { text = again.text; bad = guideStrays(text, body, iqFacts); }
     }
     if (!text.trim() || bad.length) {
       return new Response(JSON.stringify({ error: "Couldn't answer that without making something up — try asking another way." }), { status: 502, headers: CORS });

@@ -135,6 +135,24 @@ replies = ["Volkanovski has 14 title defences and a 72-inch reach.", "Volkanovsk
 r = await ask({ question: "Who wins?", card: CARD });
 check("an invented stat triggers one retry naming it, and the clean retry is returned",
   r.calls.length === 2 && /\(14, 72\)/.test(r.calls[1].body.messages[0].content) && r.status === 200 && !/14 title/.test(r.json.breakdown));
+// A number must belong to the fighter it's said about, not just appear somewhere
+// on the card: Evloev's "14 KO" is not Volkanovski's 14 title defences.
+const CARD2 = CARD + ", 14 KO, 2 sub wins\n[Co-Main] Raul Rosas Jr. (12-1-0, #12, odds -148) vs Raoni Barcelos (22-5-0, #8, odds +123) · Bantamweight · result: Raul Rosas Jr. won by KO/TKO in round 5";
+const d2 = { card: CARD2, question: "who wins?" };
+check("binding: a number pinned on the wrong fighter is caught, even though it's on the card",
+  JSON.stringify(M.numbersMisattributed("Volkanovski has 14 title defences.", d2)) === '["14"]' &&
+  JSON.stringify(M.numbersMisattributed("Evloev is 27-4-0.", d2)) === '["27","4"]');
+check("binding: each fighter's own numbers, a shared bout result, scoring and MMA basics all pass",
+  M.numbersMisattributed("Volkanovski is 27-4-0 and Evloev is 19-0-0. Evloev has 14 KO wins and lands 4.1 a minute.", d2).length === 0 &&
+  M.numbersMisattributed("Rosas finished Barcelos in round 5. An Evloev pick pays +0.5 for the method, and main events go 5 rounds.", d2).length === 0);
+check("binding: suffixes don't hide a surname (Rosas Jr. answers to Rosas)", M.fighterFacts(CARD2).get("Raul Rosas Jr.").keys.includes("Rosas"));
+check("binding: the scoring section ends at its own section (the rest of the guide isn't 'general')",
+  M.numbersMisattributed("Volkanovski has 50 wins.", d2).includes("50") && M.APP_GUIDE.includes("50 is par"));
+replies = ["Volkanovski has 14 title defences, so he's the pick.", "Volkanovski is the champion at 27-4-0; Evloev is 19-0-0."];
+r = await ask({ question: "Who wins?", card: CARD2 });
+check("…and the handler retries a misattributed figure, returning the clean answer",
+  r.calls.length === 2 && /gave a fighter a figure that belongs to someone else \(14\)/.test(r.calls[1].body.messages[0].content) &&
+  r.status === 200 && !/14 title/.test(r.json.breakdown));
 replies = ["He's won 11 straight.", "Still 11 straight, trust me."];
 r = await ask({ question: "Who wins?", card: CARD });
 check("an answer that invents twice is a 502, never shown", r.status === 502 && !r.json.breakdown);
