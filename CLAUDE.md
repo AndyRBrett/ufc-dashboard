@@ -54,6 +54,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:picklock` | the database accepting a pick, a changed pick or a deleted pick after its bout's segment started, or send-reminders writing lock times off the app's rule |
 | `npm run check:pushauth` | a push sent with text or an audience the server didn't build, a user sending as someone else, or the anon key sending anything but the rebuilt backups |
 | `npm run check:html` | scraped, user or other-process text (a card name, a nickname, a status file) reaching `innerHTML` instead of `textContent` |
+| `npm run check:photos` | a fighter photo lookup missing a disambiguated page, showing a same-named non-fighter's face, caching a miss forever, or a view without photos |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -809,6 +810,22 @@ dog bonus, no method). `loadLeaderboard` hands off to `renderSportBoard`
 before reading any UFC rows. Picks close at the feed's `time` (ET) if given,
 else `SPORT_LOCK_UTC_H` on the card's date. Feed text is rendered with
 `textContent` only. `check:sports` holds all of it.
+
+## Fighter photos: one lookup, and never someone else's face
+
+`// fighter-photos:start … :end` in `index.html` is the only code that turns a
+name into a photo, shared by the UFC rows and the sport view. It asks Wikipedia
+for the name **and** its `(fighter)` / `(mixed martial artist)` / … titles in
+one request (`redirects=1`), because a common name is a disambiguation page
+with no image ("Chris Curtis", "Makoto Takahashi"), and uses a page only if its
+short description says fighter, martial artist, kickboxer, boxer …: a bare
+name that belongs to an actor shows initials. Misses are stored with a time
+(`ufc_photo_miss`, retried after 7 days), never as a permanent `"none"`; a
+network error records nothing, so the next visit retries. Its old `ufc_photos`
+key persisted misses forever and in-flight lookups as `null`, which a reload
+read as "still loading" and never fetched; it is deleted, not migrated, since
+its hits were never checked against the page and could be the wrong face. `npm run check:photos` holds it,
+mutation-tested.
 
 ## Non-UFC cards: checked in shadow mode, now published
 
