@@ -93,8 +93,10 @@ Rules the validator enforces:
 - `date` is `YYYY-MM-DD`; every event has a name and at least one bout.
 - Every bout names two different fighters; a `winner`, if set, must be one of them.
 
-Feed promotions score on `simpleRules()`: 1 for the winner, +0.5 for the
-method. Pass your own rules object to `createEngine({ rules: { pfl: … } })` to
+Feed promotions in the *Lab* score on `simpleRules()`: 1 for the winner, +0.5
+for the method. (The app's own PFL / RIZIN / DWCS boards go further and score
+through `pickPts`, the UFC rules: see "Every MMA promotion scores by the UFC
+rules" in CLAUDE.md.) Pass your own rules object to `createEngine({ rules: { pfl: … } })` to
 change that.
 
 **Where the feed comes from:** `extra.py`, in `update.yml` after the intel

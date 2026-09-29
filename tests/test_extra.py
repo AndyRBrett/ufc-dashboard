@@ -718,3 +718,74 @@ def test_every_promotion_says_whether_it_is_published():
     assert all(isinstance(p.get("publish"), bool) for p in extra.PROMOTIONS)
     assert extra.published_ids() == {p["id"] for p in extra.PROMOTIONS if p["publish"] is True}
     assert {p["id"]: p["publish"] for p in extra.PROMOTIONS} == {"pfl": True, "rizin": True, "dwcs": True}
+
+
+# ------------------------------------------------- lines for the underdog bonus --
+# scrape.py leaves every priced bout it saw in odds-lines.json; a bout here takes
+# the line whose two fighters both match and whose start is within a day.
+def _line(a, b, ao, bo, when="2026-09-30T00:00:00Z"):
+    return {"a": a, "b": b, "a_odds": ao, "b_odds": bo, "commence_time": when}
+
+
+def _dwcs(now=NOW, prev=None, lines=None):
+    feed, _ = extra.build(fetcher(DWCS_PAGES), now, prev, lines)
+    return next(e for e in feed["events"] if e["date"] == "2026-09-29")
+
+
+def test_a_bout_takes_the_line_for_its_two_fighters():
+    ev = _dwcs(lines=[_line("George Staines", "Loai Abushaar", -150, 130)])
+    b = next(x for x in ev["bouts"] if x["a"] == "George Staines")
+    assert b["odds"] == {"a": -150, "b": 130}
+    others = [x for x in ev["bouts"] if x["a"] != "George Staines"]
+    assert others and all(x["odds"] is None for x in others)
+
+
+def test_a_line_listed_the_other_way_round_is_flipped_back():
+    ev = _dwcs(lines=[_line("Loai Abushaar", "George Staines", 130, -150)])
+    b = next(x for x in ev["bouts"] if x["a"] == "George Staines")
+    assert b["odds"] == {"a": -150, "b": 130}       # each price stays with its own fighter
+
+
+def test_no_lines_means_no_bonus_not_an_error():
+    for lines in (None, [], [{"a": "x"}], [_line("George Staines", "Loai Abushaar", "n/a", None)]):
+        ev = _dwcs(lines=lines)
+        assert all(b["odds"] is None for b in ev["bouts"])
+
+
+def test_a_line_needs_both_fighters_and_the_right_night():
+    # Only one of the two fighters matches: someone else's fight.
+    ev = _dwcs(lines=[_line("George Staines", "Somebody Else", -150, 130)])
+    assert all(b["odds"] is None for b in ev["bouts"])
+    # The same two fighters, three days later: another card.
+    ev = _dwcs(lines=[_line("George Staines", "Loai Abushaar", -150, 130, "2026-10-02T00:00:00Z")])
+    assert all(b["odds"] is None for b in ev["bouts"])
+    # Two fighters sharing a surname are never told apart by surname alone.
+    ev = _dwcs(lines=[_line("George Staines", "Ben Staines", -150, 130)])
+    assert all(b["odds"] is None for b in ev["bouts"])
+
+
+def test_a_line_stops_moving_once_the_bout_has_started():
+    first = _dwcs(lines=[_line("George Staines", "Loai Abushaar", -150, 130, "2026-09-29T23:00:00Z")])
+    prev = {"events": [first]}
+    moved = [_line("George Staines", "Loai Abushaar", -400, 300, "2026-09-29T23:00:00Z")]
+    before = datetime(2026, 9, 29, 22, 0, tzinfo=timezone.utc)
+    after = datetime(2026, 9, 29, 23, 30, tzinfo=timezone.utc)
+    live = _dwcs(before, prev, moved)
+    assert next(b for b in live["bouts"] if b["a"] == "George Staines")["odds"] == {"a": -400, "b": 300}   # still moving
+    frozen = _dwcs(after, {"events": [live]}, [_line("George Staines", "Loai Abushaar", -900, 600, "2026-09-29T23:00:00Z")])
+    assert next(b for b in frozen["bouts"] if b["a"] == "George Staines")["odds"] == {"a": -400, "b": 300}  # the closing line
+
+
+def test_a_line_is_never_replaced_by_nothing():
+    # The market vanishes the moment a fight ends; the bonus must not vanish with it.
+    first = _dwcs(lines=[_line("George Staines", "Loai Abushaar", -150, 130)])
+    gone = _dwcs(prev={"events": [first]}, lines=[])
+    assert next(b for b in gone["bouts"] if b["a"] == "George Staines")["odds"] == {"a": -150, "b": 130}
+    gone2 = _dwcs(prev={"events": [first]}, lines=None)
+    assert next(b for b in gone2["bouts"] if b["a"] == "George Staines")["odds"] == {"a": -150, "b": 130}
+
+
+def test_odds_reach_the_feed_the_app_reads():
+    ev = _dwcs(lines=[_line("George Staines", "Loai Abushaar", -150, 130)])
+    b = next(x for x in ev["bouts"] if x["a"] == "George Staines")
+    assert set(b["odds"]) == {"a", "b"} and all(isinstance(v, (int, float)) for v in b["odds"].values())

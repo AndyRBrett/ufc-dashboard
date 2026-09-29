@@ -1871,6 +1871,73 @@ def save_odds_state(state):
         print(f"Could not write {ODDS_STATE_PATH}: {e}", file=sys.stderr)
 
 
+# --- odds lines for the other promotions ------------------------------------------
+# The Odds API's umbrella MMA feed is one payload for every promotion it prices,
+# and _index_odds_api already turns all of it into an index, but only the UFC
+# cards' own bouts are ever read back out of it. extra.py (PFL, RIZIN, DWCS) can
+# score the underdog bonus if it is handed the lines for ITS bouts, so every pull
+# also leaves the whole index here: no extra call, no extra quota. As of
+# 2026-09-29 the books list essentially only UFC (odds-state.json's markets
+# block has no PFL / RIZIN / DWCS date), so today this file carries UFC lines
+# and extra.py finds nothing to attach; the bonus switches itself on if that
+# changes. Never fatal, never empties itself: a pull that returns nothing (a
+# spent key) leaves the file alone.
+ODDS_LINES_PATH = Path("odds-lines.json")
+ODDS_LINES_KEEP_DAYS = 3
+
+
+def _parse_iso_utc(s):
+    try:
+        return datetime.fromisoformat(str(s).replace("Z", "+00:00")).astimezone(timezone.utc)
+    except (TypeError, ValueError):
+        return None
+
+
+def record_odds_lines(odds_index, now, path=None):
+    """Merge this pull's priced bouts into odds-lines.json. Returns the count kept.
+
+    Lines already on file for a bout the pull didn't return are KEPT: providers
+    cover different book sets, so a partial pull is missing bouts, not withdrawing
+    them. A line is dropped only ODDS_LINES_KEEP_DAYS after its bout began (or,
+    with no start time, after it was first seen). An unchanged line keeps its
+    `seen_at`, so a pull that moved nothing writes nothing.
+    """
+    path = path or ODDS_LINES_PATH
+    if not odds_index:
+        return 0
+    have = {}
+    try:
+        for line in json.loads(path.read_text(encoding="utf-8")).get("lines", []):
+            have[tuple(sorted([str(line["a"]).lower(), str(line["b"]).lower()]))] = line
+    except Exception:
+        have = {}
+    stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    for pair, o in odds_index.items():
+        new = {"a": o["f1_name"], "b": o["f2_name"], "a_odds": o["f1_odds"], "b_odds": o["f2_odds"],
+               "commence_time": o.get("commence_time", "")}
+        old = have.get(pair)
+        if old and all(old.get(k) == new[k] for k in new):
+            continue
+        have[pair] = dict(new, seen_at=stamp)
+    cutoff = now - timedelta(days=ODDS_LINES_KEEP_DAYS)
+    kept = []
+    for line in have.values():
+        t = _parse_iso_utc(line.get("commence_time")) or _parse_iso_utc(line.get("seen_at"))
+        if t is None or t >= cutoff:
+            kept.append(line)
+    kept.sort(key=lambda l: (l.get("commence_time") or "", l["a"], l["b"]))
+    body = json.dumps({
+        "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). "
+                 "Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
+        "lines": kept}, indent=1, ensure_ascii=False) + "\n"
+    try:
+        if not path.exists() or path.read_text(encoding="utf-8") != body:
+            path.write_text(body, encoding="utf-8")
+    except Exception as e:
+        print(f"Could not write {path}: {e}", file=sys.stderr)
+    return len(kept)
+
+
 def fetch_odds_primary():
     """Primary source: US sportsbooks via The Odds API."""
     return _fetch_odds_api(ODDS_API_REGIONS_PRIMARY, f"the-odds-api:{ODDS_API_REGIONS_PRIMARY}")
@@ -3502,6 +3569,10 @@ def step_build_events(data, now):
     if should_fetch_odds(now, odds_state.get("last_fetch_at"), days_out, idle_pulls):
         print(f"Fetching odds (next card {days_out}d out)...", file=sys.stderr)
         odds_index = fetch_odds(state=odds_state, now=now)
+        try:
+            record_odds_lines(odds_index, now)
+        except Exception as e:      # a side file must never cost a data update
+            print(f"odds-lines not recorded: {e}", file=sys.stderr)
         digest     = odds_lines_digest(odds_index)
         odds_state["idle_pulls"] = next_idle_pulls(
             idle_pulls, odds_state.get("lines_digest"), digest)

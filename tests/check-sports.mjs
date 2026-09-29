@@ -62,6 +62,53 @@ const check = (name, ok) => { if (ok) console.log("  ✓ " + name); else { failu
   check("one pick per player per bout (flip / re-spelling rows don't double-count), newest wins", d.total === 1 && d.pts === 1);
 }
 
+// --- UFC rules on the other sports ----------------------------------------------------
+// PFL / RIZIN / DWCS are MMA, so their board scores through pickPts, the same
+// function the UFC board uses: winner 1, method +0.5, underdog bonus off the
+// bout's line, 🔒 +1 / -1 (only on cards from LOCKS_START). Separate boards, one rulebook.
+{
+  const ctx = vm.createContext({ String, Object, Array, JSON, Math, Date, isFinite, Number, console });
+  vm.runInContext(readFileSync(join(ROOT, "scoring.js"), "utf8"), ctx);
+  const D = "2026-10-16";
+  const events = [{ promotion: "pfl", date: D, name: "PFL X", bouts: [
+    { a: "Big Dog", b: "Chalk Fav", winner: "Big Dog", method: "KO/TKO", odds: { a: 300, b: -400 } },   // +300 dog wins
+    { a: "Mid Dog", b: "Mid Fav", winner: "Mid Dog", method: "Decision (unanimous)", odds: { a: 200, b: -250 } },   // +200 dog wins
+    { a: "Short Dog", b: "Short Fav", winner: "Short Dog", method: "Submission (rear-naked choke)", odds: { a: 120, b: -140 } },
+    { a: "No Line A", b: "No Line B", winner: "No Line A", method: "KO/TKO" },                         // the feed had no line
+    { a: "Fav Wins", b: "Dog Loses", winner: "Fav Wins", method: "Decision (split)", odds: { a: -500, b: 350 } },
+    { a: "Open A", b: "Open B", winner: "", odds: { a: 150, b: -180 } } ] }];
+  const row = (uid, f1, f2, pick, method, lock, date) => ({ user_id: uid, nickname: uid, promotion: "pfl", event_date: date || D, f1, f2, pick, method: method || "", confidence: lock ? 1 : 0 });
+  const score = (rows) => ctx.sportStandings(rows, events, "pfl")[0];
+  const one = (pick, method, lock, f1, f2, date) => score([row("u", f1, f2, pick, method, lock, date)]);
+  check("a plain correct winner is still 1 point", one("Big Dog", "", false, "Big Dog", "Chalk Fav").pts === 1 + 1 /* +300 underdog */);
+  check("the right method adds 0.5", one("Fav Wins", "Dec", false, "Fav Wins", "Dog Loses").pts === 1.5);
+  check("KO/TKO, Sub and Dec all read the feed's method text", one("No Line A", "KO/TKO", false, "No Line A", "No Line B").methods === 1 && one("Short Dog", "Sub", false, "Short Dog", "Short Fav").methods === 1 && one("Mid Dog", "Dec", false, "Mid Dog", "Mid Fav").methods === 1);
+  check("the wrong method adds nothing", one("Fav Wins", "Sub", false, "Fav Wins", "Dog Loses").methods === 0 && one("Fav Wins", "Sub", false, "Fav Wins", "Dog Loses").pts === 1);
+  check("underdog bonus follows the UFC tiers: +300 earns 1, +200 earns 0.5, +120 earns 0", one("Big Dog", "", false, "Big Dog", "Chalk Fav").dogPts === 1 && one("Mid Dog", "", false, "Mid Dog", "Mid Fav").dogPts === 0.5 && one("Short Dog", "", false, "Short Dog", "Short Fav").dogPts === 0);
+  check("a bout with no line in the feed earns no underdog bonus, and doesn't break", one("No Line A", "", false, "No Line A", "No Line B").pts === 1 && one("No Line A", "", false, "No Line A", "No Line B").dogPts === 0);
+  check("picking the favourite earns no bonus", one("Fav Wins", "", false, "Fav Wins", "Dog Loses").dogPts === 0);
+  check("the bonus is read from the pick's side even when the row's corners are flipped", one("Big Dog", "", false, "Chalk Fav", "Big Dog").dogPts === 1);
+  check("a winning lock is +1 on top of the pick", one("Fav Wins", "", true, "Fav Wins", "Dog Loses").pts === 2 && one("Fav Wins", "", true, "Fav Wins", "Dog Loses").lockPts === 1);
+  check("a losing lock is -1 (the pick itself earns nothing)", one("Dog Loses", "", true, "Fav Wins", "Dog Loses").pts === -1 && one("Dog Loses", "", true, "Fav Wins", "Dog Loses").lockPts === -1);
+  check("a lock on a bout still open scores nothing yet", one("Open A", "", true, "Open A", "Open B").pts === 0);
+  const old = one("Fav Wins", "", true, "Fav Wins", "Dog Loses", "2026-09-01");
+  check("a lock on a card older than LOCKS_START is ignored (legacy stars never scored)", old === undefined || old.lockPts === 0);
+  // Everything at once, and the invariant that matters: the sport board's points
+  // are exactly what pickPts gives the UFC board for the same pick and result.
+  const all = one("Big Dog", "KO/TKO", true, "Big Dog", "Chalk Fav");
+  check("winner + method + underdog + lock add up (1 + 0.5 + 1 + 1 = 3.5)", all.pts === 3.5);
+  let same = true;
+  for (const b of events[0].bouts) for (const pickName of [b.a, b.b]) for (const method of ["", "KO/TKO", "Sub", "Dec"]) for (const lock of [false, true]) {
+    if (!b.winner) continue;
+    const got = one(pickName, method, lock, b.a, b.b).pts;
+    const want = ctx.pickPts({ pick: pickName, method, confidence: lock ? 1 : 0, event_date: D },
+      { winner: b.winner, method: b.method, odds: b.odds ? { f1: b.odds.a, f2: b.odds.b } : null, f1n: b.a, f2n: b.b });
+    if (got !== want) same = false;
+  }
+  check("for every pick, method and lock, the sport board equals pickPts (the UFC board's own function)", same);
+  check("the parts add up: correct + methods/2 + underdog + lock = points", (() => { const u = score([row("u", "Big Dog", "Chalk Fav", "Big Dog", "KO/TKO", true), row("u", "Fav Wins", "Dog Loses", "Dog Loses", "", true)]); return u.pts === u.correct + u.methods * 0.5 + u.dogPts + u.lockPts; })());
+}
+
 // --- the app ---------------------------------------------------------------------------
 const require = createRequire(import.meta.url);
 let chromium = null;
@@ -94,13 +141,14 @@ else {
   const base = `http://127.0.0.1:${server.address().port}`;
   const exe = process.env.PLAYWRIGHT_BROWSERS_PATH ? join(process.env.PLAYWRIGHT_BROWSERS_PATH, "chromium") : undefined;
   const browser = await chromium.launch(exe && existsSync(exe) ? { executablePath: exe } : {});
-  let slowUfc = false;
-  const boot = async (feed) => {
+  let slowUfc = false, clampLocks = false, restoreRows = null;
+  const boot = async (feed, opts = {}) => {
     const page = await browser.newPage();
     const errors = [], writes = [], reads = [];
     page.on("pageerror", (e) => errors.push(e.message));
     page.on("dialog", (d) => { errors.push("dialog: " + d.message()); d.dismiss(); });   // an XSS would alert
     await page.addInitScript(() => { try { localStorage.setItem("ufc_uid", "u-Andy"); localStorage.setItem("ufc_name", "🥊 Andy"); localStorage.setItem("ufc_whatsnew_seen", "9999"); } catch (e) {} });
+    if (opts.session) await page.addInitScript(() => { try { localStorage.setItem("ufc_sb_session", JSON.stringify({ access_token: "t", refresh_token: "r", user_id: "u-Andy", expires_at: Math.floor(Date.now() / 1000) + 86400 })); } catch (e) {} });
     if (feed) await page.route(/events-extra\.json/, (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(feed) }));
     await page.route(/supabase\.co/, async (route) => {
       const req = route.request(), url = req.url();
@@ -112,6 +160,11 @@ else {
       if (/\/rest\/v1\/picks/.test(url)) {
         if (req.method() === "GET") reads.push(url);
         else writes.push({ method: req.method(), url, body: req.postData() });
+        // The server's cap trigger clamps a lock past two to 0 and returns the stored row.
+        if (clampLocks && req.method() === "POST")
+          return route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify([Object.assign(JSON.parse(req.postData()), { confidence: 0 })]) });
+        if (restoreRows && req.method() === "GET" && /select=event_date,f1,f2,pick/.test(url))
+          return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(restoreRows) });
         if (req.method() === "GET" && /promotion=eq\.pfl/.test(url) && /select=user_id,nickname/.test(url))
           return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify([
             { user_id: "u-bob", nickname: "🦂 Bob", promotion: "pfl", event_date: yesterday, f1: "Done A", f2: "Done B", pick: "Done A" },
@@ -156,6 +209,91 @@ else {
       const { page } = await boot(stale);
       const s = await state(page);
       check("nothing pickable (only an old card and a one-bout stub): no switcher", !s.bar && !s.other);
+      await page.close();
+    }
+    // --- UFC's pick options on the other sports: method, 🔒, the two-per-card cap ---
+    {
+      const F2 = { promotions: [{ id: "pfl", name: "PFL" }], events: [
+        { promotion: "pfl", name: "PFL Locks", date: future, bouts: [
+          { a: "Ann One", b: "Ann Two" }, { a: "Bea One", b: "Bea Two" }, { a: "Cat One", b: "Cat Two" } ] }] };
+      const { page, errors, writes } = await boot(F2);
+      await page.click("#sportBar .sport-tab:nth-child(2)");
+      await page.waitForTimeout(300);
+      const txt = () => page.evaluate(() => document.getElementById("sportApp").textContent);
+      const meta = () => page.evaluate(() => JSON.parse(localStorage.getItem("ufc_sport_meta") || "{}"));
+      const nothing = await page.evaluate(() => document.querySelectorAll("#sportApp .sport-meta-row").length);
+      check("no pick yet: no method or lock controls", nothing === 0);
+      await page.click('#sportApp .sport-pick:has-text("Ann One")');
+      await page.waitForTimeout(250);
+      const how = await page.evaluate(() => [...document.querySelectorAll("#sportApp .method-pick-row .pick-btn")].map((b) => b.textContent));
+      check("picking a winner shows How: KO/TKO, Sub, Dec (the UFC card's own controls)", JSON.stringify(how) === '["KO/TKO","Sub","Dec"]');
+      check("...and the card counts locks: 0/2", /0\/2 locks/.test(await txt()));
+      writes.length = 0;
+      await page.click('#sportApp .method-pick-row .pick-btn:has-text("KO/TKO")');
+      await page.waitForTimeout(250);
+      let post = JSON.parse((writes.find((w) => w.method === "POST") || { body: "{}" }).body);
+      check("choosing a method saves it with the pick, tagged pfl", post.method === "KO/TKO" && post.pick === "Ann One" && post.promotion === "pfl" && post.confidence === 0);
+      await page.click('#sportApp .method-pick-row .pick-btn:has-text("KO/TKO")');
+      await page.waitForTimeout(250);
+      check("tapping the method again clears it", (await meta())[Object.keys(await meta())[0]].m === "");
+      await page.click('#sportApp .method-pick-row .pick-btn:has-text("Dec")');
+      await page.waitForTimeout(250);
+      writes.length = 0;
+      await page.click("#sportApp .lock-btn");
+      await page.waitForTimeout(250);
+      post = JSON.parse((writes.find((w) => w.method === "POST") || { body: "{}" }).body);
+      check("🔒 saves confidence 1 and keeps the method", post.confidence === 1 && post.method === "Dec" && post.promotion === "pfl");
+      check("...the card now counts 1/2 locks", /1\/2 locks/.test(await txt()));
+      await page.click('#sportApp .sport-pick:has-text("Bea One")');
+      await page.waitForTimeout(250);
+      await page.click('#sportApp .sport-bout:has-text("Bea One") .lock-btn');
+      await page.waitForTimeout(250);
+      check("a second lock is allowed: 2/2 locks", /2\/2 locks/.test(await txt()));
+      await page.click('#sportApp .sport-pick:has-text("Cat One")');
+      await page.waitForTimeout(250);
+      check("...and the next bout's label says none are left", /No locks left/.test(await txt()));
+      writes.length = 0;
+      await page.click('#sportApp .sport-bout:has-text("Cat One") .lock-btn');
+      await page.waitForTimeout(250);
+      const toastTxt = await page.evaluate(() => document.getElementById("toast").textContent);
+      check("a third lock is refused (2 per card), nothing sent", /Only 2 locks per card/.test(toastTxt) && !writes.some((w) => w.method === "POST") && Object.values(await meta()).filter((m) => m.l).length === 2);
+      await page.click('#sportApp .sport-bout:has-text("Ann One") .lock-btn');       // unlock one
+      await page.waitForTimeout(250);
+      check("unlocking frees the slot: 1/2 locks", /1\/2 locks/.test(await txt()));
+      await page.click('#sportApp .sport-pick:has-text("Ann One")');                 // un-pick
+      await page.waitForTimeout(250);
+      check("un-picking drops the pick's method and lock too", !Object.keys(await meta()).some((k) => /Ann One/.test(k)));
+      check("no page errors with method and locks", errors.length === 0 || (console.error("    " + errors.join("\n    ")), false));
+      await page.close();
+    }
+    // The server is the last word on the cap (two phones on one account).
+    {
+      clampLocks = true;
+      const F3 = { promotions: [{ id: "pfl", name: "PFL" }], events: [{ promotion: "pfl", name: "PFL Clamp", date: future, bouts: [{ a: "Dee One", b: "Dee Two" }, { a: "Eve One", b: "Eve Two" }] }] };
+      const { page } = await boot(F3);
+      await page.click("#sportBar .sport-tab:nth-child(2)");
+      await page.click('#sportApp .sport-pick:has-text("Dee One")');
+      await page.waitForTimeout(200);
+      await page.click("#sportApp .lock-btn");
+      await page.waitForTimeout(500);
+      const kept = await page.evaluate(() => Object.values(JSON.parse(localStorage.getItem("ufc_sport_meta") || "{}")).filter((m) => m.l).length);
+      const t = await page.evaluate(() => document.getElementById("toast").textContent);
+      check("a lock the server clamps is dropped locally, with a message", kept === 0 && /Lock not saved/.test(t) && /🔓 Lock it/.test(await page.evaluate(() => document.getElementById("sportApp").textContent)));
+      clampLocks = false;
+      await page.close();
+    }
+    // A device that lost its storage gets method and lock back with its picks.
+    {
+      const F4 = { promotions: [{ id: "pfl", name: "PFL" }], events: [{ promotion: "pfl", name: "PFL Back", date: future, bouts: [{ a: "Fay One", b: "Fay Two" }, { a: "Gus One", b: "Gus Two" }] }] };
+      restoreRows = [{ event_date: future, f1: "Fay One", f2: "Fay Two", pick: "Fay Two", method: "Sub", confidence: 1 },
+                     { event_date: future, f1: "Gus One", f2: "Gus Two", pick: "Gus One", method: "", confidence: 0 }];
+      // Restore needs a signed-in user; the harness's mocked auth gives none, so seed a live session.
+      const { page } = await boot(F4, { session: true });
+      await page.waitForTimeout(600);
+      const m = await page.evaluate(() => JSON.parse(localStorage.getItem("ufc_sport_meta") || "{}"));
+      const v = Object.entries(m).find(([k]) => /Fay One/.test(k));
+      check("a restored pick brings its method and lock back", !!v && v[1].m === "Sub" && v[1].l === 1);
+      restoreRows = null;
       await page.close();
     }
     {

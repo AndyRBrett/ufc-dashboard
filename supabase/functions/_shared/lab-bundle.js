@@ -1262,7 +1262,7 @@ export function kernelFactory(EVENTS, RESULTS_ARCHIVE, FIGHTER_STATS, RANKINGS, 
 // even offline with an old copy cached. Bump it on ANY change to this file, in
 // all three places (index.html's script src + SCORING_EXPECT, sw.js's precache);
 // check:lab fails if they disagree.
-var SCORING_VERSION="2026-09-24-6";
+var SCORING_VERSION="2026-09-29-1";
 
 // fighter-names:start
 var _NM_SUFFIX_RE=/\b(?:jr|sr|ii|iii|iv)\b/g;
@@ -1613,10 +1613,14 @@ function _lbScoreUsers(rows,keep){
 // curated feed (events-extra.json, validated by PickEngine.validateFeed), not
 // data.js, and its picks are the rows with that promotion — never mixed with
 // UFC (0007_picks_promotion.sql). Rules are deliberately plain until a
-// promotion earns more: 1 point per correct winner, no underdog bonus (the
-// feed carries no reliable line), no locks, no method. Identity and name
-// matching are the board's own (user_id else nickname; nmEq), and every map
-// is prototype-free for the same reason as _lbScoreUsers'.
+// promotion earns more; PFL, RIZIN and DWCS are all MMA, so they now score by
+// the UFC rules, and by the UFC code: every pick goes through pickPts, the
+// one function the UFC board, the Belt and the recaps use (winner 1, method
+// +0.5, underdog bonus off the bout's line, 🔒 +1/-1). A bout with no line in
+// the feed simply earns no underdog bonus. The boards stay separate: a row
+// counts only on its own promotion's board. Identity and name matching are
+// the board's own (user_id else nickname; nmEq), and every map is
+// prototype-free for the same reason as _lbScoreUsers'.
 function sportBout(events,promo,date,f1,f2){
   for(var i=0;i<(events||[]).length;i++){
     var ev=events[i];
@@ -1632,6 +1636,13 @@ function sportBout(events,promo,date,f1,f2){
 // player per bout: a feed that flips the corners or re-spells a fighter leaves
 // the old row beside the new one (the upsert key is ordered), and both match
 // the same bout here — only the newest counts.
+// The feed's {a,b} line as pickPts wants it ({f1,f2}, in the bout's own order),
+// or null when either side is missing or not a number.
+function sportOdds(bout){
+  var o=bout&&bout.odds;
+  if(!o||typeof o.a!=="number"||typeof o.b!=="number"||!isFinite(o.a)||!isFinite(o.b))return null;
+  return {f1:o.a,f2:o.b};
+}
 function sportStandings(rows,events,promo){
   var users=Object.create(null),seen=Object.create(null);
   (rows||[]).forEach(function(p){
@@ -1642,11 +1653,21 @@ function sportStandings(rows,events,promo){
     var once=uid+"|"+hit.ev.date+"|"+hit.idx;
     if(seen[once])return;
     seen[once]=true;
-    var u=users[uid]||(users[uid]={user_id:p.user_id||null,nickname:p.nickname||"",correct:0,resolved:0,total:0,pts:0});
+    var u=users[uid]||(users[uid]={user_id:p.user_id||null,nickname:p.nickname||"",correct:0,resolved:0,total:0,pts:0,methods:0,dogPts:0,lockPts:0});
     if(!String(u.nickname||"").trim()&&p.nickname)u.nickname=p.nickname;
     u.total++;
-    var w=hit.bout.winner;
-    if(w){u.resolved++;if(nmEq(w,p.pick)){u.correct++;u.pts++;}}
+    var b=hit.bout,w=b.winner;
+    if(w){
+      u.resolved++;
+      var res={winner:w,method:b.method||"",odds:sportOdds(b),f1n:b.a,f2n:b.b};
+      u.pts+=pickPts(p,res);
+      if(nmEq(w,p.pick)){
+        u.correct++;
+        if(scoreMethod(p.method||"",res.method))u.methods++;
+        u.dogPts+=dogPtsForPick(res.odds,res.f1n,res.f2n,p.pick);
+      }
+      u.lockPts+=lockPtsFor(isLockPick(p),w,p.pick);
+    }
   });
   return Object.keys(users).map(function(k){
     var u=users[k];u.accuracy=u.resolved?Math.round(u.correct/u.resolved*100):null;return u;

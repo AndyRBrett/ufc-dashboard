@@ -1905,7 +1905,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <script src="data.js"></script>
 <!-- The app's scoring (scoring.js, engine migration stage 3). Required, like
      data.js: the self-heal below covers it failing to load too. -->
-<script src="scoring.js?v=2026-09-24-6"></script>
+<script src="scoring.js?v=2026-09-29-1"></script>
 <!-- The Pick Engine (engine migration, docs/MIGRATION.md). Optional by design:
      if it fails to load, _boutLookup falls back to the app's own loops and
      every score comes out the same (check:parity runs both paths). -->
@@ -1922,7 +1922,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 // …and it must be the rulebook THIS page shipped with: a previous release's
 // scoring.js (an old cached copy, a network drop mid-upgrade) is treated as
 // missing rather than silently scoring with old rules.
-var SCORING_EXPECT="2026-09-24-6";
+var SCORING_EXPECT="2026-09-29-1";
 function _scoringOk(){return typeof pickPts==="function"&&typeof _lbScoreUsers==="function"&&typeof SCORING_VERSION!=="undefined"&&SCORING_VERSION===SCORING_EXPECT;}
 if(typeof EVENTS==="undefined"||!_scoringOk()){
   (function(){
@@ -6167,7 +6167,9 @@ var WHATS_NEW=[
   {id:"2026-10-10-rizin-dwcs",emoji:"🌏",title:"RIZIN and Contender Series picks",
    desc:"The sport switch now has RIZIN and Dana White's Contender Series beside UFC and PFL. Same pick'em as PFL, with its own board: RIZIN picks close before Japan's first bell, DWCS picks an hour before Tuesday night's show."},
   {id:"2026-10-11-fighter-photos",emoji:"📸",title:"More fighter photos",
-   desc:"Fighters whose name is shared with someone else (Chris Curtis, Makoto Takahashi) now find their own photo, and a fighter with no photo yet is checked again a week later instead of never. PFL, RIZIN and DWCS cards show photos too."}
+   desc:"Fighters whose name is shared with someone else (Chris Curtis, Makoto Takahashi) now find their own photo, and a fighter with no photo yet is checked again a week later instead of never. PFL, RIZIN and DWCS cards show photos too."},
+  {id:"2026-10-12-mma-pick-options",emoji:"🔒",title:"Full picks on PFL, RIZIN and DWCS",
+   desc:"The other MMA cards now work like UFC: pick the winner, then how it ends (KO/TKO, Sub or Dec) and use up to two 🔒 locks per card. They score the same way, winner 1, method +½, lock ±1, and the underdog bonus once the books post a line. Each sport keeps its own board."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -8814,6 +8816,17 @@ var SPORT=(function(){try{return localStorage.getItem("ufc_sport")||"ufc";}catch
 var _sportFeed=null;      // {promotions, events} after PickEngine.validateFeed
 var _sportPicks=(function(){try{return JSON.parse(localStorage.getItem("ufc_sport_picks")||"{}")||{};}catch(e){return {};}})();
 function _sportSave(){try{localStorage.setItem("ufc_sport_picks",JSON.stringify(_sportPicks));}catch(e){}}
+// The method and 🔒 for each sport pick, beside it (same key). Kept apart from
+// _sportPicks so that map's shape (key -> fighter name) is unchanged for every
+// browser that already has picks in it. {m: "KO/TKO"|"Sub"|"Dec"|"", l: 0|1}.
+var SPORT_METHODS=["KO/TKO","Sub","Dec"];
+var _sportMeta=(function(){try{return JSON.parse(localStorage.getItem("ufc_sport_meta")||"{}")||{};}catch(e){return {};}})();
+function _sportMetaSave(){try{localStorage.setItem("ufc_sport_meta",JSON.stringify(_sportMeta));}catch(e){}}
+function _sportMetaOf(k){var m=Object.prototype.hasOwnProperty.call(_sportMeta,k)?_sportMeta[k]:null;return {m:m&&SPORT_METHODS.indexOf(m.m)>=0?m.m:"",l:m&&m.l?1:0};}
+// Locks used on a card: a lock only counts on a bout that still has a pick.
+function _sportCardLocks(promo,ev){
+  return ev.bouts.filter(function(b){var k=sportKey(promo,ev.date,b.a,b.b);return _sportPicks[k]&&_sportMetaOf(k).l;}).length;
+}
 function _picksFor(promo){return "&promotion=eq."+encodeURIComponent(promo);}
 function sportKey(promo,date,a,b){return promo+"|"+date+"|"+a+"|"+b;}
 // Eastern offset ON a given date (4 = EDT, 5 = EST), not today's: a November
@@ -8932,6 +8945,7 @@ function renderSportView(){
     if(ev===next&&!locked)badges.appendChild(_spEl("span","sport-badge hot","Next up"));
     if(ev.bouts.some(function(b){return b.title;}))badges.appendChild(_spEl("span","sport-badge gold","🏆 Title fight"));
     badges.appendChild(_spEl("span","sport-badge",mine+"/"+ev.bouts.length+" picked"));
+    if(locksOn(ev.date))badges.appendChild(_spEl("span","sport-badge gold","🔒 "+_sportCardLocks(promo,ev)+"/"+LOCKS_PER_CARD+" locks"));
     hd.appendChild(badges);
     box.appendChild(hd);
     ev.bouts.forEach(function(b,bi){
@@ -8954,6 +8968,38 @@ function renderSportView(){
         btns.appendChild(btn);
       });
       row.appendChild(btns);
+      if(pick){
+        var meta=_sportMetaOf(k),lockable=locksOn(ev.date);
+        if(!lk){
+          // The UFC card's own controls and classes: how they win, and a 🔒.
+          var mr=_spEl("div","method-pick-row sport-meta-row");
+          mr.appendChild(_spEl("span","pick-lbl","How:"));
+          SPORT_METHODS.forEach(function(m){
+            var mb=_spEl("button","pick-btn"+(meta.m===m?" psel":""),m);
+            mb.setAttribute("aria-pressed",meta.m===m?"true":"false");
+            mb.onclick=function(){sportMethod(promo,ev,b,m);};
+            mr.appendChild(mb);
+          });
+          row.appendChild(mr);
+          if(lockable){
+            var used=_sportCardLocks(promo,ev),cr=_spEl("div","conf-row sport-meta-row");
+            var lb=_spEl("button","lock-btn"+(meta.l?" on":""),meta.l?"🔒 Locked":"🔓 Lock it");
+            lb.setAttribute("aria-pressed",meta.l?"true":"false");
+            lb.onclick=function(){sportLock(promo,ev,b);};
+            cr.appendChild(lb);
+            cr.appendChild(_spEl("span","conf-lbl",meta.l?"+"+LOCK_HIT+" if right · "+LOCK_MISS+" if wrong":(used>=LOCKS_PER_CARD?"No locks left":(LOCKS_PER_CARD-used)+" of "+LOCKS_PER_CARD+" locks left")));
+            row.appendChild(cr);
+          }
+        }else if(meta.m||meta.l){
+          var tg=_spEl("div","conf-row sport-meta-row");
+          if(meta.m)tg.appendChild(_spEl("span","pick-method-sub","via "+meta.m));
+          if(meta.l&&lockable){
+            var lt=_spEl("span","lock-tag"+(b.winner?(nmEq(b.winner,pick)?" hit":" miss"):""),b.winner?(nmEq(b.winner,pick)?"🔒 Lock hit · +"+LOCK_HIT:"🔒 Lock missed · "+LOCK_MISS):"🔒 Locked");
+            tg.appendChild(lt);
+          }
+          row.appendChild(tg);
+        }
+      }
       if(b.winner&&b.method)row.appendChild(_spEl("div","sport-res",b.method+(b.round?" · R"+b.round:"")));
       box.appendChild(row);
     });
@@ -8961,12 +9007,31 @@ function renderSportView(){
   });
   _sportTick();          // last: it may re-render the whole view
 }
+function sportMethod(promo,ev,b,m){
+  if(sportLocked(ev,b)){toast("Picks are closed for this fight");return;}
+  var k=sportKey(promo,ev.date,b.a,b.b);
+  if(!_sportPicks[k])return;
+  var cur=_sportMetaOf(k),next=cur.m===m?"":m;
+  _sportMeta[k]={m:next,l:cur.l};_sportMetaSave();renderSportView();
+  toast(next?"Method: "+m:"Method cleared");
+  _sportSync(promo,ev,b,_sportPicks[k]);
+}
+function sportLock(promo,ev,b){
+  if(sportLocked(ev,b)){toast("Picks are closed for this fight");return;}
+  var k=sportKey(promo,ev.date,b.a,b.b);
+  if(!_sportPicks[k]||!locksOn(ev.date))return;
+  var cur=_sportMetaOf(k);
+  if(!cur.l&&_sportCardLocks(promo,ev)>=LOCKS_PER_CARD){toast("Only "+LOCKS_PER_CARD+" locks per card — unlock one first");return;}
+  _sportMeta[k]={m:cur.m,l:cur.l?0:1};_sportMetaSave();renderSportView();
+  toast(cur.l?"Lock removed":"🔒 Locked: "+_sportPicks[k].split(" ").pop()+" (+"+LOCK_HIT+" / "+LOCK_MISS+")");
+  _sportSync(promo,ev,b,_sportPicks[k]);
+}
 function sportPick(promo,ev,b,name){
   if(sportLocked(ev,b)){toast("Picks are closed for this fight");return;}
   checkName(function(){
     var k=sportKey(promo,ev.date,b.a,b.b);
     var unpick=_sportPicks[k]&&nmEq(_sportPicks[k],name);
-    if(unpick)delete _sportPicks[k];else _sportPicks[k]=name;
+    if(unpick){delete _sportPicks[k];delete _sportMeta[k];_sportMetaSave();}else _sportPicks[k]=name;
     _sportSave();renderSportView();
     toast(unpick?"Pick removed":"Picked: "+name.split(" ").pop());
     _sportSync(promo,ev,b,unpick?null:name);
@@ -8988,10 +9053,24 @@ function _sportSync(promo,ev,b,name){
       return Promise.all([fetch(SUPABASE_URL+"/rest/v1/picks"+sq,{method:"DELETE",headers:_sbHeaders()}),
                           fetch(SUPABASE_URL+"/rest/v1/picks"+flip,{method:"DELETE",headers:_sbHeaders()})]).then(function(rs){return rs[0];});
     }
-    var row={user_id:USER_ID,promotion:promo,nickname:userName,event_date:ev.date,event_name:ev.name,f1:b.a,f2:b.b,pick:name,method:"",confidence:0,updated_at:new Date().toISOString()};
-    var hdrs=Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return=minimal"});
+    var k=sportKey(promo,ev.date,b.a,b.b),meta=_sportMetaOf(k);
+    var row={user_id:USER_ID,promotion:promo,nickname:userName,event_date:ev.date,event_name:ev.name,f1:b.a,f2:b.b,pick:name,method:meta.m,confidence:meta.l?1:0,updated_at:new Date().toISOString()};
+    // A lock asks for the stored row back: the picks_cap_locks trigger clamps a
+    // lock past LOCKS_PER_CARD to 0 (another device on this account may hold
+    // two already), and this device must show what the board will score.
+    var wantLock=row.confidence>0;
+    var hdrs=Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return="+(wantLock?"representation":"minimal")});
     return fetch(SUPABASE_URL+"/rest/v1/picks?on_conflict=user_id,event_date,f1,f2",{method:"POST",headers:hdrs,body:JSON.stringify(row)}).then(function(r){
-      if(r.ok)fetch(SUPABASE_URL+"/rest/v1/picks"+flip,{method:"DELETE",headers:_sbHeaders()}).catch(function(){});
+      if(r.ok){
+        fetch(SUPABASE_URL+"/rest/v1/picks"+flip,{method:"DELETE",headers:_sbHeaders()}).catch(function(){});
+        if(wantLock)r.clone().json().then(function(rows){
+          var got=Array.isArray(rows)?rows[0]:null;
+          if(got&&!(got.confidence>0)&&_sportMetaOf(k).l){
+            _sportMeta[k]={m:_sportMetaOf(k).m,l:0};_sportMetaSave();renderSportView();
+            toast("🔒 Lock not saved — you already have "+LOCKS_PER_CARD+" locks on this card");
+          }
+        }).catch(function(){});
+      }
       return r;
     });
   }).then(function(r){if(r&&!r.ok)toast("Couldn't save that pick — check your connection");})
@@ -9003,14 +9082,18 @@ function _sportRestore(){
   if(!USER_ID)return Promise.resolve();
   return Promise.all(sportPromos().map(function(p){
     return _sbFetchAll("/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID)+_picksFor(p.id)+
-      "&select=event_date,f1,f2,pick&order=updated_at.desc,event_date.desc,f1.asc,f2.asc").then(function(rows){
+      "&select=event_date,f1,f2,pick,method,confidence&order=updated_at.desc,event_date.desc,f1.asc,f2.asc").then(function(rows){
       var added=0;
       (rows||[]).forEach(function(r){
         var hit=sportBout(_sportFeed.events,p.id,r.event_date,r.f1,r.f2);if(!hit)return;
         var k=sportKey(p.id,hit.ev.date,hit.bout.a,hit.bout.b);
-        if(_sportPicks[k]===undefined&&(nmEq(r.pick,hit.bout.a)||nmEq(r.pick,hit.bout.b))){_sportPicks[k]=nmEq(r.pick,hit.bout.a)?hit.bout.a:hit.bout.b;added++;}
+        if(_sportPicks[k]===undefined&&(nmEq(r.pick,hit.bout.a)||nmEq(r.pick,hit.bout.b))){
+          _sportPicks[k]=nmEq(r.pick,hit.bout.a)?hit.bout.a:hit.bout.b;added++;
+          // Its method and 🔒 come back with it, unless this device already has its own.
+          if(!Object.prototype.hasOwnProperty.call(_sportMeta,k))_sportMeta[k]={m:SPORT_METHODS.indexOf(r.method)>=0?r.method:"",l:r.confidence>0&&locksOn(hit.ev.date)?1:0};
+        }
       });
-      if(added){_sportSave();renderSportView();}
+      if(added){_sportSave();_sportMetaSave();renderSportView();}
     }).catch(function(){});
   }));
 }
@@ -9023,14 +9106,14 @@ function renderSportBoard(gen){
   var body=document.getElementById("lbBody"),promo=curSport();
   gen=gen||++_lbGen;
   body.innerHTML='<div class="lb-loading">Loading picks...</div>';
-  return _sbFetchAll("/rest/v1/picks?select=user_id,nickname,event_date,f1,f2,pick,promotion,updated_at&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+_picksFor(promo)).then(function(rows){
+  return _sbFetchAll("/rest/v1/picks?select=user_id,nickname,event_date,f1,f2,pick,method,confidence,promotion,updated_at&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+_picksFor(promo)).then(function(rows){
     if(gen!==_lbGen)return null;
     var room=typeof _curRoom==="function"?_curRoom():null,inRoom=room?roomHas(room):null;
     if(inRoom)rows=(rows||[]).filter(function(r){return inRoom(r.user_id||r.nickname);});
     var users=sportStandings(rows,_sportFeed.events,promo);
     body.innerHTML="";
     var hdr=_spEl("div","sport-board-hdr",_sportName(promo)+" standings");
-    hdr.appendChild(_spEl("small",null,(room?room.name+" · ":"")+"1 pt per correct winner"));
+    hdr.appendChild(_spEl("small",null,(room?room.name+" · ":"")+"UFC scoring: winner 1 · method +½ · underdog bonus · 🔒 ±1"));
     body.appendChild(hdr);
     if(!users.length){body.appendChild(_spEl("div","lb-empty","No "+_sportName(promo)+" picks yet. Pick a card to get on the board."));return users;}
     // Same row as the UFC board (lb-row), so switching sport changes the
@@ -9046,7 +9129,9 @@ function renderSportBoard(gen){
       if(me)nl.appendChild(_spEl("span","lb-you","YOU"));
       main.appendChild(nl);
       var ml=_spEl("div","lb-metaline");
-      ml.appendChild(_spEl("div","lb-detail",anyResolved?u.correct+"/"+u.resolved+" correct"+(u.total>u.resolved?" · "+(u.total-u.resolved)+" open":""):u.total+" pending"));
+      ml.appendChild(_spEl("div","lb-detail",anyResolved?u.correct+"/"+u.resolved+" correct"+
+        (u.methods?" · "+u.methods+" method"+(u.methods===1?"":"s"):"")+(u.dogPts?" · +"+u.dogPts+" underdog":"")+(u.lockPts?" · 🔒 "+(u.lockPts>0?"+":"")+u.lockPts:"")+
+        (u.total>u.resolved?" · "+(u.total-u.resolved)+" open":""):u.total+" pending"));
       main.appendChild(ml);
       r.appendChild(main);
       var right=_spEl("div","lb-right");right.appendChild(_spEl("div","lb-pts",anyResolved?u.pts+" pt"+(u.pts===1?"":"s"):u.total+(u.total===1?" pick":" picks")));

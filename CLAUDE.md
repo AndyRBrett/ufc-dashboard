@@ -48,7 +48,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:iq` | the AI Fight IQ write-up stating a number it wasn't given, drifting onto Grok, repeating one voice, or escaping its daily cap |
 | `npm run check:parity` | any score moving during the engine migration: board, main-card board, per-card, Belt lineage, recaps, Year Wrapped |
 | `npm run check:promotion` | a picks query without `promotion=eq.ufc`, letting another sport's picks onto the UFC board, Belt, restore or result pushes |
-| `npm run check:sports` | the sport switcher showing with nothing to pick, a PFL pick saved untagged or after its lock, or another sport scored on the UFC board |
+| `npm run check:sports` | the sport switcher showing with nothing to pick, a PFL pick saved untagged or after its lock, another sport scored on the UFC board, or its board drifting from `pickPts` (method, 🔒, underdog) |
 | `npm run check:rooms` | a room's board scoring differently from the main board, an anonymous device joining a room, or an invite link re-joining / re-prompting |
 | `npm run check:bundle` | send-reminders running last release's Lab code (a stale `_shared/lab-bundle.js`), or `parseDataJs` reading data.js differently from running it |
 | `npm run check:picklock` | the database accepting a pick, a changed pick or a deleted pick after its bout's segment started, or send-reminders writing lock times off the app's rule |
@@ -805,9 +805,22 @@ home page and on Ranks). It appears **only** when the validated feed
 the window, so it vanishes by itself when a promotion has nothing to pick. Another sport never
 touches the UFC path: its own view (`#sportApp`), its own local picks
 (`ufc_sport_picks`), rows tagged with its promotion, and its own board
-(`sportStandings` in `scoring.js`: 1 point per correct winner, no locks, no
-dog bonus, no method). `loadLeaderboard` hands off to `renderSportBoard`
-before reading any UFC rows. Picks close at the feed's `time` (ET) if given,
+(`sportStandings` in `scoring.js`). `loadLeaderboard` hands off to
+`renderSportBoard` before reading any UFC rows.
+
+**Every MMA promotion scores by the UFC rules, through the UFC function.**
+`sportStandings` sends each pick through `pickPts`, the same one the UFC board,
+Belt and recaps use: winner 1, method +0.5, underdog bonus off the bout's line
+(`sportOdds`: the feed's `{a,b}` becomes `{f1,f2}`), 🔒 +1 / -1 from
+`LOCKS_START`. It was its own 1-point rule until 2026-09-29; the boards are
+still separate (a row counts only on its own promotion's board), but the
+arithmetic can't drift, and `check:sports` asserts equality with `pickPts` for
+every pick / method / lock combination. The sport view has the UFC card's own
+controls (`method-pick-row`, `lock-btn`): method and 🔒 live in
+`ufc_sport_meta` beside `ufc_sport_picks` (whose shape is unchanged), save in
+the row's `method` / `confidence`, cap at `LOCKS_PER_CARD` per card in the app
+and in `picks_cap_locks` (0007 already counts per promotion), close with the
+pick, and a lock the server clamps is dropped locally, as on UFC. Picks close at the feed's `time` (ET) if given,
 else `SPORT_LOCK_UTC_H` on the card's date. Feed text is rendered with
 `textContent` only. `check:sports` holds all of it.
 
@@ -865,7 +878,17 @@ own infobox. **Each promotion's lock hour is a fact about where it fights**:
 bell is ~04:00 UTC and the 10:00 default would leave five hours pickable;
 DWCS 22:00 UTC, an hour before its 19:00 ET bell). A new promotion that fights
 before 10:00 UTC needs an entry before it is published; `check:sports` holds
-both. Title fights are read from
+both. **The underdog bonus needs a line per bout, and today there are none:**
+the Odds API's umbrella MMA feed lists essentially only UFC (`odds-state.json`'s
+`markets` has no PFL / RIZIN / DWCS date; the primary key is also out of quota).
+So `scrape.record_odds_lines` leaves every priced bout of the pull it already
+makes in `odds-lines.json` (no call, no quota; kept 3 days after the bout
+began; a spent key's empty pull never empties it) and `extra.apply_odds` gives a
+bout the line whose two fighters both match, within a day of the card. Until the
+books list these promotions nothing matches and every bout scores no bonus,
+which is correct. A line is never replaced by nothing (the market vanishes when
+a fight ends, and a bonus that vanished with it would rewrite a settled score)
+and stops moving once the bout has started. Title fights are read from
 a champion's "(c)" or the bout's own text ("championship", "for the … title";
 not eliminators), since an inaugural belt has no champion. A card needs `MIN_BOUTS` real
 bouts to be listed, and a failed fetch keeps the previous version, never an
