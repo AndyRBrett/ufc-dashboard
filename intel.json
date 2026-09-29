@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-29T01:47:46Z",
+ "generated_at": "2026-09-29T06:08:10Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -45,47 +45,15 @@
    "date": "2026-10-03",
    "items": [
     {
-     "title": "UFC 332 Embedded: Vlog Series - Episode 1",
-     "url": "https://www.youtube.com/watch?v=7vazc9f9oH8",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-09-28T14:23:38Z",
-     "thumb": "https://i4.ytimg.com/vi/7vazc9f9oH8/hqdefault.jpg",
-     "blurb": "King Green talks about being homeless, but not houseless; Imanol Rodriguez takes us inside living and training at the gym with Daniel Cormier; Natalia Silva has her camp at the UFC PI in Mexico; Johnny Walker and Damian…",
+     "title": "UFC 332 Odds: Payton Talbott a massive favorite over former champion",
+     "url": "https://www.sherdog.com/news/news/UFC-332-Odds-Payton-Talbott-a-massive-favorite-over-former-champion-202996",
+     "source": "Sherdog",
+     "kind": "article",
+     "published": "2026-09-29T03:39:59Z",
+     "thumb": null,
+     "blurb": "The Ultimate Fighting Championship returns to Salt Lake City on Oct. 3 for UFC 332 , with a new women’s flyweight champion set to be crowned in the main event.",
      "fighters": [
-      "Ateba Gautier",
-      "Damian Pinas",
-      "Imanol Rodriguez",
-      "Johnny Walker",
-      "King Green",
-      "Natalia Silva",
-      "Payton Talbott",
-      "Wang Cong"
-     ]
-    },
-    {
-     "title": "UFC 332 Countdown - Full Episode",
-     "url": "https://www.youtube.com/watch?v=2v1rKTFJ8_0",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-09-27T11:45:30Z",
-     "thumb": "https://i3.ytimg.com/vi/2v1rKTFJ8_0/hqdefault.jpg",
-     "blurb": "UFC 332 Countdown previews the promotion’s return to Salt Lake City, where Brazil’s Natalia Silva and China’s Wang Cong battle for undisputed flyweight gold in the main event.. Watch UFC on Paramount Plus ➡️…",
-     "fighters": [
-      "Natalia Silva",
-      "Wang Cong"
-     ]
-    },
-    {
-     "title": "Wang Cong's Career So Far #ufc332",
-     "url": "https://www.youtube.com/shorts/WicY_TxKy8o",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-09-28T21:09:42Z",
-     "thumb": "https://i4.ytimg.com/vi/WicY_TxKy8o/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS, the digital subscription service of the UFC. Visit…",
-     "fighters": [
-      "Wang Cong"
+      "Payton Talbott"
      ]
     },
     {
