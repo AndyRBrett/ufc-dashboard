@@ -1,7 +1,7 @@
 {
- "last_fetch": "2026-09-28T22:58:00Z",
+ "last_fetch": "2026-09-29T00:46:00Z",
  "publish": true,
- "events": 4,
+ "events": 9,
  "report": [
   {
    "promotion": "pfl",
@@ -31,9 +31,49 @@
    "promotion": "pfl",
    "event": "PFL Dubai: Nemkov vs. Bilostenniy",
    "date": "2026-11-14",
-   "bouts": 8,
+   "bouts": 9,
    "source": "article",
    "main_event": "Vadim Nemkov vs Sergey Bilostenniy"
+  },
+  {
+   "promotion": "rizin",
+   "event": "Rizin Landmark 16",
+   "date": "2026-10-03",
+   "bouts": 13,
+   "source": "year page",
+   "main_event": "Yoshinori Horie vs Sho Patrick Usami"
+  },
+  {
+   "promotion": "rizin",
+   "event": "Rizin 55",
+   "date": "2026-11-08",
+   "bouts": 5,
+   "source": "year page",
+   "main_event": "Makoto Takahashi vs Tony Laramie"
+  },
+  {
+   "promotion": "dwcs",
+   "event": "Dana White's Contender Series 94",
+   "date": "2026-09-29",
+   "bouts": 5,
+   "source": "season page",
+   "main_event": "George Staines vs Loai Abushaar"
+  },
+  {
+   "promotion": "dwcs",
+   "event": "Dana White's Contender Series 95",
+   "date": "2026-10-06",
+   "bouts": 5,
+   "source": "season page",
+   "main_event": "Roque Conceicao Moreira Jr. vs Alexander Chavez"
+  },
+  {
+   "promotion": "dwcs",
+   "event": "Dana White's Contender Series 96",
+   "date": "2026-10-13",
+   "bouts": 3,
+   "source": "season page",
+   "main_event": "Douglas da Lapa vs Davi Cabral"
   }
  ]
 }

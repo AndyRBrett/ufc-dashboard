@@ -1,14 +1,89 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-09-28T00:38:18Z",
+ "generated_at": "2026-09-29T00:46:00Z",
  "promotions": [
   {
    "id": "pfl",
    "name": "PFL",
    "sport": "mma"
+  },
+  {
+   "id": "rizin",
+   "name": "RIZIN",
+   "sport": "mma"
+  },
+  {
+   "id": "dwcs",
+   "name": "DWCS",
+   "sport": "mma"
   }
  ],
  "events": [
+  {
+   "promotion": "dwcs",
+   "name": "Dana White's Contender Series 94",
+   "date": "2026-09-29",
+   "venue": "Meta Apex",
+   "location": "Las Vegas, Nevada, United States",
+   "broadcast": "",
+   "bouts": [
+    {
+     "a": "George Staines",
+     "b": "Loai Abushaar",
+     "label": "Main Event",
+     "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Ilias Bulaid",
+     "b": "Erick Visconde",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Camila Reynoso",
+     "b": "Aieza Ramos Bertolso",
+     "label": "",
+     "division": "Women's Strawweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Ian Escuza",
+     "b": "Luca Borando",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Zaurbek Sabanov",
+     "b": "Adama Diop",
+     "label": "",
+     "division": "Heavyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    }
+   ]
+  },
   {
    "promotion": "pfl",
    "name": "PFL MENA 11",
@@ -121,6 +196,224 @@
      "b": "Ali Alshowakh",
      "label": "",
      "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    }
+   ]
+  },
+  {
+   "promotion": "rizin",
+   "name": "Rizin Landmark 16",
+   "date": "2026-10-03",
+   "venue": "Happiness Arena",
+   "location": "Nagasaki",
+   "broadcast": "",
+   "bouts": [
+    {
+     "a": "Yoshinori Horie",
+     "b": "Sho Patrick Usami",
+     "label": "Main Event",
+     "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Viktor Kolesnik",
+     "b": "Koyomi Matsushima",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Ryusei Ashizawa",
+     "b": "Seiya Inoue",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Kate Oyama",
+     "b": "Noeru Narita",
+     "label": "",
+     "division": "Women's Super Atomweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Ryan Cafaro",
+     "b": "Hyuma Yasui",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Kohei Sugiyama",
+     "b": "Kaito Oda",
+     "label": "",
+     "division": "Flyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Hidetaka Arato",
+     "b": "Ken Hasegawa",
+     "label": "",
+     "division": "Heavyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Alan Yamaniha",
+     "b": "Seigo Yamamoto",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Mac Papalii",
+     "b": "Alboury Domou Deke Bi",
+     "label": "",
+     "division": "Heavyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Ryota Oki",
+     "b": "Daisuke Okumiya",
+     "label": "",
+     "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Ryusei Imamura",
+     "b": "Reon Uemura",
+     "label": "",
+     "division": "Flyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Kotaro Mori",
+     "b": "Yuki",
+     "label": "",
+     "division": "Catchweight (220 Lb)",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Kakeru",
+     "b": "Ayuto",
+     "label": "",
+     "division": "Catchweight (143 Lb)",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    }
+   ]
+  },
+  {
+   "promotion": "dwcs",
+   "name": "Dana White's Contender Series 95",
+   "date": "2026-10-06",
+   "venue": "Meta Apex",
+   "location": "Las Vegas, Nevada, United States",
+   "broadcast": "",
+   "bouts": [
+    {
+     "a": "Roque Conceicao Moreira Jr.",
+     "b": "Alexander Chavez",
+     "label": "Main Event",
+     "division": "Flyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Ivan Gnizditskiy",
+     "b": "Nell Ariano",
+     "label": "",
+     "division": "Light Heavyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Ryuho Miyaguchi",
+     "b": "Matheus Soares",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Salhahuddin Everett",
+     "b": "Ozzy Martin",
+     "label": "",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Alivia Bierley",
+     "b": "Summer Onley",
+     "label": "",
+     "division": "Women's Bantamweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -274,6 +567,49 @@
      "b": "Oussama El Idrissi",
      "label": "",
      "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    }
+   ]
+  },
+  {
+   "promotion": "dwcs",
+   "name": "Dana White's Contender Series 96",
+   "date": "2026-10-13",
+   "venue": "Meta Apex",
+   "location": "Las Vegas, Nevada, United States",
+   "broadcast": "",
+   "bouts": [
+    {
+     "a": "Douglas da Lapa",
+     "b": "Davi Cabral",
+     "label": "Main Event",
+     "division": "Middleweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Luis Francischinelli",
+     "b": "William Rentz",
+     "label": "",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Aline Pereira",
+     "b": "Smilla Sundell",
+     "label": "",
+     "division": "Women's Bantamweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -447,6 +783,71 @@
    ]
   },
   {
+   "promotion": "rizin",
+   "name": "Rizin 55",
+   "date": "2026-11-08",
+   "venue": "LaLa Arena Tokyo-Bay",
+   "location": "Funabashi",
+   "broadcast": "",
+   "bouts": [
+    {
+     "a": "Makoto Takahashi",
+     "b": "Tony Laramie",
+     "label": "Main Event",
+     "division": "Flyweight",
+     "title": true,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Ryuya Fukuda",
+     "b": "Kim Soo-chul",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Jinnosuke Kashimura",
+     "b": "Shinobu Ota",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Abijah Kaleo Meheula",
+     "b": "Kazuki Aimoto",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Hiroaki Suzuki",
+     "b": "Kim Sei-min",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    }
+   ]
+  },
+  {
    "promotion": "pfl",
    "name": "PFL Dubai: Nemkov vs. Bilostenniy",
    "date": "2026-11-14",
@@ -536,6 +937,17 @@
      "b": "Movlid Khaybulaev",
      "label": "",
      "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Lewis McGrillen",
+     "b": "Nawras Abzakh",
+     "label": "",
+     "division": "Bantamweight",
      "title": false,
      "odds": null,
      "winner": "",
