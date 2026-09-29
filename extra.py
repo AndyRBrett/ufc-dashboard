@@ -37,6 +37,7 @@ ROOT = Path(__file__).resolve().parent
 LIVE_JSON = ROOT / "events-extra.json"
 CANDIDATE_JSON = ROOT / "events-extra.candidate.json"
 STATE_JSON = ROOT / "extra-state.json"
+LINES_JSON = ROOT / "odds-lines.json"     # scrape.py's record of every priced bout it saw
 
 WINDOW_PAST_DAYS = 2      # a card stays through its own fight night (UTC rollover)
 WINDOW_AHEAD_DAYS = int(os.environ.get("EXTRA_WINDOW_DAYS", "60"))
@@ -376,8 +377,67 @@ def link_from_year_page(year_wikitext, name, date):
     return best[1] if best else None
 
 
+# -------------------------------------------------------------------- odds --
+# The underdog bonus needs a line per bout. scrape.py leaves every priced bout
+# from the Odds API pull it already makes in odds-lines.json; a bout here takes
+# the line whose two fighters BOTH match it and whose start is within a day of
+# the card. Until the books list these promotions there is nothing to match and
+# every bout keeps odds None (no bonus), which is the correct answer, not an
+# error. Two rules keep it honest:
+#   - a line is never replaced by nothing: the market disappears the moment a
+#     fight ends, and a bonus that vanished with it would rewrite a settled score;
+#   - it stops moving once the bout has started (the closing line, like UFC's).
+LINE_DATE_SLACK_DAYS = 1
+
+
+def _bout_key(a, b):
+    return tuple(sorted([re.sub(r"[^a-z]", "", a.lower()), re.sub(r"[^a-z]", "", b.lower())]))
+
+
+def _find_line(lines, a, b, date):
+    """The odds-lines entry for this bout, as {"a": odds for a, "b": odds for b}, or None."""
+    try:
+        want = datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    except (TypeError, ValueError):
+        return None
+    best = None
+    for line in lines or []:
+        try:
+            la, lb, oa, ob = line["a"], line["b"], line["a_odds"], line["b_odds"]
+        except (KeyError, TypeError):
+            continue
+        if not (isinstance(oa, (int, float)) and isinstance(ob, (int, float))):
+            continue
+        straight = scrape.names_match(la, a) and scrape.names_match(lb, b)
+        flipped = scrape.names_match(la, b) and scrape.names_match(lb, a)
+        if not (straight or flipped) or scrape.names_match(a, b):
+            continue
+        t = scrape._parse_iso_utc(line.get("commence_time"))
+        if t is not None and abs((t - want).total_seconds()) > (LINE_DATE_SLACK_DAYS + 0.5) * 86400:
+            continue                     # the same two fighters, another night
+        gap = abs((t - want).total_seconds()) if t is not None else 0
+        if best is None or gap < best[0]:
+            best = (gap, {"a": oa, "b": ob} if straight else {"a": ob, "b": oa}, t)
+    return best[1:] if best else None
+
+
+def apply_odds(bouts, date, lines, previous_bouts, now):
+    """Give each bout its line (see the rules above). Mutates and returns bouts."""
+    prev = {_bout_key(b["a"], b["b"]): b for b in previous_bouts or []}
+    for b in bouts:
+        old = (prev.get(_bout_key(b["a"], b["b"])) or {}).get("odds")
+        hit = _find_line(lines, b["a"], b["b"], date)
+        line, start = (hit[0], hit[1]) if hit else (None, None)
+        started = bool(b.get("winner")) or (start is not None and now >= start)
+        if old and (started or not line):
+            b["odds"] = old              # frozen, or the market is gone: keep what we had
+        elif line:
+            b["odds"] = line
+    return bouts
+
+
 # ------------------------------------------------------------------- build --
-def build(fetch, now, previous=None):
+def build(fetch, now, previous=None, lines=None):
     """Build the feed. `fetch(slug) -> wikitext or ""` (scrape.fetch_wikitext
     in production, a dict lookup in the tests)."""
     prev_events = {(e.get("promotion"), e.get("date"), e.get("name")): e
@@ -440,6 +500,7 @@ def build(fetch, now, previous=None):
                     continue
                 bouts = card_from_wikitext(ev["wt"])
                 source = "season page"
+                apply_odds(bouts, ev["date"], lines, (prev_events.get((p["id"], ev["date"], ev["name"])) or {}).get("bouts"), now)
                 entry = {"promotion": p["id"], "name": ev["name"], "date": ev["date"],
                          "venue": ev["venue"], "location": ev["location"], "broadcast": "",
                          "bouts": bouts}
@@ -460,6 +521,7 @@ def build(fetch, now, previous=None):
             entry = {"promotion": p["id"], "name": ev["name"], "date": ev["date"],
                      "venue": ev["venue"], "location": ev["location"], "broadcast": "",
                      "bouts": bouts}
+            apply_odds(bouts, ev["date"], lines, (prev_events.get((p["id"], ev["date"], ev["name"])) or {}).get("bouts"), now)
             _publishable(p, ev, bouts, entry, source, prev_events, events, report)
     events.sort(key=lambda e: (e["date"], e["promotion"]))
     feed = {"about": ABOUT, "generated_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -538,7 +600,7 @@ def main(now=None):
     if not go:
         print("extra: skipped (%s)" % why)
         return 0
-    feed, report = build(scrape.fetch_wikitext, now, previous)
+    feed, report = build(scrape.fetch_wikitext, now, previous, _read(LINES_JSON).get("lines"))
     for r in report:
         if r.get("problem"):
             print("::warning::extra: %s" % json.dumps(r))

@@ -159,7 +159,7 @@ jobs:
           # state file resets every run and every standing mover re-alerts —
           # which is exactly the behaviour the dedup exists to stop.
           for f in data.js overseer-status.json odds-snapshots.jsonl \
-                   odds-series.json odds-state.json odds-alert-state.json \
+                   odds-series.json odds-state.json odds-alert-state.json odds-lines.json \
                    health-report.json intel.json intel-state.json \
                    events-extra.json events-extra.candidate.json extra-state.json; do
             if [ -f "$f" ]; then git add "$f"; fi
