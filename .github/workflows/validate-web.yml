@@ -29,6 +29,7 @@
 #   check:promotion — every UFC picks query is scoped to promotion=eq.ufc (other sports never reach the UFC board)
 #   check:sports    — the sport switcher: hidden with nothing to pick, PFL picks tagged pfl, its own board and locks
 #   check:bundle    — send-reminders' bundled Lab code matches lab/, scoring.js and index.html
+#   check:photos    — a fighter's photo is found once, is never someone else's face, and a miss is retried
 #   check:picklock  — the database refuses a pick, change or delete once its bout's segment has started
 name: Validate Web
 
@@ -117,3 +118,5 @@ jobs:
         run: npm run check:picklock
       - name: No outside text reaches the page as HTML
         run: npm run check:html
+      - name: Fighter photos
+        run: npm run check:photos
