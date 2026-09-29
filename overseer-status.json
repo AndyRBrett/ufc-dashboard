@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T16:42:53Z",
+  "generated_at": "2026-09-29T17:48:02Z",
   "events_tracked": 11,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "status": "ok",
-      "last_changed_at": "2026-09-29T11:32:48Z",
+      "last_changed_at": "2026-09-29T17:48:02Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -105,7 +105,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-09-29T16:42:53Z",
+      "last_changed_at": "2026-09-29T17:48:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-29T16:42:53Z",
+      "last_changed_at": "2026-09-29T17:48:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -135,7 +135,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-29T16:42:53Z",
+      "last_changed_at": "2026-09-29T17:48:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-29T16:42:53Z",
+      "last_changed_at": "2026-09-29T17:48:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -232,17 +232,17 @@
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Johnny Walker",
       "f2": "Mick Parkin",
-      "f1_movement": -32,
-      "f2_movement": 228,
-      "magnitude": 228,
+      "f1_movement": -29,
+      "f2_movement": 225,
+      "magnitude": 225,
       "main_event": false,
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": 6.3,
-      "f2_prob_shift": -6.5,
-      "priority": 319.2
+      "f1_prob_shift": 5.8,
+      "f2_prob_shift": -5.9,
+      "priority": 315.0
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
@@ -387,6 +387,22 @@
       "f1_prob_shift": -3.6,
       "f2_prob_shift": 3.0,
       "priority": 71.0
+    },
+    {
+      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+      "f1": "King Green",
+      "f2": "Esteban Ribovics",
+      "f1_movement": -48,
+      "f2_movement": 48,
+      "magnitude": 48,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 45,
+      "low_confidence": false,
+      "wc": "Lightweight",
+      "f1_prob_shift": 4.7,
+      "f2_prob_shift": -3.4,
+      "priority": 67.2
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
