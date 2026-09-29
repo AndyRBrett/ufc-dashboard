@@ -41,6 +41,11 @@ jobs:
         run: npm run check:picklock
       - name: Fight IQ write-up test
         run: npm run check:iq
+      # FightBot's APP_GUIDE lives in ai-breakdown: a guide that misstates
+      # scoring or names a gone button must not deploy. Handler-only (this job
+      # has no browser); validate-web runs the full check:guide.
+      - name: FightBot app guide test
+        run: npm run check:guide:fn
 
   deploy:
     needs: validate

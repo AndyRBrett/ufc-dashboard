@@ -24,6 +24,7 @@
 #   check:brief     — the Friday Fight Week Brief push goes out once, Friday 7pm ET, linking to the Lab
 #   check:swap      — a bout pulled from a card alerts exactly the people who picked it, once, before it locks
 #   check:iq        — the AI Fight IQ write-up never states a number it wasn't given, stays on Claude, is capped
+#   check:guide     — FightBot's app guide matches scoring.js and the app's real buttons, stays on Claude, is bounded
 #   check:parity    — board, belt, recaps and Wrapped are byte-identical to the pre-migration golden
 #   check:rooms     — a room's board is the main board filtered; only email accounts join; invites work
 #   check:promotion — every UFC picks query is scoped to promotion=eq.ufc (other sports never reach the UFC board)
@@ -104,6 +105,8 @@ jobs:
         run: npm run check:swap
       - name: Fight IQ write-up test
         run: npm run check:iq
+      - name: FightBot app guide test
+        run: npm run check:guide
       - name: Scoring parity (engine migration)
         run: npm run check:parity
       - name: Watch Party rooms
