@@ -131,7 +131,9 @@ const slot = () => ({ photo: null });
 check("the UFC rows use _photoInto", /_photoInto\(phWrap,fighter\.n\)/.test(html));
 check("the sport view uses _photoInto", /_photoInto\(av,nm\)/.test(html));
 check("no lookup stores a miss as \"none\" any more", !/FIGHTER_PHOTOS\[[^\]]+\]\s*=\s*"none"/.test(html) && !/FIGHTER_PHOTOS\[[^\]]+\]\s*=\s*null/.test(html));
-check("old cached photos are migrated, misses dropped", /getItem\("ufc_photos"\)/.test(html) && /\^https:/.test(html.slice(html.indexOf("var FIGHTER_PHOTOS"), html.indexOf("var FIGHTER_PHOTOS") + 900)));
+const load = html.slice(html.indexOf("var FIGHTER_PHOTOS"), html.indexOf("var FIGHTER_PHOTOS") + 1200);
+check("legacy ufc_photos hits are discarded, not migrated (they were never checked against the page)",
+  !/getItem\("ufc_photos"\)/.test(load) && /getItem\("ufc_photos2"\)/.test(load) && /removeItem\("ufc_photos"\)/.test(load));
 
 if (failures) { console.error("\ncheck:photos — " + failures + " failure(s)"); process.exit(1); }
 console.log("\ncheck:photos — all good");

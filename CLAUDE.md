@@ -823,7 +823,8 @@ name that belongs to an actor shows initials. Misses are stored with a time
 (`ufc_photo_miss`, retried after 7 days), never as a permanent `"none"`; a
 network error records nothing, so the next visit retries. Its old `ufc_photos`
 key persisted misses forever and in-flight lookups as `null`, which a reload
-read as "still loading" and never fetched. `npm run check:photos` holds it,
+read as "still loading" and never fetched; it is deleted, not migrated, since
+its hits were never checked against the page and could be the wrong face. `npm run check:photos` holds it,
 mutation-tested.
 
 ## Non-UFC cards: checked in shadow mode, now published

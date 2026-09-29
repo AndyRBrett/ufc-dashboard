@@ -2026,9 +2026,12 @@ var MAIN_CARD_BOUTS=5;
 // name -> photo URL (hits only) and name -> when a lookup last found nothing
 // (kept 7 days, then retried). The old "ufc_photos" key stored misses as "none"
 // forever and in-flight lookups as null, which a reload read as "still
-// loading" and never retried: its URLs are carried over, nothing else.
+// loading" and never retried. Nothing is carried over from it: that lookup
+// also never checked what the page was about, so its hits can be a same-named
+// non-fighter's face, and a migrated URL would never be looked at again.
 var FIGHTER_PHOTOS={},FIGHTER_PHOTO_MISS={};
-try{FIGHTER_PHOTOS=JSON.parse(localStorage.getItem("ufc_photos2")||"null")||(function(){var o={},old=JSON.parse(localStorage.getItem("ufc_photos")||"{}");Object.keys(old).forEach(function(k){if(/^https:/.test(String(old[k])))o[k]=old[k];});return o;})();}catch(e){FIGHTER_PHOTOS={};}
+try{FIGHTER_PHOTOS=JSON.parse(localStorage.getItem("ufc_photos2")||"{}")||{};}catch(e){FIGHTER_PHOTOS={};}
+try{localStorage.removeItem("ufc_photos");}catch(e){}
 try{FIGHTER_PHOTO_MISS=JSON.parse(localStorage.getItem("ufc_photo_miss")||"{}")||{};}catch(e){FIGHTER_PHOTO_MISS={};}
 function _safeImgUrl(url){if(!url||url==="none")return null;try{var p=new URL(url);if(p.protocol!=="https:")return null;if(!p.hostname.endsWith(".wikimedia.org")&&!p.hostname.endsWith(".wikipedia.org"))return null;return url;}catch(e){return null;}}
 // Picks before this date are the wiped pre-UFC-Freedom-250 test phase. They were
