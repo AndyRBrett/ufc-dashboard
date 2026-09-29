@@ -18,6 +18,17 @@ import { join, dirname, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
+// Pick buttons show surnames ("One"), so a bout is found by a fighter's full name.
+async function pickBy(page, full) {
+  const ok = await page.evaluate((n) => {
+    for (const r of document.querySelectorAll("#sportApp .fight-row")) {
+      const fn = [...r.querySelectorAll(".fn")].map((x) => x.textContent), i = fn.indexOf(n);
+      if (i >= 0) { r.querySelectorAll(".pick-row .pick-btn")[i].click(); return true; }
+    }
+    return false;
+  }, full);
+  if (!ok) throw new Error("no bout for " + full);
+}
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 let failures = 0;
 const check = (name, ok) => { if (ok) console.log("  ✓ " + name); else { failures++; console.error("  ✗ " + name); } };
@@ -221,9 +232,9 @@ else {
       await page.waitForTimeout(300);
       const txt = () => page.evaluate(() => document.getElementById("sportApp").textContent);
       const meta = () => page.evaluate(() => JSON.parse(localStorage.getItem("ufc_sport_meta") || "{}"));
-      const nothing = await page.evaluate(() => document.querySelectorAll("#sportApp .sport-meta-row").length);
+      const nothing = await page.evaluate(() => document.querySelectorAll("#sportApp .method-pick-row").length);
       check("no pick yet: no method or lock controls", nothing === 0);
-      await page.click('#sportApp .sport-pick:has-text("Ann One")');
+      await pickBy(page, "Ann One");
       await page.waitForTimeout(250);
       const how = await page.evaluate(() => [...document.querySelectorAll("#sportApp .method-pick-row .pick-btn")].map((b) => b.textContent));
       check("picking a winner shows How: KO/TKO, Sub, Dec (the UFC card's own controls)", JSON.stringify(how) === '["KO/TKO","Sub","Dec"]');
@@ -244,23 +255,24 @@ else {
       post = JSON.parse((writes.find((w) => w.method === "POST") || { body: "{}" }).body);
       check("🔒 saves confidence 1 and keeps the method", post.confidence === 1 && post.method === "Dec" && post.promotion === "pfl");
       check("...the card now counts 1/2 locks", /1\/2 locks/.test(await txt()));
-      await page.click('#sportApp .sport-pick:has-text("Bea One")');
+      await pickBy(page, "Bea One");
       await page.waitForTimeout(250);
-      await page.click('#sportApp .sport-bout:has-text("Bea One") .lock-btn');
+      await page.click('#sportApp .fight-row:has(.fn:text-is("Bea One")) .lock-btn');
       await page.waitForTimeout(250);
       check("a second lock is allowed: 2/2 locks", /2\/2 locks/.test(await txt()));
-      await page.click('#sportApp .sport-pick:has-text("Cat One")');
+      await page.click("#sportApp .more-btn");   // bouts past the co-main sit behind "N more fights", as on UFC
+      await pickBy(page, "Cat One");
       await page.waitForTimeout(250);
       check("...and the next bout's label says none are left", /No locks left/.test(await txt()));
       writes.length = 0;
-      await page.click('#sportApp .sport-bout:has-text("Cat One") .lock-btn');
+      await page.click('#sportApp .fight-row:has(.fn:text-is("Cat One")) .lock-btn');
       await page.waitForTimeout(250);
       const toastTxt = await page.evaluate(() => document.getElementById("toast").textContent);
       check("a third lock is refused (2 per card), nothing sent", /Only 2 locks per card/.test(toastTxt) && !writes.some((w) => w.method === "POST") && Object.values(await meta()).filter((m) => m.l).length === 2);
-      await page.click('#sportApp .sport-bout:has-text("Ann One") .lock-btn');       // unlock one
+      await page.click('#sportApp .fight-row:has(.fn:text-is("Ann One")) .lock-btn');       // unlock one
       await page.waitForTimeout(250);
       check("unlocking frees the slot: 1/2 locks", /1\/2 locks/.test(await txt()));
-      await page.click('#sportApp .sport-pick:has-text("Ann One")');                 // un-pick
+      await pickBy(page, "Ann One");                 // un-pick
       await page.waitForTimeout(250);
       check("un-picking drops the pick's method and lock too", !Object.keys(await meta()).some((k) => /Ann One/.test(k)));
       check("no page errors with method and locks", errors.length === 0 || (console.error("    " + errors.join("\n    ")), false));
@@ -272,7 +284,7 @@ else {
       const F3 = { promotions: [{ id: "pfl", name: "PFL" }], events: [{ promotion: "pfl", name: "PFL Clamp", date: future, bouts: [{ a: "Dee One", b: "Dee Two" }, { a: "Eve One", b: "Eve Two" }] }] };
       const { page } = await boot(F3);
       await page.click("#sportBar .sport-tab:nth-child(2)");
-      await page.click('#sportApp .sport-pick:has-text("Dee One")');
+      await pickBy(page, "Dee One");
       await page.waitForTimeout(200);
       await page.click("#sportApp .lock-btn");
       await page.waitForTimeout(500);
@@ -306,7 +318,7 @@ else {
       check("switching to PFL hides the UFC card and shows PFL's", s.other && !s.appShown && s.sportShown && /PFL Test Card/.test(s.sportText) && s.sport === "pfl");
       check("an invalid feed card (one fighter twice) is dropped", !/Bad Card/.test(s.sportText));
       check("feed text is rendered as text, never HTML", s.imgs === 0 && /<img src=x onerror=alert\(1\)>/.test(s.sportText));
-      await page.click('#sportApp .sport-pick:has-text("Jena Bishop")');
+      await pickBy(page, "Jena Bishop");
       await page.waitForTimeout(400);
       s = await state(page);
       const post = writes.find((w) => w.method === "POST");
@@ -316,7 +328,7 @@ else {
       check("a pick also clears the same bout's row in the other corner order",
         writes.some((w) => w.method === "DELETE" && /promotion=eq\.pfl/.test(w.url) && /f1=eq\.Jena%20Bishop&f2=eq\.Liz%20Carmouche/.test(w.url)));
       writes.length = 0;
-      await page.click('#sportApp .sport-pick:has-text("Jena Bishop")');
+      await pickBy(page, "Jena Bishop");
       await page.waitForTimeout(400);
       const dels = writes.filter((w) => w.method === "DELETE");
       check("un-picking deletes only that promotion's rows, both corner orders",
@@ -337,10 +349,10 @@ else {
       check("a timed card locks at its own date's ET offset (EST after the November change, EDT from March's)",
         lock.nov === Date.UTC(2026, 10, 14, 23, 0) && lock.oct === Date.UTC(2026, 9, 16, 22, 0) &&
         lock.mar === Date.UTC(2027, 2, 13, 23, 0) && lock.mar2 === Date.UTC(2027, 2, 14, 22, 0) && lock.none === Date.UTC(2026, 10, 14, 10, 0));
-      const locked = await page.evaluate(() => [...document.querySelectorAll("#sportApp .sport-pick")].filter((b) => /Done/.test(b.textContent)).every((b) => b.disabled));
+      const locked = await page.evaluate(() => { const bs = [...document.querySelectorAll("#sportApp .fight-row")].filter((r) => /Done/.test(r.textContent)).flatMap((r) => [...r.querySelectorAll(".pick-btn")]); return bs.length > 0 && bs.every((b) => b.classList.contains("plocked") && !b.onclick); });
       check("a card past its lock time can't be picked", locked);
-      const won = await page.evaluate(() => [...document.querySelectorAll("#sportApp .sport-pick.won")].map((b) => b.textContent));
-      check("results show on the card", won.some((t) => /Done A/.test(t)) && won.some((t) => /Done D/.test(t)));
+      const won = await page.evaluate(() => [...document.querySelectorAll("#sportApp .pick-btn.pcorrect")].map((b) => b.textContent));
+      check("results show on the card", won.includes("A") && won.includes("D"));
       // The hero counts down to the next card's lock. When that lock passes
       // with another card still open, the page moves on by itself: the hero
       // names the next card and the closed card's buttons lock, with no
@@ -354,11 +366,11 @@ else {
         const real = Date.now, t = sportLockMs(first) + 1000;
         Date.now = () => t;
         try { _sportTick(); } finally { Date.now = real; }
-        const box = [...document.querySelectorAll("#sportApp .sport-ev")].find((x) => x.textContent.includes(first.name));
+        const box = [...document.querySelectorAll("#sportApp .ev-band")].find((x) => x.textContent.includes(first.name)).nextElementSibling;
         const out = { before, after: document.querySelector("#sportApp .cd-event").textContent,
           heroes: document.querySelectorAll("#sportApp .sport-hero").length,
-          names: [...document.querySelectorAll("#sportApp .sport-ev-name")].map((x) => x.textContent),
-          locked: [...box.querySelectorAll(".sport-pick")].every((b) => b.disabled) };
+          names: [...document.querySelectorAll("#sportApp .ev-name")].map((x) => x.textContent),
+          locked: [...box.querySelectorAll(".pick-btn")].every((b) => b.classList.contains("plocked") && !b.onclick) };
         _sportFeed.events.pop(); renderSportView();
         return out;
       });

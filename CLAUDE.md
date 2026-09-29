@@ -840,7 +840,11 @@ Belt and recaps use: winner 1, method +0.5, underdog bonus off the bout's line
 `LOCKS_START`. It was its own 1-point rule until 2026-09-29; the boards are
 still separate (a row counts only on its own promotion's board), but the
 arithmetic can't drift, and `check:sports` asserts equality with `pickPts` for
-every pick / method / lock combination. The sport view has the UFC card's own
+every pick / method / lock combination. The sport view is built like the UFC card
+(`sportEventBlock` / `sportFightRow` mirror `makeEventBlock` / `makeFightRow`: same
+classes, `makeFighter`, `makeOddsRow`, `.pick-btn` surname buttons, "N more fights"),
+with `fighter.other` so it never borrows a UFC record, form or rank; both UFC and
+sport cards carry `N/M picked` and `n/2 locks` badges. It has the UFC card's own
 controls (`method-pick-row`, `lock-btn`): method and 🔒 live in
 `ufc_sport_meta` beside `ufc_sport_picks` (whose shape is unchanged), save in
 the row's `method` / `confidence`, cap at `LOCKS_PER_CARD` per card in the app

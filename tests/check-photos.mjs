@@ -160,7 +160,7 @@ const slot = () => ({ photo: null });
 }
 // 7. wiring: both views use it, and the old permanent miss is gone
 check("the UFC rows use _photoInto", /_photoInto\(phWrap,fighter\.n\)/.test(html));
-check("the sport view uses _photoInto", /_photoInto\(av,nm\)/.test(html));
+check("the sport view builds its rows with makeFighter (so it uses _photoInto too)", /function sportFightRow[\s\S]*?makeFighter\(f1,[\s\S]*?makeFighter\(f2,/.test(html));
 check("no lookup stores a miss as \"none\" any more", !/FIGHTER_PHOTOS\[[^\]]+\]\s*=\s*"none"/.test(html) && !/FIGHTER_PHOTOS\[[^\]]+\]\s*=\s*null/.test(html));
 const load = html.slice(html.indexOf("var FIGHTER_PHOTOS"), html.indexOf("var FIGHTER_PHOTOS") + 1200);
 check("legacy ufc_photos hits are discarded, not migrated (they were never checked against the page)",
