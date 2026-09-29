@@ -8934,6 +8934,9 @@ function taleEl(t,evName){
   if(typeof fightBotCallEl==="function"&&typeof drawTapePoster==="function"){
     var acts=_rmEl("div","tape-acts"),call=null,file=null,drawn=0;
     var prep=function(){
+      // The old image is stale from here on (a call just arrived): Share waits
+      // for the redraw rather than sending a poster without the call.
+      file=null;
       var n=++drawn,ready=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve();
       ready.then(function(){
         var cv=drawTapePoster(document.createElement("canvas"),t,evName,call);
@@ -8958,10 +8961,11 @@ function tapeFacts(t){
   f.push("The app's read: "+t.verdict);
   return f;
 }
-// A call belongs to this pairing on this card with these numbers; anything
-// changing (a new card, a new #2, a point) asks again.
+// A call belongs to exactly the tape it was told about: the card plus every
+// fact sent. Any column changing (a point, a restored pick moving accuracy, a
+// title) asks again rather than reusing a call about the old numbers.
 function tapeCallKey(t,evName){
-  return "tape|"+(evName||"")+"|"+t.a.name+"|"+t.a.pts+"|"+t.b.name+"|"+t.b.pts;
+  return "tape|"+(evName||"")+"|"+tapeFacts(t).join("|");
 }
 // tape-poster:start
 // The Tale of the Tape as a fight poster: the room's top two face off with the

@@ -85,6 +85,18 @@ check("…and the clean retry is what's returned", r.status === 200 && !/12-0/.t
 replies = ["Andy hits 90% of locks.", "Still 90%, trust me."];
 r = await ask({ kind: "tape", facts });
 check("a call that invents twice is a 502, never shipped", r.status === 502 && !r.json.breakdown);
+// Small counts are its whole subject (locks, titles, methods), so it gets no
+// "round 1 / top 3" leniency, and a count in words is still a count.
+replies = ["Andy owns seven titles and it isn't close.", "Andy has the locks and the titles."];
+r = await ask({ kind: "tape", facts });
+check("a count spelled out that the facts don't hold ('seven titles') is caught and retried", r.calls.length === 2 &&
+  /\(7\)/.test(r.calls[1].body.messages[0].content) && r.status === 200 && !/seven/.test(r.json.breakdown));
+const F = facts.map((f) => "- " + f).join("\n");
+check("strict: a stray 1–3 is caught (no scouting-report leniency)", JSON.stringify(M.numbersInvented("Andy has 2 titles.", "Titles: Andy 1, JP 0", true)) === '["2"]' &&
+  M.numbersInvented("Andy has 2 titles.", "Titles: Andy 1, JP 0").length === 0);
+check("strict: counts in the facts pass, in digits or words; 'one' as a pronoun passes",
+  M.numbersInvented("Andy is 3/4 on locks, three of four, and only one of them can win.", F, true).length === 0);
+check("strict: the verdict path uses it", /numbersInvented\(text, iqFacts, true\)/.test(src) && !/numbersInvented\(text, iqFacts\);[^]*action === "fight-iq"/.test(src.slice(src.indexOf('if (action === "verdict") {\n    let bad'))));
 replies = ["Andy's 42.5 points and 3/4 locks say he's the man; JP's 5/11 underdogs say otherwise."];
 r = await ask({ kind: "tape", facts });
 check("numbers that are in the facts pass untouched", r.status === 200 && r.calls.length === 1 && /42\.5/.test(r.json.breakdown));
@@ -209,7 +221,19 @@ try {
   });
   check("Share poster hands the drawn PNG to the share sheet", shared && shared.type === "image/png" && shared.size > 20000 && shared.title === "Tale of the Tape");
 
-  await page.click(".test-tape .bot-call-btn");
+  await page.evaluate(() => { window.__shared = null; });
+  // Tap Share in the same task the call lands in: the pre-call poster must not go out.
+  const early = await page.evaluate(() => new Promise((ok) => {
+    const tape = document.querySelector(".test-tape");
+    new MutationObserver((_, obs) => {
+      if (!tape.querySelector(".bot-call-line")) return;
+      obs.disconnect();
+      tape.querySelector(".tape-poster-btn").click();
+      ok(window.__shared);
+    }).observe(tape, { childList: true, subtree: true });
+    tape.querySelector(".bot-call-btn").click();
+  }));
+  check("Share tapped the moment the call lands never sends the stale pre-call poster", early === null);
   await page.waitForSelector(".test-tape .bot-call-line");
   const line = await page.textContent(".test-tape .bot-call-line");
   check("tapping asks once, as action verdict / kind tape, with the tape's facts and card", sent.length === 1 &&
@@ -230,6 +254,9 @@ try {
   const T2 = { ...T, a: { ...T.a, pts: 43.5 } };
   const fresh = await page.evaluate((t) => !!taleEl(t, "UFC 333").querySelector(".bot-call-btn"), T2);
   check("new numbers (a point moved) ask again rather than reuse a stale call", fresh);
+  const T3 = { ...T, rows: T.rows.map((r) => r.label === "Accuracy" ? { ...r, b: "59%" } : r) };
+  check("…and so does any other column moving with the points unchanged (the key is every fact)",
+    await page.evaluate((t) => !!taleEl(t, "UFC 333").querySelector(".bot-call-btn"), T3));
 
   // The Fight Night Report.
   mode = "cap";

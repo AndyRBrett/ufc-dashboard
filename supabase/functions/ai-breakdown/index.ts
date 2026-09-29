@@ -821,7 +821,7 @@ export function buildVerdict(v: VerdictFacts): { system: string; user: string } 
     : "the Fight Night Report of how a group of friends' picks went on a card that just finished: the night's headline";
   return {
     system: `You are FightBot, the ringside voice of a UFC picks app played by a group of friends. You call ${what}.
-FACTS ARE STRICT: use only the facts given. Never state a number, record, percentage or name that isn't in them; say it in words instead. Write any number exactly as given, sign included. Don't predict fight results.
+FACTS ARE STRICT: use only the facts given. Never state a number, count, record, percentage or name that isn't in them. Write any number exactly as the facts give it, in digits, sign included; never turn a figure into a different count ("three titles" when the facts say 1). When in doubt, leave the number out. Don't predict fight results.
 Write ONE punchy line, under 35 words, like a fight announcer calling it: plain text, no hashtags, no emoji, no quotes around it.`,
     user: `${verdictFactsText(v)}\n\nMake the call.`,
   };
@@ -835,12 +835,24 @@ Write ONE punchy line, under 35 words, like a fight announcer calling it: plain 
 // leading +/−/- is part of the number — but only where it can be a sign, not
 // between two digits, so a record like "111-58" stays two positive numbers.
 const NUM_RE = /(?<![\d.])[+\-\u2212]?\d[\d,]*(?:\.\d+)?/g;
-export function numbersInvented(text: string, facts: string): string[] {
+export function numbersInvented(text: string, facts: string, strict = false): string[] {
   const norm = (n: string) => String(Number(n.replace(/,/g, "").replace("\u2212", "-")));
   const known = new Set((facts.match(NUM_RE) ?? []).map(norm));
-  return (text.match(NUM_RE) ?? []).map(norm)
-    .filter((n) => !known.has(n) && !(Number(n) >= 1 && Number(n) <= 3 && Number.isInteger(Number(n))));
+  const found = (text.match(NUM_RE) ?? []).map(norm);
+  // Strict (FightBot's call): no small-number exemption, and a count spelled
+  // out ("three titles") must be a count the facts contain. Its whole subject
+  // is small counts (locks, titles, methods), so the scouting report's
+  // "round 1 / top 3" leniency would let exactly its likeliest slip through.
+  // "one" is left out: it is too often a pronoun ("only one of them").
+  if (strict) {
+    (text.toLowerCase().match(NUM_WORD_RE) ?? []).forEach((w) => found.push(String(NUM_WORDS.indexOf(w))));
+    return found.filter((n) => !known.has(n));
+  }
+  return found.filter((n) => !known.has(n) && !(Number(n) >= 1 && Number(n) <= 3 && Number.isInteger(Number(n))));
 }
+const NUM_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+  "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty"];
+const NUM_WORD_RE = new RegExp("\\b(" + NUM_WORDS.filter((w) => w !== "one").join("|") + ")\\b", "g");
 
 async function callAnthropic(
   apiKey: string,
@@ -1261,12 +1273,12 @@ Deno.serve(async (req) => {
   // The verdict gets the scouting report's number guard (iqFacts holds its
   // facts): one retry naming the strays, then a clean failure.
   if (action === "verdict") {
-    let bad = numbersInvented(text, iqFacts);
+    let bad = numbersInvented(text, iqFacts, true);
     if (bad.length) {
       const again = await callModel(`${prompt}
 
-Your last line used figures that aren't in the facts (${bad.join(", ")}). Call it again using only the facts given — say it in words instead.`);
-      if (again.ok) { text = again.text; bad = numbersInvented(text, iqFacts); }
+Your last line used figures that aren't in the facts (${bad.join(", ")}). Call it again using only the facts given, and leave out any number they don't contain.`);
+      if (again.ok) { text = again.text; bad = numbersInvented(text, iqFacts, true); }
     }
     const line = text.trim().replace(/^["“]|["”]$/g, "");
     if (!line || bad.length) {
