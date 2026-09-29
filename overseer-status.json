@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T03:57:35Z",
+  "generated_at": "2026-09-29T05:02:57Z",
   "events_tracked": 11,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "status": "ok",
-      "last_changed_at": "2026-09-28T22:57:59Z",
+      "last_changed_at": "2026-09-29T05:02:57Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -105,7 +105,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-09-29T03:57:35Z",
+      "last_changed_at": "2026-09-29T05:02:57Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-29T03:57:35Z",
+      "last_changed_at": "2026-09-29T05:02:57Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -135,7 +135,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-29T03:57:35Z",
+      "last_changed_at": "2026-09-29T05:02:57Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-29T03:57:35Z",
+      "last_changed_at": "2026-09-29T05:02:57Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -155,11 +155,11 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-09-28T02:12:39Z",
+      "last_changed_at": "2026-09-29T05:02:57Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
-      "line_movement": 4,
+      "line_movement": 9,
       "odds_market_priced": null
     }
   ],

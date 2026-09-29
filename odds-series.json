@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T03:57:36Z",
+  "generated_at": "2026-09-29T05:02:57Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -11657,7 +11657,7 @@
           "f1": "Ateba Gautier",
           "f2": "Roman Kopylov",
           "lbl": "Main Card",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11708,6 +11708,11 @@
               "at": "2026-09-28T22:57:59Z",
               "f1_odds": -209,
               "f2_odds": 172
+            },
+            {
+              "at": "2026-09-29T05:02:57Z",
+              "f1_odds": -200,
+              "f2_odds": 165
             }
           ],
           "open": {
@@ -11722,7 +11727,7 @@
           "f1": "Imanol Rodriguez",
           "f2": "Alden Coria",
           "lbl": "Prelim",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11763,6 +11768,11 @@
               "at": "2026-09-28T22:57:59Z",
               "f1_odds": -164,
               "f2_odds": 136
+            },
+            {
+              "at": "2026-09-29T05:02:57Z",
+              "f1_odds": -160,
+              "f2_odds": 133
             }
           ],
           "open": {
@@ -11777,7 +11787,7 @@
           "f1": "Damian Pinas",
           "f2": "Andrey Pulyaev",
           "lbl": "Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11798,6 +11808,11 @@
               "at": "2026-09-28T22:57:59Z",
               "f1_odds": -493,
               "f2_odds": 367
+            },
+            {
+              "at": "2026-09-29T05:02:57Z",
+              "f1_odds": -500,
+              "f2_odds": 370
             }
           ],
           "open": {
@@ -11812,7 +11827,7 @@
           "f1": "Marcus McGhee",
           "f2": "Bernardo Sopaj",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11868,6 +11883,11 @@
               "at": "2026-09-28T22:57:59Z",
               "f1_odds": -150,
               "f2_odds": 125
+            },
+            {
+              "at": "2026-09-29T05:02:57Z",
+              "f1_odds": -147,
+              "f2_odds": 123
             }
           ],
           "open": {
@@ -11952,7 +11972,7 @@
           "f1": "Rafael dos Anjos",
           "f2": "Alexander Hernandez",
           "lbl": "Early Prelim",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11988,6 +12008,11 @@
               "at": "2026-09-28T22:57:59Z",
               "f1_odds": 207,
               "f2_odds": -256
+            },
+            {
+              "at": "2026-09-29T05:02:57Z",
+              "f1_odds": 213,
+              "f2_odds": -265
             }
           ],
           "open": {
@@ -12067,7 +12092,7 @@
           "f1": "Court McGee",
           "f2": "Eric Nolan",
           "lbl": "Early Prelim",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -12103,6 +12128,11 @@
               "at": "2026-09-28T09:07:55Z",
               "f1_odds": 195,
               "f2_odds": -241
+            },
+            {
+              "at": "2026-09-29T05:02:57Z",
+              "f1_odds": 203,
+              "f2_odds": -251
             }
           ],
           "open": {
@@ -12117,12 +12147,17 @@
           "f1": "Roberto Soldic",
           "f2": "Khaos Williams",
           "lbl": "Main Card",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-09-28T22:57:59Z",
               "f1_odds": -318,
               "f2_odds": 251
+            },
+            {
+              "at": "2026-09-29T05:02:57Z",
+              "f1_odds": -297,
+              "f2_odds": 235
             }
           ],
           "open": {
@@ -12254,7 +12289,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -12295,6 +12330,11 @@
               "at": "2026-09-28T02:12:39Z",
               "f1_odds": -268,
               "f2_odds": 216
+            },
+            {
+              "at": "2026-09-29T05:02:57Z",
+              "f1_odds": -263,
+              "f2_odds": 212
             }
           ],
           "open": {
@@ -12822,7 +12862,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Bernardo Sopaj",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -155,
         "close": null,
         "clv": null
@@ -13012,7 +13052,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -272,
         "close": null,
         "clv": null
@@ -13065,7 +13105,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 219,
         "close": null,
         "clv": null
@@ -13570,7 +13610,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Court McGee",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": -275,
         "close": null,
         "clv": null
@@ -13632,7 +13672,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Damian Pinas",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 383,
         "close": null,
         "clv": null
@@ -14016,7 +14056,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Andrey Pulyaev",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -500,
         "close": null,
         "clv": null
@@ -14305,7 +14345,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Imanol Rodriguez",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 130,
         "close": null,
         "clv": null
@@ -16602,7 +16642,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Roman Kopylov",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -175,
         "close": null,
         "clv": null
@@ -16613,7 +16653,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Ateba Gautier",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 153,
         "close": null,
         "clv": null
@@ -16624,7 +16664,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Alden Coria",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -150,
         "close": null,
         "clv": null
@@ -16635,7 +16675,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Marcus McGhee",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 135,
         "close": null,
         "clv": null
@@ -16668,7 +16708,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Alexander Hernandez",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": 186,
         "close": null,
         "clv": null
@@ -16679,7 +16719,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Rafael dos Anjos",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": -220,
         "close": null,
         "clv": null
@@ -16712,7 +16752,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Eric Nolan",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": 226,
         "close": null,
         "clv": null
@@ -16723,7 +16763,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Khaos Williams",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -318,
         "close": null,
         "clv": null
@@ -16734,7 +16774,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Roberto Soldic",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 251,
         "close": null,
         "clv": null
