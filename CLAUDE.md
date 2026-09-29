@@ -46,6 +46,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:brief` | the Friday Fight Week Brief push firing at the wrong time, twice, after the bell, off the Lab's numbers, or not at all |
 | `npm run check:swap` | a pulled bout's pickers not told, told twice or after it locks, a rename announced as a replacement, or the alert reaching anyone else |
 | `npm run check:iq` | the AI Fight IQ write-up stating a number it wasn't given, drifting onto Grok, repeating one voice, or escaping its daily cap |
+| `npm run check:guide` | FightBot's app guide stating a scoring rule scoring.js doesn't, sending people to a button that's gone, drifting onto Grok, or taking unbounded input |
 | `npm run check:parity` | any score moving during the engine migration: board, main-card board, per-card, Belt lineage, recaps, Year Wrapped |
 | `npm run check:promotion` | a picks query without `promotion=eq.ufc`, letting another sport's picks onto the UFC board, Belt, restore or result pushes |
 | `npm run check:sports` | the sport switcher showing with nothing to pick, a PFL pick saved untagged or after its lock, another sport scored on the UFC board, or its board drifting from `pickPts` (method, 🔒, underdog) |
@@ -360,9 +361,9 @@ mutation-tested individually.
 
 ## The roast runs on Grok; everything else runs on Claude
 
-`ai-breakdown` serves five actions. Four of them — `breakdown`, `chat`,
-`parlay`, and the Fight Lab's `fight-iq` scouting report — make claims about real
-fights or real people's picks, and those stay on Claude. The fourth, `trash-talk`, is a joke between five friends, and
+`ai-breakdown` serves six actions. Five of them — `breakdown`, `chat`,
+`parlay`, the Fight Lab's `fight-iq` scouting report and FightBot's `guide` — make
+claims about real fights, real people's picks or the app itself, and those stay on Claude. The fourth, `trash-talk`, is a joke between five friends, and
 Claude would not stop sanding the edges off it: the burn came back PG no matter
 how the prompt was phrased, which is the one thing the feature cannot be. So the
 roast calls xAI's Grok instead.
@@ -771,6 +772,26 @@ through `_aiFetch` (fresh token first); the Lab borrows the app's saved token
 but never refreshes it (refresh tokens rotate, so that would sign the app out)
 and asks the user to open the app once if it has expired.
 It runs on `MODEL`, like the other analysis actions. `check:iq` holds all of it.
+
+## FightBot the guide answers from APP_GUIDE, and APP_GUIDE is tested
+
+⋯ More → FightBot Help (and Ranks → ℹ) is a chat that explains how the app
+works: `ai-breakdown`'s `guide` action, on Claude, spending the same daily AI
+budget as every other action. The description of the app it answers from,
+`APP_GUIDE`, is written **server-side** in that function; the client sends only
+the question, the screen and up to `GUIDE_MAX_TURNS` short earlier turns, each
+bounded. The prompt forbids inventing a button, number or rule.
+
+`APP_GUIDE` is a second copy of facts the app holds, so it can go stale, and a
+stale guide misleads people about their own points. `check:guide` compares its
+scoring numbers with `scoring.js`'s constants and the Ranks ℹ panel, and checks
+every name in `GUIDE_UI_LABELS` appears both in the guide and in `index.html` /
+`lab.html`. **When you ship a user-facing feature or rename a button, update
+`APP_GUIDE`** (and `GUIDE_UI_LABELS` if FightBot should send people to it), the
+same way you add a What's New entry. It is `ai-breakdown` code, so it goes live
+on the Supabase deploy.
+
+(Not to be confused with `fightbot/`, the MCP server; both answer as FightBot.)
 
 ## One scoring rulebook: `scoring.js`
 

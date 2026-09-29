@@ -1713,6 +1713,16 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     <div class="chat-input-row"><input class="chat-input" id="chatInput" type="text" placeholder="Ask about this card…" maxlength="200"><button class="chat-send-btn" id="chatSendBtn" onclick="sendPickChat()">Send</button></div>
   </div>
 </div>
+<!-- FightBot: the in-app guide. Above the leaderboard panel (z 350) because
+     Ranks → ℹ opens it too. -->
+<div class="modal-bg" id="botModal" style="z-index:500" onclick="if(event.target===this)closeBot()">
+  <div class="modal" style="padding:18px 16px 20px;display:flex;flex-direction:column;gap:0" role="dialog" aria-label="FightBot, the app guide">
+    <div class="chat-modal-header"><div class="chat-ev-name">🤖 FightBot · ask how anything works</div><button class="modal-xbtn" onclick="closeBot()" aria-label="Close">x</button></div>
+    <div class="quick-qs" id="botQuickQs"></div>
+    <div class="chat-history" id="botHistory"></div>
+    <div class="chat-input-row"><input class="chat-input" id="botInput" type="text" placeholder="How do locks work?" maxlength="300" onkeydown="if(event.key==='Enter'){event.preventDefault();sendBot();}"><button class="chat-send-btn" id="botSendBtn" onclick="sendBot()">Send</button></div>
+  </div>
+</div>
 <div class="modal-bg" id="parlayModal" onclick="if(event.target===this)closeParlay()">
   <div class="modal" style="padding:18px 16px 20px">
     <div class="chat-modal-header"><div class="chat-ev-name" id="parlayEvName"></div><button class="modal-xbtn" onclick="closeParlay()">x</button></div>
@@ -1744,6 +1754,10 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
         <span class="btn-icon-lbl">More</span>
       </button>
       <div class="btn-more-menu" id="moreMenu">
+        <button class="btn-more-item" id="botBtn" onclick="closeMoreMenu();openBot('Home')" title="Ask how anything in the app works">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9 13h.01M15 13h.01M9 17h6"/></svg>
+          <span>FightBot Help</span>
+        </button>
         <button class="btn-more-item" id="notifBell" onclick="togglePush();closeMoreMenu()" title="Fight notifications">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <span>Notifications</span><span class="theme-check">&#10003;</span>
@@ -2177,6 +2191,84 @@ function sendPickChat(){
     hEl.scrollTop=hEl.scrollHeight;
   });
 }
+
+// ── FightBot: the in-app guide ──────────────────────────────────
+// Ask how anything in the app works. The guide itself lives server-side, in
+// ai-breakdown's `guide` action (APP_GUIDE): this only sends the question, the
+// screen it was asked from and the last few turns, so a follow-up ("and how do
+// I undo that?") has context. The conversation lasts the session.
+// fightbot-guide:start
+var _botHist=[],_botBusy=false,_botScreen="",_botLocked=false;
+var BOT_TURNS=6,BOT_TURN_MAX=600;
+var BOT_QUICK=["How does scoring work?","How do locks work?","How does the belt work?","How do I join a room?","How do I turn on notifications?","What's in the Fight Lab?"];
+function _botBubble(role,text){
+  var hEl=document.getElementById("botHistory");
+  var b=document.createElement("div");b.className="chat-bubble "+(role==="user"?"user":"claude");b.textContent=text;
+  hEl.appendChild(b);hEl.scrollTop=hEl.scrollHeight;return b;
+}
+function openBot(screen){
+  _botScreen=String(screen||"").slice(0,40);
+  var info=document.getElementById("lbInfoModal");if(info)info.classList.remove("open");
+  var hEl=document.getElementById("botHistory");hEl.innerHTML="";
+  if(!_botHist.length)_botBubble("bot","Hi, I'm FightBot. Ask me how anything in the app works: picks, scoring, locks, the belt, rooms, the Fight Lab, notifications.");
+  _botHist.forEach(function(h){_botBubble(h.role,h.text);});
+  var qq=document.getElementById("botQuickQs");qq.innerHTML="";
+  BOT_QUICK.forEach(function(q){
+    var b=document.createElement("button");b.className="quick-q";b.textContent=q;
+    b.onclick=function(){document.getElementById("botInput").value=q;sendBot();};
+    qq.appendChild(b);
+  });
+  document.getElementById("botModal").classList.add("open");
+  // Ranks already holds the scroll lock; taking it again would lose its position.
+  var lb=document.getElementById("lbPanel");
+  _botLocked=!(lb&&lb.classList.contains("open"));
+  if(_botLocked)lockScroll();
+  setTimeout(function(){var i=document.getElementById("botInput");if(i)i.focus();},300);
+}
+function closeBot(){
+  document.getElementById("botModal").classList.remove("open");
+  if(_botLocked){_botLocked=false;unlockScroll();}
+}
+// The turns sent as context: the most recent BOT_TURNS, each capped, matching
+// the server's limits (GUIDE_MAX_TURNS / GUIDE_MAX_TURN) so a long session
+// never turns into a 400.
+function _botContext(){
+  return _botHist.slice(-BOT_TURNS).map(function(h){return {role:h.role,text:String(h.text).slice(0,BOT_TURN_MAX)};});
+}
+function sendBot(){
+  if(_botBusy)return;
+  var input=document.getElementById("botInput");
+  var q=(input.value||"").trim();
+  if(!q)return;
+  input.value="";
+  _botBusy=true;document.getElementById("botSendBtn").disabled=true;
+  var history=_botContext();
+  _botBubble("user",q);
+  var wait=_botBubble("bot","Thinking…");wait.classList.add("loading");
+  var ctrl=("AbortController" in window)?new AbortController():null;
+  var to=setTimeout(function(){if(ctrl)ctrl.abort();},20000);
+  _aiFetch(JSON.stringify({action:"guide",question:q.slice(0,300),history:history,screen:_botScreen}),ctrl?ctrl.signal:undefined)
+  .then(function(r){return r.json().catch(function(){return {};}).then(function(d){return {ok:r.ok,status:r.status,data:d};});})
+  .then(function(res){
+    var text=res.ok&&res.data&&res.data.breakdown||"";
+    if(!text){
+      var msg="Sorry, I couldn't answer that just now. Try again.";
+      if(res.status===429)msg=res.data&&res.data.error==="daily-cap"?"That's today's AI limit. Back tomorrow.":"Too many questions at once. Give it a moment.";
+      if(res.status===401)msg="Sign-in expired. Reopen the app and try again.";
+      wait.classList.remove("loading");wait.textContent=msg;return;
+    }
+    wait.classList.remove("loading");wait.textContent=text;
+    _botHist.push({role:"user",text:q},{role:"bot",text:text});
+  }).catch(function(err){
+    wait.classList.remove("loading");
+    wait.textContent=(err&&err.name==="AbortError")?"That took too long. Try again.":"Sorry, I couldn't answer that just now. Try again.";
+  }).finally(function(){
+    clearTimeout(to);
+    _botBusy=false;document.getElementById("botSendBtn").disabled=false;
+    var hEl=document.getElementById("botHistory");hEl.scrollTop=hEl.scrollHeight;
+  });
+}
+// fightbot-guide:end
 
 // ── Parlay risk calculator (#90) ────────────────────────────────────────
 // The AI suggester below names parlays; this prices the one YOU built. Three
@@ -6153,7 +6245,9 @@ var WHATS_NEW=[
   {id:"2026-10-12-mma-pick-options",emoji:"🔒",title:"Full picks on PFL, RIZIN and DWCS",
    desc:"The other MMA cards now work like UFC: pick the winner, then how it ends (KO/TKO, Sub or Dec) and use up to two 🔒 locks per card. They score the same way, winner 1, method +½, lock ±1, and the underdog bonus once the books post a line. Each sport keeps its own board."},
   {id:"2026-10-13-card-badges",emoji:"🎟️",title:"Picks and locks at a glance",
-   desc:"Every card now shows how many fights you've picked (7/12 picked) and how many of your two 🔒 locks you've used. PFL, RIZIN and DWCS cards also look and work exactly like UFC cards."}
+   desc:"Every card now shows how many fights you've picked (7/12 picked) and how many of your two 🔒 locks you've used. PFL, RIZIN and DWCS cards also look and work exactly like UFC cards."},
+  {id:"2026-10-14-fightbot-guide",emoji:"🤖",title:"Ask FightBot",
+   desc:"Not sure how something works? ⋯ More → FightBot Help (or the ℹ on Ranks) answers questions about the app in plain words: scoring, locks, the belt, rooms, challenges, the Fight Lab, notifications and more."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -10014,6 +10108,8 @@ function closeInstall(){document.getElementById("install-overlay").classList.rem
 // Escape closes the topmost open overlay (sub-sheets before their parent panels).
 // Keyboard/desktop a11y — harmless on touch devices that have no Escape key.
 var _escClosers=[
+  // First: FightBot opens on top of Ranks, so Escape closes it before the board.
+  ["botModal",function(){closeBot();}],
   ["wr-overlay",function(){closeWrapped();}],
   ["lbInfoModal",function(){document.getElementById("lbInfoModal").classList.remove("open");}],
   ["trashSheet",function(){closeTrashSheet();}],
@@ -10428,6 +10524,7 @@ document.addEventListener("DOMContentLoaded",function(){
     <button class="lb-action" onclick="openEditName()"><span class="lb-action-ico">✏️</span><span class="lb-action-lbl">Profile</span></button>
   </div>
   <div class="lb-info-modal" id="lbInfoModal">
+    <button class="ai-event-btn" style="width:100%;margin-bottom:12px" onclick="openBot('Ranks')">🤖 Questions? Ask FightBot</button>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">How Points Work</div>
     <div class="lb-info-row"><span>Pick the winner</span><span class="lb-info-pts">1 pt</span></div>
     <div class="lb-info-row"><span>Correct finish method</span><span class="lb-info-pts">+0.5 pt</span></div>
