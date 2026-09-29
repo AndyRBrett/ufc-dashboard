@@ -795,6 +795,18 @@ on the Supabase deploy.
 
 (Not to be confused with `fightbot/`, the MCP server; both answer as FightBot.)
 
+**It talks fights too, from the app's own data only.** Each question carries
+`_botFightData()`: the next unfinished card (bouts, records, ranks as
+`_fnRankLbl` shows them, odds, UFCStats lines), the last finished card's
+results, then later cards, built from `EVENTS` / `FIGHTER_STATS` and filled in
+priority order under the server's `MAX_CARD` (main-card stats outrank last
+week's results). The server treats it as data, never instructions, and every
+guide answer goes through `numbersInvented` against the guide, that data, the
+user's picks and what the user said: one retry, then a 502. A fighter with no
+rank is left without one, never called "unranked", and one with no fight data
+gets no stats line, never a claimed 0. A failure building the data never stops
+an app question.
+
 **FightBot's call** (`ai-breakdown` action `verdict`) adds one AI line under a
 room's Tale of the Tape and a Card Recap's Fight Night Report, only when tapped,
 kept per session (`ufc_bot_calls`). It is told only the lines already on screen

@@ -1723,10 +1723,10 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
      Ranks → ℹ opens it too. -->
 <div class="modal-bg" id="botModal" style="z-index:500" onclick="if(event.target===this)closeBot()">
   <div class="modal" style="padding:18px 16px 20px;display:flex;flex-direction:column;gap:0" role="dialog" aria-label="FightBot, the app guide">
-    <div class="chat-modal-header"><div class="chat-ev-name">🤖 FightBot · ask how anything works</div><button class="modal-xbtn" onclick="closeBot()" aria-label="Close">x</button></div>
+    <div class="chat-modal-header"><div class="chat-ev-name">🤖 FightBot · fights and how the app works</div><button class="modal-xbtn" onclick="closeBot()" aria-label="Close">x</button></div>
     <div class="quick-qs" id="botQuickQs"></div>
     <div class="chat-history" id="botHistory"></div>
-    <div class="chat-input-row"><input class="chat-input" id="botInput" type="text" placeholder="How do locks work?" maxlength="300" onkeydown="if(event.key==='Enter'){event.preventDefault();sendBot();}"><button class="chat-send-btn" id="botSendBtn" onclick="sendBot()">Send</button></div>
+    <div class="chat-input-row"><input class="chat-input" id="botInput" type="text" placeholder="Who has the edge in the main event?" maxlength="300" onkeydown="if(event.key==='Enter'){event.preventDefault();sendBot();}"><button class="chat-send-btn" id="botSendBtn" onclick="sendBot()">Send</button></div>
   </div>
 </div>
 <div class="modal-bg" id="parlayModal" onclick="if(event.target===this)closeParlay()">
@@ -2206,7 +2206,7 @@ function sendPickChat(){
 // fightbot-guide:start
 var _botHist=[],_botBusy=false,_botScreen="",_botLocked=false;
 var BOT_TURNS=6,BOT_TURN_MAX=600;
-var BOT_QUICK=["How does scoring work?","How do locks work?","How does the belt work?","How do I join a room?","How do I turn on notifications?","What's in the Fight Lab?"];
+var BOT_QUICK=["Who has the edge in the main event?","Best underdog on the next card?","How does scoring work?","How do locks work?","How do I join a room?","How do I turn on notifications?"];
 function _botBubble(role,text){
   var hEl=document.getElementById("botHistory");
   var b=document.createElement("div");b.className="chat-bubble "+(role==="user"?"user":"claude");b.textContent=text;
@@ -2216,7 +2216,7 @@ function openBot(screen){
   _botScreen=String(screen||"").slice(0,40);
   var info=document.getElementById("lbInfoModal");if(info)info.classList.remove("open");
   var hEl=document.getElementById("botHistory");hEl.innerHTML="";
-  if(!_botHist.length)_botBubble("bot","Hi, I'm FightBot. Ask me how anything in the app works: picks, scoring, locks, the belt, rooms, the Fight Lab, notifications.");
+  if(!_botHist.length)_botBubble("bot","Hi, I'm FightBot. Ask me about the fights on the next card, or how anything in the app works: picks, scoring, locks, the belt, rooms, the Fight Lab, notifications.");
   _botHist.forEach(function(h){_botBubble(h.role,h.text);});
   var qq=document.getElementById("botQuickQs");qq.innerHTML="";
   BOT_QUICK.forEach(function(q){
@@ -2234,6 +2234,106 @@ function openBot(screen){
 function closeBot(){
   document.getElementById("botModal").classList.remove("open");
   if(_botLocked){_botLocked=false;unlockScroll();}
+}
+// The fight data FightBot answers fight questions from: the next card as the
+// app shows it (bouts, records, ranks, odds, UFCStats numbers), the last
+// finished card's results, then later cards' bouts, all from EVENTS and
+// FIGHTER_STATS and nothing else. The server answers only from this and
+// rejects a figure that isn't in it, so a stat missing here is a stat
+// FightBot won't claim. Capped under the server's MAX_CARD, filled in order
+// while room lasts: the next card's bouts, its main-card fighters' stats, the
+// last card's results, the prelim fighters' stats, then later cards.
+var BOT_CARD_MAX=3900;
+function _botOdds(o){return (o>0?"+":"")+o;}
+// Rank as the fight card shows it (_fnRankLbl): the bout's own C / IC / #n,
+// else the division rankings. No rank on record is left out, never "unranked":
+// a missing number is not a fact about the fighter.
+function _botRank(p){
+  if(p.rk==="C")return "champion";
+  if(p.rk==="IC")return "interim champion";
+  if(p.rk)return "#"+p.rk;
+  var r=(typeof RANKINGS!=="undefined"&&RANKINGS)?RANKINGS[p.n]:null;
+  return r?"#"+r:"";
+}
+function _botBoutLine(f){
+  var odds=f.odds&&typeof f.odds.f1==="number"&&typeof f.odds.f2==="number"?f.odds:null;
+  var side=function(p,o){
+    var bits=[p.r,_botRank(p),o==null?"":"odds "+_botOdds(o)].filter(Boolean);
+    return p.n+(bits.length?" ("+bits.join(", ")+")":"");
+  };
+  var bits=[(f.lbl?"["+f.lbl+"] ":"")+side(f.f1,odds&&odds.f1)+" vs "+side(f.f2,odds&&odds.f2)];
+  if(f.wc)bits.push(f.wc);
+  if(f.title)bits.push("title fight");
+  if(f.winner)bits.push("result: "+f.winner+" won"+(f.method?" by "+f.method:"")+(f.round?" in round "+f.round:""));
+  return bits.join(" · ");
+}
+function _botStatsLine(p){
+  var s=stOf(p);
+  if(!s||noFightData(s))return "";
+  // Compact on purpose: every main-card fighter's line has to fit under the cap.
+  var b=[];
+  if(s.slpm!=null)b.push(s.slpm+" strikes landed/min"+(s.acc!=null?" ("+s.acc+"% acc)":""));
+  if(s.td!=null)b.push(s.td+" TD/15min");
+  if(s.tdd!=null)b.push(s.tdd+"% TD def");
+  if(s.ko!=null||s.sub!=null)b.push((s.ko||0)+" KO, "+(s.sub||0)+" sub wins");
+  if(s.stn)b.push(s.stn);
+  if(s.rch)b.push("reach "+s.rch);
+  // Newest first; opponents named for the last two only.
+  if(s.form&&s.form.length)b.push("last fights "+s.form.slice(0,4).map(function(x,i){return x.r+" "+x.m+(i<2&&s.opp&&s.opp[i]?" vs "+s.opp[i]:"");}).join(", "));
+  return b.length?"  "+p.n+": "+b.join("; "):"";
+}
+function _botCardHead(label,ev){
+  var h=label+": "+ev.name+" · "+fmtDate(ev.date);
+  if(ev.time)h+=" · main card "+to12hr(ev.time)+" ET";
+  if(ev.prelimTime)h+=", prelims "+to12hr(ev.prelimTime)+" ET";
+  if(ev.earlyPrelimTime)h+=", early prelims "+to12hr(ev.earlyPrelimTime)+" ET";
+  return h;
+}
+// `events` defaults to EVENTS (tests pass a fixture: never the live data file).
+function _botFightData(nowMs,events){
+  var now=nowMs||Date.now(),evs=events||(typeof EVENTS!=="undefined"&&EVENTS)||[];
+  var upcoming=[],last=null;
+  evs.forEach(function(ev){
+    if(!ev||!ev.fights||!ev.fights.length)return;
+    var done=ev.fights.every(function(f){return !!f.winner||f.state==="post";});
+    if(done){if(!last||ev.date>last.date)last=ev;}
+    else if(new Date(ev.date).getTime()>=now-2*DAY_MS)upcoming.push(ev);
+  });
+  upcoming.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0;});
+  var next=upcoming[0]||null;
+  if(!next&&!last)return null;
+  var bouts=next?next.fights.map(function(f){return {line:_botBoutLine(f),main:isMainCardBout(f),stats:[_botStatsLine(f.f1),_botStatsLine(f.f2)].filter(Boolean),keep:[]};}):[];
+  var lastBlock=last?[_botCardHead("LAST CARD (finished)",last)].concat(last.fights.map(_botBoutLine)):[];
+  var render=function(extra){
+    var out=[];
+    if(next){out.push(_botCardHead("NEXT CARD",next));bouts.forEach(function(b){if(b.drop)return;out.push(b.line);b.keep.forEach(function(s){out.push(s);});});}
+    return out.concat(lastBlock,extra||[]).join("\n");
+  };
+  var lastAll=lastBlock;lastBlock=[];
+  // Too long even bare: drop bouts from the bottom of the card (prelims first).
+  for(var i=bouts.length-1;i>0&&render().length>BOT_CARD_MAX;i--)bouts[i].drop=true;
+  var addStats=function(main){
+    bouts.forEach(function(b){
+      if(b.drop||b.main!==main)return;
+      b.stats.forEach(function(s){b.keep.push(s);if(render().length>BOT_CARD_MAX)b.keep.pop();});
+    });
+  };
+  addStats(true);
+  lastAll.forEach(function(l,j){
+    // A results block is its header plus at least one bout, or nothing.
+    if(j===1&&!lastBlock.length)return;
+    lastBlock.push(l);if(render().length>BOT_CARD_MAX)lastBlock.pop();
+  });
+  if(lastBlock.length===1)lastBlock=[];
+  addStats(false);
+  var extra=[];
+  upcoming.slice(1).forEach(function(ev){
+    var add=[_botCardHead("LATER CARD",ev)].concat(ev.fights.map(_botBoutLine));
+    add.forEach(function(l){if(render(extra.concat([l])).length<=BOT_CARD_MAX)extra.push(l);});
+  });
+  var txt=render(extra);
+  if(txt.length>BOT_CARD_MAX)txt=txt.slice(0,BOT_CARD_MAX);
+  return {event:(next||last).name.slice(0,120),card:txt,userPicks:next?_buildUserPicks(next).slice(0,1900):""};
 }
 // The turns sent as context: the most recent BOT_TURNS, each capped, matching
 // the server's limits (GUIDE_MAX_TURNS / GUIDE_MAX_TURN) so a long session
@@ -2253,7 +2353,10 @@ function sendBot(){
   var wait=_botBubble("bot","Thinking…");wait.classList.add("loading");
   var ctrl=("AbortController" in window)?new AbortController():null;
   var to=setTimeout(function(){if(ctrl)ctrl.abort();},20000);
-  _aiFetch(JSON.stringify({action:"guide",question:q.slice(0,300),history:history,screen:_botScreen}),ctrl?ctrl.signal:undefined)
+  var req={action:"guide",question:q.slice(0,300),history:history,screen:_botScreen};
+  try{var fd=_botFightData();if(fd){req.event=fd.event;req.card=fd.card;if(fd.userPicks)req.userPicks=fd.userPicks;}}
+  catch(e){console.warn("[fightbot] fight data",e);}   // app questions still work without it
+  _aiFetch(JSON.stringify(req),ctrl?ctrl.signal:undefined)
   .then(function(r){return r.json().catch(function(){return {};}).then(function(d){return {ok:r.ok,status:r.status,data:d};});})
   .then(function(res){
     var text=res.ok&&res.data&&res.data.breakdown||"";
@@ -6311,7 +6414,9 @@ var WHATS_NEW=[
   {id:"2026-10-14-fightbot-guide",emoji:"🤖",title:"Ask FightBot",
    desc:"Not sure how something works? ⋯ More → FightBot Help (or the ℹ on Ranks) answers questions about the app in plain words: scoring, locks, the belt, rooms, challenges, the Fight Lab, notifications and more."},
   {id:"2026-10-15-fightbot-call",emoji:"🖼️",title:"FightBot's call and the tape poster",
-   desc:"A room's Tale of the Tape now has 🤖 FightBot's call, a one-line verdict on who has the edge, and 🖼️ Share poster, the head to head as a fight poster for the group chat. The Card Recap's stories get FightBot's call on the night too."}
+   desc:"A room's Tale of the Tape now has 🤖 FightBot's call, a one-line verdict on who has the edge, and 🖼️ Share poster, the head to head as a fight poster for the group chat. The Card Recap's stories get FightBot's call on the night too."},
+  {id:"2026-10-16-fightbot-fights",emoji:"🥊",title:"FightBot talks fights",
+   desc:"FightBot Help now answers fight questions too: who has the edge in the main event, the best underdog on the next card, how the last card went. It answers from the app's own records, odds and stats for those cards, and says so when it doesn't have something."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
