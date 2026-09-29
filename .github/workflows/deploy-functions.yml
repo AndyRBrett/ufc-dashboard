@@ -46,6 +46,8 @@ jobs:
       # has no browser); validate-web runs the full check:guide.
       - name: FightBot app guide test
         run: npm run check:guide:fn
+      - name: FightBot's call test
+        run: npm run check:verdict:fn
 
   deploy:
     needs: validate

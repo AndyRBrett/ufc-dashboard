@@ -144,6 +144,13 @@ function inputTooLarge(d: ReqBody): boolean {
   }
   if ((d.viewerId ?? "").length > 80) return true;
   if ((d.screen ?? "").length > GUIDE_MAX_SCREEN) return true;
+  if (d.verdict != null) {
+    const v = d.verdict;
+    if (typeof v !== "object" || !VERDICT_KINDS.includes(v.kind)) return true;
+    if (v.title != null && (typeof v.title !== "string" || v.title.length > VERDICT_MAX_TITLE)) return true;
+    if (!Array.isArray(v.facts) || !v.facts.length || v.facts.length > VERDICT_MAX_FACTS ||
+      v.facts.some((f) => typeof f !== "string" || !f.trim() || f.length > VERDICT_MAX_FACT)) return true;
+  }
   if (d.history != null) {
     if (!Array.isArray(d.history) || d.history.length > GUIDE_MAX_TURNS) return true;
     if (d.history.some((t) => !t || typeof t !== "object" || (t.role !== "user" && t.role !== "bot") ||
@@ -185,6 +192,8 @@ interface ReqBody {
   // guide (FightBot) fields — the question rides in `question`
   history?: { role: string; text: string }[];   // a few previous turns, context only
   screen?: string;                  // where in the app the user asked from
+  // verdict fields — FightBot's one-line call on a tape or a report
+  verdict?: VerdictFacts;
 }
 interface IqFacts {
   player: string; archetype: string; blurb?: string;
@@ -791,6 +800,33 @@ Write 3 to 5 sentences, under 90 words, plain text, no headings or lists. Addres
     user: `Facts about ${q.player}'s picking:\n${iqFactsText(q)}\n\nWrite the scouting report.`,
   };
 }
+// --- FightBot's call: one line on a Tale of the Tape or a Fight Night Report --
+//
+// The app already computes both, deterministically: a room's top two head to
+// head before a card, and the night's stories after it. FightBot adds one line
+// of colour on top, only when someone taps for it. Like the scouting report it
+// is prose around numbers the app computed, so it gets the same rule and the
+// same guard: numbersInvented, one retry naming the strays, then a clean 502
+// rather than a made-up stat shown under someone's name. The client sends the
+// facts as short lines it already renders; nothing else reaches the prompt.
+export const VERDICT_KINDS = ["tape", "report"];
+export const VERDICT_MAX_FACTS = 14, VERDICT_MAX_FACT = 200, VERDICT_MAX_TITLE = 120, VERDICT_MAX_LINE = 280;
+interface VerdictFacts { kind: string; title?: string; facts: string[] }
+export function verdictFactsText(v: VerdictFacts): string {
+  return [v.title ? `Card: ${v.title}` : "", ...v.facts.map((f) => `- ${f}`)].filter(Boolean).join("\n");
+}
+export function buildVerdict(v: VerdictFacts): { system: string; user: string } {
+  const what = v.kind === "tape"
+    ? "the Tale of the Tape between the top two pickers in a group of friends, before the next card: who has the edge and why"
+    : "the Fight Night Report of how a group of friends' picks went on a card that just finished: the night's headline";
+  return {
+    system: `You are FightBot, the ringside voice of a UFC picks app played by a group of friends. You call ${what}.
+FACTS ARE STRICT: use only the facts given. Never state a number, record, percentage or name that isn't in them; say it in words instead. Write any number exactly as given, sign included. Don't predict fight results.
+Write ONE punchy line, under 35 words, like a fight announcer calling it: plain text, no hashtags, no emoji, no quotes around it.`,
+    user: `${verdictFactsText(v)}\n\nMake the call.`,
+  };
+}
+
 // Every figure in the write-up must appear in the facts. Small counting words
 // ("two locks") are words, not digits, and pass; a bare 1–3 is allowed for
 // ordinary phrasing ("round 1", "top 3").
@@ -960,13 +996,13 @@ SCORING (the ℹ button on Ranks shows this too)
 RANKS (the leaderboard)
 - This Event or All-Time, and a Main Card toggle to score main-card bouts only.
 - 🏆 The Belt: the top scorer of each card takes it. The champ must defend every card (skipping scores 0). A challenger has to beat the champ's score; a tie with the champ is a defence. If challengers finish level without the champ, career accuracy breaks the tie, then most picks made; identical on both leaves the belt vacant. Title History at the bottom of the board shows the lineage.
-- Card Recap: after a card, your night in one sheet (points, rank, movement, best upset, the title) plus the Fight Night Report's stories. It pops up once; Ranks → Card Recap brings it back.
+- Card Recap: after a card, your night in one sheet (points, rank, movement, best upset, the title) plus the Fight Night Report's stories. It pops up once; Ranks → Card Recap brings it back. Tap 🤖 FightBot's call under the stories for a one-line AI take on the night.
 - 🔥 Trash Talk: pick a voice (persona), pick who to roast, add your own angle if you like, generate an AI roast and fire it off as a push to just them or the whole group. It can swear. You can roast people who haven't picked yet. Sending trash talk, challenges and nudges unlocks once you've made picks on 2 cards that are at least two days old.
 - ⚔️ Challenges: tap ⚔️ on a rival's row to call them out on one fight or the whole card, with stakes (wheel spin, $5, or your own). They accept or decline; it settles itself when the fights finish. No pick on the contested fight is a forfeit; a tie is a push.
 - 🎡 Wheel: a random forfeit picker for challenge losers; ⚙ Edit changes the forfeits.
 - ✏️ Profile: change your name and emoji. Delete my account is in there too.
 - Nudges: friends who haven't finished their main-card picks show under "Next up"; tap a name to send them a callout push signed with your name. 3 nudges per person per day.
-- 👥 Rooms: tap 👥 Everyone at the top of Ranks to switch to a room. A room is a private board for a group, scored exactly like the main board, with its own 🏆 belt, and it opens with a Tale of the Tape of its top two before a card. Create one and share the invite link, or join with a code. Rooms need an email-linked account.
+- 👥 Rooms: tap 👥 Everyone at the top of Ranks to switch to a room. A room is a private board for a group, scored exactly like the main board, with its own 🏆 belt, and it opens with a Tale of the Tape of its top two before a card: 🤖 FightBot's call adds a one-line AI verdict, and 🖼️ Share poster shares it as a fight-poster image. Create one and share the invite link, or join with a code. Rooms need an email-linked account.
 
 OTHER PROMOTIONS: PFL, RIZIN, CONTENDER SERIES (DWCS)
 - When another promotion has a card to pick, a sport switch (UFC | PFL | RIZIN | DWCS) appears under the header, and on Ranks. Those cards look and work like UFC cards: pick the winner, the method, and up to 2 🔒 locks per card. They score by the same rules (winner 1, method +0.5, underdog bonus when there's a line, lock +1/−1), but each promotion has its own separate board, and UFC scores are unaffected.
@@ -992,7 +1028,7 @@ YEAR WRAPPED
 - Your year of picks as swipe-through slides (hit rate, best night, biggest upset, streaks, ride-or-die fighter, pick twin, nemesis, title reigns, pick personality), with a shareable image. ⋯ More → Year Wrapped, or Ranks → Your Wrapped; it pops up by itself in December.
 
 AI FEATURES AND LIMITS
-- ⚡ AI, 💬 Ask Claude, 🎰 Parlay Picks, the scouting report and FightBot share a daily AI allowance per account. If it's used up, it resets the next day (UTC).`;
+- ⚡ AI, 💬 Ask Claude, 🎰 Parlay Picks, the scouting report, FightBot's call and FightBot share a daily AI allowance per account. If it's used up, it resets the next day (UTC).`;
 
 // Every button or menu name the guide sends people to. check:guide asserts each
 // one is in APP_GUIDE and still exists in index.html or lab.html.
@@ -1002,6 +1038,7 @@ export const GUIDE_UI_LABELS = [
   "Trash Talk", "Challenges", "Wheel", "Profile", "Delete my account", "👥 Everyone",
   "Notifications", "Result Spoilers", "Sign In / Link Email", "Fight Lab", "Year Wrapped",
   "Add to Home Screen", "Fight IQ", "Market", "Fight Week", "Matchup", "Watch Party", "Hub",
+  "🤖 FightBot's call", "🖼️ Share poster",
 ];
 
 export const GUIDE_MAX_TURNS = 6, GUIDE_MAX_TURN = 600, GUIDE_MAX_SCREEN = 40;
@@ -1104,6 +1141,15 @@ Deno.serve(async (req) => {
     system = built.system;
     prompt = built.user;
     maxTokens = 350;
+  } else if (action === "verdict") {
+    if (!body.verdict) {
+      return new Response(JSON.stringify({ error: "Missing verdict facts" }), { status: 400, headers: CORS });
+    }
+    const built = buildVerdict(body.verdict);
+    system = built.system;
+    prompt = built.user;
+    iqFacts = verdictFactsText(body.verdict);
+    maxTokens = 120;
   } else if (action === "fight-iq") {
     const q = body.iq;
     if (!q || !q.player || !q.record || !Array.isArray(q.insights)) {
@@ -1212,6 +1258,23 @@ Deno.serve(async (req) => {
   }
 
   let text: string = first.text;
+  // The verdict gets the scouting report's number guard (iqFacts holds its
+  // facts): one retry naming the strays, then a clean failure.
+  if (action === "verdict") {
+    let bad = numbersInvented(text, iqFacts);
+    if (bad.length) {
+      const again = await callModel(`${prompt}
+
+Your last line used figures that aren't in the facts (${bad.join(", ")}). Call it again using only the facts given — say it in words instead.`);
+      if (again.ok) { text = again.text; bad = numbersInvented(text, iqFacts); }
+    }
+    const line = text.trim().replace(/^["“]|["”]$/g, "");
+    if (!line || bad.length) {
+      return new Response(JSON.stringify({ error: "Couldn't call it without making something up — try again." }), { status: 502, headers: CORS });
+    }
+    // One line under a card, never a paragraph, whatever the model does.
+    return new Response(JSON.stringify({ breakdown: clampRoast(line, VERDICT_MAX_LINE) }), { status: 200, headers: CORS });
+  }
   if (action === "fight-iq") {
     let bad = numbersInvented(text, iqFacts);
     if (bad.length) {

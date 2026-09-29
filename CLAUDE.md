@@ -47,6 +47,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:swap` | a pulled bout's pickers not told, told twice or after it locks, a rename announced as a replacement, or the alert reaching anyone else |
 | `npm run check:iq` | the AI Fight IQ write-up stating a number it wasn't given, drifting onto Grok, repeating one voice, or escaping its daily cap |
 | `npm run check:guide` | FightBot's app guide stating a scoring rule scoring.js doesn't, sending people to a button that's gone, drifting onto Grok, or taking unbounded input |
+| `npm run check:verdict` | FightBot's call on a Tale of the Tape or Fight Night Report stating a number it wasn't given, spending AI without a tap, or the tape poster failing to draw or share |
 | `npm run check:parity` | any score moving during the engine migration: board, main-card board, per-card, Belt lineage, recaps, Year Wrapped |
 | `npm run check:promotion` | a picks query without `promotion=eq.ufc`, letting another sport's picks onto the UFC board, Belt, restore or result pushes |
 | `npm run check:sports` | the sport switcher showing with nothing to pick, a PFL pick saved untagged or after its lock, another sport scored on the UFC board, or its board drifting from `pickPts` (method, 🔒, underdog) |
@@ -361,8 +362,9 @@ mutation-tested individually.
 
 ## The roast runs on Grok; everything else runs on Claude
 
-`ai-breakdown` serves six actions. Five of them — `breakdown`, `chat`,
-`parlay`, the Fight Lab's `fight-iq` scouting report and FightBot's `guide` — make
+`ai-breakdown` serves seven actions. Six of them — `breakdown`, `chat`,
+`parlay`, the Fight Lab's `fight-iq` scouting report, FightBot's `guide` and
+FightBot's `verdict` — make
 claims about real fights, real people's picks or the app itself, and those stay on Claude. The fourth, `trash-talk`, is a joke between five friends, and
 Claude would not stop sanding the edges off it: the burn came back PG no matter
 how the prompt was phrased, which is the one thing the feature cannot be. So the
@@ -792,6 +794,17 @@ same way you add a What's New entry. It is `ai-breakdown` code, so it goes live
 on the Supabase deploy.
 
 (Not to be confused with `fightbot/`, the MCP server; both answer as FightBot.)
+
+**FightBot's call** (`ai-breakdown` action `verdict`) adds one AI line under a
+room's Tale of the Tape and a Card Recap's Fight Night Report, only when tapped,
+kept per session (`ufc_bot_calls`). It is told only the lines already on screen
+(`tapeFacts`, the recap's title and stories) and gets the scouting report's
+guard: `numbersInvented`, one retry, then a 502. **🖼️ Share poster**
+(`drawTapePoster`) draws the tape as a 1080×1350 image in the browser, like the
+Wrapped card: no AI, nothing uploaded. Both live outside the rooms block's
+logic; `taleEl` calls them only if they exist, so the tape never depends on
+them. `check:verdict` holds all of it (`check:verdict:fn` gates the function
+deploy).
 
 ## One scoring rulebook: `scoring.js`
 
