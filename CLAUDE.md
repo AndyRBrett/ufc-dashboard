@@ -824,8 +824,17 @@ name that belongs to an actor shows initials. Misses are stored with a time
 network error records nothing, so the next visit retries. Its old `ufc_photos`
 key persisted misses forever and in-flight lookups as `null`, which a reload
 read as "still loading" and never fetched; it is deleted, not migrated, since
-its hits were never checked against the page and could be the wrong face. `npm run check:photos` holds it,
-mutation-tested.
+its hits were never checked against the page and could be the wrong face.
+
+**The images come from `thumb.wikimedia.org`, not `upload.wikimedia.org`, and
+the page's CSP `img-src` must allow that host.** It did not, so for a while the
+lookup succeeded, the URL passed `_safeImgUrl` (any `*.wikimedia.org`), and the
+browser silently refused to draw every photo: no error in the app, just
+initials, and a headless test that served its fake images from the allowed host
+could not see it. `check:photos` now feeds the real URL shape through and
+asserts every host `_safeImgUrl` accepts is one `img-src` allows. Requests are
+also queued (`PHOTO_MAX_INFLIGHT`): ~100 at once got 12 rejected. `npm run
+check:photos` holds all of it, mutation-tested.
 
 ## Non-UFC cards: checked in shadow mode, now published
 
