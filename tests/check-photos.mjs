@@ -22,7 +22,10 @@ check("the fighter-photos block exists exactly once", !!block && html.split("// 
 if (!block) process.exit(1);
 
 // The reply shapes, keyed by the (normalised) title asked for.
-const THUMB = (n) => ({ source: "https://upload.wikimedia.org/wikipedia/commons/thumb/" + n + ".jpg/96px-" + n + ".jpg", width: 96, height: 96 });
+// The REAL shape (probed on a GitHub runner 2026-09-29): thumb.wikimedia.org,
+// with tracking parameters. A fixture on upload.wikimedia.org hid a CSP that
+// refused every real photo.
+const THUMB = (n) => ({ source: "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/" + n + ".png/120px-" + n + ".png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail", width: 120, height: 120 });
 const PAGES = {
   "Alex Pereira": { description: "Brazilian kickboxer and mixed martial artist (born 1987)", thumbnail: THUMB("AP") },
   "Chris Curtis": { description: "Topics referred to by the same term" },                      // disambiguation: no image
@@ -46,21 +49,27 @@ function reply(titles) {
   return { batchcomplete: true, query: { redirects, pages } };
 }
 
+const safeSrc = (html.match(/function _safeImgUrl\(url\)\{[^\n]*\}/) || [])[0];
+check("_safeImgUrl is found in index.html", !!safeSrc);
+const _safeImgUrl = new Function(safeSrc + "\nreturn _safeImgUrl;")();
+
 function boot(store = {}, opts = {}) {
   const calls = [], saved = {}, slots = [];
   const ctx = {
     calls, saved, slots,
-    _safeImgUrl: (u) => (typeof u === "string" && u.startsWith("https://upload.wikimedia.org/") ? u : null),
+    // The app's own filter, not a stand-in: a stub that only knew one host is
+    // how the CSP mismatch went unseen.
+    _safeImgUrl,
     _setPhoto: (slot, src) => slot.photo = src,
     _saveJSON: (k, o) => { saved[k] = JSON.parse(JSON.stringify(o)); },
     Date: { now: () => opts.now || 1e12 },
     FIGHTER_PHOTOS: store.photos || {}, FIGHTER_PHOTO_MISS: store.miss || {},
-    fetch: (url) => {
+    fetch: opts.fetch || ((url) => {
       calls.push(decodeURIComponent(url));
       if (opts.fail) return Promise.reject(new Error("offline"));
       const titles = new URL(url).searchParams.get("titles");
       return Promise.resolve({ ok: true, json: async () => reply(titles) });
-    },
+    }),
   };
   const fn = new Function(...Object.keys(ctx), block + "\nreturn {_photoInto, _photoCandidates, _photoFromReply, FIGHTER_PHOTOS, FIGHTER_PHOTO_MISS};");
   return Object.assign(fn(...Object.values(ctx)), { ctx });
@@ -74,21 +83,21 @@ const slot = () => ({ photo: null });
   m._photoInto(s, "Chris Curtis"); await settle();
   check("one request, asking for the name and its (fighter) titles", m.ctx.calls.length === 1 &&
     /titles=Chris Curtis\|Chris Curtis \(fighter\)\|Chris Curtis \(mixed martial artist\)/.test(m.ctx.calls[0]) && /redirects=1/.test(m.ctx.calls[0]));
-  check("a disambiguation page is skipped for the fighter's own page", /\/CC\.jpg\//.test(s.photo || ""));
-  check("the hit is remembered (and persisted) with no miss recorded", /CC\.jpg/.test(m.FIGHTER_PHOTOS["Chris Curtis"]) && m.ctx.saved.ufc_photos2["Chris Curtis"] && !m.FIGHTER_PHOTO_MISS["Chris Curtis"]);
+  check("a disambiguation page is skipped for the fighter's own page", /\/CC\.png\//.test(s.photo || ""));
+  check("the hit is remembered (and persisted) with no miss recorded", /CC\.png/.test(m.FIGHTER_PHOTOS["Chris Curtis"]) && m.ctx.saved.ufc_photos2["Chris Curtis"] && !m.FIGHTER_PHOTO_MISS["Chris Curtis"]);
 }
 // 2. the bare name works, and a redirect is followed
 {
   const m = boot(), a = slot(), b = slot();
   m._photoInto(a, "Alex Pereira"); m._photoInto(b, "Redirected Name"); await settle();
-  check("a plain fighter page is used", /\/AP\.jpg\//.test(a.photo || ""));
-  check("a redirect is followed to its target", /\/RT\.jpg\//.test(b.photo || ""));
+  check("a plain fighter page is used", /\/AP\.png\//.test(a.photo || ""));
+  check("a redirect is followed to its target", /\/RT\.png\//.test(b.photo || ""));
 }
 // 3. someone else's face is never shown
 {
   const m = boot(), s = slot();
   m._photoInto(s, "Jordan Smith"); await settle();
-  check("a same-named non-fighter is skipped for the fighter's page", /\/JS\.jpg\//.test(s.photo || "") && !/ACTOR/.test(s.photo));
+  check("a same-named non-fighter is skipped for the fighter's page", /\/JS\.png\//.test(s.photo || "") && !/ACTOR/.test(s.photo));
   PAGES["Jordan Smith (fighter)"].thumbnail = null;
   const m2 = boot(), s2 = slot();
   m2._photoInto(s2, "Jordan Smith"); await settle();
@@ -126,6 +135,28 @@ const slot = () => ({ photo: null });
   check("...and makes no request", m.ctx.calls.length === 0);
   const bad = m._photoFromReply({ query: { pages: [{ title: "X", description: "American boxer", thumbnail: { source: "https://evil.example/x.jpg" } }] } }, ["X"]);
   check("a thumbnail off Wikimedia is refused", bad === null);
+}
+// 6b. the browser must be allowed to DRAW what the lookup accepts
+{
+  const csp = (html.match(/http-equiv="Content-Security-Policy" content="([^"]*)"/) || [])[1] || "";
+  const imgSrc = ((csp.match(/img-src([^;]*)/) || [])[1] || "").trim().split(/\s+/);
+  const allowed = (u) => imgSrc.some((s) => s === "https://" + new URL(u).host);
+  const real = THUMB("X").source;
+  check("the CSP img-src allows the host the API really returns (thumb.wikimedia.org)", allowed(real));
+  const m = boot(); const s = slot();
+  m._photoInto(s, "Alex Pereira"); await settle();
+  check("every photo the lookup accepts is one the CSP lets the browser draw", !!s.photo && allowed(s.photo));
+}
+// 6c. never more than PHOTO_MAX_INFLIGHT requests open at once
+{
+  let open = 0, peak = 0;
+  const m = boot({}, { fetch: (url) => { open++; peak = Math.max(peak, open); return new Promise((res) => setTimeout(() => { open--; res({ ok: true, json: async () => reply(new URL(url).searchParams.get("titles")) }); }, 5)); } });
+  const names = Array.from({ length: 30 }, (_, i) => "Fighter Number" + i);
+  const slots = names.map(() => slot());
+  names.forEach((n, i) => m._photoInto(slots[i], n));
+  await new Promise((r) => setTimeout(r, 200));
+  check("30 lookups at once never open more than 4 requests", peak > 0 && peak <= 4);
+  check("...and every one of them still gets its turn", Object.keys(m.FIGHTER_PHOTO_MISS).length === 30);
 }
 // 7. wiring: both views use it, and the old permanent miss is gone
 check("the UFC rows use _photoInto", /_photoInto\(phWrap,fighter\.n\)/.test(html));

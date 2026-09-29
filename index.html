@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https://upload.wikimedia.org data:; font-src 'self'; connect-src 'self' https://gkccophrdqtqcowmblre.supabase.co wss://gkccophrdqtqcowmblre.supabase.co https://en.wikipedia.org; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https://upload.wikimedia.org https://thumb.wikimedia.org data:; font-src 'self'; connect-src 'self' https://gkccophrdqtqcowmblre.supabase.co wss://gkccophrdqtqcowmblre.supabase.co https://en.wikipedia.org; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>UFC Fight Cards</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#e8192c">
@@ -5420,6 +5420,16 @@ var PHOTO_SUFFIXES=[""," (fighter)"," (mixed martial artist)"," (martial artist)
 var PHOTO_SUBJECT_RE=/mixed martial|martial art|kickbox|muay thai|boxer|wrestler|judoka|jiu-jitsu|grappl|sambo|karate|fighter/i;
 var _photoWaiters={};   // name -> slots waiting on the one in-flight lookup
 var _photoTried={};     // name -> true after a failed request (network), retried next page load
+// A card is 20-30 fighters and the sport view up to 90, so a lookup per name
+// fired at once trips Wikipedia's rate limit (12 of 108 failed in a real run).
+// At most PHOTO_MAX_INFLIGHT requests are open; the rest wait their turn.
+var PHOTO_MAX_INFLIGHT=4,_photoActive=0,_photoQueue=[];
+function _photoPump(){
+  while(_photoActive<PHOTO_MAX_INFLIGHT&&_photoQueue.length){
+    _photoActive++;
+    _photoQueue.shift()(function(){_photoActive--;_photoPump();});
+  }
+}
 function _persistPhotos(){_saveJSON("ufc_photos2",FIGHTER_PHOTOS);_saveJSON("ufc_photo_miss",FIGHTER_PHOTO_MISS);}
 function _photoCandidates(name){
   var n=String(name||"").replace(/[|_]/g," ").replace(/\s+/g," ").trim();
@@ -5450,16 +5460,19 @@ function _photoInto(slot,name){
   if(_photoWaiters[name]){_photoWaiters[name].push(slot);return;}
   var cands=_photoCandidates(name);if(!cands.length)return;
   _photoWaiters[name]=[slot];
-  fetch("https://en.wikipedia.org/w/api.php?action=query&redirects=1&prop=pageimages%7Cdescription&piprop=thumbnail&pithumbsize=96&format=json&formatversion=2&origin=*&titles="+encodeURIComponent(cands.join("|")))
-    .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
-    .then(function(d){
-      var src=_photoFromReply(d,cands);
-      if(src){FIGHTER_PHOTOS[name]=src;delete FIGHTER_PHOTO_MISS[name];(_photoWaiters[name]||[]).forEach(function(c){_setPhoto(c,src);});}
-      else FIGHTER_PHOTO_MISS[name]=Date.now();
-      _persistPhotos();
-    })
-    .catch(function(){_photoTried[name]=true;})
-    .then(function(){delete _photoWaiters[name];});
+  _photoQueue.push(function(done){
+    fetch("https://en.wikipedia.org/w/api.php?action=query&redirects=1&prop=pageimages%7Cdescription&piprop=thumbnail&pithumbsize=96&format=json&formatversion=2&origin=*&titles="+encodeURIComponent(cands.join("|")))
+      .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
+      .then(function(d){
+        var src=_photoFromReply(d,cands);
+        if(src){FIGHTER_PHOTOS[name]=src;delete FIGHTER_PHOTO_MISS[name];(_photoWaiters[name]||[]).forEach(function(c){_setPhoto(c,src);});}
+        else FIGHTER_PHOTO_MISS[name]=Date.now();
+        _persistPhotos();
+      })
+      .catch(function(){_photoTried[name]=true;})
+      .then(function(){delete _photoWaiters[name];done();});
+  });
+  _photoPump();
 }
 // fighter-photos:end
 
