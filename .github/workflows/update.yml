@@ -25,6 +25,10 @@ on:
         description: "Pull odds regardless of the cadence gate (spends ~2 API calls)"
         type: boolean
         default: false
+      force_extra:
+        description: "Pull the non-UFC cards (PFL, RIZIN, DWCS) regardless of extra.py's 4h/12h cadence gate (free: Wikipedia, no quota)"
+        type: boolean
+        default: false
 
 concurrency:
   group: update-main
@@ -110,6 +114,10 @@ jobs:
         continue-on-error: true
         env:
           EXTRA_PUBLISH: "1"
+          # EXTRA_FORCE bypasses extra.py's should_fetch gate, for a card that
+          # needs to appear now (a new promotion, a late replacement) rather
+          # than at the next 4h/12h pull. Same shape as ODDS_FORCE above.
+          EXTRA_FORCE: ${{ inputs.force_extra && '1' || '' }}
         run: python extra.py
       # Warnings don't block the publish, so they need somewhere to land that
       # isn't a workflow log nobody opens. One long-lived issue, rewritten in
