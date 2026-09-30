@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T23:12:58Z",
+  "generated_at": "2026-09-30T00:20:47Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -11747,7 +11747,7 @@
           "f1": "Imanol Rodriguez",
           "f2": "Alden Coria",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11803,6 +11803,11 @@
               "at": "2026-09-29T17:48:02Z",
               "f1_odds": -171,
               "f2_odds": 137
+            },
+            {
+              "at": "2026-09-30T00:20:46Z",
+              "f1_odds": -170,
+              "f2_odds": 136
             }
           ],
           "open": {
@@ -11817,7 +11822,7 @@
           "f1": "Damian Pinas",
           "f2": "Andrey Pulyaev",
           "lbl": "Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11848,6 +11853,11 @@
               "at": "2026-09-29T11:32:48Z",
               "f1_odds": -502,
               "f2_odds": 357
+            },
+            {
+              "at": "2026-09-30T00:20:46Z",
+              "f1_odds": -523,
+              "f2_odds": 370
             }
           ],
           "open": {
@@ -12087,7 +12097,7 @@
           "f1": "Marvin Vettori",
           "f2": "Ismail Naurdiev",
           "lbl": "Early Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -12148,6 +12158,11 @@
               "at": "2026-09-29T17:48:02Z",
               "f1_odds": 118,
               "f2_odds": -146
+            },
+            {
+              "at": "2026-09-30T00:20:46Z",
+              "f1_odds": 117,
+              "f2_odds": -144
             }
           ],
           "open": {
@@ -12257,7 +12272,7 @@
           "f1": "Jacobe Smith",
           "f2": "Bruce Whitehead",
           "lbl": "Early Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-09-29T11:32:48Z",
@@ -12268,6 +12283,11 @@
               "at": "2026-09-29T17:48:02Z",
               "f1_odds": -953,
               "f2_odds": 587
+            },
+            {
+              "at": "2026-09-30T00:20:46Z",
+              "f1_odds": -970,
+              "f2_odds": 595
             }
           ],
           "open": {
@@ -12282,12 +12302,17 @@
           "f1": "Anthony Wint",
           "f2": "Lucas Armand",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-09-29T17:48:02Z",
               "f1_odds": -448,
               "f2_odds": 327
+            },
+            {
+              "at": "2026-09-30T00:20:46Z",
+              "f1_odds": -497,
+              "f2_odds": 355
             }
           ],
           "open": {
@@ -13812,7 +13837,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Damian Pinas",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 383,
         "close": null,
         "clv": null
@@ -14196,7 +14221,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Andrey Pulyaev",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -500,
         "close": null,
         "clv": null
@@ -14368,7 +14393,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Bruce Whitehead",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -967,
         "close": null,
         "clv": null
@@ -14494,7 +14519,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Imanol Rodriguez",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 130,
         "close": null,
         "clv": null
@@ -15366,7 +15391,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Lucas Armand",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -448,
         "close": null,
         "clv": null
@@ -16822,7 +16847,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Alden Coria",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -150,
         "close": null,
         "clv": null
@@ -16888,7 +16913,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Ismail Naurdiev",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": 115,
         "close": null,
         "clv": null
@@ -16899,7 +16924,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Marvin Vettori",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -135,
         "close": null,
         "clv": null
@@ -16943,7 +16968,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Jacobe Smith",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 607,
         "close": null,
         "clv": null
@@ -16954,7 +16979,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Anthony Wint",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 327,
         "close": null,
         "clv": null
