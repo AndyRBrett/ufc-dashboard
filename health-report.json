@@ -1,11 +1,19 @@
 {
-  "generated_at": "2026-09-30T20:08:12Z",
+  "generated_at": "2026-09-30T21:13:51Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 3
+    "warn": 4
   },
   "findings": [
+    {
+      "severity": "WARN",
+      "check": "odds-missing-some",
+      "message": "UFC 332: Silva vs. Wang (3d out): 1 of 14 bouts have no odds",
+      "event": "UFC 332: Silva vs. Wang",
+      "date": "2026-10-03",
+      "days_out": 3
+    },
     {
       "severity": "WARN",
       "check": "odds-missing-all",
