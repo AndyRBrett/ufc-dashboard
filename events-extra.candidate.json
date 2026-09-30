@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-09-29T17:48:03Z",
+ "generated_at": "2026-09-30T02:14:19Z",
  "promotions": [
   {
    "id": "pfl",
@@ -37,37 +37,23 @@
       "a": -335,
       "b": 268
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "George Staines",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
-     "a": "Ilias Bulaid",
-     "b": "Erick Visconde",
+     "a": "Adama Diop",
+     "b": "Zaurbek Sabanov",
      "label": "",
-     "division": "Featherweight",
+     "division": "Heavyweight",
      "title": false,
      "odds": {
-      "a": -133,
-      "b": 112
+      "a": -368,
+      "b": 294
      },
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Camila Reynoso",
-     "b": "Aieza Ramos Bertolso",
-     "label": "",
-     "division": "Women's Strawweight",
-     "title": false,
-     "odds": {
-      "a": 406,
-      "b": -547
-     },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Adama Diop",
+     "method": "KO/TKO",
+     "round": 2
     },
     {
      "a": "Ian Escuza",
@@ -76,23 +62,23 @@
      "division": "Featherweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Ian Escuza",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
-     "a": "Zaurbek Sabanov",
-     "b": "Adama Diop",
+     "a": "Aieza Ramos Bertolso",
+     "b": "Camila Reynoso",
      "label": "",
-     "division": "Heavyweight",
+     "division": "Women's Strawweight",
      "title": false,
      "odds": {
-      "a": -368,
-      "b": 294
+      "a": 406,
+      "b": -547
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Aieza Ramos Bertolso",
+     "method": "Submission",
+     "round": 1
     }
    ]
   },
@@ -187,7 +173,10 @@
      "label": "",
      "division": "Lightweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": -160,
+      "b": 140
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -622,6 +611,17 @@
      "b": "Smilla Sundell",
      "label": "",
      "division": "Women's Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Ilias Bulaid",
+     "b": "Erick Visconde",
+     "label": "",
+     "division": "Featherweight",
      "title": false,
      "odds": null,
      "winner": "",
