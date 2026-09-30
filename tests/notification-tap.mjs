@@ -79,7 +79,7 @@ async function swTap(windows, kind = "") {
   }));
   const handlers = {};
   const sandbox = {
-    self: { addEventListener: (t, f) => { handlers[t] = f; }, registration: {}, skipWaiting() {} },
+    self: { addEventListener: (t, f) => { handlers[t] = f; }, registration: { scope: "https://x.github.io/ufc-dashboard/" }, skipWaiting() {} },
     clients: { matchAll: () => Promise.resolve(clientsList), openWindow: (u) => { log.opened.push(u); return Promise.resolve(null); } },
     caches: { open: () => Promise.resolve({ put: (k, r) => r.text().then((t) => { log.stashed = JSON.parse(t); }) }) },
     Response, URL, Promise, JSON, Date, encodeURIComponent, console,
@@ -119,6 +119,11 @@ async function main() {
       log = await swTap([{ url: LAB, visible: true }, { url: APP + "index.html", visible: false }]);
       assert("sw: an app-page window beats a visible Lab window",
         log.messages.length === 1 && log.messages[0].to === APP + "index.html" && !log.navigated.length);
+      log = await swTap([{ url: LAB, visible: true }, { url: "https://x.github.io/", visible: false }]);
+      assert("sw: a same-origin page outside the scope is not taken for the app",
+        !log.messages.length && log.navigated.length === 1 && log.navigated[0].from === LAB);
+      log = await swTap([{ url: APP + "?inbox=1#x", visible: true }]);
+      assert("sw: the app page with a query or hash still counts", log.messages.length === 1 && !log.navigated.length);
       log = await swTap([{ url: LAB, visible: true }], "challenge");
       assert("sw: a challenge tap on the Lab also goes to the app", log.navigated.length === 1 && log.navigated[0].to === "./?inbox=1");
     }

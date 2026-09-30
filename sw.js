@@ -216,10 +216,14 @@ self.addEventListener('notificationclick', function(e) {
   // and show the roast exactly once when both paths deliver.
   var tapTs = Date.now();
 
-  // Is this window on the app page itself (the scope root or index.html),
-  // rather than another page of the app such as lab.html?
+  // Is this window on the app page itself (this worker's scope root or its
+  // index.html), rather than another page of the app such as lab.html, or a
+  // same-origin page outside the scope that merely ends in '/'?
   function onAppPage(c) {
-    try { return /\/(index\.html)?$/.test(new URL(c.url).pathname); } catch (err) { return false; }
+    try {
+      var u = new URL(c.url), root = new URL(self.registration.scope);
+      return u.origin === root.origin && (u.pathname === root.pathname || u.pathname === root.pathname + 'index.html');
+    } catch (err) { return false; }
   }
 
   function stashTap() {
