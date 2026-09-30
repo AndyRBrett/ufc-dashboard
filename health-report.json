@@ -1,18 +1,11 @@
 {
-  "generated_at": "2026-09-30T06:33:38Z",
+  "generated_at": "2026-09-30T07:38:23Z",
   "summary": {
     "events": 11,
     "block": 0,
-    "warn": 4
+    "warn": 3
   },
   "findings": [
-    {
-      "severity": "WARN",
-      "check": "card-shrink",
-      "message": "UFC 334: Gane vs. Hokit dropped from 12 bouts to 11 \u2014 publishing it as a withdrawal; confirm the bout really came off the card",
-      "event": "UFC 334: Gane vs. Hokit",
-      "date": "2026-11-14"
-    },
     {
       "severity": "WARN",
       "check": "odds-missing-all",
