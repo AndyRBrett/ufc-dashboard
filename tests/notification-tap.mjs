@@ -73,7 +73,7 @@ async function swTap(windows, kind = "") {
   const log = { messages: [], navigated: [], opened: [], stashed: null };
   const clientsList = windows.map((w) => ({
     url: w.url, visibilityState: w.visible ? "visible" : "hidden",
-    focus() { return Promise.resolve(this); },
+    focus() { return w.focusRejects ? Promise.reject(new Error("not allowed")) : Promise.resolve(this); },
     navigate(u) { log.navigated.push({ from: w.url, to: u }); return Promise.resolve(this); },
     postMessage(m) { log.messages.push({ to: w.url, type: m.type }); },
   }));
@@ -124,9 +124,24 @@ async function main() {
         !log.messages.length && log.navigated.length === 1 && log.navigated[0].from === LAB);
       log = await swTap([{ url: APP + "?inbox=1#x", visible: true }]);
       assert("sw: the app page with a query or hash still counts", log.messages.length === 1 && !log.navigated.length);
+      log = await swTap([{ url: APP, visible: true, focusRejects: true }]);
+      assert("sw: the roast is posted even when focus() rejects (app already on screen)",
+        log.messages.length === 1 && log.messages[0].to === APP && log.messages[0].type === "trash-talk");
       log = await swTap([{ url: LAB, visible: true }], "challenge");
       assert("sw: a challenge tap on the Lab also goes to the app", log.navigated.length === 1 && log.navigated[0].to === "./?inbox=1");
     }
+
+    // 0. Tap on a banner while the app is already on screen: no visibilitychange,
+    //    no pageshow, and the SW's message lost. Only the visible-page poll can
+    //    find the stash, and it must.
+    await stashTap(page, { kind: "", fullMessage: ROAST, sender: "AB", ts: Date.now() });
+    await page.waitForTimeout(2600);
+    {
+      const s0 = await sheet(page);
+      assert("a tap on an app already on screen shows with no page event", s0.open && s0.text === ROAST);
+    }
+    await closeSheet(page);
+    await page.evaluate(() => { closeTrashSheet(); closeLeaderboard(); });
 
     // 1. Tap on a backgrounded (already-loaded) app. No reload happens, and the
     //    SW's postMessage can vanish into a client iOS only *thinks* is alive —

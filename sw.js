@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = "2026-09-30-1";
+const SW_VERSION = "2026-09-30-2";
 const CACHE = 'ufc-' + SW_VERSION;
 // Handoff caches that must survive SW upgrades: 'ufc-push-id' carries the push
 // identity used by pushsubscriptionchange while the app is closed, 'ufc-tap'
@@ -298,11 +298,17 @@ self.addEventListener('notificationclick', function(e) {
       return target.focus().then(function(c) { return (c || target).navigate(baseUrl); })
         .catch(openFresh);
     }
+    // Post BEFORE focusing. The message used to wait on focus() resolving, so
+    // a focus() that rejected (the app already on screen, where there is
+    // nothing to bring forward) meant no message at all, and with the page
+    // already visible no visibilitychange fires to read the stash either:
+    // the tap did nothing. The page dedupes on tapTs, so a message that lands
+    // alongside the stash still shows the roast once.
     return Promise.resolve()
-      .then(function() { return target.focus(); })
       .then(function() {
         if (kind) target.postMessage({ type: kind, fullMessage: fullMessage, sender: sender, ts: tapTs });
         else if (fullMessage) target.postMessage({ type: 'trash-talk', fullMessage: fullMessage, sender: sender, ts: tapTs });
+        return target.focus();
       })
       .catch(openFresh);
   }));

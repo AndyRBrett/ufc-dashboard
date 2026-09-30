@@ -11194,6 +11194,14 @@ _roomsBoot();
     if(document.visibilityState==='visible')consumePendingTap(0);
   });
   window.addEventListener('pageshow',function(e){if(e.persisted)consumePendingTap(0);});
+  // A tap on a banner while the app is already on screen fires no page event
+  // at all: nothing is hidden, so there is no visibilitychange, and the SW's
+  // message is the only delivery path. On iOS that message can be lost, and
+  // the stash also lands a beat AFTER the page turns visible (the SW is woken
+  // by the tap), so the foreground check above can read it too early. Look
+  // again every couple of seconds while visible: a cheap local cache read,
+  // and consumePendingTap's delete() keeps it to one showing per tap.
+  setInterval(function(){if(document.visibilityState==='visible')consumePendingTap(0);},2000);
 })();
 </script>
 <script>
