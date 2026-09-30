@@ -438,6 +438,29 @@ async function buildMsg(
   return { ok: true, msg: { title: `🎤 ${persona} (via ${nick})`, body: text, include_user_ids: to, exclude_user_id: me } };
 }
 
+// Blocks (0013_safety.sql): everyone the verified sender has blocked or been
+// blocked by. A social push never crosses a block in either direction: the
+// blocker hears nothing from the blocked person, and the blocked person can't
+// be told anything by the one who blocked them either. A missing table (404:
+// 0013 not applied yet) is "no blocks"; any other failure is null, and the
+// caller fails closed rather than deliver past a block it couldn't read.
+export async function blockedWith(sb: string, h: Record<string, string>, uid: string): Promise<Set<string> | null> {
+  const u = encodeURIComponent(uid);
+  const r = await fetch(`${sb}/rest/v1/user_blocks?or=(blocker_id.eq.${u},blocked_id.eq.${u})&select=blocker_id,blocked_id&limit=5000`, { headers: h })
+    .catch(() => null);
+  if (!r) return null;
+  if (r.status === 404) return new Set();
+  if (!r.ok) return null;
+  const rows = await r.json().catch(() => null);
+  if (!Array.isArray(rows)) return null;
+  const out = new Set<string>();
+  for (const b of rows) {
+    if (b?.blocker_id === uid && typeof b.blocked_id === "string") out.add(b.blocked_id);
+    else if (b?.blocked_id === uid && typeof b.blocker_id === "string") out.add(b.blocker_id);
+  }
+  return out;
+}
+
 async function alreadySent(sb: string, h: Record<string, string>, date: string, type: string): Promise<boolean> {
   const r = await fetch(`${sb}/rest/v1/notif_log?event_date=eq.${encodeURIComponent(date)}&type=eq.${encodeURIComponent(type)}&select=event_date`, { headers: h });
   const rows = await r.json().catch(() => null);
@@ -611,6 +634,7 @@ Deno.serve(async (req) => {
   // Who is asking (see "Who may send what" above). A JWT that doesn't verify is
   // refused outright rather than treated as anon: it was meant to be someone.
   let caller: Caller;
+  let blocked: Set<string> | null = null;   // social pushes only: see blockedWith
   if (sameSecret(req.headers.get("X-Service-Key") ?? "", SERVICE_ROLE_KEY)) caller = { kind: "service" };
   else if (isAnonKey || !ANON_KEY) caller = { kind: "anon" };
   else {
@@ -635,6 +659,19 @@ Deno.serve(async (req) => {
     // Everything that reaches a phone now comes from the server; only the
     // device's own endpoint (a self-exclusion filter) is still taken as given.
     body = { type: body.type, event_date: body.event_date, exclude_endpoint: body.exclude_endpoint ?? null, ...built.msg };
+    if (caller.kind === "user" && SOCIAL.test(body.type)) {
+      blocked = await blockedWith(SUPABASE_URL, sbHeaders, caller.uid);
+      if (!blocked) return new Response(JSON.stringify({ error: "Could not check blocks" }), { status: 503, headers: CORS });
+      if (body.include_user_ids && body.include_user_ids.length) {
+        body.include_user_ids = body.include_user_ids.filter((u) => !blocked!.has(u));
+        // Everyone it was for is blocked: nothing to send, and nothing logged,
+        // so the dedup key isn't spent. Never fall through with an empty list:
+        // an untargeted push is a broadcast.
+        if (!body.include_user_ids.length) {
+          return new Response(JSON.stringify({ sent: 0, skipped: false, reason: "no subscribers" }), { status: 200, headers: CORS });
+        }
+      }
+    }
   } else if (body.include_user_ids && (!Array.isArray(body.include_user_ids) || !body.include_user_ids.every((u) => typeof u === "string" && UID_RE.test(u)))) {
     return new Response(JSON.stringify({ error: "Bad include_user_ids" }), { status: 400, headers: CORS });
   }
@@ -666,27 +703,28 @@ Deno.serve(async (req) => {
     subsFilter = "";
   }
   let subsRes = await fetch(
-    `${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth,live_results${subsFilter}`,
+    `${SUPABASE_URL}/rest/v1/push_subs?select=user_id,endpoint,p256dh,auth,live_results${subsFilter}`,
     { headers: sbHeaders }
   );
   if (!subsRes.ok) {
     // live_results column may not exist yet (migration 0002 not applied) —
     // refetch without it; everyone is then treated as spoiler-free.
     subsRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/push_subs?select=endpoint,p256dh,auth${subsFilter}`,
+      `${SUPABASE_URL}/rest/v1/push_subs?select=user_id,endpoint,p256dh,auth${subsFilter}`,
       { headers: sbHeaders }
     );
   }
   if (!subsRes.ok) {
     return new Response(JSON.stringify({ error: "Failed to fetch subscriptions" }), { status: 502, headers: CORS });
   }
-  let subs: { endpoint: string; p256dh: string; auth: string; live_results?: boolean }[] = await subsRes.json();
+  let subs: { user_id?: string; endpoint: string; p256dh: string; auth: string; live_results?: boolean }[] = await subsRes.json();
 
   // Drop the sender's own device and collapse duplicate rows that share an
   // endpoint (left behind when a device re-registers under a new user_id).
   const seenEndpoints = new Set<string>();
   subs = subs.filter((sub) => {
     if (body.exclude_endpoint && sub.endpoint === body.exclude_endpoint) return false;
+    if (blocked && sub.user_id && blocked.has(sub.user_id)) return false;
     if (seenEndpoints.has(sub.endpoint)) return false;
     seenEndpoints.add(sub.endpoint);
     return true;

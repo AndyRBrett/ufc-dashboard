@@ -57,6 +57,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:pushauth` | a push sent with text or an audience the server didn't build, a user sending as someone else, or the anon key sending anything but the rebuilt backups |
 | `npm run check:html` | scraped, user or other-process text (a card name, a nickname, a status file) reaching `innerHTML` instead of `textContent` |
 | `npm run check:photos` | a fighter photo lookup missing a disambiguated page, showing a same-named non-fighter's face, caching a miss forever, or a view without photos |
+| `npm run check:safety` | a report readable or filed as someone else, a block the blocked person can see or undo, a blocked pair able to challenge each other, the app showing a blocked player's challenges, or the privacy policy unlinked |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -1018,6 +1019,29 @@ change, called out in the PR. Nothing in the migration merges on a card day.
 If a stage goes wrong: `docs/ROLLBACK.md` (known-good branch
 `backup/pre-engine-migration-2026-09-24`, picks snapshot
 `picks_backup_2026_09_24`).
+
+## Report, block and the privacy policy (App Store groundwork)
+
+Apple's guideline 1.2 requires an app with user content (roasts, challenges,
+nudges, nicknames, room names) to let people **report** it and **block** abusive
+users, and every app needs a **privacy policy** URL. `0013_safety.sql` adds
+`user_blocks` (only the blocker sees, adds or removes a row; the blocked person
+is never told) and `content_reports` (insert-only, as yourself, 20 a day; read
+them in the Supabase dashboard). A block is enforced by the server: `send-push`'s
+`blockedWith` drops every **social** push across it in both directions (a missing
+table is "no blocks", any other read failure is a 503: fail closed), and
+the `challenges_block_guard` trigger refuses a challenge between a blocked pair
+(a trigger, never an app-executable SECURITY DEFINER helper: that would be an
+RPC anyone could call to learn who blocked them). The app's
+`// safety:start … :end` block adds 🚩 Report / 🚫 Block under a received roast,
+an incoming challenge, a player's expanded Ranks row and (Report only) a room
+you don't own, hides a blocked player's
+challenges and roast targets, and lists blocks under ⋯ More → Privacy & Safety.
+Blocking by name blocks every uid the board holds under it (anonymous uids
+rotate). `privacy.html` is static and script-free: **when the app starts
+collecting something new (a table, a third-party call), update it in the same
+change.** The migration is applied by hand and send-push needs a Supabase deploy.
+`check:safety` and `check:pushauth` hold it.
 
 ## Other conventions
 

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="description" content="What Fight Cards collects, why, who it is shared with, and how to delete it.">
+<meta name="theme-color" content="#0f0f14">
+<link rel="icon" type="image/png" href="icon-192-v2.png">
+<title>Privacy Policy · Fight Cards</title>
+<!-- Plain, static and script-free on purpose: it has to load for an App Store
+     reviewer on any network, and it must never depend on the app booting.
+     When the app starts collecting something new (a new table, a new
+     third-party call), update the matching section here in the same change. -->
+<style>
+:root{--bg:#f7f7f9;--surface:#fff;--text:#16161d;--muted:#5b5b6b;--border:#e3e3ea;--accent:#c8102e}
+@media (prefers-color-scheme:dark){:root{--bg:#0f0f14;--surface:#17171f;--text:#ececf2;--muted:#a3a3b5;--border:#2a2a36;--accent:#ff4d5e}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:28px;line-height:1.2;margin:8px 0 4px}
+h2{font-size:19px;margin:32px 0 8px}
+p,li{color:var(--text)}
+.muted{color:var(--muted);font-size:14px}
+ul{padding-left:20px}
+li{margin:4px 0}
+a{color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:8px 6px;border-top:1px solid var(--border)}
+th{color:var(--muted);font-weight:600}
+.back{display:inline-block;margin-bottom:8px;text-decoration:none;font-weight:600}
+@media (max-width:520px){table,thead,tbody,tr,th,td{display:block}thead{display:none}td{border-top:none;padding:2px 0}tr{border-top:1px solid var(--border);padding:8px 0}td:first-child{font-weight:600}}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="./">← Back to Fight Cards</a>
+<h1>Privacy Policy</h1>
+<p class="muted">Fight Cards, the UFC picks game · Effective 30 September 2026</p>
+
+<div class="card">
+<strong>The short version.</strong> Fight Cards is a picks game for a group of friends. We keep what the game needs to work: your picks, the name you choose, and your notification settings. Your picks and name are visible to the other players, because that's the leaderboard. We don't sell your data, we don't show ads, and we don't use tracking cookies or third-party analytics.
+</div>
+
+<h2>What we collect</h2>
+<table>
+<thead><tr><th>What</th><th>Why</th><th>Kept until</th></tr></thead>
+<tbody>
+<tr><td>An account ID</td><td>Every visitor gets a random account ID automatically, so your picks are saved without a sign-up.</td><td>You delete your account</td></tr>
+<tr><td>Your email address, if you link one</td><td>So you can sign in on another phone and keep your picks. It is only used to sign you in.</td><td>You ask us to remove it (see "Deleting your data")</td></tr>
+<tr><td>Your nickname and emoji</td><td>Shown on the leaderboard, in rooms, and on roasts and challenges you send.</td><td>You delete your account</td></tr>
+<tr><td>Your picks, methods, 🔒 locks and bonus picks</td><td>Scoring, the leaderboard, the belt, recaps and Year Wrapped. <strong>Other players can see them.</strong></td><td>You delete your account</td></tr>
+<tr><td>Challenges you send or accept</td><td>The challenge inbox and side bets. The two players and the stake are visible to the group.</td><td>Removed on request</td></tr>
+<tr><td>Rooms you create or join</td><td>Room boards. Only members can see a room.</td><td>You delete your account (or leave the room)</td></tr>
+<tr><td>A push subscription, if you turn on notifications</td><td>A browser-issued address that lets us send fight reminders, results and messages from other players to your device.</td><td>You turn notifications off or delete your account</td></tr>
+<tr><td>Notification and app preferences</td><td>So your settings follow your account.</td><td>You delete your account</td></tr>
+<tr><td>Players you block</td><td>So their roasts, challenges and nudges don't reach you.</td><td>You unblock them or delete your account</td></tr>
+<tr><td>Reports you send</td><td>So the admin can review content that breaks the rules. The reported person is not told who reported them.</td><td>Kept as a moderation record</td></tr>
+<tr><td>AI usage counts, and the IP address they came from</td><td>Daily limits on the AI features, per account and per network, so they can't be abused.</td><td>30 days</td></tr>
+</tbody>
+</table>
+<p>Some settings (your theme, which cards you've expanded, photos already looked up) are stored only on your device, in your browser's local storage, and never leave it.</p>
+
+<h2>AI features</h2>
+<p>When you tap an AI feature (⚡ AI, 💬 Ask Claude, 🎰 Parlay Picks, the scouting report, FightBot, or Trash Talk), the text needed for that request is sent to an AI provider to write the answer: the fight data, what you typed, and for FightBot or a roast, the relevant players' nicknames, picks and scores. Trash Talk roasts are written by xAI's Grok; everything else is written by Anthropic's Claude. We don't send your email address or account ID to either. Nothing is sent unless you tap the feature.</p>
+
+<h2>Who we share it with</h2>
+<p>We don't sell or rent personal data, and we don't share it for advertising. It is processed by the services that run the app, only to run it:</p>
+<ul>
+<li><strong>Supabase</strong>: our database, sign-in and server functions.</li>
+<li><strong>GitHub Pages</strong>: hosts the app's files. Like any web host, it sees your IP address when your device loads the app.</li>
+<li><strong>Anthropic</strong> and <strong>xAI</strong>: the AI features above, only when you use them.</li>
+<li><strong>Your browser's push service</strong> (Apple, Google or Mozilla): delivers notifications you've turned on.</li>
+<li><strong>Wikipedia / Wikimedia</strong>: your device fetches fighter photos and bios directly from Wikipedia. No account information is included.</li>
+</ul>
+<p>We may disclose information if the law requires it.</p>
+
+<h2>Other players' content</h2>
+<p>Roasts, challenges, nudges, nicknames and room names are written by other players. Anything another player sends you has a 🚩 <strong>Report</strong> button, and you can 🚫 <strong>Block</strong> anyone: you stop getting their roasts, challenges and nudges, and they can't challenge you. The admin reviews reports and removes content (or accounts) that break the rules: no slurs, no threats, no sexual content about real people, no spam. Manage blocked players in the app under <strong>⋯ More → Privacy &amp; Safety</strong>.</p>
+
+<h2>Deleting your data</h2>
+<p>In the app, open <strong>Ranks → ✏️ Profile</strong> and choose <strong>Delete my account</strong>. That permanently removes your picks, your nickname, your notification subscription and settings, the rooms you own, your seats in other rooms, and your blocks. To also remove your linked email address or challenges you were part of, contact us (below) and we'll delete them.</p>
+
+<h2>Children</h2>
+<p>Fight Cards is not directed at children under 13, and we don't knowingly collect data from them. It shows betting odds and uncensored jokes between friends, so it is meant for adults. If you think a child has created an account, contact us and we'll delete it.</p>
+
+<h2>Security</h2>
+<p>Data travels over HTTPS. Database access rules let you change only your own picks, settings and blocks. Server keys are kept on the server, never in the app. No system is perfectly secure, but we work to protect what we hold.</p>
+
+<h2>Changes</h2>
+<p>If this policy changes, we'll update the date at the top. Significant changes will also be announced in the app's What's New.</p>
+
+<h2>Contact</h2>
+<p>Questions or deletion requests: open an issue at <a href="https://github.com/andyrbrett/ufc-dashboard/issues" rel="noopener">github.com/andyrbrett/ufc-dashboard/issues</a>, or use 🚩 Report in the app.</p>
+</main>
+</body>
+</html>
