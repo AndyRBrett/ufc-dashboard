@@ -127,6 +127,9 @@ async function main() {
       log = await swTap([{ url: APP, visible: true, focusRejects: true }]);
       assert("sw: the roast is posted even when focus() rejects (app already on screen)",
         log.messages.length === 1 && log.messages[0].to === APP && log.messages[0].type === "trash-talk");
+      assert("sw: and opens no second window over the app already on screen", !log.opened.length);
+      log = await swTap([{ url: APP, visible: false, focusRejects: true }]);
+      assert("sw: a hidden window that rejects focus() still falls back to a fresh one", log.opened.length === 1);
       log = await swTap([{ url: LAB, visible: true }], "challenge");
       assert("sw: a challenge tap on the Lab also goes to the app", log.navigated.length === 1 && log.navigated[0].to === "./?inbox=1");
     }

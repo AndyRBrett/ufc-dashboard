@@ -310,6 +310,12 @@ self.addEventListener('notificationclick', function(e) {
         else if (fullMessage) target.postMessage({ type: 'trash-talk', fullMessage: fullMessage, sender: sender, ts: tapTs });
         return target.focus();
       })
-      .catch(openFresh);
+      .catch(function() {
+        // The message is already out. A visible window rejecting focus() is
+        // the app already on screen: opening another would show the tap twice
+        // or pull the user off the page. Only a hidden window, which may be a
+        // client iOS already killed, falls back to a fresh one.
+        if (target.visibilityState !== 'visible') return openFresh();
+      });
   }));
 });
