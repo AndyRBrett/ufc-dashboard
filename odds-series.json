@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T05:28:26Z",
+  "generated_at": "2026-09-30T06:33:39Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -12302,7 +12302,7 @@
           "f1": "Anthony Wint",
           "f2": "Lucas Armand",
           "lbl": "Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-09-29T17:48:02Z",
@@ -12313,6 +12313,11 @@
               "at": "2026-09-30T00:20:46Z",
               "f1_odds": -497,
               "f2_odds": 355
+            },
+            {
+              "at": "2026-09-30T06:33:39Z",
+              "f1_odds": -540,
+              "f2_odds": 378
             }
           ],
           "open": {
@@ -15391,7 +15396,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Lucas Armand",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -448,
         "close": null,
         "clv": null
@@ -16979,7 +16984,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Anthony Wint",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 327,
         "close": null,
         "clv": null
