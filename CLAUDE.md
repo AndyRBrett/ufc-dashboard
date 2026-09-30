@@ -1030,9 +1030,12 @@ is never told) and `content_reports` (insert-only, as yourself, 20 a day; read
 them in the Supabase dashboard). A block is enforced by the server: `send-push`'s
 `blockedWith` drops every **social** push across it in both directions (a missing
 table is "no blocks", any other read failure is a 503: fail closed), and
-`challenges_insert` refuses a challenge between a blocked pair. The app's
+the `challenges_block_guard` trigger refuses a challenge between a blocked pair
+(a trigger, never an app-executable SECURITY DEFINER helper: that would be an
+RPC anyone could call to learn who blocked them). The app's
 `// safety:start … :end` block adds 🚩 Report / 🚫 Block under a received roast,
-an incoming challenge and a player's expanded Ranks row, hides a blocked player's
+an incoming challenge, a player's expanded Ranks row and (Report only) a room
+you don't own, hides a blocked player's
 challenges and roast targets, and lists blocks under ⋯ More → Privacy & Safety.
 Blocking by name blocks every uid the board holds under it (anonymous uids
 rotate). `privacy.html` is static and script-free: **when the app starts

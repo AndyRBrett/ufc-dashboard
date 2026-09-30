@@ -65,6 +65,11 @@ const check = (name, cond) => cond ? console.log("  ✓ " + name) : (failures++,
   check("a challenge still can't be sent as someone else", await refused(as("authenticated", C,
     `insert into challenges (challenger_id, challenger_name, target_id, target_name, event_date, event_name) values ($1, 'x', $2, 'y', '2026-10-03', 'Card')`, [A, C])));
 
+  check("the block check isn't an RPC: the app can't call it to learn who blocked whom",
+    await refused(as("authenticated", B, `select public.challenges_block_guard()`)) &&
+    (await db.query(`select count(*)::int n from pg_proc p join pg_namespace ns on ns.oid = p.pronamespace
+      where ns.nspname = 'public' and p.prosecdef and p.prorettype <> 'trigger'::regtype
+        and has_function_privilege('authenticated', p.oid, 'execute')`)).rows[0].n === 0);
   check("the blocker can unblock", (await as("authenticated", A, `delete from user_blocks where blocked_id = $1 returning 1`, [B])).rows.length === 1);
   check("...and then they can challenge again", !(await refused(chal(B, A))));
 
@@ -203,6 +208,7 @@ const html = readFileSync(join(ROOT, "index.html"), "utf8");
   check("the app links the privacy policy from Privacy & Safety", /href="privacy\.html"/.test(html) && /id="safetyBtn"[^>]*openSafety\(\)/.test(html));
   check("Report and Privacy & Safety are real overlays (_escClosers)", /\["reportBg",function\(\)\{closeReport\(\);\}\]/.test(html) && /\["safetyBg",function\(\)\{closeSafety\(\);\}\]/.test(html));
   check("deleting an account deletes its blocks", /"\/rest\/v1\/user_blocks\?blocker_id=eq\."/.test(html) && /throw new Error\("delete blocks "/.test(html));
+  check("a room's name can be reported by anyone but its owner", /if\(r\.owner_id!==USER_ID\)\{[^}]*openReport\(\{kind:"room",uids:\[r\.owner_id\],content:r\.name\}\)/.test(html));
   check("a blocked player isn't offered as a roast target", /else if\(!isBlocked\(u\.user_id\)&&!isBlockedName\(u\.nickname\)\)\{opponents\.push/.test(html));
   const safety = html.slice(html.indexOf("// safety:start"), html.indexOf("// safety:end"));
   check("the safety block writes other people's words with textContent, never innerHTML",

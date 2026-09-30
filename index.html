@@ -8985,7 +8985,11 @@ function renderRoomSheet(){
     var acts=_rmEl("div","room-acts");
     var inv=_rmEl("button","room-act","Invite");inv.onclick=function(){shareRoom(r.id);};
     var lv=_rmEl("button","room-act room-act-quiet",r.owner_id===USER_ID?"Delete":"Leave");lv.onclick=function(){leaveRoom(r.id).then(renderRoomSheet);};
-    acts.appendChild(inv);acts.appendChild(lv);wrap.appendChild(acts);
+    acts.appendChild(inv);acts.appendChild(lv);
+    // A room's name is its owner's words: anyone else in it can report it.
+    if(r.owner_id!==USER_ID){var rp=_rmEl("button","room-act room-act-quiet","🚩 Report");
+      rp.onclick=function(){openReport({kind:"room",uids:[r.owner_id],content:r.name});};acts.appendChild(rp);}
+    wrap.appendChild(acts);
     box.appendChild(wrap);
   });
 }

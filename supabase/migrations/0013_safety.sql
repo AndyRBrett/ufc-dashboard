@@ -8,7 +8,7 @@
 --                    add or remove it; the blocked person is never told.
 --                    send-push reads it (service role) and drops every social
 --                    push between the two, in either direction; a challenge
---                    between them can't be created (challenges_insert below).
+--                    between them can't be created (challenges_block_guard below).
 --   content_reports  insert-only for the app: a reporter can file, never read
 --                    back, and only as themselves. Read them in the Supabase
 --                    dashboard (Table editor → content_reports, status 'open').
@@ -44,14 +44,24 @@ create table if not exists public.content_reports (
 );
 create index if not exists content_reports_open on public.content_reports (status, created_at);
 
--- Either of the two has blocked the other. SECURITY DEFINER because each
--- side can only see its own rows, and a challenge policy has to look at the
--- target's.
-create or replace function public.is_blocked_between(a text, b text)
-returns boolean language sql stable security definer set search_path = public as $$
-  select exists (select 1 from user_blocks
-                 where (blocker_id = a and blocked_id = b) or (blocker_id = b and blocked_id = a))
-$$;
+-- A blocked pair can't challenge each other, in either direction. A trigger,
+-- not a policy calling a helper: a SECURITY DEFINER helper the app can execute
+-- is also an RPC anyone could call with any two ids to read the block graph,
+-- and the blocked person must never be able to find out. A trigger function
+-- can't be called directly. It refuses with the same words whoever blocked.
+create or replace function public.challenges_block_guard()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if exists (select 1 from user_blocks
+             where (blocker_id = new.challenger_id and blocked_id = new.target_id)
+                or (blocker_id = new.target_id and blocked_id = new.challenger_id)) then
+    raise exception 'challenge not allowed';
+  end if;
+  return new;
+end $$;
+drop trigger if exists challenges_block_guard on public.challenges;
+create trigger challenges_block_guard before insert on public.challenges
+  for each row execute function public.challenges_block_guard();
 
 -- A report cap per reporter per day, counted server-side.
 create or replace function public.content_reports_cap()
@@ -91,21 +101,11 @@ grant insert (reporter_id, reported_id, reported_name, kind, content, reason)
   on public.content_reports to authenticated;
 grant usage on sequence public.content_reports_id_seq to authenticated;
 
--- A blocked pair can't challenge each other (0003's policy, plus the block).
-drop policy if exists challenges_insert on public.challenges;
-create policy challenges_insert on public.challenges
-  for insert to authenticated
-  with check (auth.uid()::text = challenger_id and target_id <> challenger_id
-              and not public.is_blocked_between(challenger_id, target_id));
-
-revoke all on function public.is_blocked_between(text, text), public.content_reports_cap() from public, anon;
-grant execute on function public.is_blocked_between(text, text) to authenticated;
+revoke all on function public.challenges_block_guard(), public.content_reports_cap() from public, anon, authenticated;
 
 -- ------------------------------------------------------------------- DOWN --
--- drop policy if exists challenges_insert on public.challenges;
--- create policy challenges_insert on public.challenges for insert to authenticated
---   with check (auth.uid()::text = challenger_id and target_id <> challenger_id);
+-- drop trigger if exists challenges_block_guard on public.challenges;
 -- drop table if exists public.content_reports;
 -- drop table if exists public.user_blocks;
 -- drop function if exists public.content_reports_cap();
--- drop function if exists public.is_blocked_between(text, text);
+-- drop function if exists public.challenges_block_guard();
