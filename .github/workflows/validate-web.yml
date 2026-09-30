@@ -32,6 +32,7 @@
 #   check:sports    — the sport switcher: hidden with nothing to pick, PFL picks tagged pfl, its own board and locks
 #   check:bundle    — send-reminders' bundled Lab code matches lab/, scoring.js and index.html
 #   check:photos    — a fighter's photo is found once, is never someone else's face, and a miss is retried
+#   check:safety    — report / block hold in the database and the app, and the privacy policy is linked
 #   check:picklock  — the database refuses a pick, change or delete once its bout's segment has started
 name: Validate Web
 
@@ -126,3 +127,5 @@ jobs:
         run: npm run check:html
       - name: Fighter photos
         run: npm run check:photos
+      - name: Report, block and privacy policy
+        run: npm run check:safety

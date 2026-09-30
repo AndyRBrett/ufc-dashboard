@@ -1019,6 +1019,7 @@ RANKS (the leaderboard)
 - ⚔️ Challenges: tap ⚔️ on a rival's row to call them out on one fight or the whole card, with stakes (wheel spin, $5, or your own). They accept or decline; it settles itself when the fights finish. No pick on the contested fight is a forfeit; a tie is a push.
 - 🎡 Wheel: a random forfeit picker for challenge losers; ⚙ Edit changes the forfeits.
 - ✏️ Profile: change your name and emoji. Delete my account is in there too.
+- 🚩 Report and 🚫 Block: under a roast you received, on a challenge in your inbox, and in a player's expanded row on Ranks. A report goes to the app's admin (the person isn't told who sent it). Blocking someone stops their trash talk, challenges and nudges reaching you, they can't challenge you, and they aren't told.
 - Nudges: friends who haven't finished their main-card picks show under "Next up"; tap a name to send them a callout push signed with your name. 3 nudges per person per day.
 - 👥 Rooms: tap 👥 Everyone at the top of Ranks to switch to a room. A room is a private board for a group, scored exactly like the main board, with its own 🏆 belt, and it opens with a Tale of the Tape of its top two before a card: 🤖 FightBot's call adds a one-line AI verdict, and 🖼️ Share poster shares it as a fight-poster image. Create one and share the invite link, or join with a code. Rooms need an email-linked account.
 
@@ -1030,6 +1031,7 @@ OTHER PROMOTIONS: PFL, RIZIN, CONTENDER SERIES (DWCS)
 ⋯ MORE MENU
 - Notifications (the 🔔 bell): fight-night reminders, results, trash talk, challenges, nudges, fight change alerts and the Friday brief. On iPhone, notifications only work from the home-screen app.
 - Result Spoilers: on shows the winner in result notifications; off keeps them spoiler-free.
+- Privacy & Safety: the privacy policy, and the players you've blocked (with Unblock).
 - Sign In / Link Email: link an email (one-time code) so your picks and stats survive a new phone or a cleared browser. Linking keeps the same account and picks. To move to a new phone, sign in there with the same email.
 - Fight Lab, Year Wrapped, themes (Octagon Dark, Apex Neon, Stars & Stripes, UFC Noche, Silver Bullet, Seasonal), and Add to Home Screen.
 - Never delete the home-screen app without linking an email first: removing it clears its local data, and an unlinked account can't be recovered.
@@ -1062,7 +1064,7 @@ export const GUIDE_UI_LABELS = [
   "Trash Talk", "Challenges", "Wheel", "Profile", "Delete my account", "👥 Everyone",
   "Notifications", "Result Spoilers", "Sign In / Link Email", "Fight Lab", "Year Wrapped",
   "Add to Home Screen", "Fight IQ", "Market", "Fight Week", "Matchup", "Watch Party", "Hub",
-  "🤖 FightBot's call", "🖼️ Share poster",
+  "🤖 FightBot's call", "🖼️ Share poster", "Privacy & Safety", "🚩 Report", "🚫 Block",
 ];
 
 export const GUIDE_MAX_TURNS = 6, GUIDE_MAX_TURN = 600, GUIDE_MAX_SCREEN = 40;

@@ -43,6 +43,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="UFC Picks">
 <link rel="apple-touch-icon" href="icon-192-v2.png">
+<link rel="icon" type="image/png" href="icon-192-v2.png">
 <link rel="preload" href="fonts/bebas-neue-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style id="fonts">
@@ -1013,6 +1014,19 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .nm-del-actions .nm-btn{flex:1;width:auto;margin:0}
 .nm-btn-ghost{background:var(--card2);color:var(--text)}
 .nm-btn-danger{background:#d11}
+.safety-acts{display:flex;gap:8px;justify-content:flex-end;padding:8px 12px}
+.safety-act{background:none;border:1px solid var(--border2);color:var(--muted);font:600 11px Inter,sans-serif;padding:4px 10px;border-radius:14px;cursor:pointer}
+#trashSafety .safety-acts{padding:12px 0 0}
+.report-quote{font-size:12px;color:var(--text);background:var(--card2);border-left:3px solid var(--red);padding:8px 10px;border-radius:6px;margin-bottom:12px;max-height:96px;overflow:auto;white-space:pre-wrap;word-break:break-word}
+.report-reasons{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.report-reasons .lb-trash-chip{opacity:1}
+.report-block{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:14px}
+.safety-sub{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:4px 0 6px}
+.safety-list{max-height:180px;overflow:auto;margin-bottom:14px}
+.safety-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid var(--border);font-size:13px}
+.safety-unblock{background:none;border:1px solid var(--border2);color:var(--text);font:600 12px Inter,sans-serif;padding:4px 10px;border-radius:14px;cursor:pointer}
+.safety-empty{font-size:12px;color:var(--muted);padding:6px 0}
+.safety-link{display:block;text-align:center;text-decoration:none}
 .share-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:250;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .share-modal-bg.open{display:flex}
 .share-modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:22px;width:100%;max-width:360px;box-shadow:var(--shadow-el)}
@@ -1709,6 +1723,32 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     </div>
   </div>
 </div>
+<!-- Report / Privacy & Safety (the safety block in the script). Above every sheet a report
+     can be opened from (trash sheet, challenge inbox, Ranks). -->
+<div class="nm-bg" id="reportBg" style="z-index:600" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+  <div class="nm-box" style="max-width:340px">
+    <div class="nm-top"><h3 id="reportTitle">🚩 Report</h3></div>
+    <p><span id="reportWhat">This content</span> goes to the app's admin with your reason. They aren't told who reported it.</p>
+    <div class="report-quote" id="reportQuote"></div>
+    <div class="report-reasons" id="reportReasons"></div>
+    <input class="nm-input" id="reportNote" maxlength="200" placeholder="Anything else? (optional)" autocomplete="off" aria-label="More detail (optional)">
+    <label class="report-block" id="reportBlockRow"><input type="checkbox" id="reportAlsoBlock"> Also block <span id="reportBlockName"></span></label>
+    <div class="nm-del-actions">
+      <button class="nm-btn nm-btn-ghost" onclick="closeReport()">Cancel</button>
+      <button class="nm-btn nm-btn-danger" id="reportSendBtn" onclick="submitReport()">Send report</button>
+    </div>
+  </div>
+</div>
+<div class="nm-bg" id="safetyBg" style="z-index:600" onclick="if(event.target===this)closeSafety()" role="dialog" aria-modal="true" aria-labelledby="safetyTitle">
+  <div class="nm-box" style="max-width:340px">
+    <div class="nm-top"><h3 id="safetyTitle">Privacy &amp; Safety</h3><button class="share-modal-xbtn" onclick="closeSafety()" aria-label="Close">x</button></div>
+    <p>Anything another player sends you (a roast, a challenge, their name on Ranks) has a 🚩 Report button. Reports go to the app's admin, and content that breaks the rules comes down.</p>
+    <p>🚫 Block someone and you stop getting their roasts, challenges and nudges, they can't challenge you, and they aren't told.</p>
+    <div class="safety-sub">Blocked players</div>
+    <div id="safetyBlocked" class="safety-list"></div>
+    <a class="nm-btn safety-link" href="privacy.html" target="_blank" rel="noopener">Read the privacy policy</a>
+  </div>
+</div>
 <div class="share-modal-bg" id="shareBg" onclick="if(event.target===this)closeShare()">
   <div class="share-modal-box">
     <div class="share-modal-top"><div class="share-modal-title">Share My Picks</div><button class="share-modal-xbtn" onclick="closeShare()">x</button></div>
@@ -1780,6 +1820,10 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
         <button class="btn-more-item" id="acctBtn" onclick="openAcct();closeMoreMenu()" title="Account">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           <span id="acctBtnLbl">Sign In / Link Email</span>
+        </button>
+        <button class="btn-more-item" id="safetyBtn" onclick="closeMoreMenu();openSafety()" title="Privacy policy, reporting and blocked players">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Privacy &amp; Safety</span>
         </button>
         <!-- Fight Lab: a separate, read-only page (lab.html) — Fight IQ, market,
              fight-week brief, matchup lab, watch-party ticker. A plain link, so
@@ -4326,7 +4370,11 @@ function deleteAccount(){
         .then(function(r){if(!r.ok&&r.status!==404)throw new Error("delete rooms "+r.status);
           return fetch(SUPABASE_URL+"/rest/v1/room_members?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h});})
         .then(function(r){if(!r.ok&&r.status!==404)throw new Error("delete room seats "+r.status);
-          try{localStorage.removeItem("ufc_lb_room");localStorage.removeItem("ufc_room_join");}catch(e){}});
+          try{localStorage.removeItem("ufc_lb_room");localStorage.removeItem("ufc_room_join");}catch(e){}
+          // Blocks go with the account (0013; 404 = not applied, nothing to leave).
+          return fetch(SUPABASE_URL+"/rest/v1/user_blocks?blocker_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h});})
+        .then(function(r){if(!r.ok&&r.status!==404)throw new Error("delete blocks "+r.status);
+          _blocks={};try{localStorage.removeItem("ufc_blocks");}catch(e){}});
     });
   }).then(function(){
     // Best-effort: drop the browser push subscription, then wipe all local state.
@@ -6425,7 +6473,9 @@ var WHATS_NEW=[
   {id:"2026-10-15-fightbot-call",emoji:"🖼️",title:"FightBot's call and the tape poster",
    desc:"A room's Tale of the Tape now has 🤖 FightBot's call, a one-line verdict on who has the edge, and 🖼️ Share poster, the head to head as a fight poster for the group chat. The Card Recap's stories get FightBot's call on the night too."},
   {id:"2026-10-16-fightbot-fights",emoji:"🥊",title:"FightBot talks fights",
-   desc:"FightBot Help now answers fight questions too: who has the edge in the main event, the best underdog on the next card, how the last card went. It answers from the app's own records, odds and stats for those cards, and says so when it doesn't have something."}
+   desc:"FightBot Help now answers fight questions too: who has the edge in the main event, the best underdog on the next card, how the last card went. It answers from the app's own records, odds and stats for those cards, and says so when it doesn't have something."},
+  {id:"2026-10-17-report-block",emoji:"🛡️",title:"Report and block",
+   desc:"Anything another player sends you (a roast, a challenge, their name on Ranks) now has 🚩 Report and 🚫 Block. Block someone and you stop getting their roasts, challenges and nudges. ⋯ More → Privacy & Safety lists who you've blocked and links the privacy policy."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -7105,6 +7155,7 @@ function closeLeaderboard(){var p=document.getElementById("lbPanel");if(p.classL
 document.addEventListener("click",function(e){var m=document.getElementById("lbInfoModal");if(m&&m.classList.contains("open")&&!m.contains(e.target)&&!e.target.classList.contains("lb-info-btn"))m.classList.remove("open");});
 function closeTrashSheet(){
   document.getElementById("trashSheet").classList.remove("open");
+  document.getElementById("trashSafety").style.display="none";
   document.getElementById("trashPersonaPicker").style.display="none";
   document.getElementById("trashTargets").style.display="none";
   document.getElementById("trashSendSection").style.display="none";
@@ -7501,6 +7552,10 @@ function showIncomingTrashTalk(text,sender){
   document.getElementById("trashHintSection").style.display="none";
   document.getElementById("trashTargets").style.display="none";
   document.getElementById("trashSent").style.display="none";
+  // Someone else's words on your phone: report them, or block who sent them.
+  var saf=document.getElementById("trashSafety");saf.innerHTML="";
+  saf.appendChild(safetyActions({kind:"roast",name:sender||"",content:text}));
+  saf.style.display="";
   sheet.classList.add("open");
 }
 // In "This Event" mode the board only lists people who have already picked this
@@ -7539,6 +7594,7 @@ function _trashPool(eventSorted,eventAll,allSorted,cutoffDate){
   return out;
 }
 function openTrashTalk(){
+  document.getElementById("trashSafety").style.display="none";
   if(!_lbRows){toast("Load the leaderboard first!");return;}
   var pool=_lbSorted||[];
   if(lbMode==="current"){
@@ -7551,7 +7607,7 @@ function openTrashTalk(){
     var pts=userPts(u);
     // No rank for someone who hasn't picked this card: they aren't on it.
     if(u.isMe){me=u;myRank=u.noEventPicks?0:i+1;}
-    else{opponents.push({nickname:u.nickname,user_id:u.user_id,rank:i+1,points:pts,accuracy:u.accuracy,streak:u.currentStreak,currentStreak:u.currentStreak,correct:u.correct,total:u.total,methods:u.methods,fotn:u.fotn,picks:u.picks||[],noEventPicks:!!u.noEventPicks});}
+    else if(!isBlocked(u.user_id)&&!isBlockedName(u.nickname)){opponents.push({nickname:u.nickname,user_id:u.user_id,rank:i+1,points:pts,accuracy:u.accuracy,streak:u.currentStreak,currentStreak:u.currentStreak,correct:u.correct,total:u.total,methods:u.methods,fotn:u.fotn,picks:u.picks||[],noEventPicks:!!u.noEventPicks});}
   });
   // Someone who has never picked anything has no row anywhere, but can still
   // talk: they join as a no-picks sender under the name they set.
@@ -9867,6 +9923,7 @@ function loadLeaderboard(isLive){
         nextPicksDiv.style.borderRadius=expanded?"0":"0 0 12px 12px";
         wrap.appendChild(nextPicksDiv);
       }
+      if(!u.isMe&&u.user_id)detail.appendChild(safetyActions({kind:"nickname",name:u.nickname,uids:[u.user_id],content:u.nickname}));
       wrap.appendChild(detail);
       body.appendChild(wrap);
     });
@@ -9941,9 +9998,189 @@ function loadLeaderboard(isLive){
 var _challenges=[],_chalTarget=null,_chalEvent=null,_chalFightSel=null,_chalStake="Loser spins the wheel 🎡";
 var CHAL_STAKES=["Loser spins the wheel 🎡","$5 💵","Loser buys drinks 🍺"];
 
+// safety:start
+// Report and block (supabase/migrations/0013_safety.sql). Roasts, challenges,
+// nudges and nicknames are other people's words on your phone, so anything
+// from someone else carries a 🚩 Report, and anyone can be blocked. A block is
+// enforced by the server (send-push drops every social push across it, in
+// both directions; a challenge between the two can't be created) and here
+// (their challenges leave your inbox, they leave your roast and challenge
+// targets). The blocked person is never told.
+//
+// Blocks are kept per device in ufc_blocks ({uid: {n: name, p: 1 if the server
+// hasn't got it yet}}) and on the server in user_blocks, which wins on every
+// sync: a block removed on another phone must not come back from this one.
+// Names aren't identities (an anonymous uid rotates when a phone's storage is
+// cleared, and the board merges those under one name), so blocking someone
+// blocks every uid the board holds under that name.
+var _BLOCKS_KEY="ufc_blocks",_blocks=null;
+var REPORT_REASONS=["Harassment or bullying","Hate or slurs","Sexual content","Threats","Spam","Something else"];
+function _blocksMap(){
+  if(_blocks)return _blocks;
+  _blocks={};
+  try{
+    var o=JSON.parse(localStorage.getItem(_BLOCKS_KEY)||"{}");
+    if(o&&typeof o==="object"&&!Array.isArray(o))Object.keys(o).forEach(function(k){
+      var v=o[k];if(v&&typeof v==="object")_blocks[k]={n:String(v.n||"").slice(0,60),p:v.p?1:0};
+    });
+  }catch(e){}
+  return _blocks;
+}
+function _saveBlocks(){try{localStorage.setItem(_BLOCKS_KEY,JSON.stringify(_blocksMap()));}catch(e){}}
+function isBlocked(uid){return !!uid&&Object.prototype.hasOwnProperty.call(_blocksMap(),uid);}
+function isBlockedName(name){
+  var b=_lbBaseName(name||"");if(!b)return false;
+  var m=_blocksMap();
+  return Object.keys(m).some(function(k){return _lbBaseName(m[k].n)===b;});
+}
+// Every uid the board holds under this name (newest rows first), plus any
+// given outright. Never this device's own.
+function _uidsForName(name,extra){
+  var out=[],b=_lbBaseName(name||"");
+  (extra||[]).forEach(function(u){if(u&&out.indexOf(u)<0)out.push(u);});
+  if(b&&_lbRows)_lbRows.forEach(function(p){
+    if(p.user_id&&_lbBaseName(p.nickname)===b&&out.indexOf(p.user_id)<0)out.push(p.user_id);
+  });
+  return out.filter(function(u){return u!==USER_ID;}).slice(0,10);
+}
+function _blocksChanged(){
+  if(typeof fetchChallenges==="function")fetchChallenges();
+  if(document.getElementById("safetyBg").classList.contains("open"))renderSafety();
+}
+function _pushBlocks(uids){
+  var m=_blocksMap();
+  var rows=uids.map(function(u){return {blocker_id:USER_ID,blocked_id:u,blocked_name:(m[u]&&m[u].n)||null};});
+  return fetch(SUPABASE_URL+"/rest/v1/user_blocks",{method:"POST",
+    headers:Object.assign(_sbHeaders(),{Prefer:"resolution=ignore-duplicates,return=minimal"}),body:JSON.stringify(rows)})
+    .then(function(r){
+      if(!r.ok)return false;
+      uids.forEach(function(u){if(m[u])m[u].p=0;});_saveBlocks();return true;
+    }).catch(function(){return false;});
+}
+function blockUser(name,uids){
+  uids=_uidsForName(name,uids);
+  if(!uids.length){toast("Couldn't find them on Ranks yet. Try again from their row there.");return Promise.resolve(false);}
+  var m=_blocksMap(),n=String(name||"").slice(0,60)||"Player";
+  uids.forEach(function(u){m[u]={n:n,p:1};});
+  _saveBlocks();_blocksChanged();
+  toast("🚫 Blocked "+n);
+  return _authReady.then(function(){return _pushBlocks(uids);});
+}
+function unblockName(name){
+  var m=_blocksMap(),b=_lbBaseName(name||""),uids=Object.keys(m).filter(function(k){return _lbBaseName(m[k].n)===b;});
+  if(!uids.length)return Promise.resolve(false);
+  uids.forEach(function(u){delete m[u];});
+  _saveBlocks();_blocksChanged();
+  toast("Unblocked "+name);
+  return _authReady.then(function(){
+    return fetch(SUPABASE_URL+"/rest/v1/user_blocks?blocker_id=eq."+encodeURIComponent(USER_ID)+"&blocked_id=in.("+uids.map(encodeURIComponent).join(",")+")",
+      {method:"DELETE",headers:_sbHeaders()});
+  }).then(function(r){
+    // A failed delete would come back on the next sync, so say so.
+    if(!r.ok&&r.status!==404)toast("Couldn't unblock on the server. Try again.");
+    return r.ok;
+  }).catch(function(){toast("Couldn't unblock on the server. Try again.");return false;});
+}
+// The server's list wins; blocks made here that never reached it (offline, or
+// before 0013 was applied) are sent up and kept.
+function syncBlocks(){
+  return _authReady.then(function(){
+    if(!_sbToken)return;
+    return fetch(SUPABASE_URL+"/rest/v1/user_blocks?select=blocked_id,blocked_name&blocker_id=eq."+encodeURIComponent(USER_ID),{headers:_sbHeaders()})
+      .then(function(r){return r.ok?r.json():null;}).then(function(rows){
+        if(!Array.isArray(rows))return;
+        var m=_blocksMap(),next={},pending=[];
+        rows.forEach(function(r){if(r&&r.blocked_id)next[r.blocked_id]={n:String(r.blocked_name||(m[r.blocked_id]&&m[r.blocked_id].n)||"Player").slice(0,60),p:0};});
+        Object.keys(m).forEach(function(k){if(m[k].p&&!next[k]){next[k]=m[k];pending.push(k);}});
+        _blocks=next;_saveBlocks();
+        if(pending.length)_pushBlocks(pending);
+        _blocksChanged();
+      });
+  }).catch(function(){});
+}
+// --- Report sheet ---
+var _report=null,_reportReason="";
+function openReport(o){
+  _report={kind:o.kind||"other",name:String(o.name||"").slice(0,60),uids:_uidsForName(o.name,o.uids),content:String(o.content||"").slice(0,2000)};
+  _reportReason="";
+  document.getElementById("reportTitle").textContent="🚩 Report"+(_report.name?" "+_report.name:"");
+  document.getElementById("reportWhat").textContent={roast:"This roast",challenge:"This challenge",nickname:"This player's name",room:"This room's name"}[_report.kind]||"This content";
+  var q=document.getElementById("reportQuote");q.textContent=_report.content;q.style.display=_report.content?"":"none";
+  var chips=document.getElementById("reportReasons");chips.innerHTML="";
+  REPORT_REASONS.forEach(function(r){
+    var c=document.createElement("button");c.type="button";c.className="lb-trash-chip";c.textContent=r;
+    c.onclick=function(){_reportReason=r;Array.prototype.forEach.call(chips.children,function(x){x.classList.toggle("selected",x===c);});};
+    chips.appendChild(c);
+  });
+  document.getElementById("reportNote").value="";
+  var canBlock=_report.uids.length>0&&!_report.uids.every(isBlocked);
+  document.getElementById("reportBlockRow").style.display=canBlock?"":"none";
+  document.getElementById("reportAlsoBlock").checked=canBlock;
+  document.getElementById("reportBlockName").textContent=_report.name||"them";
+  var btn=document.getElementById("reportSendBtn");btn.disabled=false;btn.textContent="Send report";
+  document.getElementById("reportBg").classList.add("open");
+  try{chips.firstChild.focus();}catch(e){}
+}
+function closeReport(){document.getElementById("reportBg").classList.remove("open");_report=null;}
+function submitReport(){
+  var r=_report;if(!r)return;
+  if(!_reportReason){toast("Pick a reason first");return;}
+  var note=document.getElementById("reportNote").value.trim().slice(0,200);
+  var alsoBlock=document.getElementById("reportBlockRow").style.display!=="none"&&document.getElementById("reportAlsoBlock").checked;
+  var btn=document.getElementById("reportSendBtn");btn.disabled=true;btn.textContent="Sending…";
+  _authReady.then(function(){
+    return fetch(SUPABASE_URL+"/rest/v1/content_reports",{method:"POST",headers:Object.assign(_sbHeaders(),{Prefer:"return=minimal"}),
+      body:JSON.stringify({reporter_id:USER_ID,reported_id:r.uids[0]||null,reported_name:r.name||null,kind:r.kind,content:r.content||null,reason:(_reportReason+(note?": "+note:"")).slice(0,300)})});
+  }).then(function(res){
+    if(!res.ok)throw new Error("report "+res.status);
+    closeReport();
+    toast("Thanks. Your report was sent.");
+    if(alsoBlock)blockUser(r.name,r.uids);
+  }).catch(function(){
+    btn.disabled=false;btn.textContent="Send report";
+    toast("Couldn't send the report. Try again.");
+  });
+}
+// --- Privacy & Safety sheet: the privacy policy and who you've blocked ---
+function openSafety(){renderSafety();document.getElementById("safetyBg").classList.add("open");}
+function closeSafety(){document.getElementById("safetyBg").classList.remove("open");}
+function renderSafety(){
+  var list=document.getElementById("safetyBlocked");list.innerHTML="";
+  var m=_blocksMap(),seen={};
+  Object.keys(m).forEach(function(k){
+    var n=m[k].n||"Player",b=_lbBaseName(n)||k;if(seen[b])return;seen[b]=1;
+    var row=document.createElement("div");row.className="safety-row";
+    var nm=document.createElement("span");nm.textContent=n;row.appendChild(nm);
+    var u=document.createElement("button");u.type="button";u.className="safety-unblock";u.textContent="Unblock";
+    u.onclick=function(){unblockName(n);};
+    row.appendChild(u);list.appendChild(row);
+  });
+  if(!list.children.length){
+    var e=document.createElement("div");e.className="safety-empty";e.textContent="You haven't blocked anyone.";list.appendChild(e);
+  }
+}
+// The 🚩 / 🚫 pair under something another player sent or wrote. `o` is what
+// openReport takes; returns a row of two small buttons.
+function safetyActions(o){
+  var row=document.createElement("div");row.className="safety-acts";
+  var rep=document.createElement("button");rep.type="button";rep.className="safety-act";rep.textContent="🚩 Report";
+  rep.onclick=function(e){e.stopPropagation();openReport(o);};
+  var blk=document.createElement("button");blk.type="button";blk.className="safety-act";
+  var paint=function(){blk.textContent=isBlockedName(o.name)||(o.uids||[]).some(isBlocked)?"Unblock":"🚫 Block";};
+  paint();
+  blk.onclick=function(e){
+    e.stopPropagation();
+    var p=(isBlockedName(o.name)||(o.uids||[]).some(isBlocked))?unblockName(o.name):blockUser(o.name,o.uids);
+    paint();p.then(paint);
+  };
+  row.appendChild(rep);row.appendChild(blk);
+  return row;
+}
+// safety:end
 function fetchChallenges(){
   return _sbFetchAll("/rest/v1/challenges?select=*&order=created_at.desc").then(function(rows){
-    _challenges=Array.isArray(rows)?rows:[];
+    // A blocked player's challenges, either way, leave the inbox, badge and feed.
+    _challenges=(Array.isArray(rows)?rows:[]).filter(function(c){return !isBlocked(c.challenger_id)&&!isBlocked(c.target_id);});
     updateChalBadge();
     renderActivityFeed();
     var sheet=document.getElementById("chalSheet");
@@ -10078,6 +10315,7 @@ function renderChallengeInbox(){
     sub.textContent=_chalFightLbl(c)+" · "+(c.event_name||"").replace("UFC Fight Night: ","")+(r.how?" · "+r.how:"");
     row.appendChild(sub);
     var stake=document.createElement("div");stake.className="chal-row-stake";stake.textContent="💰 "+c.stake;row.appendChild(stake);
+    if(incoming&&c.challenger_id&&c.challenger_id!==USER_ID)row.appendChild(safetyActions({kind:"challenge",name:rival,uids:[c.challenger_id],content:_chalFightLbl(c)+" — "+c.stake}));
     if(r.kind==="pending"&&incoming&&c.target_id===USER_ID){
       var acts=document.createElement("div");acts.className="chal-row-actions";
       var acc=document.createElement("button");acc.className="chal-act-btn chal-act-accept";acc.textContent="Accept ⚔️";
@@ -10116,6 +10354,7 @@ function openChallengeCompose(u){
     return !_eventFinished(e.date)&&mainCardChallengeOpen(e)&&new Date(e.date).getTime()>Date.now()-2*DAY_MS;
   }).sort(function(a,b){return a.date<b.date?-1:1;})[0];
   if(!ev){toast("No upcoming card to challenge on");return;}
+  if(isBlocked(u.user_id)||isBlockedName(u.nickname)){toast("You've blocked "+u.nickname+". Unblock them first.");return;}
   _chalTarget=u;_chalEvent=ev;_chalFightSel=null;_chalStake=CHAL_STAKES[0];
   document.getElementById("chalInboxView").style.display="none";
   document.getElementById("chalComposeView").style.display="block";
@@ -10401,6 +10640,9 @@ function closeInstall(){document.getElementById("install-overlay").classList.rem
 var _escClosers=[
   // First: FightBot opens on top of Ranks, so Escape closes it before the board.
   ["botModal",function(){closeBot();}],
+  // Report opens over the roast sheet, the challenge inbox and Ranks: before them.
+  ["reportBg",function(){closeReport();}],
+  ["safetyBg",function(){closeSafety();}],
   ["wr-overlay",function(){closeWrapped();}],
   ["lbInfoModal",function(){document.getElementById("lbInfoModal").classList.remove("open");}],
   ["trashSheet",function(){closeTrashSheet();}],
@@ -10889,6 +11131,7 @@ document.addEventListener("DOMContentLoaded",function(){
       <button class="lb-trash-send" id="trashSendBtn" onclick="fireTrashTalk()">Fire it off 🔥</button>
     </div>
     <div class="lb-trash-sent" id="trashSent" style="display:none">🔔 Fired off!</div>
+    <div id="trashSafety" style="display:none"></div>
   </div>
   <div class="lb-trash-sheet" id="chalSheet">
     <button class="lb-trash-close" onclick="closeChalSheet()">✕</button>
@@ -11185,6 +11428,8 @@ function consumePendingTap(delay){
 }
 // Other sports: fetched once, shown only if the feed has a card to pick.
 sportsBoot();
+// Blocks: adopt the server's list (and send up any made offline).
+syncBlocks();
 // Rooms read ?join= before the tap router below rewrites the URL.
 _roomsBoot();
 (function(){

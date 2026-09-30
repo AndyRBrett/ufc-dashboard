@@ -93,6 +93,9 @@ const CHALS = {
     f1: null, f2: null, stake: "Dinner", status: "accepted", event_date: "2026-10-03" },
 };
 
+// Blocks (0013_safety.sql): who has blocked whom. blocksState: "ok", "down" (500)
+// or "missing" (404: 0013 not applied).
+let BLOCKS = [], blocksState = "ok";
 let sent = [], log = new Set(), dataReads = 0, picksReads = 0, picksDown = false, dataDown = false;
 const PRESENT = new Set();   // notif_log rows that already exist
 globalThis.__webpush = { setVapidDetails() {}, sendNotification: async (sub, payload) => { sent.push({ to: sub.endpoint.split("/").pop(), ...JSON.parse(payload) }); } };
@@ -132,6 +135,13 @@ globalThis.fetch = async (url, init = {}) => {
     const din = /event_date=in\.\(([^)]*)\)/.exec(u);
     if (din) rows = rows.filter((p) => din[1].split(",").includes(p.event_date));
     return json(rows);
+  }
+  if (url.startsWith(SB + "/rest/v1/user_blocks")) {
+    if (blocksState === "down") return json({ error: "down" }, 500);
+    if (blocksState === "missing") return json({ code: "PGRST205" }, 404);
+    const m = /or=\(blocker_id\.eq\.([^,]+),blocked_id\.eq\.([^)]+)\)/.exec(decodeURIComponent(url));
+    if (!m || m[1] !== m[2]) return json({ error: "user_blocks read must name the sender both ways" }, 400);
+    return json(BLOCKS.filter((b) => b.blocker_id === m[1] || b.blocked_id === m[1]));
   }
   if (url.startsWith(SB + "/rest/v1/challenges")) {
     const id = /id=eq\.([^&]+)/.exec(url)[1];
@@ -281,6 +291,38 @@ for (const t of ["brief", "swap-old-bout"]) {
   const noCards = await send({ event_date: "2026-10-03", type: "trash-talk-22", body: "Nice pick. — Joe Rogan" }, { auth: jwt("alice") });
   check("...and so does an unreadable data.js (no list of real cards, nothing sent)", noCards.status === 503 && noCards.sent.length === 0);
   dataDown = false; NOW = was;
+}
+
+// Blocks: a social push never crosses one, in either direction.
+{
+  const A = "a11ce000-0000-4000-8000-000000000001", B = "b0b00000-0000-4000-8000-000000000002", C = "ca201000-0000-4000-8000-000000000003";
+  BLOCKS = [{ blocker_id: B, blocked_id: A }];
+  const roast = await send({ event_date: "2026-10-03", type: "trash-talk-30", body: "Nice pick. — Joe Rogan", include_user_ids: [B, C] }, { auth: jwt("alice") });
+  check("blocks: a roast aimed at someone who blocked the sender skips them and still reaches the rest",
+    roast.status === 200 && roast.to.join() === C);
+  const only = await send({ event_date: "2026-10-03", type: "trash-talk-31", body: "Nice pick. — Joe Rogan", include_user_ids: [B] }, { auth: jwt("alice") });
+  check("...aimed only at them, nothing is sent (never widened to a broadcast)", only.status === 200 && only.sent.length === 0);
+  check("...and its dedup key isn't spent", ![...log].some((l) => l.includes("trash-talk-31")));
+  const group = await send({ event_date: "2026-10-03", type: "trash-talk-32", body: "Nice pick. — Joe Rogan" }, { auth: jwt("alice") });
+  check("...a whole-group roast reaches everyone but the sender and the one who blocked them",
+    group.status === 200 && !group.to.includes(B) && !group.to.includes(A) && group.sent.length === 2);
+  const picking = await send({ event_date: "2026-10-03", type: "pick-first-" + A }, { auth: jwt("alice") });
+  check("...so does 'is picking!'", picking.status === 200 && !picking.to.includes(B) && picking.sent.length === 2);
+  const back = await send({ event_date: "2026-10-03", type: "nudge-a11ce000-b0b00000-1", include_user_ids: [A] }, { auth: jwt("bob") });
+  check("...and the blocker can't reach the blocked either (Bob's nudge to Alice goes nowhere)", back.status === 200 && back.sent.length === 0);
+  const chal = await send({ event_date: "2026-10-03", type: "chal-c1" }, { auth: jwt("bob") });
+  check("...nor his challenge push", chal.status === 200 && chal.sent.length === 0);
+  const res = await send({ event_date: "2026-10-03", type: "result:jose-aldo-sean-o-malley:loss" });
+  check("result pushes aren't social: a block doesn't touch them", res.status === 200 && res.to.join() === B);
+  const brief = await send({ event_date: "2026-10-03", type: "brief", title: "b", body: "b" }, { service: SERVICE });
+  check("...nor our own functions' pushes", brief.status === 200 && brief.sent.length === 4);
+  blocksState = "down";
+  const down = await send({ event_date: "2026-10-03", type: "trash-talk-33", body: "Nice pick. — Joe Rogan" }, { auth: jwt("carol") });
+  check("an unreadable block list fails closed (503, nothing sent)", down.status === 503 && down.sent.length === 0);
+  blocksState = "missing";
+  const missing = await send({ event_date: "2026-10-03", type: "trash-talk-34", body: "Nice pick. — Joe Rogan" }, { auth: jwt("carol") });
+  check("...but a missing table (0013 not applied) means nobody has blocked anyone", missing.status === 200 && missing.sent.length === 3);
+  blocksState = "ok"; BLOCKS = [];
 }
 
 // Our own functions are trusted as given, and only with the right key.
