@@ -13,6 +13,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { join, extname, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import vm from "node:vm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const require = createRequire(import.meta.url);
@@ -63,6 +64,36 @@ async function foreground(page) {
   await page.waitForTimeout(300);
 }
 
+// sw.js's own notificationclick handler, run in a vm against stubbed window
+// clients: which window a tap goes to is decided there, and a page-side test
+// can't see it. The Fight Lab opens in the app's one window, and a roast tap
+// that focused a window on lab.html (no message handler, never reads the
+// stash) showed nothing at all.
+async function swTap(windows, kind = "") {
+  const log = { messages: [], navigated: [], opened: [], stashed: null };
+  const clientsList = windows.map((w) => ({
+    url: w.url, visibilityState: w.visible ? "visible" : "hidden",
+    focus() { return Promise.resolve(this); },
+    navigate(u) { log.navigated.push({ from: w.url, to: u }); return Promise.resolve(this); },
+    postMessage(m) { log.messages.push({ to: w.url, type: m.type }); },
+  }));
+  const handlers = {};
+  const sandbox = {
+    self: { addEventListener: (t, f) => { handlers[t] = f; }, registration: {}, skipWaiting() {} },
+    clients: { matchAll: () => Promise.resolve(clientsList), openWindow: (u) => { log.opened.push(u); return Promise.resolve(null); } },
+    caches: { open: () => Promise.resolve({ put: (k, r) => r.text().then((t) => { log.stashed = JSON.parse(t); }) }) },
+    Response, URL, Promise, JSON, Date, encodeURIComponent, console,
+  };
+  vm.runInNewContext(readFileSync(join(ROOT, "sw.js"), "utf8"), sandbox);
+  let wait = Promise.resolve();
+  handlers.notificationclick({
+    notification: { close() {}, title: "🎤 Joe Rogan (via AB)", data: { url: kind ? "./?inbox=1" : "./", kind, fullMessage: kind ? "" : ROAST } },
+    waitUntil(p) { wait = p; },
+  });
+  await wait;
+  return log;
+}
+
 async function main() {
   await new Promise((r) => server.listen(0, r));
   const base = `http://127.0.0.1:${server.address().port}`;
@@ -75,6 +106,22 @@ async function main() {
   try {
     await page.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 });
     await page.waitForTimeout(800);
+
+    // sw.js routing: a tap must reach the app page, never die on the Lab.
+    {
+      const APP = "https://x.github.io/ufc-dashboard/", LAB = APP + "lab.html#week";
+      let log = await swTap([{ url: APP, visible: true }]);
+      assert("sw: tap on the open app page is posted to it", log.messages.length === 1 && log.messages[0].to === APP && !log.navigated.length);
+      assert("sw: the tap is stashed before routing", log.stashed && log.stashed.fullMessage === ROAST && log.stashed.sender === "AB");
+      log = await swTap([{ url: LAB, visible: true }]);
+      assert("sw: a window on the Lab is sent to the app, not posted a message it ignores",
+        !log.messages.length && log.navigated.length === 1 && log.navigated[0].to === "./");
+      log = await swTap([{ url: LAB, visible: true }, { url: APP + "index.html", visible: false }]);
+      assert("sw: an app-page window beats a visible Lab window",
+        log.messages.length === 1 && log.messages[0].to === APP + "index.html" && !log.navigated.length);
+      log = await swTap([{ url: LAB, visible: true }], "challenge");
+      assert("sw: a challenge tap on the Lab also goes to the app", log.navigated.length === 1 && log.navigated[0].to === "./?inbox=1");
+    }
 
     // 1. Tap on a backgrounded (already-loaded) app. No reload happens, and the
     //    SW's postMessage can vanish into a client iOS only *thinks* is alive —

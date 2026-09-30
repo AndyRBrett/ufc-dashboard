@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = "2026-09-29-6";
+const SW_VERSION = "2026-09-30-1";
 const CACHE = 'ufc-' + SW_VERSION;
 // Handoff caches that must survive SW upgrades: 'ufc-push-id' carries the push
 // identity used by pushsubscriptionchange while the app is closed, 'ufc-tap'
@@ -216,6 +216,12 @@ self.addEventListener('notificationclick', function(e) {
   // and show the roast exactly once when both paths deliver.
   var tapTs = Date.now();
 
+  // Is this window on the app page itself (the scope root or index.html),
+  // rather than another page of the app such as lab.html?
+  function onAppPage(c) {
+    try { return /\/(index\.html)?$/.test(new URL(c.url).pathname); } catch (err) { return false; }
+  }
+
   function stashTap() {
     return caches.open('ufc-tap').then(function(c) {
       return c.put('/__pending_tap', new Response(
@@ -269,12 +275,25 @@ self.addEventListener('notificationclick', function(e) {
     // so the tap silently did nothing and the app opened on the home screen.
     // stashTap() above is what makes this safe: the relaunched page picks the
     // payload up regardless of what happened to the message.
+    //
+    // Only the app page (index.html) can show a roast or the inbox. The Fight
+    // Lab opens in the same window, so the one window a PWA has can be sitting
+    // on lab.html, which has no message handler and never reads the stash: the
+    // tap focused it and nothing appeared. Prefer a window on the app page;
+    // if the only one is elsewhere, navigate it to the app, whose on-load
+    // consumer picks the stashed tap up.
     var candidates = cs.filter(function(c) { return 'focus' in c; });
     candidates.sort(function(a, b) {
-      return (b.visibilityState === 'visible' ? 1 : 0) - (a.visibilityState === 'visible' ? 1 : 0);
+      return (onAppPage(b) ? 2 : 0) + (b.visibilityState === 'visible' ? 1 : 0)
+        - (onAppPage(a) ? 2 : 0) - (a.visibilityState === 'visible' ? 1 : 0);
     });
     var target = candidates[0];
     if (!target) return openFresh();
+    if (!onAppPage(target)) {
+      if (!('navigate' in target)) return openFresh();
+      return target.focus().then(function(c) { return (c || target).navigate(baseUrl); })
+        .catch(openFresh);
+    }
     return Promise.resolve()
       .then(function() { return target.focus(); })
       .then(function() {
