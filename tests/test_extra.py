@@ -166,6 +166,39 @@ def test_cadence_gate(monkeypatch):
     assert extra.should_fetch({"last_fetch": "2026-09-24T11:59:00Z"}, {}, NOW)[0]
 
 
+def test_a_kept_line_follows_the_fighters_when_the_order_flips():
+    # DWCS 94: the results table listed winners first, so Diop (+294, won)
+    # came back as `a` and inherited Sabanov's -368.
+    prev = [{"a": "Zaurbek Sabanov", "b": "Adama Diop", "odds": {"a": -368, "b": 294}, "winner": ""}]
+    bouts = [{"a": "Adama Diop", "b": "Zaurbek Sabanov", "winner": "Adama Diop"}]
+    night = datetime(2026, 9, 30, 2, 0, tzinfo=timezone.utc)
+    assert extra.apply_odds(bouts, "2026-09-29", [], prev, night)[0]["odds"] == {"a": 294, "b": -368}
+    same = [{"a": "Zaurbek Sabanov", "b": "Adama Diop", "winner": ""}]
+    assert extra.apply_odds(same, "2026-09-29", [], prev, night)[0]["odds"] == {"a": -368, "b": 294}
+
+
+def test_fight_mode_pulls_every_run_while_a_card_is_live(monkeypatch):
+    # DWCS 94 (2026-09-29, 8pm ET = 00:00 UTC on the 30th): the 4h fight-week
+    # interval left its results unpulled for hours after the last bout.
+    monkeypatch.delenv("EXTRA_FORCE", raising=False)
+    card = lambda date, winners: {"events": [{"name": "DWCS 94", "date": date, "bouts": [
+        {"a": "A", "b": "B", "winner": winners[0]}, {"a": "C", "b": "D", "winner": winners[1]}]}]}
+    night = datetime(2026, 9, 30, 1, 0, tzinfo=timezone.utc)
+    five_min = {"last_fetch": "2026-09-30T00:55:00Z"}
+    # yesterday's date is tonight's card across UTC midnight, and today's counts too
+    assert extra.should_fetch(five_min, card("2026-09-29", ["A", ""]), night) == (True, "live: DWCS 94")
+    assert extra.should_fetch(five_min, card("2026-09-30", ["", ""]), night)[0]
+    # not twice inside the live interval (two runs racing)
+    assert not extra.should_fetch({"last_fetch": "2026-09-30T00:58:00Z"}, card("2026-09-29", ["", ""]), night)[0]
+    # every bout decided: back to the 4h fight-week interval
+    assert not extra.should_fetch(five_min, card("2026-09-29", ["A", "D"]), night)[0]
+    # two days on, an undecided bout no longer holds the card live
+    later = datetime(2026, 10, 1, 1, 0, tzinfo=timezone.utc)
+    assert not extra.should_fetch({"last_fetch": "2026-10-01T00:55:00Z"}, card("2026-09-29", ["", ""]), later)[0]
+    # a card later this week is fight week, not live
+    assert not extra.should_fetch(five_min, card("2026-10-02", ["", ""]), night)[0]
+
+
 def test_shadow_mode_never_touches_the_live_file(tmp_path, monkeypatch):
     live, cand, state = tmp_path / "events-extra.json", tmp_path / "cand.json", tmp_path / "state.json"
     live.write_text('{"promotions": [], "events": []}\n')

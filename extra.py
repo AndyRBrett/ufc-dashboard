@@ -18,7 +18,9 @@ promotion, the live file only the published ones.
 
 Budget, same premise as intel.py: no key, no quota, no model call, no new
 dependency. A cadence gate keeps it off most 5-minute fight-night runs:
-every 12h, every 4h inside a card's week. EXTRA_FORCE=1 bypasses it.
+every 12h, every 4h inside a card's week, and every run (EXTRA_LIVE_MIN) while
+one of these cards is live, i.e. its fight night with a bout still undecided.
+EXTRA_FORCE=1 bypasses it.
 
 Never destructive: a failed fetch keeps the previous event, a page that parses
 to fewer than MIN_BOUTS real bouts is skipped (reported, not published), and a
@@ -39,6 +41,12 @@ CANDIDATE_JSON = ROOT / "events-extra.candidate.json"
 STATE_JSON = ROOT / "extra-state.json"
 LINES_JSON = ROOT / "odds-lines.json"     # scrape.py's record of every priced bout it saw
 
+# Fight mode: while a card is live, pull on every run (kick-scraper dispatches
+# every ping for the same cards: see its extraLive). A card is live on its date
+# or the day after (UTC; US night cards cross midnight) while any bout is
+# undecided -- the rule kick-scraper's cardStatus applies to data.js. Before
+# this, results waited up to 4h: DWCS 94 had none two hours after its last bout.
+LIVE_INTERVAL = timedelta(minutes=int(os.environ.get("EXTRA_LIVE_MIN", "4")))
 WINDOW_PAST_DAYS = 2      # a card stays through its own fight night (UTC rollover)
 WINDOW_AHEAD_DAYS = int(os.environ.get("EXTRA_WINDOW_DAYS", "60"))
 MAX_EVENTS = int(os.environ.get("EXTRA_MAX_EVENTS", "4"))
@@ -425,7 +433,13 @@ def apply_odds(bouts, date, lines, previous_bouts, now):
     """Give each bout its line (see the rules above). Mutates and returns bouts."""
     prev = {_bout_key(b["a"], b["b"]): b for b in previous_bouts or []}
     for b in bouts:
-        old = (prev.get(_bout_key(b["a"], b["b"])) or {}).get("odds")
+        was = prev.get(_bout_key(b["a"], b["b"])) or {}
+        old = was.get("odds")
+        # The key ignores order, the line doesn't: a results table lists the
+        # winner first, so DWCS 94's bouts came back flipped and kept their
+        # lines unflipped, turning two favourites into underdogs mid-card.
+        if old and scrape.names_match(was.get("a", ""), b["b"]) and not scrape.names_match(was.get("a", ""), b["a"]):
+            old = {"a": old["b"], "b": old["a"]}
         hit = _find_line(lines, b["a"], b["b"], date)
         line, start = (hit[0], hit[1]) if hit else (None, None)
         started = bool(b.get("winner")) or (start is not None and now >= start)
@@ -555,6 +569,15 @@ def _in_window(d, now):
 
 
 # ------------------------------------------------------------------ cadence --
+def live_card(events, now):
+    """The first card that is live now (see LIVE_INTERVAL), or None."""
+    days = {now.strftime("%Y-%m-%d"), (now - timedelta(days=1)).strftime("%Y-%m-%d")}
+    for e in events or []:
+        if e.get("date") in days and any(not b.get("winner") for b in e.get("bouts") or []):
+            return e
+    return None
+
+
 def should_fetch(state, previous, now, publish=False):
     if os.environ.get("EXTRA_FORCE"):
         return True, "forced"
@@ -569,9 +592,12 @@ def should_fetch(state, previous, now, publish=False):
     soon = any(_in_window(e.get("date"), now) and e.get("date", "9999") <= (now + timedelta(days=7)).strftime("%Y-%m-%d")
                for e in (previous or {}).get("events", []))
     interval = timedelta(hours=4 if soon else 12)
+    live = live_card((previous or {}).get("events"), now)
+    if live:
+        interval = LIVE_INTERVAL
     if now - last < interval:
         return False, "last pull %s ago (interval %s)" % (now - last, interval)
-    return True, "due"
+    return True, ("live: %s" % live.get("name")) if live else "due"
 
 
 def _read(path):

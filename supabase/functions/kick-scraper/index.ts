@@ -29,6 +29,15 @@
 const DATA_URL = Deno.env.get("DATA_URL") ??
   "https://raw.githubusercontent.com/AndyRBrett/ufc-dashboard/main/data.js";
 
+// The non-UFC cards (PFL, RIZIN, DWCS), from extra.py, read the same way: the
+// committed file, never Pages. Only ever a reason to dispatch MORE: a live card
+// there drives every ping, like a live UFC card, so its results land in
+// minutes instead of on extra.py's 4-hour fight-week pull. Before this, a DWCS
+// night with no UFC card live got hourly runs at best, and each of those
+// skipped the feed anyway (DWCS 94 had no results two hours after it ended).
+const EXTRA_URL = Deno.env.get("EXTRA_URL") ??
+  "https://raw.githubusercontent.com/AndyRBrett/ufc-dashboard/main/events-extra.json";
+
 // A card this far out is "fight week": the days when withdrawals, replacements
 // and the real line movement land. Ortega/Moicano came off UFC 331 four days
 // out and the app showed the cancelled bout until someone triggered a run by
@@ -84,6 +93,27 @@ function cardStatus(js: string): { mode: Mode; event?: string; daysOut?: number 
   }
   if (soonest) return { mode: "fight-week", event: soonest.event, daysOut: soonest.daysOut };
   return { mode: "idle" };
+}
+
+// A live card in events-extra.json, by cardStatus's rule: dated today or
+// yesterday (UTC) with a bout still undecided (`winner` empty). extra.py's own
+// cadence gate (live_card) applies the same rule, so the run this dispatches
+// actually pulls. Anything unreadable is simply not live: data.js's gate is the
+// one that fails open, and an unreadable feed must not make idle weeks hot.
+function extraLive(body: unknown): { event: string } | null {
+  const events = (body as { events?: unknown })?.events;
+  if (!Array.isArray(events)) return null;
+  const now = new Date();
+  const days = [ymd(now), ymd(new Date(now.getTime() - 864e5))];
+  for (const e of events) {
+    if (!e || typeof e !== "object") continue;
+    const { name, date, bouts } = e as { name?: unknown; date?: unknown; bouts?: unknown };
+    if (typeof date !== "string" || !days.includes(date) || !Array.isArray(bouts)) continue;
+    if (bouts.some((b) => b && typeof b === "object" && !(b as { winner?: unknown }).winner)) {
+      return { event: typeof name === "string" ? name : date };
+    }
+  }
+  return null;
 }
 
 // Minutes since update.yml last started, via the Actions API. Used only to thin
@@ -184,6 +214,13 @@ Deno.serve(async (req) => {
     const r = await fetch(`${DATA_URL}?t=${Date.now()}`, { headers: { "User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)" } });
     if (r.ok) gate = cardStatus(await r.text());
   } catch (_e) { /* fail open: gate stays { mode: "live" } */ }
+  if (gate.mode !== "live") {
+    try {
+      const r = await fetch(`${EXTRA_URL}?t=${Date.now()}`, { headers: { "User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)" } });
+      const live = r.ok ? extraLive(await r.json()) : null;
+      if (live) gate = { mode: "live", event: live.event, daysOut: 0 };
+    } catch (_e) { /* not live: see extraLive */ }
+  }
 
   if (!force && gate.mode === "idle") {
     return new Response(JSON.stringify({ ok: true, dispatched: false, reason: "no card in range", mode: gate.mode }), { status: 200, headers: { "Content-Type": "application/json" } });

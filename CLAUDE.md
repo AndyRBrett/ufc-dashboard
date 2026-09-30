@@ -131,6 +131,15 @@ just a push. Its three modes (`live` every ping, `fight-week` hourly, `idle`
 never) are held by `npm run check:kick`; widening `idle` is what let a cancelled
 bout sit on UFC 331 for days.
 
+**Non-UFC cards get the same fight mode.** A PFL / RIZIN / DWCS card in
+`events-extra.json` dated today or yesterday (UTC) with a bout still missing its
+`winner` makes `kick-scraper` live (`extraLive`) and opens `extra.py`'s cadence
+gate on every run (`live_card`, `EXTRA_LIVE_MIN`), the same rule both sides.
+Before it, those results waited on the 4-hour fight-week pull: DWCS 94
+(2026-09-29) had none two hours after its last bout. The feed only ever adds
+dispatches: unreadable is not live, and data.js's gate stays the one that
+fails open.
+
 **The gate reads the COMMITTED `data.js` (raw.githubusercontent, `main`), never
 the Pages copy.** Reading Pages made a loop: a blocked deploy left Pages showing
 a card still mid-fight, the gate read it as `live`, and every ping dispatched

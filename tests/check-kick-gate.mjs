@@ -38,11 +38,11 @@ const src = readFileSync(SRC, "utf8");
 const stub = `
 globalThis.Deno = { env: { get: () => undefined }, serve: () => {} };
 `;
-const { code } = await transform(stub + src + "\nexport { cardStatus };", {
+const { code } = await transform(stub + src + "\nexport { cardStatus, extraLive };", {
   loader: "ts",
   format: "esm",
 });
-const { cardStatus } = await import(
+const { cardStatus, extraLive } = await import(
   "data:text/javascript;base64," + Buffer.from(code).toString("base64")
 );
 
@@ -111,6 +111,30 @@ ok("the soonest in-range card sets the mode", many.daysOut === 2 && many.event =
 
 const liveWins = cardStatus(dataJs(card("UFC 332", plus(5)), card("UFC 331", today)));
 ok("a live card outranks an upcoming one whatever the order", liveWins.mode === "live");
+
+// --- the non-UFC feed: a live PFL / RIZIN / DWCS card drives every ping ------
+//
+// DWCS 94 ran on a night with no UFC card live, so the hourly fight-week
+// dispatch was all it got, and extra.py's 4h gate skipped even those.
+
+const feed = (date, winners) => ({ events: [{ promotion: "dwcs", name: "DWCS 94", date,
+  bouts: winners.map((w, i) => ({ a: "A" + i, b: "B" + i, winner: w })) }] });
+ok("a feed card tonight with an undecided bout is live",
+   extraLive(feed(today, ["", ""]))?.event === "DWCS 94");
+ok("...and still live across UTC midnight",
+   extraLive(feed(ymd(Date.now() - DAY), ["A0", ""])) !== null);
+ok("a feed card with every bout decided is not live", extraLive(feed(today, ["A0", "B1"])) === null);
+ok("a feed card later this week is not live", extraLive(feed(plus(3), ["", ""])) === null);
+ok("a feed card two days gone is not live", extraLive(feed(ymd(Date.now() - 2 * DAY), [""])) === null);
+ok("an unreadable feed is not live (data.js's gate is the one that fails open)",
+   extraLive(null) === null && extraLive({}) === null && extraLive({ events: "x" }) === null &&
+   extraLive({ events: [null, { date: today, bouts: "x" }] }) === null);
+// The feed only adds dispatches: it is read only when data.js says not live,
+// and it can only set live.
+const extraBranch = src.slice(src.indexOf('if (gate.mode !== "live")'), src.indexOf("if (!force && gate.mode === \"idle\")"));
+ok("the feed is consulted only when data.js isn't already live, and can only set live",
+   extraBranch.length > 0 && extraBranch.length < 800 &&
+   /extraLive\(/.test(extraBranch) && !/mode:\s*"(idle|fight-week)"/.test(extraBranch));
 
 // --- force takes its own credential -----------------------------------------
 //
