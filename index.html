@@ -1030,6 +1030,11 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .share-done-btn:hover{opacity:.88}
 .toast{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 28px);left:50%;transform:translateX(-50%) translateY(90px);background:var(--card2);border:1px solid var(--border2);color:var(--text);padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:500;transition:transform .25s ease;white-space:nowrap;pointer-events:none;box-shadow:var(--shadow-el)}
 .toast.show{transform:translateX(-50%) translateY(0)}
+/* A bottom sheet (a roast, a challenge, the wheel) sits exactly where the toast
+   pops up, and the toast is on top: a sync notice once covered half a roast.
+   While one is open, toasts drop in from the top instead. */
+body:has(.lb-trash-sheet.open) .toast{bottom:auto;top:calc(env(safe-area-inset-top,0px) + 16px);transform:translateX(-50%) translateY(calc(-100% - 40px))}
+body:has(.lb-trash-sheet.open) .toast.show{transform:translateX(-50%) translateY(0)}
 @media(min-width:420px){.fn{font-size:27px}.fn.fsm{font-size:22px}}
 .search-input{background:var(--btn-bg);border:1px solid var(--border);color:var(--text);padding:5px 12px;border-radius:20px;font:500 12px Inter,sans-serif;outline:none;width:130px;flex-shrink:0;transition:border-color .15s}
 .search-input:focus{border-color:var(--border2)}
@@ -8703,6 +8708,12 @@ function _reconcileMyMethods(rows){
     if(!m)return;                              // only picks that carry a local method
     var ref=findByKey(key);
     if(!ref)return;
+    // A started bout can't be repaired: the picks_enforce_lock trigger keeps
+    // the stored method, but the upsert still answers 200. So this used to
+    // "sync" the same method on every visit, toast "✓ Synced 1 method pick"
+    // each time (once over a roast someone had just sent), and credit it on
+    // this device's board alone, where no other phone ever scored it.
+    if(fightLocked(ref.ev,ref.fight))return;
     var row=mine[key];
     if(row&&row.method)return;                 // DB already has this method — nothing to do
     if(_syncedMethodKeys[key])return;          // already synced successfully this session
