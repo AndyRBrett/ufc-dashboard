@@ -29,7 +29,7 @@ the documented form. See [Security](#security).
 
    | mode | when | behaviour |
    | ---- | ---- | --------- |
-   | `live` | an event dated today/yesterday (UTC — cards cross midnight) still has an unfinished (`state:"pre"`) bout | dispatch on **every** ping (~5 min) |
+   | `live` | an event dated today/yesterday (UTC — cards cross midnight) still has an unfinished (`state:"pre"`) bout, **or** a PFL / RIZIN / DWCS card in `events-extra.json` dated today/yesterday has a bout with no `winner` | dispatch on **every** ping (~5 min) |
    | `fight-week` | an unfinished card is within `FIGHT_WEEK_DAYS` (7) | dispatch at most once per `FIGHT_WEEK_MIN_GAP_MIN` (60) |
    | `idle` | nothing closer than that | `{"dispatched":false,"reason":"no card in range"}` |
 
@@ -69,6 +69,7 @@ hourly, and an idle week must not dispatch.
 | `GH_REPO`           | Optional, default `AndyRBrett/ufc-dashboard`.            |
 | `GH_WORKFLOW`       | Optional, default `update.yml`.                          |
 | `GH_REF`            | Optional, default `main`.                                |
+| `EXTRA_URL`         | Optional, the non-UFC feed read for the `live` mode. Defaults to the committed `events-extra.json` on `main`. It can only turn a ping live, never thin one; unreadable means not live. Leave unset. |
 | `DATA_URL`          | Optional, schedule source for the cadence gate. Defaults to the committed `data.js` on `main` (raw.githubusercontent), NOT the Pages copy: a blocked deploy must not hold a finished card at the live cadence. Leave unset. |
 | `FIGHT_WEEK_DAYS`   | Optional, default `7`. How far out counts as fight week. |
 | `FIGHT_WEEK_MIN_GAP_MIN` | Optional, default `60`. Minimum minutes between fight-week dispatches. |
