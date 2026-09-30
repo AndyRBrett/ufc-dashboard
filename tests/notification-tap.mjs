@@ -269,6 +269,83 @@ async function main() {
       await page.evaluate(() => document.activeElement?.id === "orig-focus"));
     assert("dismissing it after all that checkpoints normally",
       (await page.evaluate(() => localStorage.getItem("ufc_whatsnew_seen"))) !== null);
+
+    // A toast must not cover the roast it popped up over. A sync notice
+    // ("✓ Synced 1 method pick") once landed on top of half a roast.
+    {
+      const r = await page.evaluate(async (msg) => {
+        showIncomingTrashTalk(msg, "T");
+        await new Promise((res) => setTimeout(res, 400));
+        toast("✓ Synced 1 method pick — now refresh other phones");
+        await new Promise((res) => setTimeout(res, 400));
+        const a = document.getElementById("toast").getBoundingClientRect();
+        const b = document.getElementById("trashSheet").getBoundingClientRect();
+        const out = { toastTop: a.top, toastBottom: a.bottom, sheetTop: b.top, h: innerHeight };
+        closeTrashSheet(); closeLeaderboard();
+        return out;
+      }, ROAST);
+      assert("a toast over an open roast shows clear of the sheet",
+        r.toastBottom <= r.sheetTop && r.toastTop >= 0);
+    }
+    {
+      const r = await page.evaluate(async () => {
+        openLeaderboard(); openWheelSheet();
+        await new Promise((res) => setTimeout(res, 400));
+        toast("✓ Synced 1 method pick");
+        await new Promise((res) => setTimeout(res, 400));
+        const a = document.getElementById("toast").getBoundingClientRect();
+        const b = document.getElementById("wheelSheet").getBoundingClientRect();
+        closeWheelSheet(); closeLeaderboard();
+        return { toastBottom: a.bottom, sheetTop: b.top };
+      });
+      assert("a toast over the open wheel shows clear of it too", r.toastBottom <= r.sheetTop);
+    }
+
+    // The method repair must not "sync" a bout that has started: the database
+    // keeps a locked pick's method but answers 200, so it re-toasted "Synced"
+    // on every visit and scored the method on this phone alone. Synthetic
+    // cards dated off the page's own clock, never the live data.
+    {
+      const r = await page.evaluate(() => {
+        const day = 86400000, iso = (ms) => new Date(ms).toISOString().slice(0, 10);
+        const past = { date: iso(Date.now() - 20 * day), name: "Past Test Card", time: "21:00",
+          fights: [{ lbl: "Main Event", f1: { n: "Past One" }, f2: { n: "Past Two" }, winner: "Past One", method: "KO/TKO" }] };
+        const next = { date: iso(Date.now() + 20 * day), name: "Next Test Card",
+          time: "21:00", prelimTime: "19:00",
+          fights: [{ lbl: "Main Event", f1: { n: "Next One" }, f2: { n: "Next Two" } }] };
+        // Bell two minutes ago: locked in the app, still inside the server's grace.
+        // Card times are ET "HH:MM" on the card's date; build one for two minutes ago.
+        const bell = Date.now() - 120000;
+        let et = new Date(bell - etOffset(iso(bell)) * 3600000);
+        et = new Date(bell - etOffset(et.toISOString().slice(0, 10)) * 3600000);
+        const hhmm = String(et.getUTCHours()).padStart(2, "0") + ":" + String(et.getUTCMinutes()).padStart(2, "0");
+        const late = { date: et.toISOString().slice(0, 10), name: "Late Test Card", time: hhmm,
+          fights: [{ lbl: "Main Event", f1: { n: "Late One" }, f2: { n: "Late Two" } }] };
+        EVENTS.push(past, next, late); _fightIndex = null;
+        USER_ID = "u-me"; userName = "AB";
+        const kPast = pk(past, past.fights[0]), kNext = pk(next, next.fights[0]);
+        preds = {}; preds_method = {};
+        preds[kPast] = "Past One"; preds_method[kPast] = "KO/TKO";
+        preds[kNext] = "Next One"; preds_method[kNext] = "SUB";
+        const kLate = pk(late, late.fights[0]);
+        preds[kLate] = "Late One"; preds_method[kLate] = "DEC";
+        const synced = [], toasts = [];
+        const realSync = window.syncPick, realToast = window.toast;
+        window.syncPick = (ev, f) => { synced.push(pk(ev, f)); return Promise.resolve({ ok: true }); };
+        window.toast = (m) => toasts.push(m);
+        const rows = [
+          { user_id: "u-me", nickname: "AB", event_date: past.date, f1: "Past One", f2: "Past Two", pick: "Past One", method: "" },
+          { user_id: "u-me", nickname: "AB", event_date: next.date, f1: "Next One", f2: "Next Two", pick: "Next One", method: "" },
+          { user_id: "u-me", nickname: "AB", event_date: late.date, f1: "Late One", f2: "Late Two", pick: "Late One", method: "" },
+        ];
+        _reconcileMyMethods(rows);
+        window.syncPick = realSync; window.toast = realToast;
+        return { synced, kPast, kNext, kLate, lateLocked: fightLocked(late, late.fights[0]), pastMethod: rows[0].method, nextMethod: rows[1].method };
+      });
+      assert("method repair skips a bout that has started", !r.synced.includes(r.kPast) && r.pastMethod === "");
+      assert("method repair still syncs an open bout", r.synced.includes(r.kNext) && r.nextMethod === "SUB");
+      assert("method repair keeps retrying inside the server's post-bell grace", r.lateLocked && r.synced.includes(r.kLate));
+    }
   } catch (e) {
     fatal.push("Tap test failed to run: " + e.message);
   } finally {
