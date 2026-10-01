@@ -96,7 +96,7 @@ const CHALS = {
 // Blocks (0013_safety.sql): who has blocked whom. blocksState: "ok", "down" (500)
 // or "missing" (404: 0013 not applied).
 let BLOCKS = [], blocksState = "ok";
-let INBOX = [], inboxState = "ok";   // roast_inbox rows written by send-push
+let INBOX = [], inboxState = "ok", PRUNES = [];   // roast_inbox rows written by send-push; retention deletes
 let sent = [], log = new Set(), dataReads = 0, picksReads = 0, picksDown = false, dataDown = false;
 const PRESENT = new Set();   // notif_log rows that already exist
 globalThis.__webpush = { setVapidDetails() {}, sendNotification: async (sub, payload) => { sent.push({ to: sub.endpoint.split("/").pop(), ...JSON.parse(payload) }); } };
@@ -151,7 +151,8 @@ globalThis.fetch = async (url, init = {}) => {
       if (inboxState === "missing") return json({ code: "PGRST205" }, 404);
       INBOX.push(...JSON.parse(init.body)); return new Response("", { status: 201 });
     }
-    return new Response("", { status: 204 });
+    if (init.method === "DELETE" && /created_at=lt\./.test(url)) PRUNES.push(NOW);
+    return new Response(null, { status: 204 });
   }
   if (url.startsWith(SB + "/rest/v1/challenges")) {
     const id = /id=eq\.([^&]+)/.exec(url)[1];
@@ -282,6 +283,8 @@ for (const t of ["brief", "swap-old-bout"]) {
   const noTable = await send({ event_date: "2026-10-03", type: "trash-talk-42", body: "Still lands. — Joe Rogan", include_user_ids: ["b0b00000-0000-4000-8000-000000000002"] }, { auth: jwt("alice") });
   check("roast inbox: without the table (0016 not applied) the push still goes out", noTable.status === 200 && noTable.sent.length === 1);
   inboxState = "ok";
+  check("roast inbox: retention runs without waiting on a roast, at most hourly",
+    PRUNES.length >= 1 && PRUNES.every((t, i) => !i || t - PRUNES[i - 1] >= 3600_000));
 }
 
 // A fresh account is not a sender: social pushes need picks on SOCIAL_MIN_CARDS

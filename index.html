@@ -11521,16 +11521,19 @@ function checkRoastInbox(force){
   return _authReady.then(function(){
     if(!_sbToken||!USER_ID)return false;
     var since=new Date(Date.now()-ROAST_INBOX_MAX_AGE).toISOString();
-    return fetch(SUPABASE_URL+"/rest/v1/roast_inbox?select=id,title,body&recipient_id=eq."+encodeURIComponent(USER_ID)
+    return fetch(SUPABASE_URL+"/rest/v1/roast_inbox?select=id,title,body,created_at&recipient_id=eq."+encodeURIComponent(USER_ID)
       +"&seen_at=is.null&created_at=gte."+encodeURIComponent(since)+"&order=created_at.desc&limit=10",{headers:_sbHeaders()})
       .then(function(r){return r.ok?r.json():[];}).then(function(rows){
         if(!Array.isArray(rows)||!rows.length)return false;
-        // Everything unseen is cleared; only the newest is shown, so a phone
-        // that was off all evening doesn't open to a stack of sheets.
-        var ids=rows.map(function(x){return x.id;}).filter(function(x){return typeof x==="number";});
-        if(ids.length)fetch(SUPABASE_URL+"/rest/v1/roast_inbox?id=in.("+ids.join(",")+")",
-          {method:"PATCH",headers:Object.assign({},_sbHeaders(),{"Prefer":"return=minimal"}),body:JSON.stringify({seen_at:new Date().toISOString()})}).catch(function(){});
+        // Everything unseen up to the newest is cleared, not just the rows
+        // read (a backlog past the limit would pop up again on the next poll);
+        // only the newest is shown, so a phone that was off all evening doesn't
+        // open to a stack of sheets. Bounded by the newest's time, so a roast
+        // landing mid-read stays unseen for the next check.
         var top=rows[0];
+        fetch(SUPABASE_URL+"/rest/v1/roast_inbox?recipient_id=eq."+encodeURIComponent(USER_ID)+"&seen_at=is.null"
+          +(top&&top.created_at?"&created_at=lte."+encodeURIComponent(top.created_at):""),
+          {method:"PATCH",headers:Object.assign({},_sbHeaders(),{"Prefer":"return=minimal"}),body:JSON.stringify({seen_at:new Date().toISOString()})}).catch(function(){});
         if(!top||typeof top.body!=="string"||!top.body)return false;
         // Already on screen from the notification itself: don't show it twice.
         if(_roastShownAt[top.body]&&Date.now()-_roastShownAt[top.body]<3600000)return false;

@@ -15,9 +15,11 @@
 -- RLS: a recipient reads and marks seen only their own rows. Nobody but
 -- send-push (service role) inserts, so a roast's text and title are always
 -- the server-built ones send-push vouched for. Owners may delete their rows.
--- send-push prunes rows older than 7 days, which is also how a deleted
--- account's rows go (delete_my_account isn't widened for a table this
--- short-lived, and a deleted account has no push_subs row to be sent more).
+--
+-- Retention: send-push prunes rows older than 7 days at most hourly on ANY
+-- call (every app open re-registers through it), so it doesn't wait on the
+-- next roast. A deleted account's rows go with its login: delete_my_account
+-- (0014) deletes the auth.users row, and the trigger below clears its inbox.
 --
 -- Additive and safe in any deploy order: without this table send-push's
 -- insert fails quietly and the app's read 404s quietly, i.e. push-only as
@@ -58,3 +60,26 @@ create policy roast_inbox_delete on public.roast_inbox
 revoke update on public.roast_inbox from anon, authenticated;
 grant update (seen_at) on public.roast_inbox to authenticated;
 grant select, delete on public.roast_inbox to authenticated;
+
+-- Deleting the login (delete_my_account, or an admin) clears its inbox.
+create or replace function public.roast_inbox_forget_user()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  delete from public.roast_inbox where recipient_id = old.id::text;
+  return old;
+end $$;
+revoke all on function public.roast_inbox_forget_user() from public, anon, authenticated;
+
+do $$
+begin
+  if to_regclass('auth.users') is not null then
+    drop trigger if exists roast_inbox_forget_user on auth.users;
+    create trigger roast_inbox_forget_user after delete on auth.users
+      for each row execute function public.roast_inbox_forget_user();
+  end if;
+end $$;
+
+-- Rollback:
+-- drop trigger if exists roast_inbox_forget_user on auth.users;
+-- drop function if exists public.roast_inbox_forget_user();
+-- drop table if exists public.roast_inbox;

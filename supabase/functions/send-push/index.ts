@@ -445,9 +445,7 @@ async function buildMsg(
 // 0013 not applied yet) is "no blocks"; any other failure is null, and the
 // caller fails closed rather than deliver past a block it couldn't read.
 // One inbox row per recipient (see the trash-talk branch of the handler).
-// Rows older than ROAST_INBOX_DAYS are pruned on the way; the app only reads
-// the last day. Failures are swallowed: the push still goes out.
-const ROAST_INBOX_DAYS = 7;
+// Failures are swallowed: the push still goes out.
 export async function recordRoasts(sb: string, h: Record<string, string>, to: string[], title: string, text: string): Promise<boolean> {
   if (!to.length || !text) return false;
   try {
@@ -455,10 +453,21 @@ export async function recordRoasts(sb: string, h: Record<string, string>, to: st
     const r = await fetch(`${sb}/rest/v1/roast_inbox`, {
       method: "POST", headers: { ...h, "Content-Type": "application/json", "Prefer": "return=minimal" }, body: JSON.stringify(rows),
     });
-    const cutoff = new Date(Date.now() - ROAST_INBOX_DAYS * 86400_000).toISOString();
-    await fetch(`${sb}/rest/v1/roast_inbox?created_at=lt.${encodeURIComponent(cutoff)}`, { method: "DELETE", headers: h }).catch(() => {});
     return r.ok;
   } catch { return false; }
+}
+
+// Retention: rows older than ROAST_INBOX_DAYS go (the app reads only the last
+// day). Run at most hourly per instance, on ANY call: every app open
+// re-registers its push subscription through here, so cleanup keeps happening
+// whether or not another roast is ever sent.
+const ROAST_INBOX_DAYS = 7;
+let roastPrunedAt = 0;
+export async function pruneRoasts(sb: string, h: Record<string, string>, now = Date.now()): Promise<void> {
+  if (now - roastPrunedAt < 3600_000) return;
+  roastPrunedAt = now;
+  const cutoff = new Date(now - ROAST_INBOX_DAYS * 86400_000).toISOString();
+  await fetch(`${sb}/rest/v1/roast_inbox?created_at=lt.${encodeURIComponent(cutoff)}`, { method: "DELETE", headers: h }).catch(() => {});
 }
 
 export async function blockedWith(sb: string, h: Record<string, string>, uid: string): Promise<Set<string> | null> {
@@ -573,6 +582,8 @@ Deno.serve(async (req) => {
   };
 
   // Subscription registration — uses service role to bypass RLS on push_subs
+  await pruneRoasts(SUPABASE_URL, sbHeaders);
+
   if (body.type === "register") {
     const { user_id, nickname, endpoint, p256dh, auth } = body;
     if (!user_id || !endpoint || !p256dh || !auth) {

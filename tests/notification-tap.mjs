@@ -276,7 +276,7 @@ async function main() {
     {
       const r = await page.evaluate(async (msg) => {
         const realFetch = window.fetch, patches = [];
-        let rows = [{ id: 7, title: "🎤 Joe Rogan (via T)", body: msg }, { id: 6, title: "🎤 Old (via T)", body: "older roast — Old" }];
+        let rows = [{ id: 7, title: "🎤 Joe Rogan (via T)", body: msg, created_at: "2026-10-01T19:33:20+00:00" }, { id: 6, title: "🎤 Old (via T)", body: "older roast — Old", created_at: "2026-10-01T18:00:00+00:00" }];
         let status = 200;
         window.fetch = function (url, opts = {}) {
           url = String(url);
@@ -294,7 +294,8 @@ async function main() {
           shown, open: document.getElementById("trashSheet").classList.contains("open"),
           text: document.getElementById("trashText").textContent,
           persona: document.getElementById("trashPersona").textContent,
-          clearedAll: patches.some((u) => /id=in\.\(7,6\)/.test(u)),
+          // The whole unseen backlog up to the newest, not just the rows read.
+          clearedAll: patches.some((u) => /recipient_id=eq\.u-me&seen_at=is\.null&created_at=lte\.2026-10-01T19%3A33%3A20%2B00%3A00$/.test(u)),
         };
         // The same roast again (say the notification's own path showed it first):
         // never a second time.
