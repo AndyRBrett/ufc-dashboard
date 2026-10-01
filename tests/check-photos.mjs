@@ -37,7 +37,26 @@ const PAGES = {
   "Nina Nobody": { description: "Brazilian mixed martial artist" },                            // a fighter with no image
   "Redirected Name": { redirectTo: "Redirected Target" },
   "Redirected Target": { description: "Canadian boxer", thumbnail: THUMB("RT") },
+  // Accented article titles: the bare, unaccented name has no page at all.
+  "Natália Silva (fighter)": { description: "Brazilian mixed martial arts fighter", thumbnail: THUMB("NS") },
+  "Natalia Silvano": { description: "Brazilian mixed martial artist", thumbnail: THUMB("WRONG") },
+  "Roberto Soldić": { description: "Croatian boxer and mixed martial artist", thumbnail: THUMB("RS") },
+  "Roberto Soldic (actor)": { description: "Croatian actor", thumbnail: THUMB("ACTOR2") },
+  // A fighter page with no photo (most UFC fighters, checked 2026-10-01).
+  "Payton Talbott": { description: "American mixed martial artist (born 1998)" },
 };
+// What generator=search returns for a query, best first (real shape: pages
+// carry an `index` rank, not array order).
+const SEARCH = {
+  "Natalia Silva": ["Natalia Silvano", "Natália Silva (fighter)"],
+  "Roberto Soldic": ["Roberto Soldic (actor)", "Roberto Soldić"],
+  "Payton Talbott": ["Payton Talbott"],
+};
+function searchReply(q) {
+  const pages = (SEARCH[q] || []).map((t, i) => Object.assign({ title: t, index: i + 1 }, PAGES[t].description ? { description: PAGES[t].description } : {}, PAGES[t].thumbnail ? { thumbnail: PAGES[t].thumbnail } : {}));
+  pages.reverse();
+  return pages.length ? { query: { pages } } : { batchcomplete: true };
+}
 function reply(titles) {
   const asked = titles.split("|"), pages = [], redirects = [];
   for (const t of asked) {
@@ -60,15 +79,17 @@ function boot(store = {}, opts = {}) {
     // The app's own filter, not a stand-in: a stub that only knew one host is
     // how the CSP mismatch went unseen.
     _safeImgUrl,
-    _setPhoto: (slot, src) => slot.photo = src,
+    _setPhoto: (slot, src, onfail) => { slot.photo = src; slot.onfail = onfail; },
+    FIGHTER_ESPN: opts.espn || {},
     _saveJSON: (k, o) => { saved[k] = JSON.parse(JSON.stringify(o)); },
     Date: { now: () => opts.now || 1e12 },
     FIGHTER_PHOTOS: store.photos || {}, FIGHTER_PHOTO_MISS: store.miss || {},
     fetch: opts.fetch || ((url) => {
       calls.push(decodeURIComponent(url));
       if (opts.fail) return Promise.reject(new Error("offline"));
-      const titles = new URL(url).searchParams.get("titles");
-      return Promise.resolve({ ok: true, json: async () => reply(titles) });
+      const sp = new URL(url).searchParams;
+      if (sp.get("generator") === "search") return Promise.resolve({ ok: true, json: async () => searchReply(sp.get("gsrsearch")) });
+      return Promise.resolve({ ok: true, json: async () => reply(sp.get("titles")) });
     }),
   };
   const fn = new Function(...Object.keys(ctx), block + "\nreturn {_photoInto, _photoCandidates, _photoFromReply, FIGHTER_PHOTOS, FIGHTER_PHOTO_MISS};");
@@ -150,21 +171,69 @@ const slot = () => ({ photo: null });
 // 6c. never more than PHOTO_MAX_INFLIGHT requests open at once
 {
   let open = 0, peak = 0;
-  const m = boot({}, { fetch: (url) => { open++; peak = Math.max(peak, open); return new Promise((res) => setTimeout(() => { open--; res({ ok: true, json: async () => reply(new URL(url).searchParams.get("titles")) }); }, 5)); } });
+  const m = boot({}, { fetch: (url) => { open++; peak = Math.max(peak, open); return new Promise((res) => setTimeout(() => { open--; const sp = new URL(url).searchParams; res({ ok: true, json: async () => sp.get("generator") === "search" ? searchReply(sp.get("gsrsearch")) : reply(sp.get("titles")) }); }, 5)); } });
   const names = Array.from({ length: 30 }, (_, i) => "Fighter Number" + i);
   const slots = names.map(() => slot());
   names.forEach((n, i) => m._photoInto(slots[i], n));
-  await new Promise((r) => setTimeout(r, 200));
+  await new Promise((r) => setTimeout(r, 400));
   check("30 lookups at once never open more than 4 requests", peak > 0 && peak <= 4);
   check("...and every one of them still gets its turn", Object.keys(m.FIGHTER_PHOTO_MISS).length === 30);
 }
 // 7. wiring: both views use it, and the old permanent miss is gone
-check("the UFC rows use _photoInto", /_photoInto\(phWrap,fighter\.n\)/.test(html));
+check("the UFC rows use _photoInto, with ESPN only for UFC fighters", /_photoInto\(phWrap,fighter\.n,!fighter\.other\)/.test(html));
 check("the sport view builds its rows with makeFighter (so it uses _photoInto too)", /function sportFightRow[\s\S]*?makeFighter\(f1,[\s\S]*?makeFighter\(f2,/.test(html));
 check("no lookup stores a miss as \"none\" any more", !/FIGHTER_PHOTOS\[[^\]]+\]\s*=\s*"none"/.test(html) && !/FIGHTER_PHOTOS\[[^\]]+\]\s*=\s*null/.test(html));
 const load = html.slice(html.indexOf("var FIGHTER_PHOTOS"), html.indexOf("var FIGHTER_PHOTOS") + 1200);
 check("legacy ufc_photos hits are discarded, not migrated (they were never checked against the page)",
   !/getItem\("ufc_photos"\)/.test(load) && /getItem\("ufc_photos2"\)/.test(load) && /removeItem\("ufc_photos"\)/.test(load));
+
+// 8. ESPN headshots first (most fighters' Wikipedia pages have no photo)
+{
+  const espn = { "Payton Talbott": "5144008", "Bad Id": "12/../x", "Proto Name": "1" };
+  const m = boot({}, { espn }), s = slot();
+  m._photoInto(s, "Payton Talbott", true); await settle();
+  check("a UFC fighter with an ESPN id gets ESPN's resized headshot, with no Wikipedia request",
+    s.photo === "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/5144008.png&w=120&h=87" && m.ctx.calls.length === 0);
+  check("...which the page's own filter and CSP both accept", _safeImgUrl(s.photo) === s.photo &&
+    /img-src[^;]*https:\/\/a\.espncdn\.com/.test((html.match(/http-equiv="Content-Security-Policy" content="([^"]*)"/) || [])[1] || ""));
+  s.photo = null; s.onfail(); await settle();
+  check("a headshot that fails to load falls back to the Wikipedia lookup", m.ctx.calls.length >= 1 && /titles=Payton Talbott\|/.test(m.ctx.calls[0]));
+  const o = boot({}, { espn }), so = slot();
+  o._photoInto(so, "Payton Talbott", false); await settle();
+  check("another promotion's fighter sharing a UFC name never gets the UFC fighter's ESPN face", !/espncdn/.test(so.photo || "") && o.ctx.calls.length >= 1);
+  const b = boot({}, { espn }), sb = slot();
+  b._photoInto(sb, "Bad Id", true); await settle();
+  check("an ESPN id that isn't plain digits is ignored", !/espncdn/.test(sb.photo || ""));
+  const p = boot({}, { espn: Object.create({ "Proto Name": "1" }) }), sp = slot();
+  p._photoInto(sp, "Proto Name", true); await settle();
+  check("only FIGHTER_ESPN's own keys count", !/espncdn/.test(sp.photo || ""));
+  check("_safeImgUrl takes ESPN's image host only, not look-alikes",
+    _safeImgUrl("https://a.espncdn.com/x.png") && !_safeImgUrl("https://evil.espncdn.com/x.png") && !_safeImgUrl("https://a.espncdn.com.evil.example/x.png") && !_safeImgUrl("http://a.espncdn.com/x.png"));
+}
+{
+  // The test stubs _setPhoto; the real one must hand a load failure to onfail.
+  const real = (html.match(/function _setPhoto\(container,src,onfail\)\{[\s\S]*?\n\}/) || [])[0] || "";
+  const made = [];
+  const doc = { createElement: () => { const img = { style: {} }; made.push(img); return img; } };
+  new Function("document", real + "\nreturn _setPhoto;")(doc)({ style: {}, dataset: {}, appendChild() {} }, "https://a.espncdn.com/x.png", () => made.push("fell back"));
+  if (made[0] && made[0].onerror) made[0].onerror();
+  check("the real _setPhoto calls onfail when the image fails to load", made.includes("fell back"));
+}
+// 9. accented article titles are found by one search, and only by exact name
+{
+  const m = boot(), a = slot(), b = slot();
+  m._photoInto(a, "Natalia Silva"); m._photoInto(b, "Roberto Soldic"); await settle(); await settle();
+  check("\"Natalia Silva\" finds \"Natália Silva (fighter)\", skipping a higher-ranked different name", /\/NS\.png\//.test(a.photo || ""));
+  check("\"Roberto Soldic\" finds \"Roberto Soldić\", never the same-named actor", /\/RS\.png\//.test(b.photo || ""));
+  check("...cached like any hit", /NS\.png/.test(m.FIGHTER_PHOTOS["Natalia Silva"]) && /RS\.png/.test(m.FIGHTER_PHOTOS["Roberto Soldic"]));
+  const t = boot(), st = slot();
+  t._photoInto(st, "Payton Talbott"); await settle(); await settle();
+  check("a fighter page with no photo is a miss with ONE request: search would only find that page again",
+    st.photo === null && t.ctx.calls.length === 1 && !!t.FIGHTER_PHOTO_MISS["Payton Talbott"]);
+  const n = boot(), sn = slot();
+  n._photoInto(sn, "Nobody Atall"); await settle(); await settle();
+  check("a name with no page anywhere is a miss after the search", sn.photo === null && n.ctx.calls.length === 2 && !!n.FIGHTER_PHOTO_MISS["Nobody Atall"]);
+}
 
 if (failures) { console.error("\ncheck:photos — " + failures + " failure(s)"); process.exit(1); }
 console.log("\ncheck:photos — all good");

@@ -812,9 +812,9 @@ def parse_espn_times(payload, ev_name, ev_date):
     return None, None
 
 
-def fetch_espn_times(ev_name, ev_date):
-    """Network: fetch the ESPN scoreboard for *ev_date* (cached) and resolve ET
-    times. Returns (None, None) on any network/parse failure."""
+def _espn_scoreboard(ev_date):
+    """Network: the ESPN scoreboard for *ev_date*, fetched once per run.
+    Returns {} on any network/parse failure."""
     key = ev_date.replace("-", "")
     if key not in _espn_cache:
         payload = {}
@@ -828,7 +828,113 @@ def fetch_espn_times(ev_name, ev_date):
         except Exception as e:
             print(f"  ESPN error: {e}", file=sys.stderr)
         _espn_cache[key] = payload
-    return parse_espn_times(_espn_cache[key], ev_name, ev_date)
+    return _espn_cache[key]
+
+
+def fetch_espn_times(ev_name, ev_date):
+    """Network: fetch the ESPN scoreboard for *ev_date* (cached) and resolve ET
+    times. Returns (None, None) on any network/parse failure."""
+    return parse_espn_times(_espn_scoreboard(ev_date), ev_name, ev_date)
+
+
+# ---------------------------------------------------------------------------
+# Fighter headshots (ESPN)
+#
+# Most UFC fighters' Wikipedia articles carry no photo at all (probed
+# 2026-10-01: 16 of 76 fighters on the next three cards had one, and Wikidata
+# added none), so the app's Wikipedia lookup left most cards as initials.
+# ESPN's scoreboard, already fetched above and free of any quota, names every
+# competitor with an athlete id, and ESPN hosts a headshot for most of them
+# (44 of the same 76; the rest were bouts ESPN hadn't listed yet). The app
+# shows ESPN's headshot when FIGHTER_ESPN has the fighter, else falls back to
+# Wikipedia.
+#
+# FIGHTER_ESPN only ever grows: an id is the fighter's for good, and a card
+# ESPN stops listing (or a failed fetch) must not take faces away. An id is
+# stored only once its headshot has answered 200 with an image, because a
+# missing one is a 404 the browser shows as nothing at all, which would also
+# stop the Wikipedia fallback. A name is matched to OUR card's exact name
+# (case, accents and punctuation folded: ESPN writes "Rafael Dos Anjos"), and
+# only among the competitors ESPN lists on that card's own date.
+# ---------------------------------------------------------------------------
+
+ESPN_HEADSHOT = "https://a.espncdn.com/i/headshots/mma/players/full/{}.png"
+ESPN_PHOTO_WINDOW_DAYS = 21
+
+
+def _espn_name_key(n):
+    return _norm_full(re.sub(r"[.'\u2019]", "", str(n or "")).replace("-", " "))
+
+
+def parse_espn_athletes(payload):
+    """Pure: {folded full name: athlete id} for every competitor on a scoreboard."""
+    out = {}
+    for ev in (payload or {}).get("events", []) or []:
+        for comp in ev.get("competitions", []) or []:
+            for c in comp.get("competitors", []) or []:
+                a = c.get("athlete") or {}
+                aid = str(c.get("id") or "")
+                name = a.get("displayName") or a.get("fullName")
+                if name and aid.isdigit():
+                    out[_espn_name_key(name)] = aid
+    return out
+
+
+def extract_espn_ids(data):
+    """The FIGHTER_ESPN map already in data.js ({} when absent or unreadable)."""
+    m = re.search(r"var FIGHTER_ESPN=(\{.*?\});", data, re.DOTALL)
+    if not m:
+        return {}
+    try:
+        got = json.loads(m.group(1))
+    except ValueError:
+        return {}
+    return {k: v for k, v in got.items()
+            if isinstance(k, str) and isinstance(v, str) and v.isdigit()}
+
+
+def _espn_headshot_exists(aid):
+    try:
+        r = requests.head(ESPN_HEADSHOT.format(aid), headers=WIKI_HDR, timeout=10,
+                          allow_redirects=True)
+        return r.status_code == 200 and r.headers.get("content-type", "").startswith("image/")
+    except Exception:
+        return False
+
+
+def update_espn_ids(ids, events, now, scoreboard=None, exists=None):
+    """Add ESPN ids for fighters on cards within ESPN_PHOTO_WINDOW_DAYS.
+    Never removes or changes a stored id. *scoreboard* / *exists* are
+    injectable for tests."""
+    scoreboard = scoreboard or _espn_scoreboard
+    exists = exists or _espn_headshot_exists
+    ids = dict(ids)
+    today = now.date()
+    for ev in events:
+        try:
+            d = datetime.strptime(ev["date"], "%Y-%m-%d").date()
+        except (ValueError, KeyError):
+            continue
+        if not (-2 <= (d - today).days <= ESPN_PHOTO_WINDOW_DAYS):
+            continue
+        names = [side.get("name") for f in ev.get("fights", [])
+                 for side in (f.get("f1") or {}, f.get("f2") or {})]
+        names = [n for n in names if n and n != "TBD" and n not in ids]
+        if not names:
+            continue
+        athletes = parse_espn_athletes(scoreboard(ev["date"]))
+        for n in names:
+            aid = athletes.get(_espn_name_key(n))
+            if aid and exists(aid):
+                ids[n] = aid
+    return ids
+
+
+def set_js_var(data, name, value):
+    """patch_js_var, or insert the var ahead of EVENTS when data.js lacks it."""
+    if re.search(rf"var {re.escape(name)}\s*=", data):
+        return patch_js_var(data, name, value)
+    return data.replace("var EVENTS=", f"var {name}={value};\nvar EVENTS=", 1)
 
 
 def _warn_if_implausible_time(ev_name, loc, main_et):
@@ -3934,6 +4040,11 @@ def step_build_events(data, now):
             data, "RANKINGS",
             json.dumps(rankings, separators=(",", ":"), ensure_ascii=False),
         )
+    espn_ids = update_espn_ids(extract_espn_ids(data), new_events, now)
+    data = set_js_var(
+        data, "FIGHTER_ESPN",
+        json.dumps(espn_ids, separators=(",", ":"), ensure_ascii=False, sort_keys=True),
+    )
     data = patch_js_var(data, "GENERATED_AT", f'"{fmt_update(now)}"')
 
     if len(data) < 20000:
