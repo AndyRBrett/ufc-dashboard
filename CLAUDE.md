@@ -912,6 +912,21 @@ else `SPORT_LOCK_UTC_H` on the card's date. Feed text is rendered with
 
 ## Fighter photos: one lookup, and never someone else's face
 
+**UFC rows try ESPN first.** Most UFC fighters' Wikipedia articles have no
+photo at all (16 of 76 fighters on the next three cards, probed 2026-10-01;
+Wikidata added none), so the Wikipedia lookup alone left most cards as initials.
+`scrape.py`'s `update_espn_ids` reads competitor ids off the ESPN scoreboard it
+already fetches (free, no quota), matches them to our exact names (case, accents
+and punctuation folded, only on that card's own date), HEAD-checks the headshot
+(a missing one is a 404, which would also block the fallback) and stores verified
+ids in data.js's `FIGHTER_ESPN`, which only ever grows. The app draws ESPN's
+resized headshot (`a.espncdn.com/combiner`, ~18 KB) and falls back to Wikipedia
+if it fails to load. Only UFC rows use it (`_photoInto(…, !fighter.other)`): the
+map is keyed by UFC names. A name whose title lookup finds no fighter page at all
+gets one Wikipedia search, accepted only on an exact folded-name title match
+("Natalia Silva" → "Natália Silva (fighter)"). `tests/test_espn_photos.py` and
+`check:photos` hold it.
+
 `// fighter-photos:start … :end` in `index.html` is the only code that turns a
 name into a photo, shared by the UFC rows and the sport view. It asks Wikipedia
 for the name **and** its `(fighter)` / `(mixed martial artist)` / … titles in
