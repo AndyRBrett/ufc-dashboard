@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-01T20:35:19.663729+00:00",
+  "last_fetch_at": "2026-10-01T23:00:25.353744+00:00",
   "last_status": 200,
-  "lines_digest": "853e997d029d2fa4085993a77853867bae886a3d",
+  "lines_digest": "b11fff2ec769f00952a0d141bbb6ab7b92f6ecea",
   "markets": {
     "2026-10-02": {
       "fighters": [
@@ -14,6 +14,8 @@
     },
     "2026-10-03": {
       "fighters": [
+        "smith",
+        "whitehead",
         "armand",
         "wint",
         "mcghee",
@@ -24,8 +26,6 @@
         "hernandez",
         "pinas",
         "pulyaev",
-        "smith",
-        "whitehead",
         "mcgee",
         "nolan",
         "green",
@@ -56,6 +56,10 @@
         "kamaka",
         "allen",
         "duncan",
+        "franco",
+        "ribeiro",
+        "kareckaite",
+        "gatto",
         "prado",
         "bonfim",
         "walker",
@@ -67,8 +71,8 @@
         "wellmaker",
         "tanzilovi"
       ],
-      "listed": 9,
-      "priced": 9
+      "listed": 11,
+      "priced": 11
     },
     "2026-10-24": {
       "fighters": [
@@ -163,25 +167,25 @@
       "priced": 1
     }
   },
-  "markets_at": "2026-10-01T20:35:19.663729+00:00",
+  "markets_at": "2026-10-01T23:00:25.353744+00:00",
   "next_event_days_out": 2,
   "providers": {
     "the-odds-api": {
-      "bouts": 41,
-      "last_fetch_at": "2026-10-01T20:35:19.663729+00:00",
-      "last_ok_at": "2026-10-01T20:35:19.663729+00:00",
+      "bouts": 42,
+      "last_fetch_at": "2026-10-01T23:00:25.353744+00:00",
+      "last_ok_at": "2026-10-01T23:00:25.353744+00:00",
       "last_status": 200,
       "provider": "the-odds-api:us2,uk,eu,au",
-      "requests_remaining": 455
+      "requests_remaining": 450
     },
     "the-odds-api-backup": {
-      "bouts": 42,
-      "last_fetch_at": "2026-10-01T20:35:19.663729+00:00",
-      "last_ok_at": "2026-10-01T20:35:19.663729+00:00",
+      "bouts": 44,
+      "last_fetch_at": "2026-10-01T23:00:25.353744+00:00",
+      "last_ok_at": "2026-10-01T23:00:25.353744+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 491
+      "requests_remaining": 490
     }
   },
-  "requests_remaining": 455
+  "requests_remaining": 450
 }
