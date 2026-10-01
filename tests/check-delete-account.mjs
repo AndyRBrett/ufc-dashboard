@@ -53,7 +53,7 @@ await db.exec(`
   create table public.picks_backup_2026_09_24 as select * from public.picks;
 `);
 for (const m of ["0003_challenges.sql", "0004_user_prefs.sql", "0006_rooms.sql", "0008_rooms_codes_throttle.sql",
-  "0009_ai_quota.sql", "0010_picks_lock.sql", "0013_safety.sql", "0014_delete_account.sql"]) await db.exec(mig(m));
+  "0009_ai_quota.sql", "0010_picks_lock.sql", "0013_safety.sql", "0014_delete_account.sql", "0016_roast_inbox.sql"]) await db.exec(mig(m));
 await db.exec(mig("0014_delete_account.sql"));   // re-runnable
 
 // Two players with a bit of everything. Alice's pick on a long-past card is
@@ -68,6 +68,7 @@ for (const [u, n] of [[A, "Alice"], [B, "Bob"]]) {
   await db.query(`insert into user_prefs (user_id) values ($1)`, [u]);
   await db.query(`insert into ai_usage (user_id, day, bucket, n) values ($1, current_date, 'all', 3)`, [u]);
   await db.query(`insert into room_join_misses (user_id) values ($1)`, [u]);
+  await db.query(`insert into roast_inbox (recipient_id, title, body) values ($1, 'x', 'a roast')`, [u]);
   await db.query(`insert into rooms (name, code, owner_id) values ($1, $2, $3)`, [n + "'s room", n.toUpperCase() + "CODE", u]);
 }
 await db.exec(`
@@ -95,6 +96,7 @@ const holdings = async (u) => ({
   prefs: await count(`select count(*)::int n from user_prefs where user_id = '${u}'`),
   ai: await count(`select count(*)::int n from ai_usage where user_id = '${u}'`),
   misses: await count(`select count(*)::int n from room_join_misses where user_id = '${u}'`),
+  roasts: await count(`select count(*)::int n from roast_inbox where recipient_id = '${u}'`),
   rooms: await count(`select count(*)::int n from rooms where owner_id = '${u}'`),
   seats: await count(`select count(*)::int n from room_members where user_id = '${u}'`),
   challenges: await count(`select count(*)::int n from challenges where challenger_id = '${u}' or target_id = '${u}'`),

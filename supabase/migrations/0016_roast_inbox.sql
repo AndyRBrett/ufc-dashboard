@@ -18,8 +18,12 @@
 --
 -- Retention: send-push prunes rows older than 7 days at most hourly on ANY
 -- call (every app open re-registers through it), so it doesn't wait on the
--- next roast. A deleted account's rows go with its login: delete_my_account
--- (0014) deletes the auth.users row, and the trigger below clears its inbox.
+-- next roast. A deleted account's rows go too: roast_inbox is in
+-- delete_my_account's list and refuse_deleted_account's (0014, which is
+-- re-runnable), and the trigger below covers an install that applies this
+-- without re-running 0014: delete_my_account deletes the auth.users row, and
+-- that clears its inbox. A stale token's seen_at update is refused the same
+-- way as every other table's write.
 --
 -- Additive and safe in any deploy order: without this table send-push's
 -- insert fails quietly and the app's read 404s quietly, i.e. push-only as
@@ -79,7 +83,18 @@ begin
   end if;
 end $$;
 
+-- A deleted account's leftover token can't write here either (0014's guard).
+do $$
+begin
+  if to_regprocedure('public.refuse_deleted_account()') is not null then
+    drop trigger if exists refuse_deleted_account on public.roast_inbox;
+    create trigger refuse_deleted_account before insert or update on public.roast_inbox
+      for each row execute function public.refuse_deleted_account();
+  end if;
+end $$;
+
 -- Rollback:
+-- drop trigger if exists refuse_deleted_account on public.roast_inbox;
 -- drop trigger if exists roast_inbox_forget_user on auth.users;
 -- drop function if exists public.roast_inbox_forget_user();
 -- drop table if exists public.roast_inbox;
