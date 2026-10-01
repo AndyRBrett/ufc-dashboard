@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T15:19:01Z",
+  "generated_at": "2026-10-01T16:20:16Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -11537,7 +11537,7 @@
           "f1": "Deiveson Figueiredo",
           "f2": "Payton Talbott",
           "lbl": "Co-Main",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-09-06T12:52:36Z",
@@ -11608,6 +11608,11 @@
               "at": "2026-10-01T13:48:21Z",
               "f1_odds": 468,
               "f2_odds": -705
+            },
+            {
+              "at": "2026-10-01T16:20:16Z",
+              "f1_odds": 480,
+              "f2_odds": -738
             }
           ],
           "open": {
@@ -11622,7 +11627,7 @@
           "f1": "King Green",
           "f2": "Esteban Ribovics",
           "lbl": "Main Card",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11698,6 +11703,11 @@
               "at": "2026-10-01T13:48:21Z",
               "f1_odds": 195,
               "f2_odds": -248
+            },
+            {
+              "at": "2026-10-01T16:20:16Z",
+              "f1_odds": 192,
+              "f2_odds": -243
             }
           ],
           "open": {
@@ -11892,7 +11902,7 @@
           "f1": "Damian Pinas",
           "f2": "Andrey Pulyaev",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11948,6 +11958,11 @@
               "at": "2026-10-01T13:48:21Z",
               "f1_odds": -547,
               "f2_odds": 383
+            },
+            {
+              "at": "2026-10-01T16:20:16Z",
+              "f1_odds": -585,
+              "f2_odds": 402
             }
           ],
           "open": {
@@ -12052,7 +12067,7 @@
           "f1": "Johnny Walker",
           "f2": "Mick Parkin",
           "lbl": "Early Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -12133,6 +12148,11 @@
               "at": "2026-10-01T13:48:21Z",
               "f1_odds": -135,
               "f2_odds": 111
+            },
+            {
+              "at": "2026-10-01T16:20:16Z",
+              "f1_odds": -131,
+              "f2_odds": 108
             }
           ],
           "open": {
@@ -12147,7 +12167,7 @@
           "f1": "Rafael dos Anjos",
           "f2": "Alexander Hernandez",
           "lbl": "Early Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -12203,6 +12223,11 @@
               "at": "2026-10-01T13:48:21Z",
               "f1_odds": 212,
               "f2_odds": -273
+            },
+            {
+              "at": "2026-10-01T16:20:16Z",
+              "f1_odds": 222,
+              "f2_odds": -288
             }
           ],
           "open": {
@@ -12217,7 +12242,7 @@
           "f1": "Marvin Vettori",
           "f2": "Ismail Naurdiev",
           "lbl": "Early Prelim",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -12307,6 +12332,11 @@
             {
               "at": "2026-10-01T13:48:21Z",
               "f1_odds": 115,
+              "f2_odds": -142
+            },
+            {
+              "at": "2026-10-01T16:20:16Z",
+              "f1_odds": 116,
               "f2_odds": -142
             }
           ],
@@ -12628,7 +12658,7 @@
           "f1": "Petr Yan",
           "f2": "Merab Dvalishvili",
           "lbl": "Co-Main",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -12654,6 +12684,11 @@
               "at": "2026-09-27T05:43:27Z",
               "f1_odds": -178,
               "f2_odds": 145
+            },
+            {
+              "at": "2026-10-01T16:20:16Z",
+              "f1_odds": -176,
+              "f2_odds": 143
             }
           ],
           "open": {
@@ -12850,7 +12885,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Payton Talbott",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": 412,
         "close": null,
         "clv": null
@@ -14096,7 +14131,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Damian Pinas",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 383,
         "close": null,
         "clv": null
@@ -14343,7 +14378,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Esteban Ribovics",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": 245,
         "close": null,
         "clv": null
@@ -14480,7 +14515,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Andrey Pulyaev",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -500,
         "close": null,
         "clv": null
@@ -15333,7 +15368,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "King Green",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": -300,
         "close": null,
         "clv": null
@@ -17053,7 +17088,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Deiveson Figueiredo",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -550,
         "close": null,
         "clv": null
@@ -17128,7 +17163,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Mick Parkin",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -110,
         "close": null,
         "clv": null
@@ -17139,7 +17174,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Johnny Walker",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": -110,
         "close": null,
         "clv": null
@@ -17150,7 +17185,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Alexander Hernandez",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": 186,
         "close": null,
         "clv": null
@@ -17161,7 +17196,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Rafael dos Anjos",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -220,
         "close": null,
         "clv": null
@@ -17172,7 +17207,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Ismail Naurdiev",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": 115,
         "close": null,
         "clv": null
@@ -17183,7 +17218,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Marvin Vettori",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": -135,
         "close": null,
         "clv": null
@@ -17282,7 +17317,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Merab Dvalishvili",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -171,
         "close": null,
         "clv": null
@@ -17293,7 +17328,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Petr Yan",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 138,
         "close": null,
         "clv": null
