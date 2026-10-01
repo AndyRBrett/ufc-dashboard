@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-09-30T20:08:13Z",
+ "generated_at": "2026-10-01T00:29:23Z",
  "promotions": [
   {
    "id": "pfl",
@@ -19,69 +19,6 @@
   }
  ],
  "events": [
-  {
-   "promotion": "dwcs",
-   "name": "Dana White's Contender Series 94",
-   "date": "2026-09-29",
-   "venue": "Meta Apex",
-   "location": "Las Vegas, Nevada, United States",
-   "broadcast": "",
-   "bouts": [
-    {
-     "a": "George Staines",
-     "b": "Loai Abushaar",
-     "label": "Main Event",
-     "division": "Lightweight",
-     "title": false,
-     "odds": {
-      "a": -335,
-      "b": 268
-     },
-     "winner": "George Staines",
-     "method": "KO/TKO",
-     "round": 1
-    },
-    {
-     "a": "Adama Diop",
-     "b": "Zaurbek Sabanov",
-     "label": "",
-     "division": "Heavyweight",
-     "title": false,
-     "odds": {
-      "a": 294,
-      "b": -368
-     },
-     "winner": "Adama Diop",
-     "method": "KO/TKO",
-     "round": 2
-    },
-    {
-     "a": "Ian Escuza",
-     "b": "Luca Borando",
-     "label": "",
-     "division": "Featherweight",
-     "title": false,
-     "odds": null,
-     "winner": "Ian Escuza",
-     "method": "KO/TKO",
-     "round": 1
-    },
-    {
-     "a": "Aieza Ramos Bertolso",
-     "b": "Camila Reynoso",
-     "label": "",
-     "division": "Women's Strawweight",
-     "title": false,
-     "odds": {
-      "a": -547,
-      "b": 406
-     },
-     "winner": "Aieza Ramos Bertolso",
-     "method": "Submission",
-     "round": 1
-    }
-   ]
-  },
   {
    "promotion": "pfl",
    "name": "PFL MENA 11",

@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-30T23:23:55Z",
+  "generated_at": "2026-10-01T00:29:20Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
-  "awaiting_card_events": 4,
-  "odds_unavailable_events": 1,
+  "awaiting_card_events": 5,
+  "odds_unavailable_events": 0,
   "odds_budget_exhausted": false,
   "odds_budget": {
     "exhausted": false,
     "reset_day": 1,
-    "resets_in_days": 1,
+    "resets_in_days": 0,
     "most_affected": []
   },
   "stale_threshold_hours": 48,
@@ -60,7 +60,7 @@
       "has_data": true,
       "bout_count": 14,
       "line_movement": 130,
-      "odds_market_priced": null
+      "odds_market_priced": false
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
@@ -70,7 +70,7 @@
       "has_data": true,
       "bout_count": 13,
       "line_movement": 0,
-      "odds_market_priced": null
+      "odds_market_priced": false
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
@@ -80,7 +80,7 @@
       "has_data": true,
       "bout_count": 12,
       "line_movement": -45,
-      "odds_market_priced": null
+      "odds_market_priced": false
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
@@ -90,12 +90,12 @@
       "has_data": true,
       "bout_count": 12,
       "line_movement": 32,
-      "odds_market_priced": null
+      "odds_market_priced": false
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "status": "ok",
-      "last_changed_at": "2026-09-30T21:13:51Z",
+      "last_changed_at": "2026-10-01T00:29:20Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -104,23 +104,23 @@
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
-      "status": "odds-unavailable",
-      "last_changed_at": "2026-09-30T23:23:55Z",
+      "status": "awaiting-card",
+      "last_changed_at": "2026-10-01T00:29:20Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
       "line_movement": 0,
-      "odds_market_priced": null
+      "odds_market_priced": false
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-30T23:23:55Z",
+      "last_changed_at": "2026-10-01T00:29:20Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
       "line_movement": 0,
-      "odds_market_priced": null
+      "odds_market_priced": false
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
@@ -135,22 +135,22 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-30T23:23:55Z",
+      "last_changed_at": "2026-10-01T00:29:20Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
       "line_movement": 0,
-      "odds_market_priced": null
+      "odds_market_priced": false
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-30T23:23:55Z",
+      "last_changed_at": "2026-10-01T00:29:20Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
       "line_movement": 0,
-      "odds_market_priced": null
+      "odds_market_priced": false
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
@@ -160,17 +160,17 @@
       "has_data": true,
       "bout_count": 11,
       "line_movement": 7,
-      "odds_market_priced": null
+      "odds_market_priced": false
     },
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-09-30T23:23:55Z",
+      "last_changed_at": "2026-10-01T00:29:20Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
       "line_movement": 0,
-      "odds_market_priced": null
+      "odds_market_priced": false
     }
   ],
   "alerts": [
@@ -207,6 +207,22 @@
       "priority": 600.0
     },
     {
+      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+      "f1": "Johnny Walker",
+      "f2": "Mick Parkin",
+      "f1_movement": -28,
+      "f2_movement": 224,
+      "magnitude": 224,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 120,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": 5.6,
+      "f2_prob_shift": -5.7,
+      "priority": 448.0
+    },
+    {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
       "f1": "Salahdine Parnasse",
       "f2": "Dan Hooker",
@@ -240,19 +256,19 @@
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
-      "f1": "Johnny Walker",
-      "f2": "Mick Parkin",
-      "f1_movement": -28,
-      "f2_movement": 224,
-      "magnitude": 224,
+      "f1": "Deiveson Figueiredo",
+      "f2": "Payton Talbott",
+      "f1_movement": 45,
+      "f2_movement": -130,
+      "magnitude": 130,
       "main_event": false,
-      "tier": "prelim",
-      "threshold": 120,
+      "tier": "main-card",
+      "threshold": 45,
       "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": 5.6,
-      "f2_prob_shift": -5.7,
-      "priority": 313.6
+      "wc": "Bantamweight",
+      "f1_prob_shift": -1.6,
+      "f2_prob_shift": 2.6,
+      "priority": 260.0
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
@@ -336,22 +352,6 @@
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
-      "f1": "Deiveson Figueiredo",
-      "f2": "Payton Talbott",
-      "f1_movement": 28,
-      "f2_movement": -105,
-      "magnitude": 105,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 45,
-      "low_confidence": false,
-      "wc": "Bantamweight",
-      "f1_prob_shift": -1.0,
-      "f2_prob_shift": 2.1,
-      "priority": 147.0
-    },
-    {
-      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Natalia Silva",
       "f2": "Wang Cong",
       "f1_movement": 22,
@@ -364,7 +364,39 @@
       "wc": "Women's Flyweight",
       "f1_prob_shift": -2.2,
       "f2_prob_shift": 3.3,
-      "priority": 91.0
+      "priority": 130.0
+    },
+    {
+      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+      "f1": "King Green",
+      "f2": "Esteban Ribovics",
+      "f1_movement": -48,
+      "f2_movement": 49,
+      "magnitude": 49,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 45,
+      "low_confidence": false,
+      "wc": "Lightweight",
+      "f1_prob_shift": 4.7,
+      "f2_prob_shift": -3.5,
+      "priority": 98.0
+    },
+    {
+      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+      "f1": "Ateba Gautier",
+      "f2": "Roman Kopylov",
+      "f1_movement": -49,
+      "f2_movement": 24,
+      "magnitude": 49,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 45,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 5.5,
+      "f2_prob_shift": -3.4,
+      "priority": 98.0
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
@@ -399,22 +431,6 @@
       "priority": 71.0
     },
     {
-      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
-      "f1": "Ateba Gautier",
-      "f2": "Roman Kopylov",
-      "f1_movement": -49,
-      "f2_movement": 24,
-      "magnitude": 49,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 45,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 5.5,
-      "f2_prob_shift": -3.4,
-      "priority": 68.6
-    },
-    {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
       "f1": "Alexa Grasso",
       "f2": "Manon Fiorot",
@@ -429,22 +445,6 @@
       "f1_prob_shift": -4.9,
       "f2_prob_shift": 5.6,
       "priority": 67.0
-    },
-    {
-      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
-      "f1": "King Green",
-      "f2": "Esteban Ribovics",
-      "f1_movement": -47,
-      "f2_movement": 47,
-      "magnitude": 47,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 45,
-      "low_confidence": false,
-      "wc": "Lightweight",
-      "f1_prob_shift": 4.6,
-      "f2_prob_shift": -3.3,
-      "priority": 65.8
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",

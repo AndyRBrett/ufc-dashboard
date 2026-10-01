@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T23:23:55Z",
+  "generated_at": "2026-10-01T00:29:20Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -11537,7 +11537,7 @@
           "f1": "Deiveson Figueiredo",
           "f2": "Payton Talbott",
           "lbl": "Co-Main",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-09-06T12:52:36Z",
@@ -11598,6 +11598,11 @@
               "at": "2026-09-30T19:03:32Z",
               "f1_odds": 440,
               "f2_odds": -655
+            },
+            {
+              "at": "2026-10-01T00:29:20Z",
+              "f1_odds": 457,
+              "f2_odds": -680
             }
           ],
           "open": {
@@ -11612,7 +11617,7 @@
           "f1": "King Green",
           "f2": "Esteban Ribovics",
           "lbl": "Main Card",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11678,6 +11683,11 @@
               "at": "2026-09-30T19:03:32Z",
               "f1_odds": 198,
               "f2_odds": -253
+            },
+            {
+              "at": "2026-10-01T00:29:20Z",
+              "f1_odds": 197,
+              "f2_odds": -251
             }
           ],
           "open": {
@@ -11782,7 +11792,7 @@
           "f1": "Imanol Rodriguez",
           "f2": "Alden Coria",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11848,6 +11858,11 @@
               "at": "2026-09-30T19:03:32Z",
               "f1_odds": -170,
               "f2_odds": 137
+            },
+            {
+              "at": "2026-10-01T00:29:20Z",
+              "f1_odds": -157,
+              "f2_odds": 127
             }
           ],
           "open": {
@@ -11862,7 +11877,7 @@
           "f1": "Damian Pinas",
           "f2": "Andrey Pulyaev",
           "lbl": "Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11908,6 +11923,11 @@
               "at": "2026-09-30T19:03:32Z",
               "f1_odds": -547,
               "f2_odds": 383
+            },
+            {
+              "at": "2026-10-01T00:29:20Z",
+              "f1_odds": -555,
+              "f2_odds": 388
             }
           ],
           "open": {
@@ -12252,7 +12272,7 @@
           "f1": "Court McGee",
           "f2": "Eric Nolan",
           "lbl": "Early Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -12308,6 +12328,11 @@
               "at": "2026-09-30T19:03:32Z",
               "f1_odds": 207,
               "f2_odds": -265
+            },
+            {
+              "at": "2026-10-01T00:29:20Z",
+              "f1_odds": 198,
+              "f2_odds": -253
             }
           ],
           "open": {
@@ -12322,7 +12347,7 @@
           "f1": "Roberto Soldic",
           "f2": "Khaos Williams",
           "lbl": "Main Card",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-09-28T22:57:59Z",
@@ -12348,6 +12373,11 @@
               "at": "2026-09-30T19:03:32Z",
               "f1_odds": -308,
               "f2_odds": 235
+            },
+            {
+              "at": "2026-10-01T00:29:20Z",
+              "f1_odds": -280,
+              "f2_odds": 217
             }
           ],
           "open": {
@@ -12362,7 +12392,7 @@
           "f1": "Jacobe Smith",
           "f2": "Bruce Whitehead",
           "lbl": "Early Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-09-29T11:32:48Z",
@@ -12378,6 +12408,11 @@
               "at": "2026-09-30T00:20:46Z",
               "f1_odds": -970,
               "f2_odds": 595
+            },
+            {
+              "at": "2026-10-01T00:29:20Z",
+              "f1_odds": -987,
+              "f2_odds": 603
             }
           ],
           "open": {
@@ -12392,7 +12427,7 @@
           "f1": "Anthony Wint",
           "f2": "Lucas Armand",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-09-29T17:48:02Z",
@@ -12418,12 +12453,37 @@
               "at": "2026-09-30T19:03:32Z",
               "f1_odds": -530,
               "f2_odds": 372
+            },
+            {
+              "at": "2026-10-01T00:29:20Z",
+              "f1_odds": -562,
+              "f2_odds": 390
             }
           ],
           "open": {
             "at": "2026-09-29T17:48:02Z",
             "f1_odds": -448,
             "f2_odds": 327
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Marcus McGhee",
+          "f2": "Anthony Romero",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-01T00:29:20Z",
+              "f1_odds": -478,
+              "f2_odds": 368
+            }
+          ],
+          "open": {
+            "at": "2026-10-01T00:29:20Z",
+            "f1_odds": -478,
+            "f2_odds": 368
           },
           "close": null,
           "clv": null
@@ -12705,7 +12765,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Payton Talbott",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": 412,
         "close": null,
         "clv": null
@@ -13134,6 +13194,15 @@
         "side": "f1",
         "points": 15,
         "open": -155,
+        "close": null,
+        "clv": null
+      },
+      {
+        "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+        "opponent": "Anthony Romero",
+        "side": "f1",
+        "points": 1,
+        "open": -478,
         "close": null,
         "clv": null
       }
@@ -13880,7 +13949,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Court McGee",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -275,
         "close": null,
         "clv": null
@@ -13942,7 +14011,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Damian Pinas",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 383,
         "close": null,
         "clv": null
@@ -14189,7 +14258,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Esteban Ribovics",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 245,
         "close": null,
         "clv": null
@@ -14326,7 +14395,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Andrey Pulyaev",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -500,
         "close": null,
         "clv": null
@@ -14498,7 +14567,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Bruce Whitehead",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -967,
         "close": null,
         "clv": null
@@ -14624,7 +14693,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Imanol Rodriguez",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 130,
         "close": null,
         "clv": null
@@ -15179,7 +15248,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "King Green",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -300,
         "close": null,
         "clv": null
@@ -15496,7 +15565,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Lucas Armand",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -448,
         "close": null,
         "clv": null
@@ -16899,7 +16968,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Deiveson Figueiredo",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -550,
         "close": null,
         "clv": null
@@ -16952,7 +17021,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Alden Coria",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -150,
         "close": null,
         "clv": null
@@ -17040,7 +17109,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Eric Nolan",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": 226,
         "close": null,
         "clv": null
@@ -17051,7 +17120,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Khaos Williams",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -318,
         "close": null,
         "clv": null
@@ -17062,7 +17131,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Roberto Soldic",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 251,
         "close": null,
         "clv": null
@@ -17073,7 +17142,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Jacobe Smith",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 607,
         "close": null,
         "clv": null
@@ -17084,8 +17153,19 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Anthony Wint",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 327,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Anthony Romero": [
+      {
+        "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+        "opponent": "Marcus McGhee",
+        "side": "f2",
+        "points": 1,
+        "open": 368,
         "close": null,
         "clv": null
       }
