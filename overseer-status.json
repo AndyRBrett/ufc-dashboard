@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T17:23:27Z",
+  "generated_at": "2026-10-01T18:28:25Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "status": "ok",
-      "last_changed_at": "2026-10-01T16:20:16Z",
+      "last_changed_at": "2026-10-01T18:28:25Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -105,7 +105,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-01T17:23:27Z",
+      "last_changed_at": "2026-10-01T18:28:25Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-01T17:23:27Z",
+      "last_changed_at": "2026-10-01T18:28:25Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -135,7 +135,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-01T17:23:27Z",
+      "last_changed_at": "2026-10-01T18:28:25Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-01T17:23:27Z",
+      "last_changed_at": "2026-10-01T18:28:25Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -165,7 +165,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-01T17:23:27Z",
+      "last_changed_at": "2026-10-01T18:28:25Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -370,17 +370,17 @@
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "King Green",
       "f2": "Esteban Ribovics",
-      "f1_movement": -53,
-      "f2_movement": 57,
-      "magnitude": 57,
+      "f1_movement": -52,
+      "f2_movement": 54,
+      "magnitude": 54,
       "main_event": false,
       "tier": "main-card",
       "threshold": 45,
       "low_confidence": false,
       "wc": "Lightweight",
-      "f1_prob_shift": 5.3,
-      "f2_prob_shift": -4.2,
-      "priority": 114.0
+      "f1_prob_shift": 5.1,
+      "f2_prob_shift": -3.9,
+      "priority": 108.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
