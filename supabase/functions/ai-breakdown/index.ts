@@ -985,7 +985,7 @@ ${d.card}`;
 //     fails too, instead of FightBot sending people to a button that's gone.
 // Keep the wording to what the app really does; when unsure, leave it out and
 // let FightBot say it doesn't know.
-export const APP_GUIDE = `APP: "Fight Cards", a UFC picks game for a group of friends. It is a web app (add it to your home screen to use it like an app). Every visitor gets an account automatically; linking an email makes it recoverable.
+export const APP_GUIDE = `APP: "Fight Cards", a UFC picks game for a group of friends. It is a web app (add it to your home screen to use it like an app). Anyone can browse; making picks needs an email account (one-time code, no password), so tapping a pick without one asks for an email first.
 
 HOME SCREEN
 - Top bar: Ranks (the leaderboard), FN Mode (Fight Night mode) and ⋯ More.
@@ -1032,7 +1032,7 @@ OTHER PROMOTIONS: PFL, RIZIN, CONTENDER SERIES (DWCS)
 - Notifications (the 🔔 bell): fight-night reminders, results, trash talk, challenges, nudges, fight change alerts and the Friday brief. On iPhone, notifications only work from the home-screen app.
 - Result Spoilers: on shows the winner in result notifications; off keeps them spoiler-free.
 - Privacy & Safety: the privacy policy, and the players you've blocked (with Unblock).
-- Sign In / Link Email: link an email (one-time code) so your picks and stats survive a new phone or a cleared browser. Linking keeps the same account and picks. To move to a new phone, sign in there with the same email.
+- Sign In / Link Email: sign in with an email (one-time code). It is required to make picks, and it means your picks and stats survive a new phone or a cleared browser. Linking keeps the same account and picks. To move to a new phone, sign in there with the same email.
 - Fight Lab, Year Wrapped, themes (Octagon Dark, Apex Neon, Stars & Stripes, UFC Noche, Silver Bullet, Seasonal), and Add to Home Screen.
 - Never delete the home-screen app without linking an email first: removing it clears its local data, and an unlinked account can't be recovered.
 
