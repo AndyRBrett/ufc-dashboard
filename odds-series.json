@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T19:33:18Z",
+  "generated_at": "2026-10-01T20:38:20Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -11627,7 +11627,7 @@
           "f1": "King Green",
           "f2": "Esteban Ribovics",
           "lbl": "Main Card",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11713,6 +11713,11 @@
               "at": "2026-10-01T18:28:25Z",
               "f1_odds": 193,
               "f2_odds": -246
+            },
+            {
+              "at": "2026-10-01T20:38:19Z",
+              "f1_odds": 192,
+              "f2_odds": -243
             }
           ],
           "open": {
@@ -11727,7 +11732,7 @@
           "f1": "Ateba Gautier",
           "f2": "Roman Kopylov",
           "lbl": "Main Card",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11808,6 +11813,11 @@
               "at": "2026-10-01T13:48:21Z",
               "f1_odds": -227,
               "f2_odds": 178
+            },
+            {
+              "at": "2026-10-01T20:38:19Z",
+              "f1_odds": -233,
+              "f2_odds": 184
             }
           ],
           "open": {
@@ -12077,7 +12087,7 @@
           "f1": "Johnny Walker",
           "f2": "Mick Parkin",
           "lbl": "Early Prelim",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -12163,6 +12173,11 @@
               "at": "2026-10-01T16:20:16Z",
               "f1_odds": -131,
               "f2_odds": 108
+            },
+            {
+              "at": "2026-10-01T20:38:19Z",
+              "f1_odds": -132,
+              "f2_odds": 109
             }
           ],
           "open": {
@@ -12362,7 +12377,7 @@
           "f1": "Court McGee",
           "f2": "Eric Nolan",
           "lbl": "Early Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -12433,6 +12448,11 @@
               "at": "2026-10-01T18:28:25Z",
               "f1_odds": 198,
               "f2_odds": -253
+            },
+            {
+              "at": "2026-10-01T20:38:19Z",
+              "f1_odds": 198,
+              "f2_odds": -248
             }
           ],
           "open": {
@@ -12447,7 +12467,7 @@
           "f1": "Roberto Soldic",
           "f2": "Khaos Williams",
           "lbl": "Main Card",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-09-28T22:57:59Z",
@@ -12478,6 +12498,11 @@
               "at": "2026-10-01T00:29:20Z",
               "f1_odds": -280,
               "f2_odds": 217
+            },
+            {
+              "at": "2026-10-01T20:38:19Z",
+              "f1_odds": -268,
+              "f2_odds": 208
             }
           ],
           "open": {
@@ -12619,6 +12644,192 @@
             "at": "2026-10-01T00:29:20Z",
             "f1_odds": -478,
             "f2_odds": 368
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
+      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Brendan Allen",
+          "f2": "Christian Leroy Duncan",
+          "lbl": "Main Event",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-01T20:38:19Z",
+              "f1_odds": -141,
+              "f2_odds": 121
+            }
+          ],
+          "open": {
+            "at": "2026-10-01T20:38:19Z",
+            "f1_odds": -141,
+            "f2_odds": 121
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Jai Herbert",
+          "f2": "Matheus Camilo",
+          "lbl": "Co-Main",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-01T20:38:19Z",
+              "f1_odds": 157,
+              "f2_odds": -180
+            }
+          ],
+          "open": {
+            "at": "2026-10-01T20:38:19Z",
+            "f1_odds": 157,
+            "f2_odds": -180
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Loopy Godinez",
+          "f2": "Ketlen Souza",
+          "lbl": "Main Card",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-01T20:38:19Z",
+              "f1_odds": -210,
+              "f2_odds": 180
+            }
+          ],
+          "open": {
+            "at": "2026-10-01T20:38:19Z",
+            "f1_odds": -210,
+            "f2_odds": 180
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Andre Fili",
+          "f2": "Kai Kamaka III",
+          "lbl": "Main Card",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-01T20:38:19Z",
+              "f1_odds": -154,
+              "f2_odds": 134
+            }
+          ],
+          "open": {
+            "at": "2026-10-01T20:38:19Z",
+            "f1_odds": -154,
+            "f2_odds": 134
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Julius Walker",
+          "f2": "Gerald Meerschaert",
+          "lbl": "Main Card",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-01T20:38:19Z",
+              "f1_odds": -280,
+              "f2_odds": 230
+            }
+          ],
+          "open": {
+            "at": "2026-10-01T20:38:19Z",
+            "f1_odds": -280,
+            "f2_odds": 230
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Malcolm Wellmaker",
+          "f2": "Otari Tanzilovi",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-01T20:38:19Z",
+              "f1_odds": -180,
+              "f2_odds": 157
+            }
+          ],
+          "open": {
+            "at": "2026-10-01T20:38:19Z",
+            "f1_odds": -180,
+            "f2_odds": 157
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Francisco Prado",
+          "f2": "Ismael Bonfim",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-01T20:38:19Z",
+              "f1_odds": 115,
+              "f2_odds": -135
+            }
+          ],
+          "open": {
+            "at": "2026-10-01T20:38:19Z",
+            "f1_odds": 115,
+            "f2_odds": -135
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Allen Frye Jr.",
+          "f2": "RJ Harris",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-01T20:38:19Z",
+              "f1_odds": 186,
+              "f2_odds": -220
+            }
+          ],
+          "open": {
+            "at": "2026-10-01T20:38:19Z",
+            "f1_odds": 186,
+            "f2_odds": -220
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Alice Pereira",
+          "f2": "Darya Zheleznyakova",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-01T20:38:19Z",
+              "f1_odds": -130,
+              "f2_odds": 110
+            }
+          ],
+          "open": {
+            "at": "2026-10-01T20:38:19Z",
+            "f1_odds": -130,
+            "f2_odds": 110
           },
           "close": null,
           "clv": null
@@ -13181,6 +13392,15 @@
         "open": -176,
         "close": -176,
         "clv": 0
+      },
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Christian Leroy Duncan",
+        "side": "f1",
+        "points": 1,
+        "open": -141,
+        "close": null,
+        "clv": null
       }
     ],
     "Edmen Shahbazyan": [
@@ -13482,6 +13702,15 @@
         "open": 272,
         "close": 272,
         "clv": 0
+      },
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Loopy Godinez",
+        "side": "f2",
+        "points": 1,
+        "open": 180,
+        "close": null,
+        "clv": null
       }
     ],
     "Ariane Carnelossi": [
@@ -13742,6 +13971,15 @@
         "open": 240,
         "close": 230,
         "clv": -10
+      },
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Kai Kamaka III",
+        "side": "f1",
+        "points": 1,
+        "open": -154,
+        "close": null,
+        "clv": null
       }
     ],
     "Vinicius Oliveira": [
@@ -13934,6 +14172,15 @@
         "open": 182,
         "close": 182,
         "clv": 0
+      },
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Malcolm Wellmaker",
+        "side": "f2",
+        "points": 1,
+        "open": 157,
+        "close": null,
+        "clv": null
       }
     ],
     "Rafael Fiziev": [
@@ -14000,6 +14247,15 @@
         "open": 187,
         "close": 166,
         "clv": -21
+      },
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Jai Herbert",
+        "side": "f2",
+        "points": 1,
+        "open": -180,
+        "close": null,
+        "clv": null
       }
     ],
     "Ikram Aliskerov": [
@@ -14089,7 +14345,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Court McGee",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -275,
         "close": null,
         "clv": null
@@ -14115,6 +14371,15 @@
         "open": 320,
         "close": 442,
         "clv": 122
+      },
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Gerald Meerschaert",
+        "side": "f1",
+        "points": 1,
+        "open": -280,
+        "close": null,
+        "clv": null
       }
     ],
     "Nursulton Ruziboev": [
@@ -14398,7 +14663,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Esteban Ribovics",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": 245,
         "close": null,
         "clv": null
@@ -14479,6 +14744,15 @@
         "open": 258,
         "close": 185,
         "clv": -73
+      },
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Andre Fili",
+        "side": "f2",
+        "points": 1,
+        "open": 134,
+        "close": null,
+        "clv": null
       }
     ],
     "Tracy Cortez": [
@@ -14680,6 +14954,15 @@
         "open": -300,
         "close": -300,
         "clv": 0
+      },
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Brendan Allen",
+        "side": "f2",
+        "points": 1,
+        "open": 121,
+        "close": null,
+        "clv": null
       }
     ],
     "Kevin Holland": [
@@ -15388,7 +15671,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "King Green",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": -300,
         "close": null,
         "clv": null
@@ -17139,7 +17422,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Roman Kopylov",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -175,
         "close": null,
         "clv": null
@@ -17150,7 +17433,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Ateba Gautier",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 153,
         "close": null,
         "clv": null
@@ -17183,7 +17466,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Mick Parkin",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": -110,
         "close": null,
         "clv": null
@@ -17194,7 +17477,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Johnny Walker",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": -110,
         "close": null,
         "clv": null
@@ -17249,7 +17532,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Eric Nolan",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": 226,
         "close": null,
         "clv": null
@@ -17260,7 +17543,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Khaos Williams",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -318,
         "close": null,
         "clv": null
@@ -17271,7 +17554,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Roberto Soldic",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 251,
         "close": null,
         "clv": null
@@ -17306,6 +17589,116 @@
         "side": "f2",
         "points": 5,
         "open": 368,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Jai Herbert": [
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Matheus Camilo",
+        "side": "f1",
+        "points": 1,
+        "open": 157,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Loopy Godinez": [
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Ketlen Souza",
+        "side": "f1",
+        "points": 1,
+        "open": -210,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Gerald Meerschaert": [
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Julius Walker",
+        "side": "f2",
+        "points": 1,
+        "open": 230,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Malcolm Wellmaker": [
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Otari Tanzilovi",
+        "side": "f1",
+        "points": 1,
+        "open": -180,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Francisco Prado": [
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Ismael Bonfim",
+        "side": "f1",
+        "points": 1,
+        "open": 115,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Ismael Bonfim": [
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Francisco Prado",
+        "side": "f2",
+        "points": 1,
+        "open": -135,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Allen Frye Jr.": [
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "RJ Harris",
+        "side": "f1",
+        "points": 1,
+        "open": 186,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "RJ Harris": [
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Allen Frye Jr.",
+        "side": "f2",
+        "points": 1,
+        "open": -220,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Alice Pereira": [
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Darya Zheleznyakova",
+        "side": "f1",
+        "points": 1,
+        "open": -130,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Darya Zheleznyakova": [
+      {
+        "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+        "opponent": "Alice Pereira",
+        "side": "f2",
+        "points": 1,
+        "open": 110,
         "close": null,
         "clv": null
       }

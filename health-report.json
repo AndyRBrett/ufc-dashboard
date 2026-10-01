@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T19:33:18Z",
+  "generated_at": "2026-10-01T20:38:19Z",
   "summary": {
     "events": 12,
     "block": 0,
@@ -8,8 +8,8 @@
   "findings": [
     {
       "severity": "WARN",
-      "check": "odds-missing-all",
-      "message": "UFC Fight Night: Allen vs. Duncan (9d out) has no odds on any of its 12 bouts",
+      "check": "odds-missing-some",
+      "message": "UFC Fight Night: Allen vs. Duncan (9d out): 3 of 12 bouts have no odds",
       "event": "UFC Fight Night: Allen vs. Duncan",
       "date": "2026-10-10",
       "days_out": 9
