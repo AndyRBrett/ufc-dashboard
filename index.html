@@ -1716,7 +1716,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <div class="nm-bg" id="delBg">
   <div class="nm-box" style="max-width:300px">
     <div class="nm-top"><h3>Delete account?</h3></div>
-    <p>This permanently removes your profile, all your picks, and notification settings. Your leaderboard entry will be gone for good — this can't be undone.</p>
+    <p>This permanently deletes your account: your sign-in (and linked email), profile, all your picks, challenges, rooms, blocks and notification settings. Your leaderboard entry will be gone for good. This can't be undone.</p>
     <div class="nm-del-actions">
       <button class="nm-btn nm-btn-ghost" onclick="closeDeleteConfirm()">Cancel</button>
       <button class="nm-btn nm-btn-danger" id="delConfirmBtn" onclick="deleteAccount()">Delete forever</button>
@@ -4334,6 +4334,29 @@ function deleteAccount(){
   btn.disabled=true;btn.textContent="Deleting…";
   _authReady.then(function(){
     var h=_sbHeaders();
+    // One call deletes the whole account, the login included: picks, push
+    // subscription, prefs, rooms and seats, challenges, blocks, AI usage
+    // (0014_delete_account.sql; Apple requires the account itself to go). A
+    // 404 means it isn't applied yet, and only then does the old row-by-row
+    // delete below run.
+    return fetch(SUPABASE_URL+"/rest/v1/rpc/delete_my_account",{method:"POST",headers:Object.assign({"Content-Type":"application/json"},h),body:"{}"}).then(function(r){
+      if(r.status!==404){if(!r.ok)throw new Error("delete account "+r.status);return;}
+      return _deleteAccountRows(h);
+    });
+  }).then(function(){
+    // Best-effort: drop the browser push subscription, then wipe all local state.
+    try{if('serviceWorker'in navigator)navigator.serviceWorker.ready.then(function(reg){reg.pushManager.getSubscription().then(function(s){if(s)s.unsubscribe();});}).catch(function(){});}catch(e){}
+    try{localStorage.clear();}catch(e){}
+    location.reload(); // reboots a fresh anonymous session + shows the join screen
+  }).catch(function(){
+    btn.disabled=false;btn.textContent="Delete forever";
+    toast("Couldn't delete — check your connection and try again");
+  });
+}
+// The pre-0014 delete: the account's rows one table at a time. Leaves the
+// login and challenges behind, so it only runs while delete_my_account is
+// missing.
+function _deleteAccountRows(h){
     // Delete the user's own rows first, using the current authenticated session.
     // Through delete_my_picks (0010): the pick-lock trigger refuses a plain
     // DELETE of any bout whose segment has started, which is every past card.
@@ -4376,15 +4399,6 @@ function deleteAccount(){
         .then(function(r){if(!r.ok&&r.status!==404)throw new Error("delete blocks "+r.status);
           _blocks={};try{localStorage.removeItem("ufc_blocks");}catch(e){}});
     });
-  }).then(function(){
-    // Best-effort: drop the browser push subscription, then wipe all local state.
-    try{if('serviceWorker'in navigator)navigator.serviceWorker.ready.then(function(reg){reg.pushManager.getSubscription().then(function(s){if(s)s.unsubscribe();});}).catch(function(){});}catch(e){}
-    try{localStorage.clear();}catch(e){}
-    location.reload(); // reboots a fresh anonymous session + shows the join screen
-  }).catch(function(){
-    btn.disabled=false;btn.textContent="Delete forever";
-    toast("Couldn't delete — check your connection and try again");
-  });
 }
 function selectEmoji(btn){document.querySelectorAll(".nm-emoji-btn").forEach(function(b){b.classList.remove("selected");});btn.classList.add("selected");}
 function saveName(){
