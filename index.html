@@ -4322,9 +4322,12 @@ function closeNameModal(){
 // anonymous session's pick outright). A tap without one opens "Sign In to Pick";
 // linking keeps the same user_id, so an anonymous player's picks come along, and
 // _postSignIn finishes the pick that was tapped.
+// _acctHoldsPick marks the sheet as opened for a pick: dismissing it drops the
+// held pick, so a later sign-in can't quietly make a pick the user walked away from.
+var _acctHoldsPick=false;
 function _pickNeedsAccount(cb){
   if(_sessEmail())return false;
-  window._pp=cb||null;
+  window._pp=cb||null;_acctHoldsPick=true;
   openAcct();
   document.getElementById("acctTitle").textContent="Sign In to Pick";
   document.getElementById("acctDesc").textContent="Picks are for email accounts. Enter your email and we'll send a one-time code. Your picks and your spot on the board follow you to any phone.";
@@ -4473,7 +4476,7 @@ function openAcct(){
   document.getElementById("acctCode").value="";
   document.getElementById("acctBg").classList.add("open");
 }
-function closeAcct(){document.getElementById("acctBg").classList.remove("open");}
+function closeAcct(){document.getElementById("acctBg").classList.remove("open");if(_acctHoldsPick){_acctHoldsPick=false;window._pp=null;}}
 function acctSend(){
   var email=(document.getElementById("acctEmail").value||"").trim().toLowerCase();
   var errEl=document.getElementById("acctErr");errEl.style.display="none";
@@ -4515,6 +4518,7 @@ function acctVerify(){
       if(raw.access_token)_adoptSession(raw,null);
       btn.disabled=false;btn.textContent="Verify code";
       _acctPending=null;
+      _acctHoldsPick=false;   // verified: the held pick goes through in _postSignIn
       closeAcct();
       _postSignIn(prevId,email);
     })
@@ -9555,6 +9559,14 @@ function sportLock(promo,ev,b){
 }
 function sportPick(promo,ev,b,name){
   if(sportLocked(ev,b)){toast("Picks are closed for this fight");return;}
+  // Un-picking needs no account (0015 keeps owner DELETE open), the way UFC's
+  // selected button goes straight to undoPick: an anonymous device can still
+  // clear a pick it made before the rule.
+  var k0=sportKey(promo,ev.date,b.a,b.b);
+  if(_sportPicks[k0]&&nmEq(_sportPicks[k0],name)){
+    delete _sportPicks[k0];delete _sportMeta[k0];_sportMetaSave();_sportSave();renderSportView();
+    toast("Pick removed");_sportSync(promo,ev,b,null);return;
+  }
   checkName(function(){
     var k=sportKey(promo,ev.date,b.a,b.b);
     var unpick=_sportPicks[k]&&nmEq(_sportPicks[k],name);
