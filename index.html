@@ -7591,6 +7591,8 @@ function fireTrashTalk(){
   }else send();
 }
 function showIncomingTrashTalk(text,sender){
+  _roastShownAt[text]=Date.now();
+  _markRoastSeen(text);
   var lastDash=text.lastIndexOf('—');
   var persona=lastDash>=0?text.slice(lastDash+1).trim():"A Famous Friend";
   if(!document.getElementById("lbPanel").classList.contains("open"))openLeaderboard();
@@ -11370,6 +11372,8 @@ if('serviceWorker'in navigator){
     if(!e.data)return;
     if(e.data.type==='trash-talk'&&e.data.fullMessage){_routeTap('',e.data.fullMessage,e.data.sender,e.data.ts,0);clearPendingTap();}
     else if(e.data.type==='challenge'){_routeTap('challenge','','',e.data.ts,0);clearPendingTap();}
+    // A push just landed on this device: if it was a roast, it's in the inbox.
+    else if(e.data.type==='push-arrived')setTimeout(function(){checkRoastInbox(true);},400);
   });
 }
 // Persistent offline banner — make it obvious when the network drops and the app is
@@ -11494,6 +11498,50 @@ function consumePendingTap(delay){
     return true;
   }).catch(function(){return false;});
 }
+// Roast inbox (0016_roast_inbox.sql). send-push leaves every roast here, one
+// row per recipient, and this reads it back. It is the delivery path that
+// doesn't depend on the notification: the stash / postMessage hand-off from a
+// tapped push to the page kept losing roasts on iOS (three fixes, #235-#237,
+// and it still failed), so the tap now only has to wake the app. Read on
+// boot, on every foreground, when the SW says a push arrived, and on a slow
+// poll while visible. A missing table (404) or no session just reads nothing.
+var _roastShownAt={};        // roast text -> when any path put it on screen
+var ROAST_INBOX_MAX_AGE=86400000,ROAST_INBOX_POLL_MS=20000,_roastInboxAt=0,_roastInboxBusy=false;
+function _roastSender(title){var m=/\(via\s+(.+?)\)\s*$/.exec(title||"");return m?m[1]:"";}
+function _markRoastSeen(text){
+  try{
+    if(!_sbToken||!USER_ID||!text)return;
+    fetch(SUPABASE_URL+"/rest/v1/roast_inbox?recipient_id=eq."+encodeURIComponent(USER_ID)+"&seen_at=is.null&body=eq."+encodeURIComponent(text),
+      {method:"PATCH",headers:Object.assign({},_sbHeaders(),{"Prefer":"return=minimal"}),body:JSON.stringify({seen_at:new Date().toISOString()})}).catch(function(){});
+  }catch(e){}
+}
+function checkRoastInbox(force){
+  if(_roastInboxBusy||(!force&&Date.now()-_roastInboxAt<4000))return Promise.resolve(false);
+  _roastInboxBusy=true;_roastInboxAt=Date.now();
+  return _authReady.then(function(){
+    if(!_sbToken||!USER_ID)return false;
+    var since=new Date(Date.now()-ROAST_INBOX_MAX_AGE).toISOString();
+    return fetch(SUPABASE_URL+"/rest/v1/roast_inbox?select=id,title,body,created_at&recipient_id=eq."+encodeURIComponent(USER_ID)
+      +"&seen_at=is.null&created_at=gte."+encodeURIComponent(since)+"&order=created_at.desc&limit=10",{headers:_sbHeaders()})
+      .then(function(r){return r.ok?r.json():[];}).then(function(rows){
+        if(!Array.isArray(rows)||!rows.length)return false;
+        // Everything unseen up to the newest is cleared, not just the rows
+        // read (a backlog past the limit would pop up again on the next poll);
+        // only the newest is shown, so a phone that was off all evening doesn't
+        // open to a stack of sheets. Bounded by the newest's time, so a roast
+        // landing mid-read stays unseen for the next check.
+        var top=rows[0];
+        fetch(SUPABASE_URL+"/rest/v1/roast_inbox?recipient_id=eq."+encodeURIComponent(USER_ID)+"&seen_at=is.null"
+          +(top&&top.created_at?"&created_at=lte."+encodeURIComponent(top.created_at):""),
+          {method:"PATCH",headers:Object.assign({},_sbHeaders(),{"Prefer":"return=minimal"}),body:JSON.stringify({seen_at:new Date().toISOString()})}).catch(function(){});
+        if(!top||typeof top.body!=="string"||!top.body)return false;
+        // Already on screen from the notification itself: don't show it twice.
+        if(_roastShownAt[top.body]&&Date.now()-_roastShownAt[top.body]<3600000)return false;
+        _routeTap('',top.body,_roastSender(top.title),0,0);
+        return true;
+      });
+  }).catch(function(e){console.error("roast inbox",e);return false;}).then(function(v){_roastInboxBusy=false;return v;});
+}
 // Other sports: fetched once, shown only if the feed has a card to pick.
 sportsBoot();
 // Blocks: adopt the server's list (and send up any made offline).
@@ -11536,6 +11584,14 @@ _roomsBoot();
   // again every couple of seconds while visible: a cheap local cache read,
   // and consumePendingTap's delete() keeps it to one showing per tap.
   setInterval(function(){if(document.visibilityState==='visible')consumePendingTap(0);},2000);
+  // The roast inbox: on boot (after the stash, which is local and quicker),
+  // on every foreground, and every ROAST_INBOX_POLL_MS while visible.
+  setTimeout(function(){checkRoastInbox(true);},1200);
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible')setTimeout(function(){checkRoastInbox(true);},600);
+  });
+  window.addEventListener('pageshow',function(e){if(e.persisted)checkRoastInbox(true);});
+  setInterval(function(){if(document.visibilityState==='visible')checkRoastInbox(false);},ROAST_INBOX_POLL_MS);
 })();
 </script>
 <script>

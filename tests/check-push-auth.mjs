@@ -96,6 +96,7 @@ const CHALS = {
 // Blocks (0013_safety.sql): who has blocked whom. blocksState: "ok", "down" (500)
 // or "missing" (404: 0013 not applied).
 let BLOCKS = [], blocksState = "ok";
+let INBOX = [], inboxState = "ok", PRUNES = [];   // roast_inbox rows written by send-push; retention deletes
 let sent = [], log = new Set(), dataReads = 0, picksReads = 0, picksDown = false, dataDown = false;
 const PRESENT = new Set();   // notif_log rows that already exist
 globalThis.__webpush = { setVapidDetails() {}, sendNotification: async (sub, payload) => { sent.push({ to: sub.endpoint.split("/").pop(), ...JSON.parse(payload) }); } };
@@ -143,6 +144,16 @@ globalThis.fetch = async (url, init = {}) => {
     if (!m || m[1] !== m[2]) return json({ error: "user_blocks read must name the sender both ways" }, 400);
     return json(BLOCKS.filter((b) => b.blocker_id === m[1] || b.blocked_id === m[1]));
   }
+  // The roast inbox (0016_roast_inbox.sql): every row send-push writes. A
+  // "missing" table (404) must not stop the push.
+  if (url.startsWith(SB + "/rest/v1/roast_inbox")) {
+    if ((init.method || "GET") === "POST") {
+      if (inboxState === "missing") return json({ code: "PGRST205" }, 404);
+      INBOX.push(...JSON.parse(init.body)); return new Response("", { status: 201 });
+    }
+    if (init.method === "DELETE" && /created_at=lt\./.test(url)) PRUNES.push(NOW);
+    return new Response(null, { status: 204 });
+  }
   if (url.startsWith(SB + "/rest/v1/challenges")) {
     const id = /id=eq\.([^&]+)/.exec(url)[1];
     return json(CHALS[id] ? [CHALS[id]] : []);
@@ -163,12 +174,12 @@ let NOW = MAIN - 3 * 3600_000;
 Date.now = () => NOW;
 
 async function send(body, { auth = ANON, service = null } = {}) {
-  sent = []; log = new Set();
+  sent = []; log = new Set(); INBOX = [];
   const headers = { "Content-Type": "application/json", Authorization: "Bearer " + auth };
   if (service) headers["X-Service-Key"] = service;
   const r = await handler(new Request("https://fn/send-push", { method: "POST", headers, body: JSON.stringify(body) }));
   let j = null; try { j = await r.json(); } catch { /* none */ }
-  return { status: r.status, j, sent: sent.slice(), to: sent.map((s) => s.to).sort() };
+  return { status: r.status, j, sent: sent.slice(), to: sent.map((s) => s.to).sort(), inbox: INBOX.slice() };
 }
 const FORGED = { title: "HACKED", body: "click evil.example", safe_title: "HACKED", safe_body: "HACKED" };
 const clean = (r) => r.sent.every((s) => !/HACKED|evil/.test(JSON.stringify(s)));
@@ -259,6 +270,21 @@ for (const t of ["brief", "swap-old-bout"]) {
     include_user_ids: ["b0b00000-0000-4000-8000-000000000002", "bad id!"] }, { auth: jwt("alice") });
   check("trash talk: the roast is the sender's, the title is the server's and names the real sender",
     roast.status === 200 && roast.to.join() === "b0b00000-0000-4000-8000-000000000002" && roast.sent[0].title === "🎤 Joe Rogan (via alice)" && /raccoon/.test(roast.sent[0].body));
+  check("roast inbox: the roast is left for exactly its recipient, with the server's title and the sent text",
+    roast.inbox.length === 1 && roast.inbox[0].recipient_id === "b0b00000-0000-4000-8000-000000000002"
+    && roast.inbox[0].title === "🎤 Joe Rogan (via alice)" && roast.inbox[0].body === roast.sent[0].body);
+  const group = await send({ event_date: "2026-10-03", type: "trash-talk-40", body: "Group roast. — Joe Rogan" }, { auth: jwt("alice") });
+  check("roast inbox: a whole-group roast leaves a row for everyone it pushed to, never the sender",
+    group.status === 200 && group.inbox.map((r) => r.recipient_id).sort().join() === group.to.join() && !group.inbox.some((r) => r.recipient_id === "a11ce000-0000-4000-8000-000000000001"));
+  check("roast inbox: nothing but a roast is written there", nudge.inbox.length === 0);
+  const forgedAnon = await send({ event_date: "2026-10-03", type: "trash-talk-41", ...FORGED });
+  check("roast inbox: a refused roast (anon key) writes nothing", forgedAnon.inbox.length === 0 && forgedAnon.sent.length === 0);
+  inboxState = "missing";
+  const noTable = await send({ event_date: "2026-10-03", type: "trash-talk-42", body: "Still lands. — Joe Rogan", include_user_ids: ["b0b00000-0000-4000-8000-000000000002"] }, { auth: jwt("alice") });
+  check("roast inbox: without the table (0016 not applied) the push still goes out", noTable.status === 200 && noTable.sent.length === 1);
+  inboxState = "ok";
+  check("roast inbox: retention runs without waiting on a roast, at most hourly",
+    PRUNES.length >= 1 && PRUNES.every((t, i) => !i || t - PRUNES[i - 1] >= 3600_000));
 }
 
 // A fresh account is not a sender: social pushes need picks on SOCIAL_MIN_CARDS
@@ -300,6 +326,7 @@ for (const t of ["brief", "swap-old-bout"]) {
   const roast = await send({ event_date: "2026-10-03", type: "trash-talk-30", body: "Nice pick. — Joe Rogan", include_user_ids: [B, C] }, { auth: jwt("alice") });
   check("blocks: a roast aimed at someone who blocked the sender skips them and still reaches the rest",
     roast.status === 200 && roast.to.join() === C);
+  check("...and leaves no inbox row for them either", roast.inbox.map((r) => r.recipient_id).join() === C);
   const only = await send({ event_date: "2026-10-03", type: "trash-talk-31", body: "Nice pick. — Joe Rogan", include_user_ids: [B] }, { auth: jwt("alice") });
   check("...aimed only at them, nothing is sent (never widened to a broadcast)", only.status === 200 && only.sent.length === 0);
   check("...and its dedup key isn't spent", ![...log].some((l) => l.includes("trash-talk-31")));
