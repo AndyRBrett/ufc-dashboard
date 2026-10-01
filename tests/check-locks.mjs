@@ -51,7 +51,7 @@ const ctx = vm.createContext({
   preds: {}, preds_conf: {},
   pk: (ev, f) => ev.date + "|" + f.f1.n + "|" + f.f2.n,
   fightLocked: (ev, f) => !!f._started, lockReason: () => "locked",
-  saveConf: () => {}, render: () => {}, syncPick: () => {},
+  saveConf: () => {}, render: () => {}, syncPick: () => {}, _pickNeedsAccount: () => false,   // a signed-in player (the gate itself: check:picklock)
   toast: (m) => toasts.push(m),
 });
 vm.runInContext(block("fighter-names"), ctx);

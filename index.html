@@ -2961,6 +2961,15 @@ var PICKS_UFC="&promotion=eq.ufc";
 function _sbQ(ev,fight){return"?user_id=eq."+encodeURIComponent(USER_ID)+"&event_date=eq."+encodeURIComponent(ev.date)+"&f1=eq."+encodeURIComponent(fight.f1.n)+"&f2=eq."+encodeURIComponent(fight.f2.n)+PICKS_UFC;}
 function findByKey(key){if(!_fightIndex)_buildFightIndex();return _fightIndex[key]||null;}
 
+function _jwtAnon(){try{return JSON.parse(atob(_sbToken.split(".")[1].replace(/-/g,"+").replace(/_/g,"/"))).is_anonymous===true;}catch(e){return false;}}
+var _acctTokInflight=null;
+function _accountToken(){
+  if(!_sbToken||!_sessEmail()||!_jwtAnon())return Promise.resolve();
+  var s=null;try{s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");}catch(e){}
+  if(!s||!s.refresh_token)return Promise.resolve();
+  if(!_acctTokInflight)_acctTokInflight=_refreshToken(s.refresh_token).then(function(raw){_adoptSession(raw,s);}).catch(function(){}).then(function(){_acctTokInflight=null;});
+  return _acctTokInflight;
+}
 function syncPick(ev,fight,notifyFriends){
   if(!userName)return Promise.resolve(null);
   // Never (re-)upload picks from the wiped pre-Freedom-250 test phase. A device
@@ -2974,7 +2983,7 @@ function syncPick(ev,fight,notifyFriends){
   // lock past LOCKS_PER_CARD to 0 (another device on this account may already
   // hold two), and this device must show what the standings will score.
   var wantLock=data.confidence>0;
-  return _authReady.then(function(){
+  return _authReady.then(_accountToken).then(function(){
     var hdrs=Object.assign({},_sbHeaders(),{"Prefer":"resolution=merge-duplicates,return="+(wantLock?"representation":"minimal")});
     return fetch(SUPABASE_URL+"/rest/v1/picks?on_conflict=user_id,event_date,f1,f2",{method:"POST",headers:hdrs,body:JSON.stringify(data)})
       .then(function(r){
@@ -4309,7 +4318,22 @@ function closeNameModal(){
     document.getElementById("nmBtn").textContent="Let's go";
   }
 }
-function checkName(cb){if(userName){cb();return;}
+// Picks are for email accounts (0015_picks_require_account.sql refuses an
+// anonymous session's pick outright). A tap without one opens "Sign In to Pick";
+// linking keeps the same user_id, so an anonymous player's picks come along, and
+// _postSignIn finishes the pick that was tapped.
+// _acctHoldsPick marks the sheet as opened for a pick: dismissing it drops the
+// held pick, so a later sign-in can't quietly make a pick the user walked away from.
+var _acctHoldsPick=false;
+function _pickNeedsAccount(cb){
+  if(_sessEmail())return false;
+  window._pp=cb||null;_acctHoldsPick=true;
+  openAcct();
+  document.getElementById("acctTitle").textContent="Sign In to Pick";
+  document.getElementById("acctDesc").textContent="Picks are for email accounts. Enter your email and we'll send a one-time code. Your picks and your spot on the board follow you to any phone.";
+  return true;
+}
+function checkName(cb){if(_pickNeedsAccount(cb))return;if(userName){cb();return;}
   document.getElementById("nmDelBtn").style.display="none";
   // Pre-select current emoji if set
   document.querySelectorAll(".nm-emoji-btn").forEach(function(b){b.classList.toggle("selected",b.dataset.e===userEmoji);});
@@ -4452,7 +4476,7 @@ function openAcct(){
   document.getElementById("acctCode").value="";
   document.getElementById("acctBg").classList.add("open");
 }
-function closeAcct(){document.getElementById("acctBg").classList.remove("open");}
+function closeAcct(){document.getElementById("acctBg").classList.remove("open");if(_acctHoldsPick){_acctHoldsPick=false;window._pp=null;}}
 function acctSend(){
   var email=(document.getElementById("acctEmail").value||"").trim().toLowerCase();
   var errEl=document.getElementById("acctErr");errEl.style.display="none";
@@ -4494,6 +4518,7 @@ function acctVerify(){
       if(raw.access_token)_adoptSession(raw,null);
       btn.disabled=false;btn.textContent="Verify code";
       _acctPending=null;
+      _acctHoldsPick=false;   // verified: the held pick goes through in _postSignIn
       closeAcct();
       _postSignIn(prevId,email);
     })
@@ -4513,6 +4538,7 @@ function _postSignIn(prevId,email){
   var finish=function(){
     _syncAcctBtn();
     if(window._pp&&userName){window._pp();window._pp=null;}
+    else if(window._pp)checkName(window._pp);   // a new account names itself, then the tapped pick lands
     syncAllPicks();           // merge this device's local picks into the signed-in identity
     // ...and bring that identity's own picks down, which nothing else does.
     // Re-armed because the boot restore already ran under the PREVIOUS identity
@@ -4899,6 +4925,7 @@ function toggleLock(ev,fight){
   if(fightLocked(ev,fight)){toast(lockReason(fight));return;}
   var k=pk(ev,fight);
   if(!preds[k])return;
+  if(_pickNeedsAccount(null))return;
   if((preds_conf[k]||0)>0){preds_conf[k]=0;}
   else{
     if(cardLocksUsed(ev)>=LOCKS_PER_CARD){toast("Only "+LOCKS_PER_CARD+" locks per card — unlock one first");return;}
@@ -6250,7 +6277,7 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
       var mpl=document.createElement("span");mpl.className="pick-lbl";mpl.textContent="How:";mpr.appendChild(mpl);
       ["KO/TKO","Sub","Dec"].forEach(function(m){
         var mb=document.createElement("button");mb.className="pick-btn"+(myM===m?" psel":"");mb.style.fontSize="11px";mb.textContent=m;
-        (function(k2,mv){mb.onclick=function(){preds_method[k2]=preds_method[k2]===mv?"":mv;saveMethod();render();updatePicksWidget();toast(preds_method[k2]?"Method: "+mv:"Method cleared");var ef=findByKey(k2);if(ef)syncPick(ef.ev,ef.fight);};})(key,m);
+        (function(k2,mv){mb.onclick=function(){if(_pickNeedsAccount(null))return;preds_method[k2]=preds_method[k2]===mv?"":mv;saveMethod();render();updatePicksWidget();toast(preds_method[k2]?"Method: "+mv:"Method cleared");var ef=findByKey(k2);if(ef)syncPick(ef.ev,ef.fight);};})(key,m);
         mpr.appendChild(mb);
       });
       row.appendChild(mpr);
@@ -6500,7 +6527,9 @@ var WHATS_NEW=[
   {id:"2026-10-17-report-block",emoji:"🛡️",title:"Report and block",
    desc:"Anything another player sends you (a roast, a challenge, their name on Ranks) now has 🚩 Report and 🚫 Block. Block someone and you stop getting their roasts, challenges and nudges. ⋯ More → Privacy & Safety lists who you've blocked and links the privacy policy."},
   {id:"2026-10-18-espn-headshots",emoji:"📸",title:"Faces on every card",
-   desc:"Most fighters now show their headshot instead of initials. Photos come from ESPN for UFC fighters, and from Wikipedia for everyone else (including fighters whose names carry accents, like Natália Silva)."}
+   desc:"Most fighters now show their headshot instead of initials. Photos come from ESPN for UFC fighters, and from Wikipedia for everyone else (including fighters whose names carry accents, like Natália Silva)."},
+  {id:"2026-10-19-picks-email",emoji:"✉️",title:"Picks need an email now",
+   desc:"To keep the board to real players, making a pick now needs an email sign-in (a one-time code, no password). If you already linked one, nothing changes. If you haven't, your next pick asks for it, and linking keeps all your picks and your spot on the board."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -6815,7 +6844,7 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
   var dOpt=document.createElement("option");dOpt.value="";dOpt.textContent="Performance/Fight Night...";fotSel.appendChild(dOpt);
   var evFs=[];ev.fights.forEach(function(f){evFs.push(f.f1.n,f.f2.n);});
   evFs.forEach(function(fn){var o=document.createElement("option");o.value=fn;o.textContent=fn.split(" ").pop();if(fn===fotPick)o.selected=true;fotSel.appendChild(o);});
-  (function(fk,fevt){fotSel.onchange=function(){preds_fotn[fk]=fotSel.value;saveFOTN();if(userName)fevt.fights.forEach(function(fight){if(preds[pk(fevt,fight)])syncPick(fevt,fight);});if(fotSel.value)toast("Bonus: "+fotSel.value.split(" ").pop());};})(fotKey,ev);
+  (function(fk,fevt){fotSel.onchange=function(){if(_pickNeedsAccount(null)){fotSel.value=preds_fotn[fk]||"";return;}preds_fotn[fk]=fotSel.value;saveFOTN();if(userName)fevt.fights.forEach(function(fight){if(preds[pk(fevt,fight)])syncPick(fevt,fight);});if(fotSel.value)toast("Bonus: "+fotSel.value.split(" ").pop());};})(fotKey,ev);
   fotRow.appendChild(fotSel);
   fw.appendChild(fotRow);
   if(_collapsed[ei]){fw.style.display="none";band.classList.add("ev-collapsed");}
@@ -9510,6 +9539,7 @@ function renderSportView(){
 function sportMethod(promo,ev,b,m){
   if(sportLocked(ev,b)){toast("Picks are closed for this fight");return;}
   var k=sportKey(promo,ev.date,b.a,b.b);
+  if(_pickNeedsAccount(null))return;
   if(!_sportPicks[k])return;
   var cur=_sportMetaOf(k),next=cur.m===m?"":m;
   _sportMeta[k]={m:next,l:cur.l};_sportMetaSave();renderSportView();
@@ -9519,6 +9549,7 @@ function sportMethod(promo,ev,b,m){
 function sportLock(promo,ev,b){
   if(sportLocked(ev,b)){toast("Picks are closed for this fight");return;}
   var k=sportKey(promo,ev.date,b.a,b.b);
+  if(_pickNeedsAccount(null))return;
   if(!_sportPicks[k]||!locksOn(ev.date))return;
   var cur=_sportMetaOf(k);
   if(!cur.l&&_sportCardLocks(promo,ev)>=LOCKS_PER_CARD){toast("Only "+LOCKS_PER_CARD+" locks per card — unlock one first");return;}
@@ -9528,6 +9559,14 @@ function sportLock(promo,ev,b){
 }
 function sportPick(promo,ev,b,name){
   if(sportLocked(ev,b)){toast("Picks are closed for this fight");return;}
+  // Un-picking needs no account (0015 keeps owner DELETE open), the way UFC's
+  // selected button goes straight to undoPick: an anonymous device can still
+  // clear a pick it made before the rule.
+  var k0=sportKey(promo,ev.date,b.a,b.b);
+  if(_sportPicks[k0]&&nmEq(_sportPicks[k0],name)){
+    delete _sportPicks[k0];delete _sportMeta[k0];_sportMetaSave();_sportSave();renderSportView();
+    toast("Pick removed");_sportSync(promo,ev,b,null);return;
+  }
   checkName(function(){
     var k=sportKey(promo,ev.date,b.a,b.b);
     var unpick=_sportPicks[k]&&nmEq(_sportPicks[k],name);
@@ -9546,7 +9585,7 @@ function _sportRowQ(promo,date,f1,f2){
          "&f1=eq."+encodeURIComponent(f1)+"&f2=eq."+encodeURIComponent(f2)+_picksFor(promo);
 }
 function _sportSync(promo,ev,b,name){
-  return _authReady.then(function(){
+  return _authReady.then(_accountToken).then(function(){
     var flip=_sportRowQ(promo,ev.date,b.b,b.a);
     if(!name){
       var sq=_sportRowQ(promo,ev.date,b.a,b.b);

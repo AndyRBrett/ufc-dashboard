@@ -380,5 +380,44 @@ const html = readFileSync(join(ROOT, "index.html"), "utf8");
 check("Delete account goes through an owner RPC, never a plain picks DELETE the lock would refuse",
   /\/rest\/v1\/rpc\/delete_my_account/.test(html) && /delete from picks where user_id = me/.test(readFileSync(join(ROOT, "supabase/migrations/0014_delete_account.sql"), "utf8")));
 
+// 11. Only email accounts write picks (0015). Applied last: every earlier
+// section runs as a bare uid with no is_anonymous claim, which 0015 refuses.
+await db.exec(`
+  create function auth.jwt() returns jsonb language sql stable as
+    $$ select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
+  grant execute on function auth.jwt() to anon, authenticated, service_role;
+`);
+await db.exec(readFileSync(join(ROOT, "supabase/migrations/0015_picks_require_account.sql"), "utf8"));
+const U3 = "33333333-3333-3333-3333-333333333333", U4 = "44444444-4444-4444-4444-444444444444";
+async function asJwt(uid, anon, sql) {
+  const claims = JSON.stringify(anon === undefined ? { sub: uid } : { sub: uid, is_anonymous: anon });
+  await db.exec(`reset role; select set_config('request.jwt.claim.sub', '${uid}', false); select set_config('request.jwt.claims', '${claims}', false); set role authenticated;`);
+  try { return await db.query(sql); } finally { await db.exec("reset role; select set_config('request.jwt.claims', '', false);"); }
+}
+const pickSql = (uid, who) => `insert into picks (user_id, event_date, f1, f2, pick) values ('${uid}', '${NEXT}', 'acct a', 'acct b', '${who}')`;
+const rlsRefused = async (fn) => { try { await fn(); return false; } catch (e) { return /row-level security/.test(String(e.message)); } };
+check("0015: an anonymous session's pick is refused", await rlsRefused(() => asJwt(U3, true, pickSql(U3, "acct a"))));
+check("0015: a token with no is_anonymous claim is treated as anonymous (fails closed)", await rlsRefused(() => asJwt(U3, undefined, pickSql(U3, "acct a"))));
+await asJwt(U4, false, pickSql(U4, "acct a"));
+check("0015: an email account's pick is accepted", !!(await one(`user_id = '${U4}' and f1 = 'acct a'`)));
+await db.exec(`insert into picks (user_id, event_date, f1, f2, pick) values ('${U3}', '${NEXT}', 'acct a', 'acct b', 'acct a')`);   // a row from before the rule
+check("0015: an anonymous session can't change its old pick",
+  await rlsRefused(() => asJwt(U3, true, `update picks set pick = 'acct b' where user_id = '${U3}'`)) && (await one(`user_id = '${U3}'`)).pick === "acct a");
+await asJwt(U3, false, `update picks set pick = 'acct b' where user_id = '${U3}'`);
+check("0015: ...but once it links an email (same uid) it can", (await one(`user_id = '${U3}'`)).pick === "acct b");
+await asJwt(U4, false, `update picks set pick = 'hijack' where user_id = '${U3}'`);
+check("0015: an account still can't touch someone else's pick", (await one(`user_id = '${U3}'`)).pick === "acct b");
+await asJwt(U3, true, `delete from picks where user_id = '${U3}'`);
+check("0015: an anonymous session may still delete its own row", !(await one(`user_id = '${U3}'`)));
+check("app: a pick tap without an email opens Sign In to Pick, before the name prompt",
+  /function checkName\(cb\)\{if\(_pickNeedsAccount\(cb\)\)return;/.test(html) && /function _pickNeedsAccount\(cb\)\{\s*if\(_sessEmail\(\)\)return false;/.test(html));
+check("app: lock, method, bonus and sport lock/method are gated too",
+  /if\(!preds\[k\]\)return;\s*if\(_pickNeedsAccount\(null\)\)return;/.test(html) &&
+  /mb\.onclick=function\(\)\{if\(_pickNeedsAccount\(null\)\)return;preds_method/.test(html) &&
+  /fotSel\.onchange=function\(\)\{if\(_pickNeedsAccount\(null\)\)/.test(html) &&
+  (html.match(/function sport(Method|Lock)\(promo,ev,b[^]*?_pickNeedsAccount\(null\)/g) || []).length === 2);
+check("app: pick writes refresh a token minted before the email was linked",
+  /_authReady\.then\(_accountToken\)\.then\(function\(\)\{\s*var hdrs/.test(html) && /function _sportSync\(promo,ev,b,name\)\{\s*return _authReady\.then\(_accountToken\)/.test(html));
+
 if (failures) { console.error(`\ncheck-pick-lock: ${failures} failure(s).`); process.exit(1); }
 console.log("\ncheck-pick-lock: once a bout's segment starts, its picks can't be added, changed, moved or deleted.");

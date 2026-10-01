@@ -159,7 +159,11 @@ else {
     page.on("pageerror", (e) => errors.push(e.message));
     page.on("dialog", (d) => { errors.push("dialog: " + d.message()); d.dismiss(); });   // an XSS would alert
     await page.addInitScript(() => { try { localStorage.setItem("ufc_uid", "u-Andy"); localStorage.setItem("ufc_name", "🥊 Andy"); localStorage.setItem("ufc_whatsnew_seen", "9999"); } catch (e) {} });
-    if (opts.session) await page.addInitScript(() => { try { localStorage.setItem("ufc_sb_session", JSON.stringify({ access_token: "t", refresh_token: "r", user_id: "u-Andy", expires_at: Math.floor(Date.now() / 1000) + 86400 })); } catch (e) {} });
+    // Picks need an email account (0015), so every boot is a signed-in player
+    // unless it asks to be anonymous; opts.session is the same session, kept
+    // for the restore test's sake.
+    if (opts.session || !opts.anonymous) await page.addInitScript(() => { try { localStorage.setItem("ufc_sb_session", JSON.stringify({ access_token: "t", refresh_token: "r", user_id: "u-Andy", email: "andy@example.com", expires_at: Math.floor(Date.now() / 1000) + 86400 })); } catch (e) {} });
+    if (opts.sportPicks) await page.addInitScript((v) => { try { localStorage.setItem("ufc_sport_picks", v); } catch (e) {} }, JSON.stringify(opts.sportPicks));
     if (feed) await page.route(/events-extra\.json/, (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(feed) }));
     await page.route(/supabase\.co/, async (route) => {
       const req = route.request(), url = req.url();
@@ -306,6 +310,36 @@ else {
       const v = Object.entries(m).find(([k]) => /Fay One/.test(k));
       check("a restored pick brings its method and lock back", !!v && v[1].m === "Sub" && v[1].l === 1);
       restoreRows = null;
+      await page.close();
+    }
+    // Picks need an email account: an anonymous tap opens Sign In to Pick and
+    // saves nothing, locally or to the server.
+    {
+      const { page, writes } = await boot(FEED, { anonymous: true });
+      await page.click("#sportBar .sport-tab:nth-child(2)");
+      await pickBy(page, "Jena Bishop");
+      await page.waitForTimeout(400);
+      const g = await page.evaluate(() => ({
+        open: document.getElementById("acctBg").classList.contains("open"),
+        title: document.getElementById("acctTitle").textContent,
+        picks: localStorage.getItem("ufc_sport_picks") }));
+      check("no email: a pick tap opens Sign In to Pick and saves nothing",
+        g.open && g.title === "Sign In to Pick" && !/Jena Bishop/.test(g.picks || "") && !writes.some((w) => w.method === "POST"));
+      await page.click("#acctBg .nm-xbtn");
+      check("...and dismissing the sheet drops the held pick, so a later sign-in can't make it", await page.evaluate(() => window._pp === null));
+      await page.close();
+    }
+    // A pick this device made before the rule can still be cleared without an
+    // account (0015 keeps owner DELETE), the way UFC's undoPick can.
+    {
+      const legacy = { ["pfl|" + future + "|Liz Carmouche|Jena Bishop"]: "Jena Bishop" };
+      const { page, writes } = await boot(FEED, { anonymous: true, sportPicks: legacy });
+      await page.click("#sportBar .sport-tab:nth-child(2)");
+      await pickBy(page, "Jena Bishop");
+      await page.waitForTimeout(400);
+      const g = await page.evaluate(() => ({ open: document.getElementById("acctBg").classList.contains("open"), picks: localStorage.getItem("ufc_sport_picks") }));
+      check("no email: an old sport pick can still be un-picked (local and server), with no sign-in sheet",
+        !g.open && !/Jena Bishop/.test(g.picks || "") && writes.some((w) => w.method === "DELETE" && /promotion=eq\.pfl/.test(w.url)));
       await page.close();
     }
     {

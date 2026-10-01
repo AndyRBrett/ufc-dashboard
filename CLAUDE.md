@@ -53,7 +53,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:sports` | the sport switcher showing with nothing to pick, a PFL pick saved untagged or after its lock, another sport scored on the UFC board, or its board drifting from `pickPts` (method, 🔒, underdog) |
 | `npm run check:rooms` | a room's board scoring differently from the main board, an anonymous device joining a room, or an invite link re-joining / re-prompting |
 | `npm run check:bundle` | send-reminders running last release's Lab code (a stale `_shared/lab-bundle.js`), or `parseDataJs` reading data.js differently from running it |
-| `npm run check:picklock` | the database accepting a pick, a changed pick or a deleted pick after its bout's segment started, or send-reminders writing lock times off the app's rule |
+| `npm run check:picklock` | the database accepting a pick, a changed pick or a deleted pick after its bout's segment started, or from an anonymous session; send-reminders writing lock times off the app's rule |
 | `npm run check:pushauth` | a push sent with text or an audience the server didn't build, a user sending as someone else, or the anon key sending anything but the rebuilt backups |
 | `npm run check:html` | scraped, user or other-process text (a card name, a nickname, a status file) reaching `innerHTML` instead of `textContent` |
 | `npm run check:photos` | a fighter photo lookup missing a disambiguated page, showing a same-named non-fighter's face, caching a miss forever, or a view without photos |
@@ -627,6 +627,24 @@ names on one date independently; `bonus_pick` stays UFC-only. Deploy order doesn
 matter (no rows yet means the fallback; a function deployed first just gets a 404 on
 the new tables and reports it in `sportLocks`), but **the migration is applied to
 Supabase by hand and the function needs a Supabase deploy**, not just a push.
+
+## Picks are for email accounts
+
+Anyone can browse, but only an email-linked account can write a pick
+(`0015_picks_require_account.sql`: `picks_insert` / `picks_update` need
+`is_account()`, the same test rooms use). Anonymous sign-up stays open, since
+the app needs a uid to read with, so before this a stranger could put a nickname
+and a pick on everyone's board in two taps (one did on 2026-09-30, from a VPN).
+In the app, `checkName` calls `_pickNeedsAccount` first, so a pick tap without
+an email opens "Sign In to Pick" and `_postSignIn` finishes the tapped pick
+(asking for a name first on a new account). Lock, method, bonus and the sport
+view's lock/method are gated the same way, since an anonymous device may still
+hold picks from before the rule. Linking keeps the `user_id`, so an anonymous
+player's old rows still score and become editable again once linked. A token
+minted before the link still says anonymous, so `_accountToken` refreshes it
+before a pick write. DELETE of your own row stays open. `check:picklock` holds
+the policy and the gates, `check:sports` the anonymous tap. The migration is
+applied by hand.
 
 ## Locks 🔒 ride in the old `confidence` column — and only count from `LOCKS_START`
 
