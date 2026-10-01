@@ -207,7 +207,8 @@ const html = readFileSync(join(ROOT, "index.html"), "utf8");
   }
   check("the app links the privacy policy from Privacy & Safety", /href="privacy\.html"/.test(html) && /id="safetyBtn"[^>]*openSafety\(\)/.test(html));
   check("Report and Privacy & Safety are real overlays (_escClosers)", /\["reportBg",function\(\)\{closeReport\(\);\}\]/.test(html) && /\["safetyBg",function\(\)\{closeSafety\(\);\}\]/.test(html));
-  check("deleting an account deletes its blocks", /"\/rest\/v1\/user_blocks\?blocker_id=eq\."/.test(html) && /throw new Error\("delete blocks "/.test(html));
+  check("deleting an account deletes its blocks (0014's delete_my_account)",
+    /'user_blocks:blocker_id'/.test(readFileSync(join(ROOT, "supabase/migrations/0014_delete_account.sql"), "utf8")));
   check("a room's name can be reported by anyone but its owner", /if\(r\.owner_id!==USER_ID\)\{[^}]*openReport\(\{kind:"room",uids:\[r\.owner_id\],content:r\.name\}\)/.test(html));
   check("a blocked player isn't offered as a roast target", /else if\(!isBlocked\(u\.user_id\)&&!isBlockedName\(u\.nickname\)\)\{opponents\.push/.test(html));
   const safety = html.slice(html.indexOf("// safety:start"), html.indexOf("// safety:end"));

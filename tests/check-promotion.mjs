@@ -28,7 +28,6 @@ const ALLOW = [
   { file: "index.html", re: /\/rest\/v1\/picks\?on_conflict=user_id,event_date,f1,f2",\{method:"POST",headers:hdrs,body:JSON\.stringify\(data\)\}/, why: "the UFC pick upsert (sends promotion:\"ufc\" in its body)" },
   { file: "index.html", re: /\/rest\/v1\/picks\?on_conflict=user_id,event_date,f1,f2",\{method:"POST",headers:hdrs,body:JSON\.stringify\(row\)\}/, why: "the sport pick upsert (sends its promotion in its body)" },
   { file: "index.html", re: /\/rest\/v1\/picks\?select=user_id&limit=1"/, why: "the connectivity probe" },
-  { file: "index.html", re: /\/rest\/v1\/picks\?user_id=eq\."\+encodeURIComponent\(USER_ID\),\{method:"DELETE",headers:h\}/, why: "Delete my account (every promotion)" },
   { file: "index.html", re: /\/rest\/v1\/picks\?select=event_date&nickname=ilike\./, why: "name availability (names are account-wide)" },
   { file: "index.html", re: /\/rest\/v1\/picks\?user_id=eq\."\+encodeURIComponent\(USER_ID\),\{\s*$/m, why: "nickname rename PATCH (every promotion)" },
   { file: "index.html", re: /\/rest\/v1\/picks\?select=nickname&user_id=eq\./, why: "restore my nickname" },

@@ -375,7 +375,10 @@ check("send-reminders writes locks only with the service key", /if \(SB_SERVICE_
 
 // 10. The app deletes an account through the RPC.
 const html = readFileSync(join(ROOT, "index.html"), "utf8");
-check("Delete account calls delete_my_picks", /\/rest\/v1\/rpc\/delete_my_picks/.test(html));
+// (Since 0014 that RPC is delete_my_account, which also runs as the owner so
+// the lock lets locked picks through; check:delete runs it on a locked pick.)
+check("Delete account goes through an owner RPC, never a plain picks DELETE the lock would refuse",
+  /\/rest\/v1\/rpc\/delete_my_account/.test(html) && /delete from picks where user_id = me/.test(readFileSync(join(ROOT, "supabase/migrations/0014_delete_account.sql"), "utf8")));
 
 if (failures) { console.error(`\ncheck-pick-lock: ${failures} failure(s).`); process.exit(1); }
 console.log("\ncheck-pick-lock: once a bout's segment starts, its picks can't be added, changed, moved or deleted.");

@@ -1051,7 +1051,12 @@ and every row keyed to the caller: picks, rollback `picks_backup_*` snapshots,
 push_subs, prefs, rooms and seats, challenges on either side, blocks either way,
 AI usage, wrong room codes. Reports stay as a moderation record. **A new table
 holding a user id goes into that function and into `privacy.html` in the same
-change.** The app falls back to the old row-by-row delete only on a 404. `check:delete`.
+change.** The app has **no fallback**: a partial delete reported as a full one
+would be false, so anything but success is "try again", and the migration must be
+applied before an app that calls it ships. A deleted account's access JWT stays
+valid until it expires, so the `refuse_deleted_account` trigger on every table the
+app writes as a user (a new one goes in its list too) refuses a write whose
+`auth.uid()` has no login left. `check:delete`.
 
 ## Other conventions
 

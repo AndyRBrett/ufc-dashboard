@@ -356,13 +356,10 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   check("the empty-room message uses text nodes", /createTextNode\("Nobody in "\+_room\.name/.test(empty) && !/innerHTML[^=]*=[^"]*_room\.name/.test(empty));
   check("nudges on a room's board list (and push) members only", /var _inRoom=_room\?roomHas\(_room\):null;\s*var slackers=_slackersFor\(nextEv,rows\)\.filter\(function\(u\)\{return u\.user_id&&\(!_inRoom\|\|_inRoom\(u\.user_id\)\);\}\)/.test(lb));
   check("every board render re-reads the room's roster (throttled)", /roomsRefreshForBoard\(\);/.test(lb));
-  // The row-by-row delete runs only while 0014's delete_my_account is missing;
-  // that RPC must clear rooms and seats too.
-  const del = fn("_deleteAccountRows");
+  // "Delete forever" is one RPC (0014's delete_my_account); it must clear
+  // owned rooms and seats in others (check:delete runs it for real).
   const m14 = readFileSync(join(ROOT, "supabase/migrations/0014_delete_account.sql"), "utf8");
-  check("delete_my_account clears owned rooms and seats", /'rooms:owner_id'/.test(m14) && /'room_members:user_id'/.test(m14));
-  check("deleting an account deletes the rooms it owns and its seats in others", /"\/rest\/v1\/rooms\?owner_id=eq\."/.test(del) && /"\/rest\/v1\/room_members\?user_id=eq\."/.test(del));
-  check("...and a failure there is reported, not swallowed", /throw new Error\("delete rooms "/.test(del) && /throw new Error\("delete room seats "/.test(del));
+  check("deleting an account deletes the rooms it owns and its seats in others", /'rooms:owner_id'/.test(m14) && /'room_members:user_id'/.test(m14));
   check("the room sheet is a real overlay (Escape closes it, What's New waits for it)", /\["roomBg",function\(\)\{closeRoomSheet\(\);\}\]/.test(html));
   check("a sign-in resumes a pending join", /function _postSignIn\(prevId,email\)\{\s*_roomsAfterSignIn\(\);/.test(html));
   check("?join= is read before the tap router rewrites the URL", html.indexOf("_roomsBoot();\n(function(){\n  var params=new URLSearchParams") > 0);

@@ -19,8 +19,10 @@
 -- identities, sessions and refresh tokens, so the caller's token stops
 -- working: the app clears local state and reloads into a fresh account.
 --
--- Apply any time; until it exists the app falls back to its old row-by-row
--- delete (a 404 on the RPC). Rollback at the bottom.
+-- Apply BEFORE the app that calls it ships: the app has no fallback (a
+-- partial delete reported as a full one would be the app stating something
+-- false about its own deletion), so until this exists "Delete forever" fails
+-- with a "try again" message. Rollback at the bottom.
 
 create or replace function public.delete_my_account()
 returns jsonb language plpgsql security definer set search_path = public as $$
@@ -67,5 +69,42 @@ end $$;
 revoke all on function public.delete_my_account() from public, anon;
 grant execute on function public.delete_my_account() to authenticated;
 
+-- A deleted account stays deleted. Deleting auth.users ends its sessions and
+-- refresh tokens, but an access JWT already issued (another phone still
+-- signed in) is stateless and stays valid until it expires (up to an hour),
+-- and every RLS policy here authorizes on auth.uid() alone. Without this, that
+-- phone could write picks, prefs, a room or a challenge straight back,
+-- personal data the user was just told was deleted. So every table the app
+-- writes as the user refuses a write whose auth.uid() no longer has a login.
+-- A trigger, not a policy: rooms and seats are written by SECURITY DEFINER
+-- RPCs (create_room / join_room) that RLS never sees. auth.uid() is null for
+-- our own functions (service role), which pass. The function returns
+-- trigger, so it can't be called as an RPC.
+create or replace function public.refuse_deleted_account()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is not null and to_regclass('auth.users') is not null
+     and not exists (select 1 from auth.users where id = auth.uid()) then
+    raise exception 'account deleted';
+  end if;
+  return new;
+end $$;
+revoke all on function public.refuse_deleted_account() from public, anon, authenticated;
+
+do $$
+declare t text;
+begin
+  foreach t in array array['picks', 'user_prefs', 'challenges', 'rooms', 'room_members',
+                           'user_blocks', 'content_reports', 'push_subs', 'room_join_misses'] loop
+    if to_regclass('public.' || t) is not null then
+      execute format('drop trigger if exists refuse_deleted_account on public.%I', t);
+      execute format('create trigger refuse_deleted_account before insert or update on public.%I
+                      for each row execute function public.refuse_deleted_account()', t);
+    end if;
+  end loop;
+end $$;
+
 -- Rollback:
+-- drop trigger if exists refuse_deleted_account on public.picks;  (and each table above)
+-- drop function if exists public.refuse_deleted_account();
 -- drop function if exists public.delete_my_account();

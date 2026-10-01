@@ -7,8 +7,9 @@
 //      ways, AI usage, wrong room codes, a rollback snapshot and a login. Alice
 //      deletes; everything of hers goes, everything of Bob's stays, reports
 //      stay, and nobody can delete someone else.
-//   2. The app calls it, falls back to the old row-by-row delete only when the
-//      RPC isn't there (404), and says what it removes.
+//   2. The app calls it, reports success only when it succeeds (no partial
+//      fallback), and says what it removes. A token issued before the delete
+//      can't write anything back.
 //   3. The privacy policy says the same thing the code does.
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -42,8 +43,11 @@ await db.exec(`
     bonus_pick text, promotion text default 'ufc', unique (user_id, event_date, f1, f2));
   alter table public.picks enable row level security;
   create policy picks_select on public.picks for select using (true);
+  create policy picks_insert on public.picks for insert to authenticated with check (auth.uid()::text = user_id);
+  create policy picks_update on public.picks for update to authenticated using (auth.uid()::text = user_id) with check (auth.uid()::text = user_id);
   create policy picks_delete on public.picks for delete to authenticated using (auth.uid()::text = user_id);
   grant select, insert, update, delete on public.picks to anon, authenticated, service_role;
+  grant usage on sequence public.picks_id_seq to authenticated, service_role;
   create table public.push_subs (user_id text primary key, endpoint text, p256dh text, auth text, nickname text);
   alter table public.push_subs enable row level security;
   create table public.picks_backup_2026_09_24 as select * from public.picks;
@@ -114,13 +118,38 @@ check("the RPC takes no arguments: there is no way to aim it at someone else",
   await count(`select count(*)::int n from pg_proc where proname = 'delete_my_account'`) === 1);
 check("calling it again (a stale token, a double tap) is harmless", !(await refused(as("authenticated", A, `select public.delete_my_account()`))));
 
+// A token issued before the delete (another phone still signed in) stays valid
+// until it expires; it must not be able to write anything back.
+await db.exec(`select set_config('request.jwt.claims', '{"is_anonymous":false}', false)`);
+const staleWrites = {
+  pick: `insert into picks (user_id, event_date, f1, f2, pick) values ('${A}', '2099-01-01', 'C', 'D', 'C')`,
+  prefs: `insert into user_prefs (user_id) values ('${A}')`,
+  challenge: `insert into challenges (challenger_id, challenger_name, target_id, target_name, event_date, event_name) values ('${A}', 'x', '${B}', 'y', '2099-01-01', 'Card')`,
+  block: `insert into user_blocks (blocker_id, blocked_id) values ('${A}', '${B}')`,
+  report: `insert into content_reports (reporter_id, kind) values ('${A}', 'other')`,
+  room: `select public.create_room('Ghost room')`,
+  "seat in Bob's room": `select public.join_room('BOBCODE')`,
+};
+// Refused by the guard itself, not by some other rule that happens to fire.
+const deniedAsDeleted = async (p) => { try { await p; return false; } catch (e) { return /account deleted/.test(e.message); } };
+for (const [what, sql] of Object.entries(staleWrites)) {
+  check(`a deleted account's leftover token can't write a ${what} back`, await deniedAsDeleted(as("authenticated", A, sql)));
+}
+check("...and none of it landed", JSON.stringify(await holdings(A)) === JSON.stringify(after));
+check("a live account still writes normally (Bob's pick, prefs, room)",
+  !(await refused(as("authenticated", B, `insert into picks (user_id, event_date, f1, f2, pick) values ('${B}', '2099-01-01', 'C', 'D', 'C')`))) &&
+  !(await refused(as("authenticated", B, `update user_prefs set push = true where user_id = '${B}'`))) &&
+  !(await refused(as("authenticated", B, `select public.create_room('Bob 2')`))));
+check("our own functions (no auth.uid()) are untouched", !(await refused(db.query(`insert into push_subs (user_id, endpoint) values ('svc-test', 'https://push/x')`))));
+check("the guard isn't an RPC", await refused(as("authenticated", B, `select public.refuse_deleted_account()`)));
+
 // --- 2. the app ------------------------------------------------------------------
 const html = readFileSync(join(ROOT, "index.html"), "utf8");
 const del = html.slice(html.indexOf("function deleteAccount(){"), html.indexOf("function selectEmoji("));
 check("the app deletes through delete_my_account", /\/rest\/v1\/rpc\/delete_my_account"/.test(del));
-check("...and falls back to the row-by-row delete only when the RPC isn't there (404)",
-  /if\(r\.status!==404\)\{if\(!r\.ok\)throw new Error\("delete account "\+r\.status\);return;\}/.test(del) &&
-  del.indexOf("rpc/delete_my_account") < del.indexOf("rpc/delete_my_picks"));
+check("...and reports success only when it succeeds: no partial fallback, a missing RPC is 'try again'",
+  /if\(!r\.ok\)throw new Error\("delete account "\+r\.status\);/.test(del) &&
+  !/delete_my_picks|_deleteAccountRows|status!==404/.test(del) && !/function _deleteAccountRows/.test(html));
 check("the dialog says the login goes too", /permanently deletes your account: your sign-in/.test(html));
 
 // --- 3. the privacy policy -------------------------------------------------------
