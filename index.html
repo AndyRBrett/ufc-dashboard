@@ -1716,7 +1716,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <div class="nm-bg" id="delBg">
   <div class="nm-box" style="max-width:300px">
     <div class="nm-top"><h3>Delete account?</h3></div>
-    <p>This permanently removes your profile, all your picks, and notification settings. Your leaderboard entry will be gone for good — this can't be undone.</p>
+    <p>This permanently deletes your account: your sign-in (and linked email), profile, all your picks, challenges, rooms, blocks and notification settings. Your leaderboard entry will be gone for good. This can't be undone.</p>
     <div class="nm-del-actions">
       <button class="nm-btn nm-btn-ghost" onclick="closeDeleteConfirm()">Cancel</button>
       <button class="nm-btn nm-btn-danger" id="delConfirmBtn" onclick="deleteAccount()">Delete forever</button>
@@ -4334,47 +4334,14 @@ function deleteAccount(){
   btn.disabled=true;btn.textContent="Deleting…";
   _authReady.then(function(){
     var h=_sbHeaders();
-    // Delete the user's own rows first, using the current authenticated session.
-    // Through delete_my_picks (0010): the pick-lock trigger refuses a plain
-    // DELETE of any bout whose segment has started, which is every past card.
-    // A 404 means the RPC isn't there yet, and then nothing refuses the delete.
-    return fetch(SUPABASE_URL+"/rest/v1/rpc/delete_my_picks",{method:"POST",headers:Object.assign({"Content-Type":"application/json"},h),body:"{}"}).then(function(r){
-      if(r.status!==404)return r;
-      return fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h});
-    }).then(function(r){
-      if(!r.ok)throw new Error("delete "+r.status);
-      return fetch(SUPABASE_URL+"/rest/v1/push_subs?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h}).catch(function(){})
-        // The delete dialog promises to remove "notification settings", and
-        // user_prefs is now where those live. Leaving it would outlive the
-        // account and silently restore itself if the same email signed in
-        // again -- the app stating something false about its own deletion.
-        .then(function(){return fetch(SUPABASE_URL+"/rest/v1/user_prefs?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h});})
-        .then(function(r){
-          // Not swallowed: a failure here leaves the row recoverable on the
-          // next sign-in while the dialog has already claimed the settings
-          // were permanently removed. Propagate so the user is told to retry
-          // instead of being told it worked.
-          // 404 is the exception, and it is not a failure: PostgREST answers
-          // 404 for a table that does not exist, which is every install until
-          // 0004 is applied by hand. Treating that as fatal would make
-          // "Delete forever" impossible until the migration runs. A DELETE
-          // that matches no rows returns 204, so 404 really does mean "no
-          // such table" -- there is nothing there to leave behind.
-          if(!r.ok&&r.status!==404)throw new Error("delete prefs "+r.status);
-        })
-        // Rooms: the ones this account owns go (only an owner can delete a
-        // room, so nobody else could clean them up), and so does its seat in
-        // anyone else's. Same rules as prefs: a failure is reported, and 404
-        // (0006 not applied) means there is nothing to leave behind.
-        .then(function(){return fetch(SUPABASE_URL+"/rest/v1/rooms?owner_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h});})
-        .then(function(r){if(!r.ok&&r.status!==404)throw new Error("delete rooms "+r.status);
-          return fetch(SUPABASE_URL+"/rest/v1/room_members?user_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h});})
-        .then(function(r){if(!r.ok&&r.status!==404)throw new Error("delete room seats "+r.status);
-          try{localStorage.removeItem("ufc_lb_room");localStorage.removeItem("ufc_room_join");}catch(e){}
-          // Blocks go with the account (0013; 404 = not applied, nothing to leave).
-          return fetch(SUPABASE_URL+"/rest/v1/user_blocks?blocker_id=eq."+encodeURIComponent(USER_ID),{method:"DELETE",headers:h});})
-        .then(function(r){if(!r.ok&&r.status!==404)throw new Error("delete blocks "+r.status);
-          _blocks={};try{localStorage.removeItem("ufc_blocks");}catch(e){}});
+    // One call deletes the whole account, the login included: picks, push
+    // subscription, prefs, rooms and seats, challenges, blocks, AI usage
+    // (0014_delete_account.sql; Apple requires the account itself to go).
+    // No fallback: a partial row-by-row delete would leave the login behind
+    // while this dialog says it's gone, so anything but success, a missing
+    // RPC included, is "try again".
+    return fetch(SUPABASE_URL+"/rest/v1/rpc/delete_my_account",{method:"POST",headers:Object.assign({"Content-Type":"application/json"},h),body:"{}"}).then(function(r){
+      if(!r.ok)throw new Error("delete account "+r.status);
     });
   }).then(function(){
     // Best-effort: drop the browser push subscription, then wipe all local state.

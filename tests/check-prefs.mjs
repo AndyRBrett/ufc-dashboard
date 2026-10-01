@@ -471,15 +471,11 @@ const sql = readFileSync(join(ROOT, "supabase/migrations/0004_user_prefs.sql"), 
 check("user_prefs has RLS enabled", /alter table public\.user_prefs enable row level security/.test(sql));
 check("user_prefs select is owner-only — prefs are nobody else's business",
   /user_prefs_select[\s\S]{0,200}auth\.uid\(\)::text = user_id/.test(sql));
+// "Delete forever" is one RPC (0014's delete_my_account), which must clear
+// prefs; the app reports success only when it succeeds (check:delete).
 check("\"Delete forever\" removes the prefs row — the dialog promises exactly that",
-  /user_prefs\?user_id=eq\.[\s\S]{0,120}method:"DELETE"/.test(html.slice(html.indexOf("function deleteAccount"), html.indexOf("function deleteAccount") + 1800)));
-const delSrc = html.slice(html.indexOf("function deleteAccount"), html.indexOf("function deleteAccount") + 2600);
-check("a failed prefs delete is not swallowed — deletion cannot report false success",
-  /if\(!r\.ok&&r\.status!==404\)throw new Error\("delete prefs "/.test(delSrc));
-check("...but a 404 (table not yet migrated) still lets the account be deleted",
-  /r\.status!==404/.test(delSrc));
-check("the prefs delete does not re-swallow via its own .catch",
-  !/user_prefs\?user_id=eq\.[^;]*\}\)\.catch\(function\(\)\{\}\)/.test(delSrc));
+  /'user_prefs:user_id'/.test(readFileSync(join(ROOT, "supabase/migrations/0014_delete_account.sql"), "utf8")) &&
+  /rpc\/delete_my_account"[\s\S]{0,200}if\(!r\.ok\)throw new Error\("delete account "/.test(html));
 check("user_prefs grants the owner DELETE so that request can succeed",
   /user_prefs_delete[\s\S]{0,200}for delete to authenticated using \(auth\.uid\(\)::text = user_id\)/.test(sql) &&
   /grant select, insert, update, delete on public\.user_prefs to authenticated/.test(sql));

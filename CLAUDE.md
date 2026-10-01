@@ -58,6 +58,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:html` | scraped, user or other-process text (a card name, a nickname, a status file) reaching `innerHTML` instead of `textContent` |
 | `npm run check:photos` | a fighter photo lookup missing a disambiguated page, showing a same-named non-fighter's face, caching a miss forever, or a view without photos |
 | `npm run check:safety` | a report readable or filed as someone else, a block the blocked person can see or undo, a blocked pair able to challenge each other, the app showing a blocked player's challenges, or the privacy policy unlinked |
+| `npm run check:delete` | Delete my account leaving the login, a challenge or any other row of the caller's behind, or touching anyone else's |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -1042,6 +1043,20 @@ rotate). `privacy.html` is static and script-free: **when the app starts
 collecting something new (a table, a third-party call), update it in the same
 change.** The migration is applied by hand and send-push needs a Supabase deploy.
 `check:safety` and `check:pushauth` hold it.
+
+**Delete my account deletes the account** (Apple 5.1.1(v)): `0014_delete_account.sql`'s
+`delete_my_account()` RPC (no arguments, the caller only, as the owner so the pick
+lock lets it through) removes the auth login (cascading to identities and sessions)
+and every row keyed to the caller: picks, rollback `picks_backup_*` snapshots,
+push_subs, prefs, rooms and seats, challenges on either side, blocks either way,
+AI usage, wrong room codes. Reports stay as a moderation record. **A new table
+holding a user id goes into that function and into `privacy.html` in the same
+change.** The app has **no fallback**: a partial delete reported as a full one
+would be false, so anything but success is "try again", and the migration must be
+applied before an app that calls it ships. A deleted account's access JWT stays
+valid until it expires, so the `refuse_deleted_account` trigger on every table the
+app writes as a user (a new one goes in its list too) refuses a write whose
+`auth.uid()` has no login left. `check:delete`.
 
 ## Other conventions
 
