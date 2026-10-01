@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T06:13:46Z",
+  "generated_at": "2026-10-01T07:18:25Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -12492,7 +12492,7 @@
           "f1": "Marcus McGhee",
           "f2": "Anthony Romero",
           "lbl": "Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-10-01T00:29:20Z",
@@ -12508,6 +12508,11 @@
               "at": "2026-10-01T04:43:35Z",
               "f1_odds": -478,
               "f2_odds": 343
+            },
+            {
+              "at": "2026-10-01T07:18:25Z",
+              "f1_odds": -488,
+              "f2_odds": 350
             }
           ],
           "open": {
@@ -13231,7 +13236,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Anthony Romero",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -478,
         "close": null,
         "clv": null
@@ -17194,7 +17199,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Marcus McGhee",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 368,
         "close": null,
         "clv": null
