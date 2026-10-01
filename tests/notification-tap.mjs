@@ -270,6 +270,66 @@ async function main() {
     assert("dismissing it after all that checkpoints normally",
       (await page.evaluate(() => localStorage.getItem("ufc_whatsnew_seen"))) !== null);
 
+    // The roast inbox (0016_roast_inbox.sql): the app reads its own unseen
+    // roasts from the server, so a tap whose payload never reached the page
+    // still shows the roast. Fetch is stubbed; the code under test is real.
+    {
+      const r = await page.evaluate(async (msg) => {
+        const realFetch = window.fetch, patches = [];
+        let rows = [{ id: 7, title: "🎤 Joe Rogan (via T)", body: msg }, { id: 6, title: "🎤 Old (via T)", body: "older roast — Old" }];
+        let status = 200;
+        window.fetch = function (url, opts = {}) {
+          url = String(url);
+          if (url.includes("/rest/v1/roast_inbox")) {
+            if ((opts.method || "GET") === "PATCH") { patches.push(url); return Promise.resolve(new Response(null, { status: 204 })); }
+            return Promise.resolve(new Response(JSON.stringify(status === 200 ? rows : { code: "PGRST205" }), { status }));
+          }
+          return realFetch.apply(window, arguments);
+        };
+        _sbToken = "test-token"; USER_ID = "u-me"; _roastShownAt = {};
+        closeTrashSheet(); closeLeaderboard();
+        const shown = await checkRoastInbox(true);
+        await new Promise((res) => setTimeout(res, 200));
+        const out = {
+          shown, open: document.getElementById("trashSheet").classList.contains("open"),
+          text: document.getElementById("trashText").textContent,
+          persona: document.getElementById("trashPersona").textContent,
+          clearedAll: patches.some((u) => /id=in\.\(7,6\)/.test(u)),
+        };
+        // The same roast again (say the notification's own path showed it first):
+        // never a second time.
+        closeTrashSheet(); closeLeaderboard();
+        out.again = await checkRoastInbox(true);
+        out.reopened = document.getElementById("trashSheet").classList.contains("open");
+        // No table yet: reads nothing, throws nothing.
+        status = 404; _roastShownAt = {};
+        out.missing = await checkRoastInbox(true);
+        window.fetch = realFetch; _sbToken = null;
+        return out;
+      }, ROAST);
+      assert("roast inbox: an unseen roast on the server shows with no tap payload at all", r.shown && r.open && r.text === ROAST);
+      assert("roast inbox: the sender is credited from the server's title", /sent by T/.test(r.persona));
+      assert("roast inbox: every unseen roast is marked seen, only the newest shown", r.clearedAll);
+      assert("roast inbox: a roast already on screen is not shown twice", r.again === false && !r.reopened);
+      assert("roast inbox: no table (0016 not applied) reads nothing", r.missing === false);
+    }
+
+    // sw.js tells an open page the moment a push lands, so the page reads the
+    // inbox without waiting on the tap.
+    {
+      const msgs = [];
+      const handlers = {};
+      vm.runInNewContext(readFileSync(join(ROOT, "sw.js"), "utf8"), {
+        self: { addEventListener: (t, f) => { handlers[t] = f; }, registration: { scope: "https://x.github.io/ufc-dashboard/", showNotification: () => Promise.resolve() }, skipWaiting() {} },
+        clients: { matchAll: () => Promise.resolve([{ url: "https://x.github.io/ufc-dashboard/", postMessage: (m) => msgs.push(m) }]) },
+        caches: {}, Response, URL, Promise, JSON, Date, console,
+      });
+      let wait = Promise.resolve();
+      handlers.push({ data: { json: () => ({ title: "🎤 Joe Rogan (via T)", body: ROAST }) }, waitUntil(p) { wait = p; } });
+      await wait;
+      assert("sw: a push arriving tells the open page to read the roast inbox", msgs.some((m) => m.type === "push-arrived"));
+    }
+
     // A toast must not cover the roast it popped up over. A sync notice
     // ("✓ Synced 1 method pick") once landed on top of half a roast.
     {

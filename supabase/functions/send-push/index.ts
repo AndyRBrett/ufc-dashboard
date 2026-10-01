@@ -444,6 +444,23 @@ async function buildMsg(
 // be told anything by the one who blocked them either. A missing table (404:
 // 0013 not applied yet) is "no blocks"; any other failure is null, and the
 // caller fails closed rather than deliver past a block it couldn't read.
+// One inbox row per recipient (see the trash-talk branch of the handler).
+// Rows older than ROAST_INBOX_DAYS are pruned on the way; the app only reads
+// the last day. Failures are swallowed: the push still goes out.
+const ROAST_INBOX_DAYS = 7;
+export async function recordRoasts(sb: string, h: Record<string, string>, to: string[], title: string, text: string): Promise<boolean> {
+  if (!to.length || !text) return false;
+  try {
+    const rows = to.slice(0, 60).map((u) => ({ recipient_id: u, title: title.slice(0, 120), body: text }));
+    const r = await fetch(`${sb}/rest/v1/roast_inbox`, {
+      method: "POST", headers: { ...h, "Content-Type": "application/json", "Prefer": "return=minimal" }, body: JSON.stringify(rows),
+    });
+    const cutoff = new Date(Date.now() - ROAST_INBOX_DAYS * 86400_000).toISOString();
+    await fetch(`${sb}/rest/v1/roast_inbox?created_at=lt.${encodeURIComponent(cutoff)}`, { method: "DELETE", headers: h }).catch(() => {});
+    return r.ok;
+  } catch { return false; }
+}
+
 export async function blockedWith(sb: string, h: Record<string, string>, uid: string): Promise<Set<string> | null> {
   const u = encodeURIComponent(uid);
   const r = await fetch(`${sb}/rest/v1/user_blocks?or=(blocker_id.eq.${u},blocked_id.eq.${u})&select=blocker_id,blocked_id&limit=5000`, { headers: h })
@@ -729,6 +746,20 @@ Deno.serve(async (req) => {
     seenEndpoints.add(sub.endpoint);
     return true;
   });
+
+  // A roast is also left in each recipient's inbox (0016_roast_inbox.sql), and
+  // the app reads it from there. The push payload alone kept failing to reach
+  // the page on iOS: it rides notificationclick -> a cache stash or a
+  // postMessage, and either can be lost between the tap and the page, so the
+  // tap opened the app with nothing on it. Written before the pushes go out,
+  // so the row is there by the time a tap wakes the app. Never fatal: a
+  // missing table (migration not applied) just means push-only, as before.
+  if (/^trash-talk-\d+$/.test(body.type) && caller.kind === "user") {
+    const to = body.include_user_ids && body.include_user_ids.length
+      ? body.include_user_ids
+      : [...new Set(subs.map((s) => s.user_id).filter((u): u is string => !!u))];
+    await recordRoasts(SUPABASE_URL, sbHeaders, to.filter((u) => u !== caller.uid), String(body.title ?? ""), String(body.body ?? ""));
+  }
 
   if (!subs.length) {
     return new Response(JSON.stringify({ sent: 0, skipped: false, reason: "no subscribers" }), { status: 200, headers: CORS });
