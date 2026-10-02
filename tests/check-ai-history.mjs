@@ -63,6 +63,7 @@ for (const action of ['chat','guide','breakdown']) {
   assert.ok(calls[0].tools.some(t=>t.type==='web_search_20250305'&&t.max_uses===1));
   assert.match(calls[0].messages[0].content,/completed UFCStats opponents/);
   assert.match(calls[0].system,/absent opponent.*not proof/);
+  if(action==='chat') assert.ok(calls[0].system.includes(mod.APP_GUIDE));
   assert.doesNotMatch(r.json.breakdown,/Let me check/);
   assert.match(r.json.breakdown,/185 pounds/);
   assert.equal(r.json.sources.length,1);
@@ -75,6 +76,9 @@ for (const message of ['Web search is not enabled for your organization.', 'Mode
   assert.equal(calls[1].tools,undefined);assert.equal(calls[1].max_tokens,180);
   assert.match(calls[1].system,/Web search is unavailable/);
 }
+responses=[{status:400,body:{error:{message:'Web search is not enabled'}}},{content:[{type:'text',text:'An armbar attacks the elbow by controlling and extending the arm.'}]}];
+assert.equal((await ask({action:'guide',question:'What is an armbar?'})).status,200);
+assert.match(calls[1].system,/still explain established MMA/);
 responses=[{status:400,body:{error:{message:'Invalid max_tokens value'}}}];
 assert.equal((await ask({action:'chat',question})).status,502);assert.equal(calls.length,1);
 responses=[{status:400,body:{error:{message:'Web search is not enabled'}}},{status:400,body:{error:{message:'Web search is not enabled'}}}];
@@ -86,6 +90,19 @@ assert.equal(calls[0].tools,undefined);
 assert.equal(mod.fightResearchEnabled({action:'trash-talk',question}),false);
 assert.equal(mod.fightResearchEnabled({action:'fight-iq',question}),false);
 assert.equal(mod.fightResearchEnabled({action:'verdict',question}),false);
+for (const q of ['Explain a rear-naked choke', 'Who is the current ONE flyweight champion?', 'What happened at PRIDE 33?', 'Who is the best Japanese prospect?', 'What is the latest news from Bellator?', 'How are rounds judged in MMA?', 'How does scoring work in ONE?', 'Who won FOTN last night?']) {
+  assert.equal(mod.fightResearchEnabled({action:'guide',question:q}),true,q);
+}
+for (const q of ['How do locks work?', 'How do I join a room?', 'How does scoring work in the app?', 'Where are my picks?', 'How do I choose a Bonus Pick in the app?']) {
+  assert.equal(mod.fightResearchEnabled({action:'guide',question:q}),false,q);
+}
+responses=[{content:[{type:'text',text:'A rear-naked choke compresses the neck with an arm around it, using the other arm to secure the grip.'}]}];
+const general=await ask({action:'guide',question:'Explain a rear-naked choke'});
+assert.equal(general.status,200);assert.ok(calls[0].tools);
+assert.match(calls[0].system,/general MMA assistant/);
+assert.match(calls[0].system,/selected card.*never limits/);
+assert.match(calls[0].system,/Never use external search to invent app/);
+
 responses=[{stop_reason:'pause_turn',content:[{type:'server_tool_use',id:'s1',name:'web_search',input:{query:'records'}}]},reply()];
 assert.equal((await ask({action:'chat',question})).status,200);
 assert.equal(calls.length,2);

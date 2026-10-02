@@ -887,15 +887,20 @@ FightBot Help and the lightning breakdown. Unique first/surnames are resolved;
 ambiguous names are not guessed. Ask Claude sends bounded earlier turns too.
 These lists are UFC-only and cached: absence is never proof of no MMA meeting.
 The backend offers Anthropic `web_search_20250305` for fight chat, breakdown and
-fight-related guide requests (existing key and daily budgets, at most two searches per model attempt,
+open-ended MMA guide requests (existing key and daily budgets, at most two searches per model attempt,
 including one pause continuation). It looks up missing historical facts and
-returns citation links, rendered with textContent. App-only guide requests,
+returns citation links, rendered with textContent. Clearly app-only guide requests,
 roasts, IQ and verdicts do not get search. Guide number checks include cited
 source excerpts; unsourced invented and misattributed figures still fail. An
 unfinished/truncated research response fails rather than displaying narration.
 A search-specific invalid-tool/disabled-search error retries once without the
 tool, answering from cached facts with the research limitation stated; unrelated
 API errors do not trigger that fallback.
+FightBot Help is a general MMA assistant: all promotions, unfamiliar fighters,
+history, rules, judging, techniques and news are in scope, whether or not the
+selected card or APP_GUIDE mentions them. Stable concepts use MMA knowledge;
+missing/current factual claims use cited research. App facts still come only
+from APP_GUIDE and supplied app data.
 FightBot MCP also exposes `get_fighter_history` with the same UFC-only caveat.
 `npm run check:history` tests these paths with frozen fixtures and stubbed search.
 
