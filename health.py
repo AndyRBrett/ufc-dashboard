@@ -315,11 +315,52 @@ def _fold(s):
     return " ".join(re.sub(r"[^a-z0-9 ]+", " ", s.replace("'", "")).split())
 
 
+_NAME_SUFFIXES = {"jr", "sr", "ii", "iii", "iv"}
+
+
+def _name_tokens(n):
+    """A fighter's name as a set of words, suffixes dropped: word order and
+    "Jr." differ between sources ("Wang Cong" / "Cong Wang")."""
+    return frozenset(t for t in _fold(n).split() if t not in _NAME_SUFFIXES)
+
+
 def _bout_keys(a, b):
-    """Full-name and surname keys for a bout, either corner order."""
-    fa, fb = _fold(a), _fold(b)
-    return (frozenset((fa, fb)),
-            frozenset((fa.split()[-1] if fa else "", fb.split()[-1] if fb else "")))
+    """Full-name and surname keys for a bout, either corner order. The full
+    key compares each fighter's set of name words, so reordered names and a
+    dropped suffix still match; the surname key is the last such word."""
+    ta, tb = _name_tokens(a), _name_tokens(b)
+
+    def last(n):
+        toks = [t for t in _fold(n).split() if t not in _NAME_SUFFIXES]
+        return toks[-1] if toks else ""
+    return frozenset((ta, tb)), frozenset((last(a), last(b)))
+
+
+def bout_segments(reading):
+    """{bout key: segment} from an official-times.json card reading. Shared
+    with scrape.py, so the check and the fix match bouts the same way."""
+    out, surnames = {}, {}
+    for seg, pairs in ((reading or {}).get("bouts") or {}).items():
+        for pair in pairs or []:
+            if len(pair) == 2:
+                full, sur = _bout_keys(*pair)
+                out[full] = seg
+                surnames.setdefault(sur, []).append(seg)
+    # A surname pair is a fallback for respellings ("Wang Cong" / "Cong Wang",
+    # "Dos Anjos"). It only counts when it is two different surnames naming
+    # one bout: two Silvas on a card, or one fighter's surname twice, would
+    # otherwise move a bout into the wrong segment.
+    for sur, segs in surnames.items():
+        if len(sur) == 2 and len(segs) == 1 and sur not in out:
+            out[sur] = segs[0]
+    return out
+
+
+def segment_of(segments, a, b):
+    """UFC.com's segment for the bout a vs. b, or None: full names first,
+    then surnames ("Wang Cong" / "Cong Wang" match either way round)."""
+    full, sur = _bout_keys(a, b)
+    return segments.get(full) or segments.get(sur)
 
 
 def _minutes(hhmm):
@@ -405,17 +446,10 @@ def official_findings(upcoming, official, now):
                                    f"({when})"})
         # Which segment each bout sits in decides when it locks, and scrape.py
         # infers that from bout order. Compare it with UFC.com's own split.
-        theirs = {}
-        for seg, pairs in (rd.get("bouts") or {}).items():
-            for pair in pairs or []:
-                if len(pair) == 2:
-                    full, sur = _bout_keys(*pair)
-                    theirs[full] = seg
-                    theirs.setdefault(sur, seg)
+        theirs = bout_segments(rd)
         if theirs:
             for f in ev["fights"]:
-                full, sur = _bout_keys(f["f1"], f["f2"])
-                seg = theirs.get(full) or theirs.get(sur)
+                seg = segment_of(theirs, f["f1"], f["f2"])
                 if seg and seg != _seg_of(f["lbl"]):
                     out.append({"check": "segment-mismatch", **tag,
                                 "message": f"{ev['name']} ({d}d out): {f['f1']} vs. "

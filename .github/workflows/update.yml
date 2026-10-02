@@ -55,6 +55,17 @@ jobs:
           python -m pytest -q
       - name: Snapshot the published data.js so the gate can diff against it
         run: cp data.js /tmp/data-before.js
+      # Official card times, read from UFC.com into official-times.json:
+      # each segment's start and the bouts listed under it. Runs BEFORE the
+      # scrape because scrape.py takes a card's clocks and segment split from
+      # a fresh reading (apply_official_times) and only guesses without one;
+      # health.py then WARNs on any card still unconfirmed or disagreeing.
+      # Free (no key, no quota), cadence-gated, never fatal: a failed read
+      # keeps the last good reading, and an old one falls back to the guess.
+      # Reads the previous data.js for the card list. See official_times.py.
+      - name: Official card times from UFC.com
+        continue-on-error: true
+        run: python official_times.py
       # ODDS_FORCE bypasses should_fetch_odds' elapsed-time gate. It exists for the
       # case where a card is visibly wrong and waiting hours for the next slot is
       # not acceptable — a fix that only takes effect on a run that pulls odds
@@ -70,16 +81,6 @@ jobs:
           ODDS_API_KEY_SECONDARY: ${{ secrets.ODDS_API_KEY_SECONDARY }}
           SUPABASE_ANON: ${{ secrets.SUPABASE_ANON }}
           ODDS_FORCE: ${{ inputs.force_odds && '1' || '' }}
-      # Official card times, read from UFC.com — SHADOW MODE. scrape.py still
-      # guesses each card's clock from a slot table; this reads what UFC.com
-      # publishes per segment (and which bouts sit in each) into
-      # official-times.json, and health.py below files any disagreement as a
-      # WARN on the data-health issue. Changes nothing the app shows. Free (no
-      # key, no quota), cadence-gated, never fatal. Runs before the gate so
-      # this run's health report sees this run's reading. See official_times.py.
-      - name: Official card times from UFC.com (shadow mode, report only)
-        continue-on-error: true
-        run: python official_times.py
       # The gate between a degraded scrape and a published card. Fails the job on
       # structural breakage (unparseable data, empty EVENTS, a card that lost
       # bouts) so the last-good data.js stays live and GitHub emails the failure.

@@ -30,7 +30,7 @@ from bs4 import BeautifulSoup
 # the gate rejects is a change that can never land, which is the failure mode
 # believable_shrink exists to end. health.py is stdlib-only, so importing it here
 # costs nothing and keeps one definition instead of two that can drift.
-from health import believable_shrink
+from health import believable_shrink, bout_segments, segment_of
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -1531,6 +1531,108 @@ def odds_card_start_et(odds_index, card, ev_date):
 # before it is worth flagging. Generous, because commence_time is a nominal
 # start: only a whole-segment error (the 3h class of bug) should trip it.
 _ODDS_TIME_TOLERANCE_H = 2
+
+
+# ---------------------------------------------------------------------------
+# Official card times (official_times.py → official-times.json)
+#
+# Everything above guesses a card's clock: a slot table, ESPN's ambiguous event
+# `date`, the bookmakers' nominal starts, hand pins. UFC.com publishes each
+# segment's start and the bouts listed under it, and official_times.py reads
+# that page before every scrape. When the reading is fresh it wins: its clocks
+# replace the guess and its segment split relabels any bout the bout-order
+# rule (_MAIN_CARD_SIZE / _PRELIM_CARD_SIZE) put in the wrong segment. When it
+# is missing or old, the guess stands exactly as before, and health.py says so
+# (time-unconfirmed / time-stale). Shadow-run first: the first live read
+# (2026-10-02) matched UFC 332 exactly and found two Fight Nights whose
+# six-bout main cards the guess had cut to five, locking a main-card bout at
+# the 5pm prelim bell.
+# ---------------------------------------------------------------------------
+
+OFFICIAL_TIMES_PATH = Path("official-times.json")
+# A reading older than this is not trusted to override anything. The reader
+# re-reads hourly within 2 days of a card and every 3h within a week, so a
+# healthy pipeline never gets near it; a dead one falls back to the guess.
+OFFICIAL_MAX_AGE_H = 48
+# Share of our card's bouts the reading must name before its segment split is
+# used. Below this the rosters disagree too much (a parse that caught half the
+# page, a card mid-shuffle) for the split to be trusted; the clocks still are,
+# since page_is_card already tied the page to this card.
+OFFICIAL_MIN_MATCH = 0.6
+_SEG_LABEL = {"main": "Main Card", "prelim": "Prelim", "early": "Early Prelim"}
+
+
+def load_official_times(path=OFFICIAL_TIMES_PATH):
+    """official-times.json's `cards`, or {} if it is missing or unreadable."""
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8")).get("cards") or {}
+    except (OSError, ValueError, AttributeError):
+        return {}
+
+
+def official_reading(cards, ev_name, ev_date, now):
+    """The fresh UFC.com reading for a card, or None."""
+    rd = cards.get(f"{ev_name}|{ev_date}") or {}
+    if not (rd.get("segments") or {}).get("main"):
+        return None
+    try:
+        at = datetime.fromisoformat(rd["confirmed_at"].replace("Z", "+00:00"))
+    except (KeyError, ValueError, AttributeError):
+        return None
+    if now - at > timedelta(hours=OFFICIAL_MAX_AGE_H):
+        return None
+    return rd
+
+
+def _label_segment(lbl):
+    return {"Early Prelim": "early", "Prelim": "prelim"}.get(lbl, "main")
+
+
+def apply_official_times(ev_name, ev_date, card, main, prelim, reading):
+    """Apply a UFC.com reading to a built card.
+
+    Returns (main, prelim, early) clocks, where early is None when the reading
+    has no early-prelim clock for this card's date (the caller then derives it
+    as before). Relabels bouts in *card* in place. A clock is taken only when
+    its ET date is the card's own date: the app pins every clock to ev.date, so
+    a segment that falls on the next day can't be written as one.
+    """
+    if not reading:
+        return main, prelim, None
+    segs = reading.get("segments") or {}
+
+    def clock(seg):
+        s = segs.get(seg) or {}
+        return s.get("et") if s.get("et") and s.get("date") == ev_date else None
+
+    theirs = bout_segments(reading)
+    hits = [(f, segment_of(theirs, f["f1"]["name"], f["f2"]["name"])) for f in card]
+    named = sum(1 for _, seg in hits if seg)
+    moved = []
+    if card and named / len(card) >= OFFICIAL_MIN_MATCH:
+        for f, seg in hits:
+            # The headliner and co-main are main card by definition; a reading
+            # that says otherwise has mismatched names, not found a demotion.
+            if not seg or f["label"] in ("Main Event", "Co-Main"):
+                continue
+            if _label_segment(f["label"]) != seg:
+                moved.append(f"{f['f1']['name']} vs. {f['f2']['name']}: "
+                             f"{f['label']} → {_SEG_LABEL[seg]}")
+                f["label"] = _SEG_LABEL[seg]
+    elif card:
+        print(f"  UFC.com names {named}/{len(card)} bouts of {ev_name}; "
+              f"keeping the bout-order segment split", file=sys.stderr)
+
+    new_main = clock("main") or main
+    new_prelim = clock("prelim") or prelim
+    early = clock("early")
+    if (new_main, new_prelim) != (main, prelim) or moved:
+        print(f"  UFC.com for {ev_name}: main {main}→{new_main}, prelims "
+              f"{prelim}→{new_prelim}" + (f", early {early}" if early else ""),
+              file=sys.stderr)
+        for m in moved:
+            print(f"    relabelled {m}", file=sys.stderr)
+    return new_main, new_prelim, early
 
 
 def reconcile_times_with_odds(ev_name, loc, main, prelim, odds_start):
@@ -3745,6 +3847,7 @@ def step_build_events(data, now):
     ]
     merged.sort(key=lambda x: x[0])
 
+    official_cards = load_official_times()
     new_events = []
     for ev_date, slug, ev_name, venue, loc, main_time, prelim_time in merged:
         try:
@@ -3891,6 +3994,10 @@ def step_build_events(data, now):
         main_time, prelim_time = reconcile_times_with_odds(
             ev_name, loc, main_time, prelim_time,
             odds_card_start_et(odds_index, card, ev_date))
+        # What UFC.com publishes outranks every guess above, when it is fresh.
+        main_time, prelim_time, official_early = apply_official_times(
+            ev_name, ev_date, card, main_time, prelim_time,
+            official_reading(official_cards, ev_name, ev_date, now))
         new_events.append({
             "name":        ev_name,
             "date":        ev_date,
@@ -3907,7 +4014,7 @@ def step_build_events(data, now):
             # doesn't exist and — via cardStartTime() — call the card live two
             # hours before its real first bout.
             "earlyPrelimTime": (
-                _early_prelim_time(ev_name, prelim_time)
+                (official_early or _early_prelim_time(ev_name, prelim_time))
                 if any(f.get("label") == "Early Prelim" for f in card) else ""
             ),
             "fights":      card,
