@@ -2382,7 +2382,7 @@ function sendPickChat(){
 // fightbot-guide:start
 var _botHist=[],_botBusy=false,_botScreen="",_botLocked=false;
 var BOT_TURNS=6,BOT_TURN_MAX=600;
-var BOT_QUICK=["Who has the edge in the main event?","Best underdog on the next card?","How does scoring work?","How do locks work?","How do I join a room?","How do I turn on notifications?"];
+var BOT_QUICK=["Explain a rear-naked choke","Who has the edge in the main event?","Best underdog on the next card?","How does scoring work?","How do locks work?","How do I join a room?","How do I turn on notifications?"];
 function _botBubble(role,text){
   var hEl=document.getElementById("botHistory");
   var b=document.createElement("div");b.className="chat-bubble "+(role==="user"?"user":"claude");b.textContent=text;
@@ -2392,7 +2392,7 @@ function openBot(screen){
   _botScreen=String(screen||"").slice(0,40);
   var info=document.getElementById("lbInfoModal");if(info)info.classList.remove("open");
   var hEl=document.getElementById("botHistory");hEl.innerHTML="";
-  if(!_botHist.length)_botBubble("bot","Hi, I'm FightBot. Ask me about the fights on the next card, or how anything in the app works: picks, scoring, locks, the belt, rooms, the Fight Lab, notifications.");
+  if(!_botHist.length)_botBubble("bot","Hi, I'm FightBot. Ask me anything about MMA: fighters, history, promotions, rules, judging, techniques or news. I also know this app’s picks, scoring, locks, belt, rooms and Fight Lab.");
   _botHist.forEach(function(h){_aiSourceLinks(_botBubble(h.role,h.text),h.sources);});
   var qq=document.getElementById("botQuickQs");qq.innerHTML="";
   BOT_QUICK.forEach(function(q){
@@ -6657,8 +6657,8 @@ var WHATS_NEW=[
    desc:"Most fighters now show their headshot instead of initials. Photos come from ESPN for UFC fighters, and from Wikipedia for everyone else (including fighters whose names carry accents, like Natália Silva)."},
   {id:"2026-10-19-picks-email",emoji:"✉️",title:"Picks need an email now",
    desc:"To keep the board to real players, making a pick now needs an email sign-in (a one-time code, no password). If you already linked one, nothing changes. If you haven't, your next pick asks for it, and linking keeps all your picks and your spot on the board."},
-  {id:"2026-10-20-ai-history",emoji:"🤖",title:"AI can look up fight history",
-   desc:"Ask Claude and FightBot can answer historical matchup questions beyond the current card, with source links when they look up records. The ⚡ breakdown also gets each fighter’s past opponents."}
+  {id:"2026-10-20-ai-history",emoji:"🤖",title:"Ask AI anything MMA",
+   desc:"Ask Claude and FightBot cover MMA beyond this card: fighters, promotions, history, rules, techniques and news, while still knowing your app. They can look up missing facts with source links. The ⚡ breakdown also gets each fighter’s past opponents."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
