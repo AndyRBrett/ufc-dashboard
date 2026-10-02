@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T07:08:45Z",
+  "generated_at": "2026-10-02T07:19:15Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -12607,7 +12607,7 @@
           "f1": "Jacobe Smith",
           "f2": "Bruce Whitehead",
           "lbl": "Early Prelim",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-09-29T11:32:48Z",
@@ -12648,6 +12648,11 @@
               "at": "2026-10-02T01:09:38Z",
               "f1_odds": -970,
               "f2_odds": 612
+            },
+            {
+              "at": "2026-10-02T07:19:15Z",
+              "f1_odds": -953,
+              "f2_odds": 605
             }
           ],
           "open": {
@@ -12773,7 +12778,7 @@
           "f1": "Brendan Allen",
           "f2": "Christian Leroy Duncan",
           "lbl": "Main Event",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -12784,6 +12789,11 @@
               "at": "2026-10-01T23:03:38Z",
               "f1_odds": -145,
               "f2_odds": 125
+            },
+            {
+              "at": "2026-10-02T07:19:15Z",
+              "f1_odds": -142,
+              "f2_odds": 122
             }
           ],
           "open": {
@@ -13582,7 +13592,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Christian Leroy Duncan",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -141,
         "close": null,
         "clv": null
@@ -15144,7 +15154,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Brendan Allen",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 121,
         "close": null,
         "clv": null
@@ -15175,7 +15185,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Bruce Whitehead",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -967,
         "close": null,
         "clv": null
@@ -17759,7 +17769,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Jacobe Smith",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 607,
         "close": null,
         "clv": null
