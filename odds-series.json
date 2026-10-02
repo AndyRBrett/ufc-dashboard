@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T13:19:14Z",
+  "generated_at": "2026-10-02T13:29:24Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -12137,7 +12137,7 @@
           "f1": "Johnny Walker",
           "f2": "Mick Parkin",
           "lbl": "Early Prelim",
-          "points": 21,
+          "points": 22,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -12243,6 +12243,11 @@
               "at": "2026-10-02T05:18:46Z",
               "f1_odds": -128,
               "f2_odds": 107
+            },
+            {
+              "at": "2026-10-02T13:29:24Z",
+              "f1_odds": -125,
+              "f2_odds": 103
             }
           ],
           "open": {
@@ -12552,7 +12557,7 @@
           "f1": "Roberto Soldic",
           "f2": "Khaos Williams",
           "lbl": "Main Card",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-09-28T22:57:59Z",
@@ -12598,6 +12603,11 @@
               "at": "2026-10-02T01:09:38Z",
               "f1_odds": -264,
               "f2_odds": 210
+            },
+            {
+              "at": "2026-10-02T13:29:24Z",
+              "f1_odds": -260,
+              "f2_odds": 207
             }
           ],
           "open": {
@@ -17725,7 +17735,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Mick Parkin",
         "side": "f1",
-        "points": 21,
+        "points": 22,
         "open": -110,
         "close": null,
         "clv": null
@@ -17736,7 +17746,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Johnny Walker",
         "side": "f2",
-        "points": 21,
+        "points": 22,
         "open": -110,
         "close": null,
         "clv": null
@@ -17802,7 +17812,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Khaos Williams",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -318,
         "close": null,
         "clv": null
@@ -17813,7 +17823,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Roberto Soldic",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 251,
         "close": null,
         "clv": null
