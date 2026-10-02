@@ -615,6 +615,22 @@ _TIME_OVERRIDES = {
     # anchored-but-wrong US time has no gate at all; only this pin fixes it.
     # Published Paramount+ times (prelims 2pm ET / main card 5pm ET).
     "UFC Fight Night: Silva vs. Delgado": ("17:00", "14:00"),
+    # Salt Lake City (MDT, UTC-6): main 20:00 ET = 00:00 UTC Sun = 18:00 local;
+    # prelims 18:00 ET = 22:00 UTC; early prelims (derived, -2h) 16:00 ET =
+    # 20:00 UTC. STRUCTURAL: the main card airs on CBS, which puts this numbered
+    # card an hour ahead of the 21:00/19:00 PPV slot. The slot default shipped
+    # it with every segment locking an hour after its first bell. Published
+    # times (Yahoo/MMA Mania/CBS previews: 4pm / 6pm / 8pm ET).
+    "UFC 332: Silva vs. Wang": ("20:00", "18:00"),
+    # Abu Dhabi (UTC+4): main 14:00 ET = 18:00 UTC = 22:00 local; prelims
+    # 12:00 ET = 16:00 UTC; early prelims 10:00 ET. The mideast slot's 3h
+    # Fight Night gap put prelims at 11:00, an hour early; a PPV runs a 2h gap.
+    # Published Paramount+ times (10am / 12pm / 2pm ET).
+    "UFC 333: Volkanovski vs. Evloev": ("14:00", "12:00"),
+    # Doha (UTC+3): main 13:00 ET = 17:00 UTC = 20:00 local; prelims 10:00 ET =
+    # 14:00 UTC. The venue is listed as Al Rayyan, which no regional slot
+    # matches, so the card sat at TBD. Published Paramount+ times (10am / 1pm ET).
+    "UFC Fight Night: Prochazka vs. Stirling": ("13:00", "10:00"),
 }
 
 # Cards with no preliminary bouts -- every fight is treated as a main-card fight
