@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T00:59:52Z",
+  "generated_at": "2026-10-02T01:09:38Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "status": "ok",
-      "last_changed_at": "2026-10-01T23:03:38Z",
+      "last_changed_at": "2026-10-02T01:09:38Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -105,7 +105,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "ok",
-      "last_changed_at": "2026-10-01T23:03:38Z",
+      "last_changed_at": "2026-10-02T01:09:38Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-02T00:59:52Z",
+      "last_changed_at": "2026-10-02T01:09:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 10,
@@ -135,7 +135,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-02T00:59:52Z",
+      "last_changed_at": "2026-10-02T01:09:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-02T00:59:52Z",
+      "last_changed_at": "2026-10-02T01:09:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -165,7 +165,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-02T00:59:52Z",
+      "last_changed_at": "2026-10-02T01:09:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -210,17 +210,17 @@
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Johnny Walker",
       "f2": "Mick Parkin",
-      "f1_movement": -20,
-      "f2_movement": 218,
-      "magnitude": 218,
+      "f1_movement": -21,
+      "f2_movement": 219,
+      "magnitude": 219,
       "main_event": false,
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": 4.1,
-      "f2_prob_shift": -4.3,
-      "priority": 436.0
+      "f1_prob_shift": 4.3,
+      "f2_prob_shift": -4.5,
+      "priority": 438.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
@@ -368,22 +368,6 @@
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
-      "f1": "Ateba Gautier",
-      "f2": "Roman Kopylov",
-      "f1_movement": -58,
-      "f2_movement": 31,
-      "magnitude": 58,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 45,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 6.3,
-      "f2_prob_shift": -4.3,
-      "priority": 116.0
-    },
-    {
-      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "King Green",
       "f2": "Esteban Ribovics",
       "f1_movement": -53,
@@ -400,19 +384,35 @@
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+      "f1": "Ateba Gautier",
+      "f2": "Roman Kopylov",
+      "f1_movement": -55,
+      "f2_movement": 31,
+      "magnitude": 55,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 45,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 6.1,
+      "f2_prob_shift": -4.3,
+      "priority": 110.0
+    },
+    {
+      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Roberto Soldic",
       "f2": "Khaos Williams",
-      "f1_movement": 49,
+      "f1_movement": 54,
       "f2_movement": -41,
-      "magnitude": 49,
+      "magnitude": 54,
       "main_event": false,
       "tier": "main-card",
       "threshold": 45,
       "low_confidence": false,
       "wc": "Welterweight",
-      "f1_prob_shift": -3.2,
+      "f1_prob_shift": -3.5,
       "f2_prob_shift": 3.8,
-      "priority": 98.0
+      "priority": 108.0
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
