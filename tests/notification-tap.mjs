@@ -82,7 +82,7 @@ async function swTap(windows, kind = "") {
     self: { addEventListener: (t, f) => { handlers[t] = f; }, registration: { scope: "https://x.github.io/ufc-dashboard/" }, skipWaiting() {} },
     clients: { matchAll: () => Promise.resolve(clientsList), openWindow: (u) => { log.opened.push(u); return Promise.resolve(null); } },
     caches: { open: () => Promise.resolve({ put: (k, r) => r.text().then((t) => { log.stashed = JSON.parse(t); }) }) },
-    Response, URL, Promise, JSON, Date, encodeURIComponent, console,
+    Response, URL, Promise, JSON, Date, encodeURIComponent, console, setTimeout,
   };
   vm.runInNewContext(readFileSync(join(ROOT, "sw.js"), "utf8"), sandbox);
   let wait = Promise.resolve();
@@ -323,12 +323,33 @@ async function main() {
       vm.runInNewContext(readFileSync(join(ROOT, "sw.js"), "utf8"), {
         self: { addEventListener: (t, f) => { handlers[t] = f; }, registration: { scope: "https://x.github.io/ufc-dashboard/", showNotification: () => Promise.resolve() }, skipWaiting() {} },
         clients: { matchAll: () => Promise.resolve([{ url: "https://x.github.io/ufc-dashboard/", postMessage: (m) => msgs.push(m) }]) },
-        caches: {}, Response, URL, Promise, JSON, Date, console,
+        caches: {}, Response, URL, Promise, JSON, Date, console, setTimeout,
       });
       let wait = Promise.resolve();
       handlers.push({ data: { json: () => ({ title: "🎤 Joe Rogan (via T)", body: ROAST }) }, waitUntil(p) { wait = p; } });
       await wait;
       assert("sw: a push arriving tells the open page to read the roast inbox", msgs.some((m) => m.type === "push-arrived"));
+      // The banner must never wait on telling the page: a lookup of open
+      // windows that hangs, or throws, still shows the notification, and
+      // shows it straight away (iOS counts a push with no banner as silent).
+      for (const how of ["hangs", "throws"]) {
+        const shown = [];
+        const h = {};
+        vm.runInNewContext(readFileSync(join(ROOT, "sw.js"), "utf8"), {
+          self: { addEventListener: (t, f) => { h[t] = f; }, registration: { scope: "https://x.github.io/ufc-dashboard/",
+            showNotification: (title, opts) => { shown.push({ title, body: opts.body }); return Promise.resolve(); } }, skipWaiting() {} },
+          clients: { matchAll: () => { if (how === "throws") throw new Error("nope"); return new Promise(() => {}); } },
+          caches: {}, Response, URL, Promise, JSON, Date, console, setTimeout,
+        });
+        let life = null;
+        h.push({ data: { json: () => ({ title: "🎤 Katt Williams (via AB)", body: ROAST }) }, waitUntil(p) { life = p; } });
+        // ...and the push event still finishes: a lookup that never settles
+        // must not keep the worker alive.
+        const settled = await Promise.race([life.then(() => true), new Promise((r) => setTimeout(() => r(false), 3500))]);
+        assert(`sw: the push event still finishes when finding open windows ${how}`, settled);
+        assert(`sw: the banner shows at once even when finding open windows ${how}`,
+          shown.length === 1 && shown[0].title === "🎤 Katt Williams (via AB)" && shown[0].body === ROAST);
+      }
     }
 
     // A roast must always be closable. A tall one (the max length, plus
