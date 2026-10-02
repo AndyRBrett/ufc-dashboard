@@ -2209,8 +2209,43 @@ function _aiFetch(body,signal){
     return go(auth).then(function(r){return r.status===401&&auth!==anon?go(anon):r;});
   });
 }
+// fight-history:start
+// Query-focused context from the entire stats cache, not just visible cards.
+// Ambiguous first/surnames stay unresolved rather than borrowing another record.
+function _aiFightContext(question,names,stats){
+  stats=stats||(typeof FIGHTER_STATS!=="undefined"&&FIGHTER_STATS)||{};
+  var key=function(t){return String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();};
+  var all=Object.keys(stats),q=" "+key(question)+" ",aliases={};
+  all.forEach(function(n){var parts=key(n).split(" ");[parts[0],parts[parts.length-1]].forEach(function(a){if(a.length>=3){if(!aliases[a])aliases[a]=[];if(aliases[a].indexOf(n)<0)aliases[a].push(n);}});});
+  var selected=all.filter(function(n){return q.indexOf(" "+key(n)+" ")>=0;});
+  Object.keys(aliases).forEach(function(a){if(aliases[a].length===1&&q.indexOf(" "+a+" ")>=0&&selected.indexOf(aliases[a][0])<0)selected.push(aliases[a][0]);});
+  (names||[]).forEach(function(n){var found=all.filter(function(x){return key(x)===key(n);});if(found.length===1&&selected.indexOf(found[0])<0)selected.push(found[0]);});
+  var out=[],size=0;
+  selected.slice(0,4).forEach(function(n){
+    var st=stats[n],bits=[];
+    if(st.rec)bits.push("record "+st.rec);
+    if(Array.isArray(st.opp)&&st.opp.length)bits.push("completed UFCStats opponents (newest first): "+st.opp.join(", "));
+    else bits.push("opponent history unavailable; an empty list does not prove no prior fights");
+    if(st.fetched_at)bits.push("cached as of "+st.fetched_at.slice(0,10));
+    if(st.url&&/^https?:\/\//i.test(st.url))bits.push("source "+st.url);
+    var line="  "+n+": "+bits.join("; ");
+    // Never truncate an opponent list and accidentally present it as complete.
+    if(size+line.length+1<=5800){out.push(line);size+=line.length+1;}
+  });
+  return out.join("\n");
+}
+function _aiSourceLinks(el,sources){
+  if(!Array.isArray(sources))return;
+  sources.slice(0,5).forEach(function(s){
+    if(!s||!/^https?:\/\//i.test(s.url||""))return;
+    var row=document.createElement("div"),a=document.createElement("a");
+    a.href=s.url;a.target="_blank";a.rel="noopener noreferrer";a.textContent=s.title||"Source";
+    row.style.fontSize="0.8em";row.appendChild(a);el.appendChild(row);
+  });
+}
+// fight-history:end
 function fetchAIBreakdown(fight,ev,btn,panel){
-  var cacheKey=ev.date+"|"+fight.f1.n+"|"+fight.f2.n;
+  var cacheKey="history-v1|"+ev.date+"|"+fight.f1.n+"|"+fight.f2.n;
   if(_aiCache[cacheKey]){renderAIPanel(panel,btn,_aiCache[cacheKey]);return;}
   if(_aiFetching[cacheKey])return;
   _aiFetching[cacheKey]=true;
@@ -2222,12 +2257,13 @@ function fetchAIBreakdown(fight,ev,btn,panel){
     wc:fight.wc,title:!!fight.title,event:ev.name,odds:fight.odds||null,
     s1:s1?{slpm:s1.slpm,acc:s1.acc,td:s1.td,tdd:s1.tdd,ko:s1.ko,sub:s1.sub,stn:s1.stn}:null,
     s2:s2?{slpm:s2.slpm,acc:s2.acc,td:s2.td,tdd:s2.tdd,ko:s2.ko,sub:s2.sub,stn:s2.stn}:null,
-    form1:s1&&s1.form?s1.form.slice(0,3):[],form2:s2&&s2.form?s2.form.slice(0,3):[]
+    form1:s1&&s1.form?s1.form.slice(0,3):[],form2:s2&&s2.form?s2.form.slice(0,3):[],
+    fightContext:_aiFightContext("",[fight.f1.n,fight.f2.n])
   };
   function aiErr(msg){panel.textContent="";var errDiv=document.createElement("div");errDiv.className="ai-err";errDiv.textContent=msg;panel.appendChild(errDiv);panel.classList.add("open");}
-  // Abort a stuck request after 20s so the in-flight guard clears and the user can retry.
+  // Abort a stuck request after 45s so the in-flight guard clears and the user can retry.
   var ctrl=("AbortController" in window)?new AbortController():null;
-  var to=setTimeout(function(){if(ctrl)ctrl.abort();},20000);
+  var to=setTimeout(function(){if(ctrl)ctrl.abort();},45000);
   _aiFetch(JSON.stringify(payload),ctrl?ctrl.signal:undefined).then(function(r){return r.json().then(function(d){return{ok:r.ok,status:r.status,data:d};});})
   .then(function(res){
     clearTimeout(to);
@@ -2241,8 +2277,9 @@ function fetchAIBreakdown(fight,ev,btn,panel){
     }
     var text=res.data.breakdown||"";
     if(!text){aiErr("Analysis unavailable. Try again.");return;}
-    try{_aiCache[cacheKey]=text;sessionStorage.setItem("ufc_ai_cache",JSON.stringify(_aiCache));}catch(e){}
-    renderAIPanel(panel,btn,text);
+    var answer={text:text,sources:res.data.sources||[]};
+    try{_aiCache[cacheKey]=answer;sessionStorage.setItem("ufc_ai_cache",JSON.stringify(_aiCache));}catch(e){}
+    renderAIPanel(panel,btn,answer);
   }).catch(function(err){
     clearTimeout(to);
     delete _aiFetching[cacheKey];
@@ -2250,11 +2287,13 @@ function fetchAIBreakdown(fight,ev,btn,panel){
     aiErr((err&&err.name==="AbortError")?"AI timed out — tap to retry":"Analysis unavailable. Try again.");
   });
 }
-function renderAIPanel(panel,btn,text){
+function renderAIPanel(panel,btn,answer){
+  var text=typeof answer==="string"?answer:answer.text;
   if(btn&&btn.classList){btn.classList.remove("ai-loading");btn.classList.add("ai-done");btn.textContent="⚡ AI";}
   if(panel.classList.contains("open")){panel.classList.remove("open");return;}
   panel.innerHTML="";
   var p=document.createElement("div");p.className="ai-panel-text";p.textContent=text;panel.appendChild(p);
+  _aiSourceLinks(panel,answer&&answer.sources);
   var m=document.createElement("div");m.className="ai-panel-meta";m.textContent="AI analysis · claude-haiku";panel.appendChild(m);
   panel.classList.add("open");
 }
@@ -2284,7 +2323,7 @@ function openPickChat(ev,ei){
   var hist=_chatHistory[ei]||[];
   var hEl=document.getElementById("chatHistory");hEl.innerHTML="";
   hist.forEach(function(h){
-    var b=document.createElement("div");b.className="chat-bubble "+h.role;b.textContent=h.text;hEl.appendChild(b);
+    var b=document.createElement("div");b.className="chat-bubble "+h.role;b.textContent=h.text;_aiSourceLinks(b,h.sources);hEl.appendChild(b);
   });
   if(hist.length)hEl.scrollTop=hEl.scrollHeight;
   var qqEl=document.getElementById("chatQuickQs");qqEl.innerHTML="";
@@ -2312,19 +2351,21 @@ function sendPickChat(){
   var lBubble=document.createElement("div");lBubble.className="chat-bubble claude loading";lBubble.textContent="Thinking…";hEl.appendChild(lBubble);
   hEl.scrollTop=hEl.scrollHeight;
   if(!_chatHistory[_chatEi])_chatHistory[_chatEi]=[];
+  var history=(_chatHistory[_chatEi]||[]).slice(-6).map(function(h){return {role:h.role==="user"?"user":"bot",text:String(h.text).slice(0,600)};});
   _chatHistory[_chatEi].push({role:"user",text:q});
   _aiFetch(JSON.stringify({
       action:"chat",
       event:_chatEv.name,
       card:_buildCardSummary(_chatEv),
       userPicks:_buildUserPicks(_chatEv,_chatEi),
-      question:q
+      question:q.slice(0,400),history:history,
+      fightContext:_aiFightContext([q].concat(history.filter(function(h){return h.role==="user";}).map(function(h){return h.text;})).join(" "))
     })).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
   .then(function(d){
     var text=d.breakdown||"";
     if(!text)throw new Error("Empty");
-    lBubble.className="chat-bubble claude";lBubble.textContent=text;
-    _chatHistory[_chatEi].push({role:"claude",text:text});
+    lBubble.className="chat-bubble claude";lBubble.textContent=text;_aiSourceLinks(lBubble,d.sources);
+    _chatHistory[_chatEi].push({role:"claude",text:text,sources:d.sources||[]});
   }).catch(function(){
     lBubble.className="chat-bubble claude";lBubble.textContent="Sorry, couldn't get a response. Try again.";
   }).finally(function(){
@@ -2352,7 +2393,7 @@ function openBot(screen){
   var info=document.getElementById("lbInfoModal");if(info)info.classList.remove("open");
   var hEl=document.getElementById("botHistory");hEl.innerHTML="";
   if(!_botHist.length)_botBubble("bot","Hi, I'm FightBot. Ask me about the fights on the next card, or how anything in the app works: picks, scoring, locks, the belt, rooms, the Fight Lab, notifications.");
-  _botHist.forEach(function(h){_botBubble(h.role,h.text);});
+  _botHist.forEach(function(h){_aiSourceLinks(_botBubble(h.role,h.text),h.sources);});
   var qq=document.getElementById("botQuickQs");qq.innerHTML="";
   BOT_QUICK.forEach(function(q){
     var b=document.createElement("button");b.className="quick-q";b.textContent=q;
@@ -2487,8 +2528,8 @@ function sendBot(){
   _botBubble("user",q);
   var wait=_botBubble("bot","Thinking…");wait.classList.add("loading");
   var ctrl=("AbortController" in window)?new AbortController():null;
-  var to=setTimeout(function(){if(ctrl)ctrl.abort();},20000);
-  var req={action:"guide",question:q.slice(0,300),history:history,screen:_botScreen};
+  var to=setTimeout(function(){if(ctrl)ctrl.abort();},45000);
+  var req={action:"guide",question:q.slice(0,300),history:history,screen:_botScreen,fightContext:_aiFightContext([q].concat(history.filter(function(h){return h.role==="user";}).map(function(h){return h.text;})).join(" "))};
   try{var fd=_botFightData();if(fd){req.event=fd.event;req.card=fd.card;if(fd.userPicks)req.userPicks=fd.userPicks;}}
   catch(e){console.warn("[fightbot] fight data",e);}   // app questions still work without it
   _aiFetch(JSON.stringify(req),ctrl?ctrl.signal:undefined)
@@ -2501,8 +2542,8 @@ function sendBot(){
       if(res.status===401)msg="Sign-in expired. Reopen the app and try again.";
       wait.classList.remove("loading");wait.textContent=msg;return;
     }
-    wait.classList.remove("loading");wait.textContent=text;
-    _botHist.push({role:"user",text:q},{role:"bot",text:text});
+    wait.classList.remove("loading");wait.textContent=text;_aiSourceLinks(wait,res.data.sources);
+    _botHist.push({role:"user",text:q},{role:"bot",text:text,sources:res.data.sources||[]});
   }).catch(function(err){
     wait.classList.remove("loading");
     wait.textContent=(err&&err.name==="AbortError")?"That took too long. Try again.":"Sorry, I couldn't answer that just now. Try again.";
@@ -6615,7 +6656,9 @@ var WHATS_NEW=[
   {id:"2026-10-18-espn-headshots",emoji:"📸",title:"Faces on every card",
    desc:"Most fighters now show their headshot instead of initials. Photos come from ESPN for UFC fighters, and from Wikipedia for everyone else (including fighters whose names carry accents, like Natália Silva)."},
   {id:"2026-10-19-picks-email",emoji:"✉️",title:"Picks need an email now",
-   desc:"To keep the board to real players, making a pick now needs an email sign-in (a one-time code, no password). If you already linked one, nothing changes. If you haven't, your next pick asks for it, and linking keeps all your picks and your spot on the board."}
+   desc:"To keep the board to real players, making a pick now needs an email sign-in (a one-time code, no password). If you already linked one, nothing changes. If you haven't, your next pick asks for it, and linking keeps all your picks and your spot on the board."},
+  {id:"2026-10-20-ai-history",emoji:"🤖",title:"AI can look up fight history",
+   desc:"Ask Claude and FightBot can answer historical matchup questions beyond the current card, with source links when they look up records. The ⚡ breakdown also gets each fighter’s past opponents."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;

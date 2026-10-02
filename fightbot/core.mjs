@@ -126,9 +126,29 @@ function playerList(rows) {
   return Object.values(seen).filter(Boolean);
 }
 
+// UFCStats contains UFC bouts, not every professional MMA promotion. Absence
+// is deliberately "not in cached UFC history", never an all-career "no".
+export function fighterHistory(stats, name, opponent) {
+  const q = PE.simpleKey(name), names = Object.keys(stats);
+  const exact = names.filter(n => PE.simpleKey(n) === q);
+  const hits = exact.length ? exact : names.filter(n => PE.simpleKey(n).includes(q));
+  if (!q || hits.length !== 1) return { error: "Use a unique fighter name", matches: hits.slice(0,15) };
+  const fighter = hits[0], st = stats[fighter], opponents = Array.isArray(st.opp) ? st.opp : [];
+  const want = PE.simpleKey(opponent), matches = want ? opponents.filter(n => PE.simpleKey(n) === want || PE.simpleKey(n).includes(want)) : [];
+  return { fighter, record: st.rec || null, completed_ufc_opponents_newest_first: opponents,
+    ...(opponent ? { requested_opponent: opponent, meeting: matches.length ? "found in completed UFC history" : "not found in cached UFC history", matches } : {}),
+    source: st.url || null, fetched_at: st.fetched_at || null,
+    caveat: "This is cached UFCStats history, not a complete MMA career. An absent opponent or empty list does not prove the fighters never met; verify career records for that claim. Dates and methods are not stored in this list." };
+}
+
 // -------------------------------------------------------------------- tools --
 // Each tool: description + JSON Schema input + handler(args) → plain object.
 export const TOOLS = {
+  get_fighter_history: {
+    description: "Completed UFC opponent history for a fighter anywhere in the stats cache, plus a prior-meeting lookup. Accepts a unique name fragment. Returns source and freshness; absence does not prove no meeting in another promotion.",
+    inputSchema: { type: "object", properties: { name: { type: "string" }, opponent: { type: "string" } }, required: ["name"] },
+    async run(a) { return fighterHistory(load().env.FIGHTER_STATS, a.name, a.opponent); },
+  },
   get_next_card: {
     description: "The next upcoming fight card: every bout with its segment, current moneyline, de-vigged market win % and the app's fight-model win %.",
     inputSchema: { type: "object", properties: { promotion: { type: "string", description: "Promotion id (default 'ufc')." } } },

@@ -100,6 +100,8 @@ jobs:
         run: npm run check:locks
       - name: Fight Lab test
         run: npm run check:lab
+      - name: AI historical fight questions
+        run: npm run check:history
       - name: FightBot MCP server test
         run: npm run check:fightbot
       - name: Friday brief push test

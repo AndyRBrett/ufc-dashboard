@@ -44,6 +44,8 @@ jobs:
       # FightBot's APP_GUIDE lives in ai-breakdown: a guide that misstates
       # scoring or names a gone button must not deploy. Handler-only (this job
       # has no browser); validate-web runs the full check:guide.
+      - name: AI historical fight questions
+        run: npm run check:history -- --no-browser
       - name: FightBot app guide test
         run: npm run check:guide:fn
       - name: FightBot's call test
