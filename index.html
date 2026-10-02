@@ -461,6 +461,10 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-title.lb-live::after{content:" ●";color:var(--green);font-size:10px;animation:lb-blink .6s 2}
 .lb-trash-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--card2);border-top:2px solid var(--gold);border-radius:16px 16px 0 0;padding:20px 16px 28px;transform:translateY(100%);transition:transform .3s ease;z-index:10}
 .lb-trash-sheet.open{transform:translateY(0)}
+/* Never taller than the panel it sits in, and scrollable inside: a long roast
+   plus Report / Block must not push the ✕ off the top of the screen, which
+   leaves a sheet covering everything with no way out. */
+.lb-trash-sheet{max-height:calc(100% - 12px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .lb-trash-persona{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--gold);letter-spacing:.12em;margin-bottom:10px}
 .lb-trash-text{font-size:15px;line-height:1.6;color:var(--text);min-height:60px}
 .lb-trash-close{position:absolute;top:14px;right:14px;background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;padding:0 4px;line-height:1}
@@ -1046,9 +1050,12 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .toast.show{transform:translateX(-50%) translateY(0)}
 /* A bottom sheet (a roast, a challenge, the wheel) sits exactly where the toast
    pops up, and the toast is on top: a sync notice once covered half a roast.
-   While one is open, toasts drop in from the top instead. */
-body:has(.lb-trash-sheet.open,.lb-wheel-sheet.open) .toast{bottom:auto;top:calc(env(safe-area-inset-top,0px) + 16px);transform:translateX(-50%) translateY(calc(-100% - 40px))}
-body:has(.lb-trash-sheet.open,.lb-wheel-sheet.open) .toast.show{transform:translateX(-50%) translateY(0)}
+   While one is open, toast() gives it .top and it drops in from the top.
+   A class set when the toast is shown, NOT a body:has() rule: :has() on body
+   makes WebKit re-check the whole page on every DOM change, and this page
+   adds and removes an ambient particle several times a second. */
+.toast.top{bottom:auto;top:calc(env(safe-area-inset-top,0px) + 16px);transform:translateX(-50%) translateY(calc(-100% - 40px))}
+.toast.top.show{transform:translateX(-50%) translateY(0)}
 @media(min-width:420px){.fn{font-size:27px}.fn.fsm{font-size:22px}}
 .search-input{background:var(--btn-bg);border:1px solid var(--border);color:var(--text);padding:5px 12px;border-radius:20px;font:500 12px Inter,sans-serif;outline:none;width:130px;flex-shrink:0;transition:border-color .15s}
 .search-input:focus{border-color:var(--border2)}
@@ -4110,7 +4117,7 @@ setInterval(function(){
   s.addEventListener("animationend",function(){s.remove();});
   wrap.appendChild(s);
 },2600);
-function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
+function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.toggle("top",!!document.querySelector(".lb-trash-sheet.open,.lb-wheel-sheet.open"));t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
 
 // An event is over when its MAIN EVENT has a winner (fights[0] — cards are
 // main-event-first). Results are authoritative over the clock: start times for
