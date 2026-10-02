@@ -261,3 +261,27 @@ def test_a_stale_reading_on_fight_eve_is_flagged():
     findings, _ = health.check(card_js("20:00", "18:00", "16:00"), now=later,
                                official=stale)
     assert "time-stale" in kinds(findings, "WARN")
+
+
+def test_the_same_clock_a_day_apart_is_a_mismatch():
+    # A Sunday-local card airing Saturday ET: page_is_card allows the day, but
+    # the app pins every clock to the card's own date, so 20:00 on the wrong
+    # day locks picks 24 hours off.
+    shifted = official()
+    for seg in shifted["cards"]["UFC 332: Silva vs. Wang|2026-10-03"]["segments"].values():
+        seg["date"] = "2026-10-04"
+    findings, _ = health.check(card_js("20:00", "18:00", "16:00"), now=NOW,
+                               official=shifted)
+    msgs = [f["message"] for f in findings if f["check"] == "time-mismatch"]
+    assert len(msgs) == 3
+    assert any("picks lock 1440 min early" in m for m in msgs)
+
+
+def test_a_partial_reading_leaves_the_missing_segment_unconfirmed():
+    partial = official()
+    del partial["cards"]["UFC 332: Silva vs. Wang|2026-10-03"]["segments"]["early"]
+    findings, summary = health.check(card_js("20:00", "18:00", "16:00"), now=NOW,
+                                     official=partial)
+    unc = [f for f in findings if f["check"] == "time-unconfirmed"]
+    assert [f["segment"] for f in unc] == ["early"]
+    assert summary["block"] == 0

@@ -330,6 +330,20 @@ def _minutes(hhmm):
         return None
 
 
+def _instant_diff(our_date, our_hhmm, their_date, their_hhmm):
+    """Minutes our clock sits after theirs, both read as ET wall time on their
+    own dates, or None if either won't parse."""
+    a, b = _minutes(our_hhmm), _minutes(their_hhmm)
+    if a is None or b is None:
+        return None
+    try:
+        days = (datetime.strptime(our_date, "%Y-%m-%d")
+                - datetime.strptime(their_date, "%Y-%m-%d")).days
+    except ValueError:
+        return None
+    return days * 1440 + a - b
+
+
 def official_findings(upcoming, official, now):
     """WARN findings comparing data.js's clocks and segment split with the
     UFC.com reading in official-times.json."""
@@ -350,28 +364,45 @@ def official_findings(upcoming, official, now):
                             f"{ev['name']} ({d}d out): start times not confirmed "
                             f"against UFC.com ({why})"})
             continue
+        # The segments this card runs. A reading that lacks one of them has
+        # checked nothing about that clock, which is not the same as agreeing.
+        lbls = {f["lbl"] for f in ev["fights"]}
+        expected = {"main"}
+        if "Prelim" in lbls or ev.get("prelimTime") not in ("", "TBD", None):
+            expected.add("prelim")
+        if "Early Prelim" in lbls:
+            expected.add("early")
         for seg, field, label in _SEG_FIELD:
             want = (segs.get(seg) or {}).get("et")
             if not want:
+                if seg in expected:
+                    out.append({"check": "time-unconfirmed", **tag, "segment": seg,
+                                "message": f"{ev['name']} ({d}d out): UFC.com reading "
+                                           f"has no {label} time, so it is unchecked"})
                 continue
             have = ev.get(field) or ""
             if have in ("", "TBD"):
-                if seg == "early" and not any(f["lbl"] == "Early Prelim"
-                                              for f in ev["fights"]):
+                if seg == "early" and "Early Prelim" not in lbls:
                     continue
                 out.append({"check": "time-mismatch", **tag, "segment": seg,
                             "message": f"{ev['name']} ({d}d out): {label} has no "
                                        f"time here, UFC.com says {want} ET"})
                 continue
-            a, b = _minutes(have), _minutes(want)
-            if a is None or b is None or a == b:
+            # The app pins every clock to the card's own date, so compare whole
+            # instants: an identical HH:MM a day apart is a 24h lock error.
+            diff = _instant_diff(ev["date"], have,
+                                 (segs.get(seg) or {}).get("date") or ev["date"], want)
+            if diff is None or diff == 0:
                 continue
-            diff = (a - b + 720) % 1440 - 720
             when = (f"picks lock {diff} min AFTER the bell" if diff > 0
                     else f"picks lock {-diff} min early")
+            theirs_day = (segs.get(seg) or {}).get("date") or ev["date"]
+            ours, them = ((f" on {ev['date']}", f" on {theirs_day}")
+                          if theirs_day != ev["date"] else ("", ""))
             out.append({"check": "time-mismatch", **tag, "segment": seg,
-                        "message": f"{ev['name']} ({d}d out): {label} is {have} ET "
-                                   f"here, UFC.com says {want} ET ({when})"})
+                        "message": f"{ev['name']} ({d}d out): {label} is {have} ET"
+                                   f"{ours} here, UFC.com says {want} ET{them} "
+                                   f"({when})"})
         # Which segment each bout sits in decides when it locks, and scrape.py
         # infers that from bout order. Compare it with UFC.com's own split.
         theirs = {}

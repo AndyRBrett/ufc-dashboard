@@ -585,10 +585,13 @@ re-read every 1h within 2 days, 3h within a week, 12h out to 21 days;
 failed read keeps the last good reading. **It only reports.** `health.py`
 compares the reading with `data.js` and files WARNs on the data-health issue:
 
-- `time-mismatch`: a segment clock differs, saying whether picks lock late or early
+- `time-mismatch`: a segment clock differs, saying whether picks lock late or
+  early. Whole instants are compared (date and clock), since the app pins every
+  clock to the card's own date
 - `segment-mismatch`: a bout's label disagrees with UFC.com's split, which
   `_MAIN_CARD_SIZE` / `_PRELIM_CARD_SIZE` infer from bout order
-- `time-unconfirmed`: a card within 7 days with no reading
+- `time-unconfirmed`: a card within 7 days with no reading, or a reading
+  missing a segment the card runs (a partial parse is not agreement)
 - `time-stale`: a card within 2 days last confirmed more than 24h ago
 
 Never BLOCK on these: a wrong clock is a data gap, and blocking would freeze
