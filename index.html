@@ -1433,6 +1433,85 @@ body[data-theme="silver"] .flive{background:linear-gradient(180deg,#e4f2fd,#cbe6
 </style>
 </head>
 <body>
+<script>
+// diag:start
+// On-device diagnostics for "the app ignores every touch" (2026-10-02: a roast
+// tapped from a notification opened, then nothing responded; the app's timers
+// were still running, so it was not hung). Nothing here leaves the phone: a
+// ring buffer in localStorage (ufc_diag), shown by tapping the version number
+// at the bottom of Ranks five times. It records every touch and click with the
+// element actually under the finger, the overlays that were open, the scroll
+// lock, the roast/leaderboard open and close steps, page lifecycle and errors.
+// Roast text is never recorded, only its length. Everything is try/caught and
+// listeners are passive: diagnostics must never be the thing that breaks a tap.
+(function(){
+  var KEY="ufc_diag",MAX=200,buf=null;
+  function load(){if(buf)return buf;try{buf=JSON.parse(localStorage.getItem(KEY)||"[]");if(!Array.isArray(buf))buf=[];}catch(e){buf=[];}return buf;}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(buf));}catch(e){}}
+  var saveT=null;
+  function log(type,detail){
+    try{
+      load();
+      buf.push([Date.now(),String(type).slice(0,24),String(detail==null?"":detail).slice(0,240)]);
+      if(buf.length>MAX)buf.splice(0,buf.length-MAX);
+      // Batched, but flushed on hide so a swipe-away keeps the last entries.
+      if(!saveT)saveT=setTimeout(function(){saveT=null;save();},250);
+    }catch(e){}
+  }
+  function desc(el){
+    try{
+      if(!el||!el.tagName)return String(el);
+      var d=el.tagName.toLowerCase();
+      if(el.id)d+="#"+el.id;
+      var c=typeof el.className==="string"?el.className.trim():"";
+      if(c)d+="."+c.split(/\s+/).slice(0,3).join(".");
+      // Nearest ancestor with an id, so an anonymous child still says where it is.
+      var a=el.parentElement,n=0;
+      while(a&&!a.id&&n<12){a=a.parentElement;n++;}
+      if(a&&a.id&&a!==el)d+=" in #"+a.id;
+      return d;
+    }catch(e){return "?";}
+  }
+  function opens(){
+    try{return Array.prototype.map.call(document.querySelectorAll(".open[id]"),function(e){return e.id;}).join(",");}catch(e){return "?";}
+  }
+  function scrollState(){
+    try{
+      var b=document.body.style,vv=window.visualViewport;
+      return "sy="+Math.round(window.scrollY)+(b.position?" body="+b.position+"@"+b.top:"")+
+        (vv?" vv="+Math.round(vv.offsetTop)+"/"+Math.round(vv.height)+"x"+vv.scale.toFixed(2):"");
+    }catch(e){return "?";}
+  }
+  function touch(type,e){
+    try{
+      var p=e.changedTouches&&e.changedTouches[0]?e.changedTouches[0]:e;
+      var x=Math.round(p.clientX),y=Math.round(p.clientY);
+      var top=document.elementFromPoint(x,y);
+      log(type,x+","+y+" target="+desc(e.target)+(top!==e.target?" top="+desc(top):"")+" open=["+opens()+"] "+scrollState()+(e.defaultPrevented?" prevented":""));
+    }catch(err){}
+  }
+  window._diag=log;
+  window._diagRead=function(){return load().slice();};
+  window._diagClear=function(){buf=[];save();};
+  window._diagDesc=desc;window._diagOpens=opens;window._diagScroll=scrollState;
+  document.addEventListener("touchstart",function(e){touch("touchstart",e);},{capture:true,passive:true});
+  document.addEventListener("touchend",function(e){touch("touchend",e);},{capture:true,passive:true});
+  document.addEventListener("click",function(e){touch("click",e);},true);
+  window.addEventListener("error",function(e){log("error",(e.message||"")+" @"+(e.filename||"").split("/").pop()+":"+(e.lineno||0));});
+  window.addEventListener("unhandledrejection",function(e){var r=e.reason;log("rejection",r&&(r.message||r)||"?");});
+  document.addEventListener("visibilitychange",function(){log("visibility",document.visibilityState);if(document.visibilityState==="hidden")save();});
+  window.addEventListener("pagehide",function(e){log("pagehide",e.persisted?"bfcache":"");save();});
+  window.addEventListener("pageshow",function(e){log("pageshow",e.persisted?"bfcache":"load");});
+  var sw="";try{sw=navigator.serviceWorker&&navigator.serviceWorker.controller?"sw":"no-sw";}catch(e){}
+  // Parameter NAMES only: a launch via the legacy fallback carries the roast
+  // itself (?trash=<text>&from=<sender>), and a room link its join code.
+  var qk="";try{qk=Array.from(new URLSearchParams(location.search).keys()).join(",");}catch(e){}
+  log("boot",(qk?"params="+qk+" ":"")+sw+" "+(navigator.standalone?"standalone ":"")+innerWidth+"x"+innerHeight);
+  // A heartbeat: if timers stall, the gap between these is the stall.
+  setInterval(function(){if(document.visibilityState==="visible")log("beat",opens());},10000);
+})();
+// diag:end
+</script>
 <script>try{var _t=localStorage.getItem("ufc_theme");
 var _ok={octagon:1,neon:1,fire:1,usa:1,seasonal:1,silver:1,noche:1};
 if(!_ok[_t])_t="octagon";
@@ -11642,6 +11721,65 @@ _roomsBoot();
     })
     .catch(function(){ /* see above: no banner is the right answer */ });
 })();
+</script>
+<script>
+// diag-ui:start
+// The other half of diag:start (top of <body>): breadcrumbs on the steps that
+// put a roast on screen and take it away, and the viewer. Wrapping replaces the
+// global binding, so inline onclick handlers and internal calls both go
+// through it. A function that doesn't exist is skipped, never invented.
+(function(){
+  if(typeof window._diag!=="function")return;
+  var log=window._diag;
+  function wrap(name,info){
+    var f=window[name];
+    if(typeof f!=="function"||f._diagWrapped)return;
+    var w=function(){
+      try{log("call",name+(info?" "+info.apply(null,arguments):"")+" open=["+window._diagOpens()+"] "+window._diagScroll());}catch(e){}
+      return f.apply(this,arguments);
+    };
+    w._diagWrapped=true;
+    window[name]=w;
+  }
+  var len=function(t){return "len="+String(t||"").length;};
+  wrap("_routeTap",function(kind,msg,sender,ts,delay){return "kind="+(kind||"roast")+" "+len(msg)+" ts="+(ts||0)+" delay="+(delay||0);});
+  wrap("showIncomingTrashTalk",function(t,sender){return len(t)+(sender?" sender":"");});
+  // Not consumePendingTap / checkRoastInbox / checkWhatsNew: they poll every
+  // few seconds and would push everything useful out of the ring. A poll that
+  // finds something reaches _routeTap, which is logged.
+  ["closeTrashSheet","openTrashTalk","openLeaderboard","closeLeaderboard","lockScroll","unlockScroll",
+   "renderWhatsNew","closeWhatsNew","_suspendWhatsNew","openCardRecap","closeCardRecap",
+   "openWrapped","closeWrapped","openChallengeInbox","closeChalSheet","checkName","openAcct","closeAcct",
+   "closeNameModal","showInstall","closeInstall","closeBot"].forEach(function(n){wrap(n);});
+
+  // Viewer: five taps on the version number at the bottom of Ranks within 4s.
+  var taps=[];
+  document.addEventListener("click",function(e){
+    var t=e.target;
+    if(!t||t.id!=="appVer")return;
+    var now=Date.now();taps=taps.filter(function(x){return now-x<4000;});taps.push(now);
+    if(taps.length>=5){taps=[];showDiag();}
+  },true);
+  function showDiag(){
+    var old=document.getElementById("diagView");if(old)old.remove();
+    var v=document.createElement("div");v.id="diagView";
+    v.style.cssText="position:fixed;inset:0;z-index:2147483647;background:#000;color:#ddd;display:flex;flex-direction:column;font:11px/1.35 ui-monospace,Menlo,monospace;padding:calc(env(safe-area-inset-top,0px) + 8px) 8px calc(env(safe-area-inset-bottom,0px) + 8px)";
+    var bar=document.createElement("div");bar.style.cssText="display:flex;gap:8px;margin-bottom:8px";
+    function btn(label,fn){var b=document.createElement("button");b.textContent=label;b.style.cssText="flex:1;padding:10px;font:600 13px system-ui;border-radius:8px;border:1px solid #444;background:#222;color:#fff";b.onclick=fn;bar.appendChild(b);return b;}
+    var list=document.createElement("div");list.style.cssText="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;white-space:pre-wrap;word-break:break-word";
+    var rows=window._diagRead();
+    var text=rows.map(function(r){var d=new Date(r[0]);return d.toISOString().slice(5,23).replace("T"," ")+" "+r[1]+" "+r[2];}).join("\n");
+    list.textContent=rows.length?text:"(no entries)";
+    btn("Copy",function(){try{navigator.clipboard.writeText(text).then(function(){cp.textContent="Copied";});}catch(e){}});
+    var cp=bar.lastChild;
+    btn("Clear",function(){window._diagClear();list.textContent="(cleared)";});
+    btn("Close",function(){v.remove();});
+    v.appendChild(bar);v.appendChild(list);document.body.appendChild(v);
+    list.scrollTop=list.scrollHeight;
+  }
+  window._diagShow=showDiag;
+})();
+// diag-ui:end
 </script>
 </body>
 </html>

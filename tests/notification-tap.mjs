@@ -363,6 +363,48 @@ async function main() {
       assert("no :has() selector in the app's CSS", !/:has\(/.test(css));
     }
 
+    // On-device diagnostics (diag:start / diag-ui:end): a tapped roast and the
+    // tap that closes it are recorded with the element actually under the
+    // finger, the roast's text is never stored, and five taps on the version
+    // number open the log. The recorder must not get in the way of the tap.
+    {
+      await page.evaluate(() => { _diagClear(); });
+      await page.evaluate((t) => _routeTap("", t, "T", Date.now(), 0), ROAST);
+      await page.waitForTimeout(500);
+      await page.tap("#trashSheet .lb-trash-close").catch(() => page.click("#trashSheet .lb-trash-close"));
+      await page.waitForTimeout(500);
+      const d = await page.evaluate(() => { const r = _diagRead(); return { text: JSON.stringify(r), n: r.length, closed: !document.getElementById("trashSheet").classList.contains("open") }; });
+      assert("diag: the X still closes the roast with the recorder on", d.closed);
+      assert("diag: the tap is logged with what was under the finger", /"(touchend|click)","[^"]*target=button\.lb-trash-close in #trashSheet/.test(d.text));
+      assert("diag: the roast's open and close steps are logged", /call","_routeTap kind=roast len=/.test(d.text) && /call","showIncomingTrashTalk len=/.test(d.text) && /call","closeTrashSheet/.test(d.text));
+      assert("diag: the roast's words are never stored", !d.text.includes("bingo") && !d.text.includes("underdogs"));
+      // ...including when the app was launched by the legacy ?trash= fallback,
+      // whose URL is the roast: the boot line keeps parameter names only.
+      const legacy = await browser.newPage();
+      await legacy.goto(base + "/index.html?trash=" + encodeURIComponent(ROAST) + "&from=AB", { waitUntil: "load" });
+      await legacy.waitForTimeout(600);
+      const boot = await legacy.evaluate(() => JSON.stringify(_diagRead().filter((r) => r[1] === "boot")));
+      await legacy.close();
+      assert("diag: a ?trash= launch logs its parameter names, never the roast or sender",
+        /params=trash,from/.test(boot) && !boot.includes("bingo") && !boot.includes("AB "));
+      const viewer = await page.evaluate(async () => {
+        openLeaderboard();
+        let v = document.getElementById("appVer");
+        if (!v) { v = document.createElement("div"); v.id = "appVer"; v.textContent = "vtest"; document.getElementById("lbBody").appendChild(v); }
+        for (let i = 0; i < 5; i++) v.click();
+        const el = document.getElementById("diagView");
+        const out = { shown: !!el, hasRows: !!el && /call/.test(el.textContent) };
+        if (el) el.remove();
+        closeLeaderboard();
+        return out;
+      });
+      assert("diag: five taps on the version number open the log", viewer.shown && viewer.hasRows);
+      const src = readFileSync(join(ROOT, "index.html"), "utf8");
+      const block = src.slice(src.indexOf("// diag:start"), src.indexOf("// diag:end"))
+        + src.slice(src.indexOf("// diag-ui:start"), src.indexOf("// diag-ui:end"));
+      assert("diag: nothing is sent anywhere and nothing is written as HTML", !/fetch\(|XMLHttpRequest|sendBeacon|innerHTML/.test(block));
+    }
+
     // A toast must not cover the roast it popped up over. A sync notice
     // ("✓ Synced 1 method pick") once landed on top of half a roast.
     {
