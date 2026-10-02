@@ -90,10 +90,10 @@ assert.equal(calls[0].tools,undefined);
 assert.equal(mod.fightResearchEnabled({action:'trash-talk',question}),false);
 assert.equal(mod.fightResearchEnabled({action:'fight-iq',question}),false);
 assert.equal(mod.fightResearchEnabled({action:'verdict',question}),false);
-for (const q of ['Explain a rear-naked choke', 'Who is the current ONE flyweight champion?', 'What happened at PRIDE 33?', 'Who is the best Japanese prospect?', 'What is the latest news from Bellator?', 'How are rounds judged in MMA?', 'How does scoring work in ONE?']) {
+for (const q of ['Explain a rear-naked choke', 'Who is the current ONE flyweight champion?', 'What happened at PRIDE 33?', 'Who is the best Japanese prospect?', 'What is the latest news from Bellator?', 'How are rounds judged in MMA?', 'How does scoring work in ONE?', 'Who won FOTN last night?']) {
   assert.equal(mod.fightResearchEnabled({action:'guide',question:q}),true,q);
 }
-for (const q of ['How do locks work?', 'How do I join a room?', 'How does scoring work in the app?', 'Where are my picks?']) {
+for (const q of ['How do locks work?', 'How do I join a room?', 'How does scoring work in the app?', 'Where are my picks?', 'How do I choose a Bonus Pick in the app?']) {
   assert.equal(mod.fightResearchEnabled({action:'guide',question:q}),false,q);
 }
 responses=[{content:[{type:'text',text:'A rear-naked choke compresses the neck with an arm around it, using the other arm to secure the grip.'}]}];

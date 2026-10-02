@@ -879,7 +879,7 @@ export function fightResearchEnabled(d: ReqBody): boolean {
   // Open-ended questions (including unfamiliar names and other promotions)
   // must have research available. Only clearly app-specific help skips it.
   const mma = /\b(mma|ufc|pfl|rizin|one championship|pride|bellator|fighter|fought|opponent|judging|technique|training|choke|armbar|wrestling|grappling|kickboxing|news)\b/i.test(q);
-  const app = /\b(app|my picks|locks?|leaderboard|notifications?|rooms?|watch party|fight lab|fight iq|sign in|log ?in|account|bonus pick|fotn)\b/i.test(q);
+  const app = /\b(app|my picks|locks?|leaderboard|notifications?|rooms?|watch party|fight lab|fight iq|sign in|log ?in|account|bonus pick)\b/i.test(q);
   return mma || !app || !!d.fightContext;
 }
 const SEARCH_UNAVAILABLE_RULE = "Web search is unavailable for this request. App-specific and fighter facts must come from supplied data, but you can still explain established MMA rules, styles and techniques from general knowledge. Do not claim you searched, invent current facts, or infer an all-career negative from cached UFC opponents. Say which missing historical facts you cannot verify.";
