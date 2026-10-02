@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-01T23:03:39Z",
+ "generated_at": "2026-10-02T00:03:45Z",
  "promotions": [
   {
    "id": "pfl",
@@ -897,6 +897,17 @@
      "b": "Nawras Abzakh",
      "label": "",
      "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Shaqueme Rock",
+     "b": "Connor Hughes",
+     "label": "",
+     "division": "Lightweight",
      "title": false,
      "odds": null,
      "winner": "",
