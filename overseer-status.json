@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T09:13:53Z",
+  "generated_at": "2026-10-02T09:24:47Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "status": "ok",
-      "last_changed_at": "2026-10-02T07:19:15Z",
+      "last_changed_at": "2026-10-02T09:24:47Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-02T09:13:53Z",
+      "last_changed_at": "2026-10-02T09:24:47Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 10,
@@ -135,7 +135,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-02T09:13:53Z",
+      "last_changed_at": "2026-10-02T09:24:47Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-02T09:13:53Z",
+      "last_changed_at": "2026-10-02T09:24:47Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -165,7 +165,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-02T09:13:53Z",
+      "last_changed_at": "2026-10-02T09:24:47Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -352,6 +352,22 @@
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
+      "f1": "Ateba Gautier",
+      "f2": "Roman Kopylov",
+      "f1_movement": -70,
+      "f2_movement": 43,
+      "magnitude": 70,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 45,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 7.4,
+      "f2_prob_shift": -5.7,
+      "priority": 140.0
+    },
+    {
+      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Natalia Silva",
       "f2": "Wang Cong",
       "f1_movement": 25,
@@ -365,22 +381,6 @@
       "f1_prob_shift": -2.5,
       "f2_prob_shift": 3.3,
       "priority": 130.0
-    },
-    {
-      "event_id": "2026-10-03:ufc-332-silva-vs-wang",
-      "f1": "Ateba Gautier",
-      "f2": "Roman Kopylov",
-      "f1_movement": -63,
-      "f2_movement": 37,
-      "magnitude": 63,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 45,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 6.8,
-      "f2_prob_shift": -5.0,
-      "priority": 126.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",

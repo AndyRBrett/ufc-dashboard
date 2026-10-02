@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T09:13:53Z",
+  "generated_at": "2026-10-02T09:24:47Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -11752,7 +11752,7 @@
           "f1": "Ateba Gautier",
           "f2": "Roman Kopylov",
           "lbl": "Main Card",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -11848,6 +11848,11 @@
               "at": "2026-10-02T03:14:27Z",
               "f1_odds": -238,
               "f2_odds": 190
+            },
+            {
+              "at": "2026-10-02T09:24:47Z",
+              "f1_odds": -245,
+              "f2_odds": 196
             }
           ],
           "open": {
@@ -17626,7 +17631,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Roman Kopylov",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": -175,
         "close": null,
         "clv": null
@@ -17637,7 +17642,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Ateba Gautier",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": 153,
         "close": null,
         "clv": null
