@@ -1,11 +1,53 @@
 {
-  "generated_at": "2026-10-02T03:03:45Z",
+  "generated_at": "2026-10-02T03:14:27Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 1
+    "warn": 7
   },
   "findings": [
+    {
+      "severity": "WARN",
+      "check": "start-time-changed",
+      "message": "UFC 332: Silva vs. Wang (1d out): main-card start moved 21:00 \u2192 20:00 ET",
+      "event": "UFC 332: Silva vs. Wang",
+      "date": "2026-10-03"
+    },
+    {
+      "severity": "WARN",
+      "check": "start-time-changed",
+      "message": "UFC 332: Silva vs. Wang (1d out): prelim start moved 19:00 \u2192 18:00 ET",
+      "event": "UFC 332: Silva vs. Wang",
+      "date": "2026-10-03"
+    },
+    {
+      "severity": "WARN",
+      "check": "start-time-changed",
+      "message": "UFC 333: Volkanovski vs. Evloev (22d out): prelim start moved 11:00 \u2192 12:00 ET",
+      "event": "UFC 333: Volkanovski vs. Evloev",
+      "date": "2026-10-24"
+    },
+    {
+      "severity": "WARN",
+      "check": "start-time-unanchored",
+      "message": "UFC Fight Night: Prochazka vs. Stirling (50d out): venue 'Al Rayyan' matches no known region, so its 13:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "event": "UFC Fight Night: Prochazka vs. Stirling",
+      "date": "2026-11-21"
+    },
+    {
+      "severity": "WARN",
+      "check": "start-time-changed",
+      "message": "UFC Fight Night: Prochazka vs. Stirling (50d out): main-card start moved TBD \u2192 13:00 ET",
+      "event": "UFC Fight Night: Prochazka vs. Stirling",
+      "date": "2026-11-21"
+    },
+    {
+      "severity": "WARN",
+      "check": "start-time-changed",
+      "message": "UFC Fight Night: Prochazka vs. Stirling (50d out): prelim start moved TBD \u2192 10:00 ET",
+      "event": "UFC Fight Night: Prochazka vs. Stirling",
+      "date": "2026-11-21"
+    },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
