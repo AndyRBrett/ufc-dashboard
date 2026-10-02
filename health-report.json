@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-02T04:03:53Z",
+  "generated_at": "2026-10-02T04:18:45Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 4
+    "warn": 2
   },
   "findings": [
     {
@@ -20,22 +20,6 @@
       "event": "UFC Fight Night: Allen vs. Duncan",
       "date": "2026-10-10",
       "days_out": 8
-    },
-    {
-      "severity": "WARN",
-      "check": "segment-mismatch",
-      "message": "UFC Fight Night: Allen vs. Duncan (8d out): Malcolm Wellmaker vs. Otari Tanzilovi is labelled Prelim here, UFC.com lists it under main card",
-      "event": "UFC Fight Night: Allen vs. Duncan",
-      "date": "2026-10-10",
-      "days_out": 8
-    },
-    {
-      "severity": "WARN",
-      "check": "segment-mismatch",
-      "message": "UFC Fight Night: Buckley vs. Malott (15d out): Louis Jourdain vs. Timothy Cuamba is labelled Prelim here, UFC.com lists it under main card",
-      "event": "UFC Fight Night: Buckley vs. Malott",
-      "date": "2026-10-17",
-      "days_out": 15
     }
   ]
 }
