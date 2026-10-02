@@ -233,6 +233,38 @@ async function main() {
     assert("a sender with no picks on the card gets no rank for it", r.myRank === 0);
     assert("a sender with no picks on the card is described that way, not as 0-for-anything",
       /hasn't made a single pick for UFC 999/.test(r.myRecord));
+
+    // Any voice: a name that isn't in the list can be typed and used.
+    {
+      const r = await page.evaluate(async () => {
+        const search = document.getElementById("trashPersonaSearch");
+        const rows = () => Array.from(document.querySelectorAll("#trashPersonaList .lb-trash-persona-row")).map((b) => b.textContent);
+        search.value = "Matt Williams"; filterTrashPersonas();
+        const typed = rows();
+        search.value = "conor mcgregor"; filterTrashPersonas();
+        const exact = rows();
+        search.value = "  Matt \u2014 Williams\n"; filterTrashPersonas();
+        const dashed = rows()[0];
+        search.value = "Matt Williams"; filterTrashPersonas();
+        document.querySelector("#trashPersonaList .lb-trash-persona-own").click();
+        const persona = window._trashPersona, targets = document.getElementById("trashTargets").style.display;
+        // Generate: the typed name is what the AI is asked to speak as.
+        let sent = null;
+        const real = window._aiFetch;
+        window._aiFetch = (body) => { sent = JSON.parse(body); return Promise.resolve(new Response(JSON.stringify({ breakdown: "x — Matt Williams" }), { status: 200 })); };
+        window._trashMe = window._trashMe || { user_id: "me", nickname: "AB" };
+        window._trashOpponents = window._trashOpponents && window._trashOpponents.length ? window._trashOpponents : [{ user_id: "u-t", nickname: "T" }];
+        generateTrashTalk();
+        await new Promise((res) => setTimeout(res, 200));
+        window._aiFetch = real;
+        return { typed, exact, dashed, persona, targets, sentPersona: sent && sent.persona };
+      });
+      assert("any voice: typing a name not in the list offers it", r.typed[0] === "🎤 Use \u201CMatt Williams\u201D as the voice");
+      assert("any voice: tapping it makes it the voice and moves on to targets", r.persona === "Matt Williams" && r.targets === "block");
+      assert("any voice: the AI is asked to speak as the typed name", r.sentPersona === "Matt Williams");
+      assert("any voice: a name already in the list isn't offered twice", !r.exact.some((t) => /^🎤 Use/.test(t)) && r.exact.includes("Conor McGregor"));
+      assert("any voice: dashes are stripped (the signature is read back from '— Name')", r.dashed === "🎤 Use \u201CMatt Williams\u201D as the voice");
+    }
   } catch (e) {
     fatal.push("Run failed: " + e.message);
   } finally {
