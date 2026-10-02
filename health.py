@@ -315,11 +315,25 @@ def _fold(s):
     return " ".join(re.sub(r"[^a-z0-9 ]+", " ", s.replace("'", "")).split())
 
 
+_NAME_SUFFIXES = {"jr", "sr", "ii", "iii", "iv"}
+
+
+def _name_tokens(n):
+    """A fighter's name as a set of words, suffixes dropped: word order and
+    "Jr." differ between sources ("Wang Cong" / "Cong Wang")."""
+    return frozenset(t for t in _fold(n).split() if t not in _NAME_SUFFIXES)
+
+
 def _bout_keys(a, b):
-    """Full-name and surname keys for a bout, either corner order."""
-    fa, fb = _fold(a), _fold(b)
-    return (frozenset((fa, fb)),
-            frozenset((fa.split()[-1] if fa else "", fb.split()[-1] if fb else "")))
+    """Full-name and surname keys for a bout, either corner order. The full
+    key compares each fighter's set of name words, so reordered names and a
+    dropped suffix still match; the surname key is the last such word."""
+    ta, tb = _name_tokens(a), _name_tokens(b)
+
+    def last(n):
+        toks = [t for t in _fold(n).split() if t not in _NAME_SUFFIXES]
+        return toks[-1] if toks else ""
+    return frozenset((ta, tb)), frozenset((last(a), last(b)))
 
 
 def bout_segments(reading):

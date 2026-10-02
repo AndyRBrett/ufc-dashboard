@@ -411,3 +411,17 @@ def test_a_shared_surname_is_not_a_match():
     segs = health.bout_segments({"bouts": {"early": [["Rafael Dos Anjos",
                                                       "Alexander Hernandez"]]}})
     assert health.segment_of(segs, "Alexander Hernandez", "Rafael dos Anjos") == "early"
+
+
+def test_reordered_names_and_suffixes_still_match():
+    segs = health.bout_segments({"bouts": {"main": [["Natalia Silva", "Cong Wang"]],
+                                           "prelim": [["Khalil Rountree Jr.", "Jon Doe"]]}})
+    assert health.segment_of(segs, "Wang Cong", "Natalia Silva") == "main"
+    assert health.segment_of(segs, "Khalil Rountree", "Jon Doe") == "prelim"
+    card = built(("Main Event", "A One", "B One"),
+                 ("Prelim", "Wang Cong", "Natalia Silva"))
+    rd = {"segments": {"main": {"et": "20:00", "date": "2026-10-03"}},
+          "bouts": {"main": [["A One", "B One"], ["Natalia Silva", "Cong Wang"]]}}
+    scrape.apply_official_times("UFC 332: Silva vs. Wang", "2026-10-03", card,
+                                "20:00", "18:00", rd)
+    assert card[1]["label"] == "Main Card"
