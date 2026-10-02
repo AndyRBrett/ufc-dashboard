@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-02T13:29:25Z",
+ "generated_at": "2026-10-02T14:54:35Z",
  "promotions": [
   {
    "id": "pfl",
@@ -50,40 +50,7 @@
      "round": null
     },
     {
-     "a": "Elias Boudegzdame",
-     "b": "Islam Youssef",
-     "label": "",
-     "division": "Featherweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
      "a": "Ylies Djiroun",
-     "b": "Basel Shalaan",
-     "label": "",
-     "division": "Lightweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Omar Hussein",
-     "b": "Abdelkrim Zouad",
-     "label": "",
-     "division": "Welterweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Hassan Shaaban",
      "b": "Assem Ghanem",
      "label": "",
      "division": "Lightweight",
@@ -98,6 +65,17 @@
      "b": "Shadi Kabbani",
      "label": "",
      "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Omar Hussein",
+     "b": "Abdelkrim Zouad",
+     "label": "",
+     "division": "Welterweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -122,23 +100,23 @@
      "a": "Fatima Al Ammari",
      "b": "Aya Lounes",
      "label": "",
-     "division": "Women's Bantamweight",
+     "division": "Catchweight (139 Lb)",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Fatima Al Ammari",
+     "method": "KO/TKO",
+     "round": 2
     },
     {
-     "a": "Haif Alqahtani",
+     "a": "Alridah Alnemar",
      "b": "Ali Alshowakh",
      "label": "",
-     "division": "Featherweight",
+     "division": "Bantamweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Alridah Alnemar",
+     "method": "Decision (Unanimous)",
+     "round": 3
     }
    ]
   },
