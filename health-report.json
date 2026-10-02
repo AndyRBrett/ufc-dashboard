@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-02T17:38:49Z",
+  "generated_at": "2026-10-02T17:45:54Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 2
+    "warn": 1
   },
   "findings": [
     {
@@ -12,14 +12,6 @@
       "message": "UFC Fight Night: Prochazka vs. Stirling (50d out): venue 'Al Rayyan' matches no known region, so its 13:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Prochazka vs. Stirling",
       "date": "2026-11-21"
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-missing-some",
-      "message": "UFC Fight Night: Allen vs. Duncan (8d out): 1 of 12 bouts have no odds",
-      "event": "UFC Fight Night: Allen vs. Duncan",
-      "date": "2026-10-10",
-      "days_out": 8
     }
   ]
 }
