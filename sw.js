@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = "2026-10-02-2";
+const SW_VERSION = "2026-10-02-4";
 const CACHE = 'ufc-' + SW_VERSION;
 // Handoff caches that must survive SW upgrades: 'ufc-push-id' carries the push
 // identity used by pushsubscriptionchange while the app is closed, 'ufc-tap'
@@ -180,17 +180,26 @@ self.addEventListener('push', function(e) {
   var displayBody = sep >= 0 ? rawBody.slice(0, sep) : rawBody;
   var fullMessage = sep >= 0 ? rawBody.slice(sep + 5) : rawBody;
 
+  // The notification goes up FIRST and unconditionally. iOS treats a push
+  // that shows no notification as silent (and revokes the subscription after
+  // a few), so nothing may stand in front of showNotification. #242 put a
+  // clients.matchAll() ahead of it to tell open pages a push had arrived; a
+  // friend's phone then got a roast Apple had accepted but showed no banner.
+  // Telling the page now runs beside it, and can't delay or block it.
+  var shown = self.registration.showNotification(data.title || 'UFC Picks', {
+    body: displayBody,
+    icon: './icon-192-v2.png',
+    badge: './icon-192-v2.png',
+    data: { url: data.url || './', kind: data.kind || '', fullMessage: fullMessage }
+  });
   // Tell any open page a push arrived, so it reads the roast inbox right away
   // instead of relying on the tap to carry the roast in (see index.html).
-  var told = clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(cs) {
+  var told = Promise.resolve().then(function() {
+    return clients.matchAll({ type: 'window', includeUncontrolled: true });
+  }).then(function(cs) {
     cs.forEach(function(c) { try { c.postMessage({ type: 'push-arrived', kind: data.kind || '' }); } catch (err) {} });
   }).catch(function() {});
-  e.waitUntil(told.then(function() { return self.registration.showNotification(data.title || 'UFC Picks', {
-      body: displayBody,
-      icon: './icon-192-v2.png',
-      badge: './icon-192-v2.png',
-      data: { url: data.url || './', kind: data.kind || '', fullMessage: fullMessage }
-    }); }));
+  e.waitUntil(Promise.all([shown, told]));
 });
 
 self.addEventListener('notificationclick', function(e) {

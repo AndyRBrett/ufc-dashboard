@@ -329,6 +329,22 @@ async function main() {
       handlers.push({ data: { json: () => ({ title: "🎤 Joe Rogan (via T)", body: ROAST }) }, waitUntil(p) { wait = p; } });
       await wait;
       assert("sw: a push arriving tells the open page to read the roast inbox", msgs.some((m) => m.type === "push-arrived"));
+      // The banner must never wait on telling the page: a lookup of open
+      // windows that hangs, or throws, still shows the notification, and
+      // shows it straight away (iOS counts a push with no banner as silent).
+      for (const how of ["hangs", "throws"]) {
+        const shown = [];
+        const h = {};
+        vm.runInNewContext(readFileSync(join(ROOT, "sw.js"), "utf8"), {
+          self: { addEventListener: (t, f) => { h[t] = f; }, registration: { scope: "https://x.github.io/ufc-dashboard/",
+            showNotification: (title, opts) => { shown.push({ title, body: opts.body }); return Promise.resolve(); } }, skipWaiting() {} },
+          clients: { matchAll: () => { if (how === "throws") throw new Error("nope"); return new Promise(() => {}); } },
+          caches: {}, Response, URL, Promise, JSON, Date, console,
+        });
+        h.push({ data: { json: () => ({ title: "🎤 Katt Williams (via AB)", body: ROAST }) }, waitUntil() {} });
+        assert(`sw: the banner shows at once even when finding open windows ${how}`,
+          shown.length === 1 && shown[0].title === "🎤 Katt Williams (via AB)" && shown[0].body === ROAST);
+      }
     }
 
     // A roast must always be closable. A tall one (the max length, plus
