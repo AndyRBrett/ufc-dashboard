@@ -169,6 +169,7 @@ self.addEventListener('pushsubscriptionchange', function(e) {
   );
 });
 
+var PUSH_TELL_MS = 2000;   // longest the push event waits to tell open pages
 self.addEventListener('push', function(e) {
   var data = {};
   try { data = e.data ? e.data.json() : {}; } catch(err) {}
@@ -199,7 +200,10 @@ self.addEventListener('push', function(e) {
   }).then(function(cs) {
     cs.forEach(function(c) { try { c.postMessage({ type: 'push-arrived', kind: data.kind || '' }); } catch (err) {} });
   }).catch(function() {});
-  e.waitUntil(Promise.all([shown, told]));
+  // Bounded: a lookup that never settles must not keep the push event (and the
+  // worker) alive. The banner is already up; telling the page is a bonus.
+  var toldOrTimeout = Promise.race([told, new Promise(function(res) { setTimeout(res, PUSH_TELL_MS); })]);
+  e.waitUntil(Promise.all([shown, toldOrTimeout]));
 });
 
 self.addEventListener('notificationclick', function(e) {
