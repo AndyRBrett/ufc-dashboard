@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-02T14:54:35Z",
+ "generated_at": "2026-10-02T16:24:48Z",
  "promotions": [
   {
    "id": "pfl",
@@ -72,15 +72,15 @@
      "round": null
     },
     {
-     "a": "Omar Hussein",
-     "b": "Abdelkrim Zouad",
+     "a": "Abdelkrim Zouad",
+     "b": "Omar Hussein",
      "label": "",
      "division": "Welterweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Abdelkrim Zouad",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
      "a": "Mohammad Fahmi",
@@ -92,9 +92,9 @@
       "a": -126,
       "b": 106
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Mohammad Fahmi",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
      "a": "Fatima Al Ammari",
