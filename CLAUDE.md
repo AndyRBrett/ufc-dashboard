@@ -869,7 +869,7 @@ on the Supabase deploy.
 
 (Not to be confused with `fightbot/`, the MCP server; both answer as FightBot.)
 
-**It talks fights too, from the app's own data only.** Each question carries
+**It talks fights too, from cached app data and cited web research.** Each question carries
 `_botFightData()`: the next unfinished card (bouts, records, ranks as
 `_fnRankLbl` shows them, odds, UFCStats lines), the last finished card's
 results, then later cards, built from `EVENTS` / `FIGHTER_STATS` and filled in
@@ -880,6 +880,21 @@ user's picks and what the user said: one retry, then a 502. A fighter with no
 rank is left without one, never called "unranked", and one with no fight data
 gets no stats line, never a claimed 0. A failure building the data never stops
 an app question.
+
+`_aiFightContext()` now supplies query-focused completed UFC opponent lists from
+all of FIGHTER_STATS, including fighters off the selected card, to Ask Claude,
+FightBot Help and the lightning breakdown. Unique first/surnames are resolved;
+ambiguous names are not guessed. Ask Claude sends bounded earlier turns too.
+These lists are UFC-only and cached: absence is never proof of no MMA meeting.
+The backend offers Anthropic `web_search_20250305` for fight chat, breakdown and
+fight-related guide requests (existing key and daily budgets, at most two searches per model attempt,
+including one pause continuation). It looks up missing historical facts and
+returns citation links, rendered with textContent. App-only guide requests,
+roasts, IQ and verdicts do not get search. Guide number checks include cited
+source excerpts; unsourced invented and misattributed figures still fail. An
+unfinished/truncated research response fails rather than displaying narration.
+FightBot MCP also exposes `get_fighter_history` with the same UFC-only caveat.
+`npm run check:history` tests these paths with frozen fixtures and stubbed search.
 
 **FightBot's call** (`ai-breakdown` action `verdict`) adds one AI line under a
 room's Tale of the Tape and a Card Recap's Fight Night Report, only when tapped,
