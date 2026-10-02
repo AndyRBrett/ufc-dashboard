@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-02T03:14:28Z",
+ "generated_at": "2026-10-02T05:18:47Z",
  "promotions": [
   {
    "id": "pfl",
@@ -304,32 +304,10 @@
    "broadcast": "",
    "bouts": [
     {
-     "a": "Roque Conceicao Moreira Jr.",
-     "b": "Alexander Chavez",
+     "a": "Alivia Bierley",
+     "b": "Summer Onley",
      "label": "Main Event",
-     "division": "Flyweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Ivan Gnizditskiy",
-     "b": "Nell Ariano",
-     "label": "",
-     "division": "Light Heavyweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Ryuho Miyaguchi",
-     "b": "Matheus Soares",
-     "label": "",
-     "division": "Bantamweight",
+     "division": "Women's Bantamweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -348,10 +326,32 @@
      "round": null
     },
     {
-     "a": "Alivia Bierley",
-     "b": "Summer Onley",
+     "a": "Roque Conceicao Moreira Jr.",
+     "b": "Alexander Chavez",
      "label": "",
-     "division": "Women's Bantamweight",
+     "division": "Flyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Ryuho Miyaguchi",
+     "b": "Matheus Soares",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Preston LaGrange",
+     "b": "Nell Ariano",
+     "label": "",
+     "division": "Light Heavyweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -559,6 +559,17 @@
      "b": "Erick Visconde",
      "label": "",
      "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Jason Asher",
+     "b": "Greg Foster",
+     "label": "",
+     "division": "Lightweight",
      "title": false,
      "odds": null,
      "winner": "",
