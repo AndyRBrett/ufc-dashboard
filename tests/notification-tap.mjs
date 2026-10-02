@@ -331,6 +331,38 @@ async function main() {
       assert("sw: a push arriving tells the open page to read the roast inbox", msgs.some((m) => m.type === "push-arrived"));
     }
 
+    // A roast must always be closable. A tall one (the max length, plus
+    // Report / Block) on a short screen used to be free to grow past the top
+    // of the panel, taking the ✕ with it and leaving a sheet over everything.
+    {
+      const was = page.viewportSize();
+      await page.setViewportSize({ width: 375, height: 480 });
+      const long = "Roast ".repeat(150) + "— Jorge Masvidal";
+      await page.evaluate((t) => showIncomingTrashTalk(t, "T"), long);
+      await page.waitForTimeout(500);   // past the sheet's slide-in transition
+      const r = await page.evaluate(() => {
+        const s = document.getElementById("trashSheet"), p = document.getElementById("lbPanel").getBoundingClientRect();
+        const x = s.querySelector(".lb-trash-close").getBoundingClientRect();
+        return { xTop: x.top, panelTop: p.top, xBottom: x.bottom, vh: innerHeight, scrolls: s.scrollHeight > s.clientHeight };
+      });
+      assert("a max-length roast on a short screen keeps its ✕ on screen", r.xTop >= r.panelTop && r.xBottom <= r.vh);
+      assert("...and scrolls inside the sheet instead of growing past it", r.scrolls);
+      await page.tap("#trashSheet .lb-trash-close").catch(() => page.click("#trashSheet .lb-trash-close"));
+      await page.waitForTimeout(300);
+      assert("...and the ✕ closes it", !(await sheet(page)).open);
+      await page.evaluate(() => closeLeaderboard());
+      await page.setViewportSize(was);
+    }
+
+    // No :has() rules. On body it makes WebKit re-check the whole page on every
+    // DOM change, and this page adds and removes an ambient particle several
+    // times a second; the toast rule that used one shipped with a frozen roast.
+    {
+      const css = [...readFileSync(join(ROOT, "index.html"), "utf8").matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)]
+        .map((m) => m[1].replace(/\/\*[\s\S]*?\*\//g, "")).join("\n");
+      assert("no :has() selector in the app's CSS", !/:has\(/.test(css));
+    }
+
     // A toast must not cover the roast it popped up over. A sync notice
     // ("✓ Synced 1 method pick") once landed on top of half a roast.
     {
