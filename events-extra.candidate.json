@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-02T16:50:13Z",
+ "generated_at": "2026-10-02T17:09:49Z",
  "promotions": [
   {
    "id": "pfl",
@@ -56,9 +56,9 @@
      "division": "Lightweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Ylies Djiroun",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
      "a": "Mehdi Saadi",
