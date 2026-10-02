@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-02T03:03:45Z",
+ "generated_at": "2026-10-02T06:08:54Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,7 +29,7 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 404,
+   "status": 500,
    "items": 0
   },
   {
@@ -44,6 +44,19 @@
    "name": "UFC 332: Silva vs. Wang",
    "date": "2026-10-03",
    "items": [
+    {
+     "title": "Natalia Silva vs. Wang Cong: Bloody Elbow staff predict the UFC 332 main event",
+     "url": "https://bloodyelbow.com/2026/10/02/natalia-silva-vs-wang-cong-bloody-elbow-staff-predict-the-ufc-332-main-event/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-10-02T05:00:00Z",
+     "thumb": null,
+     "blurb": "A new UFC champion will be crowned in Salt Lake City, Utah, on Saturday night. Valentina Shevchenko recently vacated her flyweight belt after suffering an ...",
+     "fighters": [
+      "Natalia Silva",
+      "Wang Cong"
+     ]
+    },
     {
      "title": "Payton Talbott says he ‘reinvented’ himself ahead of UFC 332",
      "url": "https://www.sherdog.com/news/news/Payton-Talbott-says-he-reinvented-himself-ahead-of-UFC-332-203028",
