@@ -1503,7 +1503,10 @@ body[data-theme="silver"] .flive{background:linear-gradient(180deg,#e4f2fd,#cbe6
   window.addEventListener("pagehide",function(e){log("pagehide",e.persisted?"bfcache":"");save();});
   window.addEventListener("pageshow",function(e){log("pageshow",e.persisted?"bfcache":"load");});
   var sw="";try{sw=navigator.serviceWorker&&navigator.serviceWorker.controller?"sw":"no-sw";}catch(e){}
-  log("boot",location.search.slice(0,60)+" "+sw+" "+(navigator.standalone?"standalone ":"")+innerWidth+"x"+innerHeight);
+  // Parameter NAMES only: a launch via the legacy fallback carries the roast
+  // itself (?trash=<text>&from=<sender>), and a room link its join code.
+  var qk="";try{qk=Array.from(new URLSearchParams(location.search).keys()).join(",");}catch(e){}
+  log("boot",(qk?"params="+qk+" ":"")+sw+" "+(navigator.standalone?"standalone ":"")+innerWidth+"x"+innerHeight);
   // A heartbeat: if timers stall, the gap between these is the stall.
   setInterval(function(){if(document.visibilityState==="visible")log("beat",opens());},10000);
 })();

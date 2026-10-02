@@ -378,6 +378,15 @@ async function main() {
       assert("diag: the tap is logged with what was under the finger", /"(touchend|click)","[^"]*target=button\.lb-trash-close in #trashSheet/.test(d.text));
       assert("diag: the roast's open and close steps are logged", /call","_routeTap kind=roast len=/.test(d.text) && /call","showIncomingTrashTalk len=/.test(d.text) && /call","closeTrashSheet/.test(d.text));
       assert("diag: the roast's words are never stored", !d.text.includes("bingo") && !d.text.includes("underdogs"));
+      // ...including when the app was launched by the legacy ?trash= fallback,
+      // whose URL is the roast: the boot line keeps parameter names only.
+      const legacy = await browser.newPage();
+      await legacy.goto(base + "/index.html?trash=" + encodeURIComponent(ROAST) + "&from=AB", { waitUntil: "load" });
+      await legacy.waitForTimeout(600);
+      const boot = await legacy.evaluate(() => JSON.stringify(_diagRead().filter((r) => r[1] === "boot")));
+      await legacy.close();
+      assert("diag: a ?trash= launch logs its parameter names, never the roast or sender",
+        /params=trash,from/.test(boot) && !boot.includes("bingo") && !boot.includes("AB "));
       const viewer = await page.evaluate(async () => {
         openLeaderboard();
         let v = document.getElementById("appVer");
