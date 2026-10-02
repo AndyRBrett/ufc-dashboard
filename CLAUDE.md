@@ -563,44 +563,56 @@ segment starts made the main event unpickable hours before it ran, beside a
 countdown still counting down to it. `npm run check:lock` asserts both
 directions at all three boundaries, and is mutation-tested against each half.
 
-Which bouts sit in which segment is still inferred from **bout order**, not from
-the article's section headings — `parse_upcoming_card` reads `{{MMAevent bout}}`
-templates and throws the headings away. `_MAIN_CARD_SIZE` and
-`_PRELIM_CARD_SIZE` pin the exceptions to the standard 5 / 4 / rest shape. When
-the parser learns to read the headings, both tables retire together.
+Which bouts sit in which segment is first inferred from **bout order**
+(`parse_upcoming_card` throws Wikipedia's section headings away;
+`_MAIN_CARD_SIZE` and `_PRELIM_CARD_SIZE` pin the 5 / 4 / rest shape), then
+corrected from UFC.com's own split when a fresh reading exists: see the next
+section.
 
-## Card clocks are checked against UFC.com (shadow mode)
+## Card clocks and segments come from UFC.com
 
-scrape.py never reads a card's start time. It guesses one from slot tables
-(`_default_main_time`, `_INTL_REGION_SLOTS`), trusts ESPN's event `date` for
-international cards (sometimes the main card, sometimes the first prelim), and
-every miss gets a hand-written `_TIME_OVERRIDES` pin. UFC 332 went to CBS at
-20:00 ET, the PPV slot said 21:00, and only someone reading the news caught it.
+scrape.py's own clock is a guess: slot tables (`_default_main_time`,
+`_INTL_REGION_SLOTS`), ESPN's event `date` for international cards (sometimes
+the main card, sometimes the first prelim), and hand-written `_TIME_OVERRIDES`
+pins. Its segment split is a guess too: bout order against `_MAIN_CARD_SIZE` /
+`_PRELIM_CARD_SIZE`. UFC 332 went to CBS at 20:00 ET while the PPV slot said
+21:00, and two Fight Nights ran six-bout main cards the split cut to five, so a
+main-card bout would have locked at the 5pm prelim bell.
 
-`official_times.py` reads each card's UFC.com event page instead: every
-segment's start timestamp, and which bouts sit in which segment. It runs in
-`update.yml` just before the health gate (free, no quota, `continue-on-error`,
+`official_times.py` reads each card's UFC.com event page (every segment's start
+timestamp, the bouts listed under each) into `official-times.json`. It runs in
+`update.yml` **before** `scrape.py` (free, no quota, `continue-on-error`,
 re-read every 1h within 2 days, 3h within a week, 12h out to 21 days;
-`OFFICIAL_TIMES_FORCE=1` bypasses that) and writes `official-times.json`. A
-failed read keeps the last good reading. **It only reports.** `health.py`
-compares the reading with `data.js` and files WARNs on the data-health issue:
+`OFFICIAL_TIMES_FORCE=1` bypasses that). A failed read keeps the last good
+reading; an empty segment block beside populated ones (a Fight Night's
+early-prelims placeholder) is dropped.
 
-- `time-mismatch`: a segment clock differs, saying whether picks lock late or
-  early. Whole instants are compared (date and clock), since the app pins every
-  clock to the card's own date
-- `segment-mismatch`: a bout's label disagrees with UFC.com's split, which
-  `_MAIN_CARD_SIZE` / `_PRELIM_CARD_SIZE` infer from bout order
+`scrape.apply_official_times` then overrides the guess when the reading is
+fresh (`OFFICIAL_MAX_AGE_H`, 48h): its clocks replace main / prelim / early, but
+only a clock on the card's own ET date (the app pins every clock to `ev.date`),
+and its split relabels any bout in the wrong segment, but only when it names
+`OFFICIAL_MIN_MATCH` (60%) of our bouts, and never the Main Event or Co-Main.
+Bouts match on full names, then on a surname pair only if it is two different
+surnames naming one bout (`health.bout_segments` / `segment_of`, shared by the
+scraper and the checks). With no fresh reading the guess stands, unchanged.
+
+`health.py` still compares the published card with the reading, as WARNs on
+the data-health issue (never BLOCK: a wrong clock is a data gap, and blocking
+would freeze live results):
+
+- `time-mismatch`: a segment clock differs (whole instants, date and clock),
+  saying whether picks lock late or early
+- `segment-mismatch`: a bout's label disagrees with UFC.com's split
 - `time-unconfirmed`: a card within 7 days with no reading, or a reading
-  missing a segment the card runs (a partial parse is not agreement)
+  missing a segment the card runs
 - `time-stale`: a card within 2 days last confirmed more than 24h ago
 
-Never BLOCK on these: a wrong clock is a data gap, and blocking would freeze
-live results. The parser was written without seeing the live page (this
-container can't reach ufc.com), which is why it starts in shadow mode. **Next
-step, once real cards have matched:** have `resolve_event_times` take
-UFC.com's clocks and segment split first, then retire the slot tables, the
-segment-size tables and most of `_TIME_OVERRIDES`. `tests/test_official_times.py`
-holds the parser and the checks (mutation-tested, clock pinned).
+After a fresh reading these should be quiet; one that persists means the
+scraper refused the reading (stale, wrong date, too few names matched). The
+guess tables and `_TIME_OVERRIDES` stay as the fallback for a card UFC.com
+hasn't published yet or a run where it can't be read; don't add new pins for
+a card UFC.com lists. `tests/test_official_times.py` holds the parser, the
+scraper's use of it and the checks (mutation-tested, clock pinned).
 
 ## The database enforces the pick lock too
 

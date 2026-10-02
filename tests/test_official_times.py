@@ -10,7 +10,7 @@ carries UFC 332's real clocks: early prelims 16:00, prelims 18:00, main card
 
 Run with:  python -m pytest -q
 """
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import health
 import official_times as ot
@@ -285,3 +285,129 @@ def test_a_partial_reading_leaves_the_missing_segment_unconfirmed():
     unc = [f for f in findings if f["check"] == "time-unconfirmed"]
     assert [f["segment"] for f in unc] == ["early"]
     assert summary["block"] == 0
+
+
+# --- scrape.py takes the reading -------------------------------------------
+
+import scrape  # noqa: E402
+
+
+def built(*bouts):
+    """A card as scrape.py builds it: [(label, f1, f2), ...]."""
+    return [{"label": lbl, "f1": {"name": a}, "f2": {"name": b}} for lbl, a, b in bouts]
+
+
+def fn_page():
+    """A Fight Night: six-bout main card, no early prelims, and the empty
+    early-prelims block the live page carries at the prelim time."""
+    main = [(("Brendan", "Allen"), ("Christian Leroy", "Duncan")),
+            (("A", "Two"), ("B", "Two")), (("A", "Three"), ("B", "Three")),
+            (("A", "Four"), ("B", "Four")), (("A", "Five"), ("B", "Five")),
+            (("Malcolm", "Wellmaker"), ("Otari", "Tanzilovi"))]
+    prelim = [(("C", "One"), ("D", "One")), (("C", "Two"), ("D", "Two"))]
+    return ("<html><body>Allen Duncan"
+            + section("main-card", "main-card", "Main Card",
+                      ts("2026-10-11T00:00:00+00:00"), main)
+            + section("fight-card-prelims", "prelims-card", "Prelims",
+                      ts("2026-10-10T21:00:00+00:00"), prelim)
+            + section("fight-card-prelims-early", "early-prelims", "Early Prelims",
+                      ts("2026-10-10T21:00:00+00:00"), [])
+            + "</body></html>")
+
+
+FN = {"name": "UFC Fight Night: Allen vs. Duncan", "date": "2026-10-10"}
+
+
+def fn_reading():
+    state, _, _ = ot.update([dict(FN)], {}, NOW, get=fake_get(
+        {ot.BASE + "/event/ufc-fight-night-october-10-2026": fn_page()}))
+    return state["cards"]["UFC Fight Night: Allen vs. Duncan|2026-10-10"]
+
+
+def fn_card():
+    return built(("Main Event", "Brendan Allen", "Christian Leroy Duncan"),
+                 ("Co-Main", "A Two", "B Two"), ("Main Card", "A Three", "B Three"),
+                 ("Main Card", "A Four", "B Four"), ("Main Card", "A Five", "B Five"),
+                 ("Prelim", "Malcolm Wellmaker", "Otari Tanzilovi"),
+                 ("Prelim", "C One", "D One"), ("Prelim", "C Two", "D Two"))
+
+
+def test_an_empty_placeholder_segment_is_dropped():
+    assert set(fn_reading()["segments"]) == {"main", "prelim"}
+
+
+def test_a_sixth_main_card_bout_is_relabelled():
+    card = fn_card()
+    main, prelim, early = scrape.apply_official_times(
+        FN["name"], FN["date"], card, "20:00", "17:00", fn_reading())
+    assert (main, prelim, early) == ("20:00", "17:00", None)
+    assert card[5]["label"] == "Main Card"
+    assert [f["label"] for f in card[6:]] == ["Prelim", "Prelim"]
+
+
+def test_ufc_332_clocks_replace_the_slot_guess():
+    rd = official()["cards"]["UFC 332: Silva vs. Wang|2026-10-03"]
+    card = built(("Main Event", "Natalia Silva", "Wang Cong"),
+                 ("Prelim", "Marcus McGhee", "Anthony Romero"),
+                 ("Prelim", "Anthony Wint", "Lucas Armand"),
+                 ("Early Prelim", "Johnny Walker", "Mick Parkin"))
+    got = scrape.apply_official_times(CARD["name"], CARD["date"], card,
+                                      "21:00", "19:00", rd)
+    assert got == ("20:00", "18:00", "16:00")
+    assert [f["label"] for f in card] == ["Main Event", "Prelim", "Prelim", "Early Prelim"]
+
+
+def test_no_reading_changes_nothing():
+    card = fn_card()
+    before = [f["label"] for f in card]
+    assert scrape.apply_official_times(FN["name"], FN["date"], card,
+                                       "20:00", "17:00", None) == ("20:00", "17:00", None)
+    assert [f["label"] for f in card] == before
+
+
+def test_an_old_reading_is_not_used():
+    cards = {"UFC Fight Night: Allen vs. Duncan|2026-10-10": fn_reading()}
+    assert scrape.official_reading(cards, FN["name"], FN["date"], NOW)
+    later = NOW + timedelta(hours=scrape.OFFICIAL_MAX_AGE_H + 1)
+    assert scrape.official_reading(cards, FN["name"], FN["date"], later) is None
+
+
+def test_a_clock_on_another_day_is_not_taken():
+    rd = fn_reading()
+    rd["segments"]["main"]["date"] = "2026-10-11"
+    main, prelim, _ = scrape.apply_official_times(
+        FN["name"], FN["date"], fn_card(), "21:00", "16:00", rd)
+    assert main == "21:00" and prelim == "17:00"
+
+
+def test_a_mostly_unmatched_roster_keeps_the_bout_order_split():
+    card = built(("Main Event", "Brendan Allen", "Christian Leroy Duncan"),
+                 ("Prelim", "Malcolm Wellmaker", "Otari Tanzilovi"),
+                 ("Prelim", "X One", "Y One"), ("Prelim", "X Two", "Y Two"),
+                 ("Prelim", "X Three", "Y Three"))
+    scrape.apply_official_times(FN["name"], FN["date"], card, "20:00", "17:00",
+                                fn_reading())
+    assert card[1]["label"] == "Prelim"
+
+
+def test_the_main_event_is_never_demoted():
+    rd = fn_reading()
+    rd["bouts"]["prelim"].append(["Brendan Allen", "Christian Leroy Duncan"])
+    rd["bouts"]["main"] = rd["bouts"]["main"][1:]
+    card = fn_card()
+    scrape.apply_official_times(FN["name"], FN["date"], card, "20:00", "17:00", rd)
+    assert card[0]["label"] == "Main Event"
+
+
+def test_a_shared_surname_is_not_a_match():
+    rd = {"bouts": {"main": [["Natalia Silva", "Wang Cong"]],
+                    "prelim": [["Jean Silva", "Wang Cong"], ["A Two", "B Two"]]}}
+    segs = health.bout_segments(rd)
+    # Exact names still resolve; the ambiguous surname pair does not.
+    assert health.segment_of(segs, "Natalia Silva", "Wang Cong") == "main"
+    assert health.segment_of(segs, "N. Silva", "C. Wang") is None
+    assert health.segment_of(segs, "X Two", "Y Two") is None
+    # A respelling of a unique pair still matches, in either corner order.
+    segs = health.bout_segments({"bouts": {"early": [["Rafael Dos Anjos",
+                                                      "Alexander Hernandez"]]}})
+    assert health.segment_of(segs, "Alexander Hernandez", "Rafael dos Anjos") == "early"

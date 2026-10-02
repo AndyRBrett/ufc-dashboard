@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Official card times, read from each card's UFC.com event page: SHADOW MODE.
+Official card times, read from each card's UFC.com event page.
 
 Every wrong clock this app has shipped came from the same place. scrape.py does
 not read a card's start time anywhere; it guesses one from a table (a numbered
@@ -15,12 +15,14 @@ Card) with an absolute start timestamp, and the bouts listed under each one.
 That is both clocks the app locks on AND the bout-to-segment split that
 scrape.py also infers from bout order (_MAIN_CARD_SIZE, _PRELIM_CARD_SIZE).
 
-This file only READS it. It writes official-times.json, and health.py compares
-that with data.js and files any disagreement as a WARN on the data-health issue
-("time-mismatch", "segment-mismatch", "time-unconfirmed"). Nothing here changes
-what the app shows. Once real cards have shown the reading is right, scrape.py
-can take its times from it and the guess tables retire; until then a parser
-written without sight of the live page can only ever cause a warning.
+This file writes official-times.json. scrape.py takes each card's clocks and
+segment split from it when the reading is fresh (apply_official_times), and
+falls back to its guesses when it isn't; health.py compares the result with
+the reading and files any disagreement as a WARN on the data-health issue
+("time-mismatch", "segment-mismatch", "time-unconfirmed", "time-stale"). It
+ran in shadow mode first: its first live read (2026-10-02) matched UFC 332's
+three clocks and 14-bout split exactly, and caught two Fight Nights whose
+six-bout main cards the bout-order guess had cut to five.
 
 Same rules as intel.py: free (no key, no quota), cadence-gated, never fatal,
 and a failed fetch keeps the last good reading instead of erasing it.
@@ -158,6 +160,11 @@ def parse_event_page(page):
         pairs = [[names[i], names[i + 1]] for i in range(0, len(names) - 1, 2)]
         if pairs:
             bouts[seg] = pairs
+    # A Fight Night page carries an empty early-prelims block stamped with the
+    # prelim time (seen on the first live read, 2026-10-02). A segment with no
+    # bouts while others have some is that placeholder, not a segment.
+    if bouts:
+        segments = {s: v for s, v in segments.items() if s in bouts}
     return {"segments": segments, "bouts": bouts}
 
 
