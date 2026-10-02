@@ -878,6 +878,15 @@ export function fightResearchEnabled(d: ReqBody): boolean {
   const q = [d.question ?? "", ...(d.history ?? []).filter(t => t.role === "user").map(t => t.text)].join(" ");
   return /\b(fight|fought|fighter|beat|lost|won|record|rematch|opponent|underdog|main event|ufc|mma|knockout|submission|weight class|career)\b/i.test(q) || !!d.fightContext;
 }
+const SEARCH_UNAVAILABLE_RULE = "Web search is unavailable for this request. Answer only from the supplied data; do not claim you searched or infer an all-career negative from cached UFC opponents. Say which missing historical facts you cannot verify.";
+export function webSearchUnavailable(status: number, body: string): boolean {
+  // Retry only an unavailable/invalid search tool, never unrelated auth,
+  // malformed-input or quota errors. The no-tool request cannot recurse.
+  if (status !== 400 && status !== 403) return false;
+  const parsed = parseJson(body) as { error?: { message?: string } } | null;
+  const message = parsed?.error?.message ?? body;
+  return /web[_ -]?search/i.test(message) && /not enabled|disabled|does not support|not supported|unsupported|not available|unavailable|not allowed|permission|invalid|does not match/i.test(message);
+}
 async function callAnthropic(
   apiKey: string,
   { system, user, maxTokens, webSearch = false }: { system?: string; user: string; maxTokens: number; webSearch?: boolean },
@@ -893,7 +902,13 @@ async function callAnthropic(
     const r = await fetchWithRetry(CLAUDE_API_URL, {
       method: "POST", headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" }, body: payload,
     });
-    if (!r.ok) return { ok: false, status: r.status, text: "", detail: r.detail || r.body };
+    if (!r.ok) {
+      if (webSearch && webSearchUnavailable(r.status, r.body)) {
+        console.warn("Web search unavailable; answering from cached fight data");
+        return await callAnthropic(apiKey, { system: (system ?? "") + "\n\n" + SEARCH_UNAVAILABLE_RULE, user, maxTokens, webSearch: false });
+      }
+      return { ok: false, status: r.status, text: "", detail: r.detail || r.body };
+    }
     const data = parseJson(r.body) as { stop_reason?: string; content?: { type?: string; text?: string; citations?: { url?: string; title?: string; cited_text?: string }[] }[] } | null;
     if (data?.stop_reason === "pause_turn") {
       messages.push({ role: "assistant", content: data.content });

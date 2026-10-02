@@ -38,7 +38,8 @@ globalThis.fetch = async (url, init) => {
   if (String(url).endsWith('/auth/v1/user')) return Response.json({ id: 'history-test' });
   if (String(url).includes('ai_quota_take')) return Response.json(true);
   calls.push(JSON.parse(init.body));
-  return Response.json(responses.shift() || { content: [{ type: 'text', text: 'No completed meeting is shown in these records.' }] });
+  const next = responses.shift() || { content: [{ type: 'text', text: 'No completed meeting is shown in these records.' }] };
+  return Response.json(next.body || next, {status: next.status || 200});
 };
 const { code } = await transform(readFileSync('supabase/functions/ai-breakdown/index.ts','utf8'), { loader: 'ts', format: 'esm' });
 const mod = await import('data:text/javascript;base64,' + Buffer.from(code).toString('base64'));
@@ -67,6 +68,18 @@ for (const action of ['chat','guide','breakdown']) {
   assert.equal(r.json.sources.length,1);
   assert.equal(r.json.sources[0].url,source.url);
 }
+for (const message of ['Web search is not enabled for your organization.', 'Model does not support web search.', "tools.0.type: web_search_20250305 is an invalid tool type."]) {
+  responses=[{status:400,body:{error:{type:'invalid_request_error',message}}},{content:[{type:'text',text:'No meeting appears in the cached UFC history; I cannot verify other promotions right now.'}]}];
+  const r=await ask({action:'chat',question,fightContext:context});
+  assert.equal(r.status,200);assert.equal(calls.length,2);
+  assert.equal(calls[1].tools,undefined);assert.equal(calls[1].max_tokens,180);
+  assert.match(calls[1].system,/Web search is unavailable/);
+}
+responses=[{status:400,body:{error:{message:'Invalid max_tokens value'}}}];
+assert.equal((await ask({action:'chat',question})).status,502);assert.equal(calls.length,1);
+responses=[{status:400,body:{error:{message:'Web search is not enabled'}}},{status:400,body:{error:{message:'Web search is not enabled'}}}];
+assert.equal((await ask({action:'chat',question})).status,502);assert.equal(calls.length,2);
+assert.equal(mod.webSearchUnavailable(401,'Web search is not enabled'),false);
 responses=[{content:[{type:'text',text:'Tap Ranks.'}]}];
 await ask({action:'guide',question:'How do locks work?'});
 assert.equal(calls[0].tools,undefined);

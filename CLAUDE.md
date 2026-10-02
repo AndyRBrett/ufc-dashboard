@@ -893,6 +893,9 @@ returns citation links, rendered with textContent. App-only guide requests,
 roasts, IQ and verdicts do not get search. Guide number checks include cited
 source excerpts; unsourced invented and misattributed figures still fail. An
 unfinished/truncated research response fails rather than displaying narration.
+A search-specific invalid-tool/disabled-search error retries once without the
+tool, answering from cached facts with the research limitation stated; unrelated
+API errors do not trigger that fallback.
 FightBot MCP also exposes `get_fighter_history` with the same UFC-only caveat.
 `npm run check:history` tests these paths with frozen fixtures and stubbed search.
 
