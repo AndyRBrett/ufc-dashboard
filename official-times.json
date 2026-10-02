@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-02T15:26:14Z",
+ "generated_at": "2026-10-02T15:46:28Z",
  "source": "https://www.ufc.com",
  "cards": {
   "UFC 332: Silva vs. Wang|2026-10-03": {
@@ -94,7 +94,7 @@
   "UFC Fight Night: Allen vs. Duncan|2026-10-10": {
    "name": "UFC Fight Night: Allen vs. Duncan",
    "date": "2026-10-10",
-   "checked_at": "2026-10-02T03:43:33Z",
+   "checked_at": "2026-10-02T15:46:28Z",
    "url": "https://www.ufc.com/event/ufc-fight-night-october-10-2026",
    "status": 200,
    "segments": {
@@ -104,11 +104,6 @@
      "utc": "2026-10-11T00:00:00Z"
     },
     "prelim": {
-     "et": "17:00",
-     "date": "2026-10-10",
-     "utc": "2026-10-10T21:00:00Z"
-    },
-    "early": {
      "et": "17:00",
      "date": "2026-10-10",
      "utc": "2026-10-10T21:00:00Z"
@@ -168,12 +163,12 @@
      ]
     ]
    },
-   "confirmed_at": "2026-10-02T03:43:33Z"
+   "confirmed_at": "2026-10-02T15:46:28Z"
   },
   "UFC Fight Night: Buckley vs. Malott|2026-10-17": {
    "name": "UFC Fight Night: Buckley vs. Malott",
    "date": "2026-10-17",
-   "checked_at": "2026-10-02T03:43:33Z",
+   "checked_at": "2026-10-02T15:46:28Z",
    "url": "https://www.ufc.com/event/ufc-fight-night-october-17-2026",
    "status": 200,
    "segments": {
@@ -183,11 +178,6 @@
      "utc": "2026-10-18T00:00:00Z"
     },
     "prelim": {
-     "et": "17:00",
-     "date": "2026-10-17",
-     "utc": "2026-10-17T21:00:00Z"
-    },
-    "early": {
      "et": "17:00",
      "date": "2026-10-17",
      "utc": "2026-10-17T21:00:00Z"
@@ -251,7 +241,7 @@
      ]
     ]
    },
-   "confirmed_at": "2026-10-02T03:43:33Z"
+   "confirmed_at": "2026-10-02T15:46:28Z"
   }
  }
 }
