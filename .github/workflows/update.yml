@@ -70,6 +70,16 @@ jobs:
           ODDS_API_KEY_SECONDARY: ${{ secrets.ODDS_API_KEY_SECONDARY }}
           SUPABASE_ANON: ${{ secrets.SUPABASE_ANON }}
           ODDS_FORCE: ${{ inputs.force_odds && '1' || '' }}
+      # Official card times, read from UFC.com — SHADOW MODE. scrape.py still
+      # guesses each card's clock from a slot table; this reads what UFC.com
+      # publishes per segment (and which bouts sit in each) into
+      # official-times.json, and health.py below files any disagreement as a
+      # WARN on the data-health issue. Changes nothing the app shows. Free (no
+      # key, no quota), cadence-gated, never fatal. Runs before the gate so
+      # this run's health report sees this run's reading. See official_times.py.
+      - name: Official card times from UFC.com (shadow mode, report only)
+        continue-on-error: true
+        run: python official_times.py
       # The gate between a degraded scrape and a published card. Fails the job on
       # structural breakage (unparseable data, empty EVENTS, a card that lost
       # bouts) so the last-good data.js stays live and GitHub emails the failure.
@@ -161,7 +171,8 @@ jobs:
           for f in data.js overseer-status.json odds-snapshots.jsonl \
                    odds-series.json odds-state.json odds-alert-state.json odds-lines.json \
                    health-report.json intel.json intel-state.json \
-                   events-extra.json events-extra.candidate.json extra-state.json; do
+                   events-extra.json events-extra.candidate.json extra-state.json \
+                   official-times.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           if git diff --staged --quiet; then

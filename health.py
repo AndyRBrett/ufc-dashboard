@@ -35,6 +35,7 @@ import json
 import os
 import re
 import sys
+import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -107,6 +108,7 @@ VENUE_RE      = re.compile(r'\n\s*venue:"((?:[^"\\]|\\.)*)"')
 VENUE_MARKUP_RE = re.compile(r'=|\||\{\{|\}\}|\[\[|\\"')
 TIME_RE       = re.compile(r'\n\s*time:"([^"]*)"')
 PRELIM_TIME_RE = re.compile(r'\n\s*prelimTime:"([^"]*)"')
+EARLY_PRELIM_TIME_RE = re.compile(r'\n\s*earlyPrelimTime:"([^"]*)"')
 # One serialised bout, as written by events_js.
 FIGHT_RE = re.compile(
     r'\{lbl:"(?P<lbl>[^"]*)",wc:"(?P<wc>[^"]*)".*?'
@@ -152,6 +154,7 @@ def parse_data(text):
             "loc": field(LOC_RE),
             "time": field(TIME_RE),
             "prelimTime": field(PRELIM_TIME_RE),
+            "earlyPrelimTime": field(EARLY_PRELIM_TIME_RE),
         })
     return events
 
@@ -285,7 +288,155 @@ def _has_fight_data(st):
     return any(float(st.get(k) or 0) for k in ("slpm", "acc", "td", "tdd"))
 
 
-def check(text, baseline_text=None, now=None, odds_state=None):
+# --- official card times (official_times.py) --------------------------------
+#
+# scrape.py guesses each card's clock from a slot table; official_times.py reads
+# what UFC.com publishes. Until that reading has earned the right to replace the
+# guess, it only reports here, and only as WARN: a wrong clock is a data gap the
+# tracking issue should shout about, never a reason to hold back live results.
+
+# data.js clock field for each UFC.com segment.
+_SEG_FIELD = (("main", "time", "main card"), ("prelim", "prelimTime", "prelims"),
+              ("early", "earlyPrelimTime", "early prelims"))
+# A card this close with no UFC.com reading is worth a warning.
+OFFICIAL_CONFIRM_DAYS = IMMINENT_DAYS
+# A reading older than this, for a card within CRITICAL_DAYS, may have missed a
+# late move.
+OFFICIAL_STALE_HOURS = 24
+
+
+def _seg_of(lbl):
+    return {"Early Prelim": "early", "Prelim": "prelim"}.get(lbl, "main")
+
+
+def _fold(s):
+    s = unicodedata.normalize("NFD", str(s or ""))
+    s = "".join(c for c in s if unicodedata.category(c) != "Mn").lower()
+    return " ".join(re.sub(r"[^a-z0-9 ]+", " ", s.replace("'", "")).split())
+
+
+def _bout_keys(a, b):
+    """Full-name and surname keys for a bout, either corner order."""
+    fa, fb = _fold(a), _fold(b)
+    return (frozenset((fa, fb)),
+            frozenset((fa.split()[-1] if fa else "", fb.split()[-1] if fb else "")))
+
+
+def _minutes(hhmm):
+    try:
+        h, m = (int(x) for x in hhmm.split(":")[:2])
+        return h * 60 + m
+    except (ValueError, AttributeError):
+        return None
+
+
+def _instant_diff(our_date, our_hhmm, their_date, their_hhmm):
+    """Minutes our clock sits after theirs, both read as ET wall time on their
+    own dates, or None if either won't parse."""
+    a, b = _minutes(our_hhmm), _minutes(their_hhmm)
+    if a is None or b is None:
+        return None
+    try:
+        days = (datetime.strptime(our_date, "%Y-%m-%d")
+                - datetime.strptime(their_date, "%Y-%m-%d")).days
+    except ValueError:
+        return None
+    return days * 1440 + a - b
+
+
+def official_findings(upcoming, official, now):
+    """WARN findings comparing data.js's clocks and segment split with the
+    UFC.com reading in official-times.json."""
+    out = []
+    cards = (official or {}).get("cards", {}) or {}
+    today = now.date()
+    for ev in upcoming:
+        d = days_out(ev["date"], today)
+        if d is None:
+            continue
+        tag = {"event": ev["name"], "date": ev["date"], "days_out": d}
+        rd = cards.get("%s|%s" % (ev["name"], ev["date"])) or {}
+        segs = rd.get("segments") or {}
+        if not segs:
+            if d <= OFFICIAL_CONFIRM_DAYS:
+                why = rd.get("error") or "not read yet"
+                out.append({"check": "time-unconfirmed", **tag, "message":
+                            f"{ev['name']} ({d}d out): start times not confirmed "
+                            f"against UFC.com ({why})"})
+            continue
+        # The segments this card runs. A reading that lacks one of them has
+        # checked nothing about that clock, which is not the same as agreeing.
+        lbls = {f["lbl"] for f in ev["fights"]}
+        expected = {"main"}
+        if "Prelim" in lbls or ev.get("prelimTime") not in ("", "TBD", None):
+            expected.add("prelim")
+        if "Early Prelim" in lbls:
+            expected.add("early")
+        for seg, field, label in _SEG_FIELD:
+            want = (segs.get(seg) or {}).get("et")
+            if not want:
+                if seg in expected:
+                    out.append({"check": "time-unconfirmed", **tag, "segment": seg,
+                                "message": f"{ev['name']} ({d}d out): UFC.com reading "
+                                           f"has no {label} time, so it is unchecked"})
+                continue
+            have = ev.get(field) or ""
+            if have in ("", "TBD"):
+                if seg == "early" and "Early Prelim" not in lbls:
+                    continue
+                out.append({"check": "time-mismatch", **tag, "segment": seg,
+                            "message": f"{ev['name']} ({d}d out): {label} has no "
+                                       f"time here, UFC.com says {want} ET"})
+                continue
+            # The app pins every clock to the card's own date, so compare whole
+            # instants: an identical HH:MM a day apart is a 24h lock error.
+            diff = _instant_diff(ev["date"], have,
+                                 (segs.get(seg) or {}).get("date") or ev["date"], want)
+            if diff is None or diff == 0:
+                continue
+            when = (f"picks lock {diff} min AFTER the bell" if diff > 0
+                    else f"picks lock {-diff} min early")
+            theirs_day = (segs.get(seg) or {}).get("date") or ev["date"]
+            ours, them = ((f" on {ev['date']}", f" on {theirs_day}")
+                          if theirs_day != ev["date"] else ("", ""))
+            out.append({"check": "time-mismatch", **tag, "segment": seg,
+                        "message": f"{ev['name']} ({d}d out): {label} is {have} ET"
+                                   f"{ours} here, UFC.com says {want} ET{them} "
+                                   f"({when})"})
+        # Which segment each bout sits in decides when it locks, and scrape.py
+        # infers that from bout order. Compare it with UFC.com's own split.
+        theirs = {}
+        for seg, pairs in (rd.get("bouts") or {}).items():
+            for pair in pairs or []:
+                if len(pair) == 2:
+                    full, sur = _bout_keys(*pair)
+                    theirs[full] = seg
+                    theirs.setdefault(sur, seg)
+        if theirs:
+            for f in ev["fights"]:
+                full, sur = _bout_keys(f["f1"], f["f2"])
+                seg = theirs.get(full) or theirs.get(sur)
+                if seg and seg != _seg_of(f["lbl"]):
+                    out.append({"check": "segment-mismatch", **tag,
+                                "message": f"{ev['name']} ({d}d out): {f['f1']} vs. "
+                                           f"{f['f2']} is labelled {f['lbl']} here, "
+                                           f"UFC.com lists it under "
+                                           f"{dict((s, l) for s, _, l in _SEG_FIELD)[seg]}"})
+        if d <= CRITICAL_DAYS and rd.get("confirmed_at"):
+            try:
+                age = (now - datetime.fromisoformat(
+                    rd["confirmed_at"].replace("Z", "+00:00"))).total_seconds() / 3600
+            except ValueError:
+                age = 0
+            if age > OFFICIAL_STALE_HOURS:
+                out.append({"check": "time-stale", **tag, "message":
+                            f"{ev['name']} ({d}d out): last confirmed against "
+                            f"UFC.com {age:.0f}h ago"
+                            + (f" ({rd['error']})" if rd.get("error") else "")})
+    return out
+
+
+def check(text, baseline_text=None, now=None, odds_state=None, official=None):
     """Run every check. Returns (findings, summary)."""
     now      = now or datetime.now(timezone.utc)
     today    = now.date()
@@ -500,6 +651,11 @@ def check(text, baseline_text=None, now=None, odds_state=None):
             add("WARN", "odds-quota",
                 f"Odds API quota down to {rem} requests — {tail}")
 
+    # --- the clock against UFC.com (official_times.py, shadow mode) --------
+    if official is not None:
+        for f in official_findings(upcoming, official, now):
+            add("WARN", f.pop("check"), f.pop("message"), **f)
+
     return findings, _summarise(findings, len(events))
 
 
@@ -567,7 +723,18 @@ def main():
         except json.JSONDecodeError:
             pass
 
-    findings, summary = check(text, baseline, odds_state=odds_state)
+    # Absent until official_times.py has run once: no file is "not checking
+    # yet", not "every card unconfirmed".
+    official = None
+    p = Path("official-times.json")
+    if p.exists():
+        try:
+            official = json.loads(p.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            official = None
+
+    findings, summary = check(text, baseline, odds_state=odds_state,
+                              official=official)
     report = render(findings, summary)
     print(report)
 

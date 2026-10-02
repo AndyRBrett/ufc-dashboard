@@ -569,6 +569,39 @@ templates and throws the headings away. `_MAIN_CARD_SIZE` and
 `_PRELIM_CARD_SIZE` pin the exceptions to the standard 5 / 4 / rest shape. When
 the parser learns to read the headings, both tables retire together.
 
+## Card clocks are checked against UFC.com (shadow mode)
+
+scrape.py never reads a card's start time. It guesses one from slot tables
+(`_default_main_time`, `_INTL_REGION_SLOTS`), trusts ESPN's event `date` for
+international cards (sometimes the main card, sometimes the first prelim), and
+every miss gets a hand-written `_TIME_OVERRIDES` pin. UFC 332 went to CBS at
+20:00 ET, the PPV slot said 21:00, and only someone reading the news caught it.
+
+`official_times.py` reads each card's UFC.com event page instead: every
+segment's start timestamp, and which bouts sit in which segment. It runs in
+`update.yml` just before the health gate (free, no quota, `continue-on-error`,
+re-read every 1h within 2 days, 3h within a week, 12h out to 21 days;
+`OFFICIAL_TIMES_FORCE=1` bypasses that) and writes `official-times.json`. A
+failed read keeps the last good reading. **It only reports.** `health.py`
+compares the reading with `data.js` and files WARNs on the data-health issue:
+
+- `time-mismatch`: a segment clock differs, saying whether picks lock late or
+  early. Whole instants are compared (date and clock), since the app pins every
+  clock to the card's own date
+- `segment-mismatch`: a bout's label disagrees with UFC.com's split, which
+  `_MAIN_CARD_SIZE` / `_PRELIM_CARD_SIZE` infer from bout order
+- `time-unconfirmed`: a card within 7 days with no reading, or a reading
+  missing a segment the card runs (a partial parse is not agreement)
+- `time-stale`: a card within 2 days last confirmed more than 24h ago
+
+Never BLOCK on these: a wrong clock is a data gap, and blocking would freeze
+live results. The parser was written without seeing the live page (this
+container can't reach ufc.com), which is why it starts in shadow mode. **Next
+step, once real cards have matched:** have `resolve_event_times` take
+UFC.com's clocks and segment split first, then retire the slot tables, the
+segment-size tables and most of `_TIME_OVERRIDES`. `tests/test_official_times.py`
+holds the parser and the checks (mutation-tested, clock pinned).
+
 ## The database enforces the pick lock too
 
 The app's `fightLocked` only stops the app. `0010_picks_lock.sql` adds the
