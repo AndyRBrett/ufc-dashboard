@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T15:29:30Z",
+  "generated_at": "2026-10-02T15:39:33Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "status": "ok",
-      "last_changed_at": "2026-10-02T13:29:24Z",
+      "last_changed_at": "2026-10-02T15:39:33Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -105,7 +105,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "ok",
-      "last_changed_at": "2026-10-02T11:28:44Z",
+      "last_changed_at": "2026-10-02T15:39:33Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-02T15:29:30Z",
+      "last_changed_at": "2026-10-02T15:39:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 10,
@@ -135,7 +135,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-02T15:29:30Z",
+      "last_changed_at": "2026-10-02T15:39:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-02T15:29:30Z",
+      "last_changed_at": "2026-10-02T15:39:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -165,7 +165,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-02T15:29:30Z",
+      "last_changed_at": "2026-10-02T15:39:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -210,17 +210,17 @@
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Johnny Walker",
       "f2": "Mick Parkin",
-      "f1_movement": -15,
-      "f2_movement": 213,
-      "magnitude": 213,
+      "f1_movement": -23,
+      "f2_movement": 215,
+      "magnitude": 215,
       "main_event": false,
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": 3.2,
-      "f2_prob_shift": -3.1,
-      "priority": 426.0
+      "f1_prob_shift": 4.7,
+      "f2_prob_shift": -3.6,
+      "priority": 430.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
@@ -354,17 +354,17 @@
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Ateba Gautier",
       "f2": "Roman Kopylov",
-      "f1_movement": -70,
-      "f2_movement": 43,
-      "magnitude": 70,
+      "f1_movement": -73,
+      "f2_movement": 44,
+      "magnitude": 73,
       "main_event": false,
       "tier": "main-card",
       "threshold": 45,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 7.4,
-      "f2_prob_shift": -5.7,
-      "priority": 140.0
+      "f1_prob_shift": 7.6,
+      "f2_prob_shift": -5.9,
+      "priority": 146.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
