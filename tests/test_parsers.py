@@ -2398,3 +2398,33 @@ def test_the_scraper_and_the_gate_share_one_shrink_policy():
     publish — the exact deadlock this pair replaces."""
     import health
     assert scrape.believable_shrink is health.believable_shrink
+
+
+def test_stats_budget_lets_every_run_finish():
+    # 2026-10-03: the one-time "res" backfill queued every booked fighter at
+    # ~2s each, every run outlasted the 5-minute dispatch and was cancelled
+    # before committing, and no data update landed for seven hours.
+    urgency = {"Gap Card": True, "Ok Card": True, "New Guy": False, "Old Hand": False}
+    cache = {"Gap Card": {"rec": ""}, "Ok Card": {"rec": "10-1-0"}, "Old Hand": {"rec": "5-5-0"}}
+    queued = [("Old Hand", False), ("Ok Card", False), ("New Guy", True), ("Gap Card", True)]
+    order = [n for n, _ in scrape.stats_fetch_order(queued, urgency, cache)]
+    # gaps (no cache; imminent card with no record) first, then the imminent
+    # card's refreshes, then the backlog
+    assert order == ["Gap Card", "New Guy", "Ok Card", "Old Hand"]
+    assert scrape.stats_gap(None, False) and scrape.stats_gap({"rec": ""}, True)
+    assert scrape.stats_gap({"rec": "1-0-0", "fetch_failed": "x"}, True)
+    assert not scrape.stats_gap({"rec": "1-0-0"}, True) and not scrape.stats_gap({"rec": ""}, False)
+    b = scrape.STATS_FETCH_BUDGET_S
+    assert not scrape.stats_budget_spent(0, b - 1)
+    assert scrape.stats_budget_spent(0, b)                  # a refresh waits for the next run
+    assert not scrape.stats_budget_spent(0, b * 10, gap=True)   # a gap never does
+    # the budget plus the rest of the run must fit inside the 5-minute dispatch
+    assert 0 < b <= 90
+
+
+def test_stats_loop_is_budgeted_and_ordered():
+    # The helpers above only help if the fetch loop uses them.
+    src = open(scrape.__file__, encoding="utf-8").read()
+    loop = src[src.index("to_fetch = []"):src.index('print(f"Stats cache:')]
+    assert "stats_fetch_order(to_fetch" in loop
+    assert re.search(r"if stats_budget_spent\([\s\S]{0,200}\):\s*\n[\s\S]{0,300}?break", loop)
