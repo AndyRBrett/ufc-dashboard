@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-02T18:14:24Z",
+ "generated_at": "2026-10-03T02:23:45Z",
  "promotions": [
   {
    "id": "pfl",
@@ -151,10 +151,10 @@
      "round": null
     },
     {
-     "a": "Ryusei Ashizawa",
-     "b": "Seiya Inoue",
+     "a": "Ryan Cafaro",
+     "b": "Hyuma Yasui",
      "label": "",
-     "division": "Bantamweight",
+     "division": "Featherweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -173,10 +173,10 @@
      "round": null
     },
     {
-     "a": "Ryan Cafaro",
-     "b": "Hyuma Yasui",
+     "a": "Kyohei Takagi",
+     "b": "Masatoshi Ueda",
      "label": "",
-     "division": "Featherweight",
+     "division": "Flyweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -184,10 +184,10 @@
      "round": null
     },
     {
-     "a": "Kohei Sugiyama",
-     "b": "Kaito Oda",
+     "a": "Ryusei Ashizawa",
+     "b": "Seiya Inoue",
      "label": "",
-     "division": "Flyweight",
+     "division": "Bantamweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -217,10 +217,10 @@
      "round": null
     },
     {
-     "a": "Mac Papalii",
-     "b": "Alboury Domou Deke Bi",
+     "a": "Kohei Sugiyama",
+     "b": "Kaito Oda",
      "label": "",
-     "division": "Heavyweight",
+     "division": "Flyweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -239,17 +239,6 @@
      "round": null
     },
     {
-     "a": "Ryusei Imamura",
-     "b": "Reon Uemura",
-     "label": "",
-     "division": "Flyweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
      "a": "Kotaro Mori",
      "b": "Yuki",
      "label": "",
@@ -261,7 +250,18 @@
      "round": null
     },
     {
-     "a": "Kakeru",
+     "a": "Ryusei Imamura",
+     "b": "Reon Uemura",
+     "label": "",
+     "division": "Flyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Kakeru Tsuda",
      "b": "Ayuto",
      "label": "",
      "division": "Catchweight (143 Lb)",
