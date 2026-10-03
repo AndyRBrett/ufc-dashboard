@@ -10743,6 +10743,9 @@ function renderChallengeInbox(){
 }
 // Challenge id -> "accept" | "decline" while its response is on its way.
 var _chalResponding={};
+// A request still pending after this gives the buttons back: fetch has no
+// timeout of its own, and a stalled one left them greyed out until a reload.
+var CHAL_RESPOND_TIMEOUT_MS=15000;
 function respondChallenge(c,accept,accBtn,decBtn){
   // The tap is acknowledged at once: nothing on screen used to change until
   // the server answered, so a tap looked ignored and got repeated.
@@ -10750,12 +10753,19 @@ function respondChallenge(c,accept,accBtn,decBtn){
   _chalResponding[c.id]=accept?"accept":"decline";
   if(accBtn&&decBtn){accBtn.disabled=decBtn.disabled=true;(accept?accBtn:decBtn).textContent=accept?"Accepting…":"Declining…";}
   var done=function(){delete _chalResponding[c.id];};
-  fetch(SUPABASE_URL+"/rest/v1/challenges?id=eq."+encodeURIComponent(c.id)+"&status=eq.pending",{
-    method:"PATCH",headers:Object.assign(_sbHeaders(),{Prefer:"return=representation"}),
+  var ctl=typeof AbortController==="function"?new AbortController():null;
+  var timedOut=false;
+  var timer=setTimeout(function(){timedOut=true;if(ctl)ctl.abort();},CHAL_RESPOND_TIMEOUT_MS);
+  // Aborting covers a stalled request; the race covers a browser without
+  // AbortController (or one whose fetch ignores the signal).
+  Promise.race([fetch(SUPABASE_URL+"/rest/v1/challenges?id=eq."+encodeURIComponent(c.id)+"&status=eq.pending",{
+    method:"PATCH",headers:Object.assign(_sbHeaders(),{Prefer:"return=representation"}),signal:ctl?ctl.signal:undefined,
     body:JSON.stringify({status:accept?"accepted":"declined",responded_at:new Date().toISOString()})
-  }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
+  }),new Promise(function(_,rej){setTimeout(function(){rej(new Error("timeout"));},CHAL_RESPOND_TIMEOUT_MS+50);})])
+  .then(function(r){if(timedOut)throw new Error("timeout");if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
+    if(timedOut)throw new Error("timeout");
     if(!rows||!rows.length)throw new Error("not permitted");
-    done();
+    clearTimeout(timer);done();
     // A refetch while this was in flight replaced the list's objects, so
     // update the one the inbox now draws, not just the copy the button held.
     _challenges.concat([c]).forEach(function(x){if(x.id===c.id){x.status=accept?"accepted":"declined";x.responded_at=x.responded_at||new Date().toISOString();}});
@@ -10763,7 +10773,14 @@ function respondChallenge(c,accept,accBtn,decBtn){
     if(accept)_triggerPush(c.event_date,"chal-resp-"+c.id,"⚔️ "+userName+" accepted your challenge!",
       _chalFightLbl(c)+" — "+c.stake+" · It's on!",USER_ID,{includeIds:[c.challenger_id],url:"./?inbox=1",kind:"challenge"});
     toast(accept?"It's on! ⚔️":"Declined");
-  }).catch(function(){done();renderChallengeInbox();toast("Could not respond — try again");});
+  }).catch(function(){
+    clearTimeout(timer);done();renderChallengeInbox();
+    // The server may have taken it before the answer was lost: re-read, so a
+    // challenge that did go through shows as answered instead of offering
+    // the buttons again.
+    fetchChallenges();
+    toast("Could not respond — try again");
+  });
 }
 function openChallengeCompose(u){
   if(!userName){toast("Set your name first (✏️)");return;}

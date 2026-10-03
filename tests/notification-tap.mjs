@@ -449,6 +449,16 @@ async function main() {
         renderChallengeInbox();
         acc().click(); release(); await new Promise((res) => setTimeout(res, 100));
         out.failRestores = !!acc() && !acc().disabled && acc().textContent === "Accept ⚔️";
+        // A request that never answers gives the buttons back after the timeout.
+        _challenges = [Object.assign({}, row, { id: "ra3" })]; fail = false;
+        const realTimeout = CHAL_RESPOND_TIMEOUT_MS; CHAL_RESPOND_TIMEOUT_MS = 150;
+        renderChallengeInbox();
+        acc().click();   // never released
+        out.stallAcked = acc().disabled;
+        await new Promise((res) => setTimeout(res, 400));
+        out.stallRestores = !!acc() && !acc().disabled && acc().textContent === "Accept ⚔️";
+        out.stallUnlocked = !_chalResponding.ra3;
+        CHAL_RESPOND_TIMEOUT_MS = realTimeout;
         closeChalSheet(); closeLeaderboard();
         window.fetch = realFetch; _triggerPush = realPush; _ensureFreshToken = realFresh; EVENTS = restore.EVENTS; _challenges = [];
         return out;
@@ -460,6 +470,7 @@ async function main() {
       assert("accept: a redraw mid-request keeps it acknowledged", r.survivesRedraw);
       assert("accept: once answered, the buttons go", r.accepted);
       assert("accept: a failed request gives the buttons back", r.failRestores);
+      assert("accept: a request that never answers gives them back after the timeout", r.stallAcked && r.stallRestores && r.stallUnlocked);
     }
 
     // sw.js tells an open page the moment a push lands, so the page reads the
