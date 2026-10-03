@@ -9241,7 +9241,10 @@ function _tapeStats(u){
   });
   return {acc:u.accuracy,dog:_tapeRec(dog[0],dog[1]),lock:_tapeRec(lock[0],lock[1]),meth:_tapeRec(meth[0],meth[1]),streak:u.currentStreak||0};
 }
-function taleOfTheTape(rows,members,belt){
+// phase: "pre" (default), "live" or "post", from the card the board is on,
+// so the copy never says "before" a card that has started or finished.
+function taleOfTheTape(rows,members,belt,phase){
+  phase=phase==="live"||phase==="post"?phase:"pre";
   var board=boardStandings(rows,{users:members}).filter(function(u){return u.picks.some(function(p){return p.result!==null;});});
   if(board.length<2)return null;
   var a=board[0],b=board[1],sa=_tapeStats(a),sb=_tapeStats(b);
@@ -9275,12 +9278,12 @@ function taleOfTheTape(rows,members,belt){
   var ea=rows_.filter(function(r){return r.edge===1;}),eb=rows_.filter(function(r){return r.edge===2;});
   var big=function(l){return l.slice().sort(function(x,y){return y.gap-x.gap;})[0];};
   var verdict;
-  if(!ea.length&&!eb.length)verdict="Dead level on paper. This card decides it.";
-  else if(!eb.length)verdict=na+" leads every column that has a number. "+nb+" needs a big night.";
+  if(!ea.length&&!eb.length)verdict="Dead level on paper. "+(phase==="post"?"The next card decides it.":"This card decides it.");
+  else if(!eb.length)verdict=na+" leads every column that has a number. "+nb+(phase==="pre"?" needs a big night.":phase==="live"?" needs the rest of the night.":" has ground to make up.");
   else if(!ea.length)verdict=nb+" leads every column that has a number, from second place. Something has to give.";
   else verdict=nb+" has the better "+big(eb).what+", but "+na+" has the better "+big(ea).what+". "+
     (ea.length>eb.length?na+" takes "+ea.length+" of the columns.":eb.length>ea.length?nb+" takes "+eb.length+" of the columns.":"Even on columns.");
-  return {a:{name:a.nickname,pts:userPts(a)},b:{name:b.nickname,pts:userPts(b)},rows:rows_,h2h:h2h,verdict:verdict};
+  return {a:{name:a.nickname,pts:userPts(a)},b:{name:b.nickname,pts:userPts(b)},rows:rows_,h2h:h2h,verdict:verdict,phase:phase};
 }
 // The tape as an element (textContent only: nicknames are other people's input).
 function taleEl(t,evName){
@@ -9359,7 +9362,7 @@ function drawTapePoster(canvas,t,evName,call){
   c.fillStyle=gl;c.fillRect(0,0,W,H);
   c.textBaseline="alphabetic";c.textAlign="center";c.fillStyle="#fff";
   c.globalAlpha=.9;c.font="800 40px "+_WR_FONT;c.fillText("TALE OF THE TAPE",mid,112);
-  c.globalAlpha=.7;c.fillText(_wrFit(c,evName?"Before "+evName:"",W-2*L,32,"600",22),mid,162);
+  c.globalAlpha=.7;c.fillText(_wrFit(c,evName?(t.phase==="live"?"Live: ":t.phase==="post"?"After ":"Before ")+evName:"",W-2*L,32,"600",22),mid,162);
   c.globalAlpha=1;
   var side=function(x,align,u,place){
     var sn=splitNick(u.name);
@@ -9395,13 +9398,16 @@ function drawTapePoster(canvas,t,evName,call){
   return canvas;
 }
 // tape-poster:end
-// The board's tape: only in a room, only while the next card hasn't started,
-// and never able to break the board. Both board paths call it: the normal one
-// and the "nobody has picked this card yet" one, which is exactly when a
-// pre-card tape matters most.
+// The board's tape: only in a room, and never able to break the board. It
+// stays up through the card (live and finished, not just before the first
+// bell): it used to vanish at the opening bout, right when the room is
+// watching. Its numbers are the room's board, so they move as results land.
+// Both board paths call it: the normal one and the "nobody has picked this
+// card yet" one, which is exactly when a pre-card tape matters most.
 function roomTapeEl(rows,room,belt,ev){
-  if(!room||!ev||!ev.fights||!ev.fights.length||!ev.fights.every(function(f){return f.state==="pre";}))return null;
-  try{var t=taleOfTheTape(rows,room.members,belt);return t?taleEl(t,ev.name):null;}
+  if(!room||!ev||!ev.fights||!ev.fights.length)return null;
+  var phase=ev.fights.every(function(f){return f.state==="pre";})?"pre":ev.fights.every(function(f){return f.state==="post";})?"post":"live";
+  try{var t=taleOfTheTape(rows,room.members,belt,phase);return t?taleEl(t,ev.name):null;}
   catch(e){console.warn("[tape]",e);return null;}
 }
 // rooms:end
@@ -9910,7 +9916,7 @@ function loadLeaderboard(isLive){
       var _hdrLbl=_allPre?"Next up":_allPost?"Latest":"Live";
       evHdr.textContent=_hdrLbl+": "+nextEv.name.replace("UFC Fight Night: ","").replace("UFC ","UFC ");
       body.appendChild(evHdr);
-      // A room's pre-card Tale of the Tape: its top two, head to head.
+      // A room's Tale of the Tape: its top two, head to head, before and during the card.
       var _tapeEl=roomTapeEl(rows,_room,belt,nextEv);if(_tapeEl)body.appendChild(_tapeEl);
       // Slacker nudges — call out anyone who hasn't picked before lock-in.
       // Gated ONLY on the main-card clock. _slackersFor counts main-card bouts

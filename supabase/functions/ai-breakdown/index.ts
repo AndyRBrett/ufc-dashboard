@@ -836,7 +836,7 @@ export function verdictFactsText(v: VerdictFacts): string {
 }
 export function buildVerdict(v: VerdictFacts): { system: string; user: string } {
   const what = v.kind === "tape"
-    ? "the Tale of the Tape between the top two pickers in a group of friends, before the next card: who has the edge and why"
+    ? "the Tale of the Tape between the top two pickers in a group of friends, on the current card: who has the edge and why"
     : "the Fight Night Report of how a group of friends' picks went on a card that just finished: the night's headline";
   return {
     system: `You are FightBot, the ringside voice of a UFC picks app played by a group of friends. You call ${what}.
@@ -1102,7 +1102,7 @@ RANKS (the leaderboard)
 - ✏️ Profile: change your name and emoji. Delete my account is in there too.
 - 🚩 Report and 🚫 Block: under a roast you received, on a challenge in your inbox, and in a player's expanded row on Ranks. A report goes to the app's admin (the person isn't told who sent it). Blocking someone stops their trash talk, challenges and nudges reaching you, they can't challenge you, and they aren't told.
 - Nudges: friends who haven't finished their main-card picks show under "Next up"; tap a name to send them a callout push signed with your name. 3 nudges per person per day.
-- 👥 Rooms: tap 👥 Everyone at the top of Ranks to switch to a room. A room is a private board for a group, scored exactly like the main board, with its own 🏆 belt, and it opens with a Tale of the Tape of its top two before a card: 🤖 FightBot's call adds a one-line AI verdict, and 🖼️ Share poster shares it as a fight-poster image. Create one and share the invite link, or join with a code. Rooms need an email-linked account.
+- 👥 Rooms: tap 👥 Everyone at the top of Ranks to switch to a room. A room is a private board for a group, scored exactly like the main board, with its own 🏆 belt, and it opens with a Tale of the Tape of its top two, before and during a card: 🤖 FightBot's call adds a one-line AI verdict, and 🖼️ Share poster shares it as a fight-poster image. Create one and share the invite link, or join with a code. Rooms need an email-linked account.
 
 OTHER PROMOTIONS: PFL, RIZIN, CONTENDER SERIES (DWCS)
 - When another promotion has a card to pick, a sport switch (UFC | PFL | RIZIN | DWCS) appears under the header, and on Ranks. Those cards look and work like UFC cards: pick the winner, the method, and up to 2 🔒 locks per card. They score by the same rules (winner 1, method +0.5, underdog bonus when there's a line, lock +1/−1), but each promotion has its own separate board, and UFC scores are unaffected.
