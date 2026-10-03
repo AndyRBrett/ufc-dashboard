@@ -315,6 +315,87 @@ async function main() {
       assert("roast inbox: no table (0016 not applied) reads nothing", r.missing === false);
     }
 
+    // The challenge inbox: a challenge tap rides the same hand-off that lost
+    // roasts, so the app re-reads challenges itself and opens the inbox for an
+    // incoming one (or an answer to mine) this device hasn't shown yet.
+    {
+      const r = await page.evaluate(async () => {
+        const realFetch = window.fetch;
+        const now = Date.now(), iso = (ms) => new Date(ms).toISOString();
+        let rows = [
+          { id: "c1", challenger_id: "u-them", challenger_name: "Rival", target_id: "u-me", target_name: "Me",
+            event_date: "2999-01-01", event_name: "Future", f1: null, f2: null, stake: "s", status: "pending", created_at: iso(now - 60000) },
+          { id: "c0", challenger_id: "u-them", challenger_name: "Rival", target_id: "u-me", target_name: "Me",
+            event_date: "2999-01-01", event_name: "Future", f1: null, f2: null, stake: "s", status: "pending", created_at: iso(now - 3 * 86400000) },
+        ];
+        // Rows are written for "u-me" and served as whoever is signed in when
+        // they're read: every challenge read refreshes the session first, and
+        // where Supabase is reachable (CI) that swaps in a real anonymous uid
+        // mid-test. The stand-in below does the same thing everywhere.
+        window.fetch = function (url) {
+          url = String(url);
+          if (url.includes("/rest/v1/challenges"))
+            return Promise.resolve(new Response(JSON.stringify(rows).split('"u-me"').join(JSON.stringify(USER_ID)), { status: 200 }));
+          return realFetch.apply(window, arguments);
+        };
+        const realFresh = _ensureFreshToken;
+        _ensureFreshToken = function () { USER_ID = "u-signed-in-" + Math.random().toString(36).slice(2, 6); return Promise.resolve(); };
+        const restore = { EVENTS };
+        EVENTS = EVENTS.concat([{ date: "2999-01-01", name: "Future", fights: [{ f1: "A B", f2: "C D", lbl: "Main Event", state: "pre" }] }]);
+        USER_ID = "u-me"; localStorage.removeItem("ufc_chal_seen");
+        // The app runs this check itself (boot, foreground), and on CI that
+        // call's real fetch can hang: a forced check must not wait on it. Pin
+        // one "in flight" for the whole test, and judge by what is on screen,
+        // not by which call happened to open it.
+        _chalInboxBusy = true;
+        const inboxOpen = () => document.getElementById("chalSheet").classList.contains("open")
+          && document.getElementById("chalInboxView").style.display !== "none";
+        const run = async () => { const p = checkChallengeInbox(true); _chalInboxBusy = true; await p; _chalInboxBusy = true;
+          await new Promise((r) => setTimeout(r, 200)); return inboxOpen(); };
+        closeChalSheet(); closeLeaderboard();
+        const out = {};
+        out.open = await run();
+        out.listed = /Rival/.test(document.getElementById("chalList").textContent);
+        // Shown once: the next foreground doesn't pop it up again.
+        closeChalSheet(); closeLeaderboard();
+        out.again = await run();
+        // Only the 3-day-old one left unseen? It's too old to interrupt for.
+        out.oldSkipped = !_chalNews().some((c) => c.id === "c0");
+        // An answer to my own challenge is news to me; my own pending one isn't.
+        closeChalSheet(); closeLeaderboard();
+        rows = rows.concat([
+          { id: "c2", challenger_id: "u-me", challenger_name: "Me", target_id: "u-them", target_name: "Rival",
+            event_date: "2999-01-01", event_name: "Future", f1: null, f2: null, stake: "s", status: "pending", created_at: iso(now - 1000) },
+        ]);
+        out.ownPending = await run();
+        closeChalSheet(); closeLeaderboard();
+        rows = rows.map((c) => c.id === "c2" ? Object.assign({}, c, { status: "accepted", responded_at: iso(now) }) : c);
+        out.answer = await run();
+        closeChalSheet(); closeLeaderboard();
+        // A long history: a fresh "declined" sorts last, past the 25 rows the
+        // inbox draws. It must still be on screen, and only drawn rows count as seen.
+        const filler = [];
+        for (let i = 0; i < 30; i++) filler.push({ id: "f" + i, challenger_id: "u-them", challenger_name: "Rival", target_id: "u-me", target_name: "Me",
+          event_date: "2999-01-01", event_name: "Future", f1: null, f2: null, stake: "s", status: "accepted", created_at: iso(now - 7 * 86400000 - i), responded_at: iso(now - 7 * 86400000) });
+        rows = rows.concat(filler, [{ id: "c3", challenger_id: "u-me", challenger_name: "Me", target_id: "u-them", target_name: "Declinator",
+          event_date: "2999-01-01", event_name: "Future", f1: null, f2: null, stake: "s", status: "declined", created_at: iso(now - 2000), responded_at: iso(now) }]);
+        out.deepOpen = await run();
+        out.deepListed = /Declinator/.test(document.getElementById("chalList").textContent);
+        const seen = JSON.parse(localStorage.getItem("ufc_chal_seen") || "[]");
+        out.unshownUnmarked = filler.filter((c) => seen.indexOf(c.id + ":accepted") < 0).length > 0;
+        closeChalSheet(); closeLeaderboard();
+        window.fetch = realFetch; EVENTS = restore.EVENTS; _chalInboxBusy = false; _ensureFreshToken = realFresh;
+        return out;
+      });
+      assert("challenge inbox: a new incoming challenge opens the inbox with no tap payload", r.open && r.listed);
+      assert("challenge inbox: one already shown on this device isn't popped up again", r.again === false);
+      assert("challenge inbox: a days-old challenge doesn't interrupt", r.oldSkipped);
+      assert("challenge inbox: my own outgoing challenge doesn't open it", r.ownPending === false);
+      assert("challenge inbox: an answer to my challenge does", r.answer === true);
+      assert("challenge inbox: a fresh answer past the 25-row cut is still drawn", r.deepOpen && r.deepListed);
+      assert("challenge inbox: rows the inbox didn't draw aren't marked seen", r.unshownUnmarked);
+    }
+
     // sw.js tells an open page the moment a push lands, so the page reads the
     // inbox without waiting on the tap.
     {
