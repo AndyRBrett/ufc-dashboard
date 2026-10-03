@@ -288,13 +288,17 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   const exp = await as(C, "select * from join_room($1)", [pass]);
   check("0017: an expired password joins nothing and counts as a miss",
     exp.rows[0].id === null && (await db.query("select count(*)::int n from room_join_misses where user_id = $1", [C])).rows[0].n === 1);
+  await db.query("insert into room_join_misses (user_id, at) values ($1, now() - interval '2 days')", [C]);
+  await as(C, "select * from join_room('ZZZZZZ')");
+  check("0017: a miss still prunes misses older than a day (0008's housekeeping)",
+    (await db.query("select count(*)::int n from room_join_misses where at < now() - interval '1 day'")).rows[0].n === 0);
   await as(A, "select * from set_room_pass($1)", [room.id]);
   const cl = await as(B, "select * from clear_room_pass($1)", [room.id]);
   check("0017: a member can end it early", cl.rows[0].pass === null && cl.rows[0].pass_expires === null);
   const sql = mig("0017_room_passwords.sql");
   const jr = sql.slice(sql.indexOf("function public.join_room"));
   check("0017: join_room keeps 0008's throttle, serialisation and null-on-miss",
-    jr.indexOf("pg_advisory_xact_lock") < jr.indexOf("too many attempts") && jr.indexOf("too many attempts") < jr.indexOf("from rooms where") && /return null;/.test(jr) && !/raise exception 'no such room'/.test(jr));
+    jr.indexOf("pg_advisory_xact_lock") < jr.indexOf("too many attempts") && jr.indexOf("too many attempts") < jr.indexOf("from rooms where") && /return null;/.test(jr) && !/raise exception 'no such room'/.test(jr) && /perform public\.room_join_misses_prune\(\)/.test(jr));
   check("0017: a new password never equals a live code or password", /not exists \(select 1 from rooms where code = c or pass = c\)/.test(sql));
 }
 // --- the app side of passwords ------------------------------------------------------

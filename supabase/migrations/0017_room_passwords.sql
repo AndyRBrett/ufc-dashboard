@@ -65,6 +65,15 @@ begin
   return r;
 end $$;
 
+-- 0008's pruning of day-old misses, as its own function. Same statement;
+-- split out only because the Supabase MCP tool would not deliver a request
+-- holding both the miss insert and this delete (it timed out every time,
+-- before reaching the database), and this file is what was applied.
+create or replace function public.room_join_misses_prune()
+returns void language sql security definer set search_path = public as $$
+  delete from room_join_misses where at < now() - interval '1 day';
+$$;
+
 -- join_room as in 0008, plus: a string that isn't a code may be a live
 -- password. Commonly mistyped letters are read as the digits they look like
 -- (O -> 0, I and L -> 1), which no code or password contains.
@@ -84,7 +93,7 @@ begin
   end if;
   if r.id is null then
     insert into room_join_misses (user_id) values (me);
-    delete from room_join_misses where at < now() - interval '1 day';
+    perform public.room_join_misses_prune();
     return null;                                                        -- "no such room"; see 0008
   end if;
   if (select count(*) from room_members where room_id = r.id) >= 50 then raise exception 'room full'; end if;
@@ -92,7 +101,7 @@ begin
   return r;
 end $$;
 
-revoke all on function public.new_room_pass() from public, anon, authenticated;
+revoke all on function public.new_room_pass(), public.room_join_misses_prune() from public, anon, authenticated;
 revoke all on function public.set_room_pass(uuid), public.clear_room_pass(uuid), public.join_room(text) from public, anon;
 grant execute on function public.set_room_pass(uuid), public.clear_room_pass(uuid), public.join_room(text) to authenticated;
 
@@ -100,4 +109,5 @@ grant execute on function public.set_room_pass(uuid), public.clear_room_pass(uui
 -- drop function if exists public.clear_room_pass(uuid);
 -- drop function if exists public.set_room_pass(uuid);
 -- drop function if exists public.new_room_pass();
+-- drop function if exists public.room_join_misses_prune();
 -- alter table public.rooms drop column if exists pass_expires, drop column if exists pass;
