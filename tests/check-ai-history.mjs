@@ -69,11 +69,29 @@ for (const action of ['chat','guide','breakdown']) {
   assert.equal(r.json.sources.length,1);
   assert.equal(r.json.sources[0].url,source.url);
 }
+// The screenshot's exact request must reach recommendation instructions at
+// system priority, alongside card context and the user's saved selections.
+for (const action of ['chat', 'guide']) {
+  const recommendation = 'My pick is Ateba Gautier by KO/TKO, with moderate confidence based on the supplied striking data. I would change your Valentin pick; this is a prediction, not a guarantee.';
+  responses = [{content:[{type:'text',text:recommendation}]}];
+  const r = await ask({action, question:'What should my picks be for the main event of this card',
+    event:'Fixture card', card:'[Main Event] Ateba Gautier (8-1, odds -150) vs Robert Valentin (10-3, odds +130) · Middleweight\n  Ateba Gautier: 4 strikes landed/min',
+    userPicks:'You picked: Robert Valentin by Dec'});
+  assert.equal(r.status,200); assert.equal(r.json.breakdown,recommendation);
+  assert.ok(calls[0].system.includes(mod.PICK_RECOMMENDATION_RULES));
+  assert.match(calls[0].system,/recommend a fighter directly/);
+  assert.match(calls[0].system,/Predictions are allowed/);
+  assert.match(calls[0].system,/never claim you saved, changed or locked a pick/);
+  assert.doesNotMatch(calls[0].system,/never invent a button, score, pick or rule/);
+  assert.match(calls[0].messages[0].content,/\[Main Event\]/);
+  assert.match(calls[0].messages[0].content,/You picked: Robert Valentin by Dec/);
+  assert.ok(calls[0].max_tokens>=400 && calls[0].max_tokens<=1200);
+}
 for (const message of ['Web search is not enabled for your organization.', 'Model does not support web search.', "tools.0.type: web_search_20250305 is an invalid tool type."]) {
   responses=[{status:400,body:{error:{type:'invalid_request_error',message}}},{content:[{type:'text',text:'No meeting appears in the cached UFC history; I cannot verify other promotions right now.'}]}];
   const r=await ask({action:'chat',question,fightContext:context});
   assert.equal(r.status,200);assert.equal(calls.length,2);
-  assert.equal(calls[1].tools,undefined);assert.equal(calls[1].max_tokens,180);
+  assert.equal(calls[1].tools,undefined);assert.equal(calls[1].max_tokens,400);
   assert.match(calls[1].system,/Web search is unavailable/);
 }
 responses=[{status:400,body:{error:{message:'Web search is not enabled'}}},{content:[{type:'text',text:'An armbar attacks the elbow by controlling and extending the arm.'}]}];
@@ -133,10 +151,11 @@ const server=http.createServer((req,res)=>{
 await new Promise(ok=>server.listen(0,'127.0.0.1',ok));
 const browser=await chromium.launch();
 try {
-  const page=await browser.newPage();const sent=[];
-  await page.route(/supabase\.co/,route=>{
+  const page=await browser.newPage();const sent=[];let releaseAnswer;
+  await page.route(/supabase\.co/,async route=>{
     if(route.request().url().includes('/functions/v1/ai-breakdown')){
-      sent.push(JSON.parse(route.request().postData()));
+      const payload=JSON.parse(route.request().postData());sent.push(payload);
+      if(payload.question==='Delayed advice')await new Promise(resolve=>releaseAnswer=resolve);
       return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({breakdown:'No recorded meeting. Gautier is a middleweight.',sources:[{url:source.url,title:'Career records'},{url:'javascript:alert(1)',title:'bad'}]})});
     }
     return route.fulfill({status:200,contentType:'application/json',body:'[]'});
@@ -144,20 +163,63 @@ try {
   await page.addInitScript(()=>localStorage.setItem('ufc_whatsnew_seen','9999'));
   await page.goto(`http://127.0.0.1:${server.address().port}/index.html`);
   await page.evaluate(fixture=>{ FIGHTER_STATS=fixture;_authReady=Promise.resolve();_ensureFreshToken=()=>Promise.resolve();_authBearer=()=> 'Bearer test'; },stats);
-  const ev={name:'Fixture card',date:'2026-10-02',fights:[{lbl:'Main Event',f1:{n:'Ateba Gautier',r:'8-1'},f2:{n:'Robert Valentin',r:'10-3'},wc:'Middleweight'}]};
+  const ev={name:'Fixture card',date:'2026-10-02',fights:[{lbl:'Main Event',f1:{n:'Ateba Gautier',r:'8-1',s:{slpm:4,acc:52,td:1,tdd:75,ko:5,sub:2,form:[{r:'W',m:'KO'}]}},f2:{n:'Robert Valentin',r:'10-3'},odds:{f1:-150,f2:130},wc:'Middleweight'}]};
+  const bounded=await page.evaluate(ev=>_buildCardSummary({fights:Array.from({length:30},(_,i)=>({...ev.fights[0],lbl:i===0?'Main Event':'Prelim'}))}),ev);
+  assert.ok(bounded.length<=3900);assert.match(bounded,/\[Main Event\]/);
   await page.evaluate(ev=>openPickChat(ev,0),ev);
-  await page.fill('#chatInput',question);await page.click('#chatSendBtn');
-  await page.waitForFunction(()=>!_chatBusy);
+  await page.fill('#botInput',question);await page.click('#botSendBtn');
+  await page.waitForFunction(()=>!_botBusy);
+  assert.match(sent[0].card,/\[Main Event\] Ateba Gautier \(8-1, odds -150\)/);
+  assert.match(sent[0].card,/4 strikes landed\/min \(52% acc\)/);
+  assert.match(sent[0].card,/last fights W KO/);
   assert.match(sent[0].fightContext,/Ateba Gautier/);assert.match(sent[0].fightContext,/Tai Tuivasa/);
-  assert.equal(await page.locator('#chatHistory a').count(),1);
-  await page.fill('#chatInput','And who has he beaten?');await page.click('#chatSendBtn');await page.waitForFunction(()=>!_chatBusy);
+  assert.equal(await page.locator('#botHistory a').count(),1);
+  await page.fill('#botInput','And who has he beaten?');await page.click('#botSendBtn');await page.waitForFunction(()=>!_botBusy);
   assert.equal(sent[1].history[0].text,question);assert.match(sent[1].fightContext,/Ateba Gautier/);
-  await page.evaluate(()=>{closeChat();openBot('Home');});
+  await page.evaluate(()=>{closeBot();openBot('Home');});
   await page.fill('#botInput',question);await page.click('#botSendBtn');await page.waitForFunction(()=>!_botBusy);
-  assert.match(sent[2].fightContext,/Tai Tuivasa/);assert.equal(await page.locator('#botHistory a').count(),1);
+  assert.match(sent[2].fightContext,/Tai Tuivasa/);assert.equal(await page.locator('#botHistory a').count(),3);
+  assert.equal(sent[0].action,'guide');assert.equal(sent[2].action,'guide');
+  assert.equal(sent[2].event,ev.name);assert.equal(sent[2].history.length,4);
+  assert.equal(await page.locator('#chatModal').count(),0);
+  assert.match(await page.locator('#botTitle').textContent(),/Ask FightBot.*Fixture card/);
   await page.evaluate(ev=>{closeBot();var btn=document.createElement('button'),p=document.createElement('div');p.id='historyBreakdown';document.body.appendChild(p);fetchAIBreakdown(ev.fights[0],ev,btn,p);},ev);
   await page.waitForFunction(()=>document.querySelector('#historyBreakdown a'));
   assert.match(sent[3].fightContext,/Robert Valentin/);
   assert.equal(await page.locator('#historyBreakdown a').count(),1);
+  // A new card changes the current context but preserves the conversation.
+  const next={...ev,name:'Another fixture card',date:'2026-10-09'};
+  await page.evaluate(ev=>{preds[ev.date+'|'+ev.fights[0].f1.n+'|'+ev.fights[0].f2.n]=ev.fights[0].f2.n;openPickChat(ev,1);},next);
+  await page.fill('#botInput','Delayed advice');await page.click('#botSendBtn');
+  for(let i=0;!releaseAnswer&&i<100;i++)await new Promise(resolve=>setTimeout(resolve,10));
+  assert.ok(releaseAnswer,'request reached the mocked backend');
+  const pending=sent.at(-1);
+  assert.equal(pending.event,next.name);assert.match(pending.userPicks,/Robert Valentin/);
+  assert.equal(pending.history.length,6);
+  await page.evaluate(()=>{closeBot();openBot('Home');});
+  assert.equal(await page.locator('#botHistory .loading').count(),1);
+  assert.equal(await page.locator('#botSendBtn').isDisabled(),true);
+  releaseAnswer();await page.waitForFunction(()=>!_botBusy);
+  assert.equal(await page.locator('#botHistory .loading').count(),0);
+  assert.equal(await page.locator('#botHistory a').count(),4);
+  assert.match(await page.locator('#botTitle').textContent(),/Another fixture card/);
+  // The first PR review caught a card switch during an in-flight answer.
+  releaseAnswer=null;
+  await page.fill('#botInput','Delayed advice');await page.click('#botSendBtn');
+  for(let i=0;!releaseAnswer&&i<100;i++)await new Promise(resolve=>setTimeout(resolve,10));
+  assert.ok(releaseAnswer);
+  await page.evaluate(ev=>{closeBot();openPickChat(ev,0);},ev);
+  assert.match(await page.locator('#botTitle').textContent(),/Fixture card/);
+  assert.equal(await page.locator('#botHistory .loading').count(),0);
+  assert.equal(await page.locator('#botSendBtn').isDisabled(),false);
+  // Start a new request before releasing the old response. Its completion
+  // must not add a stale answer or unlock/overwrite the new conversation.
+  await page.fill('#botInput','Who should I pick?');await page.click('#botSendBtn');
+  releaseAnswer();await page.waitForFunction(()=>!_botBusy);
+  assert.equal(sent.at(-1).event,ev.name);
+  assert.equal(await page.locator('#botHistory a').count(),5);
+  assert.equal(await page.evaluate(()=>_botHist.length),10);
+
+
 } finally {await browser.close();await new Promise(ok=>server.close(ok));globalThis.fetch=originalFetch;}
 console.log('check-ai-history: cached context, historical search, citations, bounds, failures and all three UI paths pass.');
