@@ -9103,7 +9103,7 @@ var _lbRows=null;   // raw picks rows from the last leaderboard fetch
 // Codes minted since migration 0008 are 10 chars of Crockford base32 (no I, L,
 // O, U); the 6-hex-digit codes handed out before it still work.
 //
-// Temporary room passwords (migration 0017): any member can make a 6-char
+// Temporary room passwords (migration 0018): any member can make a 6-char
 // password (same alphabet) that works for 24 hours, typed into the same Join
 // box. It exists because an invite LINK opens in the phone's browser — on iOS
 // always Safari, never the Home Screen app, whose storage (and account) is
@@ -9179,7 +9179,7 @@ function roomsLoad(){
   _roomsAt=Date.now();
   var q="&order=created_at.asc";
   return _authReady.then(function(){
-    // Before migration 0017 the password columns don't exist: fall back to
+    // Before migration 0018 the password columns don't exist: fall back to
     // the old select so rooms still load (just without passwords).
     return _roomApi("/rest/v1/rooms?select=id,name,code,owner_id,pass,pass_expires,room_members(user_id)"+q).catch(function(e){
       if(!/pass/i.test((e&&e.message)||""))throw e;

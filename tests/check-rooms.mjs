@@ -266,7 +266,7 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   check("a network failure keeps the pending join for next time", ctx.__store.get("ufc_room_join") === "AB12CD");
 }
 
-// --- migration 0017: a temporary password, run for real in PGlite ----------------------
+// --- migration 0018: a temporary password, run for real in PGlite ----------------------
 {
   const { PGlite } = await import("@electric-sql/pglite");
   const mig = (f) => readFileSync(join(ROOT, "supabase/migrations", f), "utf8");
@@ -279,7 +279,7 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
     create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
     grant usage on schema auth to anon, authenticated; grant execute on function auth.uid(), auth.jwt() to anon, authenticated;
     grant usage on schema public to anon, authenticated;`);
-  for (const m of ["0006_rooms.sql", "0008_rooms_codes_throttle.sql", "0017_room_passwords.sql"]) await db.exec(mig(m));
+  for (const m of ["0006_rooms.sql", "0008_rooms_codes_throttle.sql", "0018_room_passwords.sql"]) await db.exec(mig(m));
   const as = async (uid, sql, params = [], anon = false) => {
     await db.exec(`set role authenticated; select set_config('request.jwt.claim.sub', '${uid}', false), set_config('request.jwt.claims', '{"is_anonymous": ${anon}}', false);`);
     try { return await db.query(sql, params); } finally { await db.exec("reset role"); }
@@ -288,34 +288,34 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   const room = (await as(A, "select * from create_room('Fight Club')")).rows[0];
   const made = await tryAs(A, "select * from set_room_pass($1)", [room.id]);
   const pass = made.r && made.r.rows[0].pass;
-  check("0017: a member makes a 6-char Crockford password that lasts 24 hours",
+  check("0018: a member makes a 6-char Crockford password that lasts 24 hours",
     /^[0-9A-HJKMNP-TV-Z]{6}$/.test(pass || "") && Math.abs(Date.parse(made.r.rows[0].pass_expires) - Date.now() - 864e5) < 6e4);
-  check("0017: a non-member can't make one", /not a member/.test((await tryAs(B, "select * from set_room_pass($1)", [room.id])).e || ""));
-  check("0017: the password can't be set directly (columns outside the UPDATE grant)",
+  check("0018: a non-member can't make one", /not a member/.test((await tryAs(B, "select * from set_room_pass($1)", [room.id])).e || ""));
+  check("0018: the password can't be set directly (columns outside the UPDATE grant)",
     !!(await tryAs(A, "update rooms set pass = 'AAAAAA' where id = $1", [room.id])).e);
   const j = await as(B, "select * from join_room($1)", [pass.slice(0, 3).toLowerCase() + "-" + pass.slice(3)]);
-  check("0017: typing the password (any case, with a dash) joins the room", j.rows[0].id === room.id &&
+  check("0018: typing the password (any case, with a dash) joins the room", j.rows[0].id === room.id &&
     (await db.query("select 1 from room_members where room_id = $1 and user_id = $2", [room.id, B])).rows.length === 1);
   const legacy = await as(C, "select * from join_room($1)", [room.code]);
-  check("0017: the permanent code still joins", legacy.rows[0].id === room.id);
-  check("0017: an anonymous session still can't join with a password", /link an email/.test((await tryAs(C, "select * from join_room($1)", [pass], true)).e || ""));
+  check("0018: the permanent code still joins", legacy.rows[0].id === room.id);
+  check("0018: an anonymous session still can't join with a password", /link an email/.test((await tryAs(C, "select * from join_room($1)", [pass], true)).e || ""));
   await db.query("update rooms set pass_expires = now() - interval '1 minute' where id = $1", [room.id]);
   await db.query("delete from room_members where user_id = $1", [C]);
   const exp = await as(C, "select * from join_room($1)", [pass]);
-  check("0017: an expired password joins nothing and counts as a miss",
+  check("0018: an expired password joins nothing and counts as a miss",
     exp.rows[0].id === null && (await db.query("select count(*)::int n from room_join_misses where user_id = $1", [C])).rows[0].n === 1);
   await db.query("insert into room_join_misses (user_id, at) values ($1, now() - interval '2 days')", [C]);
   await as(C, "select * from join_room('ZZZZZZ')");
-  check("0017: a miss still prunes misses older than a day (0008's housekeeping)",
+  check("0018: a miss still prunes misses older than a day (0008's housekeeping)",
     (await db.query("select count(*)::int n from room_join_misses where at < now() - interval '1 day'")).rows[0].n === 0);
   await as(A, "select * from set_room_pass($1)", [room.id]);
   const cl = await as(B, "select * from clear_room_pass($1)", [room.id]);
-  check("0017: a member can end it early", cl.rows[0].pass === null && cl.rows[0].pass_expires === null);
-  const sql = mig("0017_room_passwords.sql");
+  check("0018: a member can end it early", cl.rows[0].pass === null && cl.rows[0].pass_expires === null);
+  const sql = mig("0018_room_passwords.sql");
   const jr = sql.slice(sql.indexOf("function public.join_room"));
-  check("0017: join_room keeps 0008's throttle, serialisation and null-on-miss",
+  check("0018: join_room keeps 0008's throttle, serialisation and null-on-miss",
     jr.indexOf("pg_advisory_xact_lock") < jr.indexOf("too many attempts") && jr.indexOf("too many attempts") < jr.indexOf("from rooms where") && /return null;/.test(jr) && !/raise exception 'no such room'/.test(jr) && /perform public\.room_join_misses_prune\(\)/.test(jr));
-  check("0017: a new password never equals a live code or password", /not exists \(select 1 from rooms where code = c or pass = c\)/.test(sql));
+  check("0018: a new password never equals a live code or password", /not exists \(select 1 from rooms where code = c or pass = c\)/.test(sql));
 }
 // --- the app side of passwords ------------------------------------------------------
 {
@@ -336,11 +336,11 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   check("rooms load with the password columns", /pass,pass_expires/.test(sel.url));
 }
 {
-  // Before 0017 is applied the columns don't exist: rooms still load.
+  // Before 0018 is applied the columns don't exist: rooms still load.
   const replies = { "/rest/v1/rooms GET": ({ path }) => /pass/.test(path) ? { status: 400, json: { message: "column rooms.pass does not exist" } } : { status: 200, json: [R1] } };
   const ctx = makeCtx({ email: "me@x.test", replies });
   const got = await ctx.roomsLoad();
-  check("before migration 0017, rooms load without passwords", got.length === 1 && got[0].pass === null);
+  check("before migration 0018, rooms load without passwords", got.length === 1 && got[0].pass === null);
 }
 {
   const ctx = makeCtx({ email: "me@x.test", rooms: [R1],
