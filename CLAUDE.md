@@ -887,8 +887,17 @@ FightBot Help and the lightning breakdown. Unique first/surnames are resolved;
 ambiguous names are not guessed. Ask Claude sends bounded earlier turns too.
 These lists are UFC-only and cached: absence is never proof of no MMA meeting.
 The backend offers Anthropic `web_search_20250305` for fight chat, breakdown and
-open-ended MMA guide requests (existing key and daily budgets, at most two searches per model attempt,
-including one pause continuation). It looks up missing historical facts and
+open-ended MMA guide requests (existing key and daily budgets, up to
+`RESEARCH_MAX_SEARCHES` (3) searches per model attempt, one pause continuation).
+**Those requests run on `RESEARCH_MODEL` (default `claude-sonnet-5-5`), not
+`MODEL`**: on Haiku, "who has Natalia Silva lost to" came back as "the app data
+doesn't specify, see UFCStats" with search available. An unknown research model
+(404, or a 400 naming the model) falls back to `MODEL` with search kept and a
+logged error; everything without search stays on `MODEL`. The rules require a
+search whenever the supplied data doesn't fully answer, and forbid pointing the
+user elsewhere instead. `FIGHTER_STATS[n].res` (scraper) holds each UFC bout's
+result aligned with `opp` ("L KO/TKO R2 2025"), so who-beat-whom is answerable
+from the cache; the app sends it only when the two arrays line up. It looks up missing historical facts and
 returns citation links, rendered with textContent. Clearly app-only guide requests,
 roasts, IQ and verdicts do not get search. Guide number checks include cited
 source excerpts; unsourced invented and misattributed figures still fail. An

@@ -28,6 +28,16 @@ assert.match(ctx._aiFightContext('', ['Ateba Gautier']), /Ateba Gautier/);
 assert.ok(ctx._aiFightContext('Ateba', [], { 'Ateba Gautier': { opp: Array(3000).fill('Long Name') } }).length <= 6000);
 assert.match(ctx._aiFightContext('Alex One'), /history unavailable/);
 assert.match(fighterHistory(stats, 'Ateba', 'Tai Tuivasa').meeting, /not found in cached UFC/);
+// Per-bout results: "who has X lost to" is answerable from the cache.
+const silva = { 'Natalia Silva': { rec: '20-5-1', opp: ['Rose Namajunas', 'Jasmine Jasudavicius'], res: ['W U-Dec R5 2025', 'L S-Dec R3 2022'] } };
+const silvaCtx = ctx._aiFightContext('Who has Natalia Silva lost to in the ufc', [], silva);
+assert.match(silvaCtx, /UFC losses: Jasmine Jasudavicius \(S-Dec R3 2022\)/);
+assert.match(silvaCtx, /UFC wins over: Rose Namajunas/);
+assert.match(silvaCtx, /career MMA record \(all promotions\) 20-5-1/);
+assert.match(silvaCtx, /not UFC losses happened in other promotions/);
+// A misaligned res is never zipped onto the wrong opponent.
+assert.doesNotMatch(ctx._aiFightContext('Natalia Silva', [], { 'Natalia Silva': { opp: ['A B', 'C D'], res: ['W Dec'] } }), /UFC losses/);
+assert.deepEqual(fighterHistory(silva, 'Natalia Silva').ufc_fights_newest_first[1], { opponent: 'Jasmine Jasudavicius', result: 'L S-Dec R3 2022' });
 assert.match(fighterHistory(stats, 'Tai Tuivasa', 'Derrick Lewis').meeting, /found in completed UFC/);
 assert.ok(fighterHistory(stats, 'Alex').error);
 
@@ -60,7 +70,10 @@ for (const action of ['chat','guide','breakdown']) {
   responses = [reply()];
   const r = await ask({ action, question, fightContext:context, card:'Fixture card', f1:{n:'Ateba Gautier',rec:'8-1'}, f2:{n:'Robert Valentin',rec:'10-3'} });
   assert.equal(r.status,200,JSON.stringify(r.json));
-  assert.ok(calls[0].tools.some(t=>t.type==='web_search_20250305'&&t.max_uses===1));
+  assert.ok(calls[0].tools.some(t=>t.type==='web_search_20250305'&&t.max_uses===3));
+  assert.equal(calls[0].model,'claude-sonnet-5-5');
+  assert.match(calls[0].system,/MUST use web_search/);
+  assert.match(calls[0].system,/never tell the user to look it up elsewhere/);
   assert.match(calls[0].messages[0].content,/completed UFCStats opponents/);
   assert.match(calls[0].system,/absent opponent.*not proof/);
   if(action==='chat') assert.ok(calls[0].system.includes(mod.APP_GUIDE));
@@ -97,6 +110,15 @@ for (const message of ['Web search is not enabled for your organization.', 'Mode
 responses=[{status:400,body:{error:{message:'Web search is not enabled'}}},{content:[{type:'text',text:'An armbar attacks the elbow by controlling and extending the arm.'}]}];
 assert.equal((await ask({action:'guide',question:'What is an armbar?'})).status,200);
 assert.match(calls[1].system,/still explain established MMA/);
+// An unknown RESEARCH_MODEL falls back to MODEL, still with search.
+responses=[{status:404,body:{error:{type:'not_found_error',message:'model: claude-sonnet-5-5'}}},reply()];
+{ const r=await ask({action:'guide',question,fightContext:context});
+  assert.equal(r.status,200);assert.equal(calls.length,2);
+  assert.equal(calls[1].model,'claude-haiku-4-5-20251001');assert.ok(calls[1].tools); }
+assert.equal(mod.researchModelUnavailable(400,JSON.stringify({error:{message:'Web search is not enabled'}})),false);
+responses=[{content:[{type:'text',text:'Tap Ranks.'}]}];
+await ask({action:'guide',question:'How do locks work?'});
+assert.equal(calls[0].model,'claude-haiku-4-5-20251001');
 responses=[{status:400,body:{error:{message:'Invalid max_tokens value'}}}];
 assert.equal((await ask({action:'chat',question})).status,502);assert.equal(calls.length,1);
 responses=[{status:400,body:{error:{message:'Web search is not enabled'}}},{status:400,body:{error:{message:'Web search is not enabled'}}}];

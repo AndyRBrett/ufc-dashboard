@@ -2217,8 +2217,19 @@ function _aiFightContext(question,names,stats){
   var out=[],size=0;
   selected.slice(0,4).forEach(function(n){
     var st=stats[n],bits=[];
-    if(st.rec)bits.push("record "+st.rec);
-    if(Array.isArray(st.opp)&&st.opp.length)bits.push("completed UFCStats opponents (newest first): "+st.opp.join(", "));
+    if(st.rec)bits.push("career MMA record (all promotions) "+st.rec);
+    var res=Array.isArray(st.res)&&Array.isArray(st.opp)&&st.res.length===st.opp.length?st.res:null;
+    if(Array.isArray(st.opp)&&st.opp.length&&res){
+      // Outcome per bout, so "who has X lost to" is answerable. UFC fights only:
+      // losses outside the UFC are in the record but not in this list.
+      var tag=function(r){return String(r||"").slice(0,24);};
+      var lost=[],beat=[];
+      st.opp.forEach(function(o,i){var r=tag(res[i]);(r.charAt(0)==="L"?lost:r.charAt(0)==="W"?beat:[]).push(o+" ("+r.slice(2)+")");});
+      bits.push("UFC fights per UFCStats (newest first, result for "+n.split(" ").pop()+"): "+st.opp.map(function(o,i){return o+" "+tag(res[i]);}).join(", "));
+      bits.push("UFC losses: "+(lost.length?lost.join(", "):"none in the UFC")+"; UFC wins over: "+(beat.length?beat.join(", "):"none"));
+      bits.push("losses in the career record that are not UFC losses happened in other promotions and are not listed here");
+    }
+    else if(Array.isArray(st.opp)&&st.opp.length)bits.push("completed UFCStats opponents (newest first, win/loss per bout not cached): "+st.opp.join(", "));
     else bits.push("opponent history unavailable; an empty list does not prove no prior fights");
     if(st.fetched_at)bits.push("cached as of "+st.fetched_at.slice(0,10));
     if(st.url&&/^https?:\/\//i.test(st.url))bits.push("source "+st.url);
@@ -6625,7 +6636,9 @@ var WHATS_NEW=[
   {id:"2026-10-21-mma-assistant",emoji:"🥋",title:"Ask AI anything MMA",
    desc:"Ask Claude and FightBot cover MMA beyond this card: fighters, promotions, history, rules, techniques and news, while still knowing your app. They can look up missing facts with source links."},
   {id:"2026-10-22-one-fightbot",emoji:"🤖",title:"One assistant: Ask FightBot",
-   desc:"Ask FightBot replaces Ask Claude on each card and opens from More and Ranks too. One conversation for MMA, pick recommendations and app help, with the selected card’s records, odds and stats."}
+   desc:"Ask FightBot replaces Ask Claude on each card and opens from More and Ranks too. One conversation for MMA, pick recommendations and app help, with the selected card’s records, odds and stats."},
+  {id:"2026-10-23-fightbot-research",emoji:"🔎",title:"FightBot looks it up",
+   desc:"Ask FightBot who a fighter has lost to, or anything the app doesn’t hold, and it now knows each UFC fight’s result and searches the web for the rest, with source links, instead of saying it doesn’t know."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
