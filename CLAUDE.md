@@ -1177,7 +1177,14 @@ rooms, 50 members). Since `0008_rooms_codes_throttle.sql`, new invite codes are
 account gets 10 wrong codes an hour. **`join_room` returns NULL for a wrong code
 rather than raising**: an exception would roll back the row that records the
 miss, so the throttle would never count anything. The app reads an empty reply
-as "no such room"; `check:rooms` holds both halves. Room names are other people's input: render them with
+as "no such room"; `check:rooms` holds both halves. **Temporary passwords**
+(`0017_room_passwords.sql`): an invite link opens in the phone's browser, and on
+iOS that is always Safari, never the Home Screen app (separate storage, usually
+no account). So any member can make a 6-character password (`set_room_pass`,
+same alphabet, 24 hours, never equal to a live code or password) that is typed
+into the same Join box; `join_room` tries the code, then a live password, and a
+miss counts against the same throttle. The columns change only through the
+RPCs. Opened from a link in iOS Safari, the app asks before joining there. Room names are other people's input: render them with
 `textContent`, never `innerHTML` (`check:rooms` holds that too).
 
 ## The engine migration moves code, never numbers
