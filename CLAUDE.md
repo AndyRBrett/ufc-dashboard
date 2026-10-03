@@ -918,6 +918,13 @@ history, rules, judging, techniques and news are in scope, whether or not the
 selected card or APP_GUIDE mentions them. Stable concepts use MMA knowledge;
 missing/current factual claims use cited research. App facts still come only
 from APP_GUIDE and supplied app data.
+**Answers lead with the answer and stop.** "Recommend my main-card picks"
+renders one line per bout (`renderMainCardSelections`: fighter, method,
+confidence) and a closing "Ask why"; it used to append each pick's record, odds
+and fight-by-fight history, which read as a stats dump. Reasons and numbers are
+for the follow-up. The prompts say the same (`PICK_RECOMMENDATION_RULES`, the
+guide's "Short and plain" rule, `FIGHT_RESEARCH_RULES`); `check:history` holds
+the line shape and the rules.
 FightBot MCP also exposes `get_fighter_history` with the same UFC-only caveat.
 `npm run check:history` tests these paths with frozen fixtures and stubbed search.
 
