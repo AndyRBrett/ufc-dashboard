@@ -190,8 +190,10 @@ Two budgets to respect when changing cadence:
   in-progress run when the next one arrives, so a run that outlasts it commits
   nothing and the next starts the same work over: a loop. The stats loop is
   capped at `STATS_FETCH_BUDGET_S` (60s); gaps (`stats_gap`: nothing cached, or
-  an imminent card's missing record / failed fetch) go first and never wait, and
-  the rest of a backlog drains across runs. Without it, #258's one-time `res`
+  an imminent card's missing record / failed fetch) go first and get
+  `STATS_GAP_BUDGET_S` (120s), still a hard stop for a UFCStats outage, and
+  the rest of a backlog drains across runs. Fight day stays urgent past UTC
+  midnight (`stats_days_out` counts calendar days; -1 covers a US night card). Without it, #258's one-time `res`
   backfill froze every data update, the UFC card's included, for 7 hours on
   2026-10-03. Any new per-run backfill needs the same kind of cap.
 

@@ -3194,6 +3194,9 @@ STATS_URGENT_DAYS  = 7    # a card this close retries failures + refreshes every
 # included, from 2026-10-03 05:04 UTC. Urgent and brand-new fighters go first;
 # the rest of a backlog drains across runs, since each run commits what it did.
 STATS_FETCH_BUDGET_S = float(os.environ.get("STATS_FETCH_BUDGET_S", "60"))
+# Gaps get longer but still a hard stop: a UFCStats outage, or a new card full of
+# uncached fighters, would otherwise turn every gap into an unbounded loop again.
+STATS_GAP_BUDGET_S = float(os.environ.get("STATS_GAP_BUDGET_S", "120"))
 # Fighters DO compete into their late 40s, so age alone cannot condemn a profile
 # — it is age together with an empty UFC history that no real roster member can
 # produce. A 47-year-old on a card has fought in the UFC many times (Arlovski
@@ -3271,9 +3274,21 @@ def stats_fetch_order(to_fetch, urgency, cache):
 
 
 def stats_budget_spent(started, now, gap=False):
-    """True once STATS_FETCH_BUDGET_S is spent and this fetch can wait.
-    A gap (see stats_gap) never waits; stats_fetch_order puts gaps first."""
-    return not gap and now - started >= STATS_FETCH_BUDGET_S
+    """True once this fetch should wait for the next run: a refresh after
+    STATS_FETCH_BUDGET_S, a gap (see stats_gap) only after STATS_GAP_BUDGET_S.
+    stats_fetch_order puts gaps first, so they get the budget before refreshes."""
+    return now - started >= (STATS_GAP_BUDGET_S if gap else STATS_FETCH_BUDGET_S)
+
+
+def stats_days_out(event_date, now):
+    """Whole calendar days (UTC) from today to the card: 0 on fight day all day,
+    -1 the day after. `(ed - now).days` read -1 from 00:00 UTC on the card's own
+    date, dropping the card being fought from the urgent set."""
+    try:
+        ed = datetime.strptime(event_date, "%Y-%m-%d").date()
+    except (TypeError, ValueError):
+        return 999
+    return (ed - now.astimezone(timezone.utc).date()).days
 
 
 def _needs_stats_fetch(entry, now, urgent=False):
@@ -4147,12 +4162,9 @@ def step_build_events(data, now):
     stats_cache  = extract_stats_cache(data)
     all_fighters = {}
     for ev in new_events:
-        try:
-            ed = datetime.strptime(ev["date"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
-            days_out = (ed - now).days
-        except (ValueError, KeyError):
-            days_out = 999
-        urgent = 0 <= days_out <= STATS_URGENT_DAYS
+        days_out = stats_days_out(ev.get("date"), now)
+        # -1 too: a US night card runs past UTC midnight into the next date.
+        urgent = -1 <= days_out <= STATS_URGENT_DAYS
         for fight in ev["fights"]:
             for side in (fight["f1"], fight["f2"]):
                 n = side.get("name")
@@ -4174,7 +4186,7 @@ def step_build_events(data, now):
     for i, (fname, force_search) in enumerate(to_fetch):
         if stats_budget_spent(stats_started, time.monotonic(),
                               gap=stats_gap(stats_cache.get(fname), all_fighters[fname])):
-            print(f"Stats budget ({STATS_FETCH_BUDGET_S:.0f}s) spent: {len(to_fetch) - i} "
+            print(f"Stats budget spent: {len(to_fetch) - i} "
                   f"refresh(es) left for the next run", file=sys.stderr)
             break
         # force_search bypasses the cached detail URL so the record is re-derived

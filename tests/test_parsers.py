@@ -2417,9 +2417,23 @@ def test_stats_budget_lets_every_run_finish():
     b = scrape.STATS_FETCH_BUDGET_S
     assert not scrape.stats_budget_spent(0, b - 1)
     assert scrape.stats_budget_spent(0, b)                  # a refresh waits for the next run
-    assert not scrape.stats_budget_spent(0, b * 10, gap=True)   # a gap never does
-    # the budget plus the rest of the run must fit inside the 5-minute dispatch
-    assert 0 < b <= 90
+    g = scrape.STATS_GAP_BUDGET_S
+    assert not scrape.stats_budget_spent(0, b, gap=True)    # a gap gets longer...
+    assert scrape.stats_budget_spent(0, g, gap=True)        # ...but never unbounded
+    # both, plus the rest of the run, must fit inside the 5-minute dispatch
+    assert 0 < b <= g <= 150
+
+
+def test_fight_day_stays_urgent_after_utc_midnight():
+    # (ed - now).days read -1 from 00:00 UTC on the card's own date.
+    d = lambda iso: datetime.fromisoformat(iso)
+    assert scrape.stats_days_out("2026-10-03", d("2026-10-03T00:30:00+00:00")) == 0
+    assert scrape.stats_days_out("2026-10-03", d("2026-10-03T23:59:00+00:00")) == 0
+    assert scrape.stats_days_out("2026-10-03", d("2026-10-04T02:00:00+00:00")) == -1
+    assert scrape.stats_days_out("2026-10-10", d("2026-10-03T12:00:00+00:00")) == 7
+    assert scrape.stats_days_out("bad", d("2026-10-03T12:00:00+00:00")) == 999
+    src = open(scrape.__file__, encoding="utf-8").read()
+    assert "urgent = -1 <= days_out <= STATS_URGENT_DAYS" in src
 
 
 def test_stats_loop_is_budgeted_and_ordered():
