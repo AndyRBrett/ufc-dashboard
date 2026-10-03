@@ -346,6 +346,48 @@ try {
   await page.waitForFunction(() => document.querySelectorAll("#botHistory .loading").length === 0);
   lastReq = sent[sent.length - 1];
   check("if building the fight data fails, the question still goes (without it)", lastReq.question === "scoring?" && lastReq.card === undefined);
+  // iPhone-sized viewport: sub-16px fields trigger Safari's input zoom.
+  // Chromium checks the CSS precondition and lifecycle; device zoom itself
+  // still needs an iPhone check. No live card/date dependency.
+  await page.evaluate(() => { closeBot(); closeLeaderboard(); });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => {
+    const spacer = document.createElement("div"); spacer.style.height = "2000px";
+    document.body.appendChild(spacer); window.scrollTo(0, 240);
+  });
+  const layout = () => page.evaluate(() => ({
+    width: document.body.getBoundingClientRect().width,
+    font: getComputedStyle(document.body).fontSize,
+    scroll: window.scrollY, scale: window.visualViewport.scale,
+    locked: document.body.style.position, focused: document.activeElement.id,
+  }));
+  const before = await layout();
+  for (const [input, open, close] of [
+    ["chatInput", () => openPickChat({ name: "Fixture MMA card", fights: [] }, 999), () => closeChat()],
+    ["botInput", () => openBot("Home"), () => closeBot()],
+  ]) {
+    await page.evaluate(open);
+    await page.waitForTimeout(350);
+    check(`${input}: iOS-safe font and focus without changing page width`,
+      await page.evaluate((id) => parseFloat(getComputedStyle(document.getElementById(id)).fontSize) >= 16 &&
+        document.activeElement.id === id, input) && (await layout()).width === before.width);
+    await page.fill("#" + input, "Fixture question");
+    await page.evaluate(close);
+    const after = await layout();
+    check(`${input}: closing releases focus and restores font, width, scroll and scale`,
+      after.focused !== input && after.locked === "" && after.font === before.font &&
+      after.width === before.width && after.scroll === before.scroll && after.scale === before.scale);
+    // Catch an autofocus timer firing after an immediate dismissal.
+    await page.evaluate((id) => {
+      const el = document.getElementById(id); window.lateFocusCalls = 0;
+      el.originalFocus = el.focus;
+      el.focus = function(options) { window.lateFocusCalls++; this.originalFocus(options); };
+    }, input);
+    await page.evaluate(open); await page.evaluate(close);
+    await page.waitForTimeout(350);
+    check(`${input}: rapid dismissal cancels delayed keyboard focus`, await page.evaluate(() => lateFocusCalls === 0));
+    await page.evaluate((id) => { const el = document.getElementById(id); el.focus = el.originalFocus; }, input);
+  }
   check("no page errors", !errors.length);
   if (errors.length) console.error("    " + errors.slice(0, 3).join("\n    "));
 } finally {
