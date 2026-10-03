@@ -42,7 +42,7 @@ class FakeDate extends RealDate {
   constructor(...a) { super(...(a.length ? a : [NOW])); }
   static now() { return NOW; }
 }
-let pagesFetched = [], pushes = [], missing = new Set(), picksRows = [], picksUrls = [];
+let pagesFetched = [], pushes = [], missing = new Set(), picksRows = [], picksUrls = [], lockRowsStored = [];
 const PAGE_CAP = 1000;
 globalThis.fetch = async (url, init) => {
   url = String(url);
@@ -59,6 +59,7 @@ globalThis.fetch = async (url, init) => {
     const from = m ? +m[1] : 0, to = m ? Math.min(+m[2], from + PAGE_CAP - 1) : PAGE_CAP - 1;
     return new Response(JSON.stringify(picksRows.slice(from, to + 1)), { status: 200 });
   }
+  if (url.startsWith(SB + "/rest/v1/pick_locks")) return new Response(JSON.stringify(lockRowsStored), { status: 200 });
   if (url === SB + "/functions/v1/send-push") {
     pushes.push(JSON.parse(init.body));
     return new Response(JSON.stringify({ sent: 1 }), { status: 200 });
@@ -121,8 +122,29 @@ check("copy fits send-push's limits", (s.title || "").length <= 120 && (s.body |
 //    never after its own segment locks.
 r = await runAt("2026-09-26T23:00:00Z");
 check("a main-card swap still sends at 7pm ET, prelims underway", r.swaps.length === 1);
-r = await runAt("2026-09-27T00:05:00Z");
-check("nothing once the new bout's segment has locked", r.swaps.length === 0);
+{
+  // One fight at a time: this main-card bout is not the main card's opener, so
+  // it stays pickable after the main card's bell (Codex on #263: the card was
+  // dropped from the watch at that bell, so a replacement then told nobody).
+  const { bundledKernel } = await import(pathToFileURL(join(ROOT, "supabase/functions/_shared/lab-bundle.js")).href);
+  const bell = Date.parse("2026-09-27T00:05:00Z");
+  const key = [main.f1.n, main.f2.n].map((n) => n.trim().toLowerCase()).sort();
+  const lockAt = Date.parse(mod.lockRows([ev], bundledKernel({}), bell).bouts.find((b) => b.a === key[0] && b.b === key[1]).lock_at);
+  check("the fixture's main-card bout locks after the main card's bell", lockAt > bell);
+  r = await runAt("2026-09-27T00:05:00Z");
+  check("a main-card swap still sends after the main card's bell, while its bout is open", r.swaps.length === 1);
+  r = await runAt(new Date(lockAt + 60e3).toISOString());
+  check("nothing once the new bout has locked", r.swaps.length === 0);
+  // The database enforces the time already stored for the bout (a result seen
+  // early locks it before this run's rule would): no alert to re-pick it.
+  lockRowsStored = [{ event_date: CARD, a: key[0], b: key[1], lock_at: "2026-09-27T00:02:00Z" }];
+  r = await runAt("2026-09-27T00:05:00Z");
+  check("nothing once the database's stored lock for the bout has passed, even if the rule alone says open", r.swaps.length === 0);
+  lockRowsStored = [{ event_date: CARD, a: key[0], b: key[1], lock_at: "2026-09-27T03:00:00Z" }];
+  r = await runAt("2026-09-27T00:05:00Z");
+  check("…while a stored time still ahead doesn't hold an alert back", r.swaps.length === 1);
+  lockRowsStored = [];
+}
 // A bout locks one fight at a time (lockRows): this prelim, last of its segment
 // in the running order, is still pickable after the prelims' bell and goes out
 // until its own lock, never after.

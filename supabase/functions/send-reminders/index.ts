@@ -509,24 +509,31 @@ Deno.serve(async (req) => {
   // Pick lock times for the database trigger (see lockRows). Best-effort: a
   // failure leaves the last written times in place, and the trigger falls back
   // to locking a card from midnight ET after its date.
+  // What the last run wrote to pick_locks, which is also what the database is
+  // enforcing right now. lockRows keeps a result's first sighting from it, and
+  // the fight change alerts below never treat a bout as open past it. A failed
+  // read costs only precision (a sighting becomes this run), never a later lock.
+  const prior: Record<string, number> = {};
+  {
+    const key = SB_SERVICE_ROLE_KEY || SB_ANON_KEY;   // pick_locks is app-readable since 0017
+    let evs: any[] = [];
+    try { evs = parseDataJs(js).EVENTS || []; } catch (_e) { /* the steps below report a bad data.js */ }
+    const dates = [...new Set(evs.map((e) => e && e.date).filter((d) => typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)))]
+      .filter((d) => { const t = Date.parse(d + "T00:00:00Z"); return t > now - LOCK_WINDOW_PAST_MS - 864e5 && t < now + LOCK_WINDOW_AHEAD_MS; });
+    if (dates.length) {
+      try {
+        const pr = await fetch(`${SUPABASE_URL}/rest/v1/pick_locks?select=event_date,a,b,lock_at&event_date=in.(${dates.join(",")})`,
+          { headers: { apikey: key, Authorization: `Bearer ${key}` } });
+        if (pr.ok) for (const r of await pr.json()) { const t = Date.parse(r.lock_at); if (!isNaN(t)) prior[r.event_date + "|" + r.a + "|" + r.b] = t; }
+      } catch (_e) { /* no prior */ }
+    }
+  }
   let locks: unknown = null;
   if (SB_SERVICE_ROLE_KEY) {
     try {
       const h = { "Content-Type": "application/json", apikey: SB_SERVICE_ROLE_KEY, Authorization: `Bearer ${SB_SERVICE_ROLE_KEY}`,
                   Prefer: "resolution=merge-duplicates,return=minimal" };
-      // What the last run wrote: a result's first sighting is kept from it. A
-      // failed read costs only precision (the sighting becomes this run), never
-      // a later lock.
       const evs = parseDataJs(js).EVENTS || [];
-      const prior: Record<string, number> = {};
-      const dates = [...new Set((evs as any[]).map((e) => e && e.date).filter((d) => typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)))]
-        .filter((d) => { const t = Date.parse(d + "T00:00:00Z"); return t > now - LOCK_WINDOW_PAST_MS - 864e5 && t < now + LOCK_WINDOW_AHEAD_MS; });
-      if (dates.length) {
-        try {
-          const pr = await fetch(`${SUPABASE_URL}/rest/v1/pick_locks?select=event_date,a,b,lock_at&event_date=in.(${dates.join(",")})`, { headers: h });
-          if (pr.ok) for (const r of await pr.json()) { const t = Date.parse(r.lock_at); if (!isNaN(t)) prior[r.event_date + "|" + r.a + "|" + r.b] = t; }
-        } catch (_e) { /* no prior: sightings start from this run */ }
-      }
       const { bouts, cards } = lockRows(evs, bundledKernel({}), now, prior);
       const stamp = new Date(now).toISOString();
       const put = (table: string, conflict: string, rows: any[]) => rows.length
@@ -615,17 +622,28 @@ Deno.serve(async (req) => {
   // may stop the reminders or the brief above from having gone out.
   const swaps: unknown[] = [];
   try {
+    const k = bundledKernel({});
+    // Each bout's lock as the database sees it: this run's rule (with the
+    // remembered sightings), never later than the time already stored for it.
+    // Recomputing without them could put a lock later than the row the
+    // database is enforcing, and alert people to re-pick a bout they can't.
+    const boutLocksOf = (e: any) => new Map(lockRows([e], k, now, prior).bouts.map((b) => {
+      const t = Date.parse(b.lock_at), stored = prior[e.date + "|" + b.a + "|" + b.b];
+      return [b.a + "|" + b.b, typeof stored === "number" ? Math.min(t, stored) : t] as [string, number];
+    }));
     const cards: any[] = ((parseDataJs(js).EVENTS || []) as any[])
       .filter((e) => {
-        // Watched until its LAST segment starts: a main-card replacement is still
-        // pickable while the prelims run. Each alert is then gated on its own bout's lock.
+        // Watched until its LAST bout locks: one fight at a time, so the co-main
+        // and main event stay pickable well after the main card's bell. Each
+        // alert is then gated on its own bout's lock.
         const bells = [e.earlyPrelimTime, e.prelimTime, e.time].map((t) => phaseUtc(e.date, t)).filter((t) => t !== null) as number[];
-        const last = bells.length ? Math.max(...bells) : null;
-        return last !== null && last > now && last < now + SWAP_HORIZON_MS && Array.isArray(e.fights);
+        if (!bells.length || !Array.isArray(e.fights)) return false;
+        const locks = [...boutLocksOf(e).values()].filter((t) => !isNaN(t));
+        const last = Math.max(...bells, ...locks);
+        return last > now && Math.max(...bells) < now + SWAP_HORIZON_MS;
       })
       .slice(0, MAX_EVENTS);
     if (cards.length) {
-      const k = bundledKernel({});
       const dates = cards.map((e) => e.date).join(",");
       // Paged: PostgREST caps a response at 1,000 rows, and a partial audience is
       // unrecoverable, since send-push's notif_log dedup then stops every later run
@@ -645,7 +663,7 @@ Deno.serve(async (req) => {
       for (const ev of cards) {
         // A bout locks by lockRows' rule (it can close before its segment's bell
         // once the fight ahead of it ends); a cancellation by the card's first bell.
-        const boutLocks = new Map(lockRows([ev], k, now).bouts.map((b) => [b.a + "|" + b.b, Date.parse(b.lock_at)]));
+        const boutLocks = boutLocksOf(ev);
         const lockFor = (f: any | null) => {
           if (f && f.f1 && f.f2 && typeof f.f1.n === "string" && typeof f.f2.n === "string") {
             const [, a, b] = lockKey(ev.date, f.f1.n, f.f2.n);

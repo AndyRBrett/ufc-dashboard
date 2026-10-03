@@ -210,6 +210,35 @@ function card() {
   check("…and one still ahead does not", ctx2.fightLocked(c, E2) === false);
   check("server times are keyed like pick_locks: lower-cased, trimmed, sorted",
     ctx2._lockKey("d", " Zed B", "alpha A ") === "d|alpha a|zed b");
+  // Other players' picks show at the server's lock plus the grace (0017), so
+  // the group bar waits for that, not for the app's own lock.
+  {
+    const d = card(), e1 = d.fights[5], e2 = d.fights[6], e3 = d.fights[7];   // E1 E2 E3, E3 runs first
+    const at = (ms, serverE2) => { const x = load(ms); if (serverE2) x._serverLocks[x._lockKey(d.date, e2.f1.n, e2.f2.n)] = serverE2; return x; };
+    e3.winner = "E3 A";                                            // the app locks E2 now
+    check("picks aren't revealed while the server's lock is still ahead (its sighting lags the app's)",
+      at(ET(17, 20), ET(17, 45)).fightLocked(d, e2) === true && at(ET(17, 20), ET(17, 45))._picksRevealed(d, e2) === false);
+    check("…nor inside the grace after it", at(ET(17, 48), ET(17, 45))._picksRevealed(d, e2) === false);
+    check("…and are once the grace has passed", at(ET(17, 50), ET(17, 45))._picksRevealed(d, e2) === true);
+    check("a bout that isn't locked is never revealed", at(ET(17, 50), ET(17, 0)).fightLocked(d, e1) === false &&
+      at(ET(17, 50), ET(17, 0))._picksRevealed(d, e1) === false);
+    check("with no server time the app's own lock decides", at(ET(17, 20), null)._picksRevealed(d, e2) === true);
+  }
+  {
+    // …and the screen redraws when a reveal happens with nothing else changing
+    // (Codex on #264: the only picker's own row looks the same either side).
+    const vmc = vm.createContext({ Date, isNaN, DAY_MS: 864e5, renders: 0, revealed: false });
+    vm.runInContext(htmlFn("_checkRevealFlip").replace(/^/, "var _revealSig=null;") +
+      `;var EVENTS=[{date:new Date().toISOString().slice(0,10),fights:[{}]}];
+       function _picksRevealed(){return revealed;} function pk(){return "k";} function render(){renders++;}`, vmc);
+    vm.runInContext("_checkRevealFlip(); _checkRevealFlip();", vmc);
+    const quiet = vmc.renders;
+    vm.runInContext("revealed = true; _checkRevealFlip(); _checkRevealFlip();", vmc);
+    check("a reveal re-renders once by itself, and an unchanged poll doesn't", quiet === 0 && vmc.renders === 1);
+    check("the 30-second picks poll checks for reveals", /function fetchCommunityPicks\(\)\{\s*_loadServerLocks\(\);\s*_checkRevealFlip\(\);/.test(html));
+  }
+  check("the group bar is drawn only once picks are revealed",
+    /if\(locked&&_picksRevealed\(EVENTS\[ei\],fight\)&&cp&&cp\.total>=1\)/.test(html));
   const fn = { ...FN, fights: [{ lbl: "Prelim", f1: { n: "Q A" }, f2: { n: "Q B" } },
     { lbl: "Early Prelim", f1: { n: "R A" }, f2: { n: "R B" } }] };
   check("with no early clock the early prelims open the prelim segment",
