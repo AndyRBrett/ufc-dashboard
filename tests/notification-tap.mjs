@@ -328,11 +328,18 @@ async function main() {
           { id: "c0", challenger_id: "u-them", challenger_name: "Rival", target_id: "u-me", target_name: "Me",
             event_date: "2999-01-01", event_name: "Future", f1: null, f2: null, stake: "s", status: "pending", created_at: iso(now - 3 * 86400000) },
         ];
+        // Rows are written for "u-me" and served as whoever is signed in when
+        // they're read: every challenge read refreshes the session first, and
+        // where Supabase is reachable (CI) that swaps in a real anonymous uid
+        // mid-test. The stand-in below does the same thing everywhere.
         window.fetch = function (url) {
           url = String(url);
-          if (url.includes("/rest/v1/challenges")) return Promise.resolve(new Response(JSON.stringify(rows), { status: 200 }));
+          if (url.includes("/rest/v1/challenges"))
+            return Promise.resolve(new Response(JSON.stringify(rows).split('"u-me"').join(JSON.stringify(USER_ID)), { status: 200 }));
           return realFetch.apply(window, arguments);
         };
+        const realFresh = _ensureFreshToken;
+        _ensureFreshToken = function () { USER_ID = "u-signed-in-" + Math.random().toString(36).slice(2, 6); return Promise.resolve(); };
         const restore = { EVENTS };
         EVENTS = EVENTS.concat([{ date: "2999-01-01", name: "Future", fights: [{ f1: "A B", f2: "C D", lbl: "Main Event", state: "pre" }] }]);
         USER_ID = "u-me"; localStorage.removeItem("ufc_chal_seen");
@@ -377,7 +384,7 @@ async function main() {
         const seen = JSON.parse(localStorage.getItem("ufc_chal_seen") || "[]");
         out.unshownUnmarked = filler.filter((c) => seen.indexOf(c.id + ":accepted") < 0).length > 0;
         closeChalSheet(); closeLeaderboard();
-        window.fetch = realFetch; EVENTS = restore.EVENTS; _chalInboxBusy = false;
+        window.fetch = realFetch; EVENTS = restore.EVENTS; _chalInboxBusy = false; _ensureFreshToken = realFresh;
         return out;
       });
       assert("challenge inbox: a new incoming challenge opens the inbox with no tap payload", r.open && r.listed);
