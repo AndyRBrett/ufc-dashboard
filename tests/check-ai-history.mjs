@@ -139,7 +139,7 @@ assert.equal(mod.numbersMisattributed('Gautier weighs 185 pounds.', {fightContex
 
 // Card context supplies the event outside the card text; event numbers
 // must be accepted, including in a sentence naming one of its fighters.
-const pickRequest={action:'guide',event:'UFC 332: Silva vs. Wang',card:'[Main Event] Natalia Silva (20-5-1, odds -208) vs Wang Cong (10-1-0, odds +168) · Flyweight',question:'What picks do you recommend for the main card'};
+const pickRequest={action:'guide',event:'UFC 332: Silva vs. Wang',card:'[Main Event] Natalia Silva (20-5-1, odds -208) vs Wang Cong (10-1-0, odds +168) · Flyweight',question:'Who should I pick for this fight?'};
 assert.deepEqual(mod.guideStrays('For UFC 332, I lean Natalia Silva by decision.',pickRequest,mod.guideFactsText(pickRequest)),[]);
 assert.ok(mod.guideStrays('Natalia Silva has 332 wins.',pickRequest,mod.guideFactsText(pickRequest)).includes('332'));
 assert.ok(mod.guideStrays('At UFC 332, Natalia Silva has 332 wins.',pickRequest,mod.guideFactsText(pickRequest)).includes('332'));
@@ -156,7 +156,7 @@ responses=Array(2).fill({content:[{type:'text',text:'Natalia Silva has 777 wins.
 pickResponse=await ask(pickRequest);assert.equal(pickResponse.status,502);assert.equal(pickResponse.json.code,'unverified-answer');
 
 // The first successful live answer contradicted these supplied facts.
-const qualityRequest={action:'guide',event:'Fixture card',question:'What picks do you recommend for the main card',card:
+const qualityRequest={action:'guide',event:'Fixture card',question:'Give me your pick recommendations',card:
  '[Main Card] Roberto Soldic (21-4-0, odds -220) vs Khaos Williams (16-5-0, odds +179) · Welterweight\n'+
  '[Main Card] Ateba Gautier (11-1-0) vs Roman Kopylov (15-5-0) · Middleweight\n'+
  '  Roman Kopylov: last fights W Dec vs Marco Tulio, L Dec vs Gregory Rodrigues, L Dec, W TKO\n'+
@@ -182,6 +182,33 @@ assert.deepEqual(mod.recommendationContradictions('Kopylov has lost his last two
 responses=[{content:[{type:'text',text:wrong}]},{content:[{type:'text',text:'Soldic by decision, lower confidence without his stats. Gautier by knockout, moderate confidence; Kopylov won his latest bout.'}]}];
 const qualityAnswer=await ask(qualityRequest);assert.equal(qualityAnswer.status,200);assert.equal(calls.length,2);assert.doesNotMatch(qualityAnswer.json.breakdown,/perfect record|lost his last two/);
 assert.match(calls[1].messages[0].content,/Correct each listed issue/);
+
+// Main-card recommendations let the model select; factual explanations are
+// rendered from the card rather than accepting invented model prose.
+const mainRequest={...qualityRequest,question:'What picks do you recommend for the main card'};
+const selection=JSON.stringify({picks:[{fighter:'Roberto Soldic',method:'KO/TKO',confidence:'high'},{fighter:'Ateba Gautier',method:'decision',confidence:'moderate'},{fighter:'King Green',method:'decision',confidence:'moderate'}]});
+const bouts=mod.mainCardSelections(mainRequest);
+assert.equal(bouts.length,3);
+assert.equal(mod.mainCardSelections({...mainRequest,question:'What were my previous main-card picks?'}).length,0);
+for(const question of ['Which main-card picks won?','Which of my main-card picks lost?','Were my main-card picks correct?','Who were the main-card winners?']) assert.equal(mod.mainCardSelections({...mainRequest,question}).length,0,question);
+assert.equal(mod.mainCardSelections({...mainRequest,question:'Recommend my main-card picks'}).length,3);
+const grounded=mod.renderMainCardSelections(selection,bouts);
+assert.match(grounded,/Roberto Soldic by KO\/TKO — low confidence/);
+assert.match(grounded,/Cached career record: 21-4-0/);
+assert.match(grounded,/Recent fight details are missing/);
+assert.doesNotMatch(grounded,/perfect record|four straight|better striking accuracy/);
+assert.equal(mod.renderMainCardSelections(selection.replace('Roberto Soldic','Unknown Fighter'),bouts),null);
+assert.equal(mod.renderMainCardSelections(JSON.stringify({picks:[]}),bouts),null);
+assert.equal(mod.renderMainCardSelections(selection.replace('"confidence":"high"','"confidence":"high","reason":"perfect record"'),bouts),null);
+for(const action of ['guide','chat']) {
+ responses=[{content:[{type:'text',text:selection}]}];
+ const result=await ask({...mainRequest,action});assert.equal(result.status,200);assert.equal(result.json.breakdown,grounded);assert.equal(calls.length,1);
+ assert.equal(calls[0].tools,undefined);assert.match(calls[0].system,/JSON object/);
+}
+responses=[{content:[{type:'text',text:'Soldic has a perfect record.'}]},{content:[{type:'text',text:selection}]}];
+assert.equal((await ask(mainRequest)).status,200);assert.equal(calls.length,2);
+responses=Array(2).fill({content:[{type:'text',text:'Soldic has a perfect record.'}]});
+assert.equal((await ask(mainRequest)).status,502);
 
 if (process.argv.includes('--no-browser')) {
   console.log('check-ai-history: context, search, citation parsing, bounds and failures pass.');

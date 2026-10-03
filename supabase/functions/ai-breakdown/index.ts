@@ -1283,6 +1283,49 @@ export function recommendationContradictions(text: string, d: ReqBody): string[]
 }
 // Everything wrong with a guide answer's numbers: made up, or pinned on the
 // wrong fighter.
+export function mainCardSelections(d: ReqBody): {fighters:string[]; facts:string[][]}[] {
+  const q=d.question ?? "";
+  if (!/\bmain[ -]card\b/i.test(q) || !/\b(picks?|recommend(?:ations?)?|predict(?:ions?)?)\b/i.test(q) || /\b(past|previous|results?|were|won|lost|winners?|scored|correct|happened)\b/i.test(q)) return [];
+  const facts=fighterFacts(d.card ?? "");
+  const out:{fighters:string[];facts:string[][]}[]=[];
+  for(const line of (d.card ?? "").split("\n")) {
+    const m=/^\[(?:Main Event|Co-Main|Main Card)\] (.+?)(?: \(([^)]*)\))? vs (.+?)(?: \(([^)]*)\))?(?: · .*)?$/.exec(line);
+    if(!m) continue;
+    const names=[m[1],m[3]];
+    out.push({fighters:names,facts:names.map((name,i)=>{
+      const supplied=facts.get(name)?.facts ?? "", details:string[]=[];
+      const record=/\b\d+-\d+(?:-\d+)?\b/.exec(i===0?m[2]??"":m[4]??"")?.[0];
+      if(record) details.push(`Cached career record: ${record}`);
+      const odds=/\bodds ([+-]?\d+)\b/.exec(i===0?m[2]??"":m[4]??"")?.[1];
+      if(odds) details.push(`Listed American odds: ${odds}`);
+      const form=/last fights ([^\n]+)/.exec(supplied)?.[1];
+      if(form) details.push(`Latest cached results, newest first: ${form}`);
+      if(!form) details.push("Recent fight details are missing from this card snapshot; confidence is limited");
+      return details;
+    })});
+  }
+  return out.slice(0,8);
+}
+export function renderMainCardSelections(text:string, bouts:ReturnType<typeof mainCardSelections>):string|null {
+  let parsed:unknown;
+  try{parsed=JSON.parse(text.trim().replace(/^```(?:json)?\s*|\s*```$/g,""));}catch{return null;}
+  if(!parsed || typeof parsed!=="object") return null;
+  const picks=(parsed as {picks?:unknown}).picks;
+  if(!Array.isArray(picks) || picks.length!==bouts.length) return null;
+  const lines:string[]=[];
+  for(let i=0;i<bouts.length;i++) {
+    const p=picks[i];
+    if(!p || typeof p!=="object" || Object.keys(p).some(k=>!["fighter","method","confidence"].includes(k))) return null;
+    const side=bouts[i].fighters.indexOf(p.fighter);
+    if(side<0 || !["decision","KO/TKO","submission","uncertain"].includes(p.method) || !["low","moderate","high"].includes(p.confidence)) return null;
+    const facts=bouts[i].facts[side];
+    // Missing recent details on either side limit confidence in the matchup.
+    const limited=bouts[i].facts.some(fs=>fs.some(f=>f.startsWith("Recent fight details are missing")));
+    const confidence=limited?"low":p.confidence;
+    lines.push(`- ${p.fighter}${p.method==="uncertain"?"; method uncertain":` by ${p.method}`} — ${confidence} confidence. ${facts.join(". ")}.`);
+  }
+  return "My main-card leans (fighter and method are predictions):\n"+lines.join("\n\n");
+}
 export function guideStrays(text: string, d: ReqBody, facts: string, sourceFacts = ""): string[] {
   text = maskEventReferences(text, d.event);
   const bad = numbersInvented(text, facts + "\n" + sourceFacts);
@@ -1348,6 +1391,7 @@ Deno.serve(async (req) => {
   // gloves-off suffix. See unfilteredRule.
   let claudeSystem: string | undefined;
   let iqTone = "", iqFacts = "";
+  let selectionBouts:ReturnType<typeof mainCardSelections>=[];
   if (action === "parlay") {
     prompt = buildParlayPrompt(body);
     maxTokens = 300;
@@ -1360,6 +1404,12 @@ Deno.serve(async (req) => {
     prompt = built.user;
     iqFacts = guideFactsText(body);
     maxTokens = 400;
+    selectionBouts=mainCardSelections(body);
+    if(selectionBouts.length) {
+      system="You are FightBot, an MMA matchup analyst. Select one fighter for each supplied main-card bout using the app's supplied records, odds and stats. Fighter and method choices are predictions, never guarantees. Missing data lowers confidence. Respond ONLY with a JSON object {\"picks\":[{\"fighter\":\"exact supplied full name\",\"method\":\"decision|KO/TKO|submission|uncertain\",\"confidence\":\"low|moderate|high\"}]}. Give exactly one item per bout in the supplied order. No explanations or extra keys; the server supplies the factual reasons from the card.";
+      prompt=`QUESTION: ${body.question}\nCARD DATA:\n${body.card}\nORDERED MATCHUPS:\n${JSON.stringify(selectionBouts.map(b=>b.fighters))}`;
+      maxTokens=600;
+    }
   } else if (action === "verdict") {
     if (!body.verdict) {
       return new Response(JSON.stringify({ error: "Missing verdict facts" }), { status: 400, headers: CORS });
@@ -1412,7 +1462,7 @@ Deno.serve(async (req) => {
     maxTokens = 250;
   }
 
-  const webSearch = fightResearchEnabled(body);
+  const webSearch = !selectionBouts.length && fightResearchEnabled(body);
   if (webSearch) system = (system ? system + "\n\n" : "") + FIGHT_RESEARCH_RULES;
 
   // The active provider can change mid-request (Grok down → Claude), so the key
@@ -1486,6 +1536,15 @@ Deno.serve(async (req) => {
   // fight data, the user's picks or what the user said. One retry naming the
   // strays, then a clean failure. (Lenient on bare 1–3: "3 rounds", "top 3".)
   if (action === "guide" || action === "chat") {
+    if(selectionBouts.length) {
+      let rendered=renderMainCardSelections(text,selectionBouts);
+      if(!rendered) {
+        const again=await callModel(prompt+"\nReturn the requested JSON schema only, with exactly one valid selection for every ordered matchup.");
+        if(again.ok) rendered=renderMainCardSelections(again.text,selectionBouts);
+      }
+      if(!rendered) return new Response(JSON.stringify({code:"unverified-answer",error:"Couldn't verify the selected fighters. Please try again."}),{status:502,headers:CORS});
+      return new Response(JSON.stringify({breakdown:rendered,sources:[]}),{status:200,headers:CORS});
+    }
     let bad = guideStrays(text, body, iqFacts, sourceFacts);
     if (bad.length) {
       const again = await callModel(`${prompt}
