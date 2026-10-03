@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-03T21:39:03Z",
+  "generated_at": "2026-10-03T21:48:56Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -11557,7 +11557,7 @@
           "f1": "Deiveson Figueiredo",
           "f2": "Payton Talbott",
           "lbl": "Co-Main",
-          "points": 20,
+          "points": 21,
           "series": [
             {
               "at": "2026-09-06T12:52:36Z",
@@ -11658,6 +11658,11 @@
               "at": "2026-10-03T15:28:51Z",
               "f1_odds": 505,
               "f2_odds": -738
+            },
+            {
+              "at": "2026-10-03T21:48:56Z",
+              "f1_odds": 513,
+              "f2_odds": -755
             }
           ],
           "open": {
@@ -11947,7 +11952,7 @@
           "f1": "Imanol Rodriguez",
           "f2": "Alden Coria",
           "lbl": "Prelim",
-          "points": 20,
+          "points": 21,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -12048,6 +12053,11 @@
               "at": "2026-10-03T18:39:03Z",
               "f1_odds": -144,
               "f2_odds": 120
+            },
+            {
+              "at": "2026-10-03T21:48:56Z",
+              "f1_odds": -140,
+              "f2_odds": 117
             }
           ],
           "open": {
@@ -12062,7 +12072,7 @@
           "f1": "Damian Pinas",
           "f2": "Andrey Pulyaev",
           "lbl": "Prelim",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-09-24T22:03:12Z",
@@ -12158,6 +12168,11 @@
               "at": "2026-10-03T15:28:51Z",
               "f1_odds": -585,
               "f2_odds": 422
+            },
+            {
+              "at": "2026-10-03T21:48:56Z",
+              "f1_odds": -593,
+              "f2_odds": 427
             }
           ],
           "open": {
@@ -12952,7 +12967,7 @@
           "f1": "Anthony Wint",
           "f2": "Lucas Armand",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-09-29T17:48:02Z",
@@ -13028,6 +13043,11 @@
               "at": "2026-10-03T18:39:03Z",
               "f1_odds": -567,
               "f2_odds": 407
+            },
+            {
+              "at": "2026-10-03T21:48:56Z",
+              "f1_odds": -577,
+              "f2_odds": 417
             }
           ],
           "open": {
@@ -13223,7 +13243,7 @@
           "f1": "Loopy Godinez",
           "f2": "Ketlen Souza",
           "lbl": "Main Card",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13249,6 +13269,11 @@
               "at": "2026-10-03T15:28:51Z",
               "f1_odds": -210,
               "f2_odds": 172
+            },
+            {
+              "at": "2026-10-03T21:48:56Z",
+              "f1_odds": -221,
+              "f2_odds": 179
             }
           ],
           "open": {
@@ -13263,7 +13288,7 @@
           "f1": "Andre Fili",
           "f2": "Kai Kamaka III",
           "lbl": "Main Card",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13294,6 +13319,11 @@
               "at": "2026-10-03T18:39:03Z",
               "f1_odds": -145,
               "f2_odds": 117
+            },
+            {
+              "at": "2026-10-03T21:48:56Z",
+              "f1_odds": -149,
+              "f2_odds": 121
             }
           ],
           "open": {
@@ -13438,7 +13468,7 @@
           "f1": "Allen Frye Jr.",
           "f2": "RJ Harris",
           "lbl": "Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13469,6 +13499,11 @@
               "at": "2026-10-03T18:39:03Z",
               "f1_odds": 186,
               "f2_odds": -235
+            },
+            {
+              "at": "2026-10-03T21:48:56Z",
+              "f1_odds": 188,
+              "f2_odds": -238
             }
           ],
           "open": {
@@ -13931,7 +13966,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Payton Talbott",
         "side": "f1",
-        "points": 20,
+        "points": 21,
         "open": 412,
         "close": null,
         "clv": null
@@ -14522,7 +14557,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Loopy Godinez",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 180,
         "close": null,
         "clv": null
@@ -14791,7 +14826,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Kai Kamaka III",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -154,
         "close": null,
         "clv": null
@@ -15240,7 +15275,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Damian Pinas",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": 383,
         "close": null,
         "clv": null
@@ -15573,7 +15608,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Andre Fili",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 134,
         "close": null,
         "clv": null
@@ -15633,7 +15668,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Andrey Pulyaev",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": -500,
         "close": null,
         "clv": null
@@ -15949,7 +15984,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Imanol Rodriguez",
         "side": "f2",
-        "points": 20,
+        "points": 21,
         "open": 130,
         "close": null,
         "clv": null
@@ -16821,7 +16856,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Lucas Armand",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -448,
         "close": null,
         "clv": null
@@ -18224,7 +18259,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Deiveson Figueiredo",
         "side": "f2",
-        "points": 20,
+        "points": 21,
         "open": -550,
         "close": null,
         "clv": null
@@ -18277,7 +18312,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Alden Coria",
         "side": "f1",
-        "points": 20,
+        "points": 21,
         "open": -150,
         "close": null,
         "clv": null
@@ -18409,7 +18444,7 @@
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
         "opponent": "Anthony Wint",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 327,
         "close": null,
         "clv": null
@@ -18442,7 +18477,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Ketlen Souza",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -210,
         "close": null,
         "clv": null
@@ -18497,7 +18532,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "RJ Harris",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": 186,
         "close": null,
         "clv": null
@@ -18508,7 +18543,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Allen Frye Jr.",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": -220,
         "close": null,
         "clv": null
