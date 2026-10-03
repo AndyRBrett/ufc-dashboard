@@ -1243,7 +1243,7 @@ export function numbersMisattributed(text: string, d: ReqBody, sourceFacts = "")
 // form just because it avoids digits. Only check explicit current claims;
 // a forecast ("to win") and an old result ("lost to X") are not these claims.
 export function recommendationContradictions(text: string, d: ReqBody): string[] {
-  if (!/\b(recommend|picks?|who wins|who has the edge)\b/i.test(d.question ?? "")) return [];
+  if (!/\b(recommend(?:ations?)?|picks?|predictions?|predict|parlays?|underdogs?|value|fade|favou?rites?|who wins|who has the edge)\b/i.test(d.question ?? "")) return [];
   const fighters = [...fighterFacts(d.card ?? "").entries()].map(([name, f]) => ({
     name, keys:f.keys,
     losses: /\b\d+-(\d+)(?:-\d+)?\b/.exec(f.facts)?.[1],
@@ -1254,10 +1254,13 @@ export function recommendationContradictions(text: string, d: ReqBody): string[]
   const bad = new Set<string>();
   for (const sentence of text.split(/[.!?\n;]/)) {
     const subject = (position:number) => {
-      let found:typeof fighters[number]|undefined, last=-1;
+      let found:typeof fighters[number]|undefined, lastEnd=-1, lastLength=0;
       for (const f of fighters) for (const key of f.keys) {
-        for (const m of sentence.slice(0,position).matchAll(new RegExp(`(^|[^\\p{L}])${esc(key)}($|[^\\p{L}])`, "giu"))) {
-          if (m.index!>last) {last=m.index!;found=f;}
+        // Shared aliases are ambiguous; an exact full name is authoritative.
+        if (key!==f.name && fighters.some(other=>other!==f && other.keys.includes(key))) continue;
+        for (const m of sentence.slice(0,position).matchAll(new RegExp(`(^|[^\p{L}])${esc(key)}($|[^\p{L}])`, "giu"))) {
+          const end=m.index!+m[1].length+key.length;
+          if (end>lastEnd || (end===lastEnd && key.length>lastLength)) {lastEnd=end;lastLength=key.length;found=f;}
         }
       }
       return found;
@@ -1271,8 +1274,8 @@ export function recommendationContradictions(text: string, d: ReqBody): string[]
       const result=(m[1]?.toLowerCase()==="won"||m[3]?.toLowerCase()==="wins")?"W":"L";
       if (f && count>=2 && f.form.length>=count && f.form.slice(0,count).some(r=>r!==result)) bad.add(`${f.name}: claimed current streak contradicts newest-first form`);
     }
-    for (const m of sentence.matchAll(/\b(?:just|recently) (lost|won)\b|\bcoming off (?:a )?(loss|win)\b/gi)) {
-      const f=subject(m.index!), result=(m[1]?.toLowerCase()==="won"||m[2]?.toLowerCase()==="win")?"W":"L";
+    for (const m of sentence.matchAll(/\b(?:just|recently) (lost|won)\b|\bcoming off (?:a )?(loss|win)\b|\b(lost|won) (?:his |her |their |the )?(?:latest|last|most recent) (?:fight|bout)\b/gi)) {
+      const f=subject(m.index!), result=(m[1]?.toLowerCase()==="won"||m[2]?.toLowerCase()==="win"||m[3]?.toLowerCase()==="won")?"W":"L";
       if (f?.form[0] && f.form[0]!==result) bad.add(`${f.name}: claimed latest result contradicts newest-first form`);
     }
   }

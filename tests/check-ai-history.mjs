@@ -164,6 +164,15 @@ const qualityRequest={action:'guide',event:'Fixture card',question:'What picks d
  '  Esteban Ribovics: last fights W TKO vs Edson Barboza, L Sub vs Mateusz Gamrot, W Dec, L Dec'};
 const wrong='Soldic is the favourite with a perfect record. Kopylov has lost his last two fights. Ribovics just lost by submission.';
 assert.equal(mod.recommendationContradictions(wrong,qualityRequest).length,3);
+for(const question of ['Best underdog value?','Parlay suggestions?','Give me your predictions','Who should I fade?']){
+ assert.equal(mod.recommendationContradictions(wrong,{...qualityRequest,question}).length,3,question);
+}
+for(const phrase of ['Kopylov lost his latest fight.','Kopylov lost his last fight.','Kopylov lost his most recent bout.']) assert.equal(mod.recommendationContradictions(phrase,qualityRequest).length,1);
+assert.deepEqual(mod.recommendationContradictions('Kopylov won his latest fight.',qualityRequest),[]);
+const sharedSurnames={...qualityRequest,card:'[Main Card] Bruno Silva (23-9-0) vs Other Fighter (12-1-0) · Middleweight\n  Bruno Silva: last fights L Dec, L Sub\n[Main Event] Natalia Silva (20-5-1) vs Wang Cong (10-1-0) · Flyweight\n  Natalia Silva: last fights W Dec, W Dec'};
+assert.equal(mod.recommendationContradictions('Natalia Silva recently lost.',sharedSurnames).length,1);
+assert.deepEqual(mod.recommendationContradictions('Bruno Silva recently lost. Natalia Silva recently won.',sharedSurnames),[]);
+assert.deepEqual(mod.recommendationContradictions('Silva recently lost.',sharedSurnames),[]);
 assert.deepEqual(mod.recommendationContradictions('Soldic by decision, lower confidence without his stats. Kopylov won his latest fight. Ribovics lost to Gamrot before his latest win.',qualityRequest),[]);
 assert.deepEqual(mod.recommendationContradictions('Gautier to win by knockout. Kopylov to lose.',qualityRequest),[]);
 assert.deepEqual(mod.recommendationContradictions('Kopylov has lost his last two fights.',{...qualityRequest,question:'What happened at an older event?'}),[]);
