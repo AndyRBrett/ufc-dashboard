@@ -1285,7 +1285,7 @@ export function recommendationContradictions(text: string, d: ReqBody): string[]
 // wrong fighter.
 export function mainCardSelections(d: ReqBody): {fighters:string[]; facts:string[][]}[] {
   const q=d.question ?? "";
-  if (!/\bmain[ -]card\b/i.test(q) || !/\b(picks?|recommend(?:ations?)?|predict(?:ions?)?)\b/i.test(q) || /\b(past|previous|results|were)\b/i.test(q)) return [];
+  if (!/\bmain[ -]card\b/i.test(q) || !/\b(picks?|recommend(?:ations?)?|predict(?:ions?)?)\b/i.test(q) || /\b(past|previous|results?|were|won|lost|winners?|scored|correct|happened)\b/i.test(q)) return [];
   const facts=fighterFacts(d.card ?? "");
   const out:{fighters:string[];facts:string[][]}[]=[];
   for(const line of (d.card ?? "").split("\n")) {

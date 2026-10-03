@@ -190,6 +190,8 @@ const selection=JSON.stringify({picks:[{fighter:'Roberto Soldic',method:'KO/TKO'
 const bouts=mod.mainCardSelections(mainRequest);
 assert.equal(bouts.length,3);
 assert.equal(mod.mainCardSelections({...mainRequest,question:'What were my previous main-card picks?'}).length,0);
+for(const question of ['Which main-card picks won?','Which of my main-card picks lost?','Were my main-card picks correct?','Who were the main-card winners?']) assert.equal(mod.mainCardSelections({...mainRequest,question}).length,0,question);
+assert.equal(mod.mainCardSelections({...mainRequest,question:'Recommend my main-card picks'}).length,3);
 const grounded=mod.renderMainCardSelections(selection,bouts);
 assert.match(grounded,/Roberto Soldic by KO\/TKO — low confidence/);
 assert.match(grounded,/Cached career record: 21-4-0/);
