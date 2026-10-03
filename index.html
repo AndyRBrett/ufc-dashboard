@@ -9007,7 +9007,6 @@ var _lbRows=null;   // raw picks rows from the last leaderboard fetch
 // always Safari, never the Home Screen app, whose storage (and account) is
 // separate — while a short password can be typed into the app people use.
 var ROOM_CODE_RE=/^([0-9A-HJKMNP-TV-Z]{6}|[0-9A-HJKMNP-TV-Z]{10})$/;
-var ROOM_PASS_HOURS=24;
 var _rooms=[];            // [{id,name,code,owner_id,members:[user_id]}], mine only
 var _roomsFor=null;       // the USER_ID _rooms was loaded for: another account's rooms never show
 var _roomsAt=0;           // when the roster was last fetched (board refreshes re-read it)
@@ -9033,6 +9032,9 @@ function normRoomCode(c){return String(c==null?"":c).trim().toUpperCase().replac
 // The room's password if it is still live, else null.
 function roomPass(r){return r&&r.pass&&r.pass_expires&&Date.parse(r.pass_expires)>Date.now()?r.pass:null;}
 function _fmtPass(p){return p.slice(0,3)+" "+p.slice(3);}
+// Whole hours until the password expires (at least 1 while it is live): the
+// expiry is fixed when it is made, so a share later on says what's left.
+function _passHoursLeft(r){return Math.max(1,Math.ceil((Date.parse(r.pass_expires)-Date.now())/3600000));}
 // iOS Safari (not the Home Screen app): an invite link always lands here.
 function _iosBrowser(){
   try{
@@ -9178,7 +9180,7 @@ function shareRoom(id){
 // is typed into the app people already have open).
 function _sharePass(r){
   var p=roomPass(r);if(!p)return;
-  var text="Join my UFC picks room “"+r.name+"”: open the app, tap 👥 on Ranks and type "+_fmtPass(p)+" (works for "+ROOM_PASS_HOURS+" hours)";
+  var text="Join my UFC picks room “"+r.name+"”: open the app, tap 👥 on Ranks and type "+_fmtPass(p)+" (works for "+_passHoursLeft(r)+" more hour"+(_passHoursLeft(r)===1?"":"s")+")";
   if(navigator.share){navigator.share({title:"Join "+r.name,text:text}).catch(function(){});return;}
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(function(){toast("Password copied: "+_fmtPass(p));},function(){prompt("Room password:",p);});
   else prompt("Room password:",p);
@@ -9224,8 +9226,7 @@ function renderRoomSheet(){
     acts.appendChild(inv);
     var pw=roomPass(r);
     if(pw){
-      var hrs=Math.max(1,Math.ceil((Date.parse(r.pass_expires)-Date.now())/3600000));
-      wrap.appendChild(_rmEl("div","room-sub room-pass","🔑 Password "+_fmtPass(pw)+" · "+hrs+"h left"));
+      wrap.appendChild(_rmEl("div","room-sub room-pass","🔑 Password "+_fmtPass(pw)+" · "+_passHoursLeft(r)+"h left"));
       var sp=_rmEl("button","room-act","🔑 Share password");sp.onclick=function(){_sharePass(r);};
       var ep=_rmEl("button","room-act room-act-quiet","End password");ep.onclick=function(){endRoomPass(r.id);};
       acts.appendChild(sp);acts.appendChild(ep);

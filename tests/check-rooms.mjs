@@ -330,6 +330,10 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   await ctx.roomsLoad();
   await ctx.makeRoomPass("r1");
   check("making a password shares it as text, with no link", shared && /K7M 4QX/.test(shared.text) && !shared.url && !/https?:/.test(shared.text));
+  shared = null;
+  ctx._rooms[0].pass_expires = new Date(Date.now() + 90 * 60e3).toISOString();
+  ctx._sharePass(ctx._rooms[0]);
+  check("sharing later states the time actually left, not a fresh 24 hours", shared && /works for 2 more hours/.test(shared.text) && !/24/.test(shared.text));
 }
 {
   // Opened from a link in iOS Safari: ask before joining there.
