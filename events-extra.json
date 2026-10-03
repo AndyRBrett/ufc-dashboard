@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-03T02:23:45Z",
+ "generated_at": "2026-10-03T12:24:56Z",
  "promotions": [
   {
    "id": "pfl",
@@ -132,7 +132,7 @@
      "a": "Yoshinori Horie",
      "b": "Sho Patrick Usami",
      "label": "Main Event",
-     "division": "Lightweight",
+     "division": "Catchweight (160 Lb)",
      "title": false,
      "odds": null,
      "winner": "",
@@ -168,9 +168,9 @@
      "division": "Women's Super Atomweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Kate Oyama",
+     "method": "Decision (Split)",
+     "round": 3
     },
     {
      "a": "Kyohei Takagi",
@@ -179,20 +179,20 @@
      "division": "Flyweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Kyohei Takagi",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
-     "a": "Ryusei Ashizawa",
-     "b": "Seiya Inoue",
+     "a": "Seiya Inoue",
+     "b": "Ryusei Ashizawa",
      "label": "",
      "division": "Bantamweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Seiya Inoue",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
      "a": "Hidetaka Arato",
@@ -201,9 +201,9 @@
      "division": "Heavyweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Hidetaka Arato",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
      "a": "Alan Yamaniha",
@@ -212,9 +212,9 @@
      "division": "Bantamweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Alan Yamaniha",
+     "method": "Submission",
+     "round": 1
     },
     {
      "a": "Kohei Sugiyama",
@@ -223,9 +223,9 @@
      "division": "Flyweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Kohei Sugiyama",
+     "method": "Decision (Split)",
+     "round": 3
     },
     {
      "a": "Ryota Oki",
@@ -234,9 +234,9 @@
      "division": "Lightweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Ryota Oki",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
      "a": "Kotaro Mori",
@@ -245,9 +245,9 @@
      "division": "Catchweight (220 Lb)",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Kotaro Mori",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
      "a": "Ryusei Imamura",
@@ -256,20 +256,20 @@
      "division": "Flyweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Ryusei Imamura",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
-     "a": "Kakeru Tsuda",
-     "b": "Ayuto",
+     "a": "Ayuto",
+     "b": "Kakeru Tsuda",
      "label": "",
      "division": "Catchweight (143 Lb)",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Ayuto",
+     "method": "Decision (Unanimous)",
+     "round": 3
     }
    ]
   },
