@@ -279,17 +279,17 @@ const k = bundledKernel({});
 const ev = { date: "2026-10-03", earlyPrelimTime: "17:00", prelimTime: "19:00", time: "21:00", fights: [
   { f1: { n: "Main A" }, f2: { n: "Main B" }, lbl: "Main Event" },
   { f1: { n: "Card A" }, f2: { n: "Card B" }, lbl: "Main Card" },
+  { f1: { n: "TBD" }, f2: { n: "" }, lbl: "Prelim" },
   { f1: { n: "Prelim A" }, f2: { n: "Prelim B" }, lbl: "Prelim" },
   { f1: { n: "Early A" }, f2: { n: "Early B" }, lbl: "Early Prelim" },
-  { f1: { n: "Early A" }, f2: { n: "Early B" }, lbl: "Early Prelim" },   // a duplicate must not reach the upsert twice
-  { f1: { n: "TBD" }, f2: { n: "" }, lbl: "Prelim" }] };
+  { f1: { n: "Early A" }, f2: { n: "Early B" }, lbl: "Early Prelim" }] };  // a duplicate must not reach the upsert twice
 const now = Date.UTC(2026, 9, 3, 12);
 const { bouts, cards } = mod.lockRows([ev], k, now);
-const lockOf = (a) => bouts.find((b) => b.a === a.toLowerCase() || b.b === a.toLowerCase())?.lock_at;
-const et = (h) => new Date(Date.UTC(2026, 9, 3, h + 4)).toISOString();   // EDT
-check("lockRows: a main-card bout locks at the main card", lockOf("Main A") === et(21) && lockOf("Card A") === et(21));
+const lockOf = (a, bs = bouts) => bs.find((b) => b.a === a.toLowerCase() || b.b === a.toLowerCase())?.lock_at;
+const et = (h, m = 0) => new Date(Date.UTC(2026, 9, 3, h + 4, m)).toISOString();   // EDT
+check("lockRows: a main-card bout locks at the main card (its opener at the bell)", lockOf("Card A") === et(21));
 check("lockRows: a prelim locks at the prelims", lockOf("Prelim A") === et(19));
-check("lockRows: an early prelim locks at the early prelims", lockOf("Early A") === et(17));
+check("lockRows: an early prelim locks at the early prelims (a duplicate at the earlier of its times)", lockOf("Early A") === et(17));
 check("lockRows: each bout written once, blank names skipped", bouts.length === 4);
 check("lockRows: names stored lower-cased and sorted", bouts.every((b) => b.a < b.b && b.a === b.a.toLowerCase()));
 check("lockRows: the card's first and last bells", cards.length === 1 && cards[0].first_bell === et(17) && cards[0].last_bell === et(21));
@@ -303,7 +303,46 @@ check("lockRows: an early prelim with no early clock answers to the prelims",
   const novNow = Date.UTC(2026, 9, 31, 12), novEv = { ...ev, date: "2026-11-07" };
   const nb = mod.lockRows([novEv], k, novNow).bouts;
   check("lockRows: a November card written in October locks on EST",
-    nb.find((b) => b.a === "main a" || b.b === "main a")?.lock_at === new Date(Date.UTC(2026, 10, 8, 2)).toISOString());
+    nb.find((b) => b.a === "card a" || b.b === "card a")?.lock_at === new Date(Date.UTC(2026, 10, 8, 2)).toISOString());
+}
+// 9a. One fight at a time: a segment's opener locks at the bell, each later
+// bout when the one before it has a result, and never later than
+// LOCK_CHAIN_MS after the bout before it locked.
+{
+  const b = (lbl, n, extra = {}) => ({ lbl, f1: { n: n + " A" }, f2: { n: n + " B" }, ...extra });
+  const mk = (...fs) => ({ date: "2026-10-03", earlyPrelimTime: "16:00", prelimTime: "18:00", time: "20:00", fights: fs });
+  const etm = (h, m) => Date.UTC(2026, 9, 3, h + 4, m);
+  const C = mod.LOCK_CHAIN_MS;
+  check("lockRows: the backstop is 45 minutes (a five-round fight plus walkouts)", C === 45 * 60e3);
+  // UFC 332's early prelims, array order (last runs first).
+  const fresh = mk(b("Main Event", "Silva"), b("Co-Main", "Talbott"), b("Early Prelim", "Walker"), b("Early Prelim", "Smith"),
+    b("Early Prelim", "Anjos"), b("Early Prelim", "Vettori"), b("Early Prelim", "Nolan"));
+  let r = mod.lockRows([fresh], k, etm(16, 5)).bouts;
+  check("lockRows: before any result, the opener locks at the bell and each next bout 45 minutes after the one before, until the next segment's bell",
+    lockOf("Nolan A", r) === et(16) && lockOf("Vettori A", r) === et(16, 45) && lockOf("Anjos A", r) === et(17, 30) &&
+    lockOf("Smith A", r) === et(18, 0) && lockOf("Walker A", r) === et(18, 0));   // capped at the prelims' bell
+  check("lockRows: the main card has its own chain, from its own opener", lockOf("Talbott A", r) === et(20) && lockOf("Silva A", r) === et(20, 45));
+  const long = mk(b("Main Event", "Top"), ...Array.from({ length: 6 }, (_, i) => b("Prelim", "Pr" + i)));
+  const lr = mod.lockRows([long], k, etm(17, 0)).bouts;
+  check("lockRows: the next segment's bell closes a long segment's chain (6 prelims: the last three at 20:00, not up to 21:45)",
+    lockOf("Pr5 A", lr) === et(18) && lockOf("Pr3 A", lr) === et(19, 30) && lockOf("Pr2 A", lr) === et(20) && lockOf("Pr0 A", lr) === et(20));
+  fresh.fights[6].winner = "Nolan A";
+  r = mod.lockRows([fresh], k, etm(16, 23)).bouts;
+  check("lockRows: a result locks the next bout at the run that first sees it",
+    lockOf("Vettori A", r) === et(16, 23) && lockOf("Anjos A", r) === et(17, 8) && lockOf("Smith A", r) === et(17, 53));
+  const prior = Object.fromEntries(r.map((x) => [x.event_date + "|" + x.a + "|" + x.b, Date.parse(x.lock_at)]));
+  r = mod.lockRows([fresh], k, etm(16, 40), prior).bouts;
+  check("lockRows: a later run keeps that first sighting rather than moving it to now",
+    lockOf("Vettori A", r) === et(16, 23) && lockOf("Anjos A", r) === et(17, 8));
+  r = mod.lockRows([fresh], k, etm(16, 40), { ...prior, "2026-10-03|vettori a|vettori b": etm(16, 45) }).bouts;
+  check("lockRows: a stored time still ahead (last run's backstop) is not a sighting; now is",
+    lockOf("Vettori A", r) === et(16, 40));
+  fresh.fights[6].winner = ""; fresh.fights[5].state = "post";
+  r = mod.lockRows([fresh], k, etm(16, 50)).bouts;
+  check("lockRows: a bout decided without its predecessor's result locks itself, everything before it and the next",
+    lockOf("Nolan A", r) === et(16) && lockOf("Anjos A", r) === et(16, 50));
+  check("lockRows: …keeping a backstop that had already passed (never moving a lock later)", lockOf("Vettori A", r) === et(16, 45));
+  check("lockRows: …and the chain carries on from the new time", lockOf("Smith A", r) === et(17, 35));
 }
 check("lockRows: a card weeks away or long gone is not written",
   mod.lockRows([{ ...ev, date: "2026-12-12" }, { ...ev, date: "2026-08-01" }], k, now).cards.length === 0);
@@ -371,7 +410,11 @@ check("lockRows: a card weeks away or long gone is not written",
     /put\("sport_pick_locks", "promotion,event_date,a,b", bouts\)/.test(src2) && /put\("sport_card_bells", "promotion,event_date", cards\)/.test(src2));
   check("...and a bad feed cannot cost UFC its lock times (separate try/catch, separate result)", /sportLocks = \{ error:/.test(src2) && /locks = \{ error:/.test(src2));
 }
-check("send-reminders writes locks only with the service key", /if \(SB_SERVICE_ROLE_KEY\) \{\s*try \{\s*const \{ bouts, cards \} = lockRows/.test(src));
+check("send-reminders writes locks only with the service key, building on what it last wrote",
+  /if \(SB_SERVICE_ROLE_KEY\) \{\s*try \{\s*const h = \{[^}]*apikey: SB_SERVICE_ROLE_KEY[^]*?const \{ bouts, cards \} = lockRows\(evs, bundledKernel\(\{\}\), now, prior\)/.test(src) &&
+  /rest\/v1\/pick_locks\?select=event_date,a,b,lock_at&event_date=in\./.test(src));
+check("the fight-change alert reads picks with the service key (0017 hides unlocked picks from anon)",
+  /apikey: SB_SERVICE_ROLE_KEY \|\| SB_ANON_KEY, Authorization: `Bearer \$\{SB_SERVICE_ROLE_KEY \|\| SB_ANON_KEY\}`, Range/.test(src));
 
 // 10. The app deletes an account through the RPC.
 const html = readFileSync(join(ROOT, "index.html"), "utf8");
@@ -419,5 +462,49 @@ check("app: lock, method, bonus and sport lock/method are gated too",
 check("app: pick writes refresh a token minted before the email was linked",
   /_authReady\.then\(_accountToken\)\.then\(function\(\)\{\s*var hdrs/.test(html) && /function _sportSync\(promo,ev,b,name\)\{\s*return _authReady\.then\(_accountToken\)/.test(html));
 
+// 12. Nobody sees anyone else's pick until that bout locks (0017).
+await db.exec(readFileSync(join(ROOT, "supabase/migrations/0017_picks_hidden_until_lock.sql"), "utf8"));
+{
+  const U5 = "55555555-5555-5555-5555-555555555555", U6 = "66666666-6666-6666-6666-666666666666";
+  await db.exec(`
+    insert into pick_locks (event_date, a, b, lock_at) values
+      ('${LIVE}', 'hide a', 'hide b', now() + interval '1 hour'),
+      ('${LIVE}', 'show a', 'show b', now() - interval '6 minutes'),
+      ('${LIVE}', 'grace a', 'grace b', now() - interval '2 minutes');
+    insert into picks (user_id, event_date, f1, f2, pick) values
+      ('${U5}', '${LIVE}', 'Hide A', 'Hide B', 'Hide A'),
+      ('${U5}', '${LIVE}', 'Show A', 'Show B', 'Show A'),
+      ('${U5}', '${LIVE}', 'Grace A', 'Grace B', 'Grace A'),
+      ('${U5}', '${PAST}', 'Gone A', 'Gone B', 'Gone A'),
+      ('${U5}', '${NEXT}', 'Next A', 'Next B', 'Next A');
+    insert into picks (user_id, event_date, f1, f2, pick, promotion) values
+      ('${U5}', '${LIVE}', 'Pfl A', 'Pfl B', 'Pfl A', 'pfl');
+    insert into sport_pick_locks (promotion, event_date, a, b, lock_at) values
+      ('pfl', '${LIVE}', 'pfl a', 'pfl b', now() + interval '1 hour');
+  `);
+  const seenBy = async (role, uid) => (await as(role, uid, `select f1 from picks where user_id = '${U5}' order by f1`)).rows.map((x) => x.f1);
+  const other = await seenBy("authenticated", U6), anon = await seenBy("anon", null), own = await seenBy("authenticated", U5);
+  check("0017: another player can't see a pick on a bout that hasn't locked", !other.includes("Hide A") && !anon.includes("Hide A"));
+  check("0017: …nor one on next week's card", !other.includes("Next A") && !anon.includes("Next A"));
+  check("0017: …nor one locked less than LOCK_GRACE ago, while it could still be written", !other.includes("Grace A") && !anon.includes("Grace A"));
+  check("0017: once the bout has locked (plus the grace) everyone sees it", other.includes("Show A") && anon.includes("Show A"));
+  check("0017: a past card is visible to everyone", other.includes("Gone A") && anon.includes("Gone A"));
+  check("0017: another sport's pick is hidden by its own lock time", !other.includes("Pfl A") && own.includes("Pfl A"));
+  check("0017: the owner always sees all of their own picks", ["Hide A", "Show A", "Grace A", "Gone A", "Next A", "Pfl A"].every((n) => own.includes(n)));
+  let locks = { rows: [] };
+  try { locks = await as("anon", null, `select lock_at from pick_locks where a = 'hide a'`); } catch (_e) { /* refused */ }
+  check("0017: lock times are readable by the app", locks.rows.length === 1);
+  let wrote = true;
+  try { await as("authenticated", U6, `update pick_locks set lock_at = now() + interval '9 hours' where a = 'show a'`); } catch (_e) { wrote = false; }
+  const still = (await db.query(`select lock_at > now() as ahead from pick_locks where a = 'show a'`)).rows[0].ahead;
+  check("0017: …but not writable: nobody can move a bout's lock to reopen it", !still);
+  void wrote;
+  await db.exec(`update picks set nickname = '🥊 Jordan' where user_id = '${U5}' and f1 = 'Next A'`);
+  const taken = async (uid, name, since = "2026-01-01") => (await as("authenticated", uid, `select nickname_taken($1, $2) as t`, [name, since])).rows[0].t;
+  check("0017: the name check still sees a name on a hidden pick", await taken(U6, "jordan") === true && await taken(U6, "Jordan") === true);
+  check("0017: …not your own name, and not a name only on old cards", await taken(U5, "jordan") === false && await taken(U6, "jordan", "2100-01-01") === false);
+  check("0017: …and a % or _ in the name is a character, not a wildcard", await taken(U6, "jord%") === false && await taken(U6, "_ordan") === false);
+}
+
 if (failures) { console.error(`\ncheck-pick-lock: ${failures} failure(s).`); process.exit(1); }
-console.log("\ncheck-pick-lock: once a bout's segment starts, its picks can't be added, changed, moved or deleted.");
+console.log("\ncheck-pick-lock: once a bout locks, its picks can't be added, changed, moved or deleted, and nobody else's show before it.");

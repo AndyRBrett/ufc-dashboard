@@ -123,9 +123,21 @@ r = await runAt("2026-09-26T23:00:00Z");
 check("a main-card swap still sends at 7pm ET, prelims underway", r.swaps.length === 1);
 r = await runAt("2026-09-27T00:05:00Z");
 check("nothing once the new bout's segment has locked", r.swaps.length === 0);
+// A bout locks one fight at a time (lockRows): this prelim, last of its segment
+// in the running order, is still pickable after the prelims' bell and goes out
+// until its own lock, never after.
 picksRows = [...onCard, row("uX", "Mickey Gall", prelim.f2.n)];
-r = await runAt("2026-09-26T21:05:00Z");
-check("a prelim swap stops at the prelims' bell", r.swaps.length === 0);
+{
+  const { bundledKernel } = await import(pathToFileURL(join(ROOT, "supabase/functions/_shared/lab-bundle.js")).href);
+  const bell = Date.parse("2026-09-26T21:05:00Z");
+  const key = [prelim.f1.n, prelim.f2.n].map((n) => n.trim().toLowerCase()).sort();
+  const lockAt = Date.parse(mod.lockRows([ev], bundledKernel({}), bell).bouts.find((b) => b.a === key[0] && b.b === key[1]).lock_at);
+  check("the fixture's prelim is not its segment's opener (it locks after the bell)", lockAt > bell);
+  r = await runAt(new Date(lockAt - 5 * 60e3).toISOString());
+  check("a prelim swap still sends after the prelims' bell, before its own bout locks", r.swaps.length === 1);
+  r = await runAt(new Date(lockAt + 60e3).toISOString());
+  check("…and stops once its bout locks", r.swaps.length === 0);
+}
 
 // 3. A rename is not a replacement.
 picksRows = [...onCard,

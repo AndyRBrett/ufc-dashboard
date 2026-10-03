@@ -37,7 +37,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:prefs` | a restored notification pref lighting the bell with nothing subscribed |
 | `npm run check:picks` | an account's picks not coming back to a device that lost them (or a stale row overwriting one) |
 | `npm run check:kick`  | the scraper not being dispatched on a card day or in fight week |
-| `npm run check:lock`  | a bout still pickable after its own segment has started (or locked before it) |
+| `npm run check:lock`  | a bout still pickable after the fight before it ended or its segment's opener started (or locked before then) |
 | `npm run check:recap` | the post-card recap crediting a title, rank or score the board and belt don't |
 | `npm run check:wrapped` | Year Wrapped reporting a rank, score, upset or reign the year-scoped board and belt don't |
 | `npm run check:locks` | a 🔒 lock scoring differently on the board, belt or challenges, legacy stars scoring, or a third lock on a card |
@@ -53,7 +53,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:sports` | the sport switcher showing with nothing to pick, a PFL pick saved untagged or after its lock, another sport scored on the UFC board, or its board drifting from `pickPts` (method, 🔒, underdog) |
 | `npm run check:rooms` | a room's board scoring differently from the main board, an anonymous device joining a room, or an invite link re-joining / re-prompting |
 | `npm run check:bundle` | send-reminders running last release's Lab code (a stale `_shared/lab-bundle.js`), or `parseDataJs` reading data.js differently from running it |
-| `npm run check:picklock` | the database accepting a pick, a changed pick or a deleted pick after its bout's segment started, or from an anonymous session; send-reminders writing lock times off the app's rule |
+| `npm run check:picklock` | the database accepting a pick, a changed pick or a deleted pick after its bout locked, or from an anonymous session; send-reminders writing lock times off the app's rule; anyone else's pick readable before its bout locks |
 | `npm run check:pushauth` | a push sent with text or an audience the server didn't build, a user sending as someone else, or the anon key sending anything but the rebuilt backups |
 | `npm run check:html` | scraped, user or other-process text (a card name, a nickname, a status file) reaching `innerHTML` instead of `textContent` |
 | `npm run check:photos` | a fighter photo lookup missing a disambiguated page, showing a same-named non-fighter's face, caching a miss forever, or a view without photos |
@@ -579,6 +579,41 @@ Which bouts sit in which segment is first inferred from **bout order**
 corrected from UFC.com's own split when a fresh reading exists: see the next
 section.
 
+## One fight at a time, and nobody sees a pick before it locks
+
+Since 2026-10-04 a segment's bell locks only its **opener**; every later bout in
+the segment locks when the fight before it has a result (`fightLocked`). Locking
+the whole segment at its bell closed a fight three bouts away while the opener
+was still walking out (Jordan, UFC 332). Running order is `scoring.js`'s
+`segmentRunOrder` (a segment runs in **reverse** array order, since `ev.fights`
+is main event first) and "over" is `boutDecided` (a winner, or `state:"post"`
+for a draw / NC); `send-reminders` uses the same functions from the bundle.
+
+Results reach `data.js` minutes after a fight ends, so the app can never lock
+at the real bell; it locks at the previous result instead. Backstops, all held
+by `check:lock` / `check:picklock`:
+- **`lockRows` writes the server's time**: the first run that saw the previous
+  result (kept from what it wrote last run, `prior`, so it never drifts to
+  "now"), and never later than `LOCK_CHAIN_MS` (45 min: a five-round fight plus
+  walkouts) after the bout before it locked. The app reads those times
+  (`_loadServerLocks`, `pick_locks` readable since 0017) and honours them.
+- **The next segment's bell** locks everything before it.
+- **A later bout already decided** locks every bout before it, so a fight that
+  never gets its result can't hold the rest of the segment open.
+- A bout a card doesn't list answers to its segment's bell, as before.
+
+**Because picks stay open longer, nobody else's pick is readable until that
+bout locks** (`0017_picks_hidden_until_lock.sql`): the owner always reads their
+own rows; anyone else only once `pick_lock_for(...) + LOCK_GRACE` has passed
+(the grace, or someone could read the room and still write within it), or for a
+card more than 2 days old. Our functions read with the service key; that is
+why the fight change alert's picks read moved off the anon key. The nickname
+check reads through `nickname_taken()` instead of other players' picks. In the
+app: Ranks shows 🙈 for someone's main-card pick that hasn't locked, and the
+group-split bar shows only once a bout locks. **Any new feature that shows
+other players' picks before a fight locks will come back empty**; that is the
+point, not a bug. The migration is applied by hand, before the app ships.
+
 ## Card clocks and segments come from UFC.com
 
 scrape.py's own clock is a guess: slot tables (`_default_main_time`,
@@ -645,7 +680,8 @@ held to it**, each against its own lock times: see below):
 **The lock times come from send-reminders**, because the card lives in
 `data.js`: every run, `lockRows` writes each nearby card's per-bout times to
 `pick_locks` (names lower-cased and sorted) and its bells to `card_bells`, by
-the app's own rule and the bundled `isMainCardBout` / `isEarlyPrelimBout`. A
+the app's own rule (one fight at a time: see above) and the bundled
+`isMainCardBout` / `isEarlyPrelimBout` / `segmentRunOrder` / `boutDecided`. A
 bout with no row falls back to its card's **first** bell; a card with no row at
 all locks at midnight ET after its date. So a broken sync fails open only until
 the card is over, and a past card is always locked. First, not last: rows match

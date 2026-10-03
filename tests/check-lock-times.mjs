@@ -52,7 +52,8 @@ const htmlFn = (name) => {
   for (; j < html.length; j++) { if (html[j] === "{") d++; else if (html[j] === "}" && --d === 0) break; }
   return html.slice(i, j + 1);
 };
-const src = labelFn("isMainCardBout") + "\n" + labelFn("isEarlyPrelimBout") + "\n" + htmlFn("_etOffsetAt") + "\n" + html.slice(a, b);
+const src = ["isMainCardBout", "isEarlyPrelimBout", "boutSegmentKey", "segmentRunOrder", "boutDecided"].map(labelFn).join("\n") +
+  "\n" + htmlFn("_etOffsetAt") + "\n" + html.slice(a, b);
 
 for (const fn of ["_segPassed", "cardStartTime", "boutSegmentTime"]) {
   if (!html.slice(a, b).includes("function " + fn)) fail(`lock block no longer defines ${fn}()`);
@@ -155,6 +156,69 @@ const lr = load(ET(12)).lockReason;
 check("lockReason distinguishes the early prelims from the prelims",
   /early prelims/.test(lr(EARLY)) && /prelims/.test(lr(PRELIM)) &&
   !/early/.test(lr(PRELIM)) && /main card/.test(lr(MAIN)));
+
+// --- one fight at a time inside a segment -----------------------------------
+// Only a segment's opener locks at the bell; each later bout locks when the
+// fight before it has a result. Jordan, UFC 332: "Rn I can't pick the Johnny
+// Walker fight and it's 3 fights away".
+// ev.fights is main event first, so each segment runs in reverse array order.
+function card() {
+  const b = (lbl, n) => ({ lbl, f1: { n: n + " A" }, f2: { n: n + " B" } });
+  return { ...EV, fights: [
+    b("Main Event", "M1"), b("Co-Main", "M2"), b("Main Card", "M3"),
+    b("Prelim", "P1"), b("Prelim", "P2"),
+    b("Early Prelim", "E1"), b("Early Prelim", "E2"), b("Early Prelim", "E3") ] };
+}
+{
+  const c = card(), [M1, M2, M3, P1, P2, E1, E2, E3] = c.fights;
+  const ctx = load(ET(17, 5));
+  check("at the early-prelim bell only the segment's opener (last in the array) locks",
+    ctx.fightLocked(c, E3) === true && ctx.fightLocked(c, E2) === false && ctx.fightLocked(c, E1) === false);
+  check("a bout two fights away is pickable while the opener runs",
+    ctx.fightLocked(c, E1) === false);
+  check("…and nothing in a later segment moves", ctx.fightLocked(c, P2) === false && ctx.fightLocked(c, M3) === false);
+  E3.winner = "E3 A";
+  check("the opener's result locks the next fight, and only that one",
+    ctx.fightLocked(c, E2) === true && ctx.fightLocked(c, E1) === false);
+  E3.winner = ""; E3.state = "post";
+  check("a draw or no contest (finished, no winner) counts as over",
+    ctx.fightLocked(c, E3) === true && ctx.fightLocked(c, E2) === true);
+  E3.state = "pre";
+  E2.winner = "E2 B";
+  check("a later fight already decided locks every bout before it (a fight that never got its result)",
+    ctx.fightLocked(c, E3) === true && ctx.fightLocked(c, E1) === true);
+  E2.winner = "";
+  check("the next segment's bell locks everything before it, results or not",
+    load(ET(19, 0)).fightLocked(c, E1) === true && load(ET(19, 0)).fightLocked(c, P1) === false);
+  check("the main card's bell locks the prelims behind it",
+    load(ET(21, 0)).fightLocked(c, P1) === true && load(ET(21, 0)).fightLocked(c, M2) === false);
+  check("the main card runs the same way: its opener (the last main-card bout) at the bell",
+    load(ET(21, 0)).fightLocked(c, M3) === true && load(ET(21, 0)).fightLocked(c, M1) === false);
+  M3.winner = "M3 A";
+  check("…the co-main when that result lands, the main event still open",
+    load(ET(21, 30)).fightLocked(c, M2) === true && load(ET(21, 30)).fightLocked(c, M1) === false);
+  M3.winner = "";
+  check("nothing locks before its segment's bell, whatever the results say",
+    load(ET(16, 0)).fightLocked(c, E2) === false && load(ET(18, 0)).fightLocked(c, P1) === false);
+  // The server's backstop: send-reminders writes a time for each bout, and the
+  // app honours it once it has passed.
+  const ctx2 = load(ET(17, 50));
+  ctx2._serverLocks[ctx2._lockKey(c.date, E1.f1.n, E1.f2.n)] = ET(17, 45);
+  check("a server lock time that has passed locks the bout",
+    ctx2.fightLocked(c, E1) === true && ctx2.fightLocked(c, E2) === false);
+  ctx2._serverLocks[ctx2._lockKey(c.date, E2.f1.n, E2.f2.n)] = ET(18, 30);
+  check("…and one still ahead does not", ctx2.fightLocked(c, E2) === false);
+  check("server times are keyed like pick_locks: lower-cased, trimmed, sorted",
+    ctx2._lockKey("d", " Zed B", "alpha A ") === "d|alpha a|zed b");
+  const fn = { ...FN, fights: [{ lbl: "Prelim", f1: { n: "Q A" }, f2: { n: "Q B" } },
+    { lbl: "Early Prelim", f1: { n: "R A" }, f2: { n: "R B" } }] };
+  check("with no early clock the early prelims open the prelim segment",
+    load(ET(17, 0)).fightLocked(fn, fn.fights[1]) === true && load(ET(17, 0)).fightLocked(fn, fn.fights[0]) === false);
+  const lr2 = load(ET(17, 5)).lockReason;
+  E3.winner = "E3 A";
+  check("the toast says a cascaded bout is up next, and keeps the segment wording for an opener",
+    /up next/.test(lr2(E2, c)) && /early prelims/.test(lr2({ lbl: "Early Prelim" }, c)));
+}
 
 if (failures) {
   console.error(`\nLock-time checks FAILED (${failures})`);

@@ -836,7 +836,7 @@ export function verdictFactsText(v: VerdictFacts): string {
 }
 export function buildVerdict(v: VerdictFacts): { system: string; user: string } {
   const what = v.kind === "tape"
-    ? "the Tale of the Tape between the top two pickers in a group of friends, before the next card: who has the edge and why"
+    ? "the Tale of the Tape between the top two pickers in a group of friends, on the current card: who has the edge and why"
     : "the Fight Night Report of how a group of friends' picks went on a card that just finished: the night's headline";
   return {
     system: `You are FightBot, the ringside voice of a UFC picks app played by a group of friends. You call ${what}.
@@ -1075,11 +1075,12 @@ HOME SCREEN
 - ⚡ Activity strip: pick lock-ins, hot streaks, belt changes and challenges as they happen, spoiler-free.
 - Per event: 🤖 Ask FightBot (the shared MMA assistant: pick recommendations, best value, who to fade, prior meetings, general MMA and app help, with source links for researched facts), 🎰 Parlay Picks (AI parlay ideas, plus a calculator that prices a parlay you build and warns about legs that aren't independent), and Quick Pick (opens FN Mode on that card). In the days before a card, Fight Week Intel under the event lists curated interviews and breakdowns, linking to the source.
 - FN Mode: a live fight-night view of the card in running order, for quick picking and following results.
-- Per bout: tap a fighter to pick him or her. After picking, "How:" sets the method (KO/TKO, Sub, Dec). ⚡ AI gives a short AI breakdown of the fight. Compare Fighters (main card bouts) shows the two side by side. A bar shows how the group split.
+- Per bout: tap a fighter to pick him or her. After picking, "How:" sets the method (KO/TKO, Sub, Dec). ⚡ AI gives a short AI breakdown of the fight. Compare Fighters (main card bouts) shows the two side by side. Once a bout locks, a bar shows how the group split.
 - Bonus Pick: one per card, choose the fighter you think wins a Performance/Fight of the Night bonus.
 
 MAKING PICKS AND WHEN THEY CLOSE
-- Picks close bout by bout, when that bout's own segment starts: early prelims, prelims or main card. After that the pick can't be added, changed or deleted, and the server enforces it too.
+- Picks close one fight at a time. The first bout of each segment (early prelims, prelims, main card) locks when that segment starts; every other bout locks when the fight before it has its result, so you can pick a fight further down the card while earlier ones run. If results are slow, a bout also locks 45 minutes after the one before it locked, and every bout locks when the next segment starts. After a bout locks its pick can't be added, changed or deleted, and the server enforces it too.
+- Nobody sees anyone else's picks until that bout locks (yours are always visible to you). On Ranks, someone's pick on a fight that hasn't locked shows as 🙈. Before a fight locks you can change your pick as often as you like.
 - The Bonus Pick freezes at the card's first bell.
 - Picks save to your account and come back if you sign in on another phone.
 - If a fighter pulls out and the bout changes, the old pick no longer counts. With notifications on you get a fight change alert saying who's in, so you can re-pick before it locks.
@@ -1102,7 +1103,7 @@ RANKS (the leaderboard)
 - ✏️ Profile: change your name and emoji. Delete my account is in there too.
 - 🚩 Report and 🚫 Block: under a roast you received, on a challenge in your inbox, and in a player's expanded row on Ranks. A report goes to the app's admin (the person isn't told who sent it). Blocking someone stops their trash talk, challenges and nudges reaching you, they can't challenge you, and they aren't told.
 - Nudges: friends who haven't finished their main-card picks show under "Next up"; tap a name to send them a callout push signed with your name. 3 nudges per person per day.
-- 👥 Rooms: tap 👥 Everyone at the top of Ranks to switch to a room. A room is a private board for a group, scored exactly like the main board, with its own 🏆 belt, and it opens with a Tale of the Tape of its top two before a card: 🤖 FightBot's call adds a one-line AI verdict, and 🖼️ Share poster shares it as a fight-poster image. Create one and share the invite link, or join with a code. Invite links open in the phone's browser (on iPhone, Safari, not the Home Screen app), so any member can also tap 🔑 Temp password in the 👥 sheet for a 6-character password that works for 24 hours; friends type it into the same Join box in the app. Rooms need an email-linked account.
+- 👥 Rooms: tap 👥 Everyone at the top of Ranks to switch to a room. A room is a private board for a group, scored exactly like the main board, with its own 🏆 belt, and it opens with a Tale of the Tape of its top two, before and during a card: 🤖 FightBot's call adds a one-line AI verdict, and 🖼️ Share poster shares it as a fight-poster image. Create one and share the invite link, or join with a code. Invite links open in the phone's browser (on iPhone, Safari, not the Home Screen app), so any member can also tap 🔑 Temp password in the 👥 sheet for a 6-character password that works for 24 hours; friends type it into the same Join box in the app. Rooms need an email-linked account.
 
 OTHER PROMOTIONS: PFL, RIZIN, CONTENDER SERIES (DWCS)
 - When another promotion has a card to pick, a sport switch (UFC | PFL | RIZIN | DWCS) appears under the header, and on Ranks. Those cards look and work like UFC cards: pick the winner, the method, and up to 2 🔒 locks per card. They score by the same rules (winner 1, method +0.5, underdog bonus when there's a line, lock +1/−1), but each promotion has its own separate board, and UFC scores are unaffected.
