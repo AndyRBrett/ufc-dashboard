@@ -9395,12 +9395,14 @@ function drawTapePoster(canvas,t,evName,call){
   return canvas;
 }
 // tape-poster:end
-// The board's tape: only in a room, only while the next card hasn't started,
-// and never able to break the board. Both board paths call it: the normal one
-// and the "nobody has picked this card yet" one, which is exactly when a
-// pre-card tape matters most.
+// The board's tape: only in a room, and never able to break the board. It
+// stays up through the card (live and finished, not just before the first
+// bell): it used to vanish at the opening bout, right when the room is
+// watching. Its numbers are the room's board, so they move as results land.
+// Both board paths call it: the normal one and the "nobody has picked this
+// card yet" one, which is exactly when a pre-card tape matters most.
 function roomTapeEl(rows,room,belt,ev){
-  if(!room||!ev||!ev.fights||!ev.fights.length||!ev.fights.every(function(f){return f.state==="pre";}))return null;
+  if(!room||!ev||!ev.fights||!ev.fights.length)return null;
   try{var t=taleOfTheTape(rows,room.members,belt);return t?taleEl(t,ev.name):null;}
   catch(e){console.warn("[tape]",e);return null;}
 }
@@ -9910,7 +9912,7 @@ function loadLeaderboard(isLive){
       var _hdrLbl=_allPre?"Next up":_allPost?"Latest":"Live";
       evHdr.textContent=_hdrLbl+": "+nextEv.name.replace("UFC Fight Night: ","").replace("UFC ","UFC ");
       body.appendChild(evHdr);
-      // A room's pre-card Tale of the Tape: its top two, head to head.
+      // A room's Tale of the Tape: its top two, head to head, before and during the card.
       var _tapeEl=roomTapeEl(rows,_room,belt,nextEv);if(_tapeEl)body.appendChild(_tapeEl);
       // Slacker nudges — call out anyone who hasn't picked before lock-in.
       // Gated ONLY on the main-card clock. _slackersFor counts main-card bouts
