@@ -805,7 +805,7 @@ def _iso(days_ago):
 def _complete(**over):
     # A fully-populated, freshly-fetched cache entry.
     e = {"rec": "20-1-0", "form": [{"r": "W", "m": "KO"}], "opp": ["Some Guy"],
-         "url": "http://ufcstats.com/x", "fetched_at": _iso(1)}
+         "res": ["W KO/TKO R1 2025"], "url": "http://ufcstats.com/x", "fetched_at": _iso(1)}
     e.update(over)
     return e
 
@@ -832,6 +832,60 @@ def test_needs_fetch_incomplete_uses_cheap_cached_url():
     # Missing form/opp → refetch, but not via the (costly) search path.
     assert scrape._needs_stats_fetch({"rec": "5-0-0", "opp": []}, _NOW) == (True, False)
     assert scrape._needs_stats_fetch({"rec": "5-0-0", "form": []}, _NOW) == (True, False)
+
+
+def test_needs_fetch_backfills_per_fight_results_cheaply():
+    # Entries cached before "res" existed are refetched once from their URL so
+    # FightBot can say who a fighter beat and lost to, not just who they met.
+    entry = _complete()
+    del entry["res"]
+    assert scrape._needs_stats_fetch(entry, _NOW) == (True, False)
+
+
+def _ufcstats_row(result, opp, event_date, method, detail, rnd):
+    return (f'<tr><td><p><a>{result}</a></p></td>'
+            f'<td><p><a>Natalia Silva</a></p><p><a>{opp}</a></p></td>'
+            '<td></td><td></td><td></td><td></td>'
+            f'<td><p><a>UFC Event</a></p><p>{event_date}</p></td>'
+            f'<td><p>{method}</p><p>{detail}</p></td><td><p>{rnd}</p></td><td><p>5:00</p></td></tr>')
+
+
+def test_fetch_fighter_stats_records_result_per_opponent(monkeypatch):
+    html = ('<html><ul><li class="b-list__box-list-item">SLpM: 4.81</li></ul>'
+            '<table><tbody class="b-fight-details__table-body">'
+            '<tr><td><p><a>next</a></p></td><td><p><a>Natalia Silva</a></p><p><a>Zhang Weili</a></p></td>'
+            '<td></td><td></td><td></td><td></td><td><p>UFC 333</p><p>Nov. 14, 2026</p></td><td></td><td></td><td></td></tr>'
+            + _ufcstats_row("win", "Rose Namajunas", "Jun. 28, 2025", "U-DEC", "", "5")
+            + _ufcstats_row("loss", "Jasmine Jasudavicius", "Mar. 12, 2022", "KO/TKO", "Punches", "2")
+            + _ufcstats_row("draw", "Someone Else", "Jan. 01, 2019", "S-DEC", "", "3")
+            + _ufcstats_row("win", "Sub Guy", "Feb. 02, 2020", "SUB", "Armbar", "1")
+            + '</tbody></table></html>')
+
+    class R:
+        status_code = 200
+        text = html
+    monkeypatch.setattr(scrape, "_ufcstats_get", lambda *a, **k: R())
+    monkeypatch.setattr(scrape.time, "sleep", lambda *_: None)
+    s = scrape.fetch_fighter_stats("Natalia Silva", cached_url="http://ufcstats.com/x")
+    assert s["opp"] == ["Rose Namajunas", "Jasmine Jasudavicius", "Someone Else", "Sub Guy"]
+    assert s["res"] == ["W U-Dec R5 2025", "L KO/TKO R2 2022", "D S-Dec R3 2019", "W Sub R1 2020"]
+    assert len(s["res"]) == len(s["opp"])
+
+
+def test_fetch_fighter_stats_failed_detail_is_a_failure_not_an_empty_profile(monkeypatch):
+    # A throttled or erroring detail page must not come back as an all-zero
+    # profile that would overwrite the cached history.
+    class Down:
+        status_code = 503
+        text = ""
+    monkeypatch.setattr(scrape.time, "sleep", lambda *_: None)
+    monkeypatch.setattr(scrape, "_ufcstats_get", lambda *a, **k: Down())
+    assert scrape.fetch_fighter_stats("Natalia Silva", cached_url="http://ufcstats.com/x") is None
+
+    def boom(*a, **k):
+        raise ConnectionError("reset")
+    monkeypatch.setattr(scrape, "_ufcstats_get", boom)
+    assert scrape.fetch_fighter_stats("Natalia Silva", cached_url="http://ufcstats.com/x") is None
 
 
 def test_needs_fetch_legacy_entry_without_timestamp_revalidates():

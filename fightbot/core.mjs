@@ -135,10 +135,12 @@ export function fighterHistory(stats, name, opponent) {
   if (!q || hits.length !== 1) return { error: "Use a unique fighter name", matches: hits.slice(0,15) };
   const fighter = hits[0], st = stats[fighter], opponents = Array.isArray(st.opp) ? st.opp : [];
   const want = PE.simpleKey(opponent), matches = want ? opponents.filter(n => PE.simpleKey(n) === want || PE.simpleKey(n).includes(want)) : [];
+  const res = Array.isArray(st.res) && st.res.length === opponents.length ? st.res : null;
   return { fighter, record: st.rec || null, completed_ufc_opponents_newest_first: opponents,
+    ...(res ? { ufc_fights_newest_first: opponents.map((o, i) => ({ opponent: o, result: String(res[i]) })) } : {}),
     ...(opponent ? { requested_opponent: opponent, meeting: matches.length ? "found in completed UFC history" : "not found in cached UFC history", matches } : {}),
     source: st.url || null, fetched_at: st.fetched_at || null,
-    caveat: "This is cached UFCStats history, not a complete MMA career. An absent opponent or empty list does not prove the fighters never met; verify career records for that claim. Dates and methods are not stored in this list." };
+    caveat: "This is cached UFCStats history, not a complete MMA career. An absent opponent or empty list does not prove the fighters never met; verify career records for that claim. Results (W/L/D, method, round, year) are present only when ufc_fights_newest_first is." };
 }
 
 // -------------------------------------------------------------------- tools --

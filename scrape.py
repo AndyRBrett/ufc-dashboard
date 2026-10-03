@@ -3282,7 +3282,49 @@ def _needs_stats_fetch(entry, now, urgent=False):
         return True, False                      # incomplete → cheap cached-URL refetch
     if not fetched or now - _parse_ts(fetched) >= timedelta(days=STATS_REFRESH_DAYS):
         return True, True                       # stale/legacy → re-validate via search
+    if "res" not in entry and entry.get("url"):
+        return True, False                      # predates per-fight results → backfill once
     return False, False
+
+
+def _fight_result_tag(result_txt, cells):
+    """One completed UFCStats row as a compact tag aligned with ``opp``.
+
+    "W Dec R3 2024", "L KO/TKO R2 2025", "D Dec R3 2019": result letter, the
+    method's first line (KO/TKO, SUB, U-DEC …, shortened), round and year. It
+    is what lets FightBot answer "who has X lost to" from the cache instead of
+    a bare opponent list with no outcome. Any piece it can't read is left out,
+    never guessed.
+    """
+    def first_p(cell):
+        ps = cell.select("p")
+        return (ps[0] if ps else cell).get_text(" ", strip=True)
+    bits = ["W" if result_txt == "win" else ("L" if result_txt == "loss" else "D")]
+    if len(cells) > 7:
+        m = first_p(cells[7]).upper()
+        if m:
+            if "KO" in m:
+                bits.append("KO/TKO")
+            elif "SUB" in m:
+                bits.append("Sub")
+            elif "DEC" in m:
+                kind = {"U": "U-Dec", "S": "S-Dec", "M": "M-Dec"}.get(m[:1]) if "-" in m else None
+                bits.append(kind or "Dec")
+            elif "DQ" in m:
+                bits.append("DQ")
+            elif "OVERTURNED" in m or "NC" in m:
+                bits.append("NC")
+            else:
+                bits.append(m[:8])
+    if len(cells) > 8:
+        rnd = first_p(cells[8])
+        if rnd.isdigit():
+            bits.append("R" + rnd)
+    if len(cells) > 6:
+        dm = _UFCSTATS_DATE_RE.search(cells[6].get_text(" ", strip=True))
+        if dm:
+            bits.append(dm.group(3))
+    return " ".join(bits)
 
 
 def fetch_fighter_stats(name, cached_url=None):
@@ -3306,10 +3348,13 @@ def fetch_fighter_stats(name, cached_url=None):
     ht = rch = stn = dob = ""
     form = []
     opponents = []
+    results = []      # aligned with opponents: "L KO/TKO R2 2025"
+    detail_ok = False
     time.sleep(0.5)
     try:
         dr = _ufcstats_get(detail_url, timeout=15)
         if dr.status_code == 200:
+            detail_ok = True
             dsoup = BeautifulSoup(dr.text, "html.parser")
             for li in dsoup.select("li.b-list__box-list-item"):
                 txt = li.get_text(strip=True)
@@ -3369,8 +3414,18 @@ def fetch_fighter_stats(name, cached_url=None):
                         opp_name = opp_links[1].get_text(strip=True)
                         if opp_name:
                             opponents.append(opp_name)
+                            results.append(_fight_result_tag(result_txt, cells_d))
     except Exception as e:
+        detail_ok = False
         print(f"  UFCStats detail error: {e}", file=sys.stderr)
+    if not detail_ok:
+        # An all-zero profile with empty form/opp/res would replace the cached
+        # entry wholesale and be stamped fresh, erasing a good history (the
+        # one-time "res" backfill refetches every booked fighter at once, so a
+        # throttled run would have wiped them all). None marks a failure the
+        # caller retries, keeping what it had.
+        print(f"  UFCStats detail unavailable for {name}; keeping cached stats", file=sys.stderr)
+        return None
 
     print(
         f"  Stats {name}: slpm={slpm} acc={acc} td={td} tdd={tdd} "
@@ -3383,6 +3438,7 @@ def fetch_fighter_stats(name, cached_url=None):
         "ht": ht, "rch": rch, "stn": stn, "dob": dob,
         "form": form,
         "opp": opponents,
+        "res": results,
         "url": detail_url,
     }
 

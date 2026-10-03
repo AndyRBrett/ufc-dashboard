@@ -28,6 +28,28 @@ assert.match(ctx._aiFightContext('', ['Ateba Gautier']), /Ateba Gautier/);
 assert.ok(ctx._aiFightContext('Ateba', [], { 'Ateba Gautier': { opp: Array(3000).fill('Long Name') } }).length <= 6000);
 assert.match(ctx._aiFightContext('Alex One'), /history unavailable/);
 assert.match(fighterHistory(stats, 'Ateba', 'Tai Tuivasa').meeting, /not found in cached UFC/);
+// Per-bout results: "who has X lost to" is answerable from the cache.
+const silva = { 'Natalia Silva': { rec: '20-5-1', opp: ['Rose Namajunas', 'Jasmine Jasudavicius'], res: ['W U-Dec R5 2025', 'L S-Dec R3 2022'] } };
+const silvaCtx = ctx._aiFightContext('Who has Natalia Silva lost to in the ufc', [], silva);
+assert.match(silvaCtx, /UFC losses per UFCStats, newest first: Jasmine Jasudavicius \(S-Dec R3 2022\)/);
+assert.match(silvaCtx, /UFC wins over, newest first: Rose Namajunas \(U-Dec R5 2025\)/);
+assert.equal(silvaCtx.match(/Rose Namajunas/g).length, 1, 'each bout listed once');
+// Two long careers in one question: both fighters survive the size cap, losses
+// stay whole, and a shortened win list says so instead of posing as complete.
+const career = (who, n) => ({ rec: '26-17-0', url: 'http://ufcstats.com/fighter-details/' + who,
+  opp: Array.from({ length: n }, (_, i) => `${who} Opponent Number ${i}`),
+  res: Array.from({ length: n }, (_, i) => (i % 3 ? 'W U-Dec R3 ' : 'L KO/TKO R2 ') + (2025 - i)) });
+const vets = { 'Jim Miller': career('Miller', 120), 'Neil Magny': career('Magny', 120) };
+const vetCtx = ctx._aiFightContext('Has Jim Miller fought Neil Magny?', [], vets);
+assert.ok(vetCtx.length <= 6000);
+assert.match(vetCtx, /Jim Miller:/); assert.match(vetCtx, /Neil Magny:/);
+assert.match(vetCtx, /Miller Opponent Number 117 \(KO\/TKO R2 1908\)/, 'every loss kept');
+assert.match(vetCtx, /earlier UFC wins not listed/);
+assert.match(silvaCtx, /career MMA record \(all promotions\) 20-5-1/);
+assert.match(silvaCtx, /not UFC losses happened in other promotions/);
+// A misaligned res is never zipped onto the wrong opponent.
+assert.doesNotMatch(ctx._aiFightContext('Natalia Silva', [], { 'Natalia Silva': { opp: ['A B', 'C D'], res: ['W Dec'] } }), /UFC losses/);
+assert.deepEqual(fighterHistory(silva, 'Natalia Silva').ufc_fights_newest_first[1], { opponent: 'Jasmine Jasudavicius', result: 'L S-Dec R3 2022' });
 assert.match(fighterHistory(stats, 'Tai Tuivasa', 'Derrick Lewis').meeting, /found in completed UFC/);
 assert.ok(fighterHistory(stats, 'Alex').error);
 
@@ -60,7 +82,10 @@ for (const action of ['chat','guide','breakdown']) {
   responses = [reply()];
   const r = await ask({ action, question, fightContext:context, card:'Fixture card', f1:{n:'Ateba Gautier',rec:'8-1'}, f2:{n:'Robert Valentin',rec:'10-3'} });
   assert.equal(r.status,200,JSON.stringify(r.json));
-  assert.ok(calls[0].tools.some(t=>t.type==='web_search_20250305'&&t.max_uses===1));
+  assert.ok(calls[0].tools.some(t=>t.type==='web_search_20250305'&&t.max_uses===3));
+  assert.equal(calls[0].model,'claude-sonnet-5-5');
+  assert.match(calls[0].system,/MUST use web_search/);
+  assert.match(calls[0].system,/never tell the user to look it up elsewhere/);
   assert.match(calls[0].messages[0].content,/completed UFCStats opponents/);
   assert.match(calls[0].system,/absent opponent.*not proof/);
   if(action==='chat') assert.ok(calls[0].system.includes(mod.APP_GUIDE));
@@ -97,6 +122,38 @@ for (const message of ['Web search is not enabled for your organization.', 'Mode
 responses=[{status:400,body:{error:{message:'Web search is not enabled'}}},{content:[{type:'text',text:'An armbar attacks the elbow by controlling and extending the arm.'}]}];
 assert.equal((await ask({action:'guide',question:'What is an armbar?'})).status,200);
 assert.match(calls[1].system,/still explain established MMA/);
+// The screenshot: a paid research call that answered "the data doesn't say,
+// see UFCStats" without searching is re-run once with the search demanded.
+const punt = 'According to the cached UFCStats data, Natalia Silva\'s completed UFC opponents include Rose Namajunas. Her record is 20-5-1, so she has five losses, but the app data doesn\'t specify which opponents she lost to. You can view her full fight history with loss details on UFCStats.';
+assert.ok(mod.puntsInsteadOfAnswering(punt));
+for (const ok of ['Natalia Silva has one UFC loss, a split decision to Jasmine Jasudavicius in 2022.', 'Gautier fights at 185 pounds.', 'A rear-naked choke compresses the neck.'])
+  assert.equal(mod.puntsInsteadOfAnswering(ok), false, ok);
+responses=[{content:[{type:'text',text:punt}]}, reply()];
+{ const r=await ask({action:'guide',question:'Who has Natalia Silva lost to in the ufc',fightContext:context});
+  assert.equal(r.status,200,JSON.stringify(r.json));assert.equal(calls.length,2);
+  assert.ok(calls[1].tools);assert.ok(calls[1].messages[0].content.includes(mod.FORCE_RESEARCH_NOTE));
+  assert.match(r.json.breakdown,/185 pounds/);assert.equal(r.json.sources.length,1); }
+// A punt AFTER searching isn't retried (it already looked), nor is a real answer.
+responses=[{content:[{type:'server_tool_use',id:'s',name:'web_search',input:{query:'q'}},{type:'web_search_tool_result',tool_use_id:'s',content:[]},{type:'text',text:'I could not verify which promotion that loss came from.'}]}];
+await ask({action:'guide',question:'Who has Natalia Silva lost to',fightContext:context});
+assert.equal(calls.length,1);
+// A failed forced retry keeps the first answer rather than erroring.
+responses=[{content:[{type:'text',text:'I cannot verify that from the app data.'}]},{status:400,body:{error:{message:'Invalid request'}}}];
+{ const r=await ask({action:'guide',question:'Who has Natalia Silva lost to',fightContext:context});
+  assert.equal(r.status,200);assert.match(r.json.breakdown,/cannot verify/); }
+// The research model thinks, so its ceiling leaves room beyond the answer.
+responses=[reply()];
+await ask({action:'guide',question,fightContext:context});
+assert.ok(calls[0].max_tokens>=8000);assert.equal(calls[0].output_config.effort,'medium');
+// An unknown RESEARCH_MODEL falls back to MODEL, still with search.
+responses=[{status:404,body:{error:{type:'not_found_error',message:'model: claude-sonnet-5-5'}}},reply()];
+{ const r=await ask({action:'guide',question,fightContext:context});
+  assert.equal(r.status,200);assert.equal(calls.length,2);
+  assert.equal(calls[1].model,'claude-haiku-4-5-20251001');assert.ok(calls[1].tools); }
+assert.equal(mod.researchModelUnavailable(400,JSON.stringify({error:{message:'Web search is not enabled'}})),false);
+responses=[{content:[{type:'text',text:'Tap Ranks.'}]}];
+await ask({action:'guide',question:'How do locks work?'});
+assert.equal(calls[0].model,'claude-haiku-4-5-20251001');
 responses=[{status:400,body:{error:{message:'Invalid max_tokens value'}}}];
 assert.equal((await ask({action:'chat',question})).status,502);assert.equal(calls.length,1);
 responses=[{status:400,body:{error:{message:'Web search is not enabled'}}},{status:400,body:{error:{message:'Web search is not enabled'}}}];
@@ -231,6 +288,10 @@ try {
       if(payload.question==='Delayed advice')await new Promise(resolve=>releaseAnswer=resolve);
       return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({breakdown:'No recorded meeting. Gautier is a middleweight.',sources:[{url:source.url,title:'Career records'},{url:'javascript:alert(1)',title:'bad'}]})});
     }
+    // An empty picks table is the app's admin-wipe signal (reconcileMyPicks),
+    // which clears local picks: answering '[]' there raced the userPicks checks.
+    if(/\/rest\/v1\/picks\?select=user_id&limit=1/.test(route.request().url()))
+      return route.fulfill({status:200,contentType:'application/json',body:'[{"user_id":"someone"}]'});
     return route.fulfill({status:200,contentType:'application/json',body:'[]'});
   });
   await page.addInitScript(()=>localStorage.setItem('ufc_whatsnew_seen','9999'));
