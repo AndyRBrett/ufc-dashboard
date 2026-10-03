@@ -169,6 +169,17 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
       ctx.roomTapeEl(rows, ctx._curRoom(), belt, { name: "UFC 333", fights: [{ state: "pre" }] }) !== null &&
       ctx.roomTapeEl(rows, ctx._curRoom(), belt, { name: "UFC 333", fights: [{ state: "post" }, { state: "live" }, { state: "pre" }] }) !== null &&
       ctx.roomTapeEl(rows, ctx._curRoom(), belt, { name: "UFC 333", fights: [{ state: "post" }, { state: "post" }] }) !== null);
+    // Codex on #262: a started or finished card's tape must not read as pre-card.
+    const ph = (p) => ctx.taleOfTheTape(rows, ctx._curRoom().members, belt, p);
+    const lvl = (p) => ctx.taleOfTheTape(same, ctx._curRoom().members, null, p).verdict;
+    check("tape: the copy follows the card's phase",
+      ph().phase === "pre" && /big night/.test(ph().verdict) &&
+      ph("live").phase === "live" && /rest of the night/.test(ph("live").verdict) &&
+      ph("post").phase === "post" && /ground to make up/.test(ph("post").verdict) && !/night/.test(ph("post").verdict) &&
+      /This card decides it/.test(lvl("live")) && /next card decides it/.test(lvl("post")));
+    const tsrc = fn("roomTapeEl"), psrc = fn("drawTapePoster");
+    check("tape: the board passes the card's phase, and the poster never says 'Before' a started card",
+      /taleOfTheTape\(rows,room\.members,belt,phase\)/.test(tsrc) && /t\.phase==="live"/.test(psrc) && /t\.phase==="post"/.test(psrc));
     check("tape: a room with fewer than two scored members gets no tape",
       ctx.taleOfTheTape(rows.filter((r) => r.user_id !== "u-jp"), ctx._curRoom().members, belt) === null);
   }
@@ -347,7 +358,7 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   check("the board's belt is the room's belt when a room is selected", /computeBeltLineage\(rows,_room\?\{users:_room\.members\}:null\)/.test(lb));
   const te = fn("roomTapeEl");
   check("the Tale of the Tape shows only in a room, through the card, and can't break the board",
-    /if\(!room\|\|!ev/.test(te) && !/state==="pre"/.test(te) && /catch\(e\)\{console\.warn\("\[tape\]"/.test(te));
+    /if\(!room\|\|!ev\|\|!ev\.fights\|\|!ev\.fights\.length\)return null;/.test(te) && !/if\(!room[^\n]*state===/.test(te) && /catch\(e\)\{console\.warn\("\[tape\]"/.test(te));
   // Codex: the empty "nobody in the room has picked this card" board returned
   // before the tape, which is exactly when a pre-card tape matters most.
   const early = lb.slice(lb.indexOf("if(_room){var _re"), lb.indexOf("if(_room){var _re") + 700);
