@@ -365,6 +365,18 @@ async function main() {
         rows = rows.map((c) => c.id === "c2" ? Object.assign({}, c, { status: "accepted", responded_at: iso(now) }) : c);
         out.answer = await run();
         closeChalSheet(); closeLeaderboard();
+        // A long history: a fresh "declined" sorts last, past the 25 rows the
+        // inbox draws. It must still be on screen, and only drawn rows count as seen.
+        const filler = [];
+        for (let i = 0; i < 30; i++) filler.push({ id: "f" + i, challenger_id: "u-them", challenger_name: "Rival", target_id: "u-me", target_name: "Me",
+          event_date: "2999-01-01", event_name: "Future", f1: null, f2: null, stake: "s", status: "accepted", created_at: iso(now - 7 * 86400000 - i), responded_at: iso(now - 7 * 86400000) });
+        rows = rows.concat(filler, [{ id: "c3", challenger_id: "u-me", challenger_name: "Me", target_id: "u-them", target_name: "Declinator",
+          event_date: "2999-01-01", event_name: "Future", f1: null, f2: null, stake: "s", status: "declined", created_at: iso(now - 2000), responded_at: iso(now) }]);
+        out.deepOpen = await run();
+        out.deepListed = /Declinator/.test(document.getElementById("chalList").textContent);
+        const seen = JSON.parse(localStorage.getItem("ufc_chal_seen") || "[]");
+        out.unshownUnmarked = filler.filter((c) => seen.indexOf(c.id + ":accepted") < 0).length > 0;
+        closeChalSheet(); closeLeaderboard();
         window.fetch = realFetch; EVENTS = restore.EVENTS; _chalInboxBusy = false;
         return out;
       });
@@ -373,6 +385,8 @@ async function main() {
       assert("challenge inbox: a days-old challenge doesn't interrupt", r.oldSkipped);
       assert("challenge inbox: my own outgoing challenge doesn't open it", r.ownPending === false);
       assert("challenge inbox: an answer to my challenge does", r.answer === true);
+      assert("challenge inbox: a fresh answer past the 25-row cut is still drawn", r.deepOpen && r.deepListed);
+      assert("challenge inbox: rows the inbox didn't draw aren't marked seen", r.unshownUnmarked);
     }
 
     // sw.js tells an open page the moment a push lands, so the page reads the

@@ -10652,7 +10652,9 @@ function updateChalBadge(){
   var b=document.getElementById("chalBadge");
   if(b){b.textContent=n;b.style.display=n?"flex":"none";}
 }
+var _chalOnTop={};
 function openChallengeInbox(){
+  _chalOnTop={};
   if(!document.getElementById("lbPanel").classList.contains("open"))openLeaderboard();
   document.getElementById("chalComposeView").style.display="none";
   document.getElementById("chalInboxView").style.display="block";
@@ -10671,14 +10673,24 @@ function renderChallengeInbox(){
     list.appendChild(e);return;
   }
   // Actionable first, then live, then history
+  // — except anything this device hasn't shown yet (what checkChallengeInbox
+  // opened the sheet for), which goes on top so it can't fall past the cut.
   var order={pending:0,open:1,decided:2,push:3,void:4,declined:5};
+  // Pinned for as long as the sheet stays open: the redraw after the refetch
+  // finds them already marked seen and would sort them back down.
+  _chalNews().forEach(function(c){_chalOnTop[c.id]=1;});
+  var news=mine.filter(function(c){return _chalOnTop[c.id];});
   mine.sort(function(a,b){
+    var na=_chalOnTop[a.id]?0:1,nb=_chalOnTop[b.id]?0:1;
+    if(na!==nb)return na-nb;
     var oa=order[resolveChallenge(a).kind],ob=order[resolveChallenge(b).kind];
     if(oa!==ob)return oa-ob;
     return (b.created_at||"").localeCompare(a.created_at||"");
   });
-  _markChalsSeen(mine);
-  mine.slice(0,25).forEach(function(c){
+  var shown=mine.slice(0,Math.max(25,news.length));
+  // Only what is on screen counts as shown.
+  _markChalsSeen(shown);
+  shown.forEach(function(c){
     var r=resolveChallenge(c);
     var incoming=_chalIncoming(c);
     var rival=_freshNick(incoming?c.challenger_name:c.target_name);
