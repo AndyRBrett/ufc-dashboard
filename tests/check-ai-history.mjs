@@ -203,6 +203,23 @@ try {
   assert.equal(await page.locator('#botHistory .loading').count(),0);
   assert.equal(await page.locator('#botHistory a').count(),4);
   assert.match(await page.locator('#botTitle').textContent(),/Another fixture card/);
+  // The first PR review caught a card switch during an in-flight answer.
+  releaseAnswer=null;
+  await page.fill('#botInput','Delayed advice');await page.click('#botSendBtn');
+  for(let i=0;!releaseAnswer&&i<100;i++)await new Promise(resolve=>setTimeout(resolve,10));
+  assert.ok(releaseAnswer);
+  await page.evaluate(ev=>{closeBot();openPickChat(ev,0);},ev);
+  assert.match(await page.locator('#botTitle').textContent(),/Fixture card/);
+  assert.equal(await page.locator('#botHistory .loading').count(),0);
+  assert.equal(await page.locator('#botSendBtn').isDisabled(),false);
+  // Start a new request before releasing the old response. Its completion
+  // must not add a stale answer or unlock/overwrite the new conversation.
+  await page.fill('#botInput','Who should I pick?');await page.click('#botSendBtn');
+  releaseAnswer();await page.waitForFunction(()=>!_botBusy);
+  assert.equal(sent.at(-1).event,ev.name);
+  assert.equal(await page.locator('#botHistory a').count(),5);
+  assert.equal(await page.evaluate(()=>_botHist.length),10);
+
 
 } finally {await browser.close();await new Promise(ok=>server.close(ok));globalThis.fetch=originalFetch;}
 console.log('check-ai-history: cached context, historical search, citations, bounds, failures and all three UI paths pass.');

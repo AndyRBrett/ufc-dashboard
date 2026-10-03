@@ -2321,7 +2321,7 @@ function openPickChat(ev,ei){openBot("Card",ev);}
 // ── Ask FightBot: one MMA and app assistant ─────────────────────
 // Every entry point shares its conversation, selected card and server prompt.
 // fightbot-guide:start
-var _botHist=[],_botBusy=false,_botScreen="",_botLocked=false,_botFocusTimer=null,_botCard=null;
+var _botHist=[],_botBusy=false,_botScreen="",_botLocked=false,_botFocusTimer=null,_botCard=null,_botController=null,_botRequestId=0;
 var BOT_TURNS=6,BOT_TURN_MAX=600;
 var BOT_QUICK=["Explain a rear-naked choke","Who has the edge in the main event?","Best underdog on the next card?","How does scoring work?","How do locks work?","How do I join a room?","How do I turn on notifications?"];
 function _botBubble(role,text){
@@ -2330,6 +2330,13 @@ function _botBubble(role,text){
   hEl.appendChild(b);hEl.scrollTop=hEl.scrollHeight;return b;
 }
 function openBot(screen,card){
+  if(card&&_botBusy&&(!_botCard||card.date!==_botCard.date||card.name!==_botCard.name)){
+    // A late answer must never appear under a different card's title.
+    _botRequestId++;
+    if(_botController)_botController.abort();
+    _botController=null;_botBusy=false;
+    document.getElementById("botSendBtn").disabled=false;
+  }
   if(card)_botCard=card;
   document.getElementById("botTitle").textContent="🤖 Ask FightBot"+(_botCard?" · "+_botCard.name:"");
   _botScreen=String(screen||"").slice(0,40);
@@ -2476,6 +2483,8 @@ function sendBot(){
   _botBubble("user",q);
   var wait=_botBubble("bot","Thinking…");wait.classList.add("loading");
   var ctrl=("AbortController" in window)?new AbortController():null;
+  _botController=ctrl;
+  var requestId=++_botRequestId;
   var to=setTimeout(function(){if(ctrl)ctrl.abort();},45000);
   var req={action:"guide",question:q.slice(0,300),history:history,screen:_botScreen,fightContext:_aiFightContext([q].concat(history.filter(function(h){return h.role==="user";}).map(function(h){return h.text;})).join(" "))};
   try{var fd=_botCard?{event:_botCard.name.slice(0,120),card:_buildCardSummary(_botCard),userPicks:_buildUserPicks(_botCard).slice(0,1900)}:_botFightData();if(fd){req.event=fd.event;req.card=fd.card;if(fd.userPicks)req.userPicks=fd.userPicks;}}
@@ -2483,6 +2492,7 @@ function sendBot(){
   _aiFetch(JSON.stringify(req),ctrl?ctrl.signal:undefined)
   .then(function(r){return r.json().catch(function(){return {};}).then(function(d){return {ok:r.ok,status:r.status,data:d};});})
   .then(function(res){
+    if(requestId!==_botRequestId)return;
     var text=res.ok&&res.data&&res.data.breakdown||"";
     if(!text){
       var msg="Sorry, I couldn't answer that just now. Try again.";
@@ -2493,10 +2503,13 @@ function sendBot(){
     wait.classList.remove("loading");wait.textContent=text;_aiSourceLinks(wait,res.data.sources);
     _botHist.push({role:"user",text:q},{role:"bot",text:text,sources:res.data.sources||[]});
   }).catch(function(err){
+    if(requestId!==_botRequestId)return;
     wait.classList.remove("loading");
     wait.textContent=(err&&err.name==="AbortError")?"That took too long. Try again.":"Sorry, I couldn't answer that just now. Try again.";
   }).finally(function(){
     clearTimeout(to);
+    if(requestId!==_botRequestId)return;
+    _botController=null;
     _botBusy=false;document.getElementById("botSendBtn").disabled=false;
     var hEl=document.getElementById("botHistory");hEl.scrollTop=hEl.scrollHeight;
   });
