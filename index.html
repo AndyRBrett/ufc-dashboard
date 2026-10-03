@@ -431,7 +431,9 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .chal-row-sub{font-size:11px;color:var(--muted);margin-top:3px}
 .chal-row-stake{font-size:12px;color:var(--gold);margin-top:4px;font-weight:600}
 .chal-row-actions{display:flex;gap:8px;margin-top:9px}
-.chal-act-btn{flex:1;padding:8px;border-radius:8px;border:none;font:700 12px Inter,sans-serif;cursor:pointer;letter-spacing:.03em}
+.chal-act-btn{flex:1;min-height:42px;padding:10px 8px;border-radius:8px;border:none;font:700 13px Inter,sans-serif;cursor:pointer;letter-spacing:.03em;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:transform .08s,opacity .15s}
+.chal-act-btn:active{transform:scale(.96);filter:brightness(.88)}
+.chal-act-btn:disabled{opacity:.55;cursor:default;transform:none;filter:none}
 .chal-act-accept{background:var(--red);color:var(--on-accent)}
 .chal-act-decline{background:var(--card2);color:var(--muted);border:1px solid var(--border2)}
 .chal-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-left:auto;letter-spacing:.04em;text-transform:uppercase}
@@ -10566,11 +10568,15 @@ function safetyActions(o){
 function fetchChallenges(){
   return _sbFetchAll("/rest/v1/challenges?select=*&order=created_at.desc").then(function(rows){
     // A blocked player's challenges, either way, leave the inbox, badge and feed.
-    _challenges=(Array.isArray(rows)?rows:[]).filter(function(c){return !isBlocked(c.challenger_id)&&!isBlocked(c.target_id);});
+    var next=(Array.isArray(rows)?rows:[]).filter(function(c){return !isBlocked(c.challenger_id)&&!isBlocked(c.target_id);});
+    // Redraw the open inbox only when something changed: every redraw rebuilds
+    // its buttons, and a tap landing on one as it is replaced does nothing.
+    var changed=JSON.stringify(next)!==JSON.stringify(_challenges);
+    _challenges=next;
     updateChalBadge();
     renderActivityFeed();
     var sheet=document.getElementById("chalSheet");
-    if(sheet&&sheet.classList.contains("open")&&document.getElementById("chalInboxView").style.display!=="none")renderChallengeInbox();
+    if(changed&&sheet&&sheet.classList.contains("open")&&document.getElementById("chalInboxView").style.display!=="none")renderChallengeInbox();
   }).catch(function(){});
 }
 function _isMyChal(c){
@@ -10717,9 +10723,13 @@ function renderChallengeInbox(){
     if(incoming&&c.challenger_id&&c.challenger_id!==USER_ID)row.appendChild(safetyActions({kind:"challenge",name:rival,uids:[c.challenger_id],content:_chalFightLbl(c)+" — "+c.stake}));
     if(r.kind==="pending"&&incoming&&c.target_id===USER_ID){
       var acts=document.createElement("div");acts.className="chal-row-actions";
-      var acc=document.createElement("button");acc.className="chal-act-btn chal-act-accept";acc.textContent="Accept ⚔️";
-      var dec=document.createElement("button");dec.className="chal-act-btn chal-act-decline";dec.textContent="Decline";
-      (function(ch){acc.onclick=function(){respondChallenge(ch,true);};dec.onclick=function(){respondChallenge(ch,false);};})(c);
+      var acc=document.createElement("button");acc.type="button";acc.className="chal-act-btn chal-act-accept";acc.textContent="Accept ⚔️";
+      var dec=document.createElement("button");dec.type="button";dec.className="chal-act-btn chal-act-decline";dec.textContent="Decline";
+      // A response in flight survives a redraw: the rebuilt buttons come back
+      // already greyed out with the same "…ing" label.
+      var busy=_chalResponding[c.id];
+      if(busy){acc.disabled=dec.disabled=true;(busy==="accept"?acc:dec).textContent=busy==="accept"?"Accepting…":"Declining…";}
+      (function(ch,a,d){a.onclick=function(){respondChallenge(ch,true,a,d);};d.onclick=function(){respondChallenge(ch,false,a,d);};})(c,acc,dec);
       acts.appendChild(acc);acts.appendChild(dec);row.appendChild(acts);
     }
     if(r.kind==="decided"&&r.loser&&_lbBaseName(r.loser)===_lbBaseName(userName)&&/wheel|spin/i.test(c.stake)){
@@ -10731,18 +10741,29 @@ function renderChallengeInbox(){
     list.appendChild(row);
   });
 }
-function respondChallenge(c,accept){
+// Challenge id -> "accept" | "decline" while its response is on its way.
+var _chalResponding={};
+function respondChallenge(c,accept,accBtn,decBtn){
+  // The tap is acknowledged at once: nothing on screen used to change until
+  // the server answered, so a tap looked ignored and got repeated.
+  if(_chalResponding[c.id])return;
+  _chalResponding[c.id]=accept?"accept":"decline";
+  if(accBtn&&decBtn){accBtn.disabled=decBtn.disabled=true;(accept?accBtn:decBtn).textContent=accept?"Accepting…":"Declining…";}
+  var done=function(){delete _chalResponding[c.id];};
   fetch(SUPABASE_URL+"/rest/v1/challenges?id=eq."+encodeURIComponent(c.id)+"&status=eq.pending",{
     method:"PATCH",headers:Object.assign(_sbHeaders(),{Prefer:"return=representation"}),
     body:JSON.stringify({status:accept?"accepted":"declined",responded_at:new Date().toISOString()})
   }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(rows){
     if(!rows||!rows.length)throw new Error("not permitted");
-    c.status=accept?"accepted":"declined";
+    done();
+    // A refetch while this was in flight replaced the list's objects, so
+    // update the one the inbox now draws, not just the copy the button held.
+    _challenges.concat([c]).forEach(function(x){if(x.id===c.id){x.status=accept?"accepted":"declined";x.responded_at=x.responded_at||new Date().toISOString();}});
     renderChallengeInbox();updateChalBadge();_rtBroadcastChal();
     if(accept)_triggerPush(c.event_date,"chal-resp-"+c.id,"⚔️ "+userName+" accepted your challenge!",
       _chalFightLbl(c)+" — "+c.stake+" · It's on!",USER_ID,{includeIds:[c.challenger_id],url:"./?inbox=1",kind:"challenge"});
     toast(accept?"It's on! ⚔️":"Declined");
-  }).catch(function(){toast("Could not respond — try again");});
+  }).catch(function(){done();renderChallengeInbox();toast("Could not respond — try again");});
 }
 function openChallengeCompose(u){
   if(!userName){toast("Set your name first (✏️)");return;}

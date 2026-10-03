@@ -396,6 +396,72 @@ async function main() {
       assert("challenge inbox: rows the inbox didn't draw aren't marked seen", r.unshownUnmarked);
     }
 
+    // Accept / Decline acknowledge the tap at once. Nothing used to change on
+    // screen until the server answered, so a tap looked ignored and was
+    // repeated (four taps for one accept, 2026-10-03), and every refetch
+    // rebuilt the buttons, so a tap could land on one as it was replaced.
+    {
+      const r = await page.evaluate(async () => {
+        const realFetch = window.fetch, realPush = _triggerPush, realFresh = _ensureFreshToken;
+        const now = Date.now();
+        const row = { id: "ra1", challenger_id: "u-them", challenger_name: "Rival", target_id: "u-me", target_name: "Me",
+          event_date: "2999-01-01", event_name: "Future", f1: null, f2: null, stake: "s", status: "pending", created_at: new Date(now - 60000).toISOString() };
+        let patches = 0, release = null, fail = false;
+        window.fetch = function (url, opts = {}) {
+          url = String(url);
+          if (url.includes("/rest/v1/challenges")) {
+            if ((opts.method || "GET") === "PATCH") {
+              patches++;
+              return new Promise((res) => { release = () => res(fail ? new Response("{}", { status: 500 })
+                : new Response(JSON.stringify([Object.assign({}, row, { status: "accepted" })]), { status: 200 })); });
+            }
+            return Promise.resolve(new Response(JSON.stringify([Object.assign({}, row, { target_id: USER_ID })]), { status: 200 }));
+          }
+          return realFetch.apply(window, arguments);
+        };
+        _ensureFreshToken = () => Promise.resolve();
+        _triggerPush = () => Promise.resolve({});
+        const restore = { EVENTS };
+        EVENTS = EVENTS.concat([{ date: "2999-01-01", name: "Future", fights: [{ f1: "A B", f2: "C D", lbl: "Main Event", state: "pre" }] }]);
+        USER_ID = "u-me";
+        _challenges = [Object.assign({}, row)];
+        closeChalSheet(); closeLeaderboard();
+        openChallengeInbox();
+        await new Promise((res) => setTimeout(res, 300));
+        const acc = () => document.querySelector("#chalList .chal-act-accept");
+        const out = {};
+        const btn = acc();
+        out.tappable = !!btn && getComputedStyle(btn).touchAction === "manipulation" && btn.getBoundingClientRect().height >= 40;
+        btn.click();
+        out.ackAtOnce = btn.disabled && btn.textContent === "Accepting…";
+        btn.click(); acc().click();
+        out.oneRequest = patches === 1;
+        // A refetch with nothing new keeps the very same button on screen.
+        await fetchChallenges();
+        out.notRebuilt = acc() === btn;
+        // A forced redraw while it is in flight keeps the acknowledgement.
+        renderChallengeInbox();
+        out.survivesRedraw = !!acc() && acc().disabled && acc().textContent === "Accepting…";
+        release(); await new Promise((res) => setTimeout(res, 100));
+        out.accepted = !document.querySelector("#chalList .chal-act-accept") && _challenges.every((c) => c.status === "accepted");
+        // A failure gives the buttons back.
+        _challenges = [Object.assign({}, row, { id: "ra2" })]; fail = true;
+        renderChallengeInbox();
+        acc().click(); release(); await new Promise((res) => setTimeout(res, 100));
+        out.failRestores = !!acc() && !acc().disabled && acc().textContent === "Accept ⚔️";
+        closeChalSheet(); closeLeaderboard();
+        window.fetch = realFetch; _triggerPush = realPush; _ensureFreshToken = realFresh; EVENTS = restore.EVENTS; _challenges = [];
+        return out;
+      });
+      assert("accept: a big, tap-friendly button (touch-action: manipulation, ≥40px)", r.tappable);
+      assert("accept: the tap is acknowledged at once (greyed out, 'Accepting…')", r.ackAtOnce);
+      assert("accept: repeat taps send one request", r.oneRequest);
+      assert("accept: a refetch with nothing new doesn't rebuild the button under the finger", r.notRebuilt);
+      assert("accept: a redraw mid-request keeps it acknowledged", r.survivesRedraw);
+      assert("accept: once answered, the buttons go", r.accepted);
+      assert("accept: a failed request gives the buttons back", r.failRestores);
+    }
+
     // sw.js tells an open page the moment a push lands, so the page reads the
     // inbox without waiting on the tap.
     {
