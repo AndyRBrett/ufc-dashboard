@@ -238,6 +238,7 @@ export const PICK_RECOMMENDATION_RULES = `PICK RECOMMENDATIONS
 - Do not refuse with "I can't tell you what your picks should be" or "that's your call". Do not redirect a recommendation to Ask Claude, FightBot, Compare Fighters or Parlay Picks; answer here.
 - "Main event" means the bout labelled Main Event, not the entire main card. If asked for main-card picks, give a short line for each supplied main-card bout. Use the user's existing picks to say which you would keep or change.
 - Recommended picks are your advice, not saved selections. Only USER'S CURRENT PICKS / THE USER'S PICKS describe what the user has actually chosen; never claim you saved, changed or locked a pick.
+- Fight records are wins-losses-draws; any loss rules out a perfect career record. Recent form is newest first: the first W/L entry is the latest result. Do not describe an older loss as the latest one, invent a current streak, or compare statistics when one fighter’s statistics are absent.
 - Use the available card data first, without searching when it is sufficient. Missing stats or odds call for a lower-confidence lean, not a blanket refusal. If the matchup or evidence needed for a meaningful recommendation is genuinely missing, identify that specific gap or research it. Never invent records, stats, recent results or market value.`;
 
 // Private background on the regulars, keyed by the leaderboard nickname the
@@ -1238,12 +1239,52 @@ export function numbersMisattributed(text: string, d: ReqBody, sourceFacts = "")
   }
   return strays;
 }
+// Recommendation prose must not contradict the supplied record or current
+// form just because it avoids digits. Only check explicit current claims;
+// a forecast ("to win") and an old result ("lost to X") are not these claims.
+export function recommendationContradictions(text: string, d: ReqBody): string[] {
+  if (!/\b(recommend|picks?|who wins|who has the edge)\b/i.test(d.question ?? "")) return [];
+  const fighters = [...fighterFacts(d.card ?? "").entries()].map(([name, f]) => ({
+    name, keys:f.keys,
+    losses: /\b\d+-(\d+)(?:-\d+)?\b/.exec(f.facts)?.[1],
+    form: (/last fights ([^\n]+)/.exec(f.facts)?.[1] ?? "").split(",").map(s => /^\s*([WLD])\b/.exec(s)?.[1]).filter(Boolean),
+  }));
+  const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const counts: Record<string,number> = {two:2,three:3,four:4,five:5};
+  const bad = new Set<string>();
+  for (const sentence of text.split(/[.!?\n;]/)) {
+    const subject = (position:number) => {
+      let found:typeof fighters[number]|undefined, last=-1;
+      for (const f of fighters) for (const key of f.keys) {
+        for (const m of sentence.slice(0,position).matchAll(new RegExp(`(^|[^\\p{L}])${esc(key)}($|[^\\p{L}])`, "giu"))) {
+          if (m.index!>last) {last=m.index!;found=f;}
+        }
+      }
+      return found;
+    };
+    for (const m of sentence.matchAll(/\bperfect (?:professional |MMA |career )?record\b/gi)) {
+      const f=subject(m.index!);
+      if (f?.losses && Number(f.losses)>0) bad.add(`${f.name}: supplied career record includes losses`);
+    }
+    for (const m of sentence.matchAll(/\b(lost|won) (?:his |her |their |the )?last (two|three|four|five|\d+) (?:fights|bouts)\b|\bback[- ]to[- ]back (losses|wins)\b/gi)) {
+      const f=subject(m.index!), count=m[3]?2:counts[m[2]?.toLowerCase()]??Number(m[2]);
+      const result=(m[1]?.toLowerCase()==="won"||m[3]?.toLowerCase()==="wins")?"W":"L";
+      if (f && count>=2 && f.form.length>=count && f.form.slice(0,count).some(r=>r!==result)) bad.add(`${f.name}: claimed current streak contradicts newest-first form`);
+    }
+    for (const m of sentence.matchAll(/\b(?:just|recently) (lost|won)\b|\bcoming off (?:a )?(loss|win)\b/gi)) {
+      const f=subject(m.index!), result=(m[1]?.toLowerCase()==="won"||m[2]?.toLowerCase()==="win")?"W":"L";
+      if (f?.form[0] && f.form[0]!==result) bad.add(`${f.name}: claimed latest result contradicts newest-first form`);
+    }
+  }
+  return [...bad];
+}
 // Everything wrong with a guide answer's numbers: made up, or pinned on the
 // wrong fighter.
 export function guideStrays(text: string, d: ReqBody, facts: string, sourceFacts = ""): string[] {
   text = maskEventReferences(text, d.event);
   const bad = numbersInvented(text, facts + "\n" + sourceFacts);
   numbersMisattributed(text, d, sourceFacts).forEach((n) => { if (!bad.includes(n)) bad.push(n); });
+  recommendationContradictions(text, d).forEach((issue) => { if (!bad.includes(issue)) bad.push(issue); });
   return bad;
 }
 
@@ -1446,11 +1487,11 @@ Deno.serve(async (req) => {
     if (bad.length) {
       const again = await callModel(`${prompt}
 
-Your last answer used figures that aren't in the app guide or the fight data, or gave a fighter a figure that belongs to someone else (${bad.join(", ")}). Answer the actual question again, using NO numeric claims: no digits, spelled-out counts, percentages, records, ranks, odds, event numbers or numbered lists. For pick recommendations, use plain "- " bullets with the fighter name, predicted method, qualitative confidence and a brief reason grounded in the supplied data. Predictions are allowed. Describe relevant differences qualitatively instead of repeating numbers. Do not refuse or redirect to another feature.`);
+Your last answer used figures that aren't in the app guide or the fight data, or gave a fighter a figure that belongs to someone else (${bad.join(", ")}). Correct each listed issue using the supplied records and newest-first form. Answer the actual question again, using NO numeric claims: no digits, spelled-out counts, percentages, records, ranks, odds, event numbers or numbered lists. For pick recommendations, use plain "- " bullets with the fighter name, predicted method, qualitative confidence and a brief reason grounded in the supplied data. Predictions are allowed. Describe relevant differences qualitatively instead of repeating numbers. Do not refuse or redirect to another feature.`);
       if (again.ok) { text = again.text; sources = again.sources ?? []; sourceFacts = again.sourceFacts ?? ""; bad = guideStrays(text, body, iqFacts, sourceFacts); }
     }
     if (!text.trim() || bad.length) {
-      console.warn("ai-breakdown fact validation failed", JSON.stringify({action, figures:bad, empty:!text.trim()}));
+      console.warn("ai-breakdown fact validation failed", JSON.stringify({action, issues:bad, empty:!text.trim()}));
       return new Response(JSON.stringify({ code:"unverified-answer", error: "Couldn't verify the details in that answer against the supplied facts." }), { status: 502, headers: CORS });
     }
     return new Response(JSON.stringify({ breakdown: text.trim(), sources }), { status: 200, headers: CORS });

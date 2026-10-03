@@ -155,6 +155,22 @@ assert.match(calls[1].messages[0].content,/Do not refuse or redirect/);
 responses=Array(2).fill({content:[{type:'text',text:'Natalia Silva has 777 wins.'}]});
 pickResponse=await ask(pickRequest);assert.equal(pickResponse.status,502);assert.equal(pickResponse.json.code,'unverified-answer');
 
+// The first successful live answer contradicted these supplied facts.
+const qualityRequest={action:'guide',event:'Fixture card',question:'What picks do you recommend for the main card',card:
+ '[Main Card] Roberto Soldic (21-4-0, odds -220) vs Khaos Williams (16-5-0, odds +179) · Welterweight\n'+
+ '[Main Card] Ateba Gautier (11-1-0) vs Roman Kopylov (15-5-0) · Middleweight\n'+
+ '  Roman Kopylov: last fights W Dec vs Marco Tulio, L Dec vs Gregory Rodrigues, L Dec, W TKO\n'+
+ '[Main Card] King Green (36-17-1) vs Esteban Ribovics (16-3-0) · Lightweight\n'+
+ '  Esteban Ribovics: last fights W TKO vs Edson Barboza, L Sub vs Mateusz Gamrot, W Dec, L Dec'};
+const wrong='Soldic is the favourite with a perfect record. Kopylov has lost his last two fights. Ribovics just lost by submission.';
+assert.equal(mod.recommendationContradictions(wrong,qualityRequest).length,3);
+assert.deepEqual(mod.recommendationContradictions('Soldic by decision, lower confidence without his stats. Kopylov won his latest fight. Ribovics lost to Gamrot before his latest win.',qualityRequest),[]);
+assert.deepEqual(mod.recommendationContradictions('Gautier to win by knockout. Kopylov to lose.',qualityRequest),[]);
+assert.deepEqual(mod.recommendationContradictions('Kopylov has lost his last two fights.',{...qualityRequest,question:'What happened at an older event?'}),[]);
+responses=[{content:[{type:'text',text:wrong}]},{content:[{type:'text',text:'Soldic by decision, lower confidence without his stats. Gautier by knockout, moderate confidence; Kopylov won his latest bout.'}]}];
+const qualityAnswer=await ask(qualityRequest);assert.equal(qualityAnswer.status,200);assert.equal(calls.length,2);assert.doesNotMatch(qualityAnswer.json.breakdown,/perfect record|lost his last two/);
+assert.match(calls[1].messages[0].content,/Correct each listed issue/);
+
 if (process.argv.includes('--no-browser')) {
   console.log('check-ai-history: context, search, citation parsing, bounds and failures pass.');
   process.exit(0);
