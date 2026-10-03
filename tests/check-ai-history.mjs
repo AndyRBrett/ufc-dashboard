@@ -166,6 +166,7 @@ const wrong='Soldic is the favourite with a perfect record. Kopylov has lost his
 assert.equal(mod.recommendationContradictions(wrong,qualityRequest).length,3);
 for(const phrase of ['Kopylov has lost his last two.','Kopylov has lost his last two and does not wrestle.','Kopylov won his last two, so pick him.']) assert.equal(mod.recommendationContradictions(phrase,qualityRequest).length,1,phrase);
 assert.deepEqual(mod.recommendationContradictions('Kopylov lost his last two rounds.',qualityRequest),[]);
+for(const phrase of ['Kopylov lost the last two—rounds two and three—but won the fight.','Kopylov lost the last two, rounds two and three, but won the fight.']) assert.deepEqual(mod.recommendationContradictions(phrase,qualityRequest),[],phrase);
 for(const question of ['Best underdog value?','Parlay suggestions?','Give me your predictions','Who should I fade?']){
  assert.equal(mod.recommendationContradictions(wrong,{...qualityRequest,question}).length,3,question);
 }

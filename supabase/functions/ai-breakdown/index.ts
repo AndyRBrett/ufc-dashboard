@@ -1269,7 +1269,7 @@ export function recommendationContradictions(text: string, d: ReqBody): string[]
       const f=subject(m.index!);
       if (f?.losses && Number(f.losses)>0) bad.add(`${f.name}: supplied career record includes losses`);
     }
-    for (const m of sentence.matchAll(/\b(lost|won) (?:his |her |their |the )?last (two|three|four|five|\d+)(?: (?:fights|bouts)\b|(?=\s*(?:[,—–]|$)|\s+(?:and|but|so|yet|though)\b))|\bback[- ]to[- ]back (losses|wins)\b/gi)) {
+    for (const m of sentence.matchAll(/\b(lost|won) (?:his |her |their |the )?last (two|three|four|five|\d+)(?![\s,—–-]*(?:rounds?|years?|minutes?|seconds?)\b)(?: (?:fights|bouts)\b|(?=\s*(?:[,—–]|$)|\s+(?:and|but|so|yet|though)\b))|\bback[- ]to[- ]back (losses|wins)\b/gi)) {
       const f=subject(m.index!), count=m[3]?2:counts[m[2]?.toLowerCase()]??Number(m[2]);
       const result=(m[1]?.toLowerCase()==="won"||m[3]?.toLowerCase()==="wins")?"W":"L";
       if (f && count>=2 && f.form.length>=count && f.form.slice(0,count).some(r=>r!==result)) bad.add(`${f.name}: claimed current streak contradicts newest-first form`);
