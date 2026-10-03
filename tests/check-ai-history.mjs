@@ -259,10 +259,20 @@ assert.doesNotMatch(grounded,/Cached career record|Listed American odds|Latest c
 assert.equal(grounded.split('\n').length,bouts.length+2);
 assert.ok(grounded.length<=60*bouts.length+120,grounded);
 assert.match(grounded,/Ask why/);
+// "…and explain why" gets one short grounded clause per pick, from the card.
+assert.ok(mod.asksWhy('Recommend my main-card picks and explain why'));
+assert.equal(mod.asksWhy('Recommend my main-card picks'),false);
+const explained=mod.renderMainCardSelections(selection,bouts,true);
+assert.match(explained,/- Roberto Soldic by KO\/TKO \(low, limited data\): record 21-4-0/);
+assert.match(explained,/no recent fight data/);
+assert.doesNotMatch(explained,/Ask why|Cached career record/);
+assert.equal(explained.split('\n').length,bouts.length+2);
 assert.doesNotMatch(grounded,/perfect record|four straight|better striking accuracy/);
 assert.equal(mod.renderMainCardSelections(selection.replace('Roberto Soldic','Unknown Fighter'),bouts),null);
 assert.equal(mod.renderMainCardSelections(JSON.stringify({picks:[]}),bouts),null);
 assert.equal(mod.renderMainCardSelections(selection.replace('"confidence":"high"','"confidence":"high","reason":"perfect record"'),bouts),null);
+responses=[{content:[{type:'text',text:selection}]}];
+assert.equal((await ask({...mainRequest,question:'Recommend my main-card picks and explain why'})).json.breakdown,explained);
 for(const action of ['guide','chat']) {
  responses=[{content:[{type:'text',text:selection}]}];
  const result=await ask({...mainRequest,action});assert.equal(result.status,200);assert.equal(result.json.breakdown,grounded);assert.equal(calls.length,1);

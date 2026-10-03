@@ -1343,7 +1343,20 @@ export function mainCardSelections(d: ReqBody): {fighters:string[]; facts:string
   }
   return out.slice(0,8);
 }
-export function renderMainCardSelections(text:string, bouts:ReturnType<typeof mainCardSelections>):string|null {
+// "…and explain why" asks for the reasons up front; anything else gets the
+// picks alone, with the reasons a follow-up away.
+export function asksWhy(question: string): boolean {
+  return /\b(why|explain|explanations?|reasons?|reasoning|justify|because|break (?:it|them) down)\b/i.test(question ?? "");
+}
+// One short grounded clause from the card's own facts: never model prose.
+function shortReason(facts: string[]): string {
+  return facts.map(f => f
+    .replace(/^Cached career record: /, "record ")
+    .replace(/^Listed American odds: /, "odds ")
+    .replace(/^Latest cached results, newest first: (.*)$/, (_, r: string) => "recent " + r.split(/,\s*/).slice(0, 3).join(", "))
+    .replace(/^Recent fight details are missing.*$/, "no recent fight data")).join(", ");
+}
+export function renderMainCardSelections(text:string, bouts:ReturnType<typeof mainCardSelections>, explain=false):string|null {
   let parsed:unknown;
   try{parsed=JSON.parse(text.trim().replace(/^```(?:json)?\s*|\s*```$/g,""));}catch{return null;}
   if(!parsed || typeof parsed!=="object") return null;
@@ -1361,9 +1374,9 @@ export function renderMainCardSelections(text:string, bouts:ReturnType<typeof ma
     // The pick only: records, odds and fight history are what a follow-up
     // "why?" is for. A reply that listed them for every bout read as a
     // stats dump, not an answer to "recommend my picks".
-    lines.push(`- ${p.fighter}${p.method==="uncertain"?"":` by ${p.method}`} (${confidence})`);
+    lines.push(`- ${p.fighter}${p.method==="uncertain"?"":` by ${p.method}`} (${confidence})${explain?`: ${shortReason(bouts[i].facts[side])}`:""}`);
   }
-  return "My main-card picks:\n"+lines.join("\n")+"\nPredictions, not guarantees. Ask why on any of them.";
+  return "My main-card picks:\n"+lines.join("\n")+(explain?"\nPredictions, not guarantees.":"\nPredictions, not guarantees. Ask why on any of them.");
 }
 export function guideStrays(text: string, d: ReqBody, facts: string, sourceFacts = ""): string[] {
   text = maskEventReferences(text, d.event);
@@ -1588,10 +1601,10 @@ Deno.serve(async (req) => {
   // strays, then a clean failure. (Lenient on bare 1–3: "3 rounds", "top 3".)
   if (action === "guide" || action === "chat") {
     if(selectionBouts.length) {
-      let rendered=renderMainCardSelections(text,selectionBouts);
+      let rendered=renderMainCardSelections(text,selectionBouts,asksWhy(body.question ?? ""));
       if(!rendered) {
         const again=await callModel(prompt+"\nReturn the requested JSON schema only, with exactly one valid selection for every ordered matchup.");
-        if(again.ok) rendered=renderMainCardSelections(again.text,selectionBouts);
+        if(again.ok) rendered=renderMainCardSelections(again.text,selectionBouts,asksWhy(body.question ?? ""));
       }
       if(!rendered) return new Response(JSON.stringify({code:"unverified-answer",error:"Couldn't verify the selected fighters. Please try again."}),{status:502,headers:CORS});
       return new Response(JSON.stringify({breakdown:rendered,sources:[]}),{status:200,headers:CORS});
