@@ -3428,8 +3428,24 @@ function _loadServerLocks(){
       if(changed)render();
     }).catch(function(){});
 }
+// A bout's picks becoming readable (_picksRevealed) changes nothing in the data
+// when you're the only one who picked it: the poll sees the same rows, so
+// nothing re-renders and the group bar never appears. Watch the reveal itself.
+var _revealSig=null;
+function _checkRevealFlip(){
+  var now=Date.now(),sig=[];
+  (EVENTS||[]).forEach(function(e){
+    var t=Date.parse(e.date+"T00:00:00Z");
+    if(isNaN(t)||t<now-2*DAY_MS||t>now+2*DAY_MS)return;
+    (e.fights||[]).forEach(function(f){if(_picksRevealed(e,f))sig.push(pk(e,f));});
+  });
+  var s=sig.join("\n"),was=_revealSig;
+  _revealSig=s;
+  if(was!==null&&was!==s)render();
+}
 function fetchCommunityPicks(){
   _loadServerLocks();
+  _checkRevealFlip();
   _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,method,confidence,nickname,user_id,updated_at,bonus_pick&order=updated_at.asc,event_date.asc,f1.asc,f2.asc"+PICKS_UFC).then(function(rows){
     if(!Array.isArray(rows))return;
     // activity feed derives lock-ins/streaks/belt from the same rows, and the

@@ -224,6 +224,19 @@ function card() {
       at(ET(17, 50), ET(17, 0))._picksRevealed(d, e1) === false);
     check("with no server time the app's own lock decides", at(ET(17, 20), null)._picksRevealed(d, e2) === true);
   }
+  {
+    // …and the screen redraws when a reveal happens with nothing else changing
+    // (Codex on #264: the only picker's own row looks the same either side).
+    const vmc = vm.createContext({ Date, isNaN, DAY_MS: 864e5, renders: 0, revealed: false });
+    vm.runInContext(htmlFn("_checkRevealFlip").replace(/^/, "var _revealSig=null;") +
+      `;var EVENTS=[{date:new Date().toISOString().slice(0,10),fights:[{}]}];
+       function _picksRevealed(){return revealed;} function pk(){return "k";} function render(){renders++;}`, vmc);
+    vm.runInContext("_checkRevealFlip(); _checkRevealFlip();", vmc);
+    const quiet = vmc.renders;
+    vm.runInContext("revealed = true; _checkRevealFlip(); _checkRevealFlip();", vmc);
+    check("a reveal re-renders once by itself, and an unchanged poll doesn't", quiet === 0 && vmc.renders === 1);
+    check("the 30-second picks poll checks for reveals", /function fetchCommunityPicks\(\)\{\s*_loadServerLocks\(\);\s*_checkRevealFlip\(\);/.test(html));
+  }
   check("the group bar is drawn only once picks are revealed",
     /if\(locked&&_picksRevealed\(EVENTS\[ei\],fight\)&&cp&&cp\.total>=1\)/.test(html));
   const fn = { ...FN, fights: [{ lbl: "Prelim", f1: { n: "Q A" }, f2: { n: "Q B" } },
