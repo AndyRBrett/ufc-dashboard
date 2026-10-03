@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-03T12:24:56Z",
+ "generated_at": "2026-10-03T13:19:46Z",
  "promotions": [
   {
    "id": "pfl",
@@ -135,9 +135,9 @@
      "division": "Catchweight (160 Lb)",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Yoshinori Horie",
+     "method": "KO/TKO",
+     "round": 2
     },
     {
      "a": "Viktor Kolesnik",
@@ -146,20 +146,20 @@
      "division": "Featherweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Viktor Kolesnik",
+     "method": "KO/TKO",
+     "round": 2
     },
     {
-     "a": "Ryan Cafaro",
-     "b": "Hyuma Yasui",
+     "a": "Hyuma Yasui",
+     "b": "Ryan Cafaro",
      "label": "",
      "division": "Featherweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Hyuma Yasui",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
      "a": "Kate Oyama",
