@@ -141,6 +141,10 @@ assert.equal(mod.numbersMisattributed('Gautier weighs 185 pounds.', {fightContex
 // must be accepted, including in a sentence naming one of its fighters.
 const pickRequest={action:'guide',event:'UFC 332: Silva vs. Wang',card:'[Main Event] Natalia Silva (20-5-1, odds -208) vs Wang Cong (10-1-0, odds +168) · Flyweight',question:'What picks do you recommend for the main card'};
 assert.deepEqual(mod.guideStrays('For UFC 332, I lean Natalia Silva by decision.',pickRequest,mod.guideFactsText(pickRequest)),[]);
+assert.ok(mod.guideStrays('Natalia Silva has 332 wins.',pickRequest,mod.guideFactsText(pickRequest)).includes('332'));
+assert.ok(mod.guideStrays('At UFC 332, Natalia Silva has 332 wins.',pickRequest,mod.guideFactsText(pickRequest)).includes('332'));
+assert.ok(mod.guideStrays('For UFC 333, I lean Natalia Silva.',pickRequest,mod.guideFactsText(pickRequest)).includes('333'));
+assert.deepEqual(mod.guideStrays('For ufc   332, I lean Natalia Silva.',pickRequest,mod.guideFactsText(pickRequest)),[]);
 responses=[{content:[{type:'text',text:'For UFC 332, I lean Natalia Silva by decision, with moderate confidence.'}]}];
 let pickResponse=await ask(pickRequest);assert.equal(pickResponse.status,200);assert.equal(calls.length,1);
 // A real invented statistic still fails and gets one qualitative repair.

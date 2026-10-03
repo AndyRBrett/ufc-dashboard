@@ -1154,7 +1154,7 @@ Answer only the question — no preamble, no sign-off.`;
 // Everything a guide answer may take a number from: the guide itself, the fight
 // data, the user's picks, and what the user said.
 export function guideFactsText(d: ReqBody): string {
-  return [APP_GUIDE, d.event ?? "", d.card ?? "", d.fightContext ?? "", d.userPicks ?? "", d.question ?? "",
+  return [APP_GUIDE, d.card ?? "", d.fightContext ?? "", d.userPicks ?? "", d.question ?? "",
     ...(d.history ?? []).map((t) => String(t.text ?? ""))].join("\n");
 }
 
@@ -1204,13 +1204,24 @@ export function fighterFacts(card: string): Map<string, { keys: string[]; facts:
   }
   return out;
 }
+// Event identifiers are references, not fighter statistics. Mask only the
+// supplied promotion/number pair in the answer; leave other uses of that
+// number intact so "Silva has 332 wins" still fails.
+function maskEventReferences(text: string, event?: string): string {
+  const label = /^([^\d\n:]+?\s+\d+)\b/.exec((event ?? "").trim())?.[1];
+  if (!label) return text;
+  const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = label.split(/\s+/).map(esc).join("\\s+");
+  return text.replace(new RegExp(`(^|[^\\p{L}\\p{N}])${pattern}(?![\\p{L}\\p{N}])`, "giu"), "$1[event]");
+}
 export function numbersMisattributed(text: string, d: ReqBody, sourceFacts = ""): string[] {
+  text = maskEventReferences(text, d.event);
   const card = [d.card ?? "", d.fightContext ?? ""].join("\n");
   if (!card) return [];
   const fighters = fighterFacts(card);
   if (!fighters.size) return [];
   const headers = card.split("\n").filter((l) => /^(NEXT|LAST|LATER) CARD/.test(l)).join("\n");
-  const general = [d.event ?? "", d.question ?? "", d.userPicks ?? "", ...(d.history ?? []).map((t) => String(t.text ?? "")),
+  const general = [d.question ?? "", d.userPicks ?? "", ...(d.history ?? []).map((t) => String(t.text ?? "")),
     headers, guideSection("SCORING (the ℹ button on Ranks shows this too)"), guideSection("MMA BASICS")].join("\n");
   const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const strays: string[] = [];
@@ -1230,6 +1241,7 @@ export function numbersMisattributed(text: string, d: ReqBody, sourceFacts = "")
 // Everything wrong with a guide answer's numbers: made up, or pinned on the
 // wrong fighter.
 export function guideStrays(text: string, d: ReqBody, facts: string, sourceFacts = ""): string[] {
+  text = maskEventReferences(text, d.event);
   const bad = numbersInvented(text, facts + "\n" + sourceFacts);
   numbersMisattributed(text, d, sourceFacts).forEach((n) => { if (!bad.includes(n)) bad.push(n); });
   return bad;
