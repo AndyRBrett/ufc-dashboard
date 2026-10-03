@@ -633,7 +633,8 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .room-row.on{border-color:var(--red)}
 .room-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
 .room-sub{font:500 11.5px Inter,sans-serif;color:var(--muted);margin-top:2px}
-.room-acts{display:flex;gap:6px;justify-content:flex-end}
+.room-acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.room-pass{margin:0 4px;color:var(--text);text-align:right}
 .room-act{background:none;border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:4px 10px;font:600 12px Inter,sans-serif;cursor:pointer}
 .room-act-quiet{color:var(--muted)}
 .room-form{display:flex;gap:8px;margin-top:10px}
@@ -1796,7 +1797,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
       <button class="nm-btn" onclick="closeRoomSheet();openAcct()">Link an email</button>
     </div>
     <div id="roomForms" style="display:none">
-      <div class="room-form"><input class="nm-input" id="roomJoinCode" placeholder="Invite code" maxlength="14" autocapitalize="characters" autocomplete="off" aria-label="Room invite code"><button class="nm-btn" onclick="roomJoinSubmit()">Join</button></div>
+      <div class="room-form"><input class="nm-input" id="roomJoinCode" placeholder="Invite code or password" maxlength="14" autocapitalize="characters" autocomplete="off" aria-label="Room invite code or password"><button class="nm-btn" onclick="roomJoinSubmit()">Join</button></div>
       <div class="room-form"><input class="nm-input" id="roomNewName" placeholder="New room name" maxlength="40" autocomplete="off" aria-label="New room name"><button class="nm-btn" onclick="roomCreateSubmit()">Create</button></div>
     </div>
   </div>
@@ -6655,7 +6656,9 @@ var WHATS_NEW=[
   {id:"2026-10-22-one-fightbot",emoji:"🤖",title:"One assistant: Ask FightBot",
    desc:"Ask FightBot replaces Ask Claude on each card and opens from More and Ranks too. One conversation for MMA, pick recommendations and app help, with the selected card’s records, odds and stats."},
   {id:"2026-10-23-fightbot-research",emoji:"🔎",title:"FightBot looks it up",
-   desc:"Ask FightBot who a fighter has lost to, or anything the app doesn’t hold, and it now knows each UFC fight’s result and searches the web for the rest, with source links, instead of saying it doesn’t know."}
+   desc:"Ask FightBot who a fighter has lost to, or anything the app doesn’t hold, and it now knows each UFC fight’s result and searches the web for the rest, with source links, instead of saying it doesn’t know."},
+  {id:"2026-10-24-room-password",emoji:"🔑",title:"Room passwords",
+   desc:"Invite links open in Safari, not the app on your Home Screen. Now any room member can tap 🔑 Temp password in 👥 Rooms for a 6-character password that works for 24 hours. Friends type it into the Join box in the app they already use."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -8997,7 +9000,14 @@ var _lbRows=null;   // raw picks rows from the last leaderboard fetch
 // listable, and RLS hides every room from non-members.
 // Codes minted since migration 0008 are 10 chars of Crockford base32 (no I, L,
 // O, U); the 6-hex-digit codes handed out before it still work.
-var ROOM_CODE_RE=/^([0-9A-F]{6}|[0-9A-HJKMNP-TV-Z]{10})$/;
+//
+// Temporary room passwords (migration 0017): any member can make a 6-char
+// password (same alphabet) that works for 24 hours, typed into the same Join
+// box. It exists because an invite LINK opens in the phone's browser — on iOS
+// always Safari, never the Home Screen app, whose storage (and account) is
+// separate — while a short password can be typed into the app people use.
+var ROOM_CODE_RE=/^([0-9A-HJKMNP-TV-Z]{6}|[0-9A-HJKMNP-TV-Z]{10})$/;
+var ROOM_PASS_HOURS=24;
 var _rooms=[];            // [{id,name,code,owner_id,members:[user_id]}], mine only
 var _roomsFor=null;       // the USER_ID _rooms was loaded for: another account's rooms never show
 var _roomsAt=0;           // when the roster was last fetched (board refreshes re-read it)
@@ -9017,7 +9027,20 @@ function roomScope(scope){
   if(r)s.users=r.members.slice();
   return s;
 }
-function normRoomCode(c){return String(c==null?"":c).trim().toUpperCase().replace(/[^0-9A-Z]/g,"");}
+// Letters people type for look-alike digits (O, I, L) are read as 0 / 1: no
+// code or password contains them. The database reads them the same way.
+function normRoomCode(c){return String(c==null?"":c).trim().toUpperCase().replace(/[^0-9A-Z]/g,"").replace(/O/g,"0").replace(/[IL]/g,"1");}
+// The room's password if it is still live, else null.
+function roomPass(r){return r&&r.pass&&r.pass_expires&&Date.parse(r.pass_expires)>Date.now()?r.pass:null;}
+function _fmtPass(p){return p.slice(0,3)+" "+p.slice(3);}
+// iOS Safari (not the Home Screen app): an invite link always lands here.
+function _iosBrowser(){
+  try{
+    var ios=/iphone|ipad|ipod/i.test(navigator.userAgent||"")||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+    var standalone=navigator.standalone===true||(typeof matchMedia==="function"&&matchMedia("(display-mode:standalone)").matches);
+    return ios&&!standalone;
+  }catch(e){return false;}
+}
 function roomInviteUrl(r){return location.origin+location.pathname+"?join="+encodeURIComponent(r.code);}
 function _roomApi(path,opts){
   opts=opts||{};
@@ -9050,12 +9073,18 @@ function roomsLoad(){
   if(!_sessEmail()){_rooms=[];_syncRoomBtn();return Promise.resolve(_rooms);}
   var had=!!_curRoom(),sig=_roomSig(_curRoom()),who=USER_ID;
   _roomsAt=Date.now();
+  var q="&order=created_at.asc";
   return _authReady.then(function(){
-    return _roomApi("/rest/v1/rooms?select=id,name,code,owner_id,room_members(user_id)&order=created_at.asc");
+    // Before migration 0017 the password columns don't exist: fall back to
+    // the old select so rooms still load (just without passwords).
+    return _roomApi("/rest/v1/rooms?select=id,name,code,owner_id,pass,pass_expires,room_members(user_id)"+q).catch(function(e){
+      if(!/pass/i.test((e&&e.message)||""))throw e;
+      return _roomApi("/rest/v1/rooms?select=id,name,code,owner_id,room_members(user_id)"+q);
+    });
   }).then(function(rows){
     if(who!==USER_ID)return _rooms;   // signed into someone else meanwhile
     _rooms=(Array.isArray(rows)?rows:[]).map(function(r){
-      return {id:r.id,name:r.name,code:r.code,owner_id:r.owner_id,
+      return {id:r.id,name:r.name,code:r.code,owner_id:r.owner_id,pass:r.pass||null,pass_expires:r.pass_expires||null,
               members:(r.room_members||[]).map(function(m){return m.user_id;})};
     });
     _syncRoomBtn();
@@ -9111,7 +9140,7 @@ function joinRoom(code){
     var m=(e&&e.message)||"";
     // A dead code stays dead: don't re-prompt on every boot.
     if(/no such room|room full/i.test(m))forget();
-    toast(/no such room/i.test(m)?"No room with that code":/room full/i.test(m)?"That room is full":/too many attempts/i.test(m)?"Too many wrong codes — try again in an hour":"Couldn't join — try again");
+    toast(/no such room/i.test(m)?"No room with that code or password":/room full/i.test(m)?"That room is full":/too many attempts/i.test(m)?"Too many wrong codes — try again in an hour":"Couldn't join — try again");
     return null;
   });
 }
@@ -9139,11 +9168,37 @@ function leaveRoom(id){
 }
 function shareRoom(id){
   var r=_roomById(id);if(!r)return;
-  var url=roomInviteUrl(r),text="Join my UFC picks room “"+r.name+"” (code "+r.code+")";
+  var url=roomInviteUrl(r),text="Join my UFC picks room “"+r.name+"” (code "+r.code+"). Using the app on your Home Screen? Open it, tap 👥 on Ranks and type the code";
   if(navigator.share){navigator.share({title:"Join "+r.name,text:text,url:url}).catch(function(){});return;}
   var done=function(){toast("Invite link copied");};
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text+": "+url).then(done,function(){prompt("Copy this invite link:",url);});
   else prompt("Copy this invite link:",url);
+}
+// Share a room's live password as plain text (no link: the point is that it
+// is typed into the app people already have open).
+function _sharePass(r){
+  var p=roomPass(r);if(!p)return;
+  var text="Join my UFC picks room “"+r.name+"”: open the app, tap 👥 on Ranks and type "+_fmtPass(p)+" (works for "+ROOM_PASS_HOURS+" hours)";
+  if(navigator.share){navigator.share({title:"Join "+r.name,text:text}).catch(function(){});return;}
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(function(){toast("Password copied: "+_fmtPass(p));},function(){prompt("Room password:",p);});
+  else prompt("Room password:",p);
+}
+// Make (or replace) the room's 24-hour password, then offer it to share.
+function makeRoomPass(id){
+  var r=_roomById(id);if(!r)return Promise.resolve(null);
+  return _roomRpc("set_room_pass",{p_room:r.id}).then(function(row){
+    if(!row||!row.pass)throw new Error("no pass");
+    r.pass=row.pass;r.pass_expires=row.pass_expires;
+    renderRoomSheet();
+    _sharePass(r);
+    return row.pass;
+  }).catch(function(){toast("Couldn't make a password — try again");return null;});
+}
+function endRoomPass(id){
+  var r=_roomById(id);if(!r)return Promise.resolve(false);
+  return _roomRpc("clear_room_pass",{p_room:r.id}).then(function(){
+    r.pass=null;r.pass_expires=null;renderRoomSheet();toast("Password ended");return true;
+  }).catch(function(){toast("Couldn't end the password — try again");return false;});
 }
 function _rmEl(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
 // Built with textContent throughout: room names are other people's input.
@@ -9166,8 +9221,20 @@ function renderRoomSheet(){
     wrap.appendChild(row(r.id,"👥 "+r.name,r.members.length+" member"+(r.members.length===1?"":"s")+" · code "+r.code));
     var acts=_rmEl("div","room-acts");
     var inv=_rmEl("button","room-act","Invite");inv.onclick=function(){shareRoom(r.id);};
+    acts.appendChild(inv);
+    var pw=roomPass(r);
+    if(pw){
+      var hrs=Math.max(1,Math.ceil((Date.parse(r.pass_expires)-Date.now())/3600000));
+      wrap.appendChild(_rmEl("div","room-sub room-pass","🔑 Password "+_fmtPass(pw)+" · "+hrs+"h left"));
+      var sp=_rmEl("button","room-act","🔑 Share password");sp.onclick=function(){_sharePass(r);};
+      var ep=_rmEl("button","room-act room-act-quiet","End password");ep.onclick=function(){endRoomPass(r.id);};
+      acts.appendChild(sp);acts.appendChild(ep);
+    }else{
+      var mp=_rmEl("button","room-act","🔑 Temp password");mp.onclick=function(){makeRoomPass(r.id);};
+      acts.appendChild(mp);
+    }
     var lv=_rmEl("button","room-act room-act-quiet",r.owner_id===USER_ID?"Delete":"Leave");lv.onclick=function(){leaveRoom(r.id).then(renderRoomSheet);};
-    acts.appendChild(inv);acts.appendChild(lv);
+    acts.appendChild(lv);
     // A room's name is its owner's words: anyone else in it can report it.
     if(r.owner_id!==USER_ID){var rp=_rmEl("button","room-act room-act-quiet","🚩 Report");
       rp.onclick=function(){openReport({kind:"room",uids:[r.owner_id],content:r.name});};acts.appendChild(rp);}
@@ -9195,14 +9262,14 @@ function _roomsAfterSignIn(){
 // re-join), load my rooms, and offer the join once nothing else is on screen —
 // a first-time visitor's name prompt goes first.
 function _roomsBoot(){
-  var code=null;
+  var code=null,fromLink=false;
   try{
     var u=new URL(location.href),j=u.searchParams.get("join");
     if(j!=null){
       u.searchParams.delete("join");
       history.replaceState(null,"",u.pathname+(u.searchParams.toString()?"?"+u.searchParams.toString():"")+u.hash);
       code=normRoomCode(j);
-      if(ROOM_CODE_RE.test(code))localStorage.setItem("ufc_room_join",code);else code=null;
+      if(ROOM_CODE_RE.test(code)){localStorage.setItem("ufc_room_join",code);fromLink=true;}else code=null;
     }
   }catch(e){}
   if(!code){try{code=localStorage.getItem("ufc_room_join");}catch(e){}}
@@ -9216,6 +9283,12 @@ function _roomsBoot(){
         var wn=document.getElementById("wn-overlay");
         var busy=(typeof _anyOverlayOpen==="function"&&_anyOverlayOpen())||!!(wn&&wn.classList.contains("open"));
         if(busy&&tries++<200){setTimeout(attempt,1500);return;}
+        // iOS opened the link in Safari, not the Home Screen app (separate
+        // storage, usually no account here). Say how to join in the app.
+        if(fromLink&&_iosBrowser()&&!confirm("This opened in Safari. To join in the app on your Home Screen instead, open it, tap 👥 on Ranks and type "+code+".\n\nOK joins here in Safari; Cancel to use the app.")){
+          try{localStorage.removeItem("ufc_room_join");}catch(e){}
+          return;
+        }
         joinRoom(code);
       })();
     });

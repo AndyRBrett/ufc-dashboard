@@ -221,8 +221,8 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   const rpc = ctx.__calls.find((c) => /rpc\/join_room/.test(c.url || ""));
   check("a 10-char base32 code is accepted and normalised", rpc && rpc.body.p_code === "7K3M9PQR2X");
   const n = ctx.__calls.length;
-  await ctx.joinRoom("7K3M9PQRIX");
-  check("...but not with a letter Crockford base32 leaves out (I)", ctx.__calls.length === n && ctx.__toasts.some((t) => /doesn't look right/.test(t)));
+  await ctx.joinRoom("7K3M9PQRUX");
+  check("...but not with a letter Crockford base32 leaves out (U; I, L and O are read as 1, 1 and 0)", ctx.__calls.length === n && ctx.__toasts.some((t) => /doesn't look right/.test(t)));
 }
 {
   const replies = { "/rest/v1/rpc/join_room POST": { status: 200, json: null } };
@@ -248,6 +248,98 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   const ctx = makeCtx({ email: "me@x.test", replies: { "/rest/v1/rpc/join_room POST": { reject: true } }, storage: { ufc_room_join: "AB12CD" } });
   await ctx.joinRoom("AB12CD");
   check("a network failure keeps the pending join for next time", ctx.__store.get("ufc_room_join") === "AB12CD");
+}
+
+// --- migration 0017: a temporary password, run for real in PGlite ----------------------
+{
+  const { PGlite } = await import("@electric-sql/pglite");
+  const mig = (f) => readFileSync(join(ROOT, "supabase/migrations", f), "utf8");
+  const A = "11111111-1111-1111-1111-111111111111", B = "22222222-2222-2222-2222-222222222222", C = "33333333-3333-3333-3333-333333333333";
+  const db = new PGlite();
+  await db.exec(`
+    create role anon nologin; create role authenticated nologin;
+    create schema auth;
+    create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+    create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
+    grant usage on schema auth to anon, authenticated; grant execute on function auth.uid(), auth.jwt() to anon, authenticated;
+    grant usage on schema public to anon, authenticated;`);
+  for (const m of ["0006_rooms.sql", "0008_rooms_codes_throttle.sql", "0017_room_passwords.sql"]) await db.exec(mig(m));
+  const as = async (uid, sql, params = [], anon = false) => {
+    await db.exec(`set role authenticated; select set_config('request.jwt.claim.sub', '${uid}', false), set_config('request.jwt.claims', '{"is_anonymous": ${anon}}', false);`);
+    try { return await db.query(sql, params); } finally { await db.exec("reset role"); }
+  };
+  const tryAs = (...a) => as(...a).then((r) => ({ r }), (e) => ({ e: e.message }));
+  const room = (await as(A, "select * from create_room('Fight Club')")).rows[0];
+  const made = await tryAs(A, "select * from set_room_pass($1)", [room.id]);
+  const pass = made.r && made.r.rows[0].pass;
+  check("0017: a member makes a 6-char Crockford password that lasts 24 hours",
+    /^[0-9A-HJKMNP-TV-Z]{6}$/.test(pass || "") && Math.abs(Date.parse(made.r.rows[0].pass_expires) - Date.now() - 864e5) < 6e4);
+  check("0017: a non-member can't make one", /not a member/.test((await tryAs(B, "select * from set_room_pass($1)", [room.id])).e || ""));
+  check("0017: the password can't be set directly (columns outside the UPDATE grant)",
+    !!(await tryAs(A, "update rooms set pass = 'AAAAAA' where id = $1", [room.id])).e);
+  const j = await as(B, "select * from join_room($1)", [pass.slice(0, 3).toLowerCase() + "-" + pass.slice(3)]);
+  check("0017: typing the password (any case, with a dash) joins the room", j.rows[0].id === room.id &&
+    (await db.query("select 1 from room_members where room_id = $1 and user_id = $2", [room.id, B])).rows.length === 1);
+  const legacy = await as(C, "select * from join_room($1)", [room.code]);
+  check("0017: the permanent code still joins", legacy.rows[0].id === room.id);
+  check("0017: an anonymous session still can't join with a password", /link an email/.test((await tryAs(C, "select * from join_room($1)", [pass], true)).e || ""));
+  await db.query("update rooms set pass_expires = now() - interval '1 minute' where id = $1", [room.id]);
+  await db.query("delete from room_members where user_id = $1", [C]);
+  const exp = await as(C, "select * from join_room($1)", [pass]);
+  check("0017: an expired password joins nothing and counts as a miss",
+    exp.rows[0].id === null && (await db.query("select count(*)::int n from room_join_misses where user_id = $1", [C])).rows[0].n === 1);
+  await as(A, "select * from set_room_pass($1)", [room.id]);
+  const cl = await as(B, "select * from clear_room_pass($1)", [room.id]);
+  check("0017: a member can end it early", cl.rows[0].pass === null && cl.rows[0].pass_expires === null);
+  const sql = mig("0017_room_passwords.sql");
+  const jr = sql.slice(sql.indexOf("function public.join_room"));
+  check("0017: join_room keeps 0008's throttle, serialisation and null-on-miss",
+    jr.indexOf("pg_advisory_xact_lock") < jr.indexOf("too many attempts") && jr.indexOf("too many attempts") < jr.indexOf("from rooms where") && /return null;/.test(jr) && !/raise exception 'no such room'/.test(jr));
+  check("0017: a new password never equals a live code or password", /not exists \(select 1 from rooms where code = c or pass = c\)/.test(sql));
+}
+// --- the app side of passwords ------------------------------------------------------
+{
+  const future = new Date(Date.now() + 5 * 3600e3).toISOString(), past = new Date(Date.now() - 6e4).toISOString();
+  const ctx = makeCtx({ email: "me@x.test", rooms: [{ ...R1, pass: "K7M4QX", pass_expires: future }],
+    replies: { "/rest/v1/rpc/join_room POST": ({ body }) => ({ status: 200, json: { id: "r1", name: "Fight Club", code: body.p_code } }) } });
+  check("a live password is shown; an expired one is not", ctx.roomPass({ pass: "K7M4QX", pass_expires: future }) === "K7M4QX" && ctx.roomPass({ pass: "K7M4QX", pass_expires: past }) === null);
+  await ctx.joinRoom("k7m 4qx");
+  const rpc = ctx.__calls.find((c) => /rpc\/join_room/.test(c.url || ""));
+  check("a typed 6-char password goes to join_room, normalised", rpc && rpc.body.p_code === "K7M4QX");
+  check("look-alike letters are read as digits (O→0, I/L→1)", ctx.normRoomCode("ko-il2x") === "K0112X");
+  await ctx.roomsLoad();
+  ctx.renderRoomSheet();
+  const flat = (n) => [n.textContent || "", ...(n.children || []).map(flat)].join(" ");
+  const shown = flat(ctx.__els.roomList);
+  check("the room sheet shows the live password and its share / end buttons", /Password K7M 4QX/.test(shown) && /Share password/.test(shown) && /End password/.test(shown));
+  const sel = ctx.__calls.find((c) => /rest\/v1\/rooms\?select=/.test(c.url || ""));
+  check("rooms load with the password columns", /pass,pass_expires/.test(sel.url));
+}
+{
+  // Before 0017 is applied the columns don't exist: rooms still load.
+  const replies = { "/rest/v1/rooms GET": ({ path }) => /pass/.test(path) ? { status: 400, json: { message: "column rooms.pass does not exist" } } : { status: 200, json: [R1] } };
+  const ctx = makeCtx({ email: "me@x.test", replies });
+  const got = await ctx.roomsLoad();
+  check("before migration 0017, rooms load without passwords", got.length === 1 && got[0].pass === null);
+}
+{
+  const ctx = makeCtx({ email: "me@x.test", rooms: [R1],
+    replies: { "/rest/v1/rpc/set_room_pass POST": { status: 200, json: { id: "r1", pass: "K7M4QX", pass_expires: new Date(Date.now() + 864e5).toISOString() } } } });
+  let shared = null;
+  ctx.navigator.share = (d) => { shared = d; return Promise.resolve(); };
+  await ctx.roomsLoad();
+  await ctx.makeRoomPass("r1");
+  check("making a password shares it as text, with no link", shared && /K7M 4QX/.test(shared.text) && !shared.url && !/https?:/.test(shared.text));
+}
+{
+  // Opened from a link in iOS Safari: ask before joining there.
+  const ctx = makeCtx({ email: "me@x.test", href: "https://x.test/app/index.html?join=AB12CD" });
+  ctx.navigator.userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)";
+  let asked = 0; ctx.confirm = () => { asked++; return false; };
+  ctx._roomsBoot();
+  await settle();
+  check("iOS Safari from a link: asks first, and Cancel joins nothing and forgets the code",
+    asked === 1 && !ctx.__calls.some((c) => /join_room/.test(c.url || "")) && !ctx.__store.has("ufc_room_join"));
 }
 
 // --- create / leave -----------------------------------------------------------------
