@@ -615,17 +615,20 @@ Deno.serve(async (req) => {
   // may stop the reminders or the brief above from having gone out.
   const swaps: unknown[] = [];
   try {
+    const k = bundledKernel({});
     const cards: any[] = ((parseDataJs(js).EVENTS || []) as any[])
       .filter((e) => {
-        // Watched until its LAST segment starts: a main-card replacement is still
-        // pickable while the prelims run. Each alert is then gated on its own bout's lock.
+        // Watched until its LAST bout locks: one fight at a time, so the co-main
+        // and main event stay pickable well after the main card's bell. Each
+        // alert is then gated on its own bout's lock.
         const bells = [e.earlyPrelimTime, e.prelimTime, e.time].map((t) => phaseUtc(e.date, t)).filter((t) => t !== null) as number[];
-        const last = bells.length ? Math.max(...bells) : null;
-        return last !== null && last > now && last < now + SWAP_HORIZON_MS && Array.isArray(e.fights);
+        if (!bells.length || !Array.isArray(e.fights)) return false;
+        const locks = lockRows([e], k, now).bouts.map((b) => Date.parse(b.lock_at)).filter((t) => !isNaN(t));
+        const last = Math.max(...bells, ...locks);
+        return last > now && Math.max(...bells) < now + SWAP_HORIZON_MS;
       })
       .slice(0, MAX_EVENTS);
     if (cards.length) {
-      const k = bundledKernel({});
       const dates = cards.map((e) => e.date).join(",");
       // Paged: PostgREST caps a response at 1,000 rows, and a partial audience is
       // unrecoverable, since send-push's notif_log dedup then stops every later run

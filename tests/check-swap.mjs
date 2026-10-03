@@ -121,8 +121,20 @@ check("copy fits send-push's limits", (s.title || "").length <= 120 && (s.body |
 //    never after its own segment locks.
 r = await runAt("2026-09-26T23:00:00Z");
 check("a main-card swap still sends at 7pm ET, prelims underway", r.swaps.length === 1);
-r = await runAt("2026-09-27T00:05:00Z");
-check("nothing once the new bout's segment has locked", r.swaps.length === 0);
+{
+  // One fight at a time: this main-card bout is not the main card's opener, so
+  // it stays pickable after the main card's bell (Codex on #263: the card was
+  // dropped from the watch at that bell, so a replacement then told nobody).
+  const { bundledKernel } = await import(pathToFileURL(join(ROOT, "supabase/functions/_shared/lab-bundle.js")).href);
+  const bell = Date.parse("2026-09-27T00:05:00Z");
+  const key = [main.f1.n, main.f2.n].map((n) => n.trim().toLowerCase()).sort();
+  const lockAt = Date.parse(mod.lockRows([ev], bundledKernel({}), bell).bouts.find((b) => b.a === key[0] && b.b === key[1]).lock_at);
+  check("the fixture's main-card bout locks after the main card's bell", lockAt > bell);
+  r = await runAt("2026-09-27T00:05:00Z");
+  check("a main-card swap still sends after the main card's bell, while its bout is open", r.swaps.length === 1);
+  r = await runAt(new Date(lockAt + 60e3).toISOString());
+  check("nothing once the new bout has locked", r.swaps.length === 0);
+}
 // A bout locks one fight at a time (lockRows): this prelim, last of its segment
 // in the running order, is still pickable after the prelims' bell and goes out
 // until its own lock, never after.

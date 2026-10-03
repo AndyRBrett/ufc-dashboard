@@ -5772,6 +5772,17 @@ function _serverLockMs(ev,f){
   var t=_serverLocks[_lockKey(ev.date,f.f1.n,f.f2.n)];
   return typeof t==="number"?t:null;
 }
+// Whether other players' picks on this bout can be read yet. The database
+// (0017) shows them at the server's lock time plus LOCK_GRACE, which can trail
+// the moment this app locks the bout (a result it saw first, then the grace),
+// so a bar drawn at fightLocked counted only your own pick: "Just you picked".
+// With no server time loaded, the app's own lock is the best it can say.
+var LOCK_GRACE_MS=5*60000;
+function _picksRevealed(ev,f){
+  if(!fightLocked(ev,f))return false;
+  var t=_serverLockMs(ev,f);
+  return t===null||Date.now()>=t+LOCK_GRACE_MS;
+}
 // Why a bout is locked, for the toast — "the event has started" is not a useful
 // thing to be told when the segment you're trying to pick hasn't.
 // A bout behind its segment's opener locked because the fight before it ended.
@@ -6444,7 +6455,8 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
       var ck=pk(EVENTS[ei],fight);var cp=communityPicks[ck];
       // Nobody's pick shows before its bout locks (0017), so before then the
       // bar would only count yours: "Just you picked" while four others had.
-      if(locked&&cp&&cp.total>=1){
+      // The reveal trails the lock by the grace: see _picksRevealed.
+      if(locked&&_picksRevealed(EVENTS[ei],fight)&&cp&&cp.total>=1){
         var f1p=Math.round(cp.f1/cp.total*100);var f2p=100-f1p;
         var commRow=document.createElement("div");commRow.className="comm-row";
         var cbw=document.createElement("div");cbw.className="comm-bar-wrap";
