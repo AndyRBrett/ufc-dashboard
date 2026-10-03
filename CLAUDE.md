@@ -1178,7 +1178,7 @@ account gets 10 wrong codes an hour. **`join_room` returns NULL for a wrong code
 rather than raising**: an exception would roll back the row that records the
 miss, so the throttle would never count anything. The app reads an empty reply
 as "no such room"; `check:rooms` holds both halves. **Temporary passwords**
-(`0017_room_passwords.sql`): an invite link opens in the phone's browser, and on
+(`0018_room_passwords.sql`): an invite link opens in the phone's browser, and on
 iOS that is always Safari, never the Home Screen app (separate storage, usually
 no account). So any member can make a 6-character password (`set_room_pass`,
 same alphabet, 24 hours, never equal to a live code or password) that is typed
