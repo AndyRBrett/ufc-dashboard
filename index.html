@@ -11894,8 +11894,11 @@ function _chalNews(){
     return !!mineOut&&now-_chalTime(c.responded_at)<CHAL_INBOX_MAX_AGE;
   });
 }
+// A forced check (boot, foreground, a push landing) never waits on one already
+// in flight: a fetch that stalls on a flaky connection would otherwise switch
+// this off until the app restarts. Two at once can only open the same sheet.
 function checkChallengeInbox(force){
-  if(_chalInboxBusy||(!force&&Date.now()-_chalInboxAt<4000))return Promise.resolve(false);
+  if(!force&&(_chalInboxBusy||Date.now()-_chalInboxAt<4000))return Promise.resolve(false);
   _chalInboxBusy=true;_chalInboxAt=Date.now();
   return _authReady.then(function(){
     if(!USER_ID&&!userName)return false;
