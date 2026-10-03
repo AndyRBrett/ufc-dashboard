@@ -26,7 +26,7 @@
 // even offline with an old copy cached. Bump it on ANY change to this file, in
 // all three places (index.html's script src + SCORING_EXPECT, sw.js's precache);
 // check:lab fails if they disagree.
-var SCORING_VERSION="2026-09-29-1";
+var SCORING_VERSION="2026-10-03-1";
 
 // fighter-names:start
 var _NM_SUFFIX_RE=/\b(?:jr|sr|ii|iii|iv)\b/g;
@@ -96,6 +96,25 @@ function isMainCardBout(f){
   return l==="Main Event"||l==="Co-Main"||l==="Main Card";
 }
 function isEarlyPrelimBout(f){return !!f&&f.lbl==="Early Prelim";}
+
+// ── Running order: which fight goes before which ────────────────────────────
+// A bout locks when the fight before it in its own broadcast segment is over
+// (fightLocked in index.html, lockRows in send-reminders), so both need the
+// same answer to "which segment, and in what order". ev.fights is main event
+// first, so a segment runs in REVERSE array order. An Early Prelim on a card
+// with no earlyPrelimTime runs with the prelims, as boutSegmentTime has it.
+function boutSegmentKey(ev,f){
+  if(isMainCardBout(f))return "main";
+  if(isEarlyPrelimBout(f)&&ev&&ev.earlyPrelimTime)return "early";
+  return "prelim";
+}
+function segmentRunOrder(ev,f){
+  var seg=boutSegmentKey(ev,f),fs=(ev&&ev.fights)||[],out=[];
+  for(var i=fs.length-1;i>=0;i--)if(fs[i]&&boutSegmentKey(ev,fs[i])===seg)out.push(fs[i]);
+  return out;
+}
+// Over: a winner, or marked finished without one (a draw or a no contest).
+function boutDecided(f){return !!(f&&(f.winner||f.state==="post"));}
 
 // pick-match:start
 var DOG_TIERS=[{min:250,pts:1},{min:150,pts:0.5}];

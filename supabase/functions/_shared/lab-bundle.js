@@ -41,7 +41,7 @@ export function engineInto(globalThis) {
     "nmKey", "nmEq", "nmBout", "splitNick",
     "dogPtsFor", "dogPtsForPick", "userPts", "locksOn", "isLockPick", "lockPtsFor",
     "pickPts", "scoreMethod", "_findFightResult", "_isMainCardPick", "_eventFinished",
-    "_lbScoreUsers", "boardStandings", "standingsKeep", "computeBeltLineage", "isMainCardBout", "isEarlyPrelimBout", "intelKey", "intelItemsFor",
+    "_lbScoreUsers", "boardStandings", "standingsKeep", "computeBeltLineage", "isMainCardBout", "isEarlyPrelimBout", "boutSegmentKey", "segmentRunOrder", "boutDecided", "intelKey", "intelItemsFor",
     "modelProb", "modelImplied", "modelDeVig", "modelEdge",
     "DOG_TIERS", "LOCKS_PER_CARD", "LOCK_HIT", "LOCK_MISS", "LOCKS_START"
   ];
@@ -1262,7 +1262,7 @@ export function kernelFactory(EVENTS, RESULTS_ARCHIVE, FIGHTER_STATS, RANKINGS, 
 // even offline with an old copy cached. Bump it on ANY change to this file, in
 // all three places (index.html's script src + SCORING_EXPECT, sw.js's precache);
 // check:lab fails if they disagree.
-var SCORING_VERSION="2026-09-29-1";
+var SCORING_VERSION="2026-10-03-1";
 
 // fighter-names:start
 var _NM_SUFFIX_RE=/\b(?:jr|sr|ii|iii|iv)\b/g;
@@ -1332,6 +1332,25 @@ function isMainCardBout(f){
   return l==="Main Event"||l==="Co-Main"||l==="Main Card";
 }
 function isEarlyPrelimBout(f){return !!f&&f.lbl==="Early Prelim";}
+
+// ── Running order: which fight goes before which ────────────────────────────
+// A bout locks when the fight before it in its own broadcast segment is over
+// (fightLocked in index.html, lockRows in send-reminders), so both need the
+// same answer to "which segment, and in what order". ev.fights is main event
+// first, so a segment runs in REVERSE array order. An Early Prelim on a card
+// with no earlyPrelimTime runs with the prelims, as boutSegmentTime has it.
+function boutSegmentKey(ev,f){
+  if(isMainCardBout(f))return "main";
+  if(isEarlyPrelimBout(f)&&ev&&ev.earlyPrelimTime)return "early";
+  return "prelim";
+}
+function segmentRunOrder(ev,f){
+  var seg=boutSegmentKey(ev,f),fs=(ev&&ev.fights)||[],out=[];
+  for(var i=fs.length-1;i>=0;i--)if(fs[i]&&boutSegmentKey(ev,fs[i])===seg)out.push(fs[i]);
+  return out;
+}
+// Over: a winner, or marked finished without one (a draw or a no contest).
+function boutDecided(f){return !!(f&&(f.winner||f.state==="post"));}
 
 // pick-match:start
 var DOG_TIERS=[{min:250,pts:1},{min:150,pts:0.5}];
@@ -2075,10 +2094,10 @@ function intelItemsFor(intel,ev){
   });
 }
 ;
-return {"nmKey":(typeof nmKey!=='undefined'?nmKey:undefined),"nmEq":(typeof nmEq!=='undefined'?nmEq:undefined),"nmBout":(typeof nmBout!=='undefined'?nmBout:undefined),"splitNick":(typeof splitNick!=='undefined'?splitNick:undefined),"dogPtsFor":(typeof dogPtsFor!=='undefined'?dogPtsFor:undefined),"dogPtsForPick":(typeof dogPtsForPick!=='undefined'?dogPtsForPick:undefined),"userPts":(typeof userPts!=='undefined'?userPts:undefined),"locksOn":(typeof locksOn!=='undefined'?locksOn:undefined),"isLockPick":(typeof isLockPick!=='undefined'?isLockPick:undefined),"lockPtsFor":(typeof lockPtsFor!=='undefined'?lockPtsFor:undefined),"pickPts":(typeof pickPts!=='undefined'?pickPts:undefined),"scoreMethod":(typeof scoreMethod!=='undefined'?scoreMethod:undefined),"_findFightResult":(typeof _findFightResult!=='undefined'?_findFightResult:undefined),"_isMainCardPick":(typeof _isMainCardPick!=='undefined'?_isMainCardPick:undefined),"_eventFinished":(typeof _eventFinished!=='undefined'?_eventFinished:undefined),"_lbScoreUsers":(typeof _lbScoreUsers!=='undefined'?_lbScoreUsers:undefined),"boardStandings":(typeof boardStandings!=='undefined'?boardStandings:undefined),"standingsKeep":(typeof standingsKeep!=='undefined'?standingsKeep:undefined),"computeBeltLineage":(typeof computeBeltLineage!=='undefined'?computeBeltLineage:undefined),"isMainCardBout":(typeof isMainCardBout!=='undefined'?isMainCardBout:undefined),"isEarlyPrelimBout":(typeof isEarlyPrelimBout!=='undefined'?isEarlyPrelimBout:undefined),"intelKey":(typeof intelKey!=='undefined'?intelKey:undefined),"intelItemsFor":(typeof intelItemsFor!=='undefined'?intelItemsFor:undefined),"modelProb":(typeof modelProb!=='undefined'?modelProb:undefined),"modelImplied":(typeof modelImplied!=='undefined'?modelImplied:undefined),"modelDeVig":(typeof modelDeVig!=='undefined'?modelDeVig:undefined),"modelEdge":(typeof modelEdge!=='undefined'?modelEdge:undefined),"DOG_TIERS":(typeof DOG_TIERS!=='undefined'?DOG_TIERS:undefined),"LOCKS_PER_CARD":(typeof LOCKS_PER_CARD!=='undefined'?LOCKS_PER_CARD:undefined),"LOCK_HIT":(typeof LOCK_HIT!=='undefined'?LOCK_HIT:undefined),"LOCK_MISS":(typeof LOCK_MISS!=='undefined'?LOCK_MISS:undefined),"LOCKS_START":(typeof LOCKS_START!=='undefined'?LOCKS_START:undefined)};
+return {"nmKey":(typeof nmKey!=='undefined'?nmKey:undefined),"nmEq":(typeof nmEq!=='undefined'?nmEq:undefined),"nmBout":(typeof nmBout!=='undefined'?nmBout:undefined),"splitNick":(typeof splitNick!=='undefined'?splitNick:undefined),"dogPtsFor":(typeof dogPtsFor!=='undefined'?dogPtsFor:undefined),"dogPtsForPick":(typeof dogPtsForPick!=='undefined'?dogPtsForPick:undefined),"userPts":(typeof userPts!=='undefined'?userPts:undefined),"locksOn":(typeof locksOn!=='undefined'?locksOn:undefined),"isLockPick":(typeof isLockPick!=='undefined'?isLockPick:undefined),"lockPtsFor":(typeof lockPtsFor!=='undefined'?lockPtsFor:undefined),"pickPts":(typeof pickPts!=='undefined'?pickPts:undefined),"scoreMethod":(typeof scoreMethod!=='undefined'?scoreMethod:undefined),"_findFightResult":(typeof _findFightResult!=='undefined'?_findFightResult:undefined),"_isMainCardPick":(typeof _isMainCardPick!=='undefined'?_isMainCardPick:undefined),"_eventFinished":(typeof _eventFinished!=='undefined'?_eventFinished:undefined),"_lbScoreUsers":(typeof _lbScoreUsers!=='undefined'?_lbScoreUsers:undefined),"boardStandings":(typeof boardStandings!=='undefined'?boardStandings:undefined),"standingsKeep":(typeof standingsKeep!=='undefined'?standingsKeep:undefined),"computeBeltLineage":(typeof computeBeltLineage!=='undefined'?computeBeltLineage:undefined),"isMainCardBout":(typeof isMainCardBout!=='undefined'?isMainCardBout:undefined),"isEarlyPrelimBout":(typeof isEarlyPrelimBout!=='undefined'?isEarlyPrelimBout:undefined),"boutSegmentKey":(typeof boutSegmentKey!=='undefined'?boutSegmentKey:undefined),"segmentRunOrder":(typeof segmentRunOrder!=='undefined'?segmentRunOrder:undefined),"boutDecided":(typeof boutDecided!=='undefined'?boutDecided:undefined),"intelKey":(typeof intelKey!=='undefined'?intelKey:undefined),"intelItemsFor":(typeof intelItemsFor!=='undefined'?intelItemsFor:undefined),"modelProb":(typeof modelProb!=='undefined'?modelProb:undefined),"modelImplied":(typeof modelImplied!=='undefined'?modelImplied:undefined),"modelDeVig":(typeof modelDeVig!=='undefined'?modelDeVig:undefined),"modelEdge":(typeof modelEdge!=='undefined'?modelEdge:undefined),"DOG_TIERS":(typeof DOG_TIERS!=='undefined'?DOG_TIERS:undefined),"LOCKS_PER_CARD":(typeof LOCKS_PER_CARD!=='undefined'?LOCKS_PER_CARD:undefined),"LOCK_HIT":(typeof LOCK_HIT!=='undefined'?LOCK_HIT:undefined),"LOCK_MISS":(typeof LOCK_MISS!=='undefined'?LOCK_MISS:undefined),"LOCKS_START":(typeof LOCKS_START!=='undefined'?LOCKS_START:undefined)};
 }
 
-export const KERNEL_EXPORTS = ["nmKey","nmEq","nmBout","splitNick","dogPtsFor","dogPtsForPick","userPts","locksOn","isLockPick","lockPtsFor","pickPts","scoreMethod","_findFightResult","_isMainCardPick","_eventFinished","_lbScoreUsers","boardStandings","standingsKeep","computeBeltLineage","isMainCardBout","isEarlyPrelimBout","intelKey","intelItemsFor","modelProb","modelImplied","modelDeVig","modelEdge","DOG_TIERS","LOCKS_PER_CARD","LOCK_HIT","LOCK_MISS","LOCKS_START"];
+export const KERNEL_EXPORTS = ["nmKey","nmEq","nmBout","splitNick","dogPtsFor","dogPtsForPick","userPts","locksOn","isLockPick","lockPtsFor","pickPts","scoreMethod","_findFightResult","_isMainCardPick","_eventFinished","_lbScoreUsers","boardStandings","standingsKeep","computeBeltLineage","isMainCardBout","isEarlyPrelimBout","boutSegmentKey","segmentRunOrder","boutDecided","intelKey","intelItemsFor","modelProb","modelImplied","modelDeVig","modelEdge","DOG_TIERS","LOCKS_PER_CARD","LOCK_HIT","LOCK_MISS","LOCKS_START"];
 // loadKernel's own call of the factory, with the same constants.
 export function bundledKernel(env) {
   env = env || {};

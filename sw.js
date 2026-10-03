@@ -14,7 +14,7 @@ self.addEventListener('install', function(e) {
   // Precache the app shell so the PWA opens offline. Each URL is cached
   // independently — one miss must not block install.
   e.waitUntil(caches.open(CACHE).then(function(c) {
-    var core = ['./', './data.js', './scoring.js?v=2026-09-29-1', './lab/engine.js', './manifest.json', './icon-192-v2.png', './sounds/eagle-1.mp3', './sounds/eagle-2.mp3'];
+    var core = ['./', './data.js', './scoring.js?v=2026-10-03-1', './lab/engine.js', './manifest.json', './icon-192-v2.png', './sounds/eagle-1.mp3', './sounds/eagle-2.mp3'];
     // Seasonal cues: precache only THIS month's file. All twelve together are
     // ~5.7MB, which is not worth forcing down every install for eleven sounds
     // nobody can reach yet — the fetch handler below already runtime-caches
