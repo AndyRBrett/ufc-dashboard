@@ -10677,6 +10677,7 @@ function renderChallengeInbox(){
     if(oa!==ob)return oa-ob;
     return (b.created_at||"").localeCompare(a.created_at||"");
   });
+  _markChalsSeen(mine);
   mine.slice(0,25).forEach(function(c){
     var r=resolveChallenge(c);
     var incoming=_chalIncoming(c);
@@ -11688,7 +11689,10 @@ if('serviceWorker'in navigator){
     if(e.data.type==='trash-talk'&&e.data.fullMessage){_routeTap('',e.data.fullMessage,e.data.sender,e.data.ts,0);clearPendingTap();}
     else if(e.data.type==='challenge'){_routeTap('challenge','','',e.data.ts,0);clearPendingTap();}
     // A push just landed on this device: if it was a roast, it's in the inbox.
-    else if(e.data.type==='push-arrived')setTimeout(function(){checkRoastInbox(true);},400);
+    else if(e.data.type==='push-arrived'){
+      if(e.data.kind==='challenge')setTimeout(function(){checkChallengeInbox(true);},400);
+      else setTimeout(function(){checkRoastInbox(true);},400);
+    }
   });
 }
 // Persistent offline banner — make it obvious when the network drops and the app is
@@ -11857,6 +11861,54 @@ function checkRoastInbox(force){
       });
   }).catch(function(e){console.error("roast inbox",e);return false;}).then(function(v){_roastInboxBusy=false;return v;});
 }
+// Challenge inbox: the same idea as the roast inbox, with the challenges table
+// as the record. A challenge push tap reaches the page through the same stash /
+// postMessage hand-off that kept losing roasts on iOS, and when it was lost the
+// app opened on whatever it last showed, with a challenge list from before the
+// push. So the page re-reads challenges itself (boot, every foreground, a push
+// landing) and opens the inbox for anything new this device hasn't shown: an
+// incoming challenge still waiting on an answer, or an answer to one of mine.
+// "Shown" is per device (ufc_chal_seen, id:status), set whenever the inbox
+// renders, so the tap path and this one never show the same thing twice.
+var _CHAL_SEEN_KEY="ufc_chal_seen",CHAL_INBOX_MAX_AGE=86400000,_chalInboxAt=0,_chalInboxBusy=false;
+function _chalSeenKey(c){return c.id+":"+c.status;}
+function _chalSeenSet(){
+  try{var a=JSON.parse(localStorage.getItem(_CHAL_SEEN_KEY)||"[]");return Array.isArray(a)?a:[];}catch(e){return [];}
+}
+function _markChalsSeen(list){
+  try{
+    var seen=_chalSeenSet(),n=seen.length;
+    (list||[]).forEach(function(c){var k=_chalSeenKey(c);if(c&&c.id&&seen.indexOf(k)<0)seen.push(k);});
+    if(seen.length!==n)localStorage.setItem(_CHAL_SEEN_KEY,JSON.stringify(seen.slice(-200)));
+  }catch(e){}
+}
+function _chalTime(t){var ms=Date.parse(t||"");return isNaN(ms)?0:ms;}
+// New to this device and worth interrupting for.
+function _chalNews(){
+  var seen=_chalSeenSet(),now=Date.now();
+  return _challenges.filter(function(c){
+    if(!c||!c.id||seen.indexOf(_chalSeenKey(c))>=0)return false;
+    if(c.status==="pending")
+      return _chalIncoming(c)&&now-_chalTime(c.created_at)<CHAL_INBOX_MAX_AGE&&resolveChallenge(c).kind==="pending";
+    var mineOut=c.challenger_id===USER_ID||(_lbBaseName(userName)&&_lbBaseName(c.challenger_name)===_lbBaseName(userName));
+    return !!mineOut&&now-_chalTime(c.responded_at)<CHAL_INBOX_MAX_AGE;
+  });
+}
+function checkChallengeInbox(force){
+  if(_chalInboxBusy||(!force&&Date.now()-_chalInboxAt<4000))return Promise.resolve(false);
+  _chalInboxBusy=true;_chalInboxAt=Date.now();
+  return _authReady.then(function(){
+    if(!USER_ID&&!userName)return false;
+    return fetchChallenges().then(function(){
+      if(!_chalNews().length)return false;
+      var sh=document.getElementById("chalSheet");
+      // Already on screen (the tap got through): rendering it marked these seen.
+      if(sh&&sh.classList.contains("open")&&document.getElementById("chalInboxView").style.display!=="none")return false;
+      _routeTap('challenge','','',0,0);
+      return true;
+    });
+  }).catch(function(e){console.error("challenge inbox",e);return false;}).then(function(v){_chalInboxBusy=false;return v;});
+}
 // Other sports: fetched once, shown only if the feed has a card to pick.
 sportsBoot();
 // Blocks: adopt the server's list (and send up any made offline).
@@ -11906,6 +11958,13 @@ _roomsBoot();
     if(document.visibilityState==='visible')setTimeout(function(){checkRoastInbox(true);},600);
   });
   window.addEventListener('pageshow',function(e){if(e.persisted)checkRoastInbox(true);});
+  // The challenge inbox, on the same beats (after the stash, so a tap that got
+  // through opens the inbox first and this finds it already showing).
+  setTimeout(function(){checkChallengeInbox(true);},1500);
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible')setTimeout(function(){checkChallengeInbox(true);},900);
+  });
+  window.addEventListener('pageshow',function(e){if(e.persisted)checkChallengeInbox(true);});
   setInterval(function(){if(document.visibilityState==='visible')checkRoastInbox(false);},ROAST_INBOX_POLL_MS);
 })();
 </script>
