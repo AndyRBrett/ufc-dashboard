@@ -2024,7 +2024,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <script src="data.js"></script>
 <!-- The app's scoring (scoring.js, engine migration stage 3). Required, like
      data.js: the self-heal below covers it failing to load too. -->
-<script src="scoring.js?v=2026-09-29-1"></script>
+<script src="scoring.js?v=2026-10-03-1"></script>
 <!-- The Pick Engine (engine migration, docs/MIGRATION.md). Optional by design:
      if it fails to load, _boutLookup falls back to the app's own loops and
      every score comes out the same (check:parity runs both paths). -->
@@ -2041,7 +2041,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 // …and it must be the rulebook THIS page shipped with: a previous release's
 // scoring.js (an old cached copy, a network drop mid-upgrade) is treated as
 // missing rather than silently scoring with old rules.
-var SCORING_EXPECT="2026-09-29-1";
+var SCORING_EXPECT="2026-10-03-1";
 function _scoringOk(){return typeof pickPts==="function"&&typeof _lbScoreUsers==="function"&&typeof SCORING_VERSION!=="undefined"&&SCORING_VERSION===SCORING_EXPECT;}
 if(typeof EVENTS==="undefined"||!_scoringOk()){
   (function(){
@@ -3406,7 +3406,30 @@ function _sbFetchAll(query){
   }
   return _ensureFreshToken().then(function(){return page(0,[],false);});
 }
+// The server's per-bout lock times for cards around now (see _serverLockMs).
+// At most once a minute; a change re-renders so a bout the server has locked
+// stops offering its pick buttons.
+function _loadServerLocks(){
+  var now=Date.now();
+  if(now-_serverLocksAt<60000)return;
+  _serverLocksAt=now;
+  var dates=EVENTS.filter(function(e){var t=Date.parse(e.date+"T00:00:00Z");return t>=now-2*DAY_MS&&t<=now+8*DAY_MS;})
+    .map(function(e){return e.date;});
+  if(!dates.length)return;
+  fetch(SUPABASE_URL+"/rest/v1/pick_locks?select=event_date,a,b,lock_at&event_date=in.("+dates.map(encodeURIComponent).join(",")+")",{headers:_sbHeaders()})
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(rows){
+      if(!Array.isArray(rows))return;
+      var next={},changed=false;
+      rows.forEach(function(r){var t=Date.parse(r&&r.lock_at);if(r&&typeof r.a==="string"&&typeof r.b==="string"&&!isNaN(t))next[r.event_date+"|"+r.a+"|"+r.b]=t;});
+      Object.keys(next).forEach(function(k){if(_serverLocks[k]!==next[k])changed=true;});
+      Object.keys(_serverLocks).forEach(function(k){if(!(k in next))changed=true;});
+      _serverLocks=next;
+      if(changed)render();
+    }).catch(function(){});
+}
 function fetchCommunityPicks(){
+  _loadServerLocks();
   _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,method,confidence,nickname,user_id,updated_at,bonus_pick&order=updated_at.asc,event_date.asc,f1.asc,f2.asc"+PICKS_UFC).then(function(rows){
     if(!Array.isArray(rows))return;
     // activity feed derives lock-ins/streaks/belt from the same rows, and the
@@ -4511,16 +4534,22 @@ function saveName(){
   var prevNames=[];try{prevNames=JSON.parse(localStorage.getItem("ufc_prev_names")||"[]");}catch(e){}
   if(prevNames.indexOf(v.toLowerCase())>=0){_commitName(emoji,v);return;}
   errEl.style.display="none";btn.disabled=true;btn.textContent="Checking…";
-  // Check the text portion of the name against all other users' nicknames (ilike "% name")
-  fetch(SUPABASE_URL+"/rest/v1/picks?select=event_date&nickname=ilike."+encodeURIComponent("% "+v)+"&user_id=neq."+encodeURIComponent(USER_ID)+"&limit=200",{
-    headers:{apikey:SUPABASE_ANON,Authorization:_authBearer()}
-  }).then(function(r){return r.ok?r.json():[];}).then(function(rows){
+  // Only block when that name is actively playing — i.e. has picks on a
+  // current/upcoming event. Abandoned identities (ghost rows under old IDs,
+  // historical events only) don't reserve the name forever.
+  var cutoff=new Date(Date.now()-2*DAY_MS).toISOString().slice(0,10);
+  var hdr={apikey:SUPABASE_ANON,Authorization:_authBearer(),"Content-Type":"application/json"};
+  // Other players' picks on the current card are hidden until each bout locks
+  // (0017), so the server answers the yes/no itself (nickname_taken). The old
+  // read is the fallback for a database without that function yet.
+  fetch(SUPABASE_URL+"/rest/v1/rpc/nickname_taken",{method:"POST",headers:hdr,body:JSON.stringify({p_name:v,p_since:cutoff})})
+  .then(function(r){
+    if(r.ok)return r.json().then(function(t){return t===true;});
+    return fetch(SUPABASE_URL+"/rest/v1/picks?select=event_date&nickname=ilike."+encodeURIComponent("% "+v)+"&user_id=neq."+encodeURIComponent(USER_ID)+"&limit=200",{headers:hdr})
+      .then(function(r2){return r2.ok?r2.json():[];})
+      .then(function(rows){return Array.isArray(rows)&&rows.some(function(p){return (p.event_date||"")>=cutoff;});});
+  }).then(function(active){
     btn.disabled=false;btn.textContent=_btnLabel;
-    // Only block when that name is actively playing — i.e. has picks on a
-    // current/upcoming event. Abandoned identities (ghost rows under old IDs,
-    // historical events only) don't reserve the name forever.
-    var cutoff=new Date(Date.now()-2*DAY_MS).toISOString().slice(0,10);
-    var active=Array.isArray(rows)&&rows.some(function(p){return (p.event_date||"")>=cutoff;});
     if(active){
       errEl.textContent="That name is already taken — pick another!";errEl.style.display="block";
       return;
@@ -5022,7 +5051,7 @@ function togglePush(){
 
 function pick(idx,side){
   var item=FIGHTS[idx];if(!item)return;
-  if(fightLocked(item.ev,item.fight)){toast(lockReason(item.fight));return;}
+  if(fightLocked(item.ev,item.fight)){toast(lockReason(item.fight,item.ev));return;}
   var f=side===0?item.fight.f1:item.fight.f2;
   checkName(function(){
     var key=pk(item.ev,item.fight);
@@ -5040,7 +5069,7 @@ function cardLocksUsed(ev){
   return n;
 }
 function toggleLock(ev,fight){
-  if(fightLocked(ev,fight)){toast(lockReason(fight));return;}
+  if(fightLocked(ev,fight)){toast(lockReason(fight,ev));return;}
   var k=pk(ev,fight);
   if(!preds[k])return;
   if(_pickNeedsAccount(null))return;
@@ -5064,7 +5093,7 @@ function _lockClampCheck(key,rows){
 }
 
 function undoPick(ev,fight){
-  if(fightLocked(ev,fight)){toast(lockReason(fight));return;}
+  if(fightLocked(ev,fight)){toast(lockReason(fight,ev));return;}
   var old=preds[pk(ev,fight)]||null;
   deleteSbPick(ev,fight);delete preds[pk(ev,fight)];
   if(preds_conf[pk(ev,fight)]){delete preds_conf[pk(ev,fight)];saveConf();}
@@ -5138,7 +5167,7 @@ function fnNav(dir){fnIdx=Math.max(0,Math.min(fnFights.length-1,fnIdx+dir));upda
 function fnPick(side){
   if(!fnFights.length)return;
   var f=fnFights[fnIdx];if(f.winner)return;
-  if(fightLocked(fnEv,f)){toast(lockReason(f));return;}
+  if(fightLocked(fnEv,f)){toast(lockReason(f,fnEv));return;}
   checkName(function(){
     preds[pk(fnEv,f)]=side===0?f.f1.n:f.f2.n;
     save();syncPick(fnEv,f,true);fnPickedAny=true;updateFN();
@@ -5698,16 +5727,56 @@ function boutSegmentTime(ev,f){
   if(isEarlyPrelimBout(f)&&ev.earlyPrelimTime)return ev.earlyPrelimTime;
   return ev.prelimTime||ev.time;
 }
+// Within a segment, one fight at a time. Locking the whole segment at its bell
+// closed a fight three bouts away while the opener was still walking out, so
+// now only a segment's OPENER locks at the bell, and every later bout locks
+// when the fight before it has a result. Results reach data.js a few minutes
+// after a fight ends, so a quick finish can leave the next fight open for its
+// first minutes; nobody can see anyone else's pick before it locks (0017), so
+// nothing can be copied in that window. Backstops, in case results stall:
+//   - send-reminders' lock time for the bout (_serverLockMs): the moment it saw
+//     the previous result, and never later than LOCK_CHAIN_MIN after the
+//     previous bout locked. The database enforces exactly that time.
+//   - the next segment's bell locks everything before it.
+//   - a later fight in the segment already decided means this one has gone.
+// A bout this card doesn't list (a stale reference) answers to its segment's bell.
 function fightLocked(ev,f){
   if(!ev)return false;
-  if(f&&f.winner)return true;
-  if(isMainCardBout(f))return mainCardLocked(ev);
-  var r=_segPassed(ev,boutSegmentTime(ev,f));
-  return r===null?picksLocked(ev):r;
+  if(boutDecided(f))return true;
+  var seg;
+  if(isMainCardBout(f))seg=mainCardLocked(ev);
+  else{var r=_segPassed(ev,boutSegmentTime(ev,f));seg=r===null?picksLocked(ev):r;}
+  if(!seg)return false;
+  var run=segmentRunOrder(ev,f),i=run.indexOf(f);
+  if(i<=0)return true;                                   // the segment's opener
+  if(boutDecided(run[i-1]))return true;                  // the fight before it is over
+  for(var j=i+1;j<run.length;j++)if(boutDecided(run[j]))return true;
+  var t=_serverLockMs(ev,f);
+  if(t!==null&&Date.now()>=t)return true;
+  var key=boutSegmentKey(ev,f);
+  if(key==="early"&&(_segPassed(ev,ev.prelimTime)===true||_segPassed(ev,ev.time)===true))return true;
+  if(key==="prelim"&&_segPassed(ev,ev.time)===true)return true;
+  return false;
+}
+// Lock times the server holds (pick_locks, written by send-reminders every few
+// minutes and readable since 0017), keyed like the table: date|a|b, names
+// lower-cased, trimmed and sorted. Empty until loaded, and a failed load keeps
+// the last good copy: the result rule above still runs without them.
+var _serverLocks={},_serverLocksAt=0;
+function _lockKey(date,n1,n2){
+  var x=String(n1||"").trim().toLowerCase(),y=String(n2||"").trim().toLowerCase();
+  return date+"|"+(x<y?x+"|"+y:y+"|"+x);
+}
+function _serverLockMs(ev,f){
+  if(!ev||!f||!f.f1||!f.f2)return null;
+  var t=_serverLocks[_lockKey(ev.date,f.f1.n,f.f2.n)];
+  return typeof t==="number"?t:null;
 }
 // Why a bout is locked, for the toast — "the event has started" is not a useful
 // thing to be told when the segment you're trying to pick hasn't.
-function lockReason(f){
+// A bout behind its segment's opener locked because the fight before it ended.
+function lockReason(f,ev){
+  if(ev&&segmentRunOrder(ev,f).indexOf(f)>0&&!boutDecided(f))return "Picks are locked — this fight is up next";
   if(isMainCardBout(f))return "Picks are locked — the main card has started";
   if(isEarlyPrelimBout(f))return "Picks are locked — the early prelims have started";
   return "Picks are locked — the prelims have started";
@@ -6373,7 +6442,9 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
     row.appendChild(pr);
     if(!fw){
       var ck=pk(EVENTS[ei],fight);var cp=communityPicks[ck];
-      if(cp&&cp.total>=1){
+      // Nobody's pick shows before its bout locks (0017), so before then the
+      // bar would only count yours: "Just you picked" while four others had.
+      if(locked&&cp&&cp.total>=1){
         var f1p=Math.round(cp.f1/cp.total*100);var f2p=100-f1p;
         var commRow=document.createElement("div");commRow.className="comm-row";
         var cbw=document.createElement("div");cbw.className="comm-bar-wrap";
@@ -6656,6 +6727,9 @@ var WHATS_NEW=[
    desc:"Ask FightBot replaces Ask Claude on each card and opens from More and Ranks too. One conversation for MMA, pick recommendations and app help, with the selected card’s records, odds and stats."},
   {id:"2026-10-23-fightbot-research",emoji:"🔎",title:"FightBot looks it up",
    desc:"Ask FightBot who a fighter has lost to, or anything the app doesn’t hold, and it now knows each UFC fight’s result and searches the web for the rest, with source links, instead of saying it doesn’t know."}
+,
+  {id:"2026-10-24-picks-till-the-bell",emoji:"🙈",title:"Pick until your fight’s up, picks stay hidden",
+   desc:"A fight now locks when the one before it ends, not when its whole segment starts, so you can pick a bout three fights away while the opener runs. Nobody can see anyone else’s pick until that fight locks, so there’s nothing to copy."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -10033,6 +10107,14 @@ function loadLeaderboard(isLive){
           // the totals exclude prelims, so showing the picks would not.
           // isMainCardBout, not a local lookup table — this was a second copy of
           // the same rule sitting a few hundred lines from the first.
+          // Someone else's pick on a bout that hasn't locked never reaches this
+          // device (0017): say so, rather than a "?" that reads as "didn't pick".
+          if(!u.isMe&&!fightLocked(nextEv,f)){
+            if(!isMainCardBout(f))return;
+            var hc=document.createElement("span");hc.className="lb-pick-chip lbc-none";hc.title="Hidden until this fight locks";
+            var hs=document.createElement("span");hs.textContent="🙈";hc.appendChild(hs);
+            nextPicksDiv.appendChild(hc);return;
+          }
           if(!isMainCardBout(f)&&(lbScope==="main"||!picked))return;
           var chip=document.createElement("span");chip.className="lb-pick-chip";
           // Render the card's own spelling, not the stored one: a pick synced before
@@ -11263,7 +11345,7 @@ document.addEventListener("DOMContentLoaded",function(){
     <div class="lb-info-row"><span>🔒 Lock misses</span><span class="lb-info-pts">−1 pt</span></div>
     <div style="font-size:11px;color:var(--muted);margin-top:10px">Methods: KO/TKO · Submission · Decision</div>
     <div style="font-size:11px;color:var(--muted);margin-top:8px">Underdog bonuses only pay on a <b>correct</b> pick, and use the moneyline shown on the card (the closing line once the fight is done). Anything under +150 is priced as a coin flip, so it scores as a normal pick. A bout with no line on record pays no bonus.</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:8px"><b>Locks:</b> up to 2 per card, set on a pick until that bout's segment starts. A lock is on top of everything else the pick earns — a locked underdog that hits by the right method stacks all of it. A cancelled bout or no contest leaves a lock at 0.</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:8px"><b>Locks:</b> up to 2 per card, set on a pick until that bout locks (when the fight before it ends). A lock is on top of everything else the pick earns — a locked underdog that hits by the right method stacks all of it. A cancelled bout or no contest leaves a lock at 0.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">🏆 The Belt</div>
     <div style="font-size:11px;color:var(--muted)">Top scorer of each card takes the belt. The champ defends every event — skip a card and anyone who scores can steal it. A challenger has to <b>beat</b> the champ's score, not match it: a tie involving the champ is a successful defence.<br><br>If the champ is out of it and challengers finish level, the belt goes to the highest <b>career accuracy</b> (the % on your row), then to whoever has made the most picks. If two are identical on both, the belt is vacated. Tap Title History at the bottom of the board for the full lineage — a belt won on a tiebreak says so.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">👥 Rooms</div>

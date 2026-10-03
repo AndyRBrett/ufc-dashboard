@@ -184,22 +184,39 @@ export async function composeBrief(ev: Ev, js: string, sb: { url: string; key: s
 }
 
 // ── Pick locks for the database ─────────────────────────────────────────────
-// migrations/0010_picks_lock.sql refuses a pick once its bout's segment has
-// started, but the card lives in data.js, not the database. So every run
-// writes each nearby card's per-bout lock times (pick_locks) and its first and
-// last bells (card_bells), by the app's own rule (fightLocked in index.html):
-// a main-card bout locks at the main card, an early prelim at the early
-// prelims when the card has them, anything else at the prelims, and a bout
-// with no segment time at the card's first bell. isMainCardBout /
-// isEarlyPrelimBout come from the bundled scoring.js, so the two can't differ.
+// migrations/0010_picks_lock.sql refuses a pick once its bout has locked, and
+// 0017 hides everyone else's pick until then, but the card lives in data.js,
+// not the database. So every run writes each nearby card's per-bout lock times
+// (pick_locks) and its first and last bells (card_bells), by the app's own rule
+// (fightLocked in index.html):
+//   - a segment's opener locks at that segment's bell (main card, early prelims
+//     when the card has them, else the prelims; no clock: the card's first bell)
+//   - every later bout locks when the fight before it in the segment has a
+//     result, or one later in the segment does. The time written is the first
+//     run that saw it: `prior` is what the last run wrote, and a time already
+//     past that is earlier than this bout's backstop is that sighting, kept.
+//   - and never later than LOCK_CHAIN_MS after the bout before it locked, in
+//     case results stall, nor than the next segment's bell.
+// boutSegmentKey / segmentRunOrder / boutDecided come from the bundled
+// scoring.js, so the two can't differ on which fight goes before which.
 // Names are stored lower-cased and sorted, as the trigger looks them up.
 export const LOCK_WINDOW_PAST_MS = 2 * 864e5;   // a card that just ended
 export const LOCK_WINDOW_AHEAD_MS = 8 * 864e5;  // fight week and a bit
-export function lockRows(events: any[], k: any, now: number) {
+// A five-round fight plus walkouts runs about 40 minutes, so a shorter backstop
+// would lock the next bout before the one ahead of it had finished.
+export const LOCK_CHAIN_MS = 45 * 60e3;
+export const lockKey = (date: string, n1: string, n2: string) => {
+  const x = n1.trim().toLowerCase(), y = n2.trim().toLowerCase();
+  return x < y ? [date, x, y] : [date, y, x];
+};
+export function lockRows(events: any[], k: any, now: number, prior: Record<string, number> = {}) {
   const bouts: { event_date: string; a: string; b: string; lock_at: string }[] = [];
   const cards: { event_date: string; first_bell: string; last_bell: string }[] = [];
   const iso = (t: number) => new Date(t).toISOString();
-  const seen = new Set<string>();
+  const named = (f: any) => {
+    const n1 = f && f.f1 && f.f1.n, n2 = f && f.f2 && f.f2.n;
+    return typeof n1 === "string" && typeof n2 === "string" && !!n1.trim() && !!n2.trim();
+  };
   for (const e of events || []) {
     if (!e || typeof e.date !== "string" || !Array.isArray(e.fights)) continue;
     const bells = [e.earlyPrelimTime, e.prelimTime, e.time].map((t) => phaseUtc(e.date, t)).filter((t) => t !== null) as number[];
@@ -207,19 +224,49 @@ export function lockRows(events: any[], k: any, now: number) {
     const first = Math.min(...bells), last = Math.max(...bells);
     if (last < now - LOCK_WINDOW_PAST_MS || first > now + LOCK_WINDOW_AHEAD_MS) continue;
     cards.push({ event_date: e.date, first_bell: iso(first), last_bell: iso(last) });
+    const segBell: Record<string, number> = {
+      main: phaseUtc(e.date, e.time) ?? first,
+      early: phaseUtc(e.date, e.earlyPrelimTime) ?? first,
+      prelim: phaseUtc(e.date, e.prelimTime || e.time) ?? first,
+    };
+    // The next segment's bell closes everything before it, results or not.
+    const main = phaseUtc(e.date, e.time), pre = phaseUtc(e.date, e.prelimTime);
+    const segEnd: Record<string, number> = {
+      main: Infinity,
+      prelim: main ?? Infinity,
+      early: Math.min(pre ?? Infinity, main ?? Infinity),
+    };
+    const lockOf = new Map<any, number>();
     for (const f of e.fights) {
-      const n1 = f && f.f1 && f.f1.n, n2 = f && f.f2 && f.f2.n;
-      if (typeof n1 !== "string" || typeof n2 !== "string" || !n1.trim() || !n2.trim()) continue;
-      const t = k.isMainCardBout(f) ? phaseUtc(e.date, e.time)
-        : k.isEarlyPrelimBout(f) && e.earlyPrelimTime ? phaseUtc(e.date, e.earlyPrelimTime)
-        : phaseUtc(e.date, e.prelimTime || e.time);
-      const x = n1.trim().toLowerCase(), y = n2.trim().toLowerCase();
-      const [a, b] = x < y ? [x, y] : [y, x];
-      const key = e.date + "|" + a + "|" + b;
-      if (seen.has(key)) continue;                // one upsert may not touch a row twice
-      seen.add(key);
-      bouts.push({ event_date: e.date, a, b, lock_at: iso(t ?? first) });
+      if (!f || lockOf.has(f)) continue;
+      const run: any[] = k.segmentRunOrder(e, f);
+      const seg = k.boutSegmentKey(e, f), bell = segBell[seg], end = segEnd[seg];
+      for (let i = 0; i < run.length; i++) {
+        const g = run[i];
+        if (lockOf.has(g)) continue;
+        const base = i === 0 ? bell : lockOf.get(run[i - 1])! + LOCK_CHAIN_MS;
+        let went = i > 0 && k.boutDecided(run[i - 1]);
+        for (let j = i; j < run.length && !went; j++) if (k.boutDecided(run[j])) went = true;
+        let t = base;
+        if (went && named(g)) {
+          const [d, a, b] = lockKey(e.date, g.f1.n, g.f2.n);
+          const seenAt = prior[d + "|" + a + "|" + b];
+          t = Math.min(base, typeof seenAt === "number" && seenAt <= now && seenAt < base ? seenAt : now);
+        }
+        lockOf.set(g, Math.min(t, end));
+      }
     }
+    // One upsert may not touch a row twice, so a bout listed twice is written
+    // once, at the earlier of its two times.
+    const at = new Map<string, { a: string; b: string; t: number }>();
+    for (const f of e.fights) {
+      if (!named(f)) continue;
+      const [d, a, b] = lockKey(e.date, f.f1.n, f.f2.n);
+      const key = d + "|" + a + "|" + b, t = lockOf.get(f) ?? first;
+      const had = at.get(key);
+      if (!had || t < had.t) at.set(key, { a, b, t });
+    }
+    for (const { a, b, t } of at.values()) bouts.push({ event_date: e.date, a, b, lock_at: iso(t) });
   }
   return { bouts, cards };
 }
@@ -465,9 +512,22 @@ Deno.serve(async (req) => {
   let locks: unknown = null;
   if (SB_SERVICE_ROLE_KEY) {
     try {
-      const { bouts, cards } = lockRows(parseDataJs(js).EVENTS || [], bundledKernel({}), now);
       const h = { "Content-Type": "application/json", apikey: SB_SERVICE_ROLE_KEY, Authorization: `Bearer ${SB_SERVICE_ROLE_KEY}`,
                   Prefer: "resolution=merge-duplicates,return=minimal" };
+      // What the last run wrote: a result's first sighting is kept from it. A
+      // failed read costs only precision (the sighting becomes this run), never
+      // a later lock.
+      const evs = parseDataJs(js).EVENTS || [];
+      const prior: Record<string, number> = {};
+      const dates = [...new Set((evs as any[]).map((e) => e && e.date).filter((d) => typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)))]
+        .filter((d) => { const t = Date.parse(d + "T00:00:00Z"); return t > now - LOCK_WINDOW_PAST_MS - 864e5 && t < now + LOCK_WINDOW_AHEAD_MS; });
+      if (dates.length) {
+        try {
+          const pr = await fetch(`${SUPABASE_URL}/rest/v1/pick_locks?select=event_date,a,b,lock_at&event_date=in.(${dates.join(",")})`, { headers: h });
+          if (pr.ok) for (const r of await pr.json()) { const t = Date.parse(r.lock_at); if (!isNaN(t)) prior[r.event_date + "|" + r.a + "|" + r.b] = t; }
+        } catch (_e) { /* no prior: sightings start from this run */ }
+      }
+      const { bouts, cards } = lockRows(evs, bundledKernel({}), now, prior);
       const stamp = new Date(now).toISOString();
       const put = (table: string, conflict: string, rows: any[]) => rows.length
         ? fetch(`${SUPABASE_URL}/rest/v1/${table}?on_conflict=${conflict}`, { method: "POST", headers: h, body: JSON.stringify(rows.map((r) => ({ ...r, updated_at: stamp }))) })
@@ -573,14 +633,25 @@ Deno.serve(async (req) => {
       const rows: any[] = [];
       for (let from = 0, PAGE = 1000; ; from += PAGE) {
         const pr = await fetch(`${SUPABASE_URL}/rest/v1/picks?select=user_id,event_date,f1,f2&event_date=in.(${dates})&promotion=eq.ufc&order=event_date.asc,user_id.asc,f1.asc,f2.asc`,
-          { headers: { apikey: SB_ANON_KEY, Authorization: `Bearer ${SB_ANON_KEY}`, Range: `${from}-${from + PAGE - 1}` } });
+          // The service key: since 0017 nobody else's pick on a bout that hasn't
+          // locked is readable with the anon key, and those are exactly the
+          // picks a fight change has to reach.
+          { headers: { apikey: SB_SERVICE_ROLE_KEY || SB_ANON_KEY, Authorization: `Bearer ${SB_SERVICE_ROLE_KEY || SB_ANON_KEY}`, Range: `${from}-${from + PAGE - 1}` } });
         if (!pr.ok) throw new Error(`picks HTTP ${pr.status}`);
         const page: any[] = await pr.json();
         rows.push(...page);
         if (page.length < PAGE || from >= 50 * PAGE) break;
       }
       for (const ev of cards) {
+        // A bout locks by lockRows' rule (it can close before its segment's bell
+        // once the fight ahead of it ends); a cancellation by the card's first bell.
+        const boutLocks = new Map(lockRows([ev], k, now).bouts.map((b) => [b.a + "|" + b.b, Date.parse(b.lock_at)]));
         const lockFor = (f: any | null) => {
+          if (f && f.f1 && f.f2 && typeof f.f1.n === "string" && typeof f.f2.n === "string") {
+            const [, a, b] = lockKey(ev.date, f.f1.n, f.f2.n);
+            const t = boutLocks.get(a + "|" + b);
+            if (typeof t === "number" && !isNaN(t)) return t;
+          }
           const t = !f ? (ev.earlyPrelimTime || ev.prelimTime || ev.time)
             : MAIN_LBL.test(f.lbl || "") ? ev.time
             : f.lbl === "Early Prelim" ? (ev.earlyPrelimTime || ev.prelimTime)

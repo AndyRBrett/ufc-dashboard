@@ -1075,11 +1075,12 @@ HOME SCREEN
 - ⚡ Activity strip: pick lock-ins, hot streaks, belt changes and challenges as they happen, spoiler-free.
 - Per event: 🤖 Ask FightBot (the shared MMA assistant: pick recommendations, best value, who to fade, prior meetings, general MMA and app help, with source links for researched facts), 🎰 Parlay Picks (AI parlay ideas, plus a calculator that prices a parlay you build and warns about legs that aren't independent), and Quick Pick (opens FN Mode on that card). In the days before a card, Fight Week Intel under the event lists curated interviews and breakdowns, linking to the source.
 - FN Mode: a live fight-night view of the card in running order, for quick picking and following results.
-- Per bout: tap a fighter to pick him or her. After picking, "How:" sets the method (KO/TKO, Sub, Dec). ⚡ AI gives a short AI breakdown of the fight. Compare Fighters (main card bouts) shows the two side by side. A bar shows how the group split.
+- Per bout: tap a fighter to pick him or her. After picking, "How:" sets the method (KO/TKO, Sub, Dec). ⚡ AI gives a short AI breakdown of the fight. Compare Fighters (main card bouts) shows the two side by side. Once a bout locks, a bar shows how the group split.
 - Bonus Pick: one per card, choose the fighter you think wins a Performance/Fight of the Night bonus.
 
 MAKING PICKS AND WHEN THEY CLOSE
-- Picks close bout by bout, when that bout's own segment starts: early prelims, prelims or main card. After that the pick can't be added, changed or deleted, and the server enforces it too.
+- Picks close one fight at a time. The first bout of each segment (early prelims, prelims, main card) locks when that segment starts; every other bout locks when the fight before it has its result, so you can pick a fight further down the card while earlier ones run. If results are slow, a bout also locks 45 minutes after the one before it locked, and every bout locks when the next segment starts. After a bout locks its pick can't be added, changed or deleted, and the server enforces it too.
+- Nobody sees anyone else's picks until that bout locks (yours are always visible to you). On Ranks, someone's pick on a fight that hasn't locked shows as 🙈. Before a fight locks you can change your pick as often as you like.
 - The Bonus Pick freezes at the card's first bell.
 - Picks save to your account and come back if you sign in on another phone.
 - If a fighter pulls out and the bout changes, the old pick no longer counts. With notifications on you get a fight change alert saying who's in, so you can re-pick before it locks.
