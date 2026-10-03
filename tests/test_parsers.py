@@ -872,6 +872,22 @@ def test_fetch_fighter_stats_records_result_per_opponent(monkeypatch):
     assert len(s["res"]) == len(s["opp"])
 
 
+def test_fetch_fighter_stats_failed_detail_is_a_failure_not_an_empty_profile(monkeypatch):
+    # A throttled or erroring detail page must not come back as an all-zero
+    # profile that would overwrite the cached history.
+    class Down:
+        status_code = 503
+        text = ""
+    monkeypatch.setattr(scrape.time, "sleep", lambda *_: None)
+    monkeypatch.setattr(scrape, "_ufcstats_get", lambda *a, **k: Down())
+    assert scrape.fetch_fighter_stats("Natalia Silva", cached_url="http://ufcstats.com/x") is None
+
+    def boom(*a, **k):
+        raise ConnectionError("reset")
+    monkeypatch.setattr(scrape, "_ufcstats_get", boom)
+    assert scrape.fetch_fighter_stats("Natalia Silva", cached_url="http://ufcstats.com/x") is None
+
+
 def test_needs_fetch_legacy_entry_without_timestamp_revalidates():
     # Entries written before the cadence existed carry no fetched_at — the case
     # that repairs a frozen wrong record or a failure-emptied opponent list.

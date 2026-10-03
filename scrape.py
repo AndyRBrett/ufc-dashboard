@@ -3349,10 +3349,12 @@ def fetch_fighter_stats(name, cached_url=None):
     form = []
     opponents = []
     results = []      # aligned with opponents: "L KO/TKO R2 2025"
+    detail_ok = False
     time.sleep(0.5)
     try:
         dr = _ufcstats_get(detail_url, timeout=15)
         if dr.status_code == 200:
+            detail_ok = True
             dsoup = BeautifulSoup(dr.text, "html.parser")
             for li in dsoup.select("li.b-list__box-list-item"):
                 txt = li.get_text(strip=True)
@@ -3414,7 +3416,16 @@ def fetch_fighter_stats(name, cached_url=None):
                             opponents.append(opp_name)
                             results.append(_fight_result_tag(result_txt, cells_d))
     except Exception as e:
+        detail_ok = False
         print(f"  UFCStats detail error: {e}", file=sys.stderr)
+    if not detail_ok:
+        # An all-zero profile with empty form/opp/res would replace the cached
+        # entry wholesale and be stamped fresh, erasing a good history (the
+        # one-time "res" backfill refetches every booked fighter at once, so a
+        # throttled run would have wiped them all). None marks a failure the
+        # caller retries, keeping what it had.
+        print(f"  UFCStats detail unavailable for {name}; keeping cached stats", file=sys.stderr)
+        return None
 
     print(
         f"  Stats {name}: slpm={slpm} acc={acc} td={td} tdd={tdd} "

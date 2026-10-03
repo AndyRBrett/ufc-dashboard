@@ -2214,26 +2214,43 @@ function _aiFightContext(question,names,stats){
   var selected=all.filter(function(n){return q.indexOf(" "+key(n)+" ")>=0;});
   Object.keys(aliases).forEach(function(a){if(aliases[a].length===1&&q.indexOf(" "+a+" ")>=0&&selected.indexOf(aliases[a][0])<0)selected.push(aliases[a][0]);});
   (names||[]).forEach(function(n){var found=all.filter(function(x){return key(x)===key(n);});if(found.length===1&&selected.indexOf(found[0])<0)selected.push(found[0]);});
-  var out=[],size=0;
-  selected.slice(0,4).forEach(function(n){
+  var out=[],size=0,picked=selected.slice(0,4);
+  // Each fighter gets an equal share, so a long career can't crowd out the
+  // second name in "has Miller fought Magny" (the guard below drops a whole line).
+  var share=Math.floor(5800/Math.max(1,picked.length))-60;
+  picked.forEach(function(n){
     var st=stats[n],bits=[];
     if(st.rec)bits.push("career MMA record (all promotions) "+st.rec);
     var res=Array.isArray(st.res)&&Array.isArray(st.opp)&&st.res.length===st.opp.length?st.res:null;
+    var tail=[];
+    if(st.fetched_at)tail.push("cached as of "+st.fetched_at.slice(0,10));
+    if(st.url&&/^https?:\/\//i.test(st.url))tail.push("source "+st.url);
     if(Array.isArray(st.opp)&&st.opp.length&&res){
-      // Outcome per bout, so "who has X lost to" is answerable. UFC fights only:
-      // losses outside the UFC are in the record but not in this list.
-      var tag=function(r){return String(r||"").slice(0,24);};
-      var lost=[],beat=[];
-      st.opp.forEach(function(o,i){var r=tag(res[i]);(r.charAt(0)==="L"?lost:r.charAt(0)==="W"?beat:[]).push(o+" ("+r.slice(2)+")");});
-      bits.push("UFC fights per UFCStats (newest first, result for "+n.split(" ").pop()+"): "+st.opp.map(function(o,i){return o+" "+tag(res[i]);}).join(", "));
-      bits.push("UFC losses: "+(lost.length?lost.join(", "):"none in the UFC")+"; UFC wins over: "+(beat.length?beat.join(", "):"none"));
+      // Each UFC bout once, split by outcome, so "who has X lost to" is
+      // answerable. Losses outside the UFC are in the record, not here.
+      var lost=[],beat=[],other=[];
+      st.opp.forEach(function(o,i){var r=String(res[i]||"").slice(0,24),t=o+" ("+r.slice(2)+")";(r.charAt(0)==="L"?lost:r.charAt(0)==="W"?beat:other).push(t);});
+      bits.push("UFC losses per UFCStats, newest first: "+(lost.length?lost.join(", "):"none in the UFC"));
+      if(other.length)bits.push("UFC draws/no contests: "+other.join(", "));
       bits.push("losses in the career record that are not UFC losses happened in other promotions and are not listed here");
+      // Wins go last and are the only part ever shortened, said explicitly so
+      // a trimmed list is never read as complete.
+      var head="  "+n+": "+bits.concat(tail).join("; ")+"; UFC wins over, newest first: ";
+      var shown=[];
+      for(var i=0;i<beat.length;i++){
+        var more=beat.length-i-1,note=more?"; …and "+more+" earlier UFC wins not listed":"";
+        if((head+shown.concat(beat[i]).join(", ")+note).length>share&&shown.length){
+          shown.push("…and "+(beat.length-i)+" earlier UFC wins not listed");break;
+        }
+        shown.push(beat[i]);
+      }
+      var line=head+(beat.length?shown.join(", "):"none");
+      if(size+line.length+1<=5800){out.push(line);size+=line.length+1;}
+      return;
     }
-    else if(Array.isArray(st.opp)&&st.opp.length)bits.push("completed UFCStats opponents (newest first, win/loss per bout not cached): "+st.opp.join(", "));
+    if(Array.isArray(st.opp)&&st.opp.length)bits.push("completed UFCStats opponents (newest first, win/loss per bout not cached): "+st.opp.join(", "));
     else bits.push("opponent history unavailable; an empty list does not prove no prior fights");
-    if(st.fetched_at)bits.push("cached as of "+st.fetched_at.slice(0,10));
-    if(st.url&&/^https?:\/\//i.test(st.url))bits.push("source "+st.url);
-    var line="  "+n+": "+bits.join("; ");
+    var line="  "+n+": "+bits.concat(tail).join("; ");
     // Never truncate an opponent list and accidentally present it as complete.
     if(size+line.length+1<=5800){out.push(line);size+=line.length+1;}
   });

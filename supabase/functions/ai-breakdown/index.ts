@@ -11,6 +11,10 @@ const MODEL = Deno.env.get("MODEL") ?? "claude-haiku-4-5-20251001";
 const RESEARCH_MODEL = Deno.env.get("RESEARCH_MODEL") ?? "claude-sonnet-5-5";
 // Searches per model attempt. One was too few to find, then confirm, a result.
 const RESEARCH_MAX_SEARCHES = Number(Deno.env.get("RESEARCH_MAX_SEARCHES") ?? "3");
+// The research model always thinks, and thinking counts against max_tokens, so
+// its ceiling is far above the answer's length (billing is per token used).
+const RESEARCH_MAX_TOKENS = Number(Deno.env.get("RESEARCH_MAX_TOKENS") ?? "8000");
+const RESEARCH_EFFORT = Deno.env.get("RESEARCH_EFFORT") ?? "medium";
 
 // --- Grok (xAI), for the roast only ----------------------------------------
 //
@@ -594,7 +598,7 @@ function trashTalkProvider(grokKey: string): Provider {
 }
 
 interface Source { url: string; title: string; }
-interface ModelReply { ok: boolean; status: number; text: string; detail: string; sources?: Source[]; sourceFacts?: string; }
+interface ModelReply { ok: boolean; status: number; text: string; detail: string; sources?: Source[]; sourceFacts?: string; searched?: boolean; searchUnavailable?: boolean; }
 
 // Retry the statuses that mean "try again", not the ones that mean "you asked
 // wrong". A 400/401/403 retried three times is three times the latency for the
@@ -892,6 +896,13 @@ export function webSearchUnavailable(status: number, body: string): boolean {
   const message = parsed?.error?.message ?? body;
   return /web[_ -]?search/i.test(message) && /not enabled|disabled|does not support|not supported|unsupported|not available|unavailable|not allowed|permission|invalid|does not match/i.test(message);
 }
+// "I don't know, go look it up" from a call that had web search and never used
+// it. The user paid for an answer; this reply is the one thing they can't use.
+const PUNT_RE = /\b(does(?:n'?t| not) (?:specify|say|show|include|list|indicate|mention)|(?:is|are)(?:n'?t| not) (?:specified|included|listed|available|provided) in|not (?:included|listed|provided|available|specified) in (?:the |this |my )?(?:app|cached|supplied|provided)|(?:app|cached|supplied) data (?:does(?:n'?t| not)|only)|(?:i )?(?:do not|don'?t|can'?t|cannot) (?:have|see|access|find|verify|confirm|determine|tell)|unable to (?:find|verify|confirm|determine)|(?:check|visit|see|view|consult|look (?:it )?up (?:on|at)?) .{0,40}\b(?:ufcstats|sherdog|tapology|espn|wikipedia|ufc\.com)|i(?:'m| am) not sure|no information (?:on|about))\b/i;
+export function puntsInsteadOfAnswering(text: string): boolean {
+  return PUNT_RE.test(text ?? "");
+}
+export const FORCE_RESEARCH_NOTE = "RESEARCH REQUIRED: the supplied data does not fully answer this. Before you write anything, run web_search for the missing facts, then answer the question directly with citations. Do not say the data doesn't specify it and do not tell the user to look it up elsewhere.";
 export function researchModelUnavailable(status: number, body: string): boolean {
   if (status === 404) return true;
   if (status !== 400) return false;
@@ -904,10 +915,12 @@ async function callAnthropic(
 ): Promise<ModelReply> {
   const messages: { role: string; content: unknown }[] = [{ role: "user", content: user }];
   const model = webSearch && !useBaseModel ? RESEARCH_MODEL : MODEL;
+  let searched = false;
   // One bounded continuation for the API's pause_turn, retaining tool results.
   for (let turn = 0; turn < 2; turn++) {
     const payload = JSON.stringify({
-      model, max_tokens: webSearch ? Math.max(maxTokens, 1600) : maxTokens,
+      model, max_tokens: model === RESEARCH_MODEL && model !== MODEL ? Math.max(maxTokens, RESEARCH_MAX_TOKENS) : webSearch ? Math.max(maxTokens, 1600) : maxTokens,
+      ...(model === RESEARCH_MODEL && model !== MODEL && RESEARCH_EFFORT ? { output_config: { effort: RESEARCH_EFFORT } } : {}),
       ...(system ? { system } : {}), messages,
       ...(webSearch ? { tools: [{ type: "web_search_20250305", name: "web_search", max_uses: RESEARCH_MAX_SEARCHES }] } : {}),
     });
@@ -923,11 +936,13 @@ async function callAnthropic(
       }
       if (webSearch && webSearchUnavailable(r.status, r.body)) {
         console.warn("Web search unavailable; answering from cached fight data");
-        return await callAnthropic(apiKey, { system: (system ?? "") + "\n\n" + SEARCH_UNAVAILABLE_RULE, user, maxTokens, webSearch: false, useBaseModel });
+        const noSearch = await callAnthropic(apiKey, { system: (system ?? "") + "\n\n" + SEARCH_UNAVAILABLE_RULE, user, maxTokens, webSearch: false, useBaseModel });
+        return { ...noSearch, searchUnavailable: true };
       }
       return { ok: false, status: r.status, text: "", detail: r.detail || r.body };
     }
     const data = parseJson(r.body) as { stop_reason?: string; content?: { type?: string; text?: string; citations?: { url?: string; title?: string; cited_text?: string }[] }[] } | null;
+    if ((data?.content ?? []).some(b => b.type === "web_search_tool_result")) searched = true;
     if (data?.stop_reason === "pause_turn") {
       messages.push({ role: "assistant", content: data.content });
       continue;
@@ -944,7 +959,7 @@ async function callAnthropic(
       if (!sources.some(s => s.url === c.url)) sources.push({ url: c.url, title: c.title || c.url });
       if (c.cited_text) facts.push((c.title || "Source") + ": " + c.cited_text);
     }
-    return { ok: true, status: r.status, text: answer.map(b => b.text ?? "").join("\n"), detail: "", sources, sourceFacts: facts.join("\n") };
+    return { ok: true, status: r.status, text: answer.map(b => b.text ?? "").join("\n"), detail: "", sources, sourceFacts: facts.join("\n"), searched };
   }
   return { ok: false, status: 502, text: "", detail: "Research did not finish" };
 }
@@ -1552,6 +1567,18 @@ Deno.serve(async (req) => {
 
   let text: string = first.text;
   let sources = first.sources ?? [], sourceFacts = first.sourceFacts ?? "";
+  // A research-capable call that answered "I don't know" without searching is
+  // re-run once with the search demanded. The model can't be forced to call a
+  // tool through the API (forced tool_choice is a 400 on the research model),
+  // so this is a second call with the order in the user turn. Kept only if it
+  // produced something; a failed retry leaves the first answer, never nothing.
+  if (webSearch && !first.searched && !first.searchUnavailable && puntsInsteadOfAnswering(first.text)) {
+    console.warn("research answer punted without searching; retrying with search required");
+    const forced = await callAnthropic(apiKey, { system, user: prompt + "\n\n" + FORCE_RESEARCH_NOTE, maxTokens, webSearch });
+    if (forced.ok && forced.text.trim()) {
+      text = forced.text; sources = forced.sources ?? []; sourceFacts = forced.sourceFacts ?? "";
+    }
+  }
   // Ask FightBot talks about real fighters, so a stat it wasn't handed is
   // a claim the app can't back: every figure must come from the guide, the
   // fight data, the user's picks or what the user said. One retry naming the
