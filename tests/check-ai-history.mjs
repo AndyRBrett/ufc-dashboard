@@ -107,6 +107,8 @@ for (const action of ['chat', 'guide']) {
   assert.match(calls[0].system,/recommend a fighter directly/);
   assert.match(calls[0].system,/Predictions are allowed/);
   assert.match(calls[0].system,/never claim you saved, changed or locked a pick/);
+  assert.match(calls[0].system,/Answer the question asked, then stop/);
+  assert.match(calls[0].system,/lead with the direct answer/);
   assert.doesNotMatch(calls[0].system,/never invent a button, score, pick or rule/);
   assert.match(calls[0].messages[0].content,/\[Main Event\]/);
   assert.match(calls[0].messages[0].content,/You picked: Robert Valentin by Dec/);
@@ -250,13 +252,27 @@ assert.equal(mod.mainCardSelections({...mainRequest,question:'What were my previ
 for(const question of ['Which main-card picks won?','Which of my main-card picks lost?','Were my main-card picks correct?','Who were the main-card winners?']) assert.equal(mod.mainCardSelections({...mainRequest,question}).length,0,question);
 assert.equal(mod.mainCardSelections({...mainRequest,question:'Recommend my main-card picks'}).length,3);
 const grounded=mod.renderMainCardSelections(selection,bouts);
-assert.match(grounded,/Roberto Soldic by KO\/TKO — low confidence/);
-assert.match(grounded,/Cached career record: 21-4-0/);
-assert.match(grounded,/Recent fight details are missing/);
+assert.match(grounded,/- Roberto Soldic by KO\/TKO \(low, limited data\)/);
+assert.match(grounded,/- Ateba Gautier by decision \(/);
+// One short line per bout: the reasons are for a follow-up "why?".
+assert.doesNotMatch(grounded,/Cached career record|Listed American odds|Latest cached results|21-4-0/);
+assert.equal(grounded.split('\n').length,bouts.length+2);
+assert.ok(grounded.length<=60*bouts.length+120,grounded);
+assert.match(grounded,/Ask why/);
+// "…and explain why" gets one short grounded clause per pick, from the card.
+assert.ok(mod.asksWhy('Recommend my main-card picks and explain why'));
+assert.equal(mod.asksWhy('Recommend my main-card picks'),false);
+const explained=mod.renderMainCardSelections(selection,bouts,true);
+assert.match(explained,/- Roberto Soldic by KO\/TKO \(low, limited data\): record 21-4-0/);
+assert.match(explained,/no recent fight data/);
+assert.doesNotMatch(explained,/Ask why|Cached career record/);
+assert.equal(explained.split('\n').length,bouts.length+2);
 assert.doesNotMatch(grounded,/perfect record|four straight|better striking accuracy/);
 assert.equal(mod.renderMainCardSelections(selection.replace('Roberto Soldic','Unknown Fighter'),bouts),null);
 assert.equal(mod.renderMainCardSelections(JSON.stringify({picks:[]}),bouts),null);
 assert.equal(mod.renderMainCardSelections(selection.replace('"confidence":"high"','"confidence":"high","reason":"perfect record"'),bouts),null);
+responses=[{content:[{type:'text',text:selection}]}];
+assert.equal((await ask({...mainRequest,question:'Recommend my main-card picks and explain why'})).json.breakdown,explained);
 for(const action of ['guide','chat']) {
  responses=[{content:[{type:'text',text:selection}]}];
  const result=await ask({...mainRequest,action});assert.equal(result.status,200);assert.equal(result.json.breakdown,grounded);assert.equal(calls.length,1);
