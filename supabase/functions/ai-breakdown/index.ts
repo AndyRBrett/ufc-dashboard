@@ -1204,7 +1204,18 @@ export function fighterFacts(card: string): Map<string, { keys: string[]; facts:
   }
   return out;
 }
+// Event identifiers are references, not fighter statistics. Mask only the
+// supplied promotion/number pair in the answer; leave other uses of that
+// number intact so "Silva has 332 wins" still fails.
+function maskEventReferences(text: string, event?: string): string {
+  const label = /^([^\d\n:]+?\s+\d+)\b/.exec((event ?? "").trim())?.[1];
+  if (!label) return text;
+  const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = label.split(/\s+/).map(esc).join("\\s+");
+  return text.replace(new RegExp(`(^|[^\\p{L}\\p{N}])${pattern}(?![\\p{L}\\p{N}])`, "giu"), "$1[event]");
+}
 export function numbersMisattributed(text: string, d: ReqBody, sourceFacts = ""): string[] {
+  text = maskEventReferences(text, d.event);
   const card = [d.card ?? "", d.fightContext ?? ""].join("\n");
   if (!card) return [];
   const fighters = fighterFacts(card);
@@ -1230,6 +1241,7 @@ export function numbersMisattributed(text: string, d: ReqBody, sourceFacts = "")
 // Everything wrong with a guide answer's numbers: made up, or pinned on the
 // wrong fighter.
 export function guideStrays(text: string, d: ReqBody, facts: string, sourceFacts = ""): string[] {
+  text = maskEventReferences(text, d.event);
   const bad = numbersInvented(text, facts + "\n" + sourceFacts);
   numbersMisattributed(text, d, sourceFacts).forEach((n) => { if (!bad.includes(n)) bad.push(n); });
   return bad;
@@ -1434,11 +1446,12 @@ Deno.serve(async (req) => {
     if (bad.length) {
       const again = await callModel(`${prompt}
 
-Your last answer used figures that aren't in the app guide or the fight data, or gave a fighter a figure that belongs to someone else (${bad.join(", ")}). Answer again using only figures given there, each about the fighter it belongs to, and leave out anything you don't have.`);
+Your last answer used figures that aren't in the app guide or the fight data, or gave a fighter a figure that belongs to someone else (${bad.join(", ")}). Answer the actual question again, using NO numeric claims: no digits, spelled-out counts, percentages, records, ranks, odds, event numbers or numbered lists. For pick recommendations, use plain "- " bullets with the fighter name, predicted method, qualitative confidence and a brief reason grounded in the supplied data. Predictions are allowed. Describe relevant differences qualitatively instead of repeating numbers. Do not refuse or redirect to another feature.`);
       if (again.ok) { text = again.text; sources = again.sources ?? []; sourceFacts = again.sourceFacts ?? ""; bad = guideStrays(text, body, iqFacts, sourceFacts); }
     }
     if (!text.trim() || bad.length) {
-      return new Response(JSON.stringify({ error: "Couldn't answer that without making something up — try asking another way." }), { status: 502, headers: CORS });
+      console.warn("ai-breakdown fact validation failed", JSON.stringify({action, figures:bad, empty:!text.trim()}));
+      return new Response(JSON.stringify({ code:"unverified-answer", error: "Couldn't verify the details in that answer against the supplied facts." }), { status: 502, headers: CORS });
     }
     return new Response(JSON.stringify({ breakdown: text.trim(), sources }), { status: 200, headers: CORS });
   }
