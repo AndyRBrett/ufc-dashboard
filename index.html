@@ -2498,6 +2498,8 @@ function sendBot(){
       var msg="Sorry, I couldn't answer that just now. Try again.";
       if(res.status===429)msg=res.data&&res.data.error==="daily-cap"?"That's today's AI limit. Back tomorrow.":"Too many questions at once. Give it a moment.";
       if(res.status===401)msg="Sign-in expired. Reopen the app and try again.";
+      if(res.status===502&&res.data&&res.data.code==="unverified-answer")msg="I couldn’t verify the details in that answer against the card data. Please try again.";
+      else if(res.status===502&&res.data&&res.data.error==="overloaded")msg="The AI service is busy right now. Try again in a moment.";
       wait.classList.remove("loading");wait.textContent=msg;return;
     }
     wait.classList.remove("loading");wait.textContent=text;_aiSourceLinks(wait,res.data.sources);

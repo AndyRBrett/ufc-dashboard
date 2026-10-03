@@ -32,7 +32,7 @@ assert.match(fighterHistory(stats, 'Tai Tuivasa', 'Derrick Lewis').meeting, /fou
 assert.ok(fighterHistory(stats, 'Alex').error);
 
 let handler, calls = [], responses = [];
-const env = { ANTHROPIC_API_KEY: 'test', SB_ANON_KEY: 'anon', SUPABASE_URL: 'https://sb.test', SB_SERVICE_ROLE_KEY: 'service', RETRY_BACKOFF_MS: '1' };
+const env = { RATE_LIMIT: '100', ANTHROPIC_API_KEY: 'test', SB_ANON_KEY: 'anon', SUPABASE_URL: 'https://sb.test', SB_SERVICE_ROLE_KEY: 'service', RETRY_BACKOFF_MS: '1' };
 globalThis.Deno = { env: { get: k => env[k] }, serve: h => handler = h };
 globalThis.fetch = async (url, init) => {
   if (String(url).endsWith('/auth/v1/user')) return Response.json({ id: 'history-test' });
@@ -136,6 +136,20 @@ assert.equal((await ask({action:'chat',question,fightContext:{}})).status,400);
 assert.equal(mod.guideStrays('Gautier has 77 wins.',{fightContext:context},context).includes('77'),true);
 assert.equal(mod.numbersMisattributed('Gautier weighs 265 pounds.', {fightContext:context}, 'Tai Tuivasa: heavyweight, 265 pounds.').includes('265'),true);
 assert.equal(mod.numbersMisattributed('Gautier weighs 185 pounds.', {fightContext:context}, 'Ateba Gautier: middleweight, 185 pounds.').length,0);
+
+// Card context supplies the event outside the card text; event numbers
+// must be accepted, including in a sentence naming one of its fighters.
+const pickRequest={action:'guide',event:'UFC 332: Silva vs. Wang',card:'[Main Event] Natalia Silva (20-5-1, odds -208) vs Wang Cong (10-1-0, odds +168) · Flyweight',question:'What picks do you recommend for the main card'};
+assert.deepEqual(mod.guideStrays('For UFC 332, I lean Natalia Silva by decision.',pickRequest,mod.guideFactsText(pickRequest)),[]);
+responses=[{content:[{type:'text',text:'For UFC 332, I lean Natalia Silva by decision, with moderate confidence.'}]}];
+let pickResponse=await ask(pickRequest);assert.equal(pickResponse.status,200);assert.equal(calls.length,1);
+// A real invented statistic still fails and gets one qualitative repair.
+responses=[{content:[{type:'text',text:'Natalia Silva has 777 wins.'}]},{content:[{type:'text',text:'- Natalia Silva by decision: moderate confidence based on the supplied matchup.'}]}];
+pickResponse=await ask(pickRequest);assert.equal(pickResponse.status,200);assert.equal(calls.length,2);
+assert.match(calls[1].messages[0].content,/using NO numeric claims/);
+assert.match(calls[1].messages[0].content,/Do not refuse or redirect/);
+responses=Array(2).fill({content:[{type:'text',text:'Natalia Silva has 777 wins.'}]});
+pickResponse=await ask(pickRequest);assert.equal(pickResponse.status,502);assert.equal(pickResponse.json.code,'unverified-answer');
 
 if (process.argv.includes('--no-browser')) {
   console.log('check-ai-history: context, search, citation parsing, bounds and failures pass.');

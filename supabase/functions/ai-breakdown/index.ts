@@ -1154,7 +1154,7 @@ Answer only the question — no preamble, no sign-off.`;
 // Everything a guide answer may take a number from: the guide itself, the fight
 // data, the user's picks, and what the user said.
 export function guideFactsText(d: ReqBody): string {
-  return [APP_GUIDE, d.card ?? "", d.fightContext ?? "", d.userPicks ?? "", d.question ?? "",
+  return [APP_GUIDE, d.event ?? "", d.card ?? "", d.fightContext ?? "", d.userPicks ?? "", d.question ?? "",
     ...(d.history ?? []).map((t) => String(t.text ?? ""))].join("\n");
 }
 
@@ -1210,7 +1210,7 @@ export function numbersMisattributed(text: string, d: ReqBody, sourceFacts = "")
   const fighters = fighterFacts(card);
   if (!fighters.size) return [];
   const headers = card.split("\n").filter((l) => /^(NEXT|LAST|LATER) CARD/.test(l)).join("\n");
-  const general = [d.question ?? "", d.userPicks ?? "", ...(d.history ?? []).map((t) => String(t.text ?? "")),
+  const general = [d.event ?? "", d.question ?? "", d.userPicks ?? "", ...(d.history ?? []).map((t) => String(t.text ?? "")),
     headers, guideSection("SCORING (the ℹ button on Ranks shows this too)"), guideSection("MMA BASICS")].join("\n");
   const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const strays: string[] = [];
@@ -1434,11 +1434,12 @@ Deno.serve(async (req) => {
     if (bad.length) {
       const again = await callModel(`${prompt}
 
-Your last answer used figures that aren't in the app guide or the fight data, or gave a fighter a figure that belongs to someone else (${bad.join(", ")}). Answer again using only figures given there, each about the fighter it belongs to, and leave out anything you don't have.`);
+Your last answer used figures that aren't in the app guide or the fight data, or gave a fighter a figure that belongs to someone else (${bad.join(", ")}). Answer the actual question again, using NO numeric claims: no digits, spelled-out counts, percentages, records, ranks, odds, event numbers or numbered lists. For pick recommendations, use plain "- " bullets with the fighter name, predicted method, qualitative confidence and a brief reason grounded in the supplied data. Predictions are allowed. Describe relevant differences qualitatively instead of repeating numbers. Do not refuse or redirect to another feature.`);
       if (again.ok) { text = again.text; sources = again.sources ?? []; sourceFacts = again.sourceFacts ?? ""; bad = guideStrays(text, body, iqFacts, sourceFacts); }
     }
     if (!text.trim() || bad.length) {
-      return new Response(JSON.stringify({ error: "Couldn't answer that without making something up — try asking another way." }), { status: 502, headers: CORS });
+      console.warn("ai-breakdown fact validation failed", JSON.stringify({action, figures:bad, empty:!text.trim()}));
+      return new Response(JSON.stringify({ code:"unverified-answer", error: "Couldn't verify the details in that answer against the supplied facts." }), { status: 502, headers: CORS });
     }
     return new Response(JSON.stringify({ breakdown: text.trim(), sources }), { status: 200, headers: CORS });
   }
