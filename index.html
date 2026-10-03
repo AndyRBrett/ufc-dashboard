@@ -1844,22 +1844,14 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     <div class="share-btns"><button class="share-copy-btn" onclick="copyPicks()">Copy</button><button class="share-done-btn" onclick="closeShare()">Done</button></div>
   </div>
 </div>
-<div class="modal-bg" id="chatModal" onclick="if(event.target===this)closeChat()">
-  <div class="modal" style="padding:18px 16px 20px;display:flex;flex-direction:column;gap:0">
-    <div class="chat-modal-header"><div class="chat-ev-name" id="chatEvName"></div><button class="modal-xbtn" onclick="closeChat()">x</button></div>
-    <div class="quick-qs" id="chatQuickQs"></div>
-    <div class="chat-history" id="chatHistory"></div>
-    <div class="chat-input-row"><input class="chat-input" id="chatInput" type="text" placeholder="Ask about this card…" maxlength="200"><button class="chat-send-btn" id="chatSendBtn" onclick="sendPickChat()">Send</button></div>
-  </div>
-</div>
-<!-- FightBot: the in-app guide. Above the leaderboard panel (z 350) because
+<!-- FightBot: the shared MMA assistant. Above the leaderboard panel (z 350) because
      Ranks → ℹ opens it too. -->
 <div class="modal-bg" id="botModal" style="z-index:500" onclick="if(event.target===this)closeBot()">
-  <div class="modal" style="padding:18px 16px 20px;display:flex;flex-direction:column;gap:0" role="dialog" aria-label="FightBot, the app guide">
-    <div class="chat-modal-header"><div class="chat-ev-name">🤖 FightBot · fights and how the app works</div><button class="modal-xbtn" onclick="closeBot()" aria-label="Close">x</button></div>
+  <div class="modal" style="padding:18px 16px 20px;display:flex;flex-direction:column;gap:0" role="dialog" aria-label="Ask FightBot">
+    <div class="chat-modal-header"><div class="chat-ev-name" id="botTitle">🤖 Ask FightBot</div><button class="modal-xbtn" onclick="closeBot()" aria-label="Close">x</button></div>
     <div class="quick-qs" id="botQuickQs"></div>
     <div class="chat-history" id="botHistory"></div>
-    <div class="chat-input-row"><input class="chat-input" id="botInput" type="text" placeholder="Who has the edge in the main event?" maxlength="300" onkeydown="if(event.key==='Enter'){event.preventDefault();sendBot();}"><button class="chat-send-btn" id="botSendBtn" onclick="sendBot()">Send</button></div>
+    <div class="chat-input-row"><input class="chat-input" id="botInput" type="text" placeholder="Ask anything about MMA or this app…" maxlength="300" onkeydown="if(event.key==='Enter'){event.preventDefault();sendBot();}"><button class="chat-send-btn" id="botSendBtn" onclick="sendBot()">Send</button></div>
   </div>
 </div>
 <div class="modal-bg" id="parlayModal" onclick="if(event.target===this)closeParlay()">
@@ -1893,9 +1885,9 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
         <span class="btn-icon-lbl">More</span>
       </button>
       <div class="btn-more-menu" id="moreMenu">
-        <button class="btn-more-item" id="botBtn" onclick="closeMoreMenu();openBot('Home')" title="Ask how anything in the app works">
+        <button class="btn-more-item" id="botBtn" onclick="closeMoreMenu();openBot('Home')" title="Ask anything about MMA, picks or this app">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9 13h.01M15 13h.01M9 17h6"/></svg>
-          <span>FightBot Help</span>
+          <span>Ask FightBot</span>
         </button>
         <button class="btn-more-item" id="notifBell" onclick="togglePush();closeMoreMenu()" title="Fight notifications">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -2301,13 +2293,17 @@ function renderAIPanel(panel,btn,answer){
 }
 
 // ── Pick Assistant ──────────────────────────────────────────────
-var _chatEv=null,_chatEi=-1,_chatBusy=false,_chatFocusTimer=null;
-var _chatHistory={};// keyed by ei, persists within session
 function _buildCardSummary(ev){
-  var lines=[];
-  ev.fights.forEach(function(f){
-    var o=f.odds?(" | "+f.f1.n+": "+(f.odds.f1>0?"+":"")+f.odds.f1+", "+f.f2.n+": "+(f.odds.f2>0?"+":"")+f.odds.f2):"";
-    lines.push((f.f1.n+(f.f1.rk?" (#"+f.f1.rk+")":""))+" vs "+(f.f2.n+(f.f2.rk?" (#"+f.f2.rk+")":""))+o+" ["+f.wc+"]");
+  // Keep bout identities first, then spend remaining space on main-card stats.
+  // The server accepts at most 4000 chars; append whole lines only.
+  var lines=[],size=0;
+  function add(line){if(line&&size+line.length+1<=3900){lines.push(line);size+=line.length+1;}}
+  ev.fights.forEach(function(f){add(_botBoutLine(f));});
+  [true,false].forEach(function(main){
+    ev.fights.forEach(function(f){
+      if(isMainCardBout(f)!==main)return;
+      add(_botStatsLine(f.f1));add(_botStatsLine(f.f2));
+    });
   });
   return lines.join("\n");
 }
@@ -2319,75 +2315,13 @@ function _buildUserPicks(ev,ei){
   });
   return picks.length?picks.join(", "):"No picks yet";
 }
-function openPickChat(ev,ei){
-  _chatEv=ev;_chatEi=ei;
-  document.getElementById("chatEvName").textContent=ev.name;
-  var hist=_chatHistory[ei]||[];
-  var hEl=document.getElementById("chatHistory");hEl.innerHTML="";
-  hist.forEach(function(h){
-    var b=document.createElement("div");b.className="chat-bubble "+h.role;b.textContent=h.text;_aiSourceLinks(b,h.sources);hEl.appendChild(b);
-  });
-  if(hist.length)hEl.scrollTop=hEl.scrollHeight;
-  var qqEl=document.getElementById("chatQuickQs");qqEl.innerHTML="";
-  ["Top pick this card?","Best underdog value?","Who should I fade?","Parlay suggestions?"].forEach(function(q){
-    var btn=document.createElement("button");btn.className="quick-q";btn.textContent=q;
-    btn.onclick=function(){document.getElementById("chatInput").value=q;sendPickChat();};
-    qqEl.appendChild(btn);
-  });
-  document.getElementById("chatInput").value="";
-  document.getElementById("chatModal").classList.add("open");
-  lockScroll();
-  clearTimeout(_chatFocusTimer);
-  _chatFocusTimer=setTimeout(function(){document.getElementById("chatInput").focus({preventScroll:true});},300);
-}
-function closeChat(){
-  clearTimeout(_chatFocusTimer);
-  document.getElementById("chatInput").blur();
-  document.getElementById("chatModal").classList.remove("open");unlockScroll();
-}
-function sendPickChat(){
-  if(_chatBusy||!_chatEv)return;
-  var input=document.getElementById("chatInput");
-  var q=input.value.trim();
-  if(!q)return;
-  input.value="";
-  _chatBusy=true;
-  document.getElementById("chatSendBtn").disabled=true;
-  var hEl=document.getElementById("chatHistory");
-  var uBubble=document.createElement("div");uBubble.className="chat-bubble user";uBubble.textContent=q;hEl.appendChild(uBubble);
-  var lBubble=document.createElement("div");lBubble.className="chat-bubble claude loading";lBubble.textContent="Thinking…";hEl.appendChild(lBubble);
-  hEl.scrollTop=hEl.scrollHeight;
-  if(!_chatHistory[_chatEi])_chatHistory[_chatEi]=[];
-  var history=(_chatHistory[_chatEi]||[]).slice(-6).map(function(h){return {role:h.role==="user"?"user":"bot",text:String(h.text).slice(0,600)};});
-  _chatHistory[_chatEi].push({role:"user",text:q});
-  _aiFetch(JSON.stringify({
-      action:"chat",
-      event:_chatEv.name,
-      card:_buildCardSummary(_chatEv),
-      userPicks:_buildUserPicks(_chatEv,_chatEi),
-      question:q.slice(0,400),history:history,
-      fightContext:_aiFightContext([q].concat(history.filter(function(h){return h.role==="user";}).map(function(h){return h.text;})).join(" "))
-    })).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
-  .then(function(d){
-    var text=d.breakdown||"";
-    if(!text)throw new Error("Empty");
-    lBubble.className="chat-bubble claude";lBubble.textContent=text;_aiSourceLinks(lBubble,d.sources);
-    _chatHistory[_chatEi].push({role:"claude",text:text,sources:d.sources||[]});
-  }).catch(function(){
-    lBubble.className="chat-bubble claude";lBubble.textContent="Sorry, couldn't get a response. Try again.";
-  }).finally(function(){
-    _chatBusy=false;document.getElementById("chatSendBtn").disabled=false;
-    hEl.scrollTop=hEl.scrollHeight;
-  });
-}
+// Card buttons and global help open the same assistant and conversation.
+function openPickChat(ev,ei){openBot("Card",ev);}
 
-// ── FightBot: the in-app guide ──────────────────────────────────
-// Ask how anything in the app works. The guide itself lives server-side, in
-// ai-breakdown's `guide` action (APP_GUIDE): this only sends the question, the
-// screen it was asked from and the last few turns, so a follow-up ("and how do
-// I undo that?") has context. The conversation lasts the session.
+// ── Ask FightBot: one MMA and app assistant ─────────────────────
+// Every entry point shares its conversation, selected card and server prompt.
 // fightbot-guide:start
-var _botHist=[],_botBusy=false,_botScreen="",_botLocked=false,_botFocusTimer=null;
+var _botHist=[],_botBusy=false,_botScreen="",_botLocked=false,_botFocusTimer=null,_botCard=null;
 var BOT_TURNS=6,BOT_TURN_MAX=600;
 var BOT_QUICK=["Explain a rear-naked choke","Who has the edge in the main event?","Best underdog on the next card?","How does scoring work?","How do locks work?","How do I join a room?","How do I turn on notifications?"];
 function _botBubble(role,text){
@@ -2395,14 +2329,19 @@ function _botBubble(role,text){
   var b=document.createElement("div");b.className="chat-bubble "+(role==="user"?"user":"claude");b.textContent=text;
   hEl.appendChild(b);hEl.scrollTop=hEl.scrollHeight;return b;
 }
-function openBot(screen){
+function openBot(screen,card){
+  if(card)_botCard=card;
+  document.getElementById("botTitle").textContent="🤖 Ask FightBot"+(_botCard?" · "+_botCard.name:"");
   _botScreen=String(screen||"").slice(0,40);
   var info=document.getElementById("lbInfoModal");if(info)info.classList.remove("open");
-  var hEl=document.getElementById("botHistory");hEl.innerHTML="";
-  if(!_botHist.length)_botBubble("bot","Hi, I'm FightBot. Ask me anything about MMA: fighters, history, promotions, rules, judging, techniques or news. I also know this app’s picks, scoring, locks, belt, rooms and Fight Lab.");
-  _botHist.forEach(function(h){_aiSourceLinks(_botBubble(h.role,h.text),h.sources);});
+  var hEl=document.getElementById("botHistory");
+  if(!_botBusy){
+    hEl.innerHTML="";
+    if(!_botHist.length)_botBubble("bot","Hi, I'm FightBot. Ask me anything about MMA: fighters, history, promotions, rules, judging, techniques or news. I also know this app’s picks, scoring, locks, belt, rooms and Fight Lab.");
+    _botHist.forEach(function(h){_aiSourceLinks(_botBubble(h.role,h.text),h.sources);});
+  }
   var qq=document.getElementById("botQuickQs");qq.innerHTML="";
-  BOT_QUICK.forEach(function(q){
+  (_botCard?["Who should I pick in the main event?","Recommend my main-card picks","Best underdog value?","Parlay suggestions?","How do locks work?"].concat(BOT_QUICK.slice(0,1)):BOT_QUICK).forEach(function(q){
     var b=document.createElement("button");b.className="quick-q";b.textContent=q;
     b.onclick=function(){document.getElementById("botInput").value=q;sendBot();};
     qq.appendChild(b);
@@ -2410,8 +2349,7 @@ function openBot(screen){
   document.getElementById("botModal").classList.add("open");
   // Ranks already holds the scroll lock; taking it again would lose its position.
   var lb=document.getElementById("lbPanel");
-  _botLocked=!(lb&&lb.classList.contains("open"));
-  if(_botLocked)lockScroll();
+  if(!_botLocked&&!(lb&&lb.classList.contains("open"))){_botLocked=true;lockScroll();}
   clearTimeout(_botFocusTimer);
   _botFocusTimer=setTimeout(function(){var i=document.getElementById("botInput");if(i)i.focus({preventScroll:true});},300);
 }
@@ -2540,7 +2478,7 @@ function sendBot(){
   var ctrl=("AbortController" in window)?new AbortController():null;
   var to=setTimeout(function(){if(ctrl)ctrl.abort();},45000);
   var req={action:"guide",question:q.slice(0,300),history:history,screen:_botScreen,fightContext:_aiFightContext([q].concat(history.filter(function(h){return h.role==="user";}).map(function(h){return h.text;})).join(" "))};
-  try{var fd=_botFightData();if(fd){req.event=fd.event;req.card=fd.card;if(fd.userPicks)req.userPicks=fd.userPicks;}}
+  try{var fd=_botCard?{event:_botCard.name.slice(0,120),card:_buildCardSummary(_botCard),userPicks:_buildUserPicks(_botCard).slice(0,1900)}:_botFightData();if(fd){req.event=fd.event;req.card=fd.card;if(fd.userPicks)req.userPicks=fd.userPicks;}}
   catch(e){console.warn("[fightbot] fight data",e);}   // app questions still work without it
   _aiFetch(JSON.stringify(req),ctrl?ctrl.signal:undefined)
   .then(function(r){return r.json().catch(function(){return {};}).then(function(d){return {ok:r.ok,status:r.status,data:d};});})
@@ -6670,7 +6608,9 @@ var WHATS_NEW=[
   {id:"2026-10-20-ai-history",emoji:"🤖",title:"AI can look up fight history",
    desc:"Ask Claude and FightBot can answer historical matchup questions beyond the current card, with source links when they look up records. The ⚡ breakdown also gets each fighter’s past opponents."},
   {id:"2026-10-21-mma-assistant",emoji:"🥋",title:"Ask AI anything MMA",
-   desc:"Ask Claude and FightBot cover MMA beyond this card: fighters, promotions, history, rules, techniques and news, while still knowing your app. They can look up missing facts with source links."}
+   desc:"Ask Claude and FightBot cover MMA beyond this card: fighters, promotions, history, rules, techniques and news, while still knowing your app. They can look up missing facts with source links."},
+  {id:"2026-10-22-one-fightbot",emoji:"🤖",title:"One assistant: Ask FightBot",
+   desc:"Ask FightBot replaces Ask Claude on each card and opens from More and Ranks too. One conversation for MMA, pick recommendations and app help, with the selected card’s records, odds and stats."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -6917,7 +6857,7 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
   if(_animRender){fw.classList.add("ev-reveal");fw.style.animationDelay=Math.min(evNum,6)*70+"ms";}
   (function(evRef,eiRef){
     var tb=document.createElement("div");tb.className="ai-event-toolbar";
-    var chatBtn=document.createElement("button");chatBtn.className="ai-event-btn";chatBtn.innerHTML="💬 Ask Claude";
+    var chatBtn=document.createElement("button");chatBtn.className="ai-event-btn";chatBtn.innerHTML="🤖 Ask FightBot";
     chatBtn.onclick=function(e){e.stopPropagation();openPickChat(evRef,eiRef);};
     var parlayBtn=document.createElement("button");parlayBtn.className="ai-event-btn btn-gold";parlayBtn.innerHTML="🎰 Parlay Picks";
     parlayBtn.onclick=function(e){e.stopPropagation();openParlay(evRef,eiRef);};
@@ -10859,7 +10799,6 @@ var _escClosers=[
   ["trashSheet",function(){closeTrashSheet();}],
   ["wheelSheet",function(){closeWheelSheet();}],
   ["chalSheet",function(){closeChalSheet();}],
-  ["chatModal",function(){closeChat();}],
   ["parlayModal",function(){closeParlay();}],
   ["cmpBg",function(){closeCmp();}],
   ["shareBg",function(){closeShare();}],

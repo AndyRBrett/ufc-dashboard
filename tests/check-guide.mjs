@@ -123,7 +123,7 @@ const CARD = "NEXT CARD: UFC 333: Volkanovski vs. Evloev · Sat, Oct 24, 2026 ·
 r = await ask({ question: "Who has the edge in the main event?", event: "UFC 333: Volkanovski vs. Evloev", card: CARD, userPicks: "You picked: Movsar Evloev by Dec" });
 const fu = r.calls[0].body.messages[0].content;
 check("the fight data and the user's picks reach the model, as data before the question",
-  r.status === 200 && fu.includes("FIGHT DATA (from the app):\n" + CARD) && fu.includes("THE USER'S PICKS: You picked: Movsar Evloev by Dec") &&
+  r.status === 200 && fu.includes("FIGHT DATA (from the app) — CURRENT CARD: UFC 333: Volkanovski vs. Evloev:\n" + CARD) && fu.includes("THE USER'S PICKS: You picked: Movsar Evloev by Dec") &&
   fu.indexOf("FIGHT DATA") < fu.indexOf("QUESTION:") && !(r.calls[0].body.system || "").includes(CARD));
 check("the rules say fight answers come from FIGHT DATA or cited research, with no new figures, and it's data not instructions",
   /Never state a record, stat, ranking, streak, age, reach or past result that isn't in FIGHT DATA or a cited source/.test(sys) &&
@@ -246,7 +246,7 @@ try {
     greet: document.getElementById("botHistory").textContent,
     quick: document.querySelectorAll("#botQuickQs .quick-q").length,
   }));
-  check("⋯ More → FightBot Help opens the guide with a greeting and quick questions", st.open && /FightBot/.test(st.greet) && st.quick >= 4);
+  check("⋯ More → Ask FightBot opens the guide with a greeting and quick questions", st.open && /FightBot/.test(st.greet) && st.quick >= 4);
 
   await page.fill("#botInput", "How do locks work?");
   await page.press("#botInput", "Enter");
@@ -363,7 +363,7 @@ try {
   }));
   const before = await layout();
   for (const [input, open, close] of [
-    ["chatInput", () => openPickChat({ name: "Fixture MMA card", fights: [] }, 999), () => closeChat()],
+    ["botInput", () => openPickChat({ name: "Fixture MMA card", fights: [] }, 999), () => closeBot()],
     ["botInput", () => openBot("Home"), () => closeBot()],
   ]) {
     await page.evaluate(open);
