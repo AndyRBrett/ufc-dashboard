@@ -526,5 +526,24 @@ await db.exec(readFileSync(join(ROOT, "supabase/migrations/0017_picks_hidden_unt
   }
 }
 
+// check-results waits out a bout's lock grace before claiming its result push:
+// the service-key read sees every pick so far, but the database still takes one
+// for LOCK_GRACE after the lock, and notif_log would dedup a later picker out.
+{
+  const src = readFileSync(join(ROOT, "supabase/functions/check-results/index.ts"), "utf8");
+  const stub = "globalThis.Deno = { env: { get: () => undefined }, serve: () => {} };\n";
+  const { code: crCode } = await transform(stub + src, { loader: "ts", format: "esm" });
+  const crLinked = crCode.replace(/from "\.\.\/_shared\/([\w-]+\.js)"/g,
+    (_m, f) => `from "${pathToFileURL(join(ROOT, "supabase/functions/_shared", f)).href}"`);
+  const cr = await import("data:text/javascript;base64," + Buffer.from(crLinked).toString("base64"));
+  const T = Date.parse("2026-10-10T02:00:00Z");
+  check("check-results: a result inside its bout's lock grace waits", cr.graceOver("2026-10-10T01:57:00Z", T) === false);
+  check("check-results: …and goes once the grace is over", cr.graceOver("2026-10-10T01:55:00Z", T) === true && cr.graceOver("2026-10-10T01:50:00Z", T) === true);
+  check("check-results: a bout with no lock row (or an unreadable time) isn't held", cr.graceOver(undefined, T) === true && cr.graceOver("nonsense", T) === true);
+  check("check-results: LOCK_GRACE matches the database's 5 minutes", cr.LOCK_GRACE_MS === 5 * 60 * 1000);
+  check("check-results: lock keys match pick_locks (lower-cased, trimmed, sorted)", cr.lockKey(" Wang Cong", "Natalia SILVA ") === "natalia silva|wang cong" && cr.lockKey("b", "a") === cr.lockKey("a", "b"));
+  check("check-results: the result loop defers on graceOver before any send", /if \(!graceOver\(locks\.get\(boutKey\), now\)\) \{ deferredCount\+\+; continue; \}/.test(src) && src.indexOf("graceOver(locks.get") < src.indexOf("functions/v1/send-push"));
+}
+
 if (failures) { console.error(`\ncheck-pick-lock: ${failures} failure(s).`); process.exit(1); }
 console.log("\ncheck-pick-lock: once a bout locks, its picks can't be added, changed, moved or deleted, and nobody else's show before it.");
