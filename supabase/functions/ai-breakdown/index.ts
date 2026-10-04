@@ -1069,7 +1069,10 @@ ${d.card}`;
 export const APP_GUIDE = `APP: "Fight Cards", a UFC picks game for a group of friends. It is a web app (add it to your home screen to use it like an app). Anyone can browse; making picks needs an email account (one-time code, no password), so tapping a pick without one asks for an email first.
 
 HOME SCREEN
-- Top bar: Ranks (the leaderboard), FN Mode (Fight Night mode) and ⋯ More.
+- Tab bar at the bottom: Cards (this home screen), Picks (jumps to My Picks), Live (opens FN Mode, the fight-night view), League (opens Ranks, the leaderboard) and FightBot.
+- Top bar: your avatar on the left opens the Menu (Ask FightBot, Challenges, Rooms, Notifications, Result Spoilers, Sign In / Link Email, Privacy & Safety, Fight Lab, Year Wrapped, themes, Add to Home Screen); the magnifier on the right jumps to fighter search.
+- The Next Event card counts down to the next main card and shows how many of its bouts you have picked; its button (Finish your picks) opens FN Mode on the first bout you still need to pick.
+- AI features ask once before the first request is sent (what goes to Anthropic or xAI, and that your email and account ID never do). Turn them off or back on in Menu → Privacy & Safety.
 - The countdown shows the next main card. Filter tabs pick a weight class.
 - Each upcoming event lists its bouts, main event first, with times for the main card, prelims and (on numbered PPVs) early prelims, all in Eastern time.
 - ⚡ Activity strip: pick lock-ins, hot streaks, belt changes and challenges as they happen, spoiler-free.
@@ -1110,15 +1113,16 @@ OTHER PROMOTIONS: PFL, RIZIN, CONTENDER SERIES (DWCS)
 - Their picks close for the whole card at once, before it starts, not segment by segment: RIZIN before Japan's first bell, DWCS an hour before the Tuesday night show.
 - Every card shows how many fights you've picked (like 7/12 picked) and how many of your 2 locks you've used.
 
-⋯ MORE MENU
+MENU (tap your avatar, top left)
 - Notifications (the 🔔 bell): fight-night reminders, results, trash talk, challenges, nudges, fight change alerts and the Friday brief. On iPhone, notifications only work from the home-screen app.
 - Result Spoilers: on shows the winner in result notifications; off keeps them spoiler-free.
-- Privacy & Safety: the privacy policy, and the players you've blocked (with Unblock).
+- Privacy & Safety: the privacy policy, the AI features switch, and the players you've blocked (with Unblock).
+- Challenges and Rooms: shortcuts to your challenge inbox and your Watch Party rooms.
 - Sign In / Link Email: sign in with an email (one-time code). It is required to make picks, and it means your picks and stats survive a new phone or a cleared browser. Linking keeps the same account and picks. To move to a new phone, sign in there with the same email.
-- Fight Lab, Year Wrapped, themes (Octagon Dark, Apex Neon, Stars & Stripes, UFC Noche, Silver Bullet, Seasonal), and Add to Home Screen.
+- Fight Lab, Year Wrapped, themes (Fight Cards, the default; Apex Neon, Stars & Stripes, UFC Noche, Silver Bullet, Seasonal), and Add to Home Screen.
 - Never delete the home-screen app without linking an email first: removing it clears its local data, and an unlinked account can't be recovered.
 
-FIGHT LAB (⋯ More → Fight Lab; it only reads, never changes picks)
+FIGHT LAB (Menu → Fight Lab; it only reads, never changes picks)
 - 🧠 Fight IQ: your collectible card (archetype, six ratings where 50 is par, signature stat, weakness, nemesis, rival, best call, worst miss, belt history, form), Fight Night XP with levels, badges and a frame that goes bronze, silver, gold and diamond (bragging rights only, never on the leaderboard), and ✍️ a scouting report written in a random voice (3 a day).
 - 📈 Market: how your picks compare with the betting market and the biggest line moves.
 - 📰 Fight Week: the fight-week brief (biggest line move, the fight the group is most split on, the one worth studying). The Friday Fight Week Brief push at 7pm ET before a card opens it.
@@ -1127,7 +1131,7 @@ FIGHT LAB (⋯ More → Fight Lab; it only reads, never changes picks)
 - 🥊 Hub: cards across promotions.
 
 YEAR WRAPPED
-- Your year of picks as swipe-through slides (hit rate, best night, biggest upset, streaks, ride-or-die fighter, pick twin, nemesis, title reigns, pick personality), with a shareable image. ⋯ More → Year Wrapped, or Ranks → Your Wrapped; it pops up by itself in December.
+- Your year of picks as swipe-through slides (hit rate, best night, biggest upset, streaks, ride-or-die fighter, pick twin, nemesis, title reigns, pick personality), with a shareable image. Menu → Year Wrapped, or Ranks → Your Wrapped; it pops up by itself in December.
 
 AI FEATURES AND LIMITS
 - ⚡ AI, 🤖 Ask FightBot, 🎰 Parlay Picks, the scouting report, FightBot's call and FightBot share a daily AI allowance per account. If it's used up, it resets the next day (UTC).
@@ -1141,7 +1145,7 @@ MMA BASICS
 // Every button or menu name the guide sends people to. check:guide asserts each
 // one is in APP_GUIDE and still exists in index.html or lab.html.
 export const GUIDE_UI_LABELS = [
-  "Ranks", "FN Mode", "Quick Pick", "Compare Fighters", "🤖 Ask FightBot", "🎰 Parlay Picks", "⚡ AI",
+  "Ranks", "FN Mode", "Cards", "Picks", "Live", "League", "Menu", "Finish your picks", "Quick Pick", "Compare Fighters", "🤖 Ask FightBot", "🎰 Parlay Picks", "⚡ AI",
   "Bonus Pick", "🔓 Lock it", "This Event", "All-Time", "Main Card", "Title History", "Card Recap",
   "Trash Talk", "Challenges", "Wheel", "Profile", "Delete my account", "👥 Everyone",
   "Notifications", "Result Spoilers", "Sign In / Link Email", "Fight Lab", "Year Wrapped",
@@ -1169,7 +1173,7 @@ ${PICK_RECOMMENDATION_RULES}
 RULES
 - Recommendation requests are fight questions, not navigation questions. Use the current card when supplied; earlier conversation about another card does not override it.
 - App questions: answer from the guide. If it doesn't cover it, say you're not sure and suggest where in the app to look (or to ask the group). Never invent a button, menu, setting, number or rule.
-- Give tap paths the way the guide names them, like "⋯ More → Fight Lab" or "Ranks → ℹ".
+- Give tap paths the way the guide names them, like "Menu → Fight Lab" or "Ranks → ℹ".
 - Fight questions: use FIGHT DATA and cited web research. You may give your read on who has the edge or where the value is, reasoning from the records, ranks, odds and stats there, and say it's your read, not a sure thing. Never state a record, stat, ranking, streak, age, reach or past result that isn't in FIGHT DATA or a cited source, and don't compute new figures (no implied percentages). If a fact is missing, look it up with web_search and cite the record; don't send the user to another AI button for the same missing fact.
 - A fighter need not be on the current card. You can research historical fights even without card data.
 - Short and plain: lead with the direct answer, then stop. 1–3 sentences, or one short "- " line per item when asked for several. Give reasons and supporting numbers only when asked why. No markdown headings, no bold, no tables.

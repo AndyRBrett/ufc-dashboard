@@ -500,7 +500,16 @@ else {
     check("the player picker lists each person once (no ghost identities)", opts.length === 3 && new Set(bases).size === bases.length);
     await page.click('#tabs button[data-tab="iq"]');
     const recTile = await page.evaluate(() => document.querySelector(".tile .v").textContent.replace(/^(\d+)W(\d+)L$/, "$1-$2"));
-    for (let i = 0; i < 4; i++) {
+    // The first tap asks for the app's AI consent and sends nothing until it's given.
+    await page.click("text=✍️");
+    const gateTxt = await page.evaluate(() => document.getElementById("main").innerText);
+    check("the scouting report asks for AI consent first, and sends nothing before it",
+      /Anthropic's Claude/.test(gateTxt) && iqCalls.length === 0 && await page.evaluate(() => localStorage.getItem("ufc_ai_consent") === null));
+    await page.click("text=Allow and write it");
+    await page.waitForFunction(() => !/Writing…/.test(document.body.innerText), null, { timeout: 5000 });
+    check("...and Allow records the consent and writes it", iqCalls.length === 1 &&
+      await page.evaluate(() => localStorage.getItem("ufc_ai_consent") === "1"));
+    for (let i = 0; i < 3; i++) {
       await page.click("text=✍️");
       await page.waitForFunction(() => !/Writing…/.test(document.body.innerText), null, { timeout: 5000 });
     }

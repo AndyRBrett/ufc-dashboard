@@ -64,7 +64,8 @@ async function main() {
       title: document.title,
       eventsOk: typeof window.EVENTS !== "undefined" && Array.isArray(window.EVENTS) && window.EVENTS.length > 0,
       bodyText: (document.body?.innerText || "").trim().length,
-      lbBtn: !!document.querySelector("[onclick*=openLeaderboard]"),
+      // League, in the tab bar, is how Ranks opens.
+      lbBtn: !!document.querySelector("#tabBar #tabLeague[onclick*=goTab]"),
       hasCards: document.querySelectorAll("[class*=ev],[class*=card],[class*=fight]").length,
     }));
 
@@ -72,17 +73,24 @@ async function main() {
     assert("EVENTS data present", state.eventsOk);
     assert("page has visible content", state.bodyText > 200);
     assert("core UI rendered (cards)", state.hasCards > 0);
-    assert("leaderboard button present", state.lbBtn);
+    assert("leaderboard (League) tab present", state.lbBtn);
 
     // Exercise a core interaction: opening the leaderboard must not throw and must open the panel.
     if (state.lbBtn) {
-      await page.evaluate(() => window.openLeaderboard && window.openLeaderboard());
+      await page.click("#tabLeague");
       await page.waitForTimeout(400);
       const lbOpen = await page.evaluate(() => {
         const p = document.getElementById("lbPanel");
-        return !!(p && (p.classList.contains("open") || getComputedStyle(p).display !== "none"));
+        return !!(p && (p.classList.contains("open") || getComputedStyle(p).display !== "none")) &&
+          document.getElementById("tabLeague").classList.contains("active");
       });
-      assert("leaderboard panel opens", lbOpen);
+      assert("tapping League opens the leaderboard panel and marks the tab", lbOpen);
+      // The tab bar stays on top of Ranks, so Cards brings the home screen back.
+      await page.click("#tabCards");
+      await page.waitForTimeout(300);
+      const lbClosed = await page.evaluate(() => !document.getElementById("lbPanel").classList.contains("open") &&
+        document.getElementById("tabCards").classList.contains("active"));
+      assert("tapping Cards closes Ranks and marks the Cards tab", lbClosed);
     }
     // Year Wrapped's share card: a real canvas draw in a real browser, with
     // long names that have to be shrunk/ellipsised to fit.

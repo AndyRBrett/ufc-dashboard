@@ -751,6 +751,17 @@ function writeupBlock(iq){
     // it out. A stale token means opening the app once, which refreshes it.
     var tok=_labSessionToken();
     if(!tok){out.textContent="Open the app once to refresh your sign-in, then come back for the scouting report.";return;}
+    // The app's AI consent (ufc_ai_consent): nothing goes to Claude until the
+    // user has said yes, here or in the app.
+    var ok=false;try{ok=localStorage.getItem("ufc_ai_consent")==="1";}catch(e){}
+    if(!ok){
+      out.textContent="";
+      out.appendChild(h("p",{style:"margin:0 0 8px",text:"The scouting report is written by Anthropic's Claude. To write it, the app sends your Fight IQ numbers (never your email address or account ID). You can turn AI features off in the app under Privacy & Safety."}));
+      var allow=h("button",{class:"act",text:"Allow and write it"});
+      allow.addEventListener("click",function(){try{localStorage.setItem("ufc_ai_consent","1");}catch(e){}out.textContent="";btn.click();});
+      out.appendChild(allow);
+      return;
+    }
     btn.disabled=true;btn.textContent="Writing…";out.textContent="";
     fetch(SUPABASE_URL+"/functions/v1/ai-breakdown",{method:"POST",
       headers:{"Content-Type":"application/json",Authorization:"Bearer "+tok},

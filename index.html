@@ -9,7 +9,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https://upload.wikimedia.org https://thumb.wikimedia.org https://a.espncdn.com data:; font-src 'self'; connect-src 'self' https://gkccophrdqtqcowmblre.supabase.co wss://gkccophrdqtqcowmblre.supabase.co https://en.wikipedia.org; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>UFC Fight Cards</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#e8192c">
+<meta name="theme-color" content="#0e0f12">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <!-- black, not black-translucent. black-translucent opts the web view into
@@ -57,9 +57,18 @@
 @font-face{font-family:'Inter';font-style:normal;font-weight:100 900;font-display:swap;src:url('fonts/inter-vietnamese.woff2') format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
 @font-face{font-family:'Inter';font-style:normal;font-weight:100 900;font-display:swap;src:url('fonts/inter-latin-ext.woff2') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:'Inter';font-style:normal;font-weight:100 900;font-display:swap;src:url('fonts/inter-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/barlow-400-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:500;font-display:swap;src:url('fonts/barlow-500-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:600;font-display:swap;src:url('fonts/barlow-600-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:700;font-display:swap;src:url('fonts/barlow-700-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:600;font-display:swap;src:url('fonts/barlow-condensed-600-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:700;font-display:swap;src:url('fonts/barlow-condensed-700-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 </style>
 <style>
-:root{--red:#e8192c;--red-dim:rgba(232,25,44,.12);--gold:#c9a84c;--gold-dim:rgba(201,168,76,.12);--bg:#07070a;--card:#0f0f14;--card2:#171720;--surface:#171720;--future-bg:#0b0b0f;--future-border:rgba(255,255,255,.06);--text:#ededef;--muted:#8a8f98;--muted2:#b0b5c0;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(255,255,255,.07);--pill-bg:rgba(255,255,255,.06);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--green:#2ecc71;--green-dim:rgba(46,204,113,.12);--green-border:rgba(46,204,113,.28);--red-border:rgba(232,25,44,.3);--loss:#d65a68;--loss-dim:rgba(214,90,104,.12);--loss-border:rgba(214,90,104,.3);--hdr-bg:#07070a;--shadow-card:0 2px 12px rgba(0,0,0,.4);--shadow-el:0 8px 32px rgba(0,0,0,.55);--on-accent:#fff;--on-gold:#000;--accent-glow:rgba(232,25,44,.35);--gold-glow:rgba(201,168,76,.5);--gold-border:rgba(201,168,76,.3);--banner-edge:#a0000a;--fn-tint:rgba(232,25,44,.14);color-scheme:dark}
+:root{--red:#e5383b;--red-dim:rgba(229,56,59,.12);--gold:#c9a84c;--gold-dim:rgba(201,168,76,.12);--blue:#4b8df8;--bg:#0e0f12;--card:#17191e;--card2:#20232a;--surface:#20232a;--future-bg:#121418;--future-border:#23262d;--text:#f2f3f5;--muted:#a7acb6;--muted2:#c3c7cf;--border:#23262d;--border2:#2c3038;--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(255,255,255,.06);--pill-bg:rgba(255,255,255,.06);--bar-bg:#20232a;--pending-bg:rgba(255,255,255,.04);--green:#3fbf7f;--green-dim:rgba(63,191,127,.12);--green-border:rgba(63,191,127,.3);--red-border:rgba(229,56,59,.35);--loss:#d65a68;--loss-dim:rgba(214,90,104,.12);--loss-border:rgba(214,90,104,.3);--hdr-bg:#0e0f12;--shadow-card:none;--shadow-el:0 8px 32px rgba(0,0,0,.55);--on-accent:#fff;--on-gold:#000;--accent-glow:rgba(229,56,59,.35);--gold-glow:rgba(201,168,76,.5);--gold-border:rgba(201,168,76,.3);--banner-edge:#a0000a;--fn-tint:rgba(229,56,59,.14);--font-body:Barlow,system-ui,-apple-system,sans-serif;--font-display:'Barlow Condensed',Barlow,sans-serif;--tabbar-h:56px;color-scheme:dark}
+/* The redesign's Barlow is the default (Octagon) theme's type; every other theme
+   keeps the Inter + Bebas Neue it was drawn with. */
+body:not([data-theme="octagon"]){--font-body:Inter,system-ui,sans-serif;--font-display:'Bebas Neue',sans-serif}
 /* ===== THEME: KNOCKOUT FIRE — charcoal, molten orange & hot yellow ===== */
 body[data-theme="fire"]{--bg:#0a0705;--card:#141009;--card2:#1d160d;--surface:#1d160d;--future-bg:#0d0a07;--future-border:rgba(255,106,26,.12);--text:#f5ede4;--muted:#9a8b7c;--muted2:#cabba9;--border:rgba(255,106,26,.12);--border2:rgba(255,106,26,.22);--sep:rgba(255,255,255,.1);--stripe-border:rgba(255,255,255,.05);--btn-bg:rgba(255,106,26,.08);--pill-bg:rgba(255,255,255,.05);--bar-bg:rgba(255,255,255,.08);--pending-bg:rgba(255,255,255,.04);--hdr-bg:#0a0705;--red:#ff6a1a;--red-dim:rgba(255,106,26,.12);--red-border:rgba(255,106,26,.38);--gold:#ffc63d;--gold-dim:rgba(255,198,61,.12);--gold-border:rgba(255,198,61,.32);--green:#3ecf6e;--green-dim:rgba(62,207,110,.12);--green-border:rgba(62,207,110,.3);--loss:#ff5d6e;--loss-dim:rgba(255,93,110,.12);--loss-border:rgba(255,93,110,.3);--shadow-card:0 2px 12px rgba(0,0,0,.5),0 0 24px rgba(255,106,26,.04);--shadow-el:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(255,106,26,.06);--on-accent:#2b1000;--on-gold:#2b1c00;--accent-glow:rgba(255,106,26,.4);--gold-glow:rgba(255,198,61,.45);--banner-edge:#8f2f00;--fn-tint:rgba(255,106,26,.14)}
 /* ===== THEME: STARS & STRIPES — midnight navy, Old Glory red, white & blue ===== */
@@ -113,7 +122,7 @@ body[data-theme="usa"] .us-flag::after{content:"";position:absolute;inset:0;z-in
   background-size:120px 100%;animation:usWave 1.9s linear infinite}
 @keyframes usWave{from{background-position:0 0}to{background-position:120px 0}}
 body[data-theme="usa"] .usa-tag-row{display:flex;align-items:center;justify-content:center;gap:9px;
-  color:#e8eef9;font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.26em;
+  color:#e8eef9;font-family:var(--font-body);font-size:9.5px;letter-spacing:.26em;
   text-transform:uppercase;padding:6px 10px;white-space:nowrap;overflow:hidden}
 body[data-theme="usa"] .usa-tag-row b{color:#ff4d5e;font-weight:500}
 body[data-theme="usa"] .usa-tag-row svg{width:11px;height:11px;display:block;flex:0 0 auto;fill:#fff;opacity:.95}
@@ -189,6 +198,7 @@ body[data-theme="noche"] .lb-hdr{position:relative}
    buttons (z-index auto). Lift the header controls above the band — it must
    still hang over the page content below, so the band keeps its z-index. */
 body[data-theme="noche"] .hdr-right,
+body[data-theme="noche"] .hdr-avatar,
 body[data-theme="noche"] .logo>:not(.noche-papel),
 body[data-theme="noche"] .lb-hdr>:not(.noche-papel){position:relative;z-index:3}
 /* Calavera wordmark glyph, reusing #noche-calavera from the sprite. */
@@ -250,7 +260,7 @@ body[data-theme="noche"]{--noche-greca:url("data:image/svg+xml,%3Csvg xmlns='htt
 *{box-sizing:border-box;margin:0;padding:0}
 /* Keep iOS text sizing stable when a modal fixes/unfixes the page. */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;min-height:100vh;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 80px);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + var(--tabbar-h) + 24px);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
 /* The status-bar strip is ours to paint. iOS reads theme-color when a standalone
    app launches and does not reliably re-read it on a theme switch, so relying on
    the meta alone left the old theme's colour stranded at the top. The header now
@@ -269,7 +279,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
    blur is gone: nothing to leak, nothing to composite, and no visual change to
    the header itself. Don't re-add backdrop-filter here without making the
    background genuinely translucent AND re-checking the banner on an iPhone. */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:62px;border-bottom:1px solid var(--border);background:var(--hdr-bg);position:sticky;top:env(safe-area-inset-top,0px);z-index:99}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:0 16px;height:62px;border-bottom:1px solid var(--border);background:var(--hdr-bg);position:sticky;top:env(safe-area-inset-top,0px);z-index:99}
 #installBtn{display:none}
 #installBtn.visible{display:flex}
 #install-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
@@ -277,7 +287,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 #install-panel{background:var(--card);border:1px solid var(--border2);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px 28px;position:relative;animation:slideUp .25s ease-out}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .install-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-.install-title{font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.06em;color:var(--text)}
+.install-title{font-family:var(--font-display);text-transform:uppercase;font-size:20px;letter-spacing:.06em;color:var(--text)}
 .install-close{background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
 .install-steps{display:flex;flex-direction:column;gap:14px}
 .install-step{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text)}
@@ -294,7 +304,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .rc-ev{font-size:12px;color:var(--muted);margin:-8px 0 2px}
 .rc-title{background:var(--btn-bg);border:1px solid var(--border2);border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center}
 .rc-title-em{font-size:26px;line-height:1}
-.rc-title-main{font:700 15px Inter,sans-serif;color:var(--text)}
+.rc-title-main{font:700 15px var(--font-body);color:var(--text)}
 .rc-sub{font-size:12px;color:var(--muted2);line-height:1.4;margin-top:2px}
 .tape{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:10px 12px;margin:0 0 12px}
 .tape-hd{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;text-align:center}
@@ -306,7 +316,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .tape-v{font-size:12px;color:var(--text);margin-top:8px;line-height:1.4;font-style:italic}
 .tape-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
 .bot-call{margin-top:8px}
-.bot-call-btn,.tape-poster-btn{background:var(--card2);border:1px solid var(--border2);color:var(--text);border-radius:999px;padding:5px 11px;font:600 12px Inter,sans-serif;cursor:pointer}
+.bot-call-btn,.tape-poster-btn{background:var(--card2);border:1px solid var(--border2);color:var(--text);border-radius:999px;padding:5px 11px;font:600 12px var(--font-body);cursor:pointer}
 .bot-call-btn:disabled{opacity:.6;cursor:default}
 .bot-call-line{font-size:13px;line-height:1.45;color:var(--text);background:var(--card2);border-left:3px solid var(--gold);border-radius:8px;padding:7px 10px}
 .tape-acts .bot-call{margin-top:0}
@@ -352,17 +362,17 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 #wr-stage{flex:1;display:flex;align-items:center;min-height:0;position:relative;z-index:1;pointer-events:none}
 .wr-slide{width:100%;padding:0 6px}
 .wr-acts{pointer-events:auto}
-.wr-kicker{font:600 13px Inter,sans-serif;text-transform:uppercase;letter-spacing:.14em;opacity:.85;margin-bottom:14px}
-.wr-big{font:800 clamp(38px,12vw,60px)/1.02 Inter,sans-serif;letter-spacing:-.02em;margin-bottom:18px;overflow-wrap:anywhere}
-.wr-sub{font:500 17px/1.45 Inter,sans-serif;opacity:.92;max-width:34ch}
-.wr-name{font:800 30px/1.1 Inter,sans-serif;margin-bottom:16px;overflow-wrap:anywhere}
+.wr-kicker{font:600 13px var(--font-body);text-transform:uppercase;letter-spacing:.14em;opacity:.85;margin-bottom:14px}
+.wr-big{font:800 clamp(38px,12vw,60px)/1.02 var(--font-body);letter-spacing:-.02em;margin-bottom:18px;overflow-wrap:anywhere}
+.wr-sub{font:500 17px/1.45 var(--font-body);opacity:.92;max-width:34ch}
+.wr-name{font:800 30px/1.1 var(--font-body);margin-bottom:16px;overflow-wrap:anywhere}
 .wr-sum{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:6px 14px}
 .wr-sum-row{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1)}
 .wr-sum-row:last-child{border-bottom:none}
 .wr-sum-row span:first-child{opacity:.7}
 .wr-sum-row span:last-child{font-weight:700;text-align:right}
 .wr-acts{display:flex;gap:10px;margin-top:18px}
-.wr-act{flex:1;padding:13px;border-radius:999px;border:none;background:#fff;color:#000;font:700 15px Inter,sans-serif;cursor:pointer}
+.wr-act{flex:1;padding:13px;border-radius:999px;border:none;background:#fff;color:#000;font:700 15px var(--font-body);cursor:pointer}
 .wr-act-2{background:rgba(255,255,255,.14);color:#fff}
 /* Tap zones: left third goes back, the rest goes forward — real buttons, so
    they work from a keyboard and a screen reader too. */
@@ -375,12 +385,12 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 @keyframes wrIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 #wn-panel{background:var(--card);border:1px solid var(--border2);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px 24px;position:relative;animation:slideUp .25s ease-out;max-height:80vh;display:flex;flex-direction:column}
 .wn-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-shrink:0}
-.wn-title{font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.06em;color:var(--text)}
+.wn-title{font-family:var(--font-display);text-transform:uppercase;font-size:20px;letter-spacing:.06em;color:var(--text)}
 .wn-close{background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .wn-list{display:flex;flex-direction:column;gap:16px;overflow-y:auto;padding-bottom:4px}
 .wn-item{display:flex;gap:12px;align-items:flex-start}
 .wn-emoji{font-size:22px;line-height:1;flex-shrink:0;margin-top:1px}
-.wn-item-title{font:700 14px Inter,sans-serif;color:var(--text);margin-bottom:2px}
+.wn-item-title{font:700 14px var(--font-body);color:var(--text);margin-bottom:2px}
 .wn-item-desc{font-size:13px;color:var(--muted2);line-height:1.4}
 .wn-btn{margin-top:18px;width:100%;padding:12px;background:var(--red);color:var(--on-accent);border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;flex-shrink:0}
 .install-step-icon{display:inline-flex;align-items:center;vertical-align:middle;margin:0 3px;color:var(--red)}
@@ -389,12 +399,12 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-panel{display:none;position:fixed;top:env(safe-area-inset-top,0px);right:0;bottom:0;left:0;z-index:350;background:var(--bg);flex-direction:column;overflow:visible}
 .lb-panel.open{display:flex}
 .lb-hdr{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:56px;border-bottom:1px solid var(--border);background:var(--hdr-bg);flex-shrink:0;gap:10px}
-.lb-title{font-family:Bebas Neue,sans-serif;font-size:27px;letter-spacing:.06em;flex:1}
+.lb-title{font-family:var(--font-display);text-transform:uppercase;font-size:27px;letter-spacing:.06em;flex:1}
 .lb-body{flex:1;overflow-y:auto;padding:12px 12px calc(env(safe-area-inset-bottom,0px) + 12px);-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .lb-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;margin-bottom:8px;background:var(--card);border:1px solid var(--border)}
 .lb-row.lb-me{border-color:var(--gold);background:var(--gold-dim)}
 .lb-medal{font-size:20px;width:28px;text-align:center;flex-shrink:0}
-.lb-rank{font-family:Bebas Neue,sans-serif;font-size:18px;color:var(--muted);width:28px;text-align:center;flex-shrink:0}
+.lb-rank{font-family:var(--font-display);text-transform:uppercase;font-size:18px;color:var(--muted);width:28px;text-align:center;flex-shrink:0}
 .lb-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
 .lb-nameline{display:flex;align-items:center;gap:6px;min-width:0}
 .lb-metaline{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;min-width:0}
@@ -404,7 +414,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-edit-btn{background:none;border:none;cursor:pointer;padding:0 2px;font-size:13px;flex-shrink:0;color:var(--muted);line-height:1;border-radius:4px;transition:background .15s}
 .lb-edit-btn:hover{background:var(--btn-bg)}
 .lb-right{text-align:right;flex-shrink:0}
-.lb-pts{font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--gold);line-height:1}
+.lb-pts{font-family:var(--font-display);text-transform:uppercase;font-size:20px;color:var(--gold);line-height:1}
 .lb-detail{font-size:11px;color:var(--muted)}
 .lb-empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:14px}
 .lb-loading{text-align:center;padding:48px 20px;color:var(--muted);font-size:14px}
@@ -413,7 +423,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-info-modal.open{display:block}
 .lb-info-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;color:var(--text)}
 .lb-info-row+.lb-info-row{border-top:1px solid var(--border)}
-.lb-info-pts{font-family:Bebas Neue,sans-serif;font-size:16px;color:var(--gold)}
+.lb-info-pts{font-family:var(--font-display);text-transform:uppercase;font-size:16px;color:var(--gold)}
 .lb-streak{font-size:11px;font-weight:700;background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border);border-radius:10px;padding:2px 7px;white-space:nowrap;flex-shrink:0}
 .lb-streak.lb-streak-0{background:var(--pill-bg);color:var(--muted);border-color:var(--border)}
 .lb-belt-chip{font-size:10px;font-weight:700;background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border);border-radius:10px;padding:1px 6px;white-space:nowrap;flex-shrink:0;letter-spacing:.02em}
@@ -431,7 +441,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .chal-row-sub{font-size:11px;color:var(--muted);margin-top:3px}
 .chal-row-stake{font-size:12px;color:var(--gold);margin-top:4px;font-weight:600}
 .chal-row-actions{display:flex;gap:8px;margin-top:9px}
-.chal-act-btn{flex:1;min-height:42px;padding:10px 8px;border-radius:8px;border:none;font:700 13px Inter,sans-serif;cursor:pointer;letter-spacing:.03em;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:transform .08s,opacity .15s}
+.chal-act-btn{flex:1;min-height:42px;padding:10px 8px;border-radius:8px;border:none;font:700 13px var(--font-body);cursor:pointer;letter-spacing:.03em;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:transform .08s,opacity .15s}
 .chal-act-btn:active{transform:scale(.96);filter:brightness(.88)}
 .chal-act-btn:disabled{opacity:.55;cursor:default;transform:none;filter:none}
 .chal-act-accept{background:var(--red);color:var(--on-accent)}
@@ -525,19 +535,19 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-ser
 .lb-wheel-del{background:none;border:1px solid transparent;color:var(--muted);font-size:14px;cursor:pointer;padding:5px 8px;line-height:1;flex-shrink:0;margin-left:10px;border-radius:8px;font-family:inherit}
 .lb-wheel-del.armed{background:var(--red);border-color:var(--red);color:var(--on-accent);font-size:11px;font-weight:700;padding:5px 10px}
 .lb-wheel-add{display:flex;gap:6px;margin-bottom:10px}
-.lb-wheel-emoji-input{width:46px;text-align:center;background:var(--card2);border:1px solid var(--border2);color:var(--text);padding:9px 4px;border-radius:9px;font:500 16px Inter,sans-serif;flex-shrink:0}
+.lb-wheel-emoji-input{width:46px;text-align:center;background:var(--card2);border:1px solid var(--border2);color:var(--text);padding:9px 4px;border-radius:9px;font:500 16px var(--font-body);flex-shrink:0}
 .lb-wheel-label-input{flex:1}
 .lb-wheel-emoji-input:focus,.lb-wheel-label-input:focus{outline:none;border-color:var(--red)}
 .lb-wheel-add-btn{padding:9px 16px;background:var(--gold);color:var(--on-gold);border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0}
 .lb-wheel-reset{width:100%;background:none;border:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px;text-decoration:underline}
 .lb-wheel-hint{text-align:center;font-size:12px;color:var(--muted);margin-bottom:8px;display:none}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
-.logo{display:flex;align-items:center;gap:9px}
-.logo-oct{width:36px;height:36px;background:var(--red);clip-path:polygon(29.3% 0%,70.7% 0%,100% 29.3%,100% 70.7%,70.7% 100%,29.3% 100%,0% 70.7%,0% 29.3%);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:16px;color:var(--on-accent);box-shadow:0 0 14px var(--accent-glow)}
+.logo{display:flex;align-items:center;justify-content:center;gap:9px;flex:1;min-width:0}
+.logo-oct{width:36px;height:36px;background:var(--red);clip-path:polygon(29.3% 0%,70.7% 0%,100% 29.3%,100% 70.7%,70.7% 100%,29.3% 100%,0% 70.7%,0% 29.3%);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);text-transform:uppercase;font-size:16px;color:var(--on-accent);box-shadow:0 0 14px var(--accent-glow)}
 .logo-eagle{background:none;border:none;font-size:32px;line-height:1;cursor:pointer;padding:0;display:none}
 body[data-theme="usa"] .logo-oct{display:none}
 body[data-theme="usa"] .logo-eagle{display:block}
-.logo-text{font-family:Bebas Neue,sans-serif;font-size:25px;letter-spacing:.08em;white-space:nowrap}
+.logo-text{font-family:var(--font-display);text-transform:uppercase;font-size:25px;letter-spacing:.08em;white-space:nowrap}
 @media (max-width:350px){.hdr{padding:0 12px}.logo{gap:6px}.logo-oct{width:32px;height:32px;font-size:14px}.logo-eagle{font-size:28px}.logo-text{font-size:18px}.hdr-right{gap:6px}.btn-icon{min-width:44px;padding:0 6px}}
 .logo-text span{color:var(--red)}
 /* month names run longer than FIGHT CARDS — THANKSGIVING, APRIL SHOWERS —
@@ -556,43 +566,85 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .btn-more-item#notifBell.bell-active svg,.btn-more-item#liveResBtn.bell-active svg{color:var(--gold)}
 .btn-icon-fn{color:var(--red)!important;border-color:var(--red-border)!important}
 .btn-icon-fn:hover{color:var(--red)!important;background:var(--red-dim)!important}
-.btn-more-wrap{position:relative}
-.btn-more-menu{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:6px;min-width:170px;box-shadow:var(--shadow-el);z-index:200}
-.btn-more-menu.open{display:block}
-.btn-more-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text);background:none;border:none;width:100%;text-align:left;font-family:Inter,sans-serif;font-weight:500;transition:background .12s}
+/* Menu drawer (#moreMenu): the old ⋯ More dropdown, now a sheet from the left. */
+.drawer-bg{position:fixed;inset:0;z-index:410;background:rgba(0,0,0,.55);opacity:0;visibility:hidden;transition:opacity .22s,visibility 0s .22s}
+.drawer-bg.open{opacity:1;visibility:visible;transition:opacity .22s}
+.btn-more-menu{position:fixed;top:0;bottom:0;left:0;width:min(320px,86vw);z-index:420;background:var(--card);border-right:1px solid var(--border2);box-shadow:var(--shadow-el);display:flex;flex-direction:column;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);transform:translateX(-102%);visibility:hidden;transition:transform .25s cubic-bezier(.2,.8,.2,1),visibility 0s .25s}
+.btn-more-menu.open{transform:none;visibility:visible;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.drawer-hd{display:flex;align-items:center;gap:12px;padding:16px 8px 14px 16px;border-bottom:1px solid var(--border)}
+.drawer-av{width:44px;height:44px;border-radius:50%;background:var(--card2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0}
+.drawer-who{flex:1;min-width:0}
+.drawer-name{font-size:17px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drawer-sub{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drawer-x{width:44px;height:44px;border:none;background:none;color:var(--muted2);display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:10px;flex-shrink:0}
+.drawer-x svg{width:20px;height:20px}
+.drawer-scroll{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:6px 8px 16px}
+.btn-more-item{display:flex;align-items:center;gap:12px;min-height:48px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:16px;color:var(--text);background:none;border:none;width:100%;text-align:left;font-family:var(--font-body);font-weight:500;transition:background .12s}
 .btn-more-item:hover{background:var(--btn-bg)}
-.btn-more-item svg{width:15px;height:15px;color:var(--muted);flex-shrink:0}
-.btn-more-sep{height:1px;background:var(--border);margin:4px 6px}
-.btn-more-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 12px 2px}
+.btn-more-item svg{width:20px;height:20px;color:var(--muted);flex-shrink:0}
+.btn-more-sep{height:1px;background:var(--border);margin:6px 8px}
+.btn-more-label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 12px 4px}
+.drawer-legal{font-size:12px;line-height:1.45;color:var(--muted);padding:14px 12px 0;margin:0}
+/* Header: avatar (menu) on the left, search on the right. */
+.hdr-avatar{position:relative;width:44px;height:44px;border:none;background:none;padding:0;margin-left:-6px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:var(--text)}
+.hdr-avatar::before{content:"";position:absolute;width:36px;height:36px;border-radius:50%;background:var(--card2);border:1px solid var(--border2)}
+.hdr-av-txt,.hdr-av-icon{position:relative}
+.hdr-av-txt{font-size:13px;font-weight:700;display:none}
+.hdr-av-icon{width:18px;height:18px}
+.hdr-avatar.has-txt .hdr-av-txt{display:block}
+.hdr-avatar.has-txt .hdr-av-icon{display:none}
+.hdr-btn{width:44px;height:44px;border:none;background:none;color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:10px;margin-right:-8px}
+.hdr-btn svg{width:22px;height:22px}
+/* Tab bar */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:360;display:flex;height:calc(var(--tabbar-h) + env(safe-area-inset-bottom,0px));padding:0 6px env(safe-area-inset-bottom,0px);background:color-mix(in srgb,var(--card) 96%,transparent);border-top:1px solid var(--border2);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.tab-btn{flex:1 1 0;min-width:0;border:none;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--muted);font:600 11px var(--font-body);cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent}
+.tab-btn svg{width:24px;height:24px}
+.tab-btn.active{color:var(--text)}
+.tab-btn.active svg{color:var(--red)}
+.tab-dot{display:none;position:absolute;top:7px;left:calc(50% + 9px);width:7px;height:7px;border-radius:50%;background:var(--red)}
+.tab-btn.is-live .tab-dot{display:block}
+/* Room for the tab bar under the full-screen views it sits over. */
+.lb-panel{bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom,0px))!important}
+.fn-mode{bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom,0px))!important}
 .theme-swatch{width:16px;height:16px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0}
 .theme-item .theme-check,#notifBell .theme-check,#liveResBtn .theme-check{display:none;margin-left:auto;color:var(--gold);font-size:12px}
 .theme-item.active .theme-check,#notifBell.bell-active .theme-check,#liveResBtn.bell-active .theme-check{display:block}
 .fn-banner{background:linear-gradient(90deg,var(--banner-edge),var(--red),var(--banner-edge));padding:9px 16px;display:none;align-items:center;gap:10px}
-.fn-banner.show{display:flex}.odds-budget-banner{display:none;padding:8px 16px;background:var(--gold-dim);border-bottom:1px solid var(--gold-border);color:var(--muted2);font-family:Inter,sans-serif;font-size:12px;line-height:1.45;letter-spacing:.02em}.odds-budget-banner.show{display:block}.odds-budget-banner b{color:var(--gold)}
-.fn-banner-text{font-family:Bebas Neue,sans-serif;font-size:15px;letter-spacing:.12em;color:var(--on-accent)}
+.fn-banner.show{display:flex}.odds-budget-banner{display:none;padding:8px 16px;background:var(--gold-dim);border-bottom:1px solid var(--gold-border);color:var(--muted2);font-family:var(--font-body);font-size:12px;line-height:1.45;letter-spacing:.02em}.odds-budget-banner.show{display:block}.odds-budget-banner b{color:var(--gold)}
+.fn-banner-text{font-family:var(--font-display);text-transform:uppercase;font-size:15px;letter-spacing:.12em;color:var(--on-accent)}
 .fn-banner-dot{width:7px;height:7px;border-radius:50%;background:var(--on-accent);animation:blink 1s infinite;flex-shrink:0}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 .hero{padding:12px 16px 8px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,color-mix(in srgb,var(--red) 5%,transparent) 0%,transparent 100%)}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .hero-sub{font-size:11px;color:var(--muted);text-align:right;margin-top:6px;letter-spacing:.01em}
-.cd-wrap{background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:var(--shadow-card)}
+.cd-wrap{background:var(--card);border:1px solid var(--border2);border-radius:18px;padding:16px;display:flex;flex-direction:column;align-items:stretch;gap:12px;box-shadow:var(--shadow-card)}
 .cd-info{min-width:0}
-.cd-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:2px;font-weight:500}
-.cd-event{font-size:15px;font-weight:600;color:var(--text);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:break-word}
-.cd-timer{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.cd-unit{text-align:center;min-width:32px}
-.cd-num{font-family:Bebas Neue,sans-serif;font-size:26px;line-height:1;color:var(--red)}
-.cd-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
-.cd-sep{font-family:Bebas Neue,sans-serif;font-size:18px;color:var(--border2);padding-bottom:12px}
+.cd-label{font-size:12px;color:var(--red);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;font-weight:700}
+.cd-event{margin:0;font-family:var(--font-display);text-transform:uppercase;font-size:30px;line-height:1.05;font-weight:700;letter-spacing:.01em;color:var(--text);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:break-word}
+.cd-when{font-size:14px;color:var(--muted);margin-top:6px}
+.cd-when:empty{display:none}
+.cd-timer{display:flex;align-items:stretch;gap:10px}
+.cd-unit{flex:1 1 0;text-align:center;background:var(--card2);border-radius:10px;padding:8px 4px}
+.cd-num{font-family:var(--font-display);text-transform:uppercase;font-size:26px;line-height:1.1;font-weight:700;color:var(--text)}
+.cd-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+.cd-sep{display:none}
 .cd-live{display:inline-block;background:var(--red-dim);color:var(--red);border:1px solid var(--red-border);font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;letter-spacing:.04em}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-bottom:1px solid var(--border)}
+.cd-picks{display:flex;flex-direction:column;gap:8px}
+.cd-picks[hidden],.cd-cta[hidden]{display:none}
+.cd-picks-row{display:flex;justify-content:space-between;font-size:14px}
+.cd-picks-row span:last-child{color:var(--muted)}
+.cd-bar{height:6px;border-radius:3px;background:var(--card2);overflow:hidden}
+.cd-bar-fill{height:100%;width:0;border-radius:3px;background:var(--red);transition:width .3s}
+.cd-cta{min-height:48px;margin-top:4px;border:none;border-radius:12px;background:var(--red);color:var(--on-accent);font:700 16px var(--font-body);cursor:pointer}
+.cd-cta:active{filter:brightness(.92)}
+.stats{display:none}
 .stat{padding:8px 6px;text-align:center;border-right:1px solid var(--border)}
 .stat:last-child{border-right:none}
-.sv{font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.05em;line-height:1;color:var(--text)}
+.sv{font-family:var(--font-display);text-transform:uppercase;font-size:20px;letter-spacing:.05em;line-height:1;color:var(--text)}
 .sl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;font-weight:500}
 .filter-wrap{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;background:var(--card)}
 .filter-wrap::-webkit-scrollbar{display:none}
-.ftab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;color:var(--muted);border:1px solid var(--border);background:none;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:Inter,sans-serif}
+.ftab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;color:var(--muted);border:1px solid var(--border);background:none;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:var(--font-body)}
 .ftab:hover{color:var(--muted2);border-color:var(--border2)}
 .ftab.active{background:var(--red);color:var(--on-accent);border-color:var(--red);box-shadow:0 2px 8px var(--accent-glow)}
 .lb-modebar{display:flex;gap:8px;align-items:stretch;flex-shrink:0}
@@ -606,7 +658,7 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .sport-bar{display:flex;gap:3px;padding:3px;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-card)}
 .sport-bar[hidden]{display:none}
 #sportBar{margin:10px 16px 0}
-.sport-tab{flex:1;min-width:0;background:none;border:none;border-radius:9px;color:var(--muted);padding:7px 10px 6px;font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:.1em;line-height:1.1;cursor:pointer;transition:background .15s,color .15s}
+.sport-tab{flex:1;min-width:0;background:none;border:none;border-radius:9px;color:var(--muted);padding:7px 10px 6px;font-family:var(--font-display);text-transform:uppercase;font-size:18px;letter-spacing:.1em;line-height:1.1;cursor:pointer;transition:background .15s,color .15s}
 .sport-tab:hover{color:var(--muted2)}
 .sport-tab.active{background:var(--red);color:var(--on-accent);box-shadow:0 2px 10px var(--accent-glow)}
 body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #app,body.sport-other .stats,body.sport-other .hero,body.sport-other #activityFeed,body.sport-other .lb-modebar{display:none!important}
@@ -621,23 +673,23 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .lb-ctl{padding:10px 12px 2px;display:flex;flex-direction:column;gap:8px;flex-shrink:0}
 .lb-ctl-row{display:flex;align-items:center;gap:8px}
 .lb-ctl-row .sport-bar{flex:1;min-width:0}
-.lb-room-btn{flex:0 1 auto;max-width:48%;margin-left:auto;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:0 12px;height:40px;font:600 13px Inter,sans-serif;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-room-btn{flex:0 1 auto;max-width:48%;margin-left:auto;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:0 12px;height:40px;font:600 13px var(--font-body);cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lb-room-btn::after{content:" ▾";color:var(--muted);font-size:11px}
 .lb-ctl-row .sport-bar:not([hidden])+.lb-room-btn{max-width:44%}
 .lb-ctl-row .sport-bar[hidden]+.lb-room-btn{margin:0 auto}
 .lb-seg{display:flex;flex:1;gap:3px;padding:3px;background:var(--card);border:1px solid var(--border);border-radius:12px}
 .lb-seg .ftab{flex:1;border:none;border-radius:9px;padding:7px 6px}
-.sport-board-hdr{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:2px 4px 10px;font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.06em;color:var(--text)}
-.sport-board-hdr small{font:500 11.5px Inter,sans-serif;letter-spacing:0;color:var(--muted)}
+.sport-board-hdr{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:2px 4px 10px;font-family:var(--font-display);text-transform:uppercase;font-size:20px;letter-spacing:.06em;color:var(--text)}
+.sport-board-hdr small{font:500 11.5px var(--font-body);letter-spacing:0;color:var(--muted)}
 .room-list{display:flex;flex-direction:column;gap:6px;margin:4px 0 6px}
 .room-item{display:flex;flex-direction:column;gap:4px}
-.room-row{display:flex;flex-direction:column;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);cursor:pointer;font:600 14px Inter,sans-serif}
+.room-row{display:flex;flex-direction:column;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);cursor:pointer;font:600 14px var(--font-body)}
 .room-row.on{border-color:var(--red)}
 .room-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
-.room-sub{font:500 11.5px Inter,sans-serif;color:var(--muted);margin-top:2px}
+.room-sub{font:500 11.5px var(--font-body);color:var(--muted);margin-top:2px}
 .room-acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
 .room-pass{margin:0 4px;color:var(--text);text-align:right}
-.room-act{background:none;border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:4px 10px;font:600 12px Inter,sans-serif;cursor:pointer}
+.room-act{background:none;border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:4px 10px;font:600 12px var(--font-body);cursor:pointer}
 .room-act-quiet{color:var(--muted)}
 .room-form{display:flex;gap:8px;margin-top:10px}
 .room-form .nm-input{flex:1;margin:0;min-width:0}
@@ -651,10 +703,10 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .lb-scope-btn.active{background:none;color:var(--red);border-color:var(--red);box-shadow:none}
 .lb-scope-btn.active::before{opacity:1}
 .picks-widget{background:var(--card);border-top:1px solid var(--border);margin:12px 12px;border-radius:14px;border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow-card)}
-.picks-toggle{width:100%;background:none;border:none;border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:Inter,sans-serif;transition:background .15s}
+.picks-toggle{width:100%;background:none;border:none;border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:var(--font-body);transition:background .15s}
 .picks-toggle:hover{background:rgba(255,255,255,.02)}
 .picks-toggle-left{display:flex;align-items:center;gap:10px}
-.picks-toggle-title{font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:.06em;color:var(--text)}
+.picks-toggle-title{font-family:var(--font-display);text-transform:uppercase;font-size:18px;letter-spacing:.06em;color:var(--text)}
 .picks-badge{background:var(--red);color:var(--on-accent);font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;letter-spacing:.02em}
 .picks-toggle-svg{width:15px;height:15px;transition:transform .2s;color:var(--muted);flex-shrink:0}
 .picks-toggle.open .picks-toggle-svg{transform:rotate(180deg)}
@@ -673,9 +725,9 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .pick-result-badge.pending{background:var(--pending-bg);color:var(--muted);border:1px solid var(--border)}
 .picks-score-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0 4px;border-top:1px solid var(--border);margin-top:6px}
 .picks-score-label{font-size:12px;color:var(--muted);font-weight:500}
-.picks-score-val{font-family:Bebas Neue,sans-serif;font-size:22px;color:var(--gold)}
+.picks-score-val{font-family:var(--font-display);text-transform:uppercase;font-size:22px;color:var(--gold)}
 .share-wrap{padding:0 16px 14px}
-.share-btn-small{background:none;border:1px solid var(--border2);color:var(--muted);cursor:pointer;padding:7px 16px;border-radius:7px;font:500 12px Inter,sans-serif;transition:color .15s,border-color .15s}
+.share-btn-small{background:none;border:1px solid var(--border2);color:var(--muted);cursor:pointer;padding:7px 16px;border-radius:7px;font:500 12px var(--font-body);transition:color .15s,border-color .15s}
 .share-btn-small:hover{color:var(--text);border-color:var(--muted)}
 .share-icon-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:10px 14px;display:flex;align-items:center;justify-content:center;transition:color .15s;flex-shrink:0}
 .share-icon-btn:hover{color:var(--text)}
@@ -684,7 +736,7 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .ev-band{border-top:3px solid var(--red);padding:16px 16px 14px;margin:6px 12px 0;border-radius:14px 14px 0 0;border-left:1px solid var(--border);border-right:1px solid var(--border);cursor:pointer;user-select:none;position:relative}
 .ev-band.ev-future{border-top-color:var(--future-border);background:var(--future-bg)}
 .ev-num{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:5px;font-weight:600}
-.ev-name{font-family:Bebas Neue,sans-serif;font-size:23px;letter-spacing:.05em;line-height:1;margin-bottom:10px;color:var(--text)}
+.ev-name{font-family:var(--font-display);text-transform:uppercase;font-size:23px;letter-spacing:.05em;line-height:1;margin-bottom:10px;color:var(--text)}
 .ev-row{display:flex;flex-wrap:wrap;gap:4px 14px;margin-bottom:8px}
 .ev-detail{font-size:12px;color:var(--muted2);display:flex;align-items:center;gap:4px}
 .ev-detail svg{width:11px;height:11px;opacity:.6;flex-shrink:0}
@@ -720,8 +772,8 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
    everything else keeps flex-end positioning. */
 .ft.ftr .fn{align-self:stretch}
 .ft>*{max-width:100%}
-.fn{font-family:Bebas Neue,sans-serif;font-size:25px;letter-spacing:.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fn.fsm{font-size:20px}.fn.fxs{font-size:16px;font-family:Inter,sans-serif;font-weight:600}
+.fn{font-family:var(--font-display);text-transform:uppercase;font-size:25px;letter-spacing:.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fn.fsm{font-size:20px}.fn.fxs{font-size:16px;font-family:var(--font-body);font-weight:600}
 .frec{font-size:13px;color:var(--muted2);margin-top:2px;font-weight:400}
 .fpills{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
 .ft.ftr .fpills{justify-content:flex-end}
@@ -729,7 +781,7 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .prank{font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;background:var(--pill-bg);color:var(--muted2)}
 .prank-nr{opacity:.35}
 .vc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;flex-shrink:0;width:60px}
-.vs{font-family:Bebas Neue,sans-serif;font-size:16px;color:var(--red);opacity:.55;text-align:center;display:block;letter-spacing:.06em}
+.vs{font-family:var(--font-display);text-transform:uppercase;font-size:16px;color:var(--red);opacity:.55;text-align:center;display:block;letter-spacing:.06em}
 .wcsm{font-size:10px;color:var(--muted);text-align:center;text-transform:uppercase;line-height:1.3;letter-spacing:.04em;width:60px}
 .stats-hint{font-size:10px;color:var(--muted);margin-top:2px}
 .ft.ftr .stats-hint{text-align:right}
@@ -748,22 +800,22 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .result-live{font-size:12px;font-weight:600;color:var(--red);display:flex;align-items:center;gap:5px;animation:blink 1s infinite}
 .pick-row{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
 .pick-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;flex-shrink:0;font-weight:500;letter-spacing:.06em}
-.pick-btn{flex:1;padding:7px 8px;border-radius:7px;border:1px solid var(--border2);background:var(--btn-bg);color:var(--muted2);font:500 13px Inter,sans-serif;cursor:pointer;transition:all .15s;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick-btn{flex:1;padding:7px 8px;border-radius:7px;border:1px solid var(--border2);background:var(--btn-bg);color:var(--muted2);font:500 13px var(--font-body);cursor:pointer;transition:all .15s;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pick-btn:hover{background:rgba(255,255,255,.09);color:var(--text)}
 .pick-btn.psel{background:var(--red-dim);border-color:var(--red-border);color:var(--red);box-shadow:0 0 0 1px var(--red-dim)}
 .pick-btn.pcorrect{background:var(--green-dim);border-color:var(--green-border);color:var(--green)}
 .pick-btn.pwrong{opacity:.35;text-decoration:line-through}
 .pick-btn.plocked{opacity:.4;cursor:not-allowed}
 .pick-locked-lbl{font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;padding:2px 0 4px;opacity:.7}
-.more-btn{width:100%;background:var(--card2);border:none;border-top:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer;font-family:Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-align:left;font-weight:500;transition:color .15s,background .15s}
+.more-btn{width:100%;background:var(--card2);border:none;border-top:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer;font-family:var(--font-body);letter-spacing:.08em;text-transform:uppercase;text-align:left;font-weight:500;transition:color .15s,background .15s}
 .more-btn:hover{background:rgba(255,255,255,.03);color:var(--muted2)}
 .more-btn svg{width:13px;height:13px;transition:transform .2s;margin-left:auto;flex-shrink:0}
 .more-btn.open svg{transform:rotate(180deg)}
 .more-body{display:none}.more-body.open{display:block}
-.cmp-btn-row{width:100%;background:none;border:none;border-top:1px solid var(--border);padding:8px 16px;font-size:11px;color:var(--muted);cursor:pointer;font-family:Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:5px;transition:color .15s;font-weight:500}
+.cmp-btn-row{width:100%;background:none;border:none;border-top:1px solid var(--border);padding:8px 16px;font-size:11px;color:var(--muted);cursor:pointer;font-family:var(--font-body);letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:5px;transition:color .15s;font-weight:500}
 .cmp-btn-row:hover{color:var(--text)}
 .ai-btn-row{padding:4px 16px 8px;display:flex;justify-content:flex-end}
-.ai-btn{display:inline-flex;align-items:center;gap:4px;background:none;border:1px solid rgba(255,255,255,.15);color:var(--muted);font:600 10px Inter,sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:4px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;flex-shrink:0;white-space:nowrap}
+.ai-btn{display:inline-flex;align-items:center;gap:4px;background:none;border:1px solid rgba(255,255,255,.15);color:var(--muted);font:600 10px var(--font-body);letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:4px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;flex-shrink:0;white-space:nowrap}
 .ai-btn:hover{color:var(--text);border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.04)}
 .ai-btn.ai-loading{opacity:.6;pointer-events:none}
 .ai-btn.ai-done{color:var(--gold);border-color:var(--gold-border)}
@@ -781,14 +833,14 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .ai-err{font-size:12px;color:var(--loss)}
 /* AI event toolbar */
 .ai-event-toolbar{display:flex;gap:8px;padding:10px 16px 6px;border-bottom:1px solid var(--border)}
-.ai-event-btn{flex:1;background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted2);font:600 11px Inter,sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:7px 10px;border-radius:8px;cursor:pointer;transition:color .15s,background .15s,border-color .15s;display:flex;align-items:center;justify-content:center;gap:5px}
+.ai-event-btn{flex:1;background:var(--btn-bg);border:1px solid var(--border2);color:var(--muted2);font:600 11px var(--font-body);letter-spacing:.05em;text-transform:uppercase;padding:7px 10px;border-radius:8px;cursor:pointer;transition:color .15s,background .15s,border-color .15s;display:flex;align-items:center;justify-content:center;gap:5px}
 .ai-event-btn:hover{color:var(--text);background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.22)}
 .ai-event-btn.btn-gold{border-color:var(--gold-border);color:var(--gold)}
 /* Fight Week Intel — curated links out to interviews/breakdowns/camp pieces.
    Served from the static intel.json, so rendering it costs no API call. */
 .intel-wrap{border-bottom:1px solid var(--border)}
 .intel-hdr{display:flex;align-items:center;gap:6px;width:100%;background:none;border:none;padding:9px 16px;cursor:pointer;
-  font:700 11px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted2);text-align:left}
+  font:700 11px var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted2);text-align:left}
 .intel-hdr:hover{color:var(--text)}
 .intel-arrow{font-size:9px;display:inline-block;transition:transform .2s;color:var(--muted)}
 .intel-hdr.open .intel-arrow{transform:rotate(90deg)}
@@ -800,7 +852,7 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .intel-item:hover{background:rgba(255,255,255,.04);border-color:var(--border)}
 .intel-thumb{width:76px;height:44px;flex-shrink:0;border-radius:5px;object-fit:cover;background:var(--pill-bg)}
 .intel-txt{min-width:0;flex:1}
-.intel-title{font:600 12.5px Inter,sans-serif;color:var(--text);line-height:1.3;margin-bottom:2px}
+.intel-title{font:600 12.5px var(--font-body);color:var(--text);line-height:1.3;margin-bottom:2px}
 .intel-blurb{font-size:11px;color:var(--muted);line-height:1.35;margin-bottom:3px;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .intel-meta{font-size:10px;color:var(--muted);letter-spacing:.03em;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
@@ -809,7 +861,7 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .intel-note{padding:4px 8px 2px;font-size:10px;color:var(--muted);letter-spacing:.03em}
 /* Chat modal */
 .chat-modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
-.chat-ev-name{font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:.05em;color:var(--text);line-height:1.1}
+.chat-ev-name{font-family:var(--font-display);text-transform:uppercase;font-size:18px;letter-spacing:.05em;color:var(--text);line-height:1.1}
 .chat-history{display:flex;flex-direction:column;gap:10px;min-height:60px;margin-bottom:12px;max-height:320px;overflow-y:auto}
 .chat-bubble{max-width:88%;padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.55}
 .chat-bubble.user{align-self:flex-end;background:var(--red);color:var(--on-accent);border-radius:12px 12px 3px 12px}
@@ -819,9 +871,9 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .quick-q{background:var(--pill-bg);border:1px solid var(--border);color:var(--muted2);font-size:11px;padding:5px 10px;border-radius:20px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
 .quick-q:hover{background:var(--btn-bg);color:var(--text)}
 .chat-input-row{display:flex;gap:8px;align-items:center}
-.chat-input{flex:1;min-width:0;background:var(--card2);border:1px solid var(--border2);color:var(--text);font:16px Inter,sans-serif;padding:9px 12px;border-radius:10px;outline:none}
+.chat-input{flex:1;min-width:0;background:var(--card2);border:1px solid var(--border2);color:var(--text);font:16px var(--font-body);padding:9px 12px;border-radius:10px;outline:none}
 .chat-input:focus{border-color:var(--muted)}
-.chat-send-btn{background:var(--red);border:none;color:var(--on-accent);font:700 12px Inter,sans-serif;padding:9px 14px;border-radius:10px;cursor:pointer;transition:opacity .15s;flex-shrink:0}
+.chat-send-btn{background:var(--red);border:none;color:var(--on-accent);font:700 12px var(--font-body);padding:9px 14px;border-radius:10px;cursor:pointer;transition:opacity .15s;flex-shrink:0}
 .chat-send-btn:disabled{opacity:.45;pointer-events:none}
 /* Parlay modal */
 .pl-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:2px 0 10px}
@@ -829,13 +881,13 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .pl-mine{font-size:11px;color:var(--muted2);background:none;border:1px solid var(--border2);border-radius:6px;padding:4px 9px;cursor:pointer}
 .pl-mine:disabled{opacity:.4;cursor:default}
 .pl-bout{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--border)}
-.pl-chip{flex:1;min-width:0;font-size:11px;font-family:Inter,sans-serif;color:var(--muted2);background:var(--card2);border:1px solid var(--border2);border-radius:7px;padding:6px 7px;cursor:pointer;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-chip{flex:1;min-width:0;font-size:11px;font-family:var(--font-body);color:var(--muted2);background:var(--card2);border:1px solid var(--border2);border-radius:7px;padding:6px 7px;cursor:pointer;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pl-chip.on{color:var(--text);border-color:var(--gold);background:var(--gold-dim)}
 .pl-chip-odds{color:var(--muted);margin-left:4px}
 .pl-sum{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin:12px 0 10px}
 .pl-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
 .pl-cell-lbl{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.pl-cell-val{font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--gold);line-height:1.1}
+.pl-cell-val{font-family:var(--font-display);text-transform:uppercase;font-size:20px;color:var(--gold);line-height:1.1}
 .pl-cell-val.neg{color:var(--loss)}
 .pl-warn{font-size:11.5px;line-height:1.5;color:var(--muted2);border-left:2px solid var(--border2);padding:3px 0 3px 9px;margin-top:8px}
 .pl-warn.high{border-left-color:var(--loss);color:var(--text)}
@@ -855,12 +907,12 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 /* Keep the 30px visual circle but extend the touch target to ~44px (WCAG/Apple min) */
 .install-close,.modal-xbtn,.cmp-xbtn,.nm-xbtn{position:relative}
 .install-close::before,.modal-xbtn::before,.cmp-xbtn::before,.nm-xbtn::before{content:"";position:absolute;inset:-7px}
-.modal-name{font-family:Bebas Neue,sans-serif;font-size:28px;letter-spacing:.05em;line-height:1}
+.modal-name{font-family:var(--font-display);text-transform:uppercase;font-size:28px;letter-spacing:.05em;line-height:1}
 .modal-photo-row{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .modal-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
 .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .ms{background:var(--card2);border-radius:10px;padding:12px 14px;border:1px solid var(--border)}
-.ms-val{font-family:Bebas Neue,sans-serif;font-size:24px}
+.ms-val{font-family:var(--font-display);text-transform:uppercase;font-size:24px}
 .ms-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;margin-top:3px;letter-spacing:.08em;font-weight:500}
 .mbar-wrap{margin-top:10px}
 .mbar-lbl{font-size:11px;color:var(--muted);margin-bottom:5px;display:flex;justify-content:space-between}
@@ -870,12 +922,12 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .cmp-bg.open{display:flex}
 .cmp-box{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:20px 16px 28px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:var(--shadow-el)}
 .cmp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.cmp-title{font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:.06em}
+.cmp-title{font-family:var(--font-display);text-transform:uppercase;font-size:22px;letter-spacing:.06em}
 .cmp-xbtn{background:var(--btn-bg);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .cmp-names{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;margin-bottom:18px}
-.cmp-name{font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:.04em;text-align:center}
+.cmp-name{font-family:var(--font-display);text-transform:uppercase;font-size:18px;letter-spacing:.04em;text-align:center}
 .cmp-rec{font-size:12px;color:var(--muted2);margin-top:3px;text-align:center}
-.cmp-vs{font-family:Bebas Neue,sans-serif;font-size:14px;color:var(--muted);align-self:center;text-align:center}
+.cmp-vs{font-family:var(--font-display);text-transform:uppercase;font-size:14px;color:var(--muted);align-self:center;text-align:center}
 .cmp-row{display:flex;flex-direction:column;gap:5px;padding:11px 0;border-bottom:1px solid var(--border)}
 .cmp-row:last-child{border-bottom:none}
 .cmp-vals{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center}
@@ -896,23 +948,23 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
    the inset (fallback 0px keeps the non-notched layout byte-identical). */
 .fn-close{position:absolute;top:calc(env(safe-area-inset-top,0px) + 16px);right:calc(env(safe-area-inset-right,0px) + 16px);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .fn-close:hover{background:rgba(255,255,255,.16)}
-.fn-ev{font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.18em;color:rgba(255,255,255,.88);margin-bottom:8px}
+.fn-ev{font-family:var(--font-display);text-transform:uppercase;font-size:20px;letter-spacing:.18em;color:rgba(255,255,255,.88);margin-bottom:8px}
 .fn-wc{font-size:11px;color:rgba(255,255,255,.62);text-transform:uppercase;letter-spacing:.09em;margin-bottom:36px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
 .fn-tag{font-weight:700;font-size:9px;letter-spacing:.1em;padding:2px 7px;border-radius:4px}
 .fn-tag-title{color:var(--gold);background:var(--gold-dim);border:1px solid var(--gold-border)}
 .fn-tag-rematch{color:var(--red);background:var(--red-dim);border:1px solid var(--red-border)}
 .fn-mu{display:flex;align-items:center;justify-content:center;gap:14px;width:100%;flex-wrap:wrap}
 .fn-ft.fnr{text-align:right}
-.fn-nm{font-family:Bebas Neue,sans-serif;font-size:clamp(26px,7vw,54px);line-height:1.05;color:#fff;overflow-wrap:anywhere}
+.fn-nm{font-family:var(--font-display);text-transform:uppercase;font-size:clamp(26px,7vw,54px);line-height:1.05;color:#fff;overflow-wrap:anywhere}
 .fn-nm::before{content:"";display:block;width:34px;height:3px;border-radius:2px;margin:0 auto 12px}
 #fn-f1-wrap .fn-nm::before{background:var(--red);box-shadow:0 0 10px var(--accent-glow)}
 #fn-f2-wrap .fn-nm::before{background:var(--gold);box-shadow:0 0 10px var(--gold-glow);margin:0 0 12px auto}
 .fn-rc{font-size:13px;margin-top:8px;letter-spacing:.03em;font-weight:500}
 #fn-r1{color:var(--red)}
 #fn-r2{color:var(--gold)}
-.fn-vs{flex-shrink:0;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:17px;color:rgba(255,255,255,.45);letter-spacing:.04em}
+.fn-vs{flex-shrink:0;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);text-transform:uppercase;font-size:17px;color:rgba(255,255,255,.45);letter-spacing:.04em}
 .fn-nav{display:flex;justify-content:center;gap:10px;margin-top:34px}
-.fn-nb{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:rgba(255,255,255,.72);padding:10px 22px;border-radius:8px;cursor:pointer;font:600 13px Inter,sans-serif;display:flex;align-items:center;gap:5px;transition:background .15s,border-color .15s}
+.fn-nb{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:rgba(255,255,255,.72);padding:10px 22px;border-radius:8px;cursor:pointer;font:600 13px var(--font-body);display:flex;align-items:center;gap:5px;transition:background .15s,border-color .15s}
 .fn-nb:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.22)}
 .fn-ft{flex:1;min-width:96px;cursor:pointer;border-radius:14px;padding:14px 8px;transition:opacity .25s,background .15s,box-shadow .2s}
 .fn-ft:active{background:rgba(255,255,255,.06)}
@@ -930,11 +982,11 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .fn-mode-live #fnPreBody{display:none}
 .fnl-floats{position:fixed;inset:0;pointer-events:none;z-index:5;overflow:hidden}
 .fnl-float{position:absolute;bottom:88px;font-size:34px;animation:fnFloat 2.6s ease-out forwards;will-change:transform,opacity}
-.fnl-float small{display:block;font-size:10px;color:rgba(255,255,255,.6);text-align:center;margin-top:-2px;font-family:Inter,sans-serif}
+.fnl-float small{display:block;font-size:10px;color:rgba(255,255,255,.6);text-align:center;margin-top:-2px;font-family:var(--font-body)}
 @keyframes fnFloat{0%{transform:translateY(0) scale(.6);opacity:0}15%{transform:translateY(-10px) scale(1.1);opacity:1}100%{transform:translateY(-260px) scale(1);opacity:0}}
 .fnl-hdr{display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 14px) 50px 12px 16px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
-.fnl-hdr-ev{font-family:Bebas Neue,sans-serif;font-size:17px;letter-spacing:.06em;color:#fff;line-height:1;flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fnl-live-dot{display:inline-flex;align-items:center;gap:5px;font:700 10px Inter,sans-serif;letter-spacing:.1em;color:var(--on-accent);background:var(--red);padding:3px 8px;border-radius:20px;flex-shrink:0}
+.fnl-hdr-ev{font-family:var(--font-display);text-transform:uppercase;font-size:17px;letter-spacing:.06em;color:#fff;line-height:1;flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fnl-live-dot{display:inline-flex;align-items:center;gap:5px;font:700 10px var(--font-body);letter-spacing:.1em;color:var(--on-accent);background:var(--red);padding:3px 8px;border-radius:20px;flex-shrink:0}
 .fnl-live-dot::before{content:"";width:6px;height:6px;border-radius:50%;background:#fff;animation:blink 1s infinite}
 .fnl-checked{font-size:9px;color:rgba(255,255,255,.3);flex-shrink:0}
 .fnl-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column}
@@ -943,12 +995,12 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .fnl-side{flex:1;min-width:0;border-radius:14px;padding:12px 8px;transition:background .3s,opacity .3s}
 .fnl-side.win{background:rgba(40,180,99,.14);box-shadow:inset 0 0 0 1px rgba(40,180,99,.4)}
 .fnl-side.lose{opacity:.4}
-.fnl-side-nm{font-family:Bebas Neue,sans-serif;font-size:clamp(22px,6vw,40px);line-height:1.05;color:#fff;word-break:break-word}
+.fnl-side-nm{font-family:var(--font-display);text-transform:uppercase;font-size:clamp(22px,6vw,40px);line-height:1.05;color:#fff;word-break:break-word}
 .fnl-side-rc{font-size:12px;color:rgba(255,255,255,.35);margin-top:3px}
-.fnl-mine-tag{display:inline-block;font:700 8px Inter,sans-serif;letter-spacing:.08em;color:var(--gold);border:1px solid var(--gold-border);border-radius:3px;padding:1px 5px;margin-top:6px;vertical-align:middle}
-.fnl-vs{font-family:Bebas Neue,sans-serif;font-size:20px;color:rgba(255,255,255,.15);align-self:center;flex-shrink:0}
+.fnl-mine-tag{display:inline-block;font:700 8px var(--font-body);letter-spacing:.08em;color:var(--gold);border:1px solid var(--gold-border);border-radius:3px;padding:1px 5px;margin-top:6px;vertical-align:middle}
+.fnl-vs{font-family:var(--font-display);text-transform:uppercase;font-size:20px;color:rgba(255,255,255,.15);align-self:center;flex-shrink:0}
 .fnl-fans{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:10px;min-height:22px}
-.fnl-chip{display:inline-flex;align-items:center;gap:3px;font:600 10px Inter,sans-serif;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);padding:3px 7px;border-radius:20px;max-width:96px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.fnl-chip{display:inline-flex;align-items:center;gap:3px;font:600 10px var(--font-body);background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);padding:3px 7px;border-radius:20px;max-width:96px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .fnl-chip.me{background:var(--gold-dim);color:#fff;box-shadow:inset 0 0 0 1px var(--gold-border)}
 .fnl-chip.correct{background:rgba(40,180,99,.22);color:#cfeed8}
 .fnl-chip.wrong{background:rgba(220,53,69,.18);color:#f3c3c8;opacity:.7}
@@ -959,21 +1011,21 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .fnl-ptbadge.miss{background:rgba(220,53,69,.92)}
 @keyframes fnPt{0%{transform:translate(-50%,10px) scale(.7);opacity:0}12%{transform:translate(-50%,0) scale(1.1);opacity:1}80%{opacity:1}100%{transform:translate(-50%,-40px) scale(1);opacity:0}}
 .fnl-nav{display:flex;align-items:center;justify-content:center;gap:8px;padding:6px 16px}
-.fnl-jump{display:none;background:var(--red);border:none;color:var(--on-accent);font:700 11px Inter,sans-serif;letter-spacing:.06em;padding:8px 16px;border-radius:20px;cursor:pointer}
+.fnl-jump{display:none;background:var(--red);border:none;color:var(--on-accent);font:700 11px var(--font-body);letter-spacing:.06em;padding:8px 16px;border-radius:20px;cursor:pointer}
 .fnl-jump.show{display:inline-block}
 /* Pick-split bar, "on the line" stakes, and tale-of-the-tape — fn-live midsection */
 .fnl-split{padding:2px 16px 8px}
-.fnl-split-top{display:flex;align-items:baseline;justify-content:space-between;font:700 13px Inter,sans-serif;margin-bottom:5px}
+.fnl-split-top{display:flex;align-items:baseline;justify-content:space-between;font:700 13px var(--font-body);margin-bottom:5px}
 .fnl-split-p1{color:var(--red)}
 .fnl-split-p2{color:var(--gold)}
-.fnl-split-lbl{font:600 9px Inter,sans-serif;color:rgba(255,255,255,.4);letter-spacing:.1em}
+.fnl-split-lbl{font:600 9px var(--font-body);color:rgba(255,255,255,.4);letter-spacing:.1em}
 .fnl-split-bar{display:flex;height:8px;border-radius:5px;overflow:hidden;background:rgba(255,255,255,.06)}
 .fnl-split-bar .s1{background:var(--red);transition:width .4s}
 .fnl-split-bar .s2{background:var(--gold);transition:width .4s}
 .fnl-split-odds{text-align:center;font-size:10px;color:rgba(255,255,255,.4);margin-top:6px;letter-spacing:.04em}
 .fnl-stakes{margin:2px 16px 8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:9px 12px}
-.fnl-stakes-hdr{font:600 9px Inter,sans-serif;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.12em;text-align:center;margin-bottom:7px}
-.fnl-stake-row{display:flex;align-items:center;gap:8px;font:600 12px Inter,sans-serif;padding:4px 0}
+.fnl-stakes-hdr{font:600 9px var(--font-body);color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.12em;text-align:center;margin-bottom:7px}
+.fnl-stake-row{display:flex;align-items:center;gap:8px;font:600 12px var(--font-body);padding:4px 0}
 .fnl-stake-row.mine .fnl-stake-out{color:#fff}
 .fnl-stake-out{flex:1;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fnl-stake-gain{width:34px;text-align:center;font-weight:800;color:rgba(255,255,255,.3)}
@@ -982,13 +1034,13 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .fnl-stake-d{font-size:9px}
 .fnl-stake-d.up{color:#3ad07a}.fnl-stake-d.down{color:#e8505b}
 .fnl-tape{margin:0 16px 12px}
-.fnl-tape-hdr{font:600 9px Inter,sans-serif;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.12em;text-align:center;padding:9px 0 5px;border-top:1px solid rgba(255,255,255,.07)}
-.fnl-tape-row{display:flex;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);font:600 12px Inter,sans-serif}
+.fnl-tape-hdr{font:600 9px var(--font-body);color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.12em;text-align:center;padding:9px 0 5px;border-top:1px solid rgba(255,255,255,.07)}
+.fnl-tape-row{display:flex;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);font:600 12px var(--font-body)}
 .fnl-tape-v1{color:var(--red);width:80px;flex-shrink:0;text-align:left}
-.fnl-tape-l{flex:1;font:600 9px Inter,sans-serif;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;text-align:center}
+.fnl-tape-l{flex:1;font:600 9px var(--font-body);color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;text-align:center}
 .fnl-tape-v2{color:var(--gold);width:80px;flex-shrink:0;text-align:right}
 .fnl-stand{flex-shrink:0;border-top:1px solid rgba(255,255,255,.07);padding:10px 12px;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.fnl-stand-row{flex-shrink:0;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border-radius:10px;padding:6px 10px;font:600 11px Inter,sans-serif;color:rgba(255,255,255,.7)}
+.fnl-stand-row{flex-shrink:0;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border-radius:10px;padding:6px 10px;font:600 11px var(--font-body);color:rgba(255,255,255,.7)}
 .fnl-stand-row.me{background:var(--gold-dim);color:#fff}
 .fnl-stand-rank{font-weight:800;color:rgba(255,255,255,.4)}
 .fnl-stand-pts{color:var(--gold);font-weight:700}
@@ -998,7 +1050,7 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .fnl-react button{flex:1;max-width:64px;height:56px;font-size:28px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:14px;cursor:pointer;transition:transform .1s,background .15s}
 .fnl-react button:active{transform:scale(.88);background:rgba(255,255,255,.14)}
 .rematch-tag{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border);vertical-align:middle;margin-left:8px}
-.ev-qp{background:none;border:1px solid var(--border2);color:var(--muted);font:600 10px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:4px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.ev-qp{background:none;border:1px solid var(--border2);color:var(--muted);font:600 10px var(--font-body);letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:4px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
 .ev-qp:hover{background:var(--btn-bg);color:var(--text)}
 .fn-ctr{font-size:11px;color:rgba(255,255,255,.2);margin-top:14px}
 .nm-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:400;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
@@ -1006,25 +1058,35 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .nm-box{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:26px 22px;width:100%;max-width:320px;box-shadow:var(--shadow-el)}
 .nm-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
 .nm-xbtn{background:var(--btn-bg);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-.nm-box h3{font-family:Bebas Neue,sans-serif;font-size:24px}
+.nm-box h3{font-family:var(--font-display);text-transform:uppercase;font-size:24px}
 .nm-box p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6}
 .nm-emoji-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;justify-content:center;max-height:160px;overflow-y:auto}
 .nm-emoji-btn{font-size:22px;background:var(--btn-bg);border:2px solid transparent;border-radius:10px;width:42px;height:42px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .15s,transform .1s}
 .nm-emoji-btn.selected{border-color:var(--red);transform:scale(1.15)}
-.nm-input{width:100%;background:var(--card2);border:1px solid var(--border2);color:var(--text);padding:11px 14px;border-radius:9px;font:500 15px Inter,sans-serif;margin-bottom:12px;transition:border-color .15s}
+.nm-input{width:100%;background:var(--card2);border:1px solid var(--border2);color:var(--text);padding:11px 14px;border-radius:9px;font:500 15px var(--font-body);margin-bottom:12px;transition:border-color .15s}
 .nm-input:focus{outline:none;border-color:var(--red)}
-.nm-btn{width:100%;background:var(--red);border:none;color:#fff;padding:12px;border-radius:9px;font:600 14px Inter,sans-serif;cursor:pointer;transition:opacity .15s}
+.nm-btn{width:100%;background:var(--red);border:none;color:#fff;padding:12px;border-radius:9px;font:600 14px var(--font-body);cursor:pointer;transition:opacity .15s}
 .nm-btn:hover{opacity:.88}
 .nm-btn:disabled{opacity:.5;cursor:not-allowed}
 .nm-err{color:#ff5555;font-size:12px;text-align:center;margin:-4px 0 10px;display:none}
-.nm-del-link{display:block;width:100%;background:none;border:none;color:var(--muted);padding:0;margin-top:14px;font:500 12.5px Inter,sans-serif;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.nm-del-link{display:block;width:100%;background:none;border:none;color:var(--muted);padding:0;margin-top:14px;font:500 12.5px var(--font-body);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 .nm-del-link:hover{color:#ff5555}
 .nm-del-actions{display:flex;gap:10px}
 .nm-del-actions .nm-btn{flex:1;width:auto;margin:0}
 .nm-btn-ghost{background:var(--card2);color:var(--text)}
 .nm-btn-danger{background:#d11}
+.ai-consent{max-width:360px;display:flex;flex-direction:column;gap:10px}
+.ai-consent h3{margin:0;font-family:var(--font-body);text-transform:none;font-size:22px;font-weight:700}
+.ai-consent p{margin:0;font-size:14px;color:var(--muted2)}
+.ai-consent p strong{color:var(--text)}
+.ai-consent-ic{width:52px;height:52px;border-radius:14px;background:var(--red-dim);color:var(--red);display:flex;align-items:center;justify-content:center}
+.ai-consent-ic svg{width:28px;height:28px}
+.ai-consent-list{margin:0;padding-left:20px;font-size:14px;line-height:1.6;color:var(--text)}
+.ai-consent .nm-btn{min-height:48px;font-size:16px}
+.ai-consent-link{text-align:center;font-size:13px;color:var(--muted2);padding:6px 0}
+.safety-ai{margin-bottom:14px}
 .safety-acts{display:flex;gap:8px;justify-content:flex-end;padding:8px 12px}
-.safety-act{background:none;border:1px solid var(--border2);color:var(--muted);font:600 11px Inter,sans-serif;padding:4px 10px;border-radius:14px;cursor:pointer}
+.safety-act{background:none;border:1px solid var(--border2);color:var(--muted);font:600 11px var(--font-body);padding:4px 10px;border-radius:14px;cursor:pointer}
 #trashSafety .safety-acts{padding:12px 0 0}
 .report-quote{font-size:12px;color:var(--text);background:var(--card2);border-left:3px solid var(--red);padding:8px 10px;border-radius:6px;margin-bottom:12px;max-height:96px;overflow:auto;white-space:pre-wrap;word-break:break-word}
 .report-reasons{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
@@ -1033,23 +1095,23 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .safety-sub{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:4px 0 6px}
 .safety-list{max-height:180px;overflow:auto;margin-bottom:14px}
 .safety-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid var(--border);font-size:13px}
-.safety-unblock{background:none;border:1px solid var(--border2);color:var(--text);font:600 12px Inter,sans-serif;padding:4px 10px;border-radius:14px;cursor:pointer}
+.safety-unblock{background:none;border:1px solid var(--border2);color:var(--text);font:600 12px var(--font-body);padding:4px 10px;border-radius:14px;cursor:pointer}
 .safety-empty{font-size:12px;color:var(--muted);padding:6px 0}
 .safety-link{display:block;text-align:center;text-decoration:none}
 .share-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:250;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .share-modal-bg.open{display:flex}
 .share-modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:22px;width:100%;max-width:360px;box-shadow:var(--shadow-el)}
 .share-modal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.share-modal-title{font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:.06em}
+.share-modal-title{font-family:var(--font-display);text-transform:uppercase;font-size:20px;letter-spacing:.06em}
 .share-modal-xbtn{background:var(--btn-bg);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .share-card{background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:16px;margin-bottom:16px}
-.share-card-title{font-family:Bebas Neue,sans-serif;font-size:17px;letter-spacing:.06em;color:var(--red);margin-bottom:12px}
+.share-card-title{font-family:var(--font-display);text-transform:uppercase;font-size:17px;letter-spacing:.06em;color:var(--red);margin-bottom:12px}
 .share-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)}
 .share-row:last-child{border-bottom:none}
 .share-btns{display:flex;gap:8px}
-.share-copy-btn{flex:1;padding:11px;border-radius:8px;border:1px solid var(--border2);background:none;color:var(--text);font:600 13px Inter,sans-serif;cursor:pointer;transition:background .15s}
+.share-copy-btn{flex:1;padding:11px;border-radius:8px;border:1px solid var(--border2);background:none;color:var(--text);font:600 13px var(--font-body);cursor:pointer;transition:background .15s}
 .share-copy-btn:hover{background:rgba(255,255,255,.06)}
-.share-done-btn{flex:1;padding:11px;border-radius:8px;background:var(--red);border:none;color:#fff;font:600 13px Inter,sans-serif;cursor:pointer;transition:opacity .15s}
+.share-done-btn{flex:1;padding:11px;border-radius:8px;background:var(--red);border:none;color:#fff;font:600 13px var(--font-body);cursor:pointer;transition:opacity .15s}
 .share-done-btn:hover{opacity:.88}
 .toast{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 28px);left:50%;transform:translateX(-50%) translateY(90px);background:var(--card2);border:1px solid var(--border2);color:var(--text);padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:500;transition:transform .25s ease;white-space:nowrap;pointer-events:none;box-shadow:var(--shadow-el)}
 .toast.show{transform:translateX(-50%) translateY(0)}
@@ -1062,14 +1124,14 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .toast.top{bottom:auto;top:calc(env(safe-area-inset-top,0px) + 16px);transform:translateX(-50%) translateY(calc(-100% - 40px))}
 .toast.top.show{transform:translateX(-50%) translateY(0)}
 @media(min-width:420px){.fn{font-size:27px}.fn.fsm{font-size:22px}}
-.search-input{background:var(--btn-bg);border:1px solid var(--border);color:var(--text);padding:5px 12px;border-radius:20px;font:500 12px Inter,sans-serif;outline:none;width:130px;flex-shrink:0;transition:border-color .15s}
+.search-input{background:var(--btn-bg);border:1px solid var(--border);color:var(--text);padding:5px 12px;border-radius:20px;font:500 12px var(--font-body);outline:none;width:130px;flex-shrink:0;transition:border-color .15s}
 .search-input:focus{border-color:var(--border2)}
 .search-input::placeholder{color:var(--muted)}
 .ft-photo{width:42px;height:42px;border-radius:50%;border:2px solid var(--border2);margin-bottom:5px;overflow:hidden;flex-shrink:0}
 .ft.ftr .ft-photo{align-self:flex-end}
 .parlay-wrap{border-top:1px solid var(--border);margin-top:6px;padding:11px 0 5px;display:flex;justify-content:space-between;align-items:center}
 .parlay-lbl{font-size:12px;color:var(--muted);font-weight:500}
-.parlay-val{font-family:Bebas Neue,sans-serif;font-size:18px;color:var(--gold)}
+.parlay-val{font-family:var(--font-display);text-transform:uppercase;font-size:18px;color:var(--gold)}
 .form-strip{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
 .form-pill{font-size:10px;font-weight:700;padding:2px 5px;border-radius:3px;letter-spacing:.04em}
 .form-w{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border)}
@@ -1085,14 +1147,14 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .lock-tag.hit{color:var(--green)}.lock-tag.miss{color:var(--loss)}
 .fotn-row{background:var(--card2);border-top:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:10px}
 .fotn-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;flex-shrink:0;font-weight:500}
-.fotn-sel{background:var(--card);border:1px solid var(--border2);color:var(--text);padding:5px 10px;border-radius:6px;font:500 12px Inter,sans-serif;flex:1;max-width:180px}
+.fotn-sel{background:var(--card);border:1px solid var(--border2);color:var(--text);padding:5px 10px;border-radius:6px;font:500 12px var(--font-body);flex:1;max-width:180px}
 .streak-badge{background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border);font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px}
 .arch-hdr{display:flex;align-items:center;gap:10px;padding:18px 16px 0;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;cursor:pointer;user-select:none;font-weight:500}
 .arch-hdr::after{content:"";flex:1;height:1px;background:var(--border)}
 .past-ev-card{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:0 12px 8px;overflow:hidden}
 .past-ev-hdr{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;user-select:none;transition:background .15s}
 .past-ev-hdr:hover{background:rgba(255,255,255,.025)}
-.past-ev-nm{font-family:Bebas Neue,sans-serif;font-size:17px;letter-spacing:.04em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.past-ev-nm{font-family:var(--font-display);text-transform:uppercase;font-size:17px;letter-spacing:.04em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .past-ev-dt{font-size:11px;color:var(--muted);flex-shrink:0}
 .past-ev-sc{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;flex-shrink:0;white-space:nowrap}
 .past-ev-sc.sc-good{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border)}
@@ -1109,7 +1171,7 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .past-pr-bdg.win{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border)}
 .past-pr-bdg.loss{background:var(--loss-dim);color:var(--loss);border:1px solid var(--loss-border)}
 .past-pr-bdg.pend{background:var(--card2);color:var(--muted);border:1px solid var(--border)}
-.model-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-top:7px;font-family:Inter,sans-serif}
+.model-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-top:7px;font-family:var(--font-body)}
 .model-val{font-size:12px;font-weight:600;color:var(--muted2)}
 .model-val.mr{text-align:right}
 .model-val.mlean{color:var(--text)}
@@ -1136,7 +1198,7 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .achv-gold{background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border)}
 .achv-green{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border)}
 .share-badge{background:linear-gradient(135deg,var(--banner-edge),var(--red));border-radius:10px;padding:16px;margin-bottom:14px;text-align:center}
-.share-badge-num{font-family:Bebas Neue,sans-serif;font-size:46px;color:var(--on-accent);line-height:1}
+.share-badge-num{font-family:var(--font-display);text-transform:uppercase;font-size:46px;color:var(--on-accent);line-height:1}
 .share-badge-sub{font-size:12px;color:var(--on-accent);opacity:.7;margin-top:3px}
 /* ===== MOTION — subtle dynamic touches ===== */
 .btn-icon:active,.ftab:active,.pick-btn:active,.ev-qp:active,.btn-more-item:active,.more-btn:active,.cmp-btn-row:active,.share-btn-small:active,.share-copy-btn:active,.share-done-btn:active,.lb-trash-chip:active,.lb-trash-aud-chip:active,.lb-wheel-pill:active,.lb-trash-send:active,.lb-trash-gen:active,.lb-wheel-spin-btn:active,.quick-q:active,.fn-nb:active,.nm-btn:active,.ai-event-btn:active,.chat-send-btn:active,.picks-toggle:active{transform:scale(.96)}
@@ -1243,7 +1305,7 @@ body[data-season="nov"] .se-band::before{background:repeating-linear-gradient(90
 body[data-season="dec"] .se-band{background:#f4f1ec}
 body[data-season="dec"] .se-band::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='28'%3E%3Cg fill='%23c1272d'%3E%3Cpath d='M-24 0H-12L16 28H4z'/%3E%3Cpath d='M0 0H12L40 28H28z'/%3E%3C/g%3E%3C/svg%3E") 0 0/24px 28px;--se-tile:24px}
 body[data-theme="seasonal"] .season-tag-row{display:flex;align-items:center;justify-content:center;gap:9px;
-  color:var(--se-ink);font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.26em;
+  color:var(--se-ink);font-family:var(--font-body);font-size:9.5px;letter-spacing:.26em;
   text-transform:uppercase;padding:6px 10px;white-space:nowrap;overflow:hidden}
 body[data-theme="seasonal"] .season-tag-row b{color:var(--se-accent2);font-weight:500}
 /* September's accent2 is chalk white, which doesn't read as a highlight on text */
@@ -1426,7 +1488,7 @@ body[data-theme="usa"] .usa-tag,body[data-theme="silver"] .silver-tag,
 body[data-theme="seasonal"] .season-tag{
   position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px);z-index:98}
 body[data-theme="silver"] .silver-tag-row{display:flex;align-items:center;justify-content:center;gap:9px;
-  color:#e8eef2;font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.26em;
+  color:#e8eef2;font-family:var(--font-body);font-size:9.5px;letter-spacing:.26em;
   text-transform:uppercase;padding:6px 10px;white-space:nowrap;overflow:hidden}
 body[data-theme="silver"] .silver-tag-row b{color:#4db8ff;font-weight:500}
 body[data-theme="silver"] .silver-tag-row svg{width:9px;height:15px;display:block;flex:0 0 auto;opacity:.95}
@@ -1835,9 +1897,24 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     <div class="nm-top"><h3 id="safetyTitle">Privacy &amp; Safety</h3><button class="share-modal-xbtn" onclick="closeSafety()" aria-label="Close">x</button></div>
     <p>Anything another player sends you (a roast, a challenge, their name on Ranks) has a 🚩 Report button. Reports go to the app's admin, and content that breaks the rules comes down.</p>
     <p>🚫 Block someone and you stop getting their roasts, challenges and nudges, they can't challenge you, and they aren't told.</p>
+    <button class="nm-btn nm-btn-ghost safety-ai" id="safetyAiBtn" onclick="_aiConsentToggle()"></button>
     <div class="safety-sub">Blocked players</div>
     <div id="safetyBlocked" class="safety-list"></div>
     <a class="nm-btn safety-link" href="privacy.html" target="_blank" rel="noopener">Read the privacy policy</a>
+  </div>
+</div>
+<!-- AI consent: asked once, the first time an AI feature is tapped. Every
+     ai-breakdown call goes through _aiFetch, which waits on this. -->
+<div class="nm-bg ai-consent-bg" id="aiConsentBg" style="z-index:650" onclick="if(event.target===this)_aiConsentAnswer(false)" role="dialog" aria-modal="true" aria-labelledby="aiConsentTitle">
+  <div class="nm-box ai-consent">
+    <span class="ai-consent-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></svg></span>
+    <h3 id="aiConsentTitle">Turn on AI features?</h3>
+    <p>FightBot, ⚡ AI breakdowns, Parlay Picks, FightBot's call and the scouting report are written by <strong>Anthropic's Claude</strong>; Trash Talk roasts by <strong>xAI's Grok</strong>. To answer, the app sends:</p>
+    <ul class="ai-consent-list"><li>Fight data and odds</li><li>What you type</li><li>For FightBot and roasts: the relevant players' nicknames, picks and scores</li></ul>
+    <p>Never your email address or account ID, and nothing until you tap an AI feature. You can turn this off in Privacy &amp; Safety.</p>
+    <button class="nm-btn" id="aiConsentAllow" onclick="_aiConsentAnswer(true)">Allow</button>
+    <button class="nm-btn nm-btn-ghost" onclick="_aiConsentAnswer(false)">Not now</button>
+    <a class="ai-consent-link" href="privacy.html#ai" target="_blank" rel="noopener">How we use AI · Privacy Policy</a>
   </div>
 </div>
 <div class="share-modal-bg" id="shareBg" onclick="if(event.target===this)closeShare()">
@@ -1866,31 +1943,41 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 </div>
 <div class="safe-top" aria-hidden="true"></div>
 <div class="toast" id="toast"></div>
-<div class="fn-banner" id="fnBanner"><div class="fn-banner-dot"></div><div class="fn-banner-text" id="fnBannerText">FIGHT NIGHT</div><div class="fn-banner-dot"></div><div id="fnLastChecked" style="font-size:10px;opacity:.6;margin-left:8px;font-family:Inter,sans-serif;letter-spacing:.04em"></div></div>
+<div class="fn-banner" id="fnBanner"><div class="fn-banner-dot"></div><div class="fn-banner-text" id="fnBannerText">FIGHT NIGHT</div><div class="fn-banner-dot"></div><div id="fnLastChecked" style="font-size:10px;opacity:.6;margin-left:8px;font-family:var(--font-body);letter-spacing:.04em"></div></div>
 <div class="odds-budget-banner" id="oddsBudgetBanner" role="status"></div>
 <header class="hdr">
+  <!-- The avatar opens the menu drawer (#moreMenu, below), as on iOS. -->
+  <button class="hdr-avatar" id="hdrAvatar" onclick="toggleMoreMenu()" aria-label="Open menu" aria-controls="moreMenu" aria-expanded="false"><span class="hdr-av-txt" id="hdrAvatarTxt"></span><svg class="hdr-av-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
   <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><button class="logo-season" onclick="seasonCry(this)" aria-label="Play the seasonal sound"></button><button class="logo-silver" onclick="silverCrack(this)" aria-label="Crack a cold one"><svg viewBox="0 0 40 64" aria-hidden="true"><defs><linearGradient id="svcan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d99a3"/><stop offset=".16" stop-color="#eef2f5"/><stop offset=".42" stop-color="#c3cdd6"/><stop offset=".62" stop-color="#f6f9fb"/><stop offset=".86" stop-color="#aab6c0"/><stop offset="1" stop-color="#7f8b95"/></linearGradient></defs><rect x="5" y="7" width="30" height="51" rx="5" fill="url(#svcan)"/><ellipse cx="20" cy="8" rx="15" ry="3.6" fill="#c9d3db"/><ellipse cx="20" cy="8" rx="11" ry="2.4" fill="#aeb9c3"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><path d="M5 39 12 29l4.5 5 5.5-7.5 5 6.5 3.5-3 6 8z" fill="#fff" opacity=".92"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/><ellipse cx="20" cy="57.6" rx="15" ry="3.2" fill="#9aa6b0"/><rect x="9" y="9" width="3" height="47" fill="#fff" opacity=".45" rx="1.5"/></svg></button><button class="logo-noche" onclick="nocheGrito(this)" aria-label="Play the grito"><svg viewBox="0 0 200 240" aria-hidden="true"><use href="#noche-calavera"/></svg></button><span class="logo-text">FIGHT <span>CARDS</span></span><svg class="noche-papel" aria-hidden="true" preserveAspectRatio="none"><rect width="100%" height="100%" fill="url(#noche-papel-pattern)"/></svg></div>
   <div class="hdr-right">
-    <!-- Leaderboard -->
-    <button class="btn-icon" onclick="openLeaderboard()" title="Leaderboard">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><path d="M8 5h8v14H8z"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
-      <span class="btn-icon-lbl">Ranks</span>
+    <button class="hdr-btn" id="hdrSearchBtn" onclick="focusSearch()" aria-label="Search fighters" title="Search fighters">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg>
     </button>
-    <!-- FN Mode -->
-    <button class="btn-icon btn-icon-fn" onclick="openFN()" title="Fight Night mode">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      <span class="btn-icon-lbl">FN Mode</span>
-    </button>
-    <!-- ⋯ More: notifications + theme + install -->
-    <div class="btn-more-wrap">
-      <button class="btn-icon" onclick="toggleMoreMenu()" title="More options">
-        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
-        <span class="btn-icon-lbl">More</span>
-      </button>
-      <div class="btn-more-menu" id="moreMenu">
+  </div>
+</header>
+<!-- Menu drawer: what used to be the ⋯ More dropdown, slid in from the left by the
+     header's avatar. It keeps the id moreMenu so toggleMoreMenu / closeMoreMenu
+     and _escClosers still drive it. Ranks, FN Mode and FightBot live in the tab
+     bar at the bottom of the screen (#tabBar). -->
+<div class="drawer-bg" id="drawerBg" onclick="closeMoreMenu()"></div>
+<nav class="btn-more-menu drawer" id="moreMenu" aria-label="Menu">
+      <div class="drawer-hd">
+        <span class="drawer-av" id="drawerAv" aria-hidden="true"></span>
+        <div class="drawer-who"><div class="drawer-name" id="drawerName">Fight Cards</div><div class="drawer-sub" id="drawerSub"></div></div>
+        <button class="drawer-x" onclick="closeMoreMenu()" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <div class="drawer-scroll">
         <button class="btn-more-item" id="botBtn" onclick="closeMoreMenu();openBot('Home')" title="Ask anything about MMA, picks or this app">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9 13h.01M15 13h.01M9 17h6"/></svg>
           <span>Ask FightBot</span>
+        </button>
+        <button class="btn-more-item" id="chalMenuBtn" onclick="closeMoreMenu();openChallengeInbox()" title="Challenges you sent and received">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="M13 19l6-6M16 16l4 4M19 21l2-2"/><path d="M9.5 6.5 21 18v3h-3l-2.5-2.5"/></svg>
+          <span>Challenges</span>
+        </button>
+        <button class="btn-more-item" id="roomsMenuBtn" onclick="closeMoreMenu();openRoomSheet()" title="Watch Party rooms: your group's own board">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Rooms</span>
         </button>
         <button class="btn-more-item" id="notifBell" onclick="togglePush();closeMoreMenu()" title="Fight notifications">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -1923,7 +2010,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
         <div class="btn-more-label">Theme</div>
         <button class="btn-more-item theme-item" data-theme="octagon" onclick="setTheme('octagon')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#0f0f14 55%,#e8192c 55%)"></span>
-          <span>Octagon Dark</span><span class="theme-check">&#10003;</span>
+          <span>Fight Cards</span><span class="theme-check">&#10003;</span>
         </button>
         <button class="btn-more-item theme-item" data-theme="neon" onclick="setTheme('neon')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#0b0e14 45%,#16e0cf 45%,#16e0cf 72%,#f23bd4 72%)"></span>
@@ -1962,10 +2049,20 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="6" x2="12" y2="12"/><polyline points="9 9 12 6 15 9"/></svg>
           <span>Add to Home Screen</span>
         </button>
+        <p class="drawer-legal">Fight Cards is a free picks game between friends. Not affiliated with, endorsed by or sponsored by any fight promotion. Odds are shown for information only; there is no wagering in this app.</p>
       </div>
-    </div>
-  </div>
-</header>
+</nav>
+<!-- Tab bar: the app's five places, iOS style. Each tab opens a view that already
+     exists (Ranks is League, FN Mode is Live); _syncTabs marks the one on screen.
+     It sits above the Ranks panel and FN Mode (z 350 / 300) and under every
+     sheet and modal (z 400+). -->
+<nav class="tabbar" id="tabBar" aria-label="Main">
+  <button class="tab-btn" id="tabCards" data-tab="cards" onclick="goTab('cards')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 10h18M9 4v16"/></svg><span>Cards</span></button>
+  <button class="tab-btn" id="tabPicks" data-tab="picks" onclick="goTab('picks')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg><span>Picks</span></button>
+  <button class="tab-btn" id="tabLive" data-tab="live" onclick="goTab('live')" aria-label="Live (FN Mode)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4"/></svg><span>Live</span><i class="tab-dot" aria-hidden="true"></i></button>
+  <button class="tab-btn" id="tabLeague" data-tab="league" onclick="goTab('league')" aria-label="League (Ranks)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M9 20h6"/></svg><span>League</span></button>
+  <button class="tab-btn" id="tabBot" data-tab="bot" onclick="goTab('bot')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5z"/><path d="M12 8v5M9.5 10.5h5"/></svg><span>FightBot</span></button>
+</nav>
 <div class="silver-tag" aria-hidden="true"><div class="sv-ridge"></div><span class="silver-tag-row"><svg viewBox="0 0 40 64" aria-hidden="true"><rect x="5" y="7" width="30" height="51" rx="5" fill="#d5dee5"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/></svg><span>As cold as the <b>Rockies</b></span><svg viewBox="0 0 40 64" aria-hidden="true"><rect x="5" y="7" width="30" height="51" rx="5" fill="#d5dee5"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/></svg></span></div>
 <div class="season-tag" aria-hidden="true"><div class="se-band"></div><span class="season-tag-row"></span></div>
 <div class="usa-tag" aria-hidden="true"><div class="us-flag"></div><span class="usa-tag-row"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z"/></svg><span>Land of the free &middot; Home of the <b>brave</b></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3L2 9.2h7.6z"/></svg></span></div>
@@ -1975,10 +2072,16 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
   <div class="cd-wrap" id="cd-wrap" style="display:none">
     <svg class="noche-agave" aria-hidden="true" viewBox="0 0 240 132"><use href="#noche-agave"/></svg>
     <div class="cd-info">
-      <div class="cd-label">Next Main Card</div>
-      <div class="cd-event" id="cd-event"></div>
+      <div class="cd-label">Next Event</div>
+      <h2 class="cd-event" id="cd-event"></h2>
+      <div class="cd-when" id="cd-when"></div>
     </div>
     <div class="cd-timer" id="cd-timer"></div>
+    <div class="cd-picks" id="cd-picks" hidden>
+      <div class="cd-picks-row"><span>Your picks</span><span id="cd-picks-n"></span></div>
+      <div class="cd-bar" aria-hidden="true"><div class="cd-bar-fill" id="cd-bar-fill"></div></div>
+      <button class="cd-cta" id="cd-cta" onclick="heroCta()" hidden></button>
+    </div>
   </div>
   <p class="hero-sub">Updated <span id="updateDate">Loading...</span></p>
 </section>
@@ -2199,11 +2302,51 @@ var AI_BREAKDOWN_URL=SUPABASE_URL+"/functions/v1/ai-breakdown";
 // account (session JWT) and counts against that account's daily quota. The token
 // is refreshed first if it's about to expire. One retry with the anon key on a
 // 401 covers the minutes a Pages deploy can run ahead of the function deploy.
+// ai-consent:start
+// Nothing goes to an AI provider until the user has said yes once (Apple 5.1.2(i):
+// say what is shared and with whom, and ask). "Not now" rejects the request; the
+// next AI tap asks again. Privacy & Safety turns it back off.
+var AI_CONSENT_KEY="ufc_ai_consent",_aiConsentWait=null;
+function _aiConsented(){try{return localStorage.getItem(AI_CONSENT_KEY)==="1";}catch(e){return false;}}
+function _aiConsentGate(){
+  if(_aiConsented())return Promise.resolve();
+  if(!_aiConsentWait){
+    _aiConsentWait={};
+    _aiConsentWait.p=new Promise(function(res,rej){_aiConsentWait.res=res;_aiConsentWait.rej=rej;});
+    _aiConsentWait.focus=document.activeElement;
+    document.getElementById("aiConsentBg").classList.add("open");
+    setTimeout(function(){var b=document.getElementById("aiConsentAllow");if(b)b.focus({preventScroll:true});},60);
+  }
+  return _aiConsentWait.p;
+}
+function _aiConsentAnswer(yes){
+  var w=_aiConsentWait;_aiConsentWait=null;
+  document.getElementById("aiConsentBg").classList.remove("open");
+  if(yes){try{localStorage.setItem(AI_CONSENT_KEY,"1");}catch(e){}}
+  _aiConsentSync();
+  if(w&&w.focus&&w.focus.focus&&document.contains(w.focus)){try{w.focus.focus({preventScroll:true});}catch(e){}}
+  if(!w)return;
+  if(yes)w.res();
+  else{toast("AI features are off. Turn them on in Menu → Privacy & Safety.");var e=new Error("AI features are off");e.name="AiConsentError";w.rej(e);}
+}
+function _aiConsentToggle(){
+  if(_aiConsented()){try{localStorage.removeItem(AI_CONSENT_KEY);}catch(e){}toast("AI features off");}
+  else{try{localStorage.setItem(AI_CONSENT_KEY,"1");}catch(e){}toast("AI features on");}
+  _aiConsentSync();
+}
+function _aiConsentSync(){
+  var b=document.getElementById("safetyAiBtn");
+  if(b)b.textContent=_aiConsented()?"AI features: on · turn off":"AI features: off · turn on";
+}
+document.addEventListener("DOMContentLoaded",_aiConsentSync);
+// ai-consent:end
 function _aiFetch(body,signal){
   var go=function(auth){return fetch(AI_BREAKDOWN_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":auth},body:body,signal:signal});};
-  return Promise.resolve(_authReady).catch(function(){}).then(function(){return _ensureFreshToken();}).catch(function(){}).then(function(){
-    var auth=_authBearer(),anon="Bearer "+SUPABASE_ANON;
-    return go(auth).then(function(r){return r.status===401&&auth!==anon?go(anon):r;});
+  return _aiConsentGate().then(function(){
+    return Promise.resolve(_authReady).catch(function(){}).then(function(){return _ensureFreshToken();}).catch(function(){}).then(function(){
+      var auth=_authBearer(),anon="Bearer "+SUPABASE_ANON;
+      return go(auth).then(function(r){return r.status===401&&auth!==anon?go(anon):r;});
+    });
   });
 }
 // fight-history:start
@@ -2309,7 +2452,7 @@ function fetchAIBreakdown(fight,ev,btn,panel){
     clearTimeout(to);
     delete _aiFetching[cacheKey];
     btn.classList.remove("ai-loading");btn.textContent="⚡ AI";
-    aiErr((err&&err.name==="AbortError")?"AI timed out — tap to retry":"Analysis unavailable. Try again.");
+    aiErr((err&&err.name==="AiConsentError")?"AI features are off.":(err&&err.name==="AbortError")?"AI timed out — tap to retry":"Analysis unavailable. Try again.");
   });
 }
 function renderAIPanel(panel,btn,answer){
@@ -2538,7 +2681,7 @@ function sendBot(){
   }).catch(function(err){
     if(requestId!==_botRequestId)return;
     wait.classList.remove("loading");
-    wait.textContent=(err&&err.name==="AbortError")?"That took too long. Try again.":"Sorry, I couldn't answer that just now. Try again.";
+    wait.textContent=(err&&err.name==="AiConsentError")?"AI features are off. Turn them on to ask FightBot.":(err&&err.name==="AbortError")?"That took too long. Try again.":"Sorry, I couldn't answer that just now. Try again.";
   }).finally(function(){
     clearTimeout(to);
     if(requestId!==_botRequestId)return;
@@ -3513,9 +3656,146 @@ function computeBestStreak(){
   res.forEach(function(r){if(r.r==="win"){curr++;if(curr>best)best=curr;}else curr=0;});
   return best;
 }
-function toggleMoreMenu(){var m=document.getElementById("moreMenu");if(m)m.classList.toggle("open");}
-function closeMoreMenu(){var m=document.getElementById("moreMenu");if(m)m.classList.remove("open");}
-document.addEventListener("click",function(e){var wrap=document.querySelector(".btn-more-wrap");if(wrap&&!wrap.contains(e.target))closeMoreMenu();});
+// ios-shell:start
+// The iOS-style shell: the menu drawer (what was the ⋯ More dropdown, opened by
+// the header's avatar) and the five-tab bar. Neither owns a view. Each tab opens
+// one that already existed (League is Ranks, Live is FN Mode), and _syncTabs
+// reads which of them is on screen, so a view opened any other way (a push tap,
+// Quick Pick, Ranks → ℹ → FightBot) still lights the right tab.
+var _drawerFocus=null,_tabPicks=false;
+function _isOpen(id){var e=document.getElementById(id);return !!(e&&e.classList.contains("open"));}
+function toggleMoreMenu(){if(_isOpen("moreMenu"))closeMoreMenu();else openMoreMenu();}
+function openMoreMenu(){
+  var m=document.getElementById("moreMenu");if(!m||m.classList.contains("open"))return;
+  _syncProfile();
+  _drawerFocus=document.activeElement;
+  m.classList.add("open");
+  var bg=document.getElementById("drawerBg");if(bg)bg.classList.add("open");
+  var av=document.getElementById("hdrAvatar");if(av)av.setAttribute("aria-expanded","true");
+  setTimeout(function(){var x=m.querySelector(".drawer-x");if(x&&m.classList.contains("open"))x.focus({preventScroll:true});},60);
+}
+function closeMoreMenu(){
+  var m=document.getElementById("moreMenu");if(!m||!m.classList.contains("open"))return;
+  m.classList.remove("open");
+  var bg=document.getElementById("drawerBg");if(bg)bg.classList.remove("open");
+  var av=document.getElementById("hdrAvatar");if(av)av.setAttribute("aria-expanded","false");
+  // Back to where focus was, unless a menu item is about to move it elsewhere.
+  var f=_drawerFocus;_drawerFocus=null;
+  if(f&&f.focus&&document.contains(f)&&m.contains(document.activeElement)){try{f.focus({preventScroll:true});}catch(e){}}
+}
+// Initials for the avatar: the nickname's (its leading emoji, if it has one),
+// else the email's, else nothing (the person icon shows instead).
+function _avatarText(){
+  var nm="";try{nm=userName||"";}catch(e){}
+  var sp=splitNick(nm);
+  if(sp.emoji)return sp.emoji;
+  var src=sp.name||(_sessEmail()||"").split("@")[0];
+  var w=String(src||"").trim().split(/[\s._-]+/).filter(Boolean);
+  if(!w.length)return "";
+  var a=Array.from(w[0]),b=w.length>1?Array.from(w[w.length-1]):a.slice(1);
+  return ((a[0]||"")+(b[0]||"")).toUpperCase();
+}
+function _syncProfile(){
+  var t=_avatarText();
+  var at=document.getElementById("hdrAvatarTxt");if(at)at.textContent=t;
+  var av=document.getElementById("hdrAvatar");if(av)av.classList.toggle("has-txt",!!t);
+  var dv=document.getElementById("drawerAv");if(dv)dv.textContent=t||"🥊";
+  var nm=document.getElementById("drawerName");
+  if(nm){var n="";try{n=userName||"";}catch(e){}nm.textContent=n||"Fight Cards";}
+  var sub=document.getElementById("drawerSub");
+  if(sub)sub.textContent=_sessEmail()||"Not signed in";
+}
+function _syncTabs(){
+  var cur=_isOpen("botModal")?"bot":_isOpen("fnMode")?"live":_isOpen("lbPanel")?"league":_tabPicks?"picks":"cards";
+  var bs=document.querySelectorAll("#tabBar .tab-btn");
+  for(var i=0;i<bs.length;i++){
+    var on=bs[i].getAttribute("data-tab")===cur;
+    bs[i].classList.toggle("active",on);
+    if(on)bs[i].setAttribute("aria-current","page");else bs[i].removeAttribute("aria-current");
+  }
+}
+function goTab(t){
+  closeMoreMenu();
+  if(t!=="bot"&&_isOpen("botModal"))closeBot();
+  if(t!=="league"&&_isOpen("lbPanel"))closeLeaderboard();
+  if(t!=="live"&&_isOpen("fnMode"))closeFN();
+  _tabPicks=t==="picks";
+  var smooth=matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth";
+  if(t==="cards")window.scrollTo({top:0,behavior:smooth});
+  else if(t==="picks"){
+    var w=document.getElementById("picksWidget");
+    if(w&&w.style.display!=="none"){
+      if(!_isOpen("picksBody"))togglePicks();
+      w.scrollIntoView({block:"start",behavior:smooth});
+    }else{
+      // Nothing picked yet: the place to start is the next card.
+      var app=document.getElementById("app");if(app)app.scrollIntoView({block:"start",behavior:smooth});
+      toast("No picks yet. Tap a fighter to pick.");
+    }
+  }
+  else if(t==="live"){
+    // A card in progress first (openFN's own choice), else the next one not
+    // over: openFN alone would land on last night's finished card.
+    if(!_isOpen("fnMode")){
+      var now=Date.now(),lv=EVENTS.filter(function(e){return new Date(e.date)>=now-2*DAY_MS&&fnIsLive(e);})[0];
+      openFN(lv||currentEvent(now)||undefined);
+    }
+  }
+  else if(t==="league"){if(!_isOpen("lbPanel"))openLeaderboard();}
+  else if(t==="bot"){if(!_isOpen("botModal"))openBot("Home");}
+  _syncTabs();
+}
+function focusSearch(){
+  var i=document.getElementById("fighterSearch");if(!i)return;
+  i.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+  setTimeout(function(){i.focus({preventScroll:true});},250);
+}
+// The hero's "Your picks" row and its button, for the card the countdown shows.
+function _heroPicks(ev,live){
+  var box=document.getElementById("cd-picks");if(!box)return;
+  if(!ev||!ev.fights||!ev.fights.length){box.hidden=true;return;}
+  var total=ev.fights.length,picked=0,open=0;
+  ev.fights.forEach(function(f){
+    var mine=!!preds[pk(ev,f)];if(mine)picked++;
+    if(!mine&&!f.winner&&!fightLocked(ev,f))open++;
+  });
+  var cta="",act="";
+  if(open)cta=picked?"Finish your picks":"Make your picks",act="pick";
+  else if(live)cta="Follow it live",act="live";
+  else if(picked&&!evConcluded(ev))cta="Share your picks",act="share";
+  var sig=total+"|"+picked+"|"+act;
+  if(box._sig===sig&&box._ev===ev)return;
+  box._sig=sig;box._ev=ev;box.hidden=false;
+  document.getElementById("cd-picks-n").textContent=picked+" of "+total;
+  document.getElementById("cd-bar-fill").style.width=Math.round(picked/total*100)+"%";
+  var b=document.getElementById("cd-cta");
+  b.hidden=!act;b.textContent=cta;b.dataset.act=act;
+}
+function heroCta(){
+  var box=document.getElementById("cd-picks"),ev=box&&box._ev,b=document.getElementById("cd-cta");
+  if(!ev||!b)return;
+  var act=b.dataset.act;
+  if(act==="share"){openShare();return;}
+  _tabPicks=false;
+  openFN(ev);
+  // FN Mode opens on the card's first bout; jump to the first one still open
+  // and unpicked, so "Finish your picks" lands where the work is.
+  if(act==="pick"&&!fnLive){
+    for(var i=0;i<fnFights.length;i++){
+      var f=fnFights[i];
+      if(!f.winner&&!preds[pk(ev,f)]&&!fightLocked(ev,f)){fnIdx=i;updateFN();break;}
+    }
+  }
+}
+document.addEventListener("DOMContentLoaded",function(){
+  _syncProfile();_syncTabs();
+  if("MutationObserver" in window){
+    var mo=new MutationObserver(_syncTabs);
+    ["botModal","fnMode","lbPanel"].forEach(function(id){var e=document.getElementById(id);if(e)mo.observe(e,{attributes:true,attributeFilter:["class"]});});
+  }
+  window.addEventListener("scroll",function(){if(_tabPicks&&window.scrollY<80){_tabPicks=false;_syncTabs();}},{passive:true});
+});
+// ios-shell:end
 function countPerfectCards(){
   var count=0;
   EVENTS.forEach(function(ev){
@@ -3542,7 +3822,7 @@ function countMethodsCorrect(){
   });});
   return count;
 }
-var THEMES={octagon:"#e8192c",neon:"#050608",fire:"#0a0705",usa:"#070a13",seasonal:"#08050e",silver:"#c4cdd5",noche:"#04050a"};
+var THEMES={octagon:"#0e0f12",neon:"#050608",fire:"#0a0705",usa:"#070a13",seasonal:"#08050e",silver:"#c4cdd5",noche:"#04050a"};
 /* The .usa-stars / .usa-stars-lb overlays are shared by every theme that spawns
    ambient particles, and the nodes outlive a theme switch — a Noche petal lives
    up to 11s. `.se-p{display:none}` only applies under prefers-reduced-motion, so
@@ -4312,6 +4592,15 @@ function updateCountdown(){
   if(!wrap)return;
   wrap.style.display="flex";
   document.getElementById("cd-event").textContent=ev.name;
+  var when=document.getElementById("cd-when");
+  if(when){
+    // The ET card date (noon, so no timezone moves it a day) and the main card's
+    // ET bell, the way every event block states it.
+    var wt=new Date(ev.date+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
+    if(!isNaN(h))wt+=" · Main card "+to12hr(ev.time)+" ET";
+    if(when.textContent!==wt)when.textContent=wt;
+  }
+  _heroPicks(ev,diff<=0&&!evConcluded(ev));
   var timer=document.getElementById("cd-timer");
   if(isNaN(h)){
     // No start time set yet (e.g. "TBD") — show the date instead of a NaN timer
@@ -4592,7 +4881,7 @@ function _commitName(emoji,v){
   userEmoji=emoji;
   try{localStorage.setItem("ufc_emoji",userEmoji);}catch(e){}
   userName=userEmoji+" "+v;
-  try{localStorage.setItem("ufc_name",userName);}catch(e){}
+  try{localStorage.setItem("ufc_name",userName);}catch(e){}if(typeof _syncProfile==="function")_syncProfile();
   window._nmEditMode=false;
   if(wasEdit){
     document.querySelector(".nm-box h3").textContent="Join the Predictor";
@@ -4623,7 +4912,7 @@ function _commitName(emoji,v){
 /* ===== Account: magic-link email (one-time code, PWA-safe) ===== */
 var _acctPending=null,_acctMode=null;
 function _sessEmail(){try{var s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");return s&&s.email||null;}catch(e){return null;}}
-function _syncAcctBtn(){var el=document.getElementById("acctBtnLbl");if(el)el.textContent=_sessEmail()||"Sign In / Link Email";}
+function _syncAcctBtn(){var el=document.getElementById("acctBtnLbl");if(el)el.textContent=_sessEmail()||"Sign In / Link Email";_syncProfile();}
 function openAcct(){
   var em=_sessEmail();
   // "link" upgrades the current anonymous identity in place (same user_id, picks
@@ -4731,7 +5020,7 @@ function _postSignIn(prevId,email){
       .then(function(rows){
         if(rows&&rows[0]&&rows[0].nickname){
           userName=rows[0].nickname;
-          try{localStorage.setItem("ufc_name",userName);}catch(e){}
+          try{localStorage.setItem("ufc_name",userName);}catch(e){}if(typeof _syncProfile==="function")_syncProfile();
           var _e=splitNick(userName).emoji;
           if(_e){userEmoji=_e;try{localStorage.setItem("ufc_emoji",userEmoji);}catch(e){}}
         }
@@ -5885,8 +6174,11 @@ function checkFightNight(){
   var banner=document.getElementById("fnBanner");
   if(!banner)return;
   var next=currentEvent(now);
-  if(!next){banner.classList.remove("show");return;}
+  var tl=document.getElementById("tabLive");
+  if(!next){banner.classList.remove("show");if(tl)tl.classList.remove("is-live");return;}
   var today=new Date();today.setHours(0,0,0,0);var du=Math.round((new Date(next.date+"T00:00:00")-today)/DAY_MS);
+  // The Live tab's dot: the same "card day and not over" test as the banner.
+  if(tl)tl.classList.toggle("is-live",du<=0&&!evConcluded(next));
   if(du<=0&&!evConcluded(next)){banner.classList.add("show");document.getElementById("fnBannerText").textContent=next.name.split(":")[0]+" - LIVE AUTO-UPDATING";}
   else if(du===1){banner.classList.add("show");document.getElementById("fnBannerText").textContent="FIGHT NIGHT TOMORROW - "+next.name.split(":")[0];}
   else{banner.classList.remove("show");}
@@ -6762,7 +7054,9 @@ var WHATS_NEW=[
   {id:"2026-10-24-picks-till-the-bell",emoji:"🙈",title:"Pick until your fight’s up, picks stay hidden",
    desc:"A fight now locks when the one before it ends, not when its whole segment starts, so you can pick a bout three fights away while the opener runs. Nobody can see anyone else’s pick until that fight locks, so there’s nothing to copy."},
   {id:"2026-10-25-room-password",emoji:"🔑",title:"Room passwords",
-   desc:"Invite links open in Safari, not the app on your Home Screen. Now any room member can tap 🔑 Temp password in 👥 Rooms for a 6-character password that works for 24 hours. Friends type it into the Join box in the app they already use."}
+   desc:"Invite links open in Safari, not the app on your Home Screen. Now any room member can tap 🔑 Temp password in 👥 Rooms for a 6-character password that works for 24 hours. Friends type it into the Join box in the app they already use."},
+  {id:"2026-10-26-new-look",emoji:"📱",title:"A new look, built like an iPhone app",
+   desc:"Five tabs along the bottom: Cards, Picks, Live (FN Mode), League (Ranks) and FightBot. Tap your avatar, top left, for the menu. The Next Event card shows how many bouts you've picked, and Finish your picks takes you straight to the next one. AI features now ask once before sending anything."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -11094,6 +11388,7 @@ function closeInstall(){document.getElementById("install-overlay").classList.rem
 // Escape closes the topmost open overlay (sub-sheets before their parent panels).
 // Keyboard/desktop a11y — harmless on touch devices that have no Escape key.
 var _escClosers=[
+  ["aiConsentBg",function(){_aiConsentAnswer(false);}],
   // First: FightBot opens on top of Ranks, so Escape closes it before the board.
   ["botModal",function(){closeBot();}],
   // Report opens over the roast sheet, the challenge inbox and Ranks: before them.
@@ -11166,7 +11461,7 @@ document.addEventListener("DOMContentLoaded",function(){
     }
     var app=document.getElementById("app");
     if(app){
-      app.style.cssText="padding:20px;color:#ff6666;font-family:Inter,sans-serif;font-size:14px;text-align:center;padding-top:60px";
+      app.style.cssText="padding:20px;color:#ff6666;font-family:var(--font-body);font-size:14px;text-align:center;padding-top:60px";
       app.textContent="Something went wrong. Please refresh the page.";
     }
   }
