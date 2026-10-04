@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import { transform } from 'esbuild';
 import { chromium } from 'playwright';
 import { fighterHistory } from '../fightbot/core.mjs';
+import { launchChromium } from "./lib/browser.mjs";
 
 const html = readFileSync('index.html', 'utf8');
 const stats = {
@@ -295,7 +296,7 @@ const server=http.createServer((req,res)=>{
   catch {res.statusCode=404;res.end('');}
 });
 await new Promise(ok=>server.listen(0,'127.0.0.1',ok));
-const browser=await chromium.launch();
+const browser=await launchChromium(chromium);
 try {
   const page=await browser.newPage();const sent=[];let releaseAnswer;
   await page.route(/supabase\.co/,async route=>{

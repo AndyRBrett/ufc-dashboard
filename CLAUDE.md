@@ -235,7 +235,13 @@ Two budgets to respect when changing cadence:
   (`REMATCH_CACHE_TTL_H`, 24h; never data.js's final `rematch`, which other
   layers set; never a verdict resting on a failed fetch), and `fetch_wikitext`
   takes the API's `missingtitle` as final instead of a raw 404 and two sleeps.
-  `tests/test_rematch_cache.py` holds both.
+  Layer 4 (only) asks the API to follow redirects, so a name like "Jiri
+  Prochazka" reads "Jiří Procházka" instead of a `#REDIRECT` stub that was never
+  read and re-fetched every run, and `_fighter_wiki_past_fight` accent-folds the
+  record text as well as the name it searches for. Event, list, rankings and
+  record fetches still don't follow redirects. Bump `REMATCH_CACHE_VER` whenever
+  Layer 4's matching changes, or old verdicts stand for a day.
+  `tests/test_rematch_cache.py` holds all of it.
 
 **"No odds" has two causes and only one of them is a bug.** `write_status.py`
 files an unpriced card as `parse-failure` (which fails the run) or

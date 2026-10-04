@@ -361,7 +361,7 @@ def sb_get(path):
 _WIKI_MISSING = set()
 
 
-def fetch_wikitext(slug):
+def fetch_wikitext(slug, follow_redirects=False):
     """Fetch raw wikitext for a Wikipedia page, trying the API then a raw fallback.
 
     The API answers a page that does not exist with HTTP 200 and error code
@@ -369,9 +369,21 @@ def fetch_wikitext(slug):
     falling through to it cost a second request and two 1-second sleeps for every
     fighter without a page, ~2.3s each, 51 of them (116s) in one 2026-10-04
     rebuild. Any other API failure still falls back to raw.
+
+    follow_redirects (the rematch check's fighter lookups only): a name that is a
+    redirect ("Jiri Prochazka" -> "Jiří Procházka") otherwise comes back as a
+    "#REDIRECT" stub under 200 chars from both the API and raw (which never
+    follows redirects), so the page was never read and, being indeterminate, was
+    re-fetched every run: 13 fighters, ~30s of a 54s warm rebuild. With it the API
+    returns the target page, and an answer the API parsed is final either way
+    (a page still too short is recorded in _WIKI_MISSING as having nothing to
+    read). Event, list, rankings and record fetches keep the old behaviour.
     """
+    api_params = {"action": "parse", "page": slug, "prop": "wikitext", "format": "json"}
+    if follow_redirects:
+        api_params["redirects"] = "1"
     sources = [
-        ("API", WIKI_API, {"action": "parse", "page": slug, "prop": "wikitext", "format": "json"}),
+        ("API", WIKI_API, api_params),
         ("raw", "https://en.wikipedia.org/w/index.php", {"title": slug, "action": "raw"}),
     ]
     for method, url, params in sources:
@@ -396,6 +408,10 @@ def fetch_wikitext(slug):
                 if wt and len(wt) > 200:
                     print(f"  Got {len(wt)} chars", file=sys.stderr)
                     return wt
+                if follow_redirects and method == "API" and "parse" in body:
+                    print(f"  Wiki page too short to use [{slug[:40]}]", file=sys.stderr)
+                    _WIKI_MISSING.add(slug)
+                    return ""
         except Exception as e:
             print(f"  Wiki error: {e}", file=sys.stderr)
         time.sleep(1)
@@ -3123,10 +3139,14 @@ def _fighter_wiki_past_fight(wikitext, opp_name):
     """Return True if the fighter's Wikipedia fight record section shows a past result against opp_name."""
     if not wikitext:
         return False
-    # Normalize name parts (accent-strip + lowercase)
-    _n = unicodedata.normalize("NFD", opp_name)
-    _n = "".join(c for c in _n if unicodedata.category(c) != "Mn").lower()
-    parts = _n.strip().split()
+    # Normalize name parts (accent-strip + lowercase). The record text gets the
+    # same treatment below: it spells opponents as Wikipedia does ("Jiří
+    # Procházka"), so folding only the name we search for never matched an
+    # accented opponent at all.
+    def _fold(t):
+        t = unicodedata.normalize("NFD", t)
+        return "".join(c for c in t if unicodedata.category(c) != "Mn").lower()
+    parts = _fold(opp_name).strip().split()
     last_l = parts[-1] if parts else ""
     first_l = parts[0] if len(parts) > 1 else ""
     if not last_l:
@@ -3140,9 +3160,9 @@ def _fighter_wiki_past_fight(wikitext, opp_name):
         return False
     # Extract just that section (up to the next == heading)
     nxt = re.search(r'\n==\s*\w', wikitext[m.end():])
-    section = wikitext[m.start(): m.end() + nxt.start() if nxt else len(wikitext)]
+    section = _fold(wikitext[m.start(): m.end() + nxt.start() if nxt else len(wikitext)])
 
-    if last_l not in section.lower():
+    if last_l not in section:
         return False
 
     # Split into individual table rows (separated by |-) and require BOTH
@@ -3197,6 +3217,10 @@ def _wiki_record(wikitext):
 # never stored.
 REMATCH_CACHE_FILE = Path("rematch-cache.json")
 REMATCH_CACHE_TTL_H = 24
+# Bump when Layer 4's matching changes, so verdicts made the old way are
+# re-checked instead of standing for up to a day. 2: redirects followed and the
+# record text accent-folded (2026-10-04).
+REMATCH_CACHE_VER = 2
 
 
 def load_rematch_cache(path=REMATCH_CACHE_FILE):
@@ -3219,6 +3243,10 @@ def _rematch_key(f1, f2):
 
 def _rematch_cache_fresh(entry, now):
     try:
+        # A damaged committed entry (a list, a string, null) is just stale: it
+        # must never raise out of here and abort the scrape.
+        if not isinstance(entry, dict) or entry.get("ver") != REMATCH_CACHE_VER:
+            return False
         return now - datetime.fromisoformat(entry["at"]) < timedelta(hours=REMATCH_CACHE_TTL_H)
     except (KeyError, TypeError, ValueError):
         return False
@@ -3231,15 +3259,15 @@ def _rematch_layer4(f1, f2, cache, now):
     if hit is not None and _rematch_cache_fresh(hit, now):
         return bool(hit.get("v"))
     s1, s2 = f1.replace(" ", "_"), f2.replace(" ", "_")
-    fw1 = fetch_wikitext(s1)
+    fw1 = fetch_wikitext(s1, follow_redirects=True)
     verdict, definite = False, bool(fw1) or s1 in _WIKI_MISSING
     if _fighter_wiki_past_fight(fw1, f2):
         time.sleep(0.5)
-        fw2 = fetch_wikitext(s2)
+        fw2 = fetch_wikitext(s2, follow_redirects=True)
         verdict = _fighter_wiki_past_fight(fw2, f1)
         definite = bool(fw2) or s2 in _WIKI_MISSING
     if definite:
-        cache[key] = {"v": verdict, "at": now.isoformat()}
+        cache[key] = {"v": verdict, "at": now.isoformat(), "ver": REMATCH_CACHE_VER}
     return verdict
 
 
