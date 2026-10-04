@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-03T23:59:21Z",
+  "generated_at": "2026-10-04T00:08:46Z",
   "summary": {
     "events": 12,
     "block": 0,
@@ -9,35 +9,35 @@
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
-      "message": "UFC Fight Night: Prochazka vs. Stirling (49d out): venue 'Al Rayyan' matches no known region, so its 13:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "message": "UFC Fight Night: Prochazka vs. Stirling (48d out): venue 'Al Rayyan' matches no known region, so its 13:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Prochazka vs. Stirling",
       "date": "2026-11-21"
     },
     {
       "severity": "WARN",
       "check": "odds-missing-all",
-      "message": "UFC Fight Night: Buckley vs. Malott (14d out) has no odds on any of its 10 bouts",
+      "message": "UFC Fight Night: Buckley vs. Malott (13d out) has no odds on any of its 10 bouts",
       "event": "UFC Fight Night: Buckley vs. Malott",
       "date": "2026-10-17",
-      "days_out": 14
+      "days_out": 13
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC Fight Night: Allen vs. Duncan (7d out): Darya Zheleznyakova has no record",
+      "message": "UFC Fight Night: Allen vs. Duncan (6d out): Darya Zheleznyakova has no record",
       "fighter": "Darya Zheleznyakova",
       "event": "UFC Fight Night: Allen vs. Duncan",
       "date": "2026-10-10",
-      "days_out": 7
+      "days_out": 6
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC Fight Night: Allen vs. Duncan (7d out): Darya Zheleznyakova stats lookup failed (2026-10-03)",
+      "message": "UFC Fight Night: Allen vs. Duncan (6d out): Darya Zheleznyakova stats lookup failed (2026-10-04)",
       "fighter": "Darya Zheleznyakova",
       "event": "UFC Fight Night: Allen vs. Duncan",
       "date": "2026-10-10",
-      "days_out": 7
+      "days_out": 6
     },
     {
       "severity": "WARN",

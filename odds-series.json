@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-03T23:59:22Z",
+  "generated_at": "2026-10-04T00:08:46Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -11359,7 +11359,7 @@
     },
     {
       "event_id": "2026-10-03:ufc-332",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Deiveson Figueiredo",
@@ -11383,14 +11383,21 @@
             "f1_odds": 415,
             "f2_odds": -550
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-03T13:33:58Z",
+            "f1_odds": 412,
+            "f2_odds": -550
+          },
+          "clv": {
+            "f1_odds": -3,
+            "f2_odds": 0
+          }
         }
       ]
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-cong",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Deiveson Figueiredo",
@@ -11409,8 +11416,15 @@
             "f1_odds": 412,
             "f2_odds": -550
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-05T20:28:35Z",
+            "f1_odds": 412,
+            "f2_odds": -550
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Natalia Silva",
@@ -11434,14 +11448,21 @@
             "f1_odds": -250,
             "f2_odds": 205
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-06T07:22:40Z",
+            "f1_odds": -230,
+            "f2_odds": 192
+          },
+          "clv": {
+            "f1_odds": 20,
+            "f2_odds": -13
+          }
         }
       ]
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Natalia Silva",
@@ -11550,8 +11571,15 @@
             "f1_odds": -230,
             "f2_odds": 192
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-03T18:39:03Z",
+            "f1_odds": -203,
+            "f2_odds": 166
+          },
+          "clv": {
+            "f1_odds": 27,
+            "f2_odds": -26
+          }
         },
         {
           "f1": "Deiveson Figueiredo",
@@ -11670,8 +11698,15 @@
             "f1_odds": 412,
             "f2_odds": -550
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-03T21:48:56Z",
+            "f1_odds": 513,
+            "f2_odds": -755
+          },
+          "clv": {
+            "f1_odds": 101,
+            "f2_odds": -205
+          }
         },
         {
           "f1": "King Green",
@@ -11810,8 +11845,15 @@
             "f1_odds": 245,
             "f2_odds": -300
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-03T18:39:03Z",
+            "f1_odds": 164,
+            "f2_odds": -200
+          },
+          "clv": {
+            "f1_odds": -81,
+            "f2_odds": 100
+          }
         },
         {
           "f1": "Ateba Gautier",
@@ -11945,8 +11987,15 @@
             "f1_odds": -175,
             "f2_odds": 153
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-03T01:48:39Z",
+            "f1_odds": -239,
+            "f2_odds": 194
+          },
+          "clv": {
+            "f1_odds": -64,
+            "f2_odds": 41
+          }
         },
         {
           "f1": "Imanol Rodriguez",
@@ -12065,8 +12114,15 @@
             "f1_odds": -150,
             "f2_odds": 130
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-03T21:48:56Z",
+            "f1_odds": -140,
+            "f2_odds": 117
+          },
+          "clv": {
+            "f1_odds": 10,
+            "f2_odds": -13
+          }
         },
         {
           "f1": "Damian Pinas",
@@ -12180,8 +12236,15 @@
             "f1_odds": -500,
             "f2_odds": 383
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-03T21:48:56Z",
+            "f1_odds": -593,
+            "f2_odds": 427
+          },
+          "clv": {
+            "f1_odds": -93,
+            "f2_odds": 44
+          }
         },
         {
           "f1": "Marcus McGhee",
@@ -12270,8 +12333,15 @@
             "f1_odds": -155,
             "f2_odds": 135
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-30T13:03:24Z",
+            "f1_odds": -147,
+            "f2_odds": 119
+          },
+          "clv": {
+            "f1_odds": 8,
+            "f2_odds": -16
+          }
         },
         {
           "f1": "Johnny Walker",
@@ -12430,8 +12500,15 @@
             "f1_odds": -110,
             "f2_odds": -110
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-03T18:39:03Z",
+            "f1_odds": -114,
+            "f2_odds": -105
+          },
+          "clv": {
+            "f1_odds": -4,
+            "f2_odds": 5
+          }
         },
         {
           "f1": "Rafael dos Anjos",
@@ -12535,8 +12612,15 @@
             "f1_odds": 186,
             "f2_odds": -220
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-03T12:24:54Z",
+            "f1_odds": 212,
+            "f2_odds": -265
+          },
+          "clv": {
+            "f1_odds": 26,
+            "f2_odds": -45
+          }
         },
         {
           "f1": "Marvin Vettori",
@@ -12675,8 +12759,15 @@
             "f1_odds": 115,
             "f2_odds": -135
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-03T18:39:03Z",
+            "f1_odds": 119,
+            "f2_odds": -142
+          },
+          "clv": {
+            "f1_odds": 4,
+            "f2_odds": -7
+          }
         },
         {
           "f1": "Court McGee",
@@ -12790,8 +12881,15 @@
             "f1_odds": 226,
             "f2_odds": -275
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-03T18:39:03Z",
+            "f1_odds": 189,
+            "f2_odds": -233
+          },
+          "clv": {
+            "f1_odds": -37,
+            "f2_odds": 42
+          }
         },
         {
           "f1": "Roberto Soldic",
@@ -12875,8 +12973,15 @@
             "f1_odds": -318,
             "f2_odds": 251
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-03T18:39:03Z",
+            "f1_odds": -214,
+            "f2_odds": 175
+          },
+          "clv": {
+            "f1_odds": 104,
+            "f2_odds": -76
+          }
         },
         {
           "f1": "Jacobe Smith",
@@ -12960,8 +13065,15 @@
             "f1_odds": -967,
             "f2_odds": 607
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-03T15:28:51Z",
+            "f1_odds": -1277,
+            "f2_odds": 767
+          },
+          "clv": {
+            "f1_odds": -310,
+            "f2_odds": 160
+          }
         },
         {
           "f1": "Anthony Wint",
@@ -13055,8 +13167,15 @@
             "f1_odds": -448,
             "f2_odds": 327
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-03T21:48:56Z",
+            "f1_odds": -577,
+            "f2_odds": 417
+          },
+          "clv": {
+            "f1_odds": -129,
+            "f2_odds": 90
+          }
         },
         {
           "f1": "Marcus McGhee",
@@ -13130,8 +13249,15 @@
             "f1_odds": -478,
             "f2_odds": 368
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-03T18:39:03Z",
+            "f1_odds": -553,
+            "f2_odds": 403
+          },
+          "clv": {
+            "f1_odds": -75,
+            "f2_odds": 35
+          }
         }
       ]
     },
@@ -13950,8 +14076,8 @@
         "side": "f1",
         "points": 2,
         "open": 415,
-        "close": null,
-        "clv": null
+        "close": 412,
+        "clv": -3
       },
       {
         "event_id": "2026-10-03:ufc-332-silva-vs-cong",
@@ -13959,8 +14085,8 @@
         "side": "f1",
         "points": 1,
         "open": 412,
-        "close": null,
-        "clv": null
+        "close": 412,
+        "clv": 0
       },
       {
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
@@ -13968,8 +14094,8 @@
         "side": "f1",
         "points": 21,
         "open": 412,
-        "close": null,
-        "clv": null
+        "close": 513,
+        "clv": 101
       }
     ],
     "Sergei Pavlovich": [
@@ -14404,8 +14530,8 @@
         "side": "f1",
         "points": 15,
         "open": -155,
-        "close": null,
-        "clv": null
+        "close": -147,
+        "clv": 8
       },
       {
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
@@ -14413,8 +14539,8 @@
         "side": "f1",
         "points": 12,
         "open": -478,
-        "close": null,
-        "clv": null
+        "close": -553,
+        "clv": -75
       }
     ],
     "John Yannis": [
@@ -15206,8 +15332,8 @@
         "side": "f2",
         "points": 20,
         "open": -275,
-        "close": null,
-        "clv": null
+        "close": -233,
+        "clv": 42
       }
     ],
     "Abdul-Rakhman Yakhyaev": [
@@ -15277,8 +15403,8 @@
         "side": "f2",
         "points": 20,
         "open": 383,
-        "close": null,
-        "clv": null
+        "close": 427,
+        "clv": 44
       }
     ],
     "Kaan Ofli": [
@@ -15524,8 +15650,8 @@
         "side": "f1",
         "points": 25,
         "open": 245,
-        "close": null,
-        "clv": null
+        "close": 164,
+        "clv": -81
       }
     ],
     "Terrance McKinney": [
@@ -15641,8 +15767,8 @@
         "side": "f2",
         "points": 2,
         "open": 205,
-        "close": null,
-        "clv": null
+        "close": 192,
+        "clv": -13
       },
       {
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
@@ -15650,8 +15776,8 @@
         "side": "f2",
         "points": 19,
         "open": 192,
-        "close": null,
-        "clv": null
+        "close": 166,
+        "clv": -26
       }
     ],
     "Damian Pinas": [
@@ -15670,8 +15796,8 @@
         "side": "f1",
         "points": 20,
         "open": -500,
-        "close": null,
-        "clv": null
+        "close": -593,
+        "clv": -93
       }
     ],
     "Cesar Almeida": [
@@ -15851,8 +15977,8 @@
         "side": "f1",
         "points": 14,
         "open": -967,
-        "close": null,
-        "clv": null
+        "close": -1277,
+        "clv": -310
       }
     ],
     "Chase Hooper": [
@@ -15986,8 +16112,8 @@
         "side": "f2",
         "points": 21,
         "open": 130,
-        "close": null,
-        "clv": null
+        "close": 117,
+        "clv": -13
       }
     ],
     "Stewart Nicoll": [
@@ -16541,8 +16667,8 @@
         "side": "f2",
         "points": 25,
         "open": -300,
-        "close": null,
-        "clv": null
+        "close": -200,
+        "clv": 100
       }
     ],
     "Chidi Njokuani": [
@@ -16858,8 +16984,8 @@
         "side": "f1",
         "points": 16,
         "open": -448,
-        "close": null,
-        "clv": null
+        "close": -577,
+        "clv": -129
       }
     ],
     "Terrance Chatman": [
@@ -18243,8 +18369,8 @@
         "side": "f2",
         "points": 2,
         "open": -550,
-        "close": null,
-        "clv": null
+        "close": -550,
+        "clv": 0
       },
       {
         "event_id": "2026-10-03:ufc-332-silva-vs-cong",
@@ -18252,8 +18378,8 @@
         "side": "f2",
         "points": 1,
         "open": -550,
-        "close": null,
-        "clv": null
+        "close": -550,
+        "clv": 0
       },
       {
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
@@ -18261,8 +18387,8 @@
         "side": "f2",
         "points": 21,
         "open": -550,
-        "close": null,
-        "clv": null
+        "close": -755,
+        "clv": -205
       }
     ],
     "Natalia Silva": [
@@ -18272,8 +18398,8 @@
         "side": "f1",
         "points": 2,
         "open": -250,
-        "close": null,
-        "clv": null
+        "close": -230,
+        "clv": 20
       },
       {
         "event_id": "2026-10-03:ufc-332-silva-vs-wang",
@@ -18281,8 +18407,8 @@
         "side": "f1",
         "points": 19,
         "open": -230,
-        "close": null,
-        "clv": null
+        "close": -203,
+        "clv": 27
       }
     ],
     "Ateba Gautier": [
@@ -18292,8 +18418,8 @@
         "side": "f1",
         "points": 24,
         "open": -175,
-        "close": null,
-        "clv": null
+        "close": -239,
+        "clv": -64
       }
     ],
     "Roman Kopylov": [
@@ -18303,8 +18429,8 @@
         "side": "f2",
         "points": 24,
         "open": 153,
-        "close": null,
-        "clv": null
+        "close": 194,
+        "clv": 41
       }
     ],
     "Imanol Rodriguez": [
@@ -18314,8 +18440,8 @@
         "side": "f1",
         "points": 21,
         "open": -150,
-        "close": null,
-        "clv": null
+        "close": -140,
+        "clv": 10
       }
     ],
     "Bernardo Sopaj": [
@@ -18325,8 +18451,8 @@
         "side": "f2",
         "points": 15,
         "open": 135,
-        "close": null,
-        "clv": null
+        "close": 119,
+        "clv": -16
       }
     ],
     "Johnny Walker": [
@@ -18336,8 +18462,8 @@
         "side": "f1",
         "points": 29,
         "open": -110,
-        "close": null,
-        "clv": null
+        "close": -114,
+        "clv": -4
       }
     ],
     "Mick Parkin": [
@@ -18347,8 +18473,8 @@
         "side": "f2",
         "points": 29,
         "open": -110,
-        "close": null,
-        "clv": null
+        "close": -105,
+        "clv": 5
       }
     ],
     "Rafael dos Anjos": [
@@ -18358,8 +18484,8 @@
         "side": "f1",
         "points": 18,
         "open": 186,
-        "close": null,
-        "clv": null
+        "close": 212,
+        "clv": 26
       }
     ],
     "Alexander Hernandez": [
@@ -18369,8 +18495,8 @@
         "side": "f2",
         "points": 18,
         "open": -220,
-        "close": null,
-        "clv": null
+        "close": -265,
+        "clv": -45
       }
     ],
     "Marvin Vettori": [
@@ -18380,8 +18506,8 @@
         "side": "f1",
         "points": 25,
         "open": 115,
-        "close": null,
-        "clv": null
+        "close": 119,
+        "clv": 4
       }
     ],
     "Ismail Naurdiev": [
@@ -18391,8 +18517,8 @@
         "side": "f2",
         "points": 25,
         "open": -135,
-        "close": null,
-        "clv": null
+        "close": -142,
+        "clv": -7
       }
     ],
     "Court McGee": [
@@ -18402,8 +18528,8 @@
         "side": "f1",
         "points": 20,
         "open": 226,
-        "close": null,
-        "clv": null
+        "close": 189,
+        "clv": -37
       }
     ],
     "Roberto Soldic": [
@@ -18413,8 +18539,8 @@
         "side": "f1",
         "points": 14,
         "open": -318,
-        "close": null,
-        "clv": null
+        "close": -214,
+        "clv": 104
       }
     ],
     "Khaos Williams": [
@@ -18424,8 +18550,8 @@
         "side": "f2",
         "points": 14,
         "open": 251,
-        "close": null,
-        "clv": null
+        "close": 175,
+        "clv": -76
       }
     ],
     "Bruce Whitehead": [
@@ -18435,8 +18561,8 @@
         "side": "f2",
         "points": 14,
         "open": 607,
-        "close": null,
-        "clv": null
+        "close": 767,
+        "clv": 160
       }
     ],
     "Lucas Armand": [
@@ -18446,8 +18572,8 @@
         "side": "f2",
         "points": 16,
         "open": 327,
-        "close": null,
-        "clv": null
+        "close": 417,
+        "clv": 90
       }
     ],
     "Anthony Romero": [
@@ -18457,8 +18583,8 @@
         "side": "f2",
         "points": 12,
         "open": 368,
-        "close": null,
-        "clv": null
+        "close": 403,
+        "clv": 35
       }
     ],
     "Jai Herbert": [
