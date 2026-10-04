@@ -536,13 +536,32 @@ await db.exec(readFileSync(join(ROOT, "supabase/migrations/0017_picks_hidden_unt
   const crLinked = crCode.replace(/from "\.\.\/_shared\/([\w-]+\.js)"/g,
     (_m, f) => `from "${pathToFileURL(join(ROOT, "supabase/functions/_shared", f)).href}"`);
   const cr = await import("data:text/javascript;base64," + Buffer.from(crLinked).toString("base64"));
-  const T = Date.parse("2026-10-10T02:00:00Z");
-  check("check-results: a result inside its bout's lock grace waits", cr.graceOver("2026-10-10T01:57:00Z", T) === false);
-  check("check-results: …and goes once the grace is over", cr.graceOver("2026-10-10T01:55:00Z", T) === true && cr.graceOver("2026-10-10T01:50:00Z", T) === true);
-  check("check-results: a bout with no lock row (or an unreadable time) isn't held", cr.graceOver(undefined, T) === true && cr.graceOver("nonsense", T) === true);
+  const T = Date.parse("2026-10-10T02:00:00Z"), min = 60_000;
+  check("check-results: a result inside its bout's lock grace waits", cr.graceOver(T - 3 * min, T) === false);
+  check("check-results: …and goes once the grace is over", cr.graceOver(T - 5 * min, T) === true && cr.graceOver(T - 10 * min, T) === true);
+  check("check-results: a lock time that couldn't be read waits (fail closed)", cr.graceOver(undefined, T) === false && cr.graceOver(NaN, T) === false);
   check("check-results: LOCK_GRACE matches the database's 5 minutes", cr.LOCK_GRACE_MS === 5 * 60 * 1000);
-  check("check-results: lock keys match pick_locks (lower-cased, trimmed, sorted)", cr.lockKey(" Wang Cong", "Natalia SILVA ") === "natalia silva|wang cong" && cr.lockKey("b", "a") === cr.lockKey("a", "b"));
-  check("check-results: the result loop defers on graceOver before any send", /if \(!graceOver\(locks\.get\(boutKey\), now\)\) \{ deferredCount\+\+; continue; \}/.test(src) && src.indexOf("graceOver(locks.get") < src.indexOf("functions/v1/send-push"));
+  check("check-results: the result loop asks pick_lock_for and defers on graceOver before any send",
+    /await boutLockAt\(SUPABASE_URL, picksHeaders, eventDate/.test(src) && /if \(!graceOver\(lockAt, now\)\) \{ deferredCount\+\+; continue; \}/.test(src)
+    && src.indexOf("graceOver(lockAt, now)") < src.indexOf("functions/v1/send-push"));
+  // "No lock row" is not "long past": a card with no schedule falls back to
+  // midnight ET after its date, which is why the functions ask pick_lock_for
+  // for the effective lock instead of reading pick_locks.
+  const fb = (await db.query("select public.pick_lock_for('ufc', '2031-06-07', 'nobody a', 'nobody b') as t")).rows[0].t;
+  check("pick_lock_for answers an unscheduled card with midnight ET after its date (so a result can land before it)",
+    new Date(fb).toISOString() === "2031-06-08T04:00:00.000Z");
+  // boutLockAt reads the RPC and fails closed on an error.
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (url, init) => /rpc\/pick_lock_for/.test(String(url)) && JSON.parse(init.body).p_promo === "ufc"
+    ? new Response(JSON.stringify("2026-10-10T01:57:00+00:00"), { status: 200 }) : new Response("no", { status: 500 });
+  const got = await cr.boutLockAt("https://x", {}, "2026-10-10", "A", "B");
+  globalThis.fetch = async () => new Response("down", { status: 503 });
+  const down = await cr.boutLockAt("https://x", {}, "2026-10-10", "A", "B");
+  globalThis.fetch = async () => new Response(JSON.stringify("-infinity"), { status: 200 });
+  const ninf = await cr.boutLockAt("https://x", {}, "2026-10-10", "A", "B");
+  globalThis.fetch = realFetch;
+  check("check-results: boutLockAt reads pick_lock_for, is undefined on an error and 0 for -infinity",
+    got === Date.parse("2026-10-10T01:57:00Z") && down === undefined && ninf === 0);
 }
 
 if (failures) { console.error(`\ncheck-pick-lock: ${failures} failure(s).`); process.exit(1); }
