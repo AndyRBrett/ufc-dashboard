@@ -4,8 +4,12 @@
   "private": true,
   "type": "module",
   "description": "UFC Picks PWA — optional static-asset minification build",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "node build.mjs",
+    "lint": "eslint . && node scripts/lint-html.mjs",
     "check:web": "node tests/check-web.mjs",
     "check:functions": "node tests/check-functions.mjs",
     "smoke": "node tests/smoke.mjs",
@@ -50,11 +54,14 @@
     "check:delete": "node tests/check-delete-account.mjs",
     "check:migrations": "node tests/check-migrations.mjs",
     "fightbot": "node fightbot/server.mjs",
-    "verify": "npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:provider && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew && npm run check:prefs && npm run check:picks && npm run check:kick && npm run check:lock && npm run check:recap && npm run check:wrapped && npm run check:locks && npm run check:lab && npm run check:fightbot && npm run check:history && npm run check:brief && npm run check:swap && npm run check:iq && npm run check:guide && npm run check:verdict && npm run check:parity && npm run check:rooms && npm run check:promotion && npm run check:sports && npm run check:pushauth && npm run check:bundle && npm run check:picklock && npm run check:html && npm run check:photos && npm run check:safety && npm run check:delete && npm run check:migrations"
+    "verify": "npm run lint && npm run check:web && npm run check:functions && npm run smoke && npm run check:tap && npm run check:audience && npm run check:prompt && npm run check:provider && npm run check:dedup && npm run check:model && npm run check:parlay && npm run check:names && npm run check:intel && npm run check:whatsnew && npm run check:prefs && npm run check:picks && npm run check:kick && npm run check:lock && npm run check:recap && npm run check:wrapped && npm run check:locks && npm run check:lab && npm run check:fightbot && npm run check:history && npm run check:brief && npm run check:swap && npm run check:iq && npm run check:guide && npm run check:verdict && npm run check:parity && npm run check:rooms && npm run check:promotion && npm run check:sports && npm run check:pushauth && npm run check:bundle && npm run check:picklock && npm run check:html && npm run check:photos && npm run check:safety && npm run check:delete && npm run check:migrations"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8",
+    "@eslint/js": "9.39.5",
     "esbuild": "^0.24.0",
+    "eslint": "9.39.5",
+    "globals": "17.13.0",
     "html-minifier-terser": "^7.2.0",
     "playwright": "^1.56.0",
     "terser": "^5.31.0"

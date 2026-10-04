@@ -19,7 +19,7 @@
 // copy is what drifts.
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { transform } from "esbuild";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -42,8 +42,11 @@ const { code } = await transform(stub + src + "\nexport { cardStatus, extraLive 
   loader: "ts",
   format: "esm",
 });
+// A data: URL has no base to resolve ../_shared/ against, so point those imports at the files.
+const linkShared = (js) => js.replace(/from "\.\.\/_shared\/([\w-]+\.js)"/g,
+  (_m, f) => `from "${pathToFileURL(join(ROOT, "supabase/functions/_shared", f)).href}"`);
 const { cardStatus, extraLive } = await import(
-  "data:text/javascript;base64," + Buffer.from(code).toString("base64")
+  "data:text/javascript;base64," + Buffer.from(linkShared(code)).toString("base64")
 );
 
 // --- fixtures --------------------------------------------------------------

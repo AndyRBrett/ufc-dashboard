@@ -64,5 +64,19 @@ try {
   else ok(`data.js compiles and defines EVENTS (${EV.length} event(s))`);
 } catch (e) { fail(`data.js: ${e.message}`); }
 
+// 4. Every gate in `npm run verify` must also run in validate-web.yml, the job
+// pages.yml's deploy needs. Four of them (check:names, check:prefs, check:lock,
+// check:pushauth) once ran only locally, so a break in any could deploy.
+try {
+  const verify = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")).scripts.verify;
+  const gates = [...verify.matchAll(/npm run ([\w:]+)/g)].map((m) => m[1]);
+  const wf = readFileSync(join(ROOT, ".github/workflows/validate-web.yml"), "utf8");
+  const inCi = new Set([...wf.matchAll(/npm run ([\w:]+)/g)].map((m) => m[1]));
+  const missing = gates.filter((g) => !inCi.has(g));
+  if (!gates.length) fail("could not read the gate list from package.json's verify script");
+  else if (missing.length) fail(`validate-web.yml doesn't run ${missing.join(", ")} (in verify, so a break would still deploy)`);
+  else ok(`validate-web.yml runs all ${gates.length} verify gates`);
+} catch (e) { fail(`gate parity: ${e.message}`); }
+
 if (failures) { console.error(`\ncheck-web: ${failures} problem(s) found — DO NOT deploy.`); process.exit(1); }
 console.log("\ncheck-web: all web assets valid.");

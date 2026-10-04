@@ -2253,7 +2253,7 @@ function _aiFightContext(question,names,stats){
     }
     if(Array.isArray(st.opp)&&st.opp.length)bits.push("completed UFCStats opponents (newest first, win/loss per bout not cached): "+st.opp.join(", "));
     else bits.push("opponent history unavailable; an empty list does not prove no prior fights");
-    var line="  "+n+": "+bits.concat(tail).join("; ");
+    line="  "+n+": "+bits.concat(tail).join("; ");
     // Never truncate an opponent list and accidentally present it as complete.
     if(size+line.length+1<=5800){out.push(line);size+=line.length+1;}
   });
@@ -6058,7 +6058,7 @@ function makeFighter(fighter,right,size,regIdx,side,isWinner){
     });
     wrap.appendChild(fstrip);
   }
-  if(fighter.other){}
+  if(fighter.other){/* another promotion: no UFC champ/rank pills */}
   else if(fighter.rk==="C"){var pills=document.createElement("div");pills.className="fpills";var chip=document.createElement("span");chip.className="pchamp";chip.textContent="CHAMP";pills.appendChild(chip);wrap.appendChild(pills);}
   else if(fighter.rk){var pills2=document.createElement("div");pills2.className="fpills";var chip2=document.createElement("span");chip2.className="prank";chip2.textContent=fighter.rk;pills2.appendChild(chip2);wrap.appendChild(pills2);}
   else if(RANKINGS[fighter.n]){var pills3=document.createElement("div");pills3.className="fpills";var chip3=document.createElement("span");chip3.className="prank";chip3.textContent="#"+RANKINGS[fighter.n];pills3.appendChild(chip3);wrap.appendChild(pills3);}
@@ -6522,7 +6522,7 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
     }
   }
   if(isMain||isCo||fight.lbl==="Main Card"){
-    var cb=document.createElement("button");cb.className="cmp-btn-row";
+    cb=document.createElement("button");cb.className="cmp-btn-row";
     cb.textContent="Compare Fighters";
     (function(f1,f2){cb.onclick=function(){openCmp(f1,f2);};})(fight.f1,fight.f2);
     row.appendChild(cb);
@@ -7159,7 +7159,7 @@ function renderPicksWidget(){
       if(ei>=0){var rk=pk(EVENTS[ei],p.fight);resolvedPicks[rk]="win";try{localStorage.setItem("ufc_resolved",JSON.stringify(resolvedPicks));}catch(e){}}
     } else {
       bdg.className+=" loss";bdg.textContent="Wrong";resolved++;
-      if(ei>=0){var rk=pk(EVENTS[ei],p.fight);resolvedPicks[rk]="loss";try{localStorage.setItem("ufc_resolved",JSON.stringify(resolvedPicks));}catch(e){}}
+      if(ei>=0){rk=pk(EVENTS[ei],p.fight);resolvedPicks[rk]="loss";try{localStorage.setItem("ufc_resolved",JSON.stringify(resolvedPicks));}catch(e){}}
     }
     row.appendChild(bdg);
     if(p.method&&pnM){
@@ -7247,7 +7247,7 @@ function renderPicksWidget(){
           compBody.appendChild(row);
         });
       } else {
-        var lbl=document.createElement("div");lbl.className="picks-ev-label";lbl.textContent=item.ev.name;compBody.appendChild(lbl);
+        lbl=document.createElement("div");lbl.className="picks-ev-label";lbl.textContent=item.ev.name;compBody.appendChild(lbl);
         item.eps.forEach(function(p){compBody.appendChild(makePickRow(p,item.ei,false));});
       }
     });
@@ -11252,7 +11252,7 @@ document.addEventListener("DOMContentLoaded",function(){
   // then drop-everything-non-ASCII matches scrape.py's asc() exactly.
   function _fold(t){
     try{t=t.normalize("NFKD");}catch(e){}
-    return t.replace(/[^\x00-\x7F]/g,"");
+    return t.replace(/[^\x00-\x7F]/g,"");   // eslint-disable-line no-control-regex -- strips everything non-ASCII, on purpose
   }
 
   function _cleanWiki(t){

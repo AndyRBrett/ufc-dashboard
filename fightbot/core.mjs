@@ -112,7 +112,7 @@ function resolvePlayer(rows, who, s) {
   if (!who) return null;
   const want = String(who).trim().toLowerCase();
   const byId = {};
-  rows.forEach((r) => { const id = r.user_id || r.nickname; if (!byId[id]) byId[id] = r.nickname || ""; else if (!byId[id] && r.nickname) byId[id] = r.nickname; });
+  rows.forEach((r) => { const id = r.user_id || r.nickname; if (!byId[id]) byId[id] = r.nickname || ""; });   // first non-blank nickname wins
   const ids = Object.keys(byId);
   // The app's own splitNick: strips a leading emoji avatar only when there is
   // one, so a legacy name like "Adam B" stays "Adam B" and "🥊Andy" is "Andy".

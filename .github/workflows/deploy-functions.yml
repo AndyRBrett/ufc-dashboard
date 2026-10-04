@@ -7,6 +7,11 @@ on:
       - 'supabase/functions/**'
   workflow_dispatch:
 
+# Least privilege: the deploy authenticates to Supabase with its own token;
+# the GitHub token only needs to read the repo.
+permissions:
+  contents: read
+
 jobs:
   # Gate: every edge function must parse before any of them deploy. Catches a
   # typo in the paid ai-breakdown function before it reaches production, with a
@@ -18,7 +23,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
       - run: npm ci
       - name: Syntax-check edge functions

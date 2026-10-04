@@ -14,7 +14,7 @@
 // web-push, and checks who receives what.
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { transform } from "esbuild";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -166,7 +166,10 @@ globalThis.Deno = { env: { get: (k) => ENV[k] }, serve: (h) => { handler = h; } 
 const src = readFileSync(join(ROOT, "supabase/functions/send-push/index.ts"), "utf8")
   .replace(/^import webpush from "npm:web-push@[\d.]+";$/m, "const webpush = globalThis.__webpush;");
 const { code } = await transform(src, { loader: "ts", format: "esm" });
-const mod = await import("data:text/javascript;base64," + Buffer.from(code).toString("base64"));
+// A data: URL has no base to resolve ../_shared/ against, so point those imports at the files.
+const linkShared = (js) => js.replace(/from "\.\.\/_shared\/([\w-]+\.js)"/g,
+  (_m, f) => `from "${pathToFileURL(join(ROOT, "supabase/functions/_shared", f)).href}"`);
+const mod = await import("data:text/javascript;base64," + Buffer.from(linkShared(code)).toString("base64"));
 
 // 20:00 ET on 2026-10-03 is 00:00 UTC on the 4th (EDT).
 const MAIN = Date.UTC(2026, 9, 4, 0, 0);

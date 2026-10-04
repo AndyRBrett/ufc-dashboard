@@ -21,7 +21,8 @@ runs the full gate set (all fast, all local):
 
 | script                | catches                                                        |
 | --------------------- | ------------------------------------------------------------- |
-| `npm run check:web`   | syntax errors in inline scripts / `sw.js`; broken/empty `data.js` |
+| `npm run lint`        | an undefined name, unreachable branch or other bug ESLint can see, in any JS file or index.html / lab.html's inline scripts (`scripts/lint-html.mjs`). Correctness rules only, no style |
+| `npm run check:web`   | syntax errors in inline scripts / `sw.js`; broken/empty `data.js`; a `verify` gate missing from `validate-web.yml` |
 | `npm run check:functions` | syntax errors in any Supabase edge function (incl. the paid one) |
 | `npm run smoke`       | the app failing to **boot** — loads it headlessly and opens the leaderboard |
 | `npm run check:tap`   | a tapped push notification not surfacing its message            |
@@ -43,6 +44,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:locks` | a 🔒 lock scoring differently on the board, belt or challenges, legacy stars scoring, or a third lock on a card |
 | `npm run check:lab`   | the Fight Lab scoring differently from the board, reading a result it claims to predict, or failing to boot |
 | `npm run check:fightbot` | FightBot's MCP stream corrupted by stray stdout, a tool crashing the session, or its standings drifting from the board |
+| `npm run check:history` | FightBot / Ask Claude losing a fighter's cached opponent history, citing nothing for a searched answer, or punting to "check UFCStats" instead of searching |
 | `npm run check:brief` | the Friday Fight Week Brief push firing at the wrong time, twice, after the bell, off the Lab's numbers, or not at all |
 | `npm run check:swap` | a pulled bout's pickers not told, told twice or after it locks, a rename announced as a replacement, or the alert reaching anyone else |
 | `npm run check:iq` | the AI Fight IQ write-up stating a number it wasn't given, drifting onto Grok, repeating one voice, or escaping its daily cap |
@@ -63,6 +65,10 @@ runs the full gate set (all fast, all local):
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
+
+Python has its own correctness lint: `ruff check .` (config in `ruff.toml`,
+installed from `requirements-dev.txt`; `ci.yml` runs it after pytest).
+Node is 22 everywhere (`.nvmrc`, `engines`, every workflow).
 
 First run needs dev deps: `npm install` (browser download is skipped if
 `PLAYWRIGHT_BROWSERS_PATH` is set; otherwise `npx playwright install chromium`).
