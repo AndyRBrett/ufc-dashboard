@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T09:36:47Z",
+  "generated_at": "2026-10-04T10:37:15Z",
   "summary": {
     "events": 12,
     "block": 0,
@@ -42,7 +42,7 @@
     {
       "severity": "WARN",
       "check": "odds-quota",
-      "message": "Odds API quota down to 25 requests \u2014 lines will freeze silently when it hits zero"
+      "message": "Odds API quota down to 20 requests \u2014 lines will freeze silently when it hits zero"
     }
   ]
 }

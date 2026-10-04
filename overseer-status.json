@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T09:36:47Z",
+  "generated_at": "2026-10-04T10:37:15Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -106,17 +106,17 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "ok",
-      "last_changed_at": "2026-10-04T03:56:51Z",
+      "last_changed_at": "2026-10-04T10:37:15Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
-      "line_movement": -13,
+      "line_movement": -11,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-04T09:36:47Z",
+      "last_changed_at": "2026-10-04T10:37:15Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 10,
@@ -136,7 +136,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-04T09:36:47Z",
+      "last_changed_at": "2026-10-04T10:37:15Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -146,7 +146,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-04T09:36:47Z",
+      "last_changed_at": "2026-10-04T10:37:15Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -166,7 +166,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-04T09:36:47Z",
+      "last_changed_at": "2026-10-04T10:37:15Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -656,22 +656,6 @@
       "priority": 52.0
     },
     {
-      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
-      "f1": "Brendan Allen",
-      "f2": "Christian Leroy Duncan",
-      "f1_movement": -13,
-      "f2_movement": 3,
-      "magnitude": 13,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 2.1,
-      "f2_prob_shift": -0.6,
-      "priority": 45.5
-    },
-    {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Alexander Hernandez",
       "f2": "Rafael dos Anjos",
@@ -688,22 +672,6 @@
       "priority": 45.0
     },
     {
-      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
-      "f1": "Felipe Franco",
-      "f2": "Brendson Ribeiro",
-      "f1_movement": 23,
-      "f2_movement": -32,
-      "magnitude": 32,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Light Heavyweight",
-      "f1_prob_shift": -1.2,
-      "f2_prob_shift": 2.4,
-      "priority": 44.8
-    },
-    {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Eric Nolan",
       "f2": "Court McGee",
@@ -718,6 +686,38 @@
       "f1_prob_shift": -3.4,
       "f2_prob_shift": 3.9,
       "priority": 42.0
+    },
+    {
+      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+      "f1": "Felipe Franco",
+      "f2": "Brendson Ribeiro",
+      "f1_movement": 22,
+      "f2_movement": -30,
+      "magnitude": 30,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Light Heavyweight",
+      "f1_prob_shift": -1.1,
+      "f2_prob_shift": 2.3,
+      "priority": 42.0
+    },
+    {
+      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+      "f1": "Brendan Allen",
+      "f2": "Christian Leroy Duncan",
+      "f1_movement": -11,
+      "f2_movement": 1,
+      "magnitude": 11,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 1.8,
+      "f2_prob_shift": -0.2,
+      "priority": 38.5
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
@@ -819,17 +819,17 @@
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "f1": "Niko Price",
       "f2": "Leon Shahbazyan",
-      "f1_movement": 11,
-      "f2_movement": -18,
-      "magnitude": 18,
+      "f1_movement": 7,
+      "f2_movement": -13,
+      "magnitude": 13,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Welterweight",
-      "f1_prob_shift": -2.2,
-      "f2_prob_shift": 2.9,
-      "priority": 25.2
+      "f1_prob_shift": -1.4,
+      "f2_prob_shift": 2.1,
+      "priority": 18.2
     },
     {
       "event_id": "2026-09-05:ufc-fight-night-hooker-vs-parnasse",
@@ -894,6 +894,22 @@
       "f1_prob_shift": -1.9,
       "f2_prob_shift": 2.4,
       "priority": 17.0
+    },
+    {
+      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+      "f1": "Ernesta Kareckaite",
+      "f2": "Melissa Gatto",
+      "f1_movement": -1,
+      "f2_movement": -11,
+      "magnitude": 11,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Women's Flyweight",
+      "f1_prob_shift": 0.2,
+      "f2_prob_shift": 1.7,
+      "priority": 15.4
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
