@@ -99,6 +99,45 @@ async function main() {
       return { w: cv.width, h: cv.height, png: cv.toDataURL("image/png").length, painted: px[3] === 255 };
     });
     assert("Wrapped share card draws a 1080×1920 image", card && card.w === 1080 && card.h === 1920 && card.painted && card.png > 20000);
+    // Keyboard reach: Enter on a role="button" element that isn't a <button>
+    // must activate it (the activity feed header toggles the feed).
+    const kb = await page.evaluate(() => {
+      const hdr = document.querySelector('.feed-hdr[role="button"]'), feed = document.getElementById("activityFeed");
+      if (!hdr || !feed) return null;
+      const was = feed.classList.contains("open");
+      hdr.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+      const now = feed.classList.contains("open");
+      if (now !== was) window.toggleActivityFeed();   // put it back
+      return { tabbable: hdr.tabIndex === 0, toggled: now !== was };
+    });
+    assert("a role=\"button\" control is tabbable and Enter activates it", kb && kb.tabbable && kb.toggled);
+    // Click targets built in JS (el.onclick = …) are made reachable as they
+    // enter the page, and a control disabled the CSS way stays disabled from the
+    // keyboard (Codex on #277: a .fn-not-picked panel could be re-picked).
+    const dyn = await page.evaluate(async () => {
+      const sp = document.createElement("span"); let hits = 0;
+      sp.onclick = () => { hits++; };
+      document.body.appendChild(sp);
+      await new Promise((r) => setTimeout(r, 0));
+      const reach = sp.getAttribute("role") === "button" && sp.tabIndex === 0;
+      sp.style.pointerEvents = "none";
+      sp.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+      const blocked = hits === 0;
+      sp.style.pointerEvents = "";
+      sp.dispatchEvent(new KeyboardEvent("keydown", { key: " ", bubbles: true }));
+      sp.remove();
+      return { reach, blocked, works: hits === 1 };
+    });
+    assert("a click target built in JS gets role=button + tabindex as it enters the page", dyn && dyn.reach);
+    assert("…Enter does nothing on one disabled with pointer-events:none, and Space works once it isn't", dyn && dyn.blocked && dyn.works);
+    const unreachable = await page.evaluate(() => {
+      window.openLeaderboard && window.openLeaderboard();
+      return new Promise((r) => setTimeout(() => r([...document.querySelectorAll("div,span,li,td,p,section,header,img")]
+        .filter((el) => typeof el.onclick === "function" && !el.hasAttribute("role")
+          && !/event\.target\s*===\s*this/.test(el.getAttribute("onclick") || ""))
+        .map((el) => el.tagName.toLowerCase() + (el.className ? "." + String(el.className).split(" ")[0] : ""))), 400));
+    });
+    assert(`no click target in the booted app (home + Ranks) is unreachable by keyboard${unreachable.length ? ": " + unreachable.slice(0, 5).join(", ") : ""}`, unreachable.length === 0);
   } catch (e) {
     fatal.push("Navigation/boot failed: " + e.message);
   } finally {
