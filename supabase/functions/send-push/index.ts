@@ -322,11 +322,12 @@ async function buildMsg(
     if (!bout || !bout.winner) return { ok: false, status: 409, error: "Result not final yet" };
     // Not inside the bout's lock grace: the database still takes a pick for
     // LOCK_GRACE after the lock, and the audience read below would miss it for
-    // good (notif_log dedups the group). 425, not 409: the scraper retries a 409
+    // good (notif_log dedups the group). A lock time we can't read waits too. 425, not 409: the scraper retries a 409
     // (data.js not visible yet) for up to 90s, which would eat its run budget;
     // check-results sends this push once the grace is over.
-    const lockAt = await boutLockAt(sb, sbHeaders, date, bout.f1, bout.f2);
-    if (lockAt !== null && now < lockAt + LOCK_GRACE_MS) return { ok: false, status: 425, error: "Inside the pick lock grace; try again shortly" };
+    const lock = await boutLockAt(sb, sbHeaders, date, bout.f1, bout.f2);
+    if (!lock.ok) return { ok: false, status: 425, error: "Couldn't read the bout's lock time; try again shortly" };
+    if (now < lock.at + LOCK_GRACE_MS) return { ok: false, status: 425, error: "Inside the pick lock grace; try again shortly" };
     const winner = bout.winner, loser = sameName(winner, bout.f1) ? bout.f2 : bout.f1;
     const ids = new Set<string>();
     for (let from = 0; ; from += 1000) {
@@ -469,18 +470,24 @@ let roastPrunedAt = 0;
 // for 5 minutes after its bout locks.
 export const LOCK_GRACE_MS = 5 * 60 * 1000;
 
-// A bout's lock time from pick_locks (names lower-cased, trimmed and sorted, as
-// send-reminders writes them), or null when there's no row or it can't be read:
-// such a bout answers to its card's first bell, long past by any result.
-export async function boutLockAt(sb: string, h: Record<string, string>, date: string, a: string, b: string): Promise<number | null> {
-  const [x, y] = [String(a ?? "").trim().toLowerCase(), String(b ?? "").trim().toLowerCase()].sort();
+// A bout's effective lock time, from the database's own pick_lock_for(): its
+// pick_locks row, else its card's first bell, else midnight ET after the date,
+// exactly what the lock trigger enforces. { ok: false } when it can't be read:
+// the caller must then wait (fail closed), never assume the picks are closed.
+// "-infinity" (a date the database can't read) is locked, so it reads as 0.
+export async function boutLockAt(sb: string, h: Record<string, string>, date: string, a: string, b: string): Promise<{ ok: true; at: number } | { ok: false }> {
   try {
-    const r = await fetch(`${sb}/rest/v1/pick_locks?select=lock_at&event_date=eq.${encodeURIComponent(date)}&a=eq.${encodeURIComponent(x)}&b=eq.${encodeURIComponent(y)}`, { headers: h });
-    if (!r.ok) return null;
-    const rows: { lock_at: string }[] = await r.json();
-    const t = rows.length ? Date.parse(rows[0].lock_at) : NaN;
-    return isNaN(t) ? null : t;
-  } catch (_e) { return null; }
+    const r = await fetch(`${sb}/rest/v1/rpc/pick_lock_for`, {
+      method: "POST",
+      headers: { ...h, "Content-Type": "application/json" },
+      body: JSON.stringify({ p_promo: "ufc", p_date: date, p_f1: a, p_f2: b }),
+    });
+    if (!r.ok) return { ok: false };
+    const v = await r.json();
+    if (v === "-infinity") return { ok: true, at: 0 };
+    const t = typeof v === "string" ? Date.parse(v) : NaN;
+    return isNaN(t) ? { ok: false } : { ok: true, at: t };
+  } catch (_e) { return { ok: false }; }
 }
 
 export async function pruneRoasts(sb: string, h: Record<string, string>, now = Date.now()): Promise<void> {

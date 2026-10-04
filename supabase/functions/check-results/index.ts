@@ -190,21 +190,32 @@ async function fetchWikitext(slug: string): Promise<string | null> {
 // for 5 minutes after its bout locks.
 export const LOCK_GRACE_MS = 5 * 60 * 1000;
 
-// pick_locks keys a bout by its two names lower-cased, trimmed and sorted (the
-// way send-reminders writes them and the lock trigger reads them).
-export function lockKey(a: string, b: string): string {
-  return [String(a ?? "").trim().toLowerCase(), String(b ?? "").trim().toLowerCase()].sort().join("|");
+// May this bout's result push claim its audience yet? Only once its effective
+// lock (`lockAt`, ms, from the database's pick_lock_for) plus the grace has
+// passed: the database still takes picks until then, and notif_log would dedup
+// a later picker out for good. `lockAt` undefined means the lock couldn't be
+// read, and that waits too (fail closed); the next run asks again.
+export function graceOver(lockAt: number | undefined, now: number): boolean {
+  return typeof lockAt === "number" && !isNaN(lockAt) && now >= lockAt + LOCK_GRACE_MS;
 }
 
-// May this bout's result push claim its audience yet? Not while the bout is
-// still inside its lock grace: a pick the database accepts later in the grace
-// would be missing from the audience, and notif_log would then dedup the push
-// away from that player for good. No lock row means the bout answers to its
-// card's first bell, long past by the time any result exists.
-export function graceOver(lockAt: string | undefined, now: number): boolean {
-  if (!lockAt) return true;
-  const t = Date.parse(lockAt);
-  return isNaN(t) || now >= t + LOCK_GRACE_MS;
+// A bout's effective lock time from pick_lock_for(): its pick_locks row, else
+// its card's first bell, else midnight ET after the date, the rule the lock
+// trigger enforces. undefined when it can't be read. "-infinity" (a date the
+// database can't read) is locked, so 0.
+export async function boutLockAt(url: string, h: Record<string, string>, date: string, a: string, b: string): Promise<number | undefined> {
+  try {
+    const r = await fetch(`${url}/rest/v1/rpc/pick_lock_for`, {
+      method: "POST",
+      headers: { ...h, "Content-Type": "application/json" },
+      body: JSON.stringify({ p_promo: "ufc", p_date: date, p_f1: a, p_f2: b }),
+    });
+    if (!r.ok) return undefined;
+    const v = await r.json();
+    if (v === "-infinity") return 0;
+    const t = typeof v === "string" ? Date.parse(v) : NaN;
+    return isNaN(t) ? undefined : t;
+  } catch (_e) { return undefined; }
 }
 
 Deno.serve(async (req) => {
@@ -320,35 +331,22 @@ Deno.serve(async (req) => {
       if (pRes.ok) picks = await pRes.json();
     } catch (_e) { picks = []; }
 
-    // Each bout's lock time, so a result inside its lock grace waits (graceOver).
-    // Service key only: without it the anon read of picks already hides a bout
-    // until its grace has passed. A failed read defers nothing (the old behaviour).
-    const locks = new Map<string, string>();
-    if (SB_SERVICE_ROLE_KEY) {
-      try {
-        const lRes = await fetch(
-          `${SUPABASE_URL}/rest/v1/pick_locks?select=a,b,lock_at&event_date=eq.${encodeURIComponent(eventDate)}`,
-          { headers: picksHeaders },
-        );
-        if (lRes.ok) for (const l of await lRes.json() as { a: string; b: string; lock_at: string }[]) locks.set(lockKey(l.a, l.b), l.lock_at);
-      } catch (_e) { /* defer nothing */ }
-    }
-
     for (const res of parsed) {
       if (!res.winner || !res.loser) continue;
       const winners: string[] = [], losers: string[] = [];
-      let boutKey = "";   // from the pick rows' own names (data.js's), as pick_locks has them
+      let boutNames: [string, string] | null = null;   // the pick rows' own names (data.js's), as the lock is keyed
       for (const p of picks) {
         if (!p.user_id) continue;
         const isFight =
           (_namesMatch(p.f1, res.winner) && _namesMatch(p.f2, res.loser)) ||
           (_namesMatch(p.f2, res.winner) && _namesMatch(p.f1, res.loser));
         if (!isFight) continue;
-        if (!boutKey) boutKey = lockKey(p.f1, p.f2);
+        if (!boutNames) boutNames = [p.f1, p.f2];
         (_namesMatch(p.pick, res.winner) ? winners : losers).push(p.user_id);
       }
       if (!winners.length && !losers.length) continue; // nobody picked this bout
-      if (!graceOver(locks.get(boutKey), now)) { deferredCount++; continue; }   // next run, once the grace is over
+      const lockAt = boutNames ? await boutLockAt(SUPABASE_URL, picksHeaders, eventDate, boutNames[0], boutNames[1]) : undefined;
+      if (!graceOver(lockAt, now)) { deferredCount++; continue; }   // next run, once the grace is over (or the lock can be read)
 
       const fightKey = _fightKey(res.winner, res.loser);
       const groups: [string, string[], string, string][] = [
