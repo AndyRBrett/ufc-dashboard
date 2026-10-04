@@ -10944,7 +10944,10 @@ function renderActivityFeed(){
   // An answer is its own line, at the time it was given: folded into the
   // challenge's line as a suffix, an accept changed a line already dated when
   // the challenge was sent, so it never surfaced as new and read as lost.
-  _challenges.slice(0,10).forEach(function(c){
+  // The ten with the latest activity, sent or answered: the list comes newest
+  // sent first, so a fresh answer to an older challenge would fall past the cut.
+  var _chalAct=function(c){return Math.max(Date.parse(c.created_at||"")||0,Date.parse(c.responded_at||"")||0);};
+  _challenges.slice().sort(function(a,b){return _chalAct(b)-_chalAct(a);}).slice(0,10).forEach(function(c){
     var t=Date.parse(c.created_at||"")||0,rt=Date.parse(c.responded_at||"")||0;
     var answered=c.status==="accepted"||c.status==="declined";
     var who=_freshNick(c.challenger_name),them=_freshNick(c.target_name);

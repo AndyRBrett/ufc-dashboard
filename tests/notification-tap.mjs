@@ -519,12 +519,20 @@ async function main() {
         _challenges = [Object.assign({ id: "fa3", status: "accepted", created_at: iso(now - 49 * 60000), responded_at: null }, base)];
         renderActivityFeed();
         const legacy = feed();
+        // An older challenge answered just now, behind ten newer ones.
+        const newer = [];
+        for (let i = 0; i < 10; i++) newer.push(Object.assign({}, base, { id: "fn" + i, status: "pending", created_at: iso(now - (10 + i) * 60000),
+          challenger_name: "🦍 T", target_name: "Other" + i }));
+        _challenges = newer.concat([Object.assign({ id: "fold", status: "accepted", created_at: iso(now - 3 * 86400000), responded_at: iso(now - 30000) }, base)]);
+        renderActivityFeed();
+        const deep = feed();
         _challenges = saved; _commRows = savedRows; renderActivityFeed();
-        return { accepted, declined, legacy };
+        return { accepted, declined, legacy, deep };
       });
       const iAcc = r.accepted.findIndex((t) => /AB accepted .*T's challenge — it's on!/.test(t));
       const iCh = r.accepted.findIndex((t) => /T challenged .*AB · Loser spins the wheel$/.test(t));
       assert("feed: an accept gets its own line, above the older challenge line", iAcc >= 0 && iCh >= 0 && iAcc < iCh);
+      assert("feed: a fresh answer to an older challenge isn't cut by ten newer ones", r.deep.some((t) => /AB accepted .*T's challenge — it's on!/.test(t)));
       assert("feed: a decline gets its own line too", r.declined.some((t) => /AB declined .*T's challenge$/.test(t)));
       assert("feed: an answer with no responded_at keeps the old suffix", r.legacy.some((t) => /T challenged .*AB · Loser spins the wheel — it's on!$/.test(t))
         && !r.legacy.some((t) => /accepted/.test(t)));
