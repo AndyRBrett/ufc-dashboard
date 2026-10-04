@@ -282,11 +282,24 @@ jobs:
   # publish gate (health.py --gate) still runs BEFORE the commit, so a structurally
   # broken build never produces a push, and pages.yml re-runs the static checks and
   # the boot smoke test in its own validate job before anything deploys.
+  #
+  # Dispatched, not called. As a `uses:` (workflow_call) job the deploy ran
+  # inside this run, so `update-main`'s cancel-in-progress could not end the run
+  # until pages.yml's validate (~3.5 min) and deploy had finished: every new
+  # dispatch sat pending behind them, and on fight night 2026-10-03 a scrape
+  # started only every ~8-10 minutes instead of every 5, which put results
+  # minutes later on screen and in pushes. As its own run, pages.yml validates
+  # main's tip and queues its deploy in the `github-pages` group (newest wins),
+  # and this run ends seconds after its commit. A dispatch made with
+  # GITHUB_TOKEN does start a run; a push made with it would not.
   deploy:
     needs: update
     if: always() && needs.update.outputs.pushed == 'true'
+    runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pages: write
-      id-token: write
-    uses: ./.github/workflows/pages.yml
+      actions: write
+    steps:
+      - name: Dispatch the Pages deploy for the new commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref main
