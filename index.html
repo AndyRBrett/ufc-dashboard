@@ -10565,8 +10565,14 @@ function safetyActions(o){
   return row;
 }
 // safety:end
+// Reads can finish out of order (a slow one started before a faster, later
+// one); only the latest read may replace the list, or an older answer landing
+// last puts back challenges as they were before.
+var _chalFetchSeq=0;
 function fetchChallenges(){
+  var seq=++_chalFetchSeq;
   return _sbFetchAll("/rest/v1/challenges?select=*&order=created_at.desc").then(function(rows){
+    if(seq!==_chalFetchSeq)return;
     // A blocked player's challenges, either way, leave the inbox, badge and feed.
     var next=(Array.isArray(rows)?rows:[]).filter(function(c){return !isBlocked(c.challenger_id)&&!isBlocked(c.target_id);});
     // Redraw the open inbox only when something changed: every redraw rebuilds

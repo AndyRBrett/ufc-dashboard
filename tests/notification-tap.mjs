@@ -396,6 +396,32 @@ async function main() {
       assert("challenge inbox: rows the inbox didn't draw aren't marked seen", r.unshownUnmarked);
     }
 
+    // Challenge reads finishing out of order: an older one landing last
+    // (a slow real read started before the stub, on CI) must not put back
+    // what the newer one replaced.
+    {
+      const r = await page.evaluate(async () => {
+        const realFetch = window.fetch, realFresh = _ensureFreshToken;
+        const pending = [];
+        window.fetch = function (url) {
+          url = String(url);
+          if (url.includes("/rest/v1/challenges")) return new Promise((res) => pending.push(res));
+          return realFetch.apply(window, arguments);
+        };
+        _ensureFreshToken = () => Promise.resolve();
+        const mk = (id) => new Response(JSON.stringify([{ id, challenger_id: "x", challenger_name: "X", target_id: "y", target_name: "Y",
+          event_date: "2999-01-01", event_name: "F", stake: "s", status: "pending", created_at: new Date().toISOString() }]), { status: 200 });
+        const older = fetchChallenges(); await new Promise((res) => setTimeout(res, 20));
+        const newer = fetchChallenges(); await new Promise((res) => setTimeout(res, 20));
+        pending[1](mk("newer")); await newer;
+        pending[0](mk("older")); await older;
+        const out = _challenges.map((c) => c.id).join(",");
+        window.fetch = realFetch; _ensureFreshToken = realFresh; _challenges = [];
+        return out;
+      });
+      assert("challenge reads: an older read landing last doesn't overwrite a newer one", r === "newer");
+    }
+
     // Accept / Decline acknowledge the tap at once. Nothing used to change on
     // screen until the server answered, so a tap looked ignored and was
     // repeated (four taps for one accept, 2026-10-03), and every refetch
