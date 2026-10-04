@@ -36,8 +36,15 @@ file, and the CSP must allow inline script, which removes most of its XSS value.
 3. **Feature blocks.** Each `// x:start … :end` region (rooms, sports, safety,
    fighter-photos, what's-new, …) becomes a file, in dependency order, still
    classic scripts sharing globals. Every stage: `verify`, `SW_VERSION` bump,
-   the precache list in `sw.js` updated, `scripts/lint-html.mjs` pointed at the
-   new files.
+   `scripts/lint-html.mjs` pointed at the new files.
+   **Each extracted file is fetched the way `scoring.js` is, never cache-first.**
+   `sw.js` serves other same-origin scripts cache-first, and an already
+   controlled client gets the new page before the new worker activates, so a
+   plain precache entry would run last release's module against this release's
+   HTML. Request every extracted file with a version (`app/x.js?v=<SW_VERSION>`),
+   add its path to `sw.js`'s network-first set alongside `scoring.js` and
+   `lab/*.js`, and extend `check:lab`'s stale-copy test (which already proves an
+   old `scoring.js` is refused) to cover them.
 4. **Inline handlers.** Replace the ~230 `onclick="…"` attributes with
    delegated listeners (`data-action="…"`), a few dozen per PR. Gate: a
    `check:web` rule that counts inline handlers and only allows the number to
@@ -73,13 +80,25 @@ injector). A wrapped App Store build also shouldn't execute downloaded code
    `parseDataJs(data.js)` deep-equals `data.json`. Cost: a second ~380 KB file
    committed every run, so do item 4 first or accept the churn for the
    migration's duration.
-2. **Readers move one at a time.** `health.py`, `send-push`'s `parseCards`,
-   `kick-scraper`, `send-reminders`, the Lab, FightBot, then the app (fetch
-   instead of `<script src>`, keeping the purge-and-reload self-heal) and
-   `sw.js`.
+2. **Readers move one at a time**, each with its tests. The full list as of
+   2026-10-04 (`git grep -l 'data\.js'`):
+   - pipeline: `scrape.py`, `health.py`, `extra.py`, `intel.py`,
+     `official_times.py`, `write_status.py`, `alert_calibration.py`, and
+     `update.yml` (copies `data.js` as the health gate's baseline)
+   - functions: `send-push` (`parseCards`), `kick-scraper`, `check-results`,
+     `send-reminders` and `_shared/datajs.js`
+   - readers: `lab.html`, `lab/engine.js`, `fightbot/core.mjs`,
+     `scripts/build-fn-bundle.mjs`
+   - build and checks: `build.mjs`, `validate-web.yml`, `check-web.mjs`,
+     `scripts/lint-html.mjs`, `eslint.config.mjs`, and the tests that load it
+   - last, the app itself (fetch instead of `<script src>`, keeping the
+     purge-and-reload self-heal), `scoring.js`'s references and `sw.js`
 3. **Results are dict edits.** `inject_results` updates the dict and
    re-renders, so no regex touches the file.
-4. **Stop writing `data.js`.**
+4. **Stop writing `data.js`**, only once a check that fails on any remaining
+   `data.js` reference outside an explicit allow-list (the dual-write itself)
+   has passed. The list above will have grown by then; the check, not the list,
+   is what proves every consumer moved.
 
 ## 4. Move data commits off the app's history
 
