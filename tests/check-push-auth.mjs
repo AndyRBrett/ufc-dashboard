@@ -99,6 +99,8 @@ let BLOCKS = [], blocksState = "ok";
 let INBOX = [], inboxState = "ok", PRUNES = [];   // roast_inbox rows written by send-push; retention deletes
 let sent = [], log = new Set(), dataReads = 0, picksReads = 0, picksDown = false, dataDown = false;
 const PRESENT = new Set();   // notif_log rows that already exist
+let LOCK_AT = null;          // pick_locks.lock_at for the bout under test (null: no row)
+let lockReads = 0;
 globalThis.__webpush = { setVapidDetails() {}, sendNotification: async (sub, payload) => { sent.push({ to: sub.endpoint.split("/").pop(), ...JSON.parse(payload) }); } };
 const inFilter = (url) => { const m = /user_id=in\.\(([^)]*)\)/.exec(decodeURIComponent(url)); return m ? m[1].split(",") : null; };
 globalThis.fetch = async (url, init = {}) => {
@@ -122,6 +124,10 @@ globalThis.fetch = async (url, init = {}) => {
     if (neq) rows = rows.filter((r) => r.user_id !== neq[1]);
     if (inl) rows = rows.filter((r) => inl.includes(r.user_id));
     return json(rows);
+  }
+  if (url.startsWith(SB + "/rest/v1/pick_locks")) {
+    lockReads++;
+    return json(LOCK_AT ? [{ lock_at: LOCK_AT }] : []);
   }
   if (url.startsWith(SB + "/rest/v1/picks")) {
     picksReads++;
@@ -222,6 +228,18 @@ for (const t of ["brief", "swap-old-bout"]) {
   PRESENT.clear();
   const early = await send({ event_date: "2026-10-03", type: "result:ann-a-bea-b:win", ...FORGED });
   check("a result the committed data doesn't have yet is refused (409), not guessed", early.status === 409 && early.sent.length === 0);
+  // Inside the bout's lock grace the database still takes picks, so the audience
+  // isn't final: 425 (not 409, which the scraper retries for 90s), nothing sent.
+  LOCK_AT = new Date(Date.now() - 2 * 60_000).toISOString(); lockReads = 0;
+  const grace = await send({ event_date: "2026-10-03", type: "result:jose-aldo-sean-o-malley:win" });
+  check("a result inside its bout's lock grace waits (425, nothing sent, no notif_log claim)",
+    grace.status === 425 && grace.sent.length === 0 && lockReads === 1 && ![...log].some((b) => b.includes("jose-aldo-sean-o-malley:win")));
+  LOCK_AT = new Date(Date.now() - 6 * 60_000).toISOString();
+  const after = await send({ event_date: "2026-10-03", type: "result:jose-aldo-sean-o-malley:win" });
+  check("...and goes once the grace is over", after.status === 200 && after.to.join() === "a11ce000-0000-4000-8000-000000000001");
+  LOCK_AT = null; log.clear();
+  const norow = await send({ event_date: "2026-10-03", type: "result:jose-aldo-sean-o-malley:loss" });
+  check("...while a bout with no lock row (its card's first bell) isn't held", norow.status === 200 && norow.to.join() === "b0b00000-0000-4000-8000-000000000002");
 }
 {
   const r = await send({ event_date: "2026-10-03", type: "main", ...FORGED });

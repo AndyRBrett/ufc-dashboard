@@ -320,6 +320,13 @@ async function buildMsg(
     const bout = card?.fights.find((f) => f.state === "post" && f.winner &&
       fightKey(f.winner, sameName(f.winner, f.f1) ? f.f2 : f.f1) === rm[1]);
     if (!bout || !bout.winner) return { ok: false, status: 409, error: "Result not final yet" };
+    // Not inside the bout's lock grace: the database still takes a pick for
+    // LOCK_GRACE after the lock, and the audience read below would miss it for
+    // good (notif_log dedups the group). 425, not 409: the scraper retries a 409
+    // (data.js not visible yet) for up to 90s, which would eat its run budget;
+    // check-results sends this push once the grace is over.
+    const lockAt = await boutLockAt(sb, sbHeaders, date, bout.f1, bout.f2);
+    if (lockAt !== null && now < lockAt + LOCK_GRACE_MS) return { ok: false, status: 425, error: "Inside the pick lock grace; try again shortly" };
     const winner = bout.winner, loser = sameName(winner, bout.f1) ? bout.f2 : bout.f1;
     const ids = new Set<string>();
     for (let from = 0; ; from += 1000) {
@@ -458,6 +465,24 @@ export async function recordRoasts(sb: string, h: Record<string, string>, to: st
 // whether or not another roast is ever sent.
 const ROAST_INBOX_DAYS = 7;
 let roastPrunedAt = 0;
+// The pick lock's grace (0010's LOCK_GRACE): the database still accepts a pick
+// for 5 minutes after its bout locks.
+export const LOCK_GRACE_MS = 5 * 60 * 1000;
+
+// A bout's lock time from pick_locks (names lower-cased, trimmed and sorted, as
+// send-reminders writes them), or null when there's no row or it can't be read:
+// such a bout answers to its card's first bell, long past by any result.
+export async function boutLockAt(sb: string, h: Record<string, string>, date: string, a: string, b: string): Promise<number | null> {
+  const [x, y] = [String(a ?? "").trim().toLowerCase(), String(b ?? "").trim().toLowerCase()].sort();
+  try {
+    const r = await fetch(`${sb}/rest/v1/pick_locks?select=lock_at&event_date=eq.${encodeURIComponent(date)}&a=eq.${encodeURIComponent(x)}&b=eq.${encodeURIComponent(y)}`, { headers: h });
+    if (!r.ok) return null;
+    const rows: { lock_at: string }[] = await r.json();
+    const t = rows.length ? Date.parse(rows[0].lock_at) : NaN;
+    return isNaN(t) ? null : t;
+  } catch (_e) { return null; }
+}
+
 export async function pruneRoasts(sb: string, h: Record<string, string>, now = Date.now()): Promise<void> {
   if (now - roastPrunedAt < 3600_000) return;
   roastPrunedAt = now;

@@ -879,7 +879,12 @@ enough to push any title and body to every subscriber. Now each caller is one of
   for the cron senders. The server rebuilds them from the committed `data.js`
   (read with patterns in `parseCards`, never executed) and reads a result's
   audience from `picks` itself; a result `data.js` doesn't have yet is a 409
-  (check-results sends it once it lands).
+  (check-results sends it once it lands). A result whose bout is still inside
+  its lock grace (`pick_locks.lock_at` + 5 min) is a **425**: the database still
+  takes picks then, so the audience isn't final, and claiming it would let
+  `notif_log` dedup a late picker out for good. 425, not 409, because the
+  scraper retries a 409 for up to 90s. `check-results` holds a result for the
+  same reason (`graceOver`) and sends it once the grace is over.
 
 The app sends through `_pushPost`: session JWT first, one retry with the anon
 key on a 401 (a Pages deploy running ahead of the function deploy, or an
