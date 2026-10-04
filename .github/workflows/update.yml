@@ -36,8 +36,14 @@ on:
 # froze every data update for 7 hours. Now a slow run finishes and commits;
 # GitHub keeps at most one run pending behind it (a newer dispatch replaces the
 # older pending one), so a slow stretch can't build a backlog either.
+#
+# A forced run (force_odds / force_extra) queues in its own group: in the shared
+# one the next routine dispatch would replace it while it waited, and the
+# operator's bypass would vanish exactly while a slow scrape held the slot. It
+# may then overlap a routine run; both start from main's tip (see checkout) and
+# the push step rebases, so the later commit simply lands on top.
 concurrency:
-  group: update-main
+  group: ${{ (inputs.force_odds || inputs.force_extra) && 'update-main-forced' || 'update-main' }}
   cancel-in-progress: false
 
 jobs:
@@ -49,7 +55,13 @@ jobs:
     outputs:
       pushed: ${{ steps.push.outputs.pushed }}
     steps:
+      # main's tip, not the dispatch's SHA: a queued run waits behind one that
+      # commits fresh results, and starting from the older snapshot would gate
+      # and push against it (the rebase's -X theirs keeps OUR side of a
+      # conflict), regressing what the run before it just published.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"

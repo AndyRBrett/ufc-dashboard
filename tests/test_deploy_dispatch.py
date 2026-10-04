@@ -45,6 +45,24 @@ def test_a_slow_scrape_finishes_instead_of_being_cancelled():
     # before committing, 97 in a row, and no data landed for 7 hours.
     update = (WF / "update.yml").read_text(encoding="utf-8")
     conc = update[update.index("\nconcurrency:"):update.index("\njobs:")]
-    assert re.search(r"group:\s*update-main", conc)
+    assert "update-main" in conc
     assert "cancel-in-progress: false" in conc
     assert "cancel-in-progress: true" not in update
+
+
+def test_a_forced_run_is_not_replaced_by_a_routine_dispatch():
+    # One pending slot per group: in the shared group the next 5-minute
+    # dispatch would replace a waiting force_odds / force_extra run.
+    update = (WF / "update.yml").read_text(encoding="utf-8")
+    conc = update[update.index("\nconcurrency:"):update.index("\njobs:")]
+    group = re.search(r"group:\s*(.+)", conc).group(1)
+    assert "inputs.force_odds" in group and "inputs.force_extra" in group
+    assert "'update-main-forced'" in group and "'update-main'" in group
+
+
+def test_a_queued_run_starts_from_mains_tip():
+    # A queued run's dispatch SHA predates the commit of the run ahead of it.
+    update = (WF / "update.yml").read_text(encoding="utf-8")
+    steps = job_block(update, "update")
+    checkout = re.search(r"uses: actions/checkout@\S+.*\n((?:\s{8,}.*\n)*)", steps)
+    assert checkout and re.search(r"ref:\s*main\b", checkout.group(1))

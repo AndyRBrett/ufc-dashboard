@@ -217,7 +217,10 @@ Two budgets to respect when changing cadence:
   2026-10-03. Any new per-run backfill needs the same kind of cap. Since
   2026-10-04 `update-main` also queues instead of cancelling
   (`cancel-in-progress: false`), so a run over budget still commits; the cap
-  is what keeps the cadence at 5 minutes.
+  is what keeps the cadence at 5 minutes. A queued run checks out `main`'s
+  tip, not its dispatch SHA, or it would push over the results the run ahead
+  of it just committed; a forced run queues in `update-main-forced` so a
+  routine dispatch can't replace it in the one pending slot.
 - **A rebuild never re-fetches what it already knows.** Every run that injects
   no result rebuilds every listed card, and the rematch check's Layer 4 fetched
   both fighters' Wikipedia pages for each bout every time: 171 fetches, 175s of a
