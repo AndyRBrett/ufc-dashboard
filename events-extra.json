@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-03T13:19:46Z",
+ "generated_at": "2026-10-04T01:33:11Z",
  "promotions": [
   {
    "id": "pfl",
@@ -19,107 +19,6 @@
   }
  ],
  "events": [
-  {
-   "promotion": "pfl",
-   "name": "PFL MENA 11",
-   "date": "2026-10-02",
-   "venue": "Boulevard City",
-   "location": "Riyadh",
-   "broadcast": "",
-   "bouts": [
-    {
-     "a": "Mostafa Rashed Neda",
-     "b": "Osama Elsaidy",
-     "label": "Main Event",
-     "division": "Light Heavyweight",
-     "title": false,
-     "odds": null,
-     "winner": "Mostafa Rashed Neda",
-     "method": "Submission",
-     "round": 2
-    },
-    {
-     "a": "Badreddine Diani",
-     "b": "Hazem Kayyali",
-     "label": "",
-     "division": "Welterweight",
-     "title": false,
-     "odds": null,
-     "winner": "Badreddine Diani",
-     "method": "Submission",
-     "round": 2
-    },
-    {
-     "a": "Ylies Djiroun",
-     "b": "Assem Ghanem",
-     "label": "",
-     "division": "Lightweight",
-     "title": false,
-     "odds": null,
-     "winner": "Ylies Djiroun",
-     "method": "KO/TKO",
-     "round": 1
-    },
-    {
-     "a": "Mehdi Saadi",
-     "b": "Shadi Kabbani",
-     "label": "",
-     "division": "Featherweight",
-     "title": false,
-     "odds": null,
-     "winner": "Mehdi Saadi",
-     "method": "Decision (Split)",
-     "round": 3
-    },
-    {
-     "a": "Abdelkrim Zouad",
-     "b": "Omar Hussein",
-     "label": "",
-     "division": "Welterweight",
-     "title": false,
-     "odds": null,
-     "winner": "Abdelkrim Zouad",
-     "method": "Decision (Unanimous)",
-     "round": 3
-    },
-    {
-     "a": "Mohammad Fahmi",
-     "b": "Ahmed El Sisy",
-     "label": "",
-     "division": "Lightweight",
-     "title": false,
-     "odds": {
-      "a": -126,
-      "b": 106
-     },
-     "winner": "Mohammad Fahmi",
-     "method": "Decision (Unanimous)",
-     "round": 3
-    },
-    {
-     "a": "Fatima Al Ammari",
-     "b": "Aya Lounes",
-     "label": "",
-     "division": "Catchweight (139 Lb)",
-     "title": false,
-     "odds": null,
-     "winner": "Fatima Al Ammari",
-     "method": "KO/TKO",
-     "round": 2
-    },
-    {
-     "a": "Alridah Alnemar",
-     "b": "Ali Alshowakh",
-     "label": "",
-     "division": "Bantamweight",
-     "title": false,
-     "odds": null,
-     "winner": "Alridah Alnemar",
-     "method": "Decision (Unanimous)",
-     "round": 3
-    }
-   ]
-  },
   {
    "promotion": "rizin",
    "name": "Rizin Landmark 16",
