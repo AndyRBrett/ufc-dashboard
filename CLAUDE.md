@@ -75,8 +75,8 @@ Pushing to `main` deploys automatically, so the gates also run in CI and
   `validate` job (the `validate-web.yml` reusable workflow = the checks above).
   `update.yml` **dispatches** it (`gh workflow run`) after a data commit, never
   calls it as a `uses:` job: a called deploy runs inside the scrape's run, which
-  `update-main`'s cancel-in-progress can't end until validate and deploy finish,
-  so every new dispatch waited ~3 min behind it (fight night 2026-10-03: a scrape
+  the `update-main` group holds until validate and deploy finish, so every new
+  dispatch waited ~3 min behind it (fight night 2026-10-03: a scrape
   every ~8-10 min instead of 5). `tests/test_deploy_dispatch.py` holds it.
 - `.github/workflows/deploy-functions.yml` → Supabase. `deploy` **needs** a
   `check:functions` + `check:provider` gate. Every deploy line carries
@@ -205,16 +205,22 @@ Two budgets to respect when changing cadence:
 - **Fighters on a card within `STATS_URGENT_DAYS` bypass the failure cooldown**
   (`_needs_stats_fetch(..., urgent=True)`). The flat 3-day cooldown guaranteed a
   blank record through any card that landed inside it.
-- **A run must finish inside the 5-minute dispatch.** `update.yml` cancels an
-  in-progress run when the next one arrives, so a run that outlasts it commits
-  nothing and the next starts the same work over: a loop. The stats loop is
+- **A run must finish inside the 5-minute dispatch.** `update.yml` used to
+  cancel an in-progress run when the next one arrived, so a run that outlasted
+  it committed nothing and the next started the same work over: a loop. The stats loop is
   capped at `STATS_FETCH_BUDGET_S` (60s); gaps (`stats_gap`: nothing cached, or
   an imminent card's missing record / failed fetch) go first and get
   `STATS_GAP_BUDGET_S` (120s), still a hard stop for a UFCStats outage, and
   the rest of a backlog drains across runs. Fight day stays urgent past UTC
   midnight (`stats_days_out` counts calendar days; -1 covers a US night card). Without it, #258's one-time `res`
   backfill froze every data update, the UFC card's included, for 7 hours on
-  2026-10-03. Any new per-run backfill needs the same kind of cap.
+  2026-10-03. Any new per-run backfill needs the same kind of cap. Since
+  2026-10-04 `update-main` also queues instead of cancelling
+  (`cancel-in-progress: false`), so a run over budget still commits; the cap
+  is what keeps the cadence at 5 minutes. A queued run checks out `main`'s
+  tip, not its dispatch SHA, or it would push over the results the run ahead
+  of it just committed; a forced run queues in `update-main-forced` so a
+  routine dispatch can't replace it in the one pending slot.
 - **A rebuild never re-fetches what it already knows.** Every run that injects
   no result rebuilds every listed card, and the rematch check's Layer 4 fetched
   both fighters' Wikipedia pages for each bout every time: 171 fetches, 175s of a
