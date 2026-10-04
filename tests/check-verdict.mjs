@@ -168,7 +168,7 @@ try {
     return route.fulfill({ status: 404, body: "{}" });
   });
   await page.addInitScript(() => {
-    try { localStorage.setItem("ufc_whatsnew_seen", "9999"); } catch {}
+    try { localStorage.setItem("ufc_whatsnew_seen", "9999"); localStorage.setItem("ufc_ai_consent", "1"); } catch {}
     // Capture what the share sheet would get.
     navigator.canShare = () => true;
     navigator.share = (d) => { window.__shared = d; return Promise.resolve(); };

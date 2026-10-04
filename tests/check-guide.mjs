@@ -193,7 +193,10 @@ check("it spends the same daily AI budget as everything else (spent = 429, no mo
 // Client limits match the server's, so a long chat can't turn into a 400.
 const cT = /var BOT_TURNS=(\d+),BOT_TURN_MAX=(\d+)/.exec(html);
 check("the app sends at most the turns the server accepts", cT && +cT[1] <= M.GUIDE_MAX_TURNS && +cT[2] <= M.GUIDE_MAX_TURN);
-check("FightBot is first in _escClosers (Escape closes it before the board under it)", /var _escClosers=\[[^\]]*?\n\s*\["botModal"/.test(html) &&
+// The AI consent sheet may come first: it opens over FightBot, on its first question.
+const escIds = [...html.slice(html.indexOf("var _escClosers=[")).matchAll(/^\s*\["([\w-]+)",/gm)].map((m) => m[1]);
+check("FightBot is first in _escClosers (Escape closes it before the board under it)",
+  (escIds[0] === "botModal" || (escIds[0] === "aiConsentBg" && escIds[1] === "botModal")) &&
   html.indexOf('["botModal"') < html.indexOf('["lbPanel"') && html.indexOf('["botModal"') < html.indexOf('["lbInfoModal"'));
 
 // --no-browser: everything above, without the Chromium half. deploy-functions.yml
@@ -238,7 +241,29 @@ try {
   await page.goto(`http://127.0.0.1:${server.address().port}/index.html`, { waitUntil: "load" });
   await page.waitForTimeout(500);
 
-  await page.evaluate(() => toggleMoreMenu());
+  // No AI request goes out before the user says yes once (ai-consent in index.html).
+  const declined = await page.evaluate(async () => {
+    const p = _aiFetch("{}").then(() => "sent", (e) => e.name);
+    await new Promise((r) => setTimeout(r, 50));
+    const shown = document.getElementById("aiConsentBg").classList.contains("open");
+    _aiConsentAnswer(false);
+    return { shown, res: await p, stored: localStorage.getItem("ufc_ai_consent") };
+  });
+  check("an AI request waits on the consent sheet, and Not now sends nothing and stores nothing",
+    declined.shown && declined.res === "AiConsentError" && declined.stored === null && sent.length === 0);
+  // Privacy & Safety's switch turns AI on through the same sheet, never silently.
+  const viaToggle = await page.evaluate(async () => {
+    _aiConsentToggle();
+    await new Promise((r) => setTimeout(r, 50));
+    const shown = document.getElementById("aiConsentBg").classList.contains("open");
+    const before = localStorage.getItem("ufc_ai_consent");
+    _aiConsentAnswer(false);
+    return { shown, before, after: localStorage.getItem("ufc_ai_consent") };
+  });
+  check("turning AI on in Privacy & Safety shows the consent sheet first, and Not now leaves it off",
+    viaToggle.shown && viaToggle.before === null && viaToggle.after === null);
+
+  await page.click("#hdrAvatar");
   await page.click("#botBtn");
   await page.waitForTimeout(350);
   let st = await page.evaluate(() => ({
@@ -246,10 +271,13 @@ try {
     greet: document.getElementById("botHistory").textContent,
     quick: document.querySelectorAll("#botQuickQs .quick-q").length,
   }));
-  check("⋯ More → Ask FightBot opens the guide with a greeting and quick questions", st.open && /FightBot/.test(st.greet) && st.quick >= 4);
+  check("Menu → Ask FightBot opens the guide with a greeting and quick questions", st.open && /FightBot/.test(st.greet) && st.quick >= 4);
 
   await page.fill("#botInput", "How do locks work?");
   await page.press("#botInput", "Enter");
+  await page.waitForSelector("#aiConsentBg.open");
+  check("the first question asks for AI consent before sending", sent.length === 0);
+  await page.click("#aiConsentAllow");
   await page.waitForFunction(() => /Answer #1/.test(document.getElementById("botHistory").textContent));
   check("Enter sends the question as action guide, from the Home screen, and the answer shows",
     sent[0] && sent[0].action === "guide" && sent[0].question === "How do locks work?" && sent[0].screen === "Home" && Array.isArray(sent[0].history));

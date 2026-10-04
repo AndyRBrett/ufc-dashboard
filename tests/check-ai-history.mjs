@@ -311,7 +311,7 @@ try {
       return route.fulfill({status:200,contentType:'application/json',body:'[{"user_id":"someone"}]'});
     return route.fulfill({status:200,contentType:'application/json',body:'[]'});
   });
-  await page.addInitScript(()=>localStorage.setItem('ufc_whatsnew_seen','9999'));
+  await page.addInitScript(()=>{localStorage.setItem('ufc_whatsnew_seen','9999');localStorage.setItem('ufc_ai_consent','1');});
   await page.goto(`http://127.0.0.1:${server.address().port}/index.html`);
   await page.evaluate(fixture=>{ FIGHTER_STATS=fixture;_authReady=Promise.resolve();_ensureFreshToken=()=>Promise.resolve();_authBearer=()=> 'Bearer test'; },stats);
   const ev={name:'Fixture card',date:'2026-10-02',fights:[{lbl:'Main Event',f1:{n:'Ateba Gautier',r:'8-1',s:{slpm:4,acc:52,td:1,tdd:75,ko:5,sub:2,form:[{r:'W',m:'KO'}]}},f2:{n:'Robert Valentin',r:'10-3'},odds:{f1:-150,f2:130},wc:'Middleweight'}]};
