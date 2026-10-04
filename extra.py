@@ -278,7 +278,7 @@ def card_from_wikitext(wikitext):
     results = scrape.parse_results(wikitext)
     titled = _title_pairs(wikitext)
     bouts = []
-    for i, f in enumerate(fights):
+    for f in fights:
         a, b = f["f1"], f["f2"]
         if not (_real(a) and _real(b)) or scrape.names_match(a, b):
             continue
@@ -482,7 +482,7 @@ def build(fetch, now, previous=None, lines=None):
                           if e.get("promotion") == p["id"] and _in_window(e.get("date"), now))
             continue
         years = {}
-        def year_page(d):
+        def year_page(d, years=years, p=p):
             y = d[:4]
             if y not in years:
                 years[y] = get(p["year_page"].format(year=y))

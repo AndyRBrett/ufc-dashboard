@@ -25,6 +25,10 @@ concurrency:
   group: scheduled-push
   cancel-in-progress: false
 
+# Least privilege: these jobs only call our edge functions with their own
+# secrets and never touch the repo, so the GitHub token gets nothing.
+permissions: {}
+
 jobs:
   trigger:
     runs-on: ubuntu-latest

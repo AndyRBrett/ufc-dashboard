@@ -1,0 +1,11 @@
+# Lint gate for the Python pipeline (ci.yml runs `ruff check .`).
+#
+# Correctness rules only, never style: pyflakes (F: undefined names, unused
+# imports/variables), syntax errors (E9), bugbear (B: late-binding closures,
+# mutable defaults, ...) and pylint errors (PLE). A style-only rule would turn
+# a scrape fix into a reformat of 4,500 lines.
+target-version = "py311"
+extend-exclude = ["node_modules", "dist"]
+
+[lint]
+select = ["F", "E9", "B", "PLE"]

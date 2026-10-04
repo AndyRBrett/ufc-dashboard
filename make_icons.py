@@ -5,7 +5,7 @@ Design: red background, "UFC" bold on top half, thin white divider, "PICKS" bold
 Both words are contained well within the maskable safe zone (center 80%).
 """
 from PIL import Image, ImageDraw, ImageFont
-import math, os
+import os
 
 RED    = (232, 25, 44)
 WHITE  = (255, 255, 255)
