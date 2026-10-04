@@ -1,0 +1,26 @@
+# Local Supabase stack: `supabase start` builds the database from
+# supabase/migrations (0000 first) and serves the edge functions, so a change
+# can be tried end to end before it touches production.
+#
+# project_id only names the local containers; the hosted project is
+# gkccophrdqtqcowmblre (see deploy-functions.yml). Everything not set here
+# takes the CLI's defaults.
+project_id = "ufc-dashboard"
+
+# JWT verification per function, matching deploy-functions.yml's flags: the
+# three cron-driven functions authenticate with CRON_SECRET themselves, so the
+# gateway must not reject their bearer as an invalid JWT. Keep both in step.
+[functions.send-push]
+verify_jwt = true
+
+[functions.ai-breakdown]
+verify_jwt = true
+
+[functions.check-results]
+verify_jwt = false
+
+[functions.send-reminders]
+verify_jwt = false
+
+[functions.kick-scraper]
+verify_jwt = false

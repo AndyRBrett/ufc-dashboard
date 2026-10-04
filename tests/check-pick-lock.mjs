@@ -511,5 +511,20 @@ await db.exec(readFileSync(join(ROOT, "supabase/migrations/0017_picks_hidden_unt
   check("0017: …and a % or _ in the name is a character, not a wildcard", await taken(U6, "jord%") === false && await taken(U6, "_ordan") === false);
 }
 
+// Since 0017 the anon key can't see a pick before its bout's lock + grace, so a
+// server function that reads picks to build a result push's audience must use
+// the service key: an anon read inside the grace returns nobody, and notif_log
+// then dedups that push away for good. send-push and send-reminders always did;
+// check-results read with the anon key until this was caught.
+{
+  const fns = ["check-results", "send-push", "send-reminders"];
+  for (const fn of fns) {
+    const src = readFileSync(join(ROOT, "supabase/functions", fn, "index.ts"), "utf8");
+    const reads = [...src.matchAll(/\/rest\/v1\/picks\?[^`]*`\s*,\s*\{\s*headers:\s*([^,}\s]+)/g)].map((m) => m[1]);
+    const anon = reads.filter((h) => /anon/i.test(h));
+    check(`0017: ${fn} reads picks with the service key, never the anon key (${reads.length} read(s))`, reads.length > 0 && anon.length === 0);
+  }
+}
+
 if (failures) { console.error(`\ncheck-pick-lock: ${failures} failure(s).`); process.exit(1); }
 console.log("\ncheck-pick-lock: once a bout locks, its picks can't be added, changed, moved or deleted, and nobody else's show before it.");

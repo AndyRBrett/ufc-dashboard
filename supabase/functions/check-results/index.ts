@@ -223,6 +223,15 @@ Deno.serve(async (req) => {
   const SB_SERVICE_ROLE_KEY = Deno.env.get("SB_SERVICE_ROLE_KEY") ?? "";
 
   const anonHeaders = { "apikey": SB_ANON_KEY, "Authorization": `Bearer ${SB_ANON_KEY}` };
+  // picks is read with the service key. Since 0017 the anon key can't see a
+  // pick until its bout's lock + LOCK_GRACE has passed, and when two results
+  // land in one run the later bout's picks can still be inside that grace: an
+  // anon read would hand send-push an empty audience, and notif_log would then
+  // dedup that result push away for good. Anon remains the fallback for a
+  // deployment without the service key (it sees every locked bout's picks).
+  const picksHeaders = SB_SERVICE_ROLE_KEY
+    ? { "apikey": SB_SERVICE_ROLE_KEY, "Authorization": `Bearer ${SB_SERVICE_ROLE_KEY}` }
+    : anonHeaders;
   // X-Service-Key tells send-push this is one of our own functions, so it sends
   // the text and audience given (from anyone else it rebuilds them). Without
   // the key a result still goes out, rebuilt from data.js, once that has it.
@@ -236,7 +245,7 @@ Deno.serve(async (req) => {
   // 1. Recent events that people actually picked (the only possible audience).
   const evRes = await fetch(
     `${SUPABASE_URL}/rest/v1/picks?select=event_date,event_name&event_date=gte.${lo}&event_date=lte.${hi}&promotion=eq.ufc`,
-    { headers: anonHeaders },
+    { headers: picksHeaders },
   );
   if (!evRes.ok) {
     return new Response(JSON.stringify({ error: "Failed to fetch events" }), { status: 502, headers: { "Content-Type": "application/json" } });
@@ -290,7 +299,7 @@ Deno.serve(async (req) => {
     try {
       const pRes = await fetch(
         `${SUPABASE_URL}/rest/v1/picks?select=user_id,f1,f2,pick&event_date=eq.${encodeURIComponent(eventDate)}&promotion=eq.ufc`,
-        { headers: anonHeaders },
+        { headers: picksHeaders },
       );
       if (pRes.ok) picks = await pRes.json();
     } catch (_e) { picks = []; }
