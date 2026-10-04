@@ -215,6 +215,15 @@ Two budgets to respect when changing cadence:
   midnight (`stats_days_out` counts calendar days; -1 covers a US night card). Without it, #258's one-time `res`
   backfill froze every data update, the UFC card's included, for 7 hours on
   2026-10-03. Any new per-run backfill needs the same kind of cap.
+- **A rebuild never re-fetches what it already knows.** Every run that injects
+  no result rebuilds every listed card, and the rematch check's Layer 4 fetched
+  both fighters' Wikipedia pages for each bout every time: 171 fetches, 175s of a
+  207s scrape on 2026-10-04, enough with the stats budget to pass 5 minutes. Its
+  own verdict is now cached in the committed `rematch-cache.json`
+  (`REMATCH_CACHE_TTL_H`, 24h; never data.js's final `rematch`, which other
+  layers set; never a verdict resting on a failed fetch), and `fetch_wikitext`
+  takes the API's `missingtitle` as final instead of a raw 404 and two sleeps.
+  `tests/test_rematch_cache.py` holds both.
 
 **"No odds" has two causes and only one of them is a bug.** `write_status.py`
 files an unpriced card as `parse-failure` (which fails the run) or
