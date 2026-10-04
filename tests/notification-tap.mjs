@@ -499,6 +499,37 @@ async function main() {
       assert("accept: a request that never answers gives them back after the timeout", r.stallAcked && r.stallRestores && r.stallUnlocked);
     }
 
+    // The activity feed gives an answer its own line, at the time it was
+    // given: as a suffix on the challenge's line (dated when it was sent) an
+    // accept never surfaced as new and read as if it hadn't gone through.
+    {
+      const r = await page.evaluate(() => {
+        const now = Date.now(), iso = (ms) => new Date(ms).toISOString();
+        const base = { challenger_id: "u-t", challenger_name: "🦍 T", target_id: "u-ab", target_name: "🥋 AB",
+          event_date: "2999-01-01", event_name: "F", f1: null, f2: null, stake: "Loser spins the wheel" };
+        const saved = _challenges, savedRows = _commRows;
+        if (!_commRows) _commRows = [];
+        const feed = () => [...document.querySelectorAll("#feedBody .feed-item-txt")].map((e) => e.textContent);
+        _challenges = [Object.assign({ id: "fa1", status: "accepted", created_at: iso(now - 49 * 60000), responded_at: iso(now - 2 * 60000) }, base)];
+        renderActivityFeed();
+        const accepted = feed();
+        _challenges = [Object.assign({ id: "fa2", status: "declined", created_at: iso(now - 49 * 60000), responded_at: iso(now - 60000) }, base)];
+        renderActivityFeed();
+        const declined = feed();
+        _challenges = [Object.assign({ id: "fa3", status: "accepted", created_at: iso(now - 49 * 60000), responded_at: null }, base)];
+        renderActivityFeed();
+        const legacy = feed();
+        _challenges = saved; _commRows = savedRows; renderActivityFeed();
+        return { accepted, declined, legacy };
+      });
+      const iAcc = r.accepted.findIndex((t) => /AB accepted .*T's challenge — it's on!/.test(t));
+      const iCh = r.accepted.findIndex((t) => /T challenged .*AB · Loser spins the wheel$/.test(t));
+      assert("feed: an accept gets its own line, above the older challenge line", iAcc >= 0 && iCh >= 0 && iAcc < iCh);
+      assert("feed: a decline gets its own line too", r.declined.some((t) => /AB declined .*T's challenge$/.test(t)));
+      assert("feed: an answer with no responded_at keeps the old suffix", r.legacy.some((t) => /T challenged .*AB · Loser spins the wheel — it's on!$/.test(t))
+        && !r.legacy.some((t) => /accepted/.test(t)));
+    }
+
     // sw.js tells an open page the moment a push lands, so the page reads the
     // inbox without waiting on the tap.
     {
