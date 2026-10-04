@@ -73,6 +73,11 @@ Pushing to `main` deploys automatically, so the gates also run in CI and
 
 - `.github/workflows/pages.yml` → GitHub Pages. `deploy` **needs** the
   `validate` job (the `validate-web.yml` reusable workflow = the checks above).
+  `update.yml` **dispatches** it (`gh workflow run`) after a data commit, never
+  calls it as a `uses:` job: a called deploy runs inside the scrape's run, which
+  `update-main`'s cancel-in-progress can't end until validate and deploy finish,
+  so every new dispatch waited ~3 min behind it (fight night 2026-10-03: a scrape
+  every ~8-10 min instead of 5). `tests/test_deploy_dispatch.py` holds it.
 - `.github/workflows/deploy-functions.yml` → Supabase. `deploy` **needs** a
   `check:functions` + `check:provider` gate. Every deploy line carries
   `--use-api` (server-side bundling): without it the runner pulls Supabase's

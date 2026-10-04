@@ -7,10 +7,12 @@
 # the deploy lets us retry the transient failure instead of dropping the update.
 #
 # Triggered three ways:
-#   - workflow_call from update.yml after it pushes fresh data (pushes made with
-#     GITHUB_TOKEN never fire `on: push` workflows, so the explicit call is required)
+#   - workflow_dispatch from update.yml after it pushes fresh data (pushes made
+#     with GITHUB_TOKEN never fire `on: push` workflows, but a dispatch does; a
+#     dispatch, not a call, so the scrape's run never waits on this one)
 #   - push to main (human commits / PR merges)
-#   - workflow_dispatch (manual redeploy)
+#   - workflow_dispatch (also a manual redeploy)
+#   - workflow_call (kept so a caller can still embed it)
 name: Deploy to GitHub Pages
 
 on:
@@ -28,7 +30,7 @@ jobs:
   # Gate: the app must boot and all web assets must be valid before we publish.
   # deploy `needs:` this, so a syntax typo or a non-booting build is blocked from
   # production instead of white-paging everyone (including on the automated
-  # data-update path, which reaches this workflow via workflow_call).
+  # data-update path, which reaches this workflow via workflow_dispatch).
   validate:
     uses: ./.github/workflows/validate-web.yml
     # Validate the exact tip we deploy — deploy checks out main, and on the
