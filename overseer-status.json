@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T02:01:00Z",
+  "generated_at": "2026-10-04T02:08:39Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "status": "ok",
-      "last_changed_at": "2026-10-04T01:44:11Z",
+      "last_changed_at": "2026-10-04T02:08:39Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -116,7 +116,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-04T02:01:00Z",
+      "last_changed_at": "2026-10-04T02:08:39Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 10,
@@ -136,7 +136,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-04T02:01:00Z",
+      "last_changed_at": "2026-10-04T02:08:39Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -146,7 +146,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-04T02:01:00Z",
+      "last_changed_at": "2026-10-04T02:08:39Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -166,7 +166,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-04T02:01:00Z",
+      "last_changed_at": "2026-10-04T02:08:39Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -289,18 +289,18 @@
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
-      "f1": "Deiveson Figueiredo",
-      "f2": "Payton Talbott",
-      "f1_movement": 101,
-      "f2_movement": -205,
+      "f1": "Payton Talbott",
+      "f2": "Deiveson Figueiredo",
+      "f1_movement": -205,
+      "f2_movement": 101,
       "magnitude": 205,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Bantamweight",
-      "f1_prob_shift": -3.2,
-      "f2_prob_shift": 3.7,
+      "f1_prob_shift": 3.7,
+      "f2_prob_shift": -3.2,
       "priority": 205.0
     },
     {
