@@ -10775,7 +10775,7 @@ function respondChallenge(c,accept,accBtn,decBtn){
     // A refetch while this was in flight replaced the list's objects, so
     // update the one the inbox now draws, not just the copy the button held.
     _challenges.concat([c]).forEach(function(x){if(x.id===c.id){x.status=accept?"accepted":"declined";x.responded_at=x.responded_at||new Date().toISOString();}});
-    renderChallengeInbox();updateChalBadge();_rtBroadcastChal();
+    renderChallengeInbox();updateChalBadge();renderActivityFeed();_rtBroadcastChal();
     if(accept)_triggerPush(c.event_date,"chal-resp-"+c.id,"⚔️ "+userName+" accepted your challenge!",
       _chalFightLbl(c)+" — "+c.stake+" · It's on!",USER_ID,{includeIds:[c.challenger_id],url:"./?inbox=1",kind:"challenge"});
     toast(accept?"It's on! ⚔️":"Declined");
@@ -10941,11 +10941,24 @@ function renderActivityFeed(){
       emoji:"🏆"});
   }
   // 4) Challenge callouts (creations/responses only — outcomes stay in the inbox)
-  _challenges.slice(0,10).forEach(function(c){
-    var t=Date.parse(c.created_at||"")||0;
-    if(Date.now()-t>14*DAY_MS)return;
-    var verb=c.status==="accepted"?" — it's on!":c.status==="declined"?" (declined)":"";
-    items.push({t:t,txt:_freshNick(c.challenger_name)+" challenged "+_freshNick(c.target_name)+" · "+c.stake+verb,emoji:"⚔️"});
+  // An answer is its own line, at the time it was given: folded into the
+  // challenge's line as a suffix, an accept changed a line already dated when
+  // the challenge was sent, so it never surfaced as new and read as lost.
+  // The ten with the latest activity, sent or answered: the list comes newest
+  // sent first, so a fresh answer to an older challenge would fall past the cut.
+  var _chalAct=function(c){return Math.max(Date.parse(c.created_at||"")||0,Date.parse(c.responded_at||"")||0);};
+  _challenges.slice().sort(function(a,b){return _chalAct(b)-_chalAct(a);}).slice(0,10).forEach(function(c){
+    var t=Date.parse(c.created_at||"")||0,rt=Date.parse(c.responded_at||"")||0;
+    var answered=c.status==="accepted"||c.status==="declined";
+    var who=_freshNick(c.challenger_name),them=_freshNick(c.target_name);
+    if(Date.now()-t<=14*DAY_MS){
+      // A row answered before responded_at existed keeps the old suffix.
+      var verb=answered&&!rt?(c.status==="accepted"?" — it's on!":" (declined)"):"";
+      items.push({t:t,txt:who+" challenged "+them+" · "+c.stake+verb,emoji:"⚔️"});
+    }
+    if(answered&&rt&&Date.now()-rt<=14*DAY_MS)
+      items.push({t:rt,emoji:c.status==="accepted"?"🤝":"🙅",
+        txt:c.status==="accepted"?them+" accepted "+who+"'s challenge — it's on!":them+" declined "+who+"'s challenge"});
   });
   items.sort(function(a,b){return b.t-a.t;});
   items=items.slice(0,8);
