@@ -59,11 +59,12 @@ jobs:
           ref: ${{ inputs.ref }}
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
       - run: npm ci
-      - name: Static checks (syntax + data + functions)
+      - name: Static checks (lint + syntax + data + functions)
         run: |
+          npm run lint
           npm run check:web
           npm run check:functions
       - name: Install Chromium
@@ -88,6 +89,16 @@ jobs:
         run: npm run check:intel
       - name: What's New popup test
         run: npm run check:whatsnew
+      # These four were in `verify` but missing here, so nothing in CI ran them
+      # and a break in any of them could deploy.
+      - name: Fighter rename test
+        run: npm run check:names
+      - name: Notification prefs restore test
+        run: npm run check:prefs
+      - name: Pick lock times test
+        run: npm run check:lock
+      - name: Push sender authorization test
+        run: npm run check:pushauth
       - name: Pick restore test
         run: npm run check:picks
       - name: kick-scraper cadence gate test

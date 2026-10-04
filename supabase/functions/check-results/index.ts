@@ -18,6 +18,7 @@
 // Deployed with --no-verify-jwt: the Supabase gateway would otherwise reject the
 // cron's `Authorization: Bearer <CRON_SECRET>` as an invalid JWT before this code
 // runs. Inbound auth is enforced here via CRON_SECRET instead.
+import { secretEquals } from "../_shared/secret.js";
 
 // ---------------------------------------------------------------------------
 // Wikipedia result parsing — ported verbatim from index.html (~4975-5074).
@@ -184,12 +185,6 @@ async function fetchWikitext(slug: string): Promise<string | null> {
 // Constant-time comparison. `!==` on a secret returns at the first differing
 // byte, so response timing across enough requests leaks the secret prefix by
 // prefix. Length is still observable; that is standard and not worth hiding.
-function secretEquals(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 204 });

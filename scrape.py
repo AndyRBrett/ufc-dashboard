@@ -3789,12 +3789,35 @@ def send_push_notifications(new_results, defer=True, retry_waits=()):
 # Results injection
 # ---------------------------------------------------------------------------
 
+def _js_safe_method(method):
+    """A scraped method, safe to splice into data.js's `method:"..."` literal.
+
+    inject_results edits data.js as text and later runs re-match the field with
+    `method:"[^"]*"`, so a quote (escaped or not), a backslash or a control
+    character from the source would corrupt the file: escaping alone isn't
+    enough, the next run's regex would split an escaped quote. Methods are short
+    prose ("Submission (rear-naked choke)"), so dropping those characters loses
+    nothing.
+    """
+    return re.sub(r'["\\\x00-\x1f\u2028\u2029]', "", str(method or "")).strip()
+
+
+def _js_safe_round(rnd):
+    """The round as an int, or None: it is spliced in unquoted (`round:3`)."""
+    try:
+        n = int(rnd)
+    except (TypeError, ValueError):
+        return None
+    return n if 1 <= n <= 5 else None
+
+
 def inject_results(js, results):
     """Inject fight results (winner, method, round, state) into the JS events block."""
     count   = 0
     pattern = r'f1:\{n:"([^"]+)"[^}]+\},f2:\{n:"([^"]+)"'
     for res in results:
         winner, loser, method, rnd = res["winner"], res["loser"], res["method"], res["round"]
+        method, rnd = _js_safe_method(method), _js_safe_round(rnd)
         for m in re.finditer(pattern, js):
             f1n, f2n = m.group(1), m.group(2)
             f1w = names_match(f1n, winner) and (not loser or names_match(f2n, loser))
@@ -3830,8 +3853,8 @@ def inject_results(js, results):
                       "— cannot inject result", file=sys.stderr)
                 break
             fstr = js[fs:fe]
-            fstr = re.sub(r'winner:"[^"]*"',     lambda _: f'winner:"{wn}"',     fstr)
-            fstr = re.sub(r'method:"[^"]*"',     lambda _: f'method:"{method}"', fstr)
+            fstr = re.sub(r'winner:"[^"]*"',     lambda _, wn=wn: f'winner:"{wn}"',     fstr)
+            fstr = re.sub(r'method:"[^"]*"',     lambda _, method=method: f'method:"{method}"', fstr)
             fstr = re.sub(r"round:(?:null|\d+)", f"round:{rnd if rnd else 'null'}", fstr)
             fstr = re.sub(r'state:"[^"]*"',      lambda _: 'state:"post"',       fstr)
             if fstr == js[fs:fe]:
@@ -4025,7 +4048,7 @@ def step_inject_results(data, now):
     total_injected = 0
     new_results    = []
 
-    for ev_name, ev_date in zip(ex_names, ex_dates):
+    for ev_name, ev_date in zip(ex_names, ex_dates, strict=False):
         try:
             ed = datetime.strptime(ev_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
         except ValueError:
@@ -4481,6 +4504,7 @@ def main():
         list(zip(
             re.findall(r'date:"(\d{4}-\d{2}-\d{2})"', data)[:6],
             re.findall(r'name:"([^"]+)"', data)[:6],
+            strict=False,
         )),
         file=sys.stderr,
     )
@@ -4490,7 +4514,7 @@ def main():
     if updated:
         updated = update_results_archive(updated, now)
         data_path.write_text(updated, encoding="utf-8")
-        print(f"Results injected", file=sys.stderr)
+        print("Results injected", file=sys.stderr)
         send_push_notifications(new_results)
         sys.exit(0)
 
@@ -4512,7 +4536,6 @@ def main():
         updated = update_results_archive(updated, now)
         data_path.write_text(updated, encoding="utf-8")
         new_events = re.findall(r'name:"([^"]+)"', updated)
-        new_fights = len(re.findall(r'"lbl":|lbl:', updated))
         print(f"Done: {len(new_events)} events", file=sys.stderr)
 
 

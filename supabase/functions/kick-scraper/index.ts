@@ -13,6 +13,7 @@
 // (header auth) and fails its run on a 502, which is the alert.
 //
 // Deployed with --no-verify-jwt; inbound auth is enforced here via CRON_SECRET.
+import { secretEquals } from "../_shared/secret.js";
 
 // Schedule source used only to decide how hard to drive the scraper: the
 // data.js the scraper itself last COMMITTED, not the copy on GitHub Pages.
@@ -144,12 +145,6 @@ async function minutesSinceLastRun(repo: string, workflow: string, token: string
 // Constant-time comparison. `!==` on a secret returns at the first differing
 // byte, so response timing across enough requests leaks the secret prefix by
 // prefix. Length is still observable; that is standard and not worth hiding.
-function secretEquals(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 204 });

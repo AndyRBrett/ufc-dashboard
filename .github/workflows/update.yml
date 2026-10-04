@@ -46,6 +46,11 @@ concurrency:
   group: ${{ (inputs.force_odds || inputs.force_extra) && 'update-main-forced' || 'update-main' }}
   cancel-in-progress: false
 
+# Default for any job that doesn't ask for more; `update` and `deploy` below
+# each declare exactly what they need.
+permissions:
+  contents: read
+
 jobs:
   update:
     runs-on: ubuntu-latest

@@ -36,7 +36,7 @@ import os
 import re
 import sys
 import unicodedata
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 
 DATA_PATH   = Path("data.js")
@@ -144,7 +144,7 @@ def parse_data(text):
             }
             for g in (mm.groupdict() for mm in FIGHT_RE.finditer(seg))
         ]
-        def field(rx):
+        def field(rx, seg=seg):
             mm = rx.search(seg)
             return mm.group(1) if mm else ""
 

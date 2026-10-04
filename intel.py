@@ -341,7 +341,6 @@ def in_window(date_str, now):
 
 def curate(events, now=None):
     now = now or datetime.now(timezone.utc)
-    today = now.date()
     upcoming = [e for e in events if in_window(e["date"], now)]
     out = {"generated_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
            "window_days": WINDOW_DAYS, "sources": [], "events": {}}
@@ -384,7 +383,7 @@ def curate(events, now=None):
         scored.sort(key=lambda t: -t[0])
 
         chosen, seen_titles, per_source = [], set(), {}
-        for score, it, hits in scored:
+        for _score, it, hits in scored:
             tkey = nm_key(it["title"])
             if tkey in seen_titles or it["url"] in seen_urls:
                 continue
@@ -435,7 +434,6 @@ def card_fingerprint(events, now):
     Jessie Rosas withdrawal in update.yml's comment was announced the day before
     the fight).
     """
-    today = now.date()
     parts = []
     for e in sorted(events, key=lambda e: (e["date"], e["slug"])):
         if not in_window(e["date"], now):

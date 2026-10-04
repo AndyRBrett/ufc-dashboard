@@ -1,6 +1,7 @@
 // Uses the runtime's built-in Deno.serve — no deno.land/std import, so deploys
 // don't depend on deno.land being up.
 import webpush from "npm:web-push@3.6.7";
+import { secretEquals } from "../_shared/secret.js";
 // v3 — spoiler-free by default: safe_title/safe_body go to everyone except
 // subscribers with live_results = true (also supports include_user_ids targeting)
 
@@ -168,12 +169,6 @@ const REBUILT = /^(main|prelim|result:.+)$/;
 // Social pushes: a signed-in sender, sending as themselves.
 const SOCIAL = /^(pick-(first|done)-.+|trash-talk-\d+|chal(-resp)?-[\w-]+|nudge-[\w-]+)$/;
 
-function sameSecret(a: string, b: string): boolean {
-  if (!a || !b || a.length !== b.length) return false;
-  let d = 0;
-  for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return d === 0;
-}
 
 // Per-sender cap for social pushes, on top of the per-IP one: a verified
 // user_id is a far better key than a spoofable address. In-memory, per
@@ -663,7 +658,7 @@ Deno.serve(async (req) => {
   // refused outright rather than treated as anon: it was meant to be someone.
   let caller: Caller;
   let blocked: Set<string> | null = null;   // social pushes only: see blockedWith
-  if (sameSecret(req.headers.get("X-Service-Key") ?? "", SERVICE_ROLE_KEY)) caller = { kind: "service" };
+  if (secretEquals(req.headers.get("X-Service-Key") ?? "", SERVICE_ROLE_KEY)) caller = { kind: "service" };
   else if (isAnonKey || !ANON_KEY) caller = { kind: "anon" };
   else {
     const uid = await verifyUser(SUPABASE_URL, ANON_KEY, bearer);

@@ -91,6 +91,26 @@ def test_inject_results_never_counts_an_edit_it_did_not_make():
     assert out == js
 
 
+def test_inject_results_keeps_data_js_parseable_with_hostile_method_and_round():
+    # inject_results splices scraped text into data.js as source. A quote,
+    # backslash or newline in the method (or a non-numeric round) used to go in
+    # raw, leaving data.js unparseable, and the health gate would then freeze
+    # every data update until a human fixed it.
+    js = _fight_js("Liu Ce", "Levi Rodrigues Jr.")
+    out, n = scrape.inject_results(
+        js, [{"winner": "Liu Ce", "loser": "Levi Rodrigues Jr.",
+              "method": 'Submission ("RNC")\\\n', "round": "3);alert(1"}])
+    assert n == 1
+    assert 'method:"Submission (RNC)"' in out
+    assert "round:null" in out
+    # Re-running the result over its own output changes nothing (the next run's
+    # `method:"[^"]*"` match must still see one whole field).
+    again, n2 = scrape.inject_results(
+        out, [{"winner": "Liu Ce", "loser": "Levi Rodrigues Jr.",
+               "method": "KO/TKO", "round": 2}])
+    assert n2 == 0 and again == out
+
+
 # --- method normalisation --------------------------------------------------
 
 def test_norm_method_canonical_forms():

@@ -51,7 +51,7 @@ jobs:
       # pages.yml blocks deploys on. An issue can land on either side, so both
       # toolchains are installed rather than guessing which one it needs.
       python_version: "3.12"
-      node_version: "20"
+      node_version: "22"
       install: pip install --require-hashes -r requirements.txt -r requirements-dev.txt && npm ci
       test_command: python -m pytest -q
       test_note: >-
