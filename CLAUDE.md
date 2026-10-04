@@ -61,6 +61,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:photos` | a fighter photo lookup missing a disambiguated page, showing a same-named non-fighter's face, caching a miss forever, or a view without photos |
 | `npm run check:safety` | a report readable or filed as someone else, a block the blocked person can see or undo, a blocked pair able to challenge each other, the app showing a blocked player's challenges, or the privacy policy unlinked |
 | `npm run check:delete` | Delete my account leaving the login, a challenge or any other row of the caller's behind, or touching anyone else's |
+| `npm run check:migrations` | a migration that can't apply to what the ones before it built, the rebuilt core tables drifting from production's catalog, or `config.toml`'s JWT settings drifting from the deploy |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
 `data.js`, `sw.js`, or a function, verify is mandatory — not optional.
@@ -1244,6 +1245,38 @@ change, called out in the PR. Nothing in the migration merges on a card day.
 If a stage goes wrong: `docs/ROLLBACK.md` (known-good branch
 `backup/pre-engine-migration-2026-09-24`, picks snapshot
 `picks_backup_2026_09_24`).
+
+## The database rebuilds from the repo, and the repo is checked against production
+
+`picks`, `push_subs` and `notif_log` were created in the dashboard before this
+folder existed, so for months nothing could rebuild the database and nothing
+noticed production drifting from it. On 2026-10-04 production turned out to be
+missing **0017** (picks hidden until lock): the app and these notes assumed it
+was live, and every player's picks were readable before their fights locked.
+`0000_baseline_core_tables.sql` is those three tables as production's catalog
+had them (idempotent: applying it to production is a no-op), and
+`npm run check:migrations` builds the whole database from 0000 up in PGlite and
+compares the core tables' columns, constraints, policies and triggers with
+production's. `supabase/config.toml` lets `supabase start` run the same stack
+locally.
+
+**Migrations are still applied by hand, so after applying one, confirm it.**
+Run this in the SQL editor; every row must say `true` (add a row for each new
+migration):
+
+```sql
+select m, ok from (values
+  ('0017 picks hidden until lock', exists(select 1 from pg_policies where tablename='picks' and policyname='picks_select' and qual like '%pick_lock_for%')),
+  ('0017 nickname_taken',          exists(select 1 from pg_proc where proname='nickname_taken')),
+  ('0018 room passwords',          exists(select 1 from pg_proc where proname='set_room_pass'))
+) t(m, ok);
+```
+
+Server functions read `picks` with the **service key** (`check:picklock`
+asserts it for every function that reads them): since 0017 an anon read inside
+a bout's lock grace returns nobody, and a result push built from that would be
+deduped away by `notif_log` for good. `check-results` read with the anon key
+until 2026-10-04.
 
 ## Report, block and the privacy policy (App Store groundwork)
 
