@@ -356,8 +356,20 @@ def sb_get(path):
 # Wikipedia
 # ---------------------------------------------------------------------------
 
+# Slugs the API has said outright do not exist this run. A miss is definite, not
+# a network failure, so callers may cache it (see _rematch_layer4).
+_WIKI_MISSING = set()
+
+
 def fetch_wikitext(slug):
-    """Fetch raw wikitext for a Wikipedia page, trying the API then a raw fallback."""
+    """Fetch raw wikitext for a Wikipedia page, trying the API then a raw fallback.
+
+    The API answers a page that does not exist with HTTP 200 and error code
+    `missingtitle`. That is final: the raw URL for the same title only 404s, so
+    falling through to it cost a second request and two 1-second sleeps for every
+    fighter without a page, ~2.3s each, 51 of them (116s) in one 2026-10-04
+    rebuild. Any other API failure still falls back to raw.
+    """
     sources = [
         ("API", WIKI_API, {"action": "parse", "page": slug, "prop": "wikitext", "format": "json"}),
         ("raw", "https://en.wikipedia.org/w/index.php", {"title": slug, "action": "raw"}),
@@ -369,9 +381,15 @@ def fetch_wikitext(slug):
             if r is None:
                 continue
             print(f"  Wiki {method} [{slug[:40]}]: {r.status_code}", file=sys.stderr)
+            if r.status_code == 200 and method == "API":
+                body = r.json()
+                if (body.get("error") or {}).get("code") == "missingtitle":
+                    print(f"  Wiki page missing [{slug[:40]}]", file=sys.stderr)
+                    _WIKI_MISSING.add(slug)
+                    return ""
             if r.status_code == 200:
                 wt = (
-                    r.json().get("parse", {}).get("wikitext", {}).get("*", "")
+                    body.get("parse", {}).get("wikitext", {}).get("*", "")
                     if method == "API"
                     else r.text
                 )
@@ -3167,6 +3185,64 @@ def _wiki_record(wikitext):
     return f"{w}-{l}-{field('draws') or '0'}"
 
 
+# Layer 4's verdict per bout, kept across runs. A full rebuild re-checks every
+# listed bout (~150 across 12 cards), and Layer 4 fetches the fighters' own
+# Wikipedia pages to do it: 171 fetches, 175s of a 207s scrape on 2026-10-04,
+# repeated every run for answers that almost never change. Combined with the
+# stats budget that pushed runs past the 5-minute dispatch, so they were
+# cancelled having committed nothing. Only this layer's own verdict is cached
+# (never data.js's final `rematch` flag, which other layers also set), it
+# expires after REMATCH_CACHE_TTL_H so a Wikipedia edit is picked up, and a
+# verdict built on a fetch that failed for a reason other than a missing page is
+# never stored.
+REMATCH_CACHE_FILE = Path("rematch-cache.json")
+REMATCH_CACHE_TTL_H = 24
+
+
+def load_rematch_cache(path=REMATCH_CACHE_FILE):
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def save_rematch_cache(cache, now, path=REMATCH_CACHE_FILE):
+    """Write the cache, dropping expired entries so the file stays bounded."""
+    keep = {k: v for k, v in cache.items() if _rematch_cache_fresh(v, now)}
+    Path(path).write_text(json.dumps(keep, sort_keys=True, indent=0), encoding="utf-8")
+
+
+def _rematch_key(f1, f2):
+    return "|".join(sorted([asc(f1).strip().lower(), asc(f2).strip().lower()]))
+
+
+def _rematch_cache_fresh(entry, now):
+    try:
+        return now - datetime.fromisoformat(entry["at"]) < timedelta(hours=REMATCH_CACHE_TTL_H)
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
+def _rematch_layer4(f1, f2, cache, now):
+    """Layer 4: do BOTH fighters' Wikipedia records show a past bout? Cached."""
+    key = _rematch_key(f1, f2)
+    hit = cache.get(key)
+    if hit is not None and _rematch_cache_fresh(hit, now):
+        return bool(hit.get("v"))
+    s1, s2 = f1.replace(" ", "_"), f2.replace(" ", "_")
+    fw1 = fetch_wikitext(s1)
+    verdict, definite = False, bool(fw1) or s1 in _WIKI_MISSING
+    if _fighter_wiki_past_fight(fw1, f2):
+        time.sleep(0.5)
+        fw2 = fetch_wikitext(s2)
+        verdict = _fighter_wiki_past_fight(fw2, f1)
+        definite = bool(fw2) or s2 in _WIKI_MISSING
+    if definite:
+        cache[key] = {"v": verdict, "at": now.isoformat()}
+    return verdict
+
+
 def fetch_wiki_record(name):
     """Fetch a fighter's Wikipedia page and return their 'W-L-D' record (or '')."""
     return _wiki_record(fetch_wikitext(name.replace(" ", "_")))
@@ -3960,6 +4036,7 @@ def step_build_events(data, now):
     """
     existing_odds  = extract_existing_odds(data)
     existing_cards = _extract_existing_cards(data)
+    rematch_cache  = load_rematch_cache()
 
     # Odds are quota-metered; pull only when the cadence allows (see
     # should_fetch_odds). Skipping is safe — the empty index falls through to the
@@ -4097,13 +4174,9 @@ def step_build_events(data, now):
             # Bautista II) were being missed when the event page didn't spell out "rematch".
             if not wiki_rematch:
                 hinted = _wiki_rematch(wt, f1, f2)
-                fw1 = fetch_wikitext(f1.replace(" ", "_"))
-                if _fighter_wiki_past_fight(fw1, f2):
-                    time.sleep(0.5)
-                    fw2 = fetch_wikitext(f2.replace(" ", "_"))
-                    if _fighter_wiki_past_fight(fw2, f1):
-                        wiki_rematch = True
-                        print(f"  Rematch (fighter wiki): {f1} vs {f2}", file=sys.stderr)
+                if _rematch_layer4(f1, f2, rematch_cache, now):
+                    wiki_rematch = True
+                    print(f"  Rematch (fighter wiki): {f1} vs {f2}", file=sys.stderr)
                 if hinted and not wiki_rematch:
                     print(f"  Rematch hint unconfirmed, ignoring: {f1} vs {f2}",
                           file=sys.stderr)
@@ -4198,6 +4271,11 @@ def step_build_events(data, now):
         })
         print(f"  Built: {ev_name} ({len(card)} fights)", file=sys.stderr)
         time.sleep(1)
+
+    try:
+        save_rematch_cache(rematch_cache, now)
+    except OSError as e:
+        print(f"  Rematch cache not saved: {e}", file=sys.stderr)
 
     if not new_events:
         print("No events built — keeping existing data.js", file=sys.stderr)

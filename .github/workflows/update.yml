@@ -184,7 +184,7 @@ jobs:
                    odds-series.json odds-state.json odds-alert-state.json odds-lines.json \
                    health-report.json intel.json intel-state.json \
                    events-extra.json events-extra.candidate.json extra-state.json \
-                   official-times.json pending-pushes.json; do
+                   official-times.json pending-pushes.json rematch-cache.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           if git diff --staged --quiet; then
