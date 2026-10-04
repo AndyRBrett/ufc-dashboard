@@ -99,6 +99,18 @@ async function main() {
       return { w: cv.width, h: cv.height, png: cv.toDataURL("image/png").length, painted: px[3] === 255 };
     });
     assert("Wrapped share card draws a 1080×1920 image", card && card.w === 1080 && card.h === 1920 && card.painted && card.png > 20000);
+    // Keyboard reach: Enter on a role="button" element that isn't a <button>
+    // must activate it (the activity feed header toggles the feed).
+    const kb = await page.evaluate(() => {
+      const hdr = document.querySelector('.feed-hdr[role="button"]'), feed = document.getElementById("activityFeed");
+      if (!hdr || !feed) return null;
+      const was = feed.classList.contains("open");
+      hdr.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+      const now = feed.classList.contains("open");
+      if (now !== was) window.toggleActivityFeed();   // put it back
+      return { tabbable: hdr.tabIndex === 0, toggled: now !== was };
+    });
+    assert("a role=\"button\" control is tabbable and Enter activates it", kb && kb.tabbable && kb.toggled);
   } catch (e) {
     fatal.push("Navigation/boot failed: " + e.message);
   } finally {

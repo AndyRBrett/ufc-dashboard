@@ -43,12 +43,24 @@ Supabase backend holds picks and fans out push notifications.
 
 **Picks and competition**
 - Pick a winner for every bout, optionally with a method (KO/TKO, submission,
-  decision) and a Fight of the Night call. Picks lock at the bout's start.
+  decision), a 🔒 lock on two bouts per card (+1 if right, −1 if wrong) and a
+  Fight of the Night call. Picks need an email account. A segment's opening bout
+  locks at its bell; every later bout locks when the fight before it has a
+  result, and the database enforces the same lock. Nobody else's pick is
+  visible until that bout locks.
 - A public leaderboard with streaks, perfect cards, upset hit rate, method
   accuracy, and a "belt lineage" tracing who won each past event.
 - Head-to-head challenges, a nudge for people who haven't picked yet, an
-  activity feed, a spin-the-wheel forfeit list, and AI-generated fight
-  breakdowns and trash talk (Claude, behind an edge function).
+  activity feed, a spin-the-wheel forfeit list, and AI features behind an edge
+  function: fight breakdowns, Ask Claude, parlay picks and the FightBot guide on
+  Anthropic's Claude, and trash talk on xAI's Grok.
+- Watch Party rooms: a private board and belt for a group, scored exactly like
+  the main board.
+- PFL, RIZIN and DWCS cards beside UFC (a switcher appears when one has a card
+  to pick), each with its own board under the same scoring rules.
+- The Fight Lab (`lab.html`): the fight model, market lines and analytics,
+  plus a Friday Fight Week Brief push. FightBot is also an MCP server
+  (`fightbot/`).
 
 **Live nights**
 - Fight Night mode: results appear as bouts are called, with standings updating
@@ -57,8 +69,8 @@ Supabase backend holds picks and fans out push notifications.
   results, and social events.
 
 **Themes**
-- Six skins from the More menu: Octagon Dark, Apex Neon, Knockout Fire, Silver,
-  Stars & Stripes, and Seasonal. Silver is the only light theme, so it redefines
+- Seven skins from the More menu: Octagon Dark, Apex Neon, Knockout Fire, Silver,
+  Stars & Stripes, UFC Noche and Seasonal. Silver is the only light theme, so it redefines
   the full colour variable set rather than tinting a dark one.
 - A theme is more than a palette. Stars & Stripes swaps the octagon for an eagle
   that screeches when tapped and streaks shooting stars across the page; Silver

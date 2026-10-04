@@ -1,6 +1,6 @@
 # UFC Dashboard — working notes for Claude / contributors
 
-A vanilla PWA: the app is **`index.html`** (HTML + inline CSS + ~5,600 lines
+A vanilla PWA: the app is **`index.html`** (HTML + inline CSS + ~9,700 lines
 of inline JS) plus **`scoring.js`** (every function that decides a score — see
 "One scoring rulebook" below), fed by **`data.js`** (the generated `EVENTS` array) and
 served **raw from the repo root** to GitHub Pages. Backend logic lives in
