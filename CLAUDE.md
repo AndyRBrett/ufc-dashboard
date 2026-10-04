@@ -148,8 +148,13 @@ scrape.** `send-push` rebuilds an anon-key result push from the committed
 `git push` is always refused. `update.yml` sets `PUSH_DEFER_FILE`, the scrape
 writes its new results there, and a step after the commit runs
 `scrape.py --send-pending` (a 409 is retried briefly, `PUSH_409_RETRY_WAITS_S`).
-Pushing from inside the scrape made two UFC 332 main-card results 12-15 minutes
-late. `tests/test_result_push_defer.py` holds it.
+The queue is the **committed** `pending-pushes.json`, never runner temp: the
+next dispatch cancels a run, and one cancelled between its commit and its send
+would lose the push for good (the next run sees the result as already in
+`data.js`). So every run first replays the committed queue and empties it
+(`--send-pending … --clear`); `notif_log` makes a repeat a no-op. Pushing from
+inside the scrape made two UFC 332 main-card results 12-15 minutes late.
+`tests/test_result_push_defer.py` holds it.
 
 **The gate reads the COMMITTED `data.js` (raw.githubusercontent, `main`), never
 the Pages copy.** Reading Pages made a loop: a blocked deploy left Pages showing

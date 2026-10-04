@@ -3549,8 +3549,16 @@ def defer_push_notifications(new_results, path):
     print(f"Deferred {len(new_results)} result push(es) to {path}", file=sys.stderr)
 
 
-def send_pending_pushes(path):
-    """Send the results a scrape deferred, once data.js is committed."""
+def send_pending_pushes(path, clear=False):
+    """Send the results a scrape deferred, once data.js is committed.
+
+    The queue is a committed file, not runner temp: update.yml's concurrency
+    cancels a run the moment the next dispatch arrives, and one cancelled
+    between its commit and its send step would otherwise lose the push for
+    good (the next run sees the result already in data.js, so it isn't new).
+    So each run first replays the queue the last run committed (clear=True,
+    then empties it); notif_log makes a replay of a push already sent a no-op.
+    """
     p = Path(path)
     if not p.exists():
         print("No deferred result pushes", file=sys.stderr)
@@ -3559,8 +3567,13 @@ def send_pending_pushes(path):
         pending = json.loads(p.read_text(encoding="utf-8")) or []
     except (OSError, ValueError) as e:
         print(f"Deferred pushes unreadable ({e}); check-results will cover them", file=sys.stderr)
-        return
-    send_push_notifications(pending, defer=False, retry_waits=PUSH_409_RETRY_WAITS_S)
+        pending = []
+    if pending:
+        # A replay reads a data.js that was committed a run ago: no 409 to wait out.
+        send_push_notifications(pending, defer=False,
+                                retry_waits=() if clear else PUSH_409_RETRY_WAITS_S)
+    if clear and pending:
+        p.write_text("[]", encoding="utf-8")
 
 
 def _post_push(payload, retry_waits=()):
@@ -4398,7 +4411,7 @@ def main():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 3 and sys.argv[1] == "--send-pending":
-        send_pending_pushes(sys.argv[2])
+    if len(sys.argv) in (3, 4) and sys.argv[1] == "--send-pending":
+        send_pending_pushes(sys.argv[2], clear=sys.argv[3:] == ["--clear"])
     else:
         main()

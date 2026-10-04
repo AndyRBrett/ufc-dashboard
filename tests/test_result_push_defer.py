@@ -98,11 +98,44 @@ def test_no_pending_file_is_a_no_op(wire, tmp_path):
     assert posts == []
 
 
+def test_replay_sends_then_empties_without_waiting(wire, tmp_path):
+    """A run cancelled after its commit left its queue committed: the next run replays it."""
+    posts, statuses, sleeps = wire
+    f = tmp_path / "pending.json"
+    f.write_text(json.dumps([RESULT]))
+    statuses.extend([409])  # a replay reads data.js a run old: no 409 worth waiting on
+    scrape.send_pending_pushes(str(f), clear=True)
+    assert len(posts) == 2 and sleeps == []
+    assert json.loads(f.read_text()) == []
+    posts.clear()
+    scrape.send_pending_pushes(str(f), clear=True)  # empty queue: nothing sent, nothing written
+    assert posts == []
+
+
+def test_the_after_commit_send_keeps_the_queue_for_the_replay(wire, tmp_path):
+    posts, _, _ = wire
+    f = tmp_path / "pending.json"
+    f.write_text(json.dumps([RESULT]))
+    scrape.send_pending_pushes(str(f))
+    assert len(posts) == 2
+    assert json.loads(f.read_text()) == [RESULT], "cleared only by the next run's replay"
+
+
+def test_update_yml_queue_survives_a_cancelled_run():
+    wf = (ROOT / ".github/workflows/update.yml").read_text(encoding="utf-8")
+    replay = wf.index("python scrape.py --send-pending pending-pushes.json --clear")
+    assert replay < wf.index("- run: python scrape.py"), "replay the last run's queue before scraping"
+    assert re.search(r"PUSH_DEFER_FILE:\s*pending-pushes\.json\s*$", wf, re.M), \
+        "the queue must be a committed file, not runner temp"
+    add_list = wf[wf.index("- id: push"):wf.index("git diff --staged --quiet")]
+    assert "pending-pushes.json" in add_list, "the queue must be committed with data.js"
+
+
 def test_update_yml_sends_after_the_commit():
     wf = (ROOT / ".github/workflows/update.yml").read_text(encoding="utf-8")
     scrape_step = wf.index("- run: python scrape.py")
     push_step = wf.index("- id: push")
-    send_step = wf.index("python scrape.py --send-pending")
+    send_step = wf.rindex("python scrape.py --send-pending pending-pushes.json\n")
     defer_at = wf.index("PUSH_DEFER_FILE:")
     assert scrape_step < defer_at < push_step, "the scrape step must defer its pushes"
     assert push_step < send_step, "pushes must go out after the commit"

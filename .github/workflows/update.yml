@@ -71,6 +71,14 @@ jobs:
       # not acceptable — a fix that only takes effect on a run that pulls odds
       # cannot be confirmed otherwise. Manual dispatch only, and off by default:
       # the gate is what keeps the monthly quota from being burned.
+      # A run cancelled between its commit and "Send result pushes" (the next
+      # dispatch cancels it) leaves its queue in the committed
+      # pending-pushes.json; replay it before scraping, then empty it.
+      - name: Replay result pushes a cancelled run left queued
+        continue-on-error: true
+        env:
+          SUPABASE_ANON: ${{ secrets.SUPABASE_ANON }}
+        run: python scrape.py --send-pending pending-pushes.json --clear
       - run: python scrape.py
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -82,7 +90,8 @@ jobs:
           SUPABASE_ANON: ${{ secrets.SUPABASE_ANON }}
           ODDS_FORCE: ${{ inputs.force_odds && '1' || '' }}
           # Result pushes wait for the commit: see the "Send result pushes" step.
-          PUSH_DEFER_FILE: ${{ runner.temp }}/pending-pushes.json
+          # Committed, not runner temp, so a cancelled run's queue survives.
+          PUSH_DEFER_FILE: pending-pushes.json
       # The gate between a degraded scrape and a published card. Fails the job on
       # structural breakage (unparseable data, empty EVENTS, a card that lost
       # bouts) so the last-good data.js stays live and GitHub emails the failure.
@@ -175,7 +184,7 @@ jobs:
                    odds-series.json odds-state.json odds-alert-state.json odds-lines.json \
                    health-report.json intel.json intel-state.json \
                    events-extra.json events-extra.candidate.json extra-state.json \
-                   official-times.json; do
+                   official-times.json pending-pushes.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           if git diff --staged --quiet; then
@@ -198,7 +207,7 @@ jobs:
         if: steps.push.outputs.pushed == 'true'
         env:
           SUPABASE_ANON: ${{ secrets.SUPABASE_ANON }}
-        run: python scrape.py --send-pending "${{ runner.temp }}/pending-pushes.json"
+        run: python scrape.py --send-pending pending-pushes.json
 
       # Event-level failures must reach the RUN's failure signal (#66).
       #
