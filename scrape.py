@@ -3243,7 +3243,9 @@ def _rematch_key(f1, f2):
 
 def _rematch_cache_fresh(entry, now):
     try:
-        if entry.get("ver") != REMATCH_CACHE_VER:
+        # A damaged committed entry (a list, a string, null) is just stale: it
+        # must never raise out of here and abort the scrape.
+        if not isinstance(entry, dict) or entry.get("ver") != REMATCH_CACHE_VER:
             return False
         return now - datetime.fromisoformat(entry["at"]) < timedelta(hours=REMATCH_CACHE_TTL_H)
     except (KeyError, TypeError, ValueError):

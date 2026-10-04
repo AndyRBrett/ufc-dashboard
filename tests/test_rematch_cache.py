@@ -198,3 +198,18 @@ def test_a_verdict_from_an_older_matcher_is_rechecked(net):
     scrape._rematch_layer4("Ann Able", "Bea Bold", cache, NOW)
     assert calls, "an entry from the old, accent-blind matcher must not stand"
     assert cache[key]["ver"] == scrape.REMATCH_CACHE_VER
+
+
+def test_a_damaged_cache_entry_never_aborts_the_scrape(net, tmp_path):
+    """Codex on #273: a non-object entry made .get() raise out of the scrape."""
+    calls, _, pages, _ = net
+    pages["Ann_Able"] = "z" * 300
+    key = scrape._rematch_key("Ann Able", "Bea Bold")
+    for junk in ([1, 2], "oops", None, 7):
+        cache = {key: junk, "x|y": junk}
+        calls.clear()
+        assert scrape._rematch_layer4("Ann Able", "Bea Bold", cache, NOW) is False
+        assert calls, "a damaged entry is re-checked, not trusted"
+        p = tmp_path / "rc.json"
+        scrape.save_rematch_cache(cache, NOW, p)
+        assert set(scrape.load_rematch_cache(p)) == {key}, "and dropped on save"
