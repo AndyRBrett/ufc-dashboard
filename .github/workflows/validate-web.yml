@@ -34,6 +34,7 @@
 #   check:photos    — a fighter's photo is found once, is never someone else's face, and a miss is retried
 #   check:safety    — report / block hold in the database and the app, and the privacy policy is linked
 #   check:delete    — Delete my account deletes the login and every row of the caller's, and nobody else's
+#   check:migrations — the database rebuilds from supabase/migrations (0000 up) and matches production's core schema
 #   check:picklock  — the database refuses a pick, change or delete once its bout's segment has started
 name: Validate Web
 
@@ -145,3 +146,5 @@ jobs:
         run: npm run check:safety
       - name: Delete my account deletes the account
         run: npm run check:delete
+      - name: Database rebuild test
+        run: npm run check:migrations
