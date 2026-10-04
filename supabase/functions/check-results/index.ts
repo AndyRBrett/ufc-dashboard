@@ -186,6 +186,38 @@ async function fetchWikitext(slug: string): Promise<string | null> {
 // byte, so response timing across enough requests leaks the secret prefix by
 // prefix. Length is still observable; that is standard and not worth hiding.
 
+// The pick lock's grace (0010's LOCK_GRACE): the database still accepts a pick
+// for 5 minutes after its bout locks.
+export const LOCK_GRACE_MS = 5 * 60 * 1000;
+
+// May this bout's result push claim its audience yet? Only once its effective
+// lock (`lockAt`, ms, from the database's pick_lock_for) plus the grace has
+// passed: the database still takes picks until then, and notif_log would dedup
+// a later picker out for good. `lockAt` undefined means the lock couldn't be
+// read, and that waits too (fail closed); the next run asks again.
+export function graceOver(lockAt: number | undefined, now: number): boolean {
+  return typeof lockAt === "number" && !isNaN(lockAt) && now >= lockAt + LOCK_GRACE_MS;
+}
+
+// A bout's effective lock time from pick_lock_for(): its pick_locks row, else
+// its card's first bell, else midnight ET after the date, the rule the lock
+// trigger enforces. undefined when it can't be read. "-infinity" (a date the
+// database can't read) is locked, so 0.
+export async function boutLockAt(url: string, h: Record<string, string>, date: string, a: string, b: string): Promise<number | undefined> {
+  try {
+    const r = await fetch(`${url}/rest/v1/rpc/pick_lock_for`, {
+      method: "POST",
+      headers: { ...h, "Content-Type": "application/json" },
+      body: JSON.stringify({ p_promo: "ufc", p_date: date, p_f1: a, p_f2: b }),
+    });
+    if (!r.ok) return undefined;
+    const v = await r.json();
+    if (v === "-infinity") return 0;
+    const t = typeof v === "string" ? Date.parse(v) : NaN;
+    return isNaN(t) ? undefined : t;
+  } catch (_e) { return undefined; }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 204 });
   if (req.method !== "POST" && req.method !== "GET") {
@@ -218,6 +250,15 @@ Deno.serve(async (req) => {
   const SB_SERVICE_ROLE_KEY = Deno.env.get("SB_SERVICE_ROLE_KEY") ?? "";
 
   const anonHeaders = { "apikey": SB_ANON_KEY, "Authorization": `Bearer ${SB_ANON_KEY}` };
+  // picks is read with the service key. Since 0017 the anon key can't see a
+  // pick until its bout's lock + LOCK_GRACE has passed, and when two results
+  // land in one run the later bout's picks can still be inside that grace: an
+  // anon read would hand send-push an empty audience, and notif_log would then
+  // dedup that result push away for good. Anon remains the fallback for a
+  // deployment without the service key (it sees every locked bout's picks).
+  const picksHeaders = SB_SERVICE_ROLE_KEY
+    ? { "apikey": SB_SERVICE_ROLE_KEY, "Authorization": `Bearer ${SB_SERVICE_ROLE_KEY}` }
+    : anonHeaders;
   // X-Service-Key tells send-push this is one of our own functions, so it sends
   // the text and audience given (from anyone else it rebuilds them). Without
   // the key a result still goes out, rebuilt from data.js, once that has it.
@@ -231,7 +272,7 @@ Deno.serve(async (req) => {
   // 1. Recent events that people actually picked (the only possible audience).
   const evRes = await fetch(
     `${SUPABASE_URL}/rest/v1/picks?select=event_date,event_name&event_date=gte.${lo}&event_date=lte.${hi}&promotion=eq.ufc`,
-    { headers: anonHeaders },
+    { headers: picksHeaders },
   );
   if (!evRes.ok) {
     return new Response(JSON.stringify({ error: "Failed to fetch events" }), { status: 502, headers: { "Content-Type": "application/json" } });
@@ -263,7 +304,7 @@ Deno.serve(async (req) => {
     } catch (_e) { /* best-effort; send-push still dedups if this read fails */ }
   }
 
-  let parsedCount = 0, pushedCount = 0, skippedCount = 0, processed = 0;
+  let parsedCount = 0, pushedCount = 0, skippedCount = 0, deferredCount = 0, processed = 0;
   const fights: unknown[] = [];
 
   for (const [eventDate, eventName] of events) {
@@ -285,7 +326,7 @@ Deno.serve(async (req) => {
     try {
       const pRes = await fetch(
         `${SUPABASE_URL}/rest/v1/picks?select=user_id,f1,f2,pick&event_date=eq.${encodeURIComponent(eventDate)}&promotion=eq.ufc`,
-        { headers: anonHeaders },
+        { headers: picksHeaders },
       );
       if (pRes.ok) picks = await pRes.json();
     } catch (_e) { picks = []; }
@@ -293,15 +334,19 @@ Deno.serve(async (req) => {
     for (const res of parsed) {
       if (!res.winner || !res.loser) continue;
       const winners: string[] = [], losers: string[] = [];
+      let boutNames: [string, string] | null = null;   // the pick rows' own names (data.js's), as the lock is keyed
       for (const p of picks) {
         if (!p.user_id) continue;
         const isFight =
           (_namesMatch(p.f1, res.winner) && _namesMatch(p.f2, res.loser)) ||
           (_namesMatch(p.f2, res.winner) && _namesMatch(p.f1, res.loser));
         if (!isFight) continue;
+        if (!boutNames) boutNames = [p.f1, p.f2];
         (_namesMatch(p.pick, res.winner) ? winners : losers).push(p.user_id);
       }
       if (!winners.length && !losers.length) continue; // nobody picked this bout
+      const lockAt = boutNames ? await boutLockAt(SUPABASE_URL, picksHeaders, eventDate, boutNames[0], boutNames[1]) : undefined;
+      if (!graceOver(lockAt, now)) { deferredCount++; continue; }   // next run, once the grace is over (or the lock can be read)
 
       const fightKey = _fightKey(res.winner, res.loser);
       const groups: [string, string[], string, string][] = [
@@ -335,7 +380,7 @@ Deno.serve(async (req) => {
   }
 
   return new Response(
-    JSON.stringify({ events: events.size, parsed: parsedCount, pushed: pushedCount, skipped: skippedCount, fights }),
+    JSON.stringify({ events: events.size, parsed: parsedCount, pushed: pushedCount, skipped: skippedCount, deferred: deferredCount, fights }),
     { status: 200, headers: { "Content-Type": "application/json" } },
   );
 });

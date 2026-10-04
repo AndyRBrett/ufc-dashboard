@@ -64,6 +64,21 @@ try {
   else ok(`data.js compiles and defines EVENTS (${EV.length} event(s))`);
 } catch (e) { fail(`data.js: ${e.message}`); }
 
+// 4a. A clickable <div>/<span> must be reachable by keyboard: role="button"
+// and tabindex="0" (the app's Enter/Space handler then activates it). A
+// click-outside backdrop handler (`if(event.target===this)…`) is exempt: those
+// close with Escape through _escClosers instead.
+{
+  const html = readFileSync(join(ROOT, "index.html"), "utf8");
+  const bad = [...html.matchAll(/<(div|span)\b[^>]*\bonclick="([^"]*)"[^>]*>/g)]
+    .filter((m) => !/^\s*if\s*\(\s*event\.target\s*===\s*this\s*\)/.test(m[2]))
+    .filter((m) => !(/\brole="button"/.test(m[0]) && /\btabindex="0"/.test(m[0])))
+    .map((m) => m[0].slice(0, 80));
+  if (bad.length) fail(`clickable <div>/<span> without role="button" tabindex="0": ${bad.join(" | ")}`);
+  else ok("every clickable <div>/<span> in index.html is keyboard-reachable");
+  if (!/getAttribute\("role"\)!=="button"/.test(html)) fail("index.html lost the Enter/Space handler for role=\"button\" elements");
+}
+
 // 4. Every gate in `npm run verify` must also run in validate-web.yml, the job
 // pages.yml's deploy needs. Four of them (check:names, check:prefs, check:lock,
 // check:pushauth) once ran only locally, so a break in any could deploy.

@@ -511,5 +511,58 @@ await db.exec(readFileSync(join(ROOT, "supabase/migrations/0017_picks_hidden_unt
   check("0017: …and a % or _ in the name is a character, not a wildcard", await taken(U6, "jord%") === false && await taken(U6, "_ordan") === false);
 }
 
+// Since 0017 the anon key can't see a pick before its bout's lock + grace, so a
+// server function that reads picks to build a result push's audience must use
+// the service key: an anon read inside the grace returns nobody, and notif_log
+// then dedups that push away for good. send-push and send-reminders always did;
+// check-results read with the anon key until this was caught.
+{
+  const fns = ["check-results", "send-push", "send-reminders"];
+  for (const fn of fns) {
+    const src = readFileSync(join(ROOT, "supabase/functions", fn, "index.ts"), "utf8");
+    const reads = [...src.matchAll(/\/rest\/v1\/picks\?[^`]*`\s*,\s*\{\s*headers:\s*([^,}\s]+)/g)].map((m) => m[1]);
+    const anon = reads.filter((h) => /anon/i.test(h));
+    check(`0017: ${fn} reads picks with the service key, never the anon key (${reads.length} read(s))`, reads.length > 0 && anon.length === 0);
+  }
+}
+
+// check-results waits out a bout's lock grace before claiming its result push:
+// the service-key read sees every pick so far, but the database still takes one
+// for LOCK_GRACE after the lock, and notif_log would dedup a later picker out.
+{
+  const src = readFileSync(join(ROOT, "supabase/functions/check-results/index.ts"), "utf8");
+  const stub = "globalThis.Deno = { env: { get: () => undefined }, serve: () => {} };\n";
+  const { code: crCode } = await transform(stub + src, { loader: "ts", format: "esm" });
+  const crLinked = crCode.replace(/from "\.\.\/_shared\/([\w-]+\.js)"/g,
+    (_m, f) => `from "${pathToFileURL(join(ROOT, "supabase/functions/_shared", f)).href}"`);
+  const cr = await import("data:text/javascript;base64," + Buffer.from(crLinked).toString("base64"));
+  const T = Date.parse("2026-10-10T02:00:00Z"), min = 60_000;
+  check("check-results: a result inside its bout's lock grace waits", cr.graceOver(T - 3 * min, T) === false);
+  check("check-results: …and goes once the grace is over", cr.graceOver(T - 5 * min, T) === true && cr.graceOver(T - 10 * min, T) === true);
+  check("check-results: a lock time that couldn't be read waits (fail closed)", cr.graceOver(undefined, T) === false && cr.graceOver(NaN, T) === false);
+  check("check-results: LOCK_GRACE matches the database's 5 minutes", cr.LOCK_GRACE_MS === 5 * 60 * 1000);
+  check("check-results: the result loop asks pick_lock_for and defers on graceOver before any send",
+    /await boutLockAt\(SUPABASE_URL, picksHeaders, eventDate/.test(src) && /if \(!graceOver\(lockAt, now\)\) \{ deferredCount\+\+; continue; \}/.test(src)
+    && src.indexOf("graceOver(lockAt, now)") < src.indexOf("functions/v1/send-push"));
+  // "No lock row" is not "long past": a card with no schedule falls back to
+  // midnight ET after its date, which is why the functions ask pick_lock_for
+  // for the effective lock instead of reading pick_locks.
+  const fb = (await db.query("select public.pick_lock_for('ufc', '2031-06-07', 'nobody a', 'nobody b') as t")).rows[0].t;
+  check("pick_lock_for answers an unscheduled card with midnight ET after its date (so a result can land before it)",
+    new Date(fb).toISOString() === "2031-06-08T04:00:00.000Z");
+  // boutLockAt reads the RPC and fails closed on an error.
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (url, init) => /rpc\/pick_lock_for/.test(String(url)) && JSON.parse(init.body).p_promo === "ufc"
+    ? new Response(JSON.stringify("2026-10-10T01:57:00+00:00"), { status: 200 }) : new Response("no", { status: 500 });
+  const got = await cr.boutLockAt("https://x", {}, "2026-10-10", "A", "B");
+  globalThis.fetch = async () => new Response("down", { status: 503 });
+  const down = await cr.boutLockAt("https://x", {}, "2026-10-10", "A", "B");
+  globalThis.fetch = async () => new Response(JSON.stringify("-infinity"), { status: 200 });
+  const ninf = await cr.boutLockAt("https://x", {}, "2026-10-10", "A", "B");
+  globalThis.fetch = realFetch;
+  check("check-results: boutLockAt reads pick_lock_for, is undefined on an error and 0 for -infinity",
+    got === Date.parse("2026-10-10T01:57:00Z") && down === undefined && ninf === 0);
+}
+
 if (failures) { console.error(`\ncheck-pick-lock: ${failures} failure(s).`); process.exit(1); }
 console.log("\ncheck-pick-lock: once a bout locks, its picks can't be added, changed, moved or deleted, and nobody else's show before it.");

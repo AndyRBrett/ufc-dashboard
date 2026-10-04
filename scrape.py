@@ -3777,6 +3777,12 @@ def send_push_notifications(new_results, defer=True, retry_waits=()):
                     "safe_body": "A fight you picked is final — open the app to see how you did. (No spoilers here!)",
                     "include_user_ids": user_ids,
                 }, retry_waits)
+                if r.status_code == 425:
+                    # Inside the bout's lock grace: send-push won't claim the
+                    # audience yet, and check-results sends it once the grace is over.
+                    print(f"  Push {group} ({winner} def. {loser}): inside the lock grace, check-results will send it",
+                          file=sys.stderr)
+                    continue
                 r.raise_for_status()
                 print(
                     f"  Push {group} ({winner} def. {loser}): {r.json()}",
