@@ -30,9 +30,15 @@ on:
         type: boolean
         default: false
 
+# Queue, never cancel. With cancel-in-progress a run that outlasted the next
+# dispatch was killed before its commit, and the next one started the same work
+# over: on 2026-10-03 a one-time stats backfill did that 97 times in a row and
+# froze every data update for 7 hours. Now a slow run finishes and commits;
+# GitHub keeps at most one run pending behind it (a newer dispatch replaces the
+# older pending one), so a slow stretch can't build a backlog either.
 concurrency:
   group: update-main
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   update:

@@ -38,3 +38,13 @@ def test_pages_still_accepts_a_dispatch_and_gates_on_validate():
     assert "needs: validate" in deploy
     assert re.search(r"group:\s*github-pages", deploy)
     assert "cancel-in-progress: false" in deploy, "never cancel an in-flight production deploy"
+
+
+def test_a_slow_scrape_finishes_instead_of_being_cancelled():
+    # 2026-10-03: runs that outlasted the 5-minute dispatch were cancelled
+    # before committing, 97 in a row, and no data landed for 7 hours.
+    update = (WF / "update.yml").read_text(encoding="utf-8")
+    conc = update[update.index("\nconcurrency:"):update.index("\njobs:")]
+    assert re.search(r"group:\s*update-main", conc)
+    assert "cancel-in-progress: false" in conc
+    assert "cancel-in-progress: true" not in update
