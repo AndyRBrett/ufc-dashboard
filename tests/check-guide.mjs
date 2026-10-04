@@ -251,6 +251,17 @@ try {
   });
   check("an AI request waits on the consent sheet, and Not now sends nothing and stores nothing",
     declined.shown && declined.res === "AiConsentError" && declined.stored === null && sent.length === 0);
+  // Privacy & Safety's switch turns AI on through the same sheet, never silently.
+  const viaToggle = await page.evaluate(async () => {
+    _aiConsentToggle();
+    await new Promise((r) => setTimeout(r, 50));
+    const shown = document.getElementById("aiConsentBg").classList.contains("open");
+    const before = localStorage.getItem("ufc_ai_consent");
+    _aiConsentAnswer(false);
+    return { shown, before, after: localStorage.getItem("ufc_ai_consent") };
+  });
+  check("turning AI on in Privacy & Safety shows the consent sheet first, and Not now leaves it off",
+    viaToggle.shown && viaToggle.before === null && viaToggle.after === null);
 
   await page.click("#hdrAvatar");
   await page.click("#botBtn");

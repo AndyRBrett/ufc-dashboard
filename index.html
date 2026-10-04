@@ -2330,9 +2330,10 @@ function _aiConsentAnswer(yes){
   else{toast("AI features are off. Turn them on in Menu → Privacy & Safety.");var e=new Error("AI features are off");e.name="AiConsentError";w.rej(e);}
 }
 function _aiConsentToggle(){
-  if(_aiConsented()){try{localStorage.removeItem(AI_CONSENT_KEY);}catch(e){}toast("AI features off");}
-  else{try{localStorage.setItem(AI_CONSENT_KEY,"1");}catch(e){}toast("AI features on");}
-  _aiConsentSync();
+  if(_aiConsented()){try{localStorage.removeItem(AI_CONSENT_KEY);}catch(e){}toast("AI features off");_aiConsentSync();return;}
+  // Turning it on goes through the same sheet, so nobody enables AI without
+  // seeing what is sent and to whom. Allow stores it; Not now leaves it off.
+  _aiConsentGate().then(function(){toast("AI features on");},function(){});
 }
 function _aiConsentSync(){
   var b=document.getElementById("safetyAiBtn");
@@ -3723,8 +3724,12 @@ function goTab(t){
   var smooth=matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth";
   if(t==="cards")window.scrollTo({top:0,behavior:smooth});
   else if(t==="picks"){
-    var w=document.getElementById("picksWidget");
-    if(w&&w.style.display!=="none"){
+    var w=document.getElementById("picksWidget"),sp=document.getElementById("sportApp");
+    if(document.body.classList.contains("sport-other")&&sp){
+      // My Picks is the UFC board's; another promotion's picks live on its own
+      // cards (each shows N/M picked), so that is where its Picks tab goes.
+      sp.scrollIntoView({block:"start",behavior:smooth});
+    }else if(w&&w.style.display!=="none"){
       if(!_isOpen("picksBody"))togglePicks();
       w.scrollIntoView({block:"start",behavior:smooth});
     }else{
@@ -3746,6 +3751,9 @@ function goTab(t){
   _syncTabs();
 }
 function focusSearch(){
+  // Fighter search covers the UFC cards only, and is hidden on another
+  // promotion's view: go back to UFC first so the box is there to type in.
+  if(document.body.classList.contains("sport-other")&&typeof setSport==="function")setSport("ufc");
   var i=document.getElementById("fighterSearch");if(!i)return;
   i.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
   setTimeout(function(){i.focus({preventScroll:true});},250);
