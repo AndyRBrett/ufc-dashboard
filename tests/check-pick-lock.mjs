@@ -66,7 +66,12 @@ const rows = async (where = "true") => (await db.query(`select * from picks wher
 const one = async (where) => (await rows(where))[0];
 
 // Dates: a card that's on now, one next week, one long past with no schedule.
-const LIVE = "2026-10-03", NEXT = "2099-10-10", PAST = "2020-01-04", PAST_NONE = "2020-02-01";
+// LIVE is today's ET date, never a fixed one: 0017 makes every pick visible on a
+// card more than 2 days old (ET), so a pinned date turned the hidden-pick cases
+// red 2 days after it was written and blocked every Pages deploy. PGlite reads
+// the same JS clock, so the shift audit (a Date shim) moves both together.
+const etToday = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York" }).format(new Date());
+const LIVE = etToday(), NEXT = "2099-10-10", PAST = "2020-01-04", PAST_NONE = "2020-02-01";
 await db.exec(`
   insert into pick_locks (event_date, a, b, lock_at) values
     ('${LIVE}', 'alpha one', 'bravo two', now() - interval '20 minutes'),   -- prelim, well past

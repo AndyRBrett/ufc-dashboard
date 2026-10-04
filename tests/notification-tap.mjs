@@ -14,6 +14,7 @@ import { join, extname, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import vm from "node:vm";
+import { launchChromium } from "./lib/browser.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const require = createRequire(import.meta.url);
@@ -97,8 +98,7 @@ async function swTap(windows, kind = "") {
 async function main() {
   await new Promise((r) => server.listen(0, r));
   const base = `http://127.0.0.1:${server.address().port}`;
-  const exe = process.env.PLAYWRIGHT_BROWSERS_PATH ? join(process.env.PLAYWRIGHT_BROWSERS_PATH, "chromium") : undefined;
-  const browser = await chromium.launch(exe && existsSync(exe) ? { executablePath: exe } : {});
+  const browser = await launchChromium(chromium);
   const page = await browser.newPage();
   const fatal = [];
   page.on("pageerror", (e) => fatal.push("Uncaught: " + e.message));

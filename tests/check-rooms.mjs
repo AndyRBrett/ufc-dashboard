@@ -21,6 +21,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { join, dirname, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { launchChromium } from "./lib/browser.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const html = readFileSync(join(ROOT, "index.html"), "utf8");
@@ -497,8 +498,7 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
     });
     await new Promise((r) => server.listen(0, r));
     const base = `http://127.0.0.1:${server.address().port}`;
-    const exe = process.env.PLAYWRIGHT_BROWSERS_PATH ? join(process.env.PLAYWRIGHT_BROWSERS_PATH, "chromium") : undefined;
-    const browser = await chromium.launch(exe && existsSync(exe) ? { executablePath: exe } : {});
+    const browser = await launchChromium(chromium);
     try {
       const page = await browser.newPage();
       const errors = [];
