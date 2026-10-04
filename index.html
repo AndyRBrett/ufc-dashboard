@@ -11140,8 +11140,36 @@ document.addEventListener("keydown",function(e){
   var t=e.target;
   if(!t||t.getAttribute("role")!=="button"||t.tagName==="BUTTON"||t.tagName==="A")return;
   e.preventDefault();
+  // A control disabled the CSS way (.fn-not-picked is pointer-events:none) or
+  // marked aria-disabled stays disabled from the keyboard too: click() would
+  // bypass the CSS and, on a Fight Night panel, start a second racing syncPick.
+  if(t.getAttribute("aria-disabled")==="true")return;
+  try{if(getComputedStyle(t).pointerEvents==="none")return;}catch(_){}
   t.click();
 });
+// Elements built in JS get their click handler as a property (el.onclick=…),
+// which no static check can see: the roast target chips, card headers, rows.
+// Anything non-native with a handler gets role="button" tabindex="0" as it
+// enters the page, so the Enter/Space handler above reaches it. Click-outside
+// backdrops (`if(event.target===this)…`) are skipped: Escape closes those.
+function _a11yClickable(root){
+  if(!root||root.nodeType!==1)return;
+  var list=[root].concat(Array.prototype.slice.call(root.querySelectorAll("div,span,li,td,p,section,header,img")));
+  for(var i=0;i<list.length;i++){
+    var el=list[i];
+    if(typeof el.onclick!=="function"||el.hasAttribute("role"))continue;
+    if(/^(BUTTON|A|INPUT|SELECT|TEXTAREA|LABEL)$/.test(el.tagName))continue;
+    if(/event\.target\s*===\s*this/.test(el.getAttribute("onclick")||""))continue;
+    el.setAttribute("role","button");
+    if(!el.hasAttribute("tabindex"))el.tabIndex=0;
+  }
+}
+try{
+  _a11yClickable(document.body);
+  new MutationObserver(function(muts){
+    for(var i=0;i<muts.length;i++)for(var j=0;j<muts[i].addedNodes.length;j++)_a11yClickable(muts[i].addedNodes[j]);
+  }).observe(document.body,{childList:true,subtree:true});
+}catch(_){}
 function triggerInstall(){if(_deferredInstall){_deferredInstall.prompt();_deferredInstall.userChoice.then(function(){_deferredInstall=null;closeInstall();});}}
 
 document.addEventListener("DOMContentLoaded",function(){
