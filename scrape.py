@@ -3520,7 +3520,70 @@ def extract_card_records(html):
 # Push notifications
 # ---------------------------------------------------------------------------
 
-def send_push_notifications(new_results):
+# Where a scrape run leaves its new results for update.yml to push AFTER the
+# commit. send-push rebuilds an anon-key result push from the COMMITTED data.js
+# on main and answers 409 "Result not final yet" when the result isn't there, so
+# a push sent from inside the scrape (before `git push`) was refused every time
+# and the scraper never retried it: on 2026-10-03 Soldic/Williams and
+# Kopylov/Gautier went out 12-15 minutes late, via the slower backup senders.
+PUSH_DEFER_FILE = os.environ.get("PUSH_DEFER_FILE", "")
+# A 409 straight after the commit is the same race, briefly: raw.githubusercontent
+# can lag a push by seconds and a warm send-push caches data.js for 60s. Bounded
+# well inside the 5-minute dispatch.
+PUSH_409_RETRY_WAITS_S = (15, 30, 45)
+
+
+def defer_push_notifications(new_results, path):
+    """Append new_results to the JSON list at path, for --send-pending."""
+    if not new_results:
+        return
+    p = Path(path)
+    pending = []
+    if p.exists():
+        try:
+            pending = json.loads(p.read_text(encoding="utf-8")) or []
+        except (OSError, ValueError):
+            pending = []
+    pending.extend(new_results)
+    p.write_text(json.dumps(pending), encoding="utf-8")
+    print(f"Deferred {len(new_results)} result push(es) to {path}", file=sys.stderr)
+
+
+def send_pending_pushes(path):
+    """Send the results a scrape deferred, once data.js is committed."""
+    p = Path(path)
+    if not p.exists():
+        print("No deferred result pushes", file=sys.stderr)
+        return
+    try:
+        pending = json.loads(p.read_text(encoding="utf-8")) or []
+    except (OSError, ValueError) as e:
+        print(f"Deferred pushes unreadable ({e}); check-results will cover them", file=sys.stderr)
+        return
+    send_push_notifications(pending, defer=False, retry_waits=PUSH_409_RETRY_WAITS_S)
+
+
+def _post_push(payload, retry_waits=()):
+    """POST one result push; retry a 409 (data.js not visible yet) per retry_waits."""
+    waits = list(retry_waits)
+    while True:
+        r = requests.post(
+            f"{SUPABASE_URL}/functions/v1/send-push",
+            headers={
+                "Authorization": f"Bearer {SUPABASE_ANON}",
+                "Content-Type": "application/json",
+            },
+            json=payload,
+            timeout=15,
+        )
+        if r.status_code != 409 or not waits:
+            return r
+        wait = waits.pop(0)
+        print(f"  send-push 409 for {payload['type']}; retrying in {wait}s", file=sys.stderr)
+        time.sleep(wait)
+
+
+def send_push_notifications(new_results, defer=True, retry_waits=()):
     """Send win/loss push notifications for newly resolved fights.
 
     push_subs is readable only by the service role (RLS), so the actual web-push
@@ -3528,8 +3591,14 @@ def send_push_notifications(new_results):
     each fight into win/loss lists and makes one targeted call per group. The
     function's notif_log dedup (event_date + type) makes re-sends from
     overlapping cron runs no-ops.
+
+    With PUSH_DEFER_FILE set (update.yml), the results are written there instead
+    and sent by `scrape.py --send-pending` after the commit; see PUSH_DEFER_FILE.
     """
     if not new_results:
+        return
+    if defer and PUSH_DEFER_FILE:
+        defer_push_notifications(new_results, PUSH_DEFER_FILE)
         return
     if not SUPABASE_ANON:
         print("Push skipped: SUPABASE_ANON not set", file=sys.stderr)
@@ -3582,23 +3651,15 @@ def send_push_notifications(new_results):
             if not user_ids:
                 continue
             try:
-                r = requests.post(
-                    f"{SUPABASE_URL}/functions/v1/send-push",
-                    headers={
-                        "Authorization": f"Bearer {SUPABASE_ANON}",
-                        "Content-Type": "application/json",
-                    },
-                    json={
-                        "event_date": event_date,
-                        "type": f"result:{fight_key}:{group}",
-                        "title": title,
-                        "body": body,
-                        "safe_title": "🥊 Fight result is in",
-                        "safe_body": "A fight you picked is final — open the app to see how you did. (No spoilers here!)",
-                        "include_user_ids": user_ids,
-                    },
-                    timeout=15,
-                )
+                r = _post_push({
+                    "event_date": event_date,
+                    "type": f"result:{fight_key}:{group}",
+                    "title": title,
+                    "body": body,
+                    "safe_title": "🥊 Fight result is in",
+                    "safe_body": "A fight you picked is final — open the app to see how you did. (No spoilers here!)",
+                    "include_user_ids": user_ids,
+                }, retry_waits)
                 r.raise_for_status()
                 print(
                     f"  Push {group} ({winner} def. {loser}): {r.json()}",
@@ -4337,4 +4398,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) == 3 and sys.argv[1] == "--send-pending":
+        send_pending_pushes(sys.argv[2])
+    else:
+        main()

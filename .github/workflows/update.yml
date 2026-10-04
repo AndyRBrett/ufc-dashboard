@@ -81,6 +81,8 @@ jobs:
           ODDS_API_KEY_SECONDARY: ${{ secrets.ODDS_API_KEY_SECONDARY }}
           SUPABASE_ANON: ${{ secrets.SUPABASE_ANON }}
           ODDS_FORCE: ${{ inputs.force_odds && '1' || '' }}
+          # Result pushes wait for the commit: see the "Send result pushes" step.
+          PUSH_DEFER_FILE: ${{ runner.temp }}/pending-pushes.json
       # The gate between a degraded scrape and a published card. Fails the job on
       # structural breakage (unparseable data, empty EVENTS, a card that lost
       # bouts) so the last-good data.js stays live and GitHub emails the failure.
@@ -184,6 +186,19 @@ jobs:
             git push
             echo "pushed=true" >> "$GITHUB_OUTPUT"
           fi
+
+      # Result pushes go out only now that data.js is on main. send-push rebuilds
+      # a scraper (anon-key) result push from the COMMITTED data.js and refuses
+      # one it can't find there (409), so sending from inside scrape.py, before
+      # the commit above, was refused every time and nothing retried it: on
+      # 2026-10-03 two main-card results reached phones 12-15 minutes late via
+      # the backup senders. Skipped with the commit (a gated run publishes no
+      # result, so send-push would refuse it anyway).
+      - name: Send result pushes now that data.js is committed
+        if: steps.push.outputs.pushed == 'true'
+        env:
+          SUPABASE_ANON: ${{ secrets.SUPABASE_ANON }}
+        run: python scrape.py --send-pending "${{ runner.temp }}/pending-pushes.json"
 
       # Event-level failures must reach the RUN's failure signal (#66).
       #

@@ -142,6 +142,15 @@ Before it, those results waited on the 4-hour fight-week pull: DWCS 94
 dispatches: unreadable is not live, and data.js's gate stays the one that
 fails open.
 
+**The scraper's result pushes go out after the commit, never from inside the
+scrape.** `send-push` rebuilds an anon-key result push from the committed
+`data.js` on `main` and 409s one it can't find there, so a push sent before
+`git push` is always refused. `update.yml` sets `PUSH_DEFER_FILE`, the scrape
+writes its new results there, and a step after the commit runs
+`scrape.py --send-pending` (a 409 is retried briefly, `PUSH_409_RETRY_WAITS_S`).
+Pushing from inside the scrape made two UFC 332 main-card results 12-15 minutes
+late. `tests/test_result_push_defer.py` holds it.
+
 **The gate reads the COMMITTED `data.js` (raw.githubusercontent, `main`), never
 the Pages copy.** Reading Pages made a loop: a blocked deploy left Pages showing
 a card still mid-fight, the gate read it as `live`, and every ping dispatched
