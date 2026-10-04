@@ -19,6 +19,7 @@ import scrape
 
 NOW = datetime(2026, 10, 10, 12, 0, tzinfo=timezone.utc)
 ROOT = Path(__file__).resolve().parent.parent
+REDIRECTS = {}
 
 RECORD = """== Mixed martial arts record ==
 {{MMA record start}}
@@ -40,6 +41,8 @@ class Resp:
 def net(monkeypatch):
     """Stub get_with_retry and sleep; `pages` maps slug -> wikitext (None = missing)."""
     calls, sleeps, pages, broken = [], [], {}, set()
+    redirects = REDIRECTS  # slug -> target slug; the API follows only when asked
+    redirects.clear()
     scrape._WIKI_MISSING.clear()
     monkeypatch.setattr(scrape.time, "sleep", lambda s: sleeps.append(s))
 
@@ -49,6 +52,12 @@ def net(monkeypatch):
         calls.append(("API" if api else "raw", slug))
         if slug in broken:
             return None  # every attempt raised: a network failure, not a miss
+        if slug in redirects:
+            if api and params.get("redirects") == "1":
+                slug = redirects[slug]
+            else:
+                stub = f"#REDIRECT [[{redirects[slug]}]]"
+                return Resp(200, {"parse": {"wikitext": {"*": stub}}}) if api else Resp(200, text=stub)
         page = pages.get(slug)
         if api:
             if page is None:
@@ -127,8 +136,9 @@ def test_a_failed_fetch_is_never_cached(net):
 def test_save_drops_expired_entries(tmp_path):
     p = tmp_path / "rc.json"
     cache = {
-        "a|b": {"v": True, "at": NOW.isoformat()},
-        "c|d": {"v": False, "at": (NOW - timedelta(hours=scrape.REMATCH_CACHE_TTL_H + 1)).isoformat()},
+        "a|b": {"v": True, "at": NOW.isoformat(), "ver": scrape.REMATCH_CACHE_VER},
+        "c|d": {"v": False, "at": (NOW - timedelta(hours=scrape.REMATCH_CACHE_TTL_H + 1)).isoformat(), "ver": scrape.REMATCH_CACHE_VER},
+        "g|h": {"v": False, "at": NOW.isoformat()},  # made by an older version
         "e|f": {"v": False, "at": "not a date"},
     }
     scrape.save_rematch_cache(cache, NOW, p)
@@ -140,3 +150,66 @@ def test_the_cache_is_committed_with_the_run():
     wf = (ROOT / ".github/workflows/update.yml").read_text(encoding="utf-8")
     add_list = wf[wf.index("- id: push"):wf.index("git diff --staged --quiet")]
     assert "rematch-cache.json" in add_list, "an uncommitted cache resets every run"
+
+
+def test_layer4_follows_a_redirected_name_to_the_real_page(net):
+    """'Jiri Prochazka' is a redirect: unfollowed, Layer 4 never read the page."""
+    calls, sleeps, pages, _ = net
+    REDIRECTS["Jiri_Prochazka"] = "Jiří_Procházka"
+    pages["Jiří_Procházka"] = RECORD.format(opp="[[Glover Teixeira]]")
+    pages["Glover_Teixeira"] = RECORD.format(opp="[[Jiří Procházka]]")
+    cache = {}
+    assert scrape._rematch_layer4("Jiri Prochazka", "Glover Teixeira", cache, NOW) is True
+    assert [c[0] for c in calls] == ["API", "API"], "one request per fighter, no raw fallback"
+    assert scrape._rematch_key("Jiri Prochazka", "Glover Teixeira") in cache
+
+
+def test_a_page_still_too_short_is_definite_and_cached(net):
+    calls, _, pages, _ = net
+    pages["Tiny_Stub"] = "too short"
+    cache = {}
+    assert scrape._rematch_layer4("Tiny Stub", "Some One", cache, NOW) is False
+    assert calls == [("API", "Tiny_Stub")]
+    assert scrape._rematch_key("Tiny Stub", "Some One") in cache, "re-fetched every run otherwise"
+
+
+def test_other_fetches_do_not_follow_redirects(net):
+    """Event, list, rankings and record fetches keep the old behaviour."""
+    calls, _, _, _ = net
+    REDIRECTS["Old_Event_Name"] = "New_Event_Name"
+    assert scrape.fetch_wikitext("Old_Event_Name") == ""
+    assert [c[0] for c in calls] == ["API", "raw"]
+    assert "Old_Event_Name" not in scrape._WIKI_MISSING
+
+
+def test_an_accented_opponent_in_the_record_matches_the_plain_name():
+    page = RECORD.format(opp="[[Jiří Procházka]]")
+    assert scrape._fighter_wiki_past_fight(page, "Jiri Prochazka")
+    assert scrape._fighter_wiki_past_fight(page, "Jiří Procházka")
+    # The first-name guard against common surnames still holds.
+    assert not scrape._fighter_wiki_past_fight(page, "Tomas Prochazka")
+
+
+def test_a_verdict_from_an_older_matcher_is_rechecked(net):
+    calls, _, pages, _ = net
+    pages["Ann_Able"] = "z" * 300
+    key = scrape._rematch_key("Ann Able", "Bea Bold")
+    cache = {key: {"v": False, "at": NOW.isoformat()}}  # no "ver": pre-v2 entry
+    scrape._rematch_layer4("Ann Able", "Bea Bold", cache, NOW)
+    assert calls, "an entry from the old, accent-blind matcher must not stand"
+    assert cache[key]["ver"] == scrape.REMATCH_CACHE_VER
+
+
+def test_a_damaged_cache_entry_never_aborts_the_scrape(net, tmp_path):
+    """Codex on #273: a non-object entry made .get() raise out of the scrape."""
+    calls, _, pages, _ = net
+    pages["Ann_Able"] = "z" * 300
+    key = scrape._rematch_key("Ann Able", "Bea Bold")
+    for junk in ([1, 2], "oops", None, 7):
+        cache = {key: junk, "x|y": junk}
+        calls.clear()
+        assert scrape._rematch_layer4("Ann Able", "Bea Bold", cache, NOW) is False
+        assert calls, "a damaged entry is re-checked, not trusted"
+        p = tmp_path / "rc.json"
+        scrape.save_rematch_cache(cache, NOW, p)
+        assert set(scrape.load_rematch_cache(p)) == {key}, "and dropped on save"
