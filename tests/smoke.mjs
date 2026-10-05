@@ -56,6 +56,9 @@ async function main() {
   const checks = [];
   const assert = (name, cond) => { checks.push({ name, cond: !!cond }); };
 
+  // What's New sits above the tab bar (as it must: see below), so a tab tap
+  // would land on the popup. Mark it seen, as the other browser checks do.
+  await page.addInitScript(() => { try { localStorage.setItem("ufc_whatsnew_seen", "9999"); } catch {} });
   try {
     await page.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 });
     await page.waitForTimeout(700); // let deferred init settle
@@ -107,6 +110,19 @@ async function main() {
       return { w: cv.width, h: cv.height, png: cv.toDataURL("image/png").length, painted: px[3] === 255 };
     });
     assert("Wrapped share card draws a 1080×1920 image", card && card.w === 1080 && card.h === 1920 && card.painted && card.png > 20000);
+    // The tab bar (index.html's .tabbar) is fixed to the bottom of the screen,
+    // so every bottom sheet must sit above it: at phone size, What's New's
+    // "Got it" has to be the thing a tap at its centre lands on.
+    await page.setViewportSize({ width: 390, height: 844 });
+    const wnTap = await page.evaluate(async () => {
+      window.renderWhatsNew(window.WHATS_NEW.slice(-1));
+      await new Promise((r) => setTimeout(r, 500));   // past its slide-up
+      const b = document.getElementById("wn-gotit-btn").getBoundingClientRect();
+      const hit = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
+      window.closeWhatsNew();
+      return !!hit && hit.id === "wn-gotit-btn";
+    });
+    assert("What's New's Got it is tappable above the tab bar on a phone", wnTap);
     // Keyboard reach: Enter on a role="button" element that isn't a <button>
     // must activate it (the activity feed header toggles the feed).
     const kb = await page.evaluate(() => {
