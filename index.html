@@ -3872,11 +3872,14 @@ function _psSurname(n){
   return w[w.length-1]||"";
 }
 function _myPickKey(ev,f){var k=pk(ev,f),kr=ev.date+"|"+f.f2.n+"|"+f.f1.n;return preds[k]?k:(preds[kr]?kr:null);}
-// FN Mode on one bout of a card.
+// FN Mode's pick view on one bout of a card. On a live card openFN shows the
+// watch-along view, which follows the fight in progress and can't pick, so
+// switch to the pick view for the bout the user tapped.
 function _fnJumpTo(ev,f){
   openFN(ev);
-  if(fnLive)return;
-  for(var i=0;i<fnFights.length;i++){if(fnFights[i]===f){fnIdx=i;updateFN();break;}}
+  if(fnLive){fnLive=false;fnAutoFollow=true;document.getElementById("fnMode").classList.remove("fn-mode-live");}
+  for(var i=0;i<fnFights.length;i++){if(fnFights[i]===f){fnIdx=i;break;}}
+  updateFN();
 }
 function openPicksSheet(){
   renderPicksSheet();
@@ -7591,6 +7594,10 @@ function updatePicksWidget(){
   if(sb){sb.textContent=streak>=2?streak+" in a row":"";sb.style.display=streak>=2?"":"none";}
   var body=document.getElementById("picksBody");
   if(body&&body.classList.contains("open"))renderPicksWidget();
+  // The Picks tab's sheet, if it's up: restored picks, server locks and
+  // results all come through here.
+  var ps=document.getElementById("picksSheet");
+  if(ps&&ps.classList.contains("open")&&typeof renderPicksSheet==="function")renderPicksSheet();
 }
 
 function renderPicksWidget(){

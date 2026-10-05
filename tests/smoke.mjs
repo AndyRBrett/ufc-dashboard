@@ -195,6 +195,28 @@ async function main() {
     });
     assert("the Picks tab opens this week's card, one row per bout, without the history panel",
       ps.open && ps.active && ps.rows === ps.want && !ps.history);
+    // An open sheet keeps up with picks and results that land while it's up,
+    // and on a live card a tapped bout opens the pick view on that bout.
+    const ps2 = await page.evaluate(() => {
+      const w = window, ev = w._picksCard();
+      if (!ev) return { skipped: true };
+      const f = ev.fights[ev.fights.length - 1], k = w.pk(ev, f), had = w.preds[k];
+      delete w.preds[k];
+      w.openPicksSheet();
+      const before = document.getElementById("psSum").textContent;
+      w.preds[k] = f.f1.n; w.render();
+      const after = document.getElementById("psSum").textContent;
+      if (had === undefined) delete w.preds[k]; else w.preds[k] = had;
+      w.closePicksSheet(); w.render();
+      const realLive = w.fnIsLive; w.fnIsLive = () => true;
+      const target = ev.fights[1];
+      w._fnJumpTo(ev, target);
+      const jumped = !w.fnLive && w.fnFights[w.fnIdx] === target && !document.getElementById("fnMode").classList.contains("fn-mode-live");
+      w.fnIsLive = realLive; w.closeFN();
+      return { refreshed: before !== after, jumped };
+    });
+    assert("an open Picks sheet refreshes when picks or results change", ps2.skipped || ps2.refreshed);
+    assert("on a live card, a bout tapped in the Picks sheet opens the pick view on that bout", ps2.skipped || ps2.jumped);
     // The menu: Year Wrapped only in December (clock pinned both ways), Edit
     // Profile only for a signed-in account.
     const menu = await page.evaluate(() => {
