@@ -123,6 +123,31 @@ async function main() {
       return !!hit && hit.id === "wn-gotit-btn";
     });
     assert("What's New's Got it is tappable above the tab bar on a phone", wnTap);
+    // The header title sits between the avatar and the search button: in every
+    // theme, at a 375px phone, it must fit between them. Silver's script title
+    // must stay mixed case (the shared .logo-text is uppercase for Bebas/Barlow).
+    await page.setViewportSize({ width: 375, height: 812 });
+    const titles = await page.evaluate(async () => {
+      const out = [];
+      for (const t of ["octagon", "neon", "usa", "noche", "silver", "seasonal"]) {
+        window.setTheme(t);
+        await new Promise((r) => setTimeout(r, 150));
+        const kids = [...document.querySelector(".logo").children]
+          .filter((e) => !e.classList.contains("noche-papel") && getComputedStyle(e).display !== "none")
+          .map((e) => e.getBoundingClientRect()).filter((r) => r.width > 0);
+        const av = document.getElementById("hdrAvatar").getBoundingClientRect().right;
+        const sq = document.getElementById("hdrSearchBtn").getBoundingClientRect().left;
+        const fits = Math.min(...kids.map((k) => k.left)) >= av && Math.max(...kids.map((k) => k.right)) <= sq;
+        const tf = getComputedStyle(document.querySelector(".logo-text")).textTransform;
+        out.push({ t, fits, tf });
+      }
+      window.setTheme("octagon");
+      return out;
+    });
+    const misfit = titles.filter((x) => !x.fits).map((x) => x.t).join(", ");
+    assert("every theme's header title fits between the avatar and search at 375px" + (misfit ? " (not: " + misfit + ")" : ""),
+      titles.length === 6 && !misfit);
+    assert("Silver's script title isn't forced to capitals", titles.some((x) => x.t === "silver" && x.tf === "none"));
     // Keyboard reach: Enter on a role="button" element that isn't a <button>
     // must activate it (the activity feed header toggles the feed).
     const kb = await page.evaluate(() => {
