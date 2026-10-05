@@ -1070,14 +1070,14 @@ export const APP_GUIDE = `APP: "Fight Cards", a UFC picks game for a group of fr
 
 HOME SCREEN
 - Tab bar at the bottom: Cards (this home screen), Picks (jumps to My Picks), Live (opens FN Mode, the fight-night view), League (opens Ranks, the leaderboard) and FightBot.
-- Top bar: your avatar on the left opens the Menu (Ask FightBot, Challenges, Rooms, Notifications, Result Spoilers, Sign In / Link Email, Privacy & Safety, Fight Lab, Year Wrapped, themes, Add to Home Screen); the magnifier on the right jumps to fighter search.
+- Top bar: your avatar on the left opens the Menu (your account at the top: Sign In / Link Email and Edit Profile; then Ask FightBot, Challenges, Rooms, Notifications, Result Spoilers, Privacy & Safety, Fight Lab, Year Wrapped in December, themes, Add to Home Screen); the magnifier on the right jumps to fighter search.
 - The Next Event card counts down to the next main card and shows how many of its bouts you have picked; its button (Finish your picks) opens FN Mode on the first bout you still need to pick.
 - AI features ask once before the first request is sent (what goes to Anthropic or xAI, and that your email and account ID never do). Turn them off or back on in Menu → Privacy & Safety.
 - The countdown shows the next main card. Filter tabs pick a weight class.
 - Each upcoming event lists its bouts, main event first, with times for the main card, prelims and (on numbered PPVs) early prelims, all in Eastern time.
 - ⚡ Activity strip: pick lock-ins, hot streaks, belt changes and challenges as they happen, spoiler-free.
 - Per event: 🤖 Ask FightBot (the shared MMA assistant: pick recommendations, best value, who to fade, prior meetings, general MMA and app help, with source links for researched facts), 🎰 Parlay Picks (AI parlay ideas, plus a calculator that prices a parlay you build and warns about legs that aren't independent), and Quick Pick (opens FN Mode on that card). In the days before a card, Fight Week Intel under the event lists curated interviews and breakdowns, linking to the source.
-- FN Mode: a live fight-night view of the card in running order, for quick picking and following results.
+- FN Mode: a live fight-night view of the card in running order, for quick picking and following results. After you pick a fighter there, "How:" sets the method (KO/TKO, Sub, Dec) and 🔓 Lock it spends a lock, the same as on the card; Next → moves to the next bout.
 - Per bout: tap a fighter to pick him or her. After picking, "How:" sets the method (KO/TKO, Sub, Dec). ⚡ AI gives a short AI breakdown of the fight. Compare Fighters (main card bouts) shows the two side by side. Once a bout locks, a bar shows how the group split.
 - Bonus Pick: one per card, choose the fighter you think wins a Performance/Fight of the Night bonus.
 
@@ -1114,12 +1114,13 @@ OTHER PROMOTIONS: PFL, RIZIN, CONTENDER SERIES (DWCS)
 - Every card shows how many fights you've picked (like 7/12 picked) and how many of your 2 locks you've used.
 
 MENU (tap your avatar, top left)
+- Your account is at the top: tap your name (or Edit Profile, once signed in) to change your name and emoji, where Delete my account also is; Sign In / Link Email is right above it.
 - Notifications (the 🔔 bell): fight-night reminders, results, trash talk, challenges, nudges, fight change alerts and the Friday brief. On iPhone, notifications only work from the home-screen app.
 - Result Spoilers: on shows the winner in result notifications; off keeps them spoiler-free.
 - Privacy & Safety: the privacy policy, the AI features switch, and the players you've blocked (with Unblock).
 - Challenges and Rooms: shortcuts to your challenge inbox and your Watch Party rooms.
 - Sign In / Link Email: sign in with an email (one-time code). It is required to make picks, and it means your picks and stats survive a new phone or a cleared browser. Linking keeps the same account and picks. To move to a new phone, sign in there with the same email.
-- Fight Lab, Year Wrapped, themes (Fight Cards, the default; Apex Neon, Stars & Stripes, UFC Noche, Silver Bullet, Seasonal), and Add to Home Screen.
+- Fight Lab, Year Wrapped (listed in December only), themes (Fight Cards, the default; Apex Neon, Stars & Stripes, UFC Noche, Silver Bullet, Seasonal), and Add to Home Screen.
 - Never delete the home-screen app without linking an email first: removing it clears its local data, and an unlinked account can't be recovered.
 
 FIGHT LAB (Menu → Fight Lab; it only reads, never changes picks)
@@ -1131,7 +1132,7 @@ FIGHT LAB (Menu → Fight Lab; it only reads, never changes picks)
 - 🥊 Hub: cards across promotions.
 
 YEAR WRAPPED
-- Your year of picks as swipe-through slides (hit rate, best night, biggest upset, streaks, ride-or-die fighter, pick twin, nemesis, title reigns, pick personality), with a shareable image. Menu → Year Wrapped, or Ranks → Your Wrapped; it pops up by itself in December.
+- Your year of picks as swipe-through slides (hit rate, best night, biggest upset, streaks, ride-or-die fighter, pick twin, nemesis, title reigns, pick personality), with a shareable image. In December: Menu → Year Wrapped; any time: Ranks → Your Wrapped. It pops up by itself in December.
 
 AI FEATURES AND LIMITS
 - ⚡ AI, 🤖 Ask FightBot, 🎰 Parlay Picks, the scouting report, FightBot's call and FightBot share a daily AI allowance per account. If it's used up, it resets the next day (UTC).
@@ -1148,7 +1149,7 @@ export const GUIDE_UI_LABELS = [
   "Ranks", "FN Mode", "Cards", "Picks", "Live", "League", "Menu", "Finish your picks", "Quick Pick", "Compare Fighters", "🤖 Ask FightBot", "🎰 Parlay Picks", "⚡ AI",
   "Bonus Pick", "🔓 Lock it", "This Event", "All-Time", "Main Card", "Title History", "Card Recap",
   "Trash Talk", "Challenges", "Wheel", "Profile", "Delete my account", "👥 Everyone",
-  "Notifications", "Result Spoilers", "Sign In / Link Email", "Fight Lab", "Year Wrapped",
+  "Notifications", "Result Spoilers", "Sign In / Link Email", "Edit Profile", "Fight Lab", "Year Wrapped",
   "Add to Home Screen", "Fight IQ", "Market", "Fight Week", "Matchup", "Watch Party", "Hub",
   "🤖 FightBot's call", "🖼️ Share poster", "Privacy & Safety", "🚩 Report", "🚫 Block",
 ];
