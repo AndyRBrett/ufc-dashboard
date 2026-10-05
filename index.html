@@ -5452,6 +5452,10 @@ function _lockClampCheck(key,rows){
   var row=Array.isArray(rows)?rows[0]:null;
   if(!row||(row.confidence||0)>0||!(preds_conf[key]>0))return;
   preds_conf[key]=0;saveConf();render();
+  // FN Mode draws its own lock button; render() doesn't reach it. Self-contained
+  // (no shell helpers): check:locks runs this function on its own.
+  var fm=typeof document!=="undefined"&&document.getElementById("fnMode");
+  if(fm&&fm.classList.contains("open")&&typeof updateFN==="function")updateFN();
   toast("🔒 Lock not saved — you already have "+LOCKS_PER_CARD+" locks on this card");
 }
 

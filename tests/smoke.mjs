@@ -161,13 +161,26 @@ async function main() {
       const before = document.querySelectorAll("#fn-extras button").length;
       w.preds[k] = f.f1.n; w.updateFN();
       const btns = [...document.querySelectorAll("#fn-extras button")].map((b) => b.textContent);
+      // A lock the server clamps (two already used on another phone) must
+      // leave FN Mode too, not keep showing as locked.
+      let clamped = true;
+      if (w.locksOn(ev.date)) {
+        const hadC = w.preds_conf[k];
+        w.preds_conf[k] = 1; w.updateFN();
+        const lockedShown = /Locked/.test(document.querySelector("#fn-extras .fn-ex-lock").textContent);
+        w._lockClampCheck(k, [{ confidence: 0 }]);
+        clamped = lockedShown && /Lock it/.test(document.querySelector("#fn-extras .fn-ex-lock").textContent);
+        if (hadC === undefined) delete w.preds_conf[k]; else w.preds_conf[k] = hadC;
+        w.saveConf();
+      }
       if (had === undefined) delete w.preds[k]; else w.preds[k] = had;
       w.closeFN();
-      return { before, btns, locks: w.locksOn(ev.date) };
+      return { before, btns, locks: w.locksOn(ev.date), clamped };
     });
     assert("FN Mode shows method (and lock) choices only once a bout is picked", fnx.skipped ||
       (fnx.before === 0 && ["KO/TKO", "Sub", "Dec"].every((m) => fnx.btns.includes(m)) &&
         (!fnx.locks || fnx.btns.some((b) => /Lock/.test(b)))));
+    assert("a lock the server clamps is dropped from an open FN Mode too", fnx.skipped || fnx.clamped);
     // The menu: Year Wrapped only in December (clock pinned both ways), Edit
     // Profile only for a signed-in account.
     const menu = await page.evaluate(() => {
