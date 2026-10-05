@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-05T09:25:39Z",
+ "generated_at": "2026-10-05T17:50:57Z",
  "window_days": 10,
  "sources": [
   {
@@ -43,7 +43,21 @@
   "UFC_Fight_Night:_Allen_vs._Duncan": {
    "name": "UFC Fight Night: Allen vs. Duncan",
    "date": "2026-10-10",
-   "items": []
+   "items": [
+    {
+     "title": "Brendan Allen vs Reinier de Ridder | FULL FIGHT | UFC Vegas 122",
+     "url": "https://www.youtube.com/watch?v=GBr6_Al98tg",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-10-05T14:00:20Z",
+     "thumb": "https://i4.ytimg.com/vi/GBr6_Al98tg/hqdefault.jpg",
+     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Watch the matchup between Brendan Allen and Reinier de Ridder ahead of Allens fight against Christian Leroy Duncan at UFC Vegas 122! Subscribe to get all the latest…",
+     "fighters": [
+      "Brendan Allen",
+      "Christian Leroy Duncan"
+     ]
+    }
+   ]
   }
  }
 }
