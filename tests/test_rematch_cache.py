@@ -10,7 +10,8 @@ committed nothing. Two fixes, held here:
 - Layer 4's own verdict is cached per bout for REMATCH_CACHE_TTL_H, and a
   verdict resting on a failed (not missing) fetch is never stored.
 """
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
+import re
 from pathlib import Path
 
 import pytest
@@ -213,3 +214,61 @@ def test_a_damaged_cache_entry_never_aborts_the_scrape(net, tmp_path):
         p = tmp_path / "rc.json"
         scrape.save_rematch_cache(cache, NOW, p)
         assert set(scrape.load_rematch_cache(p)) == {key}, "and dropped on save"
+
+
+def _row(opp, when):
+    return ("== Mixed martial arts record ==\n{{MMA record start}}\n|-\n"
+            f"|Win |align=center|10–2 |{opp} |Decision (unanimous) |UFC X |{when} |align=center|3\n"
+            "{{end}}\n" + "x" * 300)
+
+
+def test_a_finished_bout_is_not_its_own_rematch():
+    """Once a card is over, both records list THAT bout (UFC 331: Tsarukyan vs Ruffy)."""
+    card = date(2026, 9, 19)
+    today = date(2026, 10, 5)
+    same_night = _row("[[Mauricio Ruffy]]", "{{dts|2026|09|19}}")
+    assert not scrape._fighter_wiki_past_fight(same_night, "Mauricio Ruffy", card, today)
+    # A day off (an overseas card dated a day apart) is still the same bout.
+    assert not scrape._fighter_wiki_past_fight(
+        _row("[[Mauricio Ruffy]]", "{{dts|2026|09|20}}"), "Mauricio Ruffy", card, today)
+    # A genuine earlier meeting still counts, before or after the card.
+    earlier = _row("[[Mauricio Ruffy]]", "{{dts|2024|04|13}}")
+    assert scrape._fighter_wiki_past_fight(earlier, "Mauricio Ruffy", card, today)
+    assert scrape._fighter_wiki_past_fight(earlier, "Mauricio Ruffy", card, date(2026, 9, 1))
+
+
+def test_an_undated_row_counts_only_for_a_card_still_to_come():
+    undated = _row("[[Mauricio Ruffy]]", "")
+    card = date(2026, 9, 19)
+    assert scrape._fighter_wiki_past_fight(undated, "Mauricio Ruffy", card, date(2026, 9, 1))
+    assert not scrape._fighter_wiki_past_fight(undated, "Mauricio Ruffy", card, date(2026, 10, 5))
+
+
+def test_record_row_date_reads_each_format_and_takes_the_earliest():
+    f = scrape._record_row_date
+    assert f("{{dts|2024|4|13}}") == date(2024, 4, 13)
+    assert f("september 19, 2026") == date(2026, 9, 19)
+    assert f("19 september 2026") == date(2026, 9, 19)
+    assert f("{{dts|2024|04|13}} <ref>accessdate=2025-01-02</ref>") == date(2024, 4, 13)
+    assert f("no date here") is None
+    assert f("{{dts|2024|02|31}}") is None
+
+
+def test_layer4_on_a_finished_card_and_its_cache_key(net):
+    calls, _, pages, _ = net
+    pages["Arman_Tsarukyan"] = _row("[[Mauricio Ruffy]]", "{{dts|2026|09|19}}")
+    pages["Mauricio_Ruffy"] = _row("[[Arman Tsarukyan]]", "{{dts|2026|09|19}}")
+    cache = {}
+    assert scrape._rematch_layer4("Arman Tsarukyan", "Mauricio Ruffy", cache, NOW, "2026-09-19") is False
+    assert list(cache) == [scrape._rematch_key("Arman Tsarukyan", "Mauricio Ruffy") + "@2026-09-19"]
+    # A later rematch of the same pair is a different question, asked fresh.
+    n = len(calls)
+    assert scrape._rematch_layer4("Arman Tsarukyan", "Mauricio Ruffy", cache, NOW, "2027-03-01") is True
+    assert len(calls) > n
+
+
+def test_the_rebuild_passes_the_card_date_to_layer4():
+    src = (ROOT / "scrape.py").read_text(encoding="utf-8")
+    calls = re.findall(r"_rematch_layer4\(([^)]*)\)", src)
+    uses = [c for c in calls if "rematch_cache" in c]
+    assert uses and all("ev_date" in c for c in uses), "without the date a finished bout is its own rematch"
