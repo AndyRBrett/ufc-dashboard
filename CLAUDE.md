@@ -240,8 +240,14 @@ Two budgets to respect when changing cadence:
   Prochazka" reads "Jiří Procházka" instead of a `#REDIRECT` stub that was never
   read and re-fetched every run, and `_fighter_wiki_past_fight` accent-folds the
   record text as well as the name it searches for. Event, list, rankings and
-  record fetches still don't follow redirects. Bump `REMATCH_CACHE_VER` whenever
-  Layer 4's matching changes, or old verdicts stand for a day.
+  record fetches still don't follow redirects. Layer 4 counts only a meeting
+  dated at least two days before the bout's own card (`_record_row_date`; an
+  undated row only for a card still to come): once a card is over both records
+  list THAT bout, and every finished first meeting read as a rematch (UFC 331's
+  Tsarukyan vs Ruffy, the whole Hooker vs Parnasse card). Its cache key carries
+  the card date; the UFCStats layer already needs two meetings for a concluded
+  bout. Bump `REMATCH_CACHE_VER` whenever Layer 4's matching changes, or old
+  verdicts stand for a day.
   `tests/test_rematch_cache.py` holds all of it.
 
 **"No odds" has two causes and only one of them is a bug.** `write_status.py`
