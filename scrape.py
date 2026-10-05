@@ -3135,8 +3135,51 @@ def _wiki_rematch(wikitext, f1_name, f2_name):
     return False
 
 
-def _fighter_wiki_past_fight(wikitext, opp_name):
-    """Return True if the fighter's Wikipedia fight record section shows a past result against opp_name."""
+def _record_row_date(row_l):
+    """The bout date of a (folded, lower-cased) record row, or None.
+
+    References are dropped first: a cited preview can predate the fight, and
+    reading its date made a just-finished first meeting look like an earlier one
+    (Codex on #281). The row's own {{dts|...}} cell is the bout date, numeric or
+    named month ({{dts|2026|aug|15}}, as parse_date_wiki accepts); failing that,
+    the earliest plain date left in the row.
+    """
+    row_l = re.sub(r'<ref[^>]*/>', ' ', row_l)
+    row_l = re.sub(r'<ref[^>]*>.*?</ref>', ' ', row_l, flags=re.S)
+    row_l = re.sub(r'\{\{\s*cite[^{}]*\}\}', ' ', row_l)
+
+    def mk(y, mo, d):
+        try:
+            return date(int(y), int(mo), int(d))
+        except ValueError:
+            return None
+
+    for y, mo, d in re.findall(r'\{\{\s*dts\s*\|\s*(\d{4})\s*\|\s*([a-z]+|\d{1,2})\s*\|\s*(\d{1,2})', row_l):
+        mo = MONTH_MAP.get(mo) if mo.isalpha() else mo
+        got = mk(y, mo, d) if mo else None
+        if got:
+            return got
+    found = [mk(y, mo, d) for y, mo, d in re.findall(r'\b(\d{4})-(\d{2})-(\d{2})\b', row_l)]
+    for mon, d, y in re.findall(r'\b([a-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})\b', row_l):
+        if mon in MONTH_MAP:
+            found.append(mk(y, MONTH_MAP[mon], d))
+    for d, mon, y in re.findall(r'\b(\d{1,2})\s+([a-z]+)\.?\s+(\d{4})\b', row_l):
+        if mon in MONTH_MAP:
+            found.append(mk(y, MONTH_MAP[mon], d))
+    found = [f for f in found if f]
+    return min(found) if found else None
+
+
+def _fighter_wiki_past_fight(wikitext, opp_name, before=None, today=None):
+    """Return True if the fighter's Wikipedia fight record section shows a past result against opp_name.
+
+    before (the bout's own card date): only a meeting dated at least two days
+    earlier counts. Once a card is over, both fighters' records list THAT bout,
+    so without it every finished first meeting read as a rematch: Tsarukyan vs
+    Ruffy and Pitbull vs Choi (UFC 331), Heili vs Castaneda (2026-09-26), and all
+    four Hooker vs Parnasse bouts badged REMATCH. A row with no readable date is
+    trusted only for a card still to come, whose own bout can't be listed yet.
+    """
     if not wikitext:
         return False
     # Normalize name parts (accent-strip + lowercase). The record text gets the
@@ -3181,6 +3224,13 @@ def _fighter_wiki_past_fight(wikitext, opp_name):
             context = row_l[max(0, idx - 80): idx + len(last_l) + 80]
             if first_l not in context:
                 continue
+        if before is not None:
+            fought = _record_row_date(row_l)
+            if fought is None:
+                if today is None or before <= today:
+                    continue
+            elif fought > before - timedelta(days=2):
+                continue
         return True
     return False
 
@@ -3220,7 +3270,7 @@ REMATCH_CACHE_TTL_H = 24
 # Bump when Layer 4's matching changes, so verdicts made the old way are
 # re-checked instead of standing for up to a day. 2: redirects followed and the
 # record text accent-folded (2026-10-04).
-REMATCH_CACHE_VER = 2
+REMATCH_CACHE_VER = 3  # 3: keyed by card date, only earlier meetings count
 
 
 def load_rematch_cache(path=REMATCH_CACHE_FILE):
@@ -3252,19 +3302,30 @@ def _rematch_cache_fresh(entry, now):
         return False
 
 
-def _rematch_layer4(f1, f2, cache, now):
-    """Layer 4: do BOTH fighters' Wikipedia records show a past bout? Cached."""
-    key = _rematch_key(f1, f2)
+def _rematch_layer4(f1, f2, cache, now, ev_date=None):
+    """Layer 4: do BOTH fighters' Wikipedia records show an EARLIER bout? Cached.
+
+    ev_date is the card's date (YYYY-MM-DD); it is part of the key, since the
+    same pair on a later card is a different question.
+    """
+    before = None
+    if ev_date:
+        try:
+            before = datetime.strptime(ev_date, "%Y-%m-%d").date()
+        except ValueError:
+            before = None
+    key = _rematch_key(f1, f2) + (f"@{ev_date}" if before else "")
     hit = cache.get(key)
     if hit is not None and _rematch_cache_fresh(hit, now):
         return bool(hit.get("v"))
     s1, s2 = f1.replace(" ", "_"), f2.replace(" ", "_")
     fw1 = fetch_wikitext(s1, follow_redirects=True)
     verdict, definite = False, bool(fw1) or s1 in _WIKI_MISSING
-    if _fighter_wiki_past_fight(fw1, f2):
+    today = now.date()
+    if _fighter_wiki_past_fight(fw1, f2, before, today):
         time.sleep(0.5)
         fw2 = fetch_wikitext(s2, follow_redirects=True)
-        verdict = _fighter_wiki_past_fight(fw2, f1)
+        verdict = _fighter_wiki_past_fight(fw2, f1, before, today)
         definite = bool(fw2) or s2 in _WIKI_MISSING
     if definite:
         cache[key] = {"v": verdict, "at": now.isoformat(), "ver": REMATCH_CACHE_VER}
@@ -4231,7 +4292,7 @@ def step_build_events(data, now):
             # Bautista II) were being missed when the event page didn't spell out "rematch".
             if not wiki_rematch:
                 hinted = _wiki_rematch(wt, f1, f2)
-                if _rematch_layer4(f1, f2, rematch_cache, now):
+                if _rematch_layer4(f1, f2, rematch_cache, now, ev_date):
                     wiki_rematch = True
                     print(f"  Rematch (fighter wiki): {f1} vs {f2}", file=sys.stderr)
                 if hinted and not wiki_rematch:
@@ -4279,6 +4340,16 @@ def step_build_events(data, now):
             # the existing line when the feed has nothing, so a bout the guard
             # saved never loses the price it already had.
             card = prev
+            # Re-ask Layer 4 for every kept bout instead of keeping the flag it
+            # carried: a finished card always lands here (its page turns into a
+            # results table), and the UFCStats pass skips anything already
+            # flagged, so a stale rematch:true from before only-earlier-meetings
+            # would never clear (Codex on #281). Cached, so a kept card costs
+            # nothing after the first run of the day; the UFCStats pass still
+            # re-checks every bout this leaves unflagged.
+            for fight in card:
+                fight["rematch"] = _rematch_layer4(
+                    fight["f1"]["name"], fight["f2"]["name"], rematch_cache, now, ev_date)
             repriced = reprice_card(card, odds_index, existing_odds)
             if repriced:
                 print(f"  Re-priced {repriced} bout(s) on the kept card",
