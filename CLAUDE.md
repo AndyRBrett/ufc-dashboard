@@ -246,7 +246,9 @@ Two budgets to respect when changing cadence:
   list THAT bout, and every finished first meeting read as a rematch (UFC 331's
   Tsarukyan vs Ruffy, the whole Hooker vs Parnasse card). Its cache key carries
   the card date; the UFCStats layer already needs two meetings for a concluded
-  bout. Bump `REMATCH_CACHE_VER` whenever Layer 4's matching changes, or old
+  bout. The row's date is its `{{dts}}` cell (numeric or named month), read
+  after references are stripped, and a card the regression guard restores has
+  every bout re-asked, since its saved `rematch:true` would otherwise stand. Bump `REMATCH_CACHE_VER` whenever Layer 4's matching changes, or old
   verdicts stand for a day.
   `tests/test_rematch_cache.py` holds all of it.
 

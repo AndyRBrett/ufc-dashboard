@@ -3135,35 +3135,39 @@ def _wiki_rematch(wikitext, f1_name, f2_name):
     return False
 
 
-_MONTHS = {m: i for i, m in enumerate(
-    ["january", "february", "march", "april", "may", "june", "july", "august",
-     "september", "october", "november", "december"], 1)}
-
-
 def _record_row_date(row_l):
-    """Earliest date written in a (folded, lower-cased) record row, or None.
+    """The bout date of a (folded, lower-cased) record row, or None.
 
-    The bout's own date is the earliest one in its row: any other date there is
-    a reference's access date, which is later.
+    References are dropped first: a cited preview can predate the fight, and
+    reading its date made a just-finished first meeting look like an earlier one
+    (Codex on #281). The row's own {{dts|...}} cell is the bout date, numeric or
+    named month ({{dts|2026|aug|15}}, as parse_date_wiki accepts); failing that,
+    the earliest plain date left in the row.
     """
-    found = []
-    for y, mo, d in re.findall(r'\{\{\s*dts\s*\|\s*(\d{4})\s*\|\s*(\d{1,2})\s*\|\s*(\d{1,2})', row_l):
-        found.append((int(y), int(mo), int(d)))
-    for y, mo, d in re.findall(r'\b(\d{4})-(\d{2})-(\d{2})\b', row_l):
-        found.append((int(y), int(mo), int(d)))
-    for mon, d, y in re.findall(r'\b([a-z]+)\s+(\d{1,2}),?\s+(\d{4})\b', row_l):
-        if mon in _MONTHS:
-            found.append((int(y), _MONTHS[mon], int(d)))
-    for d, mon, y in re.findall(r'\b(\d{1,2})\s+([a-z]+)\s+(\d{4})\b', row_l):
-        if mon in _MONTHS:
-            found.append((int(y), _MONTHS[mon], int(d)))
-    dates = []
-    for y, mo, d in found:
+    row_l = re.sub(r'<ref[^>]*/>', ' ', row_l)
+    row_l = re.sub(r'<ref[^>]*>.*?</ref>', ' ', row_l, flags=re.S)
+    row_l = re.sub(r'\{\{\s*cite[^{}]*\}\}', ' ', row_l)
+
+    def mk(y, mo, d):
         try:
-            dates.append(date(y, mo, d))
+            return date(int(y), int(mo), int(d))
         except ValueError:
-            pass
-    return min(dates) if dates else None
+            return None
+
+    for y, mo, d in re.findall(r'\{\{\s*dts\s*\|\s*(\d{4})\s*\|\s*([a-z]+|\d{1,2})\s*\|\s*(\d{1,2})', row_l):
+        mo = MONTH_MAP.get(mo) if mo.isalpha() else mo
+        got = mk(y, mo, d) if mo else None
+        if got:
+            return got
+    found = [mk(y, mo, d) for y, mo, d in re.findall(r'\b(\d{4})-(\d{2})-(\d{2})\b', row_l)]
+    for mon, d, y in re.findall(r'\b([a-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})\b', row_l):
+        if mon in MONTH_MAP:
+            found.append(mk(y, MONTH_MAP[mon], d))
+    for d, mon, y in re.findall(r'\b(\d{1,2})\s+([a-z]+)\.?\s+(\d{4})\b', row_l):
+        if mon in MONTH_MAP:
+            found.append(mk(y, MONTH_MAP[mon], d))
+    found = [f for f in found if f]
+    return min(found) if found else None
 
 
 def _fighter_wiki_past_fight(wikitext, opp_name, before=None, today=None):
@@ -4336,6 +4340,16 @@ def step_build_events(data, now):
             # the existing line when the feed has nothing, so a bout the guard
             # saved never loses the price it already had.
             card = prev
+            # Re-ask Layer 4 for every kept bout instead of keeping the flag it
+            # carried: a finished card always lands here (its page turns into a
+            # results table), and the UFCStats pass skips anything already
+            # flagged, so a stale rematch:true from before only-earlier-meetings
+            # would never clear (Codex on #281). Cached, so a kept card costs
+            # nothing after the first run of the day; the UFCStats pass still
+            # re-checks every bout this leaves unflagged.
+            for fight in card:
+                fight["rematch"] = _rematch_layer4(
+                    fight["f1"]["name"], fight["f2"]["name"], rematch_cache, now, ev_date)
             repriced = reprice_card(card, odds_index, existing_odds)
             if repriced:
                 print(f"  Re-priced {repriced} bout(s) on the kept card",

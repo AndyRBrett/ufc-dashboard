@@ -272,3 +272,38 @@ def test_the_rebuild_passes_the_card_date_to_layer4():
     calls = re.findall(r"_rematch_layer4\(([^)]*)\)", src)
     uses = [c for c in calls if "rematch_cache" in c]
     assert uses and all("ev_date" in c for c in uses), "without the date a finished bout is its own rematch"
+
+
+def test_a_named_month_dts_is_read():
+    """Codex on #281: {{dts|2026|Aug|15}} is valid (parse_date_wiki reads it)."""
+    f = scrape._record_row_date
+    assert f("{{dts|2026|aug|15}}") == date(2026, 8, 15)
+    assert f("{{dts|2026|august|15}}") == date(2026, 8, 15)
+    assert f("aug. 15, 2026") == date(2026, 8, 15)
+    card, today = date(2026, 8, 15), date(2026, 10, 5)
+    row = _row("[[Mauricio Ruffy]]", "{{dts|2026|Aug|15}}")
+    assert not scrape._fighter_wiki_past_fight(row, "Mauricio Ruffy", card, today)
+
+
+def test_a_cited_preview_dated_before_the_fight_is_not_the_bout_date():
+    """Codex on #281: a reference's date must not stand in for the bout's."""
+    f = scrape._record_row_date
+    row = "{{dts|2026|09|19}} <ref>{{cite web |title=preview |date=2026-09-01}}</ref>"
+    assert f(row) == date(2026, 9, 19)
+    assert f("september 19, 2026 <ref>preview, september 1, 2026</ref>") == date(2026, 9, 19)
+    assert f("september 19, 2026 <ref name=x/> {{cite news|date=september 1, 2026}}") == date(2026, 9, 19)
+    card, today = date(2026, 9, 19), date(2026, 10, 5)
+    first_meeting = _row("[[Mauricio Ruffy]]",
+                         "{{dts|2026|09|19}}<ref>{{cite web|date=2026-09-01}}</ref>")
+    assert not scrape._fighter_wiki_past_fight(first_meeting, "Mauricio Ruffy", card, today)
+
+
+def test_a_guard_kept_card_has_its_rematch_flags_recomputed():
+    """Codex on #281: a finished card is restored by the regression guard with
+    its old rematch:true, and the UFCStats pass skips flagged bouts, so a stale
+    badge would never clear unless the kept bouts are asked again."""
+    src = (ROOT / "scrape.py").read_text(encoding="utf-8")
+    start = src.index("            card = prev\n")
+    kept = src[start:src.index("reprice_card(card, odds_index", start)]
+    assert re.search(r'fight\["rematch"\]\s*=\s*_rematch_layer4\(', kept)
+    assert "ev_date" in kept and "rematch_cache" in kept
