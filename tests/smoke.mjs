@@ -148,6 +148,34 @@ async function main() {
     assert("every theme's header title fits between the avatar and search at 375px" + (misfit ? " (not: " + misfit + ")" : ""),
       titles.length === 6 && !misfit);
     assert("Silver's script title isn't forced to capitals", titles.some((x) => x.t === "silver" && x.tf === "none"));
+    // FN Mode: once a bout is picked, its method and 🔒 lock are set right there,
+    // through the same setters as the card row.
+    const fnx = await page.evaluate(() => {
+      const w = window, ev = w.EVENTS.find((e) => e.fights.some((f) => !f.winner && !w.fightLocked(e, f)));
+      if (!ev) return { skipped: true };
+      w.openFN(ev);
+      const f = w.fnFights.find((x) => !x.winner && !w.fightLocked(ev, x));
+      w.fnIdx = w.fnFights.indexOf(f);
+      const k = w.pk(ev, f), had = w.preds[k];
+      w.updateFN();
+      const before = document.querySelectorAll("#fn-extras button").length;
+      w.preds[k] = f.f1.n; w.updateFN();
+      const btns = [...document.querySelectorAll("#fn-extras button")].map((b) => b.textContent);
+      if (had === undefined) delete w.preds[k]; else w.preds[k] = had;
+      w.closeFN();
+      return { before, btns, locks: w.locksOn(ev.date) };
+    });
+    assert("FN Mode shows method (and lock) choices only once a bout is picked", fnx.skipped ||
+      (fnx.before === 0 && ["KO/TKO", "Sub", "Dec"].every((m) => fnx.btns.includes(m)) &&
+        (!fnx.locks || fnx.btns.some((b) => /Lock/.test(b)))));
+    // The menu: Year Wrapped only in December (clock pinned both ways), Edit
+    // Profile only for a signed-in account.
+    const menu = await page.evaluate(() => {
+      const RD = Date, at = (m) => { window.Date = class extends RD { constructor(...a) { super(...(a.length ? a : [2026, m, 5, 12])); } static now() { return new RD(2026, m, 5, 12).getTime(); } }; window._syncProfile(); window.Date = RD; return document.getElementById("wrappedBtn").style.display; };
+      return { dec: at(11), oct: at(9), profile: document.getElementById("profileBtn").style.display, signedIn: !!window._sessEmail() };
+    });
+    assert("Year Wrapped is in the menu in December and not in October", menu.dec === "" && menu.oct === "none");
+    assert("Edit Profile shows in the menu's account area only when signed in", menu.signedIn ? menu.profile === "" : menu.profile === "none");
     // Keyboard reach: Enter on a role="button" element that isn't a <button>
     // must activate it (the activity feed header toggles the feed).
     const kb = await page.evaluate(() => {

@@ -461,7 +461,9 @@ check("app: a pick tap without an email opens Sign In to Pick, before the name p
   /function checkName\(cb\)\{if\(_pickNeedsAccount\(cb\)\)return;/.test(html) && /function _pickNeedsAccount\(cb\)\{\s*if\(_sessEmail\(\)\)return false;/.test(html));
 check("app: lock, method, bonus and sport lock/method are gated too",
   /if\(!preds\[k\]\)return;\s*if\(_pickNeedsAccount\(null\)\)return;/.test(html) &&
-  /mb\.onclick=function\(\)\{if\(_pickNeedsAccount\(null\)\)return;preds_method/.test(html) &&
+  // Method goes through one setter (card row and FN Mode alike), gated before it writes.
+  /function setPickMethod\(ev,fight,mv\)\{[\s\S]{0,160}?if\(!preds\[k\]\|\|_pickNeedsAccount\(null\)\)return;\s*preds_method\[k\]=/.test(html) &&
+  /mb\.onclick=function\(\)\{setPickMethod\(/.test(html) && /b\.onclick=function\(\)\{setPickMethod\(fnEv,f,m\)/.test(html) &&
   /fotSel\.onchange=function\(\)\{if\(_pickNeedsAccount\(null\)\)/.test(html) &&
   (html.match(/function sport(Method|Lock)\(promo,ev,b[^]*?_pickNeedsAccount\(null\)/g) || []).length === 2);
 check("app: pick writes refresh a token minted before the email was linked",
