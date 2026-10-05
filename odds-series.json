@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05T11:24:21Z",
+  "generated_at": "2026-10-05T12:26:03Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -13269,7 +13269,7 @@
           "f1": "Brendan Allen",
           "f2": "Christian Leroy Duncan",
           "lbl": "Main Event",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13335,6 +13335,11 @@
               "at": "2026-10-05T06:15:41Z",
               "f1_odds": -141,
               "f2_odds": 115
+            },
+            {
+              "at": "2026-10-05T12:26:03Z",
+              "f1_odds": -143,
+              "f2_odds": 116
             }
           ],
           "open": {
@@ -13529,7 +13534,7 @@
           "f1": "Julius Walker",
           "f2": "Gerald Meerschaert",
           "lbl": "Main Card",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13570,6 +13575,11 @@
               "at": "2026-10-05T06:15:41Z",
               "f1_odds": -267,
               "f2_odds": 208
+            },
+            {
+              "at": "2026-10-05T12:26:03Z",
+              "f1_odds": -274,
+              "f2_odds": 213
             }
           ],
           "open": {
@@ -14619,7 +14629,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Christian Leroy Duncan",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -141,
         "close": null,
         "clv": null
@@ -15607,7 +15617,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Gerald Meerschaert",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -280,
         "close": null,
         "clv": null
@@ -16190,7 +16200,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Brendan Allen",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 121,
         "close": null,
         "clv": null
@@ -18860,7 +18870,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Julius Walker",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 230,
         "close": null,
         "clv": null
