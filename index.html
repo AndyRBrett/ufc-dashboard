@@ -282,7 +282,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 .hdr{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:0 16px;height:62px;border-bottom:1px solid var(--border);background:var(--hdr-bg);position:sticky;top:env(safe-area-inset-top,0px);z-index:99}
 #installBtn{display:none}
 #installBtn.visible{display:flex}
-#install-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+#install-overlay{display:none;position:fixed;inset:0;z-index:380;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
 #install-overlay.open{display:flex}
 #install-panel{background:var(--card);border:1px solid var(--border2);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px 28px;position:relative;animation:slideUp .25s ease-out}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -295,7 +295,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 /* What's New — a short, capped highlights popup shown once per browser when new
    entries land in WHATS_NEW (below). Same bottom-sheet language as #install-overlay
    so it reads as part of the app, not a separate ad-style interstitial. */
-#wn-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+#wn-overlay{display:none;position:fixed;inset:0;z-index:380;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
 #wn-overlay.open{display:flex}
 #recap-overlay{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
 #recap-overlay.open{display:flex}
@@ -596,6 +596,10 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .hdr-btn{width:44px;height:44px;border:none;background:none;color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:10px;margin-right:-8px}
 .hdr-btn svg{width:22px;height:22px}
 /* Tab bar */
+/* Every sheet that sits at the bottom of the screen must be above this (360):
+   What's New and Add to Home Screen (380), the share and compare sheets (375)
+   and the AI chat / parlay modals (370) were drawn before the tab bar existed,
+   and it covered their buttons. smoke checks the What's New button is tappable. */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:360;display:flex;height:calc(var(--tabbar-h) + env(safe-area-inset-bottom,0px));padding:0 6px env(safe-area-inset-bottom,0px);background:color-mix(in srgb,var(--card) 96%,transparent);border-top:1px solid var(--border2);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 .tab-btn{flex:1 1 0;min-width:0;border:none;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--muted);font:600 11px var(--font-body);cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent}
 .tab-btn svg{width:24px;height:24px}
@@ -898,7 +902,7 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .parlay-fighters{font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px}
 .parlay-reason{font-size:12px;color:var(--muted2);line-height:1.5}
 .parlay-meta{font-size:10px;color:var(--muted);margin-top:14px;letter-spacing:.04em}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:370;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .modal-bg.open{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:22px 18px 28px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:var(--shadow-el)}
 .modal-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:5px}
@@ -918,7 +922,7 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .mbar-lbl{font-size:11px;color:var(--muted);margin-bottom:5px;display:flex;justify-content:space-between}
 .mbar{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
 .mbar-fill{height:100%;background:var(--red);border-radius:3px}
-.cmp-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:250;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.cmp-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:375;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .cmp-bg.open{display:flex}
 .cmp-box{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:20px 16px 28px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:var(--shadow-el)}
 .cmp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
@@ -1098,7 +1102,7 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .safety-unblock{background:none;border:1px solid var(--border2);color:var(--text);font:600 12px var(--font-body);padding:4px 10px;border-radius:14px;cursor:pointer}
 .safety-empty{font-size:12px;color:var(--muted);padding:6px 0}
 .safety-link{display:block;text-align:center;text-decoration:none}
-.share-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:250;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.share-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:375;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .share-modal-bg.open{display:flex}
 .share-modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:22px;width:100%;max-width:360px;box-shadow:var(--shadow-el)}
 .share-modal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
