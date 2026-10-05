@@ -910,6 +910,26 @@ body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #ap
 .modal-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:5px}
 .modal-xbtn{background:var(--btn-bg);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .modal-xbtn:hover{background:rgba(255,255,255,.12)}
+.ps-box{display:flex;flex-direction:column;gap:10px}
+.ps-box .chat-modal-header{margin-bottom:0}
+.ps-when{font-size:13px;color:var(--muted);margin-top:4px}
+.ps-sum{font-size:14px;color:var(--muted2)}
+.ps-list{display:flex;flex-direction:column}
+.ps-row{display:flex;align-items:center;gap:10px;min-height:52px;padding:8px 2px;border:none;border-top:1px solid var(--border);background:none;color:var(--text);font:inherit;text-align:left;width:100%}
+button.ps-row{cursor:pointer}
+button.ps-row:hover{background:var(--btn-bg)}
+.ps-left{flex:1;min-width:0;display:flex;flex-direction:column}
+.ps-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.ps-bout{font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ps-pick{font-size:14px;font-weight:600;text-align:right;white-space:nowrap}
+.ps-pick.none{color:var(--muted);font-weight:500}
+.ps-pick.todo{color:var(--red)}
+.ps-st:empty{width:0}
+.ps-st{font-size:12px;color:var(--muted);width:78px;text-align:right;flex-shrink:0}
+.ps-st.win{color:var(--green)}
+.ps-st.loss{color:var(--loss)}
+.ps-cta[hidden]{display:none}
+.ps-all{background:none;border:none;color:var(--muted2);font:500 14px var(--font-body);text-decoration:underline;cursor:pointer;padding:8px;align-self:center}
 /* Keep the 30px visual circle but extend the touch target to ~44px (WCAG/Apple min) */
 .install-close,.modal-xbtn,.cmp-xbtn,.nm-xbtn{position:relative}
 .install-close::before,.modal-xbtn::before,.cmp-xbtn::before,.nm-xbtn::before{content:"";position:absolute;inset:-7px}
@@ -1946,6 +1966,17 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     <div class="quick-qs" id="botQuickQs"></div>
     <div class="chat-history" id="botHistory"></div>
     <div class="chat-input-row"><input class="chat-input" id="botInput" type="text" placeholder="Ask anything about MMA or this app…" maxlength="300" onkeydown="if(event.key==='Enter'){event.preventDefault();sendBot();}"><button class="chat-send-btn" id="botSendBtn" onclick="sendBot()">Send</button></div>
+  </div>
+</div>
+<!-- The Picks tab: this week's card at a glance (one row per bout), not the
+     whole history. "See all past picks" opens the full My Picks panel. -->
+<div class="modal-bg" id="picksSheet" onclick="if(event.target===this)closePicksSheet()">
+  <div class="modal ps-box" role="dialog" aria-modal="true" aria-labelledby="psTitle">
+    <div class="chat-modal-header"><div><div class="chat-ev-name" id="psTitle">Your Picks</div><div class="ps-when" id="psWhen"></div></div><button class="modal-xbtn" onclick="closePicksSheet()" aria-label="Close">x</button></div>
+    <div class="ps-sum" id="psSum"></div>
+    <button class="cd-cta ps-cta" id="psCta" hidden></button>
+    <div class="ps-list" id="psList"></div>
+    <button class="ps-all" onclick="closePicksSheet();_openPicksHistory()">See all past picks</button>
   </div>
 </div>
 <div class="modal-bg" id="parlayModal" onclick="if(event.target===this)closeParlay()">
@@ -3742,7 +3773,7 @@ function _drawerAccount(){
   if(_sessEmail())openEditName();else openAcct();
 }
 function _syncTabs(){
-  var cur=_isOpen("botModal")?"bot":_isOpen("fnMode")?"live":_isOpen("lbPanel")?"league":_tabPicks?"picks":"cards";
+  var cur=_isOpen("picksSheet")?"picks":_isOpen("botModal")?"bot":_isOpen("fnMode")?"live":_isOpen("lbPanel")?"league":_tabPicks?"picks":"cards";
   var bs=document.querySelectorAll("#tabBar .tab-btn");
   for(var i=0;i<bs.length;i++){
     var on=bs[i].getAttribute("data-tab")===cur;
@@ -3753,25 +3784,19 @@ function _syncTabs(){
 function goTab(t){
   closeMoreMenu();
   if(t!=="bot"&&_isOpen("botModal"))closeBot();
+  if(t!=="picks"&&_isOpen("picksSheet"))closePicksSheet();
   if(t!=="league"&&_isOpen("lbPanel"))closeLeaderboard();
   if(t!=="live"&&_isOpen("fnMode"))closeFN();
   _tabPicks=t==="picks";
   var smooth=matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth";
   if(t==="cards")window.scrollTo({top:0,behavior:smooth});
   else if(t==="picks"){
-    var w=document.getElementById("picksWidget"),sp=document.getElementById("sportApp");
+    var sp=document.getElementById("sportApp");
     if(document.body.classList.contains("sport-other")&&sp){
       // My Picks is the UFC board's; another promotion's picks live on its own
       // cards (each shows N/M picked), so that is where its Picks tab goes.
       sp.scrollIntoView({block:"start",behavior:smooth});
-    }else if(w&&w.style.display!=="none"){
-      if(!_isOpen("picksBody"))togglePicks();
-      w.scrollIntoView({block:"start",behavior:smooth});
-    }else{
-      // Nothing picked yet: the place to start is the next card.
-      var app=document.getElementById("app");if(app)app.scrollIntoView({block:"start",behavior:smooth});
-      toast("No picks yet. Tap a fighter to pick.");
-    }
+    }else openPicksSheet();
   }
   else if(t==="live"){
     // A card in progress first (openFN's own choice), else the next one not
@@ -3830,11 +3855,94 @@ function heroCta(){
     }
   }
 }
+// ---- The Picks tab's sheet ----
+// The card it shows: the next one not over (or the one running now); with no
+// card ahead, the latest card you picked on.
+function _picksCard(){
+  var ev=currentEvent(Date.now());
+  if(ev&&ev.fights&&ev.fights.length)return ev;
+  var past=EVENTS.filter(function(e){return e.fights.some(function(f){return preds[pk(e,f)];});});
+  past.sort(function(a,b){return a.date<b.date?1:-1;});
+  return past[0]||null;
+}
+// A fighter's surname for a short row: skips a trailing Jr./Sr./II-IV.
+function _psSurname(n){
+  var w=String(n||"").trim().split(/\s+/);
+  while(w.length>1&&/^(jr\.?|sr\.?|ii|iii|iv)$/i.test(w[w.length-1]))w.pop();
+  return w[w.length-1]||"";
+}
+function _myPickKey(ev,f){var k=pk(ev,f),kr=ev.date+"|"+f.f2.n+"|"+f.f1.n;return preds[k]?k:(preds[kr]?kr:null);}
+// FN Mode on one bout of a card.
+function _fnJumpTo(ev,f){
+  openFN(ev);
+  if(fnLive)return;
+  for(var i=0;i<fnFights.length;i++){if(fnFights[i]===f){fnIdx=i;updateFN();break;}}
+}
+function openPicksSheet(){
+  renderPicksSheet();
+  document.getElementById("picksSheet").classList.add("open");
+}
+function closePicksSheet(){
+  var m=document.getElementById("picksSheet");if(m)m.classList.remove("open");
+  _tabPicks=false;_syncTabs();
+}
+function renderPicksSheet(){
+  var ev=_picksCard(),list=document.getElementById("psList"),sum=document.getElementById("psSum");
+  var when=document.getElementById("psWhen"),cta=document.getElementById("psCta"),title=document.getElementById("psTitle");
+  list.textContent="";cta.hidden=true;
+  if(!ev){title.textContent="Your Picks";when.textContent="";sum.textContent="No card to pick yet.";return;}
+  title.textContent=ev.name;
+  when.textContent=new Date(ev.date+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})+(ev.time?" · Main card "+to12hr(ev.time)+" ET":"");
+  var picked=0,open=0,right=0,done=0,firstOpen=null;
+  ev.fights.forEach(function(f){
+    var ak=_myPickKey(ev,f),mine=ak?preds[ak]:"",decided=boutDecided(f),locked=!decided&&fightLocked(ev,f);
+    if(mine)picked++;
+    if(!mine&&!decided&&!locked){open++;if(!firstOpen)firstOpen=f;}
+    var row=document.createElement(!decided&&!locked?"button":"div");row.className="ps-row";
+    var lbl=document.createElement("span");lbl.className="ps-lbl";
+    lbl.textContent=f.lbl==="Main Event"?"Main Event":f.lbl==="Co-Main"?"Co-Main":(f.wc||"");
+    var bout=document.createElement("span");bout.className="ps-bout";
+    bout.textContent=_psSurname(f.f1.n)+" vs "+_psSurname(f.f2.n);
+    var left=document.createElement("span");left.className="ps-left";left.appendChild(lbl);left.appendChild(bout);
+    var pickEl=document.createElement("span");pickEl.className="ps-pick";
+    if(mine){
+      var nm=_psSurname(mine),m=ak?preds_method[ak]:"",lk=ak&&(preds_conf[ak]||0)>0&&locksOn(ev.date);
+      pickEl.textContent=(lk?"🔒 ":"")+nm+(m?" · "+m:"");
+    }else if(decided||locked){pickEl.textContent="No pick";pickEl.classList.add("none");}
+    else{pickEl.textContent="Pick ›";pickEl.classList.add("todo");}
+    var st=document.createElement("span");st.className="ps-st";
+    if(decided){
+      if(!f.winner){st.textContent="No contest";}
+      else if(mine){var ok=nmEq(f.winner,mine);done++;if(ok)right++;st.textContent=ok?"✓ Correct":"✗ Wrong";st.classList.add(ok?"win":"loss");}
+      else st.textContent="Done";
+    }else if(locked)st.textContent="Locked";
+    row.appendChild(left);row.appendChild(pickEl);row.appendChild(st);
+    if(row.tagName==="BUTTON"){row.setAttribute("aria-label",(mine?"Change pick: ":"Pick: ")+bout.textContent);row.onclick=function(){closePicksSheet();_fnJumpTo(ev,f);};}
+    list.appendChild(row);
+  });
+  var used=locksOn(ev.date)?cardLocksUsed(ev):0;
+  var parts=[picked+" of "+ev.fights.length+" picked"];
+  if(locksOn(ev.date))parts.push(used+" of "+LOCKS_PER_CARD+" locks");
+  if(done)parts.push(right+" of "+done+" right");
+  var streak=computeStreak();if(streak>=2)parts.push("🔥 "+streak+" in a row");
+  sum.textContent=parts.join(" · ");
+  if(open&&firstOpen){
+    cta.hidden=false;cta.textContent=picked?"Finish your picks":"Make your picks";
+    cta.onclick=function(){closePicksSheet();_fnJumpTo(ev,firstOpen);};
+  }
+}
+// The full My Picks panel on the home screen (every card, past included).
+function _openPicksHistory(){
+  var w=document.getElementById("picksWidget");
+  if(!w||w.style.display==="none"){toast("No past picks yet.");return;}
+  if(!_isOpen("picksBody"))togglePicks();
+  w.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+}
 document.addEventListener("DOMContentLoaded",function(){
   _syncProfile();_syncTabs();
   if("MutationObserver" in window){
     var mo=new MutationObserver(_syncTabs);
-    ["botModal","fnMode","lbPanel"].forEach(function(id){var e=document.getElementById(id);if(e)mo.observe(e,{attributes:true,attributeFilter:["class"]});});
+    ["botModal","fnMode","lbPanel","picksSheet"].forEach(function(id){var e=document.getElementById(id);if(e)mo.observe(e,{attributes:true,attributeFilter:["class"]});});
   }
   window.addEventListener("scroll",function(){if(_tabPicks&&window.scrollY<80){_tabPicks=false;_syncTabs();}},{passive:true});
 });
@@ -7146,7 +7254,9 @@ var WHATS_NEW=[
   {id:"2026-10-26-new-look",emoji:"📱",title:"A new look, built like an iPhone app",
    desc:"Five tabs along the bottom: Cards, Picks, Live (FN Mode), League (Ranks) and FightBot. Tap your avatar, top left, for the menu. The Next Event card shows how many bouts you've picked, and Finish your picks takes you straight to the next one. AI features now ask once before sending anything."},
   {id:"2026-10-27-fn-method-lock",emoji:"🎯",title:"Method and locks in FN Mode",
-   desc:"Picking in FN Mode now lets you set how it ends (KO/TKO, Sub, Dec) and spend a 🔒 lock, right under your pick. Your account and Edit Profile now sit together at the top of the menu."}
+   desc:"Picking in FN Mode now lets you set how it ends (KO/TKO, Sub, Dec) and spend a 🔒 lock, right under your pick. Your account and Edit Profile now sit together at the top of the menu."},
+  {id:"2026-10-28-picks-at-a-glance",emoji:"✅",title:"Your picks at a glance",
+   desc:"The Picks tab now shows just this week's card: every bout with your pick, method and 🔒, and whether it's open, locked, right or wrong. Tap a bout to pick it. Your full history is one tap away under See all past picks."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -11481,6 +11591,7 @@ var _escClosers=[
   ["aiConsentBg",function(){_aiConsentAnswer(false);}],
   // First: FightBot opens on top of Ranks, so Escape closes it before the board.
   ["botModal",function(){closeBot();}],
+  ["picksSheet",function(){closePicksSheet();}],
   // Report opens over the roast sheet, the challenge inbox and Ranks: before them.
   ["reportBg",function(){closeReport();}],
   ["safetyBg",function(){closeSafety();}],

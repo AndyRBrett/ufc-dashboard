@@ -181,6 +181,20 @@ async function main() {
       (fnx.before === 0 && ["KO/TKO", "Sub", "Dec"].every((m) => fnx.btns.includes(m)) &&
         (!fnx.locks || fnx.btns.some((b) => /Lock/.test(b)))));
     assert("a lock the server clamps is dropped from an open FN Mode too", fnx.skipped || fnx.clamped);
+    // The Picks tab opens this week's card at a glance (one row per bout), not
+    // the full history panel.
+    const ps = await page.evaluate(() => {
+      const w = window, ev = w._picksCard();
+      document.getElementById("tabPicks").click();
+      const out = { open: document.getElementById("picksSheet").classList.contains("open"),
+        active: document.getElementById("tabPicks").classList.contains("active"),
+        rows: document.querySelectorAll("#psList .ps-row").length, want: ev ? ev.fights.length : 0,
+        history: document.getElementById("picksBody").classList.contains("open") };
+      w.closePicksSheet();
+      return out;
+    });
+    assert("the Picks tab opens this week's card, one row per bout, without the history panel",
+      ps.open && ps.active && ps.rows === ps.want && !ps.history);
     // The menu: Year Wrapped only in December (clock pinned both ways), Edit
     // Profile only for a signed-in account.
     const menu = await page.evaluate(() => {
