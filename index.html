@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https://upload.wikimedia.org https://thumb.wikimedia.org https://a.espncdn.com data:; font-src 'self'; connect-src 'self' https://gkccophrdqtqcowmblre.supabase.co wss://gkccophrdqtqcowmblre.supabase.co https://en.wikipedia.org; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-<title>UFC Fight Cards</title>
+<title>Picked Fight</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0e0f12">
 <meta name="mobile-web-app-capable" content="yes">
@@ -41,7 +41,7 @@
      almost certainly not run yet: confirm against a fresh install before
      concluding anything about the tag itself. -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="UFC Picks">
+<meta name="apple-mobile-web-app-title" content="Picked Fight">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180.png">
 <link rel="icon" type="image/png" href="icon-192-v2.png">
 <link rel="preload" href="fonts/bebas-neue-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -2019,7 +2019,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
         <!-- The account card: tapping it signs in, or (signed in) edits your profile. -->
         <button class="drawer-me" id="drawerMe" onclick="_drawerAccount()">
           <span class="drawer-av" id="drawerAv" aria-hidden="true"></span>
-          <span class="drawer-who"><span class="drawer-name" id="drawerName">Fight Cards</span><span class="drawer-sub" id="drawerSub"></span></span>
+          <span class="drawer-who"><span class="drawer-name" id="drawerName">Picked Fight</span><span class="drawer-sub" id="drawerSub"></span></span>
         </button>
         <button class="drawer-x" onclick="closeMoreMenu()" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
@@ -2114,7 +2114,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="6" x2="12" y2="12"/><polyline points="9 9 12 6 15 9"/></svg>
           <span>Add to Home Screen</span>
         </button>
-        <p class="drawer-legal">Fight Cards is a free picks game between friends. Not affiliated with, endorsed by or sponsored by any fight promotion. Odds are shown for information only; there is no wagering in this app.<br><a href="privacy.html" target="_blank" rel="noopener">Privacy</a> · <a href="terms.html" target="_blank" rel="noopener">Terms</a> · <a href="support.html" target="_blank" rel="noopener">Support</a></p>
+        <p class="drawer-legal">Picked Fight is a free picks game between friends. Not affiliated with, endorsed by or sponsored by any fight promotion. Odds are shown for information only; there is no wagering in this app.<br><a href="privacy.html" target="_blank" rel="noopener">Privacy</a> · <a href="terms.html" target="_blank" rel="noopener">Terms</a> · <a href="support.html" target="_blank" rel="noopener">Support</a></p>
       </div>
 </nav>
 <!-- Tab bar: the app's five places, iOS style. Each tab opens a view that already
@@ -3771,7 +3771,7 @@ function _syncProfile(){
   var dv=document.getElementById("drawerAv");if(dv)dv.textContent=t||"🥊";
   var n="";try{n=userName||"";}catch(e){}
   var em=_sessEmail();
-  var nm=document.getElementById("drawerName");if(nm)nm.textContent=(n&&splitNick(n).name)||"Fight Cards";  // the emoji is the avatar beside it
+  var nm=document.getElementById("drawerName");if(nm)nm.textContent=(n&&splitNick(n).name)||"Picked Fight";  // the emoji is the avatar beside it
   var sub=document.getElementById("drawerSub");
   if(sub)sub.textContent=em?em:"Not signed in · Tap to sign in";
   // Edit Profile sits under the sign-in row, for a signed-in account.
@@ -6080,11 +6080,11 @@ function buildShareImage(ev){
   if(resolved>0){
     ctx.font="50px 'Bebas Neue',sans-serif";ctx.fillText(correct+"/"+resolved,M+bw/2,y+60);
     ctx.font="13px Inter,sans-serif";ctx.globalAlpha=.85;
-    ctx.fillText(Math.round(correct/resolved*100)+"% correct · UFC Fight Cards",M+bw/2,y+82);ctx.globalAlpha=1;
+    ctx.fillText(Math.round(correct/resolved*100)+"% correct · Picked Fight",M+bw/2,y+82);ctx.globalAlpha=1;
   } else {
     ctx.font="36px 'Bebas Neue',sans-serif";ctx.fillText("MY PICKS",M+bw/2,y+46);
     ctx.font="13px Inter,sans-serif";ctx.globalAlpha=.85;
-    ctx.fillText(picks.length+" pick"+(picks.length!==1?"s":"")+" · UFC Fight Cards",M+bw/2,y+66);ctx.globalAlpha=1;
+    ctx.fillText(picks.length+" pick"+(picks.length!==1?"s":"")+" · Picked Fight",M+bw/2,y+66);ctx.globalAlpha=1;
   }
   ctx.textAlign="left";
   y+=badgeH+afterBadge;
@@ -6129,7 +6129,7 @@ function buildShareImage(ev){
 
   // Footer
   ctx.textAlign="center";ctx.fillStyle=C.muted;ctx.font="11px Inter,sans-serif";
-  ctx.globalAlpha=.8;ctx.fillText("Make your picks at UFC Fight Cards",W/2,y+footH-4);ctx.globalAlpha=1;
+  ctx.globalAlpha=.8;ctx.fillText("Make your picks at Picked Fight",W/2,y+footH-4);ctx.globalAlpha=1;
 
   return cv;
 }
@@ -7271,7 +7271,9 @@ var WHATS_NEW=[
   {id:"2026-10-27-fn-method-lock",emoji:"🎯",title:"Method and locks in FN Mode",
    desc:"Picking in FN Mode now lets you set how it ends (KO/TKO, Sub, Dec) and spend a 🔒 lock, right under your pick. Your account and Edit Profile now sit together at the top of the menu."},
   {id:"2026-10-28-picks-at-a-glance",emoji:"✅",title:"Your picks at a glance",
-   desc:"The Picks tab now shows just this week's card: every bout with your pick, method and 🔒, and whether it's open, locked, right or wrong. Tap a bout to pick it. Your full history is one tap away under See all past picks."}
+   desc:"The Picks tab now shows just this week's card: every bout with your pick, method and 🔒, and whether it's open, locked, right or wrong. Tap a bout to pick it. Your full history is one tap away under See all past picks."},
+  {id:"2026-10-29-picked-fight",emoji:"🥊",title:"We're Picked Fight now",
+   desc:"Same game, same picks, same leaderboard, new name. If you added the app to your Home Screen, it keeps working; re-add it from the Share menu if you want the new name under the icon."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -9315,7 +9317,7 @@ function _wrSummary(w){
   return box;
 }
 function _wrShareText(w){
-  return "My "+w.year+" UFC Picks Wrapped 🥊\n"+
+  return "My "+w.year+" Picked Fight Wrapped 🥊\n"+
     "#"+w.rank+" of "+w.of+" · "+w.pts+" pts · "+w.accuracy+"% winners\n"+
     (w.bestCard?"Best night: "+w.bestCard.pts+" pts ("+_wrShort(w.bestCard.evName||w.bestCard.date)+")\n":"")+
     (w.upset?"Biggest upset: "+w.upset.pick+" +"+w.upset.line+"\n":"")+

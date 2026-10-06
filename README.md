@@ -1,4 +1,4 @@
-# UFC Fight Cards
+# Picked Fight
 
 A pick-'em dashboard for UFC events: every upcoming card, live results as they
 land, betting lines, fighter tale-of-the-tape, and a leaderboard for the group

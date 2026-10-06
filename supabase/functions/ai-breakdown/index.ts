@@ -1066,7 +1066,7 @@ ${d.card}`;
 //     fails too, instead of FightBot sending people to a button that's gone.
 // Keep the wording to what the app really does; when unsure, leave it out and
 // let FightBot say it doesn't know.
-export const APP_GUIDE = `APP: "Fight Cards", a UFC picks game for a group of friends. It is a web app (add it to your home screen to use it like an app). Anyone can browse; making picks needs an email account (one-time code, no password), so tapping a pick without one asks for an email first.
+export const APP_GUIDE = `APP: "Picked Fight", a UFC picks game for a group of friends. It is a web app (add it to your home screen to use it like an app). Anyone can browse; making picks needs an email account (one-time code, no password), so tapping a pick without one asks for an email first.
 
 HOME SCREEN
 - Tab bar at the bottom: Cards (this home screen), Picks (your picks for the next card at a glance: each bout with your pick, method, 🔒 and whether it is open, locked, right or wrong; tap a bout to pick it; See all past picks opens the full My Picks list), Live (opens FN Mode, the fight-night view), League (opens Ranks, the leaderboard) and FightBot.
@@ -1167,7 +1167,7 @@ export const GUIDE_MAX_TURNS = 6, GUIDE_MAX_TURN = 600, GUIDE_MAX_SCREEN = 40;
 // stat it wasn't handed is a claim about a real fighter the app can't back,
 // so every answer goes through numbersInvented (see the handler).
 export function buildGuide(d: ReqBody): { system: string; user: string } {
-  const system = `You are FightBot, the friendly in-app guide for the "Fight Cards" UFC picks app. You are a general MMA assistant as well as the app guide. Answer questions about any MMA promotion, fighter, history, rules, judging, techniques, styles, training concepts and news, and about this app (from the app guide below). The selected card provides context; it never limits the topics or fighters you can discuss.
+  const system = `You are FightBot, the friendly in-app guide for the "Picked Fight" UFC picks app. You are a general MMA assistant as well as the app guide. Answer questions about any MMA promotion, fighter, history, rules, judging, techniques, styles, training concepts and news, and about this app (from the app guide below). The selected card provides context; it never limits the topics or fighters you can discuss.
 
 ${PICK_RECOMMENDATION_RULES}
 

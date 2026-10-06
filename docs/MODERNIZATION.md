@@ -146,7 +146,7 @@ These block a submission and none of them can be decided in code:
 
 | Item | Guideline | Decision |
 | ---- | --------- | -------- |
-| "UFC" in the name, manifest and UI | 5.2.1 | Rebrand (the privacy page already says "Fight Cards") or get Zuffa's written permission |
+| "UFC" in the name, manifest and UI | 5.2.1 | **Done 2026-10-06:** renamed to "Picked Fight" (manifest, page title, Home Screen title, share images, legal pages, FightBot). "UFC" remains only where it names the promotion's events |
 | ESPN headshots, Wikipedia images | 5.2.2 | Licence them, or attribute Wikimedia images per their licence and drop ESPN |
 | Wrapper approach | 4.2 | Capacitor or similar, with native features that justify an app (native push, widgets, Live Activities) |
 | Push | — | Web Push doesn't run in an iOS app's web view: `send-push` needs an APNs path |

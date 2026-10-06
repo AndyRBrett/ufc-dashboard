@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = "2026-10-06-3";
+const SW_VERSION = "2026-10-06-4";
 const CACHE = 'ufc-' + SW_VERSION;
 // Handoff caches that must survive SW upgrades: 'ufc-push-id' carries the push
 // identity used by pushsubscriptionchange while the app is closed, 'ufc-tap'
@@ -191,7 +191,7 @@ self.addEventListener('push', function(e) {
   // clients.matchAll() ahead of it to tell open pages a push had arrived; a
   // friend's phone then got a roast Apple had accepted but showed no banner.
   // Telling the page now runs beside it, and can't delay or block it.
-  var shown = self.registration.showNotification(data.title || 'UFC Picks', {
+  var shown = self.registration.showNotification(data.title || 'Picked Fight', {
     body: displayBody,
     icon: './icon-192-v2.png',
     badge: './icon-192-v2.png',
