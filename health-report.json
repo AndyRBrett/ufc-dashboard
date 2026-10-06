@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-06T02:35:44Z",
+  "generated_at": "2026-10-06T02:40:46Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 5
+    "warn": 6
   },
   "findings": [
     {
@@ -38,6 +38,11 @@
       "event": "UFC Fight Night: Allen vs. Duncan",
       "date": "2026-10-10",
       "days_out": 4
+    },
+    {
+      "severity": "WARN",
+      "check": "odds-api-error",
+      "message": "last Odds API call returned HTTP 401 \u2014 lines are frozen at their previous values"
     },
     {
       "severity": "WARN",
