@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-06T01:55:39Z",
+ "generated_at": "2026-10-06T09:55:43Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 404,
-   "items": 0
+   "status": 200,
+   "items": 15
   },
   {
    "id": "yt-mmaf",
@@ -43,7 +43,33 @@
   "UFC_Fight_Night:_Allen_vs._Duncan": {
    "name": "UFC Fight Night: Allen vs. Duncan",
    "date": "2026-10-10",
-   "items": []
+   "items": [
+    {
+     "title": "Brendan Allen vs Reinier de Ridder | FULL FIGHT | UFC Vegas 122",
+     "url": "https://www.youtube.com/watch?v=GBr6_Al98tg",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-10-05T14:00:20Z",
+     "thumb": "https://i4.ytimg.com/vi/GBr6_Al98tg/hqdefault.jpg",
+     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Watch the matchup between Brendan Allen and Reinier de Ridder ahead of Allens fight against Christian Leroy Duncan at UFC Vegas 122! Subscribe to get all the latest…",
+     "fighters": [
+      "Brendan Allen",
+      "Christian Leroy Duncan"
+     ]
+    },
+    {
+     "title": "UFC Vegas 122: Allen vs Duncan - October 10th | Fight Promo",
+     "url": "https://www.youtube.com/watch?v=yxAiOIONzQM",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-10-05T18:00:21Z",
+     "thumb": "https://i2.ytimg.com/vi/yxAiOIONzQM/hqdefault.jpg",
+     "blurb": "UFC is back and at the META APEX as Brenden Allen takes on Christian Leroy Duncan in the main event. Watch UFC on Paramount Plus ➡️ https://ufc.ac/4d4oEtR Subscribe to get all the latest UFC content:…",
+     "fighters": [
+      "Christian Leroy Duncan"
+     ]
+    }
+   ]
   }
  }
 }
