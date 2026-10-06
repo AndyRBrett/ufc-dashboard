@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-06T02:55:39Z",
+  "generated_at": "2026-10-06T03:01:07Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -14367,6 +14367,26 @@
           },
           "close": null,
           "clv": null
+        },
+        {
+          "f1": "Charles Oliveira",
+          "f2": "Diego Lopes",
+          "lbl": "Main Event",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-06T03:01:07Z",
+              "f1_odds": -166,
+              "f2_odds": 137
+            }
+          ],
+          "open": {
+            "at": "2026-10-06T03:01:07Z",
+            "f1_odds": -166,
+            "f2_odds": 137
+          },
+          "close": null,
+          "clv": null
         }
       ]
     }
@@ -15178,6 +15198,15 @@
         "open": -155,
         "close": -155,
         "clv": 0
+      },
+      {
+        "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
+        "opponent": "Charles Oliveira",
+        "side": "f2",
+        "points": 1,
+        "open": 137,
+        "close": null,
+        "clv": null
       }
     ],
     "Steve Garcia": [
@@ -19188,6 +19217,17 @@
         "side": "f2",
         "points": 3,
         "open": 141,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Charles Oliveira": [
+      {
+        "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
+        "opponent": "Diego Lopes",
+        "side": "f1",
+        "points": 1,
+        "open": -166,
         "close": null,
         "clv": null
       }
