@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https://upload.wikimedia.org https://thumb.wikimedia.org https://a.espncdn.com data:; font-src 'self'; connect-src 'self' https://gkccophrdqtqcowmblre.supabase.co wss://gkccophrdqtqcowmblre.supabase.co https://en.wikipedia.org; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-<title>UFC Fight Cards</title>
+<title>Picked Fight</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0e0f12">
 <meta name="mobile-web-app-capable" content="yes">
@@ -41,9 +41,9 @@
      almost certainly not run yet: confirm against a fresh install before
      concluding anything about the tag itself. -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="UFC Picks">
+<meta name="apple-mobile-web-app-title" content="Picked Fight">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180.png">
-<link rel="icon" type="image/png" href="icon-192-v2.png">
+<link rel="icon" type="image/png" href="icon-192-v3.png">
 <link rel="preload" href="fonts/bebas-neue-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style id="fonts">
@@ -550,7 +550,7 @@ body[data-theme="usa"] .logo-eagle{display:block}
 .logo-text{font-family:var(--font-display);text-transform:uppercase;font-size:25px;letter-spacing:.08em;white-space:nowrap}
 @media (max-width:350px){.hdr{padding:0 12px}.logo{gap:6px}.logo-oct{width:32px;height:32px;font-size:14px}.logo-eagle{font-size:28px}.logo-text{font-size:18px}.hdr-right{gap:6px}.btn-icon{min-width:44px;padding:0 6px}}
 .logo-text span{color:var(--red)}
-/* month names run longer than FIGHT CARDS — THANKSGIVING, APRIL SHOWERS —
+/* month names run longer than PICKED FIGHT — THANKSGIVING, APRIL SHOWERS —
    so the seasonal wordmark sits a touch smaller to keep the header on one line */
 body[data-theme="seasonal"] .logo-text{font-size:22px}
 @media (max-width:400px){body[data-theme="seasonal"] .logo-text{font-size:19px}}
@@ -2002,7 +2002,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <header class="hdr">
   <!-- The avatar opens the menu drawer (#moreMenu, below), as on iOS. -->
   <button class="hdr-avatar" id="hdrAvatar" onclick="toggleMoreMenu()" aria-label="Open menu" aria-controls="moreMenu" aria-expanded="false"><span class="hdr-av-txt" id="hdrAvatarTxt"></span><svg class="hdr-av-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
-  <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><button class="logo-season" onclick="seasonCry(this)" aria-label="Play the seasonal sound"></button><button class="logo-silver" onclick="silverCrack(this)" aria-label="Crack a cold one"><svg viewBox="0 0 40 64" aria-hidden="true"><defs><linearGradient id="svcan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d99a3"/><stop offset=".16" stop-color="#eef2f5"/><stop offset=".42" stop-color="#c3cdd6"/><stop offset=".62" stop-color="#f6f9fb"/><stop offset=".86" stop-color="#aab6c0"/><stop offset="1" stop-color="#7f8b95"/></linearGradient></defs><rect x="5" y="7" width="30" height="51" rx="5" fill="url(#svcan)"/><ellipse cx="20" cy="8" rx="15" ry="3.6" fill="#c9d3db"/><ellipse cx="20" cy="8" rx="11" ry="2.4" fill="#aeb9c3"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><path d="M5 39 12 29l4.5 5 5.5-7.5 5 6.5 3.5-3 6 8z" fill="#fff" opacity=".92"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/><ellipse cx="20" cy="57.6" rx="15" ry="3.2" fill="#9aa6b0"/><rect x="9" y="9" width="3" height="47" fill="#fff" opacity=".45" rx="1.5"/></svg></button><button class="logo-noche" onclick="nocheGrito(this)" aria-label="Play the grito"><svg viewBox="0 0 200 240" aria-hidden="true"><use href="#noche-calavera"/></svg></button><span class="logo-text">FIGHT <span>CARDS</span></span><svg class="noche-papel" aria-hidden="true" preserveAspectRatio="none"><rect width="100%" height="100%" fill="url(#noche-papel-pattern)"/></svg></div>
+  <div class="logo"><div class="logo-oct">UFC</div><button class="logo-eagle" onclick="eagleCry(this)" title="Freedom" aria-label="Play eagle screech">🦅</button><button class="logo-season" onclick="seasonCry(this)" aria-label="Play the seasonal sound"></button><button class="logo-silver" onclick="silverCrack(this)" aria-label="Crack a cold one"><svg viewBox="0 0 40 64" aria-hidden="true"><defs><linearGradient id="svcan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d99a3"/><stop offset=".16" stop-color="#eef2f5"/><stop offset=".42" stop-color="#c3cdd6"/><stop offset=".62" stop-color="#f6f9fb"/><stop offset=".86" stop-color="#aab6c0"/><stop offset="1" stop-color="#7f8b95"/></linearGradient></defs><rect x="5" y="7" width="30" height="51" rx="5" fill="url(#svcan)"/><ellipse cx="20" cy="8" rx="15" ry="3.6" fill="#c9d3db"/><ellipse cx="20" cy="8" rx="11" ry="2.4" fill="#aeb9c3"/><rect x="5" y="25" width="30" height="15" fill="#0071ce"/><path d="M5 39 12 29l4.5 5 5.5-7.5 5 6.5 3.5-3 6 8z" fill="#fff" opacity=".92"/><rect x="5" y="43" width="30" height="4.2" fill="#c8102e"/><ellipse cx="20" cy="57.6" rx="15" ry="3.2" fill="#9aa6b0"/><rect x="9" y="9" width="3" height="47" fill="#fff" opacity=".45" rx="1.5"/></svg></button><button class="logo-noche" onclick="nocheGrito(this)" aria-label="Play the grito"><svg viewBox="0 0 200 240" aria-hidden="true"><use href="#noche-calavera"/></svg></button><span class="logo-text">PICKED <span>FIGHT</span></span><svg class="noche-papel" aria-hidden="true" preserveAspectRatio="none"><rect width="100%" height="100%" fill="url(#noche-papel-pattern)"/></svg></div>
   <div class="hdr-right">
     <button class="hdr-btn" id="hdrSearchBtn" onclick="focusSearch()" aria-label="Search fighters" title="Search fighters">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg>
@@ -2019,7 +2019,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
         <!-- The account card: tapping it signs in, or (signed in) edits your profile. -->
         <button class="drawer-me" id="drawerMe" onclick="_drawerAccount()">
           <span class="drawer-av" id="drawerAv" aria-hidden="true"></span>
-          <span class="drawer-who"><span class="drawer-name" id="drawerName">Fight Cards</span><span class="drawer-sub" id="drawerSub"></span></span>
+          <span class="drawer-who"><span class="drawer-name" id="drawerName">Picked Fight</span><span class="drawer-sub" id="drawerSub"></span></span>
         </button>
         <button class="drawer-x" onclick="closeMoreMenu()" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
@@ -2114,7 +2114,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="6" x2="12" y2="12"/><polyline points="9 9 12 6 15 9"/></svg>
           <span>Add to Home Screen</span>
         </button>
-        <p class="drawer-legal">Fight Cards is a free picks game between friends. Not affiliated with, endorsed by or sponsored by any fight promotion. Odds are shown for information only; there is no wagering in this app.<br><a href="privacy.html" target="_blank" rel="noopener">Privacy</a> · <a href="terms.html" target="_blank" rel="noopener">Terms</a> · <a href="support.html" target="_blank" rel="noopener">Support</a></p>
+        <p class="drawer-legal">Picked Fight is a free picks game between friends. Not affiliated with, endorsed by or sponsored by any fight promotion. Odds are shown for information only; there is no wagering in this app.<br><a href="privacy.html" target="_blank" rel="noopener">Privacy</a> · <a href="terms.html" target="_blank" rel="noopener">Terms</a> · <a href="support.html" target="_blank" rel="noopener">Support</a></p>
       </div>
 </nav>
 <!-- Tab bar: the app's five places, iOS style. Each tab opens a view that already
@@ -3771,7 +3771,7 @@ function _syncProfile(){
   var dv=document.getElementById("drawerAv");if(dv)dv.textContent=t||"🥊";
   var n="";try{n=userName||"";}catch(e){}
   var em=_sessEmail();
-  var nm=document.getElementById("drawerName");if(nm)nm.textContent=(n&&splitNick(n).name)||"Fight Cards";  // the emoji is the avatar beside it
+  var nm=document.getElementById("drawerName");if(nm)nm.textContent=(n&&splitNick(n).name)||"Picked Fight";  // the emoji is the avatar beside it
   var sub=document.getElementById("drawerSub");
   if(sub)sub.textContent=em?em:"Not signed in · Tap to sign in";
   // Edit Profile sits under the sign-in row, for a signed-in account.
@@ -4107,8 +4107,8 @@ var SEASONS=[
 ];
 function curSeason(){return SEASONS[new Date().getMonth()];}
 // The wordmark carries the month, so the theme names itself in the header:
-// FIGHT CARDS becomes DOG DAYS, HALLOWEEN, THANKSGIVING. The last word takes
-// the accent colour, the way CARDS already does.
+// PICKED FIGHT becomes DOG DAYS, HALLOWEEN, THANKSGIVING. The last word takes
+// the accent colour, the way FIGHT already does.
 function seasonLogo(nm){
   var i=nm.lastIndexOf(" ");
   return i<0?'<span>'+nm+'</span>':nm.slice(0,i+1)+'<span>'+nm.slice(i+1)+'</span>';
@@ -4131,7 +4131,7 @@ function applySeason(){
 }
 function restoreLogo(){
   var t=document.querySelector(".logo-text");
-  if(t)t.innerHTML='FIGHT <span>CARDS</span>';
+  if(t)t.innerHTML='PICKED <span>FIGHT</span>';
 }
 
 /* Audio: a real recording wins, the synth is the fallback.
@@ -6067,9 +6067,9 @@ function buildShareImage(ev){
   // Wordmark
   ctx.font="18px 'Bebas Neue',sans-serif";
   ctx.textAlign="left";
-  ctx.fillStyle=C.accent;ctx.fillText("UFC ",M,y+brandH-4);
-  var uw=ctx.measureText("UFC ").width;
-  ctx.fillStyle=C.text;ctx.fillText("FIGHT CARDS",M+uw,y+brandH-4);
+  ctx.fillStyle=C.accent;ctx.fillText("PICKED ",M,y+brandH-4);
+  var uw=ctx.measureText("PICKED ").width;
+  ctx.fillStyle=C.text;ctx.fillText("FIGHT",M+uw,y+brandH-4);
   y+=brandH+afterBrand;
 
   // Score badge
@@ -6080,11 +6080,11 @@ function buildShareImage(ev){
   if(resolved>0){
     ctx.font="50px 'Bebas Neue',sans-serif";ctx.fillText(correct+"/"+resolved,M+bw/2,y+60);
     ctx.font="13px Inter,sans-serif";ctx.globalAlpha=.85;
-    ctx.fillText(Math.round(correct/resolved*100)+"% correct · UFC Fight Cards",M+bw/2,y+82);ctx.globalAlpha=1;
+    ctx.fillText(Math.round(correct/resolved*100)+"% correct · Picked Fight",M+bw/2,y+82);ctx.globalAlpha=1;
   } else {
     ctx.font="36px 'Bebas Neue',sans-serif";ctx.fillText("MY PICKS",M+bw/2,y+46);
     ctx.font="13px Inter,sans-serif";ctx.globalAlpha=.85;
-    ctx.fillText(picks.length+" pick"+(picks.length!==1?"s":"")+" · UFC Fight Cards",M+bw/2,y+66);ctx.globalAlpha=1;
+    ctx.fillText(picks.length+" pick"+(picks.length!==1?"s":"")+" · Picked Fight",M+bw/2,y+66);ctx.globalAlpha=1;
   }
   ctx.textAlign="left";
   y+=badgeH+afterBadge;
@@ -6129,7 +6129,7 @@ function buildShareImage(ev){
 
   // Footer
   ctx.textAlign="center";ctx.fillStyle=C.muted;ctx.font="11px Inter,sans-serif";
-  ctx.globalAlpha=.8;ctx.fillText("Make your picks at UFC Fight Cards",W/2,y+footH-4);ctx.globalAlpha=1;
+  ctx.globalAlpha=.8;ctx.fillText("Make your picks at Picked Fight",W/2,y+footH-4);ctx.globalAlpha=1;
 
   return cv;
 }
@@ -7271,7 +7271,9 @@ var WHATS_NEW=[
   {id:"2026-10-27-fn-method-lock",emoji:"🎯",title:"Method and locks in FN Mode",
    desc:"Picking in FN Mode now lets you set how it ends (KO/TKO, Sub, Dec) and spend a 🔒 lock, right under your pick. Your account and Edit Profile now sit together at the top of the menu."},
   {id:"2026-10-28-picks-at-a-glance",emoji:"✅",title:"Your picks at a glance",
-   desc:"The Picks tab now shows just this week's card: every bout with your pick, method and 🔒, and whether it's open, locked, right or wrong. Tap a bout to pick it. Your full history is one tap away under See all past picks."}
+   desc:"The Picks tab now shows just this week's card: every bout with your pick, method and 🔒, and whether it's open, locked, right or wrong. Tap a bout to pick it. Your full history is one tap away under See all past picks."},
+  {id:"2026-10-29-picked-fight",emoji:"🥊",title:"We're Picked Fight now",
+   desc:"Same game, same picks, same leaderboard, new name. If you added the app to your Home Screen, it keeps working; re-add it from the Share menu to get the new name and icon."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -9315,7 +9317,7 @@ function _wrSummary(w){
   return box;
 }
 function _wrShareText(w){
-  return "My "+w.year+" UFC Picks Wrapped 🥊\n"+
+  return "My "+w.year+" Picked Fight Wrapped 🥊\n"+
     "#"+w.rank+" of "+w.of+" · "+w.pts+" pts · "+w.accuracy+"% winners\n"+
     (w.bestCard?"Best night: "+w.bestCard.pts+" pts ("+_wrShort(w.bestCard.evName||w.bestCard.date)+")\n":"")+
     (w.upset?"Biggest upset: "+w.upset.pick+" +"+w.upset.line+"\n":"")+
@@ -9346,7 +9348,7 @@ function drawWrappedCard(canvas,w){
   rg.addColorStop(0,"rgba(255,160,120,.35)");rg.addColorStop(1,"rgba(255,160,120,0)");
   c.fillStyle=rg;c.fillRect(0,0,W,H);
   c.textBaseline="alphabetic";c.textAlign="left";c.fillStyle="#fff";
-  c.globalAlpha=.85;c.font="700 40px "+_WR_FONT;c.fillText("🥊 UFC PICKS",L,150);
+  c.globalAlpha=.85;c.font="700 40px "+_WR_FONT;c.fillText("🥊 PICKED FIGHT",L,150);
   c.globalAlpha=1;c.font="800 64px "+_WR_FONT;c.fillText(w.year+" WRAPPED",L,300);
   c.fillText(_wrFit(c,splitNick(w.name).name||w.name,maxW,150,"800",60),L,470);
   c.font="700 52px "+_WR_FONT;c.fillText(_wrFit(c,w.archetype.em+" "+w.archetype.name,maxW,52,"700",32),L,560);
@@ -9787,7 +9789,7 @@ function leaveRoom(id){
 }
 function shareRoom(id){
   var r=_roomById(id);if(!r)return;
-  var url=roomInviteUrl(r),text="Join my UFC picks room “"+r.name+"” (code "+r.code+"). Using the app on your Home Screen? Open it, tap 👥 on Ranks and type the code";
+  var url=roomInviteUrl(r),text="Join my Picked Fight room “"+r.name+"” (code "+r.code+"). Using the app on your Home Screen? Open it, tap 👥 on Ranks and type the code";
   if(navigator.share){navigator.share({title:"Join "+r.name,text:text,url:url}).catch(function(){});return;}
   var done=function(){toast("Invite link copied");};
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text+": "+url).then(done,function(){prompt("Copy this invite link:",url);});
@@ -9797,7 +9799,7 @@ function shareRoom(id){
 // is typed into the app people already have open).
 function _sharePass(r){
   var p=roomPass(r);if(!p)return;
-  var text="Join my UFC picks room “"+r.name+"”: open the app, tap 👥 on Ranks and type "+_fmtPass(p)+" (works for "+_passHoursLeft(r)+" more hour"+(_passHoursLeft(r)===1?"":"s")+")";
+  var text="Join my Picked Fight room “"+r.name+"”: open the app, tap 👥 on Ranks and type "+_fmtPass(p)+" (works for "+_passHoursLeft(r)+" more hour"+(_passHoursLeft(r)===1?"":"s")+")";
   if(navigator.share){navigator.share({title:"Join "+r.name,text:text}).catch(function(){});return;}
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(function(){toast("Password copied: "+_fmtPass(p));},function(){prompt("Room password:",p);});
   else prompt("Room password:",p);
@@ -10084,7 +10086,7 @@ function drawTapePoster(canvas,t,evName,call){
   _tpWrap(c,call?"🤖 "+call:t.verdict,W-2*L,3).forEach(function(l,i){c.fillText(l,mid,vy+i*46);});
   c.globalAlpha=.7;c.font="600 28px "+_WR_FONT;
   var host=String(location.host+location.pathname).replace(/\/(index\.html)?$/,"");
-  c.fillText(_wrFit(c,"🥊 UFC PICKS · "+host,W-2*L,28,"600",20),mid,H-50);
+  c.fillText(_wrFit(c,"🥊 PICKED FIGHT · "+host,W-2*L,28,"600",20),mid,H-50);
   c.globalAlpha=1;
   return canvas;
 }

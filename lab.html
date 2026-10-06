@@ -669,7 +669,7 @@ function drawFightCard(ctx,fc,sn,pal){
       ctx.fillStyle="rgba(0,0,0,.32)";rr(bx,y,bw,46,23);ctx.fill();ctx.fillStyle=pal.tx;ctx.fillText(t,bx+16,y+9);bx+=bw+12;});
     y+=78;
   }
-  font(22,600);ctx.fillStyle=pal.mut;ctx.fillText("UFC FIGHT CARDS · FIGHT LAB",P,y);
+  font(22,600);ctx.fillStyle=pal.mut;ctx.fillText("PICKED FIGHT · FIGHT LAB",P,y);
   font(20,400);ctx.textAlign="right";ctx.fillText("50 = par · higher is better",W-P,y+2);ctx.textAlign="left";
   return y+22+P;
 }

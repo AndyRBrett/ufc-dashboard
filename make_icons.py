@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Generate UFC Picks PWA icons.
-Design: red background, "UFC" bold on top half, thin white divider, "PICKS" bold on bottom half.
+Generate Picked Fight PWA icons.
+Design: red background, "PICKED" bold on top half, thin white divider, "FIGHT" bold on bottom half.
 Both words are contained well within the maskable safe zone (center 80%).
 """
 from PIL import Image, ImageDraw, ImageFont
@@ -10,6 +10,7 @@ import os
 RED    = (232, 25, 44)
 WHITE  = (255, 255, 255)
 DARK   = (7, 7, 10)
+TOP, BOTTOM = "PICKED", "FIGHT"
 
 FONT_PATH = "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
 
@@ -57,15 +58,15 @@ def make_icon(size):
     # Target: text fills ~90% of available width, capped by height
     target_w = int(avail_w * 0.90)
 
-    ufc_font  = fit_font("UFC",  target_w, text_area_h)
-    pick_font = fit_font("PICKS", target_w, text_area_h)
+    ufc_font  = fit_font(TOP, target_w, text_area_h)
+    pick_font = fit_font(BOTTOM, target_w, text_area_h)
 
     # UFC bounding box
-    ubb = draw.textbbox((0, 0), "UFC", font=ufc_font)
+    ubb = draw.textbbox((0, 0), TOP, font=ufc_font)
     utw, uth = ubb[2] - ubb[0], ubb[3] - ubb[1]
 
     # PICKS bounding box
-    pbb = draw.textbbox((0, 0), "PICKS", font=pick_font)
+    pbb = draw.textbbox((0, 0), BOTTOM, font=pick_font)
     ptw, pth = pbb[2] - pbb[0], pbb[3] - pbb[1]
 
     # Top of safe zone content
@@ -74,7 +75,7 @@ def make_icon(size):
     # UFC: vertically centered in top half
     ufc_y = top_y + (text_area_h - uth) // 2 - ubb[1]
     ufc_x = (size - utw) // 2 - ubb[0]
-    draw.text((ufc_x, ufc_y), "UFC", font=ufc_font, fill=WHITE)
+    draw.text((ufc_x, ufc_y), TOP, font=ufc_font, fill=WHITE)
 
     # Divider
     div_y = top_y + text_area_h
@@ -86,16 +87,17 @@ def make_icon(size):
     picks_top = div_y + div_h
     picks_y = picks_top + (text_area_h - pth) // 2 - pbb[1]
     picks_x = (size - ptw) // 2 - pbb[0]
-    draw.text((picks_x, picks_y), "PICKS", font=pick_font, fill=WHITE)
+    draw.text((picks_x, picks_y), BOTTOM, font=pick_font, fill=WHITE)
 
     return img
 
 def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    for size, name in [(192, "icon-192-v2.png"), (512, "icon-512-v2.png")]:
+    for size, name in [(192, "icon-192-v3.png"), (512, "icon-512-v3.png")]:
         img = make_icon(size)
         img.save(name, "PNG", optimize=True)
         print(f"Saved {name}: {os.path.getsize(name)} bytes")
+    make_icon(512).resize((180, 180), Image.LANCZOS).save("apple-touch-icon-180.png", "PNG", optimize=True)
 
 if __name__ == "__main__":
     main()
