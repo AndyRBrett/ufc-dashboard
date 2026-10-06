@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-05T21:30:55Z",
+ "generated_at": "2026-10-06T00:00:52Z",
  "promotions": [
   {
    "id": "pfl",
@@ -513,6 +513,94 @@
     {
      "a": "Hiroaki Suzuki",
      "b": "Kim Sei-min",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Juntaro Ushiku",
+     "b": "Li Kaiwen",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Kim Kyung-pyo",
+     "b": "Nurkhan Zhumagazy",
+     "label": "",
+     "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Tatsuya Saika",
+     "b": "Daigo Kuramoto",
+     "label": "",
+     "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Taichi Nakajima",
+     "b": "Tsukasa Mizoguchi",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Rikiya Matsuzawa",
+     "b": "Rio Kimura",
+     "label": "",
+     "division": "Flyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Takumi Hamada",
+     "b": "Sho Sekihara",
+     "label": "",
+     "division": "Flyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Naohiro Matsumoto",
+     "b": "Masachika Takahashi",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Shunya Inoue",
+     "b": "Saw Thwee Waw Thaunt",
      "label": "",
      "division": "Featherweight",
      "title": false,
