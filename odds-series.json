@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-06T20:45:42Z",
+  "generated_at": "2026-10-06T20:50:47Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -13439,7 +13439,7 @@
           "f1": "Loopy Godinez",
           "f2": "Ketlen Souza",
           "lbl": "Main Card",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13504,6 +13504,11 @@
             {
               "at": "2026-10-06T14:45:44Z",
               "f1_odds": -232,
+              "f2_odds": 185
+            },
+            {
+              "at": "2026-10-06T20:50:46Z",
+              "f1_odds": -230,
               "f2_odds": 185
             }
           ],
@@ -13824,7 +13829,7 @@
           "f1": "Allen Frye Jr.",
           "f2": "RJ Harris",
           "lbl": "Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13895,6 +13900,11 @@
               "at": "2026-10-06T14:45:44Z",
               "f1_odds": 222,
               "f2_odds": -286
+            },
+            {
+              "at": "2026-10-06T20:50:46Z",
+              "f1_odds": 225,
+              "f2_odds": -291
             }
           ],
           "open": {
@@ -14290,7 +14300,7 @@
           "f1": "Petr Yan",
           "f2": "Merab Dvalishvili",
           "lbl": "Co-Main",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -14336,6 +14346,11 @@
               "at": "2026-10-06T14:45:44Z",
               "f1_odds": -175,
               "f2_odds": 142
+            },
+            {
+              "at": "2026-10-06T20:50:46Z",
+              "f1_odds": -180,
+              "f2_odds": 147
             }
           ],
           "open": {
@@ -15273,7 +15288,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Loopy Godinez",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 180,
         "close": null,
         "clv": null
@@ -19220,7 +19235,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Ketlen Souza",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -210,
         "close": null,
         "clv": null
@@ -19275,7 +19290,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "RJ Harris",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": 186,
         "close": null,
         "clv": null
@@ -19286,7 +19301,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Allen Frye Jr.",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -220,
         "close": null,
         "clv": null
@@ -19385,7 +19400,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Merab Dvalishvili",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -171,
         "close": null,
         "clv": null
@@ -19396,7 +19411,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Petr Yan",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 138,
         "close": null,
         "clv": null

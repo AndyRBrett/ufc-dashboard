@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-06T20:45:42Z",
+  "generated_at": "2026-10-06T20:50:46Z",
   "events_tracked": 12,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "ok",
-      "last_changed_at": "2026-10-06T14:45:44Z",
+      "last_changed_at": "2026-10-06T20:50:46Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -106,7 +106,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-06T20:45:42Z",
+      "last_changed_at": "2026-10-06T20:50:46Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 10,
@@ -116,7 +116,7 @@
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "ok",
-      "last_changed_at": "2026-10-06T14:45:44Z",
+      "last_changed_at": "2026-10-06T20:50:46Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 8,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-06T20:45:42Z",
+      "last_changed_at": "2026-10-06T20:50:46Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -136,7 +136,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-06T20:45:42Z",
+      "last_changed_at": "2026-10-06T20:50:46Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -156,7 +156,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-06T20:45:42Z",
+      "last_changed_at": "2026-10-06T20:50:46Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -384,6 +384,22 @@
       "priority": 100.0
     },
     {
+      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+      "f1": "Allen Frye Jr.",
+      "f2": "RJ Harris",
+      "f1_movement": 39,
+      "f2_movement": -71,
+      "magnitude": 71,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": -4.2,
+      "f2_prob_shift": 5.7,
+      "priority": 99.4
+    },
+    {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "f1": "Michael Aswell Jr.",
       "f2": "Yoo Joo-sang",
@@ -430,22 +446,6 @@
       "f1_prob_shift": 2.2,
       "f2_prob_shift": -1.7,
       "priority": 93.0
-    },
-    {
-      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
-      "f1": "Allen Frye Jr.",
-      "f2": "RJ Harris",
-      "f1_movement": 36,
-      "f2_movement": -66,
-      "magnitude": 66,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": -3.9,
-      "f2_prob_shift": 5.3,
-      "priority": 92.4
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",

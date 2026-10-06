@@ -2,22 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Court McGee",
-   "b": "Eric Nolan",
-   "a_odds": 189,
-   "b_odds": -233,
-   "commence_time": "2026-10-03T20:05:00Z",
-   "seen_at": "2026-10-03T18:35:41Z"
-  },
-  {
-   "a": "Marvin Vettori",
-   "b": "Ismail Naurdiev",
-   "a_odds": 119,
-   "b_odds": -142,
-   "commence_time": "2026-10-03T20:30:00Z",
-   "seen_at": "2026-10-03T18:35:41Z"
-  },
-  {
    "a": "Rafael dos Anjos",
    "b": "Alex Hernandez",
    "a_odds": 212,
@@ -124,34 +108,42 @@
   {
    "a": "Nell Ariano",
    "b": "Preston Lagrange",
-   "a_odds": -507,
-   "b_odds": 347,
+   "a_odds": -592,
+   "b_odds": 428,
    "commence_time": "2026-10-06T22:00:00Z",
-   "seen_at": "2026-10-06T14:45:22Z"
+   "seen_at": "2026-10-06T20:50:24Z"
   },
   {
    "a": "Mateus Soares",
    "b": "Ryuho Miyaguchi",
-   "a_odds": -370,
-   "b_odds": 297,
+   "a_odds": -440,
+   "b_odds": 337,
    "commence_time": "2026-10-06T23:40:00Z",
-   "seen_at": "2026-10-06T14:45:22Z"
+   "seen_at": "2026-10-06T20:50:24Z"
+  },
+  {
+   "a": "Alexander Chavez",
+   "b": "Roque Conceicao",
+   "a_odds": -109,
+   "b_odds": -108,
+   "commence_time": "2026-10-07T00:05:00Z",
+   "seen_at": "2026-10-06T20:50:24Z"
   },
   {
    "a": "Sal Everett",
    "b": "Ozzy Martin",
-   "a_odds": -146,
-   "b_odds": 121,
+   "a_odds": -125,
+   "b_odds": 106,
    "commence_time": "2026-10-07T00:45:00Z",
-   "seen_at": "2026-10-06T14:45:22Z"
+   "seen_at": "2026-10-06T20:50:24Z"
   },
   {
    "a": "Alivia Bierley",
    "b": "Summer Onley",
-   "a_odds": 149,
-   "b_odds": -177,
+   "a_odds": 134,
+   "b_odds": -158,
    "commence_time": "2026-10-07T00:55:00Z",
-   "seen_at": "2026-10-06T14:45:22Z"
+   "seen_at": "2026-10-06T20:50:24Z"
   },
   {
    "a": "Alice Pereira",
@@ -164,10 +156,10 @@
   {
    "a": "Allen Frye Jr.",
    "b": "RJ Harris",
-   "a_odds": 222,
-   "b_odds": -286,
+   "a_odds": 225,
+   "b_odds": -291,
    "commence_time": "2026-10-11T00:00:00Z",
-   "seen_at": "2026-10-06T14:45:22Z"
+   "seen_at": "2026-10-06T20:50:24Z"
   },
   {
    "a": "Andre Fili",
@@ -220,10 +212,10 @@
   {
    "a": "Lupita Godinez",
    "b": "Ketlen Souza",
-   "a_odds": -232,
+   "a_odds": -230,
    "b_odds": 185,
    "commence_time": "2026-10-11T00:00:00Z",
-   "seen_at": "2026-10-06T14:45:22Z"
+   "seen_at": "2026-10-06T20:50:24Z"
   },
   {
    "a": "Malcolm Wellmaker",
@@ -252,10 +244,10 @@
   {
    "a": "Petr Yan",
    "b": "Merab Dvalishvili",
-   "a_odds": -175,
-   "b_odds": 142,
+   "a_odds": -180,
+   "b_odds": 147,
    "commence_time": "2026-10-25T03:30:00Z",
-   "seen_at": "2026-10-06T14:45:22Z"
+   "seen_at": "2026-10-06T20:50:24Z"
   },
   {
    "a": "Alex Volkanovski",
