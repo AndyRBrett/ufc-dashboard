@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = "2026-10-06-1";
+const SW_VERSION = "2026-10-06-3";
 const CACHE = 'ufc-' + SW_VERSION;
 // Handoff caches that must survive SW upgrades: 'ufc-push-id' carries the push
 // identity used by pushsubscriptionchange while the app is closed, 'ufc-tap'
@@ -65,6 +65,10 @@ self.addEventListener('fetch', function(e) {
   // and index.html is fetched as TEXT so the lab can lift the app's own scoring
   // out of it — a cache-first copy would score against last month's rules.
   var isLabNav = isNavigate && path.slice(-9) === '/lab.html';
+  // The static pages (privacy, terms, support) are navigations too; each keeps
+  // its own key, or opening one from the menu would overwrite the app shell
+  // and an offline launch would open a legal page instead of the app.
+  var staticNav = isNavigate && /\/(privacy|terms|support)\.html$/.exec(path);
   var labKey = !isNavigate && (
     path.slice(-17) === '/odds-series.json' ? './odds-series.json' :
     path.slice(-18) === '/events-extra.json' ? './events-extra.json' :
@@ -76,7 +80,7 @@ self.addEventListener('fetch', function(e) {
     // lab keeps its own key and an offline app launch still gets the app.
     // scoring.js is keyed by its FULL versioned URL (scoring.js?v=…), so the
     // offline fallback can only ever return the version the page asked for.
-    var cacheKey = isLabNav ? './lab.html' : isNavigate ? './' : isScoring ? req.url : labKey || (isIntel ? './intel.json' : './data.js');
+    var cacheKey = isLabNav ? './lab.html' : staticNav ? '.' + staticNav[0] : isNavigate ? './' : isScoring ? req.url : labKey || (isIntel ? './intel.json' : './data.js');
     e.respondWith(
       fetch(req, { cache: 'reload' })
         .catch(function() { return fetch(req); })

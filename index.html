@@ -42,7 +42,7 @@
      concluding anything about the tag itself. -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="UFC Picks">
-<link rel="apple-touch-icon" href="icon-192-v2.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180.png">
 <link rel="icon" type="image/png" href="icon-192-v2.png">
 <link rel="preload" href="fonts/bebas-neue-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -587,6 +587,8 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .btn-more-sep{height:1px;background:var(--border);margin:6px 8px}
 .btn-more-label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 12px 4px}
 .drawer-legal{font-size:12px;line-height:1.45;color:var(--muted);padding:14px 12px 0;margin:0}
+.drawer-legal a,.acct-legal a{color:inherit;text-decoration:underline}
+.acct-legal{font-size:12px;line-height:1.45;color:var(--muted);margin:10px 0 0;text-align:center}
 /* Header: avatar (menu) on the left, search on the right. */
 .hdr-avatar{position:relative;width:44px;height:44px;border:none;background:none;padding:0;margin-left:-6px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:var(--text)}
 .hdr-avatar::before{content:"";position:absolute;width:36px;height:36px;border-radius:50%;background:var(--card2);border:1px solid var(--border2)}
@@ -1884,6 +1886,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     <input class="nm-input" id="acctEmail" type="email" placeholder="you@email.com" aria-label="Email address" autocomplete="email" oninput="document.getElementById('acctErr').style.display='none'">
     <div class="nm-err" id="acctErr"></div>
     <button class="nm-btn" id="acctSendBtn" onclick="acctSend()">Email me a code</button>
+    <p class="acct-legal">By signing in you confirm you're 17 or older and agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
     <div id="acctCodeWrap" style="display:none">
       <input class="nm-input" id="acctCode" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="Code from email" maxlength="10" aria-label="Verification code from email" style="margin-top:12px" oninput="document.getElementById('acctErr').style.display='none'">
       <button class="nm-btn" id="acctVerifyBtn" onclick="acctVerify()">Verify code</button>
@@ -2111,7 +2114,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="6" x2="12" y2="12"/><polyline points="9 9 12 6 15 9"/></svg>
           <span>Add to Home Screen</span>
         </button>
-        <p class="drawer-legal">Fight Cards is a free picks game between friends. Not affiliated with, endorsed by or sponsored by any fight promotion. Odds are shown for information only; there is no wagering in this app.</p>
+        <p class="drawer-legal">Fight Cards is a free picks game between friends. Not affiliated with, endorsed by or sponsored by any fight promotion. Odds are shown for information only; there is no wagering in this app.<br><a href="privacy.html" target="_blank" rel="noopener">Privacy</a> · <a href="terms.html" target="_blank" rel="noopener">Terms</a> · <a href="support.html" target="_blank" rel="noopener">Support</a></p>
       </div>
 </nav>
 <!-- Tab bar: the app's five places, iOS style. Each tab opens a view that already
