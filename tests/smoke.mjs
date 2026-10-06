@@ -225,6 +225,16 @@ async function main() {
     });
     assert("Year Wrapped is in the menu in December and not in October", menu.dec === "" && menu.oct === "none");
     assert("Edit Profile shows in the menu's account area only when signed in", menu.signedIn ? menu.profile === "" : menu.profile === "none");
+    // iOS zooms in on focus into a field under 16px and stays zoomed, which
+    // sends the fixed header and tab bar sliding around. Every text field, the
+    // fighter search and the dynamically built selects included, is 16px+.
+    const small = await page.evaluate(() => {
+      const probe = document.createElement("select"); probe.className = "fotn-sel"; document.body.appendChild(probe);
+      const bad = [...document.querySelectorAll("input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=hidden]),textarea,select")]
+        .filter((e) => parseFloat(getComputedStyle(e).fontSize) < 16).map((e) => e.id || e.className || e.tagName);
+      probe.remove(); return bad;
+    });
+    assert("every text field is 16px or larger, so iOS doesn't zoom the page on focus" + (small.length ? " (" + small.join(", ") + ")" : ""), small.length === 0);
     // Keyboard reach: Enter on a role="button" element that isn't a <button>
     // must activate it (the activity feed header toggles the feed).
     const kb = await page.evaluate(() => {
