@@ -235,6 +235,18 @@ async function main() {
       probe.remove(); return bad;
     });
     assert("every text field is 16px or larger, so iOS doesn't zoom the page on focus" + (small.length ? " (" + small.join(", ") + ")" : ""), small.length === 0);
+    // Closing the menu returns focus where it was, but never into a text
+    // field: re-focusing the fighter search zoomed the page on iOS.
+    const refocus = await page.evaluate(async () => {
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+      const s = document.getElementById("fighterSearch"); s.focus();
+      window.openMoreMenu(); await sleep(120); window.closeMoreMenu(); await sleep(20);
+      const back = document.activeElement === s;
+      const btn = document.getElementById("hdrAvatar"); btn.focus();
+      window.openMoreMenu(); await sleep(120); window.closeMoreMenu(); await sleep(20);
+      return { search: back, button: document.activeElement === btn };
+    });
+    assert("closing the menu never re-focuses a text field (iOS would zoom), but still returns focus to a button", !refocus.search && refocus.button);
     // Keyboard reach: Enter on a role="button" element that isn't a <button>
     // must activate it (the activity feed header toggles the feed).
     const kb = await page.evaluate(() => {

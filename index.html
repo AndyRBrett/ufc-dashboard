@@ -3742,8 +3742,11 @@ function closeMoreMenu(){
   m.classList.remove("open");
   var bg=document.getElementById("drawerBg");if(bg)bg.classList.remove("open");
   var av=document.getElementById("hdrAvatar");if(av)av.setAttribute("aria-expanded","false");
-  // Back to where focus was, unless a menu item is about to move it elsewhere.
+  // Back to where focus was, unless a menu item is about to move it elsewhere,
+  // and never into a text field: focusing the fighter search on close zoomed
+  // the page on iOS and would raise the keyboard nobody asked for.
   var f=_drawerFocus;_drawerFocus=null;
+  if(f&&f.matches&&f.matches("input,textarea,select,[contenteditable]"))f=null;
   if(f&&f.focus&&document.contains(f)&&m.contains(document.activeElement)){try{f.focus({preventScroll:true});}catch(e){}}
 }
 // Initials for the avatar: the nickname's (its leading emoji, if it has one),
