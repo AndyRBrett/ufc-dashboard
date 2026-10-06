@@ -468,8 +468,13 @@ async function main() {
         // A forced redraw while it is in flight keeps the acknowledgement.
         renderChallengeInbox();
         out.survivesRedraw = !!acc() && acc().disabled && acc().textContent === "Accepting…";
-        release(); await new Promise((res) => setTimeout(res, 100));
-        out.accepted = !document.querySelector("#chalList .chal-act-accept") && _challenges.every((c) => c.status === "accepted");
+        // Wait for the answer to land rather than a fixed 100ms: on a loaded CI
+        // runner the response, state update and redraw can take longer, and the
+        // fixed sleep failed there while passing locally (#288).
+        release();
+        const answered = () => !document.querySelector("#chalList .chal-act-accept") && _challenges.every((c) => c.status === "accepted");
+        for (let t = 0; t < 60 && !answered(); t++) await new Promise((res) => setTimeout(res, 50));
+        out.accepted = answered();
         // A failure gives the buttons back.
         _challenges = [Object.assign({}, row, { id: "ra2" })]; fail = true;
         renderChallengeInbox();
