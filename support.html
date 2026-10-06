@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="description" content="Help with Fight Cards: signing in, picks and scoring, notifications, deleting your account, and how to contact us.">
+<meta name="theme-color" content="#0f0f14">
+<link rel="icon" type="image/png" href="icon-192-v2.png">
+<title>Support · Fight Cards</title>
+<!-- Plain, static and script-free like privacy.html, for the same reason: an
+     App Store reviewer must be able to load it on any network, and it must
+     never depend on the app booting. Keep its rules in step with privacy.html's
+     "Other players' content" section and with what the app actually does. -->
+<style>
+:root{--bg:#f7f7f9;--surface:#fff;--text:#16161d;--muted:#5b5b6b;--border:#e3e3ea;--accent:#c8102e}
+@media (prefers-color-scheme:dark){:root{--bg:#0f0f14;--surface:#17171f;--text:#ececf2;--muted:#a3a3b5;--border:#2a2a36;--accent:#ff4d5e}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:28px;line-height:1.2;margin:8px 0 4px}
+h2{font-size:19px;margin:32px 0 8px}
+p,li{color:var(--text)}
+.muted{color:var(--muted);font-size:14px}
+ul{padding-left:20px}
+li{margin:4px 0}
+a{color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:8px 6px;border-top:1px solid var(--border)}
+th{color:var(--muted);font-weight:600}
+.back{display:inline-block;margin-bottom:8px;text-decoration:none;font-weight:600}
+@media (max-width:520px){table,thead,tbody,tr,th,td{display:block}thead{display:none}td{border-top:none;padding:2px 0}tr{border-top:1px solid var(--border);padding:8px 0}td:first-child{font-weight:600}}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="./">← Back to Fight Cards</a>
+<h1>Support</h1>
+<p class="muted">Fight Cards, the fight picks game</p>
+
+<div class="card">
+<strong>Need help?</strong> Most questions are answered below, and the app's own <strong>⋯ More → FightBot Help</strong> can explain any screen. For anything else, <a href="#contact">contact us</a>.
+</div>
+
+<h2>Signing in</h2>
+<p>Anyone can browse cards. To make picks, tap a fighter and sign in with your email: we send a one-time code, with no password to remember. Signing in on a new phone with the same email brings your picks and stats back. If the code doesn't arrive, check your spam folder and tap <strong>Resend code</strong>.</p>
+
+<h2>Picks and scoring</h2>
+<p>A winner is 1 point, the right method adds +0.5, an underdog win adds a bonus, and each card has two 🔒 locks worth +1 if right and −1 if wrong. The full rules are under <strong>Ranks → ℹ</strong>. Each fight locks shortly before it starts: the first fight of each segment at that segment's start time, and every later fight once the fight before it ends. Other players' picks become visible only once that fight locks.</p>
+
+<h2>Notifications</h2>
+<p>Turn on the 🔔 bell for fight reminders and results. On iPhone, notifications need the app added to your Home Screen first (Share → Add to Home Screen), then open it from there and tap the bell.</p>
+
+<h2>Reporting and blocking</h2>
+<p>Use 🚩 <strong>Report</strong> or 🚫 <strong>Block</strong> on a roast, a challenge, or a player's row in Ranks. Manage blocks under <strong>Menu → Privacy &amp; Safety</strong>. The rules are in the <a href="terms.html">Terms of Use</a>.</p>
+
+<h2>Deleting your account</h2>
+<p>In the app, open <strong>Ranks → ✏️ Profile → Delete my account</strong>. It happens straight away; the <a href="privacy.html">Privacy Policy</a> lists exactly what it removes. If you can't open the app, contact us below with your nickname and we'll delete it for you.</p>
+
+<h2 id="credits">Credits</h2>
+<p>Fighter photos and bios come from <a href="https://commons.wikimedia.org/" rel="noopener">Wikimedia Commons</a> and <a href="https://en.wikipedia.org/" rel="noopener">Wikipedia</a>, used under their individual licences (most are <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA</a>); each image's author and licence are listed on its Commons page. Some headshots are loaded from ESPN. Fight cards and results are compiled from Wikipedia, UFC.com, ESPN and UFCStats; odds from The Odds API. Fight Cards is not affiliated with, endorsed by or sponsored by any of them, or by any fight promotion.</p>
+
+<h2 id="contact">Contact</h2>
+<p>Open an issue at <a href="https://github.com/andyrbrett/ufc-dashboard/issues" rel="noopener">github.com/andyrbrett/ufc-dashboard/issues</a>. Your in-app nickname is all we need, and it is already public on the leaderboard: don't post your email address or other personal details there. To report something a player sent you, use 🚩 Report in the app instead: it reaches only the admin.</p>
+
+<p class="muted"><a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Use</a></p>
+</main>
+</body>
+</html>

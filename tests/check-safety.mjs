@@ -205,6 +205,16 @@ const html = readFileSync(join(ROOT, "index.html"), "utf8");
     ["deletion", /Delete my account/], ["report and block", /Report[\s\S]*Block/], ["contact", /Contact/]]) {
     check(`privacy.html covers ${what}`, re.test(pp));
   }
+  // Terms of Use and Support: same static, script-free shape (App Store 1.2 asks
+  // that users agree to terms with zero tolerance for abuse; 5.1 a support URL).
+  for (const f of ["terms.html", "support.html"]) {
+    const t = readFileSync(join(ROOT, f), "utf8");
+    check(`${f} runs no script (CSP script-src 'none', no <script>)`, !/<script/i.test(t) && /script-src 'none'/.test(t));
+    check(`the app's menu links ${f}`, new RegExp(`class="drawer-legal"[^\\n]*href="${f.replace(".", "\\.")}"`).test(html));
+  }
+  const terms = readFileSync(join(ROOT, "terms.html"), "utf8");
+  check("terms.html says zero tolerance, and names Report and Block", /zero tolerance/i.test(terms) && /Report[\s\S]*Block/.test(terms));
+  check("signing in states agreement to the terms", /id="acctSendBtn"[^\n]*\n\s*<p class="acct-legal">[^\n]*href="terms\.html"/.test(html));
   check("the app links the privacy policy from Privacy & Safety", /href="privacy\.html"/.test(html) && /id="safetyBtn"[^>]*openSafety\(\)/.test(html));
   check("Report and Privacy & Safety are real overlays (_escClosers)", /\["reportBg",function\(\)\{closeReport\(\);\}\]/.test(html) && /\["safetyBg",function\(\)\{closeSafety\(\);\}\]/.test(html));
   check("deleting an account deletes its blocks (0014's delete_my_account)",
