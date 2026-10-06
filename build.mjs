@@ -49,7 +49,8 @@ async function run() {
 
   // Static assets copied verbatim.
   // …and the Fight Lab's page, modules and data, which the app links to.
-  for (const f of ["manifest.json", "icon-192-v2.png", "icon-512-v2.png", "lab.html",
+  for (const f of ["manifest.json", "icon-192-v2.png", "icon-512-v2.png", "apple-touch-icon-180.png", "lab.html",
+                   "privacy.html", "terms.html", "support.html",
                    "odds-series.json", "intel.json", "events-extra.json"]) {
     if (existsSync(f)) await cp(f, `${OUT}/${f}`);
   }

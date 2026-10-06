@@ -215,6 +215,31 @@ const html = readFileSync(join(ROOT, "index.html"), "utf8");
   const terms = readFileSync(join(ROOT, "terms.html"), "utf8");
   check("terms.html says zero tolerance, and names Report and Block", /zero tolerance/i.test(terms) && /Report[\s\S]*Block/.test(terms));
   check("signing in states agreement to the terms", /id="acctSendBtn"[^\n]*\n\s*<p class="acct-legal">[^\n]*href="terms\.html"/.test(html));
+  // Opening a legal page from the menu is a navigation through sw.js; it must be
+  // cached under its own key, never over the app shell './' (Codex on #289), or
+  // an offline launch opens the terms instead of the app. Runs the real handler.
+  {
+    const vm = await import("node:vm");
+    const listeners = {}, puts = [];
+    const ctx = {
+      URL, Promise, console,
+      self: { location: { origin: "https://x.test" }, addEventListener: (t, f) => { listeners[t] = f; }, skipWaiting() {} },
+      caches: { open: async () => ({ put: (k) => { puts.push(k); } }), match: async () => null },
+      fetch: async () => ({ ok: true, clone() { return this; } }),
+    };
+    vm.runInNewContext(readFileSync(join(ROOT, "sw.js"), "utf8"), ctx);
+    const nav = async (p) => {
+      puts.length = 0; let pr;
+      listeners.fetch({ request: { method: "GET", mode: "navigate", url: "https://x.test/ufc-dashboard/" + p }, respondWith: (x) => { pr = x; } });
+      await pr; await new Promise((r) => setTimeout(r, 0));
+      return puts.slice();
+    };
+    for (const f of ["privacy.html", "terms.html", "support.html"]) {
+      const keys = await nav(f);
+      check(`sw.js caches ${f} under its own key, not over the app shell`, keys.length === 1 && keys[0] === "./" + f);
+    }
+    check("...and the app itself is still cached as the shell './'", JSON.stringify(await nav("")) === '["./"]');
+  }
   check("the app links the privacy policy from Privacy & Safety", /href="privacy\.html"/.test(html) && /id="safetyBtn"[^>]*openSafety\(\)/.test(html));
   check("Report and Privacy & Safety are real overlays (_escClosers)", /\["reportBg",function\(\)\{closeReport\(\);\}\]/.test(html) && /\["safetyBg",function\(\)\{closeSafety\(\);\}\]/.test(html));
   check("deleting an account deletes its blocks (0014's delete_my_account)",
