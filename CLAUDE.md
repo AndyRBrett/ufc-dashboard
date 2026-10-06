@@ -1289,6 +1289,18 @@ select m, ok from (values
 ) t(m, ok);
 ```
 
+**0017 went live on 2026-10-06**, applied through the Supabase MCP connector
+and checked with the query above, plus a rolled-back test pick on the next
+card read as `anon`: hidden on the upcoming card, every pick on a past card
+visible. If the connector hangs on a migration (it did, three times, each
+rolled back cleanly), look for `DROP`: it stalled on 0017's `DROP POLICY`.
+For a policy only, apply the same end state without it: `ALTER POLICY … USING
+(…)` changes an existing policy in place, and `create or replace` / `create
+policy` / `grant` go through; split the file into small steps and re-run the
+check after the last one. Any other `DROP` (a constraint, as in 0007; a
+trigger or function) has no in-place equivalent, so don't rewrite it: run that
+migration file as-is in the dashboard's SQL Editor, then run the check.
+
 Server functions read `picks` with the **service key** (`check:picklock`
 asserts it for every function that reads them): since 0017 an anon read inside
 a bout's lock grace returns nobody, and a result push built from that would be
