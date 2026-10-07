@@ -61,6 +61,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:photos` | a fighter photo lookup missing a disambiguated page, showing a same-named non-fighter's face, caching a miss forever, or a view without photos |
 | `npm run check:safety` | a report readable or filed as someone else, a block the blocked person can see or undo, a blocked pair able to challenge each other, the app showing a blocked player's challenges, or the privacy policy unlinked |
 | `npm run check:delete` | Delete my account leaving the login, a challenge or any other row of the caller's behind, or touching anyone else's |
+| `npm run check:invites` | a founder badge on an anonymous or post-cutoff account, an invite claimed twice, by an old account, as someone else or by writing the tables, a throwaway sign-up counted as playing, or an invite surviving Delete my account |
 | `npm run check:migrations` | a migration that can't apply to what the ones before it built, the rebuilt core tables drifting from production's catalog, or `config.toml`'s JWT settings drifting from the deploy |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
@@ -1306,7 +1307,8 @@ select m, ok from (values
   ('0017 picks hidden until lock', exists(select 1 from pg_policies where tablename='picks' and policyname='picks_select' and qual like '%pick_lock_for%')),
   ('0017 nickname_taken',          exists(select 1 from pg_proc where proname='nickname_taken')),
   ('0018 room passwords',          exists(select 1 from pg_proc where proname='set_room_pass')),
-  ('0019 notification kinds',      exists(select 1 from information_schema.columns where table_name='user_prefs' and column_name='notif_off'))
+  ('0019 notification kinds',      exists(select 1 from information_schema.columns where table_name='user_prefs' and column_name='notif_off')),
+  ('0020 founders and invites',    exists(select 1 from pg_proc where proname='claim_invite'))
 ) t(m, ok);
 ```
 
@@ -1364,6 +1366,24 @@ applied before an app that calls it ships. A deleted account's access JWT stays
 valid until it expires, so the `refuse_deleted_account` trigger on every table the
 app writes as a user (a new one goes in its list too) refuses a write whose
 `auth.uid()` has no login left. `check:delete`.
+
+## Founding members and invite links (soft-launch prep)
+
+`0020_founders_invites.sql` and `// invites:start … :end` in `index.html`.
+**A founder stores nothing**: an email account whose `auth.users.created_at`
+is before `founding_cutoff()` (1 January 2027 ET; move it by re-running that
+function). Never put it in `user_prefs`: players write that table, so they could
+make themselves founders. The board's 🎖️ comes from `founders_among(uids)`.
+**Invites are new data**: `invite_codes` (one per account) and `invites` (one
+inviter per account, ever), written only by `my_invite()` / `claim_invite()`,
+which act as the caller. Only an account younger than `invite_new_days()` (14)
+can claim, so an existing player can't be re-credited; `?ref=` waits in
+`ufc_ref` until there is an email, like a room invite, and is read before the
+tap router rewrites the URL. `my_invite()` reports counts only, and "playing"
+is UFC picks on 2 past cards (send-push's `SOCIAL_MIN_CARDS` bar), so throwaway
+sign-ups don't count. Both tables are in `delete_my_account()`,
+`refuse_deleted_account`'s list and `privacy.html`. `check:invites` holds all of
+it. The migration is applied by hand.
 
 ## Other conventions
 

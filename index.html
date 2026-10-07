@@ -409,6 +409,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 .lb-nameline{display:flex;align-items:center;gap:6px;min-width:0}
 .lb-metaline{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;min-width:0}
 .lb-metaline:empty{display:none}
+.lb-founder{font-size:13px;line-height:1;flex:0 0 auto}
+.invite-stats{font-size:13px;color:var(--muted);margin:12px 0 0}
+.invite-founder{font-size:13px;margin:6px 0 0}
 .lb-name-txt{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
 .lb-you{font-size:9px;font-weight:700;background:var(--gold);color:var(--on-gold);border-radius:3px;padding:1px 4px;vertical-align:middle;letter-spacing:.04em;flex-shrink:0}
 .lb-edit-btn{background:none;border:none;cursor:pointer;padding:0 2px;font-size:13px;flex-shrink:0;color:var(--muted);line-height:1;border-radius:4px;transition:background .15s}
@@ -1927,6 +1930,16 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     <button class="nm-btn" id="termsAgreeBtn" onclick="termsAgree()">Agree and continue</button>
   </div>
 </div>
+<div class="nm-bg" id="inviteBg" onclick="if(event.target===this)closeInvite()">
+  <div class="nm-box" role="dialog" aria-modal="true" aria-labelledby="inviteTitle">
+    <div class="nm-top"><h3 id="inviteTitle">🎟️ Invite friends</h3><button class="nm-xbtn" onclick="closeInvite()" aria-label="Close">x</button></div>
+    <p>Picked Fight is better with your group. Send your link: anyone new who joins through it counts as yours.</p>
+    <input class="nm-input" id="inviteLink" type="text" readonly aria-label="Your invite link" onclick="this.select()">
+    <button class="nm-btn" id="inviteShareBtn" onclick="shareInvite()" disabled>Share my link</button>
+    <p class="invite-stats" id="inviteStats" aria-live="polite"></p>
+    <p class="invite-founder" id="inviteFounder"></p>
+  </div>
+</div>
 <div class="nm-bg" id="roomBg" onclick="if(event.target===this)closeRoomSheet()">
   <div class="nm-box" role="dialog" aria-modal="true" aria-labelledby="roomTitle">
     <div class="nm-top"><h3 id="roomTitle">👥 Rooms</h3><button class="nm-xbtn" onclick="closeRoomSheet()" aria-label="Close">x</button></div>
@@ -2087,6 +2100,10 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
         <button class="btn-more-item" id="roomsMenuBtn" onclick="closeMoreMenu();openRoomSheet()" title="Watch Party rooms: your group's own board">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           <span>Rooms</span>
+        </button>
+        <button class="btn-more-item" id="inviteMenuBtn" onclick="closeMoreMenu();openInvite()" title="Your invite link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+          <span>Invite friends</span>
         </button>
         <button class="btn-more-item" id="notifBell" onclick="closeMoreMenu();openNotifSheet()" title="Choose which notifications you get">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -5233,6 +5250,8 @@ function _recordTerms(){
 function _postSignIn(prevId,email){
   _roomsAfterSignIn();
   if(email){try{var s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");if(s&&!s.email){s.email=email;_saveSession(s);}}catch(e){}}
+  // After the email is saved: _claimInvite needs _sessEmail() to be true.
+  if(typeof _claimInvite==="function")_claimInvite();   // finish an invite link that arrived before the email
   var changed=(prevId&&USER_ID&&prevId!==USER_ID)||(!userName&&!!USER_ID);
   // Cleared HERE rather than in finish(): a different account is a different
   // set of answers, and finish() does not run until the profile fetch settles.
@@ -7463,7 +7482,9 @@ var WHATS_NEW=[
   {id:"2026-10-29-terms-tick",emoji:"✅",title:"A quick tick before you sign in",
    desc:"Signing in now asks you to confirm you're 18 or older and agree to the Terms of Use, and Support has a real email address. Two themes have new names: Picked Fight (the default) and Noche."},
   {id:"2026-10-30-notif-kinds",emoji:"🔔",title:"Pick which notifications you get",
-   desc:"Menu → Notifications now has a switch for each kind: card starting, results, fight changes, the Friday brief, trash talk, challenges, nudges and friends' picks. Turn off what you don't want; your choices follow your account."}
+   desc:"Menu → Notifications now has a switch for each kind: card starting, results, fight changes, the Friday brief, trash talk, challenges, nudges and friends' picks. Turn off what you don't want; your choices follow your account."},
+  {id:"2026-10-31-invites-founders",emoji:"🎟️",title:"Invite friends, and founding members",
+   desc:"Menu → Invite friends gives you your own link to send your group, and shows how many joined through it. And everyone with an account before 1 January 2027 is a 🎖️ founding member: look for the badge on Ranks."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -10305,6 +10326,117 @@ function roomTapeEl(rows,room,belt,ev){
   catch(e){console.warn("[tape]",e);return null;}
 }
 // rooms:end
+// invites:start
+// Soft-launch prep (0020_founders_invites.sql). Two things, both readers of the
+// database, neither touching scoring:
+//  - Invite links: ⋯ More → Invite friends gives an account its own ?ref= link.
+//    A new account that arrived through one claims it once it has an email
+//    (claim_invite, after sign-in). The code waits in ufc_ref until then, like a
+//    room invite waits in ufc_room_join; it is kept only through a network
+//    error, so a dead or refused code never re-tries forever.
+//  - Founding members: a 🎖️ on the board for accounts made before the cutoff,
+//    from founders_among (nothing stored; the database derives it).
+// Invite text and counts go in with textContent.
+var INVITE_CODE_RE=/^[0-9A-HJKMNP-TV-Z]{10}$/;
+var _inviteInfo=null,_foundersSeen={};
+function _inviteUrl(code){return location.origin+location.pathname+"?ref="+encodeURIComponent(code);}
+function _invitesBoot(){
+  try{
+    var u=new URL(location.href),r=u.searchParams.get("ref");
+    if(r!=null){
+      u.searchParams.delete("ref");
+      history.replaceState(null,"",u.pathname+(u.searchParams.toString()?"?"+u.searchParams.toString():"")+u.hash);
+      var code=String(r).toUpperCase().trim();
+      if(INVITE_CODE_RE.test(code))localStorage.setItem("ufc_ref",JSON.stringify({code:code,at:Date.now()}));
+    }
+  }catch(e){}
+  _authReady.then(_claimInvite);
+}
+function _claimInvite(){
+  var s=null;try{s=JSON.parse(localStorage.getItem("ufc_ref")||"null");}catch(e){}
+  if(!s||!s.code)return Promise.resolve(null);
+  var forget=function(){try{localStorage.removeItem("ufc_ref");}catch(e){}};
+  if(!INVITE_CODE_RE.test(s.code)||Date.now()-(s.at||0)>30*864e5){forget();return Promise.resolve(null);}
+  if(!_sessEmail())return Promise.resolve(null);   // claimed after sign-in (_postSignIn)
+  return _roomRpc("claim_invite",{p_code:s.code}).then(function(st){
+    if(/^(ok|already|self|unknown|existing)$/.test(String(st||"")))forget();
+    if(st==="ok")toast("Welcome! Your friend's invite counted 🎟️");
+    return st;
+  }).catch(function(){return null;});
+}
+function openInvite(){
+  if(!_sessEmail()){
+    openAcct();
+    var d=document.getElementById("acctDesc");
+    if(d)d.textContent="Link an email to get your invite link. Linking keeps your picks.";
+    return;
+  }
+  document.getElementById("inviteBg").classList.add("open");
+  _inviteInfo=null;_renderInvite();
+  _roomRpc("my_invite",{}).then(function(j){_inviteInfo=j||{error:true};_renderInvite();})
+    .catch(function(){_inviteInfo={error:true};_renderInvite();});
+}
+function closeInvite(){document.getElementById("inviteBg").classList.remove("open");}
+function _renderInvite(){
+  var j=_inviteInfo,link=document.getElementById("inviteLink"),st=document.getElementById("inviteStats"),
+      fo=document.getElementById("inviteFounder"),btn=document.getElementById("inviteShareBtn");
+  if(!link)return;
+  var ok=!!(j&&j.code&&INVITE_CODE_RE.test(j.code));
+  link.value=ok?_inviteUrl(j.code):"";
+  link.placeholder=j&&j.error?"Couldn't make your link":"Making your link…";
+  btn.disabled=!ok;
+  if(!j)st.textContent="";
+  else if(j.error)st.textContent="Couldn't load your invite link. Try again in a moment.";
+  else if(!j.joined)st.textContent="Nobody has joined through your link yet.";
+  else st.textContent=j.joined+" joined through your link · "+(j.playing||0)+" playing (picks on 2 cards)";
+  fo.textContent="";
+  if(j&&!j.error){
+    if(j.founder)fo.textContent="🎖️ You're a founding member.";
+    else if(j.founding_until&&Date.parse(j.founding_until)>Date.now()){
+      var d=new Date(j.founding_until).toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric",timeZone:"America/New_York"});
+      fo.textContent="🎖️ Accounts made before "+d+" are founding members.";
+    }
+  }
+}
+function shareInvite(){
+  var j=_inviteInfo;if(!j||!j.code)return;
+  var url=_inviteUrl(j.code),text="Pick fights with me on Picked Fight 🥊";
+  if(navigator.share){navigator.share({title:"Picked Fight",text:text,url:url}).catch(function(){});return;}
+  var done=function(){toast("Invite link copied");};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(done,function(){});
+  else{var l=document.getElementById("inviteLink");if(l){l.select();try{document.execCommand("copy");done();}catch(e){}}}
+}
+// The board's 🎖️ (not 🥇: that is the rank-1 medal): rows carry data-uid; ask once per uid per session.
+function _founderChip(line){
+  if(line.querySelector(".lb-founder"))return;
+  var c=document.createElement("span");c.className="lb-founder";c.textContent="🎖️";
+  c.title="Founding member";c.setAttribute("aria-label","Founding member");
+  line.insertBefore(c,line.children[1]||null);
+}
+function _markFounders(root){
+  if(!root)return;
+  var lines=root.querySelectorAll("[data-uid]"),need=[];
+  for(var i=0;i<lines.length;i++){
+    var uid=lines[i].dataset.uid;
+    if(_foundersSeen[uid]===true)_founderChip(lines[i]);
+    else if(!(uid in _foundersSeen)&&need.indexOf(uid)<0)need.push(uid);
+  }
+  if(!need.length)return;
+  need=need.slice(0,500);
+  need.forEach(function(u){_foundersSeen[u]=false;});
+  fetch(SUPABASE_URL+"/rest/v1/rpc/founders_among",{method:"POST",headers:_sbHeaders(),body:JSON.stringify({p_ids:need})})
+    .then(function(r){return r.ok?r.json():[];})
+    .then(function(ids){
+      (Array.isArray(ids)?ids:[]).forEach(function(x){
+        var id=typeof x==="string"?x:(x&&x.founders_among);
+        if(id)_foundersSeen[id]=true;
+      });
+      var ls=root.querySelectorAll("[data-uid]");
+      for(var k=0;k<ls.length;k++)if(_foundersSeen[ls[k].dataset.uid]===true)_founderChip(ls[k]);
+    })
+    .catch(function(){need.forEach(function(u){delete _foundersSeen[u];});});
+}
+// invites:end
 // sports:start
 // Sport switcher: UFC plus whatever promotions the curated feed publishes
 // (events-extra.json: PFL first, from extra.py). Hidden entirely until the
@@ -10984,6 +11116,7 @@ function loadLeaderboard(isLive){
       var nameTxt=document.createElement("span");nameTxt.className="lb-name-txt";
       nameTxt.textContent=(u.nickname&&u.nickname.trim())?u.nickname:(u.user_id?"🥊 "+u.user_id.slice(0,4):"Anon");
       nameLine.appendChild(nameTxt);
+      if(u.user_id)nameLine.dataset.uid=u.user_id;   // the 🎖️ founder badge (_markFounders)
       if(belt&&belt.holderBase&&_lbBaseName(u.nickname)===belt.holderBase){
         var beltChip=document.createElement("span");beltChip.className="lb-belt-chip";
         beltChip.title="Lineal champion — outscore them on a card to take the belt";
@@ -11138,6 +11271,7 @@ function loadLeaderboard(isLive){
       body.appendChild(wrap);
     });
     _lbSorted=sorted;
+    if(typeof _markFounders==="function")_markFounders(body);
     // Card recap — reopen the latest finished card's recap from the board.
     var _rcDate=latestRecapDate(rows);
     if(_rcDate){
@@ -11937,6 +12071,7 @@ var _escClosers=[
   ["termsBg",function(){closeTermsSheet();}],
   ["notifBg",function(){closeNotifSheet();}],
   ["roomBg",function(){closeRoomSheet();}],
+  ["inviteBg",function(){closeInvite();}],
   ["nmBg",function(){closeNameModal();}],
   ["install-overlay",function(){closeInstall();}],
   ["fnMode",function(){closeFN();}],
@@ -12852,6 +12987,7 @@ sportsBoot();
 // Blocks: adopt the server's list (and send up any made offline).
 syncBlocks();
 // Rooms read ?join= before the tap router below rewrites the URL.
+_invitesBoot();   // before the tap router below rewrites the URL, like ?join=
 _roomsBoot();
 (function(){
   var params=new URLSearchParams(window.location.search);

@@ -64,7 +64,7 @@ export default [
   {
     // Browser gates: bodies passed to page.evaluate() run inside the app and
     // name its globals, which no static scope here can know.
-    files: ["tests/check-ai-history.mjs", "tests/check-guide.mjs", "tests/check-lab.mjs", "tests/check-safety.mjs",
+    files: ["tests/check-ai-history.mjs", "tests/check-guide.mjs", "tests/check-invites.mjs", "tests/check-lab.mjs", "tests/check-safety.mjs",
             "tests/check-sports.mjs", "tests/check-verdict.mjs", "tests/notification-tap.mjs"],
     rules: { "no-undef": "off" },
   },
