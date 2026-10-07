@@ -587,8 +587,11 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .btn-more-sep{height:1px;background:var(--border);margin:6px 8px}
 .btn-more-label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 12px 4px}
 .drawer-legal{font-size:12px;line-height:1.45;color:var(--muted);padding:14px 12px 0;margin:0}
-.drawer-legal a,.acct-legal a{color:inherit;text-decoration:underline}
+.drawer-legal a,.acct-legal a,.acct-agree a{color:inherit;text-decoration:underline}
 .acct-legal{font-size:12px;line-height:1.45;color:var(--muted);margin:10px 0 0;text-align:center}
+.acct-agree{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45;color:var(--muted);margin:2px 0 12px;text-align:left;cursor:pointer}
+.acct-agree input{flex:0 0 auto;width:20px;height:20px;margin:1px 0 0;accent-color:var(--red)}
+.acct-agree a{color:inherit;text-decoration:underline}
 /* Header: avatar (menu) on the left, search on the right. */
 .hdr-avatar{position:relative;width:44px;height:44px;border:none;background:none;padding:0;margin-left:-6px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:var(--text)}
 .hdr-avatar::before{content:"";position:absolute;width:36px;height:36px;border-radius:50%;background:var(--card2);border:1px solid var(--border2)}
@@ -1886,13 +1889,22 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     <div id="acctSignedRow" style="display:none;font-size:13px;color:var(--muted);margin:-6px 0 14px">Signed in as <b id="acctEmailCur" style="color:var(--text)"></b></div>
     <input class="nm-input" id="acctEmail" type="email" placeholder="you@email.com" aria-label="Email address" autocomplete="email" oninput="document.getElementById('acctErr').style.display='none'">
     <div class="nm-err" id="acctErr"></div>
+    <label class="acct-agree"><input type="checkbox" id="acctAgree" onchange="document.getElementById('acctErr').style.display='none'"><span>I'm 18 or older and I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>, including zero tolerance for abusive content and abusive players.</span></label>
     <button class="nm-btn" id="acctSendBtn" onclick="acctSend()">Email me a code</button>
-    <p class="acct-legal">By signing in you confirm you're 17 or older and agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
     <div id="acctCodeWrap" style="display:none">
       <input class="nm-input" id="acctCode" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="Code from email" maxlength="10" aria-label="Verification code from email" style="margin-top:12px" oninput="document.getElementById('acctErr').style.display='none'">
       <button class="nm-btn" id="acctVerifyBtn" onclick="acctVerify()">Verify code</button>
       <button class="nm-del-link" onclick="acctSend()">Resend code</button>
     </div>
+  </div>
+</div>
+<div class="nm-bg" id="termsBg" onclick="if(event.target===this)closeTermsSheet()">
+  <div class="nm-box" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
+    <div class="nm-top"><h3 id="termsTitle">Before your next pick</h3><button class="nm-xbtn" onclick="closeTermsSheet()" aria-label="Close">x</button></div>
+    <p>Picked Fight now asks every account to confirm this once.</p>
+    <label class="acct-agree"><input type="checkbox" id="termsAgree" onchange="document.getElementById('termsErr').style.display='none'"><span>I'm 18 or older and I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>, including zero tolerance for abusive content and abusive players.</span></label>
+    <div class="nm-err" id="termsErr"></div>
+    <button class="nm-btn" id="termsAgreeBtn" onclick="termsAgree()">Agree and continue</button>
   </div>
 </div>
 <div class="nm-bg" id="roomBg" onclick="if(event.target===this)closeRoomSheet()">
@@ -2076,7 +2088,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
         <div class="btn-more-label">Theme</div>
         <button class="btn-more-item theme-item" data-theme="octagon" onclick="setTheme('octagon')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#0f0f14 55%,#e8192c 55%)"></span>
-          <span>Fight Cards</span><span class="theme-check">&#10003;</span>
+          <span>Picked Fight</span><span class="theme-check">&#10003;</span>
         </button>
         <button class="btn-more-item theme-item" data-theme="neon" onclick="setTheme('neon')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#0b0e14 45%,#16e0cf 45%,#16e0cf 72%,#f23bd4 72%)"></span>
@@ -2090,7 +2102,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
              chip matches the bunting the theme hangs under the header. -->
         <button class="btn-more-item theme-item" data-theme="noche" onclick="setTheme('noche')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#1e8a53 0 33.34%,#f2e3c4 33.34% 66.67%,#e0401c 66.67%)"></span>
-          <span>UFC Noche</span><span class="theme-check">&#10003;</span>
+          <span>Noche</span><span class="theme-check">&#10003;</span>
         </button>
         <button class="btn-more-item theme-item" data-theme="silver" onclick="setTheme('silver')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#e9eef2 0 34%,#0071ce 34% 64%,#c8102e 64% 84%,#0d1418 84%)"></span>
@@ -2287,6 +2299,7 @@ try{
 }catch(e){}
 var _authReady=_ensureAuth().catch(function(){var id=null;try{id=localStorage.getItem("ufc_uid");}catch(e){}if(!id){id=(typeof crypto!=="undefined"&&crypto.randomUUID)?crypto.randomUUID():"u"+Math.random().toString(36).slice(2)+Date.now().toString(36);try{localStorage.setItem("ufc_uid",id);}catch(e){}}USER_ID=id;_sbToken=null;return USER_ID;});
 _authReady.then(function(){if(_hashSignIn&&typeof _postSignIn==="function")_postSignIn(_hashPrevId,null);});
+_authReady.then(function(){if(!_hashSignIn&&typeof _checkTerms==="function")_checkTerms();});
 var VAPID_PUBLIC_KEY="BDsk51TS3jHISYUwDIyiAayIq5-W1U8RqZsBdAbIZ45aKurpDIwIsCjImxF8g5zUQnIhn2kIIWTYf6BbNA_swGU";
 var userEmoji="🥊";
 try{userEmoji=localStorage.getItem("ufc_emoji")||"🥊";}catch(e){}
@@ -4938,7 +4951,12 @@ function closeNameModal(){
 // held pick, so a later sign-in can't quietly make a pick the user walked away from.
 var _acctHoldsPick=false;
 function _pickNeedsAccount(cb){
-  if(_sessEmail())return false;
+  if(_sessEmail()){
+    if(!_termsNeeded)return false;
+    window._pp=cb||null;_termsHoldsPick=true;
+    openTermsSheet();
+    return true;
+  }
   window._pp=cb||null;_acctHoldsPick=true;
   openAcct();
   document.getElementById("acctTitle").textContent="Sign In to Pick";
@@ -5092,6 +5110,7 @@ function openAcct(){
   document.getElementById("acctCodeWrap").style.display="none";
   document.getElementById("acctEmail").value="";
   document.getElementById("acctCode").value="";
+  document.getElementById("acctAgree").checked=false;
   document.getElementById("acctBg").classList.add("open");
 }
 function closeAcct(){document.getElementById("acctBg").classList.remove("open");if(_acctHoldsPick){_acctHoldsPick=false;window._pp=null;}}
@@ -5099,6 +5118,9 @@ function acctSend(){
   var email=(document.getElementById("acctEmail").value||"").trim().toLowerCase();
   var errEl=document.getElementById("acctErr");errEl.style.display="none";
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){errEl.textContent="Enter a valid email";errEl.style.display="block";return;}
+  // The Terms tap is required (App Store guideline 1.2): no code is sent until
+  // the box is ticked, and the acceptance is recorded once the code verifies.
+  if(!document.getElementById("acctAgree").checked){errEl.textContent="Tick the box to agree to the Terms first";errEl.style.display="block";return;}
   var btn=document.getElementById("acctSendBtn");btn.disabled=true;btn.textContent="Sending…";
   var done=function(type){
     _acctPending={email:email,type:type};
@@ -5142,6 +5164,56 @@ function acctVerify(){
     })
     .catch(function(){btn.disabled=false;btn.textContent="Verify code";errEl.textContent="Wrong or expired code — try again";errEl.style.display="block";});
 }
+// Which Terms the account agreed to, and when: kept on this device and on the
+// account's own login (Supabase user metadata, owner-only, erased with the
+// login by delete_my_account). Bump TERMS_VERSION when terms.html changes in
+// substance, so the next sign-in records the new version.
+var TERMS_VERSION="2026-10-07";
+// Accounts signed in before the tick existed: the boot check reads the login's
+// metadata, and only a positive "no acceptance of this version" sets
+// _termsNeeded (an unreadable answer locks nobody out). Picks then wait on the
+// one-time Terms sheet, the same way they wait on sign-in.
+var _termsNeeded=false;
+function _termsLocalOk(){try{var t=JSON.parse(localStorage.getItem("ufc_terms")||"null");return !!t&&t.v===TERMS_VERSION;}catch(e){return false;}}
+function _checkTerms(){
+  if(!_sbToken||!_sessEmail()||_termsLocalOk())return Promise.resolve();
+  return fetch(SUPABASE_URL+"/auth/v1/user",{headers:_sbHeaders()}).then(function(r){return r.ok?r.json():null;}).then(function(u){
+    if(!u||typeof u!=="object"||Array.isArray(u)||!u.id)return;
+    var md=u.user_metadata||{};
+    if(md.terms_version===TERMS_VERSION){
+      try{localStorage.setItem("ufc_terms",JSON.stringify({v:TERMS_VERSION,at:md.terms_accepted_at||""}));}catch(e){}
+      return;
+    }
+    _termsNeeded=true;
+  }).catch(function(){});
+}
+function openTermsSheet(){
+  document.getElementById("termsAgree").checked=false;
+  document.getElementById("termsErr").style.display="none";
+  document.getElementById("termsBg").classList.add("open");
+}
+function closeTermsSheet(){document.getElementById("termsBg").classList.remove("open");if(_termsHoldsPick){_termsHoldsPick=false;window._pp=null;}}
+var _termsHoldsPick=false;
+function termsAgree(){
+  if(!document.getElementById("termsAgree").checked){var e=document.getElementById("termsErr");e.textContent="Tick the box to agree to the Terms first";e.style.display="block";return;}
+  _termsNeeded=false;_recordTerms();
+  var cb=window._pp;_termsHoldsPick=false;window._pp=null;
+  document.getElementById("termsBg").classList.remove("open");
+  toast("Thanks — you're all set");
+  if(cb)checkName(cb);
+}
+function _recordTerms(){
+  var at=new Date().toISOString();
+  try{localStorage.setItem("ufc_terms",JSON.stringify({v:TERMS_VERSION,at:at}));}catch(e){}
+  if(!_sbToken)return Promise.resolve();
+  // _accountToken: a token minted before an email was linked still says
+  // anonymous; refresh it first so the write lands on the linked account.
+  return _accountToken().then(function(){
+    return fetch(SUPABASE_URL+"/auth/v1/user",{method:"PUT",headers:_sbHeaders(),
+      body:JSON.stringify({data:{terms_version:TERMS_VERSION,terms_accepted_at:at}})});
+  }).then(function(r){if(r&&!r.ok)throw new Error("terms "+r.status);})
+    .catch(function(e){console.error("terms record failed",e);});
+}
 function _postSignIn(prevId,email){
   _roomsAfterSignIn();
   if(email){try{var s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");if(s&&!s.email){s.email=email;_saveSession(s);}}catch(e){}}
@@ -5155,6 +5227,9 @@ function _postSignIn(prevId,email){
   if(changed){_prefsTouched={};_prefsPending=null;}
   var finish=function(){
     _syncAcctBtn();
+    // Every completed sign-in (code or magic link) passed the Terms tick in
+    // acctSend before its email went out, so record it here, once, for both.
+    _termsNeeded=false;_recordTerms();
     if(window._pp&&userName){window._pp();window._pp=null;}
     else if(window._pp)checkName(window._pp);   // a new account names itself, then the tapped pick lands
     syncAllPicks();           // merge this device's local picks into the signed-in identity
@@ -7272,7 +7347,9 @@ var WHATS_NEW=[
   {id:"2026-10-29-picked-fight",emoji:"🥊",title:"We're Picked Fight now",
    desc:"Same game, same picks, same leaderboard, new name. If you added the app to your Home Screen, it keeps working; re-add it from the Share menu to get the new name and icon."},
   {id:"2026-10-29-sport-picks",emoji:"🌍",title:"PFL, RIZIN and DWCS pick like UFC",
-   desc:"Other promotions now get the same Make your picks button, the same Picks tab sheet and live results that show up while the app is open, no reopen needed."}
+   desc:"Other promotions now get the same Make your picks button, the same Picks tab sheet and live results that show up while the app is open, no reopen needed."},
+  {id:"2026-10-29-terms-tick",emoji:"✅",title:"A quick tick before you sign in",
+   desc:"Signing in now asks you to confirm you're 18 or older and agree to the Terms of Use, and Support has a real email address. Two themes have new names: Picked Fight (the default) and Noche."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -11743,6 +11820,7 @@ var _escClosers=[
   ["statsModal",function(){closeModal();}],
   ["delBg",function(){closeDeleteConfirm();}],
   ["acctBg",function(){closeAcct();}],
+  ["termsBg",function(){closeTermsSheet();}],
   ["roomBg",function(){closeRoomSheet();}],
   ["nmBg",function(){closeNameModal();}],
   ["install-overlay",function(){closeInstall();}],

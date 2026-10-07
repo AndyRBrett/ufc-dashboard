@@ -120,12 +120,18 @@ const html = readFileSync(join(ROOT, "index.html"), "utf8");
         { id: "c-bob", challenger_id: "u-bob", challenger_name: "Bob", target_id: "u-andy", target_name: "🥊 Andy", event_date: "2099-01-01", event_name: "UFC 999", f1: null, f2: null, stake: "Dinner", status: "pending", created_at: "2026-09-30T00:00:00Z" },
         { id: "c-carol", challenger_id: "u-carol", challenger_name: "Carol", target_id: "u-andy", target_name: "🥊 Andy", event_date: "2099-01-01", event_name: "UFC 999", f1: null, f2: null, stake: "Lunch", status: "pending", created_at: "2026-09-30T00:00:00Z" },
       ];
+      let authUser = null;   // what GET /auth/v1/user answers (null: the default "[]")
       await page.route(/supabase\.co/, (route) => {
         const req = route.request(), url = decodeURIComponent(req.url()), m = req.method();
         if (m !== "GET" && m !== "HEAD" && m !== "OPTIONS") writes.push({ m, url, body: req.postData() });
         let body = "[]";
         if (/\/rest\/v1\/user_blocks\?select=/.test(url) && m === "GET") body = JSON.stringify([{ blocked_id: "u-bob", blocked_name: "Bob" }]);
         else if (/\/rest\/v1\/challenges\?/.test(url) && m === "GET") body = JSON.stringify(CHALS);
+        else if (/\/auth\/v1\/user/.test(url) && m === "GET" && authUser) body = JSON.stringify(authUser);
+        if (/\/auth\/v1\/verify/.test(url)) {
+          route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ access_token: "tok2", refresh_token: "r2", expires_in: 3600, user: { id: "u-andy", email: "andy@example.com" } }) });
+          return;
+        }
         route.fulfill({ status: m === "POST" ? 201 : 200, contentType: "application/json", body: m === "POST" || m === "DELETE" ? "" : body });
       });
       await page.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 });
@@ -192,6 +198,67 @@ const html = readFileSync(join(ROOT, "index.html"), "utf8");
       check("...and Unblock removes them here and on the server", !!del && /blocker_id=eq\.u-andy/.test(del.url) && left.split("|").length === 1);
       await page.keyboard.press("Escape");
       check("Escape closes Privacy & Safety (it's a real overlay)", await page.evaluate(() => !document.getElementById("safetyBg").classList.contains("open")));
+      // The Terms tap (App Store 1.2): no code is sent until the box is ticked,
+      // and a verified sign-in records the version and time on the account.
+      await page.evaluate(() => openAcct());
+      check("the sign-in sheet opens with the Terms box unticked", await page.evaluate(() => document.getElementById("acctAgree").checked === false));
+      await page.fill("#acctEmail", "andy@example.com");
+      writes.length = 0;
+      await page.click("#acctSendBtn");
+      await page.waitForTimeout(150);
+      const blocked = await page.evaluate(() => ({ err: document.getElementById("acctErr").textContent, shown: document.getElementById("acctErr").style.display, code: document.getElementById("acctCodeWrap").style.display }));
+      check("...and without the tick no code is requested", !writes.some((w) => /\/auth\/v1\//.test(w.url)) && blocked.shown === "block" && /Terms/.test(blocked.err) && blocked.code === "none");
+      await page.check("#acctAgree");
+      await page.click("#acctSendBtn");
+      await page.waitForFunction(() => document.getElementById("acctCodeWrap").style.display === "block", null, { timeout: 5000 }).catch(() => {});
+      check("...with it, the code is requested", writes.some((w) => /\/auth\/v1\/(otp|user)/.test(w.url)));
+      writes.length = 0;
+      await page.fill("#acctCode", "123456");
+      await page.click("#acctVerifyBtn");
+      await page.waitForFunction(() => { try { return !!JSON.parse(localStorage.getItem("ufc_terms") || "null"); } catch (e) { return false; } }, null, { timeout: 5000 }).catch(() => {});
+      await page.waitForTimeout(300);
+      const local = await page.evaluate(() => ({ t: JSON.parse(localStorage.getItem("ufc_terms") || "null"), v: TERMS_VERSION }));
+      const rec = writes.filter((w) => w.m === "PUT" && /\/auth\/v1\/user/.test(w.url)).map((w) => { try { return JSON.parse(w.body); } catch (e) { return {}; } }).find((b) => b && b.data && b.data.terms_version);
+      check("a verified sign-in records the Terms version and time on this device", !!local.t && local.t.v === local.v && !isNaN(Date.parse(local.t.at)));
+      check("...and on the account's own login (user metadata)", !!rec && rec.data.terms_version === local.v && rec.data.terms_accepted_at === local.t.at);
+      // A sign-in completed by the emailed magic link (the boot hash callback)
+      // goes through the same _postSignIn, so it records the acceptance too.
+      writes.length = 0;
+      await page.evaluate(() => { localStorage.removeItem("ufc_terms"); _postSignIn(USER_ID, null); });
+      await page.waitForTimeout(400);
+      check("a magic-link sign-in records the acceptance too",
+        writes.some((w) => w.m === "PUT" && /\/auth\/v1\/user/.test(w.url) && /terms_version/.test(w.body || "")) &&
+        await page.evaluate(() => _termsLocalOk()));
+
+      // An account signed in before the tick existed: its login has no
+      // acceptance of this version, so the next pick waits on the Terms sheet.
+      authUser = { id: "u-andy", email: "andy@example.com", user_metadata: {} };
+      await page.evaluate(() => { localStorage.removeItem("ufc_terms"); _termsNeeded = false; window.__picked = 0; });
+      await page.evaluate(() => _checkTerms());
+      const gate = await page.evaluate(() => {
+        const held = _pickNeedsAccount(function () { window.__picked = 1; });
+        return { held, open: document.getElementById("termsBg").classList.contains("open"), picked: window.__picked };
+      });
+      check("an existing account without this Terms version is asked before its next pick", gate.needed !== false && gate.held === true && gate.open && gate.picked === 0);
+      writes.length = 0;
+      await page.click("#termsAgreeBtn");
+      check("...the sheet won't go without the tick", await page.evaluate(() => document.getElementById("termsBg").classList.contains("open") && window.__picked === 0) &&
+        !writes.some((w) => /terms_version/.test(w.body || "")));
+      await page.check("#termsAgree");
+      await page.click("#termsAgreeBtn");
+      await page.waitForTimeout(400);
+      const agreed = await page.evaluate(() => ({ open: document.getElementById("termsBg").classList.contains("open"), picked: window.__picked, needed: _termsNeeded, local: _termsLocalOk() }));
+      check("...with it, the acceptance is recorded and the held pick goes through",
+        !agreed.open && agreed.picked === 1 && !agreed.needed && agreed.local && writes.some((w) => w.m === "PUT" && /terms_version/.test(w.body || "")));
+      authUser = { id: "u-andy", email: "andy@example.com", user_metadata: { terms_version: await page.evaluate(() => TERMS_VERSION), terms_accepted_at: "2026-10-07T00:00:00Z" } };
+      await page.evaluate(() => { localStorage.removeItem("ufc_terms"); _termsNeeded = false; });
+      await page.evaluate(() => _checkTerms());
+      check("an account that already agreed to this version (on another phone) isn't asked again",
+        await page.evaluate(() => !_termsNeeded && _termsLocalOk() && _pickNeedsAccount(function () {}) === false));
+      authUser = null;
+      await page.evaluate(() => { localStorage.removeItem("ufc_terms"); _termsNeeded = false; });
+      await page.evaluate(() => _checkTerms());
+      check("an unreadable answer locks nobody out", await page.evaluate(() => !_termsNeeded));
       check("no page errors", errors.length === 0 || (console.error("    " + errors.join("\n    ")), false));
     } finally { await browser.close(); server.close(); }
   }
@@ -214,7 +281,9 @@ const html = readFileSync(join(ROOT, "index.html"), "utf8");
   }
   const terms = readFileSync(join(ROOT, "terms.html"), "utf8");
   check("terms.html says zero tolerance, and names Report and Block", /zero tolerance/i.test(terms) && /Report[\s\S]*Block/.test(terms));
-  check("signing in states agreement to the terms", /id="acctSendBtn"[^\n]*\n\s*<p class="acct-legal">[^\n]*href="terms\.html"/.test(html));
+  check("signing in asks for the Terms tick (18+, Terms and Privacy linked) right above the send button",
+    /<label class="acct-agree"><input type="checkbox" id="acctAgree"[^\n]*18 or older[^\n]*href="terms\.html"[^\n]*href="privacy\.html"[^\n]*<\/label>\n\s*<button class="nm-btn" id="acctSendBtn"/.test(html));
+  check("terms.html sets the age at 18", /at least 18 years old/.test(terms) && !/\b17\b/.test(terms.replace(/Effective[^<]*/, "")));
   // Opening a legal page from the menu is a navigation through sw.js; it must be
   // cached under its own key, never over the app shell './' (Codex on #289), or
   // an offline launch opens the terms instead of the app. Runs the real handler.

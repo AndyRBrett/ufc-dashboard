@@ -457,8 +457,8 @@ await asJwt(U4, false, `update picks set pick = 'hijack' where user_id = '${U3}'
 check("0015: an account still can't touch someone else's pick", (await one(`user_id = '${U3}'`)).pick === "acct b");
 await asJwt(U3, true, `delete from picks where user_id = '${U3}'`);
 check("0015: an anonymous session may still delete its own row", !(await one(`user_id = '${U3}'`)));
-check("app: a pick tap without an email opens Sign In to Pick, before the name prompt",
-  /function checkName\(cb\)\{if\(_pickNeedsAccount\(cb\)\)return;/.test(html) && /function _pickNeedsAccount\(cb\)\{\s*if\(_sessEmail\(\)\)return false;/.test(html));
+check("app: a pick tap without an email opens Sign In to Pick, before the name prompt (a signed-in account only waits on the Terms sheet, never on sign-in)",
+  /function checkName\(cb\)\{if\(_pickNeedsAccount\(cb\)\)return;/.test(html) && /function _pickNeedsAccount\(cb\)\{\s*if\(_sessEmail\(\)\)\{\s*if\(!_termsNeeded\)return false;\s*window\._pp=cb\|\|null;_termsHoldsPick=true;\s*openTermsSheet\(\);\s*return true;\s*\}/.test(html));
 check("app: lock, method, bonus and sport lock/method are gated too",
   /if\(!preds\[k\]\)return;\s*if\(_pickNeedsAccount\(null\)\)return;/.test(html) &&
   // Method goes through one setter (card row and FN Mode alike), gated before it writes.
