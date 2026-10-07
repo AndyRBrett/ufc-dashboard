@@ -5254,7 +5254,10 @@ function _postSignIn(prevId,email){
     // (or under none at all, before this sign-in produced one).
     _restoreRan=false;_restoreMyPicks();
     _prefsLoad(!changed);     // ...and restore that identity's toggles (never seed B from A)
-    if(changed)_notifOffTouched=false;_notifOffLoad();
+    // A different account never inherits the last one's switches: start from
+    // "all on" and take this account's own list, if it has one.
+    if(changed){_notifOffTouched=false;_notifKindSeq++;try{localStorage.removeItem("ufc_notif_off");}catch(e){}_renderNotifSheet();}
+    _notifOffLoad();
     // The browser's push subscription is still registered under the PREVIOUS
     // user_id. Until something re-registers it, account-targeted pushes keep
     // going to the old identity and the signed-in one gets none. _ensurePushFresh
@@ -5504,16 +5507,35 @@ var NOTIF_KINDS=[
 ];
 function _notifOff(){try{var a=JSON.parse(localStorage.getItem("ufc_notif_off")||"[]");return Array.isArray(a)?a.filter(function(k){return typeof k==="string";}):[];}catch(e){return [];}}
 function _notifOn(k){return _notifOff().indexOf(k)<0;}
-var _notifOffTouched=false;
-function _notifOffSet(list,fromServer){
+var _notifOffTouched=false,_notifKindQ=Promise.resolve(),_notifKindSeq=0;
+function _notifOffSet(list){
   try{localStorage.setItem("ufc_notif_off",JSON.stringify(list));}catch(e){}
-  if(!fromServer){_notifOffTouched=true;if(USER_ID)_prefsWrite({notif_off:list},USER_ID);}
   _renderNotifSheet();
+}
+// A switch changes ONE kind on the server (set_notif_kind, 0019), never the
+// whole list: a phone that hadn't seen another phone's change would otherwise
+// write it back. The reply is the account's whole list, adopted unless a newer
+// switch on this phone is still on its way. Writes go one at a time.
+function _notifKindWrite(k,enabled){
+  if(!USER_ID)return;
+  var seq=++_notifKindSeq,forId=USER_ID;
+  _notifKindQ=_notifKindQ.then(function(){
+    return _authReady.then(_accountToken).then(function(){
+      return fetch(SUPABASE_URL+"/rest/v1/rpc/set_notif_kind",{method:"POST",headers:_sbHeaders(),body:JSON.stringify({kind:k,enabled:enabled})});
+    }).then(function(r){
+      if(!r.ok)throw new Error("notif kind save "+r.status);
+      return r.json();
+    }).then(function(list){
+      if(seq===_notifKindSeq&&USER_ID===forId&&Array.isArray(list))_notifOffSet(list.filter(function(x){return typeof x==="string";}));
+    });
+  }).catch(function(e){console.error("notif kind save failed",e);});
 }
 function flipNotifKind(k){
   var off=_notifOff(),i=off.indexOf(k),kd=NOTIF_KINDS.filter(function(x){return x.k===k;})[0];
   if(i<0)off.push(k);else off.splice(i,1);
-  _notifOffSet(off,false);
+  _notifOffTouched=true;
+  _notifOffSet(off);
+  _notifKindWrite(k,i>=0);
   if(kd)toast(kd.t+(i<0?" off":" on"));
 }
 // The account's choice comes down on boot and after a sign-in; a switch
@@ -5526,7 +5548,7 @@ function _notifOffLoad(){
     return fetch(SUPABASE_URL+"/rest/v1/user_prefs?select=notif_off&user_id=eq."+encodeURIComponent(forId),{headers:_sbHeaders()});
   }).then(function(r){return r.ok?r.json():null;}).then(function(rows){
     if(USER_ID!==forId||_notifOffTouched||!Array.isArray(rows)||!rows[0]||!Array.isArray(rows[0].notif_off))return;
-    _notifOffSet(rows[0].notif_off.filter(function(k){return typeof k==="string";}),true);
+    _notifOffSet(rows[0].notif_off.filter(function(k){return typeof k==="string";}));
   }).catch(function(){});
 }
 function openNotifSheet(){_renderNotifSheet(true);document.getElementById("notifBg").classList.add("open");}
@@ -6527,8 +6549,8 @@ function checkNotifSchedule(){
     var dp=ev.date.split("-"),eto=etOffset(ev.date);
     function evTime(t){var p=(t||"0:0").split(":");return Date.UTC(+dp[0],+dp[1]-1,+dp[2],+p[0]+eto,+(p[1]||0),0);}
     var mainT=evTime(ev.time);var diff=mainT-now;
-    if(diff>0&&diff<=HOUR_MS&&!ev._notifMain){ev._notifMain=true;if(_notifOn("start"))setTimeout(function(){fireNotif("UFC Main Card Starting",ev.name+" main card begins in 30 min!");},Math.max(0,diff-30*MIN_MS));_triggerPush(ev.date,"main","🥊 "+ev.name.split(":")[0]+" — Main Card","Starting in under 1 hour. Lock in your picks!");}
-    if(ev.prelimTime){var preT=evTime(ev.prelimTime);var pd=preT-now;if(pd>0&&pd<=HOUR_MS&&!ev._notifPre){ev._notifPre=true;if(_notifOn("start"))setTimeout(function(){fireNotif("UFC Prelims Starting",ev.name+" prelims begin in 30 min!");},Math.max(0,pd-30*MIN_MS));_triggerPush(ev.date,"prelim","🥊 "+ev.name.split(":")[0]+" — Prelims","Starting in under 1 hour.");}}
+    if(diff>0&&diff<=HOUR_MS&&!ev._notifMain){ev._notifMain=true;if(_notifOn("start"))setTimeout(function(){if(_notifOn("start"))fireNotif("UFC Main Card Starting",ev.name+" main card begins in 30 min!");},Math.max(0,diff-30*MIN_MS));_triggerPush(ev.date,"main","🥊 "+ev.name.split(":")[0]+" — Main Card","Starting in under 1 hour. Lock in your picks!");}
+    if(ev.prelimTime){var preT=evTime(ev.prelimTime);var pd=preT-now;if(pd>0&&pd<=HOUR_MS&&!ev._notifPre){ev._notifPre=true;if(_notifOn("start"))setTimeout(function(){if(_notifOn("start"))fireNotif("UFC Prelims Starting",ev.name+" prelims begin in 30 min!");},Math.max(0,pd-30*MIN_MS));_triggerPush(ev.date,"prelim","🥊 "+ev.name.split(":")[0]+" — Prelims","Starting in under 1 hour.");}}
   });
 }
 setInterval(checkNotifSchedule,5*60*1000);

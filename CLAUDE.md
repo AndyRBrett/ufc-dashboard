@@ -910,7 +910,11 @@ expired token). `check:pushauth` runs the real handler and holds all of it.
 fight changes, the Friday brief, trash talk, challenges, nudges, friends'
 picks. Each is on until switched off. The account's list of kinds switched OFF
 lives in `user_prefs.notif_off` (`0019_notif_categories.sql`, applied by hand),
-so a new kind starts on for everyone. **send-push is the one place that honours
+so a new kind starts on for everyone. A switch changes **one kind** through the
+`set_notif_kind` RPC (same migration), never the whole list, so a phone that
+missed another phone's change can't put it back; the app adopts the merged list
+it returns, and a different account signing in starts from all on, never from
+the last account's list. **send-push is the one place that honours
 it** (`notifKind` maps a push type to its kind, `optedOut` reads who switched it
 off with the service key), so check-results' and send-reminders' pushes obey it
 too. A switched-off roast still lands in the in-app inbox: the switch is about
