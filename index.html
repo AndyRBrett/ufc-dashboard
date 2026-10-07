@@ -10595,29 +10595,34 @@ function renderSportBoard(gen){
 // in the feed minutes after each bout, and an app opened before the first bell
 // otherwise kept showing an unscored card until it was closed and reopened.
 // Nothing changes on screen unless the file did.
-var _sportFeedText="",SPORT_FEED_POLL_MS=2*60*1000,_sportFeedLoad=null;
+// Requests are numbered: a slow reply (the poll and a resume can overlap) is
+// dropped once a newer one has been applied, or it would put back the file from
+// before a result and the result would vanish until the next poll. The polling
+// is armed whether or not the first read worked, so a page that booted offline
+// or during a Pages hiccup still picks the feed up when it comes back.
+var _sportFeedText="",SPORT_FEED_POLL_MS=2*60*1000,_sportFeedLoad=null,_sportFeedReq=0,_sportFeedApplied=0,_sportRestored=false;
 function sportsBoot(){
   _sportFeedLoad=function(){
+    var req=++_sportFeedReq;
     return fetch("events-extra.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():null;}).then(function(j){
       if(!j||typeof PickEngine==="undefined"||!PickEngine.validateFeed)return;
-      var t=JSON.stringify(j);if(t===_sportFeedText)return;
+      if(req<_sportFeedApplied)return;
+      var t=JSON.stringify(j);if(t===_sportFeedText){_sportFeedApplied=req;return;}
       var v=PickEngine.validateFeed(j);
       _sportFeed={promotions:v.promotions,events:v.events};
-      _sportFeedText=t;
+      _sportFeedText=t;_sportFeedApplied=req;
       renderSportBar();renderSportView();
       if(curSport()!=="ufc"){
         if(_isOpen("picksSheet"))renderSportPicksSheet();
         if(_lbPanelOpen())loadLeaderboard(true);
       }
+      if(!_sportRestored){_sportRestored=true;_authReady.then(_sportRestore);}
     });
   };
-  return _sportFeedLoad().then(function(){
-    if(!_sportFeed)return;
-    setInterval(_sportTick,30000);
-    setInterval(function(){if(!document.hidden)_sportFeedLoad().catch(function(){});},SPORT_FEED_POLL_MS);
-    document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")_sportFeedLoad().catch(function(){});});
-    _authReady.then(_sportRestore);
-  }).catch(function(){});
+  setInterval(_sportTick,30000);
+  setInterval(function(){if(!document.hidden)_sportFeedLoad().catch(function(){});},SPORT_FEED_POLL_MS);
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")_sportFeedLoad().catch(function(){});});
+  return _sportFeedLoad().catch(function(){});
 }
 // sports:end
 function loadLeaderboard(isLive){
