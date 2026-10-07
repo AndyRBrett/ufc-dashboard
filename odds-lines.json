@@ -2,110 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Rafael dos Anjos",
-   "b": "Alex Hernandez",
-   "a_odds": 212,
-   "b_odds": -265,
-   "commence_time": "2026-10-03T20:55:00Z",
-   "seen_at": "2026-10-03T12:20:39Z"
-  },
-  {
-   "a": "Jacobe Smith",
-   "b": "Bruce Whitehead",
-   "a_odds": -1277,
-   "b_odds": 767,
-   "commence_time": "2026-10-03T21:20:00Z",
-   "seen_at": "2026-10-03T15:25:39Z"
-  },
-  {
-   "a": "Johnny Walker",
-   "b": "Michael Parkin",
-   "a_odds": -114,
-   "b_odds": -105,
-   "commence_time": "2026-10-03T21:40:00Z",
-   "seen_at": "2026-10-03T18:35:41Z"
-  },
-  {
-   "a": "Lucas Armand",
-   "b": "Anthony Wint",
-   "a_odds": 417,
-   "b_odds": -577,
-   "commence_time": "2026-10-03T22:15:00Z",
-   "seen_at": "2026-10-03T21:45:39Z"
-  },
-  {
-   "a": "Marcus McGhee",
-   "b": "Anthony Romero",
-   "a_odds": -553,
-   "b_odds": 403,
-   "commence_time": "2026-10-03T22:45:00Z",
-   "seen_at": "2026-10-03T18:35:41Z"
-  },
-  {
-   "a": "Damian Pinas",
-   "b": "Andrey Pulyaev",
-   "a_odds": -593,
-   "b_odds": 427,
-   "commence_time": "2026-10-03T23:15:00Z",
-   "seen_at": "2026-10-03T21:45:39Z"
-  },
-  {
-   "a": "Imanol Rodriguez",
-   "b": "Alden Coria",
-   "a_odds": -140,
-   "b_odds": 117,
-   "commence_time": "2026-10-03T23:40:00Z",
-   "seen_at": "2026-10-03T21:45:39Z"
-  },
-  {
-   "a": "Marcus McGhee",
-   "b": "Benardo Sopaj",
-   "a_odds": -147,
-   "b_odds": 119,
-   "commence_time": "2026-10-04T00:00:00Z",
-   "seen_at": "2026-09-30T13:00:26Z"
-  },
-  {
-   "a": "Ateba Gautier",
-   "b": "Roman Kopylov",
-   "a_odds": -239,
-   "b_odds": 194,
-   "commence_time": "2026-10-04T00:15:00Z",
-   "seen_at": "2026-10-03T01:45:34Z"
-  },
-  {
-   "a": "Khaos Williams",
-   "b": "Roberto Soldic",
-   "a_odds": 175,
-   "b_odds": -214,
-   "commence_time": "2026-10-04T00:50:00Z",
-   "seen_at": "2026-10-03T18:35:41Z"
-  },
-  {
-   "a": "King Green",
-   "b": "Esteban Ribovics",
-   "a_odds": 164,
-   "b_odds": -200,
-   "commence_time": "2026-10-04T01:20:00Z",
-   "seen_at": "2026-10-03T18:35:41Z"
-  },
-  {
-   "a": "Deiveson Figueiredo",
-   "b": "Payton Talbott",
-   "a_odds": 513,
-   "b_odds": -755,
-   "commence_time": "2026-10-04T01:45:00Z",
-   "seen_at": "2026-10-03T21:45:39Z"
-  },
-  {
-   "a": "Natalia Silva",
-   "b": "Wang Cong",
-   "a_odds": -203,
-   "b_odds": 166,
-   "commence_time": "2026-10-04T02:15:00Z",
-   "seen_at": "2026-10-03T18:35:41Z"
-  },
-  {
    "a": "Nell Ariano",
    "b": "Preston Lagrange",
    "a_odds": -592,
@@ -146,6 +42,14 @@
    "seen_at": "2026-10-06T20:50:24Z"
   },
   {
+   "a": "Kevin Fernandez",
+   "b": "Enrique Pacheco Parra",
+   "a_odds": -400,
+   "b_odds": 300,
+   "commence_time": "2026-10-09T23:00:00Z",
+   "seen_at": "2026-10-07T03:15:19Z"
+  },
+  {
    "a": "Alice Pereira",
    "b": "Darya Zheleznyakova",
    "a_odds": -151,
@@ -156,18 +60,18 @@
   {
    "a": "Allen Frye Jr.",
    "b": "RJ Harris",
-   "a_odds": 225,
-   "b_odds": -291,
+   "a_odds": 230,
+   "b_odds": -298,
    "commence_time": "2026-10-11T00:00:00Z",
-   "seen_at": "2026-10-06T20:50:24Z"
+   "seen_at": "2026-10-07T03:15:19Z"
   },
   {
    "a": "Andre Fili",
    "b": "Kai Kamaka",
-   "a_odds": -152,
-   "b_odds": 122,
+   "a_odds": -156,
+   "b_odds": 126,
    "commence_time": "2026-10-11T00:00:00Z",
-   "seen_at": "2026-10-06T14:45:22Z"
+   "seen_at": "2026-10-07T03:15:19Z"
   },
   {
    "a": "Brendan Allen",
@@ -220,10 +124,10 @@
   {
    "a": "Malcolm Wellmaker",
    "b": "Otari Tanzilovi",
-   "a_odds": -227,
+   "a_odds": -228,
    "b_odds": 180,
    "commence_time": "2026-10-11T00:00:00Z",
-   "seen_at": "2026-10-06T14:45:22Z"
+   "seen_at": "2026-10-07T03:15:19Z"
   },
   {
    "a": "Matheus Camilo",

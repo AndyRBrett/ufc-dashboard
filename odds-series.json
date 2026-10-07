@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-07T02:10:43Z",
+  "generated_at": "2026-10-07T03:15:40Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -13524,7 +13524,7 @@
           "f1": "Andre Fili",
           "f2": "Kai Kamaka III",
           "lbl": "Main Card",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13585,6 +13585,11 @@
               "at": "2026-10-06T14:45:44Z",
               "f1_odds": -152,
               "f2_odds": 122
+            },
+            {
+              "at": "2026-10-07T03:15:40Z",
+              "f1_odds": -156,
+              "f2_odds": 126
             }
           ],
           "open": {
@@ -13679,7 +13684,7 @@
           "f1": "Malcolm Wellmaker",
           "f2": "Otari Tanzilovi",
           "lbl": "Main Card",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13749,6 +13754,11 @@
             {
               "at": "2026-10-06T14:45:44Z",
               "f1_odds": -227,
+              "f2_odds": 180
+            },
+            {
+              "at": "2026-10-07T03:15:40Z",
+              "f1_odds": -228,
               "f2_odds": 180
             }
           ],
@@ -13829,7 +13839,7 @@
           "f1": "Allen Frye Jr.",
           "f2": "RJ Harris",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13905,6 +13915,11 @@
               "at": "2026-10-06T20:50:46Z",
               "f1_odds": 225,
               "f2_odds": -291
+            },
+            {
+              "at": "2026-10-07T03:15:40Z",
+              "f1_odds": 230,
+              "f2_odds": -298
             }
           ],
           "open": {
@@ -15584,7 +15599,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Kai Kamaka III",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -154,
         "close": null,
         "clv": null
@@ -15794,7 +15809,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Malcolm Wellmaker",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 157,
         "close": null,
         "clv": null
@@ -16366,7 +16381,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Andre Fili",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 134,
         "close": null,
         "clv": null
@@ -19257,7 +19272,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Otari Tanzilovi",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -180,
         "close": null,
         "clv": null
@@ -19290,7 +19305,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "RJ Harris",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": 186,
         "close": null,
         "clv": null
@@ -19301,7 +19316,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Allen Frye Jr.",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": -220,
         "close": null,
         "clv": null
