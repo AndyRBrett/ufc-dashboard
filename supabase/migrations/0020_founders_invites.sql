@@ -20,8 +20,11 @@
 -- my_invite() reports counts only (joined, playing), never who: "playing"
 -- is an invitee with UFC picks on 2 different past cards, the same bar
 -- send-push sets before an account may send social pushes (SOCIAL_MIN_CARDS),
--- so a pile of throwaway sign-ups doesn't count. Picks on a past date can't
--- be backfilled (0010's lock), so the bar can't be faked after the fact.
+-- so a pile of throwaway sign-ups doesn't count. A card is real only if
+-- card_bells (0010, written by send-reminders off data.js) has it: a pick on
+-- a made-up date is accepted until midnight after it, and would otherwise
+-- count once that date passed. Picks on a past card can't be backfilled
+-- (0010's lock), so the bar can't be faked after the fact.
 --
 -- Deleting an account (0014's delete_my_account, re-runnable, lists both
 -- tables) removes its code and every invite it is on, either side; the
@@ -111,7 +114,8 @@ begin
    where i.inviter_id = me
      and (select count(distinct p.event_date) from picks p
            where p.user_id = i.invitee_id and p.promotion = 'ufc'
-             and p.event_date ~ '^\d{4}-\d{2}-\d{2}$' and p.event_date <= cutoff_day) >= 2;
+             and p.event_date ~ '^\d{4}-\d{2}-\d{2}$' and p.event_date <= cutoff_day
+             and exists (select 1 from card_bells c where c.event_date = p.event_date)) >= 2;
   founder := exists (select 1 from public.founders_among(array[me]));
   return jsonb_build_object('code', c, 'joined', joined, 'playing', playing,
                             'founder', founder, 'founding_until', public.founding_cutoff());
@@ -130,7 +134,11 @@ declare
   born timestamptz;
 begin
   if not public.is_account() then raise exception 'link an email first'; end if;
-  select user_id into who from invite_codes where code = upper(btrim(coalesce(p_code, '')));
+  -- FOR SHARE: an inviter deleting their account at this moment either
+  -- finishes first (the code is gone: 'unknown') or waits until this claim
+  -- commits and then removes it with everything else, never leaving an
+  -- invite that points at a deleted account.
+  select user_id into who from invite_codes where code = upper(btrim(coalesce(p_code, ''))) for share;
   if who is null then return 'unknown'; end if;
   if who = me then return 'self'; end if;
   if exists (select 1 from invites where invitee_id = me) then return 'already'; end if;

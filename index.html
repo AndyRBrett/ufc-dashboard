@@ -5249,8 +5249,9 @@ function _recordTerms(){
 }
 function _postSignIn(prevId,email){
   _roomsAfterSignIn();
-  if(typeof _claimInvite==="function")_claimInvite();   // finish an invite link that arrived before the email
   if(email){try{var s=JSON.parse(localStorage.getItem("ufc_sb_session")||"null");if(s&&!s.email){s.email=email;_saveSession(s);}}catch(e){}}
+  // After the email is saved: _claimInvite needs _sessEmail() to be true.
+  if(typeof _claimInvite==="function")_claimInvite();   // finish an invite link that arrived before the email
   var changed=(prevId&&USER_ID&&prevId!==USER_ID)||(!userName&&!!USER_ID);
   // Cleared HERE rather than in finish(): a different account is a different
   // set of answers, and finish() does not run until the profile fetch settles.

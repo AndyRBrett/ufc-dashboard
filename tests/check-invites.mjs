@@ -127,10 +127,13 @@ const CODE = globalThis.CODE;
   await db.exec(`insert into public.picks (user_id, event_date, f1, f2, pick, promotion) values
     ('${NEW}', '${past(30)}', 'A', 'B', 'A', 'ufc'), ('${NEW}', '${past(20)}', 'C', 'D', 'C', 'ufc'),
     ('${NEW2}', '${past(30)}', 'A', 'B', 'A', 'ufc'), ('${NEW2}', '${past(-5)}', 'E', 'F', 'E', 'ufc'),
-    ('${NEW2}', '${past(20)}', 'G', 'H', 'G', 'pfl')`);
+    ('${NEW2}', '${past(20)}', 'G', 'H', 'G', 'pfl'), ('${NEW2}', '${past(25)}', 'I', 'J', 'I', 'ufc');
+    insert into public.card_bells (event_date, first_bell, last_bell) values
+      ('${past(30)}', now() - interval '30 days', now() - interval '30 days'),
+      ('${past(20)}', now() - interval '20 days', now() - interval '20 days')`);
   const j = (await as(OLD, "select public.my_invite() j")).rows[0].j;
   check("my_invite counts who joined through the link", j.joined === 2);
-  check("...and 'playing' only for UFC picks on 2 past cards (not a future card, not another sport)", j.playing === 1);
+  check("...and 'playing' only for UFC picks on 2 past cards (not a future card, another sport or a date with no card)", j.playing === 1);
   const n = (await as(NEW, "select public.my_invite() j")).rows[0].j;
   check("an invitee's own counts start at zero", n.joined === 0 && n.playing === 0);
 }
@@ -161,7 +164,10 @@ const blk = html.slice(html.indexOf("// invites:start"), html.indexOf("// invite
 check("index.html has the invites block", blk.length > 200);
 check("?ref= is read, checked against the code alphabet, stored, and dropped from the URL",
   /searchParams\.get\("ref"\)/.test(blk) && /searchParams\.delete\("ref"\)/.test(blk) && /INVITE_CODE_RE\.test/.test(blk) && /ufc_ref/.test(blk));
-check("a stored invite is claimed after sign-in", /_claimInvite\(\)/.test(html.slice(html.indexOf("function _postSignIn"), html.indexOf("function _postSignIn") + 400)));
+{
+  const ps = html.slice(html.indexOf("function _postSignIn"), html.indexOf("function _postSignIn") + 700);
+  check("a stored invite is claimed after sign-in, once the email is saved", ps.indexOf("_claimInvite()") > ps.indexOf("if(email){") && ps.indexOf("if(email){") > 0);
+}
 check("...and only kept for a network error (a dead code is forgotten)", /ok\|already\|self\|unknown\|existing/.test(blk));
 check("the sheet is a real overlay (_escClosers)", /\["inviteBg",function\(\)\{closeInvite\(\);\}\]/.test(html));
 check("⋯ More has Invite friends", /id="inviteMenuBtn"[^>]*openInvite\(\)/.test(html));
