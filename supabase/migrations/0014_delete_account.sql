@@ -44,7 +44,8 @@ begin
   foreach t in array array['user_prefs:user_id', 'room_members:user_id', 'rooms:owner_id',
                            'user_blocks:blocker_id', 'user_blocks:blocked_id',
                            'ai_usage:user_id', 'room_join_misses:user_id',
-                           'roast_inbox:recipient_id'] loop
+                           'roast_inbox:recipient_id', 'invite_codes:user_id',
+                           'invites:invitee_id', 'invites:inviter_id'] loop
     if to_regclass('public.' || split_part(t, ':', 1)) is not null then
       execute format('delete from public.%I where %I = $1', split_part(t, ':', 1), split_part(t, ':', 2)) using me;
       get diagnostics n = row_count;
@@ -97,7 +98,7 @@ declare t text;
 begin
   foreach t in array array['picks', 'user_prefs', 'challenges', 'rooms', 'room_members',
                            'user_blocks', 'content_reports', 'push_subs', 'room_join_misses',
-                           'roast_inbox'] loop
+                           'roast_inbox', 'invite_codes', 'invites'] loop
     if to_regclass('public.' || t) is not null then
       execute format('drop trigger if exists refuse_deleted_account on public.%I', t);
       execute format('create trigger refuse_deleted_account before insert or update on public.%I
