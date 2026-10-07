@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-06T23:40:45Z",
+ "generated_at": "2026-10-07T00:00:48Z",
  "promotions": [
   {
    "id": "pfl",
@@ -70,18 +70,18 @@
      "round": null
     },
     {
-     "a": "Ryuho Miyaguchi",
-     "b": "Matheus Soares",
+     "a": "Matheus Soares",
+     "b": "Ryuho Miyaguchi",
      "label": "",
      "division": "Bantamweight",
      "title": false,
      "odds": {
-      "a": 337,
-      "b": -440
+      "a": -440,
+      "b": 337
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Matheus Soares",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
      "a": "Alivia Bierley",
