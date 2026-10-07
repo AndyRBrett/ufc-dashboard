@@ -7900,8 +7900,8 @@ function render(){
     if(featIdx===-1)featIdx=0;
     vis.forEach(function(ev,i){var ei=EVENTS.indexOf(ev);app.appendChild(makeEventBlock(ev,ei,i,vis.length,i===featIdx));});
   }
-  // Compute stats dynamically from visible events only
-  var allFights=vis.reduce(function(a,e){return a.concat(e.fights||[]);}, []);
+  // Compute stats from the bouts on screen: a filter hides the rest of a card
+  var allFights=vis.reduce(function(a,e){return a.concat((e.fights||[]).filter(matchFilter));}, []);
   var titleFights=allFights.filter(function(f){return f.title;});
   var sevEl=document.getElementById("sev");var stiEl=document.getElementById("sti");var sboEl=document.getElementById("sbo");
   var pkEl=document.getElementById("picks-count");
