@@ -514,6 +514,35 @@ export async function blockedWith(sb: string, h: Record<string, string>, uid: st
   return out;
 }
 
+// Each push belongs to one kind, and each account can switch a kind off
+// (user_prefs.notif_off, 0019; the app's ⋯ More → Notifications). The app
+// sends the same names. A type outside these (none today) has no switch.
+export const NOTIF_KINDS = ["start", "result", "brief", "swap", "pick", "roast", "challenge", "nudge"] as const;
+export function notifKind(type: string): string | null {
+  if (/^(main|prelim)$/.test(type)) return "start";
+  if (/^result:/.test(type)) return "result";
+  if (type === "brief") return "brief";
+  if (/^swap-/.test(type)) return "swap";
+  if (/^pick-(first|done)-/.test(type)) return "pick";
+  if (/^trash-talk-/.test(type)) return "roast";
+  if (/^chal(-resp)?-/.test(type)) return "challenge";
+  if (/^nudge-/.test(type)) return "nudge";
+  return null;
+}
+// The accounts that switched this kind off. Read with the service key: the
+// row is owner-only. null when it can't be read (0019 not applied yet, or the
+// table is down): the push then goes to everyone, as it did before the
+// switches existed, which loses nothing (nobody could have saved an "off"
+// without the column) and never silently drops a result someone wanted.
+export async function optedOut(sb: string, h: Record<string, string>, kind: string): Promise<Set<string> | null> {
+  try {
+    const r = await fetch(`${sb}/rest/v1/user_prefs?select=user_id&notif_off=cs.%7B${encodeURIComponent(kind)}%7D`, { headers: h });
+    if (!r.ok) { console.error("notif_off read failed", r.status); return null; }
+    const rows = await r.json();
+    return new Set((Array.isArray(rows) ? rows : []).map((x: { user_id?: string }) => x && x.user_id).filter((u): u is string => typeof u === "string"));
+  } catch (e) { console.error("notif_off read failed", e); return null; }
+}
+
 async function alreadySent(sb: string, h: Record<string, string>, date: string, type: string): Promise<boolean> {
   const r = await fetch(`${sb}/rest/v1/notif_log?event_date=eq.${encodeURIComponent(date)}&type=eq.${encodeURIComponent(type)}&select=event_date`, { headers: h });
   const rows = await r.json().catch(() => null);
@@ -785,6 +814,13 @@ Deno.serve(async (req) => {
     return true;
   });
 
+  // Accounts that switched this kind of push off don't get it. Their roast
+  // still lands in the in-app inbox below (the switch is about the phone
+  // buzzing, not about what the app shows when opened).
+  const kind = notifKind(body.type);
+  const off = kind ? await optedOut(SUPABASE_URL, sbHeaders, kind) : null;
+  const pushSubs = off && off.size ? subs.filter((sub) => !(sub.user_id && off.has(sub.user_id))) : subs;
+
   // A roast is also left in each recipient's inbox (0016_roast_inbox.sql), and
   // the app reads it from there. The push payload alone kept failing to reach
   // the page on iOS: it rides notificationclick -> a cache stash or a
@@ -799,7 +835,7 @@ Deno.serve(async (req) => {
     await recordRoasts(SUPABASE_URL, sbHeaders, to.filter((u) => u !== caller.uid), String(body.title ?? ""), String(body.body ?? ""));
   }
 
-  if (!subs.length) {
+  if (!pushSubs.length) {
     return new Response(JSON.stringify({ sent: 0, skipped: false, reason: "no subscribers" }), { status: 200, headers: CORS });
   }
 
@@ -819,7 +855,7 @@ Deno.serve(async (req) => {
     : null;
   let sent = 0, failed = 0;
 
-  await Promise.all(subs.map(async (sub) => {
+  await Promise.all(pushSubs.map(async (sub) => {
     try {
       const payload = safePayload && sub.live_results !== true ? safePayload : livePayload;
       await webpush.sendNotification(

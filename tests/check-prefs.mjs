@@ -17,6 +17,11 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import http from "node:http";
+import { existsSync } from "node:fs";
+import { extname } from "node:path";
+import { createRequire } from "node:module";
+import { launchChromium } from "./lib/browser.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const html = readFileSync(join(ROOT, "index.html"), "utf8");
@@ -482,6 +487,76 @@ check("user_prefs grants the owner DELETE so that request can succeed",
 check("anon holds no grant on user_prefs",
   /revoke all on public\.user_prefs from anon, authenticated/.test(sql) &&
   !/grant[^\n]*to[^\n]*\banon\b/.test(sql.split("revoke all")[1] || ""));
+
+// --- One switch per kind of push (⋯ More → Notifications, 0019) --------------
+// Run in the real page: the sheet lists every kind, a switch writes ONLY
+// notif_off to the account (never push/live_results/reminders, whose restore
+// rules are above), the account's choice comes down on load, and a switch
+// flipped here is not overwritten by a slower read.
+{
+  const require = createRequire(import.meta.url);
+  let chromium = null;
+  try { ({ chromium } = require("playwright")); } catch { try { ({ chromium } = require("playwright-core")); } catch {} }
+  if (!chromium) fail("Playwright not installed (npm install)");
+  else {
+    const TYPES = { ".html": "text/html", ".js": "text/javascript", ".json": "application/json", ".png": "image/png" };
+    const server = http.createServer((req, res) => {
+      let p = decodeURIComponent(req.url.split("?")[0]); if (p === "/") p = "/index.html";
+      const file = join(ROOT, p);
+      if (!file.startsWith(ROOT) || !existsSync(file)) { res.writeHead(404); res.end(); return; }
+      res.writeHead(200, { "content-type": TYPES[extname(file)] || "application/octet-stream" }); res.end(readFileSync(file));
+    });
+    await new Promise((r) => server.listen(0, r));
+    const browser = await launchChromium(chromium);
+    try {
+      const page = await browser.newPage();
+      const errors = [], writes = [];
+      let serverOff = ["nudge"];
+      page.on("pageerror", (e) => errors.push(e.message));
+      await page.addInitScript(() => {
+        try {
+          localStorage.setItem("ufc_sb_session", JSON.stringify({ access_token: "tok", refresh_token: "r", user_id: "u-andy", email: "a@example.com", expires_at: 9999999999 }));
+          localStorage.setItem("ufc_name", "Andy"); localStorage.setItem("ufc_whatsnew_seen", "9999");
+          localStorage.setItem("ufc_terms", JSON.stringify({ v: "x", at: "" }));
+        } catch (e) {}
+      });
+      await page.route(/supabase\.co/, (route) => {
+        const req = route.request(), url = decodeURIComponent(req.url()), m = req.method();
+        if (m !== "GET" && m !== "HEAD" && m !== "OPTIONS") writes.push({ m, url, body: req.postData() });
+        let body = "[]";
+        if (/\/rest\/v1\/user_prefs\?select=notif_off/.test(url) && m === "GET") body = JSON.stringify([{ notif_off: serverOff }]);
+        route.fulfill({ status: m === "POST" ? 201 : 200, contentType: "application/json", body: m === "POST" ? "" : body });
+      });
+      await page.goto(`http://127.0.0.1:${server.address().port}/index.html`, { waitUntil: "load", timeout: 20000 });
+      await page.waitForFunction(() => { try { return JSON.parse(localStorage.getItem("ufc_notif_off") || "[]").includes("nudge"); } catch (e) { return false; } }, null, { timeout: 8000 }).catch(() => {});
+      check("notif kinds: the account's switches come down on load", await page.evaluate(() => !window._notifOn("nudge") && window._notifOn("roast")));
+      await page.evaluate(() => window.openNotifSheet());
+      const sheet = await page.evaluate(() => ({
+        rows: [...document.querySelectorAll("#notifList .notif-row")].map((r) => r.querySelector(".notif-t").textContent + "=" + r.getAttribute("aria-checked")),
+        roles: [...document.querySelectorAll("#notifList .notif-row")].every((r) => r.getAttribute("role") === "switch" && r.tagName === "BUTTON"),
+      }));
+      check("notif kinds: the sheet has the push switch, one switch per kind and Result Spoilers, as accessible switches",
+        sheet.roles && sheet.rows.length === 10 && /^Push notifications=/.test(sheet.rows[0]) && sheet.rows.includes("Nudges=false") &&
+        sheet.rows.includes("Trash talk=true") && sheet.rows.some((r) => /^Result Spoilers=/.test(r)));
+      writes.length = 0;
+      await page.click('#notifList .notif-row:has(.notif-t:text-is("Trash talk"))');
+      await page.waitForTimeout(300);
+      const w = writes.filter((x) => /\/rest\/v1\/user_prefs/.test(x.url)).map((x) => JSON.parse(x.body));
+      check("notif kinds: a switch writes only notif_off for this account",
+        w.length === 1 && w[0].user_id === "u-andy" && JSON.stringify(w[0].notif_off.slice().sort()) === JSON.stringify(["nudge", "roast"]) &&
+        !("push" in w[0]) && !("live_results" in w[0]) && !("reminders" in w[0]));
+      check("notif kinds: ...and the sheet shows it off at once",
+        await page.evaluate(() => document.querySelector('#notifList .notif-row[aria-checked="false"] .notif-t') && !window._notifOn("roast")));
+      serverOff = [];
+      await page.evaluate(() => window._notifOffLoad());
+      await page.waitForTimeout(200);
+      check("notif kinds: a slower read of the old value doesn't undo a switch flipped here", await page.evaluate(() => !window._notifOn("roast")));
+      await page.keyboard.press("Escape");
+      check("notif kinds: Escape closes the sheet", await page.evaluate(() => !document.getElementById("notifBg").classList.contains("open")));
+      check("notif kinds: no page errors", errors.length === 0 || (console.error("    " + errors.join("\n    ")), false));
+    } finally { await browser.close(); server.close(); }
+  }
+}
 
 if (failures) { console.error(`\n${failures} preference check(s) failed`); process.exit(1); }
 console.log("\nNotification preference checks passed");

@@ -1070,7 +1070,7 @@ export const APP_GUIDE = `APP: "Picked Fight", a UFC picks game for a group of f
 
 HOME SCREEN
 - Tab bar at the bottom: Cards (this home screen), Picks (your picks for the next card at a glance: each bout with your pick, method, 🔒 and whether it is open, locked, right or wrong; tap a bout to pick it; See all past picks opens the full My Picks list), Live (opens FN Mode, the fight-night view), League (opens Ranks, the leaderboard) and FightBot.
-- Top bar: your avatar on the left opens the Menu (your account at the top: Sign In / Link Email and Edit Profile; then Ask FightBot, Fight Lab (Fight IQ) right under it, Challenges, Rooms, Notifications, Result Spoilers, Privacy & Safety, Year Wrapped in December, themes, Add to Home Screen); the magnifier on the right jumps to fighter search.
+- Top bar: your avatar on the left opens the Menu (your account at the top: Sign In / Link Email and Edit Profile; then Ask FightBot, Fight Lab (Fight IQ) right under it, Challenges, Rooms, Notifications (Result Spoilers is inside it), Privacy & Safety, Year Wrapped in December, themes, Add to Home Screen); the magnifier on the right jumps to fighter search.
 - The Next Event card counts down to the next main card and shows how many of its bouts you have picked; its button (Finish your picks) opens FN Mode on the first bout you still need to pick.
 - AI features ask once before the first request is sent (what goes to Anthropic or xAI, and that your email and account ID never do). Turn them off or back on in Menu → Privacy & Safety.
 - The countdown shows the next main card. Filter tabs pick a weight class.
@@ -1116,8 +1116,8 @@ OTHER PROMOTIONS: PFL, RIZIN, CONTENDER SERIES (DWCS)
 
 MENU (tap your avatar, top left)
 - Your account is at the top: tap your name (or Edit Profile, once signed in) to change your name and emoji, where Delete my account also is; Sign In / Link Email is right above it.
-- Notifications (the 🔔 bell): fight-night reminders, results, trash talk, challenges, nudges, fight change alerts and the Friday brief. On iPhone, notifications only work from the home-screen app.
-- Result Spoilers: on shows the winner in result notifications; off keeps them spoiler-free.
+- Notifications (the 🔔 bell) opens a sheet: a Push notifications switch for this device, then one switch per kind, each on until you turn it off. Fight night: Card starting, Fight results, Fight changes, Friday Fight Week Brief. From other players: Trash talk, Challenges, Nudges, Friends' picks. The switches follow your account to other phones. Turning Trash talk off stops the notification, but roasts still show in the app. On iPhone, notifications only work from the home-screen app.
+- Result Spoilers (in the Notifications sheet, under Fight results): on shows the winner in result notifications; off keeps them spoiler-free.
 - Privacy & Safety: the privacy policy, the AI features switch, and the players you've blocked (with Unblock).
 - Challenges and Rooms: shortcuts to your challenge inbox and your Watch Party rooms.
 - Sign In / Link Email: sign in with an email (one-time code). It is required to make picks, and it means your picks and stats survive a new phone or a cleared browser. Linking keeps the same account and picks. To move to a new phone, sign in there with the same email.

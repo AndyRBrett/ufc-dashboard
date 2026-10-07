@@ -1094,6 +1094,20 @@ button.ps-row:hover{background:var(--btn-bg)}
 .fn-ctr{font-size:11px;color:rgba(255,255,255,.2);margin-top:14px}
 .nm-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:400;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .nm-bg.open{display:flex}
+.notif-box{max-width:400px;max-height:86vh;overflow-y:auto;padding:22px 18px}
+.notif-grp{font:700 11px var(--font-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:16px 2px 4px}
+.notif-row{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:9px 2px;background:none;border:none;border-top:1px solid var(--border);color:var(--text);text-align:left;cursor:pointer;font:inherit}
+.notif-row.master{border-top:none;padding-top:2px}
+.notif-row.sub{padding-left:18px;min-height:46px}
+.notif-row.dim .notif-txt{opacity:.5}
+.notif-txt{flex:1;min-width:0}
+.notif-t{display:block;font:600 14px var(--font-body)}
+.notif-d{display:block;font-size:12px;color:var(--muted);margin-top:2px;line-height:1.35}
+.notif-sw{flex:0 0 auto;width:44px;height:26px;border-radius:13px;background:var(--card2);border:1px solid var(--border2);position:relative;transition:background .15s}
+.notif-sw::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .15s}
+.notif-row[aria-checked="true"] .notif-sw{background:var(--red);border-color:var(--red)}
+.notif-row[aria-checked="true"] .notif-sw::after{transform:translateX(18px)}
+@media (prefers-reduced-motion:reduce){.notif-sw,.notif-sw::after{transition:none}}
 .nm-box{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:26px 22px;width:100%;max-width:320px;box-shadow:var(--shadow-el)}
 .nm-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
 .nm-xbtn{background:var(--btn-bg);border:none;color:var(--muted2);cursor:pointer;font-size:16px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center}
@@ -1898,6 +1912,12 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     </div>
   </div>
 </div>
+<div class="nm-bg" id="notifBg" onclick="if(event.target===this)closeNotifSheet()">
+  <div class="nm-box notif-box" role="dialog" aria-modal="true" aria-labelledby="notifTitle">
+    <div class="nm-top"><h3 id="notifTitle">🔔 Notifications</h3><button class="nm-xbtn" onclick="closeNotifSheet()" aria-label="Close">x</button></div>
+    <div id="notifList"></div>
+  </div>
+</div>
 <div class="nm-bg" id="termsBg" onclick="if(event.target===this)closeTermsSheet()">
   <div class="nm-box" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
     <div class="nm-top"><h3 id="termsTitle">Before your next pick</h3><button class="nm-xbtn" onclick="closeTermsSheet()" aria-label="Close">x</button></div>
@@ -2068,13 +2088,9 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           <span>Rooms</span>
         </button>
-        <button class="btn-more-item" id="notifBell" onclick="togglePush();closeMoreMenu()" title="Fight notifications">
+        <button class="btn-more-item" id="notifBell" onclick="closeMoreMenu();openNotifSheet()" title="Choose which notifications you get">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <span>Notifications</span><span class="theme-check">&#10003;</span>
-        </button>
-        <button class="btn-more-item" id="liveResBtn" onclick="toggleLiveResults();closeMoreMenu()" title="Show winners in result notifications (off = spoiler-free)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span>Result Spoilers</span><span class="theme-check">&#10003;</span>
         </button>
         <button class="btn-more-item" id="safetyBtn" onclick="closeMoreMenu();openSafety()" title="Privacy policy, reporting and blocked players">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -5238,6 +5254,7 @@ function _postSignIn(prevId,email){
     // (or under none at all, before this sign-in produced one).
     _restoreRan=false;_restoreMyPicks();
     _prefsLoad(!changed);     // ...and restore that identity's toggles (never seed B from A)
+    if(changed)_notifOffTouched=false;_notifOffLoad();
     // The browser's push subscription is still registered under the PREVIOUS
     // user_id. Until something re-registers it, account-targeted pushes keep
     // going to the old identity and the signed-in one gets none. _ensurePushFresh
@@ -5269,7 +5286,7 @@ function _postSignIn(prevId,email){
 }
 function urlB64ToUint8(b64){var pad='='.repeat((4-b64.length%4)%4);var raw=atob((b64+pad).replace(/-/g,'+').replace(/_/g,'/'));var arr=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i);return arr;}
 function _bufToBase64Url(buf){var bytes=new Uint8Array(buf);var str='';for(var i=0;i<bytes.length;i++)str+=String.fromCharCode(bytes[i]);return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
-function _setBellActive(on){var nb=document.getElementById("notifBell");if(!nb)return;if(on)nb.classList.add("bell-active");else nb.classList.remove("bell-active");}
+function _setBellActive(on){var nb=document.getElementById("notifBell");if(nb){if(on)nb.classList.add("bell-active");else nb.classList.remove("bell-active");}if(typeof _renderNotifSheet==="function")_renderNotifSheet();}
 // Result notifications are spoiler-free unless the user opts in to live results.
 function _liveResultsOn(){try{return localStorage.getItem("ufc_live_results")==="1";}catch(e){return false;}}
 // prefs:start
@@ -5469,7 +5486,80 @@ function _prefsApply(p){
   }
 }
 // prefs:end
-function _setLiveResActive(on){var b=document.getElementById("liveResBtn");if(!b)return;if(on)b.classList.add("bell-active");else b.classList.remove("bell-active");}
+// notif-kinds:start
+// One switch per kind of push (⋯ More → Notifications). The list holds the
+// kinds this account switched OFF, so anything new starts on. It follows the
+// account in user_prefs.notif_off (0019) and send-push honours it for every
+// sender, the server's own included: the app only stores the choice. The
+// kinds are send-push's notifKind names; check:prefs holds the two in step.
+var NOTIF_KINDS=[
+  {k:"start",g:"Fight night",t:"Card starting",d:"When the prelims and the main card are about to start"},
+  {k:"result",g:"Fight night",t:"Fight results",d:"When a fight you picked ends"},
+  {k:"swap",g:"Fight night",t:"Fight changes",d:"When a fight you picked is changed or cancelled"},
+  {k:"brief",g:"Fight night",t:"Friday Fight Week Brief",d:"The Fight Lab's preview, the Friday before a card"},
+  {k:"roast",g:"From other players",t:"Trash talk",d:"Roasts other players send you (they still show in the app)"},
+  {k:"challenge",g:"From other players",t:"Challenges",d:"New challenges and answers to yours"},
+  {k:"nudge",g:"From other players",t:"Nudges",d:"A friend reminding you to make your picks"},
+  {k:"pick",g:"From other players",t:"Friends' picks",d:"When someone starts or finishes their picks"}
+];
+function _notifOff(){try{var a=JSON.parse(localStorage.getItem("ufc_notif_off")||"[]");return Array.isArray(a)?a.filter(function(k){return typeof k==="string";}):[];}catch(e){return [];}}
+function _notifOn(k){return _notifOff().indexOf(k)<0;}
+var _notifOffTouched=false;
+function _notifOffSet(list,fromServer){
+  try{localStorage.setItem("ufc_notif_off",JSON.stringify(list));}catch(e){}
+  if(!fromServer){_notifOffTouched=true;if(USER_ID)_prefsWrite({notif_off:list},USER_ID);}
+  _renderNotifSheet();
+}
+function flipNotifKind(k){
+  var off=_notifOff(),i=off.indexOf(k),kd=NOTIF_KINDS.filter(function(x){return x.k===k;})[0];
+  if(i<0)off.push(k);else off.splice(i,1);
+  _notifOffSet(off,false);
+  if(kd)toast(kd.t+(i<0?" off":" on"));
+}
+// The account's choice comes down on boot and after a sign-in; a switch
+// flipped on this device since then wins (it has already been written up).
+// No column yet (0019 not applied) or no row: this device's copy stands.
+function _notifOffLoad(){
+  if(!USER_ID)return Promise.resolve();
+  var forId=USER_ID;
+  return _authReady.then(function(){
+    return fetch(SUPABASE_URL+"/rest/v1/user_prefs?select=notif_off&user_id=eq."+encodeURIComponent(forId),{headers:_sbHeaders()});
+  }).then(function(r){return r.ok?r.json():null;}).then(function(rows){
+    if(USER_ID!==forId||_notifOffTouched||!Array.isArray(rows)||!rows[0]||!Array.isArray(rows[0].notif_off))return;
+    _notifOffSet(rows[0].notif_off.filter(function(k){return typeof k==="string";}),true);
+  }).catch(function(){});
+}
+function openNotifSheet(){_renderNotifSheet(true);document.getElementById("notifBg").classList.add("open");}
+function closeNotifSheet(){var b=document.getElementById("notifBg");if(b)b.classList.remove("open");}
+function _notifRow(cls,title,desc,on,onclick){
+  var b=document.createElement("button");b.type="button";b.className="notif-row"+(cls?" "+cls:"");
+  b.setAttribute("role","switch");b.setAttribute("aria-checked",on?"true":"false");
+  var tx=document.createElement("span");tx.className="notif-txt";
+  var t=document.createElement("span");t.className="notif-t";t.textContent=title;tx.appendChild(t);
+  if(desc){var d=document.createElement("span");d.className="notif-d";d.textContent=desc;tx.appendChild(d);}
+  var sw=document.createElement("span");sw.className="notif-sw";sw.setAttribute("aria-hidden","true");
+  b.appendChild(tx);b.appendChild(sw);b.onclick=onclick;
+  return b;
+}
+function _renderNotifSheet(force){
+  var bg=document.getElementById("notifBg"),list=document.getElementById("notifList");
+  if(!bg||!list||(!force&&!bg.classList.contains("open")))return;
+  list.textContent="";
+  var push=_pushOn();
+  list.appendChild(_notifRow("master","Push notifications",push?"On for this device. Choose what you get below.":"Off. Turn on to get any of the notifications below.",push,function(){togglePush();}));
+  var grp=null;
+  NOTIF_KINDS.forEach(function(kd){
+    if(kd.g!==grp){grp=kd.g;var h=document.createElement("div");h.className="notif-grp";h.textContent=grp;list.appendChild(h);}
+    var on=_notifOn(kd.k);
+    list.appendChild(_notifRow(push?"":"dim",kd.t,kd.d,on,function(){flipNotifKind(kd.k);}));
+    if(kd.k==="result"){
+      var live=_liveResultsOn();
+      list.appendChild(_notifRow("sub"+(push&&on?"":" dim"),"Result Spoilers",live?"Result alerts name the winner":"Result alerts stay spoiler-free",live,function(){toggleLiveResults();}));
+    }
+  });
+}
+// notif-kinds:end
+function _setLiveResActive(on){var b=document.getElementById("liveResBtn");if(b){if(on)b.classList.add("bell-active");else b.classList.remove("bell-active");}if(typeof _renderNotifSheet==="function")_renderNotifSheet();}
 // Re-register the existing push subscription so the server picks up the new
 // live_results preference (register upserts on user_id — no resubscribe needed).
 function _syncLivePref(){
@@ -6437,8 +6527,8 @@ function checkNotifSchedule(){
     var dp=ev.date.split("-"),eto=etOffset(ev.date);
     function evTime(t){var p=(t||"0:0").split(":");return Date.UTC(+dp[0],+dp[1]-1,+dp[2],+p[0]+eto,+(p[1]||0),0);}
     var mainT=evTime(ev.time);var diff=mainT-now;
-    if(diff>0&&diff<=HOUR_MS&&!ev._notifMain){ev._notifMain=true;setTimeout(function(){fireNotif("UFC Main Card Starting",ev.name+" main card begins in 30 min!");},Math.max(0,diff-30*MIN_MS));_triggerPush(ev.date,"main","🥊 "+ev.name.split(":")[0]+" — Main Card","Starting in under 1 hour. Lock in your picks!");}
-    if(ev.prelimTime){var preT=evTime(ev.prelimTime);var pd=preT-now;if(pd>0&&pd<=HOUR_MS&&!ev._notifPre){ev._notifPre=true;setTimeout(function(){fireNotif("UFC Prelims Starting",ev.name+" prelims begin in 30 min!");},Math.max(0,pd-30*MIN_MS));_triggerPush(ev.date,"prelim","🥊 "+ev.name.split(":")[0]+" — Prelims","Starting in under 1 hour.");}}
+    if(diff>0&&diff<=HOUR_MS&&!ev._notifMain){ev._notifMain=true;if(_notifOn("start"))setTimeout(function(){fireNotif("UFC Main Card Starting",ev.name+" main card begins in 30 min!");},Math.max(0,diff-30*MIN_MS));_triggerPush(ev.date,"main","🥊 "+ev.name.split(":")[0]+" — Main Card","Starting in under 1 hour. Lock in your picks!");}
+    if(ev.prelimTime){var preT=evTime(ev.prelimTime);var pd=preT-now;if(pd>0&&pd<=HOUR_MS&&!ev._notifPre){ev._notifPre=true;if(_notifOn("start"))setTimeout(function(){fireNotif("UFC Prelims Starting",ev.name+" prelims begin in 30 min!");},Math.max(0,pd-30*MIN_MS));_triggerPush(ev.date,"prelim","🥊 "+ev.name.split(":")[0]+" — Prelims","Starting in under 1 hour.");}}
   });
 }
 setInterval(checkNotifSchedule,5*60*1000);
@@ -7349,7 +7439,9 @@ var WHATS_NEW=[
   {id:"2026-10-29-sport-picks",emoji:"🌍",title:"PFL, RIZIN and DWCS pick like UFC",
    desc:"Other promotions now get the same Make your picks button, the same Picks tab sheet and live results that show up while the app is open, no reopen needed."},
   {id:"2026-10-29-terms-tick",emoji:"✅",title:"A quick tick before you sign in",
-   desc:"Signing in now asks you to confirm you're 18 or older and agree to the Terms of Use, and Support has a real email address. Two themes have new names: Picked Fight (the default) and Noche."}
+   desc:"Signing in now asks you to confirm you're 18 or older and agree to the Terms of Use, and Support has a real email address. Two themes have new names: Picked Fight (the default) and Noche."},
+  {id:"2026-10-30-notif-kinds",emoji:"🔔",title:"Pick which notifications you get",
+   desc:"Menu → Notifications now has a switch for each kind: card starting, results, fight changes, the Friday brief, trash talk, challenges, nudges and friends' picks. Turn off what you don't want; your choices follow your account."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -11821,6 +11913,7 @@ var _escClosers=[
   ["delBg",function(){closeDeleteConfirm();}],
   ["acctBg",function(){closeAcct();}],
   ["termsBg",function(){closeTermsSheet();}],
+  ["notifBg",function(){closeNotifSheet();}],
   ["roomBg",function(){closeRoomSheet();}],
   ["nmBg",function(){closeNameModal();}],
   ["install-overlay",function(){closeInstall();}],
@@ -11958,6 +12051,7 @@ document.addEventListener("DOMContentLoaded",function(){
   // Preferences ride the account: pull them once auth has settled, so a fresh
   // install that signs in gets its toggles back instead of showing them off.
   _authReady.then(function(){_prefsLoad(true);});
+  _authReady.then(function(){_notifOffLoad();});
   _setLiveResActive(_liveResultsOn());
   setTimeout(startLivePolling,4000);
   _initSwipe();

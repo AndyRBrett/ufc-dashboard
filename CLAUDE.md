@@ -903,6 +903,22 @@ The app sends through `_pushPost`: session JWT first, one retry with the anon
 key on a 401 (a Pages deploy running ahead of the function deploy, or an
 expired token). `check:pushauth` runs the real handler and holds all of it.
 
+## Every push has a switch, and send-push honours it
+
+⋯ More → Notifications lists one switch per kind of push (`NOTIF_KINDS` in
+`index.html`'s `// notif-kinds:start … :end` block): card starting, results,
+fight changes, the Friday brief, trash talk, challenges, nudges, friends'
+picks. Each is on until switched off. The account's list of kinds switched OFF
+lives in `user_prefs.notif_off` (`0019_notif_categories.sql`, applied by hand),
+so a new kind starts on for everyone. **send-push is the one place that honours
+it** (`notifKind` maps a push type to its kind, `optedOut` reads who switched it
+off with the service key), so check-results' and send-reminders' pushes obey it
+too. A switched-off roast still lands in the in-app inbox: the switch is about
+the phone buzzing. If the column can't be read, the push goes to everyone, as
+before. **A new push type needs a kind in `notifKind` and a row in
+`NOTIF_KINDS`**; `check:pushauth` fails when the two lists differ, and
+`check:prefs` drives the sheet in a browser.
+
 ## Fight change alerts: a vanished bout tells exactly who picked it
 
 Picks are stored by fighter name, so a withdrawal leaves every pick on the old
@@ -1285,7 +1301,8 @@ migration):
 select m, ok from (values
   ('0017 picks hidden until lock', exists(select 1 from pg_policies where tablename='picks' and policyname='picks_select' and qual like '%pick_lock_for%')),
   ('0017 nickname_taken',          exists(select 1 from pg_proc where proname='nickname_taken')),
-  ('0018 room passwords',          exists(select 1 from pg_proc where proname='set_room_pass'))
+  ('0018 room passwords',          exists(select 1 from pg_proc where proname='set_room_pass')),
+  ('0019 notification kinds',      exists(select 1 from information_schema.columns where table_name='user_prefs' and column_name='notif_off'))
 ) t(m, ok);
 ```
 
