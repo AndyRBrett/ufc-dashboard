@@ -1112,6 +1112,7 @@ OTHER PROMOTIONS: PFL, RIZIN, CONTENDER SERIES (DWCS)
 - When another promotion has a card to pick, a sport switch (UFC | PFL | RIZIN | DWCS) appears under the header, and on Ranks. Those cards look and work like UFC cards: pick the winner, the method, and up to 2 🔒 locks per card. They score by the same rules (winner 1, method +0.5, underdog bonus when there's a line, lock +1/−1), but each promotion has its own separate board, and UFC scores are unaffected.
 - Their picks close for the whole card at once, before it starts, not segment by segment: RIZIN before Japan's first bell, DWCS an hour before the Tuesday night show.
 - Every card shows how many fights you've picked (like 7/12 picked) and how many of your 2 locks you've used.
+- Same as UFC: the countdown at the top shows "Your picks" with a Make your picks button, the Picks tab opens that promotion's card, and results appear while the app is open.
 
 MENU (tap your avatar, top left)
 - Your account is at the top: tap your name (or Edit Profile, once signed in) to change your name and emoji, where Delete my account also is; Sign In / Link Email is right above it.

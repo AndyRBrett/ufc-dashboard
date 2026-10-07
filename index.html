@@ -671,6 +671,7 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .sport-tab.active{background:var(--red);color:var(--on-accent);box-shadow:0 2px 10px var(--accent-glow)}
 body.sport-other .filter-wrap,body.sport-other #picksWidget,body.sport-other #app,body.sport-other .stats,body.sport-other .hero,body.sport-other #activityFeed,body.sport-other .lb-modebar{display:none!important}
 #sportApp{padding:0 0 40px}
+body.sport-other .ps-all{display:none}
 #sportApp[hidden]{display:none}
 /* The other sport's page mirrors UFC's: countdown hero, stat strip, then one
    band per card with its bouts in corners. */
@@ -3802,14 +3803,9 @@ function goTab(t){
   _tabPicks=t==="picks";
   var smooth=matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth";
   if(t==="cards")window.scrollTo({top:0,behavior:smooth});
-  else if(t==="picks"){
-    var sp=document.getElementById("sportApp");
-    if(document.body.classList.contains("sport-other")&&sp){
-      // My Picks is the UFC board's; another promotion's picks live on its own
-      // cards (each shows N/M picked), so that is where its Picks tab goes.
-      sp.scrollIntoView({block:"start",behavior:smooth});
-    }else openPicksSheet();
-  }
+  // Every promotion gets the same sheet: renderPicksSheet hands another
+  // promotion's view to renderSportPicksSheet.
+  else if(t==="picks")openPicksSheet();
   else if(t==="live"){
     // A card in progress first (openFN's own choice), else the next one not
     // over: openFN alone would land on last night's finished card.
@@ -3902,6 +3898,7 @@ function closePicksSheet(){
   _tabPicks=false;_syncTabs();
 }
 function renderPicksSheet(){
+  if(document.body.classList.contains("sport-other")&&typeof renderSportPicksSheet==="function"){renderSportPicksSheet();return;}
   var ev=_picksCard(),list=document.getElementById("psList"),sum=document.getElementById("psSum");
   var when=document.getElementById("psWhen"),cta=document.getElementById("psCta"),title=document.getElementById("psTitle");
   list.textContent="";cta.hidden=true;
@@ -7273,7 +7270,9 @@ var WHATS_NEW=[
   {id:"2026-10-28-picks-at-a-glance",emoji:"✅",title:"Your picks at a glance",
    desc:"The Picks tab now shows just this week's card: every bout with your pick, method and 🔒, and whether it's open, locked, right or wrong. Tap a bout to pick it. Your full history is one tap away under See all past picks."},
   {id:"2026-10-29-picked-fight",emoji:"🥊",title:"We're Picked Fight now",
-   desc:"Same game, same picks, same leaderboard, new name. If you added the app to your Home Screen, it keeps working; re-add it from the Share menu to get the new name and icon."}
+   desc:"Same game, same picks, same leaderboard, new name. If you added the app to your Home Screen, it keeps working; re-add it from the Share menu to get the new name and icon."},
+  {id:"2026-10-29-sport-picks",emoji:"🌍",title:"PFL, RIZIN and DWCS pick like UFC",
+   desc:"Other promotions now get the same Make your picks button, the same Picks tab sheet and live results that show up while the app is open, no reopen needed."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -10231,6 +10230,7 @@ function sportFightRow(promo,ev,b,bi){
   var isMain=bi===0,isCo=bi===1;
   var k=sportKey(promo,ev.date,b.a,b.b),pick=_sportPicks[k]||null,lk=sportLocked(ev,b),fw=b.winner||"";
   var row=_spEl("div","fight-row "+(isMain?"fmain":isCo?"fco":"fcard"));
+  row._sk=k;               // _sportGoTo finds the row by its pick key
   var lbl=_spEl("div","flbl "+(isMain?"lmain":isCo?"lco":"lpre"),
     [isMain?"Main Event":isCo?"Co-Main":"",b.division].filter(Boolean).join(" - ")+(b.title?" - TITLE":""));
   row.appendChild(lbl);
@@ -10351,7 +10351,9 @@ function renderSportView(){
     info.appendChild(_spEl("div","cd-event",next.name));
     cd.appendChild(info);
     var tm=_spEl("div","cd-timer");tm.id="sportCdTimer";tm._lock=sportLockMs(next);
-    cd.appendChild(tm);hero.appendChild(cd);app.appendChild(hero);
+    cd.appendChild(tm);
+    cd.appendChild(_sportHeroPicks(promo,next));
+    hero.appendChild(cd);app.appendChild(hero);
   }
   var nB=0,nT=0,nMine=0;
   evs.forEach(function(ev){ev.bouts.forEach(function(b){nB++;if(b.title)nT++;if(_sportPicks[sportKey(promo,ev.date,b.a,b.b)])nMine++;});});
@@ -10362,6 +10364,86 @@ function renderSportView(){
   app.appendChild(st);
   evs.forEach(function(ev,ei){app.appendChild(sportEventBlock(promo,ev,ei,evs.length,ev===next));});
   _sportTick();          // last: it may re-render the whole view
+}
+// The same "Your picks" row and button the UFC hero has (_heroPicks), for the
+// card this hero counts down to. The button lands on the first bout still open
+// and unpicked.
+function _sportOpenBouts(promo,ev){
+  return ev.bouts.filter(function(b){return !_sportPicks[sportKey(promo,ev.date,b.a,b.b)]&&!sportLocked(ev,b);});
+}
+function _sportHeroPicks(promo,ev){
+  var total=ev.bouts.length,picked=ev.bouts.filter(function(b){return _sportPicks[sportKey(promo,ev.date,b.a,b.b)];}).length;
+  var open=_sportOpenBouts(promo,ev);
+  var box=_spEl("div","cd-picks"),row=_spEl("div","cd-picks-row");
+  row.appendChild(_spEl("span",null,"Your picks"));row.appendChild(_spEl("span",null,picked+" of "+total));
+  box.appendChild(row);
+  var bar=_spEl("div","cd-bar"),fill=_spEl("div","cd-bar-fill");bar.setAttribute("aria-hidden","true");
+  fill.style.width=(total?Math.round(picked/total*100):0)+"%";bar.appendChild(fill);box.appendChild(bar);
+  if(open.length){
+    var cta=_spEl("button","cd-cta",picked?"Finish your picks":"Make your picks");
+    cta.id="sportCdCta";
+    cta.onclick=function(){_sportGoTo(promo,ev,open[0]);};
+    box.appendChild(cta);
+  }
+  return box;
+}
+// Scroll to one bout's row: its card expanded, its "N more fights" opened.
+function _sportGoTo(promo,ev,b){
+  var ck=promo+"|"+ev.date,k=sportKey(promo,ev.date,b.a,b.b);
+  _sportCollapsed[ck]=false;
+  if(ev.bouts.indexOf(b)>=2)_sportMore[ck]=true;
+  renderSportView();
+  var rows=document.querySelectorAll("#sportApp .fight-row"),row=null;
+  for(var i=0;i<rows.length;i++){if(rows[i]._sk===k){row=rows[i];break;}}
+  if(row)row.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+}
+// The Picks tab's sheet for another promotion, built like renderPicksSheet:
+// the next card not over, else the latest card you picked on.
+function _sportDecided(b){return !!b.winner||/draw|no contest/i.test(b.method||"");}
+function _sportPicksCard(promo){
+  var evs=sportEvents(promo);
+  var live=evs.filter(function(e){return e.bouts.some(function(b){return !_sportDecided(b);});})[0];
+  if(live)return live;
+  var mine=evs.filter(function(e){return e.bouts.some(function(b){return _sportPicks[sportKey(promo,e.date,b.a,b.b)];});});
+  return mine[mine.length-1]||evs[0]||null;
+}
+function renderSportPicksSheet(){
+  var promo=curSport(),ev=_sportPicksCard(promo),list=document.getElementById("psList"),sum=document.getElementById("psSum");
+  var when=document.getElementById("psWhen"),cta=document.getElementById("psCta"),title=document.getElementById("psTitle");
+  list.textContent="";cta.hidden=true;
+  if(!ev){title.textContent="Your "+_sportName(promo)+" Picks";when.textContent="";sum.textContent="No card to pick yet.";return;}
+  title.textContent=ev.name;
+  when.textContent=fmtDate(ev.date)+" · "+(Date.now()<sportLockMs(ev)?"Picks close "+new Date(sportLockMs(ev)).toLocaleString([],{weekday:"short",hour:"numeric",minute:"2-digit"}):"Picks closed");
+  var picked=0,right=0,done=0,firstOpen=null,lockable=locksOn(ev.date);
+  ev.bouts.forEach(function(b){
+    var k=sportKey(promo,ev.date,b.a,b.b),mine=_sportPicks[k]||"",decided=_sportDecided(b),locked=!decided&&sportLocked(ev,b);
+    if(mine)picked++;
+    if(!mine&&!decided&&!locked&&!firstOpen)firstOpen=b;
+    var row=document.createElement(!decided&&!locked?"button":"div");row.className="ps-row";
+    var left=_spEl("span","ps-left"),bout=_spEl("span","ps-bout",_psSurname(b.a)+" vs "+_psSurname(b.b));
+    left.appendChild(_spEl("span","ps-lbl",b.label||b.division||""));left.appendChild(bout);
+    var pickEl=_spEl("span","ps-pick");
+    if(mine){var meta=_sportMetaOf(k);pickEl.textContent=(meta.l&&lockable?"🔒 ":"")+_psSurname(mine)+(meta.m?" · "+meta.m:"");}
+    else if(decided||locked){pickEl.textContent="No pick";pickEl.classList.add("none");}
+    else{pickEl.textContent="Pick ›";pickEl.classList.add("todo");}
+    var st=_spEl("span","ps-st");
+    if(decided){
+      if(!b.winner)st.textContent=/draw/i.test(b.method||"")?"Draw":"No contest";
+      else if(mine){var ok=nmEq(b.winner,mine);done++;if(ok)right++;st.textContent=ok?"✓ Correct":"✗ Wrong";st.classList.add(ok?"win":"loss");}
+      else st.textContent="Done";
+    }else if(locked)st.textContent="Locked";
+    row.appendChild(left);row.appendChild(pickEl);row.appendChild(st);
+    if(row.tagName==="BUTTON"){row.setAttribute("aria-label",(mine?"Change pick: ":"Pick: ")+bout.textContent);row.onclick=function(){closePicksSheet();_sportGoTo(promo,ev,b);};}
+    list.appendChild(row);
+  });
+  var parts=[picked+" of "+ev.bouts.length+" picked"];
+  if(lockable)parts.push(_sportCardLocks(promo,ev)+" of "+LOCKS_PER_CARD+" locks");
+  if(done)parts.push(right+" of "+done+" right");
+  sum.textContent=parts.join(" · ");
+  if(firstOpen){
+    cta.hidden=false;cta.textContent=picked?"Finish your picks":"Make your picks";
+    cta.onclick=function(){closePicksSheet();_sportGoTo(promo,ev,firstOpen);};
+  }
 }
 function sportMethod(promo,ev,b,m){
   if(sportLocked(ev,b)){toast("Picks are closed for this fight");return;}
@@ -10509,15 +10591,38 @@ function renderSportBoard(gen){
 }
 // The feed is untrusted input: validated by the Pick Engine or not used at
 // all. No engine, no feed, a bad feed, or nothing to pick = UFC only.
+// Re-read while the app is open, as the UFC side re-reads data.js: results land
+// in the feed minutes after each bout, and an app opened before the first bell
+// otherwise kept showing an unscored card until it was closed and reopened.
+// Nothing changes on screen unless the file did.
+// Requests are numbered: a slow reply (the poll and a resume can overlap) is
+// dropped once a newer one has been applied, or it would put back the file from
+// before a result and the result would vanish until the next poll. The polling
+// is armed whether or not the first read worked, so a page that booted offline
+// or during a Pages hiccup still picks the feed up when it comes back.
+var _sportFeedText="",SPORT_FEED_POLL_MS=2*60*1000,_sportFeedLoad=null,_sportFeedReq=0,_sportFeedApplied=0,_sportRestored=false;
 function sportsBoot(){
-  return fetch("events-extra.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():null;}).then(function(j){
-    if(!j||typeof PickEngine==="undefined"||!PickEngine.validateFeed)return;
-    var v=PickEngine.validateFeed(j);
-    _sportFeed={promotions:v.promotions,events:v.events};
-    renderSportBar();renderSportView();
-    setInterval(_sportTick,30000);
-    _authReady.then(_sportRestore);
-  }).catch(function(){});
+  _sportFeedLoad=function(){
+    var req=++_sportFeedReq;
+    return fetch("events-extra.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():null;}).then(function(j){
+      if(!j||typeof PickEngine==="undefined"||!PickEngine.validateFeed)return;
+      if(req<_sportFeedApplied)return;
+      var t=JSON.stringify(j);if(t===_sportFeedText){_sportFeedApplied=req;return;}
+      var v=PickEngine.validateFeed(j);
+      _sportFeed={promotions:v.promotions,events:v.events};
+      _sportFeedText=t;_sportFeedApplied=req;
+      renderSportBar();renderSportView();
+      if(curSport()!=="ufc"){
+        if(_isOpen("picksSheet"))renderSportPicksSheet();
+        if(_lbPanelOpen())loadLeaderboard(true);
+      }
+      if(!_sportRestored){_sportRestored=true;_authReady.then(_sportRestore);}
+    });
+  };
+  setInterval(_sportTick,30000);
+  setInterval(function(){if(!document.hidden)_sportFeedLoad().catch(function(){});},SPORT_FEED_POLL_MS);
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")_sportFeedLoad().catch(function(){});});
+  return _sportFeedLoad().catch(function(){});
 }
 // sports:end
 function loadLeaderboard(isLive){
