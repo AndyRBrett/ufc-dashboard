@@ -1121,7 +1121,7 @@ MENU (tap your avatar, top left)
 - Privacy & Safety: the privacy policy, the AI features switch, and the players you've blocked (with Unblock).
 - Challenges and Rooms: shortcuts to your challenge inbox and your Watch Party rooms.
 - Sign In / Link Email: sign in with an email (one-time code). It is required to make picks, and it means your picks and stats survive a new phone or a cleared browser. Linking keeps the same account and picks. To move to a new phone, sign in there with the same email.
-- Fight Lab, Year Wrapped (listed in December only), themes (Fight Cards, the default; Apex Neon, Stars & Stripes, UFC Noche, Silver Bullet, Seasonal), and Add to Home Screen.
+- Fight Lab, Year Wrapped (listed in December only), themes (Picked Fight, the default; Apex Neon, Stars & Stripes, Noche, Silver Bullet, Seasonal), and Add to Home Screen.
 - Never delete the home-screen app without linking an email first: removing it clears its local data, and an unlinked account can't be recovered.
 
 FIGHT LAB (Menu → Fight Lab; it only reads, never changes picks)

@@ -587,8 +587,11 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .btn-more-sep{height:1px;background:var(--border);margin:6px 8px}
 .btn-more-label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 12px 4px}
 .drawer-legal{font-size:12px;line-height:1.45;color:var(--muted);padding:14px 12px 0;margin:0}
-.drawer-legal a,.acct-legal a{color:inherit;text-decoration:underline}
+.drawer-legal a,.acct-legal a,.acct-agree a{color:inherit;text-decoration:underline}
 .acct-legal{font-size:12px;line-height:1.45;color:var(--muted);margin:10px 0 0;text-align:center}
+.acct-agree{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45;color:var(--muted);margin:2px 0 12px;text-align:left;cursor:pointer}
+.acct-agree input{flex:0 0 auto;width:20px;height:20px;margin:1px 0 0;accent-color:var(--red)}
+.acct-agree a{color:inherit;text-decoration:underline}
 /* Header: avatar (menu) on the left, search on the right. */
 .hdr-avatar{position:relative;width:44px;height:44px;border:none;background:none;padding:0;margin-left:-6px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:var(--text)}
 .hdr-avatar::before{content:"";position:absolute;width:36px;height:36px;border-radius:50%;background:var(--card2);border:1px solid var(--border2)}
@@ -1886,8 +1889,8 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     <div id="acctSignedRow" style="display:none;font-size:13px;color:var(--muted);margin:-6px 0 14px">Signed in as <b id="acctEmailCur" style="color:var(--text)"></b></div>
     <input class="nm-input" id="acctEmail" type="email" placeholder="you@email.com" aria-label="Email address" autocomplete="email" oninput="document.getElementById('acctErr').style.display='none'">
     <div class="nm-err" id="acctErr"></div>
+    <label class="acct-agree"><input type="checkbox" id="acctAgree" onchange="document.getElementById('acctErr').style.display='none'"><span>I'm 18 or older and I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>, including zero tolerance for abusive content and abusive players.</span></label>
     <button class="nm-btn" id="acctSendBtn" onclick="acctSend()">Email me a code</button>
-    <p class="acct-legal">By signing in you confirm you're 17 or older and agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
     <div id="acctCodeWrap" style="display:none">
       <input class="nm-input" id="acctCode" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="Code from email" maxlength="10" aria-label="Verification code from email" style="margin-top:12px" oninput="document.getElementById('acctErr').style.display='none'">
       <button class="nm-btn" id="acctVerifyBtn" onclick="acctVerify()">Verify code</button>
@@ -2076,7 +2079,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
         <div class="btn-more-label">Theme</div>
         <button class="btn-more-item theme-item" data-theme="octagon" onclick="setTheme('octagon')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#0f0f14 55%,#e8192c 55%)"></span>
-          <span>Fight Cards</span><span class="theme-check">&#10003;</span>
+          <span>Picked Fight</span><span class="theme-check">&#10003;</span>
         </button>
         <button class="btn-more-item theme-item" data-theme="neon" onclick="setTheme('neon')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#0b0e14 45%,#16e0cf 45%,#16e0cf 72%,#f23bd4 72%)"></span>
@@ -2090,7 +2093,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
              chip matches the bunting the theme hangs under the header. -->
         <button class="btn-more-item theme-item" data-theme="noche" onclick="setTheme('noche')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#1e8a53 0 33.34%,#f2e3c4 33.34% 66.67%,#e0401c 66.67%)"></span>
-          <span>UFC Noche</span><span class="theme-check">&#10003;</span>
+          <span>Noche</span><span class="theme-check">&#10003;</span>
         </button>
         <button class="btn-more-item theme-item" data-theme="silver" onclick="setTheme('silver')">
           <span class="theme-swatch" style="background:linear-gradient(135deg,#e9eef2 0 34%,#0071ce 34% 64%,#c8102e 64% 84%,#0d1418 84%)"></span>
@@ -5092,6 +5095,7 @@ function openAcct(){
   document.getElementById("acctCodeWrap").style.display="none";
   document.getElementById("acctEmail").value="";
   document.getElementById("acctCode").value="";
+  document.getElementById("acctAgree").checked=false;
   document.getElementById("acctBg").classList.add("open");
 }
 function closeAcct(){document.getElementById("acctBg").classList.remove("open");if(_acctHoldsPick){_acctHoldsPick=false;window._pp=null;}}
@@ -5099,6 +5103,9 @@ function acctSend(){
   var email=(document.getElementById("acctEmail").value||"").trim().toLowerCase();
   var errEl=document.getElementById("acctErr");errEl.style.display="none";
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){errEl.textContent="Enter a valid email";errEl.style.display="block";return;}
+  // The Terms tap is required (App Store guideline 1.2): no code is sent until
+  // the box is ticked, and the acceptance is recorded once the code verifies.
+  if(!document.getElementById("acctAgree").checked){errEl.textContent="Tick the box to agree to the Terms first";errEl.style.display="block";return;}
   var btn=document.getElementById("acctSendBtn");btn.disabled=true;btn.textContent="Sending…";
   var done=function(type){
     _acctPending={email:email,type:type};
@@ -5139,8 +5146,26 @@ function acctVerify(){
       _acctHoldsPick=false;   // verified: the held pick goes through in _postSignIn
       closeAcct();
       _postSignIn(prevId,email);
+      _recordTerms();
     })
     .catch(function(){btn.disabled=false;btn.textContent="Verify code";errEl.textContent="Wrong or expired code — try again";errEl.style.display="block";});
+}
+// Which Terms the account agreed to, and when: kept on this device and on the
+// account's own login (Supabase user metadata, owner-only, erased with the
+// login by delete_my_account). Bump TERMS_VERSION when terms.html changes in
+// substance, so the next sign-in records the new version.
+var TERMS_VERSION="2026-10-07";
+function _recordTerms(){
+  var at=new Date().toISOString();
+  try{localStorage.setItem("ufc_terms",JSON.stringify({v:TERMS_VERSION,at:at}));}catch(e){}
+  if(!_sbToken)return Promise.resolve();
+  // _accountToken: a token minted before an email was linked still says
+  // anonymous; refresh it first so the write lands on the linked account.
+  return _accountToken().then(function(){
+    return fetch(SUPABASE_URL+"/auth/v1/user",{method:"PUT",headers:_sbHeaders(),
+      body:JSON.stringify({data:{terms_version:TERMS_VERSION,terms_accepted_at:at}})});
+  }).then(function(r){if(r&&!r.ok)throw new Error("terms "+r.status);})
+    .catch(function(e){console.error("terms record failed",e);});
 }
 function _postSignIn(prevId,email){
   _roomsAfterSignIn();
@@ -7272,7 +7297,9 @@ var WHATS_NEW=[
   {id:"2026-10-29-picked-fight",emoji:"🥊",title:"We're Picked Fight now",
    desc:"Same game, same picks, same leaderboard, new name. If you added the app to your Home Screen, it keeps working; re-add it from the Share menu to get the new name and icon."},
   {id:"2026-10-29-sport-picks",emoji:"🌍",title:"PFL, RIZIN and DWCS pick like UFC",
-   desc:"Other promotions now get the same Make your picks button, the same Picks tab sheet and live results that show up while the app is open, no reopen needed."}
+   desc:"Other promotions now get the same Make your picks button, the same Picks tab sheet and live results that show up while the app is open, no reopen needed."},
+  {id:"2026-10-29-terms-tick",emoji:"✅",title:"A quick tick before you sign in",
+   desc:"Signing in now asks you to confirm you're 18 or older and agree to the Terms of Use, and Support has a real email address. Two themes have new names: Picked Fight (the default) and Noche."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;

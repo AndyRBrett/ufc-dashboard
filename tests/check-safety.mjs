@@ -126,6 +126,10 @@ const html = readFileSync(join(ROOT, "index.html"), "utf8");
         let body = "[]";
         if (/\/rest\/v1\/user_blocks\?select=/.test(url) && m === "GET") body = JSON.stringify([{ blocked_id: "u-bob", blocked_name: "Bob" }]);
         else if (/\/rest\/v1\/challenges\?/.test(url) && m === "GET") body = JSON.stringify(CHALS);
+        if (/\/auth\/v1\/verify/.test(url)) {
+          route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ access_token: "tok2", refresh_token: "r2", expires_in: 3600, user: { id: "u-andy", email: "andy@example.com" } }) });
+          return;
+        }
         route.fulfill({ status: m === "POST" ? 201 : 200, contentType: "application/json", body: m === "POST" || m === "DELETE" ? "" : body });
       });
       await page.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 });
@@ -192,6 +196,29 @@ const html = readFileSync(join(ROOT, "index.html"), "utf8");
       check("...and Unblock removes them here and on the server", !!del && /blocker_id=eq\.u-andy/.test(del.url) && left.split("|").length === 1);
       await page.keyboard.press("Escape");
       check("Escape closes Privacy & Safety (it's a real overlay)", await page.evaluate(() => !document.getElementById("safetyBg").classList.contains("open")));
+      // The Terms tap (App Store 1.2): no code is sent until the box is ticked,
+      // and a verified sign-in records the version and time on the account.
+      await page.evaluate(() => openAcct());
+      check("the sign-in sheet opens with the Terms box unticked", await page.evaluate(() => document.getElementById("acctAgree").checked === false));
+      await page.fill("#acctEmail", "andy@example.com");
+      writes.length = 0;
+      await page.click("#acctSendBtn");
+      await page.waitForTimeout(150);
+      const blocked = await page.evaluate(() => ({ err: document.getElementById("acctErr").textContent, shown: document.getElementById("acctErr").style.display, code: document.getElementById("acctCodeWrap").style.display }));
+      check("...and without the tick no code is requested", !writes.some((w) => /\/auth\/v1\//.test(w.url)) && blocked.shown === "block" && /Terms/.test(blocked.err) && blocked.code === "none");
+      await page.check("#acctAgree");
+      await page.click("#acctSendBtn");
+      await page.waitForFunction(() => document.getElementById("acctCodeWrap").style.display === "block", null, { timeout: 5000 }).catch(() => {});
+      check("...with it, the code is requested", writes.some((w) => /\/auth\/v1\/(otp|user)/.test(w.url)));
+      writes.length = 0;
+      await page.fill("#acctCode", "123456");
+      await page.click("#acctVerifyBtn");
+      await page.waitForFunction(() => { try { return !!JSON.parse(localStorage.getItem("ufc_terms") || "null"); } catch (e) { return false; } }, null, { timeout: 5000 }).catch(() => {});
+      await page.waitForTimeout(300);
+      const local = await page.evaluate(() => ({ t: JSON.parse(localStorage.getItem("ufc_terms") || "null"), v: TERMS_VERSION }));
+      const rec = writes.filter((w) => w.m === "PUT" && /\/auth\/v1\/user/.test(w.url)).map((w) => { try { return JSON.parse(w.body); } catch (e) { return {}; } }).find((b) => b && b.data && b.data.terms_version);
+      check("a verified sign-in records the Terms version and time on this device", !!local.t && local.t.v === local.v && !isNaN(Date.parse(local.t.at)));
+      check("...and on the account's own login (user metadata)", !!rec && rec.data.terms_version === local.v && rec.data.terms_accepted_at === local.t.at);
       check("no page errors", errors.length === 0 || (console.error("    " + errors.join("\n    ")), false));
     } finally { await browser.close(); server.close(); }
   }
@@ -214,7 +241,9 @@ const html = readFileSync(join(ROOT, "index.html"), "utf8");
   }
   const terms = readFileSync(join(ROOT, "terms.html"), "utf8");
   check("terms.html says zero tolerance, and names Report and Block", /zero tolerance/i.test(terms) && /Report[\s\S]*Block/.test(terms));
-  check("signing in states agreement to the terms", /id="acctSendBtn"[^\n]*\n\s*<p class="acct-legal">[^\n]*href="terms\.html"/.test(html));
+  check("signing in asks for the Terms tick (18+, Terms and Privacy linked) right above the send button",
+    /<label class="acct-agree"><input type="checkbox" id="acctAgree"[^\n]*18 or older[^\n]*href="terms\.html"[^\n]*href="privacy\.html"[^\n]*<\/label>\n\s*<button class="nm-btn" id="acctSendBtn"/.test(html));
+  check("terms.html sets the age at 18", /at least 18 years old/.test(terms) && !/\b17\b/.test(terms.replace(/Effective[^<]*/, "")));
   // Opening a legal page from the menu is a navigation through sw.js; it must be
   // cached under its own key, never over the app shell './' (Codex on #289), or
   // an offline launch opens the terms instead of the app. Runs the real handler.
