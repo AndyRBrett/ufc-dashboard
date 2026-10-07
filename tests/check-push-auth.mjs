@@ -96,6 +96,9 @@ const CHALS = {
 // Blocks (0013_safety.sql): who has blocked whom. blocksState: "ok", "down" (500)
 // or "missing" (404: 0013 not applied).
 let BLOCKS = [], blocksState = "ok";
+// Per-kind switches (0019_notif_categories.sql): user_id -> kinds switched off.
+// prefsState: "ok", or "missing" (0019 not applied: the column doesn't exist).
+let PREFS_OFF = {}, prefsState = "ok", prefsReads = [];
 let INBOX = [], inboxState = "ok", PRUNES = [];   // roast_inbox rows written by send-push; retention deletes
 let sent = [], log = new Set(), dataReads = 0, picksReads = 0, picksDown = false, dataDown = false;
 const PRESENT = new Set();   // notif_log rows that already exist
@@ -142,6 +145,13 @@ globalThis.fetch = async (url, init = {}) => {
     const din = /event_date=in\.\(([^)]*)\)/.exec(u);
     if (din) rows = rows.filter((p) => din[1].split(",").includes(p.event_date));
     return json(rows);
+  }
+  if (url.startsWith(SB + "/rest/v1/user_prefs")) {
+    const u = decodeURIComponent(url); prefsReads.push(u);
+    if (prefsState === "missing") return json({ code: "42703", message: "column user_prefs.notif_off does not exist" }, 400);
+    const m = /notif_off=cs\.\{([a-z]+)\}/.exec(u);
+    if (!m) return json({ error: "user_prefs read must filter notif_off=cs.{kind}" }, 400);
+    return json(Object.entries(PREFS_OFF).filter(([, off]) => off.includes(m[1])).map(([user_id]) => ({ user_id })));
   }
   if (url.startsWith(SB + "/rest/v1/user_blocks")) {
     if (blocksState === "down") return json({ error: "down" }, 500);
@@ -386,6 +396,32 @@ for (const t of ["brief", "swap-old-bout"]) {
   check("...a wrong key is just an anon caller (403)", wrong.status === 403 && wrong.sent.length === 0);
   const swap = await send({ event_date: "2026-10-03", type: "swap-a-b", title: "x", body: "y", include_user_ids: ["b0b00000-0000-4000-8000-000000000002"] }, { service: SERVICE });
   check("...a targeted swap alert reaches only its targets", swap.status === 200 && swap.to.join() === "b0b00000-0000-4000-8000-000000000002");
+}
+
+// One switch per kind of push (⋯ More → Notifications): send-push drops the
+// accounts that switched a kind off, for every sender, its own included.
+{
+  const A = "a11ce000-0000-4000-8000-000000000001", B = "b0b00000-0000-4000-8000-000000000002", C = "ca201000-0000-4000-8000-000000000003";
+  const kinds = { main: "start", prelim: "start", "result:x:y": "result", brief: "brief", "swap-a-b": "swap", "pick-first-x": "pick",
+    "pick-done-x": "pick", "trash-talk-9": "roast", "chal-c1": "challenge", "chal-resp-c1": "challenge", "nudge-a-b-1": "nudge", register: null };
+  check("every push type maps to its switch (and the app lists the same switches)",
+    Object.entries(kinds).every(([t, k]) => mod.notifKind(t) === k) &&
+    (() => { const html = readFileSync(join(ROOT, "index.html"), "utf8"); const m = /var NOTIF_KINDS=\[([\s\S]*?)\n\];/.exec(html);
+      return !!m && [...m[1].matchAll(/\{k:"([a-z]+)"/g)].map((x) => x[1]).sort().join() === [...mod.NOTIF_KINDS].sort().join(); })());
+  PREFS_OFF = { [A]: ["brief"], [B]: ["roast", "nudge"] };
+  const brief = await send({ event_date: "2026-10-03", type: "brief", title: "📋 Fight Week Brief", body: "Lab numbers", url: "./lab.html#week" }, { service: SERVICE });
+  check("the Friday brief skips the account that switched the brief off, and reaches everyone else",
+    brief.status === 200 && brief.to.join() === [B, C, "da7e0000-0000-4000-8000-000000000004"].sort().join());
+  const roast = await send({ event_date: "2026-10-03", type: "trash-talk-50", body: "Nice pick. — Joe Rogan", include_user_ids: [B, C] }, { auth: jwt("alice") });
+  check("a roast doesn't buzz the target who switched trash talk off...", roast.status === 200 && roast.to.join() === C);
+  check("...but still lands in their in-app inbox", roast.inbox.map((r) => r.recipient_id).sort().join() === [B, C].sort().join());
+  const res = await send({ event_date: "2026-10-03", type: "swap-c-d", title: "x", body: "y", include_user_ids: [A, B] }, { service: SERVICE });
+  check("a kind nobody switched off goes to everyone it's for", res.status === 200 && res.to.join() === [A, B].sort().join());
+  prefsState = "missing";
+  const before = await send({ event_date: "2026-10-03", type: "brief", title: "📋 Fight Week Brief", body: "Lab numbers" }, { service: SERVICE });
+  check("before 0019 is applied (no column) the push goes to everyone, as it always did", before.status === 200 && before.sent.length === 4);
+  prefsState = "ok"; PREFS_OFF = {};
+  check("the switches are read with the service key (the row is owner-only)", prefsReads.length > 0);
 }
 
 // The app sends through _pushPost (session JWT first), never the bare anon key.

@@ -17,6 +17,11 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import http from "node:http";
+import { existsSync } from "node:fs";
+import { extname } from "node:path";
+import { createRequire } from "node:module";
+import { launchChromium } from "./lib/browser.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const html = readFileSync(join(ROOT, "index.html"), "utf8");
@@ -482,6 +487,119 @@ check("user_prefs grants the owner DELETE so that request can succeed",
 check("anon holds no grant on user_prefs",
   /revoke all on public\.user_prefs from anon, authenticated/.test(sql) &&
   !/grant[^\n]*to[^\n]*\banon\b/.test(sql.split("revoke all")[1] || ""));
+
+// --- One switch per kind of push (⋯ More → Notifications, 0019) --------------
+// Run in the real page: the sheet lists every kind, a switch writes ONLY
+// notif_off to the account (never push/live_results/reminders, whose restore
+// rules are above), the account's choice comes down on load, and a switch
+// flipped here is not overwritten by a slower read.
+{
+  const require = createRequire(import.meta.url);
+  let chromium = null;
+  try { ({ chromium } = require("playwright")); } catch { try { ({ chromium } = require("playwright-core")); } catch {} }
+  if (!chromium) fail("Playwright not installed (npm install)");
+  else {
+    const TYPES = { ".html": "text/html", ".js": "text/javascript", ".json": "application/json", ".png": "image/png" };
+    const server = http.createServer((req, res) => {
+      let p = decodeURIComponent(req.url.split("?")[0]); if (p === "/") p = "/index.html";
+      const file = join(ROOT, p);
+      if (!file.startsWith(ROOT) || !existsSync(file)) { res.writeHead(404); res.end(); return; }
+      res.writeHead(200, { "content-type": TYPES[extname(file)] || "application/octet-stream" }); res.end(readFileSync(file));
+    });
+    await new Promise((r) => server.listen(0, r));
+    const browser = await launchChromium(chromium);
+    try {
+      const page = await browser.newPage();
+      const errors = [], writes = [];
+      let serverOff = ["nudge"], noRow = false, rpcReply = null;
+      page.on("pageerror", (e) => errors.push(e.message));
+      await page.addInitScript(() => {
+        try {
+          localStorage.setItem("ufc_sb_session", JSON.stringify({ access_token: "tok", refresh_token: "r", user_id: "u-andy", email: "a@example.com", expires_at: 9999999999 }));
+          localStorage.setItem("ufc_name", "Andy"); localStorage.setItem("ufc_whatsnew_seen", "9999");
+          localStorage.setItem("ufc_terms", JSON.stringify({ v: "x", at: "" }));
+        } catch (e) {}
+      });
+      await page.route(/supabase\.co/, (route) => {
+        const req = route.request(), url = decodeURIComponent(req.url()), m = req.method();
+        if (m !== "GET" && m !== "HEAD" && m !== "OPTIONS") writes.push({ m, url, body: req.postData() });
+        let body = "[]";
+        if (/\/rest\/v1\/user_prefs\?select=notif_off/.test(url) && m === "GET") body = noRow ? "[]" : JSON.stringify([{ notif_off: serverOff }]);
+        if (/\/rest\/v1\/rpc\/set_notif_kind/.test(url)) { route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(rpcReply) }); return; }
+        route.fulfill({ status: m === "POST" ? 201 : 200, contentType: "application/json", body: m === "POST" ? "" : body });
+      });
+      await page.goto(`http://127.0.0.1:${server.address().port}/index.html`, { waitUntil: "load", timeout: 20000 });
+      await page.waitForFunction(() => { try { return JSON.parse(localStorage.getItem("ufc_notif_off") || "[]").includes("nudge"); } catch (e) { return false; } }, null, { timeout: 8000 }).catch(() => {});
+      check("notif kinds: the account's switches come down on load", await page.evaluate(() => !window._notifOn("nudge") && window._notifOn("roast")));
+      await page.evaluate(() => window.openNotifSheet());
+      const sheet = await page.evaluate(() => ({
+        rows: [...document.querySelectorAll("#notifList .notif-row")].map((r) => r.querySelector(".notif-t").textContent + "=" + r.getAttribute("aria-checked")),
+        roles: [...document.querySelectorAll("#notifList .notif-row")].every((r) => r.getAttribute("role") === "switch" && r.tagName === "BUTTON"),
+      }));
+      check("notif kinds: the sheet has the push switch, one switch per kind and Result Spoilers, as accessible switches",
+        sheet.roles && sheet.rows.length === 10 && /^Push notifications=/.test(sheet.rows[0]) && sheet.rows.includes("Nudges=false") &&
+        sheet.rows.includes("Trash talk=true") && sheet.rows.some((r) => /^Result Spoilers=/.test(r)));
+      writes.length = 0;
+      rpcReply = ["nudge", "brief", "roast"];   // another phone switched the brief off meanwhile
+      await page.click('#notifList .notif-row:has(.notif-t:text-is("Trash talk"))');
+      check("notif kinds: the sheet shows the switch off at once",
+        await page.evaluate(() => !window._notifOn("roast")));
+      await page.waitForTimeout(400);
+      const w = writes.filter((x) => /\/rest\/v1\/(user_prefs|rpc\/set_notif_kind)/.test(x.url)).map((x) => ({ url: x.url, b: JSON.parse(x.body) }));
+      check("notif kinds: a switch changes only its own kind on the server (never the whole list, never push/live_results/reminders)",
+        w.length === 1 && /rpc\/set_notif_kind/.test(w[0].url) && JSON.stringify(w[0].b) === JSON.stringify({ kind: "roast", enabled: false }));
+      check("notif kinds: ...and adopts the account's merged list it returns (another phone's change included)",
+        await page.evaluate(() => !window._notifOn("brief") && !window._notifOn("roast") && !window._notifOn("nudge")));
+      serverOff = [];
+      await page.evaluate(() => window._notifOffLoad());
+      await page.waitForTimeout(200);
+      check("notif kinds: a slower read of the old value doesn't undo a switch flipped here", await page.evaluate(() => !window._notifOn("roast")));
+      // A different account signing in on this phone never inherits these.
+      noRow = true;
+      await page.evaluate(() => { window.USER_ID = "u-bob"; window._postSignIn("u-andy", "bob@example.com"); });
+      await page.waitForTimeout(600);
+      check("notif kinds: a different account (with no saved switches) starts all on, not with the last account's",
+        await page.evaluate(() => ["nudge", "brief", "roast", "start", "result"].every((k) => window._notifOn(k))));
+      check("notif kinds: a card-start reminder re-checks the switch when it fires, not only when scheduled",
+        (html.match(/setTimeout\(function\(\)\{if\(_notifOn\("start"\)\)fireNotif\(/g) || []).length === 2);
+      await page.keyboard.press("Escape");
+      check("notif kinds: Escape closes the sheet", await page.evaluate(() => !document.getElementById("notifBg").classList.contains("open")));
+      check("notif kinds: no page errors", errors.length === 0 || (console.error("    " + errors.join("\n    ")), false));
+    } finally { await browser.close(); server.close(); }
+  }
+}
+
+// --- set_notif_kind (0019): one kind at a time, merged on the server ----------
+{
+  const { PGlite } = await import("@electric-sql/pglite");
+  const db = new PGlite();
+  const A = "11111111-1111-1111-1111-111111111111", B = "22222222-2222-2222-2222-222222222222";
+  await db.exec(`
+    create role anon nologin; create role authenticated nologin;
+    create schema auth;
+    create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+    grant usage on schema auth to anon, authenticated; grant execute on function auth.uid() to anon, authenticated;
+    grant usage on schema public to anon, authenticated;
+  `);
+  for (const m of ["0004_user_prefs.sql", "0019_notif_categories.sql"]) await db.exec(readFileSync(join(ROOT, "supabase/migrations", m), "utf8"));
+  const as = async (role, uid, sql, params) => {
+    await db.exec(`reset role; select set_config('request.jwt.claim.sub', '${uid || ""}', false); set role ${role};`);
+    try { return (await db.query(sql, params)).rows; } finally { await db.exec("reset role;"); }
+  };
+  const set = (uid, k, on) => as("authenticated", uid, "select public.set_notif_kind($1, $2) r", [k, on]).then((r) => r[0].r);
+  const refused = async (p) => { try { await p; return false; } catch { return true; } };
+  check("set_notif_kind: the first switch makes the row", JSON.stringify(await set(A, "roast", false)) === '["roast"]');
+  check("set_notif_kind: a second phone's switch adds to it instead of replacing it", JSON.stringify(await set(A, "nudge", false)) === '["roast","nudge"]');
+  check("set_notif_kind: switching one back on removes only that one", JSON.stringify(await set(A, "roast", true)) === '["nudge"]');
+  check("set_notif_kind: switching off twice lists it once", JSON.stringify(await set(A, "nudge", false)) === '["nudge"]');
+  await set(B, "brief", false);
+  check("set_notif_kind: one account never touches another's row",
+    JSON.stringify((await db.query(`select user_id, notif_off from user_prefs order by user_id`)).rows.map((r) => r.notif_off)) === '[["nudge"],["brief"]]');
+  check("set_notif_kind: only the push columns' defaults on a new row (push, reminders stay off)",
+    (await db.query(`select push, reminders from user_prefs where user_id = $1`, [B])).rows[0].push === false);
+  check("set_notif_kind: a malformed kind is refused", await refused(set(A, "Roast; drop", false)));
+  check("set_notif_kind: the anon key can't call it", await refused(as("anon", "", "select public.set_notif_kind('roast', false)")));
+}
 
 if (failures) { console.error(`\n${failures} preference check(s) failed`); process.exit(1); }
 console.log("\nNotification preference checks passed");
