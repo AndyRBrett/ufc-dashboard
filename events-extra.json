@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-07T00:00:48Z",
+ "generated_at": "2026-10-07T00:15:46Z",
  "promotions": [
   {
    "id": "pfl",
@@ -65,9 +65,9 @@
       "a": -108,
       "b": -109
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Roque Conceicao Moreira Jr.",
+     "method": "Submission",
+     "round": 1
     },
     {
      "a": "Matheus Soares",
