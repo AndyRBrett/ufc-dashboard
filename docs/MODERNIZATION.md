@@ -154,7 +154,6 @@ What blocks a submission, and where each item stands (updated 2026-10-07).
 | Delete my account | 5.1.1(v) | `0014_delete_account.sql`, now covering invites too (0020) |
 | Support URL and contact email | 5.1 | `support.html`; AndyRBrett@gmail.com on Support, Privacy and Terms (#289, #293) |
 | Age rating groundwork | 1.1 / 5.3 | 18+ in the terms and at sign-in (#293); expect a 17+ store rating |
-| Wikimedia attribution | 5.2.2 | Credits section on `support.html` (#289) |
 | Icons and manifest | — | Separate `any` / `maskable` entries, 180px Apple icon, manifest `id` (#289) |
 | Soft-launch prep | — | 🎖️ founding members and 🎟️ invite links (#296; 0020 applied 2026-10-07) |
 
@@ -162,6 +161,7 @@ What blocks a submission, and where each item stands (updated 2026-10-07).
 
 | Item | Guideline | Decision / work |
 | ---- | --------- | --------------- |
+| Wikimedia attribution | 5.2.2 | Only a general credit so far (`support.html` #credits, #289). CC BY-SA images need per-image credit: keep each photo's Commons page, author and licence (the lookup discards them today) and show them on or beside the photo |
 | ESPN headshots | 5.2.2 | Licence them, or drop them (most fighters fall back to initials: about 1 in 5 has a Wikipedia photo) |
 | Wrapper approach | 4.2 | Capacitor or similar, with native features that justify an app (native push, widgets, Live Activities) |
 | Push | — | Web Push doesn't run in an iOS app's web view: `send-push` needs an APNs path |
