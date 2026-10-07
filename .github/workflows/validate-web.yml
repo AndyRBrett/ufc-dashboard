@@ -53,10 +53,10 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    # 15, not 10: a healthy run takes ~4 minutes, and the Chromium step below
-    # may now spend up to 6 retrying a stalled download instead of letting
+    # 20, not 10: a healthy run takes ~4 minutes, and the Chromium steps below
+    # may spend up to 13 on a slow mirror or a retried download instead of letting
     # one stall eat the whole budget.
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -71,27 +71,38 @@ jobs:
           npm run lint
           npm run check:web
           npm run check:functions
-      # The browser download stalled three times on 2026-10-07 and each stall
+      # The Chromium install stalled three times on 2026-10-07 and each stall
       # ran the job into its timeout: a cancelled validate skips the Pages
-      # deploy, so #294 never reached the site. The browser is now cached
-      # (keyed on the lockfile, so a Playwright bump fetches a fresh one), and
-      # each install attempt gets 2 minutes and up to 3 tries. A healthy install
-      # takes ~25s. --with-deps still installs the OS packages every run; with
-      # a cache hit it skips only the download.
+      # deploy, so #294 never reached the site. The stall is apt (the OS font
+      # packages --with-deps pulls from the Azure mirror), not the browser
+      # download. Killing it from outside doesn't work: the root apt-get that
+      # playwright starts outlives `timeout` and keeps the dpkg lock, so every
+      # retry fails at once ("Could not get lock /var/lib/dpkg/lock-frontend").
+      # So apt bounds itself: a 30s per-request timeout, its own retries, and a
+      # wait for the lock. The OS deps and the browser are separate steps, and
+      # only the browser download (no root, cleanly killable) is retried from
+      # outside. The browser is cached, keyed on the lockfile.
       - name: Cache Chromium
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Install Chromium OS dependencies
+        timeout-minutes: 6
+        run: |
+          printf '%s\n' 'Acquire::http::Timeout "30";' 'Acquire::https::Timeout "30";' \
+            'Acquire::Retries "5";' 'DPkg::Lock::Timeout "180";' \
+            | sudo tee /etc/apt/apt.conf.d/99ci-bounded >/dev/null
+          npx playwright install-deps chromium
       - name: Install Chromium
         timeout-minutes: 7
         run: |
           for i in 1 2 3; do
-            if timeout --kill-after=10 120 npx playwright install --with-deps chromium; then exit 0; fi
-            echo "::warning::Chromium install attempt $i stalled or failed; retrying"
+            if timeout --kill-after=10 120 npx playwright install chromium; then exit 0; fi
+            echo "::warning::Chromium download attempt $i stalled or failed; retrying"
             sleep 5
           done
-          echo "::error::Chromium install failed 3 times"
+          echo "::error::Chromium download failed 3 times"
           exit 1
       - name: Boot smoke test
         run: npm run smoke
