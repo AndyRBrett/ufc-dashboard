@@ -7542,12 +7542,22 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
   var prelims=ev.fights.filter(function(f){return f.lbl==="Prelim"||f.lbl==="Early Prelim";});
   var totalExtra=mainCard.length+prelims.length;
   var mainFight=ev.fights[0],coFight=ev.fights[1];
-  var mainRow=makeFightRow(mainFight,ei,0,getRegIdx(ei,0),matchFilter(mainFight));
-  if(!matchFilter(mainFight))mainRow.style.opacity="0.3";
+  // A weight-class filter (or a search) shows only the bouts that match, in
+  // card order and straight on the card: hiding the rest behind "N more
+  // fights" would leave a filtered card looking empty.
+  if(curFilter!=="all"||curSearch){
+    var order=[mainFight].concat(coFight?[coFight]:[],mainCard,prelims);
+    order.forEach(function(f){
+      if(!matchFilter(f))return;
+      var mi=mainCard.indexOf(f);
+      var fi=f===mainFight?0:f===coFight?1:mi>-1?mi+2:mainCard.length+2+prelims.indexOf(f);
+      fw.appendChild(makeFightRow(f,ei,fi,getRegIdx(ei,fi),true));
+    });
+  } else {
+  var mainRow=makeFightRow(mainFight,ei,0,getRegIdx(ei,0),true);
   fw.appendChild(mainRow);
   if(coFight){
-    var coRow=makeFightRow(coFight,ei,1,getRegIdx(ei,1),matchFilter(coFight));
-    if(!matchFilter(coFight))coRow.style.opacity="0.3";
+    var coRow=makeFightRow(coFight,ei,1,getRegIdx(ei,1),true);
     fw.appendChild(coRow);
   }
   if(totalExtra>0){
@@ -7571,14 +7581,15 @@ function makeEventBlock(ev,ei,evNum,visTotal,isFeat){
     fw.appendChild(moreBtn);
     var moreBody=document.createElement("div");moreBody.className="more-body"+(_openMore[ei]?" open":"");moreBody.id=moreId;
     mainCard.forEach(function(f,i){
-      var fi=i+2;var r=makeFightRow(f,ei,fi,getRegIdx(ei,fi),matchFilter(f));
-      if(!matchFilter(f))r.style.opacity="0.3";moreBody.appendChild(r);
+      var fi=i+2;var r=makeFightRow(f,ei,fi,getRegIdx(ei,fi),true);
+      moreBody.appendChild(r);
     });
     prelims.forEach(function(f,i){
-      var fi=mainCard.length+2+i;var r=makeFightRow(f,ei,fi,getRegIdx(ei,fi),matchFilter(f));
-      if(!matchFilter(f))r.style.opacity="0.3";moreBody.appendChild(r);
+      var fi=mainCard.length+2+i;var r=makeFightRow(f,ei,fi,getRegIdx(ei,fi),true);
+      moreBody.appendChild(r);
     });
     fw.appendChild(moreBody);
+  }
   }
   var fotKey="fotn_"+ev.date;var fotPick=preds_fotn[fotKey]||"";
   var fotRow=document.createElement("div");fotRow.className="fotn-row";
