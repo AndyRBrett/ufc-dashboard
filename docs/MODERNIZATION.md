@@ -140,17 +140,33 @@ fallback used only when `data.js` is stale.
 
 ---
 
-## App Store: decisions, not code
+## App Store checklist
 
-These block a submission and none of them can be decided in code:
+What blocks a submission, and where each item stands (updated 2026-10-07).
 
-| Item | Guideline | Decision |
-| ---- | --------- | -------- |
-| "UFC" in the name, manifest and UI | 5.2.1 | **Done 2026-10-06:** renamed to "Picked Fight" (manifest, page title, Home Screen title, share images, legal pages, FightBot). "UFC" remains only where it names the promotion's events |
-| ESPN headshots, Wikipedia images | 5.2.2 | Licence them, or attribute Wikimedia images per their licence and drop ESPN |
+### Done
+
+| Item | Guideline | What shipped |
+| ---- | --------- | ------------ |
+| "UFC" in the app's name | 5.2.1 | Renamed **Picked Fight** (#290): manifest, page and Home Screen titles, PICKED / FIGHT icons, header wordmark, share and Wrapped images, legal pages, FightBot, sign-in email sender. "UFC" remains only where it names the promotion's events |
+| Terms of use, agreed at sign-in | 1.2 | `terms.html` (zero tolerance, report and block, no wagering), plus a required Terms tap at sign-in (#289, #293) |
+| Report and block, privacy policy | 1.2 / 5.1 | `0013_safety.sql`, `privacy.html` (earlier) |
+| Delete my account | 5.1.1(v) | `0014_delete_account.sql`, now covering invites too (0020) |
+| Support URL and contact email | 5.1 | `support.html`; AndyRBrett@gmail.com on Support, Privacy and Terms (#289, #293) |
+| Age rating groundwork | 1.1 / 5.3 | 18+ in the terms and at sign-in (#293); expect a 17+ store rating |
+| Wikimedia attribution | 5.2.2 | Credits section on `support.html` (#289) |
+| Icons and manifest | — | Separate `any` / `maskable` entries, 180px Apple icon, manifest `id` (#289) |
+| Soft-launch prep | — | 🎖️ founding members and 🎟️ invite links (#296; 0020 applied 2026-10-07) |
+
+### Still open
+
+| Item | Guideline | Decision / work |
+| ---- | --------- | --------------- |
+| ESPN headshots | 5.2.2 | Licence them, or drop them (most fighters fall back to initials: about 1 in 5 has a Wikipedia photo) |
 | Wrapper approach | 4.2 | Capacitor or similar, with native features that justify an app (native push, widgets, Live Activities) |
 | Push | — | Web Push doesn't run in an iOS app's web view: `send-push` needs an APNs path |
 | CORS | — | Add the wrapper's origin (e.g. `capacitor://localhost`) to `ALLOWED_ORIGINS` in the Supabase function secrets; no code change |
-| Unfiltered Grok roasts aimed at private people | 1.1 / 1.2 | Expect review scrutiny and a 17+ rating; consider a filtered mode for the store build |
-| Odds and "Parlay Picks" | 5.3 | No real money, but expect 17+ and questions; keep it clearly a game |
-| Support URL, contact email, privacy nutrition label, privacy manifest | 5.1 | A real contact address (not a GitHub issue) |
+| Unfiltered Grok roasts aimed at private people | 1.1 / 1.2 | Expect review scrutiny; consider a filtered mode for the store build |
+| Odds and "Parlay Picks" | 5.3 | No real money, but expect questions; keep it clearly a game |
+| Privacy nutrition label, privacy manifest | 5.1 | Filled in App Store Connect / the wrapper, from `privacy.html` |
+| Scale before a wider launch | — | Items 5 (client error reporting) and 6 (live polling) above |
