@@ -1898,6 +1898,15 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     </div>
   </div>
 </div>
+<div class="nm-bg" id="termsBg" onclick="if(event.target===this)closeTermsSheet()">
+  <div class="nm-box" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
+    <div class="nm-top"><h3 id="termsTitle">Before your next pick</h3><button class="nm-xbtn" onclick="closeTermsSheet()" aria-label="Close">x</button></div>
+    <p>Picked Fight now asks every account to confirm this once.</p>
+    <label class="acct-agree"><input type="checkbox" id="termsAgree" onchange="document.getElementById('termsErr').style.display='none'"><span>I'm 18 or older and I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>, including zero tolerance for abusive content and abusive players.</span></label>
+    <div class="nm-err" id="termsErr"></div>
+    <button class="nm-btn" id="termsAgreeBtn" onclick="termsAgree()">Agree and continue</button>
+  </div>
+</div>
 <div class="nm-bg" id="roomBg" onclick="if(event.target===this)closeRoomSheet()">
   <div class="nm-box" role="dialog" aria-modal="true" aria-labelledby="roomTitle">
     <div class="nm-top"><h3 id="roomTitle">👥 Rooms</h3><button class="nm-xbtn" onclick="closeRoomSheet()" aria-label="Close">x</button></div>
@@ -2290,6 +2299,7 @@ try{
 }catch(e){}
 var _authReady=_ensureAuth().catch(function(){var id=null;try{id=localStorage.getItem("ufc_uid");}catch(e){}if(!id){id=(typeof crypto!=="undefined"&&crypto.randomUUID)?crypto.randomUUID():"u"+Math.random().toString(36).slice(2)+Date.now().toString(36);try{localStorage.setItem("ufc_uid",id);}catch(e){}}USER_ID=id;_sbToken=null;return USER_ID;});
 _authReady.then(function(){if(_hashSignIn&&typeof _postSignIn==="function")_postSignIn(_hashPrevId,null);});
+_authReady.then(function(){if(!_hashSignIn&&typeof _checkTerms==="function")_checkTerms();});
 var VAPID_PUBLIC_KEY="BDsk51TS3jHISYUwDIyiAayIq5-W1U8RqZsBdAbIZ45aKurpDIwIsCjImxF8g5zUQnIhn2kIIWTYf6BbNA_swGU";
 var userEmoji="🥊";
 try{userEmoji=localStorage.getItem("ufc_emoji")||"🥊";}catch(e){}
@@ -4941,7 +4951,12 @@ function closeNameModal(){
 // held pick, so a later sign-in can't quietly make a pick the user walked away from.
 var _acctHoldsPick=false;
 function _pickNeedsAccount(cb){
-  if(_sessEmail())return false;
+  if(_sessEmail()){
+    if(!_termsNeeded)return false;
+    window._pp=cb||null;_termsHoldsPick=true;
+    openTermsSheet();
+    return true;
+  }
   window._pp=cb||null;_acctHoldsPick=true;
   openAcct();
   document.getElementById("acctTitle").textContent="Sign In to Pick";
@@ -5146,7 +5161,6 @@ function acctVerify(){
       _acctHoldsPick=false;   // verified: the held pick goes through in _postSignIn
       closeAcct();
       _postSignIn(prevId,email);
-      _recordTerms();
     })
     .catch(function(){btn.disabled=false;btn.textContent="Verify code";errEl.textContent="Wrong or expired code — try again";errEl.style.display="block";});
 }
@@ -5155,6 +5169,39 @@ function acctVerify(){
 // login by delete_my_account). Bump TERMS_VERSION when terms.html changes in
 // substance, so the next sign-in records the new version.
 var TERMS_VERSION="2026-10-07";
+// Accounts signed in before the tick existed: the boot check reads the login's
+// metadata, and only a positive "no acceptance of this version" sets
+// _termsNeeded (an unreadable answer locks nobody out). Picks then wait on the
+// one-time Terms sheet, the same way they wait on sign-in.
+var _termsNeeded=false;
+function _termsLocalOk(){try{var t=JSON.parse(localStorage.getItem("ufc_terms")||"null");return !!t&&t.v===TERMS_VERSION;}catch(e){return false;}}
+function _checkTerms(){
+  if(!_sbToken||!_sessEmail()||_termsLocalOk())return Promise.resolve();
+  return fetch(SUPABASE_URL+"/auth/v1/user",{headers:_sbHeaders()}).then(function(r){return r.ok?r.json():null;}).then(function(u){
+    if(!u||typeof u!=="object"||Array.isArray(u)||!u.id)return;
+    var md=u.user_metadata||{};
+    if(md.terms_version===TERMS_VERSION){
+      try{localStorage.setItem("ufc_terms",JSON.stringify({v:TERMS_VERSION,at:md.terms_accepted_at||""}));}catch(e){}
+      return;
+    }
+    _termsNeeded=true;
+  }).catch(function(){});
+}
+function openTermsSheet(){
+  document.getElementById("termsAgree").checked=false;
+  document.getElementById("termsErr").style.display="none";
+  document.getElementById("termsBg").classList.add("open");
+}
+function closeTermsSheet(){document.getElementById("termsBg").classList.remove("open");if(_termsHoldsPick){_termsHoldsPick=false;window._pp=null;}}
+var _termsHoldsPick=false;
+function termsAgree(){
+  if(!document.getElementById("termsAgree").checked){var e=document.getElementById("termsErr");e.textContent="Tick the box to agree to the Terms first";e.style.display="block";return;}
+  _termsNeeded=false;_recordTerms();
+  var cb=window._pp;_termsHoldsPick=false;window._pp=null;
+  document.getElementById("termsBg").classList.remove("open");
+  toast("Thanks — you're all set");
+  if(cb)checkName(cb);
+}
 function _recordTerms(){
   var at=new Date().toISOString();
   try{localStorage.setItem("ufc_terms",JSON.stringify({v:TERMS_VERSION,at:at}));}catch(e){}
@@ -5180,6 +5227,9 @@ function _postSignIn(prevId,email){
   if(changed){_prefsTouched={};_prefsPending=null;}
   var finish=function(){
     _syncAcctBtn();
+    // Every completed sign-in (code or magic link) passed the Terms tick in
+    // acctSend before its email went out, so record it here, once, for both.
+    _termsNeeded=false;_recordTerms();
     if(window._pp&&userName){window._pp();window._pp=null;}
     else if(window._pp)checkName(window._pp);   // a new account names itself, then the tapped pick lands
     syncAllPicks();           // merge this device's local picks into the signed-in identity
@@ -11759,6 +11809,7 @@ var _escClosers=[
   ["statsModal",function(){closeModal();}],
   ["delBg",function(){closeDeleteConfirm();}],
   ["acctBg",function(){closeAcct();}],
+  ["termsBg",function(){closeTermsSheet();}],
   ["roomBg",function(){closeRoomSheet();}],
   ["nmBg",function(){closeNameModal();}],
   ["install-overlay",function(){closeInstall();}],
