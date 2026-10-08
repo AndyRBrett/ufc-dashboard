@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-07T22:45:57Z",
+ "generated_at": "2026-10-08T01:55:40Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -44,45 +44,6 @@
    "name": "UFC Fight Night: Allen vs. Duncan",
    "date": "2026-10-10",
    "items": [
-    {
-     "title": "Brendan Allen vs Edmen Shahbazyan | FULL FIGHT | UFC Vegas 122",
-     "url": "https://www.youtube.com/watch?v=r7tBPopcXoc",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-07T14:00:37Z",
-     "thumb": "https://i3.ytimg.com/vi/r7tBPopcXoc/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Watch the matchup between Brendan Allen and Edmen Shahbazyan ahead of Allen's fight against Christian Leroy Duncan at UFC Vegas 122! Subscribe to get all the latest…",
-     "fighters": [
-      "Brendan Allen",
-      "Christian Leroy Duncan"
-     ]
-    },
-    {
-     "title": "UFC Journey: Allen vs Duncan",
-     "url": "https://www.youtube.com/watch?v=anX0ZuVMZyI",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-06T19:38:01Z",
-     "thumb": "https://i2.ytimg.com/vi/anX0ZuVMZyI/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://www.paramountplus.com/ Two middleweights. Two hard-earned paths. As Brendan Allen faces Christian Leroy Duncan, friendship, ambition and title dreams converge under the UFC…",
-     "fighters": [
-      "Brendan Allen",
-      "Christian Leroy Duncan"
-     ]
-    },
-    {
-     "title": "BRUTAL KNOCKOUT | Christian Leroy Duncan vs Marco Tulio | FULL FIGHT",
-     "url": "https://www.youtube.com/watch?v=Ahb6P7DViFI",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-06T14:00:15Z",
-     "thumb": "https://i2.ytimg.com/vi/Ahb6P7DViFI/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Watch the matchup between Christian Leroy Duncan vs Marco Tulio ahead of Duncan's fight against Brendan Allen at UFC Vegas 122! Subscribe to get all the latest UFC…",
-     "fighters": [
-      "Brendan Allen",
-      "Christian Leroy Duncan"
-     ]
-    },
     {
      "title": "Christian Leroy Duncan’s coach reveals Brendan Allen was their top opponent pick in list sent to UFC",
      "url": "https://bloodyelbow.com/2026/10/07/christian-leroy-duncans-coach-reveals-brendan-allen-was-their-top-opponent-pick-in-list-sent-to-ufc/",
