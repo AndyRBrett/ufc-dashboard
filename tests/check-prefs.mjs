@@ -580,6 +580,10 @@ check("anon holds no grant on user_prefs",
       check("restore banner: once closed, it doesn't come back for that account", !(await shown()));
       await page.evaluate(() => { window.USER_ID = "u-carl"; window._prefsApply({ push: true }); });
       check("restore banner: ...but a different account still gets asked", await shown());
+      await page.click("#pushRestore .push-restore-x");
+      await page.evaluate(() => { window.USER_ID = "u-bob"; window._prefsApply({ push: true }); });
+      check("restore banner: a second account closing it doesn't undo the first's", !(await shown()));
+      await page.evaluate(() => { window.USER_ID = "u-dana"; window._prefsApply({ push: true }); });
       await page.click("#pushRestore .push-restore-on");
       check("restore banner: Turn on hides it and asks for permission", !(await shown()));
       await page.evaluate(() => window._prefsApply({ push: false, reminders: false }));

@@ -5696,14 +5696,19 @@ function _ensurePushFresh(){
 // account on this device, so it doesn't nag on every launch.
 function _pushRestoreShow(){
   if(!('Notification'in window)||!('PushManager'in window)||!('serviceWorker'in navigator))return;
-  try{if(localStorage.getItem("ufc_push_restore_off")===USER_ID)return;}catch(e){}
+  if(_pushRestoreOff().indexOf(USER_ID)>=0)return;
   var el=document.getElementById("pushRestore");if(el)el.classList.add("show");
 }
+// Every account that closed it on this device, not just the last one: two
+// accounts sharing a phone would otherwise undo each other's dismissal.
+function _pushRestoreOff(){try{var a=JSON.parse(localStorage.getItem("ufc_push_restore_off")||"[]");return Array.isArray(a)?a:[];}catch(e){return [];}}
 function _pushRestoreHide(){var el=document.getElementById("pushRestore");if(el)el.classList.remove("show");}
 function pushRestoreTap(){_pushRestoreHide();enablePush();}
 function pushRestoreDismiss(){
   _pushRestoreHide();
-  try{localStorage.setItem("ufc_push_restore_off",USER_ID||"");}catch(e){}
+  var off=_pushRestoreOff();
+  if(USER_ID&&off.indexOf(USER_ID)<0)off.push(USER_ID);
+  try{localStorage.setItem("ufc_push_restore_off",JSON.stringify(off.slice(-20)));}catch(e){}
 }
 function enablePush(){
   if(!('Notification'in window)||!('serviceWorker'in navigator)){toast("Notifications not supported");return;}
