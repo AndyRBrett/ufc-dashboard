@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T15:24:51Z",
+  "generated_at": "2026-10-08T16:21:19Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -13569,7 +13569,7 @@
           "f1": "Andre Fili",
           "f2": "Kai Kamaka III",
           "lbl": "Main Card",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13650,6 +13650,11 @@
               "at": "2026-10-08T13:56:07Z",
               "f1_odds": -156,
               "f2_odds": 125
+            },
+            {
+              "at": "2026-10-08T16:21:19Z",
+              "f1_odds": -151,
+              "f2_odds": 121
             }
           ],
           "open": {
@@ -13759,7 +13764,7 @@
           "f1": "Malcolm Wellmaker",
           "f2": "Otari Tanzilovi",
           "lbl": "Main Card",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13850,6 +13855,11 @@
               "at": "2026-10-08T13:56:07Z",
               "f1_odds": -237,
               "f2_odds": 186
+            },
+            {
+              "at": "2026-10-08T16:21:19Z",
+              "f1_odds": -230,
+              "f2_odds": 180
             }
           ],
           "open": {
@@ -14049,7 +14059,7 @@
           "f1": "Alice Pereira",
           "f2": "Darya Zheleznyakova",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -14115,6 +14125,11 @@
               "at": "2026-10-08T02:59:26Z",
               "f1_odds": -145,
               "f2_odds": 117
+            },
+            {
+              "at": "2026-10-08T16:21:19Z",
+              "f1_odds": -147,
+              "f2_odds": 119
             }
           ],
           "open": {
@@ -15784,7 +15799,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Kai Kamaka III",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -154,
         "close": null,
         "clv": null
@@ -15994,7 +16009,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Malcolm Wellmaker",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": 157,
         "close": null,
         "clv": null
@@ -16566,7 +16581,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Andre Fili",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 134,
         "close": null,
         "clv": null
@@ -19457,7 +19472,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Otari Tanzilovi",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": -180,
         "close": null,
         "clv": null
@@ -19512,7 +19527,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Darya Zheleznyakova",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -130,
         "close": null,
         "clv": null
@@ -19523,7 +19538,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Alice Pereira",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 110,
         "close": null,
         "clv": null
