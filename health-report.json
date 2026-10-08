@@ -1,11 +1,18 @@
 {
-  "generated_at": "2026-10-08T22:13:43Z",
+  "generated_at": "2026-10-08T23:15:44Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 6
+    "warn": 7
   },
   "findings": [
+    {
+      "severity": "WARN",
+      "check": "card-shrink",
+      "message": "UFC Fight Night: Moicano vs. Nolan dropped from 11 bouts to 9 \u2014 publishing it as a withdrawal; confirm the bout really came off the card",
+      "event": "UFC Fight Night: Moicano vs. Nolan",
+      "date": "2026-10-31"
+    },
     {
       "severity": "WARN",
       "check": "start-time-unanchored",

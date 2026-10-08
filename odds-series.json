@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T22:13:43Z",
+  "generated_at": "2026-10-08T23:15:45Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -13954,7 +13954,7 @@
           "f1": "Allen Frye Jr.",
           "f2": "RJ Harris",
           "lbl": "Prelim",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -14045,6 +14045,11 @@
               "at": "2026-10-07T22:45:57Z",
               "f1_odds": 262,
               "f2_odds": -345
+            },
+            {
+              "at": "2026-10-08T23:15:45Z",
+              "f1_odds": 260,
+              "f2_odds": -337
             }
           ],
           "open": {
@@ -14059,7 +14064,7 @@
           "f1": "Alice Pereira",
           "f2": "Darya Zheleznyakova",
           "lbl": "Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -14130,6 +14135,11 @@
               "at": "2026-10-08T16:21:19Z",
               "f1_odds": -147,
               "f2_odds": 119
+            },
+            {
+              "at": "2026-10-08T23:15:45Z",
+              "f1_odds": -145,
+              "f2_odds": 119
             }
           ],
           "open": {
@@ -14144,7 +14154,7 @@
           "f1": "Felipe Franco",
           "f2": "Brendson Ribeiro",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-01T23:03:38Z",
@@ -14220,6 +14230,11 @@
               "at": "2026-10-08T13:56:07Z",
               "f1_odds": -372,
               "f2_odds": 278
+            },
+            {
+              "at": "2026-10-08T23:15:45Z",
+              "f1_odds": -367,
+              "f2_odds": 280
             }
           ],
           "open": {
@@ -14234,7 +14249,7 @@
           "f1": "Ernesta Kareckaite",
           "f2": "Melissa Gatto",
           "lbl": "Prelim",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-10-01T23:03:38Z",
@@ -14325,6 +14340,11 @@
               "at": "2026-10-08T05:05:36Z",
               "f1_odds": -106,
               "f2_odds": -117
+            },
+            {
+              "at": "2026-10-08T23:15:45Z",
+              "f1_odds": -106,
+              "f2_odds": -116
             }
           ],
           "open": {
@@ -14339,7 +14359,7 @@
           "f1": "Niko Price",
           "f2": "Leon Shahbazyan",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-02T17:45:54Z",
@@ -14415,6 +14435,11 @@
               "at": "2026-10-08T11:45:41Z",
               "f1_odds": 121,
               "f2_odds": -149
+            },
+            {
+              "at": "2026-10-08T23:15:45Z",
+              "f1_odds": 121,
+              "f2_odds": -147
             }
           ],
           "open": {
@@ -15945,7 +15970,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Niko Price",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": -140,
         "close": null,
         "clv": null
@@ -16937,7 +16962,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Brendson Ribeiro",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -350,
         "close": null,
         "clv": null
@@ -19505,7 +19530,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "RJ Harris",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": 186,
         "close": null,
         "clv": null
@@ -19516,7 +19541,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Allen Frye Jr.",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": -220,
         "close": null,
         "clv": null
@@ -19527,7 +19552,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Darya Zheleznyakova",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -130,
         "close": null,
         "clv": null
@@ -19538,7 +19563,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Alice Pereira",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 110,
         "close": null,
         "clv": null
@@ -19549,7 +19574,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Felipe Franco",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 280,
         "close": null,
         "clv": null
@@ -19560,7 +19585,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Melissa Gatto",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": 130,
         "close": null,
         "clv": null
@@ -19571,7 +19596,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Ernesta Kareckaite",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": -150,
         "close": null,
         "clv": null
@@ -19582,7 +19607,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Leon Shahbazyan",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": 120,
         "close": null,
         "clv": null

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T22:13:43Z",
+  "generated_at": "2026-10-08T23:15:45Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "ok",
-      "last_changed_at": "2026-10-08T16:21:19Z",
+      "last_changed_at": "2026-10-08T23:15:45Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -106,7 +106,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-08T22:13:43Z",
+      "last_changed_at": "2026-10-08T23:15:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -126,17 +126,17 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-08T22:13:43Z",
+      "last_changed_at": "2026-10-08T23:15:45Z",
       "is_stale": false,
       "has_data": false,
-      "bout_count": 11,
+      "bout_count": 9,
       "line_movement": 0,
       "odds_market_priced": null
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-08T22:13:43Z",
+      "last_changed_at": "2026-10-08T23:15:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -156,7 +156,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-08T22:13:43Z",
+      "last_changed_at": "2026-10-08T23:15:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -212,7 +212,7 @@
       "f1": "Ernesta Kareckaite",
       "f2": "Melissa Gatto",
       "f1_movement": -236,
-      "f2_movement": 33,
+      "f2_movement": 34,
       "magnitude": 236,
       "main_event": false,
       "tier": "prelim",
@@ -220,7 +220,7 @@
       "low_confidence": false,
       "wc": "Women's Flyweight",
       "f1_prob_shift": 8.0,
-      "f2_prob_shift": -6.1,
+      "f2_prob_shift": -6.3,
       "priority": 472.0
     },
     {
@@ -275,17 +275,17 @@
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "f1": "Allen Frye Jr.",
       "f2": "RJ Harris",
-      "f1_movement": 76,
-      "f2_movement": -125,
-      "magnitude": 125,
+      "f1_movement": 74,
+      "f2_movement": -117,
+      "magnitude": 117,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": -7.3,
-      "f2_prob_shift": 8.8,
-      "priority": 250.0
+      "f1_prob_shift": -7.2,
+      "f2_prob_shift": 8.4,
+      "priority": 234.0
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
@@ -704,22 +704,6 @@
       "priority": 45.0
     },
     {
-      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
-      "f1": "Felipe Franco",
-      "f2": "Brendson Ribeiro",
-      "f1_movement": -22,
-      "f2_movement": -2,
-      "magnitude": 22,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Light Heavyweight",
-      "f1_prob_shift": 1.0,
-      "f2_prob_shift": 0.1,
-      "priority": 44.0
-    },
-    {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Eric Nolan",
       "f2": "Court McGee",
@@ -753,18 +737,18 @@
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
-      "f1": "Alice Pereira",
-      "f2": "Darya Zheleznyakova",
+      "f1": "Felipe Franco",
+      "f2": "Brendson Ribeiro",
       "f1_movement": -17,
-      "f2_movement": 9,
+      "f2_movement": 0,
       "magnitude": 17,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
-      "wc": "Women's Bantamweight",
-      "f1_prob_shift": 3.0,
-      "f2_prob_shift": -2.0,
+      "wc": "Light Heavyweight",
+      "f1_prob_shift": 0.8,
+      "f2_prob_shift": 0.0,
       "priority": 34.0
     },
     {
@@ -798,6 +782,22 @@
       "f1_prob_shift": 4.4,
       "f2_prob_shift": -3.6,
       "priority": 32.0
+    },
+    {
+      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+      "f1": "Alice Pereira",
+      "f2": "Darya Zheleznyakova",
+      "f1_movement": -15,
+      "f2_movement": 9,
+      "magnitude": 15,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Women's Bantamweight",
+      "f1_prob_shift": 2.7,
+      "f2_prob_shift": -2.0,
+      "priority": 30.0
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
