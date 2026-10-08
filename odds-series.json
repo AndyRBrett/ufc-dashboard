@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T01:55:39Z",
+  "generated_at": "2026-10-08T02:59:26Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -13269,7 +13269,7 @@
           "f1": "Brendan Allen",
           "f2": "Christian Leroy Duncan",
           "lbl": "Main Event",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13365,6 +13365,11 @@
               "at": "2026-10-07T22:45:57Z",
               "f1_odds": -137,
               "f2_odds": 111
+            },
+            {
+              "at": "2026-10-08T02:59:26Z",
+              "f1_odds": -128,
+              "f2_odds": 104
             }
           ],
           "open": {
@@ -13454,7 +13459,7 @@
           "f1": "Loopy Godinez",
           "f2": "Ketlen Souza",
           "lbl": "Main Card",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13530,6 +13535,11 @@
               "at": "2026-10-07T16:19:00Z",
               "f1_odds": -240,
               "f2_odds": 192
+            },
+            {
+              "at": "2026-10-08T02:59:26Z",
+              "f1_odds": -243,
+              "f2_odds": 193
             }
           ],
           "open": {
@@ -13634,7 +13644,7 @@
           "f1": "Julius Walker",
           "f2": "Gerald Meerschaert",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13710,6 +13720,11 @@
               "at": "2026-10-07T22:45:57Z",
               "f1_odds": -302,
               "f2_odds": 232
+            },
+            {
+              "at": "2026-10-08T02:59:26Z",
+              "f1_odds": -305,
+              "f2_odds": 233
             }
           ],
           "open": {
@@ -13724,7 +13739,7 @@
           "f1": "Malcolm Wellmaker",
           "f2": "Otari Tanzilovi",
           "lbl": "Main Card",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13805,6 +13820,11 @@
               "at": "2026-10-07T16:19:00Z",
               "f1_odds": -240,
               "f2_odds": 189
+            },
+            {
+              "at": "2026-10-08T02:59:26Z",
+              "f1_odds": -238,
+              "f2_odds": 188
             }
           ],
           "open": {
@@ -13994,7 +14014,7 @@
           "f1": "Alice Pereira",
           "f2": "Darya Zheleznyakova",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -14055,6 +14075,11 @@
               "at": "2026-10-07T22:45:57Z",
               "f1_odds": -147,
               "f2_odds": 119
+            },
+            {
+              "at": "2026-10-08T02:59:26Z",
+              "f1_odds": -145,
+              "f2_odds": 117
             }
           ],
           "open": {
@@ -14254,7 +14279,7 @@
           "f1": "Niko Price",
           "f2": "Leon Shahbazyan",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-02T17:45:54Z",
@@ -14320,6 +14345,11 @@
               "at": "2026-10-07T16:19:00Z",
               "f1_odds": 126,
               "f2_odds": -156
+            },
+            {
+              "at": "2026-10-08T02:59:26Z",
+              "f1_odds": 124,
+              "f2_odds": -154
             }
           ],
           "open": {
@@ -15093,7 +15123,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Christian Leroy Duncan",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": -141,
         "close": null,
         "clv": null
@@ -15403,7 +15433,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Loopy Godinez",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 180,
         "close": null,
         "clv": null
@@ -15845,7 +15875,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Niko Price",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -140,
         "close": null,
         "clv": null
@@ -15909,7 +15939,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Malcolm Wellmaker",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 157,
         "close": null,
         "clv": null
@@ -16108,7 +16138,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Gerald Meerschaert",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -280,
         "close": null,
         "clv": null
@@ -16691,7 +16721,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Brendan Allen",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": 121,
         "close": null,
         "clv": null
@@ -19350,7 +19380,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Ketlen Souza",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -210,
         "close": null,
         "clv": null
@@ -19361,7 +19391,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Julius Walker",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 230,
         "close": null,
         "clv": null
@@ -19372,7 +19402,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Otari Tanzilovi",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -180,
         "close": null,
         "clv": null
@@ -19427,7 +19457,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Darya Zheleznyakova",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -130,
         "close": null,
         "clv": null
@@ -19438,7 +19468,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Alice Pereira",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 110,
         "close": null,
         "clv": null
@@ -19482,7 +19512,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Leon Shahbazyan",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 120,
         "close": null,
         "clv": null

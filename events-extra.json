@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-07T22:46:00Z",
+ "generated_at": "2026-10-08T02:59:26Z",
  "promotions": [
   {
    "id": "pfl",
@@ -19,86 +19,6 @@
   }
  ],
  "events": [
-  {
-   "promotion": "dwcs",
-   "name": "Dana White's Contender Series 95",
-   "date": "2026-10-06",
-   "venue": "Meta Apex",
-   "location": "Las Vegas, Nevada, United States",
-   "broadcast": "",
-   "bouts": [
-    {
-     "a": "Preston LaGrange",
-     "b": "Nell Ariano",
-     "label": "Main Event",
-     "division": "Light Heavyweight",
-     "title": false,
-     "odds": {
-      "a": 428,
-      "b": -592
-     },
-     "winner": "Preston LaGrange",
-     "method": "KO/TKO",
-     "round": 1
-    },
-    {
-     "a": "Salhahuddin Everett",
-     "b": "Ozzy Martin",
-     "label": "",
-     "division": "Welterweight",
-     "title": false,
-     "odds": {
-      "a": -125,
-      "b": 106
-     },
-     "winner": "Salhahuddin Everett",
-     "method": "KO/TKO",
-     "round": 1
-    },
-    {
-     "a": "Roque Conceicao Moreira Jr.",
-     "b": "Alexander Chavez",
-     "label": "",
-     "division": "Flyweight",
-     "title": false,
-     "odds": {
-      "a": -108,
-      "b": -109
-     },
-     "winner": "Roque Conceicao Moreira Jr.",
-     "method": "Submission",
-     "round": 1
-    },
-    {
-     "a": "Matheus Soares",
-     "b": "Ryuho Miyaguchi",
-     "label": "",
-     "division": "Bantamweight",
-     "title": false,
-     "odds": {
-      "a": -440,
-      "b": 337
-     },
-     "winner": "Matheus Soares",
-     "method": "KO/TKO",
-     "round": 1
-    },
-    {
-     "a": "Alivia Bierley",
-     "b": "Summer Onley",
-     "label": "",
-     "division": "Women's Bantamweight",
-     "title": false,
-     "odds": {
-      "a": 134,
-      "b": -158
-     },
-     "winner": "Alivia Bierley",
-     "method": "Decision (Unanimous)",
-     "round": 3
-    }
-   ]
-  },
   {
    "promotion": "pfl",
    "name": "PFL Africa 3",
@@ -150,8 +70,8 @@
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": -200,
-      "b": 174
+      "a": -180,
+      "b": 157
      },
      "winner": "",
      "method": "",
@@ -175,8 +95,8 @@
      "division": "Bantamweight",
      "title": false,
      "odds": {
-      "a": 105,
-      "b": -125
+      "a": -105,
+      "b": -115
      },
      "winner": "",
      "method": "",
