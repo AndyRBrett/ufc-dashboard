@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T04:00:44Z",
+  "generated_at": "2026-10-08T05:05:36Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -13839,7 +13839,7 @@
           "f1": "Francisco Prado",
           "f2": "Ismael Bonfim",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13895,6 +13895,11 @@
               "at": "2026-10-07T16:19:00Z",
               "f1_odds": -110,
               "f2_odds": -113
+            },
+            {
+              "at": "2026-10-08T05:05:36Z",
+              "f1_odds": -112,
+              "f2_odds": -111
             }
           ],
           "open": {
@@ -14179,7 +14184,7 @@
           "f1": "Ernesta Kareckaite",
           "f2": "Melissa Gatto",
           "lbl": "Prelim",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-10-01T23:03:38Z",
@@ -14265,6 +14270,11 @@
               "at": "2026-10-08T00:50:55Z",
               "f1_odds": -108,
               "f2_odds": -116
+            },
+            {
+              "at": "2026-10-08T05:05:36Z",
+              "f1_odds": -106,
+              "f2_odds": -117
             }
           ],
           "open": {
@@ -19413,7 +19423,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Ismael Bonfim",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": 115,
         "close": null,
         "clv": null
@@ -19424,7 +19434,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Francisco Prado",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -135,
         "close": null,
         "clv": null
@@ -19490,7 +19500,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Melissa Gatto",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": 130,
         "close": null,
         "clv": null
@@ -19501,7 +19511,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Ernesta Kareckaite",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": -150,
         "close": null,
         "clv": null
