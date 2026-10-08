@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T10:40:45Z",
+  "generated_at": "2026-10-08T11:45:41Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -13459,7 +13459,7 @@
           "f1": "Loopy Godinez",
           "f2": "Ketlen Souza",
           "lbl": "Main Card",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13540,6 +13540,11 @@
               "at": "2026-10-08T02:59:26Z",
               "f1_odds": -243,
               "f2_odds": 193
+            },
+            {
+              "at": "2026-10-08T11:45:41Z",
+              "f1_odds": -246,
+              "f2_odds": 197
             }
           ],
           "open": {
@@ -13839,7 +13844,7 @@
           "f1": "Francisco Prado",
           "f2": "Ismael Bonfim",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13900,6 +13905,11 @@
               "at": "2026-10-08T05:05:36Z",
               "f1_odds": -112,
               "f2_odds": -111
+            },
+            {
+              "at": "2026-10-08T11:45:41Z",
+              "f1_odds": -113,
+              "f2_odds": -110
             }
           ],
           "open": {
@@ -14289,7 +14299,7 @@
           "f1": "Niko Price",
           "f2": "Leon Shahbazyan",
           "lbl": "Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-10-02T17:45:54Z",
@@ -14360,6 +14370,11 @@
               "at": "2026-10-08T02:59:26Z",
               "f1_odds": 124,
               "f2_odds": -154
+            },
+            {
+              "at": "2026-10-08T11:45:41Z",
+              "f1_odds": 121,
+              "f2_odds": -149
             }
           ],
           "open": {
@@ -14546,7 +14561,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -14612,6 +14627,11 @@
               "at": "2026-10-06T14:45:44Z",
               "f1_odds": -268,
               "f2_odds": 208
+            },
+            {
+              "at": "2026-10-08T11:45:41Z",
+              "f1_odds": -270,
+              "f2_odds": 210
             }
           ],
           "open": {
@@ -15443,7 +15463,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Loopy Godinez",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 180,
         "close": null,
         "clv": null
@@ -15496,7 +15516,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -272,
         "close": null,
         "clv": null
@@ -15558,7 +15578,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 219,
         "close": null,
         "clv": null
@@ -15885,7 +15905,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Niko Price",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -140,
         "close": null,
         "clv": null
@@ -19390,7 +19410,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Ketlen Souza",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -210,
         "close": null,
         "clv": null
@@ -19423,7 +19443,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Ismael Bonfim",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": 115,
         "close": null,
         "clv": null
@@ -19434,7 +19454,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Francisco Prado",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -135,
         "close": null,
         "clv": null
@@ -19522,7 +19542,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Leon Shahbazyan",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": 120,
         "close": null,
         "clv": null

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T10:40:45Z",
+  "generated_at": "2026-10-08T11:45:41Z",
   "events_tracked": 12,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "ok",
-      "last_changed_at": "2026-10-08T05:05:36Z",
+      "last_changed_at": "2026-10-08T11:45:41Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -106,7 +106,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-08T10:40:45Z",
+      "last_changed_at": "2026-10-08T11:45:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-08T10:40:45Z",
+      "last_changed_at": "2026-10-08T11:45:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 11,
@@ -136,7 +136,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-08T10:40:45Z",
+      "last_changed_at": "2026-10-08T11:45:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -146,17 +146,17 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-10-06T14:45:44Z",
+      "last_changed_at": "2026-10-08T11:45:41Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 10,
-      "line_movement": 4,
+      "line_movement": 2,
       "odds_market_priced": false
     },
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-08T10:40:45Z",
+      "last_changed_at": "2026-10-08T11:45:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -227,17 +227,17 @@
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "f1": "Francisco Prado",
       "f2": "Ismael Bonfim",
-      "f1_movement": -227,
-      "f2_movement": 24,
-      "magnitude": 227,
+      "f1_movement": -228,
+      "f2_movement": 25,
+      "magnitude": 228,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Lightweight",
-      "f1_prob_shift": 6.3,
-      "f2_prob_shift": -4.8,
-      "priority": 454.0
+      "f1_prob_shift": 6.5,
+      "f2_prob_shift": -5.1,
+      "priority": 456.0
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
@@ -814,38 +814,6 @@
       "f1_prob_shift": 2.7,
       "f2_prob_shift": -1.5,
       "priority": 30.0
-    },
-    {
-      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
-      "f1": "Niko Price",
-      "f2": "Leon Shahbazyan",
-      "f1_movement": 4,
-      "f2_movement": -14,
-      "magnitude": 14,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Welterweight",
-      "f1_prob_shift": -0.8,
-      "f2_prob_shift": 2.3,
-      "priority": 28.0
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Ciryl Gane",
-      "f2": "Josh Hokit",
-      "f1_movement": 4,
-      "f2_movement": -11,
-      "magnitude": 11,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": -0.3,
-      "f2_prob_shift": 1.1,
-      "priority": 27.5
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
