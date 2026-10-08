@@ -625,6 +625,7 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .theme-item.active .theme-check,#notifBell.bell-active .theme-check,#liveResBtn.bell-active .theme-check{display:block}
 .fn-banner{background:linear-gradient(90deg,var(--banner-edge),var(--red),var(--banner-edge));padding:9px 16px;display:none;align-items:center;gap:10px}
 .fn-banner.show{display:flex}.odds-budget-banner{display:none;padding:8px 16px;background:var(--gold-dim);border-bottom:1px solid var(--gold-border);color:var(--muted2);font-family:var(--font-body);font-size:12px;line-height:1.45;letter-spacing:.02em}.odds-budget-banner.show{display:block}.odds-budget-banner b{color:var(--gold)}
+.push-restore{display:none;align-items:center;gap:10px;padding:10px 16px;background:var(--gold-dim);border-bottom:1px solid var(--gold-border);color:var(--text);font-family:var(--font-body);font-size:13px;line-height:1.4}.push-restore.show{display:flex}.push-restore-text{flex:1;min-width:0}.push-restore-on{flex-shrink:0;background:var(--gold);color:var(--on-gold);border:0;border-radius:8px;padding:7px 12px;font-family:var(--font-body);font-weight:700;font-size:13px;cursor:pointer}.push-restore-x{flex-shrink:0;background:none;border:0;color:var(--muted);font-size:18px;line-height:1;padding:4px 2px;cursor:pointer}
 .fn-banner-text{font-family:var(--font-display);text-transform:uppercase;font-size:15px;letter-spacing:.12em;color:var(--on-accent)}
 .fn-banner-dot{width:7px;height:7px;border-radius:50%;background:var(--on-accent);animation:blink 1s infinite;flex-shrink:0}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
@@ -2045,6 +2046,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <div class="toast" id="toast"></div>
 <div class="fn-banner" id="fnBanner"><div class="fn-banner-dot"></div><div class="fn-banner-text" id="fnBannerText">FIGHT NIGHT</div><div class="fn-banner-dot"></div><div id="fnLastChecked" style="font-size:10px;opacity:.6;margin-left:8px;font-family:var(--font-body);letter-spacing:.04em"></div></div>
 <div class="odds-budget-banner" id="oddsBudgetBanner" role="status"></div>
+<div class="push-restore" id="pushRestore" role="status"><span class="push-restore-text">🔔 Your fight notifications were on. Turn them back on for this phone?</span><button class="push-restore-on" onclick="pushRestoreTap()">Turn on</button><button class="push-restore-x" onclick="pushRestoreDismiss()" aria-label="Not now">×</button></div>
 <header class="hdr">
   <!-- The avatar opens the menu drawer (#moreMenu, below), as on iOS. -->
   <button class="hdr-avatar" id="hdrAvatar" onclick="toggleMoreMenu()" aria-label="Open menu" aria-controls="moreMenu" aria-expanded="false"><span class="hdr-av-txt" id="hdrAvatarTxt"></span><svg class="hdr-av-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
@@ -5259,7 +5261,7 @@ function _postSignIn(prevId,email){
   // fetch would be handled with the PREVIOUS account's held intent and touched
   // keys -- writing A's answers onto B's row. Nothing between here and finish()
   // reads this state, so clearing it early costs nothing.
-  if(changed){_prefsTouched={};_prefsPending=null;}
+  if(changed){_prefsTouched={};_prefsPending=null;_pushRestoreHide();}
   var finish=function(){
     _syncAcctBtn();
     // Every completed sign-in (code or magic link) passed the Terms tick in
@@ -5491,8 +5493,12 @@ function _prefsApply(p){
     // Hold what we could not apply. Without this the intent is not merely
     // unshown, it is destroyed by the next _prefsSave (see there).
     _prefsPending=_prefsWithoutTouched(p);
-    if((p.push&&!_prefsTouched.push)||(p.reminders&&!_prefsTouched.reminders))
-      toast("Tap the bell to turn your fight notifications back on");
+    // A banner that stays until tapped or closed, not a toast: the toast
+    // landed beside "Signed in — picks restored!" and was gone in seconds,
+    // so people signed back in and never got their push back.
+    if(p.push&&!_prefsTouched.push)_pushRestoreShow();
+    else if(p.reminders&&!_prefsTouched.reminders)
+      toast("Open Menu → Notifications to turn your reminders back on");
     return;
   }
   if(p.push&&!_prefsTouched.push){
@@ -5683,6 +5689,22 @@ function _ensurePushFresh(){
     });
   }).then(function(sub){if(sub)return _pushRegister(sub);}).catch(function(e){console.error("push refresh failed",e);});
 }
+// The "turn notifications back on" banner. Shown when the account says push
+// was on but this install has no OS permission (a reinstall or new phone):
+// iOS only grants it on a tap, so the app can't restore it, only ask. It stays
+// until the user turns push on or closes it; closing is remembered for that
+// account on this device, so it doesn't nag on every launch.
+function _pushRestoreShow(){
+  if(!('Notification'in window)||!('PushManager'in window)||!('serviceWorker'in navigator))return;
+  try{if(localStorage.getItem("ufc_push_restore_off")===USER_ID)return;}catch(e){}
+  var el=document.getElementById("pushRestore");if(el)el.classList.add("show");
+}
+function _pushRestoreHide(){var el=document.getElementById("pushRestore");if(el)el.classList.remove("show");}
+function pushRestoreTap(){_pushRestoreHide();enablePush();}
+function pushRestoreDismiss(){
+  _pushRestoreHide();
+  try{localStorage.setItem("ufc_push_restore_off",USER_ID||"");}catch(e){}
+}
 function enablePush(){
   if(!('Notification'in window)||!('serviceWorker'in navigator)){toast("Notifications not supported");return;}
   Notification.requestPermission().then(function(p){
@@ -5696,6 +5718,7 @@ function enablePush(){
             }).catch(function(e){console.error("push register error",e);toast("⚠️ Notification setup failed — check connection");});
             try{localStorage.setItem("ufc_push","1");}catch(e){}
             _setBellActive(true);
+            _pushRestoreHide();
             _prefsSave("push");
             toast("Fight notifications enabled! 🔔");
           }).catch(function(){toast("Could not subscribe to notifications");});
@@ -5711,6 +5734,7 @@ function togglePush(){
   if(active){
     try{localStorage.setItem("ufc_push","0");}catch(e){}
     _setBellActive(false);
+    _pushRestoreHide();
     _prefsSave("push");
     if("serviceWorker" in navigator){
       navigator.serviceWorker.ready.then(function(reg){

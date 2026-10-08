@@ -37,7 +37,7 @@ const src = html.slice(a, b);
 // Build a context where every side effect _prefsApply can have is observable.
 function run(prefs, permission) {
   const store = {};
-  const calls = { ensureFresh: 0, bell: [], liveRes: [], toasts: [], schedule: 0, saved: [], liveSync: 0 };
+  const calls = { ensureFresh: 0, bell: [], liveRes: [], toasts: [], restore: 0, schedule: 0, saved: [], liveSync: 0 };
   const perm = { value: permission };
   const ctx = vm.createContext({
     console, JSON, Object, String, Array, Promise, Date, encodeURIComponent,
@@ -78,6 +78,7 @@ function run(prefs, permission) {
     _setLiveResActive: (v) => calls.liveRes.push(v),
     checkNotifSchedule: () => { calls.schedule++; },
     toast: (m) => calls.toasts.push(m),
+    _pushRestoreShow: () => { calls.restore++; },
   });
   // `"Notification" in window` is how the source probes support.
   let rows = [], status = 200;
@@ -116,15 +117,15 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
     calls.ensureFresh === 0);
   check("permission 'default': local reminders are not claimed either",
     store.ufc_notif !== "1");
-  check("permission 'default': the remembered intent surfaces as a prompt",
-    calls.toasts.length === 1 && /bell/i.test(calls.toasts[0]));
+  check("permission 'default': the remembered push intent surfaces as the banner, not a toast",
+    calls.restore === 1 && calls.toasts.length === 0);
   check("permission 'default': live_results still restores (no OS permission needed)",
     store.ufc_live_results === "1" && calls.liveRes.includes(true));
 }
 {
   const { store, calls } = run(ALL_ON, "denied");
   check("permission 'denied' is treated exactly like 'default'",
-    store.ufc_push !== "1" && calls.ensureFresh === 0 && calls.toasts.length === 1);
+    store.ufc_push !== "1" && calls.ensureFresh === 0 && calls.restore === 1);
 }
 // --- granted: the toggles actually come back ---
 {
@@ -136,7 +137,7 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
   check("permission 'granted': reminders restore and reschedule",
     store.ufc_notif === "1" && calls.schedule === 1);
   check("permission 'granted': no prompt — nothing for the user to do",
-    calls.toasts.length === 0);
+    calls.toasts.length === 0 && calls.restore === 0);
 }
 // --- positives only: a stored false never kills a live local subscription ---
 {
@@ -256,7 +257,7 @@ const ALL_ON = { push: true, live_results: true, reminders: true };
   await h.save("push");
   await h.load([{ push: true, live_results: false, reminders: false }]);
   check("no prompt for intent the user has explicitly just declined",
-    h.calls.toasts.length === 0);
+    h.calls.toasts.length === 0 && h.calls.restore === 0);
 }
 
 // --- Codex #140 round 4 P2: a touched key must not be HELD, only skipped ---
@@ -564,6 +565,25 @@ check("anon holds no grant on user_prefs",
         (html.match(/setTimeout\(function\(\)\{if\(_notifOn\("start"\)\)fireNotif\(/g) || []).length === 2);
       await page.keyboard.press("Escape");
       check("notif kinds: Escape closes the sheet", await page.evaluate(() => !document.getElementById("notifBg").classList.contains("open")));
+      // The "turn notifications back on" banner: a reinstall can't restore
+      // push by itself (no OS permission), so it asks, and keeps asking until
+      // answered. It used to be a toast that vanished in seconds behind the
+      // sign-in toast.
+      const shown = () => page.evaluate(() => document.getElementById("pushRestore").classList.contains("show"));
+      await page.evaluate(() => { Notification.requestPermission = () => Promise.resolve("denied"); window._prefsApply({ push: true }); });
+      check("restore banner: a saved push=on without permission shows the banner", await shown());
+      await page.waitForTimeout(4000);
+      check("restore banner: it stays up (it is not a toast)", await shown());
+      await page.click("#pushRestore .push-restore-x");
+      check("restore banner: × hides it", !(await shown()));
+      await page.evaluate(() => window._prefsApply({ push: true }));
+      check("restore banner: once closed, it doesn't come back for that account", !(await shown()));
+      await page.evaluate(() => { window.USER_ID = "u-carl"; window._prefsApply({ push: true }); });
+      check("restore banner: ...but a different account still gets asked", await shown());
+      await page.click("#pushRestore .push-restore-on");
+      check("restore banner: Turn on hides it and asks for permission", !(await shown()));
+      await page.evaluate(() => window._prefsApply({ push: false, reminders: false }));
+      check("restore banner: nothing saved on, no banner", !(await shown()));
       check("notif kinds: no page errors", errors.length === 0 || (console.error("    " + errors.join("\n    ")), false));
     } finally { await browser.close(); server.close(); }
   }
