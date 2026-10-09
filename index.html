@@ -1011,6 +1011,30 @@ button.ps-row:hover{background:var(--btn-bg)}
 .fn-picked-lbl{display:inline-block;font-size:13px;font-weight:600;color:#fff;margin-top:18px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);padding:7px 16px;border-radius:20px}
 .fn-picked-lbl:empty{display:none}
 .fn-extras{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:14px}
+/* Quick Pick's odds, model and short tape. With them the pick view can outgrow a
+   phone, so it scrolls; margin:auto keeps it centred when it fits (justify-content
+   centre would clip the top instead). The live view scrolls inside its own body. */
+.fn-mode:not(.fn-mode-live){overflow-y:auto;justify-content:flex-start}
+#fnPreBody{margin:auto 0;width:100%;max-width:560px}
+.fn-info{width:100%;margin-top:14px}
+.fn-info:empty{display:none}
+.fn-odds{display:flex;align-items:flex-start;gap:8px}
+.fn-odds-side{width:96px;flex-shrink:0;text-align:left}
+.fn-odds-side.r{text-align:right}
+.fn-odds-ml{font:700 20px var(--font-body);color:#fff;letter-spacing:.01em}
+.fn-odds-mv{font-size:11px;margin-left:3px;vertical-align:2px}
+.fn-odds-mv.up{color:var(--green)}
+.fn-odds-mv.dn{color:var(--loss)}
+.fn-odds-sub{font:600 11px var(--font-body);color:rgba(255,255,255,.6);margin-top:2px}
+.fn-odds-sub b{font-weight:700;color:#fff}
+.fn-odds-dog{display:inline-block;margin-top:5px;font:700 10px var(--font-body);color:var(--gold);background:var(--gold-dim);border:1px solid var(--gold-border);padding:2px 6px;border-radius:4px}
+.fn-odds-ctr{flex:1;padding-top:6px}
+.fn-odds-lbl{font:600 9px var(--font-body);color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.12em}
+.fn-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;margin-top:8px;background:rgba(255,255,255,.08)}
+.fn-bar i{display:block;height:100%}
+.fn-bar i:first-child{background:var(--red)}
+.fn-bar i:last-child{background:var(--gold)}
+.fn-info .fnl-tape{margin:12px 0 0}
 .fn-extras:empty{display:none}
 .fn-ex-row{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px}
 .fn-ex-lbl{font-size:12px;color:rgba(255,255,255,.6)}
@@ -1801,9 +1825,11 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     <div class="fn-ev" id="fn-ev"></div>
     <div class="fn-wc" id="fn-wc"></div>
     <div class="fn-mu"><div class="fn-ft" id="fn-f1-wrap" role="button" tabindex="0" onclick="fnPick(0)"><div class="fn-nm" id="fn-f1"></div><div class="fn-rc" id="fn-r1"></div></div><div class="fn-vs">VS</div><div class="fn-ft fnr" id="fn-f2-wrap" role="button" tabindex="0" onclick="fnPick(1)"><div class="fn-nm" id="fn-f2"></div><div class="fn-rc" id="fn-r2"></div></div></div>
+    <div class="fn-info" id="fn-info"></div>
     <div class="fn-pick-hint" id="fn-pick-hint">Tap a fighter to pick · Swipe to pick</div>
     <div class="fn-picked-lbl" id="fn-picked-lbl"></div>
     <div class="fn-extras" id="fn-extras"></div>
+    <div class="fn-info" id="fn-tape"></div>
     <div class="fn-nav"><button class="fn-nb" onclick="fnNav(-1)">← Prev</button><button class="fn-nb" onclick="fnNav(1)">Next →</button></div>
     <div class="fn-ctr" id="fn-ctr"></div>
   </div>
@@ -5880,7 +5906,7 @@ function openFN(evArg){
 function closeFN(){
   var m=document.getElementById("fnMode");
   m.classList.remove("open");m.classList.remove("fn-mode-live");unlockScroll();
-  fnLive=false;fnAutoFollow=true;
+  fnLive=false;fnAutoFollow=true;_fnPreShown=null;
   var fl=document.getElementById("fnl-floats");if(fl)fl.innerHTML="";
   if(fnPickedAny){render();updatePicksWidget();}
 }
@@ -5900,8 +5926,14 @@ function updateFN(){
   if(!fnFights.length)return;
   if(fnLive)updateFNLive();else updateFNPre();
 }
+var _fnPreShown=null;
 function updateFNPre(){
   var f=fnFights[fnIdx];
+  // The pick view can outgrow a phone and scroll (see .fn-mode:not(.fn-mode-live)).
+  // A new bout starts at the top, with its fighters in reach; a re-render of the
+  // same bout (a pick, a method, a lock) keeps where the user scrolled to.
+  var shownKey=fnEv?pk(fnEv,f):null;
+  if(shownKey!==_fnPreShown){_fnPreShown=shownKey;var fm=document.getElementById("fnMode");if(fm)fm.scrollTop=0;}
   document.getElementById("fn-ev").textContent=fnEv?fnEv.name:"";
   var wc=document.getElementById("fn-wc");wc.innerHTML="";
   wc.appendChild(document.createTextNode(f.lbl+" · "+wcLabel(f.wc)));
@@ -5924,6 +5956,55 @@ function updateFNPre(){
     lbl.textContent="";
   }
   _fnExtras(f,myPick,fnLocked||!!f.winner);
+  _fnInfo(f);
+}
+// What's worth a glance before tapping a side: the moneyline (the market's
+// no-vig win chance, the move since the line opened, what a correct dog call is
+// worth) right under the fighters, and below the pick's method and lock, the
+// model's second opinion and a short tale of the tape. Everything is read from
+// the same places the card row reads it, and a missing value is left out,
+// never shown as a zero.
+function _fnInfo(f){
+  var box=document.getElementById("fn-info"),tbox=document.getElementById("fn-tape");if(!box||!tbox)return;
+  box.textContent="";tbox.textContent="";
+  var mk=function(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;};
+  var o=f.odds,hasOdds=o&&typeof o.f1==="number"&&typeof o.f2==="number";
+  var mkt=hasOdds?modelDeVig(o):null;
+  if(hasOdds){
+    var po=fnEv?prevOdds[pk(fnEv,f)]:null,row=mk("div","fn-odds");
+    row.setAttribute("aria-label","Moneyline");
+    var side=function(n){
+      var v=o["f"+n],other=o["f"+(3-n)],ftr=f["f"+n];
+      var s=mk("div","fn-odds-side"+(n===2?" r":""));
+      var ml=mk("div","fn-odds-ml",fmtOdds(v));
+      var was=po&&typeof po["f"+n]==="number"?po["f"+n]:null;
+      if(was!==null&&was!==v){
+        var mv=mk("span","fn-odds-mv "+(v<was?"up":"dn"),v<was?"▲":"▼");
+        mv.title="Opened "+fmtOdds(was)+" → now "+fmtOdds(v);ml.appendChild(mv);
+      }
+      s.appendChild(ml);
+      var sub=mk("div","fn-odds-sub");
+      sub.appendChild(document.createTextNode((v===other?"Even":v<other?"Favourite":"Underdog")+(mkt?" · ":"")));
+      if(mkt)sub.appendChild(mk("b",null,Math.round(mkt["p"+n]*100)+"%"));
+      s.appendChild(sub);
+      var db=dogPtsFor(v);
+      if(db)s.appendChild(mk("span","fn-odds-dog","+"+db+" if "+ftr.n.split(" ").pop()+" wins"));
+      return s;
+    };
+    var ctr=mk("div","fn-odds-ctr");ctr.appendChild(mk("div","fn-odds-lbl",mkt?"Odds · win chance":"Odds"));
+    if(mkt){
+      var bar=mk("div","fn-bar"),b1=mk("i"),b2=mk("i"),p1=Math.round(mkt.p1*100);
+      b1.style.width=p1+"%";b2.style.width=(100-p1)+"%";bar.appendChild(b1);bar.appendChild(b2);
+      bar.title="Win chance implied by the odds, bookmaker margin removed";ctr.appendChild(bar);
+    }
+    row.appendChild(side(1));row.appendChild(ctr);row.appendChild(side(2));
+    box.appendChild(row);
+  }
+  var tape=mk("div","fnl-tape"),rows=_tapeRows(f,{odds:!hasOdds,model:true,age:true,form:true});
+  if(rows.length){
+    tape.appendChild(mk("div","fnl-tape-hdr","Tale of the Tape"));
+    _tapeAppend(tape,rows);tbox.appendChild(tape);
+  }
 }
 // Method of victory and the 🔒 lock for the bout on screen, the same choices
 // (and the same setters) as the card row, once a pick is in and the bout is open.
@@ -6051,11 +6132,27 @@ function fnRenderStakes(f){
 // Tale of the tape: odds, rank, and any physical/striking stats we actually have.
 // Rows with no data on either side are skipped (deep stats are often empty per the
 // UFCStats scraping gap), so the panel degrades to whatever's known.
-function fnRenderTape(f){
-  var el=document.getElementById("fnl-tape");if(!el)return;el.innerHTML="";
+// The rows, shared by the live view and Quick Pick. opts.odds adds the moneyline
+// (Quick Pick draws its own), opts.model the model's win chance, opts.age and
+// opts.form the fighters' ages and last five results, newest first.
+function _tapeRows(f,opts){
+  opts=opts||{};
   var s1=stOf(f.f1)||{},s2=stOf(f.f2)||{},rows=[],num=function(v){return parseFloat(v)||0;};
-  if(f.odds&&(f.odds.f1!=null||f.odds.f2!=null))rows.push(["Odds",f.odds.f1!=null?fmtOdds(f.odds.f1):"—",f.odds.f2!=null?fmtOdds(f.odds.f2):"—"]);
+  if(opts.odds&&f.odds&&(f.odds.f1!=null||f.odds.f2!=null))rows.push(["Odds",f.odds.f1!=null?fmtOdds(f.odds.f1):"—",f.odds.f2!=null?fmtOdds(f.odds.f2):"—"]);
+  if(opts.model&&!f.winner){
+    var me=modelEdge(f);
+    if(me){var mp=Math.round(me.model.p1*100);rows.push(["Model win %",mp+"%",(100-mp)+"%"]);}
+  }
   var r1=_fnRankLbl(f.f1),r2=_fnRankLbl(f.f2);if(r1||r2)rows.push(["Rank",r1||"—",r2||"—"]);
+  if(opts.age){
+    var a1=_ageFromDob(s1.dob),a2=_ageFromDob(s2.dob);
+    if(a1!=null||a2!=null)rows.push(["Age",a1!=null?""+a1:"—",a2!=null?""+a2:"—"]);
+  }
+  if(opts.form){
+    var fm=function(s){return s.form&&s.form.length?s.form.slice(0,5).map(function(x){return x.r==="W"||x.r==="L"?x.r:"D";}).join(""):"—";};
+    var fm1=fm(s1),fm2=fm(s2);
+    if(fm1!=="—"||fm2!=="—")rows.push(["Last 5 (newest first)",fm1,fm2]);
+  }
   if(s1.ht||s2.ht)rows.push(["Height",s1.ht||"—",s2.ht||"—"]);
   if(s1.rch||s2.rch)rows.push(["Reach",s1.rch||"—",s2.rch||"—"]);
   if(s1.stn||s2.stn)rows.push(["Stance",s1.stn||"—",s2.stn||"—"]);
@@ -6066,9 +6163,9 @@ function fnRenderTape(f){
   if(num(s1.tdd)||num(s2.tdd))rows.push(["TD Def",statVal(s1,s1.tdd,"%"),statVal(s2,s2.tdd,"%")]);
   if(num(s1.ko)||num(s2.ko))rows.push(["KO Wins",statVal(s1,s1.ko),statVal(s2,s2.ko)]);
   if(num(s1.sub)||num(s2.sub))rows.push(["Sub Wins",statVal(s1,s1.sub),statVal(s2,s2.sub)]);
-  if(!rows.length){el.style.display="none";return;}
-  el.style.display="";
-  var hdr=document.createElement("div");hdr.className="fnl-tape-hdr";hdr.textContent="Tale of the Tape";el.appendChild(hdr);
+  return rows;
+}
+function _tapeAppend(el,rows){
   rows.forEach(function(r){
     var row=document.createElement("div");row.className="fnl-tape-row";
     var v1=document.createElement("span");v1.className="fnl-tape-v1";v1.textContent=r[1];
@@ -6076,6 +6173,14 @@ function fnRenderTape(f){
     var v2=document.createElement("span");v2.className="fnl-tape-v2";v2.textContent=r[2];
     row.appendChild(v1);row.appendChild(l);row.appendChild(v2);el.appendChild(row);
   });
+}
+function fnRenderTape(f){
+  var el=document.getElementById("fnl-tape");if(!el)return;el.innerHTML="";
+  var rows=_tapeRows(f,{odds:true});
+  if(!rows.length){el.style.display="none";return;}
+  el.style.display="";
+  var hdr=document.createElement("div");hdr.className="fnl-tape-hdr";hdr.textContent="Tale of the Tape";el.appendChild(hdr);
+  _tapeAppend(el,rows);
 }
 function updateFNLive(){
   if(!fnFights.length)return;
@@ -7512,7 +7617,9 @@ var WHATS_NEW=[
   {id:"2026-10-30-notif-kinds",emoji:"🔔",title:"Pick which notifications you get",
    desc:"Menu → Notifications now has a switch for each kind: card starting, results, fight changes, the Friday brief, trash talk, challenges, nudges and friends' picks. Turn off what you don't want; your choices follow your account."},
   {id:"2026-10-31-invites-founders",emoji:"🎟️",title:"Invite friends, and founding members",
-   desc:"Menu → Invite friends gives you your own link to send your group, and shows how many joined through it. And everyone with an account before 1 January 2027 is a 🎖️ founding member: look for the badge on Ranks."}
+   desc:"Menu → Invite friends gives you your own link to send your group, and shows how many joined through it. And everyone with an account before 1 January 2027 is a 🎖️ founding member: look for the badge on Ranks."},
+  {id:"2026-10-31-quick-pick-odds",emoji:"📊",title:"Odds and the tape in Quick Pick",
+   desc:"Quick Pick now shows each bout's odds before you pick: the win chance they imply, how the line has moved, and the underdog bonus on offer. Under that sits a Tale of the Tape with the model's call, rank, age, last five results, size and finishes."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
