@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T14:06:07Z",
+  "generated_at": "2026-10-09T15:07:42Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -13589,7 +13589,7 @@
           "f1": "Andre Fili",
           "f2": "Kai Kamaka III",
           "lbl": "Main Card",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13680,6 +13680,11 @@
               "at": "2026-10-09T01:25:51Z",
               "f1_odds": -149,
               "f2_odds": 122
+            },
+            {
+              "at": "2026-10-09T15:07:42Z",
+              "f1_odds": -146,
+              "f2_odds": 121
             }
           ],
           "open": {
@@ -14219,7 +14224,7 @@
           "f1": "Felipe Franco",
           "f2": "Brendson Ribeiro",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-10-01T23:03:38Z",
@@ -14300,6 +14305,11 @@
               "at": "2026-10-08T23:15:45Z",
               "f1_odds": -367,
               "f2_odds": 280
+            },
+            {
+              "at": "2026-10-09T15:07:42Z",
+              "f1_odds": -372,
+              "f2_odds": 283
             }
           ],
           "open": {
@@ -14516,6 +14526,212 @@
             "at": "2026-10-02T17:45:54Z",
             "f1_odds": 120,
             "f2_odds": -140
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
+      "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Joaquin Buckley",
+          "f2": "Mike Malott",
+          "lbl": "Main Event",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-09T15:07:42Z",
+              "f1_odds": 131,
+              "f2_odds": -151
+            }
+          ],
+          "open": {
+            "at": "2026-10-09T15:07:42Z",
+            "f1_odds": 131,
+            "f2_odds": -151
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Erin Blanchfield",
+          "f2": "Jasmine Jasudavicius",
+          "lbl": "Co-Main",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-09T15:07:42Z",
+              "f1_odds": -230,
+              "f2_odds": 192
+            }
+          ],
+          "open": {
+            "at": "2026-10-09T15:07:42Z",
+            "f1_odds": -230,
+            "f2_odds": 192
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Marc-Andre Barriault",
+          "f2": "Kyle Daukaus",
+          "lbl": "Main Card",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-09T15:07:42Z",
+              "f1_odds": 185,
+              "f2_odds": -220
+            }
+          ],
+          "open": {
+            "at": "2026-10-09T15:07:42Z",
+            "f1_odds": 185,
+            "f2_odds": -220
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Louis Jourdain",
+          "f2": "Timothy Cuamba",
+          "lbl": "Main Card",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-09T15:07:42Z",
+              "f1_odds": -170,
+              "f2_odds": 130
+            }
+          ],
+          "open": {
+            "at": "2026-10-09T15:07:42Z",
+            "f1_odds": -170,
+            "f2_odds": 130
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Mandel Nallo",
+          "f2": "Nate Landwehr",
+          "lbl": "Main Card",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-09T15:07:42Z",
+              "f1_odds": -235,
+              "f2_odds": 195
+            }
+          ],
+          "open": {
+            "at": "2026-10-09T15:07:42Z",
+            "f1_odds": -235,
+            "f2_odds": 195
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Tanner Boser",
+          "f2": "Jhonata Diniz",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-09T15:07:42Z",
+              "f1_odds": 210,
+              "f2_odds": -250
+            }
+          ],
+          "open": {
+            "at": "2026-10-09T15:07:42Z",
+            "f1_odds": 210,
+            "f2_odds": -250
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Julien Leblanc",
+          "f2": "Nick Galanti",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-09T15:07:42Z",
+              "f1_odds": 420,
+              "f2_odds": -550
+            }
+          ],
+          "open": {
+            "at": "2026-10-09T15:07:42Z",
+            "f1_odds": 420,
+            "f2_odds": -550
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Chad Anheliger",
+          "f2": "Steven Koslow",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-09T15:07:42Z",
+              "f1_odds": -130,
+              "f2_odds": 110
+            }
+          ],
+          "open": {
+            "at": "2026-10-09T15:07:42Z",
+            "f1_odds": -130,
+            "f2_odds": 110
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Melissa Croden",
+          "f2": "Chelsea Chandler",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-09T15:07:42Z",
+              "f1_odds": -240,
+              "f2_odds": 205
+            }
+          ],
+          "open": {
+            "at": "2026-10-09T15:07:42Z",
+            "f1_odds": -240,
+            "f2_odds": 205
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Cody Chovancek",
+          "f2": "You Su-young",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-09T15:07:42Z",
+              "f1_odds": -150,
+              "f2_odds": 130
+            }
+          ],
+          "open": {
+            "at": "2026-10-09T15:07:42Z",
+            "f1_odds": -150,
+            "f2_odds": 130
           },
           "close": null,
           "clv": null
@@ -15509,6 +15725,15 @@
         "open": 118,
         "close": 118,
         "clv": 0
+      },
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Melissa Croden",
+        "side": "f2",
+        "points": 1,
+        "open": 205,
+        "close": null,
+        "clv": null
       }
     ],
     "Priscila Cachoeira": [
@@ -15759,6 +15984,15 @@
         "open": 257,
         "close": 257,
         "clv": 0
+      },
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Marc-Andre Barriault",
+        "side": "f2",
+        "points": 1,
+        "open": -220,
+        "close": null,
+        "clv": null
       }
     ],
     "Diego Lopes": [
@@ -15894,7 +16128,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Kai Kamaka III",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": -154,
         "close": null,
         "clv": null
@@ -16676,7 +16910,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Andre Fili",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": 134,
         "close": null,
         "clv": null
@@ -17032,7 +17266,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Brendson Ribeiro",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -350,
         "close": null,
         "clv": null
@@ -19644,7 +19878,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Felipe Franco",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 280,
         "close": null,
         "clv": null
@@ -19679,6 +19913,204 @@
         "side": "f1",
         "points": 16,
         "open": 120,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Joaquin Buckley": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Mike Malott",
+        "side": "f1",
+        "points": 1,
+        "open": 131,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Mike Malott": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Joaquin Buckley",
+        "side": "f2",
+        "points": 1,
+        "open": -151,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Erin Blanchfield": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Jasmine Jasudavicius",
+        "side": "f1",
+        "points": 1,
+        "open": -230,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Jasmine Jasudavicius": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Erin Blanchfield",
+        "side": "f2",
+        "points": 1,
+        "open": 192,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Marc-Andre Barriault": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Kyle Daukaus",
+        "side": "f1",
+        "points": 1,
+        "open": 185,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Louis Jourdain": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Timothy Cuamba",
+        "side": "f1",
+        "points": 1,
+        "open": -170,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Timothy Cuamba": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Louis Jourdain",
+        "side": "f2",
+        "points": 1,
+        "open": 130,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Mandel Nallo": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Nate Landwehr",
+        "side": "f1",
+        "points": 1,
+        "open": -235,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Nate Landwehr": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Mandel Nallo",
+        "side": "f2",
+        "points": 1,
+        "open": 195,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Tanner Boser": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Jhonata Diniz",
+        "side": "f1",
+        "points": 1,
+        "open": 210,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Jhonata Diniz": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Tanner Boser",
+        "side": "f2",
+        "points": 1,
+        "open": -250,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Julien Leblanc": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Nick Galanti",
+        "side": "f1",
+        "points": 1,
+        "open": 420,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Nick Galanti": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Julien Leblanc",
+        "side": "f2",
+        "points": 1,
+        "open": -550,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Chad Anheliger": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Steven Koslow",
+        "side": "f1",
+        "points": 1,
+        "open": -130,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Steven Koslow": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Chad Anheliger",
+        "side": "f2",
+        "points": 1,
+        "open": 110,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Melissa Croden": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Chelsea Chandler",
+        "side": "f1",
+        "points": 1,
+        "open": -240,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Cody Chovancek": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "You Su-young",
+        "side": "f1",
+        "points": 1,
+        "open": -150,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "You Su-young": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Cody Chovancek",
+        "side": "f2",
+        "points": 1,
+        "open": 130,
         "close": null,
         "clv": null
       }

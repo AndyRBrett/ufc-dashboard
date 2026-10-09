@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-09T14:06:07Z",
+  "generated_at": "2026-10-09T15:07:42Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
   "awaiting_card_events": 3,
-  "odds_unavailable_events": 1,
+  "odds_unavailable_events": 0,
   "odds_budget_exhausted": false,
   "odds_budget": {
     "exhausted": false,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "ok",
-      "last_changed_at": "2026-10-09T13:00:45Z",
+      "last_changed_at": "2026-10-09T15:07:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -105,13 +105,13 @@
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
-      "status": "odds-unavailable",
-      "last_changed_at": "2026-10-09T14:06:07Z",
+      "status": "ok",
+      "last_changed_at": "2026-10-09T15:07:42Z",
       "is_stale": false,
-      "has_data": false,
+      "has_data": true,
       "bout_count": 13,
       "line_movement": 0,
-      "odds_market_priced": null
+      "odds_market_priced": true
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-09T14:06:07Z",
+      "last_changed_at": "2026-10-09T15:07:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -136,7 +136,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-09T14:06:07Z",
+      "last_changed_at": "2026-10-09T15:07:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -156,7 +156,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-09T14:06:07Z",
+      "last_changed_at": "2026-10-09T15:07:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -704,6 +704,22 @@
       "priority": 45.0
     },
     {
+      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+      "f1": "Felipe Franco",
+      "f2": "Brendson Ribeiro",
+      "f1_movement": -22,
+      "f2_movement": 3,
+      "magnitude": 22,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Light Heavyweight",
+      "f1_prob_shift": 1.0,
+      "f2_prob_shift": -0.2,
+      "priority": 44.0
+    },
+    {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Eric Nolan",
       "f2": "Court McGee",
@@ -733,22 +749,6 @@
       "wc": "Lightweight",
       "f1_prob_shift": 5.8,
       "f2_prob_shift": -5.7,
-      "priority": 34.0
-    },
-    {
-      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
-      "f1": "Felipe Franco",
-      "f2": "Brendson Ribeiro",
-      "f1_movement": -17,
-      "f2_movement": 0,
-      "magnitude": 17,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Light Heavyweight",
-      "f1_prob_shift": 0.8,
-      "f2_prob_shift": 0.0,
       "priority": 34.0
     },
     {
