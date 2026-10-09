@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-08T20:30:46Z",
+ "generated_at": "2026-10-09T01:25:53Z",
  "promotions": [
   {
    "id": "pfl",
@@ -70,8 +70,8 @@
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": -222,
-      "b": 184
+      "a": -240,
+      "b": 194
      },
      "winner": "",
      "method": "",
@@ -95,8 +95,8 @@
      "division": "Bantamweight",
      "title": false,
      "odds": {
-      "a": -116,
-      "b": -104
+      "a": -130,
+      "b": 108
      },
      "winner": "",
      "method": "",
@@ -131,8 +131,8 @@
      "division": "Bantamweight",
      "title": false,
      "odds": {
-      "a": -175,
-      "b": 148
+      "a": -144,
+      "b": 120
      },
      "winner": "",
      "method": "",
@@ -678,6 +678,28 @@
      "b": "Akhmed Magomedov",
      "label": "",
      "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Denis Goltsov",
+     "b": "Maxwell Djantou Nana",
+     "label": "",
+     "division": "Heavyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Khamzat Abaev",
+     "b": "Leon Hill",
+     "label": "",
+     "division": "Welterweight",
      "title": false,
      "odds": null,
      "winner": "",

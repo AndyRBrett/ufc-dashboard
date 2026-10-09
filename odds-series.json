@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T00:20:41Z",
+  "generated_at": "2026-10-09T01:25:52Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -13469,7 +13469,7 @@
           "f1": "Loopy Godinez",
           "f2": "Ketlen Souza",
           "lbl": "Main Card",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13555,6 +13555,11 @@
               "at": "2026-10-08T11:45:41Z",
               "f1_odds": -246,
               "f2_odds": 197
+            },
+            {
+              "at": "2026-10-09T01:25:51Z",
+              "f1_odds": -241,
+              "f2_odds": 196
             }
           ],
           "open": {
@@ -13569,7 +13574,7 @@
           "f1": "Andre Fili",
           "f2": "Kai Kamaka III",
           "lbl": "Main Card",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13655,6 +13660,11 @@
               "at": "2026-10-08T16:21:19Z",
               "f1_odds": -151,
               "f2_odds": 121
+            },
+            {
+              "at": "2026-10-09T01:25:51Z",
+              "f1_odds": -149,
+              "f2_odds": 122
             }
           ],
           "open": {
@@ -13669,7 +13679,7 @@
           "f1": "Julius Walker",
           "f2": "Gerald Meerschaert",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13750,6 +13760,11 @@
               "at": "2026-10-08T02:59:26Z",
               "f1_odds": -305,
               "f2_odds": 233
+            },
+            {
+              "at": "2026-10-09T01:25:51Z",
+              "f1_odds": -298,
+              "f2_odds": 232
             }
           ],
           "open": {
@@ -13764,7 +13779,7 @@
           "f1": "Malcolm Wellmaker",
           "f2": "Otari Tanzilovi",
           "lbl": "Main Card",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13859,6 +13874,11 @@
             {
               "at": "2026-10-08T16:21:19Z",
               "f1_odds": -230,
+              "f2_odds": 180
+            },
+            {
+              "at": "2026-10-09T01:25:51Z",
+              "f1_odds": -225,
               "f2_odds": 180
             }
           ],
@@ -15528,7 +15548,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Loopy Godinez",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": 180,
         "close": null,
         "clv": null
@@ -15824,7 +15844,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Kai Kamaka III",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": -154,
         "close": null,
         "clv": null
@@ -16034,7 +16054,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Malcolm Wellmaker",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": 157,
         "close": null,
         "clv": null
@@ -16233,7 +16253,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Gerald Meerschaert",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -280,
         "close": null,
         "clv": null
@@ -16606,7 +16626,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Andre Fili",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": 134,
         "close": null,
         "clv": null
@@ -19475,7 +19495,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Ketlen Souza",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": -210,
         "close": null,
         "clv": null
@@ -19486,7 +19506,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Julius Walker",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 230,
         "close": null,
         "clv": null
@@ -19497,7 +19517,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Otari Tanzilovi",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": -180,
         "close": null,
         "clv": null
