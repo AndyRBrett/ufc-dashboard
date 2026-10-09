@@ -5906,7 +5906,7 @@ function openFN(evArg){
 function closeFN(){
   var m=document.getElementById("fnMode");
   m.classList.remove("open");m.classList.remove("fn-mode-live");unlockScroll();
-  fnLive=false;fnAutoFollow=true;
+  fnLive=false;fnAutoFollow=true;_fnPreShown=null;
   var fl=document.getElementById("fnl-floats");if(fl)fl.innerHTML="";
   if(fnPickedAny){render();updatePicksWidget();}
 }
@@ -5926,8 +5926,14 @@ function updateFN(){
   if(!fnFights.length)return;
   if(fnLive)updateFNLive();else updateFNPre();
 }
+var _fnPreShown=null;
 function updateFNPre(){
   var f=fnFights[fnIdx];
+  // The pick view can outgrow a phone and scroll (see .fn-mode:not(.fn-mode-live)).
+  // A new bout starts at the top, with its fighters in reach; a re-render of the
+  // same bout (a pick, a method, a lock) keeps where the user scrolled to.
+  var shownKey=fnEv?pk(fnEv,f):null;
+  if(shownKey!==_fnPreShown){_fnPreShown=shownKey;var fm=document.getElementById("fnMode");if(fm)fm.scrollTop=0;}
   document.getElementById("fn-ev").textContent=fnEv?fnEv.name:"";
   var wc=document.getElementById("fn-wc");wc.innerHTML="";
   wc.appendChild(document.createTextNode(f.lbl+" · "+wcLabel(f.wc)));
