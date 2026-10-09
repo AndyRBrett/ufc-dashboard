@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T05:27:08Z",
+  "generated_at": "2026-10-09T06:31:15Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -14099,7 +14099,7 @@
           "f1": "Alice Pereira",
           "f2": "Darya Zheleznyakova",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -14175,6 +14175,11 @@
               "at": "2026-10-08T23:15:45Z",
               "f1_odds": -145,
               "f2_odds": 119
+            },
+            {
+              "at": "2026-10-09T06:31:14Z",
+              "f1_odds": -143,
+              "f2_odds": 117
             }
           ],
           "open": {
@@ -19587,7 +19592,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Darya Zheleznyakova",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -130,
         "close": null,
         "clv": null
@@ -19598,7 +19603,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Alice Pereira",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 110,
         "close": null,
         "clv": null

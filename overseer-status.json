@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T05:27:07Z",
+  "generated_at": "2026-10-09T06:31:14Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "ok",
-      "last_changed_at": "2026-10-09T03:35:43Z",
+      "last_changed_at": "2026-10-09T06:31:14Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -106,7 +106,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-09T05:27:07Z",
+      "last_changed_at": "2026-10-09T06:31:14Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-09T05:27:07Z",
+      "last_changed_at": "2026-10-09T06:31:14Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -136,7 +136,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-09T05:27:07Z",
+      "last_changed_at": "2026-10-09T06:31:14Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -156,7 +156,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-09T05:27:07Z",
+      "last_changed_at": "2026-10-09T06:31:14Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -787,17 +787,17 @@
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "f1": "Alice Pereira",
       "f2": "Darya Zheleznyakova",
-      "f1_movement": -15,
-      "f2_movement": 9,
-      "magnitude": 15,
+      "f1_movement": -13,
+      "f2_movement": 7,
+      "magnitude": 13,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Women's Bantamweight",
-      "f1_prob_shift": 2.7,
-      "f2_prob_shift": -2.0,
-      "priority": 30.0
+      "f1_prob_shift": 2.3,
+      "f2_prob_shift": -1.5,
+      "priority": 26.0
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
