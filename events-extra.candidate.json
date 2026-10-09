@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-09T18:10:49Z",
+ "generated_at": "2026-10-09T22:50:42Z",
  "promotions": [
   {
    "id": "pfl",
@@ -45,8 +45,8 @@
      "division": "Featherweight",
      "title": false,
      "odds": {
-      "a": 199,
-      "b": -245
+      "a": 200,
+      "b": -242
      },
      "winner": "",
      "method": "",
@@ -70,8 +70,8 @@
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": -224,
-      "b": 184
+      "a": -222,
+      "b": 186
      },
      "winner": "",
      "method": "",
@@ -95,8 +95,8 @@
      "division": "Bantamweight",
      "title": false,
      "odds": {
-      "a": -130,
-      "b": 108
+      "a": -128,
+      "b": 109
      },
      "winner": "",
      "method": "",
@@ -641,6 +641,17 @@
      "round": null
     },
     {
+     "a": "Denis Goltsov",
+     "b": "Maxwell Djantou Nana",
+     "label": "",
+     "division": "Heavyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
      "a": "Asael Adjoudj",
      "b": "Movlid Khaybulaev",
      "label": "",
@@ -678,17 +689,6 @@
      "b": "Akhmed Magomedov",
      "label": "",
      "division": "Lightweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Denis Goltsov",
-     "b": "Maxwell Djantou Nana",
-     "label": "",
-     "division": "Heavyweight",
      "title": false,
      "odds": null,
      "winner": "",
