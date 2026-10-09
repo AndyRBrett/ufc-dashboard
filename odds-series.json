@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T19:15:42Z",
+  "generated_at": "2026-10-09T20:21:06Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -13269,7 +13269,7 @@
           "f1": "Brendan Allen",
           "f2": "Christian Leroy Duncan",
           "lbl": "Main Event",
-          "points": 22,
+          "points": 23,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13380,6 +13380,11 @@
               "at": "2026-10-09T03:35:43Z",
               "f1_odds": -128,
               "f2_odds": 106
+            },
+            {
+              "at": "2026-10-09T20:21:05Z",
+              "f1_odds": -127,
+              "f2_odds": 105
             }
           ],
           "open": {
@@ -13709,7 +13714,7 @@
           "f1": "Julius Walker",
           "f2": "Gerald Meerschaert",
           "lbl": "Prelim",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13800,6 +13805,11 @@
               "at": "2026-10-09T13:00:45Z",
               "f1_odds": -304,
               "f2_odds": 237
+            },
+            {
+              "at": "2026-10-09T20:21:05Z",
+              "f1_odds": -307,
+              "f2_odds": 238
             }
           ],
           "open": {
@@ -13934,7 +13944,7 @@
           "f1": "Francisco Prado",
           "f2": "Ismael Bonfim",
           "lbl": "Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -14005,6 +14015,11 @@
               "at": "2026-10-09T13:00:45Z",
               "f1_odds": -124,
               "f2_odds": 102
+            },
+            {
+              "at": "2026-10-09T20:21:05Z",
+              "f1_odds": -133,
+              "f2_odds": 110
             }
           ],
           "open": {
@@ -15524,7 +15539,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Christian Leroy Duncan",
         "side": "f1",
-        "points": 22,
+        "points": 23,
         "open": -141,
         "close": null,
         "clv": null
@@ -16557,7 +16572,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Gerald Meerschaert",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": -280,
         "close": null,
         "clv": null
@@ -17140,7 +17155,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Brendan Allen",
         "side": "f2",
-        "points": 22,
+        "points": 23,
         "open": 121,
         "close": null,
         "clv": null
@@ -19810,7 +19825,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Julius Walker",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": 230,
         "close": null,
         "clv": null
@@ -19832,7 +19847,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Ismael Bonfim",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": 115,
         "close": null,
         "clv": null
@@ -19843,7 +19858,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Francisco Prado",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -135,
         "close": null,
         "clv": null
