@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T17:05:44Z",
+  "generated_at": "2026-10-09T18:10:47Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "ok",
-      "last_changed_at": "2026-10-09T15:07:42Z",
+      "last_changed_at": "2026-10-09T18:10:47Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-09T17:05:44Z",
+      "last_changed_at": "2026-10-09T18:10:47Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -136,7 +136,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-09T17:05:44Z",
+      "last_changed_at": "2026-10-09T18:10:47Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -156,7 +156,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-09T17:05:44Z",
+      "last_changed_at": "2026-10-09T18:10:47Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -275,17 +275,17 @@
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "f1": "Allen Frye Jr.",
       "f2": "RJ Harris",
-      "f1_movement": 76,
-      "f2_movement": -118,
-      "magnitude": 118,
+      "f1_movement": 77,
+      "f2_movement": -122,
+      "magnitude": 122,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": -7.3,
-      "f2_prob_shift": 8.4,
-      "priority": 236.0
+      "f1_prob_shift": -7.4,
+      "f2_prob_shift": 8.6,
+      "priority": 244.0
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
@@ -544,6 +544,22 @@
       "priority": 71.0
     },
     {
+      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
+      "f1": "Felipe Franco",
+      "f2": "Brendson Ribeiro",
+      "f1_movement": -35,
+      "f2_movement": 13,
+      "magnitude": 35,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Light Heavyweight",
+      "f1_prob_shift": 1.6,
+      "f2_prob_shift": -0.9,
+      "priority": 70.0
+    },
+    {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Natalia Silva",
       "f2": "Wang Cong",
@@ -702,22 +718,6 @@
       "f1_prob_shift": 3.9,
       "f2_prob_shift": -2.9,
       "priority": 45.0
-    },
-    {
-      "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
-      "f1": "Felipe Franco",
-      "f2": "Brendson Ribeiro",
-      "f1_movement": -22,
-      "f2_movement": 3,
-      "magnitude": 22,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Light Heavyweight",
-      "f1_prob_shift": 1.0,
-      "f2_prob_shift": -0.2,
-      "priority": 44.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",

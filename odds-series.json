@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T17:05:44Z",
+  "generated_at": "2026-10-09T18:10:47Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -13394,7 +13394,7 @@
           "f1": "Jai Herbert",
           "f2": "Matheus Camilo",
           "lbl": "Co-Main",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13470,6 +13470,11 @@
               "at": "2026-10-09T13:00:45Z",
               "f1_odds": 154,
               "f2_odds": -190
+            },
+            {
+              "at": "2026-10-09T18:10:47Z",
+              "f1_odds": 156,
+              "f2_odds": -192
             }
           ],
           "open": {
@@ -13589,7 +13594,7 @@
           "f1": "Andre Fili",
           "f2": "Kai Kamaka III",
           "lbl": "Main Card",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13685,6 +13690,11 @@
               "at": "2026-10-09T15:07:42Z",
               "f1_odds": -146,
               "f2_odds": 121
+            },
+            {
+              "at": "2026-10-09T18:10:47Z",
+              "f1_odds": -148,
+              "f2_odds": 122
             }
           ],
           "open": {
@@ -14009,7 +14019,7 @@
           "f1": "Allen Frye Jr.",
           "f2": "RJ Harris",
           "lbl": "Prelim",
-          "points": 20,
+          "points": 21,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -14110,6 +14120,11 @@
               "at": "2026-10-09T03:35:43Z",
               "f1_odds": 262,
               "f2_odds": -338
+            },
+            {
+              "at": "2026-10-09T18:10:47Z",
+              "f1_odds": 263,
+              "f2_odds": -342
             }
           ],
           "open": {
@@ -14224,7 +14239,7 @@
           "f1": "Felipe Franco",
           "f2": "Brendson Ribeiro",
           "lbl": "Prelim",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-10-01T23:03:38Z",
@@ -14310,6 +14325,11 @@
               "at": "2026-10-09T15:07:42Z",
               "f1_odds": -372,
               "f2_odds": 283
+            },
+            {
+              "at": "2026-10-09T18:10:47Z",
+              "f1_odds": -385,
+              "f2_odds": 293
             }
           ],
           "open": {
@@ -16128,7 +16148,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Kai Kamaka III",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": -154,
         "close": null,
         "clv": null
@@ -16413,7 +16433,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Jai Herbert",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": -180,
         "close": null,
         "clv": null
@@ -16910,7 +16930,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Andre Fili",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": 134,
         "close": null,
         "clv": null
@@ -17266,7 +17286,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Brendson Ribeiro",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": -350,
         "close": null,
         "clv": null
@@ -19768,7 +19788,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Matheus Camilo",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": 157,
         "close": null,
         "clv": null
@@ -19834,7 +19854,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "RJ Harris",
         "side": "f1",
-        "points": 20,
+        "points": 21,
         "open": 186,
         "close": null,
         "clv": null
@@ -19845,7 +19865,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Allen Frye Jr.",
         "side": "f2",
-        "points": 20,
+        "points": 21,
         "open": -220,
         "close": null,
         "clv": null
@@ -19878,7 +19898,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Felipe Franco",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": 280,
         "close": null,
         "clv": null
