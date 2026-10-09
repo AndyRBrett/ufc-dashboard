@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T07:36:01Z",
+  "generated_at": "2026-10-09T08:40:57Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -14289,7 +14289,7 @@
           "f1": "Ernesta Kareckaite",
           "f2": "Melissa Gatto",
           "lbl": "Prelim",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-10-01T23:03:38Z",
@@ -14385,6 +14385,11 @@
               "at": "2026-10-08T23:15:45Z",
               "f1_odds": -106,
               "f2_odds": -116
+            },
+            {
+              "at": "2026-10-09T08:40:57Z",
+              "f1_odds": -105,
+              "f2_odds": -117
             }
           ],
           "open": {
@@ -19625,7 +19630,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Melissa Gatto",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": 130,
         "close": null,
         "clv": null
@@ -19636,7 +19641,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Ernesta Kareckaite",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": -150,
         "close": null,
         "clv": null
