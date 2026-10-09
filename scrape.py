@@ -2859,7 +2859,7 @@ def _name_token_variants(tokens):
     return out
 
 
-def _names_denote_same_fighter(a, b):
+def _names_denote_same_fighter(a, b, strict=False):
     """True when two FULL fighter names denote one person, order-independently.
 
     _name_tokens_match takes UFCStats' split (first, last) columns; the odds feed
@@ -2871,13 +2871,13 @@ def _names_denote_same_fighter(a, b):
     if not ta or not tb:
         return False
     return any(
-        _token_lists_match(x, y)
+        _token_lists_match(x, y, strict)
         for x in _name_token_variants(ta)
         for y in _name_token_variants(tb)
     )
 
 
-def _name_tokens_match(row_first, row_last, target_name):
+def _name_tokens_match(row_first, row_last, target_name, strict=False):
     """Match a UFCStats (first, last) row against a card name.
 
     UFCStats stores first/last separately and files particle surnames under the
@@ -2893,14 +2893,22 @@ def _name_tokens_match(row_first, row_last, target_name):
     if not t_base or not row_base:
         return False
     return any(
-        _token_lists_match(t, row)
+        _token_lists_match(t, row, strict)
         for t in _name_token_variants(t_base)
         for row in _name_token_variants(row_base)
     )
 
 
-def _token_lists_match(t, row):
-    """One normalised token list against another. See _name_tokens_match."""
+def _token_lists_match(t, row, strict=False):
+    """One normalised token list against another. See _name_tokens_match.
+
+    ``strict`` drops the two-letter given-name rule and keeps only a given name
+    that equals or wholly prefixes the other (Jon/Jonathan). The loose rule is
+    what bridges Joe/Joseph and Mike/Michael, but it also reads Alex and Alice
+    as one name: Alice Pereira was handed Alex Pereira's UFCStats page (record,
+    age, height, opponents) on the 2026-10-10 card. _search_ufcstats uses the
+    strict reading to choose between candidates, never to refuse a lone one.
+    """
     # Exact token set (any order): particle surnames, suffixes, reversed order.
     if set(t) == set(row):
         return True
@@ -2924,6 +2932,9 @@ def _token_lists_match(t, row):
         return True
     givens_t   = [x for x in t   if x != surname]
     givens_row = [x for x in row if x != surname]
+    if strict:
+        return any(a.startswith(b) or b.startswith(a)
+                   for a in givens_t for b in givens_row)
     return any(
         a == b or a.startswith(b[:2]) or b.startswith(a[:2])
         for a in givens_t
@@ -2952,6 +2963,10 @@ _UFCSTATS_NAME_ALIASES = {
     # would match every other O-named Diaz on the roster. Left blank he showed
     # no record on a UFC 331 main-card week.
     "osman diaz": "Ozzy Diaz",
+    # Wikipedia transliterates her "Darya Zheleznyakova"; UFC.com (and so
+    # UFCStats) has "Daria Zhelezniakova". The surnames differ, so no token rule
+    # can bridge them, and she had no record on the 2026-10-10 card.
+    "darya zheleznyakova": "Daria Zhelezniakova",
 }
 
 
@@ -3051,7 +3066,8 @@ def _search_ufcstats(name):
                 continue
             for row_first, row_last, href, w, l, d in rows:
                 if _name_tokens_match(row_first, row_last, name):
-                    matches.append((href, w, l, d))
+                    strong = _name_tokens_match(row_first, row_last, name, strict=True)
+                    matches.append((href, w, l, d, strong))
         # De-duplicate: a fighter can appear on more than one letter page when
         # both of their name tokens share an initial with the search.
         seen, unique = set(), []
@@ -3060,7 +3076,12 @@ def _search_ufcstats(name):
                 continue
             seen.add(m[0])
             unique.append(m)
-        matches = unique
+        # A candidate whose given name really is this one's beats one that only
+        # shares its first two letters (Alice Pereira vs Alex Pereira): recency
+        # below would otherwise pick whichever namesake fought last.
+        if any(m[4] for m in unique):
+            unique = [m for m in unique if m[4]]
+        matches = [m[:4] for m in unique]
         # A partial scan must never decide. If one initial's page came back empty
         # while another's returned a namesake, choosing now caches the namesake —
         # the Petr Yan mis-match re-created by a transient blip. Retry first; on
@@ -3456,7 +3477,41 @@ def stats_days_out(event_date, now):
     return (ed - now.astimezone(timezone.utc).date()).days
 
 
-def _needs_stats_fetch(entry, now, urgent=False):
+def stats_url_conflicts(cache):
+    """Names whose cached UFCStats page is also filed under a DIFFERENT fighter.
+
+    Two cache names may share a page legitimately ("Gane" / "Ciryl Gane",
+    "Chris Duncan" / "Christian Leroy Duncan"). They may not when the names are
+    two people, like Alex and Alice Pereira, who only the loose two-letter rule
+    reads as one. Both names in such a pair are returned, and each gets a fresh
+    search, which now prefers the candidate whose given name really matches.
+    Only same-surname pairs count: an alias (Jose Luiz → Jose Montanha) shares
+    a page with a different surname by design. A misspelt duplicate
+    ("Bodgan Grad") is flagged too, but only once: the re-search stamps
+    ``shared_ok`` with the page it settled on, and a name already stamped for
+    its current page is never flagged again.
+    """
+    by_url = {}
+    for n, e in (cache or {}).items():
+        url = (e or {}).get("url")
+        if url:
+            by_url.setdefault(url, []).append(n)
+    out = set()
+    for names in by_url.values():
+        for i, a in enumerate(names):
+            for b in names[i + 1:]:
+                ta, tb = _name_tokens(a), _name_tokens(b)
+                if not ta or not tb or ta[-1] != tb[-1]:
+                    continue
+                if (_names_denote_same_fighter(a, b, strict=True)
+                        or _names_denote_same_fighter(b, a, strict=True)):
+                    continue
+                url = cache[a]["url"]
+                out.update(n for n in (a, b) if cache[n].get("shared_ok") != url)
+    return out
+
+
+def _needs_stats_fetch(entry, now, urgent=False, conflict=False):
     """Decide whether a fighter's cached stats should be (re)fetched this run.
 
     Returns (fetch: bool, force_search: bool). ``force_search`` requests the
@@ -3478,6 +3533,8 @@ def _needs_stats_fetch(entry, now, urgent=False):
     failed = entry.get("fetch_failed")
     if failed and now - _parse_ts(failed) < timedelta(days=STATS_RETRY_DAYS):
         return False, False                     # failed recently → cooldown, skip
+    if conflict:
+        return True, True                       # page shared with another fighter → re-search once
     fetched = entry.get("fetched_at")
     # Checked BEFORE the incomplete-entry branch below: an implausible profile
     # that is also missing form/opp would otherwise take the cheap cached-URL
@@ -4451,9 +4508,11 @@ def step_build_events(data, now):
                 if n and n != "TBD":
                     all_fighters[n] = all_fighters.get(n, False) or urgent
     to_fetch = []
+    conflicts = stats_url_conflicts(stats_cache)
     for n in sorted(all_fighters):
         fetch, force_search = _needs_stats_fetch(
-            stats_cache.get(n), now, urgent=all_fighters[n])
+            stats_cache.get(n), now, urgent=all_fighters[n],
+            conflict=n in conflicts)
         if fetch:
             to_fetch.append((n, force_search))
     to_fetch = stats_fetch_order(to_fetch, all_fighters, stats_cache)
@@ -4482,6 +4541,8 @@ def step_build_events(data, now):
             elif prev_rec and s["rec"] != prev_rec:
                 print(f"  Record change [{fname}]: {prev_rec} -> {s['rec']}", file=sys.stderr)
             s["fetched_at"] = now.isoformat()
+            if fname in conflicts and s.get("url"):
+                s["shared_ok"] = s["url"]     # searched for this conflict; don't repeat it
             stats_cache[fname] = s            # replace wholesale → clears any prior fetch_failed
         else:
             # UFCStats is unavailable for this fighter. Never fabricate an empty
