@@ -2462,3 +2462,67 @@ def test_stats_loop_is_budgeted_and_ordered():
     loop = src[src.index("to_fetch = []"):src.index('print(f"Stats cache:')]
     assert "stats_fetch_order(to_fetch" in loop
     assert re.search(r"if stats_budget_spent\([\s\S]{0,200}\):\s*\n[\s\S]{0,300}?break", loop)
+
+
+def test_search_ufcstats_prefers_a_real_given_name_over_a_two_letter_one(monkeypatch):
+    # "Al" made Alex and Alice Pereira one name, and recency picked Alex: Alice
+    # showed his 13-4-0 record, 1987 birth date and Gane/Ankalaev opponents on
+    # the 2026-10-10 card. A candidate whose given name really matches wins.
+    other = [("Someone", "Else", "http://x/else", 1, 1, 0)]
+    rows = {"p": [("Alex", "Pereira", "http://x/alex", 13, 4, 0),
+                  ("Alice", "Pereira", "http://x/alice", 7, 1, 0)]}
+    monkeypatch.setattr(
+        scrape, "_load_ufcstats_letter", lambda letter: rows.get(letter, other))
+    monkeypatch.setattr(
+        scrape, "_ufcstats_last_fight_date",
+        lambda url: {"http://x/alex": "2026-08-01", "http://x/alice": "2026-04-01"}[url])
+    assert scrape._search_ufcstats("Alice Pereira") == ("http://x/alice", "7-1-0")
+    assert scrape._search_ufcstats("Alex Pereira") == ("http://x/alex", "13-4-0")
+    # A lone loose candidate is still taken: the loose rule is what finds
+    # Joe/Joseph and Mike/Michael, so it chooses, it never refuses.
+    rows["p"] = [("Joseph", "Pereira", "http://x/joseph", 5, 0, 0)]
+    assert scrape._search_ufcstats("Joe Pereira") == ("http://x/joseph", "5-0-0")
+
+
+def test_token_match_strict_reading():
+    m = scrape._name_tokens_match
+    assert m("Alex", "Pereira", "Alice Pereira")               # loose: still a candidate
+    assert not m("Alex", "Pereira", "Alice Pereira", strict=True)
+    assert m("Jonathan", "Jones", "Jon Jones", strict=True)    # whole-prefix variant
+    assert m("Conor", "McGregor", "Conor McGregor", strict=True)
+
+
+def test_search_ufcstats_aliases_zhelezniakova(monkeypatch):
+    other = [("Someone", "Else", "http://x/else", 1, 1, 0)]
+    rows = {"z": [("Daria", "Zhelezniakova", "http://x/dz", 10, 3, 0)]}
+    monkeypatch.setattr(
+        scrape, "_load_ufcstats_letter", lambda letter: rows.get(letter, other))
+    assert scrape._search_ufcstats("Darya Zheleznyakova") == ("http://x/dz", "10-3-0")
+
+
+def test_stats_url_conflicts_flags_two_people_on_one_page_once():
+    page = {"url": "http://x/alex"}
+    cache = {
+        "Alex Pereira": dict(page), "Alice Pereira": dict(page),
+        # one fighter under two names: never a conflict
+        "Gane": {"url": "http://x/gane"}, "Ciryl Gane": {"url": "http://x/gane"},
+        "Chris Duncan": {"url": "http://x/cd"},
+        "Christian Leroy Duncan": {"url": "http://x/cd"},
+        # an alias with a different surname shares a page by design
+        "Jose Luiz": {"url": "http://x/mnt"}, "Jose Montanha": {"url": "http://x/mnt"},
+    }
+    assert scrape.stats_url_conflicts(cache) == {"Alex Pereira", "Alice Pereira"}
+    # Once a name has been re-searched onto this page, it isn't flagged again,
+    # so a pair UFCStats really does file together costs one search, not one a run.
+    cache["Alex Pereira"]["shared_ok"] = "http://x/alex"
+    assert scrape.stats_url_conflicts(cache) == {"Alice Pereira"}
+    cache["Alice Pereira"]["shared_ok"] = "http://x/alex"
+    assert scrape.stats_url_conflicts(cache) == set()
+
+
+def test_needs_stats_fetch_researches_a_conflict():
+    now = datetime(2026, 10, 9, 20, tzinfo=timezone.utc)
+    fresh = {"rec": "13-4-0", "form": [], "opp": ["Ciryl Gane"], "res": ["L"],
+             "url": "http://x/alex", "fetched_at": now.isoformat()}
+    assert scrape._needs_stats_fetch(fresh, now) == (False, False)
+    assert scrape._needs_stats_fetch(fresh, now, conflict=True) == (True, True)
