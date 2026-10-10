@@ -765,15 +765,27 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ sent: 0, skipped: true }), { status: 200, headers: CORS });
   }
 
-  // Insert log entry first (prevents race conditions — second caller will see this row)
+  // Claim the log row first. Two callers can both pass alreadySent (the cron
+  // and the scraper both run send-reminders, and the app backs up the result
+  // senders), and with ignore-duplicates the loser's insert still answers 201,
+  // so return=representation tells them apart: the winner gets its row back,
+  // the loser an empty array, and only the winner sends. A body we can't read
+  // falls back to sending, as before: a duplicate beats a lost push.
   const logInsert = await fetch(`${SUPABASE_URL}/rest/v1/notif_log`, {
     method: "POST",
-    headers: { ...sbHeaders, "Prefer": "resolution=ignore-duplicates,return=minimal" },
+    headers: { ...sbHeaders, "Prefer": "resolution=ignore-duplicates,return=representation" },
     body: JSON.stringify({ event_date: body.event_date, type: body.type }),
   });
   if (!logInsert.ok && logInsert.status !== 409) {
     // If insert failed for a reason other than duplicate, another caller likely won the race
     return new Response(JSON.stringify({ sent: 0, skipped: true }), { status: 200, headers: CORS });
+  }
+  if (logInsert.ok) {
+    let claimed: unknown = null;
+    try { claimed = JSON.parse(await logInsert.text()); } catch (_e) { /* unreadable: send */ }
+    if (Array.isArray(claimed) && claimed.length === 0) {
+      return new Response(JSON.stringify({ sent: 0, skipped: true }), { status: 200, headers: CORS });
+    }
   }
 
   // Fetch push subscriptions — targeted list takes priority, then exclude-self, then all

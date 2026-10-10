@@ -102,6 +102,7 @@ let PREFS_OFF = {}, prefsState = "ok", prefsReads = [];
 let INBOX = [], inboxState = "ok", PRUNES = [];   // roast_inbox rows written by send-push; retention deletes
 let sent = [], log = new Set(), dataReads = 0, picksReads = 0, picksDown = false, dataDown = false;
 const PRESENT = new Set();   // notif_log rows that already exist
+const RACED = new Set();     // rows another caller inserts between our check and our insert
 let LOCK_AT = null;   // pick_lock_for() for the bout under test; null: an hour before the test clock (long locked)
 let lockDown = false, lockReads = 0;
 globalThis.__webpush = { setVapidDetails() {}, sendNotification: async (sub, payload) => { sent.push({ to: sub.endpoint.split("/").pop(), ...JSON.parse(payload) }); } };
@@ -115,7 +116,13 @@ globalThis.fetch = async (url, init = {}) => {
     return USERS[tok] ? json({ id: USERS[tok] }) : json({ msg: "bad jwt" }, 401);
   }
   if (url.startsWith(SB + "/rest/v1/notif_log")) {
-    if ((init.method || "GET") === "POST") { log.add(init.body); return new Response("", { status: 201 }); }
+    if ((init.method || "GET") === "POST") {
+      // RACED: another caller claimed the row between our check and our insert;
+      // PostgREST's ignore-duplicates then returns 201 with no row.
+      const ty = JSON.parse(init.body).type;
+      if (RACED.has(ty)) return json([], 201);
+      log.add(init.body); return new Response("", { status: 201 });
+    }
     const ty = decodeURIComponent((/type=eq\.([^&]+)/.exec(url) || [])[1] || "");
     return json(PRESENT.has(ty) ? [{ event_date: "x" }] : []);
   }
@@ -236,6 +243,11 @@ for (const t of ["brief", "swap-old-bout"]) {
   check("an already-sent result is answered from the log before any rebuild (no data.js or picks read)",
     dup.status === 200 && dup.j && dup.j.skipped === true && dataReads === 0 && picksReads === 0 && dup.sent.length === 0);
   PRESENT.clear();
+  RACED.add("result:jose-aldo-sean-o-malley:win");
+  const raced = await send({ event_date: "2026-10-03", type: "result:jose-aldo-sean-o-malley:win" });
+  check("a push another caller claimed between the log check and the insert is skipped, not sent twice",
+    raced.status === 200 && raced.j && raced.j.skipped === true && raced.sent.length === 0);
+  RACED.clear();
   const early = await send({ event_date: "2026-10-03", type: "result:ann-a-bea-b:win", ...FORGED });
   check("a result the committed data doesn't have yet is refused (409), not guessed", early.status === 409 && early.sent.length === 0);
   // Inside the bout's lock grace the database still takes picks, so the audience

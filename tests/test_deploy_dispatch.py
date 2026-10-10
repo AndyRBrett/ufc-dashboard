@@ -66,3 +66,17 @@ def test_a_queued_run_starts_from_mains_tip():
     steps = job_block(update, "update")
     checkout = re.search(r"uses: actions/checkout@\S+.*\n((?:\s{8,}.*\n)*)", steps)
     assert checkout and re.search(r"ref:\s*main\b", checkout.group(1))
+
+
+def test_update_writes_lock_times_right_after_its_commit():
+    """Pick reveals wait on send-reminders' lock times; left to the throttled
+    */5 cron they trailed results by ~10 minutes on 2026-10-10."""
+    update = (WF / "update.yml").read_text(encoding="utf-8")
+    i = update.index("- name: Write pick lock times now that data.js is committed")
+    step = update[i:update.index("- name:", i + 1)]
+    assert update.index("id: push") < i, "must run after the commit, or it reads the old data.js"
+    assert update.index("- name: Send result pushes now that data.js is committed") < i
+    assert "if: steps.push.outputs.pushed == 'true'" in step
+    assert "continue-on-error: true" in step, "a lock-writer hiccup must never fail a data update"
+    assert "functions/v1/send-reminders" in step and "Bearer $CRON_SECRET" in step
+    assert "secrets.CRON_SECRET" in step
