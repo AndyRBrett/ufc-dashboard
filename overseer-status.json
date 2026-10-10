@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-10T17:00:40Z",
+  "generated_at": "2026-10-10T17:05:40Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "ok",
-      "last_changed_at": "2026-10-10T14:00:46Z",
+      "last_changed_at": "2026-10-10T17:05:40Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -106,11 +106,11 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "ok",
-      "last_changed_at": "2026-10-10T04:55:40Z",
+      "last_changed_at": "2026-10-10T17:05:40Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": 0,
+      "line_movement": -4,
       "odds_market_priced": true
     },
     {
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-10T17:00:40Z",
+      "last_changed_at": "2026-10-10T17:05:40Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -136,7 +136,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-10T17:00:40Z",
+      "last_changed_at": "2026-10-10T17:05:40Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -156,7 +156,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-10T17:00:40Z",
+      "last_changed_at": "2026-10-10T17:05:40Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -166,7 +166,7 @@
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
       "status": "ok",
-      "last_changed_at": "2026-10-10T14:00:46Z",
+      "last_changed_at": "2026-10-10T17:05:40Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 3,
@@ -736,6 +736,22 @@
       "priority": 42.0
     },
     {
+      "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+      "f1": "Melissa Croden",
+      "f2": "Chelsea Chandler",
+      "f1_movement": 22,
+      "f2_movement": -27,
+      "magnitude": 27,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Women's Bantamweight",
+      "f1_prob_shift": -2.0,
+      "f2_prob_shift": 3.2,
+      "priority": 37.8
+    },
+    {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
       "f1": "Rong Zhu",
       "f2": "Rafa Garcia",
@@ -782,6 +798,22 @@
       "f1_prob_shift": 4.4,
       "f2_prob_shift": -3.6,
       "priority": 32.0
+    },
+    {
+      "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+      "f1": "Julien Leblanc",
+      "f2": "Nick Galanti",
+      "f1_movement": -14,
+      "f2_movement": -13,
+      "magnitude": 14,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 0.5,
+      "f2_prob_shift": 0.3,
+      "priority": 19.6
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
