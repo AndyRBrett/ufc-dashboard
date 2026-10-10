@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-10T21:35:37Z",
+  "generated_at": "2026-10-10T21:40:42Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "ok",
-      "last_changed_at": "2026-10-10T21:35:37Z",
+      "last_changed_at": "2026-10-10T21:40:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-10T21:35:37Z",
+      "last_changed_at": "2026-10-10T21:40:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -136,7 +136,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-10T21:35:37Z",
+      "last_changed_at": "2026-10-10T21:40:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -156,7 +156,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-10T21:35:37Z",
+      "last_changed_at": "2026-10-10T21:40:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -689,18 +689,18 @@
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
-      "f1": "Melissa Gatto",
-      "f2": "Ernesta Kareckaite",
-      "f1_movement": 25,
-      "f2_movement": -26,
+      "f1": "Ernesta Kareckaite",
+      "f2": "Melissa Gatto",
+      "f1_movement": -26,
+      "f2_movement": 25,
       "magnitude": 26,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Women's Flyweight",
-      "f1_prob_shift": -4.4,
-      "f2_prob_shift": 5.5,
+      "f1_prob_shift": 5.5,
+      "f2_prob_shift": -4.4,
       "priority": 52.0
     },
     {
