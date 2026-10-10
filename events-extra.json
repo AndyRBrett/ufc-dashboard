@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-09T22:50:42Z",
+ "generated_at": "2026-10-10T01:55:39Z",
  "promotions": [
   {
    "id": "pfl",
@@ -131,8 +131,8 @@
      "division": "Bantamweight",
      "title": false,
      "odds": {
-      "a": -124,
-      "b": 106
+      "a": -120,
+      "b": 101
      },
      "winner": "",
      "method": "",
