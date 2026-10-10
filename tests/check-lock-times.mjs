@@ -249,6 +249,24 @@ function card() {
     /up next/.test(lr2(E2, c)) && /early prelims/.test(lr2({ lbl: "Early Prelim" }, c)));
 }
 
+// The Live screen follows the bout after the last one decided, never the first
+// bout without a winner: a draw (no winner, state "post") or a result the
+// scraper missed pinned it to the opener while the card fought on
+// (Kareckaite/Gatto, a draw, Allen vs. Duncan 2026-10-10).
+{
+  const live = new Function(labelFn("boutDecided") + "\n" + htmlFn("_liveFightIdx") +
+    "\nreturn _liveFightIdx;")();
+  const b = (o) => ({ f1: { n: "A" }, f2: { n: "B" }, winner: "", state: "pre", ...o });
+  check("live view: a draw counts as over",
+    live([b({ state: "post", method: "Draw" }), b({})]) === 1);
+  check("live view: a later result moves past a bout with none",
+    live([b({}), b({ winner: "A", state: "post" }), b({}), b({})]) === 2);
+  check("live view: nothing decided yet is the opener",
+    live([b({}), b({})]) === 0);
+  check("live view: a finished card has no live bout",
+    live([b({ winner: "A", state: "post" }), b({ state: "post", method: "NC" })]) === -1);
+}
+
 if (failures) {
   console.error(`\nLock-time checks FAILED (${failures})`);
   process.exit(1);

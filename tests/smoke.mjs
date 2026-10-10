@@ -153,7 +153,11 @@ async function main() {
     const fnx = await page.evaluate(() => {
       const w = window, ev = w.EVENTS.find((e) => e.fights.some((f) => !f.winner && !w.fightLocked(e, f)));
       if (!ev) return { skipped: true };
-      w.openFN(ev);
+      // Pick mode, never the live screen: on a card day the first card with an
+      // open bout is in progress and openFN would show it live (no #fn-extras),
+      // which failed every Pages deploy through Allen vs. Duncan (2026-10-10).
+      const realLive = w.fnIsLive; w.fnIsLive = () => false;
+      try { w.openFN(ev); } finally { w.fnIsLive = realLive; }
       const f = w.fnFights.find((x) => !x.winner && !w.fightLocked(ev, x));
       w.fnIdx = w.fnFights.indexOf(f);
       const k = w.pk(ev, f), had = w.preds[k];

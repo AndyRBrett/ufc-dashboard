@@ -4010,7 +4010,7 @@ function renderPicksSheet(){
     else{pickEl.textContent="Pick ›";pickEl.classList.add("todo");}
     var st=document.createElement("span");st.className="ps-st";
     if(decided){
-      if(!f.winner){st.textContent="No contest";}
+      if(!f.winner){st.textContent=_noWinnerLbl(f);}
       else if(mine){var ok=nmEq(f.winner,mine);done++;if(ok)right++;st.textContent=ok?"✓ Correct":"✗ Wrong";st.classList.add(ok?"win":"loss");}
       else st.textContent="Done";
     }else if(locked)st.textContent="Locked";
@@ -5887,11 +5887,17 @@ function resetPicks(){
   preds={};preds_method={};preds_conf={};save();saveMethod();saveConf();render();updatePicksWidget();toast("All picks cleared");
 }
 
-function fnIsLive(ev){return ev&&picksLocked(ev)&&ev.fights.some(function(f){return !f.winner;});}
+function fnIsLive(ev){return ev&&picksLocked(ev)&&ev.fights.some(function(f){return !boutDecided(f);});}
 // fnFights is held in chronological order (opener → main event; openFN reverses the
 // main-event-first source array), so the live bout is simply the first one without a
 // winner — fights resolve front to back. -1 when all resolved.
-function _liveFightIdx(fights){for(var i=0;i<fights.length;i++){if(!fights[i].winner)return i;}return -1;}
+// The bout after the last one decided (fights are opener first). Not the first
+// bout without a winner: a draw or a result the scraper missed would pin the
+// live view to that bout while the card fought on (Kareckaite/Gatto, a draw,
+// 2026-10-10). Same rule as the pick lock: a later result means it's over.
+function _liveFightIdx(fights){var i=fights.length;while(i>0&&!boutDecided(fights[i-1]))i--;return i<fights.length?i:-1;}
+// A bout over without a winner: the method the scraper wrote says which.
+function _noWinnerLbl(f){return /draw/i.test(f&&f.method||"")?"Draw":"No contest";}
 function fnModeOpen(){var m=document.getElementById("fnMode");return m&&m.classList.contains("open");}
 function openFN(evArg){
   var now=Date.now();
@@ -6199,7 +6205,7 @@ function fnRenderSplit(f){
 // so your rank shift depends on the room — and on which corner is the dog.
 function fnRenderStakes(f){
   var el=document.getElementById("fnl-stakes");if(!el)return;el.innerHTML="";el.style.display="none";
-  if(!fnEv||f.winner)return;                       // resolved → the result line says it all
+  if(!fnEv||boutDecided(f))return;                 // resolved → the result line says it all
   var myPick=preds[pk(fnEv,f)];if(!myPick)return;  // only meaningful when you've got a horse
   var list=_lbSorted||[];if(!list.length)return;
   var base={},meId=null;
@@ -6296,6 +6302,7 @@ function updateFNLive(){
   fnRenderFans(f);
   var res=document.getElementById("fnl-result");
   if(f.winner){res.textContent="";var wb=document.createElement("b");wb.textContent=_fnNameShort(f.winner);res.appendChild(wb);res.appendChild(document.createTextNode(" def. "+_fnNameShort(f.winner===f.f1.n?f.f2.n:f.f1.n)+(f.method?" · "+f.method:"")+(f.round?" · R"+f.round:"")));}
+  else if(boutDecided(f)){res.textContent=_noWinnerLbl(f)+(f.round?" · R"+f.round:"");}
   else{res.textContent=fightLocked(fnEv,f)?"In progress — waiting on result…":"Up next";}
   // Jump-to-live pill visible only when user has navigated off the live fight
   var liveIdx=_liveFightIdx(fnFights);
@@ -7380,7 +7387,7 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
   }
   // The model's own read, next to the market's (#74). Shown for an unpriced bout
   // too — that is exactly when a second opinion has nothing to compete with.
-  if(!fight.winner){
+  if(!boutDecided(fight)){
     var mrow=makeModelRow(fight,EVENTS[ei]);
     if(mrow)row.appendChild(mrow);
   }
@@ -7392,6 +7399,9 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
       var rw=document.createElement("div");rw.className="result-winner";
       var rwt=document.createElement("span");rwt.textContent=fight.winner.split(" ").pop()+" wins";rw.appendChild(rwt);rr.appendChild(rw);
       if(fight.method){var rm=document.createElement("div");rm.className="result-method";rm.textContent=fight.method+(fight.round?" R"+fight.round:"");rr.appendChild(rm);}
+      row.classList.add("fresult");
+    } else if(fight.state==="post"){
+      var rd=document.createElement("div");rd.className="result-method";rd.textContent=_noWinnerLbl(fight)+(fight.round?" R"+fight.round:"");rr.appendChild(rd);
       row.classList.add("fresult");
     }
     row.appendChild(rr);
