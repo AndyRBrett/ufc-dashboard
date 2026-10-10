@@ -5912,6 +5912,9 @@ function openFN(evArg){
   if(fnLive){loadLeaderboard(true);}  // populate _lbSorted + _fnPicksByFight for the live view
   updateFN();
   m.classList.add("open");lockScroll();
+  // updateFN ran while the overlay was still display:none, where nothing has a
+  // width to fit the names to; fit them now that it is on screen.
+  if(!fnLive)_fnFitNames();
 }
 function closeFN(){
   var m=document.getElementById("fnMode");
@@ -5967,7 +5970,35 @@ function updateFNPre(){
   }
   _fnExtras(f,myPick,fnLocked||!!f.winner);
   _fnInfo(f);
+  _fnFitNames();
 }
+// A long surname used to break mid-word ("SHAHBAZYA / N"), worst once the picked
+// side's highlight takes some of its width. Shrink both names to the size at
+// which each one's longest word fits its side, the same size for both so the
+// matchup stays balanced. overflow-wrap:anywhere (the CSS) is only the floor,
+// for a word that still won't fit at FN_NAME_MIN_PX.
+var FN_NAME_MIN_PX=18;
+function _fnFitNames(){
+  var els=[document.getElementById("fn-f1"),document.getElementById("fn-f2")];
+  if(!els[0]||!els[1])return;
+  var size=Infinity,base=0;
+  els.forEach(function(el){
+    el.style.fontSize="";el.style.overflowWrap="normal";
+    var s=base=parseFloat(getComputedStyle(el).fontSize)||0;
+    for(var i=0;i<3&&el.clientWidth&&el.scrollWidth>el.clientWidth+1&&s>FN_NAME_MIN_PX;i++){
+      s=Math.max(FN_NAME_MIN_PX,Math.floor(s*el.clientWidth/el.scrollWidth));
+      el.style.fontSize=s+"px";
+    }
+    size=Math.min(size,s);
+  });
+  els.forEach(function(el){
+    el.style.overflowWrap="";
+    el.style.fontSize=size<base?size+"px":"";
+  });
+}
+window.addEventListener("resize",function(){
+  if(typeof fnModeOpen==="function"&&fnModeOpen()&&!fnLive&&fnFights.length)_fnFitNames();
+});
 // What's worth a glance before tapping a side: the moneyline (the market's
 // no-vig win chance, the move since the line opened, what a correct dog call is
 // worth) right under the fighters, and below the pick's method and lock, the
