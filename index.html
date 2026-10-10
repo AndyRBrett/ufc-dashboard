@@ -5912,6 +5912,9 @@ function openFN(evArg){
   if(fnLive){loadLeaderboard(true);}  // populate _lbSorted + _fnPicksByFight for the live view
   updateFN();
   m.classList.add("open");lockScroll();
+  // updateFN ran while the overlay was still display:none, where nothing has a
+  // width to fit the names to; fit them now that it is on screen.
+  if(!fnLive)_fnFitNames();
 }
 function closeFN(){
   var m=document.getElementById("fnMode");
