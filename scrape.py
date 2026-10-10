@@ -189,6 +189,11 @@ def names_match(a, b):
 def norm_method(m):
     """Normalise a fight finish description to a canonical form."""
     ml = (m or "").lower()
+    # Before the decision checks: "Draw (majority)" would read as a majority decision.
+    if "draw" in ml:
+        return "Draw"
+    if "no contest" in ml or ml.strip() in ("nc", "overturned"):
+        return "NC"
     if "ko" in ml or "tko" in ml:
         return "KO/TKO"
     if "submission" in ml or "sub" in ml:
@@ -1326,6 +1331,29 @@ def parse_results(wikitext):
     return results or _parse_results_wikitable(wikitext)
 
 
+_UNDECIDED_RE = re.compile(r"\b(draw|no contest)\b|^nc\b|overturned", re.IGNORECASE)
+
+
+def _undecided_result(a, b, rest):
+    """A draw or no contest, listed as "A vs. B" with no winner, or None.
+
+    A bout with no "def." cell is otherwise dropped, so it stayed `state:"pre"`
+    for good and the live view sat on it as the bout in progress (a draw opened
+    Allen vs. Duncan on 2026-10-10). The result carries both names and an empty
+    winner; inject_results marks the bout over without one.
+    """
+    a = re.sub(r"\s*\(c\)\s*", "", clean_wiki(a)).strip()
+    b = re.sub(r"\s*\(c\)\s*", "", clean_wiki(b)).strip()
+    if len(a) < 2 or len(b) < 2:
+        return None
+    method = next((c for c in rest if _UNDECIDED_RE.search(c or "")), "")
+    if not method:
+        return None
+    rnd = next((int(c.strip()) for c in rest if re.fullmatch(r"\s*\d\s*", c or "")), None)
+    return {"winner": "", "loser": "", "f1": a, "f2": b,
+            "method": norm_method(method), "round": rnd, "undecided": True}
+
+
 def _parse_results_mma_template(wikitext):
     results = []
     for block in re.finditer(
@@ -1340,6 +1368,11 @@ def _parse_results_mma_template(wikitext):
             continue
         di = next((i for i, l in enumerate(lines) if l.lower().strip() in ("def.", "def", "d.")), -1)
         if di < 1:
+            vi = next((i for i, l in enumerate(lines) if l.lower().strip() in ("vs.", "vs")), -1)
+            if 1 <= vi < len(lines) - 1:
+                und = _undecided_result(lines[vi - 1], lines[vi + 1], lines[vi + 2:])
+                if und:
+                    results.append(und)
             continue
         winner = re.sub(r"\s*\(c\)\s*", "", clean_wiki(lines[di - 1])).strip()
         loser  = (
@@ -1422,6 +1455,9 @@ def _flush_wikitable_row(row):
         loser  = re.sub(r"\s*\(c\)\s*", "", row[di + 1]).strip() if di + 1 < len(row) else ""
         rest   = row[di + 2:]
     else:
+        vi = next((i for i, c in enumerate(row) if c.strip().lower() in ("vs.", "vs")), -1)
+        if 1 <= vi < len(row) - 1:
+            return _undecided_result(row[vi - 1], row[vi + 1], row[vi + 2:])
         if len(row) < 4:
             return None
         winner, loser, rest = row[1], row[2], row[3:]
@@ -3942,18 +3978,26 @@ def inject_results(js, results):
     for res in results:
         winner, loser, method, rnd = res["winner"], res["loser"], res["method"], res["round"]
         method, rnd = _js_safe_method(method), _js_safe_round(rnd)
+        und = bool(res.get("undecided"))
         for m in re.finditer(pattern, js):
             f1n, f2n = m.group(1), m.group(2)
-            f1w = names_match(f1n, winner) and (not loser or names_match(f2n, loser))
-            f2w = names_match(f2n, winner) and (not loser or names_match(f1n, loser))
+            if und:
+                # No winner: both names must match, either way round.
+                a, b = res["f1"], res["f2"]
+                f1w = ((names_match(f1n, a) and names_match(f2n, b))
+                       or (names_match(f1n, b) and names_match(f2n, a)))
+                f2w = False
+            else:
+                f1w = names_match(f1n, winner) and (not loser or names_match(f2n, loser))
+                f2w = names_match(f2n, winner) and (not loser or names_match(f1n, loser))
             if not f1w and not f2w:
                 continue
-            wn = f1n if f1w else f2n
+            wn = "" if und else (f1n if f1w else f2n)
             fs = js.rfind("{lbl:", 0, m.start())
             if fs < 0:
                 continue
             if 'state:"post"' in js[fs:fs + 300]:
-                print(f"  Already set: {wn}", file=sys.stderr)
+                print(f"  Already set: {wn or f1n + ' vs ' + f2n}", file=sys.stderr)
                 break
             # Locate the fight object's extent by brace depth. A name carrying
             # stray braces (see clean_wiki) never balances, leaving fe == fs and
@@ -3986,7 +4030,10 @@ def inject_results(js, results):
                 # injection that never happened and, via main(), skip the rebuild.
                 break
             js   = js[:fs] + fstr + js[fe:]
-            print(f"  Injected: {wn} def {f2n if f1w else f1n} R{rnd}", file=sys.stderr)
+            if und:
+                print(f"  Injected: {f1n} vs {f2n} {method} R{rnd}", file=sys.stderr)
+            else:
+                print(f"  Injected: {wn} def {f2n if f1w else f1n} R{rnd}", file=sys.stderr)
             count += 1
             break
     return js, count
@@ -4192,9 +4239,11 @@ def step_inject_results(data, now):
             js, n = inject_results(js, results)
             total_injected += n
             if n:
-                for r in results:
+                # A draw / no contest has no winner to announce: no result push.
+                decided = [r for r in results if not r.get("undecided")]
+                for r in decided:
                     r["event_date"] = ev_date
-                new_results.extend(results)
+                new_results.extend(decided)
         time.sleep(1)
 
     if not total_injected:
@@ -4469,13 +4518,14 @@ def step_build_events(data, now):
     # Preserve results already injected into the existing data so a full rebuild
     # never wipes winners for fights that finished more than 2 days ago.
     _post_pat = re.compile(
-        r'winner:"([^"]+)",method:"([^"]*)",round:(\d+|null),state:"post"[^{]*'
+        r'winner:"([^"]*)",method:"([^"]*)",round:(\d+|null),state:"post"[^{]*'
         r'f1:\{n:"([^"]+)"[^}]+\},f2:\{n:"([^"]+)"'
     )
     existing_results = {}
     for m in _post_pat.finditer(data):
         winner, method, rnd, f1n, f2n = m.groups()
-        if winner:
+        # A draw / no contest is over without a winner; keep it too.
+        if winner or method in ("Draw", "NC"):
             key = frozenset([f1n.lower(), f2n.lower()])
             existing_results[key] = {
                 "winner": winner, "method": method,

@@ -513,7 +513,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 .lb-trash-persona-empty{font-size:12px;color:var(--muted);text-align:center;padding:14px 0}
 .lb-wheel-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--card2);border-top:2px solid var(--gold);border-radius:16px 16px 0 0;padding:20px 16px 28px;transform:translateY(100%);transition:transform .3s ease;z-index:10}
 .lb-wheel-sheet.open{transform:translateY(0)}
-.lb-wheel-close{position:absolute;top:14px;right:14px;background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;padding:0 4px;line-height:1}
+/* A 44px target above the wheel: the canvas wrap (position:relative, later in
+   the DOM) covered all but a ~14px sliver of the old glyph-sized button, so a
+   finger tap on ✕ landed on the wheel and the sheet wouldn't close. */
+.lb-wheel-close{position:absolute;top:2px;right:2px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;z-index:2;background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;padding:0;line-height:1;touch-action:manipulation}
 .lb-wheel-canvas-wrap{position:relative;display:flex;justify-content:center;margin:8px 0 12px}
 .lb-wheel-pointer{position:absolute;top:-2px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:18px solid var(--gold);z-index:2}
 .lb-wheel-spin-btn{width:100%;padding:11px;background:var(--gold);color:var(--on-gold);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;margin-top:4px}
@@ -521,8 +524,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 .lb-wheel-result{text-align:center;font-size:22px;font-weight:800;color:var(--text);min-height:36px;margin-bottom:8px;display:none}
 .lb-wheel-result.show{display:block;animation:wheel-result-pop .35s ease}
 @keyframes wheel-result-pop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
-.lb-wheel-edit{position:absolute;top:14px;left:14px;background:none;border:none;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;padding:0;font-family:inherit}
-.lb-wheel-back{position:absolute;top:14px;left:14px;background:none;border:none;font-size:13px;font-weight:600;color:var(--gold);cursor:pointer;padding:0;font-family:inherit;display:none}
+.lb-wheel-edit{position:absolute;top:2px;left:2px;min-height:44px;z-index:2;background:none;border:none;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;padding:0 12px;font-family:inherit;touch-action:manipulation}
+.lb-wheel-back{position:absolute;top:2px;left:2px;min-height:44px;z-index:2;background:none;border:none;font-size:13px;font-weight:600;color:var(--gold);cursor:pointer;padding:0 12px;font-family:inherit;display:none;touch-action:manipulation}
 .lb-wheel-sheet.managing .lb-wheel-edit{display:none}
 .lb-wheel-sheet.managing .lb-wheel-back{display:block}
 .lb-wheel-sheet.managing .lb-wheel-spin-view{display:none}
@@ -4010,7 +4013,7 @@ function renderPicksSheet(){
     else{pickEl.textContent="Pick ›";pickEl.classList.add("todo");}
     var st=document.createElement("span");st.className="ps-st";
     if(decided){
-      if(!f.winner){st.textContent="No contest";}
+      if(!f.winner){st.textContent=_noWinnerLbl(f);}
       else if(mine){var ok=nmEq(f.winner,mine);done++;if(ok)right++;st.textContent=ok?"✓ Correct":"✗ Wrong";st.classList.add(ok?"win":"loss");}
       else st.textContent="Done";
     }else if(locked)st.textContent="Locked";
@@ -5887,11 +5890,17 @@ function resetPicks(){
   preds={};preds_method={};preds_conf={};save();saveMethod();saveConf();render();updatePicksWidget();toast("All picks cleared");
 }
 
-function fnIsLive(ev){return ev&&picksLocked(ev)&&ev.fights.some(function(f){return !f.winner;});}
+function fnIsLive(ev){return ev&&picksLocked(ev)&&ev.fights.some(function(f){return !boutDecided(f);});}
 // fnFights is held in chronological order (opener → main event; openFN reverses the
 // main-event-first source array), so the live bout is simply the first one without a
 // winner — fights resolve front to back. -1 when all resolved.
-function _liveFightIdx(fights){for(var i=0;i<fights.length;i++){if(!fights[i].winner)return i;}return -1;}
+// The bout after the last one decided (fights are opener first). Not the first
+// bout without a winner: a draw or a result the scraper missed would pin the
+// live view to that bout while the card fought on (Kareckaite/Gatto, a draw,
+// 2026-10-10). Same rule as the pick lock: a later result means it's over.
+function _liveFightIdx(fights){var i=fights.length;while(i>0&&!boutDecided(fights[i-1]))i--;return i<fights.length?i:-1;}
+// A bout over without a winner: the method the scraper wrote says which.
+function _noWinnerLbl(f){return /draw/i.test(f&&f.method||"")?"Draw":"No contest";}
 function fnModeOpen(){var m=document.getElementById("fnMode");return m&&m.classList.contains("open");}
 function openFN(evArg){
   var now=Date.now();
@@ -6199,7 +6208,7 @@ function fnRenderSplit(f){
 // so your rank shift depends on the room — and on which corner is the dog.
 function fnRenderStakes(f){
   var el=document.getElementById("fnl-stakes");if(!el)return;el.innerHTML="";el.style.display="none";
-  if(!fnEv||f.winner)return;                       // resolved → the result line says it all
+  if(!fnEv||boutDecided(f))return;                 // resolved → the result line says it all
   var myPick=preds[pk(fnEv,f)];if(!myPick)return;  // only meaningful when you've got a horse
   var list=_lbSorted||[];if(!list.length)return;
   var base={},meId=null;
@@ -6296,6 +6305,7 @@ function updateFNLive(){
   fnRenderFans(f);
   var res=document.getElementById("fnl-result");
   if(f.winner){res.textContent="";var wb=document.createElement("b");wb.textContent=_fnNameShort(f.winner);res.appendChild(wb);res.appendChild(document.createTextNode(" def. "+_fnNameShort(f.winner===f.f1.n?f.f2.n:f.f1.n)+(f.method?" · "+f.method:"")+(f.round?" · R"+f.round:"")));}
+  else if(boutDecided(f)){res.textContent=_noWinnerLbl(f)+(f.round?" · R"+f.round:"");}
   else{res.textContent=fightLocked(fnEv,f)?"In progress — waiting on result…":"Up next";}
   // Jump-to-live pill visible only when user has navigated off the live fight
   var liveIdx=_liveFightIdx(fnFights);
@@ -7380,7 +7390,7 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
   }
   // The model's own read, next to the market's (#74). Shown for an unpriced bout
   // too — that is exactly when a second opinion has nothing to compete with.
-  if(!fight.winner){
+  if(!boutDecided(fight)){
     var mrow=makeModelRow(fight,EVENTS[ei]);
     if(mrow)row.appendChild(mrow);
   }
@@ -7392,6 +7402,9 @@ function makeFightRow(fight,ei,fi,regIdx,showPick){
       var rw=document.createElement("div");rw.className="result-winner";
       var rwt=document.createElement("span");rwt.textContent=fight.winner.split(" ").pop()+" wins";rw.appendChild(rwt);rr.appendChild(rw);
       if(fight.method){var rm=document.createElement("div");rm.className="result-method";rm.textContent=fight.method+(fight.round?" R"+fight.round:"");rr.appendChild(rm);}
+      row.classList.add("fresult");
+    } else if(fight.state==="post"){
+      var rd=document.createElement("div");rd.className="result-method";rd.textContent=_noWinnerLbl(fight)+(fight.round?" R"+fight.round:"");rr.appendChild(rd);
       row.classList.add("fresult");
     }
     row.appendChild(rr);
@@ -12575,6 +12588,9 @@ document.addEventListener("DOMContentLoaded",function(){
   function _normMethod(m){
     if(!m)return"";
     var ml=m.toLowerCase();
+    // Before the decision checks: "Draw (majority)" would read as a majority decision.
+    if(ml.indexOf("draw")>=0)return"Draw";
+    if(ml.indexOf("no contest")>=0||ml.trim()==="nc"||ml.trim()==="overturned")return"NC";
     if(ml.indexOf("ko")>=0||ml.indexOf("tko")>=0)return"KO/TKO";
     if(ml.indexOf("submission")>=0||ml.indexOf("sub")>=0)return"Submission";
     if(ml.indexOf("unanimous")>=0)return"Decision (Unanimous)";
@@ -12596,6 +12612,19 @@ document.addEventListener("DOMContentLoaded",function(){
     return _lastName(a)===_lastName(b)||(a2.length>3&&b2.indexOf(a2)>=0)||(b2.length>3&&a2.indexOf(b2)>=0);
   }
 
+  // A draw or no contest: "A vs. B" with no winner. Mirrors scrape.py's
+  // _undecided_result, so an open page marks the bout over too (Kareckaite /
+  // Gatto, a draw, pinned the live view on 2026-10-10).
+  function _undecidedRes(a,b,rest){
+    a=_cleanWiki(a).replace(/\s*\(c\)\s*/g,"").trim();b=_cleanWiki(b).replace(/\s*\(c\)\s*/g,"").trim();
+    if(a.length<2||b.length<2)return null;
+    var method="",rnd=null;
+    rest.forEach(function(c){c=c||"";if(!method&&/\b(draw|no contest)\b|^nc\b|overturned/i.test(c))method=c;else if(rnd==null&&/^\s*\d\s*$/.test(c))rnd=parseInt(c,10);});
+    if(!method)return null;
+    return{winner:"",loser:"",f1:a,f2:b,method:_normMethod(method),round:rnd,undecided:true};
+  }
+  function _isVs(c){var l=(c||"").trim().toLowerCase();return l==="vs."||l==="vs";}
+
   function _parseMMATemplate(wt){
     var results=[];
     var re=/\{\{MMAevent bout\s*\n([\s\S]*?)\}\}/gi;
@@ -12605,7 +12634,11 @@ document.addEventListener("DOMContentLoaded",function(){
       if(lines.length<5)continue;
       var di=-1;
       for(var i=0;i<lines.length;i++){var ll=lines[i].toLowerCase().trim();if(ll==="def."||ll==="def"||ll==="d."){di=i;break;}}
-      if(di<1)continue;
+      if(di<1){
+        var vi=-1;for(var v=0;v<lines.length;v++){if(_isVs(lines[v])){vi=v;break;}}
+        if(vi>=1&&vi<lines.length-1){var und=_undecidedRes(lines[vi-1],lines[vi+1],lines.slice(vi+2));if(und)results.push(und);}
+        continue;
+      }
       var winner=_cleanWiki(lines[di-1]).replace(/\s*\(c\)\s*/g,"").trim();
       var loser=di+1<lines.length?_cleanWiki(lines[di+1]).replace(/\s*\(c\)\s*/g,"").trim():"";
       var method=di+2<lines.length?lines[di+2]:"";
@@ -12631,6 +12664,8 @@ document.addEventListener("DOMContentLoaded",function(){
       loser=di+1<row.length?row[di+1].replace(/\s*\(c\)\s*/g,"").trim():"";
       rest=row.slice(di+2);
     } else {
+      var vi=-1;for(var v=0;v<row.length;v++){if(_isVs(row[v])){vi=v;break;}}
+      if(vi>=1&&vi<row.length-1)return _undecidedRes(row[vi-1],row[vi+1],row.slice(vi+2));
       if(row.length<4)return null;
       winner=row[1];loser=row[2];rest=row.slice(3);
     }
@@ -12741,7 +12776,14 @@ document.addEventListener("DOMContentLoaded",function(){
         var changed=false,dirty=false;
         parsed.forEach(function(res){
           ev.fights.forEach(function(fight){
-            if(fight.winner)return;
+            if(boutDecided(fight))return;
+            if(res.undecided){
+              // Over without a winner: both names must match. No win/loss push.
+              if(!((_namesMatch(res.f1,fight.f1.n)&&_namesMatch(res.f2,fight.f2.n))||(_namesMatch(res.f1,fight.f2.n)&&_namesMatch(res.f2,fight.f1.n))))return;
+              fight.winner="";fight.method=res.method;fight.round=res.round;fight.state="post";
+              evSeen[[fight.f1.n,fight.f2.n].sort().join("|")]=1;dirty=true;changed=true;
+              return;
+            }
             var winF1=_namesMatch(res.winner,fight.f1.n),winF2=_namesMatch(res.winner,fight.f2.n);
             if(!winF1&&!winF2)return;
             var loseF1=_namesMatch(res.loser,fight.f1.n),loseF2=_namesMatch(res.loser,fight.f2.n);
