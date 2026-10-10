@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-10T21:30:45Z",
+ "generated_at": "2026-10-10T23:15:58Z",
  "promotions": [
   {
    "id": "pfl",
@@ -34,23 +34,23 @@
      "division": "Heavyweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Abdoulaye Kane",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
-     "a": "Taha Bendaoud",
-     "b": "Yanis Ghemmouri",
+     "a": "Yanis Ghemmouri",
+     "b": "Taha Bendaoud",
      "label": "",
      "division": "Featherweight",
      "title": false,
      "odds": {
-      "a": 218,
-      "b": -265
+      "a": -265,
+      "b": 218
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Yanis Ghemmouri",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
      "a": "Shido Boris Esperanca",
@@ -59,9 +59,9 @@
      "division": "Welterweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Shido Boris Esperanca",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
      "a": "Patrick Ocheme",
@@ -73,9 +73,9 @@
       "a": -205,
       "b": 175
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Patrick Ocheme",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
      "a": "David Samuel",

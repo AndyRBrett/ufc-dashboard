@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-10T20:05:21.529180+00:00",
+  "last_fetch_at": "2026-10-10T23:15:28.086415+00:00",
   "last_status": 401,
-  "lines_digest": "58cbd48dd951deb4b0df2e137fdc102b17d01d82",
+  "lines_digest": "4ab87950f95a96cc27840aa4c458ead6249e336f",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -143,20 +143,6 @@
   "markets_partial": {
     "2026-10-10": {
       "fighters": [
-        "ocheme",
-        "thompson",
-        "kareckaite",
-        "gatto",
-        "zheleznyakova",
-        "pereira",
-        "bendaoud",
-        "ghemmouri",
-        "harris",
-        "jr.",
-        "franco",
-        "ribeiro",
-        "price",
-        "shahbazyan",
         "prado",
         "bonfim",
         "walker",
@@ -172,8 +158,8 @@
         "allen",
         "duncan"
       ],
-      "listed": 14,
-      "priced": 14
+      "listed": 7,
+      "priced": 7
     },
     "2026-10-17": {
       "fighters": [
@@ -311,25 +297,25 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-10T20:05:21.529180+00:00",
+  "markets_partial_at": "2026-10-10T23:15:28.086415+00:00",
   "next_event_days_out": 0,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-10T20:05:21.529180+00:00",
+      "last_fetch_at": "2026-10-10T23:15:28.086415+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
       "requests_remaining": 0
     },
     "the-odds-api-backup": {
-      "bouts": 46,
-      "last_fetch_at": "2026-10-10T20:05:21.529180+00:00",
-      "last_ok_at": "2026-10-10T20:05:21.529180+00:00",
+      "bouts": 39,
+      "last_fetch_at": "2026-10-10T23:15:28.086415+00:00",
+      "last_ok_at": "2026-10-10T23:15:28.086415+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 364
+      "requests_remaining": 363
     }
   },
   "requests_remaining": 0
