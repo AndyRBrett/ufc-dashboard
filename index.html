@@ -1016,6 +1016,14 @@ button.ps-row:hover{background:var(--btn-bg)}
    centre would clip the top instead). The live view scrolls inside its own body. */
 .fn-mode:not(.fn-mode-live){overflow-y:auto;justify-content:flex-start}
 #fnPreBody{margin:auto 0;width:100%;max-width:560px}
+/* Prev / Next stay pinned to the bottom of the pick view. Picking opens the
+   method and lock rows above the tape, which pushed Next off a phone screen
+   just when you want to move on; sticky keeps it under the thumb, and it settles
+   back in place once the page is short enough to show it anyway. The bar
+   reaches the overlay's 24px side padding so the tape scrolls behind it. */
+.fn-foot{position:sticky;bottom:-24px;z-index:2;margin:24px -24px -24px;padding:12px 24px calc(14px + 24px);background:linear-gradient(to top,#000 72%,rgba(0,0,0,0))}
+.fn-foot .fn-nav{margin-top:0}
+.fn-foot .fn-ctr{margin-top:8px}
 .fn-info{width:100%;margin-top:14px}
 .fn-info:empty{display:none}
 .fn-odds{display:flex;align-items:flex-start;gap:8px}
@@ -1830,8 +1838,10 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     <div class="fn-picked-lbl" id="fn-picked-lbl"></div>
     <div class="fn-extras" id="fn-extras"></div>
     <div class="fn-info" id="fn-tape"></div>
-    <div class="fn-nav"><button class="fn-nb" onclick="fnNav(-1)">← Prev</button><button class="fn-nb" onclick="fnNav(1)">Next →</button></div>
-    <div class="fn-ctr" id="fn-ctr"></div>
+    <div class="fn-foot">
+      <div class="fn-nav"><button class="fn-nb" onclick="fnNav(-1)">← Prev</button><button class="fn-nb" onclick="fnNav(1)">Next →</button></div>
+      <div class="fn-ctr" id="fn-ctr"></div>
+    </div>
   </div>
   <div id="fnLiveBody">
     <div class="fnl-hdr">
