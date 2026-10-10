@@ -668,7 +668,11 @@ check reads through `nickname_taken()` instead of other players' picks. In the
 app: Ranks shows 🙈 for someone's main-card pick that hasn't locked, and the
 group-split bar shows only once a bout locks. **Any new feature that shows
 other players' picks before a fight locks will come back empty**; that is the
-point, not a bug. The migration is applied by hand, before the app ships.
+point, not a bug. The migration is applied by hand, before the app ships. Who has picked which bouts (never
+the pick, method or 🔒) comes from `card_picked_bouts` (0021): the board lists a
+player whose picks on the card are all still hidden as "🙈 N picked", and the
+nudge list counts hidden picks as picked. Before it, This Event showed only the
+viewer and offered to nudge a player who had picked the whole card.
 
 ## Card clocks and segments come from UFC.com
 
@@ -1308,7 +1312,8 @@ select m, ok from (values
   ('0017 nickname_taken',          exists(select 1 from pg_proc where proname='nickname_taken')),
   ('0018 room passwords',          exists(select 1 from pg_proc where proname='set_room_pass')),
   ('0019 notification kinds',      exists(select 1 from information_schema.columns where table_name='user_prefs' and column_name='notif_off')),
-  ('0020 founders and invites',    exists(select 1 from pg_proc where proname='claim_invite'))
+  ('0020 founders and invites',    exists(select 1 from pg_proc where proname='claim_invite')),
+  ('0021 card picked bouts',       exists(select 1 from pg_proc where proname='card_picked_bouts'))
 ) t(m, ok);
 ```
 

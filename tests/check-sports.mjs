@@ -441,7 +441,7 @@ else {
   const html = readFileSync(join(ROOT, "index.html"), "utf8");
   check("the UFC board hands off to the sport board before touching UFC rows",
     /function loadLeaderboard\(isLive\)\{\s*var _gen=\+\+_lbGen;\s*\/\/[^\n]*\n\s*if\(typeof curSport==="function"&&curSport\(\)!=="ufc"\)\{renderSportBoard\(_gen\);return;\}/.test(html));
-  check("the UFC board drops a response a newer load overtook", /\+PICKS_UFC\)\.then\(function\(rows\)\{\s*if\(_gen!==_lbGen\)return;/.test(html));
+  check("the UFC board drops a response a newer load overtook", /\+PICKS_UFC\)(?:,\s*_cardPickedBouts\([^()]*\)\s*\]\))?\.then\(function\((?:rows|res)\)\{\s*(?:var rows=res\[0\],_hidden=res\[1\]\|\|\[\];\s*)?if\(_gen!==_lbGen\)return;/.test(html));
   check("the feed is only used after PickEngine.validateFeed", /var v=PickEngine\.validateFeed\(j\);\s*_sportFeed=\{promotions:v\.promotions,events:v\.events\};/.test(html));
 }
 
