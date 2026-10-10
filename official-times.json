@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-09T23:55:21Z",
+ "generated_at": "2026-10-10T00:00:27Z",
  "source": "https://www.ufc.com",
  "cards": {
   "UFC Fight Night: Allen vs. Duncan|2026-10-10": {
@@ -79,7 +79,7 @@
   "UFC Fight Night: Buckley vs. Malott|2026-10-17": {
    "name": "UFC Fight Night: Buckley vs. Malott",
    "date": "2026-10-17",
-   "checked_at": "2026-10-09T20:41:19Z",
+   "checked_at": "2026-10-10T00:00:27Z",
    "url": "https://www.ufc.com/event/ufc-fight-night-october-17-2026",
    "status": 200,
    "segments": {
@@ -152,7 +152,7 @@
      ]
     ]
    },
-   "confirmed_at": "2026-10-09T20:41:19Z"
+   "confirmed_at": "2026-10-10T00:00:27Z"
   },
   "UFC 333: Volkanovski vs. Evloev|2026-10-24": {
    "name": "UFC 333: Volkanovski vs. Evloev",
@@ -215,6 +215,27 @@
     ]
    },
    "confirmed_at": "2026-10-09T17:05:22Z"
+  },
+  "UFC Fight Night: Moicano vs. Nolan|2026-10-31": {
+   "name": "UFC Fight Night: Moicano vs. Nolan",
+   "date": "2026-10-31",
+   "checked_at": "2026-10-10T00:00:27Z",
+   "url": "https://www.ufc.com/event/ufc-fight-night-october-31-2026",
+   "status": 200,
+   "segments": {
+    "prelim": {
+     "et": "17:00",
+     "date": "2026-10-31",
+     "utc": "2026-10-31T21:00:00Z"
+    },
+    "main": {
+     "et": "20:00",
+     "date": "2026-10-31",
+     "utc": "2026-11-01T00:00:00Z"
+    }
+   },
+   "bouts": {},
+   "confirmed_at": "2026-10-10T00:00:27Z"
   }
  }
 }
