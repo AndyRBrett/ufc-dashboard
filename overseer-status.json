@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-10T10:55:37Z",
+  "generated_at": "2026-10-10T11:00:45Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "status": "ok",
-      "last_changed_at": "2026-10-10T08:00:44Z",
+      "last_changed_at": "2026-10-10T11:00:45Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-10T10:55:37Z",
+      "last_changed_at": "2026-10-10T11:00:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -136,7 +136,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-10T10:55:37Z",
+      "last_changed_at": "2026-10-10T11:00:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -156,7 +156,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-10T10:55:37Z",
+      "last_changed_at": "2026-10-10T11:00:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -211,17 +211,17 @@
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "f1": "Francisco Prado",
       "f2": "Ismael Bonfim",
-      "f1_movement": -260,
-      "f2_movement": 255,
-      "magnitude": 260,
+      "f1_movement": -262,
+      "f2_movement": 256,
+      "magnitude": 262,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Catchweight (163.5 Lb)",
-      "f1_prob_shift": 12.7,
-      "f2_prob_shift": -12.0,
-      "priority": 520.0
+      "f1_prob_shift": 13.0,
+      "f2_prob_shift": -12.2,
+      "priority": 524.0
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
@@ -275,17 +275,17 @@
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "f1": "Allen Frye Jr.",
       "f2": "RJ Harris",
-      "f1_movement": 94,
-      "f2_movement": -138,
-      "magnitude": 138,
+      "f1_movement": 92,
+      "f2_movement": -137,
+      "magnitude": 137,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": -8.6,
+      "f1_prob_shift": -8.5,
       "f2_prob_shift": 9.4,
-      "priority": 276.0
+      "priority": 274.0
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
