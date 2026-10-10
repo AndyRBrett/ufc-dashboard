@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-10T04:50:41Z",
+  "generated_at": "2026-10-10T04:55:41Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -13269,7 +13269,7 @@
           "f1": "Brendan Allen",
           "f2": "Christian Leroy Duncan",
           "lbl": "Main Event",
-          "points": 24,
+          "points": 25,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13390,6 +13390,11 @@
               "at": "2026-10-10T01:55:38Z",
               "f1_odds": -124,
               "f2_odds": 102
+            },
+            {
+              "at": "2026-10-10T04:55:40Z",
+              "f1_odds": -123,
+              "f2_odds": 103
             }
           ],
           "open": {
@@ -13854,7 +13859,7 @@
           "f1": "Malcolm Wellmaker",
           "f2": "Otari Tanzilovi",
           "lbl": "Main Card",
-          "points": 22,
+          "points": 23,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13965,6 +13970,11 @@
               "at": "2026-10-10T01:55:38Z",
               "f1_odds": -220,
               "f2_odds": 179
+            },
+            {
+              "at": "2026-10-10T04:55:40Z",
+              "f1_odds": -215,
+              "f2_odds": 175
             }
           ],
           "open": {
@@ -14665,12 +14675,17 @@
           "f1": "Erin Blanchfield",
           "f2": "Jasmine Jasudavicius",
           "lbl": "Co-Main",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
               "f1_odds": -230,
               "f2_odds": 192
+            },
+            {
+              "at": "2026-10-10T04:55:40Z",
+              "f1_odds": -250,
+              "f2_odds": 207
             }
           ],
           "open": {
@@ -14725,12 +14740,17 @@
           "f1": "Mandel Nallo",
           "f2": "Nate Landwehr",
           "lbl": "Main Card",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
               "f1_odds": -235,
               "f2_odds": 195
+            },
+            {
+              "at": "2026-10-10T04:55:40Z",
+              "f1_odds": -275,
+              "f2_odds": 226
             }
           ],
           "open": {
@@ -15178,7 +15198,7 @@
           "f1": "Charles Oliveira",
           "f2": "Diego Lopes",
           "lbl": "Main Event",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-10-06T03:01:07Z",
@@ -15194,6 +15214,11 @@
               "at": "2026-10-06T14:45:44Z",
               "f1_odds": -157,
               "f2_odds": 130
+            },
+            {
+              "at": "2026-10-10T04:55:40Z",
+              "f1_odds": -164,
+              "f2_odds": 136
             }
           ],
           "open": {
@@ -15609,7 +15634,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Christian Leroy Duncan",
         "side": "f1",
-        "points": 24,
+        "points": 25,
         "open": -141,
         "close": null,
         "clv": null
@@ -16114,7 +16139,7 @@
         "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
         "opponent": "Charles Oliveira",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 137,
         "close": null,
         "clv": null
@@ -16443,7 +16468,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Malcolm Wellmaker",
         "side": "f2",
-        "points": 22,
+        "points": 23,
         "open": 157,
         "close": null,
         "clv": null
@@ -17225,7 +17250,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Brendan Allen",
         "side": "f2",
-        "points": 24,
+        "points": 25,
         "open": 121,
         "close": null,
         "clv": null
@@ -19906,7 +19931,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Otari Tanzilovi",
         "side": "f1",
-        "points": 22,
+        "points": 23,
         "open": -180,
         "close": null,
         "clv": null
@@ -20049,7 +20074,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Jasmine Jasudavicius",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -230,
         "close": null,
         "clv": null
@@ -20060,7 +20085,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Erin Blanchfield",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 192,
         "close": null,
         "clv": null
@@ -20104,7 +20129,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Nate Landwehr",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -235,
         "close": null,
         "clv": null
@@ -20115,7 +20140,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Mandel Nallo",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 195,
         "close": null,
         "clv": null
@@ -20335,7 +20360,7 @@
         "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
         "opponent": "Diego Lopes",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -166,
         "close": null,
         "clv": null
