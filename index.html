@@ -789,6 +789,9 @@ body.sport-other .ps-all{display:none}
 .ft>*{max-width:100%}
 .fn{font-family:var(--font-display);text-transform:uppercase;font-size:25px;letter-spacing:.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fn.fsm{font-size:20px}.fn.fxs{font-size:16px;font-family:var(--font-body);font-weight:600}
+/* Card-row names wrap between words and are shrunk to fit by _fitNamePair (see
+   _watchCardName); overflow-wrap:anywhere only applies below CARD_NAME_MIN_PX. */
+.ft>.fn{white-space:normal;text-overflow:clip;overflow-wrap:anywhere}
 .frec{font-size:13px;color:var(--muted2);margin-top:2px;font-weight:400}
 .fpills{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
 .ft.ftr .fpills{justify-content:flex-end}
@@ -4086,6 +4089,7 @@ function applyTheme(t){
   if(!THEMES[t])t="octagon";
   if(document.body.getAttribute("data-theme")!==t)ambClear();
   document.body.setAttribute("data-theme",t);
+  if(typeof _refitCardNames==="function")_refitCardNames();  // octagon swaps the display font
   if(t==="seasonal")applySeason();
   else{document.body.removeAttribute("data-season");try{seasonStop();}catch(e){}
     if(t==="silver")applySilver();else restoreLogo();}
@@ -5981,12 +5985,19 @@ var FN_NAME_MIN_PX=18;
 function _fnFitNames(){
   var els=[document.getElementById("fn-f1"),document.getElementById("fn-f2")];
   if(!els[0]||!els[1])return;
+  _fitNamePair(els,FN_NAME_MIN_PX);
+}
+// Shared by Quick Pick and the card rows: the largest size (up to the CSS one)
+// at which each name's longest word fits its own width, applied to every name
+// in the matchup so the two sides stay the same size. Names wrap between words;
+// a word is only ever broken by the CSS floor, below minPx.
+function _fitNamePair(els,minPx){
   var size=Infinity,base=0;
   els.forEach(function(el){
     el.style.fontSize="";el.style.overflowWrap="normal";
     var s=base=parseFloat(getComputedStyle(el).fontSize)||0;
-    for(var i=0;i<3&&el.clientWidth&&el.scrollWidth>el.clientWidth+1&&s>FN_NAME_MIN_PX;i++){
-      s=Math.max(FN_NAME_MIN_PX,Math.floor(s*el.clientWidth/el.scrollWidth));
+    for(var i=0;i<3&&el.clientWidth&&el.scrollWidth>el.clientWidth+1&&s>minPx;i++){
+      s=Math.max(minPx,Math.floor(s*el.clientWidth/el.scrollWidth));
       el.style.fontSize=s+"px";
     }
     size=Math.min(size,s);
@@ -5995,6 +6006,51 @@ function _fnFitNames(){
     el.style.overflowWrap="";
     el.style.fontSize=size<base?size+"px":"";
   });
+}
+// Card rows: names used to be one line with an ellipsis, which cut most main-card
+// names short ("BRENDAN A…", "CHRISTIAN …"). They now wrap between words and shrink
+// to fit, like Quick Pick. Each name is watched with one ResizeObserver, so a row
+// is fitted when it first gets a width: on render, when a collapsed card or
+// "N more fights" opens, and on rotation. Fitting is deferred to the next frame
+// and skipped while the widths are unchanged, so resizing a name never loops.
+// render() replaces whole card trees, and an observer holds its targets until
+// they are unobserved, so a name that has left the page is dropped: when the
+// observer reports it (it shrinks to 0x0 on removal) and, as a backstop, by a
+// sweep of _nameWatched on every flush (each render's new names trigger one).
+var CARD_NAME_MIN_PX=13,_namePend=new Set(),_nameWatched=new Set(),_nameRAF=0;
+var _nameRO=typeof ResizeObserver==="function"?new ResizeObserver(function(entries){
+  entries.forEach(function(e){
+    if(!e.target.isConnected){_nameUnwatch(e.target);return;}
+    _namePend.add(e.target.closest(".mu")||e.target);
+  });
+  if(!_nameRAF)_nameRAF=requestAnimationFrame(_flushNameFit);
+}):null;
+function _nameUnwatch(el){_nameRO.unobserve(el);_nameWatched.delete(el);}
+function _flushNameFit(){
+  _nameRAF=0;
+  _nameWatched.forEach(function(el){if(!el.isConnected)_nameUnwatch(el);});
+  var list=Array.from(_namePend);_namePend.clear();
+  list.forEach(function(box){
+    if(!box.isConnected)return;
+    var els=box.classList.contains("fn")?[box]:Array.from(box.querySelectorAll(".ft > .fn"));
+    if(!els.length||!els[0].clientWidth)return;
+    var key=els.map(function(e){return e.clientWidth;}).join("/");
+    if(box._fitKey===key)return;
+    box._fitKey=key;
+    _fitNamePair(els,CARD_NAME_MIN_PX);
+  });
+}
+function _watchCardName(el){if(_nameRO){_nameRO.observe(el);_nameWatched.add(el);}}
+// Web fonts can land after the first fit (a different width per letter), and a
+// theme switch changes the font; refit everything on screen when either happens.
+function _refitCardNames(){
+  if(!_nameRO)return;
+  document.querySelectorAll(".ft > .fn").forEach(function(el){var b=el.closest(".mu")||el;b._fitKey="";_namePend.add(b);});
+  if(!_nameRAF)_nameRAF=requestAnimationFrame(_flushNameFit);
+}
+if(typeof document!=="undefined"&&document.fonts){
+  if(document.fonts.ready)document.fonts.ready.then(_refitCardNames);
+  if(document.fonts.addEventListener)document.fonts.addEventListener("loadingdone",_refitCardNames);
 }
 window.addEventListener("resize",function(){
   if(typeof fnModeOpen==="function"&&fnModeOpen()&&!fnLive&&fnFights.length)_fnFitNames();
@@ -6918,7 +6974,7 @@ function makeFighter(fighter,right,size,regIdx,side,isWinner){
     _photoInto(phWrap,fighter.n,!fighter.other);
     wrap.appendChild(phWrap);
   }
-  var nm=document.createElement("div");nm.className="fn"+(size==="sm"?" fsm":size==="xs"?" fxs":"");nm.textContent=fighter.n;
+  var nm=document.createElement("div");nm.className="fn"+(size==="sm"?" fsm":size==="xs"?" fxs":"");nm.textContent=fighter.n;_watchCardName(nm);
   if(isWinner)nm.style.color="var(--green)";
   wrap.appendChild(nm);
   // Another promotion's fighter (fighter.other, set by the sport view) is not in
