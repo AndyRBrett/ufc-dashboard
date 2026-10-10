@@ -27,7 +27,7 @@ const served = (f) => join(DATA_FILES.has(f) ? FIX : ROOT, f);
 let failures = 0;
 const check = (name, cond) => cond ? console.log("  ✓ " + name) : (failures++, console.error("  ✗ " + name));
 
-const PAGES = "https://andyrbrett.github.io/ufc-dashboard/";
+const PAGES = "https://raw.githubusercontent.com/AndyRBrett/ufc-dashboard/main/"; // send-reminders reads the committed files
 const SB = "https://sb.test";
 const ENV = { CRON_SECRET: "s3cret", SUPABASE_URL: SB, SB_ANON_KEY: "anon" };
 

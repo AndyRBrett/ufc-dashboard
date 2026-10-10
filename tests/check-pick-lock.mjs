@@ -415,6 +415,12 @@ check("lockRows: a card weeks away or long gone is not written",
     /put\("sport_pick_locks", "promotion,event_date,a,b", bouts\)/.test(src2) && /put\("sport_card_bells", "promotion,event_date", cards\)/.test(src2));
   check("...and a bad feed cannot cost UFC its lock times (separate try/catch, separate result)", /sportLocks = \{ error:/.test(src2) && /locks = \{ error:/.test(src2));
 }
+// The lock times come from data.js's results, so they must come from the
+// COMMITTED file: Pages lags a blocked deploy, and on 2026-10-10 that froze
+// every result for an hour and kept everyone's finished picks hidden.
+check("send-reminders reads data.js from main, never the Pages copy",
+  /const DATA_URL = Deno\.env\.get\("DATA_URL"\) \?\?\s*"https:\/\/raw\.githubusercontent\.com\/AndyRBrett\/ufc-dashboard\/main\/data\.js"/.test(src) &&
+  !/github\.io\/ufc-dashboard\/data\.js/.test(src));
 check("send-reminders writes locks only with the service key, building on what it last wrote",
   /if \(SB_SERVICE_ROLE_KEY\) \{\s*try \{\s*const h = \{[^}]*apikey: SB_SERVICE_ROLE_KEY[^]*?const \{ bouts, cards \} = lockRows\(evs, bundledKernel\(\{\}\), now, prior\)/.test(src) &&
   /rest\/v1\/pick_locks\?select=event_date,a,b,lock_at&event_date=in\./.test(src));

@@ -232,6 +232,26 @@ jobs:
           SUPABASE_ANON: ${{ secrets.SUPABASE_ANON }}
         run: python scrape.py --send-pending pending-pushes.json
 
+      # Pick reveals wait on the lock times send-reminders writes from the
+      # committed data.js (picks are hidden until a bout's lock + LOCK_GRACE).
+      # Left to scheduled-push.yml's throttled */5 cron it ran ~10 minutes apart
+      # on 2026-10-10, so a fight's result sat in data.js while the next bout
+      # stayed unlocked and everyone's picks stayed hidden. Called right after
+      # the commit (after the result pushes, whose 409 retries mean main's copy
+      # is readable), the lock lands seconds after the result. Never fails the
+      # run: the cron is still the backstop.
+      - name: Write pick lock times now that data.js is committed
+        if: steps.push.outputs.pushed == 'true'
+        continue-on-error: true
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then echo "::warning::CRON_SECRET not set; lock times wait for scheduled-push"; exit 0; fi
+          code=$(curl -s -m 60 -o /tmp/sr.json -w '%{http_code}' -X POST \
+            "https://gkccophrdqtqcowmblre.supabase.co/functions/v1/send-reminders" \
+            -H "Authorization: Bearer $CRON_SECRET" -H "Content-Type: application/json" || echo 000)
+          echo "send-reminders -> HTTP $code"; head -c 2000 /tmp/sr.json 2>/dev/null || true; echo
+
       # Event-level failures must reach the RUN's failure signal (#66).
       #
       # Deliberately the last step, after the publish: a card carrying no odds is
