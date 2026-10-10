@@ -148,6 +148,37 @@ async function main() {
     assert("every theme's header title fits between the avatar and search at 375px" + (misfit ? " (not: " + misfit + ")" : ""),
       titles.length === 6 && !misfit);
     assert("Silver's script title isn't forced to capitals", titles.some((x) => x.t === "silver" && x.tf === "none"));
+    // The wheel's ✕, Edit and Done take a finger, not just their centre pixel:
+    // the canvas wrap once covered all but a 14px sliver of ✕, so it wouldn't
+    // close on a phone (2026-10-10). Every point of a 40px square must hit it.
+    const wheelHits = await page.evaluate(async () => {
+      document.getElementById("tabLeague").click();
+      await new Promise((r) => setTimeout(r, 400));
+      window.openWheelSheet();
+      const sheet = document.getElementById("wheelSheet");
+      sheet.style.transition = "none";
+      const probe = (el) => {
+        const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        for (let dx = -19; dx <= 19; dx += 19) for (let dy = -19; dy <= 19; dy += 19) {
+          const hit = document.elementFromPoint(cx + dx, cy + dy);
+          if (!hit || !(hit === el || el.contains(hit))) return false;
+        }
+        return true;
+      };
+      const close = sheet.querySelector(".lb-wheel-close");
+      const out = { close: probe(close), edit: probe(document.getElementById("wheelEditBtn")) };
+      window.showWheelView("manage");
+      out.done = probe(document.getElementById("wheelBackBtn"));
+      window.showWheelView("spin");
+      close.click();
+      out.closed = !sheet.classList.contains("open");
+      sheet.style.transition = "";
+      document.getElementById("tabCards").click();
+      return out;
+    });
+    if (!(wheelHits.close && wheelHits.edit && wheelHits.done && wheelHits.closed)) console.log("  wheel hits:", JSON.stringify(wheelHits));
+    assert("the wheel's ✕, Edit and Done are 40px+ targets nothing covers, and ✕ closes it",
+      wheelHits.close && wheelHits.edit && wheelHits.done && wheelHits.closed);
     // FN Mode: once a bout is picked, its method and 🔒 lock are set right there,
     // through the same setters as the card row.
     const fnx = await page.evaluate(() => {
