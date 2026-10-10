@@ -11191,15 +11191,60 @@ function sportsBoot(){
   return _sportFeedLoad().catch(function(){});
 }
 // sports:end
+// The card the board is about: the next one by (prelim) start, kept for a day
+// after it starts so its chips persist through the live main event.
+function _lbNextEvent(nowMs){
+  function _evStartMs(e){var dp=e.date.split("-"),_eto=etOffset(e.date);var t=e.prelimTime||e.time||"";var pp=t.split(":");var h=parseInt(pp[0],10);if(isNaN(h))return new Date(e.date).getTime()+DAY_MS;return Date.UTC(+dp[0],+dp[1]-1,+dp[2],h+_eto,+(pp[1]||0),0);}
+  return EVENTS.filter(function(e){return _evStartMs(e)>nowMs-DAY_MS;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);})[0]||null;
+}
+// Who has picked which bouts on a card, never what they picked (0021). Other
+// players' picks are hidden until each bout locks (0017), so without this the
+// board can't see that anyone else has picked tonight: This Event listed only
+// you, and the nudge list called a player who'd picked the whole card 0/5.
+// Anything but a list (the function missing, offline) reads as nobody, which
+// is how the board behaved before.
+function _cardPickedBouts(date){
+  if(!date)return Promise.resolve([]);
+  return fetch(SUPABASE_URL+"/rest/v1/rpc/card_picked_bouts",{method:"POST",headers:_sbHeaders(),body:JSON.stringify({p_date:date})})
+    .then(function(r){return r.ok?r.json():[];})
+    .then(function(a){return Array.isArray(a)?a:[];})
+    .catch(function(){return [];});
+}
+// A board row for a player whose picks on this card are all still hidden: on
+// the board with nothing scored, the count of bouts they have in, and 🙈 chips.
+// Only players the board isn't already showing, never the viewer, and in a room
+// only its members; on the main-card scope only someone with a main-card bout.
+function _lbHiddenPickers(hidden,sorted,ev,room){
+  if(!ev||!hidden.length)return [];
+  var shown={};sorted.forEach(function(u){if(u.user_id)shown[u.user_id]=true;});
+  var inRoom=room?roomHas(room):null,by={};
+  hidden.forEach(function(h){
+    var uid=h.user_id;if(!uid||uid===USER_ID||shown[uid])return;
+    if(inRoom&&!inRoom(uid))return;
+    var fight=null;for(var i=0;i<ev.fights.length;i++){if(nmBout(ev.fights[i],h.f1,h.f2)){fight=ev.fights[i];break;}}
+    if(!fight)return;
+    if(lbScope==="main"&&!isMainCardBout(fight))return;
+    var u=by[uid]||(by[uid]={nickname:"",user_id:uid,correct:0,total:0,methods:0,fotn:0,dogPts:0,lockPts:0,bonusPicks:{},isMe:false,picks:[],accuracy:null,currentStreak:0,bestStreak:0,hiddenCount:0,_t:-1,_seen:{}});
+    var t=Date.parse(h.updated_at||"")||0;
+    if(t>=u._t&&h.nickname&&String(h.nickname).trim()){u._t=t;u.nickname=h.nickname;}
+    var k=pk(ev,fight);if(!u._seen[k]){u._seen[k]=true;u.hiddenCount++;}
+  });
+  return Object.keys(by).map(function(k){return by[k];}).filter(function(u){return u.hiddenCount>0;});
+}
 function loadLeaderboard(isLive){
   var _gen=++_lbGen;
   // Another sport selected: its own board (sports block), never the UFC one.
   if(typeof curSport==="function"&&curSport()!=="ufc"){renderSportBoard(_gen);return;}
   var body=document.getElementById("lbBody");
   if(!isLive)body.innerHTML='<div class="lb-loading">Loading picks...</div>';
-  _sbFetchAll("/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+PICKS_UFC).then(function(rows){
+  var _nextEv0=_lbNextEvent(Date.now());
+  Promise.all([
+    _sbFetchAll("/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+PICKS_UFC),
+    _cardPickedBouts(_nextEv0?_nextEv0.date:null)
+  ]).then(function(res){
+    var rows=res[0],_hidden=res[1]||[];
     if(_gen!==_lbGen)return;          // a newer load (e.g. a sport switch) owns the board now
-    if(!Array.isArray(rows)||rows.length===0){
+    if(!Array.isArray(rows)||(rows.length===0&&!_hidden.length)){
       body.innerHTML='<div class="lb-empty">No picks submitted yet.<br>Make some picks to appear here!</div>';
       return;
     }
@@ -11213,11 +11258,12 @@ function loadLeaderboard(isLive){
     roomsRefreshForBoard();
     var belt=computeBeltLineage(rows,_room?{users:_room.members}:null);
     // Find the current/active event up front so "This Event" mode can scope scoring to it.
-    var nowMs=Date.now();
-    function _evStartMs(e){var dp=e.date.split("-"),_eto=etOffset(e.date);var t=e.prelimTime||e.time||"";var pp=t.split(":");var h=parseInt(pp[0],10);if(isNaN(h))return new Date(e.date).getTime()+DAY_MS;return Date.UTC(+dp[0],+dp[1]-1,+dp[2],h+_eto,+(pp[1]||0),0);}
     // Keep an event's pick chips visible until ~a day after its (prelim) start, so they
     // persist through the live main event instead of vanishing the moment it begins.
-    var nextEv=EVENTS.filter(function(e){return _evStartMs(e)>nowMs-DAY_MS;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);})[0]||null;
+    // The same card the hidden-pickers read above asked about.
+    var nextEv=_nextEv0;
+    // The hidden-pickers list is only about that card; drop it if it ever isn't.
+    if(!nextEv)_hidden=[];
     _lbCtxEvName=nextEv?nextEv.name:null;
     _lbCtxEvDate=nextEv?nextEv.date:null;
     var nextMainFights=nextEv?nextEv.fights.slice().reverse():[];
@@ -11229,6 +11275,9 @@ function loadLeaderboard(isLive){
     // picks are prelims drops off the main-card board entirely rather than
     // appearing on it with a zero.
     var sorted=boardStandings(rows,roomScope({date:lbMode==="current"?nextEv.date:null,mainCard:lbScope==="main"}));
+    // Players whose picks on this card are all still hidden (0017) go on the
+    // board too, unscored, so a full card of picks doesn't read as nobody.
+    sorted=sorted.concat(_lbHiddenPickers(_hidden,sorted,nextEv,_room));
     // Index picks per fight (from the DEDUPED users) for Fight Night LIVE fans, and publish
     // _lbSorted now so the live view has data even when a panel early-return fires below.
     _fnPicksByFight={};
@@ -11295,8 +11344,10 @@ function loadLeaderboard(isLive){
       // at a leaderboard that no longer had any nudge buttons on it.
       if(!mainCardLocked(nextEv)){
         // In a room, only its members: never list (or push) someone outside it.
+        // Hidden picks count as picked: a pick you can't read yet is still a pick.
+        var _slRows=rows.concat(_hidden.map(function(h){return {user_id:h.user_id,nickname:h.nickname,f1:h.f1,f2:h.f2,updated_at:h.updated_at,event_date:nextEv.date};}));
         var _inRoom=_room?roomHas(_room):null;
-        var slackers=_slackersFor(nextEv,rows).filter(function(u){return u.user_id&&(!_inRoom||_inRoom(u.user_id));});
+        var slackers=_slackersFor(nextEv,_slRows).filter(function(u){return u.user_id&&(!_inRoom||_inRoom(u.user_id));});
         if(slackers.length){
           var nr=document.createElement("div");
           nr.style.cssText="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:0 2px 12px";
@@ -11365,13 +11416,15 @@ function loadLeaderboard(isLive){
       streakDiv.textContent=u.currentStreak>0?"🔥 "+u.currentStreak:"–";
       metaLine.appendChild(streakDiv);
       var det=document.createElement("div");det.className="lb-detail";
-      det.textContent=anyResolved?(u.correct+"/"+u.total+" correct"+(u.methods?" · +"+u.methods+" method":"")+(u.dogPts?" · +"+u.dogPts+" dog":"")+(u.lockPts?" · "+(u.lockPts>0?"+":"")+u.lockPts+" lock":"")+(u.fotn?" · +"+u.fotn+" bonus":"")):pending+" pending";
+      if(u.hiddenCount)det.textContent="🙈 "+u.hiddenCount+" picked, hidden until each fight locks";
+      else det.textContent=anyResolved?(u.correct+"/"+u.total+" correct"+(u.methods?" · +"+u.methods+" method":"")+(u.dogPts?" · +"+u.dogPts+" dog":"")+(u.lockPts?" · "+(u.lockPts>0?"+":"")+u.lockPts+" lock":"")+(u.fotn?" · +"+u.fotn+" bonus":"")):pending+" pending";
       metaLine.appendChild(det);
       main.appendChild(metaLine);
       row.appendChild(main);
       var right=document.createElement("div");right.className="lb-right";
       var ptsDiv=document.createElement("div");ptsDiv.className="lb-pts";
-      ptsDiv.textContent=anyResolved?(pts%1===0?pts+" pts":pts.toFixed(1)+" pts"):u.total+(u.total===1?" pick":" picks");
+      var _shownN=u.hiddenCount||u.total;
+      ptsDiv.textContent=anyResolved?(pts%1===0?pts+" pts":pts.toFixed(1)+" pts"):_shownN+(_shownN===1?" pick":" picks");
       right.appendChild(ptsDiv);
       row.appendChild(right);
       if(!u.isMe&&u.user_id){
