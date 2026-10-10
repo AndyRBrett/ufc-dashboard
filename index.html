@@ -12585,6 +12585,9 @@ document.addEventListener("DOMContentLoaded",function(){
   function _normMethod(m){
     if(!m)return"";
     var ml=m.toLowerCase();
+    // Before the decision checks: "Draw (majority)" would read as a majority decision.
+    if(ml.indexOf("draw")>=0)return"Draw";
+    if(ml.indexOf("no contest")>=0||ml.trim()==="nc"||ml.trim()==="overturned")return"NC";
     if(ml.indexOf("ko")>=0||ml.indexOf("tko")>=0)return"KO/TKO";
     if(ml.indexOf("submission")>=0||ml.indexOf("sub")>=0)return"Submission";
     if(ml.indexOf("unanimous")>=0)return"Decision (Unanimous)";
@@ -12606,6 +12609,19 @@ document.addEventListener("DOMContentLoaded",function(){
     return _lastName(a)===_lastName(b)||(a2.length>3&&b2.indexOf(a2)>=0)||(b2.length>3&&a2.indexOf(b2)>=0);
   }
 
+  // A draw or no contest: "A vs. B" with no winner. Mirrors scrape.py's
+  // _undecided_result, so an open page marks the bout over too (Kareckaite /
+  // Gatto, a draw, pinned the live view on 2026-10-10).
+  function _undecidedRes(a,b,rest){
+    a=_cleanWiki(a).replace(/\s*\(c\)\s*/g,"").trim();b=_cleanWiki(b).replace(/\s*\(c\)\s*/g,"").trim();
+    if(a.length<2||b.length<2)return null;
+    var method="",rnd=null;
+    rest.forEach(function(c){c=c||"";if(!method&&/\b(draw|no contest)\b|^nc\b|overturned/i.test(c))method=c;else if(rnd==null&&/^\s*\d\s*$/.test(c))rnd=parseInt(c,10);});
+    if(!method)return null;
+    return{winner:"",loser:"",f1:a,f2:b,method:_normMethod(method),round:rnd,undecided:true};
+  }
+  function _isVs(c){var l=(c||"").trim().toLowerCase();return l==="vs."||l==="vs";}
+
   function _parseMMATemplate(wt){
     var results=[];
     var re=/\{\{MMAevent bout\s*\n([\s\S]*?)\}\}/gi;
@@ -12615,7 +12631,11 @@ document.addEventListener("DOMContentLoaded",function(){
       if(lines.length<5)continue;
       var di=-1;
       for(var i=0;i<lines.length;i++){var ll=lines[i].toLowerCase().trim();if(ll==="def."||ll==="def"||ll==="d."){di=i;break;}}
-      if(di<1)continue;
+      if(di<1){
+        var vi=-1;for(var v=0;v<lines.length;v++){if(_isVs(lines[v])){vi=v;break;}}
+        if(vi>=1&&vi<lines.length-1){var und=_undecidedRes(lines[vi-1],lines[vi+1],lines.slice(vi+2));if(und)results.push(und);}
+        continue;
+      }
       var winner=_cleanWiki(lines[di-1]).replace(/\s*\(c\)\s*/g,"").trim();
       var loser=di+1<lines.length?_cleanWiki(lines[di+1]).replace(/\s*\(c\)\s*/g,"").trim():"";
       var method=di+2<lines.length?lines[di+2]:"";
@@ -12641,6 +12661,8 @@ document.addEventListener("DOMContentLoaded",function(){
       loser=di+1<row.length?row[di+1].replace(/\s*\(c\)\s*/g,"").trim():"";
       rest=row.slice(di+2);
     } else {
+      var vi=-1;for(var v=0;v<row.length;v++){if(_isVs(row[v])){vi=v;break;}}
+      if(vi>=1&&vi<row.length-1)return _undecidedRes(row[vi-1],row[vi+1],row.slice(vi+2));
       if(row.length<4)return null;
       winner=row[1];loser=row[2];rest=row.slice(3);
     }
@@ -12751,7 +12773,14 @@ document.addEventListener("DOMContentLoaded",function(){
         var changed=false,dirty=false;
         parsed.forEach(function(res){
           ev.fights.forEach(function(fight){
-            if(fight.winner)return;
+            if(boutDecided(fight))return;
+            if(res.undecided){
+              // Over without a winner: both names must match. No win/loss push.
+              if(!((_namesMatch(res.f1,fight.f1.n)&&_namesMatch(res.f2,fight.f2.n))||(_namesMatch(res.f1,fight.f2.n)&&_namesMatch(res.f2,fight.f1.n))))return;
+              fight.winner="";fight.method=res.method;fight.round=res.round;fight.state="post";
+              evSeen[[fight.f1.n,fight.f2.n].sort().join("|")]=1;dirty=true;changed=true;
+              return;
+            }
             var winF1=_namesMatch(res.winner,fight.f1.n),winF2=_namesMatch(res.winner,fight.f2.n);
             if(!winF1&&!winF2)return;
             var loseF1=_namesMatch(res.loser,fight.f1.n),loseF2=_namesMatch(res.loser,fight.f2.n);

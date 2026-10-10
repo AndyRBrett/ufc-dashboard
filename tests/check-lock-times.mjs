@@ -267,6 +267,27 @@ function card() {
     live([b({ winner: "A", state: "post" }), b({ state: "post", method: "NC" })]) === -1);
 }
 
+// The open page's own result poll reads draws the same way (Codex on #306):
+// without it a draw landing mid-card left the live view pinned until a reload.
+{
+  // One contiguous slice (_fold … _parseWikitable): _cleanWiki's regexes carry braces a brace-matcher misreads.
+  const pa = html.indexOf("  function _fold("), pb = html.indexOf("  function _deriveSlug(");
+  if (pa < 0 || pb <= pa) { fail("index.html: could not locate the live poll's parsers (_fold … _deriveSlug)"); process.exit(1); }
+  const p = new Function(html.slice(pa, pb) + "\nreturn {_parseMMATemplate,_parseWikitable};")();
+  const tpl = "{{MMAevent bout\n|Women's Flyweight\n|[[Ernesta Kareckait\u0117]]\n|vs.\n|Melissa Gatto\n|Draw (majority) (29\u201327, 28\u201328, 28\u201328)\n|3\n|5:00\n|\n}}\n" +
+    "{{MMAevent bout\n|Lightweight\n|Allen Frye Jr.\n|vs.\n|RJ Harris\n|\n|\n|\n|\n}}\n" +
+    "{{MMAevent bout\n|Women's Flyweight\n|Alice Pereira\n|def.\n|Daria Zhelezniakova\n|TKO (punches)\n|1\n|2:00\n|\n}}";
+  const r = p._parseMMATemplate(tpl);
+  check("client poll: a draw is an undecided result, an unfought bout is nothing",
+    r.length === 2 && r[0].undecided && r[0].winner === "" && r[0].method === "Draw" && r[0].round === 3 &&
+    /Gatto/.test(r[0].f2) && r[1].winner === "Alice Pereira" && !r[1].undecided);
+  const tbl = "{| class=\"wikitable\"\n|-\n| Lightweight || Bo Nickal || vs. || Joe Pyfer || No Contest (accidental eye poke) || 1 || 0:45\n" +
+    "|-\n| Lightweight || Jan Draw || vs. || Joe Pyfer || Draw (majority decision) || 3 || 5:00\n|}";
+  const t = p._parseWikitable(tbl);
+  check("client poll: a wikitable draw / NC never reads as a win for the first name",
+    t.length === 2 && t.every((x) => x.undecided && x.winner === "") && t[0].method === "NC" && t[1].method === "Draw");
+}
+
 if (failures) {
   console.error(`\nLock-time checks FAILED (${failures})`);
   process.exit(1);
