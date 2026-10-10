@@ -471,7 +471,7 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
   check("room names reach the page as text, never HTML", !/innerHTML\s*=\s*[^"'\s]/.test(rs) && /textContent/.test(fn("_rmEl")) && !/innerHTML/.test(fn("_syncRoomBtn")));
   const empty = lb.slice(lb.indexOf("if(_room){var _re"), lb.indexOf("if(_room){var _re") + 400);
   check("the empty-room message uses text nodes", /createTextNode\("Nobody in "\+_room\.name/.test(empty) && !/innerHTML[^=]*=[^"]*_room\.name/.test(empty));
-  check("nudges on a room's board list (and push) members only", /var _inRoom=_room\?roomHas\(_room\):null;\s*var slackers=_slackersFor\(nextEv,rows\)\.filter\(function\(u\)\{return u\.user_id&&\(!_inRoom\|\|_inRoom\(u\.user_id\)\);\}\)/.test(lb));
+  check("nudges on a room's board list (and push) members only", /var _inRoom=_room\?roomHas\(_room\):null;\s*var slackers=_slackersFor\(nextEv,(?:rows|_slRows)\)\.filter\(function\(u\)\{return u\.user_id&&\(!_inRoom\|\|_inRoom\(u\.user_id\)\);\}\)/.test(lb));
   check("every board render re-reads the room's roster (throttled)", /roomsRefreshForBoard\(\);/.test(lb));
   // "Delete forever" is one RPC (0014's delete_my_account); it must clear
   // owned rooms and seats in others (check:delete runs it for real).
