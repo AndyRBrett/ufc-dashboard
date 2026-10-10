@@ -11205,28 +11205,41 @@ function _lbNextEvent(nowMs){
 // is how the board behaved before.
 function _cardPickedBouts(date){
   if(!date)return Promise.resolve([]);
-  return fetch(SUPABASE_URL+"/rest/v1/rpc/card_picked_bouts",{method:"POST",headers:_sbHeaders(),body:JSON.stringify({p_date:date})})
-    .then(function(r){return r.ok?r.json():[];})
-    .then(function(a){return Array.isArray(a)?a:[];})
-    .catch(function(){return [];});
+  // A stale session token (a PWA resumed after it expired) 401s; drop it and
+  // retry once on the anon key while a refresh runs, as _sbFetchAll does.
+  function call(retried){
+    return fetch(SUPABASE_URL+"/rest/v1/rpc/card_picked_bouts",{method:"POST",headers:_sbHeaders(),body:JSON.stringify({p_date:date})})
+      .then(function(r){
+        if(r.status===401&&!retried){_sbToken=null;_ensureFreshToken();return call(true);}
+        return r.ok?r.json():[];
+      });
+  }
+  return call(false).then(function(a){return Array.isArray(a)?a:[];}).catch(function(){return [];});
 }
 // A board row for a player whose picks on this card are all still hidden: on
 // the board with nothing scored, the count of bouts they have in, and 🙈 chips.
 // Only players the board isn't already showing, never the viewer, and in a room
 // only its members; on the main-card scope only someone with a main-card bout.
+// One row per player the way the scorer counts them (_lbScoreUsers merges a
+// base nickname across old and rotated user ids), so a player already on the
+// board under another id, or two hidden ids sharing a name, isn't listed twice.
 function _lbHiddenPickers(hidden,sorted,ev,room){
   if(!ev||!hidden.length)return [];
-  var shown={};sorted.forEach(function(u){if(u.user_id)shown[u.user_id]=true;});
+  var shown={},shownName={};
+  sorted.forEach(function(u){if(u.user_id)shown[u.user_id]=true;var b=_lbBaseName(u.nickname);if(b)shownName[b]=true;});
+  var me=typeof userName==="string"?_lbBaseName(userName):"";
   var inRoom=room?roomHas(room):null,by={};
   hidden.forEach(function(h){
     var uid=h.user_id;if(!uid||uid===USER_ID||shown[uid])return;
+    var base=_lbBaseName(h.nickname)||uid;
+    if(shownName[base]||(me&&base===me))return;
     if(inRoom&&!inRoom(uid))return;
     var fight=null;for(var i=0;i<ev.fights.length;i++){if(nmBout(ev.fights[i],h.f1,h.f2)){fight=ev.fights[i];break;}}
     if(!fight)return;
     if(lbScope==="main"&&!isMainCardBout(fight))return;
-    var u=by[uid]||(by[uid]={nickname:"",user_id:uid,correct:0,total:0,methods:0,fotn:0,dogPts:0,lockPts:0,bonusPicks:{},isMe:false,picks:[],accuracy:null,currentStreak:0,bestStreak:0,hiddenCount:0,_t:-1,_seen:{}});
+    var u=by[base]||(by[base]={nickname:"",user_id:uid,correct:0,total:0,methods:0,fotn:0,dogPts:0,lockPts:0,bonusPicks:{},isMe:false,picks:[],accuracy:null,currentStreak:0,bestStreak:0,hiddenCount:0,_t:-1,_seen:{}});
     var t=Date.parse(h.updated_at||"")||0;
-    if(t>=u._t&&h.nickname&&String(h.nickname).trim()){u._t=t;u.nickname=h.nickname;}
+    if(t>=u._t&&h.nickname&&String(h.nickname).trim()){u._t=t;u.nickname=h.nickname;u.user_id=uid;}
     var k=pk(ev,fight);if(!u._seen[k]){u._seen[k]=true;u.hiddenCount++;}
   });
   return Object.keys(by).map(function(k){return by[k];}).filter(function(u){return u.hiddenCount>0;});
@@ -11277,7 +11290,15 @@ function loadLeaderboard(isLive){
     var sorted=boardStandings(rows,roomScope({date:lbMode==="current"?nextEv.date:null,mainCard:lbScope==="main"}));
     // Players whose picks on this card are all still hidden (0017) go on the
     // board too, unscored, so a full card of picks doesn't read as nobody.
-    sorted=sorted.concat(_lbHiddenPickers(_hidden,sorted,nextEv,_room));
+    // They score 0, and a missed 🔒 can leave someone below that, so re-sort by
+    // points; the sort is stable, so ties keep the scorer's order.
+    var _hidRows=_lbHiddenPickers(_hidden,sorted,nextEv,_room);
+    if(_hidRows.length){
+      sorted=sorted.concat(_hidRows)
+        .map(function(u,i){return {u:u,i:i,p:userPts(u)};})
+        .sort(function(a,b){return b.p-a.p||a.i-b.i;})
+        .map(function(x){return x.u;});
+    }
     // Index picks per fight (from the DEDUPED users) for Fight Night LIVE fans, and publish
     // _lbSorted now so the live view has data even when a panel early-return fires below.
     _fnPicksByFight={};
