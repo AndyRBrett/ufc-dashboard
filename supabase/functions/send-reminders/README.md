@@ -49,7 +49,7 @@ key `SB_ANON_KEY`, exactly like the web client.
 | `CRON_SECRET`  | Authenticates the inbound cron trigger (shared with check-results). |
 | `SB_ANON_KEY`  | Calls `send-push` (already exists).                       |
 | `SUPABASE_URL` | Auto-provided by the Edge runtime.                       |
-| `DATA_URL`     | Optional override for the schedule source (defaults to the GitHub Pages `data.js`). |
+| `DATA_URL`     | Optional override for the schedule source. Defaults to the committed `data.js` on `main` (raw.githubusercontent). Never point it at the GitHub Pages copy: a blocked deploy freezes it, and the pick lock times (and so everyone's pick reveals) freeze with it. |
 
 ## Deploy & schedule (owner steps)
 
