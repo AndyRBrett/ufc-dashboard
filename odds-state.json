@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-10T17:05:20.632079+00:00",
+  "last_fetch_at": "2026-10-10T20:05:21.529180+00:00",
   "last_status": 401,
-  "lines_digest": "b6edd867b33802bdda51189ef829bc0323132691",
+  "lines_digest": "58cbd48dd951deb4b0df2e137fdc102b17d01d82",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -143,8 +143,6 @@
   "markets_partial": {
     "2026-10-10": {
       "fighters": [
-        "joseph",
-        "godogo",
         "ocheme",
         "thompson",
         "kareckaite",
@@ -174,11 +172,13 @@
         "allen",
         "duncan"
       ],
-      "listed": 19,
-      "priced": 15
+      "listed": 14,
+      "priced": 14
     },
     "2026-10-17": {
       "fighters": [
+        "croden",
+        "chandler",
         "blanchfield",
         "jasudavicius",
         "buckley",
@@ -191,8 +191,6 @@
         "landwehr",
         "anheliger",
         "koslow",
-        "croden",
-        "chandler",
         "chovancek",
         "you",
         "nelson",
@@ -313,25 +311,25 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-10T17:05:20.632079+00:00",
+  "markets_partial_at": "2026-10-10T20:05:21.529180+00:00",
   "next_event_days_out": 0,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-10T17:05:20.632079+00:00",
+      "last_fetch_at": "2026-10-10T20:05:21.529180+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
       "requests_remaining": 0
     },
     "the-odds-api-backup": {
-      "bouts": 47,
-      "last_fetch_at": "2026-10-10T17:05:20.632079+00:00",
-      "last_ok_at": "2026-10-10T17:05:20.632079+00:00",
+      "bouts": 46,
+      "last_fetch_at": "2026-10-10T20:05:21.529180+00:00",
+      "last_ok_at": "2026-10-10T20:05:21.529180+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 365
+      "requests_remaining": 364
     }
   },
   "requests_remaining": 0
