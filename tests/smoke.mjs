@@ -252,6 +252,40 @@ async function main() {
       (fnx.before === 0 && ["KO/TKO", "Sub", "Dec"].every((m) => fnx.btns.includes(m)) &&
         (!fnx.locks || fnx.btns.some((b) => /Lock/.test(b)))));
     assert("a lock the server clamps is dropped from an open FN Mode too", fnx.skipped || fnx.clamped);
+    // FN Mode's ✕ closes it from the live view and from a scrolled pick view.
+    // It was absolutely positioned with no z-index: on iOS the live view's
+    // touch-scrolling area (its own layer) took the tap, and the pick view
+    // scrolled it away (2026-10-10). Fixed + a z-index above every positioned
+    // thing in FN Mode is what holds on iOS; headless can only check that.
+    const fnClose = await page.evaluate(async () => {
+      const w = window, m = document.getElementById("fnMode"), x = m.querySelector(".fn-close");
+      const ev = w.EVENTS.find((e) => e.fights.length > 1) || w.EVENTS[0];
+      const probe = () => {
+        const cs = getComputedStyle(x), r = x.getBoundingClientRect(), z = +cs.zIndex || 0;
+        const others = [...m.querySelectorAll("*")].filter((e) => e !== x && !x.contains(e))
+          .map((e) => getComputedStyle(e)).filter((c) => c.position !== "static").map((c) => +c.zIndex || 0);
+        let hit = true;
+        for (const dx of [-12, 0, 12]) for (const dy of [-12, 0, 12]) {
+          const e = document.elementFromPoint(r.left + r.width / 2 + dx, r.top + r.height / 2 + dy);
+          if (!e || !(e === x || x.contains(e))) hit = false;
+        }
+        return { fixed: cs.position === "fixed", big: r.width >= 44 && r.height >= 44, onTop: z > Math.max(0, ...others),
+          inView: r.top >= 0 && r.bottom <= innerHeight, hit };
+      };
+      const realLive = w.fnIsLive, out = {};
+      for (const mode of ["live", "pick"]) {
+        w.fnIsLive = () => mode === "live";
+        try { w.openFN(ev); } finally { w.fnIsLive = realLive; }
+        await new Promise((r) => setTimeout(r, 50));
+        if (mode === "pick") { m.scrollTop = 10000; await new Promise((r) => setTimeout(r, 50)); }
+        out[mode] = probe();
+        x.click();
+        out[mode].closed = !m.classList.contains("open");
+      }
+      return out;
+    });
+    const fnBad = ["live", "pick"].flatMap((k) => Object.entries(fnClose[k]).filter(([, v]) => !v).map(([n]) => k + ":" + n));
+    assert("FN Mode's ✕ is a fixed 44px target above everything, live and scrolled pick view, and closes it" + (fnBad.length ? " (" + fnBad.join(", ") + ")" : ""), fnBad.length === 0);
     // The Picks tab opens this week's card at a glance (one row per bout), not
     // the full history panel.
     const ps = await page.evaluate(() => {
