@@ -6013,13 +6013,22 @@ function _fitNamePair(els,minPx){
 // is fitted when it first gets a width: on render, when a collapsed card or
 // "N more fights" opens, and on rotation. Fitting is deferred to the next frame
 // and skipped while the widths are unchanged, so resizing a name never loops.
-var CARD_NAME_MIN_PX=13,_namePend=new Set(),_nameRAF=0;
+// render() replaces whole card trees, and an observer holds its targets until
+// they are unobserved, so a name that has left the page is dropped: when the
+// observer reports it (it shrinks to 0x0 on removal) and, as a backstop, by a
+// sweep of _nameWatched on every flush (each render's new names trigger one).
+var CARD_NAME_MIN_PX=13,_namePend=new Set(),_nameWatched=new Set(),_nameRAF=0;
 var _nameRO=typeof ResizeObserver==="function"?new ResizeObserver(function(entries){
-  entries.forEach(function(e){_namePend.add(e.target.closest(".mu")||e.target);});
+  entries.forEach(function(e){
+    if(!e.target.isConnected){_nameUnwatch(e.target);return;}
+    _namePend.add(e.target.closest(".mu")||e.target);
+  });
   if(!_nameRAF)_nameRAF=requestAnimationFrame(_flushNameFit);
 }):null;
+function _nameUnwatch(el){_nameRO.unobserve(el);_nameWatched.delete(el);}
 function _flushNameFit(){
   _nameRAF=0;
+  _nameWatched.forEach(function(el){if(!el.isConnected)_nameUnwatch(el);});
   var list=Array.from(_namePend);_namePend.clear();
   list.forEach(function(box){
     if(!box.isConnected)return;
@@ -6031,7 +6040,7 @@ function _flushNameFit(){
     _fitNamePair(els,CARD_NAME_MIN_PX);
   });
 }
-function _watchCardName(el){if(_nameRO)_nameRO.observe(el);}
+function _watchCardName(el){if(_nameRO){_nameRO.observe(el);_nameWatched.add(el);}}
 // Web fonts can land after the first fit (a different width per letter), and a
 // theme switch changes the font; refit everything on screen when either happens.
 function _refitCardNames(){
