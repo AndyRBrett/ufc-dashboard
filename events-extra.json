@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-10T20:05:41Z",
+ "generated_at": "2026-10-10T21:30:45Z",
  "promotions": [
   {
    "id": "pfl",
@@ -78,40 +78,26 @@
      "round": null
     },
     {
-     "a": "Rivaldo Pereira",
-     "b": "David Samuel",
+     "a": "David Samuel",
+     "b": "Rivaldo Pereira",
      "label": "",
      "division": "Welterweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "David Samuel",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
-     "a": "Alain Majorique",
-     "b": "Raphael Uchegbu",
-     "label": "",
-     "division": "Bantamweight",
-     "title": false,
-     "odds": {
-      "a": -128,
-      "b": 109
-     },
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Yabna N'Tchala",
-     "b": "Mouhamed Ba",
+     "a": "Mouhamed Ba",
+     "b": "Yabna N'Tchala",
      "label": "",
      "division": "Welterweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Mouhamed Ba",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
      "a": "Reda Abdellaoui",
@@ -120,9 +106,9 @@
      "division": "Bantamweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Reda Abdellaoui",
+     "method": "Submission",
+     "round": 1
     },
     {
      "a": "Dwight Joseph",
@@ -134,9 +120,9 @@
       "a": -126,
       "b": 106
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Dwight Joseph",
+     "method": "Decision (Split)",
+     "round": 3
     },
     {
      "a": "Demba Seck",
@@ -156,9 +142,9 @@
      "division": "Catchweight (132 Lb)",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Jane Osigwe",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
      "a": "Abderrahman Errachidy",
@@ -167,9 +153,9 @@
      "division": "Lightweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Abderrahman Errachidy",
+     "method": "Decision (Unanimous)",
+     "round": 3
     }
    ]
   },
