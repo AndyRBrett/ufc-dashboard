@@ -16,6 +16,7 @@ import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
 import { createRequire } from "node:module";
 import { launchChromium } from "./lib/browser.mjs";
+import vm from "node:vm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const require = createRequire(import.meta.url);
@@ -44,11 +45,46 @@ const server = http.createServer((req, res) => {
 // Errors that are environment noise, not app bugs (no real backend in the test).
 const BENIGN = /supabase|gkccophrdqtqcowmblre|wikipedia|wikimedia|Failed to load resource|net::|ERR_|the server responded with a status|401|403|Load failed|NetworkError|fetch/i;
 
+// --card-day: the same run with the page's clock pinned mid-card, 90 minutes
+// after the first bell of the next unfinished card in data.js. A check that
+// quietly assumes "no card is live" passes all week and fails the moment a card
+// starts, and since verify gates every Pages deploy, that froze the live site
+// (results, pick reveals, fixes) for an hour of Allen vs. Duncan (2026-10-10).
+// This pass makes that failure show up in the week before, not during, a card.
+const CARD_DAY = process.argv.includes("--card-day");
+const etOffsetH = (date) => {
+  // Hours ET is behind UTC on the card's own date (4 in EDT, 5 in EST).
+  const noon = new Date(date + "T12:00:00Z");
+  const et = new Date(noon.toLocaleString("en-US", { timeZone: "America/New_York" }));
+  const utc = new Date(noon.toLocaleString("en-US", { timeZone: "UTC" }));
+  return Math.round((utc - et) / 3600e3);
+};
+function cardDayInstant() {
+  const ctx = {};
+  vm.createContext(ctx);
+  vm.runInContext(readFileSync(join(ROOT, "data.js"), "utf8").replace(/^(const|let) /mg, "var "), ctx);
+  const evs = (ctx.EVENTS || []).filter((e) => e && e.date && Array.isArray(e.fights) && e.fights.some((f) => !f.winner && f.state !== "post"))
+    .sort((a, b) => a.date.localeCompare(b.date));
+  for (const e of evs) {
+    const t = [e.earlyPrelimTime, e.prelimTime, e.time].find((x) => /^\d{1,2}:\d{2}$/.test(x || ""));
+    if (!t) continue;
+    const [h, m] = t.split(":").map(Number), [y, mo, d] = e.date.split("-").map(Number);
+    return { name: e.name, at: Date.UTC(y, mo - 1, d, h + etOffsetH(e.date), m) + 90 * 60e3 };
+  }
+  return null;
+}
+
 async function main() {
   await new Promise((r) => server.listen(0, r));
   const base = `http://127.0.0.1:${server.address().port}`;
   const browser = await launchChromium(chromium);
   const page = await browser.newPage();
+  if (CARD_DAY) {
+    const cd = cardDayInstant();
+    if (!cd) { console.log("smoke --card-day: no unfinished card with a clock in data.js; skipped."); await browser.close(); server.close(); return; }
+    console.log(`smoke --card-day: clock pinned to ${new Date(cd.at).toISOString()} (90 min into ${cd.name})`);
+    await page.clock.setFixedTime(cd.at);
+  }
   const fatal = [];
   page.on("pageerror", (e) => fatal.push("Uncaught: " + e.message));
   page.on("console", (msg) => { if (msg.type() === "error" && !BENIGN.test(msg.text())) fatal.push("Console: " + msg.text()); });

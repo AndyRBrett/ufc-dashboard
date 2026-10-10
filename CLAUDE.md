@@ -169,7 +169,11 @@ would lose the push for good (the next run sees the result as already in
 inside the scrape made two UFC 332 main-card results 12-15 minutes late.
 `tests/test_result_push_defer.py` holds it.
 
-**The gate reads the COMMITTED `data.js` (raw.githubusercontent, `main`), never
+**Every server function reads the COMMITTED `data.js` (raw.githubusercontent,
+`main`), never the Pages copy:** kick-scraper's gate, send-push and
+send-reminders (whose `lockRows` writes the pick lock times; reading Pages, a
+blocked deploy hid every finished pick for an hour on 2026-10-10, and
+`check:picklock` now holds its URL). **The gate reads the COMMITTED `data.js`, never
 the Pages copy.** Reading Pages made a loop: a blocked deploy left Pages showing
 a card still mid-fight, the gate read it as `live`, and every ping dispatched
 another run that failed the same gate. On 2026-09-27 a broken test blocked
@@ -194,7 +198,13 @@ blocking every Pages deploy hourly. The same sweep found `test_extra` would fail
 fixture card passed, and that `etOffset()` read DST off today instead of the
 card's date, so `check:brief` and `check:picklock` would have gone red at the
 November change. Pin the clock (`load(nowMs)`, `runAt(iso)`, `main(now)`) or date
-fixtures relative to it. To audit: rerun the suite with `Date` / `datetime`
+fixtures relative to it. **Nor on "no card is live".** `smoke`'s FN Mode check
+took the first card with an open bout; once Allen vs. Duncan started that card
+opened in Live mode, the check threw, and every Pages deploy failed for an hour
+mid-card (2026-10-10): no results, no pick reveals, no fixes. So `npm run smoke`
+now runs twice, the second time with `--card-day`, the page's clock pinned 90
+minutes into the next unfinished card in data.js. A check that only holds
+between cards fails there the week before, not on fight night. To audit: rerun the suite with `Date` / `datetime`
 shifted forward by 3, 30, 60 and 365 days (a `--require` shim for Node,
 `time-machine` for pytest). Browser tests need the page's clock shifted too, so
 a Node-only shim reports false failures there.

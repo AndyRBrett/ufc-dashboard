@@ -12,7 +12,7 @@
     "lint": "eslint . && node scripts/lint-html.mjs",
     "check:web": "node tests/check-web.mjs",
     "check:functions": "node tests/check-functions.mjs",
-    "smoke": "node tests/smoke.mjs",
+    "smoke": "node tests/smoke.mjs && node tests/smoke.mjs --card-day",
     "check:tap": "node tests/notification-tap.mjs",
     "check:audience": "node tests/trash-audience.mjs",
     "check:prompt": "node tests/trash-prompt.mjs",
