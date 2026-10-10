@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-10T07:55:36Z",
+  "generated_at": "2026-10-10T08:00:44Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -13509,7 +13509,7 @@
           "f1": "Loopy Godinez",
           "f2": "Ketlen Souza",
           "lbl": "Main Card",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -13605,6 +13605,11 @@
               "at": "2026-10-10T01:55:38Z",
               "f1_odds": -238,
               "f2_odds": 196
+            },
+            {
+              "at": "2026-10-10T08:00:44Z",
+              "f1_odds": -236,
+              "f2_odds": 194
             }
           ],
           "open": {
@@ -13989,7 +13994,7 @@
           "f1": "Francisco Prado",
           "f2": "Ismael Bonfim",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-10-01T20:38:19Z",
@@ -14070,6 +14075,11 @@
               "at": "2026-10-10T01:55:38Z",
               "f1_odds": -140,
               "f2_odds": 117
+            },
+            {
+              "at": "2026-10-10T08:00:44Z",
+              "f1_odds": -145,
+              "f2_odds": 120
             }
           ],
           "open": {
@@ -15953,7 +15963,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Loopy Godinez",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": 180,
         "close": null,
         "clv": null
@@ -19909,7 +19919,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Ketlen Souza",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": -210,
         "close": null,
         "clv": null
@@ -19942,7 +19952,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Ismael Bonfim",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": 115,
         "close": null,
         "clv": null
@@ -19953,7 +19963,7 @@
         "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
         "opponent": "Francisco Prado",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": -135,
         "close": null,
         "clv": null
