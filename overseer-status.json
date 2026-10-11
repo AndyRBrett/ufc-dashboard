@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T17:25:36Z",
+  "generated_at": "2026-10-11T17:30:41Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -106,7 +106,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "ok",
-      "last_changed_at": "2026-10-11T11:25:46Z",
+      "last_changed_at": "2026-10-11T17:30:41Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-11T17:25:36Z",
+      "last_changed_at": "2026-10-11T17:30:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -136,7 +136,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-11T17:25:36Z",
+      "last_changed_at": "2026-10-11T17:30:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -156,7 +156,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-11T17:25:36Z",
+      "last_changed_at": "2026-10-11T17:30:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -416,6 +416,22 @@
       "priority": 94.0
     },
     {
+      "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+      "f1": "Erin Blanchfield",
+      "f2": "Jasmine Jasudavicius",
+      "f1_movement": -67,
+      "f2_movement": 45,
+      "magnitude": 67,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 50,
+      "low_confidence": false,
+      "wc": "Women's Flyweight",
+      "f1_prob_shift": 5.1,
+      "f2_prob_shift": -4.6,
+      "priority": 93.8
+    },
+    {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "f1": "Robelis Despaigne",
       "f2": "Tai Tuivasa",
@@ -446,22 +462,6 @@
       "f1_prob_shift": 2.2,
       "f2_prob_shift": -1.7,
       "priority": 93.0
-    },
-    {
-      "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
-      "f1": "Erin Blanchfield",
-      "f2": "Jasmine Jasudavicius",
-      "f1_movement": -61,
-      "f2_movement": 40,
-      "magnitude": 61,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 50,
-      "low_confidence": false,
-      "wc": "Women's Flyweight",
-      "f1_prob_shift": 4.7,
-      "f2_prob_shift": -4.1,
-      "priority": 85.4
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
@@ -752,6 +752,22 @@
       "priority": 42.0
     },
     {
+      "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+      "f1": "Melissa Croden",
+      "f2": "Chelsea Chandler",
+      "f1_movement": -28,
+      "f2_movement": 10,
+      "magnitude": 28,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Women's Bantamweight",
+      "f1_prob_shift": 2.2,
+      "f2_prob_shift": -1.0,
+      "priority": 39.2
+    },
+    {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
       "f1": "Rong Zhu",
       "f2": "Rafa Garcia",
@@ -833,19 +849,19 @@
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
-      "f1": "Melissa Croden",
-      "f2": "Chelsea Chandler",
-      "f1_movement": -18,
-      "f2_movement": 3,
-      "magnitude": 18,
+      "f1": "Tanner Boser",
+      "f2": "Jhonata Diniz",
+      "f1_movement": -17,
+      "f2_movement": 12,
+      "magnitude": 17,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
-      "wc": "Women's Bantamweight",
-      "f1_prob_shift": 1.5,
-      "f2_prob_shift": -0.3,
-      "priority": 25.2
+      "wc": "Heavyweight",
+      "f1_prob_shift": 1.9,
+      "f2_prob_shift": -1.0,
+      "priority": 23.8
     },
     {
       "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
