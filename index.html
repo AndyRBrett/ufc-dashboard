@@ -330,6 +330,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 .rc-rank{width:22px;color:var(--muted);flex-shrink:0}
 .rc-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rc-pts{color:var(--muted2);flex-shrink:0}
+.rc-share-btn{align-self:center;margin-top:12px}
+.rc-share-btn[hidden]{display:none}
 /* Year Wrapped — full-screen, story-style. Deliberately NOT themed: like the
    thing it's named after, each slide is its own loud gradient, with white
    text that holds contrast on every one of them in every app theme. */
@@ -7733,7 +7735,9 @@ var WHATS_NEW=[
   {id:"2026-10-31-invites-founders",emoji:"🎟️",title:"Invite friends, and founding members",
    desc:"Menu → Invite friends gives you your own link to send your group, and shows how many joined through it. And everyone with an account before 1 January 2027 is a 🎖️ founding member: look for the badge on Ranks."},
   {id:"2026-10-31-quick-pick-odds",emoji:"📊",title:"Odds and the tape in Quick Pick",
-   desc:"Quick Pick now shows each bout's odds before you pick: the win chance they imply, how the line has moved, and the underdog bonus on offer. Under that sits a Tale of the Tape with the model's call, rank, age, last five results, size and finishes."}
+   desc:"Quick Pick now shows each bout's odds before you pick: the win chance they imply, how the line has moved, and the underdog bonus on offer. Under that sits a Tale of the Tape with the model's call, rank, age, last five results, size and finishes."},
+  {id:"2026-11-01-share-recap",emoji:"🖼️",title:"Share your Card Recap",
+   desc:"The Card Recap now has 🖼️ Share recap: the night's title, stories and standings as one image for the group chat. Once you've tapped 🤖 FightBot's call, its line goes on the image too."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -9374,6 +9378,29 @@ function _recapTitleText(t){
   if(t.via)sub+=" · "+t.via.tied+"-way tie, won on "+t.via.val+(t.via.by==="accuracy"?" accuracy":" made");
   return {em:em,main:main,sub:sub};
 }
+// 🖼️ Share recap: the recap as an image for the group chat, drawn in the
+// browser from the same object the sheet renders (drawRecapPoster), so it
+// costs nothing and nothing is uploaded. Drawn ahead of the tap, as the tape
+// poster is: iOS drops a share sheet that waits on a toBlob. FightBot's call
+// (fightBotCallEl's onLine sets it and redraws) goes on it once there is one.
+var _rcPoster={rc:null,call:null,file:null,n:0};
+function _rcPrepPoster(){
+  var P=_rcPoster,rc=P.rc,n=++P.n,btn=document.getElementById("rc-share-btn");
+  P.file=null;
+  if(btn)btn.hidden=!rc||typeof drawRecapPoster!=="function";
+  if(!rc||typeof drawRecapPoster!=="function")return;
+  var ready=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve();
+  ready.then(function(){
+    if(n!==P.n)return;
+    var cv=drawRecapPoster(document.createElement("canvas"),rc,userName?_lbBaseName(userName):"",P.call);
+    cv.toBlob(function(b){if(b&&n===P.n)P.file=new File([b],"card-recap.png",{type:"image/png"});},"image/png");
+  }).catch(function(){});
+}
+function shareCardRecap(){
+  var f=_rcPoster.file;
+  if(!f){toast("Drawing the recap, tap again in a second");return;}
+  _shareImageFile(f,"Card Recap"+(_rcPoster.rc&&_rcPoster.rc.evName?": "+_rcPoster.rc.evName:""),"recap");
+}
 function _rcEl(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
 function _rcStat(parent,label,val,cls){
   var r=_rcEl("div","rc-stat");r.appendChild(_rcEl("span","",label));
@@ -9383,6 +9410,7 @@ function renderCardRecap(rc){
   var body=document.getElementById("rc-body");
   if(!body)return false;
   body.textContent="";
+  _rcPoster.rc=rc;_rcPoster.call=null;
   document.getElementById("rc-ev").textContent=rc.evName||rc.date;
   var tt=_recapTitleText(rc.title);
   var tb=_rcEl("div","rc-title");tb.appendChild(_rcEl("div","rc-title-em",tt.em));
@@ -9398,7 +9426,7 @@ function renderCardRecap(rc){
     // FightBot's call on the night, told only the title line and the stories above.
     if(typeof fightBotCallEl==="function"){
       var rf=[tt.main+(tt.sub?". "+tt.sub:"")].concat(rc.stories.map(function(s){return s.text;}));
-      sr.appendChild(fightBotCallEl("report|"+rc.date+"|"+rf.join("|"),"report",rc.evName||rc.date,rf));
+      sr.appendChild(fightBotCallEl("report|"+rc.date+"|"+rf.join("|"),"report",rc.evName||rc.date,rf,function(l){if(_rcPoster.rc!==rc)return;_rcPoster.call=l;_rcPrepPoster();}));
     }
     body.appendChild(sr);
   }
@@ -9436,6 +9464,7 @@ function renderCardRecap(rc){
     st.appendChild(r);
   });
   body.appendChild(st);
+  _rcPrepPoster();
   var ov=document.getElementById("recap-overlay");
   ov.setAttribute("data-date",rc.date);
   ov.classList.add("open");
@@ -10562,6 +10591,85 @@ function drawTapePoster(canvas,t,evName,call){
   return canvas;
 }
 // tape-poster:end
+// recap-poster:start
+// The Card Recap as an image: the title line, the night's stories (FightBot's
+// call once there is one) and the card's standings, the viewer's row in gold.
+// Every line is one the sheet already shows; nothing is computed here.
+function drawRecapPoster(canvas,rc,myBase,call){
+  canvas.width=TP_W;canvas.height=TP_H;
+  var c=canvas.getContext("2d"),W=TP_W,H=TP_H,L=70,R=W-70,maxW=R-L,mid=W/2,foot=H-110;
+  var g=c.createLinearGradient(0,0,W*.6,H);
+  g.addColorStop(0,"#e8192c");g.addColorStop(.42,"#6d0514");g.addColorStop(1,"#0b0206");
+  c.fillStyle=g;c.fillRect(0,0,W,H);
+  var gl=c.createRadialGradient(W*.85,120,0,W*.85,120,W*.6);
+  gl.addColorStop(0,"rgba(255,200,90,.25)");gl.addColorStop(1,"rgba(255,200,90,0)");
+  c.fillStyle=gl;c.fillRect(0,0,W,H);
+  c.textBaseline="alphabetic";c.textAlign="left";c.fillStyle="#fff";
+  c.globalAlpha=.85;c.font="800 36px "+_WR_FONT;c.fillText("CARD RECAP",L,110);
+  c.globalAlpha=1;c.fillText(_wrFit(c,rc.evName||rc.date,maxW,64,"800",34),L,186);
+  // The title.
+  var tt=_recapTitleText(rc.title||{kind:"none"}),y=240;
+  c.fillStyle="rgba(0,0,0,.3)";
+  if(c.roundRect){c.beginPath();c.roundRect(L-20,y,maxW+40,150,28);c.fill();}else c.fillRect(L-20,y,maxW+40,150);
+  c.fillStyle="#fff";c.font="76px "+_WR_FONT;c.fillText(tt.em,L,y+100);
+  c.fillStyle="#ffc63d";c.fillText(_wrFit(c,splitNick(tt.main).name||tt.main,maxW-120,46,"800",28),L+110,y+68);
+  c.fillStyle="#fff";c.globalAlpha=.8;c.fillText(_wrFit(c,tt.sub,maxW-120,28,"600",20),L+110,y+114);
+  c.globalAlpha=1;y+=200;
+  var sec=function(label){c.globalAlpha=.65;c.font="700 26px "+_WR_FONT;c.fillText(label.toUpperCase(),L,y);c.globalAlpha=1;y+=50;};
+  // Standings take what's left after the stories, at least four rows.
+  var rows=(rc.standings||[]).slice(0,5);
+  var mine=myBase?(rc.standings||[]).filter(function(u){return u.base===myBase;})[0]:null;
+  if(mine&&rows.indexOf(mine)<0)rows.push(mine);
+  var rowH=62,standH=rows.length?50+rows.length*rowH+20:0;
+  var stories=(rc.stories||[]).map(function(s){return s.em+" "+s.text;});
+  if(call)stories.unshift("🤖 "+call);
+  if(stories.length){
+    sec("The night's stories");
+    // Every story the sheet shows goes on: the text shrinks until they all
+    // fit above the standings, and only past the smallest size does the
+    // image say how many it left off.
+    var room=foot-standH-y,size,lh,gap,wrapped;
+    for(size=32;size>=22;size-=2){
+      lh=Math.round(size*1.3);gap=Math.round(size*.55);c.font="600 "+size+"px "+_WR_FONT;
+      wrapped=stories.map(function(t){return _tpWrap(c,t,maxW,2);});
+      var need=wrapped.reduce(function(a,ls){return a+ls.length*lh+gap;},0);
+      if(need<=room)break;
+    }
+    if(size<22)size=22;
+    var shown=0,more=lh+gap;
+    for(var i=0;i<wrapped.length;i++){
+      var h=wrapped[i].length*lh+gap;
+      if(y+h+(i<wrapped.length-1?more:0)>foot-standH)break;
+      c.fillStyle=i===0&&call?"#ffc63d":"#fff";
+      wrapped[i].forEach(function(l){c.fillText(l,L,y);y+=lh;});
+      y+=gap;shown++;
+    }
+    if(shown<wrapped.length){
+      c.fillStyle="#fff";c.globalAlpha=.7;c.fillText("+"+(wrapped.length-shown)+" more in the app",L,y);c.globalAlpha=1;y+=lh+gap;
+    }
+    c.fillStyle="#fff";y+=14;
+  }
+  if(rows.length){
+    sec("Card standings");
+    rows.forEach(function(u){
+      if(y>foot)return;
+      var me=myBase&&u.base===myBase;
+      c.fillStyle=me?"#ffc63d":"#fff";
+      c.globalAlpha=me?1:.65;c.font="700 32px "+_WR_FONT;c.textAlign="left";c.fillText("#"+u.rank,L,y);
+      c.globalAlpha=1;c.textAlign="right";
+      var right=u.pts+" pts · "+u.correct+"/"+u.total;c.font="700 32px "+_WR_FONT;
+      var rw=c.measureText(right).width;c.fillText(right,R,y);
+      c.textAlign="left";c.fillText(_wrFit(c,u.name+(u.perfect?" 🎯":""),maxW-110-rw-30,34,me?"800":"600",22),L+90,y);
+      y+=rowH;
+    });
+  }
+  c.fillStyle="#fff";c.textAlign="center";c.globalAlpha=.7;
+  var host=String(location.host+location.pathname).replace(/\/(index\.html)?$/,"");
+  c.fillText(_wrFit(c,"🥊 PICKED FIGHT · "+host,maxW,28,"600",20),mid,H-50);
+  c.globalAlpha=1;
+  return canvas;
+}
+// recap-poster:end
 // The board's tape: only in a room, and never able to break the board. It
 // stays up through the card (live and finished, not just before the first
 // bell): it used to vanish at the opening bout, right when the room is
@@ -13042,6 +13150,7 @@ document.addEventListener("DOMContentLoaded",function(){
     </div>
     <div class="rc-ev" id="rc-ev"></div>
     <div class="rc-body" id="rc-body"></div>
+    <button type="button" class="tape-poster-btn rc-share-btn" id="rc-share-btn" onclick="shareCardRecap()" hidden>🖼️ Share recap</button>
     <button class="wn-btn" id="rc-gotit-btn" onclick="closeCardRecap()">Got it</button>
   </div>
 </div>
