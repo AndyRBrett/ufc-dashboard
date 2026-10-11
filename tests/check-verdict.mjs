@@ -1,5 +1,5 @@
 // Guard: FightBot's call (one AI line on a room's Tale of the Tape or a Card
-// Recap's Fight Night Report) and the Tale of the Tape poster.
+// Recap's Fight Night Report), the Tale of the Tape poster and the recap image.
 //
 // The call is prose around numbers the app computed, shown under real people's
 // names, so its dangerous failure is a made-up stat. It gets the scouting
@@ -10,7 +10,8 @@
 //      shared daily budget, one line;
 //   2. the app: the call button on the tape and on the report, facts that are
 //      exactly what's on screen, session caching, error states; the poster
-//      drawn at 1080×1350 and handed to the share sheet, redrawn with the call.
+//      drawn at 1080×1350 and handed to the share sheet, redrawn with the call;
+//      the same for the Card Recap's 🖼️ Share recap image.
 import http from "node:http";
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname, extname } from "node:path";
@@ -262,9 +263,36 @@ try {
   mode = "cap";
   await page.evaluate(() => renderCardRecap({ date: "2026-10-03", evName: "UFC 332", title: { kind: "won", name: "🥊 Andy", pts: 9.5 },
     stories: [{ em: "💣", text: "Andy landed the biggest upset: Delta Four (+250) over Charlie Three" }, { em: "🔒", text: "JP went 2–0 on locks" }],
-    me: null, standings: [] }));
-  st = await page.evaluate(() => ({ btn: !!document.querySelector("#rc-body .bot-call-btn") }));
+    me: null, standings: [{ base: "Andy", name: "🥊 Andy", pts: 9.5, correct: 8, total: 11, rank: 1, perfect: false },
+      { base: "JP", name: "🦂 JP", pts: 7, correct: 7, total: 11, rank: 2, perfect: false }] }));
+  st = await page.evaluate(() => ({ btn: !!document.querySelector("#rc-body .bot-call-btn"),
+    share: !document.getElementById("rc-share-btn").hidden }));
   check("the Card Recap's stories get 🤖 FightBot's call", st.btn);
+  check("…and the recap shows 🖼️ Share recap", st.share);
+
+  // The recap image.
+  const rp = await page.evaluate(() => {
+    const rc = { date: "2026-10-03", evName: "UFC 332", title: { kind: "won", name: "🥊 Andy", pts: 9.5 },
+      stories: [{ em: "💣", text: "Andy landed the biggest upset" }],
+      standings: [{ base: "Andy", name: "🥊 Andy", pts: 9.5, correct: 8, total: 11, rank: 1 }] };
+    const a = drawRecapPoster(document.createElement("canvas"), rc, "", null);
+    const b = drawRecapPoster(document.createElement("canvas"), rc, "", "Andy ran the room.");
+    const c = drawRecapPoster(document.createElement("canvas"), { ...rc, stories: [], standings: [], title: { kind: "none" } }, "", null);
+    const px = a.getContext("2d").getImageData(540, 700, 1, 1).data;
+    return { w: a.width, h: a.height, painted: px[3] === 255, png: a.toDataURL().length,
+      differs: a.toDataURL() !== b.toDataURL(), empty: c.width === 1080 };
+  });
+  check("the recap image is a 1080×1350 image, painted", rp.w === 1080 && rp.h === 1350 && rp.painted && rp.png > 20000);
+  check("…FightBot's call goes on it once there is one, and an empty night still draws", rp.differs && rp.empty);
+  await page.waitForFunction(() => !!_rcPoster.file, null, { timeout: 10000 });
+  await page.evaluate(() => { window.__shared = null; });
+  await page.click("#rc-share-btn");
+  await page.waitForTimeout(100);
+  const rShared = await page.evaluate(() => {
+    const s = window.__shared; if (!s || !s.files) return null;
+    return { type: s.files[0].type, size: s.files[0].size, title: s.title };
+  });
+  check("Share recap hands the drawn PNG to the share sheet", rShared && rShared.type === "image/png" && rShared.size > 20000 && rShared.title === "Card Recap: UFC 332");
   await page.click("#rc-body .bot-call-btn");
   await page.waitForFunction(() => /AI limit/.test(document.querySelector("#rc-body .bot-call-btn").textContent));
   const rq = sent[sent.length - 1];
@@ -275,6 +303,12 @@ try {
   await page.click("#rc-body .bot-call-btn");
   await page.waitForSelector("#rc-body .bot-call-line");
   check("…and a retry that works shows the call", /for report/.test(await page.textContent("#rc-body .bot-call-line")));
+  await page.waitForFunction(() => !!_rcPoster.file, null, { timeout: 10000 });
+  await page.evaluate(() => { window.__shared = null; });
+  await page.click("#rc-share-btn");
+  await page.waitForTimeout(100);
+  const rShared2 = await page.evaluate(() => window.__shared && window.__shared.files[0].size);
+  check("…and the recap image is redrawn with the call on it", rShared2 && rShared2 !== rShared.size);
   check("no page errors", !errors.length);
   if (errors.length) console.error("    " + errors.slice(0, 3).join("\n    "));
 } finally {
