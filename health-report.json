@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-10T23:55:42Z",
+  "generated_at": "2026-10-11T00:00:42Z",
   "summary": {
     "events": 12,
     "block": 0,
@@ -9,25 +9,25 @@
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
-      "message": "UFC Fight Night: Prochazka vs. Stirling (42d out): venue 'Al Rayyan' matches no known region, so its 13:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "message": "UFC Fight Night: Prochazka vs. Stirling (41d out): venue 'Al Rayyan' matches no known region, so its 13:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Prochazka vs. Stirling",
       "date": "2026-11-21"
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Buckley vs. Malott (7d out): 3 of 13 bouts have no odds",
+      "message": "UFC Fight Night: Buckley vs. Malott (6d out): 3 of 13 bouts have no odds",
       "event": "UFC Fight Night: Buckley vs. Malott",
       "date": "2026-10-17",
-      "days_out": 7
+      "days_out": 6
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC 333: Volkanovski vs. Evloev (14d out): 7 of 9 bouts have no odds",
+      "message": "UFC 333: Volkanovski vs. Evloev (13d out): 7 of 9 bouts have no odds",
       "event": "UFC 333: Volkanovski vs. Evloev",
       "date": "2026-10-24",
-      "days_out": 14
+      "days_out": 13
     },
     {
       "severity": "WARN",
