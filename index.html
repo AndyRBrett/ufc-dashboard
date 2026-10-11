@@ -10625,13 +10625,27 @@ function drawRecapPoster(canvas,rc,myBase,call){
   if(call)stories.unshift("🤖 "+call);
   if(stories.length){
     sec("The night's stories");
-    c.font="600 32px "+_WR_FONT;
-    for(var i=0;i<stories.length;i++){
-      var lines=_tpWrap(c,stories[i],maxW,2);
-      if(y+lines.length*42>foot-standH)break;
+    // Every story the sheet shows goes on: the text shrinks until they all
+    // fit above the standings, and only past the smallest size does the
+    // image say how many it left off.
+    var room=foot-standH-y,size,lh,gap,wrapped;
+    for(size=32;size>=22;size-=2){
+      lh=Math.round(size*1.3);gap=Math.round(size*.55);c.font="600 "+size+"px "+_WR_FONT;
+      wrapped=stories.map(function(t){return _tpWrap(c,t,maxW,2);});
+      var need=wrapped.reduce(function(a,ls){return a+ls.length*lh+gap;},0);
+      if(need<=room)break;
+    }
+    if(size<22)size=22;
+    var shown=0,more=lh+gap;
+    for(var i=0;i<wrapped.length;i++){
+      var h=wrapped[i].length*lh+gap;
+      if(y+h+(i<wrapped.length-1?more:0)>foot-standH)break;
       c.fillStyle=i===0&&call?"#ffc63d":"#fff";
-      lines.forEach(function(l){c.fillText(l,L,y);y+=42;});
-      y+=18;
+      wrapped[i].forEach(function(l){c.fillText(l,L,y);y+=lh;});
+      y+=gap;shown++;
+    }
+    if(shown<wrapped.length){
+      c.fillStyle="#fff";c.globalAlpha=.7;c.fillText("+"+(wrapped.length-shown)+" more in the app",L,y);c.globalAlpha=1;y+=lh+gap;
     }
     c.fillStyle="#fff";y+=14;
   }

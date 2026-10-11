@@ -278,9 +278,12 @@ try {
     const a = drawRecapPoster(document.createElement("canvas"), rc, "", null);
     const b = drawRecapPoster(document.createElement("canvas"), rc, "", "Andy ran the room.");
     const c = drawRecapPoster(document.createElement("canvas"), { ...rc, stories: [], standings: [], title: { kind: "none" } }, "", null);
+    // A full night (eight stories, the call, a long board) still draws, shrunk or with "+N more".
+    const full = drawRecapPoster(document.createElement("canvas"), { ...rc, stories: Array.from({ length: 8 }, (_, i) => ({ em: "💣", text: "Story " + i + " is a long line about who called what on the night, and then some more words" })),
+      standings: Array.from({ length: 9 }, (_, i) => ({ base: "P" + i, name: "Player " + i, pts: 9 - i, correct: 9 - i, total: 11, rank: i + 1 })) }, "P8", "Andy ran the room.");
     const px = a.getContext("2d").getImageData(540, 700, 1, 1).data;
     return { w: a.width, h: a.height, painted: px[3] === 255, png: a.toDataURL().length,
-      differs: a.toDataURL() !== b.toDataURL(), empty: c.width === 1080 };
+      differs: a.toDataURL() !== b.toDataURL(), empty: c.width === 1080 && full.height === 1350 };
   });
   check("the recap image is a 1080×1350 image, painted", rp.w === 1080 && rp.h === 1350 && rp.painted && rp.png > 20000);
   check("…FightBot's call goes on it once there is one, and an empty night still draws", rp.differs && rp.empty);
