@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-11T17:30:23.022877+00:00",
+  "last_fetch_at": "2026-10-11T23:35:20.540021+00:00",
   "last_status": 401,
-  "lines_digest": "730a762b29ee15c13f4e611dd0e55e8964a963bd",
+  "lines_digest": "51624925a50e1150e93581fb35168f328acb010e",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -143,10 +143,10 @@
   "markets_partial": {
     "2026-10-13": {
       "fighters": [
-        "bulaid",
-        "visconde",
         "rentz",
-        "francischinelli"
+        "francischinelli",
+        "bulaid",
+        "visconde"
       ],
       "listed": 2,
       "priced": 2
@@ -287,13 +287,13 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-11T17:30:23.022877+00:00",
+  "markets_partial_at": "2026-10-11T23:35:20.540021+00:00",
   "next_event_days_out": 6,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-11T17:30:23.022877+00:00",
+      "last_fetch_at": "2026-10-11T23:35:20.540021+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
@@ -301,11 +301,11 @@
     },
     "the-odds-api-backup": {
       "bouts": 34,
-      "last_fetch_at": "2026-10-11T17:30:23.022877+00:00",
-      "last_ok_at": "2026-10-11T17:30:23.022877+00:00",
+      "last_fetch_at": "2026-10-11T23:35:20.540021+00:00",
+      "last_ok_at": "2026-10-11T23:35:20.540021+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 360
+      "requests_remaining": 359
     }
   },
   "requests_remaining": 0

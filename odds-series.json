@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T23:30:39Z",
+  "generated_at": "2026-10-11T23:35:42Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -14864,7 +14864,7 @@
           "f1": "Joaquin Buckley",
           "f2": "Mike Malott",
           "lbl": "Main Event",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -14890,6 +14890,11 @@
               "at": "2026-10-11T11:25:46Z",
               "f1_odds": 123,
               "f2_odds": -147
+            },
+            {
+              "at": "2026-10-11T23:35:42Z",
+              "f1_odds": 119,
+              "f2_odds": -143
             }
           ],
           "open": {
@@ -14999,7 +15004,7 @@
           "f1": "Louis Jourdain",
           "f2": "Timothy Cuamba",
           "lbl": "Main Card",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15030,6 +15035,11 @@
               "at": "2026-10-11T17:30:41Z",
               "f1_odds": -190,
               "f2_odds": 157
+            },
+            {
+              "at": "2026-10-11T23:35:42Z",
+              "f1_odds": -197,
+              "f2_odds": 163
             }
           ],
           "open": {
@@ -15612,7 +15622,7 @@
           "f1": "Charles Oliveira",
           "f2": "Diego Lopes",
           "lbl": "Main Event",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-10-06T03:01:07Z",
@@ -15647,6 +15657,11 @@
             {
               "at": "2026-10-11T05:20:44Z",
               "f1_odds": -148,
+              "f2_odds": 123
+            },
+            {
+              "at": "2026-10-11T23:35:42Z",
+              "f1_odds": -149,
               "f2_odds": 123
             }
           ],
@@ -16593,7 +16608,7 @@
         "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
         "opponent": "Charles Oliveira",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 137,
         "close": null,
         "clv": null
@@ -20506,7 +20521,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Mike Malott",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": 131,
         "close": null,
         "clv": null
@@ -20517,7 +20532,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Joaquin Buckley",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": -151,
         "close": null,
         "clv": null
@@ -20561,7 +20576,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Timothy Cuamba",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -170,
         "close": null,
         "clv": null
@@ -20572,7 +20587,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Louis Jourdain",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 130,
         "close": null,
         "clv": null
@@ -20814,7 +20829,7 @@
         "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
         "opponent": "Diego Lopes",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -166,
         "close": null,
         "clv": null
