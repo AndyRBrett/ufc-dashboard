@@ -2,6 +2,7 @@
 // don't depend on deno.land being up.
 import webpush from "npm:web-push@3.6.7";
 import { secretEquals } from "../_shared/secret.js";
+import { apnsConfig, apnsPayload, sendApns, APNS_TOKEN_RE } from "../_shared/apns.js";
 // v3 — spoiler-free by default: safe_title/safe_body go to everyone except
 // subscribers with live_results = true (also supports include_user_ids targeting)
 
@@ -549,6 +550,49 @@ async function alreadySent(sb: string, h: Record<string, string>, date: string, 
   return Array.isArray(rows) && rows.length > 0;
 }
 
+// Registering an iPhone running the App Store build (native/). Same rule as a
+// web subscription: a verified session JWT, and only as yourself. The token is
+// the row's key, so a phone that signs in as someone else moves its token to
+// them rather than notifying both accounts. There is no endpoint to police
+// here (Apple's host is fixed in _shared/apns.js), only the token's shape.
+async function registerApns(
+  body: ReqBody, sb: string, anonKey: string, token: string,
+  h: Record<string, string>, CORS: Record<string, string>,
+): Promise<Response> {
+  const reply = (status: number, b: unknown) => new Response(JSON.stringify(b), { status, headers: CORS });
+  const apnsToken = String(body.apns_token ?? "").toLowerCase();
+  const env = body.apns_env === "sandbox" ? "sandbox" : "production";
+  const userId = String(body.user_id ?? "");
+  if (!APNS_TOKEN_RE.test(apnsToken) || !userId || userId.length > MAX_USER_ID || (body.nickname ?? "").length > MAX_NICKNAME) {
+    return reply(400, { error: "Bad device registration" });
+  }
+  const callerId = await verifyUser(sb, anonKey, token);
+  if (!callerId) return reply(401, { error: "Sign-in required to register for notifications" });
+  if (callerId !== userId) return reply(403, { error: "Cannot register a device for another user" });
+  const r = await fetch(`${sb}/rest/v1/apns_devices?on_conflict=token`, {
+    method: "POST",
+    headers: { ...h, "Prefer": "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify({ token: apnsToken, user_id: userId, nickname: clean(body.nickname, MAX_NICKNAME) || userId.slice(0, 8),
+      env, live_results: body.live_results === true, updated_at: new Date().toISOString() }),
+  }).catch(() => null);
+  if (!r || !r.ok) return reply(502, { error: "Failed to save device" });
+  return reply(200, { ok: true });
+}
+
+// The APNs devices a push goes to, by the same audience filter as push_subs.
+// Only read when the APNS_* secrets are set: until then the web loop is the
+// whole story, exactly as before. A read failure sends to no iPhones rather
+// than failing the web push.
+type ApnsDevice = { token: string; user_id: string; env: string; live_results?: boolean };
+async function apnsDevices(sb: string, h: Record<string, string>, filter: string): Promise<ApnsDevice[]> {
+  try {
+    const r = await fetch(`${sb}/rest/v1/apns_devices?select=token,user_id,env,live_results${filter}`, { headers: h });
+    if (!r.ok) { console.error("apns_devices read failed", r.status); return []; }
+    const rows = await r.json();
+    return Array.isArray(rows) ? rows.filter((d) => d && typeof d.token === "string" && APNS_TOKEN_RE.test(d.token)) : [];
+  } catch (e) { console.error("apns_devices read failed", e); return []; }
+}
+
 interface ReqBody {
   event_date?: string;
   type: string;
@@ -577,6 +621,11 @@ interface ReqBody {
   p256dh?: string;
   auth?: string;
   live_results?: boolean;
+  // type="register" from the native iOS build (native/): an APNs device token
+  // instead of a web-push subscription. See _shared/apns.js and 0022.
+  platform?: string;
+  apns_token?: string;
+  apns_env?: string;
 }
 
 Deno.serve(async (req) => {
@@ -639,6 +688,10 @@ Deno.serve(async (req) => {
 
   // Subscription registration — uses service role to bypass RLS on push_subs
   await pruneRoasts(SUPABASE_URL, sbHeaders);
+
+  if (body.type === "register" && body.platform === "ios") {
+    return await registerApns(body, SUPABASE_URL, ANON_KEY, isAnonKey ? "" : bearer, sbHeaders, CORS);
+  }
 
   if (body.type === "register") {
     const { user_id, nickname, endpoint, p256dh, auth } = body;
@@ -833,6 +886,13 @@ Deno.serve(async (req) => {
   const off = kind ? await optedOut(SUPABASE_URL, sbHeaders, kind) : null;
   const pushSubs = off && off.size ? subs.filter((sub) => !(sub.user_id && off.has(sub.user_id))) : subs;
 
+  // iPhones on the App Store build, by the same audience: the same targeting
+  // filter, blocks and per-kind switches. (exclude_endpoint is a web
+  // subscription's; a native sender is excluded by user_id.)
+  const apns = apnsConfig((k: string) => Deno.env.get(k));
+  const devs = apns ? await apnsDevices(SUPABASE_URL, sbHeaders, subsFilter) : [];
+  const apnsDevs = devs.filter((d) => !(blocked && blocked.has(d.user_id)) && !(off && off.has(d.user_id)));
+
   // A roast is also left in each recipient's inbox (0016_roast_inbox.sql), and
   // the app reads it from there. The push payload alone kept failing to reach
   // the page on iOS: it rides notificationclick -> a cache stash or a
@@ -843,11 +903,11 @@ Deno.serve(async (req) => {
   if (/^trash-talk-\d+$/.test(body.type) && caller.kind === "user") {
     const to = body.include_user_ids && body.include_user_ids.length
       ? body.include_user_ids
-      : [...new Set(subs.map((s) => s.user_id).filter((u): u is string => !!u))];
+      : [...new Set([...subs.map((s) => s.user_id), ...devs.map((d) => d.user_id)].filter((u): u is string => !!u))];
     await recordRoasts(SUPABASE_URL, sbHeaders, to.filter((u) => u !== caller.uid), String(body.title ?? ""), String(body.body ?? ""));
   }
 
-  if (!pushSubs.length) {
+  if (!pushSubs.length && !apnsDevs.length) {
     return new Response(JSON.stringify({ sent: 0, skipped: false, reason: "no subscribers" }), { status: 200, headers: CORS });
   }
 
@@ -886,6 +946,36 @@ Deno.serve(async (req) => {
       }
     }
   }));
+
+  // The same message to each iPhone, spoiler-free unless that device opted in
+  // to live results. A token Apple calls dead (410, BadDeviceToken) is removed,
+  // like a web endpoint's 410.
+  if (apns && apnsDevs.length) {
+    const apnsLive = apnsPayload({ title: body.title, body: body.body, ...routing });
+    const apnsSafe = body.safe_title ? apnsPayload({ title: body.safe_title, body: body.safe_body ?? "", ...routing }) : null;
+    const at = Date.now();
+    await Promise.all(apnsDevs.map(async (d) => {
+      const payload = apnsSafe && d.live_results !== true ? apnsSafe : apnsLive;
+      let r = await sendApns(apns, d, payload, at);
+      // A build run from Xcode holds a sandbox token, which the production
+      // host calls BadDeviceToken. The app can't tell which it is, so it
+      // registers as production; the first push finds out and remembers.
+      if (!r.ok && r.reason === "BadDeviceToken" && d.env !== "sandbox") {
+        const sb = await sendApns(apns, { ...d, env: "sandbox" }, payload, at);
+        if (sb.ok) {
+          r = sb;
+          await fetch(`${SUPABASE_URL}/rest/v1/apns_devices?token=eq.${encodeURIComponent(d.token)}`, {
+            method: "PATCH", headers: { ...sbHeaders, "Prefer": "return=minimal" }, body: JSON.stringify({ env: "sandbox" }),
+          }).catch(() => {});
+        }
+      }
+      if (r.ok) { sent++; return; }
+      failed++;
+      if (r.gone) {
+        await fetch(`${SUPABASE_URL}/rest/v1/apns_devices?token=eq.${encodeURIComponent(d.token)}`, { method: "DELETE", headers: sbHeaders }).catch(() => {});
+      } else console.error("apns send failed", r.status, r.reason);
+    }));
+  }
 
   return new Response(JSON.stringify({ sent, failed }), { status: 200, headers: CORS });
 });

@@ -205,6 +205,7 @@ interface ReqBody {
   lbMode?: string;                  // "current" (this week's event) or all-time
   evName?: string | null;           // event name when lbMode === "current"
   hint?: string;                    // optional user-supplied angle
+  store?: boolean;                  // sent by the App Store build: filtered roast (roastFiltered)
   // fight-iq fields — the Fight Lab's deterministic Fight IQ, already computed
   // in the browser (lab/analytics.js). The model only writes prose around it.
   iq?: IqFacts;
@@ -592,10 +593,27 @@ type Provider = "grok" | "claude";
 // key configured this returns "claude" and the feature behaves exactly as it
 // did before — deploying this function without setting GROK_API_KEY changes
 // nothing, which is what makes the rollout safe.
-function trashTalkProvider(grokKey: string): Provider {
+//
+// `filtered` is the App Store build (roastFiltered below): Claude, without
+// the gloves-off suffix, whatever the key says.
+function trashTalkProvider(grokKey: string, filtered = false): Provider {
+  if (filtered) return "claude";
   const want = (Deno.env.get("TRASH_TALK_PROVIDER") ?? "grok").trim().toLowerCase();
   if (want === "claude" || want === "anthropic") return "claude";
   return grokKey ? "grok" : "claude";
+}
+
+// The App Store build asks for a filtered roast. Apple reviews what the app
+// can generate (guidelines 1.1 and 1.2: mean-spirited content aimed at real,
+// private people), and the unfiltered Grok roast is built to be exactly that,
+// so the native build (native/, which sends store: true) gets Claude's own
+// voice with no gloves-off rule. The web app is unchanged.
+// ROAST_FILTERED=1 filters every roast, web included, without a redeploy.
+// This is a choice about which app asked, not a security boundary: anyone can
+// ask for the filtered roast, and asking for it only makes a roast tamer.
+function roastFiltered(body: { store?: boolean }): boolean {
+  if ((Deno.env.get("ROAST_FILTERED") ?? "").trim() === "1") return true;
+  return body.store === true;
 }
 
 interface Source { url: string; title: string; }
@@ -1498,7 +1516,7 @@ Deno.serve(async (req) => {
     iqFacts = iqFactsText(q);
     maxTokens = 300;
   } else if (action === "trash-talk") {
-    provider = trashTalkProvider(grokKey);
+    provider = trashTalkProvider(grokKey, roastFiltered(body));
     const built = buildTrashTalk(body);
     claudeSystem = built.system;
     system = provider === "grok"

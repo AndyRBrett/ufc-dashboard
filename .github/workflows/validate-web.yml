@@ -36,6 +36,7 @@
 #   check:delete    — Delete my account deletes the login and every row of the caller's, and nobody else's
 #   check:invites   — a founder is an email account made before the cutoff; an invite is claimed once, by a new account, as yourself
 #   check:migrations — the database rebuilds from supabase/migrations (0000 up) and matches production's core schema
+#   check:native    — the iOS shell registers its APNs token and routes taps; a browser never takes the native path
 #   check:picklock  — the database refuses a pick, change or delete once its bout's segment has started
 name: Validate Web
 
@@ -185,3 +186,5 @@ jobs:
         run: npm run check:invites
       - name: Database rebuild test
         run: npm run check:migrations
+      - name: iOS shell push and taps
+        run: npm run check:native

@@ -1,0 +1,19 @@
+{
+  "name": "picked-fight-ios",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The App Store build of Picked Fight: a Capacitor shell around the live web app, adding native push. See README.md.",
+  "scripts": {
+    "add:ios": "cap add ios",
+    "sync": "cap sync ios",
+    "open": "cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "8.5.2",
+    "@capacitor/ios": "8.5.2",
+    "@capacitor/push-notifications": "8.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.2"
+  }
+}

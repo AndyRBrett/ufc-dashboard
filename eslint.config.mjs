@@ -32,7 +32,7 @@ const rules = {
 };
 
 export default [
-  { ignores: ["node_modules/**", "dist/**", "data.js", "supabase/functions/_shared/lab-bundle.js", "docs/archived-themes/**"] },
+  { ignores: ["node_modules/**", "dist/**", "data.js", "supabase/functions/_shared/lab-bundle.js", "docs/archived-themes/**", "native/node_modules/**", "native/ios/**"] },
   {
     files: ["scoring.js", "lab/**/*.js"],
     languageOptions: { ecmaVersion: 2024, sourceType: "script", globals: { ...globals.browser, ...globals.commonjs, ...shared } },
