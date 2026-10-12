@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T05:25:39Z",
+  "generated_at": "2026-10-12T06:30:40Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -14864,7 +14864,7 @@
           "f1": "Joaquin Buckley",
           "f2": "Mike Malott",
           "lbl": "Main Event",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -14895,6 +14895,11 @@
               "at": "2026-10-11T23:35:42Z",
               "f1_odds": 119,
               "f2_odds": -143
+            },
+            {
+              "at": "2026-10-12T06:30:40Z",
+              "f1_odds": 111,
+              "f2_odds": -134
             }
           ],
           "open": {
@@ -20521,7 +20526,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Mike Malott",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": 131,
         "close": null,
         "clv": null
@@ -20532,7 +20537,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Joaquin Buckley",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": -151,
         "close": null,
         "clv": null

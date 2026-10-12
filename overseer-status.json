@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T05:25:38Z",
+  "generated_at": "2026-10-12T06:30:40Z",
   "events_tracked": 11,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -96,11 +96,11 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "ok",
-      "last_changed_at": "2026-10-11T23:35:42Z",
+      "last_changed_at": "2026-10-12T06:30:40Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": -12,
+      "line_movement": -20,
       "odds_market_priced": true
     },
     {
@@ -116,7 +116,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-12T05:25:38Z",
+      "last_changed_at": "2026-10-12T06:30:40Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-12T05:25:38Z",
+      "last_changed_at": "2026-10-12T06:30:40Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -146,7 +146,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-12T05:25:38Z",
+      "last_changed_at": "2026-10-12T06:30:40Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -454,6 +454,22 @@
       "priority": 71.0
     },
     {
+      "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+      "f1": "Joaquin Buckley",
+      "f2": "Mike Malott",
+      "f1_movement": -20,
+      "f2_movement": 17,
+      "magnitude": 20,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Welterweight",
+      "f1_prob_shift": 4.1,
+      "f2_prob_shift": -2.9,
+      "priority": 70.0
+    },
+    {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Natalia Silva",
       "f2": "Wang Cong",
@@ -643,22 +659,6 @@
       "wc": "Welterweight",
       "f1_prob_shift": -3.4,
       "f2_prob_shift": 3.9,
-      "priority": 42.0
-    },
-    {
-      "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
-      "f1": "Joaquin Buckley",
-      "f2": "Mike Malott",
-      "f1_movement": -12,
-      "f2_movement": 8,
-      "magnitude": 12,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Welterweight",
-      "f1_prob_shift": 2.4,
-      "f2_prob_shift": -1.3,
       "priority": 42.0
     },
     {
