@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-11T23:55:38Z",
-  "events_tracked": 12,
+  "generated_at": "2026-10-12T00:55:41Z",
+  "events_tracked": 11,
   "stale_events": 1,
   "parse_failure_events": 0,
   "awaiting_card_events": 3,
@@ -9,7 +9,7 @@
   "odds_budget": {
     "exhausted": false,
     "reset_day": 1,
-    "resets_in_days": 21,
+    "resets_in_days": 20,
     "most_affected": []
   },
   "stale_threshold_hours": 48,
@@ -53,16 +53,6 @@
   ],
   "movement_alert_low_confidence_tiers": [],
   "events": [
-    {
-      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
-      "status": "ok",
-      "last_changed_at": "2026-09-13T00:08:51Z",
-      "is_stale": false,
-      "has_data": true,
-      "bout_count": 13,
-      "line_movement": 0,
-      "odds_market_priced": null
-    },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "status": "ok",
@@ -126,7 +116,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-11T23:55:38Z",
+      "last_changed_at": "2026-10-12T00:55:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -136,7 +126,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-11T23:55:38Z",
+      "last_changed_at": "2026-10-12T00:55:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -156,7 +146,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-11T23:55:38Z",
+      "last_changed_at": "2026-10-12T00:55:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -175,22 +165,6 @@
     }
   ],
   "alerts": [
-    {
-      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
-      "f1": "Thomas Gantt",
-      "f2": "Drakkar Klose",
-      "f1_movement": -38500,
-      "f2_movement": 1812,
-      "magnitude": 38500,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Lightweight",
-      "f1_prob_shift": 16.4,
-      "f2_prob_shift": -16.9,
-      "priority": 38500.0
-    },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "f1": "Francisco Prado",
@@ -256,22 +230,6 @@
       "priority": 310.0
     },
     {
-      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
-      "f1": "Ignacio Bahamondes",
-      "f2": "Muslim Salikhov",
-      "f1_movement": -222,
-      "f2_movement": 132,
-      "magnitude": 222,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Welterweight",
-      "f1_prob_shift": 7.3,
-      "f2_prob_shift": -6.8,
-      "priority": 222.0
-    },
-    {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Payton Talbott",
       "f2": "Deiveson Figueiredo",
@@ -286,22 +244,6 @@
       "f1_prob_shift": 3.7,
       "f2_prob_shift": -3.2,
       "priority": 205.0
-    },
-    {
-      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
-      "f1": "Yousri Belgaroui",
-      "f2": "Djorden Santos",
-      "f1_movement": -203,
-      "f2_movement": 97,
-      "magnitude": 203,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 2.5,
-      "f2_prob_shift": -2.4,
-      "priority": 203.0
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
@@ -334,22 +276,6 @@
       "f1_prob_shift": -9.2,
       "f2_prob_shift": 10.1,
       "priority": 153.0
-    },
-    {
-      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
-      "f1": "David Martinez",
-      "f2": "Dan Ige",
-      "f1_movement": -150,
-      "f2_movement": 96,
-      "magnitude": 150,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 50,
-      "low_confidence": false,
-      "wc": "Bantamweight",
-      "f1_prob_shift": 7.3,
-      "f2_prob_shift": -6.7,
-      "priority": 150.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
@@ -544,22 +470,6 @@
       "priority": 67.5
     },
     {
-      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
-      "f1": "Alexa Grasso",
-      "f2": "Manon Fiorot",
-      "f1_movement": 45,
-      "f2_movement": -67,
-      "magnitude": 67,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 50,
-      "low_confidence": false,
-      "wc": "Women's Flyweight",
-      "f1_prob_shift": -4.9,
-      "f2_prob_shift": 5.6,
-      "priority": 67.0
-    },
-    {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Alateng Heili",
       "f2": "John Castaneda",
@@ -638,22 +548,6 @@
       "f1_prob_shift": -0.1,
       "f2_prob_shift": 0.8,
       "priority": 53.2
-    },
-    {
-      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
-      "f1": "Regina Tarin",
-      "f2": "JJ Aldrich",
-      "f1_movement": -53,
-      "f2_movement": 39,
-      "magnitude": 53,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Women's Flyweight",
-      "f1_prob_shift": 4.2,
-      "f2_prob_shift": -4.1,
-      "priority": 53.0
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
@@ -784,22 +678,6 @@
       "priority": 39.2
     },
     {
-      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
-      "f1": "Rong Zhu",
-      "f2": "Rafa Garcia",
-      "f1_movement": -34,
-      "f2_movement": 27,
-      "magnitude": 34,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Lightweight",
-      "f1_prob_shift": 5.8,
-      "f2_prob_shift": -5.7,
-      "priority": 34.0
-    },
-    {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
       "f1": "Marlon Vera",
       "f2": "Charles Jourdain",
@@ -878,22 +756,6 @@
       "f1_prob_shift": 1.9,
       "f2_prob_shift": -1.0,
       "priority": 23.8
-    },
-    {
-      "event_id": "2026-09-12:ufc-fight-night-silva-vs-delgado",
-      "f1": "Tim Elliott",
-      "f2": "Edgar Chairez",
-      "f1_movement": -17,
-      "f2_movement": 14,
-      "magnitude": 17,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Catchweight (130 Lb)",
-      "f1_prob_shift": 2.2,
-      "f2_prob_shift": -1.4,
-      "priority": 17.0
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-11T22:30:42Z",
+ "generated_at": "2026-10-12T00:55:41Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -40,114 +40,6 @@
   }
  ],
  "events": {
-  "UFC_Fight_Night:_Allen_vs._Duncan": {
-   "name": "UFC Fight Night: Allen vs. Duncan",
-   "date": "2026-10-10",
-   "items": [
-    {
-     "title": "Brendan Allen submits Christian Leroy Duncan in UFC Vegas 122 main event",
-     "url": "https://www.sherdog.com/news/news/Brendan-Allen-submits-Christian-Leroy-Duncan-in-UFC-Vegas-122-main-event-203156",
-     "source": "Sherdog",
-     "kind": "article",
-     "published": "2026-10-10T23:57:07Z",
-     "thumb": null,
-     "blurb": "Related » UFC Vegas 122 round-by-round scoring",
-     "fighters": [
-      "Brendan Allen",
-      "Christian Leroy Duncan"
-     ]
-    },
-    {
-     "title": "‘Nothing changes’… Christian Leroy Duncan breaks his silence on Brendan Allen loss at UFC Vegas 122",
-     "url": "https://bloodyelbow.com/2026/10/11/nothing-changes-christian-leroy-duncan-breaks-his-silence-on-brendan-allen-loss-at-ufc-vegas-122/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-10-11T10:30:50Z",
-     "thumb": null,
-     "blurb": "Christian Leroy Duncan has issued a brief statement addressing his defeat at UFC Vegas 122. The 31-year-old Englishman carried a five-fight win streak into his ...",
-     "fighters": [
-      "Brendan Allen",
-      "Christian Leroy Duncan"
-     ]
-    },
-    {
-     "title": "Brendan Allen overcame brutal fight week illness to score fifth round submission of Christian Leroy Duncan",
-     "url": "https://bloodyelbow.com/2026/10/10/brendan-allen-overcame-brutal-fight-week-illness-to-score-fifth-round-submission-of-christian-leroy-duncan/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-10-11T03:00:00Z",
-     "thumb": null,
-     "blurb": "Brendan Allen had to fight through a gruesome and potentially disastrous illness in order to score his latest win. Allen had to go into the ...",
-     "fighters": [
-      "Brendan Allen",
-      "Christian Leroy Duncan"
-     ]
-    },
-    {
-     "title": "Brendan Allen plans to test Christian Leroy Duncan in uncharted rounds",
-     "url": "https://www.sherdog.com/news/news/Brendan-Allen-plans-to-test-Christian-Leroy-Duncan-in-uncharted-rounds-203149",
-     "source": "Sherdog",
-     "kind": "article",
-     "published": "2026-10-09T05:40:27Z",
-     "thumb": null,
-     "blurb": "Brendan Allen plans to bring the pressure when he faces Christian Leroy Duncan .",
-     "fighters": [
-      "Brendan Allen",
-      "Christian Leroy Duncan"
-     ]
-    },
-    {
-     "title": "Christian Leroy Duncan eyes UFC title shot with Brendan Allen win",
-     "url": "https://www.sherdog.com/news/news/Christian-Leroy-Duncan-eyes-UFC-title-shot-with-Brendan-Allen-win-203137",
-     "source": "Sherdog",
-     "kind": "article",
-     "published": "2026-10-09T02:55:38Z",
-     "thumb": null,
-     "blurb": "Christian Leroy Duncan believes a win over Brendan Allen warrants a shot at Ultimate Fighting Championship gold or a former titleholder.",
-     "fighters": [
-      "Brendan Allen",
-      "Christian Leroy Duncan"
-     ]
-    },
-    {
-     "title": "Brendan Allen’s UFC Vegas 122 win moved him closer to record set by veteran who retired at the event",
-     "url": "https://bloodyelbow.com/2026/10/11/brendan-allens-ufc-vegas-122-win-moved-him-closer-to-record-set-by-veteran-who-retired-at-the-event/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-10-11T21:00:00Z",
-     "thumb": null,
-     "blurb": "Gerald Meerschaert will not add to his submission tally, but Brendan Allen likely will increase his. Both men were in action at Saturday’s UFC Vegas ...",
-     "fighters": [
-      "Brendan Allen",
-      "Gerald Meerschaert"
-     ]
-    },
-    {
-     "title": "Brendan Allen Octagon Interview | UFC Vegas 122",
-     "url": "https://www.youtube.com/watch?v=HL0E4bTOAq8",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-11T02:55:29Z",
-     "thumb": "https://i1.ytimg.com/vi/HL0E4bTOAq8/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://www.paramountplus.com/ Allen vs Duncan results: https://ufc.ac/3VF0GAr Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS,…",
-     "fighters": [
-      "Brendan Allen"
-     ]
-    },
-    {
-     "title": "Jai Herbert Octagon Interview | UFC Vegas 122",
-     "url": "https://www.youtube.com/watch?v=IvRggjAIyEY",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-11T02:05:54Z",
-     "thumb": "https://i2.ytimg.com/vi/IvRggjAIyEY/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://www.paramountplus.com/ Allen vs Duncan results: https://ufc.ac/3VF0GAr Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS,…",
-     "fighters": [
-      "Jai Herbert"
-     ]
-    }
-   ]
-  },
   "UFC_Fight_Night:_Buckley_vs._Malott": {
    "name": "UFC Fight Night: Buckley vs. Malott",
    "date": "2026-10-17",
