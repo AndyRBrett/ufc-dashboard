@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T18:00:47Z",
+  "generated_at": "2026-10-12T18:53:32Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -14974,7 +14974,7 @@
           "f1": "Marc-Andre Barriault",
           "f2": "Kyle Daukaus",
           "lbl": "Main Card",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15010,6 +15010,11 @@
               "at": "2026-10-12T12:35:55Z",
               "f1_odds": 187,
               "f2_odds": -237
+            },
+            {
+              "at": "2026-10-12T18:53:32Z",
+              "f1_odds": 180,
+              "f2_odds": -228
             }
           ],
           "open": {
@@ -15129,7 +15134,7 @@
           "f1": "Tanner Boser",
           "f2": "Jhonata Diniz",
           "lbl": "Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15160,6 +15165,11 @@
               "at": "2026-10-12T12:35:55Z",
               "f1_odds": 194,
               "f2_odds": -247
+            },
+            {
+              "at": "2026-10-12T18:53:32Z",
+              "f1_odds": 199,
+              "f2_odds": -253
             }
           ],
           "open": {
@@ -15214,7 +15224,7 @@
           "f1": "Chad Anheliger",
           "f2": "Steven Koslow",
           "lbl": "Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15235,6 +15245,11 @@
               "at": "2026-10-12T12:35:55Z",
               "f1_odds": -113,
               "f2_odds": -110
+            },
+            {
+              "at": "2026-10-12T18:53:32Z",
+              "f1_odds": -112,
+              "f2_odds": -111
             }
           ],
           "open": {
@@ -15299,7 +15314,7 @@
           "f1": "Cody Chovancek",
           "f2": "You Su-young",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15325,12 +15340,37 @@
               "at": "2026-10-12T12:35:55Z",
               "f1_odds": -149,
               "f2_odds": 121
+            },
+            {
+              "at": "2026-10-12T18:53:32Z",
+              "f1_odds": -151,
+              "f2_odds": 122
             }
           ],
           "open": {
             "at": "2026-10-09T15:07:42Z",
             "f1_odds": -150,
             "f2_odds": 130
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Javad Mahjoub",
+          "f2": "Joel Faglier",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-12T18:53:32Z",
+              "f1_odds": -116,
+              "f2_odds": -108
+            }
+          ],
+          "open": {
+            "at": "2026-10-12T18:53:32Z",
+            "f1_odds": -116,
+            "f2_odds": -108
           },
           "close": null,
           "clv": null
@@ -15516,7 +15556,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -15587,6 +15627,11 @@
               "at": "2026-10-08T11:45:41Z",
               "f1_odds": -270,
               "f2_odds": 210
+            },
+            {
+              "at": "2026-10-12T18:53:32Z",
+              "f1_odds": -268,
+              "f2_odds": 208
             }
           ],
           "open": {
@@ -16540,7 +16585,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -272,
         "close": null,
         "clv": null
@@ -16602,7 +16647,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 219,
         "close": null,
         "clv": null
@@ -16653,7 +16698,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Marc-Andre Barriault",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": -220,
         "close": null,
         "clv": null
@@ -20630,7 +20675,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Kyle Daukaus",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": 185,
         "close": null,
         "clv": null
@@ -20685,7 +20730,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Jhonata Diniz",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": 210,
         "close": null,
         "clv": null
@@ -20696,7 +20741,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Tanner Boser",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": -250,
         "close": null,
         "clv": null
@@ -20729,7 +20774,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Steven Koslow",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -130,
         "close": null,
         "clv": null
@@ -20740,7 +20785,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Chad Anheliger",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 110,
         "close": null,
         "clv": null
@@ -20762,7 +20807,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "You Su-young",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -150,
         "close": null,
         "clv": null
@@ -20773,8 +20818,30 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Cody Chovancek",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 130,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Javad Mahjoub": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Joel Faglier",
+        "side": "f1",
+        "points": 1,
+        "open": -116,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Joel Faglier": [
+      {
+        "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+        "opponent": "Javad Mahjoub",
+        "side": "f2",
+        "points": 1,
+        "open": -108,
         "close": null,
         "clv": null
       }

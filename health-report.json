@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T18:00:47Z",
+  "generated_at": "2026-10-12T18:53:32Z",
   "summary": {
     "events": 11,
     "block": 0,
@@ -16,7 +16,7 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Buckley vs. Malott (5d out): 3 of 13 bouts have no odds",
+      "message": "UFC Fight Night: Buckley vs. Malott (5d out): 2 of 13 bouts have no odds",
       "event": "UFC Fight Night: Buckley vs. Malott",
       "date": "2026-10-17",
       "days_out": 5
