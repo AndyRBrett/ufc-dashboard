@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-12T22:05:43Z",
+ "generated_at": "2026-10-13T00:00:46Z",
  "promotions": [
   {
    "id": "pfl",
@@ -28,28 +28,14 @@
    "broadcast": "",
    "bouts": [
     {
-     "a": "Douglas da Lapa",
-     "b": "Davi Cabral",
+     "a": "Ilias Bulaid",
+     "b": "Erick Visconde",
      "label": "Main Event",
-     "division": "Middleweight",
+     "division": "Featherweight",
      "title": false,
      "odds": {
-      "a": -192,
-      "b": 160
-     },
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Luis Francischinelli",
-     "b": "William Rentz",
-     "label": "",
-     "division": "Welterweight",
-     "title": false,
-     "odds": {
-      "a": -245,
-      "b": 203
+      "a": -150,
+      "b": 126
      },
      "winner": "",
      "method": "",
@@ -70,14 +56,28 @@
      "round": null
     },
     {
-     "a": "Ilias Bulaid",
-     "b": "Erick Visconde",
+     "a": "Luis Francischinelli",
+     "b": "William Rentz",
      "label": "",
-     "division": "Featherweight",
+     "division": "Welterweight",
      "title": false,
      "odds": {
-      "a": -150,
-      "b": 126
+      "a": -245,
+      "b": 203
+     },
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Douglas da Lapa",
+     "b": "Davi Cabral",
+     "label": "",
+     "division": "Middleweight",
+     "title": false,
+     "odds": {
+      "a": -192,
+      "b": 160
      },
      "winner": "",
      "method": "",
@@ -85,7 +85,7 @@
     },
     {
      "a": "Jason Asher",
-     "b": "Greg Foster",
+     "b": "Gregory Foster",
      "label": "",
      "division": "Lightweight",
      "title": false,
@@ -152,6 +152,17 @@
      "round": null
     },
     {
+     "a": "Eliezer Kubanza",
+     "b": "Trey Waters",
+     "label": "",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
      "a": "Emiliano Sordi",
      "b": "Abraham Bably",
      "label": "",
@@ -163,8 +174,8 @@
      "round": null
     },
     {
-     "a": "Gamid Khizriev",
-     "b": "Michael Boylan",
+     "a": "Cassio Barao Jr.",
+     "b": "Kevin Pease",
      "label": "",
      "division": "Lightweight",
      "title": false,
@@ -185,21 +196,10 @@
      "round": null
     },
     {
-     "a": "Cassio Barao Jr.",
-     "b": "Kevin Pease",
+     "a": "Gamid Khizriev",
+     "b": "Michael Boylan",
      "label": "",
      "division": "Lightweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Eliezer Kubanza",
-     "b": "Trey Waters",
-     "label": "",
-     "division": "Welterweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -211,6 +211,17 @@
      "b": "Rosario Romero",
      "label": "",
      "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Levan Khabalaev",
+     "b": "Brock Hamer",
+     "label": "",
+     "division": "Lightweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -241,20 +252,9 @@
     },
     {
      "a": "Benita van Rooij",
-     "b": "Giuliany Perea",
+     "b": "Giuliany Perea Viana",
      "label": "",
      "division": "Women's Strawweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Levan Khabalaev",
-     "b": "Morquez Forest",
-     "label": "",
-     "division": "Lightweight",
      "title": false,
      "odds": null,
      "winner": "",
