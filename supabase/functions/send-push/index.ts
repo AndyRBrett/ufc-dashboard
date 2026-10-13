@@ -903,7 +903,8 @@ Deno.serve(async (req) => {
   if (/^trash-talk-\d+$/.test(body.type) && caller.kind === "user") {
     const to = body.include_user_ids && body.include_user_ids.length
       ? body.include_user_ids
-      : [...new Set([...subs.map((s) => s.user_id), ...devs.map((d) => d.user_id)].filter((u): u is string => !!u))];
+      : [...new Set([...subs.map((s) => s.user_id), ...devs.filter((d) => !(blocked && blocked.has(d.user_id))).map((d) => d.user_id)]
+          .filter((u): u is string => !!u))];
     await recordRoasts(SUPABASE_URL, sbHeaders, to.filter((u) => u !== caller.uid), String(body.title ?? ""), String(body.body ?? ""));
   }
 

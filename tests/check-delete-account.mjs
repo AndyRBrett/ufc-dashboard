@@ -122,6 +122,23 @@ check("the RPC takes no arguments: there is no way to aim it at someone else",
   await count(`select count(*)::int n from pg_proc where proname = 'delete_my_account'`) === 1);
 check("calling it again (a stale token, a double tap) is harmless", !(await refused(as("authenticated", A, `select public.delete_my_account()`))));
 
+// Turning push off on an iPhone deletes its own apns_devices row through the
+// REST API (DELETE ... WHERE token = …), which needs SELECT on the filtered
+// column and a SELECT policy the row passes, not just DELETE.
+{
+  const C = "c0c00000-0000-4000-8000-000000000003", tokB = "b".repeat(64), tokC = "c".repeat(64);
+  await db.query(`insert into apns_devices (token, user_id) values ($1, $2)`, [tokC, C]);
+  check("nobody reads another account's iPhone token",
+    (await as("authenticated", C, `select token from apns_devices where token = '${tokB}'`)).rows.length === 0 &&
+    await refused(as("anon", "", `select token from apns_devices`)));
+  check("nobody deletes another account's iPhone",
+    (await as("authenticated", C, `delete from apns_devices where token = '${tokB}' returning 1`)).rows.length === 0);
+  check("turning push off deletes your own iPhone's row by its token",
+    (await as("authenticated", C, `delete from apns_devices where token = '${tokC}' returning 1`)).rows.length === 1 &&
+    await count(`select count(*)::int n from apns_devices where token = '${tokC}'`) === 0 &&
+    await count(`select count(*)::int n from apns_devices where token = '${tokB}'`) === 1);
+}
+
 // A token issued before the delete (another phone still signed in) stays valid
 // until it expires; it must not be able to write anything back.
 await db.exec(`select set_config('request.jwt.claims', '{"is_anonymous":false}', false)`);

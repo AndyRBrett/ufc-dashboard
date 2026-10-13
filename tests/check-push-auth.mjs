@@ -528,6 +528,8 @@ for (const t of ["brief", "swap-old-bout"]) {
   const roast = await send({ event_date: "2026-10-03", type: "trash-talk-77", body: "Nice pick. — Joe Rogan" }, { auth: jwt("alice") });
   check("a roast skips the sender's own iPhone, a blocker's and one switched off; the inbox still has everyone not blocked",
     roast.status === 200 && APPLE.length === 0 && roast.inbox.map((r) => r.recipient_id).includes(B));
+  check("...and a blocker's iPhone never puts the roast in their inbox either",
+    !roast.inbox.map((r) => r.recipient_id).includes(C));
   BLOCKS = []; PREFS_OFF = {};
   const roast2 = await send({ event_date: "2026-10-03", type: "trash-talk-78", body: "Nice pick. — Joe Rogan", include_user_ids: [C] }, { auth: jwt("alice") });
   check("...and a targeted one reaches the target's iPhone with the full text for the in-app sheet",

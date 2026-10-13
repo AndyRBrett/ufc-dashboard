@@ -13,9 +13,12 @@
 -- itself, so an account can hold a phone and an iPad, and a token that moves
 -- to another account (sign out, sign in as someone else) moves with it.
 --
--- RLS: nobody reads or writes through the API except to delete their own
--- device (turning notifications off). send-push registers with the service
--- key after checking the caller's session JWT, exactly like push_subs.
+-- RLS: nobody writes through the API except to delete their own device
+-- (turning notifications off). send-push registers with the service key
+-- after checking the caller's session JWT, exactly like push_subs. A DELETE
+-- ... WHERE token = … needs SELECT on the columns it filters and a SELECT
+-- policy the row passes, so owners can also read their own rows; without
+-- that the delete matched nothing and the phone kept getting pushes.
 --
 -- Deleting an account: apns_devices is in delete_my_account's list (0014,
 -- re-runnable), and the trigger below covers an install that applies this
@@ -42,12 +45,16 @@ create index if not exists apns_devices_user_idx on public.apns_devices (user_id
 
 alter table public.apns_devices enable row level security;
 
+drop policy if exists apns_devices_select on public.apns_devices;
+create policy apns_devices_select on public.apns_devices
+  for select to authenticated using (auth.uid()::text = user_id);
+
 drop policy if exists apns_devices_delete on public.apns_devices;
 create policy apns_devices_delete on public.apns_devices
   for delete to authenticated using (auth.uid()::text = user_id);
 
 revoke all on public.apns_devices from anon, authenticated;
-grant delete on public.apns_devices to authenticated;
+grant select, delete on public.apns_devices to authenticated;
 grant select, insert, update, delete on public.apns_devices to service_role;
 
 -- Deleting the login (delete_my_account, or an admin) forgets its devices.
