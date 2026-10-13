@@ -415,6 +415,22 @@ else {
       const board = await page.evaluate(() => ({ text: document.getElementById("lbBody").textContent, lbSportBar: !document.getElementById("lbSportBar").hidden }));
       check("Ranks shows the PFL board, scored by sportStandings", /PFL standings/.test(board.text) && /Bob1\/1 correct1 pt(?!s)/.test(board.text) && /Cat0\/1 correct0 pts/.test(board.text));
       check("...read with promotion=eq.pfl, and the switcher is on Ranks too", reads.some((u) => /promotion=eq\.pfl/.test(u) && /select=user_id,nickname/.test(u)) && board.lbSportBar);
+      // Like the UFC board: each row carries its picks for the card the board
+      // is about, and taps open the full history, each pick scored by pickPts.
+      const rowsUi = await page.evaluate(() => {
+        const items = [...document.querySelectorAll("#lbBody .sport-board-item")];
+        const bob = items.find((x) => /Bob/.test(x.querySelector(".lb-row").textContent));
+        const cat = items.find((x) => /Cat/.test(x.querySelector(".lb-row").textContent));
+        const hist = bob.querySelector(".sport-board-hist"), before = hist.style.display;
+        bob.querySelector(".lb-row").click();
+        const after = hist.style.display;
+        return { before, after, chips: bob.querySelector(".sport-board-chips")?.textContent || "",
+          bobHist: hist.textContent, catHist: cat.querySelector(".sport-board-hist").textContent };
+      });
+      check("a sport board row opens its pick history on tap", rowsUi.before === "none" && rowsUi.after === "block");
+      check("...each pick scored as the board scores it (a win +1 pt, a loss 0 pts)",
+        /PFL Last Night/.test(rowsUi.bobHist) && /vs BA\+1 pt(?!s)/.test(rowsUi.bobHist) && /vs AB0 pts/.test(rowsUi.catHist));
+      check("...and someone else's picks on a card still open read as hidden, not as unpicked", /🙈/.test(rowsUi.chips));
       await page.click("#lbSportBar .sport-tab:nth-child(1)");
       await page.waitForTimeout(600);
       // Switch to PFL while the (slow) UFC board is still loading: the UFC
