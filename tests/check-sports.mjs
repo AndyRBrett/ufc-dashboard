@@ -264,6 +264,9 @@ else {
       await page.click('#sportApp .fight-row:has(.fn:text-is("Bea One")) .lock-btn');
       await page.waitForTimeout(250);
       check("a second lock is allowed: 2/2 locks", /2\/2 locks/.test(await txt()));
+      const hero = await page.evaluate(() => document.querySelector("#sportApp .cd-picks").textContent);
+      check("the hero shows picks, methods and locks done: 2 of 3 · 1 of 3 · 2 of 2",
+        /Your picks2 of 3/.test(hero) && /Methods1 of 3/.test(hero) && /Locks 🔒2 of 2/.test(hero));
       await page.click("#sportApp .more-btn");   // bouts past the co-main sit behind "N more fights", as on UFC
       await pickBy(page, "Cat One");
       await page.waitForTimeout(250);
