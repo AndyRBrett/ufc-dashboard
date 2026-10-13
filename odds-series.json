@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-13T00:50:41Z",
+  "generated_at": "2026-10-13T00:55:42Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -14974,7 +14974,7 @@
           "f1": "Marc-Andre Barriault",
           "f2": "Kyle Daukaus",
           "lbl": "Main Card",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15015,6 +15015,11 @@
               "at": "2026-10-12T18:53:32Z",
               "f1_odds": 180,
               "f2_odds": -228
+            },
+            {
+              "at": "2026-10-13T00:55:42Z",
+              "f1_odds": 177,
+              "f2_odds": -223
             }
           ],
           "open": {
@@ -15029,7 +15034,7 @@
           "f1": "Louis Jourdain",
           "f2": "Timothy Cuamba",
           "lbl": "Main Card",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15070,6 +15075,11 @@
               "at": "2026-10-12T12:35:55Z",
               "f1_odds": -199,
               "f2_odds": 159
+            },
+            {
+              "at": "2026-10-13T00:55:42Z",
+              "f1_odds": -201,
+              "f2_odds": 160
             }
           ],
           "open": {
@@ -15224,7 +15234,7 @@
           "f1": "Chad Anheliger",
           "f2": "Steven Koslow",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15250,6 +15260,11 @@
               "at": "2026-10-12T18:53:32Z",
               "f1_odds": -112,
               "f2_odds": -111
+            },
+            {
+              "at": "2026-10-13T00:55:42Z",
+              "f1_odds": -107,
+              "f2_odds": -116
             }
           ],
           "open": {
@@ -15385,7 +15400,7 @@
           "f1": "Alexander Volkanovski",
           "f2": "Movsar Evloev",
           "lbl": "Main Event",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -15441,6 +15456,11 @@
               "at": "2026-10-06T14:45:44Z",
               "f1_odds": -107,
               "f2_odds": -114
+            },
+            {
+              "at": "2026-10-13T00:55:42Z",
+              "f1_odds": -109,
+              "f2_odds": -112
             }
           ],
           "open": {
@@ -15782,7 +15802,7 @@
           "f1": "Sergei Pavlovich",
           "f2": "Alex Pereira",
           "lbl": "Co-Main",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-10-06T08:45:40Z",
@@ -15813,6 +15833,11 @@
               "at": "2026-10-12T12:35:55Z",
               "f1_odds": -204,
               "f2_odds": 170
+            },
+            {
+              "at": "2026-10-13T00:55:42Z",
+              "f1_odds": -204,
+              "f2_odds": 171
             }
           ],
           "open": {
@@ -15943,7 +15968,7 @@
         "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
         "opponent": "Alex Pereira",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -166,
         "close": null,
         "clv": null
@@ -16605,7 +16630,7 @@
         "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
         "opponent": "Sergei Pavlovich",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 140,
         "close": null,
         "clv": null
@@ -16698,7 +16723,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Marc-Andre Barriault",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": -220,
         "close": null,
         "clv": null
@@ -20675,7 +20700,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Kyle Daukaus",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": 185,
         "close": null,
         "clv": null
@@ -20686,7 +20711,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Timothy Cuamba",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -170,
         "close": null,
         "clv": null
@@ -20697,7 +20722,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Louis Jourdain",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 130,
         "close": null,
         "clv": null
@@ -20774,7 +20799,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Steven Koslow",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -130,
         "close": null,
         "clv": null
@@ -20785,7 +20810,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Chad Anheliger",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 110,
         "close": null,
         "clv": null
@@ -20851,7 +20876,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Movsar Evloev",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -115,
         "close": null,
         "clv": null
@@ -20862,7 +20887,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Alexander Volkanovski",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -108,
         "close": null,
         "clv": null

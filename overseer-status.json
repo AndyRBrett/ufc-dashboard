@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-13T00:50:41Z",
+  "generated_at": "2026-10-13T00:55:42Z",
   "events_tracked": 11,
-  "stale_events": 1,
+  "stale_events": 0,
   "parse_failure_events": 0,
   "awaiting_card_events": 3,
   "odds_unavailable_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "ok",
-      "last_changed_at": "2026-10-12T18:53:32Z",
+      "last_changed_at": "2026-10-13T00:55:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -106,17 +106,17 @@
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "ok",
-      "last_changed_at": "2026-10-10T14:00:46Z",
-      "is_stale": true,
+      "last_changed_at": "2026-10-13T00:55:42Z",
+      "is_stale": false,
       "has_data": true,
       "bout_count": 9,
-      "line_movement": 8,
+      "line_movement": 6,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-13T00:50:41Z",
+      "last_changed_at": "2026-10-13T00:55:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-13T00:50:41Z",
+      "last_changed_at": "2026-10-13T00:55:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -146,7 +146,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-13T00:50:41Z",
+      "last_changed_at": "2026-10-13T00:55:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -156,7 +156,7 @@
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
       "status": "ok",
-      "last_changed_at": "2026-10-12T12:35:55Z",
+      "last_changed_at": "2026-10-13T00:55:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 3,
@@ -214,6 +214,22 @@
       "priority": 320.0
     },
     {
+      "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+      "f1": "Chad Anheliger",
+      "f2": "Steven Koslow",
+      "f1_movement": 23,
+      "f2_movement": -226,
+      "magnitude": 226,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Bantamweight",
+      "f1_prob_shift": -4.8,
+      "f2_prob_shift": 6.1,
+      "priority": 316.4
+    },
+    {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Jacobe Smith",
       "f2": "Bruce Whitehead",
@@ -228,22 +244,6 @@
       "f1_prob_shift": 2.1,
       "f2_prob_shift": -2.6,
       "priority": 310.0
-    },
-    {
-      "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
-      "f1": "Chad Anheliger",
-      "f2": "Steven Koslow",
-      "f1_movement": 18,
-      "f2_movement": -221,
-      "magnitude": 221,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Bantamweight",
-      "f1_prob_shift": -3.7,
-      "f2_prob_shift": 5.0,
-      "priority": 309.4
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
