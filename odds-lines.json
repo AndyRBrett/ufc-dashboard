@@ -2,54 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Kyle Clark",
-   "b": "Ali Gazamatov",
-   "a_odds": -200,
-   "b_odds": 174,
-   "commence_time": "2026-10-10T01:35:00Z",
-   "seen_at": "2026-10-09T22:50:22Z"
-  },
-  {
-   "a": "Aysia Cortez",
-   "b": "Sophie Lang",
-   "a_odds": 120,
-   "b_odds": -140,
-   "commence_time": "2026-10-10T01:40:00Z",
-   "seen_at": "2026-10-10T01:55:19Z"
-  },
-  {
-   "a": "Joe Thurrott",
-   "b": "Ricky Miller",
-   "a_odds": -400,
-   "b_odds": 300,
-   "commence_time": "2026-10-10T02:25:00Z",
-   "seen_at": "2026-10-10T01:55:19Z"
-  },
-  {
-   "a": "Mason Carzino-Hartshorn",
-   "b": "Kelvin Martinez",
-   "a_odds": -340,
-   "b_odds": 274,
-   "commence_time": "2026-10-10T02:50:00Z",
-   "seen_at": "2026-10-10T01:55:19Z"
-  },
-  {
-   "a": "Kevin Fernandez",
-   "b": "Enrique Pacheco Parra",
-   "a_odds": -550,
-   "b_odds": 400,
-   "commence_time": "2026-10-10T03:15:00Z",
-   "seen_at": "2026-10-10T01:55:19Z"
-  },
-  {
-   "a": "Nick Maximov",
-   "b": "Wildemar Santos",
-   "a_odds": -420,
-   "b_odds": 320,
-   "commence_time": "2026-10-10T03:40:00Z",
-   "seen_at": "2026-10-10T01:55:19Z"
-  },
-  {
    "a": "Alain Majorique",
    "b": "Raphael Uchegbu",
    "a_odds": -128,
@@ -220,42 +172,42 @@
   {
    "a": "Greg Foster",
    "b": "Jason Asher",
-   "a_odds": 174,
-   "b_odds": -208,
+   "a_odds": 176,
+   "b_odds": -212,
    "commence_time": "2026-10-13T23:15:00Z",
-   "seen_at": "2026-10-13T00:55:23Z"
+   "seen_at": "2026-10-13T07:00:24Z"
   },
   {
    "a": "Davi Cabral",
    "b": "Douglas da Lapa",
-   "a_odds": 159,
-   "b_odds": -189,
+   "a_odds": 154,
+   "b_odds": -183,
    "commence_time": "2026-10-13T23:40:00Z",
-   "seen_at": "2026-10-13T00:55:23Z"
+   "seen_at": "2026-10-13T07:00:24Z"
   },
   {
    "a": "Will Rentz",
    "b": "Luis Francischinelli",
-   "a_odds": 202,
-   "b_odds": -248,
+   "a_odds": 211,
+   "b_odds": -260,
    "commence_time": "2026-10-14T00:05:00Z",
-   "seen_at": "2026-10-13T00:55:23Z"
+   "seen_at": "2026-10-13T07:00:24Z"
   },
   {
    "a": "Aline Pereira",
    "b": "Smilla Sundell",
-   "a_odds": 502,
-   "b_odds": -707,
+   "a_odds": 515,
+   "b_odds": -723,
    "commence_time": "2026-10-14T00:30:00Z",
-   "seen_at": "2026-10-13T00:55:23Z"
+   "seen_at": "2026-10-13T07:00:24Z"
   },
   {
    "a": "Ilias Bulaid",
    "b": "Erick Visconde",
    "a_odds": -151,
-   "b_odds": 127,
+   "b_odds": 128,
    "commence_time": "2026-10-14T00:55:00Z",
-   "seen_at": "2026-10-13T00:55:23Z"
+   "seen_at": "2026-10-13T07:00:24Z"
   },
   {
    "a": "Erin Blanchfield",
