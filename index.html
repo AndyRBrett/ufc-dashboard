@@ -649,7 +649,7 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 .cd-sep{display:none}
 .cd-live{display:inline-block;background:var(--red-dim);color:var(--red);border:1px solid var(--red-border);font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;letter-spacing:.04em}
 .cd-picks{display:flex;flex-direction:column;gap:8px}
-.cd-picks[hidden],.cd-cta[hidden]{display:none}
+.cd-picks[hidden],.cd-cta[hidden],.cd-picks-row[hidden],.cd-bar[hidden]{display:none}
 .cd-picks-row{display:flex;justify-content:space-between;font-size:14px}
 .cd-picks-row span:last-child{color:var(--muted)}
 .cd-bar{height:6px;border-radius:3px;background:var(--card2);overflow:hidden}
@@ -2258,6 +2258,10 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
     <div class="cd-picks" id="cd-picks" hidden>
       <div class="cd-picks-row"><span>Your picks</span><span id="cd-picks-n"></span></div>
       <div class="cd-bar" aria-hidden="true"><div class="cd-bar-fill" id="cd-bar-fill"></div></div>
+      <div class="cd-picks-row"><span>Methods</span><span id="cd-methods-n"></span></div>
+      <div class="cd-bar" aria-hidden="true"><div class="cd-bar-fill" id="cd-methods-fill"></div></div>
+      <div class="cd-picks-row" id="cd-locks-row"><span>Locks 🔒</span><span id="cd-locks-n"></span></div>
+      <div class="cd-bar" id="cd-locks-bar" aria-hidden="true"><div class="cd-bar-fill" id="cd-locks-fill"></div></div>
       <button class="cd-cta" id="cd-cta" onclick="heroCta()" hidden></button>
     </div>
   </div>
@@ -3943,20 +3947,28 @@ function focusSearch(){
 function _heroPicks(ev,live){
   var box=document.getElementById("cd-picks");if(!box)return;
   if(!ev||!ev.fights||!ev.fights.length){box.hidden=true;return;}
-  var total=ev.fights.length,picked=0,open=0;
+  var total=ev.fights.length,picked=0,open=0,methods=0;
+  var lockOn=locksOn(ev.date),locks=lockOn?Math.min(cardLocksUsed(ev),LOCKS_PER_CARD):0;
   ev.fights.forEach(function(f){
     var mine=!!preds[pk(ev,f)];if(mine)picked++;
+    if(mine&&preds_method[pk(ev,f)])methods++;
     if(!mine&&!f.winner&&!fightLocked(ev,f))open++;
   });
   var cta="",act="";
   if(open)cta=picked?"Finish your picks":"Make your picks",act="pick";
   else if(live)cta="Follow it live",act="live";
   else if(picked&&!evConcluded(ev))cta="Share your picks",act="share";
-  var sig=total+"|"+picked+"|"+act;
+  var sig=total+"|"+picked+"|"+methods+"|"+locks+"|"+lockOn+"|"+act;
   if(box._sig===sig&&box._ev===ev)return;
   box._sig=sig;box._ev=ev;box.hidden=false;
   document.getElementById("cd-picks-n").textContent=picked+" of "+total;
   document.getElementById("cd-bar-fill").style.width=Math.round(picked/total*100)+"%";
+  // Method and 🔒 beside the picks, so a finished card reads finished at a glance.
+  document.getElementById("cd-methods-n").textContent=methods+" of "+total;
+  document.getElementById("cd-methods-fill").style.width=Math.round(methods/total*100)+"%";
+  document.getElementById("cd-locks-row").hidden=document.getElementById("cd-locks-bar").hidden=!lockOn;
+  document.getElementById("cd-locks-n").textContent=locks+" of "+LOCKS_PER_CARD;
+  document.getElementById("cd-locks-fill").style.width=Math.round(locks/LOCKS_PER_CARD*100)+"%";
   var b=document.getElementById("cd-cta");
   b.hidden=!act;b.textContent=cta;b.dataset.act=act;
 }
@@ -7846,6 +7858,8 @@ var WHATS_NEW=[
    desc:"The Card Recap now has 🖼️ Share recap: the night's title, stories and standings as one image for the group chat. Once you've tapped 🤖 FightBot's call, its line goes on the image too."}
   ,{id:"2026-11-02-sport-board-picks",emoji:"🥋",title:"See the picks on every board",
    desc:"PFL, RIZIN and DWCS standings now show each player's picks for the card under their name, like UFC, and tap a row for their pick history. Leaving or deleting a room is clearer too: 👥 Rooms → 🚪 Leave room or 🗑️ Delete room."}
+  ,{id:"2026-11-03-hero-method-lock-bars",emoji:"📊",title:"Methods and locks at a glance",
+   desc:"The countdown card now has two more bars under Your picks: how many bouts have a method and how many 🔒 locks you've used, so you can see the whole card is done."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -11178,6 +11192,15 @@ function _sportHeroPicks(promo,ev){
   box.appendChild(row);
   var bar=_spEl("div","cd-bar"),fill=_spEl("div","cd-bar-fill");bar.setAttribute("aria-hidden","true");
   fill.style.width=(total?Math.round(picked/total*100):0)+"%";bar.appendChild(fill);box.appendChild(bar);
+  // Method and 🔒 beside the picks, as on the UFC hero.
+  var methods=ev.bouts.filter(function(b){var k=sportKey(promo,ev.date,b.a,b.b);return _sportPicks[k]&&_sportMetaOf(k).m;}).length;
+  var meters=[["Methods",methods,total]];
+  if(locksOn(ev.date))meters.push(["Locks 🔒",Math.min(_sportCardLocks(promo,ev),LOCKS_PER_CARD),LOCKS_PER_CARD]);
+  meters.forEach(function(m){
+    var r=_spEl("div","cd-picks-row");r.appendChild(_spEl("span",null,m[0]));r.appendChild(_spEl("span",null,m[1]+" of "+m[2]));box.appendChild(r);
+    var b2=_spEl("div","cd-bar"),f2=_spEl("div","cd-bar-fill");b2.setAttribute("aria-hidden","true");
+    f2.style.width=(m[2]?Math.round(m[1]/m[2]*100):0)+"%";b2.appendChild(f2);box.appendChild(b2);
+  });
   if(open.length){
     var cta=_spEl("button","cd-cta",picked?"Finish your picks":"Make your picks");
     cta.id="sportCdCta";
