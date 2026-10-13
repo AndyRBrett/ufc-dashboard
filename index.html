@@ -5082,6 +5082,7 @@ function deleteAccount(){
     });
   }).then(function(){
     // Best-effort: drop the browser push subscription, then wipe all local state.
+    try{if((typeof _nativeApp==="function"&&_nativeApp())){var NP=_nativePush();if(NP)NP.unregister().catch(function(){});}}catch(e){}
     try{if('serviceWorker'in navigator)navigator.serviceWorker.ready.then(function(reg){reg.pushManager.getSubscription().then(function(s){if(s)s.unsubscribe();});}).catch(function(){});}catch(e){}
     try{localStorage.clear();}catch(e){}
     location.reload(); // reboots a fresh anonymous session + shows the join screen
@@ -5393,7 +5394,7 @@ function _prefsWithoutTouched(p){
   for(k in p)if(Object.prototype.hasOwnProperty.call(p,k)&&!_prefsTouched[k])o[k]=p[k];
   return o;
 }
-function _prefsGranted(){try{return("Notification" in window)&&Notification.permission==="granted";}catch(e){return false;}}
+function _prefsGranted(){if((typeof _nativeApp==="function"&&_nativeApp()))return _nativeGranted;try{return("Notification" in window)&&Notification.permission==="granted";}catch(e){return false;}}
 // `changed` names the key the calling toggle just set, if any. Two jobs, and
 // both are about held intent (_prefsPending) that we could not apply for want
 // of OS permission:
@@ -5658,6 +5659,7 @@ function _setLiveResActive(on){var b=document.getElementById("liveResBtn");if(b)
 // Re-register the existing push subscription so the server picks up the new
 // live_results preference (register upserts on user_id — no resubscribe needed).
 function _syncLivePref(){
+  if((typeof _nativeApp==="function"&&_nativeApp())){_nativeRefresh();return;}
   if(!('serviceWorker' in navigator))return;
   navigator.serviceWorker.ready.then(function(reg){
     reg.pushManager.getSubscription().then(function(sub){
@@ -5728,6 +5730,7 @@ function _pushRegister(sub){
 // foreground, re-subscribe if needed and re-register so the row stays valid.
 function _ensurePushFresh(){
   try{if(localStorage.getItem("ufc_push")!=="1")return;}catch(e){return;}
+  if((typeof _nativeApp==="function"&&_nativeApp())){_nativeRefresh();return;}
   if(!('serviceWorker'in navigator)||!('PushManager'in window)||!('Notification'in window))return;
   if(Notification.permission!=="granted"||!USER_ID)return;
   navigator.serviceWorker.ready.then(function(reg){
@@ -5758,7 +5761,91 @@ function pushRestoreDismiss(){
   if(USER_ID&&off.indexOf(USER_ID)<0)off.push(USER_ID);
   try{localStorage.setItem("ufc_push_restore_off",JSON.stringify(off.slice(-20)));}catch(e){}
 }
+// native:start
+// The App Store build (native/, Capacitor) runs this same page inside an iOS
+// web view, where Web Push doesn't exist. Capacitor's bridge is injected as
+// window.Capacitor, and its PushNotifications plugin hands us an APNs device
+// token instead, which send-push registers (platform "ios", 0022) and
+// delivers to through Apple. Everywhere else every function here is a no-op:
+// _nativeApp() is false in a browser and the web paths run as before.
+function _nativeApp(){try{var C=window.Capacitor;return !!(C&&C.isNativePlatform&&C.isNativePlatform()&&C.getPlatform&&C.getPlatform()==="ios");}catch(e){return false;}}
+function _nativePush(){try{return _nativeApp()&&window.Capacitor.Plugins&&window.Capacitor.Plugins.PushNotifications||null;}catch(e){return null;}}
+var _nativeGranted=false,_nativeEnabling=false;
+function _nativeToken(){try{return localStorage.getItem("ufc_apns_token")||"";}catch(e){return "";}}
+// Register (or refresh) this phone's token with the server. Every launch
+// re-registers, which also carries a changed nickname or live-results choice.
+function _nativeRegisterToken(tok){
+  try{localStorage.setItem("ufc_apns_token",tok);}catch(e){}
+  return _authReady.then(function(){
+    return fetch(SUPABASE_URL+"/functions/v1/send-push",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":_authBearer()},
+      body:JSON.stringify({type:"register",platform:"ios",user_id:USER_ID,nickname:userName||USER_ID.slice(0,8),apns_token:tok,live_results:_liveResultsOn()})
+    });
+  });
+}
+function _nativeEnablePush(){
+  var P=_nativePush();if(!P){toast("Notifications not supported");return;}
+  P.requestPermissions().then(function(res){
+    _nativeGranted=!!res&&res.receive==="granted";
+    if(!_nativeGranted){toast("Notifications blocked — check Settings");return;}
+    _nativeEnabling=true;
+    return P.register();
+  }).catch(function(){_nativeEnabling=false;toast("Could not subscribe to notifications");});
+}
+function _nativeDisablePush(){
+  var P=_nativePush(),tok=_nativeToken();
+  if(P)P.unregister().catch(function(){});
+  if(tok)fetch(SUPABASE_URL+"/rest/v1/apns_devices?token=eq."+encodeURIComponent(tok),{method:"DELETE",headers:_sbHeaders()}).catch(function(){});
+  try{localStorage.removeItem("ufc_apns_token");}catch(e){}
+}
+// On every load and after a preference change: if push is on and iOS still
+// allows it, ask for the token again; 'registration' below re-registers it.
+function _nativeRefresh(){
+  var P=_nativePush();if(!P)return;
+  P.checkPermissions().then(function(res){
+    _nativeGranted=!!res&&res.receive==="granted";
+    if(_nativeGranted&&_pushOn())return P.register();
+  }).catch(function(){});
+}
+// A tap on a notification: the same routing sw.js's notificationclick does
+// (the Friday brief opens the Lab; a challenge opens the inbox; anything with
+// a message opens the sheet, crediting the roast's sender from its title).
+function _nativeTap(d){
+  d=d||{};
+  var url=d.url||"",kind=d.kind||"",msg=d.fullMessage||"";
+  if(/^\.\/lab\.html(#[a-z]+)?$/.test(url)){location.href=url;return;}
+  var m=String(d.title||"").match(/\(via\s+(.+?)\)\s*$/);
+  if(kind)_routeTap(kind,msg,m?m[1]:"",Date.now(),300);
+  else if(msg)_routeTap("",msg,m?m[1]:"",Date.now(),300);
+}
+function _nativeInit(){
+  var P=_nativePush();if(!P)return;
+  P.checkPermissions().then(function(res){_nativeGranted=!!res&&res.receive==="granted";}).catch(function(){});
+  P.addListener("registration",function(t){
+    var tok=t&&t.value;if(!tok)return;
+    _nativeRegisterToken(tok).then(function(r){
+      if(!_nativeEnabling)return;
+      _nativeEnabling=false;
+      if(!r.ok){toast("⚠️ Notification setup failed ("+r.status+") — try again");return;}
+      try{localStorage.setItem("ufc_push","1");}catch(e){}
+      _setBellActive(true);
+      _prefsSave("push");
+      toast("Fight notifications enabled! 🔔");
+    }).catch(function(){if(_nativeEnabling){_nativeEnabling=false;toast("⚠️ Notification setup failed — check connection");}});
+  });
+  P.addListener("registrationError",function(){if(_nativeEnabling){_nativeEnabling=false;toast("Could not subscribe to notifications");}});
+  // A push while the app is open: read the inbox now, as the SW's push-arrived does.
+  P.addListener("pushNotificationReceived",function(n){
+    var k=n&&n.data&&n.data.kind;
+    setTimeout(function(){if(k==="challenge")checkChallengeInbox(true);else checkRoastInbox(true);},400);
+  });
+  P.addListener("pushNotificationActionPerformed",function(a){_nativeTap(a&&a.notification&&a.notification.data);});
+}
+if(_nativeApp()){try{_nativeInit();}catch(e){console.error("native init failed",e);}}
+// native:end
 function enablePush(){
+  if((typeof _nativeApp==="function"&&_nativeApp())){_nativeEnablePush();return;}
   if(!('Notification'in window)||!('serviceWorker'in navigator)){toast("Notifications not supported");return;}
   Notification.requestPermission().then(function(p){
     if(p!=='granted'){toast("Notifications blocked — check Settings");return;}
@@ -5789,7 +5876,8 @@ function togglePush(){
     _setBellActive(false);
     _pushRestoreHide();
     _prefsSave("push");
-    if("serviceWorker" in navigator){
+    if((typeof _nativeApp==="function"&&_nativeApp()))_nativeDisablePush();
+    else if("serviceWorker" in navigator){
       navigator.serviceWorker.ready.then(function(reg){
         reg.pushManager.getSubscription().then(function(sub){
           if(sub)sub.unsubscribe().catch(function(){});
@@ -6626,7 +6714,7 @@ function copyPicks(){
 }
 
 function fireNotif(title,body){
-  if(Notification.permission!=="granted")return;
+  if(!("Notification" in window)||Notification.permission!=="granted")return;
   try{new Notification(title,{body:body,icon:"https://andyrbrett.github.io/ufc-dashboard/icon.png"});}catch(e){}
 }
 // Eastern offset (4 = EDT, 5 = EST) ON the card's date ("YYYY-MM-DD"), not
@@ -9073,7 +9161,7 @@ function generateTrashTalk(){
   // rules) is assembled server-side by ai-breakdown's trash-talk action — the
   // edge function caps caller-supplied text tightly, so the client only ships
   // the short variable parts.
-  _aiFetch(JSON.stringify({action:"trash-talk",persona:persona,myNickname:myName,myRank:myRank,myRecord:myRecord,targets:targets.slice(0,20).map(function(o){return o.nickname;}),lbMode:_trashLbMode,evName:_trashLbEvName,card:facts,hint:hint})).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(data){
+  _aiFetch(JSON.stringify({action:"trash-talk",persona:persona,myNickname:myName,myRank:myRank,myRecord:myRecord,targets:targets.slice(0,20).map(function(o){return o.nickname;}),lbMode:_trashLbMode,evName:_trashLbEvName,card:facts,hint:hint,store:(typeof _nativeApp==="function"&&_nativeApp())||undefined})).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(data){
     _trashText=data.breakdown||"No trash talk generated.";
     var t=document.getElementById("trashText");
     if(t){

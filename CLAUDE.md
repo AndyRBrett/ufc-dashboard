@@ -62,6 +62,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:safety` | a report readable or filed as someone else, a block the blocked person can see or undo, a blocked pair able to challenge each other, the app showing a blocked player's challenges, or the privacy policy unlinked |
 | `npm run check:delete` | Delete my account leaving the login, a challenge or any other row of the caller's behind, or touching anyone else's |
 | `npm run check:invites` | a founder badge on an anonymous or post-cutoff account, an invite claimed twice, by an old account, as someone else or by writing the tables, a throwaway sign-up counted as playing, or an invite surviving Delete my account |
+| `npm run check:native` | the iOS app's push not registering its APNs token, a tapped notification not routing, or a browser taking the native path |
 | `npm run check:migrations` | a migration that can't apply to what the ones before it built, the rebuilt core tables drifting from production's catalog, or `config.toml`'s JWT settings drifting from the deploy |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
@@ -1323,7 +1324,8 @@ select m, ok from (values
   ('0018 room passwords',          exists(select 1 from pg_proc where proname='set_room_pass')),
   ('0019 notification kinds',      exists(select 1 from information_schema.columns where table_name='user_prefs' and column_name='notif_off')),
   ('0020 founders and invites',    exists(select 1 from pg_proc where proname='claim_invite')),
-  ('0021 card picked bouts',       exists(select 1 from pg_proc where proname='card_picked_bouts'))
+  ('0021 card picked bouts',       exists(select 1 from pg_proc where proname='card_picked_bouts')),
+  ('0022 apns devices',            to_regclass('public.apns_devices') is not null)
 ) t(m, ok);
 ```
 
@@ -1381,6 +1383,34 @@ applied before an app that calls it ships. A deleted account's access JWT stays
 valid until it expires, so the `refuse_deleted_account` trigger on every table the
 app writes as a user (a new one goes in its list too) refuses a write whose
 `auth.uid()` has no login left. `check:delete`.
+
+## The App Store build: `native/`, APNs and the filtered roast
+
+`native/` is a Capacitor shell that loads the live Pages site in an iOS web
+view (`server.url`), so it is always the current release and needs no CORS
+change. Setup and the Apple-side steps: `native/README.md`. Three rules:
+
+- **The web app must not notice it.** Everything native in `index.html` sits
+  in `// native:start … :end` and each hook checks `_nativeApp()` first, which
+  is false in any browser. Push, tap routing and the roast request branch on it.
+- **An iPhone gets every push a browser would, by the same rules.** The app
+  registers an APNs token (`register` with `platform: "ios"`, verified JWT,
+  only as yourself) into `apns_devices` (0022, keyed on the token). `send-push`
+  reads it with the **same** `subsFilter`, blocks and per-kind switches as
+  `push_subs`, and sends through `_shared/apns.js`. **It is inert until all four
+  `APNS_*` secrets are set**: no read of `apns_devices`, no Apple call. A new
+  audience filter on the web loop must be applied to `apnsDevs` too;
+  `check:pushauth` drives both.
+- **The store build's roast is filtered.** The app sends `store: true` and
+  `roastFiltered` keeps that roast on Claude without `unfilteredRule`;
+  `ROAST_FILTERED=1` filters every roast. `check:provider` holds it.
+
+`check:native` boots the app as a browser and with a fake Capacitor bridge.
+Hooks outside the block use `typeof _nativeApp==="function"&&_nativeApp()`,
+because some checks lift single functions out of the page without the block.
+
+`apns_devices` is in `delete_my_account()` and `privacy.html`. The migration is
+applied by hand; `send-push` and `ai-breakdown` need a Supabase deploy.
 
 ## Founding members and invite links (soft-launch prep)
 

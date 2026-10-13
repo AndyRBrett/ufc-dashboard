@@ -1,0 +1,3 @@
+# False positive: a fake session JWT the iOS-shell test serves from its stubbed
+# Supabase (tests/check-native.mjs). Its signature segment is base64 of "signature".
+d4a1f7b9852a2689eefa7a6bd3edd361868bc193:tests/check-native.mjs:generic-api-key:57

@@ -53,7 +53,7 @@ await db.exec(`
   create table public.picks_backup_2026_09_24 as select * from public.picks;
 `);
 for (const m of ["0003_challenges.sql", "0004_user_prefs.sql", "0006_rooms.sql", "0008_rooms_codes_throttle.sql",
-  "0009_ai_quota.sql", "0010_picks_lock.sql", "0013_safety.sql", "0014_delete_account.sql", "0016_roast_inbox.sql"]) await db.exec(mig(m));
+  "0009_ai_quota.sql", "0010_picks_lock.sql", "0013_safety.sql", "0014_delete_account.sql", "0016_roast_inbox.sql", "0022_apns_devices.sql"]) await db.exec(mig(m));
 await db.exec(mig("0014_delete_account.sql"));   // re-runnable
 
 // Two players with a bit of everything. Alice's pick on a long-past card is
@@ -65,6 +65,7 @@ for (const [u, n] of [[A, "Alice"], [B, "Bob"]]) {
   await db.query(`insert into picks (user_id, nickname, event_date, f1, f2, pick, confidence) values ($1, $2, '2020-01-04', 'A', 'B', 'A', 1)`, [u, n]);
   await db.query(`insert into picks_backup_2026_09_24 (user_id, nickname) values ($1, $2)`, [u, n]);
   await db.query(`insert into push_subs (user_id, endpoint) values ($1, $2)`, [u, "https://push/" + n]);
+  await db.query(`insert into apns_devices (token, user_id) values ($1, $2)`, [(n === "Alice" ? "a" : "b").repeat(64), u]);
   await db.query(`insert into user_prefs (user_id) values ($1)`, [u]);
   await db.query(`insert into ai_usage (user_id, day, bucket, n) values ($1, current_date, 'all', 3)`, [u]);
   await db.query(`insert into room_join_misses (user_id) values ($1)`, [u]);
@@ -93,6 +94,7 @@ const holdings = async (u) => ({
   picks: await count(`select count(*)::int n from picks where user_id = '${u}'`),
   backup: await count(`select count(*)::int n from picks_backup_2026_09_24 where user_id = '${u}'`),
   push: await count(`select count(*)::int n from push_subs where user_id = '${u}'`),
+  apns: await count(`select count(*)::int n from apns_devices where user_id = '${u}'`),
   prefs: await count(`select count(*)::int n from user_prefs where user_id = '${u}'`),
   ai: await count(`select count(*)::int n from ai_usage where user_id = '${u}'`),
   misses: await count(`select count(*)::int n from room_join_misses where user_id = '${u}'`),
@@ -119,6 +121,23 @@ check("the RPC takes no arguments: there is no way to aim it at someone else",
   await count(`select count(*)::int n from pg_proc where proname = 'delete_my_account' and pronargs = 0`) === 1 &&
   await count(`select count(*)::int n from pg_proc where proname = 'delete_my_account'`) === 1);
 check("calling it again (a stale token, a double tap) is harmless", !(await refused(as("authenticated", A, `select public.delete_my_account()`))));
+
+// Turning push off on an iPhone deletes its own apns_devices row through the
+// REST API (DELETE ... WHERE token = …), which needs SELECT on the filtered
+// column and a SELECT policy the row passes, not just DELETE.
+{
+  const C = "c0c00000-0000-4000-8000-000000000003", tokB = "b".repeat(64), tokC = "c".repeat(64);
+  await db.query(`insert into apns_devices (token, user_id) values ($1, $2)`, [tokC, C]);
+  check("nobody reads another account's iPhone token",
+    (await as("authenticated", C, `select token from apns_devices where token = '${tokB}'`)).rows.length === 0 &&
+    await refused(as("anon", "", `select token from apns_devices`)));
+  check("nobody deletes another account's iPhone",
+    (await as("authenticated", C, `delete from apns_devices where token = '${tokB}' returning 1`)).rows.length === 0);
+  check("turning push off deletes your own iPhone's row by its token",
+    (await as("authenticated", C, `delete from apns_devices where token = '${tokC}' returning 1`)).rows.length === 1 &&
+    await count(`select count(*)::int n from apns_devices where token = '${tokC}'`) === 0 &&
+    await count(`select count(*)::int n from apns_devices where token = '${tokB}'`) === 1);
+}
 
 // A token issued before the delete (another phone still signed in) stays valid
 // until it expires; it must not be able to write anything back.

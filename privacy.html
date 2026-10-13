@@ -55,6 +55,7 @@ th{color:var(--muted);font-weight:600}
 <tr><td>Challenges you send or accept</td><td>The challenge inbox and side bets. The two players, their nicknames and the stake can be seen by anyone using the app, not only the group.</td><td>Either player deletes their account</td></tr>
 <tr><td>Rooms you create or join</td><td>Room boards. Only members can see a room.</td><td>You delete your account (or leave the room)</td></tr>
 <tr><td>A push subscription, if you turn on notifications</td><td>A browser-issued address that lets us send fight reminders, results and messages from other players to your device.</td><td>You turn notifications off or delete your account</td></tr>
+<tr><td>A device token, if you turn on notifications in the iPhone app</td><td>An address Apple issues to the app on your phone, so we can send the same notifications through Apple's push service. Stored with your account id, nickname and your result-spoiler choice.</td><td>You turn notifications off, Apple retires the token, or you delete your account</td></tr>
 <tr><td>Notification and app preferences</td><td>So your settings follow your account, including which kinds of notification you turned off.</td><td>You delete your account</td></tr>
 <tr><td>Roasts sent to you</td><td>A copy of each roast another player sends you, so it opens in the app when you tap its notification.</td><td>After 7 days, or when you delete your account</td></tr>
 <tr><td>Your invite link, and who invited you</td><td>If you share your invite link, we count how many people joined through it and how many are playing; you see the totals, never names. If you joined through someone's link, they're counted as the friend who invited you.</td><td>You (or they) delete your account</td></tr>
@@ -75,7 +76,7 @@ th{color:var(--muted);font-weight:600}
 <li><strong>Supabase</strong>: our database, sign-in and server functions.</li>
 <li><strong>GitHub Pages</strong>: hosts the app's files. Like any web host, it sees your IP address when your device loads the app.</li>
 <li><strong>Anthropic</strong> and <strong>xAI</strong>: the AI features above, only when you use them.</li>
-<li><strong>Your browser's push service</strong> (Apple, Google or Mozilla): delivers notifications you've turned on.</li>
+<li><strong>Your browser's push service</strong> (Apple, Google or Mozilla), or <strong>Apple Push Notification service</strong> in the iPhone app: delivers notifications you've turned on.</li>
 <li><strong>Wikipedia / Wikimedia</strong>: your device fetches fighter photos and bios directly from Wikipedia. No account information is included.</li>
 <li><strong>ESPN</strong>: your device loads UFC fighters' headshots directly from ESPN's image server. No account information is included.</li>
 </ul>

@@ -40,7 +40,7 @@ const FULL = readFileSync(join(ROOT, "supabase/functions/ai-breakdown/index.ts")
 const src = FULL.split("Deno.serve(")[0];
 const handler = FULL.slice(FULL.indexOf("Deno.serve("));
 const { code } = esbuild.transformSync(
-  src + "\nexport { buildTrashTalk, trashTalkProvider, unfilteredRule, callGrok, callAnthropic, GROK_MODEL, GROK_MAX_TOKENS, MODEL, clampRoast, ROAST_MAX_CHARS, GROK_TIMEOUT_MS, ROAST_RETRY_BUDGET_MS };",
+  src + "\nexport { buildTrashTalk, trashTalkProvider, roastFiltered, unfilteredRule, callGrok, callAnthropic, GROK_MODEL, GROK_MAX_TOKENS, MODEL, clampRoast, ROAST_MAX_CHARS, GROK_TIMEOUT_MS, ROAST_RETRY_BUDGET_MS };",
   { loader: "ts", format: "esm" },
 );
 const M = await import("data:text/javascript," + encodeURIComponent(code));
@@ -63,6 +63,17 @@ for (const v of ["claude", "Claude", " ANTHROPIC "]) {
 ENV = { TRASH_TALK_PROVIDER: "grok" };
 assert("TRASH_TALK_PROVIDER=grok with no key still degrades to Claude",
   M.trashTalkProvider("") === "claude");
+ENV = {};
+
+// ── The App Store build's filtered roast ───────────────────────────────────
+// The native build sends store: true and must never get the Grok gloves-off
+// roast; the web app keeps it. ROAST_FILTERED=1 filters everyone.
+assert("the store build's roast stays on Claude even with a Grok key", M.trashTalkProvider("xai-abc", true) === "claude");
+assert("the web's roast is unchanged (Grok with a key)", M.trashTalkProvider("xai-abc", false) === "grok");
+assert("store: true asks for the filtered roast", M.roastFiltered({ store: true }) === true);
+assert("no store flag (the web app) does not", M.roastFiltered({}) === false && M.roastFiltered({ store: "true" }) === false);
+ENV = { ROAST_FILTERED: "1" };
+assert("ROAST_FILTERED=1 filters every roast", M.roastFiltered({}) === true);
 ENV = {};
 
 // ── The gloves-off rule ────────────────────────────────────────────────────
@@ -105,6 +116,10 @@ assert("the signature survives the rule", /Sign off with '— Johnny Lawrence'/.
 // a claim about a real fight and stays on the model the rest of the app trusts.
 assert("provider defaults to claude in the handler", /let provider: Provider = "claude"/.test(handler));
 const trashBranch = handler.slice(handler.indexOf('action === "trash-talk"'));
+assert("the roast branch asks roastFiltered which roast this caller gets",
+  /provider = trashTalkProvider\(grokKey, roastFiltered\(body\)\);/.test(handler));
+assert("a filtered (Claude) roast never carries the gloves-off rule",
+  /system = provider === "grok"\s*\?\s*built\.system \+ unfilteredRule\(/.test(handler));
 assert("only the roast branch selects a provider",
   (handler.match(/trashTalkProvider\(/g) || []).length === 1 &&
   trashBranch.includes("trashTalkProvider("));

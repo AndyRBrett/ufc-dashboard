@@ -142,7 +142,7 @@ fallback used only when `data.js` is stale.
 
 ## App Store checklist
 
-What blocks a submission, and where each item stands (updated 2026-10-07).
+What blocks a submission, and where each item stands (updated 2026-10-12).
 
 ### Done
 
@@ -156,17 +156,20 @@ What blocks a submission, and where each item stands (updated 2026-10-07).
 | Age rating groundwork | 1.1 / 5.3 | 18+ in the terms and at sign-in (#293); expect a 17+ store rating |
 | Icons and manifest | — | Separate `any` / `maskable` entries, 180px Apple icon, manifest `id` (#289) |
 | Soft-launch prep | — | 🎖️ founding members and 🎟️ invite links (#296; 0020 applied 2026-10-07) |
+| Wrapper approach | 4.2 | Capacitor shell in `native/` loading the live site, iPhone only, portrait (`native/README.md`). Needs the Apple Developer account and a Mac to build |
+| Push | — | Native APNs path: `apns_devices` (0022), `_shared/apns.js`, `send-push` delivers to iPhones by the same audience rules; inert until the `APNS_*` secrets are set |
+| CORS | — | Not needed while the shell loads the live site (same origin). A bundled build would add `capacitor://localhost` to `ALLOWED_ORIGINS` |
+| Unfiltered Grok roasts aimed at private people | 1.1 / 1.2 | The app build sends `store: true`; its roasts are Claude's, without the gloves-off rule (`roastFiltered`). `ROAST_FILTERED=1` filters the web too |
 
 ### Still open
 
 | Item | Guideline | Decision / work |
 | ---- | --------- | --------------- |
-| Wikimedia attribution | 5.2.2 | Only a general credit so far (`support.html` #credits, #289). CC BY-SA images need per-image credit: keep each photo's Commons page, author and licence (the lookup discards them today) and show them on or beside the photo |
-| ESPN headshots | 5.2.2 | Licence them, or drop them (most fighters fall back to initials: about 1 in 5 has a Wikipedia photo) |
-| Wrapper approach | 4.2 | Capacitor or similar, with native features that justify an app (native push, widgets, Live Activities) |
-| Push | — | Web Push doesn't run in an iOS app's web view: `send-push` needs an APNs path |
-| CORS | — | Add the wrapper's origin (e.g. `capacitor://localhost`) to `ALLOWED_ORIGINS` in the Supabase function secrets; no code change |
-| Unfiltered Grok roasts aimed at private people | 1.1 / 1.2 | Expect review scrutiny; consider a filtered mode for the store build |
+| Wikimedia attribution | 5.2.2 | Only a general credit so far (`support.html` #credits, #289). CC BY-SA images need per-image credit: keep each photo's Commons page, author and licence (the lookup discards them today) and show them on or beside the photo. Kept as is for now (2026-10-12): do it when the code base moves |
+| ESPN headshots | 5.2.2 | Licence them, or drop them (most fighters fall back to initials: about 1 in 5 has a Wikipedia photo). Same: decided with the move |
+| Apple account and first build | — | Developer Program, bundle id, APNs key, `APNS_*` secrets, apply 0022, archive to TestFlight (`native/README.md`) |
+| A second native feature | 4.2 | Native push alone may not satisfy "more than a website": widgets or Live Activities for fight night |
+| Universal Links | — | Room and invite links open Safari, not the app; needs `apple-app-site-association` on the Pages host and Associated Domains |
 | Odds and "Parlay Picks" | 5.3 | No real money, but expect questions; keep it clearly a game |
 | Privacy nutrition label, privacy manifest | 5.1 | Filled in App Store Connect / the wrapper, from `privacy.html` |
 | Scale before a wider launch | — | Items 5 (client error reporting) and 6 (live polling) above |

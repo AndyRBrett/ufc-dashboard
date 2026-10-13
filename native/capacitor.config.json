@@ -1,0 +1,18 @@
+{
+  "appId": "com.andyrbrett.pickedfight",
+  "appName": "Picked Fight",
+  "webDir": "www",
+  "server": {
+    "url": "https://andyrbrett.github.io/ufc-dashboard/",
+    "errorPath": "offline.html"
+  },
+  "ios": {
+    "limitsNavigationsToAppBoundDomains": true,
+    "appendUserAgent": "PickedFightApp"
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
+  }
+}

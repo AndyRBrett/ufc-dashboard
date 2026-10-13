@@ -103,6 +103,7 @@ let INBOX = [], inboxState = "ok", PRUNES = [];   // roast_inbox rows written by
 let sent = [], log = new Set(), dataReads = 0, picksReads = 0, picksDown = false, dataDown = false;
 const PRESENT = new Set();   // notif_log rows that already exist
 const RACED = new Set();     // rows another caller inserts between our check and our insert
+let APNS_DEVS = [], APNS_DELETED = [], APPLE_SANDBOX_ONLY = new Set(), APPLE = [], APPLE_DEAD = new Set(), APPLE_DOWN = false, apnsReads = 0;
 let LOCK_AT = null;   // pick_lock_for() for the bout under test; null: an hour before the test clock (long locked)
 let lockDown = false, lockReads = 0;
 globalThis.__webpush = { setVapidDetails() {}, sendNotification: async (sub, payload) => { sent.push({ to: sub.endpoint.split("/").pop(), ...JSON.parse(payload) }); } };
@@ -180,6 +181,30 @@ globalThis.fetch = async (url, init = {}) => {
   if (url.startsWith(SB + "/rest/v1/challenges")) {
     const id = /id=eq\.([^&]+)/.exec(url)[1];
     return json(CHALS[id] ? [CHALS[id]] : []);
+  }
+  // The native iOS build's devices (0022) and Apple's push service. Reading
+  // apns_devices at all before the APNS_* secrets exist is a failure.
+  if (url.startsWith(SB + "/rest/v1/apns_devices")) {
+    apnsReads++;
+    const u = decodeURIComponent(url), m = init.method || "GET";
+    if (m === "POST") { const row = JSON.parse(init.body); APNS_DEVS = APNS_DEVS.filter((d) => d.token !== row.token).concat([row]); return new Response("", { status: 201 }); }
+    if (m === "PATCH") { const t = /token=eq\.([^&]+)/.exec(u)[1]; APNS_DEVS = APNS_DEVS.map((d) => d.token === t ? { ...d, ...JSON.parse(init.body) } : d); return new Response(null, { status: 204 }); }
+    if (m === "DELETE") { const t = /token=eq\.([^&]+)/.exec(u)[1]; APNS_DEVS = APNS_DEVS.filter((d) => d.token !== t); APNS_DELETED.push(t); return new Response(null, { status: 204 }); }
+    const eq = /user_id=eq\.([^&]+)/.exec(u), neq = /user_id=neq\.([^&]+)/.exec(u), inl = inFilter(url);
+    let rows = APNS_DEVS;
+    if (eq) rows = rows.filter((r) => r.user_id === eq[1]);
+    if (neq) rows = rows.filter((r) => r.user_id !== neq[1]);
+    if (inl) rows = rows.filter((r) => inl.includes(r.user_id));
+    return json(rows);
+  }
+  const apple = /^https:\/\/api\.(sandbox\.)?push\.apple\.com\/3\/device\/([0-9a-f]+)$/.exec(url);
+  if (apple) {
+    const tok = apple[2];
+    APPLE.push({ host: apple[1] ? "sandbox" : "production", token: tok, headers: init.headers, payload: JSON.parse(init.body) });
+    if (APPLE_DEAD.has(tok)) return json({ reason: "BadDeviceToken" }, 400);
+    if (APPLE_SANDBOX_ONLY.has(tok) && !apple[1]) return json({ reason: "BadDeviceToken" }, 400);
+    if (APPLE_DOWN) throw new TypeError("connection reset");
+    return new Response("", { status: 200 });
   }
   return new Response("unexpected " + url, { status: 500 });
 };
@@ -436,11 +461,109 @@ for (const t of ["brief", "swap-old-bout"]) {
   check("the switches are read with the service key (the row is owner-only)", prefsReads.length > 0);
 }
 
+// ── Native iOS push (APNs, 0022, _shared/apns.js) ───────────────────────────
+// The App Store build registers an APNs token instead of a web subscription,
+// and every push reaches it by the same audience rules.
+{
+  const A = "a11ce000-0000-4000-8000-000000000001", B = "b0b00000-0000-4000-8000-000000000002", C = "ca201000-0000-4000-8000-000000000003";
+  const tokA = "a".repeat(64), tokB = "b".repeat(64), tokC = "c".repeat(64);
+  const apnsMod = await import(pathToFileURL(join(ROOT, "supabase/functions/_shared/apns.js")).href);
+
+  // Inert until the secrets exist: no device read, no Apple call, web as before.
+  APNS_DEVS = [{ token: tokB, user_id: B, env: "production", live_results: false }]; apnsReads = 0; APPLE = [];
+  const inert = await send({ event_date: "2026-10-03", type: "brief", title: "📋 Fight Week Brief", body: "Lab numbers" }, { service: SERVICE });
+  check("with no APNS_* secrets send-push never reads apns_devices or calls Apple", inert.status === 200 && apnsReads === 0 && APPLE.length === 0 && inert.sent.length === 4);
+
+  // A real P-256 key, the way Apple issues one (.p8 = PKCS#8 PEM).
+  const { generateKeyPairSync, createVerify } = await import("node:crypto");
+  const { privateKey, publicKey } = generateKeyPairSync("ec", { namedCurve: "P-256" });
+  const pem = privateKey.export({ type: "pkcs8", format: "pem" });
+  Object.assign(ENV, { APNS_KEY: pem.replace(/\n/g, "\\n"), APNS_KEY_ID: "KEY1234567", APNS_TEAM_ID: "TEAM123456", APNS_TOPIC: "app.pickedfight" });
+  const cfg = apnsMod.apnsConfig((k) => ENV[k]);
+  const jwtStr = await apnsMod.apnsJwt(cfg, NOW);
+  const [h64, c64, s64] = jwtStr.split(".");
+  const head = JSON.parse(Buffer.from(h64, "base64url")), claims = JSON.parse(Buffer.from(c64, "base64url"));
+  const verified = createVerify("SHA256").update(h64 + "." + c64).verify({ key: publicKey, dsaEncoding: "ieee-p1363" }, Buffer.from(s64, "base64url"));
+  check("the provider token is an ES256 JWT Apple can verify (kid, iss, iat; key with escaped newlines)",
+    verified && head.alg === "ES256" && head.kid === "KEY1234567" && claims.iss === "TEAM123456" && claims.iat === Math.floor(NOW / 1000));
+  const t1 = await apnsMod.providerToken(cfg, NOW), t2 = await apnsMod.providerToken(cfg, NOW + 30 * 60_000), t3 = await apnsMod.providerToken(cfg, NOW + 51 * 60_000);
+  check("the provider token is reused inside 50 minutes and replaced after (Apple refuses churn)", t1 === t2 && t1 !== t3);
+  const big = JSON.parse(apnsMod.apnsPayload({ title: "🎤 X (via Y)", body: "🔥".repeat(1600), kind: "" }));
+  check("a body too long for Apple's 4 KB is shortened, never sent oversized",
+    Buffer.byteLength(apnsMod.apnsPayload({ title: "t", body: "🔥".repeat(1600) })) <= 4096 && big.aps.alert.body.endsWith("…"));
+
+  // Registering: only as yourself, only a real token shape.
+  APNS_DEVS = [];
+  const noAuth = await send({ type: "register", platform: "ios", user_id: A, apns_token: tokA });
+  check("registering an iPhone needs a session (anon key: 401)", noAuth.status === 401 && !APNS_DEVS.length);
+  const other = await send({ type: "register", platform: "ios", user_id: B, apns_token: tokA }, { auth: jwt("alice") });
+  check("...and only as yourself (403)", other.status === 403 && !APNS_DEVS.length);
+  const bad = await send({ type: "register", platform: "ios", user_id: A, apns_token: "../../evil" }, { auth: jwt("alice") });
+  check("...and only a hex device token (400)", bad.status === 400 && !APNS_DEVS.length);
+  const ok = await send({ type: "register", platform: "ios", user_id: A, apns_token: tokA.toUpperCase(), apns_env: "sandbox", live_results: true, nickname: "Alice" }, { auth: jwt("alice") });
+  check("a signed-in iPhone registers its token (lower-cased, env and live_results kept)",
+    ok.status === 200 && APNS_DEVS.length === 1 && APNS_DEVS[0].token === tokA && APNS_DEVS[0].user_id === A && APNS_DEVS[0].env === "sandbox" && APNS_DEVS[0].live_results === true);
+  const moved = await send({ type: "register", platform: "ios", user_id: B, apns_token: tokA }, { auth: jwt("bob") });
+  check("a token that signs in as someone else moves to them, not both", moved.status === 200 && APNS_DEVS.length === 1 && APNS_DEVS[0].user_id === B);
+
+  // Sending: same audience, filters and spoiler rule as web.
+  APNS_DEVS = [
+    { token: tokA, user_id: A, env: "sandbox", live_results: false },
+    { token: tokB, user_id: B, env: "production", live_results: true },
+    { token: tokC, user_id: C, env: "production", live_results: false },
+  ];
+  APPLE = [];
+  const res = await send({ event_date: "2026-10-03", type: "result:jose-aldo-sean-o-malley:win" });
+  check("a result push reaches only the iPhones of the people it is for (Alice), on the right APNs host",
+    res.status === 200 && APPLE.length === 1 && APPLE[0].token === tokA && APPLE[0].host === "sandbox");
+  check("...spoiler-free unless that device opted in, with the bundle id as topic and a bearer provider token",
+    APPLE[0].payload.aps.alert.title === "🥊 Fight result is in" && APPLE[0].headers["apns-topic"] === "app.pickedfight" &&
+    /^bearer [\w-]+\.[\w-]+\.[\w-]+$/.test(APPLE[0].headers.authorization) && APPLE[0].headers["apns-push-type"] === "alert");
+  check("...and counted with the web sends", res.j && res.j.sent === 2);
+  APPLE = [];
+  const chal = await send({ event_date: "2026-10-03", type: "chal-c1" }, { auth: jwt("bob") });
+  check("a challenge reaches the target's iPhone with the tap route (kind, url) the app reads",
+    chal.status === 200 && APPLE.length === 1 && APPLE[0].token === tokA && APPLE[0].payload.kind === "challenge" && APPLE[0].payload.url === "./?inbox=1");
+  APPLE = []; BLOCKS = [{ blocker_id: C, blocked_id: A }]; PREFS_OFF = { [B]: ["roast"] };
+  const roast = await send({ event_date: "2026-10-03", type: "trash-talk-77", body: "Nice pick. — Joe Rogan" }, { auth: jwt("alice") });
+  check("a roast skips the sender's own iPhone, a blocker's and one switched off; the inbox still has everyone not blocked",
+    roast.status === 200 && APPLE.length === 0 && roast.inbox.map((r) => r.recipient_id).includes(B));
+  check("...and a blocker's iPhone never puts the roast in their inbox either",
+    !roast.inbox.map((r) => r.recipient_id).includes(C));
+  BLOCKS = []; PREFS_OFF = {};
+  const roast2 = await send({ event_date: "2026-10-03", type: "trash-talk-78", body: "Nice pick. — Joe Rogan", include_user_ids: [C] }, { auth: jwt("alice") });
+  check("...and a targeted one reaches the target's iPhone with the full text for the in-app sheet",
+    roast2.status === 200 && APPLE.length === 1 && APPLE[0].token === tokC && APPLE[0].payload.fullMessage === "Nice pick. — Joe Rogan" && /\(via /.test(APPLE[0].payload.title));
+  // A dead token is removed; Apple being unreachable is a failure, not a crash.
+  APPLE = []; APPLE_DEAD = new Set([tokC]); APNS_DELETED = [];
+  const dead = await send({ event_date: "2026-10-03", type: "swap-x-y", title: "x", body: "y", include_user_ids: [C] }, { service: SERVICE });
+  check("a token Apple calls dead (BadDeviceToken) is deleted", dead.status === 200 && APNS_DELETED.join() === tokC && !APNS_DEVS.some((d) => d.token === tokC));
+  APPLE_DEAD = new Set(); APPLE = []; APNS_DELETED = [];
+  APNS_DEVS = [{ token: tokB, user_id: B, env: "production", live_results: false }]; APPLE_SANDBOX_ONLY = new Set([tokB]);
+  const xcode = await send({ event_date: "2026-10-03", type: "swap-x-u", title: "x", body: "y", include_user_ids: [B] }, { service: SERVICE });
+  check("a build run from Xcode (a sandbox token registered as production) is retried on sandbox, delivered and remembered",
+    xcode.status === 200 && xcode.j.sent === 2 && xcode.j.failed === 0 && APPLE.map((a) => a.host).join() === "production,sandbox" && APNS_DEVS[0].env === "sandbox" && !APNS_DELETED.length);
+  APPLE_SANDBOX_ONLY = new Set();
+  APNS_DEVS = [{ token: tokA, user_id: A, env: "sandbox" }, { token: tokB, user_id: B, env: "production", live_results: true }];
+  APPLE_DOWN = true; APNS_DELETED = [];
+  const down = await send({ event_date: "2026-10-03", type: "swap-x-z", title: "x", body: "y", include_user_ids: [A, B] }, { service: SERVICE });
+  check("Apple unreachable: the web pushes still go, the iPhones count as failed, no token is deleted",
+    down.status === 200 && down.sent.length === 2 && down.j.failed === 2 && APNS_DELETED.length === 0);
+  APPLE_DOWN = false;
+  const onlyPhone = await send({ event_date: "2026-10-03", type: "swap-x-w", title: "x", body: "y", include_user_ids: ["e7e00000-0000-4000-8000-000000000005"] }, { service: SERVICE });
+  check("a push for someone with no device anywhere is 'no subscribers', never a broadcast", onlyPhone.j && onlyPhone.j.reason === "no subscribers");
+  APNS_DEVS.push({ token: "e".repeat(64), user_id: "e7e00000-0000-4000-8000-000000000005", env: "production" }); APPLE = [];
+  const phoneOnly = await send({ event_date: "2026-10-03", type: "swap-x-v", title: "x", body: "y", include_user_ids: ["e7e00000-0000-4000-8000-000000000005"] }, { service: SERVICE });
+  check("someone with only an iPhone (no web subscription) still gets it", phoneOnly.status === 200 && APPLE.length === 1 && phoneOnly.sent.length === 0);
+  for (const k of ["APNS_KEY", "APNS_KEY_ID", "APNS_TEAM_ID", "APNS_TOPIC"]) delete ENV[k];
+  APNS_DEVS = [];
+}
+
 // The app sends through _pushPost (session JWT first), never the bare anon key.
 {
   const html = readFileSync(join(ROOT, "index.html"), "utf8");
   const direct = html.split('/functions/v1/send-push"').length - 1;
-  check("index.html calls send-push in exactly three places: two registers and _pushPost", direct === 3 && /function _pushPost\(req\)/.test(html));
+  check("index.html calls send-push in exactly four places: two web registers, the iPhone register and _pushPost", direct === 4 && /apns_token:tok/.test(html) && /function _pushPost\(req\)/.test(html));
   check("_pushPost leads with the session JWT and only falls back to anon on a 401",
     /var auth=_authBearer\(\),anon="Bearer "\+SUPABASE_ANON;[\s\S]{0,120}r\.status===401&&auth!==anon\?go\(anon\):r/.test(html));
   for (const f of ["check-results", "send-reminders"]) {
