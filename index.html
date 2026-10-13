@@ -701,6 +701,23 @@ body.sport-other .ps-all{display:none}
 .lb-seg .ftab{flex:1;border:none;border-radius:9px;padding:7px 6px}
 .sport-board-hdr{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:2px 4px 10px;font-family:var(--font-display);text-transform:uppercase;font-size:20px;letter-spacing:.06em;color:var(--text)}
 .sport-board-hdr small{font:500 11.5px var(--font-body);letter-spacing:0;color:var(--muted)}
+.sport-board-item{margin-bottom:8px}
+.sport-board-item>.lb-row{margin-bottom:0}
+.sport-board-arr{font-size:10px;color:var(--muted);flex-shrink:0;display:inline-block;transition:transform .2s}
+.sport-board-chips{background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px}
+.sport-board-hist{background:var(--card2);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;overflow:hidden;padding:4px 0 8px}
+.sport-hist-ev{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:600;color:var(--muted);padding:8px 14px 4px;text-transform:uppercase;letter-spacing:.05em}
+.sport-hist-evname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sport-hist-evdate{font-weight:500;opacity:.7;text-transform:none;letter-spacing:0;flex-shrink:0}
+.sport-hist-row{display:flex;align-items:center;gap:8px;padding:7px 14px}
+.sport-hist-opp{font-size:11px;color:var(--muted);width:70px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sport-hist-pick{font-size:13px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.sport-hist-pick.win,.sport-hist-pts.win{color:var(--green)}
+.sport-hist-pick.loss,.sport-hist-pts.loss{color:var(--loss)}
+.sport-hist-method{font-size:10px;color:var(--muted);flex-shrink:0}
+.sport-hist-lock{font-size:11px;flex-shrink:0}
+.sport-hist-pts{font-size:11px;font-weight:600;flex-shrink:0;min-width:36px;text-align:right;color:var(--muted)}
+.sport-hist-empty{font-size:12px;color:var(--muted);padding:10px 14px}
 .room-list{display:flex;flex-direction:column;gap:6px;margin:4px 0 6px}
 .room-item{display:flex;flex-direction:column;gap:4px}
 .room-row{display:flex;flex-direction:column;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);cursor:pointer;font:600 14px var(--font-body)}
@@ -711,6 +728,7 @@ body.sport-other .ps-all{display:none}
 .room-pass{margin:0 4px;color:var(--text);text-align:right}
 .room-act{background:none;border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:4px 10px;font:600 12px var(--font-body);cursor:pointer}
 .room-act-quiet{color:var(--muted)}
+.room-act-danger{color:var(--loss);border-color:var(--loss-border)}
 .room-form{display:flex;gap:8px;margin-top:10px}
 .room-form .nm-input{flex:1;margin:0;min-width:0}
 .room-form .nm-btn{width:auto;padding:0 16px;flex-shrink:0}
@@ -7826,6 +7844,8 @@ var WHATS_NEW=[
    desc:"Quick Pick now shows each bout's odds before you pick: the win chance they imply, how the line has moved, and the underdog bonus on offer. Under that sits a Tale of the Tape with the model's call, rank, age, last five results, size and finishes."},
   {id:"2026-11-01-share-recap",emoji:"🖼️",title:"Share your Card Recap",
    desc:"The Card Recap now has 🖼️ Share recap: the night's title, stories and standings as one image for the group chat. Once you've tapped 🤖 FightBot's call, its line goes on the image too."}
+  ,{id:"2026-11-02-sport-board-picks",emoji:"🥋",title:"See the picks on every board",
+   desc:"PFL, RIZIN and DWCS standings now show each player's picks for the card under their name, like UFC, and tap a row for their pick history. Leaving or deleting a room is clearer too: 👥 Rooms → 🚪 Leave room or 🗑️ Delete room."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -10441,7 +10461,7 @@ function renderRoomSheet(){
       var mp=_rmEl("button","room-act","🔑 Temp password");mp.onclick=function(){makeRoomPass(r.id);};
       acts.appendChild(mp);
     }
-    var lv=_rmEl("button","room-act room-act-quiet",r.owner_id===USER_ID?"Delete":"Leave");lv.onclick=function(){leaveRoom(r.id).then(renderRoomSheet);};
+    var lv=_rmEl("button","room-act room-act-danger",r.owner_id===USER_ID?"🗑️ Delete room":"🚪 Leave room");lv.onclick=function(){leaveRoom(r.id).then(renderRoomSheet);};
     acts.appendChild(lv);
     // A room's name is its owner's words: anyone else in it can report it.
     if(r.owner_id!==USER_ID){var rp=_rmEl("button","room-act room-act-quiet","🚩 Report");
@@ -11324,6 +11344,71 @@ function _sportRestore(){
     }).catch(function(){});
   }));
 }
+// When the server starts showing other players' picks on a card (0017).
+function _sportRevealMs(ev){return sportLockMs(ev)+LOCK_GRACE_MS;}
+var _sportRevealTimer=null;
+// A board row's chips: this player's picks on the card the board is about, as
+// the UFC board shows them. Yours come from this device first (what the card
+// shows), then the server. Nobody else's pick is readable until the card
+// locks plus LOCK_GRACE (0017), so before then theirs is one 🙈, not a row of
+// "didn't pick"; renderSportBoard reloads itself at that moment.
+function _sportBoardChips(promo,ev,list,me){
+  if(!ev)return null;
+  var box=_spEl("div","lb-next-picks sport-board-chips"),byIdx=Object.create(null);
+  list.forEach(function(x){if(x.ev===ev)byIdx[x.idx]=x;});
+  var open=Date.now()<_sportRevealMs(ev)&&!ev.bouts.some(function(b){return _sportDecided(b);});
+  if(!me&&open){
+    var hc=_spEl("span","lb-pick-chip lbc-none");hc.title="Hidden until this card's picks lock";
+    hc.appendChild(_spEl("span",null,"🙈 hidden until picks lock"));box.appendChild(hc);
+    return box;
+  }
+  ev.bouts.forEach(function(b,bi){
+    var k=sportKey(promo,ev.date,b.a,b.b),row=byIdx[bi],picked=null,method="";
+    if(me&&_sportPicks[k]){picked=_sportPicks[k];method=_sportMetaOf(k).m;}
+    else if(row){picked=row.p.pick;method=row.p.method||"";}
+    if(!picked)return;
+    var shown=nmEq(picked,b.a)?b.a:nmEq(picked,b.b)?b.b:picked;
+    var chip=_spEl("span","lb-pick-chip");
+    chip.appendChild(_spEl("span",null,String(shown).split(" ").pop()));
+    if(method)chip.appendChild(_spEl("span","lb-pick-method",method==="KO/TKO"?"KO":method));
+    if(b.winner)chip.classList.add(nmEq(picked,b.winner)?"lbc-win":"lbc-loss");
+    else if(me)chip.classList.add("lbc-me");
+    chip.title=b.a+" vs "+b.b;
+    box.appendChild(chip);
+  });
+  return box.children.length?box:null;
+}
+// A board row's ▼ history: every pick of this player's the board can see,
+// newest card first, each scored by pickPts like the board's total.
+function _sportBoardHistory(list){
+  var box=_spEl("div","sport-board-hist");box.style.display="none";
+  var cards=[],byDate=Object.create(null);
+  list.forEach(function(x){if(!byDate[x.ev.date]){byDate[x.ev.date]=[];cards.push(x.ev);}byDate[x.ev.date].push(x);});
+  cards.sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:0;});
+  if(!cards.length)box.appendChild(_spEl("div","sport-hist-empty","No picks to show yet."));
+  cards.forEach(function(ev){
+    var hd=_spEl("div","sport-hist-ev");
+    hd.appendChild(_spEl("span","sport-hist-evname",ev.name||ev.date));
+    hd.appendChild(_spEl("span","sport-hist-evdate",_shortEvDate(ev.date)));
+    box.appendChild(hd);
+    byDate[ev.date].sort(function(a,b){return a.idx-b.idx;}).forEach(function(x){
+      var p=x.p,b=x.b,picked=nmEq(p.pick,b.a)?b.a:nmEq(p.pick,b.b)?b.b:p.pick,opp=picked===b.a?b.b:b.a;
+      var res=b.winner?nmEq(p.pick,b.winner):null;
+      var pr=_spEl("div","sport-hist-row");
+      pr.appendChild(_spEl("div","sport-hist-opp","vs "+String(opp).split(" ").pop()));
+      var pk=_spEl("div","sport-hist-pick"+(res===true?" win":res===false?" loss":""),String(picked).split(" ").pop());
+      pr.appendChild(pk);
+      if(p.method)pr.appendChild(_spEl("span","sport-hist-method","via "+p.method));
+      if(isLockPick(p)){var lk=_spEl("span","sport-hist-lock","🔒");lk.title="Locked pick";pr.appendChild(lk);}
+      var pts=b.winner?pickPts(p,{winner:b.winner,method:b.method||"",odds:sportOdds(b),f1n:b.a,f2n:b.b}):null;
+      var bdg=_spEl("div","sport-hist-pts"+(pts>0?" win":pts<0?" loss":""),
+        pts===null?(_sportDecided(b)?"0 pts":"⏳"):(pts>0?"+":"")+pts+" pt"+(Math.abs(pts)===1?"":"s"));
+      pr.appendChild(bdg);
+      box.appendChild(pr);
+    });
+  });
+  return box;
+}
 // Every board load takes a ticket; a response that comes back after a newer
 // load started (the user switched sport, or a refresh overtook it) is dropped
 // instead of painting the wrong promotion's standings over the right one.
@@ -11346,6 +11431,25 @@ function renderSportBoard(gen){
     // Same row as the UFC board (lb-row), so switching sport changes the
     // numbers, not the look. Ties share a rank, like the UFC board.
     var medals=["🥇","🥈","🥉"],rank=0,anyResolved=users.some(function(u){return u.resolved>0;});
+    // Each player's picks, for the chips and the ▼ history: matched to the feed
+    // the way sportStandings matches them (rows newest-first, one per bout).
+    var picksOf=Object.create(null),seenP=Object.create(null);
+    (rows||[]).forEach(function(p){
+      if(p.promotion!==promo)return;
+      var hit=sportBout(_sportFeed.events,promo,p.event_date,p.f1,p.f2);if(!hit)return;
+      var uid=p.user_id||p.nickname||"unknown",once=uid+"|"+hit.ev.date+"|"+hit.idx;
+      if(seenP[once])return;seenP[once]=true;
+      (picksOf[uid]||(picksOf[uid]=[])).push({p:p,ev:hit.ev,b:hit.bout,idx:hit.idx});
+    });
+    var evs=sportEvents(promo),nextEv=evs.filter(function(e){return e.bouts.some(function(b){return !_sportDecided(b);});})[0]||evs[evs.length-1]||null;
+    // Reload once the card's picks become readable, so the 🙈 gives way to
+    // them without a manual refresh.
+    if(_sportRevealTimer){clearTimeout(_sportRevealTimer);_sportRevealTimer=null;}
+    var wait=nextEv?_sportRevealMs(nextEv)-Date.now():-1;
+    if(wait>0&&wait<DAY_MS)_sportRevealTimer=setTimeout(function(){
+      _sportRevealTimer=null;
+      if(_lbPanelOpen()&&curSport()===promo)loadLeaderboard(true);
+    },wait+3000);
     users.forEach(function(u,i){
       if(!i||u.pts!==users[i-1].pts)rank=i+1;
       var tied=users.filter(function(x){return x.pts===u.pts;}).length>1,me=!!(u.user_id&&u.user_id===USER_ID);
@@ -11363,7 +11467,25 @@ function renderSportBoard(gen){
       r.appendChild(main);
       var right=_spEl("div","lb-right");right.appendChild(_spEl("div","lb-pts",anyResolved?u.pts+" pt"+(u.pts===1?"":"s"):u.total+(u.total===1?" pick":" picks")));
       r.appendChild(right);
-      body.appendChild(r);
+      var list=picksOf[u.user_id||u.nickname||"unknown"]||[];
+      var chips=_sportBoardChips(promo,nextEv,list,me),hist=_sportBoardHistory(list);
+      var arr=_spEl("span","sport-board-arr","▼");r.appendChild(arr);
+      r.style.cursor="pointer";r.setAttribute("role","button");r.tabIndex=0;r.setAttribute("aria-expanded","false");
+      if(chips){r.style.borderRadius="12px 12px 0 0";r.style.marginBottom="0";}
+      var wrap=_spEl("div","sport-board-item");wrap.appendChild(r);
+      if(chips)wrap.appendChild(chips);
+      if(!me&&u.user_id&&typeof safetyActions==="function")hist.appendChild(safetyActions({kind:"nickname",name:u.nickname,uids:[u.user_id],content:u.nickname}));
+      wrap.appendChild(hist);
+      var toggle=function(){
+        var open=hist.style.display==="none";
+        hist.style.display=open?"block":"none";arr.style.transform=open?"rotate(180deg)":"";
+        r.setAttribute("aria-expanded",open?"true":"false");
+        if(!chips){r.style.borderRadius=open?"12px 12px 0 0":"";r.style.marginBottom=open?"0":"";}
+        if(chips)chips.style.borderRadius=open?"0":"0 0 12px 12px";
+      };
+      r.onclick=toggle;
+      r.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle();}};
+      body.appendChild(wrap);
     });
     return users;
   }).catch(function(){if(gen===_lbGen)body.innerHTML='<div class="lb-empty">Couldn\'t load the board — try again.</div>';});
