@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-13T19:05:48Z",
+ "generated_at": "2026-10-13T23:45:39Z",
  "promotions": [
   {
    "id": "pfl",
@@ -84,18 +84,18 @@
      "round": null
     },
     {
-     "a": "Jason Asher",
-     "b": "Gregory Foster",
+     "a": "Gregory Foster",
+     "b": "Jason Asher",
      "label": "",
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": -212,
-      "b": 176
+      "a": 176,
+      "b": -212
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Gregory Foster",
+     "method": "Decision (Unanimous)",
+     "round": 3
     }
    ]
   },
