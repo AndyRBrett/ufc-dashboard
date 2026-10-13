@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-13T12:55:42Z",
+  "generated_at": "2026-10-13T13:00:49Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -15094,7 +15094,7 @@
           "f1": "Mandel Nallo",
           "f2": "Nate Landwehr",
           "lbl": "Main Card",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15130,6 +15130,11 @@
               "at": "2026-10-12T12:35:55Z",
               "f1_odds": -294,
               "f2_odds": 227
+            },
+            {
+              "at": "2026-10-13T13:00:49Z",
+              "f1_odds": -291,
+              "f2_odds": 225
             }
           ],
           "open": {
@@ -15279,7 +15284,7 @@
           "f1": "Melissa Croden",
           "f2": "Chelsea Chandler",
           "lbl": "Prelim",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15315,6 +15320,11 @@
               "at": "2026-10-12T12:35:55Z",
               "f1_odds": -280,
               "f2_odds": 217
+            },
+            {
+              "at": "2026-10-13T13:00:49Z",
+              "f1_odds": -283,
+              "f2_odds": 218
             }
           ],
           "open": {
@@ -16464,7 +16474,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Melissa Croden",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 205,
         "close": null,
         "clv": null
@@ -20733,7 +20743,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Nate Landwehr",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -235,
         "close": null,
         "clv": null
@@ -20744,7 +20754,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Mandel Nallo",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 195,
         "close": null,
         "clv": null
@@ -20821,7 +20831,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Chelsea Chandler",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -240,
         "close": null,
         "clv": null
