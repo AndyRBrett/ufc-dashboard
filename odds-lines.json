@@ -2,54 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Alain Majorique",
-   "b": "Raphael Uchegbu",
-   "a_odds": -128,
-   "b_odds": 109,
-   "commence_time": "2026-10-10T16:00:00Z",
-   "seen_at": "2026-10-09T20:20:27Z"
-  },
-  {
-   "a": "Andrzej Karkula",
-   "b": "Kamil Korzeniowski",
-   "a_odds": -800,
-   "b_odds": 550,
-   "commence_time": "2026-10-10T16:00:00Z",
-   "seen_at": "2026-10-08T20:30:25Z"
-  },
-  {
-   "a": "Kristians Boguzs",
-   "b": "Kacper Cholewa",
-   "a_odds": -125,
-   "b_odds": 105,
-   "commence_time": "2026-10-10T16:00:00Z",
-   "seen_at": "2026-10-10T14:00:27Z"
-  },
-  {
-   "a": "Laid Zerhouni",
-   "b": "Andrzej Grzebyk",
-   "a_odds": -115,
-   "b_odds": -105,
-   "commence_time": "2026-10-10T16:00:00Z",
-   "seen_at": "2026-10-10T14:00:27Z"
-  },
-  {
-   "a": "Marian Ziolkowski",
-   "b": "Wilson Varela",
-   "a_odds": -118,
-   "b_odds": -102,
-   "commence_time": "2026-10-10T16:00:00Z",
-   "seen_at": "2026-10-10T14:00:27Z"
-  },
-  {
-   "a": "Mateusz Makarowski",
-   "b": "Adam Soldaev",
-   "a_odds": 192,
-   "b_odds": -230,
-   "commence_time": "2026-10-10T16:00:00Z",
-   "seen_at": "2026-10-10T14:00:27Z"
-  },
-  {
    "a": "Dwight Joseph",
    "b": "Boule Godogo",
    "a_odds": -126,
@@ -180,10 +132,10 @@
   {
    "a": "Davi Cabral",
    "b": "Douglas da Lapa",
-   "a_odds": 150,
-   "b_odds": -178,
+   "a_odds": 142,
+   "b_odds": -168,
    "commence_time": "2026-10-13T23:40:00Z",
-   "seen_at": "2026-10-13T13:00:27Z"
+   "seen_at": "2026-10-13T19:05:28Z"
   },
   {
    "a": "Will Rentz",
@@ -196,26 +148,26 @@
   {
    "a": "Aline Pereira",
    "b": "Smilla Sundell",
-   "a_odds": 413,
-   "b_odds": -553,
+   "a_odds": 387,
+   "b_odds": -513,
    "commence_time": "2026-10-14T00:30:00Z",
-   "seen_at": "2026-10-13T13:00:27Z"
+   "seen_at": "2026-10-13T19:05:28Z"
   },
   {
    "a": "Ilias Bulaid",
    "b": "Erick Visconde",
-   "a_odds": -151,
-   "b_odds": 128,
+   "a_odds": -141,
+   "b_odds": 118,
    "commence_time": "2026-10-14T00:55:00Z",
-   "seen_at": "2026-10-13T07:00:24Z"
+   "seen_at": "2026-10-13T19:05:28Z"
   },
   {
    "a": "Erin Blanchfield",
    "b": "Jasmine Jasudavicius",
-   "a_odds": -315,
-   "b_odds": 242,
+   "a_odds": -328,
+   "b_odds": 250,
    "commence_time": "2026-10-17T21:00:00Z",
-   "seen_at": "2026-10-12T12:35:35Z"
+   "seen_at": "2026-10-13T19:05:28Z"
   },
   {
    "a": "Joaquin Buckley",
@@ -236,10 +188,10 @@
   {
    "a": "Louis Jourdain",
    "b": "Timothy Cuamba",
-   "a_odds": -201,
-   "b_odds": 160,
+   "a_odds": -209,
+   "b_odds": 165,
    "commence_time": "2026-10-17T21:00:00Z",
-   "seen_at": "2026-10-13T00:55:23Z"
+   "seen_at": "2026-10-13T19:05:28Z"
   },
   {
    "a": "Mackenzie Stiller",
@@ -260,18 +212,18 @@
   {
    "a": "Marc-Andre Barriault",
    "b": "Kyle Daukaus",
-   "a_odds": 177,
-   "b_odds": -223,
+   "a_odds": 172,
+   "b_odds": -217,
    "commence_time": "2026-10-17T21:00:00Z",
-   "seen_at": "2026-10-13T00:55:23Z"
+   "seen_at": "2026-10-13T19:05:28Z"
   },
   {
    "a": "Melissa Croden",
    "b": "Chelsea Chandler",
-   "a_odds": -283,
-   "b_odds": 218,
+   "a_odds": -286,
+   "b_odds": 222,
    "commence_time": "2026-10-17T21:00:00Z",
-   "seen_at": "2026-10-13T13:00:27Z"
+   "seen_at": "2026-10-13T19:05:28Z"
   },
   {
    "a": "Chad Anheliger",
