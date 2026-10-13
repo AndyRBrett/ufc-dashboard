@@ -431,6 +431,20 @@ else {
       check("...each pick scored as the board scores it (a win +1 pt, a loss 0 pts)",
         /PFL Last Night/.test(rowsUi.bobHist) && /vs BA\+1 pt(?!s)/.test(rowsUi.bobHist) && /vs AB0 pts/.test(rowsUi.catHist));
       check("...and someone else's picks on a card still open read as hidden, not as unpicked", /🙈/.test(rowsUi.chips));
+      // The server shows them only at lock + LOCK_GRACE (0017): 🙈 holds through
+      // the grace, then gives way, and the board reloads itself at that moment.
+      const grace = await page.evaluate(() => {
+        const ev = _sportFeed.events.find((e) => e.name === "PFL Test Card"), real = Date.now, lock = sportLockMs(ev);
+        const at = (t) => { Date.now = () => t; try { return !!(_sportBoardChips("pfl", ev, [], false) || { textContent: "" }).textContent.match(/🙈/); } finally { Date.now = real; } };
+        return { inGrace: at(lock + 60000), after: at(lock + LOCK_GRACE_MS + 1000) };
+      });
+      grace.timer = await page.evaluate(async () => {
+        const ev = _sportFeed.events.find((e) => e.name === "PFL Test Card"), real = Date.now, t = sportLockMs(ev) - 3600000;
+        Date.now = () => t;
+        try { await renderSportBoard(); return !!_sportRevealTimer; } finally { Date.now = real; }
+      });
+      check("someone else's picks stay 🙈 through the lock grace and stop after it", grace.inGrace && !grace.after);
+      check("...and the board schedules its own reload for that moment", grace.timer);
       await page.click("#lbSportBar .sport-tab:nth-child(1)");
       await page.waitForTimeout(600);
       // Switch to PFL while the (slow) UFC board is still loading: the UFC

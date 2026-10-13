@@ -7845,7 +7845,7 @@ var WHATS_NEW=[
   {id:"2026-11-01-share-recap",emoji:"🖼️",title:"Share your Card Recap",
    desc:"The Card Recap now has 🖼️ Share recap: the night's title, stories and standings as one image for the group chat. Once you've tapped 🤖 FightBot's call, its line goes on the image too."}
   ,{id:"2026-11-02-sport-board-picks",emoji:"🥋",title:"See the picks on every board",
-   desc:"PFL, RIZIN and DWCS standings now show each player's picks for the card under their name, like UFC, and tap a row for their full pick history. Leaving or deleting a room is clearer too: 👥 Rooms → 🚪 Leave room or 🗑️ Delete room."}
+   desc:"PFL, RIZIN and DWCS standings now show each player's picks for the card under their name, like UFC, and tap a row for their pick history. Leaving or deleting a room is clearer too: 👥 Rooms → 🚪 Leave room or 🗑️ Delete room."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -11344,15 +11344,19 @@ function _sportRestore(){
     }).catch(function(){});
   }));
 }
+// When the server starts showing other players' picks on a card (0017).
+function _sportRevealMs(ev){return sportLockMs(ev)+LOCK_GRACE_MS;}
+var _sportRevealTimer=null;
 // A board row's chips: this player's picks on the card the board is about, as
 // the UFC board shows them. Yours come from this device first (what the card
 // shows), then the server. Nobody else's pick is readable until the card
-// locks (0017), so before then theirs is one 🙈, not a row of "didn't pick".
+// locks plus LOCK_GRACE (0017), so before then theirs is one 🙈, not a row of
+// "didn't pick"; renderSportBoard reloads itself at that moment.
 function _sportBoardChips(promo,ev,list,me){
   if(!ev)return null;
   var box=_spEl("div","lb-next-picks sport-board-chips"),byIdx=Object.create(null);
   list.forEach(function(x){if(x.ev===ev)byIdx[x.idx]=x;});
-  var open=Date.now()<sportLockMs(ev)&&!ev.bouts.some(function(b){return _sportDecided(b);});
+  var open=Date.now()<_sportRevealMs(ev)&&!ev.bouts.some(function(b){return _sportDecided(b);});
   if(!me&&open){
     var hc=_spEl("span","lb-pick-chip lbc-none");hc.title="Hidden until this card's picks lock";
     hc.appendChild(_spEl("span",null,"🙈 hidden until picks lock"));box.appendChild(hc);
@@ -11438,6 +11442,14 @@ function renderSportBoard(gen){
       (picksOf[uid]||(picksOf[uid]=[])).push({p:p,ev:hit.ev,b:hit.bout,idx:hit.idx});
     });
     var evs=sportEvents(promo),nextEv=evs.filter(function(e){return e.bouts.some(function(b){return !_sportDecided(b);});})[0]||evs[evs.length-1]||null;
+    // Reload once the card's picks become readable, so the 🙈 gives way to
+    // them without a manual refresh.
+    if(_sportRevealTimer){clearTimeout(_sportRevealTimer);_sportRevealTimer=null;}
+    var wait=nextEv?_sportRevealMs(nextEv)-Date.now():-1;
+    if(wait>0&&wait<DAY_MS)_sportRevealTimer=setTimeout(function(){
+      _sportRevealTimer=null;
+      if(_lbPanelOpen()&&curSport()===promo)loadLeaderboard(true);
+    },wait+3000);
     users.forEach(function(u,i){
       if(!i||u.pts!==users[i-1].pts)rank=i+1;
       var tied=users.filter(function(x){return x.pts===u.pts;}).length>1,me=!!(u.user_id&&u.user_id===USER_ID);
