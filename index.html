@@ -9010,11 +9010,11 @@ function _trashPool(eventSorted,eventAll,allSorted,cutoffDate){
 function _trashSportPool(){
   var c=typeof _sportBoardCache!=="undefined"?_sportBoardCache:null;
   if(!c||c.promo!==curSport())return null;
-  var evNames=Object.create(null);
+  var evNames=Object.create(null),evByDate=Object.create(null);
   var pool=c.users.map(function(u){
     var picks=(c.picksOf[u.user_id||u.nickname||"unknown"]||[]).map(function(x){
       var p=x.p,b=x.b,name=nmEq(p.pick,b.a)?b.a:nmEq(p.pick,b.b)?b.b:p.pick;
-      evNames[x.ev.date]=x.ev.name||x.ev.date;
+      evNames[x.ev.date]=x.ev.name||x.ev.date;evByDate[x.ev.date]=x.ev;
       return {evDate:x.ev.date,evName:x.ev.name,f1:b.a,f2:b.b,pick:name,method:p.method||"",locked:isLockPick(p),
         result:b.winner?nmEq(p.pick,b.winner):null,_idx:x.idx};
     });
@@ -9027,16 +9027,16 @@ function _trashSportPool(){
       correct:u.correct,total:u.total,methods:u.methods,fotn:0,dogPts:u.dogPts,lockPts:u.lockPts,
       accuracy:u.accuracy,currentStreak:streak};
   });
-  var dates=Object.keys(evNames);
-  var evName=dates.length===1?evNames[dates[0]]:null;
+  var dates=Object.keys(evNames).sort();
+  var evName=dates.length===1?evNames[dates[0]]:null,focus=dates.length?evByDate[dates[dates.length-1]]:null;
   // Nobody has picked any card on the board: it's about the card the feed is
   // on, the one that's started (or just finished), else the next one.
   if(!dates.length){
     var evs=sportEvents(c.promo),started=evs.filter(function(e){return e.bouts.some(function(b){return _sportDecided(b);});});
     var ev=started[started.length-1]||evs[0];
-    if(ev)evName=ev.name||ev.date;
+    if(ev){evName=ev.name||ev.date;focus=ev;}
   }
-  return {pool:pool,mode:dates.length>1?"all":"current",evName:evName};
+  return {pool:pool,mode:dates.length>1?"all":"current",evName:evName,ev:focus};
 }
 // The group a sport board's roast can also reach: everyone who has played the
 // UFC board within TRASH_ACTIVE_DAYS but isn't on this board, as "no picks"
@@ -9072,7 +9072,11 @@ function openTrashTalk(){
     var sp=_trashSportPool();
     if(!sp){toast("Load the leaderboard first!");return;}
     var onBoard=Object.create(null);sp.pool.forEach(function(u){if(u.user_id)onBoard[u.user_id]=true;});
-    pool=sp.pool.concat(_trashSportSlackers(onBoard));mode=sp.mode;evName=sp.evName;
+    // Nobody else's pick on a card is readable until it locks (0017), so before
+    // then "not on the board" doesn't mean "skipped it": no slackers until the
+    // card the roast is about has revealed its picks.
+    var revealed=!!sp.ev&&Date.now()>=_sportRevealMs(sp.ev);
+    pool=revealed?sp.pool.concat(_trashSportSlackers(onBoard)):sp.pool;mode=sp.mode;evName=sp.evName;
   }else{
     if(!_lbRows){toast("Load the leaderboard first!");return;}
     pool=_lbSorted||[];

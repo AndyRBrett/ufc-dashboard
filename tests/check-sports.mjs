@@ -332,6 +332,15 @@ else {
       const cleared = await page.evaluate(() => { renderSportBoard(); return _sportBoardCache === null; });
       check("...and a reloading sport board has no cached board to roast from", cleared);
       await page.waitForTimeout(800);
+      // Before the card's picks are readable, absence from the board proves
+      // nothing (0017 hides them): nobody may be called a no-show yet.
+      const early = await page.evaluate(() => {
+        const ev = _sportFeed.events.find((e) => e.name === "PFL Last Night"), real = Date.now, t = sportLockMs(ev) - 3600000;
+        Date.now = () => t;
+        try { openTrashTalk(); return (_trashOpponents || []).filter((o) => o.noEventPicks).map((o) => o.nickname); }
+        finally { Date.now = real; }
+      });
+      check("...but nobody is called a no-show before the card's picks are readable", Array.isArray(early) && early.length === 0);
       // Back on UFC, the roast is the UFC board's again.
       await page.evaluate(() => { setSport("ufc"); lbMode = "all"; loadLeaderboard(); });
       await page.waitForTimeout(800);
