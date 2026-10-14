@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T19:45:34Z",
+  "generated_at": "2026-10-14T20:50:40Z",
   "summary": {
     "events": 11,
     "block": 0,
@@ -24,7 +24,7 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC 333: Volkanovski vs. Evloev (10d out): 9 of 11 bouts have no odds",
+      "message": "UFC 333: Volkanovski vs. Evloev (10d out): 2 of 11 bouts have no odds",
       "event": "UFC 333: Volkanovski vs. Evloev",
       "date": "2026-10-24",
       "days_out": 10
