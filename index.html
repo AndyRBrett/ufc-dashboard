@@ -7860,6 +7860,8 @@ var WHATS_NEW=[
    desc:"PFL, RIZIN and DWCS standings now show each player's picks for the card under their name, like UFC, and tap a row for their pick history. Leaving or deleting a room is clearer too: 👥 Rooms → 🚪 Leave room or 🗑️ Delete room."}
   ,{id:"2026-11-03-hero-method-lock-bars",emoji:"📊",title:"Methods and locks at a glance",
    desc:"The countdown card now has two more bars under Your picks: how many bouts have a method and how many 🔒 locks you've used, so you can see the whole card is done."}
+  ,{id:"2026-11-04-sport-trash-talk",emoji:"🔥",title:"Trash talk on every board",
+   desc:"Open Trash Talk from the PFL, RIZIN or DWCS standings and the roast is about that board: who's on it, what they picked and how it went."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -8994,45 +8996,48 @@ function _trashPool(eventSorted,eventAll,allSorted,cutoffDate){
   });
   return out;
 }
-// Ranks opened on another sport (the switch is remembered) never loads the UFC
-// board, and the roast is about the UFC board: fetch it quietly, scoped the
-// way that board would be, instead of refusing with "Load the leaderboard first!".
-function _trashLoadUfc(){
-  var nextEv=_lbNextEvent(Date.now());
-  return Promise.all([
-    _sbFetchAll("/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+PICKS_UFC),
-    _cardPickedBouts(nextEv?nextEv.date:null)
-  ]).then(function(res){
-    var rows=res[0],hidden=nextEv?(res[1]||[]):[];
-    if(!Array.isArray(rows))return false;
-    if(_lbRows)return true;           // the UFC board loaded meanwhile: keep its state
-    _lbCtxEvName=nextEv?nextEv.name:null;_lbCtxEvDate=nextEv?nextEv.date:null;
-    _lbRows=rows;
-    if(lbMode==="current"&&!nextEv){_lbSorted=[];return true;}
-    var sorted=boardStandings(rows,roomScope({date:lbMode==="current"?nextEv.date:null,mainCard:lbScope==="main"}));
-    // As loadLeaderboard: players whose picks on this card are all still
-    // hidden (0017) are on the board too, so they can be roasted.
-    var hid=_lbHiddenPickers(hidden,sorted,nextEv,_curRoom());
-    if(hid.length)sorted=sorted.concat(hid).map(function(u,i){return {u:u,i:i,p:userPts(u)};})
-      .sort(function(a,b){return b.p-a.p||a.i-b.i;}).map(function(x){return x.u;});
-    _lbSorted=sorted;
-    return true;
-  }).catch(function(){return false;});
+// Ranks on another sport: the roast is about the board on screen. Players come
+// from that board (renderSportBoard keeps it in _sportBoardCache), shaped like
+// the UFC board's users so _trashFacts / _trashRecord read them unchanged.
+function _trashSportPool(){
+  var c=typeof _sportBoardCache!=="undefined"?_sportBoardCache:null;
+  if(!c||c.promo!==curSport())return null;
+  var evNames=Object.create(null);
+  var pool=c.users.map(function(u){
+    var picks=(c.picksOf[u.user_id||u.nickname||"unknown"]||[]).map(function(x){
+      var p=x.p,b=x.b,name=nmEq(p.pick,b.a)?b.a:nmEq(p.pick,b.b)?b.b:p.pick;
+      evNames[x.ev.date]=x.ev.name||x.ev.date;
+      return {evDate:x.ev.date,evName:x.ev.name,f1:b.a,f2:b.b,pick:name,method:p.method||"",locked:isLockPick(p),
+        result:b.winner?nmEq(p.pick,b.winner):null,_idx:x.idx};
+    });
+    // Streak: newest settled pick first. A card runs in reverse array order,
+    // so within one date the lower index fought later.
+    var settled=picks.filter(function(r){return r.result!==null;})
+      .sort(function(a,b){return a.evDate<b.evDate?1:a.evDate>b.evDate?-1:a._idx-b._idx;});
+    var streak=0;for(var i=0;i<settled.length&&settled[i].result;i++)streak++;
+    return {nickname:u.nickname,user_id:u.user_id,isMe:!!(u.user_id&&u.user_id===USER_ID),picks:picks,
+      correct:u.correct,total:u.total,methods:u.methods,fotn:0,dogPts:u.dogPts,lockPts:u.lockPts,
+      accuracy:u.accuracy,currentStreak:streak};
+  });
+  var dates=Object.keys(evNames);
+  return {pool:pool,mode:dates.length===1?"current":"all",evName:dates.length===1?evNames[dates[0]]:null};
 }
 function openTrashTalk(){
   document.getElementById("trashSafety").style.display="none";
-  if(!_lbRows){
-    if(typeof curSport==="function"&&curSport()!=="ufc"){
-      _trashLoadUfc().then(function(ok){if(ok&&_lbRows)openTrashTalk();else toast("Couldn't load the board — try again");});
-      return;
+  var sport=typeof curSport==="function"&&curSport()!=="ufc"?curSport():null;
+  var pool,mode=lbMode,evName=_lbCtxEvName;
+  if(sport){
+    var sp=_trashSportPool();
+    if(!sp){toast("Load the leaderboard first!");return;}
+    pool=sp.pool;mode=sp.mode;evName=sp.evName;
+  }else{
+    if(!_lbRows){toast("Load the leaderboard first!");return;}
+    pool=_lbSorted||[];
+    if(lbMode==="current"){
+      var cutoff=new Date(Date.now()-TRASH_ACTIVE_DAYS*DAY_MS).toISOString().slice(0,10);
+      var evAll=_lbCtxEvDate?boardStandings(_lbRows,{date:_lbCtxEvDate}):[];
+      pool=_trashPool(pool,evAll,boardStandings(_lbRows),cutoff);
     }
-    toast("Load the leaderboard first!");return;
-  }
-  var pool=_lbSorted||[];
-  if(lbMode==="current"){
-    var cutoff=new Date(Date.now()-TRASH_ACTIVE_DAYS*DAY_MS).toISOString().slice(0,10);
-    var evAll=_lbCtxEvDate?boardStandings(_lbRows,{date:_lbCtxEvDate}):[];
-    pool=_trashPool(pool,evAll,boardStandings(_lbRows),cutoff);
   }
   var me=null,myRank=0,opponents=[];
   pool.forEach(function(u,i){
@@ -9045,9 +9050,9 @@ function openTrashTalk(){
   // talk: they join as a no-picks sender under the name they set.
   if(!me&&String(userName||"").trim())me=_trashNoPicks(userName,USER_ID,true);
   if(!me){toast("Set your name to trash talk!");return;}
-  if(!opponents.length){toast("Nobody else on the board to roast yet!");return;}
+  if(!opponents.length){toast(sport?"Nobody else on the "+_sportName(sport)+" board yet — picks show once the card locks":"Nobody else on the board to roast yet!");return;}
   _trashMe=me;_trashOpponents=opponents;_trashMyRank=myRank;_trashPersona="";
-  _trashLbMode=lbMode;_trashLbEvName=_lbCtxEvName;
+  _trashLbMode=mode;_trashLbEvName=evName;
   var shuffled=_trashPersonas.slice().sort(function(){return Math.random()-.5;});
   var picks=shuffled.slice(0,3);
   var cardsDiv=document.getElementById("trashPickerCards");
@@ -11467,6 +11472,8 @@ function _sportBoardHistory(list){
 // load started (the user switched sport, or a refresh overtook it) is dropped
 // instead of painting the wrong promotion's standings over the right one.
 var _lbGen=0;
+// The last sport board drawn, for Trash Talk to roast from (_trashSportPool).
+var _sportBoardCache=null;
 // The Ranks board when another sport is selected. Rooms still apply.
 function renderSportBoard(gen){
   var body=document.getElementById("lbBody"),promo=curSport();
@@ -11481,6 +11488,7 @@ function renderSportBoard(gen){
     var hdr=_spEl("div","sport-board-hdr",_sportName(promo)+" standings");
     hdr.appendChild(_spEl("small",null,(room?room.name+" · ":"")+"UFC scoring: winner 1 · method +½ · underdog bonus · 🔒 ±1"));
     body.appendChild(hdr);
+    _sportBoardCache={promo:promo,users:[],picksOf:Object.create(null)};
     if(!users.length){body.appendChild(_spEl("div","lb-empty","No "+_sportName(promo)+" picks yet. Pick a card to get on the board."));return users;}
     // Same row as the UFC board (lb-row), so switching sport changes the
     // numbers, not the look. Ties share a rank, like the UFC board.
@@ -11495,6 +11503,7 @@ function renderSportBoard(gen){
       if(seenP[once])return;seenP[once]=true;
       (picksOf[uid]||(picksOf[uid]=[])).push({p:p,ev:hit.ev,b:hit.bout,idx:hit.idx});
     });
+    _sportBoardCache={promo:promo,users:users,picksOf:picksOf};
     var evs=sportEvents(promo),nextEv=evs.filter(function(e){return e.bouts.some(function(b){return !_sportDecided(b);});})[0]||evs[evs.length-1]||null;
     // Reload once the card's picks become readable, so the 🙈 gives way to
     // them without a manual refresh.
