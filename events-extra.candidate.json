@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-13T23:45:39Z",
+ "generated_at": "2026-10-14T00:15:37Z",
  "promotions": [
   {
    "id": "pfl",
@@ -79,9 +79,9 @@
       "a": -168,
       "b": 142
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Douglas da Lapa",
+     "method": "KO/TKO",
+     "round": 3
     },
     {
      "a": "Gregory Foster",
