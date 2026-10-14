@@ -3259,6 +3259,7 @@ var _trashText="",_trashPersona="",_trashMe=null,_trashOpponents=[],_trashMyRank
 // (the original behaviour, still the default); "group" delivers to everyone on
 // the board except the sender, while the roast stays written about the targets.
 var _trashAudience="targets";
+var _trashBoardIds=null;   // a sport board's players: its roast's "Everyone" (null on UFC = every subscriber)
 // Which leaderboard the trash talk is about, captured when the sheet opens.
 var _trashLbMode="current",_trashLbEvName=null,_lbCtxEvName=null,_lbCtxEvDate=null;
 var _trashPersonas=["Conor McGregor","Chael Sonnen","Colby Covington","Sean Strickland","Nate Diaz","Jorge Masvidal","Israel Adesanya","Jon Jones","Michael Bisping","Dominick Cruz","Daniel Cormier","Rampage Jackson","Tito Ortiz","Kevin Holland","Paddy Pimblett","Sean O'Malley","Dustin Poirier","Justin Gaethje","Kamaru Usman","Henry Cejudo","Ben Askren","Matt Serra","Donald Cerrone","Khabib Nurmagomedov","Max Holloway","Muhammad Ali","Mike Tyson","Floyd Mayweather Jr.","Tyson Fury","Deontay Wilder","Shannon Briggs","Ric Flair","Dwayne Johnson","Stone Cold Steve Austin","John Cena","CM Punk","Triple H","The Miz","MJF","Paul Heyman","Randy Savage","Roddy Piper","Hulk Hogan","Kurt Angle","Booker T","Chris Jericho","Kevin Garnett","Gary Payton","Charles Barkley","Draymond Green","Richard Sherman","Deion Sanders","Terrell Owens","Chad Johnson","Dennis Rodman","Pat McAfee","Marshawn Lynch","Cam Newton","Jalen Ramsey","Shannon Sharpe","Joe Rogan","Bill Burr","Andrew Schulz","Kevin Hart","Theo Von","Don Rickles","Larry David","Howard Stern","Gordon Ramsay","Simon Cowell","Samuel L. Jackson","Katt Williams","Tony Stark","Deadpool","Ron Swanson","Tyler Durden","Trevor Philips","Kratos","Duke Nukem","Sterling Archer","The Joker","Captain Jack Sparrow","Johnny Lawrence","Homelander","Bender Bending Rodríguez","Kenny Powers","Ron Burgundy","Ricky Bobby","Shooter McGavin","Happy Gilmore","Eric Cartman","Rick Sanchez","Stewie Griffin","Saul Goodman","Walter White","Tony Montana","Dave Chappelle","Ricky Gervais","Yosemite Sam","Patrick Bateman","Frank Reynolds","Dr. Cox","Michael Scott","GOB Bluth","Bugs Bunny","Daffy Duck","Foghorn Leghorn","Marvin the Martian","Taz"];
@@ -8902,6 +8903,13 @@ function fireTrashTalk(){
   // null = every subscriber except the sender. "Whole group" takes that path
   // deliberately even though only some of them are being roasted.
   var includeIds=(_trashAudience==="group"||_selectedTargets.has("__all__"))?null:Array.from(_selectedTargets);
+  // A sport board's roast is about that board, so its "Everyone" / whole group
+  // is that board's players, never every subscriber. Never an empty list:
+  // send-push reads an untargeted push as a broadcast.
+  if(!includeIds&&_trashBoardIds){
+    if(!_trashBoardIds.length){btn.disabled=false;toast("Nobody on this board to send it to");return;}
+    includeIds=_trashBoardIds.slice();
+  }
   // Send the AI text once — duplicating it (with a \n---\n split + persona prefix)
   // roughly doubled the body and pushed typical 2-3 sentence roasts past the
   // server's 600-char MAX_BODY guard, which silently rejected them. The SW shows
@@ -9053,6 +9061,7 @@ function openTrashTalk(){
   if(!opponents.length){toast(sport?"Nobody else on the "+_sportName(sport)+" board yet — picks show once the card locks":"Nobody else on the board to roast yet!");return;}
   _trashMe=me;_trashOpponents=opponents;_trashMyRank=myRank;_trashPersona="";
   _trashLbMode=mode;_trashLbEvName=evName;
+  _trashBoardIds=sport?opponents.map(function(o){return o.user_id;}).filter(Boolean):null;
   var shuffled=_trashPersonas.slice().sort(function(){return Math.random()-.5;});
   var picks=shuffled.slice(0,3);
   var cardsDiv=document.getElementById("trashPickerCards");
@@ -11477,6 +11486,7 @@ var _sportBoardCache=null;
 // The Ranks board when another sport is selected. Rooms still apply.
 function renderSportBoard(gen){
   var body=document.getElementById("lbBody"),promo=curSport();
+  _sportBoardCache=null;   // until this load lands, Trash Talk has no board to roast
   gen=gen||++_lbGen;
   body.innerHTML='<div class="lb-loading">Loading picks...</div>';
   return _sbFetchAll("/rest/v1/picks?select=user_id,nickname,event_date,f1,f2,pick,method,confidence,promotion,updated_at&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+_picksFor(promo)).then(function(rows){

@@ -311,6 +311,20 @@ else {
       check("...with its real results as ammo (Cat 0 of 1, lost with Done B; Bob 1 of 1)",
         /😀 Cat — 0 of 1 right/.test(r.facts) && /backed and LOST with: Done B/.test(r.facts) && /🦂 Bob — 1 of 1 right/.test(r.facts));
       check("...and the PFL board stays on screen", /PFL standings/.test(r.board));
+      // "Everyone" on a sport board is that board's players, never a broadcast
+      // (send-push reads a push with no include_user_ids as every subscriber).
+      const pushes = [];
+      page.on("request", (q) => { if (/send-push/.test(q.url()) && q.method() === "POST") pushes.push(JSON.parse(q.postData() || "{}")); });
+      await page.evaluate(() => { _trashText = "test roast — Someone"; _trashPersona = "Someone"; _selectedTargets = new Set(["__all__"]); _trashAudience = "targets"; fireTrashTalk(); });
+      await page.waitForTimeout(2500);
+      const sent = pushes.find((q) => /^trash-talk-/.test(q.type || ""));
+      check("...and 'Everyone' is sent to that board's players only, never every subscriber",
+        !!sent && Array.isArray(sent.include_user_ids) && JSON.stringify(sent.include_user_ids.slice().sort()) === JSON.stringify(["u-bob", "u-cat"]));
+      // A reload (a room switch, a refresh) drops the cache until it lands, so a
+      // roast can't be built from the board being replaced.
+      const cleared = await page.evaluate(() => { renderSportBoard(); return _sportBoardCache === null; });
+      check("...and a reloading sport board has no cached board to roast from", cleared);
+      await page.waitForTimeout(800);
       // Back on UFC, the roast is the UFC board's again.
       await page.evaluate(() => { setSport("ufc"); lbMode = "all"; loadLeaderboard(); });
       await page.waitForTimeout(800);
