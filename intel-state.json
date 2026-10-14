@@ -1,6 +1,6 @@
 {
- "last_fetch": "2026-10-13T18:10:42Z",
- "fingerprint": "655f6966e5e195f7",
+ "last_fetch": "2026-10-14T00:00:44Z",
+ "fingerprint": "3c8cffb105d8cc7a",
  "sources": [
   {
    "id": "mmajunkie",
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -39,6 +39,6 @@
    "items": 0
   }
  ],
- "events": 1,
+ "events": 2,
  "items": 4
 }

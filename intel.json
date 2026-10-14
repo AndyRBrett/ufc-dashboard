@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-13T18:10:42Z",
+ "generated_at": "2026-10-14T00:00:44Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -45,19 +45,6 @@
    "date": "2026-10-17",
    "items": [
     {
-     "title": "Joaquin Buckley vs Impa Kasanganay | FULL FIGHT | UFC Edmonton",
-     "url": "https://www.youtube.com/watch?v=RKXLDGQXEHE",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-13T16:00:36Z",
-     "thumb": "https://i3.ytimg.com/vi/RKXLDGQXEHE/hqdefault.jpg",
-     "blurb": "Watch the matchup between Joaquin Buckley and Impa Kasanganay ahead of Buckley's main event match up against Mike Malott at UFC Edmonton! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the…",
-     "fighters": [
-      "Joaquin Buckley",
-      "Mike Malott"
-     ]
-    },
-    {
      "title": "UFC Edmonton preview: Start time, full card and how to watch Joaquin Buckley vs Mike Malott",
      "url": "https://bloodyelbow.com/2026/10/13/ufc-edmonton-preview-start-time-full-card-and-how-to-watch-joaquin-buckley-vs-mike-malott/",
      "source": "Bloody Elbow",
@@ -69,29 +56,49 @@
       "Joaquin Buckley",
       "Mike Malott"
      ]
-    },
+    }
+   ]
+  },
+  "UFC_333": {
+   "name": "UFC 333: Volkanovski vs. Evloev",
+   "date": "2026-10-24",
+   "items": [
     {
-     "title": "Mike Malott's Career So Far 🇨🇦 #ufcedmonton",
-     "url": "https://www.youtube.com/shorts/ZW8klK7UPF4",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-13T16:01:19Z",
-     "thumb": "https://i3.ytimg.com/vi/ZW8klK7UPF4/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS, the digital subscription service of the UFC. Visit…",
+     "title": "Movsar Evloev says he's entering his prime before Alexander Volkanovski title fight",
+     "url": "https://www.sherdog.com/news/news/Movsar-Evloev-says-hes-entering-his-prime-before-Alexander-Volkanovski-title-fight-203185",
+     "source": "Sherdog",
+     "kind": "article",
+     "published": "2026-10-13T02:52:21Z",
+     "thumb": null,
+     "blurb": "Movsar Evloev feels he has hit his prime ahead of his title fight against Alexander Volkanovski .",
      "fighters": [
-      "Mike Malott"
+      "Alexander Volkanovski",
+      "Movsar Evloev"
      ]
     },
     {
-     "title": "Why did Joaquin Buckley scream like that 😂 #ufcedmonton",
-     "url": "https://www.youtube.com/shorts/9sxoa_278VY",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-12T18:30:09Z",
-     "thumb": "https://i2.ytimg.com/vi/9sxoa_278VY/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS, the digital subscription service of the UFC. Visit…",
+     "title": "Merab Dvalishvili admits he knew he wasn’t going to beat Petr Yan in second round of their rematch",
+     "url": "https://bloodyelbow.com/2026/10/13/merab-dvalishvili-admits-he-knew-he-wasnt-going-to-beat-petr-yan-in-second-round-of-their-rematch/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-10-14T00:00:00Z",
+     "thumb": null,
+     "blurb": "Merab Dvalishvili has opened up on his second fight with Petr Yan ahead of their trilogy. Last December, Yan ended Dvalishvili’s dominant win streak by ...",
      "fighters": [
-      "Joaquin Buckley"
+      "Merab Dvalishvili",
+      "Petr Yan"
+     ]
+    },
+    {
+     "title": "Josh Hokit rips Alexander Volkov, teases move to light heavyweight",
+     "url": "https://www.sherdog.com/news/news/Josh-Hokit-rips-Alexander-Volkov-teases-move-to-light-heavyweight-203136",
+     "source": "Sherdog",
+     "kind": "article",
+     "published": "2026-10-09T02:38:33Z",
+     "thumb": null,
+     "blurb": "Josh Hokit believes Alexander Volkov will never get a chance to fight him.",
+     "fighters": [
+      "Alexander Volkov"
      ]
     }
    ]
