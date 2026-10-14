@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T06:30:38Z",
+  "generated_at": "2026-10-14T07:35:36Z",
   "events_tracked": 11,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "ok",
-      "last_changed_at": "2026-10-14T01:10:39Z",
+      "last_changed_at": "2026-10-14T07:35:36Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -116,7 +116,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-14T06:30:38Z",
+      "last_changed_at": "2026-10-14T07:35:36Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-14T06:30:38Z",
+      "last_changed_at": "2026-10-14T07:35:36Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -146,7 +146,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-14T06:30:38Z",
+      "last_changed_at": "2026-10-14T07:35:36Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -201,17 +201,17 @@
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Chad Anheliger",
       "f2": "Steven Koslow",
-      "f1_movement": 242,
-      "f2_movement": -249,
-      "magnitude": 249,
+      "f1_movement": 253,
+      "f2_movement": -262,
+      "magnitude": 262,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Bantamweight",
-      "f1_prob_shift": -9.4,
-      "f2_prob_shift": 10.5,
-      "priority": 348.6
+      "f1_prob_shift": -11.7,
+      "f2_prob_shift": 12.7,
+      "priority": 366.8
     },
     {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",

@@ -2,30 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Lupita Godinez",
-   "b": "Ketlen Souza",
-   "a_odds": -240,
-   "b_odds": 198,
-   "commence_time": "2026-10-11T01:15:00Z",
-   "seen_at": "2026-10-10T20:05:21Z"
-  },
-  {
-   "a": "Matheus Camilo",
-   "b": "Jai Herbert",
-   "a_odds": -191,
-   "b_odds": 157,
-   "commence_time": "2026-10-11T01:45:00Z",
-   "seen_at": "2026-10-10T01:55:19Z"
-  },
-  {
-   "a": "Brendan Allen",
-   "b": "Christian Leroy Duncan",
-   "a_odds": -123,
-   "b_odds": 103,
-   "commence_time": "2026-10-11T02:15:00Z",
-   "seen_at": "2026-10-10T04:55:20Z"
-  },
-  {
    "a": "Greg Foster",
    "b": "Jason Asher",
    "a_odds": 176,
@@ -106,6 +82,46 @@
    "seen_at": "2026-10-14T01:10:22Z"
   },
   {
+   "a": "Dario Bellandi",
+   "b": "Aldo Pereira",
+   "a_odds": -650,
+   "b_odds": 475,
+   "commence_time": "2026-10-17T16:00:00Z",
+   "seen_at": "2026-10-14T07:35:20Z"
+  },
+  {
+   "a": "Enrico Di Gangi",
+   "b": "Tommy Brunning",
+   "a_odds": -210,
+   "b_odds": 180,
+   "commence_time": "2026-10-17T16:00:00Z",
+   "seen_at": "2026-10-14T07:35:20Z"
+  },
+  {
+   "a": "Giuseppe Mastrogiacomo",
+   "b": "Alexis Tsarmantidis",
+   "a_odds": -250,
+   "b_odds": 207,
+   "commence_time": "2026-10-17T16:00:00Z",
+   "seen_at": "2026-10-14T07:35:20Z"
+  },
+  {
+   "a": "Salvatore Bellotta",
+   "b": "Christian Tosco",
+   "a_odds": -150,
+   "b_odds": 130,
+   "commence_time": "2026-10-17T16:00:00Z",
+   "seen_at": "2026-10-14T07:35:20Z"
+  },
+  {
+   "a": "Simone Patrizi",
+   "b": "Dylan Logan",
+   "a_odds": -140,
+   "b_odds": 120,
+   "commence_time": "2026-10-17T16:00:00Z",
+   "seen_at": "2026-10-14T07:35:20Z"
+  },
+  {
    "a": "Erin Blanchfield",
    "b": "Jasmine Jasudavicius",
    "a_odds": -333,
@@ -172,10 +188,10 @@
   {
    "a": "Chad Anheliger",
    "b": "Steven Koslow",
-   "a_odds": 112,
-   "b_odds": -139,
+   "a_odds": 123,
+   "b_odds": -152,
    "commence_time": "2026-10-18T02:00:00Z",
-   "seen_at": "2026-10-14T01:10:22Z"
+   "seen_at": "2026-10-14T07:35:20Z"
   },
   {
    "a": "Cody Chovancek",

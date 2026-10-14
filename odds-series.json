@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T06:30:38Z",
+  "generated_at": "2026-10-14T07:35:36Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -15269,7 +15269,7 @@
           "f1": "Chad Anheliger",
           "f2": "Steven Koslow",
           "lbl": "Prelim",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15305,6 +15305,11 @@
               "at": "2026-10-14T01:10:39Z",
               "f1_odds": 112,
               "f2_odds": -139
+            },
+            {
+              "at": "2026-10-14T07:35:36Z",
+              "f1_odds": 123,
+              "f2_odds": -152
             }
           ],
           "open": {
@@ -20859,7 +20864,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Steven Koslow",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -130,
         "close": null,
         "clv": null
@@ -20870,7 +20875,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Chad Anheliger",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 110,
         "close": null,
         "clv": null
