@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-14T02:10:42Z",
+ "generated_at": "2026-10-14T15:31:13Z",
  "promotions": [
   {
    "id": "pfl",
@@ -115,7 +115,7 @@
      "title": true,
      "odds": {
       "a": -350,
-      "b": 280
+      "b": 268
      },
      "winner": "",
      "method": "",
@@ -128,8 +128,8 @@
      "division": "Featherweight",
      "title": false,
      "odds": {
-      "a": -425,
-      "b": 325
+      "a": -432,
+      "b": 318
      },
      "winner": "",
      "method": "",
@@ -164,8 +164,8 @@
      "division": "Welterweight",
      "title": false,
      "odds": {
-      "a": -145,
-      "b": 125
+      "a": -150,
+      "b": 124
      },
      "winner": "",
      "method": "",
@@ -178,8 +178,8 @@
      "division": "Light Heavyweight",
      "title": false,
      "odds": {
-      "a": 219,
-      "b": -265
+      "a": 220,
+      "b": -280
      },
      "winner": "",
      "method": "",
@@ -214,8 +214,8 @@
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": -2500,
-      "b": 1156
+      "a": -3250,
+      "b": 1128
      },
      "winner": "",
      "method": "",
@@ -292,6 +292,17 @@
      "label": "Main Event",
      "division": "Flyweight",
      "title": true,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Naoki Inoue",
+     "b": "Yrysbek Tilenov",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
      "odds": null,
      "winner": "",
      "method": "",
