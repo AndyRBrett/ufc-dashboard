@@ -176,7 +176,7 @@ else {
         return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(hiddenRows) });
       if (/\/rest\/v1\/picks/.test(url)) {
         if (req.method() === "GET") reads.push(url);
-        if (ufcRows && req.method() === "GET" && /promotion=eq\.ufc/.test(url) && /select=user_id,event_name/.test(url))
+        if (ufcRows && req.method() === "GET" && /promotion=eq\.ufc/.test(url) && /select=user_id,(event_name|nickname,event_date)/.test(url))
           return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(ufcRows) });
         else writes.push({ method: req.method(), url, body: req.postData() });
         // The server's cap trigger clamps a lock past two to 0 and returns the stored row.
@@ -293,7 +293,11 @@ else {
     // picks and results, its card's name. Never the UFC board, which on this
     // screen isn't even loaded.
     {
+      // UfcGuy last played long ago; Slacker plays UFC (5 days ago, relative to
+      // the clock) but skipped this PFL card: fair game for sitting it out.
+      const recent = iso(new Date(now.getTime() - 5 * 86400000));
       ufcRows = [
+        { user_id: "u-slack", nickname: "🐢 Slacker", promotion: "ufc", event_date: recent, event_name: "UFC Recent", f1: "X One", f2: "Y Two", pick: "X One", method: "", confidence: 0, updated_at: recent + "T00:00:00Z" },
         { user_id: "u-ufc", nickname: "🥊 UfcGuy", promotion: "ufc", event_date: "2026-01-01", event_name: "UFC Old", f1: "X One", f2: "Y Two", pick: "Y Two", method: "", confidence: 0, updated_at: "2026-01-01T00:00:00Z" }];
       const { page, errors } = await boot(FEED);
       await page.click("#sportBar .sport-tab:nth-child(2)");
@@ -304,6 +308,7 @@ else {
       const r = await page.evaluate(() => ({
         picker: document.getElementById("trashPersonaPicker").style.display,
         opp: (_trashOpponents || []).map((o) => o.nickname), mode: _trashLbMode, ev: _trashLbEvName,
+        slack: (_trashOpponents || []).filter((o) => o.noEventPicks).map((o) => o.nickname),
         facts: _trashMe ? _trashFacts(_trashMe, _trashOpponents) : "", board: document.getElementById("lbBody").textContent }));
       check("Trash Talk on a PFL board opens with that board's players, not the UFC board's",
         r.picker === "block" && r.opp.includes("🦂 Bob") && r.opp.includes("😀 Cat") && !r.opp.includes("🥊 UfcGuy"));
@@ -311,6 +316,8 @@ else {
       check("...with its real results as ammo (Cat 0 of 1, lost with Done B; Bob 1 of 1)",
         /😀 Cat — 0 of 1 right/.test(r.facts) && /backed and LOST with: Done B/.test(r.facts) && /🦂 Bob — 1 of 1 right/.test(r.facts));
       check("...and the PFL board stays on screen", /PFL standings/.test(r.board));
+      check("...plus recent UFC players who skipped the card, as no-picks targets (not ones long gone)",
+        JSON.stringify(r.slack) === '["🐢 Slacker"]' && /🐢 Slacker — hasn't made a single pick for PFL Last Night yet/.test(r.facts));
       // "Everyone" on a sport board is that board's players, never a broadcast
       // (send-push reads a push with no include_user_ids as every subscriber).
       const pushes = [];
@@ -319,7 +326,7 @@ else {
       await page.waitForTimeout(2500);
       const sent = pushes.find((q) => /^trash-talk-/.test(q.type || ""));
       check("...and 'Everyone' is sent to that board's players only, never every subscriber",
-        !!sent && Array.isArray(sent.include_user_ids) && JSON.stringify(sent.include_user_ids.slice().sort()) === JSON.stringify(["u-bob", "u-cat"]));
+        !!sent && Array.isArray(sent.include_user_ids) && JSON.stringify(sent.include_user_ids.slice().sort()) === JSON.stringify(["u-bob", "u-cat", "u-slack"]));
       // A reload (a room switch, a refresh) drops the cache until it lands, so a
       // roast can't be built from the board being replaced.
       const cleared = await page.evaluate(() => { renderSportBoard(); return _sportBoardCache === null; });

@@ -9028,16 +9028,51 @@ function _trashSportPool(){
       accuracy:u.accuracy,currentStreak:streak};
   });
   var dates=Object.keys(evNames);
-  return {pool:pool,mode:dates.length===1?"current":"all",evName:dates.length===1?evNames[dates[0]]:null};
+  var evName=dates.length===1?evNames[dates[0]]:null;
+  // Nobody has picked any card on the board: it's about the card the feed is
+  // on, the one that's started (or just finished), else the next one.
+  if(!dates.length){
+    var evs=sportEvents(c.promo),started=evs.filter(function(e){return e.bouts.some(function(b){return _sportDecided(b);});});
+    var ev=started[started.length-1]||evs[0];
+    if(ev)evName=ev.name||ev.date;
+  }
+  return {pool:pool,mode:dates.length>1?"all":"current",evName:evName};
+}
+// The group a sport board's roast can also reach: everyone who has played the
+// UFC board within TRASH_ACTIVE_DAYS but isn't on this board, as "no picks"
+// targets (roasted for sitting the card out, as the UFC board does). In a room,
+// only its members. Read from the UFC picks, fetched once if Ranks never drew
+// the UFC board; a failed read just means no extra targets.
+var _trashGroupRows=null;
+function _trashSportSlackers(onBoard){
+  var rows=_lbRows||_trashGroupRows||[],seen=Object.create(null),out=[];
+  var cutoff=new Date(Date.now()-TRASH_ACTIVE_DAYS*DAY_MS).toISOString().slice(0,10);
+  var room=typeof _curRoom==="function"?_curRoom():null,inRoom=room?roomHas(room):null;
+  rows.forEach(function(r){
+    var uid=r.user_id;if(!uid||seen[uid])return;
+    seen[uid]=true;                                   // rows are newest first: this is their current name
+    if(uid===USER_ID||onBoard[uid]||(r.event_date||"")<cutoff)return;
+    if(inRoom&&!inRoom(uid))return;
+    if(!String(r.nickname||"").trim())return;
+    out.push(_trashNoPicks(r.nickname,uid,false));
+  });
+  return out;
 }
 function openTrashTalk(){
   document.getElementById("trashSafety").style.display="none";
   var sport=typeof curSport==="function"&&curSport()!=="ufc"?curSport():null;
   var pool,mode=lbMode,evName=_lbCtxEvName;
   if(sport){
+    if(!_lbRows&&!_trashGroupRows){
+      _sbFetchAll("/rest/v1/picks?select=user_id,nickname,event_date,updated_at&order=updated_at.desc,user_id.asc"+PICKS_UFC)
+        .then(function(r){_trashGroupRows=Array.isArray(r)?r:[];},function(){_trashGroupRows=[];})
+        .then(openTrashTalk);
+      return;
+    }
     var sp=_trashSportPool();
     if(!sp){toast("Load the leaderboard first!");return;}
-    pool=sp.pool;mode=sp.mode;evName=sp.evName;
+    var onBoard=Object.create(null);sp.pool.forEach(function(u){if(u.user_id)onBoard[u.user_id]=true;});
+    pool=sp.pool.concat(_trashSportSlackers(onBoard));mode=sp.mode;evName=sp.evName;
   }else{
     if(!_lbRows){toast("Load the leaderboard first!");return;}
     pool=_lbSorted||[];
@@ -9058,7 +9093,7 @@ function openTrashTalk(){
   // talk: they join as a no-picks sender under the name they set.
   if(!me&&String(userName||"").trim())me=_trashNoPicks(userName,USER_ID,true);
   if(!me){toast("Set your name to trash talk!");return;}
-  if(!opponents.length){toast(sport?"Nobody else on the "+_sportName(sport)+" board yet — picks show once the card locks":"Nobody else on the board to roast yet!");return;}
+  if(!opponents.length){toast(sport?"Nobody else to roast on the "+_sportName(sport)+" board yet":"Nobody else on the board to roast yet!");return;}
   _trashMe=me;_trashOpponents=opponents;_trashMyRank=myRank;_trashPersona="";
   _trashLbMode=mode;_trashLbEvName=evName;
   _trashBoardIds=sport?opponents.map(function(o){return o.user_id;}).filter(Boolean):null;
