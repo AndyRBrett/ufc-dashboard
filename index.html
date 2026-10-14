@@ -8994,9 +8994,29 @@ function _trashPool(eventSorted,eventAll,allSorted,cutoffDate){
   });
   return out;
 }
+// Ranks opened on another sport (the switch is remembered) never loads the UFC
+// board, and the roast is about the UFC board: fetch it quietly, scoped the
+// way that board would be, instead of refusing with "Load the leaderboard first!".
+function _trashLoadUfc(){
+  return _sbFetchAll("/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+PICKS_UFC).then(function(rows){
+    if(!Array.isArray(rows))return false;
+    if(_lbRows)return true;           // the UFC board loaded meanwhile: keep its state
+    var nextEv=_lbNextEvent(Date.now());
+    _lbCtxEvName=nextEv?nextEv.name:null;_lbCtxEvDate=nextEv?nextEv.date:null;
+    _lbRows=rows;
+    _lbSorted=lbMode==="current"&&!nextEv?[]:boardStandings(rows,roomScope({date:lbMode==="current"?nextEv.date:null,mainCard:lbScope==="main"}));
+    return true;
+  }).catch(function(){return false;});
+}
 function openTrashTalk(){
   document.getElementById("trashSafety").style.display="none";
-  if(!_lbRows){toast("Load the leaderboard first!");return;}
+  if(!_lbRows){
+    if(typeof curSport==="function"&&curSport()!=="ufc"){
+      _trashLoadUfc().then(function(ok){if(ok&&_lbRows)openTrashTalk();else toast("Couldn't load the board — try again");});
+      return;
+    }
+    toast("Load the leaderboard first!");return;
+  }
   var pool=_lbSorted||[];
   if(lbMode==="current"){
     var cutoff=new Date(Date.now()-TRASH_ACTIVE_DAYS*DAY_MS).toISOString().slice(0,10);
