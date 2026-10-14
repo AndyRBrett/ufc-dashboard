@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-14T01:25:39Z",
+ "generated_at": "2026-10-14T02:10:42Z",
  "promotions": [
   {
    "id": "pfl",
@@ -28,18 +28,18 @@
    "broadcast": "",
    "bouts": [
     {
-     "a": "Ilias Bulaid",
-     "b": "Erick Visconde",
+     "a": "Erick Visconde",
+     "b": "Ilias Bulaid",
      "label": "Main Event",
      "division": "Featherweight",
      "title": false,
      "odds": {
-      "a": -141,
-      "b": 118
+      "a": 118,
+      "b": -141
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Erick Visconde",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
      "a": "Smilla Sundell",
