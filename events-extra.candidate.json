@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-14T00:35:36Z",
+ "generated_at": "2026-10-14T01:10:40Z",
  "promotions": [
   {
    "id": "pfl",
@@ -113,7 +113,10 @@
      "label": "Main Event",
      "division": "Women's Flyweight",
      "title": true,
-     "odds": null,
+     "odds": {
+      "a": -350,
+      "b": 280
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -124,7 +127,10 @@
      "label": "",
      "division": "Featherweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": -425,
+      "b": 325
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -157,7 +163,10 @@
      "label": "",
      "division": "Welterweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": -145,
+      "b": 125
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -168,7 +177,10 @@
      "label": "",
      "division": "Light Heavyweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": 219,
+      "b": -265
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -201,7 +213,10 @@
      "label": "",
      "division": "Lightweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": -2500,
+      "b": 1156
+     },
      "winner": "",
      "method": "",
      "round": null
