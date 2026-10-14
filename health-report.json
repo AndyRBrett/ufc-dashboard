@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-14T17:41:05Z",
+  "generated_at": "2026-10-14T18:40:40Z",
   "summary": {
     "events": 11,
     "block": 0,
-    "warn": 6
+    "warn": 5
   },
   "findings": [
     {
@@ -38,15 +38,6 @@
       "severity": "WARN",
       "check": "odds-quota",
       "message": "Odds API quota down to 0 requests \u2014 lines are frozen until the quota resets"
-    },
-    {
-      "severity": "WARN",
-      "check": "time-unconfirmed",
-      "message": "UFC 333: Volkanovski vs. Evloev (10d out): UFC.com reading has no early prelims time, so it is unchecked",
-      "event": "UFC 333: Volkanovski vs. Evloev",
-      "date": "2026-10-24",
-      "days_out": 10,
-      "segment": "early"
     }
   ]
 }
