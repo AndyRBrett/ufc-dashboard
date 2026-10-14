@@ -8994,9 +8994,40 @@ function _trashPool(eventSorted,eventAll,allSorted,cutoffDate){
   });
   return out;
 }
+// Ranks opened on another sport (the switch is remembered) never loads the UFC
+// board, and the roast is about the UFC board: fetch it quietly, scoped the
+// way that board would be, instead of refusing with "Load the leaderboard first!".
+function _trashLoadUfc(){
+  var nextEv=_lbNextEvent(Date.now());
+  return Promise.all([
+    _sbFetchAll("/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+PICKS_UFC),
+    _cardPickedBouts(nextEv?nextEv.date:null)
+  ]).then(function(res){
+    var rows=res[0],hidden=nextEv?(res[1]||[]):[];
+    if(!Array.isArray(rows))return false;
+    if(_lbRows)return true;           // the UFC board loaded meanwhile: keep its state
+    _lbCtxEvName=nextEv?nextEv.name:null;_lbCtxEvDate=nextEv?nextEv.date:null;
+    _lbRows=rows;
+    if(lbMode==="current"&&!nextEv){_lbSorted=[];return true;}
+    var sorted=boardStandings(rows,roomScope({date:lbMode==="current"?nextEv.date:null,mainCard:lbScope==="main"}));
+    // As loadLeaderboard: players whose picks on this card are all still
+    // hidden (0017) are on the board too, so they can be roasted.
+    var hid=_lbHiddenPickers(hidden,sorted,nextEv,_curRoom());
+    if(hid.length)sorted=sorted.concat(hid).map(function(u,i){return {u:u,i:i,p:userPts(u)};})
+      .sort(function(a,b){return b.p-a.p||a.i-b.i;}).map(function(x){return x.u;});
+    _lbSorted=sorted;
+    return true;
+  }).catch(function(){return false;});
+}
 function openTrashTalk(){
   document.getElementById("trashSafety").style.display="none";
-  if(!_lbRows){toast("Load the leaderboard first!");return;}
+  if(!_lbRows){
+    if(typeof curSport==="function"&&curSport()!=="ufc"){
+      _trashLoadUfc().then(function(ok){if(ok&&_lbRows)openTrashTalk();else toast("Couldn't load the board — try again");});
+      return;
+    }
+    toast("Load the leaderboard first!");return;
+  }
   var pool=_lbSorted||[];
   if(lbMode==="current"){
     var cutoff=new Date(Date.now()-TRASH_ACTIVE_DAYS*DAY_MS).toISOString().slice(0,10);

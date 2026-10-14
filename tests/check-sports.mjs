@@ -152,7 +152,7 @@ else {
   await new Promise((r) => server.listen(0, r));
   const base = `http://127.0.0.1:${server.address().port}`;
   const browser = await launchChromium(chromium);
-  let slowUfc = false, clampLocks = false, restoreRows = null;
+  let slowUfc = false, clampLocks = false, restoreRows = null, ufcRows = null, hiddenRows = null;
   const boot = async (feed, opts = {}) => {
     const page = await browser.newPage();
     const errors = [], writes = [], reads = [];
@@ -172,8 +172,12 @@ else {
         return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify([
           { user_id: "u-ufc", nickname: "🥊 UfcGuy", promotion: "ufc", event_date: "2026-01-01", f1: "X", f2: "Y", pick: "X", method: "", confidence: 0, updated_at: "2026-01-01T00:00:00Z" }]) });
       }
+      if (hiddenRows && /\/rest\/v1\/rpc\/card_picked_bouts/.test(url))
+        return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(hiddenRows) });
       if (/\/rest\/v1\/picks/.test(url)) {
         if (req.method() === "GET") reads.push(url);
+        if (ufcRows && req.method() === "GET" && /promotion=eq\.ufc/.test(url) && /select=user_id,event_name/.test(url))
+          return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(ufcRows) });
         else writes.push({ method: req.method(), url, body: req.postData() });
         // The server's cap trigger clamps a lock past two to 0 and returns the stored row.
         if (clampLocks && req.method() === "POST")
@@ -283,6 +287,47 @@ else {
       await page.waitForTimeout(250);
       check("un-picking drops the pick's method and lock too", !Object.keys(await meta()).some((k) => /Ann One/.test(k)));
       check("no page errors with method and locks", errors.length === 0 || (console.error("    " + errors.join("\n    ")), false));
+      await page.close();
+    }
+    // Trash Talk from Ranks opened straight on another sport: the UFC board the
+    // roast reads was never drawn, so it is fetched on demand instead of the
+    // button refusing with "Load the leaderboard first!".
+    {
+      ufcRows = [
+        { user_id: "u-Andy", nickname: "🥊 Andy", promotion: "ufc", event_date: "2026-01-01", event_name: "UFC Old", f1: "X One", f2: "Y Two", pick: "X One", method: "", confidence: 0, updated_at: "2026-01-02T00:00:00Z" },
+        { user_id: "u-ufc", nickname: "🥊 UfcGuy", promotion: "ufc", event_date: "2026-01-01", event_name: "UFC Old", f1: "X One", f2: "Y Two", pick: "Y Two", method: "", confidence: 0, updated_at: "2026-01-01T00:00:00Z" }];
+      const { page, errors } = await boot(FEED);
+      await page.click("#sportBar .sport-tab:nth-child(2)");
+      await page.evaluate(() => { lbMode = "all"; openLeaderboard(); });
+      await page.waitForTimeout(800);
+      const before = await page.evaluate(() => _lbRows === null && /PFL standings/.test(document.getElementById("lbBody").textContent));
+      await page.evaluate(() => openTrashTalk());
+      await page.waitForTimeout(800);
+      const after = await page.evaluate(() => ({ picker: document.getElementById("trashPersonaPicker").style.display, toast: document.getElementById("toast").textContent, board: document.getElementById("lbBody").textContent }));
+      check("Trash Talk on another sport's board loads the UFC board itself and opens", before && after.picker === "block" && !/Load the leaderboard first/.test(after.toast));
+      check("...without painting the UFC board over the sport one", /PFL standings/.test(after.board));
+      check("no page errors opening Trash Talk from a sport board", errors.length === 0 || (console.error("    " + errors.join("\n    ")), false));
+      await page.close();
+    }
+    // "This Event" before the card locks: every opponent's pick on it is
+    // hidden (0017), so the only way they reach the roast pool is
+    // card_picked_bouts, merged in as the UFC board merges it.
+    {
+      const { page } = await boot(FEED);
+      const fight = await page.evaluate(() => { const ev = _lbNextEvent(Date.now()); return ev ? { f1: ev.fights[0].f1.n, f2: ev.fights[0].f2.n } : null; });
+      if (!fight) check("hidden pickers join the roast pool (no upcoming UFC card in data.js: nothing to hide)", true);
+      else {
+        ufcRows = [ufcRows[0]];   // only me readable
+        hiddenRows = [{ user_id: "u-hid", nickname: "🙈 Hidden", f1: fight.f1, f2: fight.f2, updated_at: "2026-01-01T00:00:00Z" }];
+        await page.click("#sportBar .sport-tab:nth-child(2)");
+        await page.evaluate(() => { lbMode = "current"; openLeaderboard(); });
+        await page.waitForTimeout(800);
+        await page.evaluate(() => openTrashTalk());
+        await page.waitForTimeout(800);
+        const r = await page.evaluate(() => ({ picker: document.getElementById("trashPersonaPicker").style.display, opp: (_trashOpponents || []).map((o) => o.nickname) }));
+        check("someone whose only picks are this card's, still hidden, can be roasted from a sport board", r.picker === "block" && r.opp.includes("🙈 Hidden"));
+      }
+      ufcRows = null; hiddenRows = null;
       await page.close();
     }
     // The server is the last word on the cap (two phones on one account).
