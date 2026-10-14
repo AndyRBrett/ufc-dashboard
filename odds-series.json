@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T13:00:46Z",
+  "generated_at": "2026-10-14T14:05:47Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -14919,7 +14919,7 @@
           "f1": "Erin Blanchfield",
           "f2": "Jasmine Jasudavicius",
           "lbl": "Co-Main",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -14970,6 +14970,11 @@
               "at": "2026-10-14T01:10:39Z",
               "f1_odds": -333,
               "f2_odds": 253
+            },
+            {
+              "at": "2026-10-14T14:05:47Z",
+              "f1_odds": -337,
+              "f2_odds": 255
             }
           ],
           "open": {
@@ -20743,7 +20748,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Jasmine Jasudavicius",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -230,
         "close": null,
         "clv": null
@@ -20754,7 +20759,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Erin Blanchfield",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 192,
         "close": null,
         "clv": null
