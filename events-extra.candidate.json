@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-14T01:10:40Z",
+ "generated_at": "2026-10-14T01:25:39Z",
  "promotions": [
   {
    "id": "pfl",
@@ -42,18 +42,18 @@
      "round": null
     },
     {
-     "a": "Aline Pereira",
-     "b": "Smilla Sundell",
+     "a": "Smilla Sundell",
+     "b": "Aline Pereira",
      "label": "",
      "division": "Women's Bantamweight",
      "title": false,
      "odds": {
-      "a": 387,
-      "b": -513
+      "a": -513,
+      "b": 387
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Smilla Sundell",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
      "a": "Luis Francischinelli",
