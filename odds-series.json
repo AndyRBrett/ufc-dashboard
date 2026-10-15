@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-15T20:55:37Z",
+  "generated_at": "2026-10-15T22:00:45Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -15099,7 +15099,7 @@
           "f1": "Louis Jourdain",
           "f2": "Timothy Cuamba",
           "lbl": "Main Card",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15170,6 +15170,11 @@
               "at": "2026-10-15T17:40:39Z",
               "f1_odds": -190,
               "f2_odds": 150
+            },
+            {
+              "at": "2026-10-15T22:00:45Z",
+              "f1_odds": -188,
+              "f2_odds": 149
             }
           ],
           "open": {
@@ -15364,7 +15369,7 @@
           "f1": "Chad Anheliger",
           "f2": "Steven Koslow",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15425,6 +15430,11 @@
               "at": "2026-10-15T19:50:36Z",
               "f1_odds": 133,
               "f2_odds": -165
+            },
+            {
+              "at": "2026-10-15T22:00:45Z",
+              "f1_odds": 131,
+              "f2_odds": -162
             }
           ],
           "open": {
@@ -15439,7 +15449,7 @@
           "f1": "Melissa Croden",
           "f2": "Chelsea Chandler",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15505,6 +15515,11 @@
               "at": "2026-10-15T10:05:42Z",
               "f1_odds": -314,
               "f2_odds": 240
+            },
+            {
+              "at": "2026-10-15T22:00:45Z",
+              "f1_odds": -307,
+              "f2_odds": 240
             }
           ],
           "open": {
@@ -15519,7 +15534,7 @@
           "f1": "Cody Chovancek",
           "f2": "You Su-young",
           "lbl": "Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15565,6 +15580,11 @@
               "at": "2026-10-15T10:05:42Z",
               "f1_odds": -140,
               "f2_odds": 114
+            },
+            {
+              "at": "2026-10-15T22:00:45Z",
+              "f1_odds": -138,
+              "f2_odds": 113
             }
           ],
           "open": {
@@ -15795,7 +15815,7 @@
           "f1": "Alexander Volkov",
           "f2": "Rizvan Kuniev",
           "lbl": "Main Card",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -15806,6 +15826,11 @@
               "at": "2026-10-15T02:10:34Z",
               "f1_odds": -135,
               "f2_odds": 115
+            },
+            {
+              "at": "2026-10-15T22:00:45Z",
+              "f1_odds": -130,
+              "f2_odds": 110
             }
           ],
           "open": {
@@ -15890,12 +15915,17 @@
           "f1": "Abusupiyan Magomedov",
           "f2": "Cameron Rowston",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
               "f1_odds": -118,
               "f2_odds": -102
+            },
+            {
+              "at": "2026-10-15T22:00:45Z",
+              "f1_odds": -103,
+              "f2_odds": -117
             }
           ],
           "open": {
@@ -16864,7 +16894,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Melissa Croden",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 205,
         "close": null,
         "clv": null
@@ -17598,7 +17628,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Cameron Rowston",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -118,
         "close": null,
         "clv": null
@@ -21156,7 +21186,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Timothy Cuamba",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -170,
         "close": null,
         "clv": null
@@ -21167,7 +21197,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Louis Jourdain",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 130,
         "close": null,
         "clv": null
@@ -21244,7 +21274,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Steven Koslow",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -130,
         "close": null,
         "clv": null
@@ -21255,7 +21285,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Chad Anheliger",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 110,
         "close": null,
         "clv": null
@@ -21266,7 +21296,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Chelsea Chandler",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -240,
         "close": null,
         "clv": null
@@ -21277,7 +21307,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "You Su-young",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -150,
         "close": null,
         "clv": null
@@ -21288,7 +21318,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Cody Chovancek",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 130,
         "close": null,
         "clv": null
@@ -21376,7 +21406,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Rizvan Kuniev",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -125,
         "close": null,
         "clv": null
@@ -21387,7 +21417,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Alexander Volkov",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 105,
         "close": null,
         "clv": null
@@ -21431,7 +21461,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Abusupiyan Magomedov",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -102,
         "close": null,
         "clv": null
