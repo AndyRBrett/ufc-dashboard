@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-15T16:39:03Z",
+  "generated_at": "2026-10-15T17:40:39Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -14929,7 +14929,7 @@
           "f1": "Erin Blanchfield",
           "f2": "Jasmine Jasudavicius",
           "lbl": "Co-Main",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -14985,6 +14985,11 @@
               "at": "2026-10-14T14:05:47Z",
               "f1_odds": -337,
               "f2_odds": 255
+            },
+            {
+              "at": "2026-10-15T17:40:39Z",
+              "f1_odds": -342,
+              "f2_odds": 258
             }
           ],
           "open": {
@@ -14999,7 +15004,7 @@
           "f1": "Marc-Andre Barriault",
           "f2": "Kyle Daukaus",
           "lbl": "Main Card",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15075,6 +15080,11 @@
               "at": "2026-10-15T15:10:44Z",
               "f1_odds": 160,
               "f2_odds": -202
+            },
+            {
+              "at": "2026-10-15T17:40:39Z",
+              "f1_odds": 162,
+              "f2_odds": -204
             }
           ],
           "open": {
@@ -15089,7 +15099,7 @@
           "f1": "Louis Jourdain",
           "f2": "Timothy Cuamba",
           "lbl": "Main Card",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15155,6 +15165,11 @@
               "at": "2026-10-15T02:10:34Z",
               "f1_odds": -191,
               "f2_odds": 152
+            },
+            {
+              "at": "2026-10-15T17:40:39Z",
+              "f1_odds": -190,
+              "f2_odds": 150
             }
           ],
           "open": {
@@ -17103,7 +17118,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Marc-Andre Barriault",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": -220,
         "close": null,
         "clv": null
@@ -21103,7 +21118,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Jasmine Jasudavicius",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -230,
         "close": null,
         "clv": null
@@ -21114,7 +21129,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Erin Blanchfield",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 192,
         "close": null,
         "clv": null
@@ -21125,7 +21140,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Kyle Daukaus",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": 185,
         "close": null,
         "clv": null
@@ -21136,7 +21151,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Timothy Cuamba",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -170,
         "close": null,
         "clv": null
@@ -21147,7 +21162,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Louis Jourdain",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 130,
         "close": null,
         "clv": null

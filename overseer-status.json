@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-15T16:39:03Z",
+  "generated_at": "2026-10-15T17:40:39Z",
   "events_tracked": 11,
   "stale_events": 2,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "ok",
-      "last_changed_at": "2026-10-15T15:10:44Z",
+      "last_changed_at": "2026-10-15T17:40:39Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -116,7 +116,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-15T16:39:03Z",
+      "last_changed_at": "2026-10-15T17:40:39Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-15T16:39:03Z",
+      "last_changed_at": "2026-10-15T17:40:39Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -146,7 +146,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-15T16:39:03Z",
+      "last_changed_at": "2026-10-15T17:40:39Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -281,17 +281,17 @@
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Erin Blanchfield",
       "f2": "Jasmine Jasudavicius",
-      "f1_movement": -107,
-      "f2_movement": 63,
-      "magnitude": 107,
+      "f1_movement": -112,
+      "f2_movement": 66,
+      "magnitude": 112,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Women's Flyweight",
-      "f1_prob_shift": 7.4,
-      "f2_prob_shift": -6.1,
-      "priority": 214.0
+      "f1_prob_shift": 7.7,
+      "f2_prob_shift": -6.3,
+      "priority": 224.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
