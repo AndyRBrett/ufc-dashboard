@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-15T11:10:36Z",
+  "generated_at": "2026-10-15T12:15:42Z",
   "events_tracked": 11,
   "stale_events": 2,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "ok",
-      "last_changed_at": "2026-10-15T10:05:42Z",
+      "last_changed_at": "2026-10-15T12:15:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -116,7 +116,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-15T11:10:36Z",
+      "last_changed_at": "2026-10-15T12:15:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-15T11:10:36Z",
+      "last_changed_at": "2026-10-15T12:15:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -146,7 +146,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-15T11:10:36Z",
+      "last_changed_at": "2026-10-15T12:15:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -377,17 +377,17 @@
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Mandel Nallo",
       "f2": "Nate Landwehr",
-      "f1_movement": -56,
-      "f2_movement": 30,
-      "magnitude": 56,
+      "f1_movement": -59,
+      "f2_movement": 32,
+      "magnitude": 59,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Lightweight",
-      "f1_prob_shift": 4.3,
-      "f2_prob_shift": -3.1,
-      "priority": 112.0
+      "f1_prob_shift": 4.5,
+      "f2_prob_shift": -3.3,
+      "priority": 118.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",

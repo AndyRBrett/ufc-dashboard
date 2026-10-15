@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-15T11:10:37Z",
+  "generated_at": "2026-10-15T12:15:43Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -15164,7 +15164,7 @@
           "f1": "Mandel Nallo",
           "f2": "Nate Landwehr",
           "lbl": "Main Card",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15205,6 +15205,11 @@
               "at": "2026-10-13T13:00:49Z",
               "f1_odds": -291,
               "f2_odds": 225
+            },
+            {
+              "at": "2026-10-15T12:15:42Z",
+              "f1_odds": -294,
+              "f2_odds": 227
             }
           ],
           "open": {
@@ -21133,7 +21138,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Nate Landwehr",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -235,
         "close": null,
         "clv": null
@@ -21144,7 +21149,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Mandel Nallo",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 195,
         "close": null,
         "clv": null
