@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-14T15:31:13Z",
+ "generated_at": "2026-10-15T00:04:15Z",
  "promotions": [
   {
    "id": "pfl",
@@ -20,86 +20,6 @@
  ],
  "events": [
   {
-   "promotion": "dwcs",
-   "name": "Dana White's Contender Series 96",
-   "date": "2026-10-13",
-   "venue": "Meta Apex",
-   "location": "Las Vegas, Nevada, United States",
-   "broadcast": "",
-   "bouts": [
-    {
-     "a": "Erick Visconde",
-     "b": "Ilias Bulaid",
-     "label": "Main Event",
-     "division": "Featherweight",
-     "title": false,
-     "odds": {
-      "a": 118,
-      "b": -141
-     },
-     "winner": "Erick Visconde",
-     "method": "Decision (Unanimous)",
-     "round": 3
-    },
-    {
-     "a": "Smilla Sundell",
-     "b": "Aline Pereira",
-     "label": "",
-     "division": "Women's Bantamweight",
-     "title": false,
-     "odds": {
-      "a": -513,
-      "b": 387
-     },
-     "winner": "Smilla Sundell",
-     "method": "Decision (Unanimous)",
-     "round": 3
-    },
-    {
-     "a": "Luis Francischinelli",
-     "b": "William Rentz",
-     "label": "",
-     "division": "Welterweight",
-     "title": false,
-     "odds": {
-      "a": -246,
-      "b": 200
-     },
-     "winner": "Luis Francischinelli",
-     "method": "KO/TKO",
-     "round": 1
-    },
-    {
-     "a": "Douglas da Lapa",
-     "b": "Davi Cabral",
-     "label": "",
-     "division": "Middleweight",
-     "title": false,
-     "odds": {
-      "a": -168,
-      "b": 142
-     },
-     "winner": "Douglas da Lapa",
-     "method": "KO/TKO",
-     "round": 3
-    },
-    {
-     "a": "Gregory Foster",
-     "b": "Jason Asher",
-     "label": "",
-     "division": "Lightweight",
-     "title": false,
-     "odds": {
-      "a": 176,
-      "b": -212
-     },
-     "winner": "Gregory Foster",
-     "method": "Decision (Unanimous)",
-     "round": 3
-    }
-   ]
-  },
-  {
    "promotion": "pfl",
    "name": "PFL Chicago: Carmouche vs. Bishop 2",
    "date": "2026-10-16",
@@ -114,8 +34,8 @@
      "division": "Women's Flyweight",
      "title": true,
      "odds": {
-      "a": -350,
-      "b": 268
+      "a": -338,
+      "b": 259
      },
      "winner": "",
      "method": "",
@@ -164,8 +84,8 @@
      "division": "Welterweight",
      "title": false,
      "odds": {
-      "a": -150,
-      "b": 124
+      "a": -138,
+      "b": 114
      },
      "winner": "",
      "method": "",

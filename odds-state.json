@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-14T20:50:24.590182+00:00",
+  "last_fetch_at": "2026-10-15T00:03:55.446252+00:00",
   "last_status": 401,
-  "lines_digest": "7b209e20cbcb1a320e8f86e88c8f6e6b0f7b5dd5",
+  "lines_digest": "ee232a3251990719028e277496805e594cff7a5b",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -172,14 +172,14 @@
         "pereira",
         "croden",
         "chandler",
-        "faglier",
-        "mahjoub",
-        "stiller",
-        "chookagian",
         "chovancek",
         "you",
         "anheliger",
         "koslow",
+        "stiller",
+        "chookagian",
+        "faglier",
+        "mahjoub",
         "leblanc",
         "galanti",
         "boser",
@@ -322,25 +322,25 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-14T20:50:24.590182+00:00",
-  "next_event_days_out": 3,
+  "markets_partial_at": "2026-10-15T00:03:55.446252+00:00",
+  "next_event_days_out": 2,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-14T20:50:24.590182+00:00",
+      "last_fetch_at": "2026-10-15T00:03:55.446252+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
       "requests_remaining": 0
     },
     "the-odds-api-backup": {
-      "bouts": 52,
-      "last_fetch_at": "2026-10-14T20:50:24.590182+00:00",
-      "last_ok_at": "2026-10-14T20:50:24.590182+00:00",
+      "bouts": 51,
+      "last_fetch_at": "2026-10-15T00:03:55.446252+00:00",
+      "last_ok_at": "2026-10-15T00:03:55.446252+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 348
+      "requests_remaining": 347
     }
   },
   "requests_remaining": 0

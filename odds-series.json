@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T23:00:41Z",
+  "generated_at": "2026-10-15T00:04:13Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -14989,7 +14989,7 @@
           "f1": "Marc-Andre Barriault",
           "f2": "Kyle Daukaus",
           "lbl": "Main Card",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15045,6 +15045,11 @@
               "at": "2026-10-14T20:50:41Z",
               "f1_odds": 168,
               "f2_odds": -211
+            },
+            {
+              "at": "2026-10-15T00:04:13Z",
+              "f1_odds": 169,
+              "f2_odds": -213
             }
           ],
           "open": {
@@ -15349,7 +15354,7 @@
           "f1": "Melissa Croden",
           "f2": "Chelsea Chandler",
           "lbl": "Prelim",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15400,6 +15405,11 @@
               "at": "2026-10-14T20:50:41Z",
               "f1_odds": -290,
               "f2_odds": 225
+            },
+            {
+              "at": "2026-10-15T00:04:13Z",
+              "f1_odds": -293,
+              "f2_odds": 227
             }
           ],
           "open": {
@@ -15775,12 +15785,17 @@
           "f1": "Grant Dawson",
           "f2": "Nurullo Aliev",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
               "f1_odds": -118,
               "f2_odds": -102
+            },
+            {
+              "at": "2026-10-15T00:04:13Z",
+              "f1_odds": -110,
+              "f2_odds": -110
             }
           ],
           "open": {
@@ -16709,7 +16724,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Melissa Croden",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 205,
         "close": null,
         "clv": null
@@ -16968,7 +16983,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Marc-Andre Barriault",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -220,
         "close": null,
         "clv": null
@@ -20990,7 +21005,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Kyle Daukaus",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": 185,
         "close": null,
         "clv": null
@@ -21111,7 +21126,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Chelsea Chandler",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -240,
         "close": null,
         "clv": null
@@ -21287,7 +21302,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Nurullo Aliev",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -118,
         "close": null,
         "clv": null
@@ -21298,7 +21313,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Grant Dawson",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -102,
         "close": null,
         "clv": null
