@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T22:35:40Z",
+  "generated_at": "2026-10-16T22:40:43Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -15444,7 +15444,7 @@
           "f1": "Chad Anheliger",
           "f2": "Steven Koslow",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15520,6 +15520,11 @@
               "at": "2026-10-16T16:35:41Z",
               "f1_odds": 135,
               "f2_odds": -164
+            },
+            {
+              "at": "2026-10-16T22:40:43Z",
+              "f1_odds": 135,
+              "f2_odds": -162
             }
           ],
           "open": {
@@ -15534,7 +15539,7 @@
           "f1": "Melissa Croden",
           "f2": "Chelsea Chandler",
           "lbl": "Prelim",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15620,6 +15625,11 @@
               "at": "2026-10-16T20:35:43Z",
               "f1_odds": -322,
               "f2_odds": 250
+            },
+            {
+              "at": "2026-10-16T22:40:43Z",
+              "f1_odds": -318,
+              "f2_odds": 252
             }
           ],
           "open": {
@@ -15634,7 +15644,7 @@
           "f1": "Cody Chovancek",
           "f2": "You Su-young",
           "lbl": "Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15705,6 +15715,11 @@
               "at": "2026-10-16T18:35:41Z",
               "f1_odds": -137,
               "f2_odds": 113
+            },
+            {
+              "at": "2026-10-16T22:40:43Z",
+              "f1_odds": -133,
+              "f2_odds": 111
             }
           ],
           "open": {
@@ -17054,7 +17069,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Melissa Croden",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": 205,
         "close": null,
         "clv": null
@@ -21434,7 +21449,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Steven Koslow",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -130,
         "close": null,
         "clv": null
@@ -21445,7 +21460,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Chad Anheliger",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 110,
         "close": null,
         "clv": null
@@ -21456,7 +21471,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Chelsea Chandler",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": -240,
         "close": null,
         "clv": null
@@ -21467,7 +21482,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "You Su-young",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -150,
         "close": null,
         "clv": null
@@ -21478,7 +21493,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Cody Chovancek",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 130,
         "close": null,
         "clv": null
