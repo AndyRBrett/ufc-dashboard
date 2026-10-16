@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-16T00:05:39Z",
+ "generated_at": "2026-10-16T02:10:38Z",
  "promotions": [
   {
    "id": "pfl",
@@ -87,8 +87,8 @@
      "division": "Welterweight",
      "title": false,
      "odds": {
-      "a": -137,
-      "b": 115
+      "a": -147,
+      "b": 124
      },
      "winner": "",
      "method": "",
@@ -126,8 +126,8 @@
      "division": "Women's Flyweight",
      "title": false,
      "odds": {
-      "a": -533,
-      "b": 391
+      "a": -523,
+      "b": 394
      },
      "winner": "",
      "method": "",
@@ -140,8 +140,8 @@
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": -3000,
-      "b": 1172
+      "a": -2833,
+      "b": 1219
      },
      "winner": "",
      "method": "",
@@ -168,8 +168,8 @@
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": -733,
-      "b": 520
+      "a": -967,
+      "b": 650
      },
      "winner": "",
      "method": "",
