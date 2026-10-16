@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T06:10:35Z",
+  "generated_at": "2026-10-16T06:15:37Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -15274,7 +15274,7 @@
           "f1": "Tanner Boser",
           "f2": "Jhonata Diniz",
           "lbl": "Prelim",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15325,6 +15325,11 @@
               "at": "2026-10-16T00:05:38Z",
               "f1_odds": 196,
               "f2_odds": -246
+            },
+            {
+              "at": "2026-10-16T06:15:37Z",
+              "f1_odds": 193,
+              "f2_odds": -242
             }
           ],
           "open": {
@@ -21295,7 +21300,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Jhonata Diniz",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": 210,
         "close": null,
         "clv": null
@@ -21306,7 +21311,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Tanner Boser",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": -250,
         "close": null,
         "clv": null
