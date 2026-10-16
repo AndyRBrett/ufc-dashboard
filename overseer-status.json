@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-16T10:35:35Z",
+  "generated_at": "2026-10-16T10:40:41Z",
   "events_tracked": 11,
-  "stale_events": 2,
+  "stale_events": 1,
   "parse_failure_events": 0,
   "awaiting_card_events": 3,
   "odds_unavailable_events": 0,
@@ -116,7 +116,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-16T10:35:35Z",
+      "last_changed_at": "2026-10-16T10:40:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-16T10:35:35Z",
+      "last_changed_at": "2026-10-16T10:40:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -146,7 +146,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-16T10:35:35Z",
+      "last_changed_at": "2026-10-16T10:40:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -156,10 +156,10 @@
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
       "status": "ok",
-      "last_changed_at": "2026-10-13T00:55:42Z",
-      "is_stale": true,
+      "last_changed_at": "2026-10-16T10:40:41Z",
+      "is_stale": false,
       "has_data": true,
-      "bout_count": 6,
+      "bout_count": 5,
       "line_movement": 17,
       "odds_market_priced": true
     }
@@ -836,22 +836,6 @@
       "f1_prob_shift": 2.0,
       "f2_prob_shift": -1.5,
       "priority": 32.0
-    },
-    {
-      "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
-      "f1": "Joe Pyfer",
-      "f2": "Bo Nickal",
-      "f1_movement": -31,
-      "f2_movement": 24,
-      "magnitude": 31,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 4.0,
-      "f2_prob_shift": -3.8,
-      "priority": 31.0
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
