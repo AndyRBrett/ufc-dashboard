@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T20:30:38Z",
+  "generated_at": "2026-10-16T20:35:43Z",
   "events_tracked": 11,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "ok",
-      "last_changed_at": "2026-10-16T18:35:41Z",
+      "last_changed_at": "2026-10-16T20:35:43Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -116,7 +116,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-16T20:30:38Z",
+      "last_changed_at": "2026-10-16T20:35:43Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-16T20:30:38Z",
+      "last_changed_at": "2026-10-16T20:35:43Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -146,7 +146,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-16T20:30:38Z",
+      "last_changed_at": "2026-10-16T20:35:43Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -345,17 +345,17 @@
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Melissa Croden",
       "f2": "Chelsea Chandler",
-      "f1_movement": -77,
-      "f2_movement": 42,
-      "magnitude": 77,
+      "f1_movement": -82,
+      "f2_movement": 45,
+      "magnitude": 82,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Women's Bantamweight",
-      "f1_prob_shift": 5.4,
-      "f2_prob_shift": -4.0,
-      "priority": 154.0
+      "f1_prob_shift": 5.7,
+      "f2_prob_shift": -4.2,
+      "priority": 164.0
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
@@ -630,6 +630,22 @@
       "priority": 58.0
     },
     {
+      "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
+      "f1": "Tanner Boser",
+      "f2": "Jhonata Diniz",
+      "f1_movement": -29,
+      "f2_movement": 24,
+      "magnitude": 29,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": 3.3,
+      "f2_prob_shift": -2.1,
+      "priority": 58.0
+    },
+    {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Brady Hiestand",
       "f2": "Rinya Nakamura",
@@ -692,22 +708,6 @@
       "f1_prob_shift": -3.3,
       "f2_prob_shift": 4.0,
       "priority": 45.0
-    },
-    {
-      "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
-      "f1": "Tanner Boser",
-      "f2": "Jhonata Diniz",
-      "f1_movement": -22,
-      "f2_movement": 15,
-      "magnitude": 22,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": 2.5,
-      "f2_prob_shift": -1.3,
-      "priority": 44.0
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",

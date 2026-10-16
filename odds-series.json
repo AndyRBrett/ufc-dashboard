@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T20:30:39Z",
+  "generated_at": "2026-10-16T20:35:43Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -15019,7 +15019,7 @@
           "f1": "Marc-Andre Barriault",
           "f2": "Kyle Daukaus",
           "lbl": "Main Card",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15110,6 +15110,11 @@
               "at": "2026-10-16T16:35:41Z",
               "f1_odds": 163,
               "f2_odds": -203
+            },
+            {
+              "at": "2026-10-16T20:35:43Z",
+              "f1_odds": 165,
+              "f2_odds": -205
             }
           ],
           "open": {
@@ -15289,7 +15294,7 @@
           "f1": "Tanner Boser",
           "f2": "Jhonata Diniz",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15350,6 +15355,11 @@
               "at": "2026-10-16T10:20:45Z",
               "f1_odds": 188,
               "f2_odds": -235
+            },
+            {
+              "at": "2026-10-16T20:35:43Z",
+              "f1_odds": 181,
+              "f2_odds": -226
             }
           ],
           "open": {
@@ -15524,7 +15534,7 @@
           "f1": "Melissa Croden",
           "f2": "Chelsea Chandler",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15605,6 +15615,11 @@
               "at": "2026-10-16T10:20:45Z",
               "f1_odds": -317,
               "f2_odds": 247
+            },
+            {
+              "at": "2026-10-16T20:35:43Z",
+              "f1_odds": -322,
+              "f2_odds": 250
             }
           ],
           "open": {
@@ -17039,7 +17054,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Melissa Croden",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 205,
         "close": null,
         "clv": null
@@ -17298,7 +17313,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Marc-Andre Barriault",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": -220,
         "close": null,
         "clv": null
@@ -21320,7 +21335,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Kyle Daukaus",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": 185,
         "close": null,
         "clv": null
@@ -21375,7 +21390,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Jhonata Diniz",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": 210,
         "close": null,
         "clv": null
@@ -21386,7 +21401,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Tanner Boser",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -250,
         "close": null,
         "clv": null
@@ -21441,7 +21456,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Chelsea Chandler",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -240,
         "close": null,
         "clv": null
