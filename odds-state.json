@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-16T16:35:21.207278+00:00",
+  "last_fetch_at": "2026-10-16T18:35:21.434521+00:00",
   "last_status": 401,
-  "lines_digest": "268c57e5831e980b3c008120071ab3ec3fead203",
+  "lines_digest": "2a9b7aaf626e4c2a47551b505295658aeb6b981f",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -143,8 +143,6 @@
   "markets_partial": {
     "2026-10-16": {
       "fighters": [
-        "huseynov",
-        "borshchev",
         "hermosillo",
         "cox",
         "khabalaev",
@@ -164,8 +162,8 @@
         "tandia",
         "louis"
       ],
-      "listed": 12,
-      "priced": 10
+      "listed": 11,
+      "priced": 9
     },
     "2026-10-17": {
       "fighters": [
@@ -365,25 +363,25 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-16T16:35:21.207278+00:00",
+  "markets_partial_at": "2026-10-16T18:35:21.434521+00:00",
   "next_event_days_out": 1,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-16T16:35:21.207278+00:00",
+      "last_fetch_at": "2026-10-16T18:35:21.434521+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
       "requests_remaining": 0
     },
     "the-odds-api-backup": {
-      "bouts": 74,
-      "last_fetch_at": "2026-10-16T16:35:21.207278+00:00",
-      "last_ok_at": "2026-10-16T16:35:21.207278+00:00",
+      "bouts": 73,
+      "last_fetch_at": "2026-10-16T18:35:21.434521+00:00",
+      "last_ok_at": "2026-10-16T18:35:21.434521+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 329
+      "requests_remaining": 328
     }
   },
   "requests_remaining": 0
