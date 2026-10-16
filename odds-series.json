@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T14:25:43Z",
+  "generated_at": "2026-10-16T14:30:45Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -15684,7 +15684,7 @@
           "f1": "Javad Mahjoub",
           "f2": "Joel Faglier",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-10-12T18:53:32Z",
@@ -15710,6 +15710,11 @@
               "at": "2026-10-16T10:20:45Z",
               "f1_odds": 111,
               "f2_odds": -135
+            },
+            {
+              "at": "2026-10-16T14:30:44Z",
+              "f1_odds": 110,
+              "f2_odds": -134
             }
           ],
           "open": {
@@ -15910,7 +15915,7 @@
           "f1": "Alexander Volkov",
           "f2": "Rizvan Kuniev",
           "lbl": "Main Card",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -15936,6 +15941,11 @@
               "at": "2026-10-16T04:10:48Z",
               "f1_odds": -120,
               "f2_odds": 100
+            },
+            {
+              "at": "2026-10-16T14:30:44Z",
+              "f1_odds": -125,
+              "f2_odds": 105
             }
           ],
           "open": {
@@ -21434,7 +21444,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Joel Faglier",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -116,
         "close": null,
         "clv": null
@@ -21445,7 +21455,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Javad Mahjoub",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": -108,
         "close": null,
         "clv": null
@@ -21511,7 +21521,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Rizvan Kuniev",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -125,
         "close": null,
         "clv": null
@@ -21522,7 +21532,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Alexander Volkov",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 105,
         "close": null,
         "clv": null
