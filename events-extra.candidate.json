@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-17T00:10:42Z",
+ "generated_at": "2026-10-17T00:40:40Z",
  "promotions": [
   {
    "id": "pfl",
@@ -143,9 +143,9 @@
       "a": -2900,
       "b": 1200
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Gamid Khizriev",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
      "a": "Cobey Fehr",
