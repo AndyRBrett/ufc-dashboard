@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T13:45:39Z",
+  "generated_at": "2026-10-17T13:51:43Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -15249,7 +15249,7 @@
           "f1": "Mandel Nallo",
           "f2": "Nate Landwehr",
           "lbl": "Main Card",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15305,6 +15305,11 @@
               "at": "2026-10-17T01:40:42Z",
               "f1_odds": -287,
               "f2_odds": 228
+            },
+            {
+              "at": "2026-10-17T13:51:43Z",
+              "f1_odds": -294,
+              "f2_odds": 233
             }
           ],
           "open": {
@@ -15709,7 +15714,7 @@
           "f1": "Cody Chovancek",
           "f2": "You Su-young",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-10-09T15:07:42Z",
@@ -15790,6 +15795,11 @@
               "at": "2026-10-17T04:45:38Z",
               "f1_odds": -131,
               "f2_odds": 110
+            },
+            {
+              "at": "2026-10-17T13:51:43Z",
+              "f1_odds": -129,
+              "f2_odds": 108
             }
           ],
           "open": {
@@ -15804,7 +15814,7 @@
           "f1": "Javad Mahjoub",
           "f2": "Joel Faglier",
           "lbl": "Prelim",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-10-12T18:53:32Z",
@@ -15845,6 +15855,11 @@
               "at": "2026-10-17T07:45:41Z",
               "f1_odds": 110,
               "f2_odds": -132
+            },
+            {
+              "at": "2026-10-17T13:51:43Z",
+              "f1_odds": 112,
+              "f2_odds": -134
             }
           ],
           "open": {
@@ -16145,12 +16160,17 @@
           "f1": "Aaron Pico",
           "f2": "Losene Keita",
           "lbl": "Main Card",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
               "f1_odds": 105,
               "f2_odds": -125
+            },
+            {
+              "at": "2026-10-17T13:51:43Z",
+              "f1_odds": 102,
+              "f2_odds": -122
             }
           ],
           "open": {
@@ -16240,7 +16260,7 @@
           "f1": "Grant Dawson",
           "f2": "Nurullo Aliev",
           "lbl": "Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16271,6 +16291,11 @@
               "at": "2026-10-16T16:35:41Z",
               "f1_odds": -115,
               "f2_odds": -105
+            },
+            {
+              "at": "2026-10-17T13:51:43Z",
+              "f1_odds": -110,
+              "f2_odds": -110
             }
           ],
           "open": {
@@ -20086,7 +20111,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Aaron Pico",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -125,
         "close": null,
         "clv": null
@@ -21513,7 +21538,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Nate Landwehr",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -235,
         "close": null,
         "clv": null
@@ -21524,7 +21549,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Mandel Nallo",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 195,
         "close": null,
         "clv": null
@@ -21612,7 +21637,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "You Su-young",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -150,
         "close": null,
         "clv": null
@@ -21623,7 +21648,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Cody Chovancek",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 130,
         "close": null,
         "clv": null
@@ -21634,7 +21659,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Joel Faglier",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -116,
         "close": null,
         "clv": null
@@ -21645,7 +21670,7 @@
         "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
         "opponent": "Javad Mahjoub",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": -108,
         "close": null,
         "clv": null
@@ -21777,7 +21802,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Losene Keita",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 105,
         "close": null,
         "clv": null
@@ -21821,7 +21846,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Nurullo Aliev",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -118,
         "close": null,
         "clv": null
@@ -21832,7 +21857,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Grant Dawson",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": -102,
         "close": null,
         "clv": null
