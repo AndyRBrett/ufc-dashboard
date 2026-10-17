@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-10-16T23:55:35Z",
+  "generated_at": "2026-10-17T00:00:03Z",
   "events_tracked": 11,
   "stale_events": 1,
   "parse_failure_events": 0,
-  "awaiting_card_events": 3,
-  "odds_unavailable_events": 0,
+  "awaiting_card_events": 2,
+  "odds_unavailable_events": 1,
   "odds_budget_exhausted": false,
   "odds_budget": {
     "exhausted": false,
     "reset_day": 1,
-    "resets_in_days": 16,
+    "resets_in_days": 15,
     "most_affected": []
   },
   "stale_threshold_hours": 48,
@@ -115,8 +115,8 @@
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
-      "status": "awaiting-card",
-      "last_changed_at": "2026-10-16T23:55:35Z",
+      "status": "odds-unavailable",
+      "last_changed_at": "2026-10-17T00:00:03Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-16T23:55:35Z",
+      "last_changed_at": "2026-10-17T00:00:03Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -146,7 +146,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-16T23:55:35Z",
+      "last_changed_at": "2026-10-17T00:00:03Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -262,6 +262,22 @@
       "priority": 310.0
     },
     {
+      "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
+      "f1": "Alexander Volkov",
+      "f2": "Rizvan Kuniev",
+      "f1_movement": 15,
+      "f2_movement": -215,
+      "magnitude": 215,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 50,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": -3.2,
+      "f2_prob_shift": 3.6,
+      "priority": 301.0
+    },
+    {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Julien Leblanc",
       "f2": "Nick Galanti",
@@ -276,22 +292,6 @@
       "f1_prob_shift": -1.6,
       "f2_prob_shift": 2.7,
       "priority": 276.0
-    },
-    {
-      "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
-      "f1": "Alexander Volkov",
-      "f2": "Rizvan Kuniev",
-      "f1_movement": 15,
-      "f2_movement": -215,
-      "magnitude": 215,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 50,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": -3.2,
-      "f2_prob_shift": 3.6,
-      "priority": 236.5
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
@@ -758,6 +758,22 @@
       "priority": 42.0
     },
     {
+      "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
+      "f1": "Azamat Murzakanov",
+      "f2": "Dominick Reyes",
+      "f1_movement": -30,
+      "f2_movement": 24,
+      "magnitude": 30,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Light Heavyweight",
+      "f1_prob_shift": 2.8,
+      "f2_prob_shift": -2.9,
+      "priority": 42.0
+    },
+    {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Cody Chovancek",
       "f2": "You Su-young",
@@ -772,22 +788,6 @@
       "f1_prob_shift": -2.9,
       "f2_prob_shift": 3.9,
       "priority": 38.0
-    },
-    {
-      "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
-      "f1": "Azamat Murzakanov",
-      "f2": "Dominick Reyes",
-      "f1_movement": -30,
-      "f2_movement": 24,
-      "magnitude": 30,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Light Heavyweight",
-      "f1_prob_shift": 2.8,
-      "f2_prob_shift": -2.9,
-      "priority": 33.0
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
@@ -870,6 +870,22 @@
       "priority": 26.0
     },
     {
+      "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
+      "f1": "Abusupiyan Magomedov",
+      "f2": "Cameron Rowston",
+      "f1_movement": 15,
+      "f2_movement": -15,
+      "magnitude": 15,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": -3.4,
+      "f2_prob_shift": 3.4,
+      "priority": 21.0
+    },
+    {
       "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
       "f1": "Christian Edwards",
       "f2": "Rodolfo Bellato",
@@ -884,22 +900,6 @@
       "f1_prob_shift": -1.9,
       "f2_prob_shift": 2.4,
       "priority": 17.0
-    },
-    {
-      "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
-      "f1": "Abusupiyan Magomedov",
-      "f2": "Cameron Rowston",
-      "f1_movement": 15,
-      "f2_movement": -15,
-      "magnitude": 15,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": -3.4,
-      "f2_prob_shift": 3.4,
-      "priority": 16.5
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
