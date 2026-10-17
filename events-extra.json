@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-17T01:40:43Z",
+ "generated_at": "2026-10-17T02:10:44Z",
  "promotions": [
   {
    "id": "pfl",
@@ -109,15 +109,15 @@
      "round": null
     },
     {
-     "a": "Cassio Barao Jr.",
-     "b": "Kevin Pease",
+     "a": "Kevin Pease",
+     "b": "Cassio Barao",
      "label": "",
      "division": "Lightweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Kevin Pease",
+     "method": "Submission",
+     "round": 1
     },
     {
      "a": "Shannon Clark",
