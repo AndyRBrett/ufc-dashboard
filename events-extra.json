@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-16T22:40:43Z",
+ "generated_at": "2026-10-17T00:10:42Z",
  "promotions": [
   {
    "id": "pfl",
@@ -157,9 +157,9 @@
       "a": -468,
       "b": 362
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Cobey Fehr",
+     "method": "Submission",
+     "round": 1
     },
     {
      "a": "Levan Khabalaev",
@@ -171,9 +171,9 @@
       "a": -1900,
       "b": 970
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Levan Khabalaev",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
      "a": "Paulina Wisniewska",
@@ -182,9 +182,9 @@
      "division": "Women's Flyweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Paulina Wisniewska",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
      "a": "Noah Hermosillo",
@@ -196,9 +196,9 @@
       "a": -181,
       "b": 153
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Noah Hermosillo",
+     "method": "KO/TKO",
+     "round": 3
     }
    ]
   },
