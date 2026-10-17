@@ -2,46 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Greg Foster",
-   "b": "Jason Asher",
-   "a_odds": 176,
-   "b_odds": -212,
-   "commence_time": "2026-10-13T23:15:00Z",
-   "seen_at": "2026-10-13T07:00:24Z"
-  },
-  {
-   "a": "Davi Cabral",
-   "b": "Douglas da Lapa",
-   "a_odds": 142,
-   "b_odds": -168,
-   "commence_time": "2026-10-13T23:40:00Z",
-   "seen_at": "2026-10-13T19:05:28Z"
-  },
-  {
-   "a": "Will Rentz",
-   "b": "Luis Francischinelli",
-   "a_odds": 200,
-   "b_odds": -246,
-   "commence_time": "2026-10-14T00:05:00Z",
-   "seen_at": "2026-10-13T13:00:27Z"
-  },
-  {
-   "a": "Aline Pereira",
-   "b": "Smilla Sundell",
-   "a_odds": 650,
-   "b_odds": -1350,
-   "commence_time": "2026-10-14T00:45:00Z",
-   "seen_at": "2026-10-14T01:10:22Z"
-  },
-  {
-   "a": "Ilias Bulaid",
-   "b": "Erick Visconde",
-   "a_odds": -132,
-   "b_odds": 111,
-   "commence_time": "2026-10-14T01:10:00Z",
-   "seen_at": "2026-10-14T01:10:22Z"
-  },
-  {
    "a": "Mirali Huseynov",
    "b": "Viacheslav Borshchev",
    "a_odds": 180,
@@ -100,18 +60,18 @@
   {
    "a": "Emiliano Sordi",
    "b": "Abraham Bably",
-   "a_odds": 184,
-   "b_odds": -218,
+   "a_odds": 185,
+   "b_odds": -220,
    "commence_time": "2026-10-17T02:10:00Z",
-   "seen_at": "2026-10-16T22:40:23Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Eliezer Kubanza",
    "b": "Trey Waters",
-   "a_odds": -156,
-   "b_odds": 134,
+   "a_odds": -178,
+   "b_odds": 152,
    "commence_time": "2026-10-17T02:40:00Z",
-   "seen_at": "2026-10-16T22:40:23Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Sarvarjon Hamidov",
@@ -124,26 +84,26 @@
   {
    "a": "Oualy Tandia",
    "b": "J.P. Saint Louis",
-   "a_odds": -275,
-   "b_odds": 225,
+   "a_odds": -328,
+   "b_odds": 264,
    "commence_time": "2026-10-17T03:10:00Z",
-   "seen_at": "2026-10-16T22:40:23Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Timur Khizriev",
    "b": "Gabriel Alves Braga",
-   "a_odds": -330,
-   "b_odds": 266,
+   "a_odds": -300,
+   "b_odds": 245,
    "commence_time": "2026-10-17T04:10:00Z",
-   "seen_at": "2026-10-16T22:40:23Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Liz Carmouche",
    "b": "Jena Bishop",
-   "a_odds": -408,
-   "b_odds": 315,
+   "a_odds": -410,
+   "b_odds": 318,
    "commence_time": "2026-10-17T04:40:00Z",
-   "seen_at": "2026-10-16T22:40:23Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Aaron Aby",
@@ -188,10 +148,10 @@
   {
    "a": "Timo Feucht",
    "b": "Zdenek Polivka",
-   "a_odds": -230,
-   "b_odds": 160,
+   "a_odds": -200,
+   "b_odds": 150,
    "commence_time": "2026-10-17T14:00:00Z",
-   "seen_at": "2026-10-16T14:30:28Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Tomasz Narkun",
@@ -220,18 +180,18 @@
   {
    "a": "Niko Ceraglia",
    "b": "Valentino Greco",
-   "a_odds": -800,
-   "b_odds": 550,
+   "a_odds": -1200,
+   "b_odds": 754,
    "commence_time": "2026-10-17T16:55:00Z",
-   "seen_at": "2026-10-16T14:30:28Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Alessandro Ortolani",
    "b": "Simone Ali",
-   "a_odds": -140,
-   "b_odds": 120,
+   "a_odds": -130,
+   "b_odds": 110,
    "commence_time": "2026-10-17T17:20:00Z",
-   "seen_at": "2026-10-16T14:30:28Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Jonathan Rivera",
@@ -260,10 +220,10 @@
   {
    "a": "Salvatore Bellotta",
    "b": "Christian Tosco",
-   "a_odds": -105,
-   "b_odds": -115,
+   "a_odds": -106,
+   "b_odds": -114,
    "commence_time": "2026-10-17T18:40:00Z",
-   "seen_at": "2026-10-16T16:35:21Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Federico Rotoni",
@@ -276,10 +236,10 @@
   {
    "a": "Simone Patrizi",
    "b": "Dylan Logan",
-   "a_odds": -155,
-   "b_odds": 135,
+   "a_odds": -175,
+   "b_odds": 153,
    "commence_time": "2026-10-17T19:15:00Z",
-   "seen_at": "2026-10-16T14:30:28Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Andrea Kabali",
@@ -331,6 +291,14 @@
   },
   {
    "a": "Mackenzie Stiller",
+   "b": "Katlyn Cerminara",
+   "a_odds": 212,
+   "b_odds": -264,
+   "commence_time": "2026-10-17T22:25:00Z",
+   "seen_at": "2026-10-17T01:40:24Z"
+  },
+  {
+   "a": "Mackenzie Stiller",
    "b": "Katlyn Chookagian",
    "a_odds": 217,
    "b_odds": -271,
@@ -340,50 +308,58 @@
   {
    "a": "Joel Faglier",
    "b": "Javad Mahjoub",
-   "a_odds": -134,
-   "b_odds": 110,
+   "a_odds": -131,
+   "b_odds": 109,
    "commence_time": "2026-10-17T22:50:00Z",
-   "seen_at": "2026-10-16T14:30:28Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Julien Leblanc",
    "b": "Nick Galanti",
-   "a_odds": 467,
+   "a_odds": 480,
    "b_odds": -688,
    "commence_time": "2026-10-17T23:15:00Z",
-   "seen_at": "2026-10-16T10:20:28Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Tanner Boser",
    "b": "Jhonata Diniz",
-   "a_odds": 181,
-   "b_odds": -226,
+   "a_odds": 183,
+   "b_odds": -224,
    "commence_time": "2026-10-17T23:40:00Z",
-   "seen_at": "2026-10-16T20:35:23Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Mandel Nallo",
    "b": "Nate Landwehr",
    "a_odds": -287,
-   "b_odds": 225,
+   "b_odds": 228,
    "commence_time": "2026-10-18T00:15:00Z",
-   "seen_at": "2026-10-16T02:10:20Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Louis Jourdain",
    "b": "Timothy Cuamba",
-   "a_odds": -179,
+   "a_odds": -177,
    "b_odds": 146,
    "commence_time": "2026-10-18T00:45:00Z",
-   "seen_at": "2026-10-16T10:20:28Z"
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Marc-Andre Barriault",
    "b": "Kyle Daukaus",
-   "a_odds": 165,
-   "b_odds": -205,
+   "a_odds": 166,
+   "b_odds": -204,
    "commence_time": "2026-10-18T01:15:00Z",
-   "seen_at": "2026-10-16T20:35:23Z"
+   "seen_at": "2026-10-17T01:40:24Z"
+  },
+  {
+   "a": "Kyle Nelson",
+   "b": "Cristian Perez",
+   "a_odds": 278,
+   "b_odds": -367,
+   "commence_time": "2026-10-18T01:45:00Z",
+   "seen_at": "2026-10-17T01:40:24Z"
   },
   {
    "a": "Erin Blanchfield",
