@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-16T22:20:40Z",
+ "generated_at": "2026-10-17T01:25:37Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -44,38 +44,6 @@
    "name": "UFC Fight Night: Buckley vs. Malott",
    "date": "2026-10-17",
    "items": [
-    {
-     "title": "Buckley vs Malott Weigh-Ins | UFC Edmonton",
-     "url": "https://www.youtube.com/watch?v=EWTYRIk_pcw",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-16T17:09:14Z",
-     "thumb": "https://i2.ytimg.com/vi/EWTYRIk_pcw/hqdefault.jpg",
-     "blurb": "Every athlete set to compete on the UFC Edmonton fight card steps onto the scale for official weigh-ins. Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content:…",
-     "fighters": [
-      "Chad Anheliger",
-      "Chelsea Chandler",
-      "Cody Chovancek",
-      "Erin Blanchfield",
-      "Jasmine Jasudavicius",
-      "Javad Mahjoub",
-      "Joaquin Buckley",
-      "Joel Faglier",
-      "Julien Leblanc",
-      "Kyle Daukaus",
-      "Kyle Nelson",
-      "Louis Jourdain",
-      "Mackenzie Stiller",
-      "Mandel Nallo",
-      "Marc-Andre Barriault",
-      "Melissa Croden",
-      "Mike Malott",
-      "Nate Landwehr",
-      "Nick Galanti",
-      "Steven Koslow",
-      "Tanner Boser"
-     ]
-    },
     {
      "title": "Mike Malott was told he'd never make the UFC; now he's headlining",
      "url": "https://www.sherdog.com/news/news/Mike-Malott-was-told-hed-never-make-the-UFC-now-hes-headlining-203247",
@@ -103,18 +71,6 @@
      ]
     },
     {
-     "title": "Mike Malott is locked in for tomorrow! #ufcedmonton",
-     "url": "https://www.youtube.com/shorts/yKgWdAzAMLk",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-16T16:06:21Z",
-     "thumb": "https://i2.ytimg.com/vi/yKgWdAzAMLk/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS, the digital subscription service of the UFC. Visit…",
-     "fighters": [
-      "Mike Malott"
-     ]
-    },
-    {
      "title": "Watch Sean Strickland get slapped and chased for filming homeless people ahead of UFC Edmonton",
      "url": "https://bloodyelbow.com/2026/10/16/watch-sean-strickland-get-slapped-and-chased-for-filming-homeless-people-ahead-of-ufc-edmonton/",
      "source": "Bloody Elbow",
@@ -124,18 +80,6 @@
      "blurb": "Sean Strickland is making a nuisance of himself during his trip to Alberta, Canada. The UFC middleweight champion is in town to watch Mike Malott ...",
      "fighters": [
       "Mike Malott"
-     ]
-    },
-    {
-     "title": "Erin Blanchfield, the submission machine! #ufcedmonton",
-     "url": "https://www.youtube.com/shorts/04_5EZm7I_8",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-15T16:45:24Z",
-     "thumb": "https://i1.ytimg.com/vi/04_5EZm7I_8/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS, the digital subscription service of the UFC. Visit…",
-     "fighters": [
-      "Erin Blanchfield"
      ]
     },
     {
@@ -167,19 +111,6 @@
      "fighters": [
       "Alexander Volkanovski",
       "Movsar Evloev"
-     ]
-    },
-    {
-     "title": "Merab Dvalishvili vs Sean O'Malley 2 | FULL FIGHT | UFC 333",
-     "url": "https://www.youtube.com/watch?v=vmhY-qvIvvI",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-15T14:00:03Z",
-     "thumb": "https://i3.ytimg.com/vi/vmhY-qvIvvI/hqdefault.jpg",
-     "blurb": "Rewatch the second full fight between Merab Dvalishvili vs Sean O'Malley ahead of Dvalishvili's rematch against Petr Yan at UFC 333. Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest…",
-     "fighters": [
-      "Merab Dvalishvili",
-      "Petr Yan"
      ]
     },
     {
@@ -219,18 +150,6 @@
      "fighters": [
       "Merab Dvalishvili",
       "Petr Yan"
-     ]
-    },
-    {
-     "title": "Making A Fighter: Inside Syndicate MMA",
-     "url": "https://www.youtube.com/watch?v=uTwn-PcukiQ",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-15T12:00:09Z",
-     "thumb": "https://i2.ytimg.com/vi/uTwn-PcukiQ/hqdefault.jpg",
-     "blurb": "An unprecedented look inside a defining year at Syndicate MMA, this inspiring story follows Coach John Wood as he stakes everything on building a world-class team—guiding Merab Dvalishvili into his first UFC…",
-     "fighters": [
-      "Merab Dvalishvili"
      ]
     },
     {
