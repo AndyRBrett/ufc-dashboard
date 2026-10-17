@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T22:25:24Z",
+  "generated_at": "2026-10-17T22:30:47Z",
   "events_tracked": 11,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "ok",
-      "last_changed_at": "2026-10-17T22:00:42Z",
+      "last_changed_at": "2026-10-17T22:30:47Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -116,7 +116,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-17T22:25:24Z",
+      "last_changed_at": "2026-10-17T22:30:47Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-17T22:25:24Z",
+      "last_changed_at": "2026-10-17T22:30:47Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -146,7 +146,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-17T22:25:24Z",
+      "last_changed_at": "2026-10-17T22:30:47Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -199,18 +199,18 @@
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
-      "f1": "Chad Anheliger",
-      "f2": "Steven Koslow",
-      "f1_movement": 268,
-      "f2_movement": -276,
+      "f1": "Steven Koslow",
+      "f2": "Chad Anheliger",
+      "f1_movement": -276,
+      "f2_movement": 268,
       "magnitude": 276,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Bantamweight",
-      "f1_prob_shift": -14.5,
-      "f2_prob_shift": 14.8,
+      "f1_prob_shift": 14.8,
+      "f2_prob_shift": -14.5,
       "priority": 552.0
     },
     {
