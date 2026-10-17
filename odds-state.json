@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-17T01:40:24.645328+00:00",
+  "last_fetch_at": "2026-10-17T04:45:19.930198+00:00",
   "last_status": 401,
-  "lines_digest": "234b449257dde5c2b4f32bc07a15a0eb7965718f",
+  "lines_digest": "d64b966bfa67455f59acda1aec5360f29fec1409",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -141,24 +141,8 @@
   },
   "markets_at": "2026-10-05T12:25:19.921285+00:00",
   "markets_partial": {
-    "2026-10-16": {
-      "fighters": [
-        "sordi",
-        "bably",
-        "kubanza",
-        "waters",
-        "hamidov",
-        "nascimento",
-        "tandia",
-        "louis"
-      ],
-      "listed": 4,
-      "priced": 4
-    },
     "2026-10-17": {
       "fighters": [
-        "khizriev",
-        "braga",
         "carmouche",
         "bishop",
         "aby",
@@ -228,8 +212,8 @@
         "buckley",
         "malott"
       ],
-      "listed": 44,
-      "priced": 35
+      "listed": 43,
+      "priced": 34
     },
     "2026-10-24": {
       "fighters": [
@@ -353,25 +337,25 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-17T01:40:24.645328+00:00",
+  "markets_partial_at": "2026-10-17T04:45:19.930198+00:00",
   "next_event_days_out": 0,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-17T01:40:24.645328+00:00",
+      "last_fetch_at": "2026-10-17T04:45:19.930198+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
       "requests_remaining": 0
     },
     "the-odds-api-backup": {
-      "bouts": 69,
-      "last_fetch_at": "2026-10-17T01:40:24.645328+00:00",
-      "last_ok_at": "2026-10-17T01:40:24.645328+00:00",
+      "bouts": 64,
+      "last_fetch_at": "2026-10-17T04:45:19.930198+00:00",
+      "last_ok_at": "2026-10-17T04:45:19.930198+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 325
+      "requests_remaining": 324
     }
   },
   "requests_remaining": 0

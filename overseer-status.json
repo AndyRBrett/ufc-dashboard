@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T04:40:36Z",
+  "generated_at": "2026-10-17T04:45:38Z",
   "events_tracked": 11,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "ok",
-      "last_changed_at": "2026-10-17T01:40:42Z",
+      "last_changed_at": "2026-10-17T04:45:38Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -106,7 +106,7 @@
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "ok",
-      "last_changed_at": "2026-10-16T18:35:41Z",
+      "last_changed_at": "2026-10-17T04:45:38Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 11,
@@ -116,7 +116,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-17T04:40:36Z",
+      "last_changed_at": "2026-10-17T04:45:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-17T04:40:36Z",
+      "last_changed_at": "2026-10-17T04:45:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -146,7 +146,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-17T04:40:36Z",
+      "last_changed_at": "2026-10-17T04:45:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -201,17 +201,17 @@
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Chad Anheliger",
       "f2": "Steven Koslow",
-      "f1_movement": 265,
-      "f2_movement": -272,
-      "magnitude": 272,
+      "f1_movement": 267,
+      "f2_movement": -275,
+      "magnitude": 275,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Bantamweight",
-      "f1_prob_shift": -14.0,
-      "f2_prob_shift": 14.2,
-      "priority": 544.0
+      "f1_prob_shift": -14.3,
+      "f2_prob_shift": 14.6,
+      "priority": 550.0
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
@@ -297,17 +297,17 @@
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Erin Blanchfield",
       "f2": "Jasmine Jasudavicius",
-      "f1_movement": -108,
-      "f2_movement": 68,
-      "magnitude": 108,
+      "f1_movement": -105,
+      "f2_movement": 70,
+      "magnitude": 105,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Women's Flyweight",
-      "f1_prob_shift": 7.5,
-      "f2_prob_shift": -6.5,
-      "priority": 216.0
+      "f1_prob_shift": 7.3,
+      "f2_prob_shift": -6.6,
+      "priority": 210.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
@@ -442,7 +442,7 @@
       "f1": "Joaquin Buckley",
       "f2": "Mike Malott",
       "f1_movement": -20,
-      "f2_movement": 16,
+      "f2_movement": 18,
       "magnitude": 20,
       "main_event": true,
       "tier": "main-event",
@@ -450,7 +450,7 @@
       "low_confidence": false,
       "wc": "Welterweight",
       "f1_prob_shift": 4.1,
-      "f2_prob_shift": -2.7,
+      "f2_prob_shift": -3.1,
       "priority": 100.0
     },
     {
@@ -777,17 +777,17 @@
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Cody Chovancek",
       "f2": "You Su-young",
-      "f1_movement": 17,
-      "f2_movement": -19,
-      "magnitude": 19,
+      "f1_movement": 19,
+      "f2_movement": -20,
+      "magnitude": 20,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Bantamweight",
-      "f1_prob_shift": -2.9,
-      "f2_prob_shift": 3.9,
-      "priority": 38.0
+      "f1_prob_shift": -3.3,
+      "f2_prob_shift": 4.1,
+      "priority": 40.0
     },
     {
       "event_id": "2026-09-19:ufc-331-van-vs-pantoja-2",
