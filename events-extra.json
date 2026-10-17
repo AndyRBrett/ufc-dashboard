@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-17T04:35:39Z",
+ "generated_at": "2026-10-17T05:30:42Z",
  "promotions": [
   {
    "id": "pfl",
@@ -28,17 +28,17 @@
    "broadcast": "",
    "bouts": [
     {
-     "a": "Liz Carmouche",
-     "b": "Jena Bishop",
+     "a": "Jena Bishop",
+     "b": "Liz Carmouche",
      "label": "Main Event",
      "division": "Women's Flyweight",
      "title": true,
      "odds": {
-      "a": -410,
-      "b": 318
+      "a": 318,
+      "b": -410
      },
-     "winner": "",
-     "method": "",
+     "winner": "Jena Bishop",
+     "method": "Decision (Unanimous)",
      "round": null
     },
     {
