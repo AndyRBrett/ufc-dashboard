@@ -1027,6 +1027,13 @@ button.ps-row:hover{background:var(--btn-bg)}
 .fn-rc{font-size:13px;margin-top:8px;letter-spacing:.03em;font-weight:500}
 #fn-r1{color:var(--red)}
 #fn-r2{color:var(--gold)}
+/* Quick Pick's last-three strip: one row where the column fits it, wrapping
+   inside the column on the narrowest phones rather than spilling past it. */
+.form-strip.fn-form{justify-content:center;flex-wrap:nowrap;margin-top:8px}
+@media(max-width:359px){.form-strip.fn-form{flex-wrap:wrap}}
+.fn-form:empty{display:none}
+.fnr .form-strip.fn-form{justify-content:flex-end}
+.fn-form .form-pill{white-space:nowrap;padding:2px 4px;letter-spacing:0}
 .fn-vs{flex-shrink:0;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);text-transform:uppercase;font-size:17px;color:rgba(255,255,255,.45);letter-spacing:.04em}
 .fn-nav{display:flex;justify-content:center;gap:10px;margin-top:34px}
 .fn-nb{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:rgba(255,255,255,.72);padding:10px 22px;border-radius:8px;cursor:pointer;font:600 13px var(--font-body);display:flex;align-items:center;gap:5px;transition:background .15s,border-color .15s}
@@ -1862,7 +1869,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
   <div id="fnPreBody">
     <div class="fn-ev" id="fn-ev"></div>
     <div class="fn-wc" id="fn-wc"></div>
-    <div class="fn-mu"><div class="fn-ft" id="fn-f1-wrap" role="button" tabindex="0" onclick="fnPick(0)"><div class="fn-nm" id="fn-f1"></div><div class="fn-rc" id="fn-r1"></div></div><div class="fn-vs">VS</div><div class="fn-ft fnr" id="fn-f2-wrap" role="button" tabindex="0" onclick="fnPick(1)"><div class="fn-nm" id="fn-f2"></div><div class="fn-rc" id="fn-r2"></div></div></div>
+    <div class="fn-mu"><div class="fn-ft" id="fn-f1-wrap" role="button" tabindex="0" onclick="fnPick(0)"><div class="fn-nm" id="fn-f1"></div><div class="fn-rc" id="fn-r1"></div><div class="form-strip fn-form" id="fn-fm1"></div></div><div class="fn-vs">VS</div><div class="fn-ft fnr" id="fn-f2-wrap" role="button" tabindex="0" onclick="fnPick(1)"><div class="fn-nm" id="fn-f2"></div><div class="fn-rc" id="fn-r2"></div><div class="form-strip fn-form" id="fn-fm2"></div></div></div>
     <div class="fn-info" id="fn-info"></div>
     <div class="fn-pick-hint" id="fn-pick-hint">Tap a fighter to pick · Swipe to pick</div>
     <div class="fn-picked-lbl" id="fn-picked-lbl"></div>
@@ -6092,6 +6099,7 @@ function updateFNPre(){
   if(f.rematch){var rm=document.createElement("span");rm.className="fn-tag fn-tag-rematch";rm.textContent="REMATCH";wc.appendChild(rm);}
   document.getElementById("fn-f1").textContent=f.f1.n;document.getElementById("fn-r1").textContent=f.f1.r||"";
   document.getElementById("fn-f2").textContent=f.f2.n;document.getElementById("fn-r2").textContent=f.f2.r||"";
+  [["fn-fm1",f.f1],["fn-fm2",f.f2]].forEach(function(x){var el=document.getElementById(x[0]);if(el){el.textContent="";_formPills(el,stOf(x[1]),true);}});
   document.getElementById("fn-ctr").textContent=(fnIdx+1)+" of "+fnFights.length;
   var myPick=fnEv?preds[pk(fnEv,f)]:"";
   var w1=document.getElementById("fn-f1-wrap"),w2=document.getElementById("fn-f2-wrap");
@@ -6366,6 +6374,17 @@ function fnRenderStakes(f){
 // The rows, shared by the live view and Quick Pick. opts.odds adds the moneyline
 // (Quick Pick draws its own), opts.model the model's win chance, opts.age and
 // opts.form the fighters' ages and last five results, newest first.
+// The last three results as W/L pills, oldest to newest (newest on the right):
+// the card row's strip, also shown under each fighter in Quick Pick.
+function _formPills(el,st,withMethod){
+  ((st&&st.form)||[]).slice(0,3).reverse().forEach(function(fr){
+    var r=fr.r==="W"||fr.r==="L"?fr.r:"D";
+    var pill=document.createElement("span");
+    pill.className="form-pill form-"+r.toLowerCase();
+    pill.textContent=fr.r+(withMethod&&fr.m?" "+fr.m:"");
+    el.appendChild(pill);
+  });
+}
 function _tapeRows(f,opts){
   opts=opts||{};
   var s1=stOf(f.f1)||{},s2=stOf(f.f2)||{},rows=[],num=function(v){return parseFloat(v)||0;};
@@ -7121,12 +7140,7 @@ function makeFighter(fighter,right,size,regIdx,side,isWinner){
   if(recTxt){var rec=document.createElement("div");rec.className="frec";rec.textContent=recTxt;wrap.appendChild(rec);}
   if(_fst&&_fst.form&&_fst.form.length){
     var fstrip=document.createElement("div");fstrip.className="form-strip";
-    _fst.form.slice(0,3).reverse().forEach(function(fr){
-      var pill=document.createElement("span");
-      pill.className="form-pill form-"+fr.r.toLowerCase();
-      pill.textContent=fr.r+(size!=="xs"&&fr.m?" "+fr.m:"");
-      fstrip.appendChild(pill);
-    });
+    _formPills(fstrip,_fst,size!=="xs");
     wrap.appendChild(fstrip);
   }
   if(fighter.other){/* another promotion: no UFC champ/rank pills */}
@@ -7863,6 +7877,8 @@ var WHATS_NEW=[
    desc:"The countdown card now has two more bars under Your picks: how many bouts have a method and how many 🔒 locks you've used, so you can see the whole card is done."}
   ,{id:"2026-11-04-sport-trash-talk",emoji:"🔥",title:"Trash talk on every board",
    desc:"Open Trash Talk from the PFL, RIZIN or DWCS standings and the roast is about that board: who's on it, what they picked and how it went."}
+  ,{id:"2026-11-05-quick-pick-form",emoji:"📈",title:"Recent form in Quick Pick",
+   desc:"Quick Pick now shows each fighter's last three results under their record, the same W / L badges as the fight cards, so you can see who's on a run before you pick."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
