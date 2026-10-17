@@ -1027,8 +1027,10 @@ button.ps-row:hover{background:var(--btn-bg)}
 .fn-rc{font-size:13px;margin-top:8px;letter-spacing:.03em;font-weight:500}
 #fn-r1{color:var(--red)}
 #fn-r2{color:var(--gold)}
-/* Quick Pick's last-three strip: one row, so it can't push the matchup apart. */
+/* Quick Pick's last-three strip: one row where the column fits it, wrapping
+   inside the column on the narrowest phones rather than spilling past it. */
 .form-strip.fn-form{justify-content:center;flex-wrap:nowrap;margin-top:8px}
+@media(max-width:359px){.form-strip.fn-form{flex-wrap:wrap}}
 .fn-form:empty{display:none}
 .fnr .form-strip.fn-form{justify-content:flex-end}
 .fn-form .form-pill{white-space:nowrap;padding:2px 4px;letter-spacing:0}
