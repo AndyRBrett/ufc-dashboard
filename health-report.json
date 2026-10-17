@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-17T04:05:43Z",
+  "generated_at": "2026-10-17T04:10:40Z",
   "summary": {
     "events": 11,
     "block": 0,
-    "warn": 6
+    "warn": 5
   },
   "findings": [
     {
@@ -38,14 +38,6 @@
       "severity": "WARN",
       "check": "odds-quota",
       "message": "Odds API quota down to 0 requests \u2014 lines are frozen until the quota resets"
-    },
-    {
-      "severity": "WARN",
-      "check": "segment-mismatch",
-      "message": "UFC Fight Night: Moicano vs. Nolan (14d out): Lucia Szabova vs. Tainara Lisboa is labelled Co-Main here, UFC.com lists it under prelims",
-      "event": "UFC Fight Night: Moicano vs. Nolan",
-      "date": "2026-10-31",
-      "days_out": 14
     }
   ]
 }
