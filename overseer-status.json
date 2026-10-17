@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T23:05:24Z",
+  "generated_at": "2026-10-17T23:10:45Z",
   "events_tracked": 11,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "ok",
-      "last_changed_at": "2026-10-17T22:55:44Z",
+      "last_changed_at": "2026-10-17T23:10:45Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -116,7 +116,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-17T23:05:24Z",
+      "last_changed_at": "2026-10-17T23:10:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-17T23:05:24Z",
+      "last_changed_at": "2026-10-17T23:10:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -146,7 +146,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-17T23:05:24Z",
+      "last_changed_at": "2026-10-17T23:10:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -231,18 +231,18 @@
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
-      "f1": "Javad Mahjoub",
-      "f2": "Joel Faglier",
-      "f1_movement": 227,
-      "f2_movement": -25,
+      "f1": "Joel Faglier",
+      "f2": "Javad Mahjoub",
+      "f1_movement": -25,
+      "f2_movement": 227,
       "magnitude": 227,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": -6.3,
-      "f2_prob_shift": 5.2,
+      "f1_prob_shift": 5.2,
+      "f2_prob_shift": -6.3,
       "priority": 454.0
     },
     {
