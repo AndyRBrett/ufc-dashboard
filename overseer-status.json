@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T21:35:22Z",
+  "generated_at": "2026-10-17T21:40:42Z",
   "events_tracked": 11,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -96,7 +96,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "ok",
-      "last_changed_at": "2026-10-17T19:50:42Z",
+      "last_changed_at": "2026-10-17T21:40:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -116,7 +116,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-17T21:35:22Z",
+      "last_changed_at": "2026-10-17T21:40:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -126,7 +126,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-17T21:35:22Z",
+      "last_changed_at": "2026-10-17T21:40:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -146,7 +146,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-17T21:35:22Z",
+      "last_changed_at": "2026-10-17T21:40:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -775,18 +775,18 @@
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
-      "f1": "Cody Chovancek",
-      "f2": "You Su-young",
-      "f1_movement": 18,
-      "f2_movement": -20,
+      "f1": "You Su-young",
+      "f2": "Cody Chovancek",
+      "f1_movement": -20,
+      "f2_movement": 18,
       "magnitude": 20,
       "main_event": false,
       "tier": "prelim",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Bantamweight",
-      "f1_prob_shift": -3.1,
-      "f2_prob_shift": 4.1,
+      "f1_prob_shift": 4.1,
+      "f2_prob_shift": -3.1,
       "priority": 40.0
     },
     {
