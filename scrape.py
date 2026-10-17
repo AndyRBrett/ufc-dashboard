@@ -1512,6 +1512,23 @@ def _valid_odds(f1_odds, f2_odds):
     return _implied_prob(f1_odds) + _implied_prob(f2_odds) >= 1.0
 
 
+# The books' spelling -> the card's, for a fighter the feed files under a name
+# no token rule can reach. Same contract as _UFCSTATS_NAME_ALIASES below: a
+# genuinely different name, never a variant spelling. Keys are clean()ed +
+# lowercased.
+_ODDS_NAME_ALIASES = {
+    # Fights as Cerminara since her marriage; the books still list her maiden
+    # name, so Cerminara vs. Stiller sat at odds:null on Buckley vs. Malott
+    # (2026-10-17) with its line in the feed the whole week.
+    "katlyn chookagian": "Katlyn Cerminara",
+}
+
+
+def _odds_name(name):
+    name = clean(name or "")
+    return _ODDS_NAME_ALIASES.get(name.lower(), name)
+
+
 def _index_odds_api(data, source):
     """Turn one Odds API payload into a fighter-pair index tagged with `source`.
 
@@ -1520,25 +1537,54 @@ def _index_odds_api(data, source):
     preferred  = ["fanduel", "draftkings", "betrivers", "bovada", "betonlineag", "betus"]
     odds_index = {}
     for fight in data:
-        h = clean(fight.get("home_team", ""))
-        a = clean(fight.get("away_team", ""))
+        h = _odds_name(fight.get("home_team", ""))
+        a = _odds_name(fight.get("away_team", ""))
         if not h or not a:
             continue
         books = sorted(
             fight.get("bookmakers", []),
             key=lambda b: preferred.index(b["key"]) if b["key"] in preferred else 99,
         )
+        hl, al = h.lower(), a.lower()
         p1, p2 = [], []
         for bm in books[:3]:
             for mkt in bm.get("markets", []):
                 if mkt["key"] != "h2h":
                     continue
-                for o in mkt["outcomes"]:
-                    nl = o["name"].lower()
-                    if h.lower() in nl or nl in h.lower():
-                        p1.append(o["price"])
-                    elif a.lower() in nl or nl in a.lower():
-                        p2.append(o["price"])
+                sides = [o for o in mkt["outcomes"]
+                         if isinstance(o.get("price"), (int, float))
+                         and clean(o.get("name", "")).lower() != "draw"]
+                got1, got2, loose = [], [], []
+                for o in sides:
+                    nl = _odds_name(o["name"]).lower()
+                    if hl in nl or nl in hl:
+                        got1.append(o["price"])
+                    elif al in nl or nl in al:
+                        got2.append(o["price"])
+                    else:
+                        loose.append(o["price"])
+                # A two-way market whose outcome spells one fighter unlike the
+                # event's own home/away ("Christian" for "Cristian") still names
+                # both sides: the price left over is the other fighter's. Only
+                # when the rest is unambiguous, one matched and one left.
+                if len(sides) == 2 and len(loose) == 1:
+                    if len(got1) == 1 and not got2:
+                        got2 = loose
+                    elif len(got2) == 1 and not got1:
+                        got1 = loose
+                p1 += got1
+                p2 += got2
+        if not (p1 and p2):
+            if _raw_h2h_priced(fight):
+                # Priced upstream, unreadable here: say so with the book's own
+                # spellings, or the bout just sits at odds:null with no trace.
+                names = sorted({o.get("name", "") for bm in fight.get("bookmakers") or []
+                                for m in bm.get("markets") or [] if m.get("key") == "h2h"
+                                for o in m.get("outcomes") or []})
+                print(f"::warning::Odds for {h} vs {a} ({source}) are priced but "
+                      f"their outcomes {names} name neither fighter; skipped",
+                      file=sys.stderr)
+            continue
         if p1 and p2:
             f1_odds = round(sum(p1) / len(p1))
             f2_odds = round(sum(p2) / len(p2))

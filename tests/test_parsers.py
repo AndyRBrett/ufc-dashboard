@@ -290,6 +290,61 @@ def test_index_odds_api_empty_payload_yields_empty_index():
     assert scrape._index_odds_api([], "the-odds-api:us") == {}
 
 
+def test_index_odds_api_maps_a_maiden_name_to_the_card():
+    # The books list Katlyn Cerminara under her maiden name; with no alias her
+    # bout stayed at odds:null all fight week (Buckley vs. Malott, 2026-10-17).
+    payload = [{
+        "home_team": "Mackenzie Stiller", "away_team": "Katlyn Chookagian",
+        "bookmakers": [{"key": "fanduel", "markets": [{"key": "h2h", "outcomes": [
+            {"name": "Mackenzie Stiller", "price": 217},
+            {"name": "Katlyn Chookagian", "price": -271}]}]}],
+    }]
+    idx = scrape._index_odds_api(payload, "s")
+    assert scrape.get_odds(idx, "Katlyn Cerminara", "Mackenzie Stiller") == {"f1": -271, "f2": 217}
+
+
+def test_index_odds_api_pairs_a_misspelt_outcome_by_elimination(capsys):
+    # The event says "Cristian Perez", the market's outcome "Christian Perez":
+    # neither is a substring of the other, and the bout was dropped silently.
+    payload = [{
+        "home_team": "Kyle Nelson", "away_team": "Cristian Perez",
+        "bookmakers": [{"key": "fanduel", "markets": [{"key": "h2h", "outcomes": [
+            {"name": "Kyle Nelson", "price": 140},
+            {"name": "Christian Perez", "price": -165}]}]}],
+    }]
+    idx = scrape._index_odds_api(payload, "s")
+    assert scrape.get_odds(idx, "Kyle Nelson", "Cristian Perez") == {"f1": 140, "f2": -165}
+    assert "::warning::" not in capsys.readouterr().err
+
+
+def test_index_odds_api_never_guesses_when_neither_outcome_matches(capsys):
+    # Nothing to anchor the elimination on: skip it, and say so in the log.
+    payload = [{
+        "home_team": "Kyle Nelson", "away_team": "Cristian Perez",
+        "bookmakers": [{"key": "fanduel", "markets": [{"key": "h2h", "outcomes": [
+            {"name": "K. Nelsen", "price": 140},
+            {"name": "Christian Perez", "price": -165}]}]}],
+    }]
+    assert scrape._index_odds_api(payload, "s") == {}
+    err = capsys.readouterr().err
+    assert "::warning::Odds for Kyle Nelson vs Cristian Perez" in err
+    assert "Christian Perez" in err
+
+
+def test_index_odds_api_elimination_ignores_a_draw_outcome():
+    # A three-way market (with a draw) still has two fighters; the draw price
+    # must never be taken for one of them.
+    payload = [{
+        "home_team": "Kyle Nelson", "away_team": "Cristian Perez",
+        "bookmakers": [{"key": "fanduel", "markets": [{"key": "h2h", "outcomes": [
+            {"name": "Kyle Nelson", "price": 140},
+            {"name": "Draw", "price": 4000},
+            {"name": "Christian Perez", "price": -165}]}]}],
+    }]
+    idx = scrape._index_odds_api(payload, "s")
+    assert scrape.get_odds(idx, "Kyle Nelson", "Cristian Perez") == {"f1": 140, "f2": -165}
+
+
 # --- market observation: what the feed listed vs what it priced -------------
 #
 # write_status.classify_event reads this to tell "the books have posted no
