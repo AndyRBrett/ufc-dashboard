@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T02:15:24Z",
+  "generated_at": "2026-10-18T02:20:51Z",
   "events_tracked": 11,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "ok",
-      "last_changed_at": "2026-10-18T01:45:48Z",
+      "last_changed_at": "2026-10-18T02:20:51Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-18T02:15:24Z",
+      "last_changed_at": "2026-10-18T02:20:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-18T02:15:24Z",
+      "last_changed_at": "2026-10-18T02:20:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-18T02:15:24Z",
+      "last_changed_at": "2026-10-18T02:20:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -358,18 +358,18 @@
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
-      "f1": "Erin Blanchfield",
-      "f2": "Jasmine Jasudavicius",
-      "f1_movement": -105,
-      "f2_movement": 70,
+      "f1": "Jasmine Jasudavicius",
+      "f2": "Erin Blanchfield",
+      "f1_movement": 70,
+      "f2_movement": -105,
       "magnitude": 105,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Women's Flyweight",
-      "f1_prob_shift": 7.3,
-      "f2_prob_shift": -6.6,
+      "f1_prob_shift": -6.6,
+      "f2_prob_shift": 7.3,
       "priority": 105.0
     },
     {
