@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T23:55:41Z",
+  "generated_at": "2026-10-18T00:00:31Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -14858,7 +14858,7 @@
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Joaquin Buckley",
@@ -14952,8 +14952,15 @@
             "f1_odds": 131,
             "f2_odds": -151
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-17T22:55:44Z",
+            "f1_odds": 107,
+            "f2_odds": -128
+          },
+          "clv": {
+            "f1_odds": -24,
+            "f2_odds": 23
+          }
         },
         {
           "f1": "Erin Blanchfield",
@@ -15037,8 +15044,15 @@
             "f1_odds": -230,
             "f2_odds": 192
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-17T04:45:38Z",
+            "f1_odds": -335,
+            "f2_odds": 262
+          },
+          "clv": {
+            "f1_odds": -105,
+            "f2_odds": 70
+          }
         },
         {
           "f1": "Marc-Andre Barriault",
@@ -15162,8 +15176,15 @@
             "f1_odds": 185,
             "f2_odds": -220
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-17T22:55:44Z",
+            "f1_odds": 166,
+            "f2_odds": -203
+          },
+          "clv": {
+            "f1_odds": -19,
+            "f2_odds": 17
+          }
         },
         {
           "f1": "Louis Jourdain",
@@ -15277,8 +15298,15 @@
             "f1_odds": -170,
             "f2_odds": 130
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-17T22:55:44Z",
+            "f1_odds": -167,
+            "f2_odds": 138
+          },
+          "clv": {
+            "f1_odds": 3,
+            "f2_odds": 8
+          }
         },
         {
           "f1": "Mandel Nallo",
@@ -15357,8 +15385,15 @@
             "f1_odds": -235,
             "f2_odds": 195
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-17T19:50:42Z",
+            "f1_odds": -287,
+            "f2_odds": 228
+          },
+          "clv": {
+            "f1_odds": -52,
+            "f2_odds": 33
+          }
         },
         {
           "f1": "Tanner Boser",
@@ -15457,8 +15492,15 @@
             "f1_odds": 210,
             "f2_odds": -250
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-17T22:55:44Z",
+            "f1_odds": 176,
+            "f2_odds": -216
+          },
+          "clv": {
+            "f1_odds": -34,
+            "f2_odds": 34
+          }
         },
         {
           "f1": "Julien Leblanc",
@@ -15547,8 +15589,15 @@
             "f1_odds": 420,
             "f2_odds": -550
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-17T22:55:44Z",
+            "f1_odds": 530,
+            "f2_odds": -788
+          },
+          "clv": {
+            "f1_odds": 110,
+            "f2_odds": -238
+          }
         },
         {
           "f1": "Chad Anheliger",
@@ -15667,8 +15716,15 @@
             "f1_odds": -130,
             "f2_odds": 110
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-17T19:50:42Z",
+            "f1_odds": 138,
+            "f2_odds": -166
+          },
+          "clv": {
+            "f1_odds": 268,
+            "f2_odds": -276
+          }
         },
         {
           "f1": "Melissa Croden",
@@ -15787,8 +15843,15 @@
             "f1_odds": -240,
             "f2_odds": 205
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-17T16:50:43Z",
+            "f1_odds": -347,
+            "f2_odds": 270
+          },
+          "clv": {
+            "f1_odds": -107,
+            "f2_odds": 65
+          }
         },
         {
           "f1": "Cody Chovancek",
@@ -15897,8 +15960,15 @@
             "f1_odds": -150,
             "f2_odds": 130
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-17T19:50:42Z",
+            "f1_odds": -132,
+            "f2_odds": 110
+          },
+          "clv": {
+            "f1_odds": 18,
+            "f2_odds": -20
+          }
         },
         {
           "f1": "Javad Mahjoub",
@@ -15962,8 +16032,15 @@
             "f1_odds": -116,
             "f2_odds": -108
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-17T16:50:43Z",
+            "f1_odds": 111,
+            "f2_odds": -133
+          },
+          "clv": {
+            "f1_odds": 227,
+            "f2_odds": -25
+          }
         },
         {
           "f1": "Kyle Nelson",
@@ -15992,8 +16069,15 @@
             "f1_odds": 278,
             "f2_odds": -367
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-17T16:50:43Z",
+            "f1_odds": 273,
+            "f2_odds": -352
+          },
+          "clv": {
+            "f1_odds": -5,
+            "f2_odds": 15
+          }
         },
         {
           "f1": "Katlyn Cerminara",
@@ -16022,8 +16106,15 @@
             "f1_odds": -264,
             "f2_odds": 212
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-17T19:50:42Z",
+            "f1_odds": -259,
+            "f2_odds": 208
+          },
+          "clv": {
+            "f1_odds": 5,
+            "f2_odds": -4
+          }
         }
       ]
     },
@@ -17431,8 +17522,8 @@
         "side": "f2",
         "points": 21,
         "open": 205,
-        "close": null,
-        "clv": null
+        "close": 270,
+        "clv": 65
       }
     ],
     "Priscila Cachoeira": [
@@ -17690,8 +17781,8 @@
         "side": "f2",
         "points": 22,
         "open": -220,
-        "close": null,
-        "clv": null
+        "close": -203,
+        "clv": 17
       }
     ],
     "Diego Lopes": [
@@ -21668,8 +21759,8 @@
         "side": "f1",
         "points": 16,
         "open": 131,
-        "close": null,
-        "clv": null
+        "close": 107,
+        "clv": -24
       }
     ],
     "Mike Malott": [
@@ -21679,8 +21770,8 @@
         "side": "f2",
         "points": 16,
         "open": -151,
-        "close": null,
-        "clv": null
+        "close": -128,
+        "clv": 23
       }
     ],
     "Erin Blanchfield": [
@@ -21690,8 +21781,8 @@
         "side": "f1",
         "points": 14,
         "open": -230,
-        "close": null,
-        "clv": null
+        "close": -335,
+        "clv": -105
       }
     ],
     "Jasmine Jasudavicius": [
@@ -21701,8 +21792,8 @@
         "side": "f2",
         "points": 14,
         "open": 192,
-        "close": null,
-        "clv": null
+        "close": 262,
+        "clv": 70
       }
     ],
     "Marc-Andre Barriault": [
@@ -21712,8 +21803,8 @@
         "side": "f1",
         "points": 22,
         "open": 185,
-        "close": null,
-        "clv": null
+        "close": 166,
+        "clv": -19
       }
     ],
     "Louis Jourdain": [
@@ -21723,8 +21814,8 @@
         "side": "f1",
         "points": 20,
         "open": -170,
-        "close": null,
-        "clv": null
+        "close": -167,
+        "clv": 3
       }
     ],
     "Timothy Cuamba": [
@@ -21734,8 +21825,8 @@
         "side": "f2",
         "points": 20,
         "open": 130,
-        "close": null,
-        "clv": null
+        "close": 138,
+        "clv": 8
       }
     ],
     "Mandel Nallo": [
@@ -21745,8 +21836,8 @@
         "side": "f1",
         "points": 13,
         "open": -235,
-        "close": null,
-        "clv": null
+        "close": -287,
+        "clv": -52
       }
     ],
     "Nate Landwehr": [
@@ -21756,8 +21847,8 @@
         "side": "f2",
         "points": 13,
         "open": 195,
-        "close": null,
-        "clv": null
+        "close": 228,
+        "clv": 33
       }
     ],
     "Tanner Boser": [
@@ -21767,8 +21858,8 @@
         "side": "f1",
         "points": 17,
         "open": 210,
-        "close": null,
-        "clv": null
+        "close": 176,
+        "clv": -34
       }
     ],
     "Jhonata Diniz": [
@@ -21778,8 +21869,8 @@
         "side": "f2",
         "points": 17,
         "open": -250,
-        "close": null,
-        "clv": null
+        "close": -216,
+        "clv": 34
       }
     ],
     "Julien Leblanc": [
@@ -21789,8 +21880,8 @@
         "side": "f1",
         "points": 15,
         "open": 420,
-        "close": null,
-        "clv": null
+        "close": 530,
+        "clv": 110
       }
     ],
     "Nick Galanti": [
@@ -21800,8 +21891,8 @@
         "side": "f2",
         "points": 15,
         "open": -550,
-        "close": null,
-        "clv": null
+        "close": -788,
+        "clv": -238
       }
     ],
     "Chad Anheliger": [
@@ -21811,8 +21902,8 @@
         "side": "f1",
         "points": 21,
         "open": -130,
-        "close": null,
-        "clv": null
+        "close": 138,
+        "clv": 268
       }
     ],
     "Steven Koslow": [
@@ -21822,8 +21913,8 @@
         "side": "f2",
         "points": 21,
         "open": 110,
-        "close": null,
-        "clv": null
+        "close": -166,
+        "clv": -276
       }
     ],
     "Melissa Croden": [
@@ -21833,8 +21924,8 @@
         "side": "f1",
         "points": 21,
         "open": -240,
-        "close": null,
-        "clv": null
+        "close": -347,
+        "clv": -107
       }
     ],
     "Cody Chovancek": [
@@ -21844,8 +21935,8 @@
         "side": "f1",
         "points": 19,
         "open": -150,
-        "close": null,
-        "clv": null
+        "close": -132,
+        "clv": 18
       }
     ],
     "You Su-young": [
@@ -21855,8 +21946,8 @@
         "side": "f2",
         "points": 19,
         "open": 130,
-        "close": null,
-        "clv": null
+        "close": 110,
+        "clv": -20
       }
     ],
     "Javad Mahjoub": [
@@ -21866,8 +21957,8 @@
         "side": "f1",
         "points": 10,
         "open": -116,
-        "close": null,
-        "clv": null
+        "close": 111,
+        "clv": 227
       }
     ],
     "Joel Faglier": [
@@ -21877,8 +21968,8 @@
         "side": "f2",
         "points": 10,
         "open": -108,
-        "close": null,
-        "clv": null
+        "close": -133,
+        "clv": -25
       }
     ],
     "Kyle Nelson": [
@@ -21888,8 +21979,8 @@
         "side": "f1",
         "points": 3,
         "open": 278,
-        "close": null,
-        "clv": null
+        "close": 273,
+        "clv": -5
       }
     ],
     "Cristian Perez": [
@@ -21899,8 +21990,8 @@
         "side": "f2",
         "points": 3,
         "open": -367,
-        "close": null,
-        "clv": null
+        "close": -352,
+        "clv": 15
       }
     ],
     "Katlyn Cerminara": [
@@ -21910,8 +22001,8 @@
         "side": "f1",
         "points": 3,
         "open": -264,
-        "close": null,
-        "clv": null
+        "close": -259,
+        "clv": 5
       }
     ],
     "Mackenzie Stiller": [
@@ -21921,8 +22012,8 @@
         "side": "f2",
         "points": 3,
         "open": 212,
-        "close": null,
-        "clv": null
+        "close": 208,
+        "clv": -4
       }
     ],
     "Alexander Volkanovski": [
