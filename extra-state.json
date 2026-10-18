@@ -1,23 +1,14 @@
 {
- "last_fetch": "2026-10-17T21:45:43Z",
+ "last_fetch": "2026-10-18T10:00:44Z",
  "publish": true,
- "events": 3,
+ "events": 2,
  "report": [
-  {
-   "promotion": "pfl",
-   "event": "PFL Chicago: Carmouche vs. Bishop 2",
-   "date": "2026-10-16",
-   "bouts": 13,
-   "source": "article",
-   "main_event": "Jena Bishop vs Liz Carmouche"
-  },
   {
    "promotion": "pfl",
    "event": "PFL Dubai: Nemkov vs. Bilostenniy",
    "date": "2026-11-14",
-   "bouts": 13,
-   "source": "article",
-   "main_event": "Vadim Nemkov vs Sergey Bilostenniy"
+   "problem": "only 0 bout(s) parsed",
+   "kept_previous": true
   },
   {
    "promotion": "rizin",
