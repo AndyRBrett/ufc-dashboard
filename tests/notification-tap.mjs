@@ -612,6 +612,9 @@ async function main() {
     for (const [label, openIt, isOpen] of [
       ["the Picks tab", () => goTab("picks"), "picksSheet"],
       ["a fighter's stats", () => document.getElementById("statsModal").classList.add("open"), "statsModal"],
+      ["the Notifications sheet", () => document.getElementById("notifBg").classList.add("open"), "notifBg"],
+      ["the Card Recap", () => document.getElementById("recap-overlay").classList.add("open"), "recap-overlay"],
+      ["Year Wrapped", () => document.getElementById("wr-overlay").classList.add("open"), "wr-overlay"],
     ]) {
       await page.evaluate(openIt);
       await page.waitForTimeout(400);
@@ -624,6 +627,8 @@ async function main() {
           return { open: s.classList.contains("open"), onTop: !!el && s.contains(el) };
         }, kind ? "chalSheet" : "trashSheet");
         assert(`a ${via} arriving over ${label} is drawn on top of it`, top.open && top.onTop);
+        const focused = await page.evaluate((id) => document.getElementById(id).contains(document.activeElement), kind ? "chalSheet" : "trashSheet");
+        assert(`...and takes focus off ${label}`, focused);
         await page.tap(`#${kind ? "chalSheet" : "trashSheet"} .lb-trash-close`).catch(() => page.click(`#${kind ? "chalSheet" : "trashSheet"} .lb-trash-close`));
         await page.waitForTimeout(300);
         const back = await page.evaluate((id) => {
@@ -633,7 +638,7 @@ async function main() {
         }, isOpen);
         assert(`...and closing the ${via} returns to ${label}`, back.open && back.onTop && !back.lifted);
       }
-      await page.evaluate(() => { document.getElementById("statsModal").classList.remove("open"); goTab("cards"); closeLeaderboard(); });
+      await page.evaluate((id) => { document.getElementById(id).classList.remove("open"); goTab("cards"); closeLeaderboard(); }, isOpen);
       await page.waitForTimeout(300);
     }
     // FightBot sits over the toasts (z-index 500), so it steps aside instead,

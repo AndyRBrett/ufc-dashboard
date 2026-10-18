@@ -399,10 +399,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 .install-arrow svg{display:block;margin:4px auto 0;animation:bounce .9s ease-in-out infinite}
 .lb-panel{display:none;position:fixed;top:env(safe-area-inset-top,0px);right:0;bottom:0;left:0;z-index:350;background:var(--bg);flex-direction:column;overflow:visible}
 /* A received roast / challenge inbox lives inside Ranks, which sits under the
-   Picks sheet, FightBot, stats, parlay, compare and share (370-380). Lifted
-   while one is open so it is never drawn behind them; below the nm-bg sheets
-   (400) so Report / Block opened from the roast still show on top. */
-.lb-panel.tap-front{z-index:395}
+   Picks sheet, stats, parlay, compare, share (370-380), the account / name /
+   notification / room sheets and the Card Recap (400) and Year Wrapped (450).
+   Lifted over all of them while one is open; still under the toasts (500) and
+   Report / Block (600), which open from the roast. FightBot (500) steps aside
+   instead (_tapFront). */
+.lb-panel.tap-front{z-index:460}
 .lb-panel.open{display:flex}
 .lb-hdr{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:56px;border-bottom:1px solid var(--border);background:var(--hdr-bg);flex-shrink:0;gap:10px}
 .lb-title{font-family:var(--font-display);text-transform:uppercase;font-size:27px;letter-spacing:.06em;flex:1}
@@ -8973,21 +8975,32 @@ function fireTrashTalk(){
 // marked seen with nothing on screen, and tapping the banner re-opened it
 // behind the same screen (fight night 2026-10-17). Lift Ranks over them while
 // the sheet is open; closing it drops Ranks back, so the user returns to the
-// screen they were on. Anything that still sits above it steps aside: the
-// More menu, FightBot (z-index 500, over the toasts; closing only hides it, the
-// chat is kept, as the Ranks tab does), and an auto-popped Card Recap, without
-// checkpointing so it comes back later.
+// screen they were on, and focus goes back where it was. FightBot sits over the
+// toasts (z-index 500), so it steps aside instead: closing only hides it, the
+// chat is kept, as the Ranks tab does. Focus moves onto the sheet, so a keyboard
+// or screen-reader user isn't left on a control now drawn underneath it.
+var _tapFrontFocus=null;
 function _tapFront(on){
   var p=document.getElementById("lbPanel");if(!p)return;
+  var open=function(id){var el=document.getElementById(id);return !!el&&el.classList.contains("open");};
   if(on){
+    var was=p.classList.contains("tap-front");
     p.classList.add("tap-front");
     try{closeMoreMenu();}catch(e){}
     try{if(_isOpen("botModal"))closeBot();}catch(e){}
-    var rc=document.getElementById("recap-overlay");if(rc)rc.classList.remove("open");
+    try{
+      var a=document.activeElement;
+      if(!was)_tapFrontFocus=a&&a!==document.body&&!p.contains(a)?a:null;
+      var sh=document.getElementById(open("chalSheet")&&!open("trashSheet")?"chalSheet":"trashSheet");
+      var btn=sh&&sh.querySelector(".lb-trash-close");
+      if(btn&&!(a&&sh.contains(a)))btn.focus();
+    }catch(e){}
     return;
   }
-  var open=function(id){var el=document.getElementById(id);return !!el&&el.classList.contains("open");};
-  if(!open("trashSheet")&&!open("chalSheet"))p.classList.remove("tap-front");
+  if(open("trashSheet")||open("chalSheet")||!p.classList.contains("tap-front"))return;
+  p.classList.remove("tap-front");
+  var f=_tapFrontFocus;_tapFrontFocus=null;
+  try{if(f&&document.documentElement.contains(f))f.focus();}catch(e){}
 }
 function showIncomingTrashTalk(text,sender){
   _roastShownAt[text]=Date.now();
