@@ -603,6 +603,61 @@ async function main() {
       await page.setViewportSize(was);
     }
 
+    // A roast arriving while another screen is up. The sheet lives inside
+    // Ranks, which sat under the Picks sheet, FightBot and the other modals,
+    // so on fight night 2026-10-17 a roast was put "on screen" (and marked
+    // seen) behind the Picks tab, and tapping its banner re-opened it behind
+    // the same screen. It must be the thing actually under the finger, and
+    // closing it must hand the user back to the screen they were on.
+    for (const [label, openIt, isOpen] of [
+      ["the Picks tab", () => goTab("picks"), "picksSheet"],
+      ["a fighter's stats", () => document.getElementById("statsModal").classList.add("open"), "statsModal"],
+      ["the Notifications sheet", () => document.getElementById("notifBg").classList.add("open"), "notifBg"],
+      ["the Card Recap", () => document.getElementById("recap-overlay").classList.add("open"), "recap-overlay"],
+      ["Year Wrapped", () => document.getElementById("wr-overlay").classList.add("open"), "wr-overlay"],
+    ]) {
+      await page.evaluate(openIt);
+      await page.waitForTimeout(400);
+      for (const [via, kind] of [["roast", ""], ["challenge", "challenge"]]) {
+        await page.evaluate(([k, t]) => _routeTap(k, k ? "" : t, "T", Date.now() + Math.random(), 0), [kind, ROAST]);
+        await page.waitForTimeout(500);   // past the sheet's slide-in transition
+        const top = await page.evaluate((id) => {
+          const s = document.getElementById(id), r = s.getBoundingClientRect();
+          const el = document.elementFromPoint(r.left + r.width / 2, r.top + Math.min(40, r.height / 2));
+          return { open: s.classList.contains("open"), onTop: !!el && s.contains(el) };
+        }, kind ? "chalSheet" : "trashSheet");
+        assert(`a ${via} arriving over ${label} is drawn on top of it`, top.open && top.onTop);
+        const focused = await page.evaluate((id) => document.getElementById(id).contains(document.activeElement), kind ? "chalSheet" : "trashSheet");
+        assert(`...and takes focus off ${label}`, focused);
+        await page.tap(`#${kind ? "chalSheet" : "trashSheet"} .lb-trash-close`).catch(() => page.click(`#${kind ? "chalSheet" : "trashSheet"} .lb-trash-close`));
+        await page.waitForTimeout(300);
+        const back = await page.evaluate((id) => {
+          const m = document.getElementById(id), r = m.getBoundingClientRect();
+          const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          return { open: m.classList.contains("open"), onTop: !!el && m.contains(el), lifted: document.getElementById("lbPanel").classList.contains("tap-front") };
+        }, isOpen);
+        assert(`...and closing the ${via} returns to ${label}`, back.open && back.onTop && !back.lifted);
+      }
+      await page.evaluate((id) => { document.getElementById(id).classList.remove("open"); goTab("cards"); closeLeaderboard(); }, isOpen);
+      await page.waitForTimeout(300);
+    }
+    // FightBot sits over the toasts (z-index 500), so it steps aside instead,
+    // keeping its chat, the way the Ranks tab closes it.
+    {
+      await page.evaluate(() => goTab("bot"));
+      await page.waitForTimeout(400);
+      await page.evaluate((t) => _routeTap("", t, "T", Date.now() + 0.5, 0), ROAST);
+      await page.waitForTimeout(500);
+      const top = await page.evaluate(() => {
+        const s = document.getElementById("trashSheet"), r = s.getBoundingClientRect();
+        const el = document.elementFromPoint(r.left + r.width / 2, r.top + Math.min(40, r.height / 2));
+        return { onTop: !!el && s.contains(el), bot: document.getElementById("botModal").classList.contains("open") };
+      });
+      assert("a roast arriving over FightBot is drawn on top (FightBot steps aside)", top.onTop && !top.bot);
+      await page.evaluate(() => closeLeaderboard());
+      await page.waitForTimeout(300);
+    }
+
     // No :has() rules. On body it makes WebKit re-check the whole page on every
     // DOM change, and this page adds and removes an ambient particle several
     // times a second; the toast rule that used one shipped with a frozen roast.
