@@ -398,6 +398,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 .install-arrow{text-align:center;margin-top:16px;font-size:13px;color:var(--muted)}
 .install-arrow svg{display:block;margin:4px auto 0;animation:bounce .9s ease-in-out infinite}
 .lb-panel{display:none;position:fixed;top:env(safe-area-inset-top,0px);right:0;bottom:0;left:0;z-index:350;background:var(--bg);flex-direction:column;overflow:visible}
+/* A received roast / challenge inbox lives inside Ranks, which sits under the
+   Picks sheet, FightBot, stats, parlay, compare and share (370-380). Lifted
+   while one is open so it is never drawn behind them; below the nm-bg sheets
+   (400) so Report / Block opened from the roast still show on top. */
+.lb-panel.tap-front{z-index:395}
 .lb-panel.open{display:flex}
 .lb-hdr{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:56px;border-bottom:1px solid var(--border);background:var(--hdr-bg);flex-shrink:0;gap:10px}
 .lb-title{font-family:var(--font-display);text-transform:uppercase;font-size:27px;letter-spacing:.06em;flex:1}
@@ -8573,6 +8578,7 @@ function closeLeaderboard(){var p=document.getElementById("lbPanel");if(p.classL
 document.addEventListener("click",function(e){var m=document.getElementById("lbInfoModal");if(m&&m.classList.contains("open")&&!m.contains(e.target)&&!e.target.classList.contains("lb-info-btn"))m.classList.remove("open");});
 function closeTrashSheet(){
   document.getElementById("trashSheet").classList.remove("open");
+  _tapFront();
   document.getElementById("trashSafety").style.display="none";
   document.getElementById("trashPersonaPicker").style.display="none";
   document.getElementById("trashTargets").style.display="none";
@@ -8961,6 +8967,28 @@ function fireTrashTalk(){
     ]).then(function(sub){if(sub)req.exclude_endpoint=sub.endpoint;}).catch(function(){}).then(send);
   }else send();
 }
+// A roast or challenge that arrives while the user is on another screen (the
+// Picks tab, FightBot, a fighter's stats...) used to open behind it: the sheet
+// lives inside Ranks, which sits under all of those, so it was "shown" and
+// marked seen with nothing on screen, and tapping the banner re-opened it
+// behind the same screen (fight night 2026-10-17). Lift Ranks over them while
+// the sheet is open; closing it drops Ranks back, so the user returns to the
+// screen they were on. Anything that still sits above it steps aside: the
+// More menu, FightBot (z-index 500, over the toasts; closing only hides it, the
+// chat is kept, as the Ranks tab does), and an auto-popped Card Recap, without
+// checkpointing so it comes back later.
+function _tapFront(on){
+  var p=document.getElementById("lbPanel");if(!p)return;
+  if(on){
+    p.classList.add("tap-front");
+    try{closeMoreMenu();}catch(e){}
+    try{if(_isOpen("botModal"))closeBot();}catch(e){}
+    var rc=document.getElementById("recap-overlay");if(rc)rc.classList.remove("open");
+    return;
+  }
+  var open=function(id){var el=document.getElementById(id);return !!el&&el.classList.contains("open");};
+  if(!open("trashSheet")&&!open("chalSheet"))p.classList.remove("tap-front");
+}
 function showIncomingTrashTalk(text,sender){
   _roastShownAt[text]=Date.now();
   _markRoastSeen(text);
@@ -8984,6 +9012,7 @@ function showIncomingTrashTalk(text,sender){
   saf.appendChild(safetyActions({kind:"roast",name:sender||"",content:text}));
   saf.style.display="";
   sheet.classList.add("open");
+  _tapFront(true);
 }
 // In "This Event" mode the board only lists people who have already picked this
 // card, and the roast sheet used to take its cast straight from it. So early in
@@ -12396,10 +12425,11 @@ function openChallengeInbox(){
   document.getElementById("chalComposeView").style.display="none";
   document.getElementById("chalInboxView").style.display="block";
   document.getElementById("chalSheet").classList.add("open");
+  _tapFront(true);
   renderChallengeInbox();
   fetchChallenges();
 }
-function closeChalSheet(){document.getElementById("chalSheet").classList.remove("open");}
+function closeChalSheet(){document.getElementById("chalSheet").classList.remove("open");_tapFront();}
 function renderChallengeInbox(){
   var list=document.getElementById("chalList");if(!list)return;
   list.innerHTML="";
