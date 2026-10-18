@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T02:45:29Z",
+  "generated_at": "2026-10-18T02:58:03Z",
   "events_tracked": 11,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,11 +95,11 @@
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "status": "ok",
-      "last_changed_at": "2026-10-18T02:20:51Z",
+      "last_changed_at": "2026-10-18T02:58:03Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": -24,
+      "line_movement": 23,
       "odds_market_priced": true
     },
     {
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-18T02:45:29Z",
+      "last_changed_at": "2026-10-18T02:58:03Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-18T02:45:29Z",
+      "last_changed_at": "2026-10-18T02:58:03Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -145,7 +145,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-18T02:45:29Z",
+      "last_changed_at": "2026-10-18T02:58:03Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -470,18 +470,18 @@
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
-      "f1": "Joaquin Buckley",
-      "f2": "Mike Malott",
-      "f1_movement": -24,
-      "f2_movement": 23,
+      "f1": "Mike Malott",
+      "f2": "Joaquin Buckley",
+      "f1_movement": 23,
+      "f2_movement": -24,
       "magnitude": 24,
       "main_event": true,
       "tier": "main-event",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Welterweight",
-      "f1_prob_shift": 5.0,
-      "f2_prob_shift": -4.0,
+      "f1_prob_shift": -4.0,
+      "f2_prob_shift": 5.0,
       "priority": 60.0
     },
     {
