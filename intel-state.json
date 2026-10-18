@@ -1,5 +1,5 @@
 {
- "last_fetch": "2026-10-18T05:05:38Z",
+ "last_fetch": "2026-10-18T08:55:38Z",
  "fingerprint": "e1f1558cb0c2b7e5",
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 404,
-   "items": 0
+   "status": 200,
+   "items": 15
   },
   {
    "id": "yt-mmaf",
@@ -40,5 +40,5 @@
   }
  ],
  "events": 2,
- "items": 10
+ "items": 12
 }
