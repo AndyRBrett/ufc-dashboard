@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T11:00:46Z",
+  "generated_at": "2026-10-18T12:05:42Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -16126,7 +16126,7 @@
           "f1": "Alexander Volkanovski",
           "f2": "Movsar Evloev",
           "lbl": "Main Event",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -16197,6 +16197,11 @@
               "at": "2026-10-17T22:55:44Z",
               "f1_odds": -112,
               "f2_odds": -112
+            },
+            {
+              "at": "2026-10-18T12:05:41Z",
+              "f1_odds": -110,
+              "f2_odds": -113
             }
           ],
           "open": {
@@ -16311,7 +16316,7 @@
           "f1": "Lone'er Kavanagh",
           "f2": "Ramazan Temirov",
           "lbl": "Main Card",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16322,6 +16327,11 @@
               "at": "2026-10-17T16:50:43Z",
               "f1_odds": -114,
               "f2_odds": -109
+            },
+            {
+              "at": "2026-10-18T12:05:41Z",
+              "f1_odds": -110,
+              "f2_odds": -111
             }
           ],
           "open": {
@@ -16426,7 +16436,7 @@
           "f1": "Azamat Murzakanov",
           "f2": "Dominick Reyes",
           "lbl": "Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16457,6 +16467,11 @@
               "at": "2026-10-18T05:05:37Z",
               "f1_odds": -243,
               "f2_odds": 196
+            },
+            {
+              "at": "2026-10-18T12:05:41Z",
+              "f1_odds": -233,
+              "f2_odds": 188
             }
           ],
           "open": {
@@ -16501,7 +16516,7 @@
           "f1": "Abusupiyan Magomedov",
           "f2": "Cameron Rowston",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16527,6 +16542,11 @@
               "at": "2026-10-18T05:05:37Z",
               "f1_odds": -111,
               "f2_odds": -110
+            },
+            {
+              "at": "2026-10-18T12:05:41Z",
+              "f1_odds": -109,
+              "f2_odds": -112
             }
           ],
           "open": {
@@ -16601,7 +16621,7 @@
           "f1": "Abubakar Vagaev",
           "f2": "Jacob Malkoun",
           "lbl": "Early Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-17T16:50:43Z",
@@ -16612,6 +16632,11 @@
               "at": "2026-10-18T05:05:37Z",
               "f1_odds": -196,
               "f2_odds": 162
+            },
+            {
+              "at": "2026-10-18T12:05:41Z",
+              "f1_odds": -190,
+              "f2_odds": 158
             }
           ],
           "open": {
@@ -18274,7 +18299,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Cameron Rowston",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -118,
         "close": null,
         "clv": null
@@ -18610,7 +18635,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Ramazan Temirov",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -110,
         "close": null,
         "clv": null
@@ -22041,7 +22066,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Movsar Evloev",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -115,
         "close": null,
         "clv": null
@@ -22052,7 +22077,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Alexander Volkanovski",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -108,
         "close": null,
         "clv": null
@@ -22085,7 +22110,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Lone'er Kavanagh",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": -110,
         "close": null,
         "clv": null
@@ -22129,7 +22154,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Dominick Reyes",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -210,
         "close": null,
         "clv": null
@@ -22140,7 +22165,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Azamat Murzakanov",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 177,
         "close": null,
         "clv": null
@@ -22151,7 +22176,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Abusupiyan Magomedov",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": -102,
         "close": null,
         "clv": null
@@ -22184,7 +22209,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Jacob Malkoun",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -185,
         "close": null,
         "clv": null
@@ -22195,7 +22220,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Abubakar Vagaev",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 157,
         "close": null,
         "clv": null
