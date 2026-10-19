@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-19T19:35:40Z",
+  "generated_at": "2026-10-19T20:40:39Z",
   "events_tracked": 10,
-  "stale_events": 1,
+  "stale_events": 0,
   "parse_failure_events": 0,
   "awaiting_card_events": 2,
   "odds_unavailable_events": 1,
@@ -95,17 +95,17 @@
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "ok",
-      "last_changed_at": "2026-10-19T14:25:41Z",
+      "last_changed_at": "2026-10-19T20:40:39Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 11,
-      "line_movement": 3,
+      "line_movement": 6,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-19T19:35:40Z",
+      "last_changed_at": "2026-10-19T20:40:39Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-19T19:35:40Z",
+      "last_changed_at": "2026-10-19T20:40:39Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -135,7 +135,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-19T19:35:40Z",
+      "last_changed_at": "2026-10-19T20:40:39Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -145,11 +145,11 @@
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
       "status": "ok",
-      "last_changed_at": "2026-10-16T10:40:41Z",
-      "is_stale": true,
+      "last_changed_at": "2026-10-19T20:40:39Z",
+      "is_stale": false,
       "has_data": true,
       "bout_count": 5,
-      "line_movement": 17,
+      "line_movement": 11,
       "odds_market_priced": true
     }
   ],
@@ -187,22 +187,6 @@
       "priority": 320.0
     },
     {
-      "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
-      "f1": "Aaron Pico",
-      "f2": "Losene Keita",
-      "f1_movement": -223,
-      "f2_movement": 20,
-      "magnitude": 223,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 50,
-      "low_confidence": false,
-      "wc": "Featherweight",
-      "f1_prob_shift": 5.3,
-      "f2_prob_shift": -4.3,
-      "priority": 312.2
-    },
-    {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Jacobe Smith",
       "f2": "Bruce Whitehead",
@@ -217,6 +201,22 @@
       "f1_prob_shift": 2.1,
       "f2_prob_shift": -2.6,
       "priority": 310.0
+    },
+    {
+      "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
+      "f1": "Aaron Pico",
+      "f2": "Losene Keita",
+      "f1_movement": -220,
+      "f2_movement": 17,
+      "magnitude": 220,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 50,
+      "low_confidence": false,
+      "wc": "Featherweight",
+      "f1_prob_shift": 4.7,
+      "f2_prob_shift": -3.6,
+      "priority": 308.0
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
@@ -238,17 +238,17 @@
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "f1": "Grant Dawson",
       "f2": "Nurullo Aliev",
-      "f1_movement": -10,
-      "f2_movement": 205,
-      "magnitude": 205,
+      "f1_movement": -11,
+      "f2_movement": 206,
+      "magnitude": 206,
       "main_event": false,
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
       "wc": "Lightweight",
-      "f1_prob_shift": 2.0,
-      "f2_prob_shift": -1.2,
-      "priority": 287.0
+      "f1_prob_shift": 2.2,
+      "f2_prob_shift": -1.5,
+      "priority": 288.4
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
@@ -475,22 +475,6 @@
       "priority": 45.0
     },
     {
-      "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
-      "f1": "Charles Oliveira",
-      "f2": "Diego Lopes",
-      "f1_movement": 17,
-      "f2_movement": -14,
-      "magnitude": 17,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Lightweight",
-      "f1_prob_shift": -2.6,
-      "f2_prob_shift": 2.6,
-      "priority": 42.5
-    },
-    {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Ciryl Gane",
       "f2": "Josh Hokit",
@@ -505,6 +489,22 @@
       "f1_prob_shift": -0.7,
       "f2_prob_shift": 1.4,
       "priority": 35.0
+    },
+    {
+      "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
+      "f1": "Charles Oliveira",
+      "f2": "Diego Lopes",
+      "f1_movement": 11,
+      "f2_movement": -13,
+      "magnitude": 13,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Lightweight",
+      "f1_prob_shift": -1.6,
+      "f2_prob_shift": 2.4,
+      "priority": 32.5
     }
   ],
   "errors": []

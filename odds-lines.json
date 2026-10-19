@@ -2,14 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Mirali Huseynov",
-   "b": "Viacheslav Borshchev",
-   "a_odds": 180,
-   "b_odds": -270,
-   "commence_time": "2026-10-16T18:00:00Z",
-   "seen_at": "2026-10-16T14:30:28Z"
-  },
-  {
    "a": "Benita van Rooij",
    "b": "Giulliany Perea",
    "a_odds": 115,
@@ -380,18 +372,18 @@
   {
    "a": "Aaron Pico",
    "b": "Losene Keita",
-   "a_odds": -118,
-   "b_odds": -105,
+   "a_odds": -115,
+   "b_odds": -108,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-19T07:35:21Z"
+   "seen_at": "2026-10-19T20:40:22Z"
   },
   {
    "a": "Abubakar Vagaev",
    "b": "Jacob Malkoun",
-   "a_odds": -198,
-   "b_odds": 160,
+   "a_odds": -179,
+   "b_odds": 143,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-19T07:35:21Z"
+   "seen_at": "2026-10-19T20:40:22Z"
   },
   {
    "a": "Abusupyian Magomedov",
@@ -410,28 +402,36 @@
    "seen_at": "2026-10-19T07:35:21Z"
   },
   {
+   "a": "Asaf Chopurov",
+   "b": "Colby Thicknesse",
+   "a_odds": -533,
+   "b_odds": 378,
+   "commence_time": "2026-10-24T14:00:00Z",
+   "seen_at": "2026-10-19T20:40:22Z"
+  },
+  {
    "a": "Azamat Murzakanov",
    "b": "Dominick Reyes",
-   "a_odds": -213,
-   "b_odds": 169,
+   "a_odds": -220,
+   "b_odds": 174,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-19T07:35:21Z"
+   "seen_at": "2026-10-19T20:40:22Z"
   },
   {
    "a": "Bolaji Oki",
    "b": "Daniel Santos",
-   "a_odds": 115,
-   "b_odds": -137,
+   "a_odds": 114,
+   "b_odds": -136,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-19T14:25:24Z"
+   "seen_at": "2026-10-19T20:40:22Z"
   },
   {
    "a": "Grant Dawson",
    "b": "Nurullo Aliev",
-   "a_odds": -128,
-   "b_odds": 103,
+   "a_odds": -129,
+   "b_odds": 104,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-19T14:25:24Z"
+   "seen_at": "2026-10-19T20:40:22Z"
   },
   {
    "a": "Iasmin Lucindo",
@@ -460,10 +460,10 @@
   {
    "a": "Nikita Krylov",
    "b": "Abdulrakhman Yakhyaev",
-   "a_odds": 350,
-   "b_odds": -490,
+   "a_odds": 360,
+   "b_odds": -507,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-19T14:25:24Z"
+   "seen_at": "2026-10-19T20:40:22Z"
   },
   {
    "a": "Petr Yan",
@@ -476,10 +476,10 @@
   {
    "a": "Alex Volkanovski",
    "b": "Movsar Evloev",
-   "a_odds": -112,
-   "b_odds": -111,
+   "a_odds": -109,
+   "b_odds": -114,
    "commence_time": "2026-10-24T20:30:00Z",
-   "seen_at": "2026-10-19T07:35:21Z"
+   "seen_at": "2026-10-19T20:40:22Z"
   },
   {
    "a": "Kayla Harrison",
@@ -508,18 +508,18 @@
   {
    "a": "Sergey Pavlovich",
    "b": "Alex Pereira",
-   "a_odds": -204,
-   "b_odds": 171,
+   "a_odds": -205,
+   "b_odds": 167,
    "commence_time": "2026-12-13T03:30:00Z",
-   "seen_at": "2026-10-13T00:55:23Z"
+   "seen_at": "2026-10-19T20:40:22Z"
   },
   {
    "a": "Charles Oliveira",
    "b": "Diego Lopes",
-   "a_odds": -149,
-   "b_odds": 123,
+   "a_odds": -155,
+   "b_odds": 124,
    "commence_time": "2026-12-13T04:00:00Z",
-   "seen_at": "2026-10-11T23:35:20Z"
+   "seen_at": "2026-10-19T20:40:22Z"
   },
   {
    "a": "Justin Gaethje",
