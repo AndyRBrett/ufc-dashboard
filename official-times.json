@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-10-19T14:25:23Z",
+ "generated_at": "2026-10-19T16:24:12Z",
  "source": "https://www.ufc.com",
  "cards": {
   "UFC 333: Volkanovski vs. Evloev|2026-10-24": {
    "name": "UFC 333: Volkanovski vs. Evloev",
    "date": "2026-10-24",
-   "checked_at": "2026-10-19T13:20:22Z",
+   "checked_at": "2026-10-19T16:24:12Z",
    "url": "https://www.ufc.com/event/ufc-333",
    "status": 200,
    "segments": {
@@ -74,15 +74,27 @@
      [
       "Abubakar Vagaev",
       "Jacob Malkoun"
+     ],
+     [
+      "Bolaji Oki",
+      "Daniel Santos"
+     ],
+     [
+      "Kody Steele",
+      "Noah Gugnon"
+     ],
+     [
+      "Iasmin Lucindo",
+      "Nicolle Caliari"
      ]
     ]
    },
-   "confirmed_at": "2026-10-19T13:20:22Z"
+   "confirmed_at": "2026-10-19T16:24:12Z"
   },
   "UFC Fight Night: Moicano vs. Nolan|2026-10-31": {
    "name": "UFC Fight Night: Moicano vs. Nolan",
    "date": "2026-10-31",
-   "checked_at": "2026-10-19T04:20:22Z",
+   "checked_at": "2026-10-19T16:24:12Z",
    "url": "https://www.ufc.com/event/ufc-fight-night-october-31-2026",
    "status": 200,
    "segments": {
@@ -147,7 +159,7 @@
      ]
     ]
    },
-   "confirmed_at": "2026-10-19T04:20:22Z"
+   "confirmed_at": "2026-10-19T16:24:12Z"
   },
   "UFC Fight Night: Bonfim vs. Brady|2026-11-07": {
    "name": "UFC Fight Night: Bonfim vs. Brady",
