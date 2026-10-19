@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-19T13:20:40Z",
+  "generated_at": "2026-10-19T14:25:42Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -16226,7 +16226,7 @@
           "f1": "Petr Yan",
           "f2": "Merab Dvalishvili",
           "lbl": "Co-Main",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -16317,6 +16317,11 @@
               "at": "2026-10-19T00:59:19Z",
               "f1_odds": -177,
               "f2_odds": 142
+            },
+            {
+              "at": "2026-10-19T14:25:41Z",
+              "f1_odds": -175,
+              "f2_odds": 141
             }
           ],
           "open": {
@@ -16551,7 +16556,7 @@
           "f1": "Nikita Krylov",
           "f2": "Abdul-Rakhman Yakhyaev",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16577,6 +16582,11 @@
               "at": "2026-10-19T07:35:37Z",
               "f1_odds": 343,
               "f2_odds": -480
+            },
+            {
+              "at": "2026-10-19T14:25:41Z",
+              "f1_odds": 350,
+              "f2_odds": -490
             }
           ],
           "open": {
@@ -16636,7 +16646,7 @@
           "f1": "Grant Dawson",
           "f2": "Nurullo Aliev",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16692,6 +16702,11 @@
               "at": "2026-10-19T07:35:37Z",
               "f1_odds": -129,
               "f2_odds": 104
+            },
+            {
+              "at": "2026-10-19T14:25:41Z",
+              "f1_odds": -128,
+              "f2_odds": 103
             }
           ],
           "open": {
@@ -18475,7 +18490,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Nikita Krylov",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": -450,
         "close": null,
         "clv": null
@@ -18833,7 +18848,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Abdul-Rakhman Yakhyaev",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": 354,
         "close": null,
         "clv": null
@@ -22193,7 +22208,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Merab Dvalishvili",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": -171,
         "close": null,
         "clv": null
@@ -22204,7 +22219,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Petr Yan",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": 138,
         "close": null,
         "clv": null
@@ -22292,7 +22307,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Nurullo Aliev",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -118,
         "close": null,
         "clv": null
@@ -22303,7 +22318,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Grant Dawson",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -102,
         "close": null,
         "clv": null
