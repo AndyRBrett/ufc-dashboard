@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T21:45:38Z",
+  "generated_at": "2026-10-20T22:50:39Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -16911,7 +16911,7 @@
           "f1": "Kody Steele",
           "f2": "Noah Gugnon",
           "lbl": "Early Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-20T03:10:49Z",
@@ -16922,6 +16922,11 @@
               "at": "2026-10-20T16:20:40Z",
               "f1_odds": -164,
               "f2_odds": 132
+            },
+            {
+              "at": "2026-10-20T22:50:39Z",
+              "f1_odds": -163,
+              "f2_odds": 131
             }
           ],
           "open": {
@@ -16936,7 +16941,7 @@
           "f1": "Iasmin Lucindo",
           "f2": "Nicole Caliari",
           "lbl": "Early Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-10-20T03:10:49Z",
@@ -16952,6 +16957,11 @@
               "at": "2026-10-20T16:20:40Z",
               "f1_odds": -378,
               "f2_odds": 283
+            },
+            {
+              "at": "2026-10-20T22:50:39Z",
+              "f1_odds": -380,
+              "f2_odds": 285
             }
           ],
           "open": {
@@ -16992,7 +17002,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -17073,6 +17083,11 @@
               "at": "2026-10-19T07:35:37Z",
               "f1_odds": -263,
               "f2_odds": 205
+            },
+            {
+              "at": "2026-10-20T22:50:39Z",
+              "f1_odds": -268,
+              "f2_odds": 208
             }
           ],
           "open": {
@@ -18041,7 +18056,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -272,
         "close": null,
         "clv": null
@@ -18103,7 +18118,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 219,
         "close": null,
         "clv": null
@@ -22605,7 +22620,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Noah Gugnon",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -158,
         "close": null,
         "clv": null
@@ -22616,7 +22631,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Kody Steele",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 133,
         "close": null,
         "clv": null
@@ -22627,7 +22642,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Nicole Caliari",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -360,
         "close": null,
         "clv": null
@@ -22638,7 +22653,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Iasmin Lucindo",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 282,
         "close": null,
         "clv": null

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T21:45:38Z",
+  "generated_at": "2026-10-20T22:50:39Z",
   "events_tracked": 10,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "ok",
-      "last_changed_at": "2026-10-20T16:20:40Z",
+      "last_changed_at": "2026-10-20T22:50:39Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -105,7 +105,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-20T21:45:38Z",
+      "last_changed_at": "2026-10-20T22:50:39Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-20T21:45:38Z",
+      "last_changed_at": "2026-10-20T22:50:39Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -125,17 +125,17 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-10-19T07:35:37Z",
+      "last_changed_at": "2026-10-20T22:50:39Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 9,
-      "line_movement": 9,
+      "line_movement": 4,
       "odds_market_priced": null
     },
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-20T21:45:38Z",
+      "last_changed_at": "2026-10-20T22:50:39Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -475,22 +475,6 @@
       "priority": 45.0
     },
     {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Ciryl Gane",
-      "f2": "Josh Hokit",
-      "f1_movement": 9,
-      "f2_movement": -14,
-      "magnitude": 14,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": -0.7,
-      "f2_prob_shift": 1.4,
-      "priority": 35.0
-    },
-    {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
       "f1": "Charles Oliveira",
       "f2": "Diego Lopes",
@@ -505,6 +489,22 @@
       "f1_prob_shift": -1.6,
       "f2_prob_shift": 2.4,
       "priority": 32.5
+    },
+    {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Ciryl Gane",
+      "f2": "Josh Hokit",
+      "f1_movement": 4,
+      "f2_movement": -11,
+      "magnitude": 11,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": -0.3,
+      "f2_prob_shift": 1.1,
+      "priority": 27.5
     }
   ],
   "errors": []

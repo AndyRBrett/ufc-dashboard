@@ -2,150 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Gabriele Lionetti",
-   "b": "Elez Guri",
-   "a_odds": -285,
-   "b_odds": 234,
-   "commence_time": "2026-10-17T16:30:00Z",
-   "seen_at": "2026-10-17T07:45:22Z"
-  },
-  {
-   "a": "Niko Ceraglia",
-   "b": "Valentino Greco",
-   "a_odds": -1200,
-   "b_odds": 754,
-   "commence_time": "2026-10-17T16:55:00Z",
-   "seen_at": "2026-10-17T01:40:24Z"
-  },
-  {
-   "a": "Alessandro Ortolani",
-   "b": "Simone Ali",
-   "a_odds": -101,
-   "b_odds": -119,
-   "commence_time": "2026-10-17T17:20:00Z",
-   "seen_at": "2026-10-17T16:50:23Z"
-  },
-  {
-   "a": "Jonathan Rivera",
-   "b": "Angelo Coppola",
-   "a_odds": -450,
-   "b_odds": 350,
-   "commence_time": "2026-10-17T17:45:00Z",
-   "seen_at": "2026-10-17T16:50:23Z"
-  },
-  {
-   "a": "Enrico Di Gangi",
-   "b": "Tommy Brunning",
-   "a_odds": -215,
-   "b_odds": 183,
-   "commence_time": "2026-10-17T18:10:00Z",
-   "seen_at": "2026-10-16T12:25:23Z"
-  },
-  {
-   "a": "Kevin Caperna",
-   "b": "Diego Giangirolami",
-   "a_odds": -110,
-   "b_odds": -110,
-   "commence_time": "2026-10-17T18:35:00Z",
-   "seen_at": "2026-10-17T07:45:22Z"
-  },
-  {
-   "a": "Salvatore Bellotta",
-   "b": "Christian Tosco",
-   "a_odds": -105,
-   "b_odds": -115,
-   "commence_time": "2026-10-17T18:40:00Z",
-   "seen_at": "2026-10-17T16:50:23Z"
-  },
-  {
-   "a": "Federico Rotoni",
-   "b": "Andrei Gabura",
-   "a_odds": -2500,
-   "b_odds": 1156,
-   "commence_time": "2026-10-17T18:50:00Z",
-   "seen_at": "2026-10-16T14:30:28Z"
-  },
-  {
-   "a": "Simone Patrizi",
-   "b": "Dylan Logan",
-   "a_odds": -170,
-   "b_odds": 149,
-   "commence_time": "2026-10-17T19:15:00Z",
-   "seen_at": "2026-10-17T16:50:23Z"
-  },
-  {
-   "a": "Andrea Kabali",
-   "b": "Danilo Belluardo",
-   "a_odds": -215,
-   "b_odds": 183,
-   "commence_time": "2026-10-17T19:40:00Z",
-   "seen_at": "2026-10-17T13:50:22Z"
-  },
-  {
-   "a": "Giuseppe Mastrogiacomo",
-   "b": "Alexis Tsarmantidis",
-   "a_odds": -400,
-   "b_odds": 316,
-   "commence_time": "2026-10-17T19:40:00Z",
-   "seen_at": "2026-10-17T19:50:23Z"
-  },
-  {
-   "a": "Dario Bellandi",
-   "b": "Aldo Pereira",
-   "a_odds": -725,
-   "b_odds": 520,
-   "commence_time": "2026-10-17T20:10:00Z",
-   "seen_at": "2026-10-17T19:50:23Z"
-  },
-  {
-   "a": "Cody Chovancek",
-   "b": "Su Young You",
-   "a_odds": -132,
-   "b_odds": 110,
-   "commence_time": "2026-10-17T21:10:00Z",
-   "seen_at": "2026-10-17T19:50:23Z"
-  },
-  {
-   "a": "Melissa Croden",
-   "b": "Chelsea Chandler",
-   "a_odds": -347,
-   "b_odds": 270,
-   "commence_time": "2026-10-17T21:45:00Z",
-   "seen_at": "2026-10-17T16:50:23Z"
-  },
-  {
-   "a": "Chad Anheliger",
-   "b": "Steven Koslow",
-   "a_odds": 138,
-   "b_odds": -166,
-   "commence_time": "2026-10-17T22:00:00Z",
-   "seen_at": "2026-10-17T19:50:23Z"
-  },
-  {
-   "a": "Mackenzie Stiller",
-   "b": "Katlyn Cerminara",
-   "a_odds": 208,
-   "b_odds": -259,
-   "commence_time": "2026-10-17T22:25:00Z",
-   "seen_at": "2026-10-17T19:50:23Z"
-  },
-  {
-   "a": "Mackenzie Stiller",
-   "b": "Katlyn Chookagian",
-   "a_odds": 217,
-   "b_odds": -271,
-   "commence_time": "2026-10-17T22:25:00Z",
-   "seen_at": "2026-10-16T22:40:23Z"
-  },
-  {
-   "a": "Joel Faglier",
-   "b": "Javad Mahjoub",
-   "a_odds": -133,
-   "b_odds": 111,
-   "commence_time": "2026-10-17T22:50:00Z",
-   "seen_at": "2026-10-17T16:50:23Z"
-  },
-  {
    "a": "Julien Leblanc",
    "b": "Nick Galanti",
    "a_odds": 530,
@@ -208,46 +64,6 @@
    "b_odds": -128,
    "commence_time": "2026-10-18T02:45:00Z",
    "seen_at": "2026-10-17T22:55:25Z"
-  },
-  {
-   "a": "Igor Michaliszyn",
-   "b": "Tomasz Romanowski",
-   "a_odds": -155,
-   "b_odds": 115,
-   "commence_time": "2026-10-21T10:00:00Z",
-   "seen_at": "2026-10-20T03:10:23Z"
-  },
-  {
-   "a": "Marcin Held",
-   "b": "Valeriu Mircea",
-   "a_odds": -120,
-   "b_odds": -120,
-   "commence_time": "2026-10-21T10:00:00Z",
-   "seen_at": "2026-10-20T03:10:23Z"
-  },
-  {
-   "a": "Mateusz Pawlik",
-   "b": "Madars Fleminas",
-   "a_odds": 155,
-   "b_odds": -220,
-   "commence_time": "2026-10-21T10:00:00Z",
-   "seen_at": "2026-10-20T03:10:23Z"
-  },
-  {
-   "a": "Sasha Moisa",
-   "b": "Wojciech Kawa",
-   "a_odds": -185,
-   "b_odds": 145,
-   "commence_time": "2026-10-21T10:00:00Z",
-   "seen_at": "2026-10-20T09:40:21Z"
-  },
-  {
-   "a": "Steven Krt",
-   "b": "Oskar Szczepaniak",
-   "a_odds": 185,
-   "b_odds": -275,
-   "commence_time": "2026-10-21T10:00:00Z",
-   "seen_at": "2026-10-20T09:40:21Z"
   },
   {
    "a": "Farida Abdueva",
@@ -324,18 +140,18 @@
   {
    "a": "Iasmin Lucindo",
    "b": "Nicolle Caliari",
-   "a_odds": -378,
-   "b_odds": 283,
+   "a_odds": -380,
+   "b_odds": 285,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-20T16:20:23Z"
+   "seen_at": "2026-10-20T22:50:22Z"
   },
   {
    "a": "Kody Steele",
    "b": "Noah Gugnon",
-   "a_odds": -164,
-   "b_odds": 132,
+   "a_odds": -163,
+   "b_odds": 131,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-20T16:20:23Z"
+   "seen_at": "2026-10-20T22:50:22Z"
   },
   {
    "a": "Lone'er Kavanagh",
@@ -380,10 +196,50 @@
   {
    "a": "Ciryl Gane",
    "b": "Josh Hokit",
-   "a_odds": -263,
-   "b_odds": 205,
+   "a_odds": -268,
+   "b_odds": 208,
    "commence_time": "2026-11-15T05:30:00Z",
-   "seen_at": "2026-10-19T07:35:21Z"
+   "seen_at": "2026-10-20T22:50:22Z"
+  },
+  {
+   "a": "Igor Michaliszyn",
+   "b": "Tomasz Romanowski",
+   "a_odds": -155,
+   "b_odds": 115,
+   "commence_time": "2026-11-21T11:00:00Z",
+   "seen_at": "2026-10-20T22:50:22Z"
+  },
+  {
+   "a": "Marcin Held",
+   "b": "Valeriu Mircea",
+   "a_odds": -120,
+   "b_odds": -120,
+   "commence_time": "2026-11-21T11:00:00Z",
+   "seen_at": "2026-10-20T22:50:22Z"
+  },
+  {
+   "a": "Mateusz Pawlik",
+   "b": "Madars Fleminas",
+   "a_odds": 155,
+   "b_odds": -220,
+   "commence_time": "2026-11-21T11:00:00Z",
+   "seen_at": "2026-10-20T22:50:22Z"
+  },
+  {
+   "a": "Sasha Moisa",
+   "b": "Wojciech Kawa",
+   "a_odds": -185,
+   "b_odds": 145,
+   "commence_time": "2026-11-21T11:00:00Z",
+   "seen_at": "2026-10-20T22:50:22Z"
+  },
+  {
+   "a": "Steven Krt",
+   "b": "Oskar Szczepaniak",
+   "a_odds": 185,
+   "b_odds": -275,
+   "commence_time": "2026-11-21T11:00:00Z",
+   "seen_at": "2026-10-20T22:50:22Z"
   },
   {
    "a": "Joseph Pyfer",
