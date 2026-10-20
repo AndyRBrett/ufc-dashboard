@@ -2,70 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Aaron Aby",
-   "b": "David Dvorak",
-   "a_odds": 400,
-   "b_odds": -700,
-   "commence_time": "2026-10-17T14:00:00Z",
-   "seen_at": "2026-10-17T07:45:22Z"
-  },
-  {
-   "a": "Daniel Hooker",
-   "b": "Viktor Cervinsky",
-   "a_odds": 215,
-   "b_odds": -325,
-   "commence_time": "2026-10-17T14:00:00Z",
-   "seen_at": "2026-10-17T07:45:22Z"
-  },
-  {
-   "a": "Dominik Humburger",
-   "b": "Patrik Kincl",
-   "a_odds": 165,
-   "b_odds": -190,
-   "commence_time": "2026-10-17T14:00:00Z",
-   "seen_at": "2026-10-16T06:15:21Z"
-  },
-  {
-   "a": "Jozef Wittner",
-   "b": "Matus Juracek",
-   "a_odds": 177,
-   "b_odds": -205,
-   "commence_time": "2026-10-17T14:00:00Z",
-   "seen_at": "2026-10-17T13:50:22Z"
-  },
-  {
-   "a": "Marco Elpidio",
-   "b": "Husein Kadimagomaev",
-   "a_odds": 415,
-   "b_odds": -550,
-   "commence_time": "2026-10-17T14:00:00Z",
-   "seen_at": "2026-10-17T13:50:22Z"
-  },
-  {
-   "a": "Timo Feucht",
-   "b": "Zdenek Polivka",
-   "a_odds": -200,
-   "b_odds": 150,
-   "commence_time": "2026-10-17T14:00:00Z",
-   "seen_at": "2026-10-17T13:50:22Z"
-  },
-  {
-   "a": "Tomasz Narkun",
-   "b": "Daniel Skvor",
-   "a_odds": 170,
-   "b_odds": -250,
-   "commence_time": "2026-10-17T14:00:00Z",
-   "seen_at": "2026-10-15T05:00:25Z"
-  },
-  {
-   "a": "Ruben Vinci",
-   "b": "Jurgen Koci",
-   "a_odds": 234,
-   "b_odds": -285,
-   "commence_time": "2026-10-17T16:05:00Z",
-   "seen_at": "2026-10-17T04:45:19Z"
-  },
-  {
    "a": "Gabriele Lionetti",
    "b": "Elez Guri",
    "a_odds": -285,
@@ -356,18 +292,18 @@
   {
    "a": "Asaf Chopurov",
    "b": "Colby Thicknesse",
-   "a_odds": -533,
-   "b_odds": 378,
+   "a_odds": -543,
+   "b_odds": 383,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-19T20:40:22Z"
+   "seen_at": "2026-10-20T16:20:23Z"
   },
   {
    "a": "Azamat Murzakanov",
    "b": "Dominick Reyes",
-   "a_odds": -220,
+   "a_odds": -222,
    "b_odds": 174,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-19T20:40:22Z"
+   "seen_at": "2026-10-20T16:20:23Z"
   },
   {
    "a": "Bolaji Oki",
@@ -380,58 +316,58 @@
   {
    "a": "Grant Dawson",
    "b": "Nurullo Aliev",
-   "a_odds": -129,
-   "b_odds": 104,
+   "a_odds": -127,
+   "b_odds": 103,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-19T20:40:22Z"
+   "seen_at": "2026-10-20T16:20:23Z"
   },
   {
    "a": "Iasmin Lucindo",
    "b": "Nicolle Caliari",
-   "a_odds": -357,
-   "b_odds": 278,
+   "a_odds": -378,
+   "b_odds": 283,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-20T09:40:21Z"
+   "seen_at": "2026-10-20T16:20:23Z"
   },
   {
    "a": "Kody Steele",
    "b": "Noah Gugnon",
-   "a_odds": -158,
-   "b_odds": 133,
+   "a_odds": -164,
+   "b_odds": 132,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-20T03:10:23Z"
+   "seen_at": "2026-10-20T16:20:23Z"
   },
   {
    "a": "Lone'er Kavanagh",
    "b": "Ramazonbek Temirov",
-   "a_odds": -112,
-   "b_odds": -112,
+   "a_odds": -110,
+   "b_odds": -113,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-20T09:40:21Z"
+   "seen_at": "2026-10-20T16:20:23Z"
   },
   {
    "a": "Nikita Krylov",
    "b": "Abdulrakhman Yakhyaev",
    "a_odds": 360,
-   "b_odds": -507,
+   "b_odds": -500,
    "commence_time": "2026-10-24T14:00:00Z",
-   "seen_at": "2026-10-19T20:40:22Z"
+   "seen_at": "2026-10-20T16:20:23Z"
   },
   {
    "a": "Petr Yan",
    "b": "Merab Dvalishvili",
-   "a_odds": -182,
-   "b_odds": 145,
+   "a_odds": -177,
+   "b_odds": 142,
    "commence_time": "2026-10-24T19:45:00Z",
-   "seen_at": "2026-10-20T09:40:21Z"
+   "seen_at": "2026-10-20T16:20:23Z"
   },
   {
    "a": "Alex Volkanovski",
    "b": "Movsar Evloev",
-   "a_odds": -112,
-   "b_odds": -111,
+   "a_odds": -111,
+   "b_odds": -112,
    "commence_time": "2026-10-24T20:30:00Z",
-   "seen_at": "2026-10-20T03:10:23Z"
+   "seen_at": "2026-10-20T16:20:23Z"
   },
   {
    "a": "Kayla Harrison",
