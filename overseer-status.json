@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T02:05:44Z",
+  "generated_at": "2026-10-20T03:10:49Z",
   "events_tracked": 10,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -95,17 +95,17 @@
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "ok",
-      "last_changed_at": "2026-10-19T20:40:39Z",
+      "last_changed_at": "2026-10-20T03:10:49Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
-      "line_movement": 6,
+      "line_movement": 3,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-20T02:05:44Z",
+      "last_changed_at": "2026-10-20T03:10:49Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-20T02:05:44Z",
+      "last_changed_at": "2026-10-20T03:10:49Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -135,7 +135,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-20T02:05:44Z",
+      "last_changed_at": "2026-10-20T03:10:49Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -187,6 +187,22 @@
       "priority": 320.0
     },
     {
+      "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
+      "f1": "Aaron Pico",
+      "f2": "Losene Keita",
+      "f1_movement": -223,
+      "f2_movement": 20,
+      "magnitude": 223,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 50,
+      "low_confidence": false,
+      "wc": "Featherweight",
+      "f1_prob_shift": 5.3,
+      "f2_prob_shift": -4.3,
+      "priority": 312.2
+    },
+    {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Jacobe Smith",
       "f2": "Bruce Whitehead",
@@ -201,22 +217,6 @@
       "f1_prob_shift": 2.1,
       "f2_prob_shift": -2.6,
       "priority": 310.0
-    },
-    {
-      "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
-      "f1": "Aaron Pico",
-      "f2": "Losene Keita",
-      "f1_movement": -220,
-      "f2_movement": 17,
-      "magnitude": 220,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 50,
-      "low_confidence": false,
-      "wc": "Featherweight",
-      "f1_prob_shift": 4.7,
-      "f2_prob_shift": -3.6,
-      "priority": 308.0
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
