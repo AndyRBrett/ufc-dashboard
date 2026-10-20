@@ -1,7 +1,7 @@
 {
- "last_fetch": "2026-10-19T22:51:01Z",
+ "last_fetch": "2026-10-20T11:50:44Z",
  "publish": true,
- "events": 2,
+ "events": 3,
  "report": [
   {
    "promotion": "pfl",
@@ -9,6 +9,14 @@
    "date": "2026-11-14",
    "problem": "only 0 bout(s) parsed",
    "kept_previous": true
+  },
+  {
+   "promotion": "pfl",
+   "event": "PFL Lyon: Lapilus vs. McKee",
+   "date": "2026-12-19",
+   "bouts": 7,
+   "source": "article",
+   "main_event": "Taylor Lapilus vs Mitchell McKee"
   },
   {
    "promotion": "rizin",

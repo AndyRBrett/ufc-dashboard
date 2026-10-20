@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-18T10:00:44Z",
+ "generated_at": "2026-10-20T11:50:44Z",
  "promotions": [
   {
    "id": "pfl",
@@ -328,6 +328,93 @@
      "b": "Leon Hill",
      "label": "",
      "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    }
+   ]
+  },
+  {
+   "promotion": "pfl",
+   "name": "PFL Lyon: Lapilus vs. McKee",
+   "date": "2026-12-19",
+   "venue": "LDLC Arena",
+   "location": "Decines-Charpieu",
+   "broadcast": "",
+   "bouts": [
+    {
+     "a": "Taylor Lapilus",
+     "b": "Mitchell McKee",
+     "label": "Main Event",
+     "division": "Bantamweight",
+     "title": true,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Bryan Battle",
+     "b": "Boris Mbarga Atangana",
+     "label": "",
+     "division": "Middleweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Abdoul Abdouraguimov",
+     "b": "Andreeas Binder",
+     "label": "",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Fabian Edwards",
+     "b": "Ilian Bouafia",
+     "label": "",
+     "division": "Middleweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Baris Adiguzel",
+     "b": "Liam Gittins",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Brandon Brachet",
+     "b": "Adam Meskini",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Jan Ciepowski",
+     "b": "Mauricio Partida",
+     "label": "",
+     "division": "Bantamweight",
      "title": false,
      "odds": null,
      "winner": "",
