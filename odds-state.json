@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-20T22:50:22.020362+00:00",
+  "last_fetch_at": "2026-10-21T05:10:21.628306+00:00",
   "last_status": 401,
-  "lines_digest": "5ab6ba9c6d35530989f452d7e0d42c04685d33fd",
+  "lines_digest": "35a32fb6904af949bc307dcf5042cc47b09194e5",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -149,6 +149,16 @@
       "listed": 1,
       "priced": 1
     },
+    "2026-10-23": {
+      "fighters": [
+        "chimaev",
+        "lawler",
+        "woodley",
+        "havener"
+      ],
+      "listed": 2,
+      "priced": 2
+    },
     "2026-10-24": {
       "fighters": [
         "pico",
@@ -291,25 +301,25 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-20T22:50:22.020362+00:00",
-  "next_event_days_out": 4,
+  "markets_partial_at": "2026-10-21T05:10:21.628306+00:00",
+  "next_event_days_out": 3,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-20T22:50:22.020362+00:00",
+      "last_fetch_at": "2026-10-21T05:10:21.628306+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
       "requests_remaining": 0
     },
     "the-odds-api-backup": {
-      "bouts": 37,
-      "last_fetch_at": "2026-10-20T22:50:22.020362+00:00",
-      "last_ok_at": "2026-10-20T22:50:22.020362+00:00",
+      "bouts": 38,
+      "last_fetch_at": "2026-10-21T05:10:21.628306+00:00",
+      "last_ok_at": "2026-10-21T05:10:21.628306+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 307
+      "requests_remaining": 306
     }
   },
   "requests_remaining": 0

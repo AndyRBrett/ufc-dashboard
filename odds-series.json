@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T04:10:43Z",
+  "generated_at": "2026-10-21T05:10:36Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -16126,7 +16126,7 @@
           "f1": "Alexander Volkanovski",
           "f2": "Movsar Evloev",
           "lbl": "Main Event",
-          "points": 20,
+          "points": 21,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -16227,6 +16227,11 @@
               "at": "2026-10-20T16:20:40Z",
               "f1_odds": -111,
               "f2_odds": -112
+            },
+            {
+              "at": "2026-10-21T05:10:35Z",
+              "f1_odds": -112,
+              "f2_odds": -111
             }
           ],
           "open": {
@@ -16806,7 +16811,7 @@
           "f1": "Abubakar Vagaev",
           "f2": "Jacob Malkoun",
           "lbl": "Early Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-10-17T16:50:43Z",
@@ -16852,6 +16857,11 @@
               "at": "2026-10-20T09:40:39Z",
               "f1_odds": -178,
               "f2_odds": 142
+            },
+            {
+              "at": "2026-10-21T05:10:35Z",
+              "f1_odds": -168,
+              "f2_odds": 135
             }
           ],
           "open": {
@@ -16941,7 +16951,7 @@
           "f1": "Iasmin Lucindo",
           "f2": "Nicole Caliari",
           "lbl": "Early Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-10-20T03:10:49Z",
@@ -16962,6 +16972,11 @@
               "at": "2026-10-20T22:50:39Z",
               "f1_odds": -380,
               "f2_odds": 285
+            },
+            {
+              "at": "2026-10-21T05:10:35Z",
+              "f1_odds": -395,
+              "f2_odds": 295
             }
           ],
           "open": {
@@ -22411,7 +22426,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Movsar Evloev",
         "side": "f1",
-        "points": 20,
+        "points": 21,
         "open": -115,
         "close": null,
         "clv": null
@@ -22422,7 +22437,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Alexander Volkanovski",
         "side": "f2",
-        "points": 20,
+        "points": 21,
         "open": -108,
         "close": null,
         "clv": null
@@ -22554,7 +22569,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Jacob Malkoun",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -185,
         "close": null,
         "clv": null
@@ -22565,7 +22580,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Abubakar Vagaev",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 157,
         "close": null,
         "clv": null
@@ -22642,7 +22657,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Nicole Caliari",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -360,
         "close": null,
         "clv": null
@@ -22653,7 +22668,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Iasmin Lucindo",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 282,
         "close": null,
         "clv": null
