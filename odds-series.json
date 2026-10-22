@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T01:10:39Z",
+  "generated_at": "2026-10-22T02:15:39Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -16251,7 +16251,7 @@
           "f1": "Petr Yan",
           "f2": "Merab Dvalishvili",
           "lbl": "Co-Main",
-          "points": 23,
+          "points": 24,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -16367,6 +16367,11 @@
               "at": "2026-10-22T00:05:38Z",
               "f1_odds": -161,
               "f2_odds": 129
+            },
+            {
+              "at": "2026-10-22T02:15:39Z",
+              "f1_odds": -162,
+              "f2_odds": 130
             }
           ],
           "open": {
@@ -16381,7 +16386,7 @@
           "f1": "Lone'er Kavanagh",
           "f2": "Ramazan Temirov",
           "lbl": "Main Card",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16427,6 +16432,11 @@
               "at": "2026-10-22T00:05:38Z",
               "f1_odds": -111,
               "f2_odds": -113
+            },
+            {
+              "at": "2026-10-22T02:15:39Z",
+              "f1_odds": -109,
+              "f2_odds": -114
             }
           ],
           "open": {
@@ -16516,7 +16526,7 @@
           "f1": "Aaron Pico",
           "f2": "Losene Keita",
           "lbl": "Main Card",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16562,6 +16572,11 @@
               "at": "2026-10-22T00:05:38Z",
               "f1_odds": -133,
               "f2_odds": 108
+            },
+            {
+              "at": "2026-10-22T02:15:39Z",
+              "f1_odds": -135,
+              "f2_odds": 110
             }
           ],
           "open": {
@@ -16856,7 +16871,7 @@
           "f1": "Abubakar Vagaev",
           "f2": "Jacob Malkoun",
           "lbl": "Early Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-17T16:50:43Z",
@@ -16912,6 +16927,11 @@
               "at": "2026-10-22T00:05:38Z",
               "f1_odds": -158,
               "f2_odds": 127
+            },
+            {
+              "at": "2026-10-22T02:15:39Z",
+              "f1_odds": -161,
+              "f2_odds": 129
             }
           ],
           "open": {
@@ -19060,7 +19080,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Ramazan Temirov",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -110,
         "close": null,
         "clv": null
@@ -20877,7 +20897,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Aaron Pico",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": -125,
         "close": null,
         "clv": null
@@ -22513,7 +22533,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Merab Dvalishvili",
         "side": "f1",
-        "points": 23,
+        "points": 24,
         "open": -171,
         "close": null,
         "clv": null
@@ -22524,7 +22544,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Petr Yan",
         "side": "f2",
-        "points": 23,
+        "points": 24,
         "open": 138,
         "close": null,
         "clv": null
@@ -22535,7 +22555,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Lone'er Kavanagh",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": -110,
         "close": null,
         "clv": null
@@ -22568,7 +22588,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Losene Keita",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": 105,
         "close": null,
         "clv": null
@@ -22634,7 +22654,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Jacob Malkoun",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -185,
         "close": null,
         "clv": null
@@ -22645,7 +22665,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Abubakar Vagaev",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 157,
         "close": null,
         "clv": null
