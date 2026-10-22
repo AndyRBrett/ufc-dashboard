@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-22T22:00:41Z",
+  "generated_at": "2026-10-22T23:05:37Z",
   "events_tracked": 10,
-  "stale_events": 0,
+  "stale_events": 1,
   "parse_failure_events": 0,
   "awaiting_card_events": 2,
   "odds_unavailable_events": 1,
@@ -105,7 +105,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-22T22:00:41Z",
+      "last_changed_at": "2026-10-22T23:05:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-22T22:00:41Z",
+      "last_changed_at": "2026-10-22T23:05:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -126,7 +126,7 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
       "last_changed_at": "2026-10-20T22:50:39Z",
-      "is_stale": false,
+      "is_stale": true,
       "has_data": true,
       "bout_count": 9,
       "line_movement": 4,
@@ -135,7 +135,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-22T22:00:41Z",
+      "last_changed_at": "2026-10-22T23:05:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
