@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T12:40:41Z",
+  "generated_at": "2026-10-22T13:38:14Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -16126,7 +16126,7 @@
           "f1": "Alexander Volkanovski",
           "f2": "Movsar Evloev",
           "lbl": "Main Event",
-          "points": 23,
+          "points": 24,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -16242,6 +16242,11 @@
               "at": "2026-10-22T05:05:36Z",
               "f1_odds": -110,
               "f2_odds": -113
+            },
+            {
+              "at": "2026-10-22T13:38:13Z",
+              "f1_odds": -112,
+              "f2_odds": -111
             }
           ],
           "open": {
@@ -16396,7 +16401,7 @@
           "f1": "Lone'er Kavanagh",
           "f2": "Ramazan Temirov",
           "lbl": "Main Card",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16447,6 +16452,11 @@
               "at": "2026-10-22T02:15:39Z",
               "f1_odds": -109,
               "f2_odds": -114
+            },
+            {
+              "at": "2026-10-22T13:38:13Z",
+              "f1_odds": -112,
+              "f2_odds": -111
             }
           ],
           "open": {
@@ -16541,7 +16551,7 @@
           "f1": "Aaron Pico",
           "f2": "Losene Keita",
           "lbl": "Main Card",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16597,6 +16607,11 @@
               "at": "2026-10-22T05:05:36Z",
               "f1_odds": -137,
               "f2_odds": 111
+            },
+            {
+              "at": "2026-10-22T13:38:13Z",
+              "f1_odds": -141,
+              "f2_odds": 115
             }
           ],
           "open": {
@@ -16811,7 +16826,7 @@
           "f1": "Grant Dawson",
           "f2": "Nurullo Aliev",
           "lbl": "Prelim",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16897,6 +16912,11 @@
               "at": "2026-10-22T07:15:39Z",
               "f1_odds": -119,
               "f2_odds": -105
+            },
+            {
+              "at": "2026-10-22T13:38:13Z",
+              "f1_odds": -120,
+              "f2_odds": -104
             }
           ],
           "open": {
@@ -19135,7 +19155,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Ramazan Temirov",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -110,
         "close": null,
         "clv": null
@@ -20952,7 +20972,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Aaron Pico",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -125,
         "close": null,
         "clv": null
@@ -22566,7 +22586,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Movsar Evloev",
         "side": "f1",
-        "points": 23,
+        "points": 24,
         "open": -115,
         "close": null,
         "clv": null
@@ -22577,7 +22597,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Alexander Volkanovski",
         "side": "f2",
-        "points": 23,
+        "points": 24,
         "open": -108,
         "close": null,
         "clv": null
@@ -22610,7 +22630,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Lone'er Kavanagh",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": -110,
         "close": null,
         "clv": null
@@ -22643,7 +22663,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Losene Keita",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": 105,
         "close": null,
         "clv": null
@@ -22687,7 +22707,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Nurullo Aliev",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": -118,
         "close": null,
         "clv": null
@@ -22698,7 +22718,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Grant Dawson",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": -102,
         "close": null,
         "clv": null

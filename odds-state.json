@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-22T11:35:21.761514+00:00",
+  "last_fetch_at": "2026-10-22T13:37:57.780169+00:00",
   "last_status": 401,
-  "lines_digest": "9ac564b6e0d950cdac68604378d00f307e8119b9",
+  "lines_digest": "a5dc58de1227fa375bebd0c4328b18d3216e4aa9",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -167,8 +167,6 @@
         "rowston",
         "volkov",
         "kuniev",
-        "chopurov",
-        "thicknesse",
         "murzakanov",
         "reyes",
         "oki",
@@ -181,6 +179,8 @@
         "gugnon",
         "kavanagh",
         "temirov",
+        "chopurov",
+        "thicknesse",
         "yan",
         "dvalishvili",
         "volkanovski",
@@ -297,13 +297,13 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-22T11:35:21.761514+00:00",
+  "markets_partial_at": "2026-10-22T13:37:57.780169+00:00",
   "next_event_days_out": 2,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-22T11:35:21.761514+00:00",
+      "last_fetch_at": "2026-10-22T13:37:57.780169+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
@@ -311,11 +311,11 @@
     },
     "the-odds-api-backup": {
       "bouts": 44,
-      "last_fetch_at": "2026-10-22T11:35:21.761514+00:00",
-      "last_ok_at": "2026-10-22T11:35:21.761514+00:00",
+      "last_fetch_at": "2026-10-22T13:37:57.780169+00:00",
+      "last_ok_at": "2026-10-22T13:37:57.780169+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 299
+      "requests_remaining": 298
     }
   },
   "requests_remaining": 0

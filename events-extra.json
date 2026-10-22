@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-20T11:50:44Z",
+ "generated_at": "2026-10-22T13:38:16Z",
  "promotions": [
   {
    "id": "pfl",
@@ -225,6 +225,17 @@
      "round": null
     },
     {
+     "a": "Abubakar Nurmagomedov",
+     "b": "David Martinez",
+     "label": "",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
      "a": "Sergio Pettis",
      "b": "Joji Goto",
      "label": "",
@@ -236,10 +247,10 @@
      "round": null
     },
     {
-     "a": "Rhys McKee",
-     "b": "Ernesto Rodriguez",
+     "a": "Shaqueme Rock",
+     "b": "Connor Hughes",
      "label": "",
-     "division": "Welterweight",
+     "division": "Lightweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -247,10 +258,32 @@
      "round": null
     },
     {
-     "a": "Abubakar Nurmagomedov",
-     "b": "David Martinez",
+     "a": "Lewis McGrillen",
+     "b": "Nawras Abzakh",
      "label": "",
-     "division": "Welterweight",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Asael Adjoudj",
+     "b": "Movlid Khaybulaev",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Alexei Pergande",
+     "b": "Akhmed Magomedov",
+     "label": "",
+     "division": "Lightweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -280,43 +313,10 @@
      "round": null
     },
     {
-     "a": "Asael Adjoudj",
-     "b": "Movlid Khaybulaev",
+     "a": "Rhys McKee",
+     "b": "Ernesto Rodriguez",
      "label": "",
-     "division": "Featherweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Lewis McGrillen",
-     "b": "Nawras Abzakh",
-     "label": "",
-     "division": "Bantamweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Shaqueme Rock",
-     "b": "Connor Hughes",
-     "label": "",
-     "division": "Lightweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Alexei Pergande",
-     "b": "Akhmed Magomedov",
-     "label": "",
-     "division": "Lightweight",
+     "division": "Welterweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -328,6 +328,17 @@
      "b": "Leon Hill",
      "label": "",
      "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Khabib Nabiev",
+     "b": "Styve Ngono Essono",
+     "label": "",
+     "division": "Light Heavyweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -404,6 +415,17 @@
      "b": "Adam Meskini",
      "label": "",
      "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Mathilde Aschenbrenner",
+     "b": "Shelda Chipito",
+     "label": "",
+     "division": "Women's Strawweight",
      "title": false,
      "odds": null,
      "winner": "",
