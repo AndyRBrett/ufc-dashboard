@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T08:20:33Z",
+  "generated_at": "2026-10-22T09:25:38Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -16906,7 +16906,7 @@
           "f1": "Abubakar Vagaev",
           "f2": "Jacob Malkoun",
           "lbl": "Early Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-17T16:50:43Z",
@@ -16967,6 +16967,11 @@
               "at": "2026-10-22T02:15:39Z",
               "f1_odds": -161,
               "f2_odds": 129
+            },
+            {
+              "at": "2026-10-22T09:25:38Z",
+              "f1_odds": -163,
+              "f2_odds": 131
             }
           ],
           "open": {
@@ -22689,7 +22694,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Jacob Malkoun",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -185,
         "close": null,
         "clv": null
@@ -22700,7 +22705,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Abubakar Vagaev",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 157,
         "close": null,
         "clv": null
