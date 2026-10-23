@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-22T20:55:40Z",
+ "generated_at": "2026-10-23T00:10:35Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -44,22 +44,6 @@
    "name": "UFC 333: Volkanovski vs. Evloev",
    "date": "2026-10-24",
    "items": [
-    {
-     "title": "UFC 333 Embedded: Vlog Series - Episode 4",
-     "url": "https://www.youtube.com/watch?v=BAwV305xCGw",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-22T15:10:32Z",
-     "thumb": "https://i3.ytimg.com/vi/BAwV305xCGw/hqdefault.jpg",
-     "blurb": "Alexander Volkanovski shows he can’t slow down; Grant Dawson has lunch; Lone’er Kavanagh trains; Fighters check in for UFC 333; Merab Dvalishvili gets in some training; Alexander Volkanovski hosts a big feast for the…",
-     "fighters": [
-      "Alexander Volkanovski",
-      "Grant Dawson",
-      "Lone'er Kavanagh",
-      "Merab Dvalishvili",
-      "Movsar Evloev"
-     ]
-    },
     {
      "title": "Alexander Volkanovski explains why he’s a ‘nightmare matchup’ for Movsar Evloev",
      "url": "https://www.sherdog.com/news/news/Alexander-Volkanovski-explains-why-hes-a-nightmare-matchup-for-Movsar-Evloev-203291",
@@ -87,19 +71,6 @@
      ]
     },
     {
-     "title": "Alexander Volkanovski’s coach uses Islam Makhachev to explain why Movsar Evloev’s style is ‘mistaken’",
-     "url": "https://bloodyelbow.com/2026/10/21/alexander-volkanovskis-coach-uses-islam-makhachev-to-explain-why-movsar-evloevs-style-is-mistaken/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-10-21T22:00:00Z",
-     "thumb": null,
-     "blurb": "Eugene Bareman highlighted where Movsar Evloev differs from grapplers like Islam Makhachev. UFC legend Jose Aldo urged the promotion to cut Evloev if he suffers ...",
-     "fighters": [
-      "Alexander Volkanovski",
-      "Movsar Evloev"
-     ]
-    },
-    {
      "title": "Alexander Volkanovski predicts 'wild' finish of 20-0 Movsar Evloev",
      "url": "https://www.sherdog.com/news/news/Alexander-Volkanovski-predicts-wild-finish-of-200-Movsar-Evloev-203269",
      "source": "Sherdog",
@@ -110,19 +81,6 @@
      "fighters": [
       "Alexander Volkanovski",
       "Movsar Evloev"
-     ]
-    },
-    {
-     "title": "Merab Dvalishvili could have another trilogy match away from the UFC after facing Petr Yan again",
-     "url": "https://bloodyelbow.com/2026/10/21/merab-dvalishvili-could-have-another-trilogy-match-away-from-the-ufc-after-facing-petr-yan-again/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-10-22T00:00:00Z",
-     "thumb": null,
-     "blurb": "Merab Dvalishvili could wrap up more than one trilogy before the end of 2026. The former UFC bantamweight champion has his current focus on regaining ...",
-     "fighters": [
-      "Merab Dvalishvili",
-      "Petr Yan"
      ]
     },
     {
@@ -138,13 +96,13 @@
      ]
     },
     {
-     "title": "Merab Dvalishvili's Career So Far #UFC333",
-     "url": "https://www.youtube.com/shorts/jB-aXD-tYG4",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-22T14:00:08Z",
-     "thumb": "https://i3.ytimg.com/vi/jB-aXD-tYG4/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS, the digital subscription service of the UFC. Visit…",
+     "title": "Merab Dvalishvili ends Umar Nurmagomedov rivalry to gain access to Khabib’s gym before UFC 333",
+     "url": "https://bloodyelbow.com/2026/10/21/merab-dvalishvili-ends-umar-nurmagomedov-rivalry-to-gain-access-to-khabibs-gym-before-ufc-333/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-10-22T03:00:00Z",
+     "thumb": null,
+     "blurb": "Merab Dvalishvili no longer has an issue with Khabib Nurmagomedov’s cousin — or so he claims. Ever since Dvalishvili beat Umar Nurmagomedov at UFC 311 ...",
      "fighters": [
       "Merab Dvalishvili"
      ]
