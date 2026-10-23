@@ -1075,8 +1075,7 @@ button.ps-row:hover{background:var(--btn-bg)}
 .fn-odds-side.r{text-align:right}
 .fn-odds-ml{font:700 20px var(--font-body);color:#fff;letter-spacing:.01em}
 .fn-odds-mv{font-size:11px;margin-left:3px;vertical-align:2px}
-.fn-odds-mv.up{color:var(--green)}
-.fn-odds-mv.dn{color:var(--loss)}
+.fn-odds-mv.up,.fn-odds-mv.dn{color:var(--muted)}
 .fn-odds-sub{font:600 11px var(--font-body);color:rgba(255,255,255,.6);margin-top:2px}
 .fn-odds-sub b{font-weight:700;color:#fff}
 .fn-odds-dog{display:inline-block;margin-top:5px;font:700 10px var(--font-body);color:var(--gold);background:var(--gold-dim);border:1px solid var(--gold-border);padding:2px 6px;border-radius:4px}
@@ -1312,7 +1311,7 @@ button.ps-row:hover{background:var(--btn-bg)}
 .model-gap{font-size:10px;font-weight:700;margin-left:4px;padding:1px 4px;border-radius:4px;vertical-align:middle;color:var(--gold);border:1px solid var(--gold);opacity:.85}
 .model-flag{display:block;font-size:10px;letter-spacing:.08em;color:var(--gold);margin-top:2px}
 .odds-mv{font-size:10px;font-weight:700;margin-left:3px;vertical-align:middle}
-.odds-mv-up{color:var(--green)}.odds-mv-dn{color:var(--loss)}
+.odds-mv-up,.odds-mv-dn{color:var(--muted)}
 .odds-dog{font-size:10px;font-weight:700;margin-left:4px;padding:1px 4px;border-radius:4px;vertical-align:middle;color:var(--gold);border:1px solid var(--gold);opacity:.85}
 @keyframes muPickConfirm{0%{background:var(--red-dim)}100%{background:transparent}}
 .mu.pick-flash{animation:muPickConfirm .4s ease-out;border-radius:8px}
@@ -3962,15 +3961,19 @@ function focusSearch(){
 function _heroPicks(ev,live){
   var box=document.getElementById("cd-picks");if(!box)return;
   if(!ev||!ev.fights||!ev.fights.length){box.hidden=true;return;}
-  var total=ev.fights.length,picked=0,open=0,methods=0;
+  var total=ev.fights.length,picked=0,open=0,methods=0,mOpen=0;
   var lockOn=locksOn(ev.date),locks=lockOn?Math.min(cardLocksUsed(ev),LOCKS_PER_CARD):0;
   ev.fights.forEach(function(f){
     var mine=!!preds[pk(ev,f)];if(mine)picked++;
     if(mine&&preds_method[pk(ev,f)])methods++;
+    else if(mine&&!f.winner&&!fightLocked(ev,f))mOpen++;
     if(!mine&&!f.winner&&!fightLocked(ev,f))open++;
   });
   var cta="",act="";
   if(open)cta=picked?"Finish your picks":"Make your picks",act="pick";
+  // Every bout picked but some still without a method: that's the work left,
+  // not sharing a card that isn't finished.
+  else if(mOpen)cta="Finish your methods",act="method";
   else if(live)cta="Follow it live",act="live";
   else if(picked&&!evConcluded(ev))cta="Share your picks",act="share";
   var sig=total+"|"+picked+"|"+methods+"|"+locks+"|"+lockOn+"|"+act;
@@ -3993,6 +3996,16 @@ function heroCta(){
   var act=b.dataset.act;
   if(act==="share"){openShare();return;}
   _tabPicks=false;
+  // A method can still be missing once the card is live, and the watch-along
+  // view hides the How: buttons: _fnJumpTo switches a live card to the pick
+  // view. FN Mode runs the card in reverse array order.
+  if(act==="method"){
+    var run=ev.fights.slice().reverse();
+    for(var j=0;j<run.length;j++){
+      var mf=run[j],mk=pk(ev,mf);
+      if(!mf.winner&&!fightLocked(ev,mf)&&preds[mk]&&!preds_method[mk]){_fnJumpTo(ev,mf);return;}
+    }
+  }
   openFN(ev);
   // FN Mode opens on the card's first bout; jump to the first one still open
   // and unpicked, so "Finish your picks" lands where the work is.
@@ -7496,6 +7509,8 @@ function makeOddsRow(fight,po){
     var ov2=document.createElement("div");ov2.className="odds-val "+(pickem?"":fav1?"dog":"fav");ov2.textContent=fmtOdds(fight.odds.f2);
     s2.appendChild(on2);s2.appendChild(ov2);or.appendChild(s2);
     // ▲ = the line shortened (money came in on that fighter), ▼ = it drifted out.
+    // Muted, not green/red: the number beside it is already coloured fav/dog,
+    // and a red ▼ on a green favourite read as a mistake.
     // Measured against the opening line, so the arrow persists for the whole
     // week the card is up rather than only until the app is closed.
     if(po&&po.f1!==fight.odds.f1){var mv1=document.createElement("span");mv1.className="odds-mv "+(fight.odds.f1<po.f1?"odds-mv-up":"odds-mv-dn");mv1.title="Opened "+fmtOdds(po.f1)+" → now "+fmtOdds(fight.odds.f1);mv1.textContent=fight.odds.f1<po.f1?"▲":"▼";ov1.appendChild(mv1);}
