@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-23T12:40:23.794734+00:00",
+  "last_fetch_at": "2026-10-23T15:15:22.708359+00:00",
   "last_status": 401,
-  "lines_digest": "605f4cd6b5157b94f3711930e6525ac4af64cb81",
+  "lines_digest": "dea538296f9124a8f0fc01e5b335c4ff00b929d3",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -181,12 +181,12 @@
         "santos",
         "dawson",
         "aliev",
-        "lucindo",
-        "caliari",
         "steele",
         "gugnon",
         "kavanagh",
         "temirov",
+        "lucindo",
+        "caliari",
         "chopurov",
         "thicknesse",
         "yan",
@@ -209,14 +209,18 @@
         "hasanov",
         "erosa",
         "lee",
+        "klein",
+        "kropschot",
         "santos",
         "alencar",
         "rodriguez",
         "moicano",
-        "nolan"
+        "nolan",
+        "sezinando",
+        "berggren"
       ],
-      "listed": 8,
-      "priced": 8
+      "listed": 10,
+      "priced": 10
     },
     "2026-11-15": {
       "fighters": [
@@ -326,25 +330,25 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-23T12:40:23.794734+00:00",
+  "markets_partial_at": "2026-10-23T15:15:22.708359+00:00",
   "next_event_days_out": 1,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-23T12:40:23.794734+00:00",
+      "last_fetch_at": "2026-10-23T15:15:22.708359+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
       "requests_remaining": 0
     },
     "the-odds-api-backup": {
-      "bouts": 56,
-      "last_fetch_at": "2026-10-23T12:40:23.794734+00:00",
-      "last_ok_at": "2026-10-23T12:40:23.794734+00:00",
+      "bouts": 57,
+      "last_fetch_at": "2026-10-23T15:15:22.708359+00:00",
+      "last_ok_at": "2026-10-23T15:15:22.708359+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 290
+      "requests_remaining": 289
     }
   },
   "requests_remaining": 0
