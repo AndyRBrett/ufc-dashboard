@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-23T03:20:43Z",
+ "generated_at": "2026-10-23T07:20:35Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 404,
-   "items": 0
+   "status": 200,
+   "items": 15
   },
   {
    "id": "yt-mmaf",
@@ -71,16 +71,52 @@
      ]
     },
     {
-     "title": "Merab Dvalishvili says he's 'much better' than Petr Yan despite loss",
-     "url": "https://www.sherdog.com/news/news/Merab-Dvalishvili-says-hes-much-better-than-Petr-Yan-despite-loss-203303",
+     "title": "Alexander Volkanovski predicts 'wild' finish of 20-0 Movsar Evloev",
+     "url": "https://www.sherdog.com/news/news/Alexander-Volkanovski-predicts-wild-finish-of-200-Movsar-Evloev-203269",
      "source": "Sherdog",
      "kind": "article",
-     "published": "2026-10-22T06:16:49Z",
+     "published": "2026-10-19T02:41:14Z",
      "thumb": null,
-     "blurb": "Merab Dvalishvili is eager to reclaim the Ultimate Fighting Championship bantamweight title.",
+     "blurb": "Alexander Volkanovski ’s confidence is sky-high going into his upcoming title defense.",
      "fighters": [
-      "Merab Dvalishvili",
+      "Alexander Volkanovski",
+      "Movsar Evloev"
+     ]
+    },
+    {
+     "title": "Movsar Evloev is locked in #ufc333",
+     "url": "https://www.youtube.com/shorts/8CImAoqtiZc",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-10-23T05:21:32Z",
+     "thumb": "https://i1.ytimg.com/vi/8CImAoqtiZc/hqdefault.jpg",
+     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS, the digital subscription service of the UFC. Visit…",
+     "fighters": [
+      "Movsar Evloev"
+     ]
+    },
+    {
+     "title": "135 for Petr Yan! #ufc333",
+     "url": "https://www.youtube.com/shorts/qB5HPlKv_vw",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-10-23T05:31:17Z",
+     "thumb": "https://i2.ytimg.com/vi/qB5HPlKv_vw/hqdefault.jpg",
+     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS, the digital subscription service of the UFC. Visit…",
+     "fighters": [
       "Petr Yan"
+     ]
+    },
+    {
+     "title": "Merab Dvalishvili #ufc333",
+     "url": "https://www.youtube.com/shorts/uwDrH74iGFA",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-10-23T05:23:21Z",
+     "thumb": "https://i2.ytimg.com/vi/uwDrH74iGFA/hqdefault.jpg",
+     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS, the digital subscription service of the UFC. Visit…",
+     "fighters": [
+      "Merab Dvalishvili"
      ]
     }
    ]
