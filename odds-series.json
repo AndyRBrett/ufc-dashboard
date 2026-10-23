@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T02:20:58Z",
+  "generated_at": "2026-10-23T03:20:43Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -16126,7 +16126,7 @@
           "f1": "Alexander Volkanovski",
           "f2": "Movsar Evloev",
           "lbl": "Main Event",
-          "points": 26,
+          "points": 27,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -16257,6 +16257,11 @@
               "at": "2026-10-22T20:55:40Z",
               "f1_odds": -111,
               "f2_odds": -111
+            },
+            {
+              "at": "2026-10-23T03:20:42Z",
+              "f1_odds": -111,
+              "f2_odds": -110
             }
           ],
           "open": {
@@ -17091,7 +17096,7 @@
           "f1": "Colby Thicknesse",
           "f2": "Asaf Chopurov",
           "lbl": "Early Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-10-19T20:40:39Z",
@@ -17112,6 +17117,11 @@
               "at": "2026-10-22T16:35:38Z",
               "f1_odds": 415,
               "f2_odds": -585
+            },
+            {
+              "at": "2026-10-23T03:20:42Z",
+              "f1_odds": 420,
+              "f2_odds": -593
             }
           ],
           "open": {
@@ -22686,7 +22696,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Movsar Evloev",
         "side": "f1",
-        "points": 26,
+        "points": 27,
         "open": -115,
         "close": null,
         "clv": null
@@ -22697,7 +22707,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Alexander Volkanovski",
         "side": "f2",
-        "points": 26,
+        "points": 27,
         "open": -108,
         "close": null,
         "clv": null
@@ -22851,7 +22861,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Asaf Chopurov",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 378,
         "close": null,
         "clv": null
@@ -22862,7 +22872,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Colby Thicknesse",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -533,
         "close": null,
         "clv": null
