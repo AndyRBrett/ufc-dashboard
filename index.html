@@ -3996,15 +3996,23 @@ function heroCta(){
   var act=b.dataset.act;
   if(act==="share"){openShare();return;}
   _tabPicks=false;
+  // A method can still be missing once the card is live, and the watch-along
+  // view hides the How: buttons: _fnJumpTo switches a live card to the pick
+  // view. FN Mode runs the card in reverse array order.
+  if(act==="method"){
+    var run=ev.fights.slice().reverse();
+    for(var j=0;j<run.length;j++){
+      var mf=run[j],mk=pk(ev,mf);
+      if(!mf.winner&&!fightLocked(ev,mf)&&preds[mk]&&!preds_method[mk]){_fnJumpTo(ev,mf);return;}
+    }
+  }
   openFN(ev);
   // FN Mode opens on the card's first bout; jump to the first one still open
-  // and unpicked (or picked without a method), so "Finish your picks" and
-  // "Finish your methods" land where the work is.
-  if((act==="pick"||act==="method")&&!fnLive){
+  // and unpicked, so "Finish your picks" lands where the work is.
+  if(act==="pick"&&!fnLive){
     for(var i=0;i<fnFights.length;i++){
-      var f=fnFights[i],k=pk(ev,f);
-      if(f.winner||fightLocked(ev,f))continue;
-      if(act==="pick"?!preds[k]:preds[k]&&!preds_method[k]){fnIdx=i;updateFN();break;}
+      var f=fnFights[i];
+      if(!f.winner&&!preds[pk(ev,f)]&&!fightLocked(ev,f)){fnIdx=i;updateFN();break;}
     }
   }
 }
