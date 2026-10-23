@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-23T14:11:08Z",
+ "generated_at": "2026-10-23T17:25:42Z",
  "window_days": 10,
  "sources": [
   {
@@ -44,6 +44,19 @@
    "name": "UFC 333: Volkanovski vs. Evloev",
    "date": "2026-10-24",
    "items": [
+    {
+     "title": "UFC 333 Embedded: Vlog Series - Episode 5",
+     "url": "https://www.youtube.com/watch?v=j11Bt5SQ4Io",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-10-23T15:05:43Z",
+     "thumb": "https://i3.ytimg.com/vi/j11Bt5SQ4Io/hqdefault.jpg",
+     "blurb": "UFC 333 fighters face the cameras at media day; Fighters show off their skills at open workouts; Merab Dvalishvili gets ready ahead of the press conference; Fighters take the stage for the UFC 333 press conference;…",
+     "fighters": [
+      "Alexander Volkanovski",
+      "Merab Dvalishvili"
+     ]
+    },
     {
      "title": "Alexander Volkanovski explains why he’s a ‘nightmare matchup’ for Movsar Evloev",
      "url": "https://www.sherdog.com/news/news/Alexander-Volkanovski-explains-why-hes-a-nightmare-matchup-for-Movsar-Evloev-203291",
@@ -121,25 +134,13 @@
      ]
     },
     {
-     "title": "Merab Dvalishvili #ufc333",
-     "url": "https://www.youtube.com/shorts/uwDrH74iGFA",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-23T05:23:21Z",
-     "thumb": "https://i2.ytimg.com/vi/uwDrH74iGFA/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS, the digital subscription service of the UFC. Visit…",
-     "fighters": [
-      "Merab Dvalishvili"
-     ]
-    },
-    {
-     "title": "Merab Dvalishvili reveals astonishing weight gain hours after hitting 135lbs ahead of UFC 333",
-     "url": "https://bloodyelbow.com/2026/10/23/merab-dvalishvili-reveals-astonishing-weight-gain-hours-after-hitting-135lbs-ahead-of-ufc-333/",
+     "title": "Merab Dvalishvili’s unfixed injury could cost him in a close fight at UFC 333, coach admits",
+     "url": "https://bloodyelbow.com/2026/10/23/merab-dvalishvilis-unfixed-injury-could-cost-him-in-a-close-fight-at-ufc-333-coach-admits/",
      "source": "Bloody Elbow",
      "kind": "article",
-     "published": "2026-10-23T11:38:44Z",
+     "published": "2026-10-23T16:00:00Z",
      "thumb": null,
-     "blurb": "Merab Dvalishvili gained an extraordinary amount of weight in the hours after his UFC 333 weigh-in. The former bantamweight champion will try to take his ...",
+     "blurb": "There’s likely to be plenty of blood in the UFC 333 co-main event. Merab Dvalishvili gets his chance for redemption on Saturday, as his trilogy ...",
      "fighters": [
       "Merab Dvalishvili"
      ]
@@ -149,20 +150,7 @@
   "UFC_Fight_Night:_Moicano_vs._Nolan": {
    "name": "UFC Fight Night: Moicano vs. Nolan",
    "date": "2026-10-31",
-   "items": [
-    {
-     "title": "18-fight UFC veteran is retiring after his next bout so he can help out his mother’s business",
-     "url": "https://bloodyelbow.com/2026/10/22/18-fight-ufc-veteran-is-retiring-after-his-next-bout-so-he-can-help-out-his-mothers-business/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-10-22T18:00:00Z",
-     "thumb": null,
-     "blurb": "UFC Vegas 123 will be the final appearance inside the Octagon for Julian Erosa. The featherweight veteran has competed 44 times as a professional in ...",
-     "fighters": [
-      "Julian Erosa"
-     ]
-    }
-   ]
+   "items": []
   }
  }
 }

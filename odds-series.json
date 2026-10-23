@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T16:20:39Z",
+  "generated_at": "2026-10-23T17:25:41Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -16126,7 +16126,7 @@
           "f1": "Alexander Volkanovski",
           "f2": "Movsar Evloev",
           "lbl": "Main Event",
-          "points": 27,
+          "points": 28,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -16262,6 +16262,11 @@
               "at": "2026-10-23T03:20:42Z",
               "f1_odds": -111,
               "f2_odds": -110
+            },
+            {
+              "at": "2026-10-23T17:25:41Z",
+              "f1_odds": -110,
+              "f2_odds": -111
             }
           ],
           "open": {
@@ -16526,7 +16531,7 @@
           "f1": "Alexander Volkov",
           "f2": "Rizvan Kuniev",
           "lbl": "Main Card",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16602,6 +16607,11 @@
               "at": "2026-10-23T15:15:36Z",
               "f1_odds": -123,
               "f2_odds": 102
+            },
+            {
+              "at": "2026-10-23T17:25:41Z",
+              "f1_odds": -125,
+              "f2_odds": 103
             }
           ],
           "open": {
@@ -16706,7 +16716,7 @@
           "f1": "Azamat Murzakanov",
           "f2": "Dominick Reyes",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16782,6 +16792,11 @@
               "at": "2026-10-22T18:40:50Z",
               "f1_odds": -217,
               "f2_odds": 174
+            },
+            {
+              "at": "2026-10-23T17:25:41Z",
+              "f1_odds": -213,
+              "f2_odds": 171
             }
           ],
           "open": {
@@ -16796,7 +16811,7 @@
           "f1": "Nikita Krylov",
           "f2": "Abdul-Rakhman Yakhyaev",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16857,6 +16872,11 @@
               "at": "2026-10-22T18:40:50Z",
               "f1_odds": 377,
               "f2_odds": -517
+            },
+            {
+              "at": "2026-10-23T17:25:41Z",
+              "f1_odds": 385,
+              "f2_odds": -517
             }
           ],
           "open": {
@@ -16871,7 +16891,7 @@
           "f1": "Abusupiyan Magomedov",
           "f2": "Cameron Rowston",
           "lbl": "Prelim",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16922,6 +16942,11 @@
               "at": "2026-10-23T10:30:42Z",
               "f1_odds": -125,
               "f2_odds": 102
+            },
+            {
+              "at": "2026-10-23T17:25:41Z",
+              "f1_odds": -124,
+              "f2_odds": 103
             }
           ],
           "open": {
@@ -17056,7 +17081,7 @@
           "f1": "Abubakar Vagaev",
           "f2": "Jacob Malkoun",
           "lbl": "Early Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-10-17T16:50:43Z",
@@ -17127,6 +17152,11 @@
               "at": "2026-10-22T16:35:38Z",
               "f1_odds": -161,
               "f2_odds": 132
+            },
+            {
+              "at": "2026-10-23T17:25:41Z",
+              "f1_odds": -159,
+              "f2_odds": 132
             }
           ],
           "open": {
@@ -17141,7 +17171,7 @@
           "f1": "Colby Thicknesse",
           "f2": "Asaf Chopurov",
           "lbl": "Early Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-10-19T20:40:39Z",
@@ -17166,6 +17196,11 @@
             {
               "at": "2026-10-23T03:20:42Z",
               "f1_odds": 420,
+              "f2_odds": -593
+            },
+            {
+              "at": "2026-10-23T17:25:41Z",
+              "f1_odds": 427,
               "f2_odds": -593
             }
           ],
@@ -17256,7 +17291,7 @@
           "f1": "Iasmin Lucindo",
           "f2": "Nicole Caliari",
           "lbl": "Early Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-10-20T03:10:49Z",
@@ -17302,6 +17337,11 @@
               "at": "2026-10-23T15:15:36Z",
               "f1_odds": -372,
               "f2_odds": 290
+            },
+            {
+              "at": "2026-10-23T17:25:41Z",
+              "f1_odds": -382,
+              "f2_odds": 297
             }
           ],
           "open": {
@@ -19173,7 +19213,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Cameron Rowston",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -118,
         "close": null,
         "clv": null
@@ -19253,7 +19293,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Nikita Krylov",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -450,
         "close": null,
         "clv": null
@@ -19620,7 +19660,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Abdul-Rakhman Yakhyaev",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": 354,
         "close": null,
         "clv": null
@@ -22967,7 +23007,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Movsar Evloev",
         "side": "f1",
-        "points": 27,
+        "points": 28,
         "open": -115,
         "close": null,
         "clv": null
@@ -22978,7 +23018,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Alexander Volkanovski",
         "side": "f2",
-        "points": 27,
+        "points": 28,
         "open": -108,
         "close": null,
         "clv": null
@@ -23022,7 +23062,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Rizvan Kuniev",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -125,
         "close": null,
         "clv": null
@@ -23033,7 +23073,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Alexander Volkov",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 105,
         "close": null,
         "clv": null
@@ -23055,7 +23095,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Dominick Reyes",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -210,
         "close": null,
         "clv": null
@@ -23066,7 +23106,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Azamat Murzakanov",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 177,
         "close": null,
         "clv": null
@@ -23077,7 +23117,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Abusupiyan Magomedov",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": -102,
         "close": null,
         "clv": null
@@ -23110,7 +23150,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Jacob Malkoun",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -185,
         "close": null,
         "clv": null
@@ -23121,7 +23161,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Abubakar Vagaev",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 157,
         "close": null,
         "clv": null
@@ -23132,7 +23172,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Asaf Chopurov",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": 378,
         "close": null,
         "clv": null
@@ -23143,7 +23183,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Colby Thicknesse",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": -533,
         "close": null,
         "clv": null
@@ -23198,7 +23238,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Nicole Caliari",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -360,
         "close": null,
         "clv": null
@@ -23209,7 +23249,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Iasmin Lucindo",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 282,
         "close": null,
         "clv": null
