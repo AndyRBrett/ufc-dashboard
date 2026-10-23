@@ -1,8 +1,8 @@
 {
-  "idle_pulls": 1,
-  "last_fetch_at": "2026-10-23T06:15:25.305865+00:00",
+  "idle_pulls": 0,
+  "last_fetch_at": "2026-10-23T10:30:25.659692+00:00",
   "last_status": 401,
-  "lines_digest": "014f35f84663855ac574d392e01cfa9facfe07b7",
+  "lines_digest": "d324938ca43a227c9f372dfad0c53108f3a6c119",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -143,6 +143,14 @@
   "markets_partial": {
     "2026-10-23": {
       "fighters": [
+        "rose",
+        "ellen",
+        "worth",
+        "blackorby",
+        "mestvirishvili",
+        "silva",
+        "reinoso",
+        "sanchez",
         "mir",
         "hooper",
         "chimaev",
@@ -152,8 +160,8 @@
         "woodley",
         "havener"
       ],
-      "listed": 4,
-      "priced": 4
+      "listed": 8,
+      "priced": 8
     },
     "2026-10-24": {
       "fighters": [
@@ -297,25 +305,25 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-23T06:15:25.305865+00:00",
+  "markets_partial_at": "2026-10-23T10:30:25.659692+00:00",
   "next_event_days_out": 1,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-23T06:15:25.305865+00:00",
+      "last_fetch_at": "2026-10-23T10:30:25.659692+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
       "requests_remaining": 0
     },
     "the-odds-api-backup": {
-      "bouts": 43,
-      "last_fetch_at": "2026-10-23T06:15:25.305865+00:00",
-      "last_ok_at": "2026-10-23T06:15:25.305865+00:00",
+      "bouts": 48,
+      "last_fetch_at": "2026-10-23T10:30:25.659692+00:00",
+      "last_ok_at": "2026-10-23T10:30:25.659692+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 292
+      "requests_remaining": 291
     }
   },
   "requests_remaining": 0

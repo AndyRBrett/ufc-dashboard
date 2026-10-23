@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T09:25:36Z",
+  "generated_at": "2026-10-23T10:30:43Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -16426,7 +16426,7 @@
           "f1": "Lone'er Kavanagh",
           "f2": "Ramazan Temirov",
           "lbl": "Main Card",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16492,6 +16492,11 @@
               "at": "2026-10-22T20:55:40Z",
               "f1_odds": -112,
               "f2_odds": -108
+            },
+            {
+              "at": "2026-10-23T10:30:42Z",
+              "f1_odds": -111,
+              "f2_odds": -110
             }
           ],
           "open": {
@@ -16506,7 +16511,7 @@
           "f1": "Alexander Volkov",
           "f2": "Rizvan Kuniev",
           "lbl": "Main Card",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16572,6 +16577,11 @@
               "at": "2026-10-22T11:35:35Z",
               "f1_odds": -128,
               "f2_odds": 103
+            },
+            {
+              "at": "2026-10-23T10:30:42Z",
+              "f1_odds": -122,
+              "f2_odds": 101
             }
           ],
           "open": {
@@ -16836,7 +16846,7 @@
           "f1": "Abusupiyan Magomedov",
           "f2": "Cameron Rowston",
           "lbl": "Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16882,6 +16892,11 @@
               "at": "2026-10-22T18:40:50Z",
               "f1_odds": -130,
               "f2_odds": 107
+            },
+            {
+              "at": "2026-10-23T10:30:42Z",
+              "f1_odds": -125,
+              "f2_odds": 102
             }
           ],
           "open": {
@@ -18929,7 +18944,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Cameron Rowston",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -118,
         "close": null,
         "clv": null
@@ -19265,7 +19280,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Ramazan Temirov",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -110,
         "close": null,
         "clv": null
@@ -22740,7 +22755,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Lone'er Kavanagh",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -110,
         "close": null,
         "clv": null
@@ -22751,7 +22766,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Rizvan Kuniev",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -125,
         "close": null,
         "clv": null
@@ -22762,7 +22777,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Alexander Volkov",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 105,
         "close": null,
         "clv": null
@@ -22806,7 +22821,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Abusupiyan Magomedov",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": -102,
         "close": null,
         "clv": null
