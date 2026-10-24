@@ -8717,7 +8717,7 @@ function drawWheel(angle){
 }
 function openWheelSheet(){
   closeTrashSheet();
-  _wheelPayFor=null;   // the plain Wheel button pays nothing; Pay up sets it after this
+  _wheelPayFor=null;_wheelSession++;   // the plain Wheel button pays nothing; Pay up sets it after this
   var sheet=document.getElementById("wheelSheet");
   document.getElementById("wheelResult").className="lb-wheel-result";
   document.getElementById("wheelResult").textContent="";
@@ -8729,7 +8729,7 @@ function openWheelSheet(){
 }
 function closeWheelSheet(){
   document.getElementById("wheelSheet").classList.remove("open");
-  _wheelSpinning=false;_wheelPayFor=null;
+  _wheelSpinning=false;_wheelPayFor=null;_wheelSession++;
 }
 // Toggle between the spin view and the manage (edit) view inside the wheel sheet.
 function showWheelView(view){
@@ -8818,6 +8818,7 @@ function spinWheel(){
   var segs=activeSegments();
   if(segs.length<2)return;
   _wheelSpinning=true;
+  var payFor=_wheelPayFor,session=_wheelSession;
   var btn=document.getElementById("wheelSpinBtn");btn.disabled=true;
   document.getElementById("wheelResult").className="lb-wheel-result";
   var n=segs.length,arc=Math.PI*2/n;
@@ -8844,7 +8845,7 @@ function spinWheel(){
       res.textContent=seg.emoji+" "+seg.label;
       res.className="lb-wheel-result show";
       btn.disabled=false;btn.dataset.spun="1";btn.textContent="Spin Again 🎡";
-      if(_wheelPayFor){var pid=_wheelPayFor;_wheelPayFor=null;_markChalPaid(pid,seg.emoji+" "+seg.label);}
+      if(payFor&&session===_wheelSession&&_wheelPayFor===payFor){_wheelPayFor=null;_markChalPaid(payFor,seg.emoji+" "+seg.label);}
     }
   }
   requestAnimationFrame(step);
@@ -12562,6 +12563,10 @@ function renderChallengeInbox(){
 // at once as well (ufc_chal_paid), so a database without 0023 yet, or a failed
 // call, still shows the bet settled here instead of offering Pay up again.
 var _wheelPayFor=null;
+// Bumped whenever the wheel opens or closes: a spin pays only the challenge
+// it started for, and only if its wheel is still the one on screen (Codex on
+// #326: close mid-spin, tap Pay up on another bet, and the old spin paid it).
+var _wheelSession=0;
 function _chalPaidLocal(){try{return JSON.parse(localStorage.getItem("ufc_chal_paid")||"{}")||{};}catch(e){return {};}}
 function _chalPaid(c){
   if(c.paid_at)return {spin:c.paid_spin||""};
