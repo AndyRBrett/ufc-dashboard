@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T00:55:35Z",
+  "generated_at": "2026-10-24T01:00:44Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -17592,12 +17592,17 @@
           "f1": "Rodrigo Sezinando",
           "f2": "Theodor Berggren",
           "lbl": "Main Card",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-23T15:15:36Z",
               "f1_odds": -171,
               "f2_odds": 150
+            },
+            {
+              "at": "2026-10-24T01:00:44Z",
+              "f1_odds": -180,
+              "f2_odds": 157
             }
           ],
           "open": {
@@ -19547,7 +19552,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Rodrigo Sezinando",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 150,
         "close": null,
         "clv": null
@@ -23456,7 +23461,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Theodor Berggren",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -171,
         "close": null,
         "clv": null
