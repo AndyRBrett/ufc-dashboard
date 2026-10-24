@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-23T22:58:34Z",
+ "generated_at": "2026-10-24T02:00:47Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -45,6 +45,33 @@
    "date": "2026-10-24",
    "items": [
     {
+     "title": "Watch Alexander Volkanovski and Petr Yan spar each other years before their UFC 333 title defenses",
+     "url": "https://bloodyelbow.com/2026/10/23/watch-alexander-volkanovski-and-petr-yan-spar-each-other-years-before-their-ufc-333-title-defenses/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-10-24T02:00:00Z",
+     "thumb": null,
+     "blurb": "Alexander Volkanovski and Petr Yan went head-to-head while training at the same gym. Earlier this month, Yan picked against his countryman Movsar Evloev when sharing ...",
+     "fighters": [
+      "Alexander Volkanovski",
+      "Movsar Evloev",
+      "Petr Yan"
+     ]
+    },
+    {
+     "title": "Max Holloway explains why Alexander Volkanovski will negate ‘biggest concern’ in Movsar Evloev clash",
+     "url": "https://bloodyelbow.com/2026/10/23/max-holloway-explains-why-alexander-volkanovski-will-negate-biggest-concern-in-movsar-evloev-clash/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-10-23T23:30:00Z",
+     "thumb": null,
+     "blurb": "Max Holloway has shared his prediction for the main event of UFC 333. There were always going to be questions about whether Alexander Volkanovski’s time ...",
+     "fighters": [
+      "Alexander Volkanovski",
+      "Movsar Evloev"
+     ]
+    },
+    {
      "title": "Dana White open to another lightweight shot for Alexander Volkanovski: ‘We would be very supportive’",
      "url": "https://bloodyelbow.com/2026/10/23/dana-white-open-to-another-lightweight-shot-for-alexander-volkanovski-we-would-be-very-supportive/",
      "source": "Bloody Elbow",
@@ -55,19 +82,6 @@
      "fighters": [
       "Alexander Volkanovski",
       "Movsar Evloev"
-     ]
-    },
-    {
-     "title": "UFC 333 Embedded: Vlog Series - Episode 5",
-     "url": "https://www.youtube.com/watch?v=j11Bt5SQ4Io",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-23T15:05:43Z",
-     "thumb": "https://i3.ytimg.com/vi/j11Bt5SQ4Io/hqdefault.jpg",
-     "blurb": "UFC 333 fighters face the cameras at media day; Fighters show off their skills at open workouts; Merab Dvalishvili gets ready ahead of the press conference; Fighters take the stage for the UFC 333 press conference;…",
-     "fighters": [
-      "Alexander Volkanovski",
-      "Merab Dvalishvili"
      ]
     },
     {
@@ -97,32 +111,6 @@
      ]
     },
     {
-     "title": "Petr Yan wins UFC 333 poll that predicts Merab Dvalishvili to suffer his first losing skid in 8 years",
-     "url": "https://bloodyelbow.com/2026/10/23/petr-yan-wins-ufc-333-poll-that-predicts-merab-dvalishvili-to-suffer-his-first-losing-skid-in-8-years/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-10-23T20:30:00Z",
-     "thumb": null,
-     "blurb": "Fans have picked a side ahead of Saturday’s UFC 333 co-main event. The UFC’s latest trip to Abu Dhabi will feature two title fights, the ...",
-     "fighters": [
-      "Merab Dvalishvili",
-      "Petr Yan"
-     ]
-    },
-    {
-     "title": "Petr Yan vs. Merab Dvalishvili 3: Bloody Elbow staff all agree on the UFC 333 co-main event",
-     "url": "https://bloodyelbow.com/2026/10/23/petr-yan-vs-merab-dvalishvili-3-bloody-elbow-staff-all-agree-on-the-ufc-333-co-main-event/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-10-23T10:00:00Z",
-     "thumb": null,
-     "blurb": "Petr Yan and Merab Dvalishvili will complete their trilogy of fights on Saturday night. ‘The Machine’ won every round when he first fought Petr Yan ...",
-     "fighters": [
-      "Merab Dvalishvili",
-      "Petr Yan"
-     ]
-    },
-    {
      "title": "Alexander Volkanovski predicts 'wild' finish of 20-0 Movsar Evloev",
      "url": "https://www.sherdog.com/news/news/Alexander-Volkanovski-predicts-wild-finish-of-200-Movsar-Evloev-203269",
      "source": "Sherdog",
@@ -133,18 +121,6 @@
      "fighters": [
       "Alexander Volkanovski",
       "Movsar Evloev"
-     ]
-    },
-    {
-     "title": "135 for Petr Yan! #ufc333",
-     "url": "https://www.youtube.com/shorts/qB5HPlKv_vw",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-10-23T05:31:17Z",
-     "thumb": "https://i2.ytimg.com/vi/qB5HPlKv_vw/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS, the digital subscription service of the UFC. Visit…",
-     "fighters": [
-      "Petr Yan"
      ]
     }
    ]
