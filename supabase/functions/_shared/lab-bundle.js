@@ -1287,19 +1287,29 @@ function _nmFold(n){
 // read the global; loadKernel hands the server's copy to setNameAliases.
 var _nmAlias=null;
 function setNameAliases(map){
-  var out={},n=0;
+  var step={},out={},n=0;
   if(map&&typeof map==="object")Object.keys(map).forEach(function(k){
     var a=_nmFold(k),b=_nmFold(map[k]);
-    if(a&&b&&a!==b){out[a]=b;n++;}
+    if(a&&b&&a!==b){step[a]=b;n++;}
+  });
+  // Resolved once, to each chain's end (A → B, later B → C: A keys as C). A
+  // loop (a spelling changed and changed back) resolves every member to the
+  // same one, its first in sort order, so the spellings never key apart.
+  Object.keys(step).forEach(function(a){
+    var seen=[a],s=a;
+    while(Object.prototype.hasOwnProperty.call(step,s)){
+      s=step[s];
+      if(seen.indexOf(s)>=0){s=seen.slice(seen.indexOf(s)).sort()[0];break;}
+      seen.push(s);
+    }
+    out[a]=s;
   });
   _nmAlias=n?out:null;
 }
 if(typeof FIGHTER_ALIASES!=="undefined")setNameAliases(FIGHTER_ALIASES);
 function nmKey(n){
   var s=_nmFold(n);
-  // A chain (A → B, later B → C) resolves to its end; the hop cap stops a cycle.
-  for(var i=0;_nmAlias&&i<5&&Object.prototype.hasOwnProperty.call(_nmAlias,s);i++)s=_nmAlias[s];
-  return s;
+  return _nmAlias&&Object.prototype.hasOwnProperty.call(_nmAlias,s)?_nmAlias[s]:s;
 }
 // True when two fighter names refer to the same person. Blank never matches
 // blank — an undecided bout has winner:"" and must not read as "you were right".

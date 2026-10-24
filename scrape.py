@@ -1009,8 +1009,11 @@ def update_fighter_aliases(aliases, old_cards, new_events):
     never aliased away, and neither is a real replacement (looks_like_rename).
     """
     out = dict(aliases or {})
+    # A seed whose target has since been respelled again is history, not a
+    # loop to put back.
     for k, v in _SEED_FIGHTER_ALIASES.items():
-        out.setdefault(k, v)
+        if v not in out:
+            out.setdefault(k, v)
     old_by_date = {}
     for (_name, ev_date), fights in (old_cards or {}).items():
         old_by_date.setdefault(ev_date, []).extend(fights)
@@ -1038,6 +1041,10 @@ def update_fighter_aliases(aliases, old_cards, new_events):
                             and looks_like_rename(gone, came)):
                         if out.get(gone) != came:
                             print(f"  Respelled: {gone} -> {came}", file=sys.stderr)
+                        # The card's spelling is the end of every chain: a
+                        # change back (A → B → A) drops B's old entry rather
+                        # than leave a loop that keys A and B apart.
+                        out.pop(came, None)
                         out[gone] = came
     return out
 

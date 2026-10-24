@@ -203,9 +203,16 @@ check("...and a pick OF the respelled fighter is still the same side (wrong here
 check("an alias only joins its own two spellings, never a different fighter",
   !withMap(`nmEq("Nicole Smith","Nicolle Caliari")`) && !withMap(`nmEq("Nicole Caliari","Nicole Calvo")`) &&
   withMap(`nmEq("Sean King III","Sean King")`));
-check("a chain resolves to its end, and a cycle can't hang the lookup",
-  aliasCtx({ "A One": "A Two", "A Two": "A Three" })(`nmEq("A One","A Three")`) &&
-  typeof aliasCtx({ "B One": "B Two", "B Two": "B One" })(`nmKey("B One")`) === "string");
+check("a chain resolves to its end (A → B → C: A, B and C are one fighter)",
+  aliasCtx({ "A One": "A Two", "A Two": "A Three" })(`nmEq("A One","A Three") && nmEq("A Two","A Three") && nmEq("A One","A Two")`));
+// Codex on #321: a spelling changed and changed back left A → B and B → A, and
+// a hop-capped walk keyed the two apart again.
+for (const loop of [{ "Nicole Caliari": "Nicolle Caliari", "Nicolle Caliari": "Nicole Caliari" },
+                    { "C One": "C Two", "C Two": "C Three", "C Three": "C One" }]) {
+  const r = aliasCtx(loop), names = Object.keys(loop);
+  check(`a loop (${names.length} spellings) keys every member as one fighter`,
+    names.every((a) => names.every((b) => r(`nmEq(${JSON.stringify(a)},${JSON.stringify(b)})`))));
+}
 check("setNameAliases (the server's way in) replaces the map, and {} clears it",
   noMap(`setNameAliases({"Nicole Caliari":"Nicolle Caliari"}),nmEq("Nicole Caliari","Nicolle Caliari")`) &&
   !noMap(`setNameAliases({}),nmEq("Nicole Caliari","Nicolle Caliari")`));

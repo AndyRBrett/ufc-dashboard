@@ -71,3 +71,15 @@ def test_round_trip_through_data_js():
     data = scrape.set_js_var(data, "FIGHTER_ALIASES", '{"Nicole Caliari":"Nicolle Caliari"}')
     assert scrape.extract_fighter_aliases(data) == {"Nicole Caliari": "Nicolle Caliari"}
     assert scrape.extract_fighter_aliases("var EVENTS=[];") == {}
+
+
+def test_a_spelling_changed_back_leaves_no_loop():
+    # Codex on #321: A -> B then back to A must not leave A -> B and B -> A.
+    first = scrape.update_fighter_aliases({}, old(("Iasmin Lucindo", "Nicole Caliari")),
+                                          new(("Iasmin Lucindo", "Nicolle Caliari")))
+    back = scrape.update_fighter_aliases(first, old(("Iasmin Lucindo", "Nicolle Caliari")),
+                                         new(("Iasmin Lucindo", "Nicole Caliari")))
+    assert back.get("Nicolle Caliari") == "Nicole Caliari"
+    assert "Nicole Caliari" not in back          # the seed isn't put back either
+    again = scrape.update_fighter_aliases(back, {}, [])
+    assert again == back
