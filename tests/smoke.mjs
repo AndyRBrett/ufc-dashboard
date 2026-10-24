@@ -177,6 +177,30 @@ async function main() {
       return bad;
     });
     assert("every tab stays tappable with any tab's view open" + (covered.length ? " (covered: " + covered.slice(0, 4).join(", ") + ")" : ""), covered.length === 0);
+    // Paying a stake: a spin from "Pay up" marks that challenge paid (on this
+    // device at once, and through mark_challenge_paid for both players); a
+    // plain Wheel spin pays nothing. It used to record nothing at all.
+    const payup = await page.evaluate(async () => {
+      const calls = [], realFetch = window.fetch;
+      window.fetch = (u, o) => { if (/rpc\/mark_challenge_paid/.test(String(u))) { calls.push(JSON.parse(o.body)); return Promise.resolve(new Response("true")); } return realFetch(u, o); };
+      const spinOnce = async (payFor) => {
+        window.openWheelSheet(); if (payFor) window._wheelPayFor = payFor;
+        window.spinWheel(); await new Promise((r) => setTimeout(r, 4200));
+        window.closeWheelSheet();
+      };
+      try {
+        localStorage.removeItem("ufc_chal_paid");
+        await spinOnce(null);
+        const plain = Object.keys(window._chalPaidLocal()).length === 0 && calls.length === 0;
+        await spinOnce("chal-xyz");
+        const local = window._chalPaid({ id: "chal-xyz" });
+        return { plain, local: !!(local && local.spin), rpc: calls.length === 1 && calls[0].p_id === "chal-xyz" && !!calls[0].p_spin,
+          server: (window._chalPaid({ id: "other", paid_at: "2026-10-24T17:00:00Z", paid_spin: "🍺 Beer" }) || {}).spin === "🍺 Beer",
+          none: window._chalPaid({ id: "nope" }) === null };
+      } finally { window.fetch = realFetch; localStorage.removeItem("ufc_chal_paid"); }
+    });
+    assert("a spin from Pay up marks its challenge paid (here and via mark_challenge_paid); a plain spin pays nothing",
+      payup.plain && payup.local && payup.rpc && payup.server && payup.none);
     // A tapped roast lifts Ranks over the tab bar (.tap-front); a closed sheet
     // slid below it (the wheel) must not show in the bar's place.
     const peek = await page.evaluate(async () => {

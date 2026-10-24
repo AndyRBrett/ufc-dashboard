@@ -88,6 +88,43 @@ const check = (name, cond) => cond ? console.log("  ✓ " + name) : (failures++,
   check("...which doesn't stop anyone else", !(await refused(report(C, C))));
 }
 
+// --- 1b. a challenge's stake marked paid (0023) ----------------------------------
+// "Pay up — spin now" used to open the wheel and record nothing, so a settled
+// bet showed "lost" with Pay up forever. Only the two players, once, and only
+// on an accepted challenge; never by writing the columns directly.
+{
+  const db = new PGlite();
+  await db.exec(`
+    create role anon nologin; create role authenticated nologin;
+    create schema auth;
+    create function auth.uid() returns uuid language sql stable as
+      $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+    grant usage on schema auth to anon, authenticated;
+    grant execute on function auth.uid() to anon, authenticated;
+    grant usage on schema public to anon, authenticated;
+  `);
+  await db.exec(readFileSync(join(ROOT, "supabase/migrations/0003_challenges.sql"), "utf8"));
+  await db.exec(readFileSync(join(ROOT, "supabase/migrations/0023_challenge_paid.sql"), "utf8"));
+  await db.exec(readFileSync(join(ROOT, "supabase/migrations/0023_challenge_paid.sql"), "utf8"));   // re-runnable
+  const A = "11111111-1111-1111-1111-111111111111", B = "22222222-2222-2222-2222-222222222222", C = "33333333-3333-3333-3333-333333333333";
+  async function as(role, uid, sql, params) {
+    await db.exec(`reset role; select set_config('request.jwt.claim.sub', '${uid || ""}', false); set role ${role};`);
+    try { return await db.query(sql, params); } finally { await db.exec("reset role;"); }
+  }
+  const refused = async (p) => { try { await p; return false; } catch { return true; } };
+  const id = (await as("authenticated", A, `insert into challenges (challenger_id, challenger_name, target_id, target_name, event_date, event_name) values ($1, 'x', $2, 'y', '2026-10-24', 'Card') returning id`, [A, C])).rows[0].id;
+  const pay = async (uid, spin) => (await as("authenticated", uid, `select public.mark_challenge_paid($1, $2) ok`, [id, spin])).rows[0].ok;
+  check("a pending challenge can't be marked paid", (await pay(C, "🍺 Beer")) === false);
+  await as("authenticated", C, `update challenges set status = 'accepted', responded_at = now() where id = $1`, [id]);
+  check("someone outside the challenge can't mark it paid", (await pay(B, "🍺 Beer")) === false);
+  check("either player can, once it's accepted", (await pay(C, "  🍺 Beer Tunnel " + "x".repeat(200))) === true);
+  const row = (await db.query(`select paid_at, paid_spin from challenges where id = $1`, [id])).rows[0];
+  check("...recording when and what the wheel landed on, trimmed and capped", !!row.paid_at && row.paid_spin.startsWith("🍺 Beer Tunnel") && [...row.paid_spin].length <= 80);
+  check("...only once", (await pay(A, "💀 Other")) === false && (await db.query(`select paid_spin from challenges where id = $1`, [id])).rows[0].paid_spin === row.paid_spin);
+  check("the paid columns can't be written directly", await refused(as("authenticated", C, `update challenges set paid_at = null where id = $1`, [id])));
+  check("the anon key can't mark anything paid", await refused(as("anon", "", `select public.mark_challenge_paid($1, 'x')`, [id])));
+}
+
 // --- 2. the app ------------------------------------------------------------------
 const html = readFileSync(join(ROOT, "index.html"), "utf8");
 {
