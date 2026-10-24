@@ -522,6 +522,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 .lb-trash-persona-empty{font-size:12px;color:var(--muted);text-align:center;padding:14px 0}
 .lb-wheel-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--card2);border-top:2px solid var(--gold);border-radius:16px 16px 0 0;padding:20px 16px 28px;transform:translateY(100%);transition:transform .3s ease;z-index:10}
 .lb-wheel-sheet.open{transform:translateY(0)}
+/* A closed sheet is slid below Ranks, not removed, and Ranks stops above the tab
+   bar: lifted over it (.tap-front, a tapped roast) the closed wheel's header
+   showed in the bar's place under an open roast. Hidden once it has slid away;
+   shown at once on open, so the slide-in is unchanged. */
+.lb-trash-sheet:not(.open),.lb-wheel-sheet:not(.open){visibility:hidden;transition:transform .3s ease,visibility 0s .3s}
 /* A 44px target above the wheel: the canvas wrap (position:relative, later in
    the DOM) covered all but a ~14px sliver of the old glyph-sized button, so a
    finger tap on ✕ landed on the wheel and the sheet wouldn't close. */
@@ -6373,21 +6378,31 @@ function fnRenderStakes(f){
   var base={},meId=null;
   list.forEach(function(u){base[_fnUid(u)]=userPts(u);if(u.isMe)meId=_fnUid(u);});
   if(meId==null)return;
-  var b=_fnPicksByFight[pk(fnEv,f)]||{f1:[],f2:[]},picked={f1:{},f2:{}},lockd={};
-  (b.f1||[]).forEach(function(u){picked.f1[_fnUid(u)]=1;if(u.locked)lockd[_fnUid(u)]=1;});
-  (b.f2||[]).forEach(function(u){picked.f2[_fnUid(u)]=1;if(u.locked)lockd[_fnUid(u)]=1;});
+  var b=_fnPicksByFight[pk(fnEv,f)]||{f1:[],f2:[]},picked={f1:{},f2:{}},lockd={},meth={};
+  (b.f1||[]).forEach(function(u){picked.f1[_fnUid(u)]=1;if(u.locked)lockd[_fnUid(u)]=1;if(u.method)meth[_fnUid(u)]=u.method;});
+  (b.f2||[]).forEach(function(u){picked.f2[_fnUid(u)]=1;if(u.locked)lockd[_fnUid(u)]=1;if(u.method)meth[_fnUid(u)]=u.method;});
   var curRank=_fnRankIn(list,base,meId),mySide=myPick===f.f1.n?"f1":"f2";
+  var myMethod=preds_method[pk(fnEv,f)]||"";
   el.style.display="";
   var hdr=document.createElement("div");hdr.className="fnl-stakes-hdr";hdr.textContent="On the line · you're "+_fnOrd(curRank)+" now";el.appendChild(hdr);
+  // With a method picked, your fighter's win splits in two: by your method (the
+  // +0.5 for everyone who called it) and any other way (method ignored).
+  var specs=[];
   [["f1",f.f1.n],["f2",f.f2.n]].forEach(function(spec){
-    var side=spec[0],proj={};
+    if(spec[0]===mySide&&myMethod){specs.push([spec[0],spec[1],myMethod]);specs.push([spec[0],spec[1],"other"]);}
+    else specs.push([spec[0],spec[1],""]);
+  });
+  specs.forEach(function(spec){
+    var side=spec[0],how=spec[2],proj={};
     var win=1+dogPtsForPick(f.odds,f.f1.n,f.f2.n,spec[1]);   // 1 pt + the dog bonus for that corner
+    var mBonus=function(id){return how&&how!=="other"&&meth[id]===how?0.5:0;};
     // A lock swings both ways: +LOCK_HIT on the side you backed, LOCK_MISS on the other.
-    list.forEach(function(u){var id=_fnUid(u);proj[id]=base[id]+(picked[side][id]?win+(lockd[id]?LOCK_HIT:0):(lockd[id]?LOCK_MISS:0));});
+    list.forEach(function(u){var id=_fnUid(u);proj[id]=base[id]+(picked[side][id]?win+mBonus(id)+(lockd[id]?LOCK_HIT:0):(lockd[id]?LOCK_MISS:0));});
     var pr=_fnRankIn(list,proj,meId),d=curRank-pr;  // +ve = you climb
     var row=document.createElement("div");row.className="fnl-stake-row"+(side===mySide?" mine":"");
-    var out=document.createElement("span");out.className="fnl-stake-out";out.textContent=_fnNameShort(spec[1])+" wins";
-    var gain=document.createElement("span");gain.className="fnl-stake-gain"+(side===mySide?" up":"");gain.textContent=side===mySide?("+"+(win+(lockd[meId]?LOCK_HIT:0))):(lockd[meId]?String(LOCK_MISS):"—");
+    var out=document.createElement("span");out.className="fnl-stake-out";
+    out.textContent=_fnNameShort(spec[1])+(how==="other"?", other way":how?" by "+how:" wins");
+    var gain=document.createElement("span");gain.className="fnl-stake-gain"+(side===mySide?" up":"");gain.textContent=side===mySide?("+"+(win+mBonus(meId)+(lockd[meId]?LOCK_HIT:0))):(lockd[meId]?String(LOCK_MISS):"—");
     var rank=document.createElement("span");rank.className="fnl-stake-rank";
     var rk=document.createElement("span");rk.textContent=_fnOrd(pr);rank.appendChild(rk);
     if(d!==0){var dd=document.createElement("span");dd.className="fnl-stake-d "+(d>0?"up":"down");dd.textContent=(d>0?"▲":"▼")+Math.abs(d);rank.appendChild(dd);}
@@ -11835,7 +11850,7 @@ function loadLeaderboard(isLive){
         if(!ev||!fight)return;
         var key=pk(ev,fight);
         if(!_fnPicksByFight[key])_fnPicksByFight[key]={f1:[],f2:[]};
-        _fnPicksByFight[key][nmEq(p.pick,fight.f1.n)?"f1":"f2"].push({nickname:u.nickname,user_id:u.user_id,isMe:u.isMe,locked:!!p.locked});
+        _fnPicksByFight[key][nmEq(p.pick,fight.f1.n)?"f1":"f2"].push({nickname:u.nickname,user_id:u.user_id,isMe:u.isMe,locked:!!p.locked,method:p.method||""});
       });
     });
     _lbSorted=sorted;
