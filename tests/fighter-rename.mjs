@@ -172,6 +172,61 @@ check("a pick already under the current spelling is left alone and unflagged",
   rd("_pickSpellingChanged") === false &&
   Object.keys(rd("preds")).length === 1);
 
+// ── 3b. a respelling the fold can't see, carried by FIGHTER_ALIASES ─────────
+// UFC 333 (2026-10-23): "Nicole Caliari" became "Nicolle Caliari" the day
+// before the card. nmKey can't fold an added letter, so every pick under the
+// old spelling matched no bout: shown unpicked, never scored, and no alert
+// (send-reminders reads it as a rename). scrape.py records the respelling in
+// data.js's FIGHTER_ALIASES and nmKey keys the old spelling as the new one.
+const CAL = { lbl: "Early Prelim", wc: "Catchweight", state: "post", winner: "Iasmin Lucindo", method: "Decision (Unanimous)",
+  odds: { f1: -377, f2: 293 }, f1: { n: "Iasmin Lucindo" }, f2: { n: "Nicolle Caliari" } };
+const CDATE = "2026-10-24";
+function aliasCtx(aliases) {
+  const c = vm.createContext({ console, String, Object, Math, Date, Array, JSON,
+    EVENTS: [{ date: CDATE, name: "UFC 333", fights: [CAL] }], RESULTS_ARCHIVE: {}, MAIN_CARD_BOUTS: 5, lbScope: "all",
+    isMainCardBout: (f) => f.lbl !== "Prelim" && f.lbl !== "Early Prelim", splitNick: (n) => ({ name: String(n || "") }) });
+  if (aliases) c.FIGHTER_ALIASES = aliases;
+  vm.runInContext(block("fighter-names"), c);
+  vm.runInContext(block("pick-match"), c);
+  return (expr) => vm.runInContext(expr, c);
+}
+const noMap = aliasCtx(null), withMap = aliasCtx({ "Nicole Caliari": "Nicolle Caliari" });
+check("without the alias the respelled bout is lost (the incident, reproduced)",
+  noMap(`_findFightResult("${CDATE}","Iasmin Lucindo","Nicole Caliari")`) === null);
+check("with FIGHTER_ALIASES a pick under the old spelling finds its bout",
+  !!withMap(`_findFightResult("${CDATE}","Iasmin Lucindo","Nicole Caliari")`) &&
+  withMap(`nmBout(${JSON.stringify(CAL)},"Nicole Caliari","Iasmin Lucindo")`));
+check("...and a pick OF the respelled fighter is still the same side (wrong here, priced as her)",
+  withMap(`nmEq("Nicole Caliari","Nicolle Caliari")`) &&
+  !withMap(`nmEq("Nicole Caliari","Iasmin Lucindo")`) &&
+  withMap(`dogPtsForPick(${JSON.stringify(CAL.odds)},"Iasmin Lucindo","Nicolle Caliari","Nicole Caliari")`) === 1);
+check("an alias only joins its own two spellings, never a different fighter",
+  !withMap(`nmEq("Nicole Smith","Nicolle Caliari")`) && !withMap(`nmEq("Nicole Caliari","Nicole Calvo")`) &&
+  withMap(`nmEq("Sean King III","Sean King")`));
+check("a chain resolves to its end, and a cycle can't hang the lookup",
+  aliasCtx({ "A One": "A Two", "A Two": "A Three" })(`nmEq("A One","A Three")`) &&
+  typeof aliasCtx({ "B One": "B Two", "B Two": "B One" })(`nmKey("B One")`) === "string");
+check("setNameAliases (the server's way in) replaces the map, and {} clears it",
+  noMap(`setNameAliases({"Nicole Caliari":"Nicolle Caliari"}),nmEq("Nicole Caliari","Nicolle Caliari")`) &&
+  !noMap(`setNameAliases({}),nmEq("Nicole Caliari","Nicolle Caliari")`));
+// The phone's own copy: _reconcilePickOrder re-keys it to the card's spelling.
+{
+  const c = vm.createContext({ console, String, Object, Array, JSON, FIGHTER_ALIASES: { "Nicole Caliari": "Nicolle Caliari" } });
+  vm.runInContext(`
+    var EVENTS=${JSON.stringify([{ date: CDATE, fights: [CAL] }])};
+    var preds={"${CDATE}|Iasmin Lucindo|Nicole Caliari":"Nicole Caliari"},preds_method={},preds_conf={},resolvedPicks={};
+    function save(){} function saveMethod(){} function saveConf(){}
+    var localStorage={setItem:function(){},getItem:function(){return null;}};
+  `, c);
+  vm.runInContext(block("fighter-names"), c);
+  vm.runInContext(block("pick-reconcile"), c);
+  vm.runInContext("_reconcilePickOrder();", c);
+  check("a phone's pick under the old spelling is re-keyed, re-spelled and flagged for the server prune",
+    vm.runInContext(`preds["${CDATE}|Iasmin Lucindo|Nicolle Caliari"]`, c) === "Nicolle Caliari" &&
+    vm.runInContext(`preds["${CDATE}|Iasmin Lucindo|Nicole Caliari"]`, c) === undefined &&
+    vm.runInContext("_pickSpellingChanged", c) === true);
+}
+
 // ── 4. no collisions on any card we actually ship ────────────────────────────
 const dataSrc = readFileSync(join(ROOT, "data.js"), "utf8");
 const dctx = vm.createContext({});

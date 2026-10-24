@@ -32,7 +32,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:dedup` | the three result senders drifting apart and double-pushing a fight |
 | `npm run check:model` | the fight model posting a confident number off missing data |
 | `npm run check:parlay` | a parlay priced with the vig left in, or a correlated ticket read as independent |
-| `npm run check:names` | a fighter renamed mid-card silently unscoring picks made under the old name |
+| `npm run check:names` | a fighter renamed mid-card silently unscoring picks made under the old name (incl. a respelling carried by `FIGHTER_ALIASES`) |
 | `npm run check:intel` | a curated fight-week link landing under the wrong card |
 | `npm run check:whatsnew` | the what's-new popup losing a backfill announcement or growing unbounded |
 | `npm run check:prefs` | a restored notification pref lighting the bell with nothing subscribed |
@@ -938,6 +938,23 @@ the phone buzzing. If the column can't be read, the push goes to everyone, as
 before. **A new push type needs a kind in `notifKind` and a row in
 `NOTIF_KINDS`**; `check:pushauth` fails when the two lists differ, and
 `check:prefs` drives the sheet in a browser.
+
+## A respelled fighter keeps the picks made under the old name
+
+`nmKey` folds case, accents, punctuation and suffixes, but not a changed
+letter: "Nicole Caliari" → "Nicolle Caliari" (UFC 333, the day before the
+card) left three players' picks matching no bout, shown unpicked and never
+scored, and the fight change alert stayed quiet because `looksLikeRename`
+reads it as a rename. Now `scrape.update_fighter_aliases` records any bout
+whose other corner is unchanged and whose name changed by that same rule in
+data.js's `FIGHTER_ALIASES` (`{old: new}`, only ever grows; a name still on
+the card is never aliased away), and `scoring.js`'s `nmKey` keys the old
+spelling as the new one, so the board, Belt, restore, reconcile, the Lab and
+the swap check all agree. The app and the Lab read the global; server kernels
+get it through `loadKernel` / `bundledKernel`'s `env.FIGHTER_ALIASES`
+(`setNameAliases`). The database's `pick_locks` still match exact lower-cased
+names, so an old-spelling row locks at the card's first bell (early, never
+late). `check:names` and `tests/test_fighter_aliases.py` hold it.
 
 ## Fight change alerts: a vanished bout tells exactly who picked it
 

@@ -38,7 +38,7 @@ export function engineInto(globalThis) {
   var KERNEL_BLOCKS = ["model"];
   var KERNEL_FNS = ["intelKey", "intelItemsFor"];
   var KERNEL_EXPORTS = [
-    "nmKey", "nmEq", "nmBout", "splitNick",
+    "nmKey", "nmEq", "nmBout", "setNameAliases", "splitNick",
     "dogPtsFor", "dogPtsForPick", "userPts", "locksOn", "isLockPick", "lockPtsFor",
     "pickPts", "scoreMethod", "_findFightResult", "_isMainCardPick", "_eventFinished",
     "_lbScoreUsers", "boardStandings", "standingsKeep", "computeBeltLineage", "isMainCardBout", "isEarlyPrelimBout", "boutSegmentKey", "segmentRunOrder", "boutDecided", "intelKey", "intelItemsFor",
@@ -66,7 +66,7 @@ export function engineInto(globalThis) {
   }
 
   // loadKernel(indexHtml, env, compile?, scoringSrc)
-  //   env: { EVENTS, RESULTS_ARCHIVE, FIGHTER_STATS, RANKINGS, USER_ID? }
+  //   env: { EVENTS, RESULTS_ARCHIVE, FIGHTER_STATS, RANKINGS, USER_ID?, FIGHTER_ALIASES? }
   //   compile(params, body) → function. Defaults to new Function (node, tests,
   //   FightBot); lab.html passes one that injects an inline <script> instead, so
   //   the page keeps a CSP without 'unsafe-eval'.
@@ -92,6 +92,9 @@ export function engineInto(globalThis) {
     KERNEL_EXPORTS.forEach(function (n) {
       if (k[n] === undefined) throw new Error("kernel: " + n + " missing after load — renamed in scoring.js / index.html?");
     });
+    // data.js's respellings ({old: new}): a browser kernel already sees the
+    // global, a server one (send-reminders, FightBot) only gets them here.
+    if (env.FIGHTER_ALIASES) k.setNameAliases(env.FIGHTER_ALIASES);
     return k;
   }
 
@@ -1262,17 +1265,41 @@ export function kernelFactory(EVENTS, RESULTS_ARCHIVE, FIGHTER_STATS, RANKINGS, 
 // even offline with an old copy cached. Bump it on ANY change to this file, in
 // all three places (index.html's script src + SCORING_EXPECT, sw.js's precache);
 // check:lab fails if they disagree.
-var SCORING_VERSION="2026-10-03-1";
+var SCORING_VERSION="2026-10-25-1";
 
 // fighter-names:start
 var _NM_SUFFIX_RE=/\b(?:jr|sr|ii|iii|iv)\b/g;
-function nmKey(n){
+function _nmFold(n){
   var s=String(n==null?"":n);
   if(s.normalize)s=s.normalize("NFD").replace(/[̀-ͯ]/g,"");
   return s.toLowerCase()
     .replace(/[.,'’`‘\-]/g," ")
     .replace(_NM_SUFFIX_RE," ")
     .replace(/\s+/g," ").trim();
+}
+// A respelling the fold can't see ("Nicole Caliari" → "Nicolle Caliari", UFC
+// 333, 2026-10-23) left every pick made under the old spelling matching no
+// bout: not scored, shown as unpicked, and no fight-change alert either, since
+// send-reminders reads a same-surname, same-initial change as a rename. The
+// scraper records each one it sees on a bout in data.js's FIGHTER_ALIASES
+// ({old: new}, only ever grows), and every name compare goes through nmKey, so
+// the old spelling keys as the new one everywhere at once. The app and the Lab
+// read the global; loadKernel hands the server's copy to setNameAliases.
+var _nmAlias=null;
+function setNameAliases(map){
+  var out={},n=0;
+  if(map&&typeof map==="object")Object.keys(map).forEach(function(k){
+    var a=_nmFold(k),b=_nmFold(map[k]);
+    if(a&&b&&a!==b){out[a]=b;n++;}
+  });
+  _nmAlias=n?out:null;
+}
+if(typeof FIGHTER_ALIASES!=="undefined")setNameAliases(FIGHTER_ALIASES);
+function nmKey(n){
+  var s=_nmFold(n);
+  // A chain (A → B, later B → C) resolves to its end; the hop cap stops a cycle.
+  for(var i=0;_nmAlias&&i<5&&Object.prototype.hasOwnProperty.call(_nmAlias,s);i++)s=_nmAlias[s];
+  return s;
 }
 // True when two fighter names refer to the same person. Blank never matches
 // blank — an undecided bout has winner:"" and must not read as "you were right".
@@ -2094,15 +2121,16 @@ function intelItemsFor(intel,ev){
   });
 }
 ;
-return {"nmKey":(typeof nmKey!=='undefined'?nmKey:undefined),"nmEq":(typeof nmEq!=='undefined'?nmEq:undefined),"nmBout":(typeof nmBout!=='undefined'?nmBout:undefined),"splitNick":(typeof splitNick!=='undefined'?splitNick:undefined),"dogPtsFor":(typeof dogPtsFor!=='undefined'?dogPtsFor:undefined),"dogPtsForPick":(typeof dogPtsForPick!=='undefined'?dogPtsForPick:undefined),"userPts":(typeof userPts!=='undefined'?userPts:undefined),"locksOn":(typeof locksOn!=='undefined'?locksOn:undefined),"isLockPick":(typeof isLockPick!=='undefined'?isLockPick:undefined),"lockPtsFor":(typeof lockPtsFor!=='undefined'?lockPtsFor:undefined),"pickPts":(typeof pickPts!=='undefined'?pickPts:undefined),"scoreMethod":(typeof scoreMethod!=='undefined'?scoreMethod:undefined),"_findFightResult":(typeof _findFightResult!=='undefined'?_findFightResult:undefined),"_isMainCardPick":(typeof _isMainCardPick!=='undefined'?_isMainCardPick:undefined),"_eventFinished":(typeof _eventFinished!=='undefined'?_eventFinished:undefined),"_lbScoreUsers":(typeof _lbScoreUsers!=='undefined'?_lbScoreUsers:undefined),"boardStandings":(typeof boardStandings!=='undefined'?boardStandings:undefined),"standingsKeep":(typeof standingsKeep!=='undefined'?standingsKeep:undefined),"computeBeltLineage":(typeof computeBeltLineage!=='undefined'?computeBeltLineage:undefined),"isMainCardBout":(typeof isMainCardBout!=='undefined'?isMainCardBout:undefined),"isEarlyPrelimBout":(typeof isEarlyPrelimBout!=='undefined'?isEarlyPrelimBout:undefined),"boutSegmentKey":(typeof boutSegmentKey!=='undefined'?boutSegmentKey:undefined),"segmentRunOrder":(typeof segmentRunOrder!=='undefined'?segmentRunOrder:undefined),"boutDecided":(typeof boutDecided!=='undefined'?boutDecided:undefined),"intelKey":(typeof intelKey!=='undefined'?intelKey:undefined),"intelItemsFor":(typeof intelItemsFor!=='undefined'?intelItemsFor:undefined),"modelProb":(typeof modelProb!=='undefined'?modelProb:undefined),"modelImplied":(typeof modelImplied!=='undefined'?modelImplied:undefined),"modelDeVig":(typeof modelDeVig!=='undefined'?modelDeVig:undefined),"modelEdge":(typeof modelEdge!=='undefined'?modelEdge:undefined),"DOG_TIERS":(typeof DOG_TIERS!=='undefined'?DOG_TIERS:undefined),"LOCKS_PER_CARD":(typeof LOCKS_PER_CARD!=='undefined'?LOCKS_PER_CARD:undefined),"LOCK_HIT":(typeof LOCK_HIT!=='undefined'?LOCK_HIT:undefined),"LOCK_MISS":(typeof LOCK_MISS!=='undefined'?LOCK_MISS:undefined),"LOCKS_START":(typeof LOCKS_START!=='undefined'?LOCKS_START:undefined)};
+return {"nmKey":(typeof nmKey!=='undefined'?nmKey:undefined),"nmEq":(typeof nmEq!=='undefined'?nmEq:undefined),"nmBout":(typeof nmBout!=='undefined'?nmBout:undefined),"setNameAliases":(typeof setNameAliases!=='undefined'?setNameAliases:undefined),"splitNick":(typeof splitNick!=='undefined'?splitNick:undefined),"dogPtsFor":(typeof dogPtsFor!=='undefined'?dogPtsFor:undefined),"dogPtsForPick":(typeof dogPtsForPick!=='undefined'?dogPtsForPick:undefined),"userPts":(typeof userPts!=='undefined'?userPts:undefined),"locksOn":(typeof locksOn!=='undefined'?locksOn:undefined),"isLockPick":(typeof isLockPick!=='undefined'?isLockPick:undefined),"lockPtsFor":(typeof lockPtsFor!=='undefined'?lockPtsFor:undefined),"pickPts":(typeof pickPts!=='undefined'?pickPts:undefined),"scoreMethod":(typeof scoreMethod!=='undefined'?scoreMethod:undefined),"_findFightResult":(typeof _findFightResult!=='undefined'?_findFightResult:undefined),"_isMainCardPick":(typeof _isMainCardPick!=='undefined'?_isMainCardPick:undefined),"_eventFinished":(typeof _eventFinished!=='undefined'?_eventFinished:undefined),"_lbScoreUsers":(typeof _lbScoreUsers!=='undefined'?_lbScoreUsers:undefined),"boardStandings":(typeof boardStandings!=='undefined'?boardStandings:undefined),"standingsKeep":(typeof standingsKeep!=='undefined'?standingsKeep:undefined),"computeBeltLineage":(typeof computeBeltLineage!=='undefined'?computeBeltLineage:undefined),"isMainCardBout":(typeof isMainCardBout!=='undefined'?isMainCardBout:undefined),"isEarlyPrelimBout":(typeof isEarlyPrelimBout!=='undefined'?isEarlyPrelimBout:undefined),"boutSegmentKey":(typeof boutSegmentKey!=='undefined'?boutSegmentKey:undefined),"segmentRunOrder":(typeof segmentRunOrder!=='undefined'?segmentRunOrder:undefined),"boutDecided":(typeof boutDecided!=='undefined'?boutDecided:undefined),"intelKey":(typeof intelKey!=='undefined'?intelKey:undefined),"intelItemsFor":(typeof intelItemsFor!=='undefined'?intelItemsFor:undefined),"modelProb":(typeof modelProb!=='undefined'?modelProb:undefined),"modelImplied":(typeof modelImplied!=='undefined'?modelImplied:undefined),"modelDeVig":(typeof modelDeVig!=='undefined'?modelDeVig:undefined),"modelEdge":(typeof modelEdge!=='undefined'?modelEdge:undefined),"DOG_TIERS":(typeof DOG_TIERS!=='undefined'?DOG_TIERS:undefined),"LOCKS_PER_CARD":(typeof LOCKS_PER_CARD!=='undefined'?LOCKS_PER_CARD:undefined),"LOCK_HIT":(typeof LOCK_HIT!=='undefined'?LOCK_HIT:undefined),"LOCK_MISS":(typeof LOCK_MISS!=='undefined'?LOCK_MISS:undefined),"LOCKS_START":(typeof LOCKS_START!=='undefined'?LOCKS_START:undefined)};
 }
 
-export const KERNEL_EXPORTS = ["nmKey","nmEq","nmBout","splitNick","dogPtsFor","dogPtsForPick","userPts","locksOn","isLockPick","lockPtsFor","pickPts","scoreMethod","_findFightResult","_isMainCardPick","_eventFinished","_lbScoreUsers","boardStandings","standingsKeep","computeBeltLineage","isMainCardBout","isEarlyPrelimBout","boutSegmentKey","segmentRunOrder","boutDecided","intelKey","intelItemsFor","modelProb","modelImplied","modelDeVig","modelEdge","DOG_TIERS","LOCKS_PER_CARD","LOCK_HIT","LOCK_MISS","LOCKS_START"];
+export const KERNEL_EXPORTS = ["nmKey","nmEq","nmBout","setNameAliases","splitNick","dogPtsFor","dogPtsForPick","userPts","locksOn","isLockPick","lockPtsFor","pickPts","scoreMethod","_findFightResult","_isMainCardPick","_eventFinished","_lbScoreUsers","boardStandings","standingsKeep","computeBeltLineage","isMainCardBout","isEarlyPrelimBout","boutSegmentKey","segmentRunOrder","boutDecided","intelKey","intelItemsFor","modelProb","modelImplied","modelDeVig","modelEdge","DOG_TIERS","LOCKS_PER_CARD","LOCK_HIT","LOCK_MISS","LOCKS_START"];
 // loadKernel's own call of the factory, with the same constants.
 export function bundledKernel(env) {
   env = env || {};
   const quiet = { log() {}, warn() {}, error() {} };
   const k = kernelFactory(env.EVENTS || [], env.RESULTS_ARCHIVE || {}, env.FIGHTER_STATS || {}, env.RANKINGS || {}, env.USER_ID || null, 5, 86400000, "all", "", null, null, quiet);
   for (const n of KERNEL_EXPORTS) if (k[n] === undefined) throw new Error("bundled kernel: " + n + " missing");
+  if (env.FIGHTER_ALIASES) k.setNameAliases(env.FIGHTER_ALIASES);
   return k;
 }

@@ -32,7 +32,7 @@
   var KERNEL_BLOCKS = ["model"];
   var KERNEL_FNS = ["intelKey", "intelItemsFor"];
   var KERNEL_EXPORTS = [
-    "nmKey", "nmEq", "nmBout", "splitNick",
+    "nmKey", "nmEq", "nmBout", "setNameAliases", "splitNick",
     "dogPtsFor", "dogPtsForPick", "userPts", "locksOn", "isLockPick", "lockPtsFor",
     "pickPts", "scoreMethod", "_findFightResult", "_isMainCardPick", "_eventFinished",
     "_lbScoreUsers", "boardStandings", "standingsKeep", "computeBeltLineage", "isMainCardBout", "isEarlyPrelimBout", "boutSegmentKey", "segmentRunOrder", "boutDecided", "intelKey", "intelItemsFor",
@@ -60,7 +60,7 @@
   }
 
   // loadKernel(indexHtml, env, compile?, scoringSrc)
-  //   env: { EVENTS, RESULTS_ARCHIVE, FIGHTER_STATS, RANKINGS, USER_ID? }
+  //   env: { EVENTS, RESULTS_ARCHIVE, FIGHTER_STATS, RANKINGS, USER_ID?, FIGHTER_ALIASES? }
   //   compile(params, body) → function. Defaults to new Function (node, tests,
   //   FightBot); lab.html passes one that injects an inline <script> instead, so
   //   the page keeps a CSP without 'unsafe-eval'.
@@ -86,6 +86,9 @@
     KERNEL_EXPORTS.forEach(function (n) {
       if (k[n] === undefined) throw new Error("kernel: " + n + " missing after load — renamed in scoring.js / index.html?");
     });
+    // data.js's respellings ({old: new}): a browser kernel already sees the
+    // global, a server one (send-reminders, FightBot) only gets them here.
+    if (env.FIGHTER_ALIASES) k.setNameAliases(env.FIGHTER_ALIASES);
     return k;
   }
 
