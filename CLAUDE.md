@@ -1334,6 +1334,7 @@ select m, ok from (values
   ('0020 founders and invites',    exists(select 1 from pg_proc where proname='claim_invite')),
   ('0021 card picked bouts',       exists(select 1 from pg_proc where proname='card_picked_bouts')),
   ('0022 apns devices',            to_regclass('public.apns_devices') is not null),
+  ('0023 challenge paid',          exists(select 1 from pg_proc where proname='mark_challenge_paid')),
   ('0024 room show picks',         exists(select 1 from pg_proc where proname='room_early_picks'))
 ) t(m, ok);
 ```
