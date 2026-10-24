@@ -250,7 +250,7 @@ setEvents([card1, card2]);
 {
   const lb = fn("loadLeaderboard");
   check("the leaderboard scores through boardStandings() (no private copy to drift)",
-    /boardStandings\(rows,/.test(lb) && !/var users=\{\};/.test(lb));
+    /boardStandings\((?:rows|_boardRows),/.test(lb) && !/var users=\{\};/.test(lb));
   const cr = fn("computeCardRecap");
   check("the recap's standings and ranks come from boardStandings()",
     (cr.match(/boardStandings\(/g) || []).length === 3 && !/_lbScoreUsers\(/.test(cr));

@@ -177,6 +177,28 @@ async function main() {
       return bad;
     });
     assert("every tab stays tappable with any tab's view open" + (covered.length ? " (covered: " + covered.slice(0, 4).join(", ") + ")" : ""), covered.length === 0);
+    // Rooms that show picks before they lock (0024): the owner gets the switch,
+    // a member sees which way it's set, and the merge adds only missing rows.
+    const showPicks = await page.evaluate(() => {
+      const keep = { rooms: window._rooms, for: window._roomsFor };
+      const mk = (owner, on) => ({ id: "r-" + owner, name: "Club", code: "ABCDEFGH12", owner_id: owner, show_picks: on, members: [window.USER_ID, "other"] });
+      try {
+        window._roomsFor = window.USER_ID;
+        window._rooms = [mk(window.USER_ID, false), mk("someone-else", true)];
+        const box = document.getElementById("roomList"), was = box.style.display;
+        window.renderRoomSheet();
+        const txt = box.textContent;
+        const merged = window._mergePickRows(
+          [{ user_id: "a", event_date: "d", f1: "Ann One", f2: "Bea Two", pick: "Ann One" }],
+          [{ user_id: "a", event_date: "d", f1: "Bea Two", f2: "Ann One", pick: "Bea Two" }, { user_id: "b", event_date: "d", f1: "Ann One", f2: "Bea Two", pick: "Ann One" }]);
+        box.innerHTML = ""; box.style.display = was;
+        return { owner: /👀 Show picks before lock/.test(txt), oneSwitch: (txt.match(/picks before lock|picks until lock/g) || []).length === 1,
+          member: /Members' picks show here before they lock/.test(txt) && /Picks stay hidden until each fight locks/.test(txt),
+          merge: merged.length === 2 && merged[0].pick === "Ann One" && merged[1].user_id === "b" };
+      } finally { window._rooms = keep.rooms; window._roomsFor = keep.for; }
+    });
+    assert("a room's owner (only) gets the show-picks switch, members see its state, and early rows only fill gaps",
+      showPicks.owner && showPicks.oneSwitch && showPicks.member && showPicks.merge);
     // A tapped roast lifts Ranks over the tab bar (.tap-front); a closed sheet
     // slid below it (the wheel) must not show in the bar's place.
     const peek = await page.evaluate(async () => {

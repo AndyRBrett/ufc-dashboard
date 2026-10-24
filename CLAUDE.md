@@ -1287,6 +1287,14 @@ miss counts against the same throttle. The columns change only through the
 RPCs. Opened from a link in iOS Safari, the app asks before joining there. Room names are other people's input: render them with
 `textContent`, never `innerHTML` (`check:rooms` holds that too).
 
+**A room can show picks before they lock** (`0024_room_show_picks.sql`, owner
+only, off by default). It never touches 0017's `picks_select`: the room's board
+asks `room_early_picks(room, date)`, which answers only a member of a room with
+`show_picks` on, with that room's members' UFC rows, and `loadLeaderboard`
+merges them into **that board's rows only** (`_mergePickRows`; challenges and
+the belt keep the rows everyone reads). The main board, the Lab and every other
+room still hide them. `check:rooms` runs it in PGlite. Applied by hand.
+
 ## The engine migration moves code, never numbers
 
 `index.html` is being moved onto the Pick Engine in stages (`docs/MIGRATION.md`).
@@ -1325,7 +1333,8 @@ select m, ok from (values
   ('0019 notification kinds',      exists(select 1 from information_schema.columns where table_name='user_prefs' and column_name='notif_off')),
   ('0020 founders and invites',    exists(select 1 from pg_proc where proname='claim_invite')),
   ('0021 card picked bouts',       exists(select 1 from pg_proc where proname='card_picked_bouts')),
-  ('0022 apns devices',            to_regclass('public.apns_devices') is not null)
+  ('0022 apns devices',            to_regclass('public.apns_devices') is not null),
+  ('0024 room show picks',         exists(select 1 from pg_proc where proname='room_early_picks'))
 ) t(m, ok);
 ```
 
