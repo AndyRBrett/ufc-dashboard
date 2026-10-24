@@ -149,7 +149,7 @@ export async function composeBrief(ev: Ev, js: string, sb: { url: string; key: s
     analyticsInto(root);
     const PE = root.PickEngine, FL = root.FightLab;
     const d: Record<string, any> = parseDataJs(js);
-    const env = { EVENTS: d.EVENTS || [], RESULTS_ARCHIVE: d.RESULTS_ARCHIVE || {}, FIGHTER_STATS: d.FIGHTER_STATS || {}, RANKINGS: d.RANKINGS || {} };
+    const env = { EVENTS: d.EVENTS || [], RESULTS_ARCHIVE: d.RESULTS_ARCHIVE || {}, FIGHTER_STATS: d.FIGHTER_STATS || {}, RANKINGS: d.RANKINGS || {}, FIGHTER_ALIASES: d.FIGHTER_ALIASES || {} };
     const kernel = bundledKernel(env);
     const engine = PE.createEngine({ adapters: [PE.ufcAdapter(env)], rules: { ufc: PE.ufcRules(kernel) } });
     const nev = engine.events("ufc").find((e: any) => e.date === ev.date && e.name === ev.name);
@@ -619,7 +619,10 @@ Deno.serve(async (req) => {
   // may stop the reminders or the brief above from having gone out.
   const swaps: unknown[] = [];
   try {
-    const k = bundledKernel({});
+    const dj: Record<string, any> = parseDataJs(js);
+    // With data.js's respellings, so a pick under a fighter's old spelling
+    // still finds its bout and isn't announced as a vanished one.
+    const k = bundledKernel({ FIGHTER_ALIASES: dj.FIGHTER_ALIASES || {} });
     // Each bout's lock as the database sees it: this run's rule (with the
     // remembered sightings), never later than the time already stored for it.
     // Recomputing without them could put a lock later than the row the
@@ -628,7 +631,7 @@ Deno.serve(async (req) => {
       const t = Date.parse(b.lock_at), stored = prior[e.date + "|" + b.a + "|" + b.b];
       return [b.a + "|" + b.b, typeof stored === "number" ? Math.min(t, stored) : t] as [string, number];
     }));
-    const cards: any[] = ((parseDataJs(js).EVENTS || []) as any[])
+    const cards: any[] = ((dj.EVENTS || []) as any[])
       .filter((e) => {
         // Watched until its LAST bout locks: one fight at a time, so the co-main
         // and main event stay pickable well after the main card's bell. Each

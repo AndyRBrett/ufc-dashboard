@@ -948,6 +948,107 @@ def extract_espn_ids(data):
             if isinstance(k, str) and isinstance(v, str) and v.isdigit()}
 
 
+# ---------------------------------------------------------------------------
+# Fighter respellings (FIGHTER_ALIASES)
+#
+# Picks are stored by fighter name, and the app's nmKey only folds case,
+# accents, punctuation and suffixes. A respelling beyond that ("Nicole
+# Caliari" → "Nicolle Caliari", UFC 333 the day before the card) left every
+# pick made under the old spelling matching no bout, and send-reminders sent
+# no fight-change alert because the change reads as a rename. So when a bout
+# comes back with its other corner unchanged and one name respelled (the same
+# test as send-reminders' looksLikeRename), the old spelling is recorded here
+# and the app keys it as the new one. The map only ever grows: old picks keep
+# the old spelling for good.
+# ---------------------------------------------------------------------------
+
+_NM_SUFFIX_RE = re.compile(r"\b(?:jr|sr|ii|iii|iv)\b")
+# Respellings seen before this map existed.
+_SEED_FIGHTER_ALIASES = {"Nicole Caliari": "Nicolle Caliari"}
+
+
+def _nm_fold(n):
+    """scoring.js's _nmFold: the fold every name compare in the app goes through."""
+    s = unicodedata.normalize("NFD", str(n or ""))
+    s = "".join(c for c in s if unicodedata.category(c) != "Mn").lower()
+    s = re.sub(r"[.,'\u2019`\u2018\-]", " ", s)
+    s = _NM_SUFFIX_RE.sub(" ", s)
+    return " ".join(s.split())
+
+
+def looks_like_rename(a, b):
+    """send-reminders' looksLikeRename: one name inside the other with two or
+    more tokens in common, or the same surname and first initial."""
+    ta, tb = _nm_fold(a).split(), _nm_fold(b).split()
+    if not ta or not tb:
+        return False
+    short, long_ = (ta, tb) if len(ta) <= len(tb) else (tb, ta)
+    if len(short) >= 2 and all(t in long_ for t in short):
+        return True
+    return len(ta) >= 2 and len(tb) >= 2 and ta[-1] == tb[-1] and ta[0][0] == tb[0][0]
+
+
+def extract_fighter_aliases(data):
+    """The FIGHTER_ALIASES map already in data.js ({} when absent or unreadable)."""
+    m = re.search(r"var FIGHTER_ALIASES=(\{.*?\});", data, re.DOTALL)
+    if not m:
+        return {}
+    try:
+        got = json.loads(m.group(1))
+    except ValueError:
+        return {}
+    return {k: v for k, v in got.items() if isinstance(k, str) and isinstance(v, str)}
+
+
+def update_fighter_aliases(aliases, old_cards, new_events):
+    """aliases plus every respelling between a card as data.js had it
+    (old_cards, _extract_existing_cards' shape) and as rebuilt (new_events).
+
+    Only a bout that vanished counts, matched to a new bout on the same date
+    whose other corner is the same fighter; a name still on the new card is
+    never aliased away, and neither is a real replacement (looks_like_rename).
+    """
+    out = dict(aliases or {})
+    # A seed whose target has since been respelled again is history, not a
+    # loop to put back.
+    for k, v in _SEED_FIGHTER_ALIASES.items():
+        if v not in out:
+            out.setdefault(k, v)
+    old_by_date = {}
+    for (_name, ev_date), fights in (old_cards or {}).items():
+        old_by_date.setdefault(ev_date, []).extend(fights)
+    for ev in new_events or []:
+        old = old_by_date.get(ev.get("date"))
+        if not old:
+            continue
+        new_pairs = []
+        on_card = set()
+        for f in ev.get("fights", []):
+            a, b = f["f1"]["name"], f["f2"]["name"]
+            new_pairs.append((a, b))
+            on_card.update((_nm_fold(a), _nm_fold(b)))
+        new_keys = {frozenset((_nm_fold(a), _nm_fold(b))) for a, b in new_pairs}
+        for of in old:
+            oa, ob = of["f1"]["name"], of["f2"]["name"]
+            if frozenset((_nm_fold(oa), _nm_fold(ob))) in new_keys:
+                continue
+            for na, nb in new_pairs:
+                for keep_o, gone, keep_n, came in ((oa, ob, na, nb), (ob, oa, na, nb),
+                                                   (oa, ob, nb, na), (ob, oa, nb, na)):
+                    if (_nm_fold(keep_o) == _nm_fold(keep_n)
+                            and _nm_fold(gone) != _nm_fold(came)
+                            and _nm_fold(gone) not in on_card
+                            and looks_like_rename(gone, came)):
+                        if out.get(gone) != came:
+                            print(f"  Respelled: {gone} -> {came}", file=sys.stderr)
+                        # The card's spelling is the end of every chain: a
+                        # change back (A → B → A) drops B's old entry rather
+                        # than leave a loop that keys A and B apart.
+                        out.pop(came, None)
+                        out[gone] = came
+    return out
+
+
 def _espn_headshot_exists(aid):
     try:
         r = requests.head(ESPN_HEADSHOT.format(aid), headers=WIKI_HDR, timeout=10,
@@ -4707,6 +4808,14 @@ def step_build_events(data, now):
             data, "RANKINGS",
             json.dumps(rankings, separators=(",", ":"), ensure_ascii=False),
         )
+    try:
+        aliases = update_fighter_aliases(extract_fighter_aliases(data), existing_cards, new_events)
+        data = set_js_var(
+            data, "FIGHTER_ALIASES",
+            json.dumps(aliases, separators=(",", ":"), ensure_ascii=False, sort_keys=True),
+        )
+    except Exception as e:      # a side map must never cost a data update
+        print(f"fighter aliases not recorded: {e}", file=sys.stderr)
     espn_ids = update_espn_ids(extract_espn_ids(data), new_events, now)
     data = set_js_var(
         data, "FIGHTER_ESPN",

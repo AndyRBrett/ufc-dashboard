@@ -26,17 +26,51 @@
 // even offline with an old copy cached. Bump it on ANY change to this file, in
 // all three places (index.html's script src + SCORING_EXPECT, sw.js's precache);
 // check:lab fails if they disagree.
-var SCORING_VERSION="2026-10-03-1";
+var SCORING_VERSION="2026-10-25-1";
 
 // fighter-names:start
 var _NM_SUFFIX_RE=/\b(?:jr|sr|ii|iii|iv)\b/g;
-function nmKey(n){
+function _nmFold(n){
   var s=String(n==null?"":n);
   if(s.normalize)s=s.normalize("NFD").replace(/[̀-ͯ]/g,"");
   return s.toLowerCase()
     .replace(/[.,'’`‘\-]/g," ")
     .replace(_NM_SUFFIX_RE," ")
     .replace(/\s+/g," ").trim();
+}
+// A respelling the fold can't see ("Nicole Caliari" → "Nicolle Caliari", UFC
+// 333, 2026-10-23) left every pick made under the old spelling matching no
+// bout: not scored, shown as unpicked, and no fight-change alert either, since
+// send-reminders reads a same-surname, same-initial change as a rename. The
+// scraper records each one it sees on a bout in data.js's FIGHTER_ALIASES
+// ({old: new}, only ever grows), and every name compare goes through nmKey, so
+// the old spelling keys as the new one everywhere at once. The app and the Lab
+// read the global; loadKernel hands the server's copy to setNameAliases.
+var _nmAlias=null;
+function setNameAliases(map){
+  var step={},out={},n=0;
+  if(map&&typeof map==="object")Object.keys(map).forEach(function(k){
+    var a=_nmFold(k),b=_nmFold(map[k]);
+    if(a&&b&&a!==b){step[a]=b;n++;}
+  });
+  // Resolved once, to each chain's end (A → B, later B → C: A keys as C). A
+  // loop (a spelling changed and changed back) resolves every member to the
+  // same one, its first in sort order, so the spellings never key apart.
+  Object.keys(step).forEach(function(a){
+    var seen=[a],s=a;
+    while(Object.prototype.hasOwnProperty.call(step,s)){
+      s=step[s];
+      if(seen.indexOf(s)>=0){s=seen.slice(seen.indexOf(s)).sort()[0];break;}
+      seen.push(s);
+    }
+    out[a]=s;
+  });
+  _nmAlias=n?out:null;
+}
+if(typeof FIGHTER_ALIASES!=="undefined")setNameAliases(FIGHTER_ALIASES);
+function nmKey(n){
+  var s=_nmFold(n);
+  return _nmAlias&&Object.prototype.hasOwnProperty.call(_nmAlias,s)?_nmAlias[s]:s;
 }
 // True when two fighter names refer to the same person. Blank never matches
 // blank — an undecided bout has winner:"" and must not read as "you were right".

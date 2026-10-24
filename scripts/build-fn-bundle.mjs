@@ -83,6 +83,7 @@ export function buildBundle() {
     "  const quiet = { log() {}, warn() {}, error() {} };",
     `  const k = kernelFactory(env.EVENTS || [], env.RESULTS_ARCHIVE || {}, env.FIGHTER_STATS || {}, env.RANKINGS || {}, env.USER_ID || null, ${tail.map((v) => JSON.stringify(v)).join(", ")}, quiet);`,
     "  for (const n of KERNEL_EXPORTS) if (k[n] === undefined) throw new Error(\"bundled kernel: \" + n + \" missing\");",
+    "  if (env.FIGHTER_ALIASES) k.setNameAliases(env.FIGHTER_ALIASES);",
     "  return k;",
     "}",
     "",
