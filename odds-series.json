@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T03:59:28Z",
+  "generated_at": "2026-10-24T04:00:49Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -16291,7 +16291,7 @@
           "f1": "Petr Yan",
           "f2": "Merab Dvalishvili",
           "lbl": "Co-Main",
-          "points": 29,
+          "points": 30,
           "series": [
             {
               "at": "2026-09-01T15:34:15Z",
@@ -16437,6 +16437,11 @@
               "at": "2026-10-23T22:00:50Z",
               "f1_odds": -145,
               "f2_odds": 120
+            },
+            {
+              "at": "2026-10-24T04:00:49Z",
+              "f1_odds": -147,
+              "f2_odds": 122
             }
           ],
           "open": {
@@ -16656,7 +16661,7 @@
           "f1": "Aaron Pico",
           "f2": "Losene Keita",
           "lbl": "Main Card",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -16742,6 +16747,11 @@
               "at": "2026-10-23T22:00:50Z",
               "f1_odds": -149,
               "f2_odds": 123
+            },
+            {
+              "at": "2026-10-24T04:00:49Z",
+              "f1_odds": -151,
+              "f2_odds": 125
             }
           ],
           "open": {
@@ -16951,7 +16961,7 @@
           "f1": "Abusupiyan Magomedov",
           "f2": "Cameron Rowston",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-14T20:50:41Z",
@@ -17012,6 +17022,11 @@
               "at": "2026-10-23T22:00:50Z",
               "f1_odds": -123,
               "f2_odds": 102
+            },
+            {
+              "at": "2026-10-24T04:00:49Z",
+              "f1_odds": -125,
+              "f2_odds": 104
             }
           ],
           "open": {
@@ -17316,7 +17331,7 @@
           "f1": "Kody Steele",
           "f2": "Noah Gugnon",
           "lbl": "Early Prelim",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-10-20T03:10:49Z",
@@ -17352,6 +17367,11 @@
               "at": "2026-10-23T19:35:41Z",
               "f1_odds": -158,
               "f2_odds": 131
+            },
+            {
+              "at": "2026-10-24T04:00:49Z",
+              "f1_odds": -160,
+              "f2_odds": 133
             }
           ],
           "open": {
@@ -17431,12 +17451,17 @@
           "f1": "Iasmin Lucindo",
           "f2": "Nicolle Caliari",
           "lbl": "Early Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-23T19:35:41Z",
               "f1_odds": -377,
               "f2_odds": 293
+            },
+            {
+              "at": "2026-10-24T04:00:49Z",
+              "f1_odds": -422,
+              "f2_odds": 320
             }
           ],
           "open": {
@@ -17763,7 +17788,7 @@
           "f1": "Kayla Harrison",
           "f2": "Amanda Nunes",
           "lbl": "Co-Main",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -17794,6 +17819,11 @@
               "at": "2026-10-12T12:35:55Z",
               "f1_odds": -204,
               "f2_odds": 163
+            },
+            {
+              "at": "2026-10-24T04:00:49Z",
+              "f1_odds": -207,
+              "f2_odds": 165
             }
           ],
           "open": {
@@ -19328,7 +19358,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Cameron Rowston",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -118,
         "close": null,
         "clv": null
@@ -21499,7 +21529,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Aaron Pico",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": -125,
         "close": null,
         "clv": null
@@ -23144,7 +23174,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Merab Dvalishvili",
         "side": "f1",
-        "points": 29,
+        "points": 30,
         "open": -171,
         "close": null,
         "clv": null
@@ -23155,7 +23185,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Petr Yan",
         "side": "f2",
-        "points": 29,
+        "points": 30,
         "open": 138,
         "close": null,
         "clv": null
@@ -23199,7 +23229,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Losene Keita",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": 105,
         "close": null,
         "clv": null
@@ -23232,7 +23262,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Abusupiyan Magomedov",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -102,
         "close": null,
         "clv": null
@@ -23331,7 +23361,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Noah Gugnon",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -158,
         "close": null,
         "clv": null
@@ -23342,7 +23372,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Kody Steele",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 133,
         "close": null,
         "clv": null
@@ -23362,7 +23392,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Nicolle Caliari",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -377,
         "close": null,
         "clv": null
@@ -23384,7 +23414,7 @@
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
         "opponent": "Iasmin Lucindo",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 293,
         "close": null,
         "clv": null
@@ -23516,7 +23546,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Amanda Nunes",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -201,
         "close": null,
         "clv": null
@@ -23527,7 +23557,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kayla Harrison",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 165,
         "close": null,
         "clv": null
