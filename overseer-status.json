@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T16:10:49Z",
+  "generated_at": "2026-10-24T16:16:10Z",
   "events_tracked": 10,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,17 +95,17 @@
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "ok",
-      "last_changed_at": "2026-10-24T15:16:07Z",
+      "last_changed_at": "2026-10-24T16:16:10Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
-      "line_movement": 6,
+      "line_movement": 7,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-24T13:10:41Z",
+      "last_changed_at": "2026-10-24T16:16:10Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 9,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-24T16:10:49Z",
+      "last_changed_at": "2026-10-24T16:16:10Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -135,7 +135,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-24T16:10:49Z",
+      "last_changed_at": "2026-10-24T16:16:10Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -185,6 +185,22 @@
       "f1_prob_shift": 10.7,
       "f2_prob_shift": -10.5,
       "priority": 504.0
+    },
+    {
+      "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
+      "f1": "Colby Thicknesse",
+      "f2": "Asaf Chopurov",
+      "f1_movement": -186,
+      "f2_movement": 248,
+      "magnitude": 248,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 120,
+      "low_confidence": false,
+      "wc": "Bantamweight",
+      "f1_prob_shift": 13.3,
+      "f2_prob_shift": -10.2,
+      "priority": 496.0
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
