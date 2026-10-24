@@ -293,14 +293,20 @@ function myIdentity(){
   try{if(!id)id=localStorage.getItem("ufc_uid");name=localStorage.getItem("ufc_name")||"";}catch(e){}
   return {id:id,name:name};
 }
+// Read as the signed-in player when the app's token is still good: since 0017
+// a pick is hidden from everyone but its owner until its bout locks, so an
+// anon read leaves your own picks on the upcoming card out ("0 of 14 picked").
+// A token the server refuses falls back to the anon key once.
 function fetchPicks(){
   var PAGE=1000,q="/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick,id&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc&promotion=eq.ufc";
-  function page(from,acc){
-    return fetch(SUPABASE_URL+q,{headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+SUPABASE_ANON,Range:from+"-"+(from+PAGE-1)}})
-      .then(function(r){if(!r.ok)throw new Error("picks HTTP "+r.status);return r.json();})
-      .then(function(rows){acc=acc.concat(Array.isArray(rows)?rows:[]);return rows.length<PAGE?acc:page(from+PAGE,acc);});
+  function page(from,acc,bearer){
+    return fetch(SUPABASE_URL+q,{headers:{apikey:SUPABASE_ANON,Authorization:"Bearer "+bearer,Range:from+"-"+(from+PAGE-1)}})
+      .then(function(r){if(!r.ok){var e=new Error("picks HTTP "+r.status);e.status=r.status;throw e;}return r.json();})
+      .then(function(rows){acc=acc.concat(Array.isArray(rows)?rows:[]);return rows.length<PAGE?acc:page(from+PAGE,acc,bearer);});
   }
-  return page(0,[]);
+  var tok=_labSessionToken();
+  if(!tok)return page(0,[],SUPABASE_ANON);
+  return page(0,[],tok).catch(function(e){if(e.status===401||e.status===403)return page(0,[],SUPABASE_ANON);throw e;});
 }
 function buildEngine(){
   var env={EVENTS:EVENTS,RESULTS_ARCHIVE:RESULTS_ARCHIVE,FIGHTER_STATS:FIGHTER_STATS,RANKINGS:RANKINGS,USER_ID:L.me};
