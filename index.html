@@ -7922,6 +7922,8 @@ var WHATS_NEW=[
    desc:"Open Trash Talk from the PFL, RIZIN or DWCS standings and the roast is about that board: who's on it, what they picked and how it went."}
   ,{id:"2026-11-05-quick-pick-form",emoji:"📈",title:"Recent form in Quick Pick",
    desc:"Quick Pick now shows each fighter's last three results under their record, the same W / L badges as the fight cards, so you can see who's on a run before you pick."}
+  ,{id:"2026-11-06-room-show-picks",emoji:"👀",title:"Rooms can show picks early",
+   desc:"A room’s owner can now tap 👀 Show picks before lock in 👥 Rooms. Inside that room, members see each other’s picks before each fight locks. Everywhere else, picks stay hidden until the fight locks, as before."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -10432,7 +10434,10 @@ var _roomsAt=0;           // when the roster was last fetched (board refreshes r
 var lbRoom=(function(){try{return localStorage.getItem("ufc_lb_room")||null;}catch(e){return null;}})();
 function _roomById(id){if(_roomsFor!==USER_ID)return null;for(var i=0;i<_rooms.length;i++)if(_rooms[i].id===id)return _rooms[i];return null;}
 function roomHas(r){var m=Object.create(null);r.members.forEach(function(u){m[u]=true;});return function(uid){return !!m[uid];};}
-function _roomSig(r){return r?r.members.slice().sort().join(","):"";}
+// What the board on screen depends on: the roster and, since 0024, whether the
+// room shows picks early (an owner flipping it on another phone must re-render
+// a member's board, or switched-off picks stay up until the next refresh).
+function _roomSig(r){return r?r.members.slice().sort().join(",")+"|"+(r.show_picks?1:0):"";}
 // The selected room, or null for Everyone. A room you've left, or that its
 // owner deleted, falls back to Everyone rather than an empty board.
 function _curRoom(){return lbRoom?_roomById(lbRoom):null;}
@@ -10498,14 +10503,19 @@ function roomsLoad(){
   return _authReady.then(function(){
     // Before migration 0018 the password columns don't exist: fall back to
     // the old select so rooms still load (just without passwords).
-    return _roomApi("/rest/v1/rooms?select=id,name,code,owner_id,pass,pass_expires,room_members(user_id)"+q).catch(function(e){
+    // Before 0024 there is no show_picks column, and before 0018 no password
+    // ones: fall back a step at a time so rooms still load without them.
+    return _roomApi("/rest/v1/rooms?select=id,name,code,owner_id,pass,pass_expires,show_picks,room_members(user_id)"+q).catch(function(e){
+      if(!/show_picks/i.test((e&&e.message)||""))throw e;
+      return _roomApi("/rest/v1/rooms?select=id,name,code,owner_id,pass,pass_expires,room_members(user_id)"+q);
+    }).catch(function(e){
       if(!/pass/i.test((e&&e.message)||""))throw e;
       return _roomApi("/rest/v1/rooms?select=id,name,code,owner_id,room_members(user_id)"+q);
     });
   }).then(function(rows){
     if(who!==USER_ID)return _rooms;   // signed into someone else meanwhile
     _rooms=(Array.isArray(rows)?rows:[]).map(function(r){
-      return {id:r.id,name:r.name,code:r.code,owner_id:r.owner_id,pass:r.pass||null,pass_expires:r.pass_expires||null,
+      return {id:r.id,name:r.name,code:r.code,owner_id:r.owner_id,pass:r.pass||null,pass_expires:r.pass_expires||null,show_picks:!!r.show_picks,
               members:(r.room_members||[]).map(function(m){return m.user_id;})};
     });
     _syncRoomBtn();
@@ -10621,6 +10631,32 @@ function endRoomPass(id){
     r.pass=null;r.pass_expires=null;renderRoomSheet();toast("Password ended");return true;
   }).catch(function(){toast("Couldn't end the password — try again");return false;});
 }
+// Owner only (the database says so too). The board on screen reloads if it is
+// this room's, so the picks appear or go back to 🙈 straight away.
+function setRoomShowPicks(id,on){
+  var r=_roomById(id);if(!r)return Promise.resolve(false);
+  return _roomRpc("set_room_show_picks",{p_room:id,p_on:!!on}).then(function(){
+    r.show_picks=!!on;renderRoomSheet();
+    toast(on?"Picks now show in "+r.name+" before they lock":"Picks in "+r.name+" stay hidden until they lock");
+    if(_curRoom()===r&&_lbPanelOpen())loadLeaderboard();
+    return true;
+  }).catch(function(){toast("Couldn't change that — try again");return false;});
+}
+// A show-picks room's members' rows for one card, unlocked ones included
+// (room_early_picks, 0024). Anything but a list reads as none: the board is
+// then exactly what it was.
+function _roomEarlyPicks(room,date){
+  if(!room||!room.show_picks||!date)return Promise.resolve([]);
+  return _roomApi("/rest/v1/rpc/room_early_picks",{method:"POST",body:{p_room:room.id,p_date:date}})
+    .then(function(a){return Array.isArray(a)?a:[];}).catch(function(){return [];});
+}
+// rows plus the ones it lacks from extra, one per player and bout.
+function _mergePickRows(rows,extra){
+  if(!extra||!extra.length)return rows;
+  var key=function(p){return p.user_id+"|"+p.event_date+"|"+[nmKey(p.f1),nmKey(p.f2)].sort().join("|");};
+  var have=Object.create(null);rows.forEach(function(p){have[key(p)]=true;});
+  return rows.concat(extra.filter(function(p){return !have[key(p)];}));
+}
 function _rmEl(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
 // Built with textContent throughout: room names are other people's input.
 function renderRoomSheet(){
@@ -10652,6 +10688,12 @@ function renderRoomSheet(){
     }else{
       var mp=_rmEl("button","room-act","🔑 Temp password");mp.onclick=function(){makeRoomPass(r.id);};
       acts.appendChild(mp);
+    }
+    // Picks before they lock (0024): the owner's call, and every member sees which.
+    wrap.appendChild(_rmEl("div","room-sub",r.show_picks?"👀 Members' picks show here before they lock":"🙈 Picks stay hidden until each fight locks"));
+    if(r.owner_id===USER_ID){
+      var sp2=_rmEl("button","room-act",r.show_picks?"🙈 Hide picks until lock":"👀 Show picks before lock");
+      sp2.onclick=function(){setRoomShowPicks(r.id,!r.show_picks);};acts.appendChild(sp2);
     }
     var lv=_rmEl("button","room-act room-act-danger",r.owner_id===USER_ID?"🗑️ Delete room":"🚪 Leave room");lv.onclick=function(){leaveRoom(r.id).then(renderRoomSheet);};
     acts.appendChild(lv);
@@ -11794,9 +11836,10 @@ function loadLeaderboard(isLive){
   var _nextEv0=_lbNextEvent(Date.now());
   Promise.all([
     _sbFetchAll("/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+PICKS_UFC),
-    _cardPickedBouts(_nextEv0?_nextEv0.date:null)
+    _cardPickedBouts(_nextEv0?_nextEv0.date:null),
+    typeof _roomEarlyPicks==="function"?_roomEarlyPicks(_curRoom(),_nextEv0?_nextEv0.date:null):[]
   ]).then(function(res){
-    var rows=res[0],_hidden=res[1]||[];
+    var rows=res[0],_hidden=res[1]||[],_early=res[2]||[];
     if(_gen!==_lbGen)return;          // a newer load (e.g. a sport switch) owns the board now
     if(!Array.isArray(rows)||(rows.length===0&&!_hidden.length)){
       body.innerHTML='<div class="lb-empty">No picks submitted yet.<br>Make some picks to appear here!</div>';
@@ -11828,7 +11871,10 @@ function loadLeaderboard(isLive){
     // Scope filter runs before the user object exists, so someone whose only
     // picks are prelims drops off the main-card board entirely rather than
     // appearing on it with a zero.
-    var sorted=boardStandings(rows,roomScope({date:lbMode==="current"?nextEv.date:null,mainCard:lbScope==="main"}));
+    // A show-picks room (0024) adds its members' unlocked picks for this card,
+    // for this board only: challenges and the belt keep the rows everyone reads.
+    var _boardRows=_room&&_room.show_picks&&typeof _mergePickRows==="function"?_mergePickRows(rows,_early):rows;
+    var sorted=boardStandings(_boardRows,roomScope({date:lbMode==="current"?nextEv.date:null,mainCard:lbScope==="main"}));
     // Players whose picks on this card are all still hidden (0017) go on the
     // board too, unscored, so a full card of picks doesn't read as nobody.
     // They score 0, and a missed 🔒 can leave someone below that, so re-sort by
@@ -12021,7 +12067,8 @@ function loadLeaderboard(isLive){
           // the same rule sitting a few hundred lines from the first.
           // Someone else's pick on a bout that hasn't locked never reaches this
           // device (0017): say so, rather than a "?" that reads as "didn't pick".
-          if(!u.isMe&&!fightLocked(nextEv,f)){
+          // A show-picks room (0024) reads them, so its chips show the pick.
+          if(!u.isMe&&!fightLocked(nextEv,f)&&!(_room&&_room.show_picks)){
             if(!isMainCardBout(f))return;
             var hc=document.createElement("span");hc.className="lb-pick-chip lbc-none";hc.title="Hidden until this fight locks";
             var hs=document.createElement("span");hs.textContent="🙈";hc.appendChild(hs);
