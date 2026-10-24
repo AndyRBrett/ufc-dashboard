@@ -379,7 +379,11 @@ else {
     const errs = [];
     page.on("pageerror", (e) => errs.push("Uncaught: " + e.message));
     page.on("console", (m) => { if (m.type() === "error") errs.push("Console: " + m.text()); });
-    await page.route(/supabase\.co/, (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(stub) }));
+    const picksAuth = [];
+    await page.route(/supabase\.co/, (route) => {
+      if (/\/rest\/v1\/picks/.test(route.request().url())) picksAuth.push(route.request().headers()["authorization"]);
+      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(stub) });
+    });
     // The ✍️ scouting report: stub the model's answer, record what was asked.
     const iqCalls = [];
     await page.route(/functions\/v1\/ai-breakdown/, (route) => {
@@ -523,6 +527,16 @@ else {
       await page.evaluate(() => { const k = "ufc_sb_session", keep = localStorage.getItem(k);
         localStorage.setItem(k, JSON.stringify({ access_token: "old", expires_at: Math.floor(Date.now() / 1000) + 30 }));
         const t = _labSessionToken(); localStorage.setItem(k, keep); return t === null && _labSessionToken() === "tok-andy"; }));
+    // Since 0017 a pick is hidden from all but its owner until it locks, so an
+    // anon read showed "You've picked 0 of 14" beside a fully picked card.
+    check("picks are read with the app's session token, so your own unlocked picks come back",
+      picksAuth.length > 0 && picksAuth[0] === "Bearer tok-andy");
+    check("...and a refused token falls back to the anon key instead of emptying the Lab",
+      await page.evaluate(async () => { const real = window.fetch, seen = [];
+        window.fetch = (u, o) => { seen.push(o.headers.Authorization);
+          return Promise.resolve(new Response(seen.length === 1 ? "{}" : "[]", { status: seen.length === 1 ? 401 : 200 })); };
+        try { const rows = await fetchPicks(); return Array.isArray(rows) && seen[0] === "Bearer tok-andy" && seen[1] === "Bearer " + SUPABASE_ANON; }
+        finally { window.fetch = real; } }));
     check("the device cap stops the 4th write-up before any network call", iqCalls.length === 3 && /scouts are off until tomorrow/.test(iqTxt2));
     check("lab page boots under its CSP with no uncaught or console errors", errs.length === 0 || (console.error(errs.join("\n")), false));
     await page.close();
