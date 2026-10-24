@@ -99,6 +99,8 @@ const b = r.briefs[0] || {};
 check("brief is keyed to the card date as type 'brief' (notif_log dedups it)", b.event_date === CARD && b.type === "brief");
 check("brief deep-links to the Fight Lab's Fight Week tab", b.url === "./lab.html#week");
 check("brief title names the day and the headliners", /^📰 Saturday Brief: /.test(b.title || "") && b.title.includes(card.split(":").pop().trim()));
+check("brief title carries the main-card start, where a lock screen can't cut it", / · 8pm ET$/.test(b.title || ""));
+check("...once: the body doesn't repeat it", !/Main card/.test(b.body || ""));
 check("brief is the rich one, built by the Lab's own code", r.json.brief && r.json.brief.rich === true);
 check("brief carries the group's most disputed fight", /Most disputed/.test(b.body || ""));
 check("brief leads with the line move, then the group's split", /^📉 [^\n]+\n🔥 /.test(b.body || ""));
@@ -120,6 +122,14 @@ check("no brief on Thursday", r.briefs.length === 0);
     globalThis.Date = RealDate;
     check("a thin card's brief still carries no per-user line", t.rich && !/You've picked/.test(t.body));
   } else check("fixture: a thin upcoming card exists for the per-user-line check", false);
+}
+
+{
+  const js = readFileSync(served("data.js"), "utf8");
+  const long = await mod.composeBrief({ name: "UFC 999: " + "Verylongname ".repeat(12).trim(), date: CARD, time: "21:00", prelimTime: "" }, js, null, NOW);
+  const tbd = await mod.composeBrief({ name: "UFC 998: A vs. B", date: CARD, time: "TBD", prelimTime: "" }, js, null, NOW);
+  check("a long headline is trimmed, never the start time", long.title.length <= 118 && / · 9pm ET$/.test(long.title));
+  check("a TBD start adds no time to the title", tbd.title === "📰 Saturday Brief: A vs. B");
 }
 
 // 2. It degrades to a plain teaser rather than sending nothing.
