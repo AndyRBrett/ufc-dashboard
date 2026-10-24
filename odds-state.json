@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-24T19:20:23.460283+00:00",
+  "last_fetch_at": "2026-10-24T23:06:05.585156+00:00",
   "last_status": 401,
-  "lines_digest": "9f45db36f9d1254908adef0db52a879526d91b73",
+  "lines_digest": "d6a1badc6482e2d8605f853900c8456bdb8aff91",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -143,18 +143,18 @@
   "markets_partial": {
     "2026-10-24": {
       "fighters": [
-        "kavanagh",
-        "temirov",
-        "yan",
-        "dvalishvili",
-        "volkanovski",
-        "evloev"
+        "silva",
+        "morales",
+        "weems",
+        "shaykhaev"
       ],
-      "listed": 3,
-      "priced": 3
+      "listed": 2,
+      "priced": 2
     },
     "2026-10-31": {
       "fighters": [
+        "lisboa",
+        "szabova",
         "osbourne",
         "durden",
         "marshall",
@@ -173,8 +173,8 @@
         "sezinando",
         "berggren"
       ],
-      "listed": 9,
-      "priced": 9
+      "listed": 10,
+      "priced": 10
     },
     "2026-11-15": {
       "fighters": [
@@ -233,6 +233,22 @@
       "listed": 8,
       "priced": 8
     },
+    "2027-01-30": {
+      "fighters": [
+        "prates",
+        "morales"
+      ],
+      "listed": 1,
+      "priced": 1
+    },
+    "2027-01-31": {
+      "fighters": [
+        "van",
+        "kape"
+      ],
+      "listed": 1,
+      "priced": 1
+    },
     "2027-04-24": {
       "fighters": [
         "makhachev",
@@ -242,13 +258,15 @@
       "listed": 2,
       "priced": 2
     },
-    "2027-06-30": {
+    "2027-06-26": {
       "fighters": [
-        "kape",
-        "van"
+        "volkanovski",
+        "silva",
+        "yan",
+        "o'malley"
       ],
-      "listed": 1,
-      "priced": 1
+      "listed": 2,
+      "priced": 2
     },
     "2027-07-01": {
       "fighters": [
@@ -266,6 +284,14 @@
       "listed": 1,
       "priced": 1
     },
+    "2027-07-24": {
+      "fighters": [
+        "yan",
+        "yadong"
+      ],
+      "listed": 1,
+      "priced": 1
+    },
     "2027-07-31": {
       "fighters": [
         "ankalaev",
@@ -274,6 +300,14 @@
       ],
       "listed": 2,
       "priced": 2
+    },
+    "2027-10-24": {
+      "fighters": [
+        "gaethje",
+        "volkanovski"
+      ],
+      "listed": 1,
+      "priced": 1
     },
     "2028-07-30": {
       "fighters": [
@@ -284,25 +318,25 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-24T19:20:23.460283+00:00",
+  "markets_partial_at": "2026-10-24T23:06:05.585156+00:00",
   "next_event_days_out": 0,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-24T19:20:23.460283+00:00",
+      "last_fetch_at": "2026-10-24T23:06:05.585156+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
       "requests_remaining": 0
     },
     "the-odds-api-backup": {
-      "bouts": 38,
-      "last_fetch_at": "2026-10-24T19:20:23.460283+00:00",
-      "last_ok_at": "2026-10-24T19:20:23.460283+00:00",
+      "bouts": 42,
+      "last_fetch_at": "2026-10-24T23:06:05.585156+00:00",
+      "last_ok_at": "2026-10-24T23:06:05.585156+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 279
+      "requests_remaining": 278
     }
   },
   "requests_remaining": 0

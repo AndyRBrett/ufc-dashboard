@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T22:19:14Z",
+  "generated_at": "2026-10-24T23:06:24Z",
   "summary": {
     "events": 10,
     "block": 0,
@@ -16,7 +16,7 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Moicano vs. Nolan (7d out): 2 of 9 bouts have no odds",
+      "message": "UFC Fight Night: Moicano vs. Nolan (7d out): 1 of 9 bouts have no odds",
       "event": "UFC Fight Night: Moicano vs. Nolan",
       "date": "2026-10-31",
       "days_out": 7

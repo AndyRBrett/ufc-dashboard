@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-24T22:19:14Z",
+  "generated_at": "2026-10-24T23:06:24Z",
   "events_tracked": 10,
-  "stale_events": 1,
+  "stale_events": 0,
   "parse_failure_events": 0,
   "awaiting_card_events": 1,
   "odds_unavailable_events": 1,
@@ -100,22 +100,22 @@
       "has_data": true,
       "bout_count": 14,
       "line_movement": 5,
-      "odds_market_priced": true
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-24T19:20:39Z",
+      "last_changed_at": "2026-10-24T23:06:24Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 9,
-      "line_movement": -4,
+      "line_movement": -1,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-24T22:19:14Z",
+      "last_changed_at": "2026-10-24T23:06:24Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -135,7 +135,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-24T22:19:14Z",
+      "last_changed_at": "2026-10-24T23:06:24Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -145,8 +145,8 @@
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
       "status": "ok",
-      "last_changed_at": "2026-10-22T00:05:38Z",
-      "is_stale": true,
+      "last_changed_at": "2026-10-24T23:06:24Z",
+      "is_stale": false,
       "has_data": true,
       "bout_count": 5,
       "line_movement": 11,
@@ -473,6 +473,22 @@
       "f1_prob_shift": -4.0,
       "f2_prob_shift": 5.0,
       "priority": 60.0
+    },
+    {
+      "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
+      "f1": "Sergei Pavlovich",
+      "f2": "Alex Pereira",
+      "f1_movement": -50,
+      "f2_movement": 36,
+      "magnitude": 50,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 50,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": 5.9,
+      "f2_prob_shift": -5.4,
+      "priority": 50.0
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
