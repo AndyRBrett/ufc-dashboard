@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T07:00:43Z",
+  "generated_at": "2026-10-24T07:05:40Z",
   "events_tracked": 10,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "status": "ok",
-      "last_changed_at": "2026-10-24T04:00:49Z",
+      "last_changed_at": "2026-10-24T07:05:40Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-24T07:00:43Z",
+      "last_changed_at": "2026-10-24T07:05:40Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -135,7 +135,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-24T07:00:43Z",
+      "last_changed_at": "2026-10-24T07:05:40Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -185,6 +185,22 @@
       "f1_prob_shift": 11.4,
       "f2_prob_shift": -11.1,
       "priority": 512.0
+    },
+    {
+      "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
+      "f1": "Bolaji Oki",
+      "f2": "Daniel Santos",
+      "f1_movement": -213,
+      "f2_movement": 14,
+      "magnitude": 213,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 120,
+      "low_confidence": false,
+      "wc": "Featherweight",
+      "f1_prob_shift": 3.1,
+      "f2_prob_shift": -2.9,
+      "priority": 426.0
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
@@ -249,6 +265,22 @@
       "f1_prob_shift": 14.8,
       "f2_prob_shift": -14.5,
       "priority": 276.0
+    },
+    {
+      "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
+      "f1": "Nikita Krylov",
+      "f2": "Abdul-Rakhman Yakhyaev",
+      "f1_movement": 58,
+      "f2_movement": -125,
+      "magnitude": 125,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 120,
+      "low_confidence": false,
+      "wc": "Light Heavyweight",
+      "f1_prob_shift": -2.5,
+      "f2_prob_shift": 3.4,
+      "priority": 250.0
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
