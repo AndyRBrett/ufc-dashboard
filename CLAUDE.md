@@ -1325,7 +1325,8 @@ select m, ok from (values
   ('0019 notification kinds',      exists(select 1 from information_schema.columns where table_name='user_prefs' and column_name='notif_off')),
   ('0020 founders and invites',    exists(select 1 from pg_proc where proname='claim_invite')),
   ('0021 card picked bouts',       exists(select 1 from pg_proc where proname='card_picked_bouts')),
-  ('0022 apns devices',            to_regclass('public.apns_devices') is not null)
+  ('0022 apns devices',            to_regclass('public.apns_devices') is not null),
+  ('0023 challenge paid',          exists(select 1 from pg_proc where proname='mark_challenge_paid'))
 ) t(m, ok);
 ```
 

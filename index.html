@@ -522,6 +522,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 .lb-trash-persona-empty{font-size:12px;color:var(--muted);text-align:center;padding:14px 0}
 .lb-wheel-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--card2);border-top:2px solid var(--gold);border-radius:16px 16px 0 0;padding:20px 16px 28px;transform:translateY(100%);transition:transform .3s ease;z-index:10}
 .lb-wheel-sheet.open{transform:translateY(0)}
+.chal-row-paid{font-size:13px;font-weight:600;color:var(--green);margin-top:4px}
 /* A closed sheet is slid below Ranks, not removed, and Ranks stops above the tab
    bar: lifted over it (.tap-front, a tapped roast) the closed wheel's header
    showed in the bar's place under an open roast. Hidden once it has slid away;
@@ -8716,6 +8717,7 @@ function drawWheel(angle){
 }
 function openWheelSheet(){
   closeTrashSheet();
+  _wheelPayFor=null;_wheelSession++;   // the plain Wheel button pays nothing; Pay up sets it after this
   var sheet=document.getElementById("wheelSheet");
   document.getElementById("wheelResult").className="lb-wheel-result";
   document.getElementById("wheelResult").textContent="";
@@ -8727,7 +8729,7 @@ function openWheelSheet(){
 }
 function closeWheelSheet(){
   document.getElementById("wheelSheet").classList.remove("open");
-  _wheelSpinning=false;
+  _wheelSpinning=false;_wheelPayFor=null;_wheelSession++;
 }
 // Toggle between the spin view and the manage (edit) view inside the wheel sheet.
 function showWheelView(view){
@@ -8816,6 +8818,7 @@ function spinWheel(){
   var segs=activeSegments();
   if(segs.length<2)return;
   _wheelSpinning=true;
+  var payFor=_wheelPayFor,session=_wheelSession;
   var btn=document.getElementById("wheelSpinBtn");btn.disabled=true;
   document.getElementById("wheelResult").className="lb-wheel-result";
   var n=segs.length,arc=Math.PI*2/n;
@@ -8842,6 +8845,7 @@ function spinWheel(){
       res.textContent=seg.emoji+" "+seg.label;
       res.className="lb-wheel-result show";
       btn.disabled=false;btn.dataset.spun="1";btn.textContent="Spin Again 🎡";
+      if(payFor&&session===_wheelSession&&_wheelPayFor===payFor){_wheelPayFor=null;_markChalPaid(payFor,seg.emoji+" "+seg.label);}
     }
   }
   requestAnimationFrame(step);
@@ -12529,7 +12533,9 @@ function renderChallengeInbox(){
     var sub=document.createElement("div");sub.className="chal-row-sub";
     sub.textContent=_chalFightLbl(c)+" · "+(c.event_name||"").replace("UFC Fight Night: ","")+(r.how?" · "+r.how:"");
     row.appendChild(sub);
+    var paid=_chalPaid(c);
     var stake=document.createElement("div");stake.className="chal-row-stake";stake.textContent="💰 "+c.stake;row.appendChild(stake);
+    if(paid){var pd=document.createElement("div");pd.className="chal-row-paid";pd.textContent="✅ Paid"+(paid.spin?" · "+paid.spin:"");row.appendChild(pd);}
     if(incoming&&c.challenger_id&&c.challenger_id!==USER_ID)row.appendChild(safetyActions({kind:"challenge",name:rival,uids:[c.challenger_id],content:_chalFightLbl(c)+" — "+c.stake}));
     if(r.kind==="pending"&&incoming&&c.target_id===USER_ID){
       var acts=document.createElement("div");acts.className="chal-row-actions";
@@ -12542,14 +12548,38 @@ function renderChallengeInbox(){
       (function(ch,a,d){a.onclick=function(){respondChallenge(ch,true,a,d);};d.onclick=function(){respondChallenge(ch,false,a,d);};})(c,acc,dec);
       acts.appendChild(acc);acts.appendChild(dec);row.appendChild(acts);
     }
-    if(r.kind==="decided"&&r.loser&&_lbBaseName(r.loser)===_lbBaseName(userName)&&/wheel|spin/i.test(c.stake)){
+    if(!paid&&r.kind==="decided"&&r.loser&&_lbBaseName(r.loser)===_lbBaseName(userName)&&/wheel|spin/i.test(c.stake)){
       var acts2=document.createElement("div");acts2.className="chal-row-actions";
       var spin=document.createElement("button");spin.className="chal-act-btn chal-act-accept";spin.textContent="Pay up — spin now 🎡";
-      spin.onclick=function(){closeChalSheet();openWheelSheet();};
+      (function(cid){spin.onclick=function(){closeChalSheet();openWheelSheet();_wheelPayFor=cid;};})(c.id);
       acts2.appendChild(spin);row.appendChild(acts2);
     }
     list.appendChild(row);
   });
+}
+// Paying a stake. "Pay up" opens the wheel for one challenge (_wheelPayFor);
+// the spin it lands on marks that challenge paid (0023: paid_at / paid_spin,
+// through mark_challenge_paid, so the winner sees it too). Kept on this device
+// at once as well (ufc_chal_paid), so a database without 0023 yet, or a failed
+// call, still shows the bet settled here instead of offering Pay up again.
+var _wheelPayFor=null;
+// Bumped whenever the wheel opens or closes: a spin pays only the challenge
+// it started for, and only if its wheel is still the one on screen (Codex on
+// #326: close mid-spin, tap Pay up on another bet, and the old spin paid it).
+var _wheelSession=0;
+function _chalPaidLocal(){try{return JSON.parse(localStorage.getItem("ufc_chal_paid")||"{}")||{};}catch(e){return {};}}
+function _chalPaid(c){
+  if(c.paid_at)return {spin:c.paid_spin||""};
+  var l=_chalPaidLocal()[c.id];
+  return l!==undefined?{spin:l}:null;
+}
+function _markChalPaid(id,spin){
+  var l=_chalPaidLocal();l[id]=spin;
+  try{localStorage.setItem("ufc_chal_paid",JSON.stringify(l));}catch(e){}
+  toast("Paid up: challenge settled ✅");
+  fetch(SUPABASE_URL+"/rest/v1/rpc/mark_challenge_paid",{method:"POST",headers:_sbHeaders(),body:JSON.stringify({p_id:id,p_spin:spin})})
+    .then(function(r){if(r.ok&&typeof fetchChallenges==="function")fetchChallenges();})
+    .catch(function(){});
 }
 // Challenge id -> "accept" | "decline" while its response is on its way.
 var _chalResponding={};
