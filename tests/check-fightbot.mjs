@@ -96,8 +96,17 @@ check("a legacy nickname without an emoji resolves by its whole name", !adam.isE
   check("find_underdogs returns only dogs at or beyond the price", !dogs.isError && dogs.data.underdogs.every((u) => Number(u.odds) >= 150));
   const brief = await call("fight_week_brief", { player: "Andy" });
   check("fight_week_brief returns headlines", !brief.isError && brief.data.headlines && brief.data.headlines.length > 0);
-  const why = await call("why_did_my_pick_lose", { player: "Andy" });
-  check("why_did_my_pick_lose explains each loss on the latest card", !why.isError && why.data.losses.length > 0 && why.data.losses.every((l) => l.winner && l.you_picked !== l.winner));
+  // A card Andy's fixture picks lost on, named explicitly: the default ("the
+  // most recent card with results") is whatever data.js holds right now, and
+  // mid-card that is tonight's with one or two results, where Andy may not
+  // have lost yet. Reading it failed every Pages deploy during UFC 333.
+  const lostOn = d.EVENTS.filter((e) => e.fights.some((f, i) => f.winner && f.winner !== (i % 2 ? f.f1.n : f.f2.n)))
+    .map((e) => e.date).sort().pop();
+  const latest = await call("why_did_my_pick_lose", { player: "Andy" });
+  check("why_did_my_pick_lose defaults to the latest card with results without erroring", !latest.isError && Array.isArray(latest.data.losses));
+  const why = await call("why_did_my_pick_lose", { player: "Andy", date: lostOn });
+  check("why_did_my_pick_lose explains each loss on a card", !!lostOn && !why.isError && why.data.date === lostOn &&
+    why.data.losses.length > 0 && why.data.losses.every((l) => l.winner && l.you_picked !== l.winner));
 check("every loss says whether its analysis is pre-fight or retrospective", why.data.losses.every((l) => /^(pre-fight|retrospective)/.test(l.analysis_basis)));
 // The price is the one at the pick: re-derive it from the engine for each loss.
 {
