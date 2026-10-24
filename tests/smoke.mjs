@@ -194,11 +194,12 @@ async function main() {
         box.innerHTML = ""; box.style.display = was;
         return { owner: /👀 Show picks before lock/.test(txt), oneSwitch: (txt.match(/picks before lock|picks until lock/g) || []).length === 1,
           member: /Members' picks show here before they lock/.test(txt) && /Picks stay hidden until each fight locks/.test(txt),
-          merge: merged.length === 2 && merged[0].pick === "Ann One" && merged[1].user_id === "b" };
+          merge: merged.length === 2 && merged[0].pick === "Ann One" && merged[1].user_id === "b",
+          sig: window._roomSig(mk("x", true)) !== window._roomSig(mk("x", false)) };
       } finally { window._rooms = keep.rooms; window._roomsFor = keep.for; }
     });
-    assert("a room's owner (only) gets the show-picks switch, members see its state, and early rows only fill gaps",
-      showPicks.owner && showPicks.oneSwitch && showPicks.member && showPicks.merge);
+    assert("a room's owner (only) gets the show-picks switch, members see its state, early rows only fill gaps, and a flip re-renders the board",
+      showPicks.owner && showPicks.oneSwitch && showPicks.member && showPicks.merge && showPicks.sig);
     // A tapped roast lifts Ranks over the tab bar (.tap-front); a closed sheet
     // slid below it (the wheel) must not show in the bar's place.
     const peek = await page.evaluate(async () => {

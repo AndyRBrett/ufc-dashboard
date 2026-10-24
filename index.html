@@ -10434,7 +10434,10 @@ var _roomsAt=0;           // when the roster was last fetched (board refreshes r
 var lbRoom=(function(){try{return localStorage.getItem("ufc_lb_room")||null;}catch(e){return null;}})();
 function _roomById(id){if(_roomsFor!==USER_ID)return null;for(var i=0;i<_rooms.length;i++)if(_rooms[i].id===id)return _rooms[i];return null;}
 function roomHas(r){var m=Object.create(null);r.members.forEach(function(u){m[u]=true;});return function(uid){return !!m[uid];};}
-function _roomSig(r){return r?r.members.slice().sort().join(","):"";}
+// What the board on screen depends on: the roster and, since 0024, whether the
+// room shows picks early (an owner flipping it on another phone must re-render
+// a member's board, or switched-off picks stay up until the next refresh).
+function _roomSig(r){return r?r.members.slice().sort().join(",")+"|"+(r.show_picks?1:0):"";}
 // The selected room, or null for Everyone. A room you've left, or that its
 // owner deleted, falls back to Everyone rather than an empty board.
 function _curRoom(){return lbRoom?_roomById(lbRoom):null;}
