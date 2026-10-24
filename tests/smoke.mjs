@@ -177,6 +177,40 @@ async function main() {
       return bad;
     });
     assert("every tab stays tappable with any tab's view open" + (covered.length ? " (covered: " + covered.slice(0, 4).join(", ") + ")" : ""), covered.length === 0);
+    // A tapped roast lifts Ranks over the tab bar (.tap-front); a closed sheet
+    // slid below it (the wheel) must not show in the bar's place.
+    const peek = await page.evaluate(async () => {
+      window.goTab("league");
+      await new Promise((r) => setTimeout(r, 400));
+      const p = document.getElementById("lbPanel"), t = document.getElementById("trashSheet");
+      p.classList.add("tap-front"); t.classList.add("open");
+      await new Promise((r) => setTimeout(r, 450));
+      const hidden = ["wheelSheet", "chalSheet"].every((id) => getComputedStyle(document.getElementById(id)).visibility === "hidden");
+      t.classList.remove("open"); p.classList.remove("tap-front"); window.goTab("cards");
+      await new Promise((r) => setTimeout(r, 300));
+      return hidden;
+    });
+    assert("closed Ranks sheets (wheel, challenges) are hidden, not peeking under an open roast", peek);
+    // "On the line" with a method picked: your fighter's win splits into "by
+    // <method>" (+0.5 for everyone who called it) and "other way" (+1 only).
+    const stakes = await page.evaluate(() => {
+      const keep = { ev: window.fnEv, lb: window._lbSorted, by: window._fnPicksByFight };
+      const f = { lbl: "Prelim", f1: { n: "Ann One" }, f2: { n: "Bea Two" }, odds: { f1: -125, f2: 104 }, winner: "", state: "pre" };
+      window.fnEv = { date: "2099-01-02", name: "Test", fights: [f] };
+      const k = window.pk(window.fnEv, f), kp = window.preds[k], km = window.preds_method[k];
+      window.preds[k] = "Ann One"; window.preds_method[k] = "Dec";
+      const u = (id, nick, me, methods) => ({ user_id: id, nickname: nick, isMe: me, correct: 5, methods, fotn: 0, dogPts: 0, lockPts: 0, picks: [] });
+      window._lbSorted = [u("x", "👑 Xa", false, 1), u("me", "🥋 Me", true, 0)];
+      window._fnPicksByFight = { [k]: { f1: [{ user_id: "me", method: "Dec" }, { user_id: "x", method: "KO/TKO" }], f2: [] } };
+      window.fnRenderStakes(f);
+      const rows = [...document.querySelectorAll("#fnl-stakes .fnl-stake-row")].map((r) => [...r.children].map((c) => c.textContent.trim()).join("|"));
+      window.fnEv = keep.ev; window._lbSorted = keep.lb; window._fnPicksByFight = keep.by;
+      if (kp === undefined) delete window.preds[k]; else window.preds[k] = kp;
+      if (km === undefined) delete window.preds_method[k]; else window.preds_method[k] = km;
+      return rows;
+    });
+    assert("On the line splits your fighter's win by your method (+1.5, 1st) and other way (+1, 2nd)" + (stakes.length ? " (" + stakes.join(" / ") + ")" : ""),
+      stakes.length === 3 && /by Dec\|\+1\.5\|1st/.test(stakes[0]) && /other way\|\+1\|2nd/.test(stakes[1]) && /wins\|—\|2nd/.test(stakes[2]));
     // The header title sits between the avatar and the search button: in every
     // theme, at a 375px phone, it must fit between them. Silver's script title
     // must stay mixed case (the shared .logo-text is uppercase for Bebas/Barlow).
