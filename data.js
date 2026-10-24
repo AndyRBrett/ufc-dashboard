@@ -116,7 +116,7 @@ var EVENTS=[
     prelimTime:"12:00",
     earlyPrelimTime:"10:00",
     fights:[
-      {lbl:"Main Event",wc:"Featherweight",title:true,rematch:false,odds:{f1:-110,f2:-110},winner:"Alexander Volkanovski",method:"Submission",round:1,state:"post",f1:{n:"Alexander Volkanovski",r:"28-4-0",rk:"C",s:null},f2:{n:"Movsar Evloev",r:"20-0-0",rk:"",s:null}},
+      {lbl:"Main Event",wc:"Featherweight",title:true,rematch:false,odds:{f1:-110,f2:-110},winner:"Alexander Volkanovski",method:"KO/TKO",round:2,state:"post",f1:{n:"Alexander Volkanovski",r:"28-4-0",rk:"C",s:null},f2:{n:"Movsar Evloev",r:"20-0-0",rk:"",s:null}},
       {lbl:"Co-Main",wc:"Bantamweight",title:true,rematch:true,odds:{f1:-149,f2:124},winner:"Petr Yan",method:"Decision (Unanimous)",round:5,state:"post",f1:{n:"Petr Yan",r:"20-5-0",rk:"C",s:null},f2:{n:"Merab Dvalishvili",r:"21-5-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Flyweight",title:false,rematch:false,odds:{f1:-115,f2:-108},winner:"Lone'er Kavanagh",method:"KO/TKO",round:1,state:"post",f1:{n:"Lone'er Kavanagh",r:"10-2-0",rk:"",s:null},f2:{n:"Ramazan Temirov",r:"20-3-0",rk:"",s:null}},
       {lbl:"Main Card",wc:"Heavyweight",title:false,rematch:false,odds:{f1:-127,f2:106},winner:"Alexander Volkov",method:"Decision (Unanimous)",round:3,state:"post",f1:{n:"Alexander Volkov",r:"40-11-0",rk:"",s:null},f2:{n:"Rizvan Kuniev",r:"14-3-1",rk:"",s:null}},
