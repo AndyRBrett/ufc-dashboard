@@ -631,6 +631,12 @@ body[data-theme="seasonal"] .logo-text{font-size:22px}
 /* Room for the tab bar under the full-screen views it sits over. */
 .lb-panel{bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom,0px))!important}
 .fn-mode{bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom,0px))!important}
+/* The Picks and FightBot tabs open as modals (370 / 500), and their backdrop
+   covered the whole bar: a tap on another tab landed on it, closed the sheet
+   at best and never switched, so the bar read as frozen (UFC 333). They stop
+   above it like the two views above, and the box fits what's left. */
+#picksSheet,#botModal{bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom,0px))}
+#picksSheet .modal,#botModal .modal{max-height:min(85vh,100%)}
 .theme-swatch{width:16px;height:16px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0}
 .theme-item .theme-check,#notifBell .theme-check,#liveResBtn .theme-check{display:none;margin-left:auto;color:var(--gold);font-size:12px}
 .theme-item.active .theme-check,#notifBell.bell-active .theme-check,#liveResBtn.bell-active .theme-check{display:block}

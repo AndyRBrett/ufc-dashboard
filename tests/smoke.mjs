@@ -159,6 +159,24 @@ async function main() {
       return !!hit && hit.id === "wn-gotit-btn";
     });
     assert("What's New's Got it is tappable above the tab bar on a phone", wnTap);
+    // With any tab's view open, every tab button is still what a tap at its
+    // centre lands on. The Picks and FightBot backdrops once covered the whole
+    // bar, so taps closed the sheet at best and the bar read as frozen.
+    const covered = await page.evaluate(async () => {
+      const bad = [];
+      for (const open of ["picks", "live", "league", "bot"]) {
+        window.goTab(open);
+        await new Promise((r) => setTimeout(r, 400));
+        document.querySelectorAll("#tabBar .tab-btn").forEach((b) => {
+          const r = b.getBoundingClientRect(), hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          if (!hit || hit.closest(".tab-btn") !== b) bad.push(open + "→" + b.dataset.tab + " (" + (hit ? hit.id || hit.className : "none") + ")");
+        });
+        window.goTab("cards");
+        await new Promise((r) => setTimeout(r, 300));
+      }
+      return bad;
+    });
+    assert("every tab stays tappable with any tab's view open" + (covered.length ? " (covered: " + covered.slice(0, 4).join(", ") + ")" : ""), covered.length === 0);
     // The header title sits between the avatar and the search button: in every
     // theme, at a 375px phone, it must fit between them. Silver's script title
     // must stay mixed case (the shared .logo-text is uppercase for Bebas/Barlow).
