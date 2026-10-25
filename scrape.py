@@ -4084,6 +4084,78 @@ def inject_results(js, results):
             break
     return js, count
 
+
+# Bouts whose result was corrected by hand and must never be re-read from
+# Wikipedia, as (fighter, fighter) in either order. correct_results would
+# otherwise put a wrong reading straight back. UFC 333's main event went in as
+# Submission R1 from an early edit; every outlet has TKO (punches) 4:54 R2.
+_RESULT_PINS = {
+    ("Alexander Volkanovski", "Movsar Evloev"),
+}
+
+
+def _result_pinned(f1n, f2n):
+    return any(
+        (names_match(f1n, a) and names_match(f2n, b))
+        or (names_match(f1n, b) and names_match(f2n, a))
+        for a, b in _RESULT_PINS
+    )
+
+
+def correct_results(js, results):
+    """Bring an already-finished bout's method and round up to date.
+
+    inject_results never touches a bout once it is `state:"post"`, so a wrong
+    early reading stood for good: UFC 333's main event went in as Submission R1
+    and stayed there after the page was fixed, scoring every KO/TKO pick on it
+    as a method miss. This re-reads method and round only, and only when the
+    reading still names the same winner: a changed winner is a different claim
+    (an overturn, or a bad edit) and stays for a human. A blank method or round
+    never replaces a known one, a pinned bout (_RESULT_PINS) is never touched,
+    and a correction is no new result, so the caller pushes nothing for it.
+    Returns (js, count of bouts corrected).
+    """
+    count   = 0
+    pattern = r'f1:\{n:"([^"]+)"[^}]+\},f2:\{n:"([^"]+)"'
+    for res in results:
+        if res.get("undecided") or not res.get("winner"):
+            continue
+        winner, loser = res["winner"], res.get("loser", "")
+        method = _js_safe_method(res.get("method"))
+        rnd    = _js_safe_round(res.get("round"))
+        if not method and not rnd:
+            continue
+        for m in re.finditer(pattern, js):
+            f1n, f2n = m.group(1), m.group(2)
+            f1w = names_match(f1n, winner) and (not loser or names_match(f2n, loser))
+            f2w = names_match(f2n, winner) and (not loser or names_match(f1n, loser))
+            if not f1w and not f2w:
+                continue
+            fs = js.rfind("{lbl:", 0, m.start())
+            if fs < 0 or 'state:"post"' not in js[fs:fs + 300]:
+                break
+            if _result_pinned(f1n, f2n):
+                break
+            wm = re.search(r'winner:"([^"]*)"', js[fs:m.start()])
+            if not wm or wm.group(1) != (f1n if f1w else f2n):
+                break
+            # The result fields all sit before f1, so the edit is confined to
+            # the fight's own head and needs no brace scan.
+            head = js[fs:m.start()]
+            new  = head
+            if method:
+                new = re.sub(r'method:"[^"]*"', lambda _, m_=method: f'method:"{m_}"', new, count=1)
+            if rnd:
+                new = re.sub(r"round:(?:null|\d+)", f"round:{rnd}", new, count=1)
+            if new == head:
+                break
+            js = js[:fs] + new + js[m.start():]
+            print(f"  Corrected: {wm.group(1)} now {method or '?'} R{rnd or '?'}",
+                  file=sys.stderr)
+            count += 1
+            break
+    return js, count
+
 # ---------------------------------------------------------------------------
 # JS serialisation
 # ---------------------------------------------------------------------------
@@ -4282,6 +4354,8 @@ def step_inject_results(data, now):
             continue
         results = parse_results(wt)
         if results:
+            js, fixed = correct_results(js, results)
+            total_injected += fixed
             js, n = inject_results(js, results)
             total_injected += n
             if n:

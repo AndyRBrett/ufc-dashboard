@@ -170,6 +170,16 @@ would lose the push for good (the next run sees the result as already in
 inside the scrape made two UFC 332 main-card results 12-15 minutes late.
 `tests/test_result_push_defer.py` holds it.
 
+**A finished bout's method and round follow Wikipedia's corrections; its
+winner doesn't.** `inject_results` never re-reads a bout once it is
+`state:"post"`, so UFC 333's main event went in as Submission R1 from an early
+edit and stayed there after the page was fixed (TKO R2), scoring every KO/TKO
+pick as a method miss. `correct_results` now re-reads method and round inside
+the same results window, only when the reading names the same winner, never
+blanking a known value, and pushes nothing. A result fixed by hand goes in
+`_RESULT_PINS`, or the next run puts a still-wrong reading back.
+`tests/test_result_corrections.py` holds it.
+
 **Every server function reads the COMMITTED `data.js` (raw.githubusercontent,
 `main`), never the Pages copy:** kick-scraper's gate, send-push and
 send-reminders (whose `lockRows` writes the pick lock times; reading Pages, a
