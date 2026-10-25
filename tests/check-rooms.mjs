@@ -318,6 +318,48 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
     jr.indexOf("pg_advisory_xact_lock") < jr.indexOf("too many attempts") && jr.indexOf("too many attempts") < jr.indexOf("from rooms where") && /return null;/.test(jr) && !/raise exception 'no such room'/.test(jr) && /perform public\.room_join_misses_prune\(\)/.test(jr));
   check("0018: a new password never equals a live code or password", /not exists \(select 1 from rooms where code = c or pass = c\)/.test(sql));
 }
+
+// --- migration 0024: a room can show its members' picks before they lock ---------------
+{
+  const { PGlite } = await import("@electric-sql/pglite");
+  const mig = (f) => readFileSync(join(ROOT, "supabase/migrations", f), "utf8");
+  const A = "11111111-1111-1111-1111-111111111111", B = "22222222-2222-2222-2222-222222222222", C = "33333333-3333-3333-3333-333333333333";
+  const db = new PGlite();
+  await db.exec(`
+    create role anon nologin; create role authenticated nologin;
+    create schema auth;
+    create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+    create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
+    grant usage on schema auth to anon, authenticated; grant execute on function auth.uid(), auth.jwt() to anon, authenticated;
+    grant usage on schema public to anon, authenticated;
+    create table public.picks (id bigserial primary key, user_id text, event_name text, event_date text, f1 text, f2 text, pick text,
+      method text, confidence integer not null default 0, nickname text, updated_at timestamptz default now(), bonus_pick text, promotion text default 'ufc');
+    alter table public.picks enable row level security;   -- nothing granted: only the definer function reads it`);
+  for (const m of ["0006_rooms.sql", "0008_rooms_codes_throttle.sql", "0018_room_passwords.sql", "0024_room_show_picks.sql", "0024_room_show_picks.sql"]) await db.exec(mig(m));
+  const as = async (uid, sql, params = [], anon = false) => {
+    await db.exec(`set role authenticated; select set_config('request.jwt.claim.sub', '${uid}', false), set_config('request.jwt.claims', '{"is_anonymous": ${anon}}', false);`);
+    try { return await db.query(sql, params); } finally { await db.exec("reset role"); }
+  };
+  const tryAs = (...a) => as(...a).then((r) => ({ r }), (e) => ({ e: e.message }));
+  const room = (await as(A, "select * from create_room('Fight Club')")).rows[0];
+  await as(B, "select * from join_room($1)", [room.code]);
+  for (const [u, n] of [[A, "🥋 AB"], [B, "👑 Tristin"], [C, "🦍 T"]])
+    await db.query("insert into picks (user_id, nickname, event_name, event_date, f1, f2, pick, method) values ($1, $2, 'UFC 334', '2026-10-31', 'Ann One', 'Bea Two', 'Ann One', 'Dec')", [u, n]);
+  await db.query("insert into picks (user_id, nickname, event_date, f1, f2, pick, promotion) values ($1, 'x', '2026-10-31', 'P One', 'P Two', 'P One', 'pfl')", [B]);
+  const early = async (uid) => (await as(uid, "select * from room_early_picks($1, '2026-10-31')", [room.id])).rows;
+  check("0024: a new room keeps picks hidden (show_picks off, nothing early)", room.show_picks === false && (await early(A)).length === 0);
+  check("0024: only the owner can switch it on", /only the room owner/.test((await tryAs(B, "select * from set_room_show_picks($1, true)", [room.id])).e || "") &&
+    (await as(A, "select * from set_room_show_picks($1, true)", [room.id])).rows[0].show_picks === true);
+  check("0024: ...and never by writing the column", !!(await tryAs(A, "update rooms set show_picks = false where id = $1", [room.id])).e);
+  const seen = await early(B);
+  check("0024: on, a member sees every member's picks for that card, UFC only", seen.length === 2 &&
+    seen.every((r) => r.user_id === A || r.user_id === B) && seen.every((r) => r.f1 === "Ann One"));
+  check("0024: a non-member sees nothing, even of the members", (await early(C)).length === 0);
+  check("0024: an anonymous session sees nothing", (await as(B, "select * from room_early_picks($1, '2026-10-31')", [room.id], true)).rows.length === 0);
+  await as(A, "select * from set_room_show_picks($1, false)", [room.id]);
+  check("0024: switched off, the early picks are gone again", (await early(B)).length === 0);
+  check("0024: the anon key can't call either function", !!(await db.exec("set role anon").then(() => db.query("select * from room_early_picks($1, 'x')", [room.id])).then(() => null, (e) => e).finally(() => db.exec("reset role"))));
+}
 // --- the app side of passwords ------------------------------------------------------
 {
   const future = new Date(Date.now() + 5 * 3600e3).toISOString(), past = new Date(Date.now() - 6e4).toISOString();
@@ -455,7 +497,9 @@ const R1 = { id: "r1", name: "Fight Club", code: "AB12CD", owner_id: "u-me", roo
 // --- wiring in the page -------------------------------------------------------------
 {
   const lb = fn("loadLeaderboard");
-  check("the board scores a room through boardStandings + roomScope (no second scorer)", /boardStandings\(rows,roomScope\(/.test(lb) && !/_lbScoreUsers\(/.test(lb));
+  check("the board scores a room through boardStandings + roomScope (no second scorer)", /boardStandings\(_boardRows,roomScope\(/.test(lb) && !/_lbScoreUsers\(/.test(lb) &&
+    // _boardRows is the board's rows, plus a show-picks room's early ones (0024): nothing else.
+    /var _boardRows=_room&&_room\.show_picks&&typeof _mergePickRows==="function"\?_mergePickRows\(rows,_early\):rows;/.test(lb));
   check("the board's belt is the room's belt when a room is selected", /computeBeltLineage\(rows,_room\?\{users:_room\.members\}:null\)/.test(lb));
   const te = fn("roomTapeEl");
   check("the Tale of the Tape shows only in a room, through the card, and can't break the board",

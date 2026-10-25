@@ -132,8 +132,13 @@ export async function composeBrief(ev: Ev, js: string, sb: { url: string; key: s
   const dp = ev.date.split("-").map(Number);
   const day = DAY_NAMES[new Date(Date.UTC(dp[0], dp[1] - 1, dp[2])).getUTCDay()];
   const headline = ev.name.includes(":") ? ev.name.split(":").slice(1).join(":").trim() : ev.name;
-  const title = `📰 ${day} Brief: ${headline}`.slice(0, 118);
-  const when = ev.time && ev.time.toUpperCase() !== "TBD" ? ` Main card ${to12(ev.time)} ET.` : "";
+  const timed = !!ev.time && ev.time.toUpperCase() !== "TBD";
+  const when = timed ? ` Main card ${to12(ev.time)} ET.` : "";
+  // The main-card start rides in the title, which a lock screen always shows
+  // in full; the body's last line is the first thing it cuts. A long headline
+  // is trimmed, never the time.
+  const at = timed ? ` · ${to12(ev.time)} ET` : "";
+  const title = `📰 ${day} Brief: ${headline}`.slice(0, 118 - at.length) + at;
   const plain = { title, body: `Fight week is here.${when} Tap for the lines, the stories and the fights worth studying.`, rich: false };
   try {
     const get = async (f: string) => {
@@ -178,7 +183,7 @@ export async function composeBrief(ev: Ev, js: string, sb: { url: string; key: s
     const PRIORITY = ["📉", "🔥", "🔍", "📰", "♨️", "⏳"];
     const rank = (l: string) => { const i = PRIORITY.findIndex((p) => l.startsWith(p)); return i < 0 ? PRIORITY.length : i; };
     lines.sort((a, b) => rank(a) - rank(b));
-    const body = (lines.slice(0, 4).join("\n") + (when ? "\n🕘" + when : "")).slice(0, 900);
+    const body = lines.slice(0, 4).join("\n").slice(0, 900);
     return { title, body, rich: true };
   } catch (e) {
     console.warn("[brief] falling back to the plain teaser:", (e as Error).message);

@@ -170,6 +170,16 @@ would lose the push for good (the next run sees the result as already in
 inside the scrape made two UFC 332 main-card results 12-15 minutes late.
 `tests/test_result_push_defer.py` holds it.
 
+**A finished bout's method and round follow Wikipedia's corrections; its
+winner doesn't.** `inject_results` never re-reads a bout once it is
+`state:"post"`, so UFC 333's main event went in as Submission R1 from an early
+edit and stayed there after the page was fixed (TKO R2), scoring every KO/TKO
+pick as a method miss. `correct_results` now re-reads method and round inside
+the same results window, only when the reading names the same winner, never
+blanking a known value, and pushes nothing. A result fixed by hand goes in
+`_RESULT_PINS`, or the next run puts a still-wrong reading back.
+`tests/test_result_corrections.py` holds it.
+
 **Every server function reads the COMMITTED `data.js` (raw.githubusercontent,
 `main`), never the Pages copy:** kick-scraper's gate, send-push and
 send-reminders (whose `lockRows` writes the pick lock times; reading Pages, a
@@ -1304,6 +1314,14 @@ miss counts against the same throttle. The columns change only through the
 RPCs. Opened from a link in iOS Safari, the app asks before joining there. Room names are other people's input: render them with
 `textContent`, never `innerHTML` (`check:rooms` holds that too).
 
+**A room can show picks before they lock** (`0024_room_show_picks.sql`, owner
+only, off by default). It never touches 0017's `picks_select`: the room's board
+asks `room_early_picks(room, date)`, which answers only a member of a room with
+`show_picks` on, with that room's members' UFC rows, and `loadLeaderboard`
+merges them into **that board's rows only** (`_mergePickRows`; challenges and
+the belt keep the rows everyone reads). The main board, the Lab and every other
+room still hide them. `check:rooms` runs it in PGlite. Applied by hand.
+
 ## The engine migration moves code, never numbers
 
 `index.html` is being moved onto the Pick Engine in stages (`docs/MIGRATION.md`).
@@ -1342,7 +1360,9 @@ select m, ok from (values
   ('0019 notification kinds',      exists(select 1 from information_schema.columns where table_name='user_prefs' and column_name='notif_off')),
   ('0020 founders and invites',    exists(select 1 from pg_proc where proname='claim_invite')),
   ('0021 card picked bouts',       exists(select 1 from pg_proc where proname='card_picked_bouts')),
-  ('0022 apns devices',            to_regclass('public.apns_devices') is not null)
+  ('0022 apns devices',            to_regclass('public.apns_devices') is not null),
+  ('0023 challenge paid',          exists(select 1 from pg_proc where proname='mark_challenge_paid')),
+  ('0024 room show picks',         exists(select 1 from pg_proc where proname='room_early_picks'))
 ) t(m, ok);
 ```
 

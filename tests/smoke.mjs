@@ -159,6 +159,112 @@ async function main() {
       return !!hit && hit.id === "wn-gotit-btn";
     });
     assert("What's New's Got it is tappable above the tab bar on a phone", wnTap);
+    // With any tab's view open, every tab button is still what a tap at its
+    // centre lands on. The Picks and FightBot backdrops once covered the whole
+    // bar, so taps closed the sheet at best and the bar read as frozen.
+    const covered = await page.evaluate(async () => {
+      const bad = [];
+      for (const open of ["picks", "live", "league", "bot"]) {
+        window.goTab(open);
+        await new Promise((r) => setTimeout(r, 400));
+        document.querySelectorAll("#tabBar .tab-btn").forEach((b) => {
+          const r = b.getBoundingClientRect(), hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          if (!hit || hit.closest(".tab-btn") !== b) bad.push(open + "→" + b.dataset.tab + " (" + (hit ? hit.id || hit.className : "none") + ")");
+        });
+        window.goTab("cards");
+        await new Promise((r) => setTimeout(r, 300));
+      }
+      return bad;
+    });
+    assert("every tab stays tappable with any tab's view open" + (covered.length ? " (covered: " + covered.slice(0, 4).join(", ") + ")" : ""), covered.length === 0);
+    // Paying a stake: a spin from "Pay up" marks that challenge paid (on this
+    // device at once, and through mark_challenge_paid for both players); a
+    // plain Wheel spin pays nothing. It used to record nothing at all.
+    const payup = await page.evaluate(async () => {
+      const calls = [], realFetch = window.fetch;
+      window.fetch = (u, o) => { if (/rpc\/mark_challenge_paid/.test(String(u))) { calls.push(JSON.parse(o.body)); return Promise.resolve(new Response("true")); } return realFetch(u, o); };
+      const spinOnce = async (payFor) => {
+        window.openWheelSheet(); if (payFor) window._wheelPayFor = payFor;
+        window.spinWheel(); await new Promise((r) => setTimeout(r, 4200));
+        window.closeWheelSheet();
+      };
+      try {
+        localStorage.removeItem("ufc_chal_paid");
+        await spinOnce(null);
+        const plain = Object.keys(window._chalPaidLocal()).length === 0 && calls.length === 0;
+        // Closed mid-spin, then Pay up on another bet: the old spin pays nothing.
+        window.openWheelSheet(); window._wheelPayFor = "chal-old"; window.spinWheel();
+        await new Promise((r) => setTimeout(r, 500));
+        window.closeWheelSheet(); window.openWheelSheet(); window._wheelPayFor = "chal-new";
+        await new Promise((r) => setTimeout(r, 3800));
+        const stray = Object.keys(window._chalPaidLocal()).length === 0 && calls.length === 0;
+        window.closeWheelSheet();
+        await spinOnce("chal-xyz");
+        const local = window._chalPaid({ id: "chal-xyz" });
+        return { plain, stray, local: !!(local && local.spin), rpc: calls.length === 1 && calls[0].p_id === "chal-xyz" && !!calls[0].p_spin,
+          server: (window._chalPaid({ id: "other", paid_at: "2026-10-24T17:00:00Z", paid_spin: "🍺 Beer" }) || {}).spin === "🍺 Beer",
+          none: window._chalPaid({ id: "nope" }) === null };
+      } finally { window.fetch = realFetch; localStorage.removeItem("ufc_chal_paid"); }
+    });
+    assert("a spin from Pay up marks its challenge paid (here and via mark_challenge_paid); a plain spin, or one closed mid-spin, pays nothing",
+      payup.plain && payup.stray && payup.local && payup.rpc && payup.server && payup.none);
+    // Rooms that show picks before they lock (0024): the owner gets the switch,
+    // a member sees which way it's set, and the merge adds only missing rows.
+    const showPicks = await page.evaluate(() => {
+      const keep = { rooms: window._rooms, for: window._roomsFor };
+      const mk = (owner, on) => ({ id: "r-" + owner, name: "Club", code: "ABCDEFGH12", owner_id: owner, show_picks: on, members: [window.USER_ID, "other"] });
+      try {
+        window._roomsFor = window.USER_ID;
+        window._rooms = [mk(window.USER_ID, false), mk("someone-else", true)];
+        const box = document.getElementById("roomList"), was = box.style.display;
+        window.renderRoomSheet();
+        const txt = box.textContent;
+        const merged = window._mergePickRows(
+          [{ user_id: "a", event_date: "d", f1: "Ann One", f2: "Bea Two", pick: "Ann One" }],
+          [{ user_id: "a", event_date: "d", f1: "Bea Two", f2: "Ann One", pick: "Bea Two" }, { user_id: "b", event_date: "d", f1: "Ann One", f2: "Bea Two", pick: "Ann One" }]);
+        box.innerHTML = ""; box.style.display = was;
+        return { owner: /👀 Show picks before lock/.test(txt), oneSwitch: (txt.match(/picks before lock|picks until lock/g) || []).length === 1,
+          member: /Members' picks show here before they lock/.test(txt) && /Picks stay hidden until each fight locks/.test(txt),
+          merge: merged.length === 2 && merged[0].pick === "Ann One" && merged[1].user_id === "b",
+          sig: window._roomSig(mk("x", true)) !== window._roomSig(mk("x", false)) };
+      } finally { window._rooms = keep.rooms; window._roomsFor = keep.for; }
+    });
+    assert("a room's owner (only) gets the show-picks switch, members see its state, early rows only fill gaps, and a flip re-renders the board",
+      showPicks.owner && showPicks.oneSwitch && showPicks.member && showPicks.merge && showPicks.sig);
+    // A tapped roast lifts Ranks over the tab bar (.tap-front); a closed sheet
+    // slid below it (the wheel) must not show in the bar's place.
+    const peek = await page.evaluate(async () => {
+      window.goTab("league");
+      await new Promise((r) => setTimeout(r, 400));
+      const p = document.getElementById("lbPanel"), t = document.getElementById("trashSheet");
+      p.classList.add("tap-front"); t.classList.add("open");
+      await new Promise((r) => setTimeout(r, 450));
+      const hidden = ["wheelSheet", "chalSheet"].every((id) => getComputedStyle(document.getElementById(id)).visibility === "hidden");
+      t.classList.remove("open"); p.classList.remove("tap-front"); window.goTab("cards");
+      await new Promise((r) => setTimeout(r, 300));
+      return hidden;
+    });
+    assert("closed Ranks sheets (wheel, challenges) are hidden, not peeking under an open roast", peek);
+    // "On the line" with a method picked: your fighter's win splits into "by
+    // <method>" (+0.5 for everyone who called it) and "other way" (+1 only).
+    const stakes = await page.evaluate(() => {
+      const keep = { ev: window.fnEv, lb: window._lbSorted, by: window._fnPicksByFight };
+      const f = { lbl: "Prelim", f1: { n: "Ann One" }, f2: { n: "Bea Two" }, odds: { f1: -125, f2: 104 }, winner: "", state: "pre" };
+      window.fnEv = { date: "2099-01-02", name: "Test", fights: [f] };
+      const k = window.pk(window.fnEv, f), kp = window.preds[k], km = window.preds_method[k];
+      window.preds[k] = "Ann One"; window.preds_method[k] = "Dec";
+      const u = (id, nick, me, methods) => ({ user_id: id, nickname: nick, isMe: me, correct: 5, methods, fotn: 0, dogPts: 0, lockPts: 0, picks: [] });
+      window._lbSorted = [u("x", "👑 Xa", false, 1), u("me", "🥋 Me", true, 0)];
+      window._fnPicksByFight = { [k]: { f1: [{ user_id: "me", method: "Dec" }, { user_id: "x", method: "KO/TKO" }], f2: [] } };
+      window.fnRenderStakes(f);
+      const rows = [...document.querySelectorAll("#fnl-stakes .fnl-stake-row")].map((r) => [...r.children].map((c) => c.textContent.trim()).join("|"));
+      window.fnEv = keep.ev; window._lbSorted = keep.lb; window._fnPicksByFight = keep.by;
+      if (kp === undefined) delete window.preds[k]; else window.preds[k] = kp;
+      if (km === undefined) delete window.preds_method[k]; else window.preds_method[k] = km;
+      return rows;
+    });
+    assert("On the line splits your fighter's win by your method (+1.5, 1st) and other way (+1, 2nd)" + (stakes.length ? " (" + stakes.join(" / ") + ")" : ""),
+      stakes.length === 3 && /by Dec\|\+1\.5\|1st/.test(stakes[0]) && /other way\|\+1\|2nd/.test(stakes[1]) && /wins\|—\|2nd/.test(stakes[2]));
     // The header title sits between the avatar and the search button: in every
     // theme, at a 375px phone, it must fit between them. Silver's script title
     // must stay mixed case (the shared .logo-text is uppercase for Bebas/Barlow).
