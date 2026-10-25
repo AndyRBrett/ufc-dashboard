@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T23:06:24Z",
+  "generated_at": "2026-10-25T00:10:38Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -16120,7 +16120,7 @@
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Alexander Volkanovski",
@@ -16299,8 +16299,15 @@
             "f1_odds": -115,
             "f2_odds": -108
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-24T19:20:39Z",
+            "f1_odds": -110,
+            "f2_odds": -110
+          },
+          "clv": {
+            "f1_odds": 5,
+            "f2_odds": -2
+          }
         },
         {
           "f1": "Petr Yan",
@@ -16479,8 +16486,15 @@
             "f1_odds": -171,
             "f2_odds": 138
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-24T19:20:39Z",
+            "f1_odds": -149,
+            "f2_odds": 124
+          },
+          "clv": {
+            "f1_odds": 22,
+            "f2_odds": -14
+          }
         },
         {
           "f1": "Lone'er Kavanagh",
@@ -16594,8 +16608,15 @@
             "f1_odds": -110,
             "f2_odds": -110
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-24T19:20:39Z",
+            "f1_odds": -115,
+            "f2_odds": -108
+          },
+          "clv": {
+            "f1_odds": -5,
+            "f2_odds": 2
+          }
         },
         {
           "f1": "Alexander Volkov",
@@ -16709,8 +16730,15 @@
             "f1_odds": -125,
             "f2_odds": 105
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-24T16:16:10Z",
+            "f1_odds": -127,
+            "f2_odds": 106
+          },
+          "clv": {
+            "f1_odds": -2,
+            "f2_odds": 1
+          }
         },
         {
           "f1": "Aaron Pico",
@@ -16824,8 +16852,15 @@
             "f1_odds": 105,
             "f2_odds": -125
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-24T13:10:41Z",
+            "f1_odds": -147,
+            "f2_odds": 122
+          },
+          "clv": {
+            "f1_odds": -252,
+            "f2_odds": 247
+          }
         },
         {
           "f1": "Azamat Murzakanov",
@@ -16949,8 +16984,15 @@
             "f1_odds": -210,
             "f2_odds": 177
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-24T16:16:10Z",
+            "f1_odds": -212,
+            "f2_odds": 172
+          },
+          "clv": {
+            "f1_odds": -2,
+            "f2_odds": -5
+          }
         },
         {
           "f1": "Nikita Krylov",
@@ -17054,8 +17096,15 @@
             "f1_odds": 354,
             "f2_odds": -450
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-24T16:16:10Z",
+            "f1_odds": 403,
+            "f2_odds": -562
+          },
+          "clv": {
+            "f1_odds": 49,
+            "f2_odds": -112
+          }
         },
         {
           "f1": "Abusupiyan Magomedov",
@@ -17134,8 +17183,15 @@
             "f1_odds": -118,
             "f2_odds": -102
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-24T04:00:49Z",
+            "f1_odds": -125,
+            "f2_odds": 104
+          },
+          "clv": {
+            "f1_odds": -7,
+            "f2_odds": 206
+          }
         },
         {
           "f1": "Grant Dawson",
@@ -17264,8 +17320,15 @@
             "f1_odds": -118,
             "f2_odds": -102
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-24T16:16:10Z",
+            "f1_odds": -111,
+            "f2_odds": -109
+          },
+          "clv": {
+            "f1_odds": 7,
+            "f2_odds": -7
+          }
         },
         {
           "f1": "Abubakar Vagaev",
@@ -17359,8 +17422,15 @@
             "f1_odds": -185,
             "f2_odds": 157
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-24T13:10:41Z",
+            "f1_odds": -157,
+            "f2_odds": 130
+          },
+          "clv": {
+            "f1_odds": 28,
+            "f2_odds": -27
+          }
         },
         {
           "f1": "Colby Thicknesse",
@@ -17424,8 +17494,15 @@
             "f1_odds": 378,
             "f2_odds": -533
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-24T16:16:10Z",
+            "f1_odds": 192,
+            "f2_odds": -285
+          },
+          "clv": {
+            "f1_odds": -186,
+            "f2_odds": 248
+          }
         },
         {
           "f1": "Bolaji Oki",
@@ -17464,8 +17541,15 @@
             "f1_odds": 106,
             "f2_odds": -127
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-24T13:10:41Z",
+            "f1_odds": -108,
+            "f2_odds": -112
+          },
+          "clv": {
+            "f1_odds": -214,
+            "f2_odds": 15
+          }
         },
         {
           "f1": "Kody Steele",
@@ -17524,8 +17608,15 @@
             "f1_odds": -158,
             "f2_odds": 133
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-24T13:10:41Z",
+            "f1_odds": -158,
+            "f2_odds": 131
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": -2
+          }
         },
         {
           "f1": "Iasmin Lucindo",
@@ -17589,8 +17680,15 @@
             "f1_odds": -360,
             "f2_odds": 282
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-23T17:25:41Z",
+            "f1_odds": -382,
+            "f2_odds": 297
+          },
+          "clv": {
+            "f1_odds": -22,
+            "f2_odds": 15
+          }
         },
         {
           "f1": "Iasmin Lucindo",
@@ -17629,8 +17727,15 @@
             "f1_odds": -377,
             "f2_odds": 293
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-24T13:10:41Z",
+            "f1_odds": -432,
+            "f2_odds": 327
+          },
+          "clv": {
+            "f1_odds": -55,
+            "f2_odds": 34
+          }
         }
       ]
     },
@@ -19630,8 +19735,8 @@
         "side": "f1",
         "points": 13,
         "open": -118,
-        "close": null,
-        "clv": null
+        "close": -125,
+        "clv": -7
       }
     ],
     "Micha Oleksiejczuk": [
@@ -19710,8 +19815,8 @@
         "side": "f2",
         "points": 18,
         "open": -450,
-        "close": null,
-        "clv": null
+        "close": -562,
+        "clv": -112
       }
     ],
     "Julius Walker": [
@@ -19984,8 +20089,8 @@
         "side": "f1",
         "points": 20,
         "open": -110,
-        "close": null,
-        "clv": null
+        "close": -115,
+        "clv": -5
       }
     ],
     "Gable Steveson": [
@@ -20077,8 +20182,8 @@
         "side": "f1",
         "points": 18,
         "open": 354,
-        "close": null,
-        "clv": null
+        "close": 403,
+        "clv": 49
       }
     ],
     "Cody Garbrandt": [
@@ -21801,8 +21906,8 @@
         "side": "f2",
         "points": 20,
         "open": -125,
-        "close": null,
-        "clv": null
+        "close": 122,
+        "clv": 247
       }
     ],
     "Muhammad Naimov": [
@@ -23424,8 +23529,8 @@
         "side": "f1",
         "points": 33,
         "open": -115,
-        "close": null,
-        "clv": null
+        "close": -110,
+        "clv": 5
       }
     ],
     "Movsar Evloev": [
@@ -23435,8 +23540,8 @@
         "side": "f2",
         "points": 33,
         "open": -108,
-        "close": null,
-        "clv": null
+        "close": -110,
+        "clv": -2
       }
     ],
     "Petr Yan": [
@@ -23446,8 +23551,8 @@
         "side": "f1",
         "points": 33,
         "open": -171,
-        "close": null,
-        "clv": null
+        "close": -149,
+        "clv": 22
       }
     ],
     "Merab Dvalishvili": [
@@ -23457,8 +23562,8 @@
         "side": "f2",
         "points": 33,
         "open": 138,
-        "close": null,
-        "clv": null
+        "close": 124,
+        "clv": -14
       }
     ],
     "Ramazan Temirov": [
@@ -23468,8 +23573,8 @@
         "side": "f2",
         "points": 20,
         "open": -110,
-        "close": null,
-        "clv": null
+        "close": -108,
+        "clv": 2
       }
     ],
     "Alexander Volkov": [
@@ -23479,8 +23584,8 @@
         "side": "f1",
         "points": 20,
         "open": -125,
-        "close": null,
-        "clv": null
+        "close": -127,
+        "clv": -2
       }
     ],
     "Rizvan Kuniev": [
@@ -23490,8 +23595,8 @@
         "side": "f2",
         "points": 20,
         "open": 105,
-        "close": null,
-        "clv": null
+        "close": 106,
+        "clv": 1
       }
     ],
     "Aaron Pico": [
@@ -23501,8 +23606,8 @@
         "side": "f1",
         "points": 20,
         "open": 105,
-        "close": null,
-        "clv": null
+        "close": -147,
+        "clv": -252
       }
     ],
     "Azamat Murzakanov": [
@@ -23512,8 +23617,8 @@
         "side": "f1",
         "points": 22,
         "open": -210,
-        "close": null,
-        "clv": null
+        "close": -212,
+        "clv": -2
       }
     ],
     "Dominick Reyes": [
@@ -23523,8 +23628,8 @@
         "side": "f2",
         "points": 22,
         "open": 177,
-        "close": null,
-        "clv": null
+        "close": 172,
+        "clv": -5
       }
     ],
     "Cameron Rowston": [
@@ -23534,8 +23639,8 @@
         "side": "f2",
         "points": 13,
         "open": -102,
-        "close": null,
-        "clv": null
+        "close": 104,
+        "clv": 206
       }
     ],
     "Grant Dawson": [
@@ -23545,8 +23650,8 @@
         "side": "f1",
         "points": 23,
         "open": -118,
-        "close": null,
-        "clv": null
+        "close": -111,
+        "clv": 7
       }
     ],
     "Nurullo Aliev": [
@@ -23556,8 +23661,8 @@
         "side": "f2",
         "points": 23,
         "open": -102,
-        "close": null,
-        "clv": null
+        "close": -109,
+        "clv": -7
       }
     ],
     "Abubakar Vagaev": [
@@ -23567,8 +23672,8 @@
         "side": "f1",
         "points": 16,
         "open": -185,
-        "close": null,
-        "clv": null
+        "close": -157,
+        "clv": 28
       }
     ],
     "Jacob Malkoun": [
@@ -23578,8 +23683,8 @@
         "side": "f2",
         "points": 16,
         "open": 157,
-        "close": null,
-        "clv": null
+        "close": 130,
+        "clv": -27
       }
     ],
     "Colby Thicknesse": [
@@ -23589,8 +23694,8 @@
         "side": "f1",
         "points": 10,
         "open": 378,
-        "close": null,
-        "clv": null
+        "close": 192,
+        "clv": -186
       }
     ],
     "Asaf Chopurov": [
@@ -23600,8 +23705,8 @@
         "side": "f2",
         "points": 10,
         "open": -533,
-        "close": null,
-        "clv": null
+        "close": -285,
+        "clv": 248
       }
     ],
     "Bolaji Oki": [
@@ -23611,8 +23716,8 @@
         "side": "f1",
         "points": 5,
         "open": 106,
-        "close": null,
-        "clv": null
+        "close": -108,
+        "clv": -214
       }
     ],
     "Daniel Santos": [
@@ -23622,8 +23727,8 @@
         "side": "f2",
         "points": 5,
         "open": -127,
-        "close": null,
-        "clv": null
+        "close": -112,
+        "clv": 15
       }
     ],
     "Kody Steele": [
@@ -23633,8 +23738,8 @@
         "side": "f1",
         "points": 9,
         "open": -158,
-        "close": null,
-        "clv": null
+        "close": -158,
+        "clv": 0
       }
     ],
     "Noah Gugnon": [
@@ -23644,8 +23749,8 @@
         "side": "f2",
         "points": 9,
         "open": 133,
-        "close": null,
-        "clv": null
+        "close": 131,
+        "clv": -2
       }
     ],
     "Iasmin Lucindo": [
@@ -23655,8 +23760,8 @@
         "side": "f1",
         "points": 10,
         "open": -360,
-        "close": null,
-        "clv": null
+        "close": -382,
+        "clv": -22
       },
       {
         "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
@@ -23664,8 +23769,8 @@
         "side": "f1",
         "points": 5,
         "open": -377,
-        "close": null,
-        "clv": null
+        "close": -432,
+        "clv": -55
       }
     ],
     "Nicole Caliari": [
@@ -23675,8 +23780,8 @@
         "side": "f2",
         "points": 10,
         "open": 282,
-        "close": null,
-        "clv": null
+        "close": 297,
+        "clv": 15
       }
     ],
     "Nicolle Caliari": [
@@ -23686,8 +23791,8 @@
         "side": "f2",
         "points": 5,
         "open": 293,
-        "close": null,
-        "clv": null
+        "close": 327,
+        "clv": 34
       }
     ],
     "Yana Santos": [

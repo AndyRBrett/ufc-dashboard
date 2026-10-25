@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T23:06:24Z",
+  "generated_at": "2026-10-25T00:10:38Z",
   "summary": {
     "events": 10,
     "block": 0,
@@ -9,25 +9,25 @@
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
-      "message": "UFC Fight Night: Prochazka vs. Stirling (28d out): venue 'Al Rayyan' matches no known region, so its 13:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "message": "UFC Fight Night: Prochazka vs. Stirling (27d out): venue 'Al Rayyan' matches no known region, so its 13:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Prochazka vs. Stirling",
       "date": "2026-11-21"
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Moicano vs. Nolan (7d out): 1 of 9 bouts have no odds",
+      "message": "UFC Fight Night: Moicano vs. Nolan (6d out): 1 of 9 bouts have no odds",
       "event": "UFC Fight Night: Moicano vs. Nolan",
       "date": "2026-10-31",
-      "days_out": 7
+      "days_out": 6
     },
     {
       "severity": "WARN",
       "check": "odds-missing-all",
-      "message": "UFC Fight Night: Bonfim vs. Brady (14d out) has no odds on any of its 12 bouts",
+      "message": "UFC Fight Night: Bonfim vs. Brady (13d out) has no odds on any of its 12 bouts",
       "event": "UFC Fight Night: Bonfim vs. Brady",
       "date": "2026-11-07",
-      "days_out": 14
+      "days_out": 13
     },
     {
       "severity": "WARN",
