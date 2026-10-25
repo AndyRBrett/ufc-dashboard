@@ -9,7 +9,7 @@ import globals from "globals";
 
 // Browser-side scripts share one global scope: data.js and scoring.js define
 // names the app and the Lab read, so they're declared here once.
-const shared = { PickEngine: "writable", SCORING_VERSION: "readonly" };
+const shared = { PickEngine: "writable", SCORING_VERSION: "readonly", FIGHTER_ALIASES: "readonly" };
 
 // scoring.js runs against a host environment: the app defines these as
 // globals, and lab/engine.js's loadKernel (and the send-reminders bundle)

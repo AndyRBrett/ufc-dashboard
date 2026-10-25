@@ -51,7 +51,7 @@ export function load(force) {
   const dctx = vm.createContext({});
   vm.runInContext(readFileSync(join(ROOT, "data.js"), "utf8"), dctx, { filename: "data.js" });
   const html = readFileSync(join(ROOT, "index.html"), "utf8");
-  const env = { EVENTS: dctx.EVENTS, RESULTS_ARCHIVE: dctx.RESULTS_ARCHIVE || {}, FIGHTER_STATS: dctx.FIGHTER_STATS || {}, RANKINGS: dctx.RANKINGS || {} };
+  const env = { EVENTS: dctx.EVENTS, RESULTS_ARCHIVE: dctx.RESULTS_ARCHIVE || {}, FIGHTER_STATS: dctx.FIGHTER_STATS || {}, RANKINGS: dctx.RANKINGS || {}, FIGHTER_ALIASES: dctx.FIGHTER_ALIASES || {} };
   const kernel = PE.loadKernel(html, env, undefined, readFileSync(join(ROOT, "scoring.js"), "utf8"));
   const feedRaw = readJSON("events-extra.json", null);
   const adapters = [PE.ufcAdapter(env)];
