@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-25T11:30:22.478037+00:00",
+  "last_fetch_at": "2026-10-25T17:55:22.989267+00:00",
   "last_status": 401,
-  "lines_digest": "b342a0a43e13069ef7f757557832bd15baf27953",
+  "lines_digest": "551d5dfbed6350f63c4a0c3a06680ee174ea55ef",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -151,11 +151,15 @@
         "hope",
         "lebosnoyani",
         "hasanov",
+        "brown",
+        "smith",
         "erosa",
         "lee",
         "klein",
         "kropschot",
         "santos",
+        "reese",
+        "gall",
         "alencar",
         "rodriguez",
         "moicano",
@@ -163,8 +167,8 @@
         "sezinando",
         "berggren"
       ],
-      "listed": 10,
-      "priced": 10
+      "listed": 12,
+      "priced": 12
     },
     "2026-11-15": {
       "fighters": [
@@ -308,25 +312,25 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-25T11:30:22.478037+00:00",
+  "markets_partial_at": "2026-10-25T17:55:22.989267+00:00",
   "next_event_days_out": 6,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-25T11:30:22.478037+00:00",
+      "last_fetch_at": "2026-10-25T17:55:22.989267+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
       "requests_remaining": 0
     },
     "the-odds-api-backup": {
-      "bouts": 40,
-      "last_fetch_at": "2026-10-25T11:30:22.478037+00:00",
-      "last_ok_at": "2026-10-25T11:30:22.478037+00:00",
+      "bouts": 42,
+      "last_fetch_at": "2026-10-25T17:55:22.989267+00:00",
+      "last_ok_at": "2026-10-25T17:55:22.989267+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 276
+      "requests_remaining": 275
     }
   },
   "requests_remaining": 0
