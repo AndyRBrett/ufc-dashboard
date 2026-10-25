@@ -2,14 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Farida Abdueva",
-   "b": "Charles Oliveira",
-   "a_odds": 138,
-   "b_odds": -158,
-   "commence_time": "2026-10-22T10:00:00Z",
-   "seen_at": "2026-10-22T09:25:22Z"
-  },
-  {
    "a": "Bella Mir",
    "b": "Chase Hooper",
    "a_odds": -2000,
@@ -228,18 +220,18 @@
   {
    "a": "Jean-Paul Lebosnoyani",
    "b": "Farman Hasanov",
-   "a_odds": -251,
-   "b_odds": 203,
+   "a_odds": -262,
+   "b_odds": 205,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-24T23:06:05Z"
+   "seen_at": "2026-10-25T11:30:22Z"
   },
   {
    "a": "Julian Erosa",
    "b": "Jeongyoung Lee",
-   "a_odds": 152,
-   "b_odds": -184,
+   "a_odds": 151,
+   "b_odds": -183,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-25T05:15:18Z"
+   "seen_at": "2026-10-25T11:30:22Z"
   },
   {
    "a": "Nick Klein",
@@ -252,26 +244,26 @@
   {
    "a": "Ode Osbourne",
    "b": "Cody Durden",
-   "a_odds": -125,
+   "a_odds": -127,
    "b_odds": 103,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-25T05:15:18Z"
+   "seen_at": "2026-10-25T11:30:22Z"
   },
   {
    "a": "Renato Moicano",
    "b": "Tom Nolan",
-   "a_odds": 111,
-   "b_odds": -134,
+   "a_odds": 104,
+   "b_odds": -129,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-25T05:15:18Z"
+   "seen_at": "2026-10-25T11:30:22Z"
   },
   {
    "a": "Rodrigo Sezinando",
    "b": "Theodor Berggren",
-   "a_odds": -185,
-   "b_odds": 149,
+   "a_odds": -181,
+   "b_odds": 146,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-24T23:06:05Z"
+   "seen_at": "2026-10-25T11:30:22Z"
   },
   {
    "a": "Talita Alencar",
@@ -284,10 +276,10 @@
   {
    "a": "Yana Santos",
    "b": "Luana Santos",
-   "a_odds": 207,
-   "b_odds": -255,
+   "a_odds": 198,
+   "b_odds": -252,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-25T05:15:18Z"
+   "seen_at": "2026-10-25T11:30:22Z"
   },
   {
    "a": "Kayla Harrison",
