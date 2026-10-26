@@ -1,13 +1,12 @@
 {
- "generated_at": "2026-10-26T01:22:07Z",
+ "generated_at": "2026-10-26T04:20:23Z",
  "source": "https://www.ufc.com",
  "cards": {
   "UFC Fight Night: Moicano vs. Nolan|2026-10-31": {
    "name": "UFC Fight Night: Moicano vs. Nolan",
    "date": "2026-10-31",
-   "checked_at": "2026-10-26T00:20:20Z",
+   "checked_at": "2026-10-26T04:20:23Z",
    "url": "https://www.ufc.com/event/ufc-fight-night-october-31-2026",
-   "status": 200,
    "segments": {
     "prelim": {
      "et": "17:00",
@@ -21,7 +20,12 @@
     }
    },
    "bouts": {},
-   "confirmed_at": "2026-10-26T00:20:20Z"
+   "confirmed_at": "2026-10-26T00:20:20Z",
+   "status": 200,
+   "error": "no UFC.com page matched this card",
+   "tried": [
+    "/event/ufc-fight-night-october-31-2026"
+   ]
   },
   "UFC Fight Night: Bonfim vs. Brady|2026-11-07": {
    "name": "UFC Fight Night: Bonfim vs. Brady",
