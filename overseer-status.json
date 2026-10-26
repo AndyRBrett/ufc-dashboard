@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-26T19:15:49Z",
+  "generated_at": "2026-10-26T20:20:48Z",
   "events_tracked": 9,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,17 +95,17 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-26T18:10:38Z",
+      "last_changed_at": "2026-10-26T20:20:48Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
-      "line_movement": -217,
+      "line_movement": -220,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-26T19:15:49Z",
+      "last_changed_at": "2026-10-26T20:20:48Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-26T19:15:49Z",
+      "last_changed_at": "2026-10-26T20:20:48Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -148,17 +148,17 @@
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Renato Moicano",
       "f2": "Tom Nolan",
-      "f1_movement": -217,
-      "f2_movement": 14,
-      "magnitude": 217,
+      "f1_movement": -220,
+      "f2_movement": 17,
+      "magnitude": 220,
       "main_event": true,
       "tier": "main-event",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Lightweight",
-      "f1_prob_shift": 4.1,
-      "f2_prob_shift": -2.8,
-      "priority": 759.5
+      "f1_prob_shift": 4.8,
+      "f2_prob_shift": -3.5,
+      "priority": 770.0
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",

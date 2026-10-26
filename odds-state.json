@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-26T13:25:28.225351+00:00",
+  "last_fetch_at": "2026-10-26T20:20:24.665981+00:00",
   "last_status": 401,
-  "lines_digest": "7efa61009fdbbb691f5e575b4e34eb714704f1fa",
+  "lines_digest": "b1a0e47d70de42104631bd7a51fbcc3c3af9af44",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -143,6 +143,14 @@
   "markets_partial": {
     "2026-10-31": {
       "fighters": [
+        "samsonidse",
+        "aksu",
+        "surdu",
+        "ayari",
+        "biyong",
+        "todev",
+        "pfeifer",
+        "paradeiser",
         "lisboa",
         "szabova",
         "osbourne",
@@ -167,8 +175,8 @@
         "sezinando",
         "berggren"
       ],
-      "listed": 12,
-      "priced": 12
+      "listed": 16,
+      "priced": 16
     },
     "2026-11-15": {
       "fighters": [
@@ -312,25 +320,25 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-26T13:25:28.225351+00:00",
+  "markets_partial_at": "2026-10-26T20:20:24.665981+00:00",
   "next_event_days_out": 5,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-26T13:25:28.225351+00:00",
+      "last_fetch_at": "2026-10-26T20:20:24.665981+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
       "requests_remaining": 0
     },
     "the-odds-api-backup": {
-      "bouts": 41,
-      "last_fetch_at": "2026-10-26T13:25:28.225351+00:00",
-      "last_ok_at": "2026-10-26T13:25:28.225351+00:00",
+      "bouts": 45,
+      "last_fetch_at": "2026-10-26T20:20:24.665981+00:00",
+      "last_ok_at": "2026-10-26T20:20:24.665981+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 272
+      "requests_remaining": 271
     }
   },
   "requests_remaining": 0
