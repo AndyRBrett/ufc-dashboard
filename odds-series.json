@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-26T05:25:37Z",
+  "generated_at": "2026-10-26T06:30:38Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -18097,7 +18097,7 @@
           "f1": "Ode' Osbourne",
           "f2": "Cody Durden",
           "lbl": "Main Card",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-25T05:15:35Z",
@@ -18108,6 +18108,11 @@
               "at": "2026-10-25T11:30:38Z",
               "f1_odds": -127,
               "f2_odds": 103
+            },
+            {
+              "at": "2026-10-26T06:30:38Z",
+              "f1_odds": -126,
+              "f2_odds": 102
             }
           ],
           "open": {
@@ -18142,7 +18147,7 @@
           "f1": "Randy Brown",
           "f2": "Jacobe Smith",
           "lbl": "Co-Main",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-25T17:55:39Z",
@@ -18153,6 +18158,11 @@
               "at": "2026-10-26T00:20:37Z",
               "f1_odds": 211,
               "f2_odds": -265
+            },
+            {
+              "at": "2026-10-26T06:30:38Z",
+              "f1_odds": 208,
+              "f2_odds": -260
             }
           ],
           "open": {
@@ -20524,7 +20534,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Ode' Osbourne",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 103,
         "close": null,
         "clv": null
@@ -20661,7 +20671,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Randy Brown",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": -255,
         "close": null,
         "clv": null
@@ -24117,7 +24127,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Cody Durden",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -125,
         "close": null,
         "clv": null
@@ -24150,7 +24160,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Jacobe Smith",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": 212,
         "close": null,
         "clv": null
