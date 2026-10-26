@@ -1,100 +1,11 @@
 {
- "generated_at": "2026-10-25T22:20:21Z",
+ "generated_at": "2026-10-26T00:20:20Z",
  "source": "https://www.ufc.com",
  "cards": {
-  "UFC 333: Volkanovski vs. Evloev|2026-10-24": {
-   "name": "UFC 333: Volkanovski vs. Evloev",
-   "date": "2026-10-24",
-   "checked_at": "2026-10-25T22:20:21Z",
-   "url": "https://www.ufc.com/event/ufc-333",
-   "status": 200,
-   "segments": {
-    "main": {
-     "et": "14:00",
-     "date": "2026-10-24",
-     "utc": "2026-10-24T18:00:00Z"
-    },
-    "prelim": {
-     "et": "12:00",
-     "date": "2026-10-24",
-     "utc": "2026-10-24T16:00:00Z"
-    },
-    "early": {
-     "et": "10:00",
-     "date": "2026-10-24",
-     "utc": "2026-10-24T14:00:00Z"
-    }
-   },
-   "bouts": {
-    "main": [
-     [
-      "Alexander Volkanovski",
-      "Movsar Evloev"
-     ],
-     [
-      "Petr Yan",
-      "Merab Dvalishvili"
-     ],
-     [
-      "Lone’er Kavanagh",
-      "Ramazan Temirov"
-     ],
-     [
-      "Alexander Volkov",
-      "Rizvan Kuniev"
-     ],
-     [
-      "Aaron Pico",
-      "Losene Keita"
-     ]
-    ],
-    "prelim": [
-     [
-      "Azamat Murzakanov",
-      "Dominick Reyes"
-     ],
-     [
-      "Nikita Krylov",
-      "Abdul Rakhman Yakhyaev"
-     ],
-     [
-      "Abus Magomedov",
-      "Cam Rowston"
-     ],
-     [
-      "Grant Dawson",
-      "Nurullo Aliev"
-     ]
-    ],
-    "early": [
-     [
-      "Colby Thicknesse",
-      "Asaf Chopurov"
-     ],
-     [
-      "Abubakar Vagaev",
-      "Jacob Malkoun"
-     ],
-     [
-      "Bolaji Oki",
-      "Daniel Santos"
-     ],
-     [
-      "Kody Steele",
-      "Noah Gugnon"
-     ],
-     [
-      "Iasmin Lucindo",
-      "Nicolle Caliari"
-     ]
-    ]
-   },
-   "confirmed_at": "2026-10-25T22:20:21Z"
-  },
   "UFC Fight Night: Moicano vs. Nolan|2026-10-31": {
    "name": "UFC Fight Night: Moicano vs. Nolan",
    "date": "2026-10-31",
-   "checked_at": "2026-10-25T21:15:42Z",
+   "checked_at": "2026-10-26T00:20:20Z",
    "url": "https://www.ufc.com/event/ufc-fight-night-october-31-2026",
    "status": 200,
    "segments": {
@@ -110,7 +21,7 @@
     }
    },
    "bouts": {},
-   "confirmed_at": "2026-10-25T21:15:42Z"
+   "confirmed_at": "2026-10-26T00:20:20Z"
   },
   "UFC Fight Night: Bonfim vs. Brady|2026-11-07": {
    "name": "UFC Fight Night: Bonfim vs. Brady",

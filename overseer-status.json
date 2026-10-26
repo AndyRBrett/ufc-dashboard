@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-25T23:20:16Z",
-  "events_tracked": 10,
+  "generated_at": "2026-10-26T00:20:37Z",
+  "events_tracked": 9,
   "stale_events": 0,
   "parse_failure_events": 0,
   "awaiting_card_events": 1,
@@ -9,7 +9,7 @@
   "odds_budget": {
     "exhausted": false,
     "reset_day": 1,
-    "resets_in_days": 7,
+    "resets_in_days": 6,
     "most_affected": []
   },
   "stale_threshold_hours": 48,
@@ -53,16 +53,6 @@
   "movement_alert_low_confidence_tiers": [],
   "events": [
     {
-      "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
-      "status": "ok",
-      "last_changed_at": "2026-09-27T20:38:17Z",
-      "is_stale": false,
-      "has_data": true,
-      "bout_count": 12,
-      "line_movement": 32,
-      "odds_market_priced": null
-    },
-    {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "status": "ok",
       "last_changed_at": "2026-10-04T02:08:39Z",
@@ -105,7 +95,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-25T17:55:39Z",
+      "last_changed_at": "2026-10-26T00:20:37Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -115,7 +105,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-25T23:20:16Z",
+      "last_changed_at": "2026-10-26T00:20:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 12,
@@ -135,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-25T23:20:16Z",
+      "last_changed_at": "2026-10-26T00:20:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -169,22 +159,6 @@
       "f1_prob_shift": 39.3,
       "f2_prob_shift": -36.0,
       "priority": 718.0
-    },
-    {
-      "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
-      "f1": "Yazmin Jauregui",
-      "f2": "Vanessa Demopoulos",
-      "f1_movement": -320,
-      "f2_movement": 149,
-      "magnitude": 320,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 120,
-      "low_confidence": false,
-      "wc": "Women's Strawweight",
-      "f1_prob_shift": 4.5,
-      "f2_prob_shift": -3.9,
-      "priority": 320.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
@@ -411,20 +385,20 @@
       "priority": 100.0
     },
     {
-      "event_id": "2026-09-26:ufc-fight-night-rosas-jr-vs-barcelos",
-      "f1": "Raul Rosas Jr.",
-      "f2": "Raoni Barcelos",
-      "f1_movement": 32,
-      "f2_movement": -30,
-      "magnitude": 32,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
+      "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
+      "f1": "Yana Santos",
+      "f2": "Luana Santos",
+      "f1_movement": 27,
+      "f2_movement": -55,
+      "magnitude": 55,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 45,
       "low_confidence": false,
-      "wc": "Bantamweight",
-      "f1_prob_shift": -4.6,
-      "f2_prob_shift": 5.3,
-      "priority": 80.0
+      "wc": "Women's Bantamweight",
+      "f1_prob_shift": -3.1,
+      "f2_prob_shift": 4.9,
+      "priority": 77.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
