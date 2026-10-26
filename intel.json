@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-26T00:20:37Z",
+ "generated_at": "2026-10-26T08:40:37Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 404,
-   "items": 0
+   "status": 200,
+   "items": 15
   },
   {
    "id": "yt-mmaf",
@@ -45,16 +45,17 @@
    "date": "2026-10-31",
    "items": [
     {
-     "title": "13-0 Jacobe Smith reportedly draws UFC veteran Randy Brown on Halloween",
-     "url": "https://www.sherdog.com/news/news/130-Jacobe-Smith-reportedly-draws-UFC-veteran-Randy-Brown-on-Halloween-203294",
-     "source": "Sherdog",
+     "title": "UFC Vegas 123 takes a hit as fighter withdraws after passing out at CVS",
+     "url": "https://bloodyelbow.com/2026/10/25/ufc-vegas-123-takes-a-hit-as-fighter-withdraws-after-passing-out-at-cvs/",
+     "source": "Bloody Elbow",
      "kind": "article",
-     "published": "2026-10-22T03:20:48Z",
+     "published": "2026-10-26T00:30:00Z",
      "thumb": null,
-     "blurb": "Undefeated welterweight Jacobe Smith will reportedly put his perfect record on the line against Ultimate Fighting Championship veteran Randy Brown .",
+     "blurb": "UFC Vegas 123 is down a fight after the withdrawal of 20-5 middleweight Azamat Bekoev. Renato Moicano vs. Tom Nolan will headline the card in ...",
      "fighters": [
-      "Jacobe Smith",
-      "Randy Brown"
+      "Azamat Bekoev",
+      "Renato Moicano",
+      "Tom Nolan"
      ]
     }
    ]
