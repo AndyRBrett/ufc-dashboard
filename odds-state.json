@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-27T02:45:25.112926+00:00",
+  "last_fetch_at": "2026-10-27T09:15:18.017394+00:00",
   "last_status": 401,
-  "lines_digest": "5fa2673bdb2e4d653f4130cd7d52666ffccf593c",
+  "lines_digest": "d7e9667fa58bb5be9de79a286cc40d317cd5d272",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -206,8 +206,8 @@
     },
     "2026-12-12": {
       "fighters": [
-        "pyfer",
         "nickal",
+        "pyfer",
         "pavlovich",
         "pereira",
         "oliveira",
@@ -320,13 +320,13 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-27T02:45:25.112926+00:00",
+  "markets_partial_at": "2026-10-27T09:15:18.017394+00:00",
   "next_event_days_out": 4,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-27T02:45:25.112926+00:00",
+      "last_fetch_at": "2026-10-27T09:15:18.017394+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
@@ -334,11 +334,11 @@
     },
     "the-odds-api-backup": {
       "bouts": 46,
-      "last_fetch_at": "2026-10-27T02:45:25.112926+00:00",
-      "last_ok_at": "2026-10-27T02:45:25.112926+00:00",
+      "last_fetch_at": "2026-10-27T09:15:18.017394+00:00",
+      "last_ok_at": "2026-10-27T09:15:18.017394+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 270
+      "requests_remaining": 269
     }
   },
   "requests_remaining": 0
