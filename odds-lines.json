@@ -2,62 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Bella Mir",
-   "b": "Chase Hooper",
-   "a_odds": -2000,
-   "b_odds": 700,
-   "commence_time": "2026-10-24T00:30:00Z",
-   "seen_at": "2026-10-22T20:55:22Z"
-  },
-  {
-   "a": "Khamzat Chimaev",
-   "b": "Robbie Lawler",
-   "a_odds": -12000,
-   "b_odds": 2100,
-   "commence_time": "2026-10-24T00:30:00Z",
-   "seen_at": "2026-10-23T22:00:26Z"
-  },
-  {
-   "a": "Patrick Downey",
-   "b": "Magomed Magomedkerimov",
-   "a_odds": -260,
-   "b_odds": 215,
-   "commence_time": "2026-10-24T00:30:00Z",
-   "seen_at": "2026-10-23T17:25:27Z"
-  },
-  {
-   "a": "Devan Worth",
-   "b": "Thomas Blackorby",
-   "a_odds": 170,
-   "b_odds": -195,
-   "commence_time": "2026-10-24T01:00:00Z",
-   "seen_at": "2026-10-23T22:00:26Z"
-  },
-  {
-   "a": "Guram Mestvirishvili",
-   "b": "Jansey Silva",
-   "a_odds": -110,
-   "b_odds": -110,
-   "commence_time": "2026-10-24T01:00:00Z",
-   "seen_at": "2026-10-23T22:00:26Z"
-  },
-  {
-   "a": "Hilarie Rose",
-   "b": "Bruna Ellen",
-   "a_odds": 192,
-   "b_odds": -230,
-   "commence_time": "2026-10-24T01:00:00Z",
-   "seen_at": "2026-10-24T01:00:27Z"
-  },
-  {
-   "a": "Maikel Reinoso",
-   "b": "Oscar Jurado Sanchez",
-   "a_odds": 145,
-   "b_odds": -165,
-   "commence_time": "2026-10-24T01:35:00Z",
-   "seen_at": "2026-10-24T01:00:27Z"
-  },
-  {
    "a": "Jake Woodley",
    "b": "Zayne Havener",
    "a_odds": -350,
@@ -196,10 +140,10 @@
   {
    "a": "Ion Surdu",
    "b": "Jessin Ayari",
-   "a_odds": -160,
-   "b_odds": 120,
+   "a_odds": -200,
+   "b_odds": 150,
    "commence_time": "2026-10-31T10:00:00Z",
-   "seen_at": "2026-10-26T20:20:24Z"
+   "seen_at": "2026-10-27T02:45:25Z"
   },
   {
    "a": "Niko Samsonidse",
@@ -212,18 +156,18 @@
   {
    "a": "Simon Biyong",
    "b": "Lazar Todev",
-   "a_odds": 200,
-   "b_odds": -300,
+   "a_odds": 225,
+   "b_odds": -350,
    "commence_time": "2026-10-31T10:00:00Z",
-   "seen_at": "2026-10-26T20:20:24Z"
+   "seen_at": "2026-10-27T02:45:25Z"
   },
   {
    "a": "Tyrone Pfeifer",
    "b": "Ronald Paradeiser",
-   "a_odds": 110,
-   "b_odds": -150,
+   "a_odds": 120,
+   "b_odds": -160,
    "commence_time": "2026-10-31T10:00:00Z",
-   "seen_at": "2026-10-26T20:20:24Z"
+   "seen_at": "2026-10-27T02:45:25Z"
   },
   {
    "a": "Tainara Lisboa",
@@ -252,18 +196,18 @@
   {
    "a": "Jean-Paul Lebosnoyani",
    "b": "Farman Hasanov",
-   "a_odds": -271,
-   "b_odds": 212,
+   "a_odds": -279,
+   "b_odds": 217,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-26T20:20:24Z"
+   "seen_at": "2026-10-27T02:45:25Z"
   },
   {
    "a": "Julian Erosa",
    "b": "Jeongyoung Lee",
-   "a_odds": 149,
-   "b_odds": -180,
+   "a_odds": 141,
+   "b_odds": -172,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-26T06:30:23Z"
+   "seen_at": "2026-10-27T02:45:25Z"
   },
   {
    "a": "Nick Klein",
@@ -276,26 +220,26 @@
   {
    "a": "Ode Osbourne",
    "b": "Cody Durden",
-   "a_odds": -126,
-   "b_odds": 102,
+   "a_odds": -115,
+   "b_odds": -108,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-26T06:30:23Z"
+   "seen_at": "2026-10-27T02:45:25Z"
   },
   {
    "a": "Randy Brown",
    "b": "Jacobe Smith",
-   "a_odds": 198,
-   "b_odds": -245,
+   "a_odds": 209,
+   "b_odds": -259,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-26T20:20:24Z"
+   "seen_at": "2026-10-27T02:45:25Z"
   },
   {
    "a": "Renato Moicano",
    "b": "Tom Nolan",
-   "a_odds": -110,
-   "b_odds": -113,
+   "a_odds": -111,
+   "b_odds": -112,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-26T20:20:24Z"
+   "seen_at": "2026-10-27T02:45:25Z"
   },
   {
    "a": "Rodrigo Sezinando",
@@ -324,10 +268,10 @@
   {
    "a": "Zachary Reese",
    "b": "Mickey Gall",
-   "a_odds": -287,
-   "b_odds": 229,
+   "a_odds": -292,
+   "b_odds": 234,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-26T20:20:24Z"
+   "seen_at": "2026-10-27T02:45:25Z"
   },
   {
    "a": "Kayla Harrison",
@@ -476,10 +420,10 @@
   {
    "a": "Carlos Prates",
    "b": "Michael Morales",
-   "a_odds": -159,
+   "a_odds": -160,
    "b_odds": 132,
    "commence_time": "2027-01-31T04:30:00Z",
-   "seen_at": "2026-10-26T06:30:23Z"
+   "seen_at": "2026-10-27T02:45:25Z"
   },
   {
    "a": "Islam Makhachev",
