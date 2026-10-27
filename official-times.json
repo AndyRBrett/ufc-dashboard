@@ -1,27 +1,80 @@
 {
- "generated_at": "2026-10-26T21:25:21Z",
+ "generated_at": "2026-10-27T00:40:22Z",
  "source": "https://www.ufc.com",
  "cards": {
   "UFC Fight Night: Moicano vs. Nolan|2026-10-31": {
    "name": "UFC Fight Night: Moicano vs. Nolan",
    "date": "2026-10-31",
-   "checked_at": "2026-10-26T21:25:21Z",
+   "checked_at": "2026-10-27T00:40:22Z",
    "url": "https://www.ufc.com/event/ufc-fight-night-october-31-2026",
    "status": 200,
    "segments": {
-    "prelim": {
-     "et": "17:00",
-     "date": "2026-10-31",
-     "utc": "2026-10-31T21:00:00Z"
-    },
     "main": {
      "et": "20:00",
      "date": "2026-10-31",
      "utc": "2026-11-01T00:00:00Z"
+    },
+    "prelim": {
+     "et": "17:00",
+     "date": "2026-10-31",
+     "utc": "2026-10-31T21:00:00Z"
     }
    },
-   "bouts": {},
-   "confirmed_at": "2026-10-26T21:25:21Z"
+   "bouts": {
+    "main": [
+     [
+      "Renato Moicano",
+      "Tom Nolan"
+     ],
+     [
+      "Randy Brown",
+      "Jacobe Smith"
+     ],
+     [
+      "Yana Santos",
+      "Luana Santos"
+     ],
+     [
+      "Ode' Osbourne",
+      "Cody Durden"
+     ],
+     [
+      "Jean-Paul Lebosnoyani",
+      "Farman Hasanov"
+     ]
+    ],
+    "prelim": [
+     [
+      "Zachary Reese",
+      "Mickey Gall"
+     ],
+     [
+      "Francis Marshall",
+      "Dakota Hope"
+     ],
+     [
+      "Rodrigo Sezinando",
+      "Theodor Berggren"
+     ],
+     [
+      "Julian Erosa",
+      "JeongYeong Lee"
+     ],
+     [
+      "Nick Klein",
+      "Joseph Kropschot"
+     ],
+     [
+      "Talita Alencar",
+      "Piera Rodriguez"
+     ],
+     [
+      "Lucia Szabova",
+      "Tainara Lisboa"
+     ]
+    ]
+   },
+   "confirmed_at": "2026-10-27T00:40:22Z"
   },
   "UFC Fight Night: Bonfim vs. Brady|2026-11-07": {
    "name": "UFC Fight Night: Bonfim vs. Brady",
