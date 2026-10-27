@@ -2,30 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Iasmin Lucindo",
-   "b": "Nicolle Caliari",
-   "a_odds": -432,
-   "b_odds": 327,
-   "commence_time": "2026-10-24T14:15:00Z",
-   "seen_at": "2026-10-24T13:10:24Z"
-  },
-  {
-   "a": "Kody Steele",
-   "b": "Noah Gugnon",
-   "a_odds": -158,
-   "b_odds": 131,
-   "commence_time": "2026-10-24T14:30:00Z",
-   "seen_at": "2026-10-24T13:10:24Z"
-  },
-  {
-   "a": "Bolaji Oki",
-   "b": "Daniel Santos",
-   "a_odds": -108,
-   "b_odds": -112,
-   "commence_time": "2026-10-24T14:55:00Z",
-   "seen_at": "2026-10-24T13:10:24Z"
-  },
-  {
    "a": "Abubakar Vagaev",
    "b": "Jacob Malkoun",
    "a_odds": -157,
@@ -164,10 +140,10 @@
   {
    "a": "Tainara Lisboa",
    "b": "Lucia Szabova",
-   "a_odds": 423,
-   "b_odds": -620,
+   "a_odds": 443,
+   "b_odds": -662,
    "commence_time": "2026-10-31T21:00:00Z",
-   "seen_at": "2026-10-26T13:25:28Z"
+   "seen_at": "2026-10-27T15:16:37Z"
   },
   {
    "a": "Azamat Bekoev",
@@ -180,50 +156,50 @@
   {
    "a": "Francis Marshall",
    "b": "Dakota Hope",
-   "a_odds": -258,
-   "b_odds": 201,
+   "a_odds": -262,
+   "b_odds": 203,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-25T05:15:18Z"
+   "seen_at": "2026-10-27T15:16:37Z"
   },
   {
    "a": "Jean-Paul Lebosnoyani",
    "b": "Farman Hasanov",
-   "a_odds": -279,
-   "b_odds": 217,
+   "a_odds": -298,
+   "b_odds": 228,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-27T02:45:25Z"
+   "seen_at": "2026-10-27T15:16:37Z"
   },
   {
    "a": "Julian Erosa",
    "b": "Jeongyoung Lee",
-   "a_odds": 141,
-   "b_odds": -172,
+   "a_odds": 140,
+   "b_odds": -170,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-27T02:45:25Z"
+   "seen_at": "2026-10-27T15:16:37Z"
   },
   {
    "a": "Nick Klein",
    "b": "Joseph Kropschot",
-   "a_odds": 250,
-   "b_odds": -317,
+   "a_odds": 257,
+   "b_odds": -327,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-27T09:15:18Z"
+   "seen_at": "2026-10-27T15:16:37Z"
   },
   {
    "a": "Ode Osbourne",
    "b": "Cody Durden",
-   "a_odds": -115,
-   "b_odds": -108,
+   "a_odds": -109,
+   "b_odds": -114,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-27T02:45:25Z"
+   "seen_at": "2026-10-27T15:16:37Z"
   },
   {
    "a": "Randy Brown",
    "b": "Jacobe Smith",
-   "a_odds": 209,
-   "b_odds": -259,
+   "a_odds": 213,
+   "b_odds": -274,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-27T02:45:25Z"
+   "seen_at": "2026-10-27T15:16:37Z"
   },
   {
    "a": "Renato Moicano",
@@ -236,34 +212,34 @@
   {
    "a": "Rodrigo Sezinando",
    "b": "Theodor Berggren",
-   "a_odds": -181,
-   "b_odds": 146,
+   "a_odds": -176,
+   "b_odds": 141,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-25T11:30:22Z"
+   "seen_at": "2026-10-27T15:16:37Z"
   },
   {
    "a": "Talita Alencar",
    "b": "Piera Rodriguez",
-   "a_odds": 220,
-   "b_odds": -284,
+   "a_odds": 228,
+   "b_odds": -298,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-26T00:20:21Z"
+   "seen_at": "2026-10-27T15:16:37Z"
   },
   {
    "a": "Yana Santos",
    "b": "Luana Santos",
-   "a_odds": 207,
-   "b_odds": -265,
+   "a_odds": 210,
+   "b_odds": -271,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-26T00:20:21Z"
+   "seen_at": "2026-10-27T15:16:37Z"
   },
   {
    "a": "Zachary Reese",
    "b": "Mickey Gall",
-   "a_odds": -295,
-   "b_odds": 236,
+   "a_odds": -313,
+   "b_odds": 242,
    "commence_time": "2026-11-01T00:00:00Z",
-   "seen_at": "2026-10-27T09:15:18Z"
+   "seen_at": "2026-10-27T15:16:37Z"
   },
   {
    "a": "Kayla Harrison",
@@ -413,9 +389,9 @@
    "a": "Carlos Prates",
    "b": "Michael Morales",
    "a_odds": -164,
-   "b_odds": 136,
+   "b_odds": 131,
    "commence_time": "2027-01-31T04:30:00Z",
-   "seen_at": "2026-10-27T09:15:18Z"
+   "seen_at": "2026-10-27T15:16:37Z"
   },
   {
    "a": "Islam Makhachev",
