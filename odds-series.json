@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-28T09:30:36Z",
+  "generated_at": "2026-10-28T10:35:38Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -18152,7 +18152,7 @@
           "f1": "Lucia Szabova",
           "f2": "Tainara Lisboa",
           "lbl": "Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-10-24T23:06:24Z",
@@ -18183,6 +18183,11 @@
               "at": "2026-10-27T21:45:43Z",
               "f1_odds": -678,
               "f2_odds": 453
+            },
+            {
+              "at": "2026-10-28T10:35:38Z",
+              "f1_odds": -695,
+              "f2_odds": 463
             }
           ],
           "open": {
@@ -18247,7 +18252,7 @@
           "f1": "Francis Marshall",
           "f2": "Dakota Hope",
           "lbl": "Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-10-25T05:15:35Z",
@@ -18263,6 +18268,11 @@
               "at": "2026-10-27T21:45:43Z",
               "f1_odds": -247,
               "f2_odds": 194
+            },
+            {
+              "at": "2026-10-28T10:35:38Z",
+              "f1_odds": -243,
+              "f2_odds": 192
             }
           ],
           "open": {
@@ -24410,7 +24420,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Tainara Lisboa",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -590,
         "close": null,
         "clv": null
@@ -24421,7 +24431,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Lucia Szabova",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 400,
         "close": null,
         "clv": null
@@ -24443,7 +24453,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Dakota Hope",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -258,
         "close": null,
         "clv": null
@@ -24454,7 +24464,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Francis Marshall",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 201,
         "close": null,
         "clv": null
