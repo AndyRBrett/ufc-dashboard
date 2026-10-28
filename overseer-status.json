@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-28T15:54:07Z",
+  "generated_at": "2026-10-28T16:55:41Z",
   "events_tracked": 9,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-28T10:35:38Z",
+      "last_changed_at": "2026-10-28T16:55:41Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -105,7 +105,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-28T15:54:07Z",
+      "last_changed_at": "2026-10-28T16:55:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-28T15:54:07Z",
+      "last_changed_at": "2026-10-28T16:55:41Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -177,6 +177,22 @@
       "priority": 718.0
     },
     {
+      "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
+      "f1": "Ode' Osbourne",
+      "f2": "Cody Durden",
+      "f1_movement": 20,
+      "f2_movement": -222,
+      "magnitude": 222,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 45,
+      "low_confidence": false,
+      "wc": "Flyweight",
+      "f1_prob_shift": -4.3,
+      "f2_prob_shift": 5.1,
+      "priority": 310.8
+    },
+    {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
       "f1": "Jacobe Smith",
       "f2": "Bruce Whitehead",
@@ -191,22 +207,6 @@
       "f1_prob_shift": 2.1,
       "f2_prob_shift": -2.6,
       "priority": 310.0
-    },
-    {
-      "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
-      "f1": "Ode' Osbourne",
-      "f2": "Cody Durden",
-      "f1_movement": 18,
-      "f2_movement": -219,
-      "magnitude": 219,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 45,
-      "low_confidence": false,
-      "wc": "Flyweight",
-      "f1_prob_shift": -3.9,
-      "f2_prob_shift": 4.4,
-      "priority": 306.6
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
@@ -385,6 +385,38 @@
       "priority": 129.0
     },
     {
+      "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
+      "f1": "Jean-Paul Lebosnoyani",
+      "f2": "Farman Hasanov",
+      "f1_movement": -81,
+      "f2_movement": 45,
+      "magnitude": 81,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 45,
+      "low_confidence": false,
+      "wc": "Welterweight",
+      "f1_prob_shift": 6.0,
+      "f2_prob_shift": -4.6,
+      "priority": 113.4
+    },
+    {
+      "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
+      "f1": "Yana Santos",
+      "f2": "Luana Santos",
+      "f1_movement": 45,
+      "f2_movement": -80,
+      "magnitude": 80,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 45,
+      "low_confidence": false,
+      "wc": "Women's Bantamweight",
+      "f1_prob_shift": -4.9,
+      "f2_prob_shift": 6.6,
+      "priority": 112.0
+    },
+    {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Jasmine Jasudavicius",
       "f2": "Erin Blanchfield",
@@ -431,38 +463,6 @@
       "f1_prob_shift": -8.3,
       "f2_prob_shift": 8.9,
       "priority": 100.0
-    },
-    {
-      "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
-      "f1": "Jean-Paul Lebosnoyani",
-      "f2": "Farman Hasanov",
-      "f1_movement": -71,
-      "f2_movement": 38,
-      "magnitude": 71,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 45,
-      "low_confidence": false,
-      "wc": "Welterweight",
-      "f1_prob_shift": 5.4,
-      "f2_prob_shift": -3.9,
-      "priority": 99.4
-    },
-    {
-      "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
-      "f1": "Yana Santos",
-      "f2": "Luana Santos",
-      "f1_movement": 33,
-      "f2_movement": -65,
-      "magnitude": 65,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 45,
-      "low_confidence": false,
-      "wc": "Women's Bantamweight",
-      "f1_prob_shift": -3.8,
-      "f2_prob_shift": 5.6,
-      "priority": 91.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
