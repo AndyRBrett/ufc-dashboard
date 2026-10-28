@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-28T03:06:43Z",
+  "generated_at": "2026-10-28T04:10:43Z",
   "events_tracked": 9,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-27T21:45:43Z",
+      "last_changed_at": "2026-10-28T04:10:43Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -105,7 +105,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "odds-unavailable",
-      "last_changed_at": "2026-10-28T03:06:43Z",
+      "last_changed_at": "2026-10-28T04:10:43Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-10-27T21:45:43Z",
+      "last_changed_at": "2026-10-28T04:10:43Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 10,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-28T03:06:43Z",
+      "last_changed_at": "2026-10-28T04:10:43Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -196,17 +196,17 @@
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Ode' Osbourne",
       "f2": "Cody Durden",
-      "f1_movement": 17,
-      "f2_movement": -218,
-      "magnitude": 218,
+      "f1_movement": 18,
+      "f2_movement": -219,
+      "magnitude": 219,
       "main_event": false,
       "tier": "main-card",
       "threshold": 45,
       "low_confidence": false,
       "wc": "Flyweight",
-      "f1_prob_shift": -3.6,
-      "f2_prob_shift": 4.2,
-      "priority": 305.2
+      "f1_prob_shift": -3.9,
+      "f2_prob_shift": 4.4,
+      "priority": 306.6
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
@@ -335,6 +335,22 @@
       "f1_prob_shift": 3.7,
       "f2_prob_shift": -3.2,
       "priority": 205.0
+    },
+    {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Caio Borralho",
+      "f2": "Yousri Belgaroui",
+      "f1_movement": -5,
+      "f2_movement": 204,
+      "magnitude": 204,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 45,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 1.1,
+      "f2_prob_shift": -1.0,
+      "priority": 204.0
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",

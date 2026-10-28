@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-28T03:06:43Z",
+  "generated_at": "2026-10-28T04:10:43Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -18197,7 +18197,7 @@
           "f1": "Ode' Osbourne",
           "f2": "Cody Durden",
           "lbl": "Main Card",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-10-25T05:15:35Z",
@@ -18228,6 +18228,11 @@
               "at": "2026-10-27T21:45:43Z",
               "f1_odds": -108,
               "f2_odds": -115
+            },
+            {
+              "at": "2026-10-28T04:10:43Z",
+              "f1_odds": -107,
+              "f2_odds": -116
             }
           ],
           "open": {
@@ -18558,12 +18563,17 @@
           "f1": "Caio Borralho",
           "f2": "Yousri Belgaroui",
           "lbl": "Main Card",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
               "f1_odds": -115,
               "f2_odds": -101
+            },
+            {
+              "at": "2026-10-28T04:10:43Z",
+              "f1_odds": -120,
+              "f2_odds": 103
             }
           ],
           "open": {
@@ -18578,12 +18588,17 @@
           "f1": "Uros Medic",
           "f2": "Kevin Holland",
           "lbl": "Main Card",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
               "f1_odds": -155,
               "f2_odds": 132
+            },
+            {
+              "at": "2026-10-28T04:10:43Z",
+              "f1_odds": -165,
+              "f2_odds": 140
             }
           ],
           "open": {
@@ -20788,7 +20803,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Ode' Osbourne",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 103,
         "close": null,
         "clv": null
@@ -20905,7 +20920,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Uros Medic",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 132,
         "close": null,
         "clv": null
@@ -21153,7 +21168,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kevin Holland",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -155,
         "close": null,
         "clv": null
@@ -22730,7 +22745,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Caio Borralho",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -101,
         "close": null,
         "clv": null
@@ -24417,7 +24432,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Cody Durden",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -125,
         "close": null,
         "clv": null
@@ -24505,7 +24520,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Yousri Belgaroui",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -115,
         "close": null,
         "clv": null
