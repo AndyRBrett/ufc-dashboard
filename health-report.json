@@ -1,11 +1,18 @@
 {
-  "generated_at": "2026-10-29T22:00:43Z",
+  "generated_at": "2026-10-29T23:00:37Z",
   "summary": {
     "events": 9,
     "block": 0,
-    "warn": 5
+    "warn": 6
   },
   "findings": [
+    {
+      "severity": "WARN",
+      "check": "card-shrink",
+      "message": "UFC Fight Night 293 dropped from 12 bouts to 11 \u2014 publishing it as a withdrawal; confirm the bout really came off the card",
+      "event": "UFC Fight Night 293",
+      "date": "2026-11-07"
+    },
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
@@ -24,7 +31,7 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night 293 (9d out): 5 of 12 bouts have no odds",
+      "message": "UFC Fight Night 293 (9d out): 4 of 11 bouts have no odds",
       "event": "UFC Fight Night 293",
       "date": "2026-11-07",
       "days_out": 9
