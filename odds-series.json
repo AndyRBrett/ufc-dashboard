@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T00:25:37Z",
+  "generated_at": "2026-10-29T01:30:42Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -18057,7 +18057,7 @@
           "f1": "Rodrigo Sezinando",
           "f2": "Theodor Berggren",
           "lbl": "Prelim",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-10-23T15:15:36Z",
@@ -18098,6 +18098,11 @@
               "at": "2026-10-28T23:20:34Z",
               "f1_odds": -178,
               "f2_odds": 142
+            },
+            {
+              "at": "2026-10-29T01:30:42Z",
+              "f1_odds": -181,
+              "f2_odds": 145
             }
           ],
           "open": {
@@ -18297,7 +18302,7 @@
           "f1": "Francis Marshall",
           "f2": "Dakota Hope",
           "lbl": "Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-10-25T05:15:35Z",
@@ -18328,6 +18333,11 @@
               "at": "2026-10-28T23:20:34Z",
               "f1_odds": -238,
               "f2_odds": 187
+            },
+            {
+              "at": "2026-10-29T01:30:42Z",
+              "f1_odds": -236,
+              "f2_odds": 185
             }
           ],
           "open": {
@@ -18402,7 +18412,7 @@
           "f1": "Zachary Reese",
           "f2": "Mickey Gall",
           "lbl": "Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-10-25T17:55:39Z",
@@ -18448,12 +18458,183 @@
               "at": "2026-10-28T23:20:34Z",
               "f1_odds": -332,
               "f2_odds": 252
+            },
+            {
+              "at": "2026-10-29T01:30:42Z",
+              "f1_odds": -333,
+              "f2_odds": 253
             }
           ],
           "open": {
             "at": "2026-10-25T17:55:39Z",
             "f1_odds": -265,
             "f2_odds": 220
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
+      "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Gabriel Bonfim",
+          "f2": "Sean Brady",
+          "lbl": "Main Event",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-29T01:30:42Z",
+              "f1_odds": -126,
+              "f2_odds": 108
+            }
+          ],
+          "open": {
+            "at": "2026-10-29T01:30:42Z",
+            "f1_odds": -126,
+            "f2_odds": 108
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Tatiana Suarez",
+          "f2": "Virna Jandiroba",
+          "lbl": "Co-Main",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-29T01:30:42Z",
+              "f1_odds": -200,
+              "f2_odds": 169
+            }
+          ],
+          "open": {
+            "at": "2026-10-29T01:30:42Z",
+            "f1_odds": -200,
+            "f2_odds": 169
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Billy Elekana",
+          "f2": "Lucas Fernando",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-29T01:30:42Z",
+              "f1_odds": 212,
+              "f2_odds": -255
+            }
+          ],
+          "open": {
+            "at": "2026-10-29T01:30:42Z",
+            "f1_odds": 212,
+            "f2_odds": -255
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Karine Silva",
+          "f2": "Gabriella Fernandes",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-29T01:30:42Z",
+              "f1_odds": -170,
+              "f2_odds": 145
+            }
+          ],
+          "open": {
+            "at": "2026-10-29T01:30:42Z",
+            "f1_odds": -170,
+            "f2_odds": 145
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Mitch Raposo",
+          "f2": "Marcos Degli",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-29T01:30:42Z",
+              "f1_odds": 177,
+              "f2_odds": -210
+            }
+          ],
+          "open": {
+            "at": "2026-10-29T01:30:42Z",
+            "f1_odds": 177,
+            "f2_odds": -210
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Jose Mauro Delano",
+          "f2": "Murtazali Magomedov",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-29T01:30:42Z",
+              "f1_odds": -113,
+              "f2_odds": -103
+            }
+          ],
+          "open": {
+            "at": "2026-10-29T01:30:42Z",
+            "f1_odds": -113,
+            "f2_odds": -103
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Keiichiro Nakamura",
+          "f2": "Ollie Schmid",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-29T01:30:42Z",
+              "f1_odds": -325,
+              "f2_odds": 265
+            }
+          ],
+          "open": {
+            "at": "2026-10-29T01:30:42Z",
+            "f1_odds": -325,
+            "f2_odds": 265
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Priscila Cachoeira",
+          "f2": "Nina Nikolija Milosevic",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-29T01:30:42Z",
+              "f1_odds": 350,
+              "f2_odds": -445
+            }
+          ],
+          "open": {
+            "at": "2026-10-29T01:30:42Z",
+            "f1_odds": 350,
+            "f2_odds": -445
           },
           "close": null,
           "clv": null
@@ -18668,7 +18849,7 @@
           "f1": "Uros Medic",
           "f2": "Kevin Holland",
           "lbl": "Main Card",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -18679,6 +18860,11 @@
               "at": "2026-10-28T04:10:43Z",
               "f1_odds": -165,
               "f2_odds": 140
+            },
+            {
+              "at": "2026-10-29T01:30:42Z",
+              "f1_odds": -150,
+              "f2_odds": 128
             }
           ],
           "open": {
@@ -19524,6 +19710,15 @@
         "open": -138,
         "close": -138,
         "clv": 0
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Nina Nikolija Milosevic",
+        "side": "f1",
+        "points": 1,
+        "open": 350,
+        "close": null,
+        "clv": null
       }
     ],
     "Joanderson Brito": [
@@ -19891,6 +20086,15 @@
         "open": -338,
         "close": -383,
         "clv": -45
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Jose Mauro Delano",
+        "side": "f2",
+        "points": 1,
+        "open": -103,
+        "close": null,
+        "clv": null
       }
     ],
     "Andre Fili": [
@@ -20006,6 +20210,15 @@
         "open": 142,
         "close": 141,
         "clv": -1
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Marcos Degli",
+        "side": "f1",
+        "points": 1,
+        "open": 177,
+        "close": null,
+        "clv": null
       }
     ],
     "Gaston Bolanos": [
@@ -20476,7 +20689,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Rodrigo Sezinando",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 150,
         "close": null,
         "clv": null
@@ -20863,7 +21076,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Mickey Gall",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -265,
         "close": null,
         "clv": null
@@ -21000,7 +21213,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Uros Medic",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 132,
         "close": null,
         "clv": null
@@ -21248,7 +21461,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kevin Holland",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -155,
         "close": null,
         "clv": null
@@ -21842,6 +22055,15 @@
         "open": -180,
         "close": -290,
         "clv": -110
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Billy Elekana",
+        "side": "f2",
+        "points": 1,
+        "open": -255,
+        "close": null,
+        "clv": null
       }
     ],
     "Neil Magny": [
@@ -23422,7 +23644,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Zachary Reese",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 220,
         "close": null,
         "clv": null
@@ -24457,7 +24679,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Theodor Berggren",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -171,
         "close": null,
         "clv": null
@@ -24523,7 +24745,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Dakota Hope",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -258,
         "close": null,
         "clv": null
@@ -24534,7 +24756,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Francis Marshall",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 201,
         "close": null,
         "clv": null
@@ -24547,6 +24769,138 @@
         "side": "f1",
         "points": 9,
         "open": 212,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Gabriel Bonfim": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Sean Brady",
+        "side": "f1",
+        "points": 1,
+        "open": -126,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Sean Brady": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Gabriel Bonfim",
+        "side": "f2",
+        "points": 1,
+        "open": 108,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Tatiana Suarez": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Virna Jandiroba",
+        "side": "f1",
+        "points": 1,
+        "open": -200,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Virna Jandiroba": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Tatiana Suarez",
+        "side": "f2",
+        "points": 1,
+        "open": 169,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Billy Elekana": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Lucas Fernando",
+        "side": "f1",
+        "points": 1,
+        "open": 212,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Karine Silva": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Gabriella Fernandes",
+        "side": "f1",
+        "points": 1,
+        "open": -170,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Gabriella Fernandes": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Karine Silva",
+        "side": "f2",
+        "points": 1,
+        "open": 145,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Marcos Degli": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Mitch Raposo",
+        "side": "f2",
+        "points": 1,
+        "open": -210,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Jose Mauro Delano": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Murtazali Magomedov",
+        "side": "f1",
+        "points": 1,
+        "open": -113,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Keiichiro Nakamura": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Ollie Schmid",
+        "side": "f1",
+        "points": 1,
+        "open": -325,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Ollie Schmid": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Keiichiro Nakamura",
+        "side": "f2",
+        "points": 1,
+        "open": 265,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Nina Nikolija Milosevic": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+        "opponent": "Priscila Cachoeira",
+        "side": "f2",
+        "points": 1,
+        "open": -445,
         "close": null,
         "clv": null
       }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T00:25:37Z",
+  "generated_at": "2026-10-29T01:30:42Z",
   "summary": {
     "events": 9,
     "block": 0,
@@ -23,8 +23,8 @@
     },
     {
       "severity": "WARN",
-      "check": "odds-missing-all",
-      "message": "UFC Fight Night: Bonfim vs. Brady (9d out) has no odds on any of its 13 bouts",
+      "check": "odds-missing-some",
+      "message": "UFC Fight Night: Bonfim vs. Brady (9d out): 5 of 13 bouts have no odds",
       "event": "UFC Fight Night: Bonfim vs. Brady",
       "date": "2026-11-07",
       "days_out": 9
