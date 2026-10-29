@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T11:35:33Z",
+  "generated_at": "2026-10-29T12:40:37Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -17902,7 +17902,7 @@
           "f1": "Jean-Paul Lebosnoyani",
           "f2": "Farman Hasanov",
           "lbl": "Main Card",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-10-23T12:40:39Z",
@@ -17973,6 +17973,11 @@
               "at": "2026-10-29T03:40:39Z",
               "f1_odds": -308,
               "f2_odds": 232
+            },
+            {
+              "at": "2026-10-29T12:40:37Z",
+              "f1_odds": -310,
+              "f2_odds": 233
             }
           ],
           "open": {
@@ -18212,7 +18217,7 @@
           "f1": "Lucia Szabova",
           "f2": "Tainara Lisboa",
           "lbl": "Prelim",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-10-24T23:06:24Z",
@@ -18253,6 +18258,11 @@
               "at": "2026-10-28T23:20:34Z",
               "f1_odds": -735,
               "f2_odds": 480
+            },
+            {
+              "at": "2026-10-29T12:40:37Z",
+              "f1_odds": -762,
+              "f2_odds": 490
             }
           ],
           "open": {
@@ -18633,7 +18643,7 @@
           "f1": "Jose Mauro Delano",
           "f2": "Murtazali Magomedov",
           "lbl": "Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-29T01:30:42Z",
@@ -18644,6 +18654,11 @@
               "at": "2026-10-29T03:40:39Z",
               "f1_odds": -133,
               "f2_odds": 114
+            },
+            {
+              "at": "2026-10-29T12:40:37Z",
+              "f1_odds": -131,
+              "f2_odds": 112
             }
           ],
           "open": {
@@ -18829,7 +18844,7 @@
           "f1": "Kayla Harrison",
           "f2": "Amanda Nunes",
           "lbl": "Co-Main",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -18865,6 +18880,11 @@
               "at": "2026-10-24T04:00:49Z",
               "f1_odds": -207,
               "f2_odds": 165
+            },
+            {
+              "at": "2026-10-29T12:40:37Z",
+              "f1_odds": -204,
+              "f2_odds": 163
             }
           ],
           "open": {
@@ -20156,7 +20176,7 @@
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
         "opponent": "Jose Mauro Delano",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": -103,
         "close": null,
         "clv": null
@@ -20570,7 +20590,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Jean-Paul Lebosnoyani",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 192,
         "close": null,
         "clv": null
@@ -24689,7 +24709,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Farman Hasanov",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -230,
         "close": null,
         "clv": null
@@ -24777,7 +24797,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Tainara Lisboa",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -590,
         "close": null,
         "clv": null
@@ -24788,7 +24808,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Lucia Szabova",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 400,
         "close": null,
         "clv": null
@@ -24931,7 +24951,7 @@
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
         "opponent": "Murtazali Magomedov",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -113,
         "close": null,
         "clv": null
@@ -24997,7 +25017,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Amanda Nunes",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -201,
         "close": null,
         "clv": null
@@ -25008,7 +25028,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kayla Harrison",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 165,
         "close": null,
         "clv": null
