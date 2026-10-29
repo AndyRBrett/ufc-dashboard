@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T02:36:46Z",
+  "generated_at": "2026-10-29T03:40:39Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -17897,7 +17897,7 @@
           "f1": "Jean-Paul Lebosnoyani",
           "f2": "Farman Hasanov",
           "lbl": "Main Card",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-23T12:40:39Z",
@@ -17963,6 +17963,11 @@
               "at": "2026-10-28T23:20:34Z",
               "f1_odds": -314,
               "f2_odds": 237
+            },
+            {
+              "at": "2026-10-29T03:40:39Z",
+              "f1_odds": -308,
+              "f2_odds": 232
             }
           ],
           "open": {
@@ -18483,12 +18488,17 @@
           "f1": "Gabriel Bonfim",
           "f2": "Sean Brady",
           "lbl": "Main Event",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-29T01:30:42Z",
               "f1_odds": -126,
               "f2_odds": 108
+            },
+            {
+              "at": "2026-10-29T03:40:39Z",
+              "f1_odds": -134,
+              "f2_odds": 115
             }
           ],
           "open": {
@@ -18563,12 +18573,17 @@
           "f1": "Mitch Raposo",
           "f2": "Marcos Degli",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-29T01:30:42Z",
               "f1_odds": 177,
               "f2_odds": -210
+            },
+            {
+              "at": "2026-10-29T03:40:39Z",
+              "f1_odds": 208,
+              "f2_odds": -250
             }
           ],
           "open": {
@@ -18583,12 +18598,17 @@
           "f1": "Jose Mauro Delano",
           "f2": "Murtazali Magomedov",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-29T01:30:42Z",
               "f1_odds": -113,
               "f2_odds": -103
+            },
+            {
+              "at": "2026-10-29T03:40:39Z",
+              "f1_odds": -133,
+              "f2_odds": 114
             }
           ],
           "open": {
@@ -18603,12 +18623,17 @@
           "f1": "Keiichiro Nakamura",
           "f2": "Ollie Schmid",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-29T01:30:42Z",
               "f1_odds": -325,
               "f2_odds": 265
+            },
+            {
+              "at": "2026-10-29T03:40:39Z",
+              "f1_odds": -350,
+              "f2_odds": 284
             }
           ],
           "open": {
@@ -18849,7 +18874,7 @@
           "f1": "Uros Medic",
           "f2": "Kevin Holland",
           "lbl": "Main Card",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -18865,6 +18890,11 @@
               "at": "2026-10-29T01:30:42Z",
               "f1_odds": -150,
               "f2_odds": 128
+            },
+            {
+              "at": "2026-10-29T03:40:39Z",
+              "f1_odds": -160,
+              "f2_odds": 136
             }
           ],
           "open": {
@@ -20091,7 +20121,7 @@
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
         "opponent": "Jose Mauro Delano",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -103,
         "close": null,
         "clv": null
@@ -20215,7 +20245,7 @@
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
         "opponent": "Marcos Degli",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 177,
         "close": null,
         "clv": null
@@ -20505,7 +20535,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Jean-Paul Lebosnoyani",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 192,
         "close": null,
         "clv": null
@@ -21213,7 +21243,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Uros Medic",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 132,
         "close": null,
         "clv": null
@@ -21461,7 +21491,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kevin Holland",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -155,
         "close": null,
         "clv": null
@@ -24624,7 +24654,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Farman Hasanov",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -230,
         "close": null,
         "clv": null
@@ -24778,7 +24808,7 @@
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
         "opponent": "Sean Brady",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -126,
         "close": null,
         "clv": null
@@ -24789,7 +24819,7 @@
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
         "opponent": "Gabriel Bonfim",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 108,
         "close": null,
         "clv": null
@@ -24855,7 +24885,7 @@
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
         "opponent": "Mitch Raposo",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -210,
         "close": null,
         "clv": null
@@ -24866,7 +24896,7 @@
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
         "opponent": "Murtazali Magomedov",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -113,
         "close": null,
         "clv": null
@@ -24877,7 +24907,7 @@
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
         "opponent": "Ollie Schmid",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -325,
         "close": null,
         "clv": null
@@ -24888,7 +24918,7 @@
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
         "opponent": "Keiichiro Nakamura",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 265,
         "close": null,
         "clv": null
