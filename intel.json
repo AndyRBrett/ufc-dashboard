@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-29T06:10:36Z",
+ "generated_at": "2026-10-29T09:25:35Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 404,
-   "items": 0
+   "status": 200,
+   "items": 15
   },
   {
    "id": "yt-mmaf",
@@ -45,6 +45,32 @@
    "date": "2026-10-31",
    "items": [
     {
+     "title": "\"Easy Money!\" | UFC Vegas 123 Media Day",
+     "url": "https://www.youtube.com/watch?v=nQ0B9Pg1ap0",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-10-28T22:07:02Z",
+     "thumb": "https://i3.ytimg.com/vi/nQ0B9Pg1ap0/hqdefault.jpg",
+     "blurb": "Listen to Renato Moicano and Tom Nolan answer questions from the press ahead of their matchup at UFC Vegas 123 Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content:…",
+     "fighters": [
+      "Renato Moicano",
+      "Tom Nolan"
+     ]
+    },
+    {
+     "title": "UFC Journey: Moicano vs Nolan",
+     "url": "https://www.youtube.com/watch?v=P8yDtEUaCEA",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-10-27T21:51:54Z",
+     "thumb": "https://i1.ytimg.com/vi/P8yDtEUaCEA/hqdefault.jpg",
+     "blurb": "Watch UFC on Paramount Plus ➡️ https://www.paramountplus.com/ Renato Moicano’s climb back toward a title shot collides with Tom Nolan’s rise as two confident lightweights put their ambitions—and hard-earned momentum—on…",
+     "fighters": [
+      "Renato Moicano",
+      "Tom Nolan"
+     ]
+    },
+    {
      "title": "Renato Moicano brands upcoming fight the ‘worst in the UFC’ following missed opportunities",
      "url": "https://bloodyelbow.com/2026/10/28/renato-moicano-brands-upcoming-fight-the-worst-in-the-ufc-following-missed-opportunities/",
      "source": "Bloody Elbow",
@@ -52,6 +78,19 @@
      "published": "2026-10-28T15:00:00Z",
      "thumb": null,
      "blurb": "Renato Moicano doesn’t have high hopes for Dan Hooker vs Brian Ortega. Moicano returns to face Tom Nolan at UFC Vegas 123 in the lightweight ...",
+     "fighters": [
+      "Renato Moicano",
+      "Tom Nolan"
+     ]
+    },
+    {
+     "title": "Renato Moicano vs Chris Duncan | FULL FIGHT | UFC Vegas 123",
+     "url": "https://www.youtube.com/watch?v=-BmqMDT3ERE",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-10-26T14:00:39Z",
+     "thumb": "https://i2.ytimg.com/vi/-BmqMDT3ERE/hqdefault.jpg",
+     "blurb": "Watch the matchup between Renato Moicano and Chris Duncan ahead of Moicano's main event match up against Tom Nolan at UFC Vegas 123! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest…",
      "fighters": [
       "Renato Moicano",
       "Tom Nolan"
