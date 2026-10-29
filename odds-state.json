@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-29T19:10:22.070939+00:00",
+  "last_fetch_at": "2026-10-29T22:00:28.059936+00:00",
   "last_status": 401,
-  "lines_digest": "0695c40975192e08d7f944d51c156615976d51c9",
+  "lines_digest": "69d2b58baf2dd55c6db1373e533b0c610a77dbcb",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -142,12 +142,32 @@
   "markets_at": "2026-10-05T12:25:19.921285+00:00",
   "markets_partial": {
     "2026-10-30": {
-      "fighters": [],
+      "fighters": [
+        "khamzaev",
+        "prescendo",
+        "wright",
+        "adams",
+        "ladd",
+        "davlatmurodov",
+        "santos"
+      ],
       "listed": 4,
-      "priced": 0
+      "priced": 4
     },
     "2026-10-31": {
       "fighters": [
+        "manning",
+        "bartl",
+        "samsonidse",
+        "aksu",
+        "surdu",
+        "ayari",
+        "biyong",
+        "todev",
+        "pfeifer",
+        "paradeiser",
+        "ngatchou",
+        "belkhadir",
         "durden",
         "osbourne",
         "lisboa",
@@ -172,8 +192,44 @@
         "nolan",
         "moicano"
       ],
-      "listed": 12,
-      "priced": 12
+      "listed": 18,
+      "priced": 18
+    },
+    "2026-11-07": {
+      "fighters": [
+        "lourenco",
+        "petersen",
+        "elekana",
+        "fernando",
+        "silva",
+        "fernandes",
+        "delano",
+        "magomedov",
+        "nakamura",
+        "schmid",
+        "raposo",
+        "degli",
+        "cachoeira",
+        "milosevic",
+        "ko",
+        "turman",
+        "suarez",
+        "jandiroba"
+      ],
+      "listed": 9,
+      "priced": 9
+    },
+    "2026-11-14": {
+      "fighters": [
+        "gurule",
+        "hasan",
+        "borralho",
+        "belgaroui",
+        "medic",
+        "holland"
+      ],
+      "listed": 3,
+      "priced": 3
     },
     "2026-11-15": {
       "fighters": [
@@ -185,6 +241,22 @@
       "listed": 2,
       "priced": 2
     },
+    "2026-11-21": {
+      "fighters": [
+        "michaliszyn",
+        "romanowski",
+        "pawlik",
+        "fleminas",
+        "held",
+        "mircea",
+        "krt",
+        "szczepaniak",
+        "moisa",
+        "kawa"
+      ],
+      "listed": 5,
+      "priced": 5
+    },
     "2026-12-12": {
       "fighters": [
         "pavlovich",
@@ -192,8 +264,35 @@
         "oliveira",
         "lopes"
       ],
-      "listed": 3,
+      "listed": 2,
       "priced": 2
+    },
+    "2026-12-31": {
+      "fighters": [
+        "gaethje",
+        "topuria",
+        "mcgregor",
+        "masvidal",
+        "silva",
+        "grasso",
+        "chimaev",
+        "costa",
+        "strickland",
+        "holloway",
+        "pimblett",
+        "imavov",
+        "shevchenko"
+      ],
+      "listed": 8,
+      "priced": 8
+    },
+    "2027-01-12": {
+      "fighters": [
+        "pavlovich",
+        "pereira"
+      ],
+      "listed": 1,
+      "priced": 1
     },
     "2027-01-30": {
       "fighters": [
@@ -210,27 +309,103 @@
       ],
       "listed": 1,
       "priced": 1
+    },
+    "2027-02-06": {
+      "fighters": [
+        "salkilld",
+        "saint-denis"
+      ],
+      "listed": 1,
+      "priced": 1
+    },
+    "2027-04-24": {
+      "fighters": [
+        "makhachev",
+        "prates",
+        "morales"
+      ],
+      "listed": 2,
+      "priced": 2
+    },
+    "2027-06-26": {
+      "fighters": [
+        "volkanovski",
+        "silva",
+        "yan",
+        "o'malley"
+      ],
+      "listed": 2,
+      "priced": 2
+    },
+    "2027-07-01": {
+      "fighters": [
+        "makhachev",
+        "usman"
+      ],
+      "listed": 1,
+      "priced": 1
+    },
+    "2027-07-10": {
+      "fighters": [
+        "pimblett",
+        "mcgregor"
+      ],
+      "listed": 1,
+      "priced": 1
+    },
+    "2027-07-24": {
+      "fighters": [
+        "yan",
+        "yadong"
+      ],
+      "listed": 1,
+      "priced": 1
+    },
+    "2027-07-31": {
+      "fighters": [
+        "ankalaev",
+        "ulberg",
+        "prochazka"
+      ],
+      "listed": 2,
+      "priced": 2
+    },
+    "2027-10-24": {
+      "fighters": [
+        "gaethje",
+        "volkanovski"
+      ],
+      "listed": 1,
+      "priced": 1
+    },
+    "2028-07-30": {
+      "fighters": [
+        "gaethje",
+        "tsarukyan"
+      ],
+      "listed": 1,
+      "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-29T19:10:22.070939+00:00",
+  "markets_partial_at": "2026-10-29T22:00:28.059936+00:00",
   "next_event_days_out": 2,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-29T19:10:22.070939+00:00",
+      "last_fetch_at": "2026-10-29T22:00:28.059936+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
       "requests_remaining": 0
     },
     "the-odds-api-backup": {
-      "bouts": 16,
-      "last_fetch_at": "2026-10-29T19:10:22.070939+00:00",
-      "last_ok_at": "2026-10-29T19:10:22.070939+00:00",
+      "bouts": 63,
+      "last_fetch_at": "2026-10-29T22:00:28.059936+00:00",
+      "last_ok_at": "2026-10-29T22:00:28.059936+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 254
+      "requests_remaining": 253
     }
   },
   "requests_remaining": 0
