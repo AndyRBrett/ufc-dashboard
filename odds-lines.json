@@ -74,20 +74,20 @@
    "seen_at": "2026-10-29T12:40:22Z"
   },
   {
-   "a": "Randy Brown",
-   "b": "Jacobe Smith",
-   "a_odds": 218,
-   "b_odds": -282,
-   "commence_time": "2026-10-31T13:45:00Z",
-   "seen_at": "2026-10-29T06:10:21Z"
-  },
-  {
    "a": "Marc-Philippe Ngatchou",
    "b": "Maher Belkhadir",
    "a_odds": -180,
    "b_odds": 140,
    "commence_time": "2026-10-31T15:00:00Z",
    "seen_at": "2026-10-29T01:30:27Z"
+  },
+  {
+   "a": "Cody Durden",
+   "b": "Ode Osbourne",
+   "a_odds": -120,
+   "b_odds": -104,
+   "commence_time": "2026-10-31T21:00:00Z",
+   "seen_at": "2026-10-29T19:10:22Z"
   },
   {
    "a": "Tainara Lisboa",
@@ -98,52 +98,52 @@
    "seen_at": "2026-10-29T12:40:22Z"
   },
   {
-   "a": "Talita Alencar",
-   "b": "Piera Rodriguez",
-   "a_odds": 228,
-   "b_odds": -298,
+   "a": "Piera Rodriguez",
+   "b": "Talita Alencar",
+   "a_odds": -298,
+   "b_odds": 228,
    "commence_time": "2026-10-31T21:35:00Z",
-   "seen_at": "2026-10-29T10:30:23Z"
+   "seen_at": "2026-10-29T19:10:22Z"
   },
   {
-   "a": "Nick Klein",
-   "b": "Joseph Kropschot",
-   "a_odds": 252,
-   "b_odds": -318,
+   "a": "Joseph Kropschot",
+   "b": "Nick Klein",
+   "a_odds": -318,
+   "b_odds": 252,
    "commence_time": "2026-10-31T22:00:00Z",
-   "seen_at": "2026-10-29T14:50:25Z"
+   "seen_at": "2026-10-29T19:10:22Z"
   },
   {
-   "a": "Zachary Reese",
-   "b": "Mickey Gall",
-   "a_odds": -367,
-   "b_odds": 275,
+   "a": "Mickey Gall",
+   "b": "Zachary Reese",
+   "a_odds": 275,
+   "b_odds": -367,
    "commence_time": "2026-10-31T22:25:00Z",
-   "seen_at": "2026-10-29T17:00:26Z"
+   "seen_at": "2026-10-29T19:10:22Z"
   },
   {
-   "a": "Julian Erosa",
-   "b": "Jeongyoung Lee",
-   "a_odds": 138,
-   "b_odds": -167,
+   "a": "Jeongyoung Lee",
+   "b": "Julian Erosa",
+   "a_odds": -166,
+   "b_odds": 136,
    "commence_time": "2026-10-31T22:50:00Z",
-   "seen_at": "2026-10-29T08:20:20Z"
+   "seen_at": "2026-10-29T19:10:22Z"
   },
   {
-   "a": "Rodrigo Sezinando",
-   "b": "Theodor Berggren",
-   "a_odds": -183,
-   "b_odds": 146,
+   "a": "Theodor Berggren",
+   "b": "Rodrigo Sezinando",
+   "a_odds": 146,
+   "b_odds": -183,
    "commence_time": "2026-10-31T23:15:00Z",
-   "seen_at": "2026-10-29T14:50:25Z"
+   "seen_at": "2026-10-29T19:10:22Z"
   },
   {
-   "a": "Francis Marshall",
-   "b": "Dakota Hope",
-   "a_odds": -238,
-   "b_odds": 187,
+   "a": "Dakota Hope",
+   "b": "Francis Marshall",
+   "a_odds": 185,
+   "b_odds": -236,
    "commence_time": "2026-10-31T23:40:00Z",
-   "seen_at": "2026-10-29T14:50:25Z"
+   "seen_at": "2026-10-29T19:10:22Z"
   },
   {
    "a": "Azamat Bekoev",
@@ -162,28 +162,28 @@
    "seen_at": "2026-10-27T09:15:18Z"
   },
   {
-   "a": "Jean-Paul Lebosnoyani",
-   "b": "Farman Hasanov",
-   "a_odds": -305,
-   "b_odds": 230,
+   "a": "Farman Hasanov",
+   "b": "Jean-Paul Lebosnoyani",
+   "a_odds": 230,
+   "b_odds": -305,
    "commence_time": "2026-11-01T00:15:00Z",
-   "seen_at": "2026-10-29T17:00:26Z"
+   "seen_at": "2026-10-29T19:10:22Z"
   },
   {
-   "a": "Yana Santos",
-   "b": "Luana Santos",
-   "a_odds": 228,
-   "b_odds": -295,
+   "a": "Luana Santos",
+   "b": "Yana Santos",
+   "a_odds": -295,
+   "b_odds": 228,
    "commence_time": "2026-11-01T00:45:00Z",
-   "seen_at": "2026-10-29T14:50:25Z"
+   "seen_at": "2026-10-29T19:10:22Z"
   },
   {
-   "a": "Ode Osbourne",
-   "b": "Cody Durden",
-   "a_odds": -104,
-   "b_odds": -120,
-   "commence_time": "2026-11-01T01:15:00Z",
-   "seen_at": "2026-10-28T23:20:21Z"
+   "a": "Jacobe Smith",
+   "b": "Randy Brown",
+   "a_odds": -282,
+   "b_odds": 218,
+   "commence_time": "2026-11-01T01:45:00Z",
+   "seen_at": "2026-10-29T19:10:22Z"
   },
   {
    "a": "Gabriel Lourenco",
@@ -354,6 +354,14 @@
    "seen_at": "2026-10-27T21:45:24Z"
   },
   {
+   "a": "Sergey Pavlovich",
+   "b": "Alex Pereira",
+   "a_odds": -202,
+   "b_odds": 161,
+   "commence_time": "2026-12-13T03:30:00Z",
+   "seen_at": "2026-10-29T19:10:22Z"
+  },
+  {
    "a": "Charles Oliveira",
    "b": "Diego Lopes",
    "a_odds": -155,
@@ -424,14 +432,6 @@
    "b_odds": 165,
    "commence_time": "2027-01-01T03:00:00Z",
    "seen_at": "2026-10-06T02:40:24Z"
-  },
-  {
-   "a": "Sergey Pavlovich",
-   "b": "Alex Pereira",
-   "a_odds": -225,
-   "b_odds": 189,
-   "commence_time": "2027-01-13T03:00:00Z",
-   "seen_at": "2026-10-27T21:45:24Z"
   },
   {
    "a": "Carlos Prates",

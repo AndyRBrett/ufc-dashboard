@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T18:05:38Z",
+  "generated_at": "2026-10-29T19:10:37Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -17822,7 +17822,7 @@
           "f1": "Yana Santos",
           "f2": "Luana Santos",
           "lbl": "Main Card",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-10-23T12:40:39Z",
@@ -17893,6 +17893,11 @@
               "at": "2026-10-29T14:50:39Z",
               "f1_odds": 228,
               "f2_odds": -295
+            },
+            {
+              "at": "2026-10-29T19:10:36Z",
+              "f1_odds": -295,
+              "f2_odds": 228
             }
           ],
           "open": {
@@ -18357,7 +18362,7 @@
           "f1": "Francis Marshall",
           "f2": "Dakota Hope",
           "lbl": "Prelim",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-10-25T05:15:35Z",
@@ -18398,6 +18403,11 @@
               "at": "2026-10-29T14:50:39Z",
               "f1_odds": -238,
               "f2_odds": 187
+            },
+            {
+              "at": "2026-10-29T19:10:36Z",
+              "f1_odds": -236,
+              "f2_odds": 185
             }
           ],
           "open": {
@@ -19266,7 +19276,7 @@
           "f1": "Sergei Pavlovich",
           "f2": "Alex Pereira",
           "lbl": "Co-Main",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-06T08:45:40Z",
@@ -19322,6 +19332,11 @@
               "at": "2026-10-27T21:45:43Z",
               "f1_odds": -225,
               "f2_odds": 189
+            },
+            {
+              "at": "2026-10-29T19:10:36Z",
+              "f1_odds": -202,
+              "f2_odds": 161
             }
           ],
           "open": {
@@ -19452,7 +19467,7 @@
         "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
         "opponent": "Alex Pereira",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -166,
         "close": null,
         "clv": null
@@ -20150,7 +20165,7 @@
         "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
         "opponent": "Sergei Pavlovich",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 140,
         "close": null,
         "clv": null
@@ -20606,7 +20621,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Yana Santos",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -210,
         "close": null,
         "clv": null
@@ -24920,7 +24935,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Luana Santos",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": 180,
         "close": null,
         "clv": null
@@ -25052,7 +25067,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Dakota Hope",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -258,
         "close": null,
         "clv": null
@@ -25063,7 +25078,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Francis Marshall",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 201,
         "close": null,
         "clv": null
