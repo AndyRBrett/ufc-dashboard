@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T13:45:36Z",
+  "generated_at": "2026-10-29T14:50:39Z",
   "events_tracked": 9,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-29T12:40:37Z",
+      "last_changed_at": "2026-10-29T14:50:39Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -105,11 +105,11 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
       "status": "ok",
-      "last_changed_at": "2026-10-29T12:40:37Z",
+      "last_changed_at": "2026-10-29T14:50:39Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": -8,
+      "line_movement": -14,
       "odds_market_priced": true
     },
     {
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-29T13:45:36Z",
+      "last_changed_at": "2026-10-29T14:50:39Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -388,17 +388,17 @@
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Yana Santos",
       "f2": "Luana Santos",
-      "f1_movement": 47,
-      "f2_movement": -83,
-      "magnitude": 83,
+      "f1_movement": 48,
+      "f2_movement": -85,
+      "magnitude": 85,
       "main_event": false,
       "tier": "main-card",
       "threshold": 45,
       "low_confidence": false,
       "wc": "Women's Bantamweight",
-      "f1_prob_shift": -5.1,
-      "f2_prob_shift": 6.8,
-      "priority": 166.0
+      "f1_prob_shift": -5.2,
+      "f2_prob_shift": 6.9,
+      "priority": 170.0
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
@@ -575,6 +575,22 @@
       "f1_prob_shift": -3.3,
       "f2_prob_shift": 4.0,
       "priority": 45.0
+    },
+    {
+      "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
+      "f1": "Gabriel Bonfim",
+      "f2": "Sean Brady",
+      "f1_movement": -14,
+      "f2_movement": 12,
+      "magnitude": 14,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Welterweight",
+      "f1_prob_shift": 2.6,
+      "f2_prob_shift": -2.6,
+      "priority": 38.5
     },
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T13:45:36Z",
+  "generated_at": "2026-10-29T14:50:39Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -17822,7 +17822,7 @@
           "f1": "Yana Santos",
           "f2": "Luana Santos",
           "lbl": "Main Card",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-23T12:40:39Z",
@@ -17888,6 +17888,11 @@
               "at": "2026-10-29T10:30:37Z",
               "f1_odds": 227,
               "f2_odds": -293
+            },
+            {
+              "at": "2026-10-29T14:50:39Z",
+              "f1_odds": 228,
+              "f2_odds": -295
             }
           ],
           "open": {
@@ -18082,7 +18087,7 @@
           "f1": "Rodrigo Sezinando",
           "f2": "Theodor Berggren",
           "lbl": "Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-10-23T15:15:36Z",
@@ -18128,6 +18133,11 @@
               "at": "2026-10-29T01:30:42Z",
               "f1_odds": -181,
               "f2_odds": 145
+            },
+            {
+              "at": "2026-10-29T14:50:39Z",
+              "f1_odds": -183,
+              "f2_odds": 146
             }
           ],
           "open": {
@@ -18142,7 +18152,7 @@
           "f1": "Nick Klein",
           "f2": "Joseph Kropschot",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-23T15:15:36Z",
@@ -18203,6 +18213,11 @@
               "at": "2026-10-29T06:10:35Z",
               "f1_odds": 257,
               "f2_odds": -327
+            },
+            {
+              "at": "2026-10-29T14:50:39Z",
+              "f1_odds": 252,
+              "f2_odds": -318
             }
           ],
           "open": {
@@ -18337,7 +18352,7 @@
           "f1": "Francis Marshall",
           "f2": "Dakota Hope",
           "lbl": "Prelim",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-10-25T05:15:35Z",
@@ -18373,6 +18388,11 @@
               "at": "2026-10-29T01:30:42Z",
               "f1_odds": -236,
               "f2_odds": 185
+            },
+            {
+              "at": "2026-10-29T14:50:39Z",
+              "f1_odds": -238,
+              "f2_odds": 187
             }
           ],
           "open": {
@@ -18533,7 +18553,7 @@
           "f1": "Gabriel Bonfim",
           "f2": "Sean Brady",
           "lbl": "Main Event",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-29T01:30:42Z",
@@ -18544,6 +18564,11 @@
               "at": "2026-10-29T03:40:39Z",
               "f1_odds": -134,
               "f2_odds": 115
+            },
+            {
+              "at": "2026-10-29T14:50:39Z",
+              "f1_odds": -140,
+              "f2_odds": 120
             }
           ],
           "open": {
@@ -18618,7 +18643,7 @@
           "f1": "Mitch Raposo",
           "f2": "Marcos Degli",
           "lbl": "Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-29T01:30:42Z",
@@ -18629,6 +18654,11 @@
               "at": "2026-10-29T03:40:39Z",
               "f1_odds": 208,
               "f2_odds": -250
+            },
+            {
+              "at": "2026-10-29T14:50:39Z",
+              "f1_odds": 205,
+              "f2_odds": -245
             }
           ],
           "open": {
@@ -20300,7 +20330,7 @@
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
         "opponent": "Marcos Degli",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": 177,
         "close": null,
         "clv": null
@@ -20393,7 +20423,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Yana Santos",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -210,
         "close": null,
         "clv": null
@@ -20774,7 +20804,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Rodrigo Sezinando",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 150,
         "close": null,
         "clv": null
@@ -24698,7 +24728,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Luana Santos",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 180,
         "close": null,
         "clv": null
@@ -24764,7 +24794,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Theodor Berggren",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -171,
         "close": null,
         "clv": null
@@ -24775,7 +24805,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Joseph Kropschot",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": 252,
         "close": null,
         "clv": null
@@ -24786,7 +24816,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Nick Klein",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -310,
         "close": null,
         "clv": null
@@ -24830,7 +24860,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Dakota Hope",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -258,
         "close": null,
         "clv": null
@@ -24841,7 +24871,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Francis Marshall",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 201,
         "close": null,
         "clv": null
@@ -24863,7 +24893,7 @@
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
         "opponent": "Sean Brady",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -126,
         "close": null,
         "clv": null
@@ -24874,7 +24904,7 @@
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
         "opponent": "Gabriel Bonfim",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 108,
         "close": null,
         "clv": null
@@ -24940,7 +24970,7 @@
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
         "opponent": "Mitch Raposo",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": -210,
         "close": null,
         "clv": null
