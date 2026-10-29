@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T05:05:58Z",
+  "generated_at": "2026-10-29T06:10:36Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -18012,7 +18012,7 @@
           "f1": "Talita Alencar",
           "f2": "Piera Rodriguez",
           "lbl": "Prelim",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-10-23T12:40:39Z",
@@ -18048,6 +18048,11 @@
               "at": "2026-10-27T15:16:53Z",
               "f1_odds": 228,
               "f2_odds": -298
+            },
+            {
+              "at": "2026-10-29T06:10:35Z",
+              "f1_odds": 223,
+              "f2_odds": -291
             }
           ],
           "open": {
@@ -18122,7 +18127,7 @@
           "f1": "Nick Klein",
           "f2": "Joseph Kropschot",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-23T15:15:36Z",
@@ -18178,6 +18183,11 @@
               "at": "2026-10-28T23:20:34Z",
               "f1_odds": 265,
               "f2_odds": -337
+            },
+            {
+              "at": "2026-10-29T06:10:35Z",
+              "f1_odds": 257,
+              "f2_odds": -327
             }
           ],
           "open": {
@@ -18357,7 +18367,7 @@
           "f1": "Randy Brown",
           "f2": "Jacobe Smith",
           "lbl": "Co-Main",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-10-25T17:55:39Z",
@@ -18403,6 +18413,11 @@
               "at": "2026-10-28T16:55:41Z",
               "f1_odds": 223,
               "f2_odds": -289
+            },
+            {
+              "at": "2026-10-29T06:10:35Z",
+              "f1_odds": 218,
+              "f2_odds": -282
             }
           ],
           "open": {
@@ -18417,7 +18432,7 @@
           "f1": "Zachary Reese",
           "f2": "Mickey Gall",
           "lbl": "Prelim",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-25T17:55:39Z",
@@ -18468,6 +18483,11 @@
               "at": "2026-10-29T01:30:42Z",
               "f1_odds": -333,
               "f2_odds": 253
+            },
+            {
+              "at": "2026-10-29T06:10:35Z",
+              "f1_odds": -358,
+              "f2_odds": 270
             }
           ],
           "open": {
@@ -21106,7 +21126,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Mickey Gall",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -265,
         "close": null,
         "clv": null
@@ -21272,7 +21292,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Randy Brown",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": -255,
         "close": null,
         "clv": null
@@ -23674,7 +23694,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Zachary Reese",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 220,
         "close": null,
         "clv": null
@@ -24687,7 +24707,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Piera Rodriguez",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": 189,
         "close": null,
         "clv": null
@@ -24698,7 +24718,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Talita Alencar",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": -225,
         "close": null,
         "clv": null
@@ -24720,7 +24740,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Joseph Kropschot",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": 252,
         "close": null,
         "clv": null
@@ -24731,7 +24751,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Nick Klein",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -310,
         "close": null,
         "clv": null
@@ -24797,7 +24817,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Jacobe Smith",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": 212,
         "close": null,
         "clv": null

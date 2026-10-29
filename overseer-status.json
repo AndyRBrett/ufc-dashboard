@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T05:05:58Z",
+  "generated_at": "2026-10-29T06:10:35Z",
   "events_tracked": 9,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-29T03:40:39Z",
+      "last_changed_at": "2026-10-29T06:10:35Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-29T05:05:58Z",
+      "last_changed_at": "2026-10-29T06:10:35Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
