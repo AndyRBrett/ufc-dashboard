@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T09:25:34Z",
+  "generated_at": "2026-10-29T10:30:37Z",
   "events_tracked": 9,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-29T06:10:35Z",
+      "last_changed_at": "2026-10-29T10:30:37Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-29T09:25:34Z",
+      "last_changed_at": "2026-10-29T10:30:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -388,17 +388,17 @@
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Yana Santos",
       "f2": "Luana Santos",
-      "f1_movement": 45,
-      "f2_movement": -80,
-      "magnitude": 80,
+      "f1_movement": 47,
+      "f2_movement": -83,
+      "magnitude": 83,
       "main_event": false,
       "tier": "main-card",
       "threshold": 45,
       "low_confidence": false,
       "wc": "Women's Bantamweight",
-      "f1_prob_shift": -4.9,
-      "f2_prob_shift": 6.6,
-      "priority": 160.0
+      "f1_prob_shift": -5.1,
+      "f2_prob_shift": 6.8,
+      "priority": 166.0
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T09:25:34Z",
+  "generated_at": "2026-10-29T10:30:37Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -17822,7 +17822,7 @@
           "f1": "Yana Santos",
           "f2": "Luana Santos",
           "lbl": "Main Card",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-23T12:40:39Z",
@@ -17883,6 +17883,11 @@
               "at": "2026-10-28T16:55:41Z",
               "f1_odds": 225,
               "f2_odds": -290
+            },
+            {
+              "at": "2026-10-29T10:30:37Z",
+              "f1_odds": 227,
+              "f2_odds": -293
             }
           ],
           "open": {
@@ -18012,7 +18017,7 @@
           "f1": "Talita Alencar",
           "f2": "Piera Rodriguez",
           "lbl": "Prelim",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-10-23T12:40:39Z",
@@ -18053,6 +18058,11 @@
               "at": "2026-10-29T06:10:35Z",
               "f1_odds": 223,
               "f2_odds": -291
+            },
+            {
+              "at": "2026-10-29T10:30:37Z",
+              "f1_odds": 228,
+              "f2_odds": -298
             }
           ],
           "open": {
@@ -18432,7 +18442,7 @@
           "f1": "Zachary Reese",
           "f2": "Mickey Gall",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-25T17:55:39Z",
@@ -18488,6 +18498,11 @@
               "at": "2026-10-29T06:10:35Z",
               "f1_odds": -358,
               "f2_odds": 270
+            },
+            {
+              "at": "2026-10-29T10:30:37Z",
+              "f1_odds": -365,
+              "f2_odds": 273
             }
           ],
           "open": {
@@ -20358,7 +20373,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Yana Santos",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -210,
         "close": null,
         "clv": null
@@ -21126,7 +21141,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Mickey Gall",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -265,
         "close": null,
         "clv": null
@@ -23694,7 +23709,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Zachary Reese",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 220,
         "close": null,
         "clv": null
@@ -24663,7 +24678,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Luana Santos",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": 180,
         "close": null,
         "clv": null
@@ -24707,7 +24722,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Piera Rodriguez",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": 189,
         "close": null,
         "clv": null
@@ -24718,7 +24733,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Talita Alencar",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": -225,
         "close": null,
         "clv": null
