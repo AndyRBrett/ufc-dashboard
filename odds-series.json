@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T14:56:17Z",
+  "generated_at": "2026-10-30T15:46:51Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -18202,7 +18202,7 @@
           "f1": "Nick Klein",
           "f2": "Joseph Kropschot",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-23T15:15:36Z",
@@ -18278,6 +18278,11 @@
               "at": "2026-10-30T02:15:37Z",
               "f1_odds": 252,
               "f2_odds": -318
+            },
+            {
+              "at": "2026-10-30T15:46:51Z",
+              "f1_odds": 250,
+              "f2_odds": -323
             }
           ],
           "open": {
@@ -25212,7 +25217,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Joseph Kropschot",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": 252,
         "close": null,
         "clv": null
@@ -25223,7 +25228,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Nick Klein",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": -310,
         "close": null,
         "clv": null
