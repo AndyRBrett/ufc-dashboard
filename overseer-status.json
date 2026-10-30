@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T13:40:38Z",
+  "generated_at": "2026-10-30T14:45:35Z",
   "events_tracked": 9,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-30T13:40:38Z",
+      "last_changed_at": "2026-10-30T14:45:35Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -251,7 +251,7 @@
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
-      "wc": "Women's Bantamweight",
+      "wc": "Women's Flyweight",
       "f1_prob_shift": 2.4,
       "f2_prob_shift": -2.8,
       "priority": 276.0
