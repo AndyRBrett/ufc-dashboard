@@ -1,40 +1,33 @@
 {
-  "generated_at": "2026-10-29T23:00:37Z",
+  "generated_at": "2026-10-30T00:05:36Z",
   "summary": {
     "events": 9,
     "block": 0,
-    "warn": 6
+    "warn": 5
   },
   "findings": [
     {
       "severity": "WARN",
-      "check": "card-shrink",
-      "message": "UFC Fight Night 293 dropped from 12 bouts to 11 \u2014 publishing it as a withdrawal; confirm the bout really came off the card",
-      "event": "UFC Fight Night 293",
-      "date": "2026-11-07"
-    },
-    {
-      "severity": "WARN",
       "check": "start-time-unanchored",
-      "message": "UFC Fight Night: Prochazka vs. Stirling (23d out): venue 'Al Rayyan' matches no known region, so its 13:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "message": "UFC Fight Night: Prochazka vs. Stirling (22d out): venue 'Al Rayyan' matches no known region, so its 13:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Prochazka vs. Stirling",
       "date": "2026-11-21"
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Moicano vs. Nolan (2d out): 1 of 12 bouts have no odds",
+      "message": "UFC Fight Night: Moicano vs. Nolan (1d out): 1 of 12 bouts have no odds",
       "event": "UFC Fight Night: Moicano vs. Nolan",
       "date": "2026-10-31",
-      "days_out": 2
+      "days_out": 1
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night 293 (9d out): 4 of 11 bouts have no odds",
+      "message": "UFC Fight Night 293 (8d out): 4 of 11 bouts have no odds",
       "event": "UFC Fight Night 293",
       "date": "2026-11-07",
-      "days_out": 9
+      "days_out": 8
     },
     {
       "severity": "WARN",

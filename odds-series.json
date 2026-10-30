@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T23:00:37Z",
+  "generated_at": "2026-10-30T00:05:37Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -18107,7 +18107,7 @@
           "f1": "Rodrigo Sezinando",
           "f2": "Theodor Berggren",
           "lbl": "Prelim",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-23T15:15:36Z",
@@ -18158,6 +18158,11 @@
               "at": "2026-10-29T14:50:39Z",
               "f1_odds": -183,
               "f2_odds": 146
+            },
+            {
+              "at": "2026-10-30T00:05:37Z",
+              "f1_odds": -180,
+              "f2_odds": 146
             }
           ],
           "open": {
@@ -18172,7 +18177,7 @@
           "f1": "Nick Klein",
           "f2": "Joseph Kropschot",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-23T15:15:36Z",
@@ -18238,6 +18243,11 @@
               "at": "2026-10-29T14:50:39Z",
               "f1_odds": 252,
               "f2_odds": -318
+            },
+            {
+              "at": "2026-10-30T00:05:37Z",
+              "f1_odds": 257,
+              "f2_odds": -327
             }
           ],
           "open": {
@@ -18252,7 +18262,7 @@
           "f1": "Lucia Szabova",
           "f2": "Tainara Lisboa",
           "lbl": "Prelim",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-24T23:06:24Z",
@@ -18303,6 +18313,11 @@
               "at": "2026-10-29T22:00:44Z",
               "f1_odds": -745,
               "f2_odds": 493
+            },
+            {
+              "at": "2026-10-30T00:05:37Z",
+              "f1_odds": -737,
+              "f2_odds": 490
             }
           ],
           "open": {
@@ -18377,7 +18392,7 @@
           "f1": "Francis Marshall",
           "f2": "Dakota Hope",
           "lbl": "Prelim",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-25T05:15:35Z",
@@ -18427,6 +18442,11 @@
             {
               "at": "2026-10-29T22:00:44Z",
               "f1_odds": -221,
+              "f2_odds": 175
+            },
+            {
+              "at": "2026-10-30T00:05:37Z",
+              "f1_odds": -218,
               "f2_odds": 175
             }
           ],
@@ -18507,7 +18527,7 @@
           "f1": "Zachary Reese",
           "f2": "Mickey Gall",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-25T17:55:39Z",
@@ -18573,6 +18593,11 @@
               "at": "2026-10-29T17:00:47Z",
               "f1_odds": -367,
               "f2_odds": 275
+            },
+            {
+              "at": "2026-10-30T00:05:37Z",
+              "f1_odds": -363,
+              "f2_odds": 277
             }
           ],
           "open": {
@@ -18593,7 +18618,7 @@
           "f1": "Tatiana Suarez",
           "f2": "Virna Jandiroba",
           "lbl": "Main Event",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-29T17:00:47Z",
@@ -18604,6 +18629,11 @@
               "at": "2026-10-29T22:00:44Z",
               "f1_odds": -195,
               "f2_odds": 160
+            },
+            {
+              "at": "2026-10-30T00:05:37Z",
+              "f1_odds": -192,
+              "f2_odds": 158
             }
           ],
           "open": {
@@ -21072,7 +21102,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Rodrigo Sezinando",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 150,
         "close": null,
         "clv": null
@@ -21459,7 +21489,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Mickey Gall",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -265,
         "close": null,
         "clv": null
@@ -24036,7 +24066,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Zachary Reese",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 220,
         "close": null,
         "clv": null
@@ -25071,7 +25101,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Theodor Berggren",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -171,
         "close": null,
         "clv": null
@@ -25082,7 +25112,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Joseph Kropschot",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 252,
         "close": null,
         "clv": null
@@ -25093,7 +25123,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Nick Klein",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -310,
         "close": null,
         "clv": null
@@ -25104,7 +25134,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Tainara Lisboa",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -590,
         "close": null,
         "clv": null
@@ -25115,7 +25145,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Lucia Szabova",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 400,
         "close": null,
         "clv": null
@@ -25137,7 +25167,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Dakota Hope",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -258,
         "close": null,
         "clv": null
@@ -25148,7 +25178,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Francis Marshall",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 201,
         "close": null,
         "clv": null
@@ -25170,7 +25200,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Virna Jandiroba",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -200,
         "close": null,
         "clv": null
@@ -25190,7 +25220,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Tatiana Suarez",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 169,
         "close": null,
         "clv": null

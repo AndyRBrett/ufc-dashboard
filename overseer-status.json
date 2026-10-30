@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T23:00:37Z",
+  "generated_at": "2026-10-30T00:05:37Z",
   "events_tracked": 9,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -9,7 +9,7 @@
   "odds_budget": {
     "exhausted": false,
     "reset_day": 1,
-    "resets_in_days": 3,
+    "resets_in_days": 2,
     "most_affected": []
   },
   "stale_threshold_hours": 48,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-29T22:00:44Z",
+      "last_changed_at": "2026-10-30T00:05:37Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -105,11 +105,11 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-293",
       "status": "ok",
-      "last_changed_at": "2026-10-29T22:00:44Z",
+      "last_changed_at": "2026-10-30T00:05:37Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 11,
-      "line_movement": 5,
+      "line_movement": 8,
       "odds_market_priced": true
     },
     {
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-29T23:00:37Z",
+      "last_changed_at": "2026-10-30T00:05:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -228,17 +228,17 @@
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Lucia Szabova",
       "f2": "Tainara Lisboa",
-      "f1_movement": -155,
-      "f2_movement": 93,
-      "magnitude": 155,
+      "f1_movement": -147,
+      "f2_movement": 90,
+      "magnitude": 147,
       "main_event": false,
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
       "wc": "Women's Bantamweight",
-      "f1_prob_shift": 2.7,
+      "f1_prob_shift": 2.5,
       "f2_prob_shift": -3.1,
-      "priority": 310.0
+      "priority": 294.0
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
@@ -575,6 +575,22 @@
       "f1_prob_shift": -1.6,
       "f2_prob_shift": 2.4,
       "priority": 32.5
+    },
+    {
+      "event_id": "2026-11-07:ufc-fight-night-293",
+      "f1": "Tatiana Suarez",
+      "f2": "Virna Jandiroba",
+      "f1_movement": 8,
+      "f2_movement": -11,
+      "magnitude": 11,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Women's Strawweight",
+      "f1_prob_shift": -0.9,
+      "f2_prob_shift": 1.6,
+      "priority": 30.3
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
