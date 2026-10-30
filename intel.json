@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-30T06:05:33Z",
+ "generated_at": "2026-10-30T09:20:39Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 404,
-   "items": 0
+   "status": 200,
+   "items": 15
   },
   {
    "id": "yt-mmaf",
@@ -44,6 +44,45 @@
    "name": "UFC Fight Night: Moicano vs. Nolan",
    "date": "2026-10-31",
    "items": [
+    {
+     "title": "SCARIEST NIGHT OF THE YEAR 😱 | Moicano vs Nolan Promo",
+     "url": "https://www.youtube.com/watch?v=-4HxF4lN4ts",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-10-29T22:15:44Z",
+     "thumb": "https://i2.ytimg.com/vi/-4HxF4lN4ts/hqdefault.jpg",
+     "blurb": "UFC returns to the META APEX on Halloween night, as Renato Moicano takes on Tom Nolan in the main event. Watch UFC on Paramount Plus ➡️ https://ufc.ac/4d4oEtR Subscribe to get all the latest UFC content:…",
+     "fighters": [
+      "Renato Moicano",
+      "Tom Nolan"
+     ]
+    },
+    {
+     "title": "\"Easy Money!\" | UFC Vegas 123 Media Day",
+     "url": "https://www.youtube.com/watch?v=nQ0B9Pg1ap0",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-10-28T22:07:02Z",
+     "thumb": "https://i3.ytimg.com/vi/nQ0B9Pg1ap0/hqdefault.jpg",
+     "blurb": "Listen to Renato Moicano and Tom Nolan answer questions from the press ahead of their matchup at UFC Vegas 123 Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content:…",
+     "fighters": [
+      "Renato Moicano",
+      "Tom Nolan"
+     ]
+    },
+    {
+     "title": "UFC Journey: Moicano vs Nolan",
+     "url": "https://www.youtube.com/watch?v=P8yDtEUaCEA",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-10-27T21:51:54Z",
+     "thumb": "https://i1.ytimg.com/vi/P8yDtEUaCEA/hqdefault.jpg",
+     "blurb": "Watch UFC on Paramount Plus ➡️ https://www.paramountplus.com/ Renato Moicano’s climb back toward a title shot collides with Tom Nolan’s rise as two confident lightweights put their ambitions—and hard-earned momentum—on…",
+     "fighters": [
+      "Renato Moicano",
+      "Tom Nolan"
+     ]
+    },
     {
      "title": "Tom Nolan makes permanent City Kickboxing move before Moicano fight",
      "url": "https://www.sherdog.com/news/news/Tom-Nolan-makes-permanent-City-Kickboxing-move-before-Moicano-fight-203396",
