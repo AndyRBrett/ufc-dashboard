@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T03:20:37Z",
+  "generated_at": "2026-10-30T04:20:38Z",
   "events_tracked": 9,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -105,11 +105,11 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-293",
       "status": "ok",
-      "last_changed_at": "2026-10-30T00:05:37Z",
+      "last_changed_at": "2026-10-30T04:20:38Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 11,
-      "line_movement": 8,
+      "line_movement": -2,
       "odds_market_priced": true
     },
     {
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-30T03:20:37Z",
+      "last_changed_at": "2026-10-30T04:20:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -575,22 +575,6 @@
       "f1_prob_shift": -1.6,
       "f2_prob_shift": 2.4,
       "priority": 32.5
-    },
-    {
-      "event_id": "2026-11-07:ufc-fight-night-293",
-      "f1": "Tatiana Suarez",
-      "f2": "Virna Jandiroba",
-      "f1_movement": 8,
-      "f2_movement": -11,
-      "magnitude": 11,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Women's Strawweight",
-      "f1_prob_shift": -0.9,
-      "f2_prob_shift": 1.6,
-      "priority": 30.3
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
