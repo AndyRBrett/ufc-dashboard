@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T16:50:38Z",
+  "generated_at": "2026-10-30T17:55:38Z",
   "summary": {
     "events": 9,
     "block": 0,
@@ -24,7 +24,7 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night 293 (8d out): 4 of 11 bouts have no odds",
+      "message": "UFC Fight Night 293 (8d out): 3 of 11 bouts have no odds",
       "event": "UFC Fight Night 293",
       "date": "2026-11-07",
       "days_out": 8

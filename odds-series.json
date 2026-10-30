@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T16:50:38Z",
+  "generated_at": "2026-10-30T17:55:39Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -18202,7 +18202,7 @@
           "f1": "Nick Klein",
           "f2": "Joseph Kropschot",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-10-23T15:15:36Z",
@@ -18283,6 +18283,11 @@
               "at": "2026-10-30T15:46:51Z",
               "f1_odds": 250,
               "f2_odds": -323
+            },
+            {
+              "at": "2026-10-30T17:55:38Z",
+              "f1_odds": 252,
+              "f2_odds": -327
             }
           ],
           "open": {
@@ -18442,7 +18447,7 @@
           "f1": "Francis Marshall",
           "f2": "Dakota Hope",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-25T05:15:35Z",
@@ -18503,6 +18508,11 @@
               "at": "2026-10-30T13:40:38Z",
               "f1_odds": -223,
               "f2_odds": 178
+            },
+            {
+              "at": "2026-10-30T17:55:38Z",
+              "f1_odds": -218,
+              "f2_odds": 175
             }
           ],
           "open": {
@@ -18688,7 +18698,7 @@
           "f1": "Tatiana Suarez",
           "f2": "Virna Jandiroba",
           "lbl": "Main Event",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-10-29T17:00:47Z",
@@ -18714,6 +18724,11 @@
               "at": "2026-10-30T13:40:38Z",
               "f1_odds": -192,
               "f2_odds": 158
+            },
+            {
+              "at": "2026-10-30T17:55:38Z",
+              "f1_odds": -194,
+              "f2_odds": 160
             }
           ],
           "open": {
@@ -18728,7 +18743,7 @@
           "f1": "Billy Elekana",
           "f2": "Lucas Fernando",
           "lbl": "Main Card",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-10-29T17:00:47Z",
@@ -18744,6 +18759,11 @@
               "at": "2026-10-30T13:40:38Z",
               "f1_odds": 209,
               "f2_odds": -258
+            },
+            {
+              "at": "2026-10-30T17:55:38Z",
+              "f1_odds": 209,
+              "f2_odds": -259
             }
           ],
           "open": {
@@ -18758,7 +18778,7 @@
           "f1": "Karine Silva",
           "f2": "Gabriella Fernandes",
           "lbl": "Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-29T17:00:47Z",
@@ -18769,6 +18789,11 @@
               "at": "2026-10-29T22:00:44Z",
               "f1_odds": -172,
               "f2_odds": 142
+            },
+            {
+              "at": "2026-10-30T17:55:38Z",
+              "f1_odds": -166,
+              "f2_odds": 137
             }
           ],
           "open": {
@@ -18783,7 +18808,7 @@
           "f1": "Mitch Raposo",
           "f2": "Marcos Degli",
           "lbl": "Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-10-29T17:00:47Z",
@@ -18798,6 +18823,11 @@
             {
               "at": "2026-10-30T13:40:38Z",
               "f1_odds": 201,
+              "f2_odds": -247
+            },
+            {
+              "at": "2026-10-30T17:55:38Z",
+              "f1_odds": 200,
               "f2_odds": -247
             }
           ],
@@ -18843,7 +18873,7 @@
           "f1": "Keiichiro Nakamura",
           "f2": "Ollie Schmid",
           "lbl": "Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-10-29T17:00:47Z",
@@ -18859,6 +18889,11 @@
               "at": "2026-10-30T13:40:38Z",
               "f1_odds": -348,
               "f2_odds": 273
+            },
+            {
+              "at": "2026-10-30T17:55:38Z",
+              "f1_odds": -347,
+              "f2_odds": 271
             }
           ],
           "open": {
@@ -18873,7 +18908,7 @@
           "f1": "Priscila Cachoeira",
           "f2": "Nina Nikolija Milosevic",
           "lbl": "Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-10-29T17:00:47Z",
@@ -18889,12 +18924,37 @@
               "at": "2026-10-30T13:40:38Z",
               "f1_odds": 340,
               "f2_odds": -457
+            },
+            {
+              "at": "2026-10-30T17:55:38Z",
+              "f1_odds": 345,
+              "f2_odds": -460
             }
           ],
           "open": {
             "at": "2026-10-29T17:00:47Z",
             "f1_odds": 350,
             "f2_odds": -445
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Jonny Parsons",
+          "f2": "Jose Henrique Souza",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-30T17:55:38Z",
+              "f1_odds": 150,
+              "f2_odds": -180
+            }
+          ],
+          "open": {
+            "at": "2026-10-30T17:55:38Z",
+            "f1_odds": 150,
+            "f2_odds": -180
           },
           "close": null,
           "clv": null
@@ -19320,7 +19380,7 @@
           "f1": "Uros Medic",
           "f2": "Kevin Holland",
           "lbl": "Main Card",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -19341,6 +19401,11 @@
               "at": "2026-10-29T03:40:39Z",
               "f1_odds": -160,
               "f2_odds": 136
+            },
+            {
+              "at": "2026-10-30T17:55:38Z",
+              "f1_odds": -161,
+              "f2_odds": 136
             }
           ],
           "open": {
@@ -19355,7 +19420,7 @@
           "f1": "Bilal Hasan",
           "f2": "Luis Gurule",
           "lbl": "Main Card",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -19366,6 +19431,11 @@
               "at": "2026-10-29T22:00:44Z",
               "f1_odds": -930,
               "f2_odds": 612
+            },
+            {
+              "at": "2026-10-30T17:55:38Z",
+              "f1_odds": -937,
+              "f2_odds": 616
             }
           ],
           "open": {
@@ -19847,7 +19917,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Bilal Hasan",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 648,
         "close": null,
         "clv": null
@@ -20206,7 +20276,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Nina Nikolija Milosevic",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": 350,
         "close": null,
         "clv": null
@@ -20724,7 +20794,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Marcos Degli",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": 205,
         "close": null,
         "clv": null
@@ -21731,7 +21801,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Uros Medic",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 132,
         "close": null,
         "clv": null
@@ -21979,7 +22049,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kevin Holland",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -155,
         "close": null,
         "clv": null
@@ -22578,7 +22648,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Billy Elekana",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -255,
         "close": null,
         "clv": null
@@ -22997,7 +23067,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Luis Gurule",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -950,
         "close": null,
         "clv": null
@@ -25217,7 +25287,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Joseph Kropschot",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": 252,
         "close": null,
         "clv": null
@@ -25228,7 +25298,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Nick Klein",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": -310,
         "close": null,
         "clv": null
@@ -25272,7 +25342,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Dakota Hope",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -258,
         "close": null,
         "clv": null
@@ -25283,7 +25353,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Francis Marshall",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 201,
         "close": null,
         "clv": null
@@ -25305,7 +25375,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Virna Jandiroba",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -200,
         "close": null,
         "clv": null
@@ -25325,7 +25395,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Tatiana Suarez",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 169,
         "close": null,
         "clv": null
@@ -25345,7 +25415,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Lucas Fernando",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": 212,
         "close": null,
         "clv": null
@@ -25365,7 +25435,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Gabriella Fernandes",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -170,
         "close": null,
         "clv": null
@@ -25385,7 +25455,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Karine Silva",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 145,
         "close": null,
         "clv": null
@@ -25405,7 +25475,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Mitch Raposo",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -245,
         "close": null,
         "clv": null
@@ -25445,7 +25515,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Ollie Schmid",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -350,
         "close": null,
         "clv": null
@@ -25465,7 +25535,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Keiichiro Nakamura",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 284,
         "close": null,
         "clv": null
@@ -25485,7 +25555,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Priscila Cachoeira",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -445,
         "close": null,
         "clv": null
@@ -25496,6 +25566,28 @@
         "side": "f2",
         "points": 1,
         "open": -445,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Jonny Parsons": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-293",
+        "opponent": "Jose Henrique Souza",
+        "side": "f1",
+        "points": 1,
+        "open": 150,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Jose Henrique Souza": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-293",
+        "opponent": "Jonny Parsons",
+        "side": "f2",
+        "points": 1,
+        "open": -180,
         "close": null,
         "clv": null
       }
