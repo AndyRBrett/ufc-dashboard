@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T21:40:44Z",
+  "generated_at": "2026-10-30T22:45:46Z",
   "events_tracked": 9,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-30T20:05:37Z",
+      "last_changed_at": "2026-10-30T22:45:46Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -108,7 +108,7 @@
       "last_changed_at": "2026-10-30T20:05:37Z",
       "is_stale": false,
       "has_data": true,
-      "bout_count": 11,
+      "bout_count": 12,
       "line_movement": 10,
       "odds_market_priced": true
     },
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-30T21:40:44Z",
+      "last_changed_at": "2026-10-30T22:45:46Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -245,7 +245,7 @@
       "f1": "Lucia Szabova",
       "f2": "Tainara Lisboa",
       "f1_movement": -138,
-      "f2_movement": 83,
+      "f2_movement": 93,
       "magnitude": 138,
       "main_event": false,
       "tier": "prelim",
@@ -253,24 +253,8 @@
       "low_confidence": false,
       "wc": "Women's Flyweight",
       "f1_prob_shift": 2.4,
-      "f2_prob_shift": -2.8,
+      "f2_prob_shift": -3.1,
       "priority": 276.0
-    },
-    {
-      "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
-      "f1": "Zachary Reese",
-      "f2": "Mickey Gall",
-      "f1_movement": -127,
-      "f2_movement": 78,
-      "magnitude": 127,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 120,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 7.1,
-      "f2_prob_shift": -6.1,
-      "priority": 254.0
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
@@ -303,6 +287,22 @@
       "f1_prob_shift": 13.3,
       "f2_prob_shift": -10.2,
       "priority": 248.0
+    },
+    {
+      "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
+      "f1": "Zachary Reese",
+      "f2": "Mickey Gall",
+      "f1_movement": -122,
+      "f2_movement": 80,
+      "magnitude": 122,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 120,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 6.9,
+      "f2_prob_shift": -6.2,
+      "priority": 244.0
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
@@ -452,17 +452,17 @@
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Jean-Paul Lebosnoyani",
       "f2": "Farman Hasanov",
-      "f1_movement": -58,
-      "f2_movement": 35,
-      "magnitude": 58,
+      "f1_movement": -60,
+      "f2_movement": 36,
+      "magnitude": 60,
       "main_event": false,
       "tier": "main-card",
       "threshold": 45,
       "low_confidence": false,
       "wc": "Welterweight",
-      "f1_prob_shift": 4.5,
-      "f2_prob_shift": -3.7,
-      "priority": 116.0
+      "f1_prob_shift": 4.7,
+      "f2_prob_shift": -3.8,
+      "priority": 120.0
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
@@ -591,22 +591,6 @@
       "f1_prob_shift": -3.3,
       "f2_prob_shift": 4.0,
       "priority": 45.0
-    },
-    {
-      "event_id": "2026-11-07:ufc-fight-night-293",
-      "f1": "Tatiana Suarez",
-      "f2": "Virna Jandiroba",
-      "f1_movement": 10,
-      "f2_movement": -12,
-      "magnitude": 12,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Women's Strawweight",
-      "f1_prob_shift": -1.1,
-      "f2_prob_shift": 1.7,
-      "priority": 33.0
     },
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",

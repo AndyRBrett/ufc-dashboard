@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-30T20:05:20.587513+00:00",
+  "last_fetch_at": "2026-10-30T22:45:24.161642+00:00",
   "last_status": 401,
-  "lines_digest": "20355a275ead404674f6141f5eb32fcb18531cb5",
+  "lines_digest": "0444a6e86875f478bdd96bf9631423c939349a99",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -143,13 +143,13 @@
   "markets_partial": {
     "2026-10-30": {
       "fighters": [
+        "adams",
+        "ladd",
+        "wright",
         "hart",
         "bahamondes",
         "khamzaev",
         "prescendo",
-        "wright",
-        "adams",
-        "ladd",
         "picciano",
         "verdinez",
         "davlatmurodov",
@@ -393,13 +393,13 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-30T20:05:20.587513+00:00",
+  "markets_partial_at": "2026-10-30T22:45:24.161642+00:00",
   "next_event_days_out": 1,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-30T20:05:20.587513+00:00",
+      "last_fetch_at": "2026-10-30T22:45:24.161642+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
@@ -407,11 +407,11 @@
     },
     "the-odds-api-backup": {
       "bouts": 66,
-      "last_fetch_at": "2026-10-30T20:05:20.587513+00:00",
-      "last_ok_at": "2026-10-30T20:05:20.587513+00:00",
+      "last_fetch_at": "2026-10-30T22:45:24.161642+00:00",
+      "last_ok_at": "2026-10-30T22:45:24.161642+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 244
+      "requests_remaining": 243
     }
   },
   "requests_remaining": 0
