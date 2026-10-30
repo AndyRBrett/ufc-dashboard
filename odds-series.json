@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T19:00:42Z",
+  "generated_at": "2026-10-30T20:05:37Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -18447,7 +18447,7 @@
           "f1": "Francis Marshall",
           "f2": "Dakota Hope",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-25T05:15:35Z",
@@ -18513,6 +18513,11 @@
               "at": "2026-10-30T17:55:38Z",
               "f1_odds": -218,
               "f2_odds": 175
+            },
+            {
+              "at": "2026-10-30T20:05:37Z",
+              "f1_odds": -223,
+              "f2_odds": 178
             }
           ],
           "open": {
@@ -18698,7 +18703,7 @@
           "f1": "Tatiana Suarez",
           "f2": "Virna Jandiroba",
           "lbl": "Main Event",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-10-29T17:00:47Z",
@@ -18729,6 +18734,11 @@
               "at": "2026-10-30T17:55:38Z",
               "f1_odds": -194,
               "f2_odds": 160
+            },
+            {
+              "at": "2026-10-30T20:05:37Z",
+              "f1_odds": -190,
+              "f2_odds": 157
             }
           ],
           "open": {
@@ -19290,7 +19300,7 @@
           "f1": "Kayla Harrison",
           "f2": "Amanda Nunes",
           "lbl": "Co-Main",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -19331,6 +19341,11 @@
               "at": "2026-10-29T12:40:37Z",
               "f1_odds": -204,
               "f2_odds": 163
+            },
+            {
+              "at": "2026-10-30T20:05:37Z",
+              "f1_odds": -202,
+              "f2_odds": 162
             }
           ],
           "open": {
@@ -19345,7 +19360,7 @@
           "f1": "Caio Borralho",
           "f2": "Yousri Belgaroui",
           "lbl": "Main Card",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -19366,6 +19381,11 @@
               "at": "2026-10-29T22:00:44Z",
               "f1_odds": -136,
               "f2_odds": 114
+            },
+            {
+              "at": "2026-10-30T20:05:37Z",
+              "f1_odds": -143,
+              "f2_odds": 120
             }
           ],
           "open": {
@@ -23644,7 +23664,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Caio Borralho",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -101,
         "close": null,
         "clv": null
@@ -25342,7 +25362,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Dakota Hope",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -258,
         "close": null,
         "clv": null
@@ -25353,7 +25373,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Francis Marshall",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 201,
         "close": null,
         "clv": null
@@ -25375,7 +25395,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Virna Jandiroba",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -200,
         "close": null,
         "clv": null
@@ -25395,7 +25415,7 @@
         "event_id": "2026-11-07:ufc-fight-night-293",
         "opponent": "Tatiana Suarez",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 169,
         "close": null,
         "clv": null
@@ -25641,7 +25661,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Amanda Nunes",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -201,
         "close": null,
         "clv": null
@@ -25652,7 +25672,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kayla Harrison",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 165,
         "close": null,
         "clv": null
@@ -25663,7 +25683,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Yousri Belgaroui",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -115,
         "close": null,
         "clv": null

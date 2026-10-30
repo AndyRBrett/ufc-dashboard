@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T19:00:42Z",
+  "generated_at": "2026-10-30T20:05:37Z",
   "events_tracked": 9,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-30T17:55:38Z",
+      "last_changed_at": "2026-10-30T20:05:37Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -105,17 +105,17 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-293",
       "status": "ok",
-      "last_changed_at": "2026-10-30T17:55:38Z",
+      "last_changed_at": "2026-10-30T20:05:37Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 11,
-      "line_movement": 6,
+      "line_movement": 10,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-10-30T17:55:38Z",
+      "last_changed_at": "2026-10-30T20:05:37Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 10,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-30T19:00:42Z",
+      "last_changed_at": "2026-10-30T20:05:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -356,17 +356,17 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Caio Borralho",
       "f2": "Yousri Belgaroui",
-      "f1_movement": -21,
-      "f2_movement": 215,
-      "magnitude": 215,
+      "f1_movement": -28,
+      "f2_movement": 221,
+      "magnitude": 221,
       "main_event": false,
       "tier": "main-card",
       "threshold": 45,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 4.1,
-      "f2_prob_shift": -3.5,
-      "priority": 215.0
+      "f1_prob_shift": 5.4,
+      "f2_prob_shift": -4.8,
+      "priority": 221.0
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
@@ -591,6 +591,22 @@
       "f1_prob_shift": -3.3,
       "f2_prob_shift": 4.0,
       "priority": 45.0
+    },
+    {
+      "event_id": "2026-11-07:ufc-fight-night-293",
+      "f1": "Tatiana Suarez",
+      "f2": "Virna Jandiroba",
+      "f1_movement": 10,
+      "f2_movement": -12,
+      "magnitude": 12,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Women's Strawweight",
+      "f1_prob_shift": -1.1,
+      "f2_prob_shift": 1.7,
+      "priority": 33.0
     },
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
