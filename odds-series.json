@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T22:45:47Z",
+  "generated_at": "2026-10-30T23:50:48Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -19203,6 +19203,172 @@
       ]
     },
     {
+      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Tatiana Suarez",
+          "f2": "Virna Jandiroba",
+          "lbl": "Co-Main",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-30T23:50:47Z",
+              "f1_odds": -190,
+              "f2_odds": 157
+            }
+          ],
+          "open": {
+            "at": "2026-10-30T23:50:47Z",
+            "f1_odds": -190,
+            "f2_odds": 157
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Billy Elekana",
+          "f2": "Lucas Fernando",
+          "lbl": "Main Card",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-30T23:50:47Z",
+              "f1_odds": 209,
+              "f2_odds": -259
+            }
+          ],
+          "open": {
+            "at": "2026-10-30T23:50:47Z",
+            "f1_odds": 209,
+            "f2_odds": -259
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Karine Silva",
+          "f2": "Gabriella Fernandes",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-30T23:50:47Z",
+              "f1_odds": -166,
+              "f2_odds": 137
+            }
+          ],
+          "open": {
+            "at": "2026-10-30T23:50:47Z",
+            "f1_odds": -166,
+            "f2_odds": 137
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Mitch Raposo",
+          "f2": "Marcos Degli",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-30T23:50:47Z",
+              "f1_odds": 200,
+              "f2_odds": -247
+            }
+          ],
+          "open": {
+            "at": "2026-10-30T23:50:47Z",
+            "f1_odds": 200,
+            "f2_odds": -247
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Jose Mauro Delano",
+          "f2": "Murtazali Magomedov",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-30T23:50:47Z",
+              "f1_odds": -115,
+              "f2_odds": -104
+            }
+          ],
+          "open": {
+            "at": "2026-10-30T23:50:47Z",
+            "f1_odds": -115,
+            "f2_odds": -104
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Keiichiro Nakamura",
+          "f2": "Ollie Schmid",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-30T23:50:47Z",
+              "f1_odds": -347,
+              "f2_odds": 271
+            }
+          ],
+          "open": {
+            "at": "2026-10-30T23:50:47Z",
+            "f1_odds": -347,
+            "f2_odds": 271
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Priscila Cachoeira",
+          "f2": "Nina Nikolija Milosevic",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-30T23:50:47Z",
+              "f1_odds": 345,
+              "f2_odds": -460
+            }
+          ],
+          "open": {
+            "at": "2026-10-30T23:50:47Z",
+            "f1_odds": 345,
+            "f2_odds": -460
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Jonny Parsons",
+          "f2": "Jose Henrique Souza",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-10-30T23:50:47Z",
+              "f1_odds": 150,
+              "f2_odds": -180
+            }
+          ],
+          "open": {
+            "at": "2026-10-30T23:50:47Z",
+            "f1_odds": 150,
+            "f2_odds": -180
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "concluded": false,
       "bouts": [
@@ -20339,6 +20505,15 @@
         "open": 350,
         "close": null,
         "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Nina Nikolija Milosevic",
+        "side": "f1",
+        "points": 1,
+        "open": 345,
+        "close": null,
+        "clv": null
       }
     ],
     "Joanderson Brito": [
@@ -20724,6 +20899,15 @@
         "open": -103,
         "close": null,
         "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Jose Mauro Delano",
+        "side": "f2",
+        "points": 1,
+        "open": -104,
+        "close": null,
+        "clv": null
       }
     ],
     "Andre Fili": [
@@ -20855,6 +21039,15 @@
         "side": "f1",
         "points": 3,
         "open": 177,
+        "close": null,
+        "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Marcos Degli",
+        "side": "f1",
+        "points": 1,
+        "open": 200,
         "close": null,
         "clv": null
       }
@@ -22709,6 +22902,15 @@
         "side": "f2",
         "points": 1,
         "open": -255,
+        "close": null,
+        "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Billy Elekana",
+        "side": "f2",
+        "points": 1,
+        "open": -259,
         "close": null,
         "clv": null
       }
@@ -25438,6 +25640,15 @@
         "open": -200,
         "close": null,
         "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Virna Jandiroba",
+        "side": "f1",
+        "points": 1,
+        "open": -190,
+        "close": null,
+        "clv": null
       }
     ],
     "Virna Jandiroba": [
@@ -25456,6 +25667,15 @@
         "side": "f2",
         "points": 1,
         "open": 169,
+        "close": null,
+        "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Tatiana Suarez",
+        "side": "f2",
+        "points": 1,
+        "open": 157,
         "close": null,
         "clv": null
       }
@@ -25478,6 +25698,15 @@
         "open": 212,
         "close": null,
         "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Lucas Fernando",
+        "side": "f1",
+        "points": 1,
+        "open": 209,
+        "close": null,
+        "clv": null
       }
     ],
     "Karine Silva": [
@@ -25496,6 +25725,15 @@
         "side": "f1",
         "points": 1,
         "open": -170,
+        "close": null,
+        "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Gabriella Fernandes",
+        "side": "f1",
+        "points": 1,
+        "open": -166,
         "close": null,
         "clv": null
       }
@@ -25518,6 +25756,15 @@
         "open": 145,
         "close": null,
         "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Karine Silva",
+        "side": "f2",
+        "points": 1,
+        "open": 137,
+        "close": null,
+        "clv": null
       }
     ],
     "Marcos Degli": [
@@ -25536,6 +25783,15 @@
         "side": "f2",
         "points": 3,
         "open": -210,
+        "close": null,
+        "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Mitch Raposo",
+        "side": "f2",
+        "points": 1,
+        "open": -247,
         "close": null,
         "clv": null
       }
@@ -25558,6 +25814,15 @@
         "open": -113,
         "close": null,
         "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Murtazali Magomedov",
+        "side": "f1",
+        "points": 1,
+        "open": -115,
+        "close": null,
+        "clv": null
       }
     ],
     "Keiichiro Nakamura": [
@@ -25576,6 +25841,15 @@
         "side": "f1",
         "points": 2,
         "open": -325,
+        "close": null,
+        "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Ollie Schmid",
+        "side": "f1",
+        "points": 1,
+        "open": -347,
         "close": null,
         "clv": null
       }
@@ -25598,6 +25872,15 @@
         "open": 265,
         "close": null,
         "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Keiichiro Nakamura",
+        "side": "f2",
+        "points": 1,
+        "open": 271,
+        "close": null,
+        "clv": null
       }
     ],
     "Nina Nikolija Milosevic": [
@@ -25618,6 +25901,15 @@
         "open": -445,
         "close": null,
         "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Priscila Cachoeira",
+        "side": "f2",
+        "points": 1,
+        "open": -460,
+        "close": null,
+        "clv": null
       }
     ],
     "Jonny Parsons": [
@@ -25629,11 +25921,29 @@
         "open": 150,
         "close": null,
         "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Jose Henrique Souza",
+        "side": "f1",
+        "points": 1,
+        "open": 150,
+        "close": null,
+        "clv": null
       }
     ],
     "Jose Henrique Souza": [
       {
         "event_id": "2026-11-07:ufc-fight-night-293",
+        "opponent": "Jonny Parsons",
+        "side": "f2",
+        "points": 1,
+        "open": -180,
+        "close": null,
+        "clv": null
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Jonny Parsons",
         "side": "f2",
         "points": 1,

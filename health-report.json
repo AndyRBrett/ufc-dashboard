@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T22:45:46Z",
+  "generated_at": "2026-10-30T23:50:47Z",
   "summary": {
     "events": 9,
     "block": 0,
@@ -24,8 +24,8 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night 293 (8d out): 4 of 12 bouts have no odds",
-      "event": "UFC Fight Night 293",
+      "message": "UFC Fight Night: Cortes-Acosta vs. Walker (8d out): 5 of 13 bouts have no odds",
+      "event": "UFC Fight Night: Cortes-Acosta vs. Walker",
       "date": "2026-11-07",
       "days_out": 8
     },
