@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-31T04:45:36Z",
+  "generated_at": "2026-10-31T04:50:38Z",
   "events_tracked": 9,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -95,11 +95,11 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-31T01:50:37Z",
+      "last_changed_at": "2026-10-31T04:50:38Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
-      "line_movement": -223,
+      "line_movement": -231,
       "odds_market_priced": true
     },
     {
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-31T04:45:36Z",
+      "last_changed_at": "2026-10-31T04:50:38Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -148,33 +148,33 @@
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Renato Moicano",
       "f2": "Tom Nolan",
-      "f1_movement": -223,
-      "f2_movement": 20,
-      "magnitude": 223,
+      "f1_movement": -231,
+      "f2_movement": 230,
+      "magnitude": 231,
       "main_event": true,
       "tier": "main-event",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Lightweight",
-      "f1_prob_shift": 5.4,
-      "f2_prob_shift": -4.1,
-      "priority": 1115.0
+      "f1_prob_shift": 7.1,
+      "f2_prob_shift": -6.5,
+      "priority": 1155.0
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Yana Santos",
       "f2": "Luana Santos",
-      "f1_movement": -492,
-      "f2_movement": 455,
-      "magnitude": 492,
+      "f1_movement": -507,
+      "f2_movement": 467,
+      "magnitude": 507,
       "main_event": false,
       "tier": "main-card",
       "threshold": 45,
       "low_confidence": false,
       "wc": "Women's Bantamweight",
-      "f1_prob_shift": 40.0,
-      "f2_prob_shift": -38.8,
-      "priority": 984.0
+      "f1_prob_shift": 40.9,
+      "f2_prob_shift": -39.7,
+      "priority": 1014.0
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",

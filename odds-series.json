@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-31T04:45:36Z",
+  "generated_at": "2026-10-31T04:50:39Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -17747,7 +17747,7 @@
           "f1": "Renato Moicano",
           "f2": "Tom Nolan",
           "lbl": "Main Event",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-23T12:40:39Z",
@@ -17808,6 +17808,11 @@
               "at": "2026-10-27T09:15:33Z",
               "f1_odds": -113,
               "f2_odds": -110
+            },
+            {
+              "at": "2026-10-31T04:50:38Z",
+              "f1_odds": -121,
+              "f2_odds": 100
             }
           ],
           "open": {
@@ -17822,7 +17827,7 @@
           "f1": "Yana Santos",
           "f2": "Luana Santos",
           "lbl": "Main Card",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-10-23T12:40:39Z",
@@ -17918,6 +17923,11 @@
               "at": "2026-10-31T01:50:37Z",
               "f1_odds": -312,
               "f2_odds": 245
+            },
+            {
+              "at": "2026-10-31T04:50:38Z",
+              "f1_odds": -327,
+              "f2_odds": 257
             }
           ],
           "open": {
@@ -18157,7 +18167,7 @@
           "f1": "Rodrigo Sezinando",
           "f2": "Theodor Berggren",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-23T15:15:36Z",
@@ -18218,6 +18228,11 @@
               "at": "2026-10-31T01:50:37Z",
               "f1_odds": -179,
               "f2_odds": 147
+            },
+            {
+              "at": "2026-10-31T04:50:38Z",
+              "f1_odds": -181,
+              "f2_odds": 149
             }
           ],
           "open": {
@@ -20312,7 +20327,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Renato Moicano",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -130,
         "close": null,
         "clv": null
@@ -21174,7 +21189,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Yana Santos",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": -210,
         "close": null,
         "clv": null
@@ -21555,7 +21570,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Rodrigo Sezinando",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 150,
         "close": null,
         "clv": null
@@ -24158,7 +24173,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Tom Nolan",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": 110,
         "close": null,
         "clv": null
@@ -25497,7 +25512,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Luana Santos",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": 180,
         "close": null,
         "clv": null
@@ -25563,7 +25578,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Theodor Berggren",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -171,
         "close": null,
         "clv": null
