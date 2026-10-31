@@ -66,3 +66,43 @@ def test_data_js_round_trip_and_insert():
     data = scrape.set_js_var(data, "FIGHTER_ESPN", '{"A B":"12","C D":"3"}')
     assert data.count("var FIGHTER_ESPN=") == 1 and scrape.extract_espn_ids(data)["C D"] == "3"
     assert scrape.extract_espn_ids('var FIGHTER_ESPN={"x":"<script>"};') == {}
+
+
+def test_respelled_corner_takes_its_bouts_other_espn_competitor():
+    # Moicano vs. Nolan (2026-10-31): each of these drew initials beside an
+    # opponent ESPN matched exactly.
+    sb = board((("Julian Erosa", "1"), ("JeongYeong Lee", "2")),
+               (("Zach Reese", "3"), ("Mickey Gall", "4")),
+               (("Nick Klein", "5"), ("Joe Kropschot", "6")))
+    ev = card("2026-10-03", ("Julian Erosa", "Lee Jeong-yeong"),
+              ("Zachary Reese", "Mickey Gall"), ("Nick Klein", "Joseph Kropschot"))
+    got = scrape.update_espn_ids({"Julian Erosa": "1", "Mickey Gall": "4", "Nick Klein": "5"},
+                                 [ev], NOW, scoreboard=lambda d: sb, exists=lambda i: True)
+    assert got["Lee Jeong-yeong"] == "2"
+    assert got["Zachary Reese"] == "3"
+    assert got["Joseph Kropschot"] == "6"
+
+
+def test_stale_replacement_corner_is_never_taken():
+    # ESPN still lists the withdrawn fighter: same surname, different person.
+    sb = board((("Mike Davis", "1"), ("Bruno Silva", "2")),
+               (("Ann Lee", "3"), ("Kim Ho", "4")))
+    ev = card("2026-10-03", ("Mike Davis", "Jon Silva"), ("Ann Lee", "Ho Jin"))
+    got = scrape.update_espn_ids({}, [ev], NOW, scoreboard=lambda d: sb, exists=lambda i: True)
+    assert got == {"Mike Davis": "1", "Ann Lee": "3"}
+
+
+def test_bout_fallback_needs_a_verified_headshot_and_an_exact_opponent():
+    sb = board((("Julian Erosa", "1"), ("JeongYeong Lee", "404")),
+               (("Zach Reese", "3"), ("Mikey Gall", "4")))
+    ev = card("2026-10-03", ("Julian Erosa", "Lee Jeong-yeong"), ("Zachary Reese", "Mickey Gall"))
+    got = scrape.update_espn_ids({}, [ev], NOW, scoreboard=lambda d: sb,
+                                 exists=lambda i: i != "404")
+    assert got == {"Julian Erosa": "1"}
+
+
+def test_bout_fallback_never_takes_another_card_fighters_exact_name():
+    sb = board((("Julian Erosa", "1"), ("Zach Reese", "3")))
+    ev = card("2026-10-03", ("Julian Erosa", "Zachary Reese"), ("Zach Reese", "Mickey Gall"))
+    got = scrape.update_espn_ids({}, [ev], NOW, scoreboard=lambda d: sb, exists=lambda i: True)
+    assert "Zachary Reese" not in got
