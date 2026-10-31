@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-30T23:50:24Z",
+ "generated_at": "2026-10-31T00:00:33Z",
  "source": "https://www.ufc.com",
  "cards": {
   "UFC Fight Night: Moicano vs. Nolan|2026-10-31": {
@@ -76,10 +76,10 @@
    },
    "confirmed_at": "2026-10-30T23:50:24Z"
   },
-  "UFC Fight Night 293|2026-11-07": {
-   "name": "UFC Fight Night 293",
+  "UFC Fight Night: Cortes-Acosta vs. Walker|2026-11-07": {
+   "name": "UFC Fight Night: Cortes-Acosta vs. Walker",
    "date": "2026-11-07",
-   "checked_at": "2026-10-30T20:05:19Z",
+   "checked_at": "2026-10-31T00:00:33Z",
    "status": 200,
    "error": "no UFC.com page matched this card",
    "tried": [
@@ -166,6 +166,27 @@
     ]
    },
    "confirmed_at": "2026-10-30T17:55:22Z"
+  },
+  "UFC Fight Night: Prochazka vs. Stirling|2026-11-21": {
+   "name": "UFC Fight Night: Prochazka vs. Stirling",
+   "date": "2026-11-21",
+   "checked_at": "2026-10-31T00:00:33Z",
+   "url": "https://www.ufc.com/event/ufc-fight-night-november-21-2026",
+   "status": 200,
+   "segments": {
+    "prelim": {
+     "et": "10:00",
+     "date": "2026-11-21",
+     "utc": "2026-11-21T15:00:00Z"
+    },
+    "main": {
+     "et": "13:00",
+     "date": "2026-11-21",
+     "utc": "2026-11-21T18:00:00Z"
+    }
+   },
+   "bouts": {},
+   "confirmed_at": "2026-10-31T00:00:33Z"
   }
  }
 }

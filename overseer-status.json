@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T23:50:47Z",
+  "generated_at": "2026-10-31T00:00:50Z",
   "events_tracked": 9,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -9,7 +9,7 @@
   "odds_budget": {
     "exhausted": false,
     "reset_day": 1,
-    "resets_in_days": 2,
+    "resets_in_days": 1,
     "most_affected": []
   },
   "stale_threshold_hours": 48,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-30T23:50:47Z",
+      "last_changed_at": "2026-10-31T00:00:50Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -305,6 +305,22 @@
       "priority": 244.0
     },
     {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Caio Borralho",
+      "f2": "Yousri Belgaroui",
+      "f1_movement": -28,
+      "f2_movement": 221,
+      "magnitude": 221,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 45,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 5.4,
+      "f2_prob_shift": -4.8,
+      "priority": 243.1
+    },
+    {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Nick Galanti",
       "f2": "Julien Leblanc",
@@ -335,22 +351,6 @@
       "f1_prob_shift": 5.2,
       "f2_prob_shift": -6.3,
       "priority": 227.0
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Caio Borralho",
-      "f2": "Yousri Belgaroui",
-      "f1_movement": -28,
-      "f2_movement": 221,
-      "magnitude": 221,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 45,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 5.4,
-      "f2_prob_shift": -4.8,
-      "priority": 221.0
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
@@ -606,7 +606,7 @@
       "wc": "Heavyweight",
       "f1_prob_shift": -0.3,
       "f2_prob_shift": 1.1,
-      "priority": 27.5
+      "priority": 30.3
     }
   ],
   "errors": []
