@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-31T23:01:09Z",
+  "generated_at": "2026-10-31T23:06:14Z",
   "events_tracked": 9,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-31T22:31:12Z",
+      "last_changed_at": "2026-10-31T23:06:14Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -105,7 +105,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "status": "ok",
-      "last_changed_at": "2026-10-31T20:05:31Z",
+      "last_changed_at": "2026-10-31T23:06:14Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -115,7 +115,7 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-10-31T17:00:40Z",
+      "last_changed_at": "2026-10-31T23:06:14Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 10,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-31T23:01:09Z",
+      "last_changed_at": "2026-10-31T23:06:14Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -164,17 +164,17 @@
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Yana Santos",
       "f2": "Luana Santos",
-      "f1_movement": -512,
-      "f2_movement": 470,
-      "magnitude": 512,
+      "f1_movement": -518,
+      "f2_movement": 475,
+      "magnitude": 518,
       "main_event": false,
       "tier": "main-card",
       "threshold": 45,
       "low_confidence": false,
       "wc": "Women's Bantamweight",
-      "f1_prob_shift": 41.1,
-      "f2_prob_shift": -40.0,
-      "priority": 1024.0
+      "f1_prob_shift": 41.5,
+      "f2_prob_shift": -40.3,
+      "priority": 1036.0
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
@@ -401,22 +401,6 @@
       "priority": 205.0
     },
     {
-      "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
-      "f1": "Jean-Paul Lebosnoyani",
-      "f2": "Farman Hasanov",
-      "f1_movement": -79,
-      "f2_movement": 51,
-      "magnitude": 79,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 45,
-      "low_confidence": false,
-      "wc": "Welterweight",
-      "f1_prob_shift": 5.9,
-      "f2_prob_shift": -5.1,
-      "priority": 158.0
-    },
-    {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "f1": "Allen Frye Jr.",
       "f2": "RJ Harris",
@@ -431,6 +415,22 @@
       "f1_prob_shift": -9.2,
       "f2_prob_shift": 10.1,
       "priority": 153.0
+    },
+    {
+      "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
+      "f1": "Jean-Paul Lebosnoyani",
+      "f2": "Farman Hasanov",
+      "f1_movement": -73,
+      "f2_movement": 46,
+      "magnitude": 73,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 45,
+      "low_confidence": false,
+      "wc": "Welterweight",
+      "f1_prob_shift": 5.5,
+      "f2_prob_shift": -4.7,
+      "priority": 146.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
