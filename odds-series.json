@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-31T07:50:32Z",
+  "generated_at": "2026-10-31T07:55:37Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -17747,7 +17747,7 @@
           "f1": "Renato Moicano",
           "f2": "Tom Nolan",
           "lbl": "Main Event",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-23T12:40:39Z",
@@ -17813,6 +17813,11 @@
               "at": "2026-10-31T04:50:38Z",
               "f1_odds": -121,
               "f2_odds": 100
+            },
+            {
+              "at": "2026-10-31T07:55:37Z",
+              "f1_odds": -121,
+              "f2_odds": 101
             }
           ],
           "open": {
@@ -18247,7 +18252,7 @@
           "f1": "Nick Klein",
           "f2": "Joseph Kropschot",
           "lbl": "Prelim",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-10-23T15:15:36Z",
@@ -18338,6 +18343,11 @@
               "at": "2026-10-30T22:45:46Z",
               "f1_odds": 260,
               "f2_odds": -333
+            },
+            {
+              "at": "2026-10-31T07:55:37Z",
+              "f1_odds": 263,
+              "f2_odds": -337
             }
           ],
           "open": {
@@ -18352,7 +18362,7 @@
           "f1": "Lucia Szabova",
           "f2": "Tainara Lisboa",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-24T23:06:24Z",
@@ -18418,6 +18428,11 @@
               "at": "2026-10-30T22:45:46Z",
               "f1_odds": -728,
               "f2_odds": 493
+            },
+            {
+              "at": "2026-10-31T07:55:37Z",
+              "f1_odds": -718,
+              "f2_odds": 490
             }
           ],
           "open": {
@@ -20327,7 +20342,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Renato Moicano",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -130,
         "close": null,
         "clv": null
@@ -24173,7 +24188,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Tom Nolan",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 110,
         "close": null,
         "clv": null
@@ -25589,7 +25604,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Joseph Kropschot",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": 252,
         "close": null,
         "clv": null
@@ -25600,7 +25615,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Nick Klein",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": -310,
         "close": null,
         "clv": null
@@ -25611,7 +25626,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Tainara Lisboa",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -590,
         "close": null,
         "clv": null
@@ -25622,7 +25637,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Lucia Szabova",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 400,
         "close": null,
         "clv": null

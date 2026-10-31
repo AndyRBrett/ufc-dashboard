@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-31T07:50:32Z",
+  "generated_at": "2026-10-31T07:55:37Z",
   "events_tracked": 9,
   "stale_events": 0,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-10-31T04:50:38Z",
+      "last_changed_at": "2026-10-31T07:55:37Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-10-31T07:50:32Z",
+      "last_changed_at": "2026-10-31T07:55:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -149,7 +149,7 @@
       "f1": "Renato Moicano",
       "f2": "Tom Nolan",
       "f1_movement": -231,
-      "f2_movement": 230,
+      "f2_movement": 231,
       "magnitude": 231,
       "main_event": true,
       "tier": "main-event",
@@ -157,7 +157,7 @@
       "low_confidence": false,
       "wc": "Lightweight",
       "f1_prob_shift": 7.1,
-      "f2_prob_shift": -6.5,
+      "f2_prob_shift": -6.8,
       "priority": 1155.0
     },
     {
@@ -260,17 +260,17 @@
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Lucia Szabova",
       "f2": "Tainara Lisboa",
-      "f1_movement": -138,
-      "f2_movement": 93,
-      "magnitude": 138,
+      "f1_movement": -128,
+      "f2_movement": 90,
+      "magnitude": 128,
       "main_event": false,
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
       "wc": "Women's Flyweight",
-      "f1_prob_shift": 2.4,
+      "f1_prob_shift": 2.3,
       "f2_prob_shift": -3.1,
-      "priority": 276.0
+      "priority": 256.0
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
