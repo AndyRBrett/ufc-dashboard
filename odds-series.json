@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-31T10:50:33Z",
+  "generated_at": "2026-10-31T10:55:39Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -18612,7 +18612,7 @@
           "f1": "Randy Brown",
           "f2": "Jacobe Smith",
           "lbl": "Co-Main",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-25T17:55:39Z",
@@ -18678,6 +18678,11 @@
               "at": "2026-10-31T01:50:37Z",
               "f1_odds": 215,
               "f2_odds": -268
+            },
+            {
+              "at": "2026-10-31T10:55:39Z",
+              "f1_odds": 212,
+              "f2_odds": -263
             }
           ],
           "open": {
@@ -22138,7 +22143,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Randy Brown",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -255,
         "close": null,
         "clv": null
@@ -25681,7 +25686,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Jacobe Smith",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 212,
         "close": null,
         "clv": null
