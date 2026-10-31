@@ -921,6 +921,24 @@ def _espn_name_key(n):
     return _norm_full(re.sub(r"[.'\u2019]", "", str(n or "")).replace("-", " "))
 
 
+def parse_espn_bouts(payload):
+    """Pure: [((key, id), (key, id))] for every two-competitor bout on a
+    scoreboard, keys folded as parse_espn_athletes folds them."""
+    out = []
+    for ev in (payload or {}).get("events", []) or []:
+        for comp in ev.get("competitions", []) or []:
+            sides = []
+            for c in comp.get("competitors", []) or []:
+                a = c.get("athlete") or {}
+                aid = str(c.get("id") or "")
+                name = a.get("displayName") or a.get("fullName")
+                if name and aid.isdigit():
+                    sides.append((_espn_name_key(name), aid))
+            if len(sides) == 2:
+                out.append((sides[0], sides[1]))
+    return out
+
+
 def parse_espn_athletes(payload):
     """Pure: {folded full name: athlete id} for every competitor on a scoreboard."""
     out = {}
@@ -1078,12 +1096,50 @@ def update_espn_ids(ids, events, now, scoreboard=None, exists=None):
         names = [n for n in names if n and n != "TBD" and n not in ids]
         if not names:
             continue
-        athletes = parse_espn_athletes(scoreboard(ev["date"]))
+        payload = scoreboard(ev["date"])
+        athletes = parse_espn_athletes(payload)
         for n in names:
             aid = athletes.get(_espn_name_key(n))
             if aid and exists(aid):
                 ids[n] = aid
+        # A name ESPN spells differently ("Zach Reese", a family name moved to
+        # the end) still sits in the same bout as an opponent who matched
+        # exactly, so ESPN's other corner of THAT bout is ours. Taken only when
+        # the two spellings plainly name one person (_espn_same_person): ESPN
+        # can trail a late replacement, and a stale corner is someone else's
+        # face. Lee Jeong-yeong, Zachary Reese and Joseph Kropschot drew
+        # initials on Moicano vs. Nolan (2026-10-31) beside opponents who had
+        # photos.
+        bouts = parse_espn_bouts(payload)
+        on_card = {_espn_name_key(n) for n in names} | {_espn_name_key(n) for n in ids}
+        for f in ev.get("fights", []):
+            a = (f.get("f1") or {}).get("name")
+            b = (f.get("f2") or {}).get("name")
+            for known, missing in ((a, b), (b, a)):
+                if not known or not missing or missing == "TBD" or missing in ids:
+                    continue
+                kk = _espn_name_key(known)
+                for (k1, i1), (k2, i2) in bouts:
+                    okey, oid = (k2, i2) if k1 == kk else (k1, i1) if k2 == kk else (None, None)
+                    if (okey and okey != kk and okey not in on_card - {_espn_name_key(missing)}
+                            and _espn_same_person(missing, okey) and exists(oid)):
+                        ids[missing] = oid
+                        break
     return ids
+
+
+def _espn_same_person(card_name, espn_key):
+    """True when *card_name* and an ESPN spelling plainly name one fighter: a
+    rename by send-reminders' rule (same surname + first initial, "Zachary
+    Reese" / "Zach Reese"), or the same letters with the tokens reordered or
+    glued ("Lee Jeong-yeong" / "JeongYeong Lee"). A shared surname alone is
+    not enough: that is how a stale replacement would look."""
+    ck = _espn_name_key(card_name)
+    if looks_like_rename(ck, espn_key):
+        return True
+    ct, et = ck.split(), espn_key.split()
+    return (len(ct) >= 2 and len(et) >= 2 and ct != et
+            and sorted(ck.replace(" ", "")) == sorted(espn_key.replace(" ", "")))
 
 
 def set_js_var(data, name, value):
