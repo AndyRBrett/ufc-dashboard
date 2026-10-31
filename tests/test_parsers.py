@@ -303,6 +303,19 @@ def test_index_odds_api_maps_a_maiden_name_to_the_card():
     assert scrape.get_odds(idx, "Katlyn Cerminara", "Mackenzie Stiller") == {"f1": -271, "f2": 217}
 
 
+def test_index_odds_api_maps_a_reordered_romanisation_to_the_card():
+    # Feed "Jeongyoung Lee", card "Lee Jeong-yeong": the bout sat at odds:null
+    # on Moicano vs. Nolan (2026-10-31) with its line in the feed.
+    payload = [{
+        "home_team": "Jeongyoung Lee", "away_team": "Julian Erosa",
+        "bookmakers": [{"key": "fanduel", "markets": [{"key": "h2h", "outcomes": [
+            {"name": "Jeongyoung Lee", "price": -153},
+            {"name": "Julian Erosa", "price": 127}]}]}],
+    }]
+    idx = scrape._index_odds_api(payload, "s")
+    assert scrape.get_odds(idx, "Julian Erosa", "Lee Jeong-yeong") == {"f1": 127, "f2": -153}
+
+
 def test_index_odds_api_pairs_a_misspelt_outcome_by_elimination(capsys):
     # The event says "Cristian Perez", the market's outcome "Christian Perez":
     # neither is a substring of the other, and the bout was dropped silently.
