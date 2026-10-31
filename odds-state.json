@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-10-31T17:00:23.986586+00:00",
+  "last_fetch_at": "2026-10-31T20:05:17.021873+00:00",
   "last_status": 401,
-  "lines_digest": "c965db71ea72b3f7528ede16f558dcf719515c5f",
+  "lines_digest": "4effe98746e1daa92b9ee6ffe43c75727be76a06",
   "markets": {
     "2026-10-10": {
       "fighters": [
@@ -143,14 +143,6 @@
   "markets_partial": {
     "2026-10-31": {
       "fighters": [
-        "ayari",
-        "gogoladze",
-        "manning",
-        "bartl",
-        "biyong",
-        "todev",
-        "pfeifer",
-        "paradeiser",
         "durden",
         "osbourne",
         "lisboa",
@@ -175,8 +167,8 @@
         "nolan",
         "moicano"
       ],
-      "listed": 16,
-      "priced": 16
+      "listed": 12,
+      "priced": 12
     },
     "2026-11-07": {
       "fighters": [
@@ -378,25 +370,25 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-10-31T17:00:23.986586+00:00",
+  "markets_partial_at": "2026-10-31T20:05:17.021873+00:00",
   "next_event_days_out": 0,
   "providers": {
     "the-odds-api": {
       "bouts": 28,
       "exhausted_at": "2026-10-05T12:25:19.921285+00:00",
-      "last_fetch_at": "2026-10-31T17:00:23.986586+00:00",
+      "last_fetch_at": "2026-10-31T20:05:17.021873+00:00",
       "last_ok_at": "2026-10-05T12:25:19.921285+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
       "requests_remaining": 0
     },
     "the-odds-api-backup": {
-      "bouts": 60,
-      "last_fetch_at": "2026-10-31T17:00:23.986586+00:00",
-      "last_ok_at": "2026-10-31T17:00:23.986586+00:00",
+      "bouts": 56,
+      "last_fetch_at": "2026-10-31T20:05:17.021873+00:00",
+      "last_ok_at": "2026-10-31T20:05:17.021873+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 237
+      "requests_remaining": 236
     }
   },
   "requests_remaining": 0

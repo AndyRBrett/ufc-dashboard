@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-31T20:00:38Z",
+  "generated_at": "2026-10-31T20:05:31Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -17957,7 +17957,7 @@
           "f1": "Jean-Paul Lebosnoyani",
           "f2": "Farman Hasanov",
           "lbl": "Main Card",
-          "points": 21,
+          "points": 22,
           "series": [
             {
               "at": "2026-10-23T12:40:39Z",
@@ -18063,6 +18063,11 @@
               "at": "2026-10-31T13:56:26Z",
               "f1_odds": -293,
               "f2_odds": 233
+            },
+            {
+              "at": "2026-10-31T20:05:31Z",
+              "f1_odds": -309,
+              "f2_odds": 243
             }
           ],
           "open": {
@@ -18192,7 +18197,7 @@
           "f1": "Rodrigo Sezinando",
           "f2": "Theodor Berggren",
           "lbl": "Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-10-23T15:15:36Z",
@@ -18263,6 +18268,11 @@
               "at": "2026-10-31T13:56:26Z",
               "f1_odds": -179,
               "f2_odds": 148
+            },
+            {
+              "at": "2026-10-31T20:05:31Z",
+              "f1_odds": -183,
+              "f2_odds": 151
             }
           ],
           "open": {
@@ -18557,7 +18567,7 @@
           "f1": "Francis Marshall",
           "f2": "Dakota Hope",
           "lbl": "Prelim",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-10-25T05:15:35Z",
@@ -18643,6 +18653,11 @@
               "at": "2026-10-31T17:00:40Z",
               "f1_odds": -203,
               "f2_odds": 166
+            },
+            {
+              "at": "2026-10-31T20:05:31Z",
+              "f1_odds": -205,
+              "f2_odds": 168
             }
           ],
           "open": {
@@ -18852,7 +18867,7 @@
           "f1": "Julian Erosa",
           "f2": "Lee Jeong-yeong",
           "lbl": "Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-31T13:56:26Z",
@@ -18863,6 +18878,11 @@
               "at": "2026-10-31T17:00:40Z",
               "f1_odds": 122,
               "f2_odds": -146
+            },
+            {
+              "at": "2026-10-31T20:05:31Z",
+              "f1_odds": 124,
+              "f2_odds": -148
             }
           ],
           "open": {
@@ -19360,12 +19380,17 @@
           "f1": "Tatiana Suarez",
           "f2": "Virna Jandiroba",
           "lbl": "Co-Main",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
               "f1_odds": -190,
               "f2_odds": 157
+            },
+            {
+              "at": "2026-10-31T20:05:31Z",
+              "f1_odds": -182,
+              "f2_odds": 149
             }
           ],
           "open": {
@@ -19530,7 +19555,7 @@
           "f1": "Waldo Cortes-Acosta",
           "f2": "Johnny Walker",
           "lbl": "Main Event",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-10-31T13:56:26Z",
@@ -19541,6 +19566,11 @@
               "at": "2026-10-31T17:00:40Z",
               "f1_odds": -203,
               "f2_odds": 160
+            },
+            {
+              "at": "2026-10-31T20:05:31Z",
+              "f1_odds": -194,
+              "f2_odds": 156
             }
           ],
           "open": {
@@ -19580,12 +19610,17 @@
           "f1": "Davey Grant",
           "f2": "Elijah Smith",
           "lbl": "Main Card",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-10-31T17:00:40Z",
               "f1_odds": 175,
               "f2_odds": -240
+            },
+            {
+              "at": "2026-10-31T20:05:31Z",
+              "f1_odds": 180,
+              "f2_odds": -232
             }
           ],
           "open": {
@@ -21576,7 +21611,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Jean-Paul Lebosnoyani",
         "side": "f2",
-        "points": 21,
+        "points": 22,
         "open": 192,
         "close": null,
         "clv": null
@@ -21760,7 +21795,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Rodrigo Sezinando",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 150,
         "close": null,
         "clv": null
@@ -24059,7 +24094,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Johnny Walker",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -201,
         "close": null,
         "clv": null
@@ -24897,7 +24932,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Waldo Cortes-Acosta",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 170,
         "close": null,
         "clv": null
@@ -25731,7 +25766,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Farman Hasanov",
         "side": "f1",
-        "points": 21,
+        "points": 22,
         "open": -230,
         "close": null,
         "clv": null
@@ -25795,7 +25830,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Theodor Berggren",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -171,
         "close": null,
         "clv": null
@@ -25861,7 +25896,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Dakota Hope",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": -258,
         "close": null,
         "clv": null
@@ -25872,7 +25907,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Francis Marshall",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": 201,
         "close": null,
         "clv": null
@@ -25894,7 +25929,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Lee Jeong-yeong",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": 127,
         "close": null,
         "clv": null
@@ -25905,7 +25940,7 @@
         "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
         "opponent": "Julian Erosa",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": -153,
         "close": null,
         "clv": null
@@ -25934,7 +25969,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Virna Jandiroba",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -190,
         "close": null,
         "clv": null
@@ -25963,7 +25998,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Tatiana Suarez",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 157,
         "close": null,
         "clv": null
@@ -26279,7 +26314,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Elijah Smith",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 175,
         "close": null,
         "clv": null
@@ -26290,7 +26325,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Davey Grant",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -240,
         "close": null,
         "clv": null
