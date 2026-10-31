@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-31T13:50:36Z",
+  "generated_at": "2026-10-31T13:56:26Z",
   "summary": {
     "events": 9,
     "block": 0,
-    "warn": 7
+    "warn": 6
   },
   "findings": [
     {
@@ -16,15 +16,7 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Moicano vs. Nolan (0d out): 1 of 12 bouts have no odds",
-      "event": "UFC Fight Night: Moicano vs. Nolan",
-      "date": "2026-10-31",
-      "days_out": 0
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-missing-some",
-      "message": "UFC Fight Night: Cortes-Acosta vs. Walker (7d out): 5 of 13 bouts have no odds",
+      "message": "UFC Fight Night: Cortes-Acosta vs. Walker (7d out): 3 of 13 bouts have no odds",
       "event": "UFC Fight Night: Cortes-Acosta vs. Walker",
       "date": "2026-11-07",
       "days_out": 7
