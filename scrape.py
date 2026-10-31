@@ -1622,6 +1622,11 @@ _ODDS_NAME_ALIASES = {
     # name, so Cerminara vs. Stiller sat at odds:null on Buckley vs. Malott
     # (2026-10-17) with its line in the feed the whole week.
     "katlyn chookagian": "Katlyn Cerminara",
+    # The books romanise him "Jeongyoung Lee" (given name first); Wikipedia has
+    # "Lee Jeong-yeong". "young" vs "yeong" is past what the token rule glues,
+    # so Erosa vs. Lee sat at odds:null on Moicano vs. Nolan (2026-10-31) with
+    # Lee -153 / Erosa +127 in the feed, and an Erosa win scored no dog bonus.
+    "jeongyoung lee": "Lee Jeong-yeong",
 }
 
 
