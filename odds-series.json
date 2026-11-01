@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T10:40:40Z",
+  "generated_at": "2026-11-01T11:21:37Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -19506,7 +19506,7 @@
           "f1": "Tatiana Suarez",
           "f2": "Virna Jandiroba",
           "lbl": "Co-Main",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19527,6 +19527,11 @@
               "at": "2026-11-01T05:20:38Z",
               "f1_odds": -185,
               "f2_odds": 153
+            },
+            {
+              "at": "2026-11-01T11:21:37Z",
+              "f1_odds": -187,
+              "f2_odds": 155
             }
           ],
           "open": {
@@ -26229,7 +26234,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Virna Jandiroba",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -190,
         "close": null,
         "clv": null
@@ -26258,7 +26263,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Tatiana Suarez",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 157,
         "close": null,
         "clv": null
