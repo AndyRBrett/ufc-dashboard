@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-01T04:16:58Z",
+  "generated_at": "2026-11-01T05:20:38Z",
   "summary": {
     "events": 10,
     "block": 0,
-    "warn": 6
+    "warn": 4
   },
   "findings": [
     {
@@ -28,16 +28,6 @@
       "event": "UFC 334: Gane vs. Hokit",
       "date": "2026-11-14",
       "days_out": 13
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-api-error",
-      "message": "last Odds API call returned HTTP 401 \u2014 lines are frozen at their previous values"
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-quota",
-      "message": "Odds API quota down to 0 requests \u2014 lines are frozen until the quota resets"
     },
     {
       "severity": "WARN",
