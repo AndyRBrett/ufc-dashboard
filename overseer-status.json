@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T01:31:21Z",
+  "generated_at": "2026-11-01T01:35:33Z",
   "events_tracked": 10,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -33,10 +33,10 @@
       "target_alert_rate": 0.35,
       "source": "calibrated",
       "observed_p": 55,
-      "persistence_at_default": 0.794,
-      "persistence_at_threshold": 0.887,
-      "persistence_samples": 240,
-      "persistence_samples_at_default": 971
+      "persistence_at_default": 0.795,
+      "persistence_at_threshold": 0.847,
+      "persistence_samples": 242,
+      "persistence_samples_at_default": 973
     },
     {
       "tier": "prelim",
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-01T01:31:21Z",
+      "last_changed_at": "2026-11-01T01:35:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -145,7 +145,7 @@
     {
       "event_id": "2027-01-30:ufc-336-van-vs-kape",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-01T01:31:21Z",
+      "last_changed_at": "2026-11-01T01:35:33Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 2,
