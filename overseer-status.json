@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T02:50:24Z",
+  "generated_at": "2026-11-01T02:55:42Z",
   "events_tracked": 10,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,11 +95,11 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-11-01T02:15:38Z",
+      "last_changed_at": "2026-11-01T02:55:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
-      "line_movement": -233,
+      "line_movement": 233,
       "odds_market_priced": true
     },
     {
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-01T02:50:24Z",
+      "last_changed_at": "2026-11-01T02:55:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -145,7 +145,7 @@
     {
       "event_id": "2027-01-30:ufc-336-van-vs-kape",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-01T02:50:24Z",
+      "last_changed_at": "2026-11-01T02:55:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 2,
@@ -172,18 +172,18 @@
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
-      "f1": "Renato Moicano",
-      "f2": "Tom Nolan",
-      "f1_movement": -233,
-      "f2_movement": 233,
+      "f1": "Tom Nolan",
+      "f2": "Renato Moicano",
+      "f1_movement": 233,
+      "f2_movement": -233,
       "magnitude": 233,
       "main_event": true,
       "tier": "main-event",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Lightweight",
-      "f1_prob_shift": 7.5,
-      "f2_prob_shift": -7.3,
+      "f1_prob_shift": -7.3,
+      "f2_prob_shift": 7.5,
       "priority": 582.5
     },
     {
