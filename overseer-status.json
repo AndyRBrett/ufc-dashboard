@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T01:30:28Z",
+  "generated_at": "2026-11-01T01:31:21Z",
   "events_tracked": 10,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-11-01T00:25:43Z",
+      "last_changed_at": "2026-11-01T01:31:21Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-01T01:30:28Z",
+      "last_changed_at": "2026-11-01T01:31:21Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -145,7 +145,7 @@
     {
       "event_id": "2027-01-30:ufc-336-van-vs-kape",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-01T01:30:28Z",
+      "last_changed_at": "2026-11-01T01:31:21Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 2,
@@ -185,22 +185,6 @@
       "f1_prob_shift": 7.5,
       "f2_prob_shift": -7.3,
       "priority": 582.5
-    },
-    {
-      "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
-      "f1": "Yana Santos",
-      "f2": "Luana Santos",
-      "f1_movement": -518,
-      "f2_movement": 475,
-      "magnitude": 518,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Women's Bantamweight",
-      "f1_prob_shift": 41.5,
-      "f2_prob_shift": -40.3,
-      "priority": 518.0
     },
     {
       "event_id": "2026-10-03:ufc-332-silva-vs-wang",
@@ -441,6 +425,22 @@
       "f1_prob_shift": 3.5,
       "f2_prob_shift": -4.1,
       "priority": 129.0
+    },
+    {
+      "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
+      "f1": "Luana Santos",
+      "f2": "Yana Santos",
+      "f1_movement": -128,
+      "f2_movement": 85,
+      "magnitude": 128,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Women's Bantamweight",
+      "f1_prob_shift": 9.4,
+      "f2_prob_shift": -8.3,
+      "priority": 128.0
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
