@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-31T23:56:37Z",
+  "generated_at": "2026-11-01T00:01:39Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -17741,7 +17741,7 @@
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Renato Moicano",
@@ -17830,8 +17830,15 @@
             "f1_odds": 110,
             "f2_odds": -130
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-31T13:56:26Z",
+            "f1_odds": -123,
+            "f2_odds": 103
+          },
+          "clv": {
+            "f1_odds": -233,
+            "f2_odds": 233
+          }
         },
         {
           "f1": "Yana Santos",
@@ -17955,8 +17962,15 @@
             "f1_odds": 180,
             "f2_odds": -210
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-31T23:06:14Z",
+            "f1_odds": -338,
+            "f2_odds": 265
+          },
+          "clv": {
+            "f1_odds": -518,
+            "f2_odds": 475
+          }
         },
         {
           "f1": "Jean-Paul Lebosnoyani",
@@ -18085,8 +18099,15 @@
             "f1_odds": -230,
             "f2_odds": 192
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-31T23:06:14Z",
+            "f1_odds": -303,
+            "f2_odds": 238
+          },
+          "clv": {
+            "f1_odds": -73,
+            "f2_odds": 46
+          }
         },
         {
           "f1": "Azamat Bekoev",
@@ -18115,8 +18136,15 @@
             "f1_odds": -400,
             "f2_odds": 316
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-23T22:00:50Z",
+            "f1_odds": -400,
+            "f2_odds": 300
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": -16
+          }
         },
         {
           "f1": "Talita Alencar",
@@ -18200,8 +18228,15 @@
             "f1_odds": 189,
             "f2_odds": -225
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-31T13:56:26Z",
+            "f1_odds": 232,
+            "f2_odds": -292
+          },
+          "clv": {
+            "f1_odds": 43,
+            "f2_odds": -67
+          }
         },
         {
           "f1": "Rodrigo Sezinando",
@@ -18295,8 +18330,15 @@
             "f1_odds": -171,
             "f2_odds": 150
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-31T23:06:14Z",
+            "f1_odds": -178,
+            "f2_odds": 146
+          },
+          "clv": {
+            "f1_odds": -7,
+            "f2_odds": -4
+          }
         },
         {
           "f1": "Nick Klein",
@@ -18415,8 +18457,15 @@
             "f1_odds": 252,
             "f2_odds": -310
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-31T17:00:40Z",
+            "f1_odds": 260,
+            "f2_odds": -332
+          },
+          "clv": {
+            "f1_odds": 8,
+            "f2_odds": -22
+          }
         },
         {
           "f1": "Lucia Szabova",
@@ -18505,8 +18554,15 @@
             "f1_odds": -590,
             "f2_odds": 400
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-31T17:00:40Z",
+            "f1_odds": -735,
+            "f2_odds": 500
+          },
+          "clv": {
+            "f1_odds": -145,
+            "f2_odds": 100
+          }
         },
         {
           "f1": "Ode' Osbourne",
@@ -18575,8 +18631,15 @@
             "f1_odds": -125,
             "f2_odds": 103
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-30T13:40:38Z",
+            "f1_odds": -104,
+            "f2_odds": -117
+          },
+          "clv": {
+            "f1_odds": 21,
+            "f2_odds": -220
+          }
         },
         {
           "f1": "Francis Marshall",
@@ -18685,8 +18748,15 @@
             "f1_odds": -258,
             "f2_odds": 201
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-31T23:06:14Z",
+            "f1_odds": -207,
+            "f2_odds": 170
+          },
+          "clv": {
+            "f1_odds": 51,
+            "f2_odds": -31
+          }
         },
         {
           "f1": "Randy Brown",
@@ -18780,8 +18850,15 @@
             "f1_odds": 212,
             "f2_odds": -255
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-31T23:06:14Z",
+            "f1_odds": 220,
+            "f2_odds": -274
+          },
+          "clv": {
+            "f1_odds": 8,
+            "f2_odds": -19
+          }
         },
         {
           "f1": "Zachary Reese",
@@ -18885,8 +18962,15 @@
             "f1_odds": -265,
             "f2_odds": 220
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-31T17:00:40Z",
+            "f1_odds": -415,
+            "f2_odds": 320
+          },
+          "clv": {
+            "f1_odds": -150,
+            "f2_odds": 100
+          }
         },
         {
           "f1": "Julian Erosa",
@@ -18920,8 +19004,15 @@
             "f1_odds": 127,
             "f2_odds": -153
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-31T23:06:14Z",
+            "f1_odds": 160,
+            "f2_odds": -220
+          },
+          "clv": {
+            "f1_odds": 33,
+            "f2_odds": -67
+          }
         }
       ]
     },
@@ -20599,8 +20690,8 @@
         "side": "f2",
         "points": 15,
         "open": -130,
-        "close": null,
-        "clv": null
+        "close": 103,
+        "clv": 233
       }
     ],
     "Fares Ziam": [
@@ -21461,8 +21552,8 @@
         "side": "f2",
         "points": 22,
         "open": -210,
-        "close": null,
-        "clv": null
+        "close": 265,
+        "clv": 475
       }
     ],
     "Shane Collins": [
@@ -21658,8 +21749,8 @@
         "side": "f2",
         "points": 23,
         "open": 192,
-        "close": null,
-        "clv": null
+        "close": 238,
+        "clv": 46
       }
     ],
     "Eric Nolan": [
@@ -21842,8 +21933,8 @@
         "side": "f2",
         "points": 16,
         "open": 150,
-        "close": null,
-        "clv": null
+        "close": 146,
+        "clv": -4
       }
     ],
     "Tahir Abdullayev": [
@@ -22229,8 +22320,8 @@
         "side": "f1",
         "points": 18,
         "open": -265,
-        "close": null,
-        "clv": null
+        "close": -415,
+        "clv": -150
       }
     ],
     "Cody Durden": [
@@ -22249,8 +22340,8 @@
         "side": "f2",
         "points": 11,
         "open": 103,
-        "close": null,
-        "clv": null
+        "close": -117,
+        "clv": -220
       }
     ],
     "Farid Basharat": [
@@ -22395,8 +22486,8 @@
         "side": "f2",
         "points": 16,
         "open": -255,
-        "close": null,
-        "clv": null
+        "close": -274,
+        "clv": -19
       }
     ],
     "Chase Hooper": [
@@ -24454,8 +24545,8 @@
         "side": "f1",
         "points": 15,
         "open": 110,
-        "close": null,
-        "clv": null
+        "close": -123,
+        "clv": -233
       }
     ],
     "Brian Ortega": [
@@ -24824,8 +24915,8 @@
         "side": "f2",
         "points": 18,
         "open": 220,
-        "close": null,
-        "clv": null
+        "close": 320,
+        "clv": 100
       }
     ],
     "Sedriques Dumas": [
@@ -25802,8 +25893,8 @@
         "side": "f1",
         "points": 22,
         "open": 180,
-        "close": null,
-        "clv": null
+        "close": -338,
+        "clv": -518
       }
     ],
     "Jean-Paul Lebosnoyani": [
@@ -25813,8 +25904,8 @@
         "side": "f1",
         "points": 23,
         "open": -230,
-        "close": null,
-        "clv": null
+        "close": -303,
+        "clv": -73
       }
     ],
     "Azamat Bekoev": [
@@ -25824,8 +25915,8 @@
         "side": "f1",
         "points": 3,
         "open": -400,
-        "close": null,
-        "clv": null
+        "close": -400,
+        "clv": 0
       }
     ],
     "Andre Petroski": [
@@ -25835,8 +25926,8 @@
         "side": "f2",
         "points": 3,
         "open": 316,
-        "close": null,
-        "clv": null
+        "close": 300,
+        "clv": -16
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -25855,8 +25946,8 @@
         "side": "f1",
         "points": 14,
         "open": 189,
-        "close": null,
-        "clv": null
+        "close": 232,
+        "clv": 43
       }
     ],
     "Piera Rodriguez": [
@@ -25866,8 +25957,8 @@
         "side": "f2",
         "points": 14,
         "open": -225,
-        "close": null,
-        "clv": null
+        "close": -292,
+        "clv": -67
       }
     ],
     "Rodrigo Sezinando": [
@@ -25877,8 +25968,8 @@
         "side": "f1",
         "points": 16,
         "open": -171,
-        "close": null,
-        "clv": null
+        "close": -178,
+        "clv": -7
       }
     ],
     "Nick Klein": [
@@ -25888,8 +25979,8 @@
         "side": "f1",
         "points": 21,
         "open": 252,
-        "close": null,
-        "clv": null
+        "close": 260,
+        "clv": 8
       }
     ],
     "Joseph Kropschot": [
@@ -25899,8 +25990,8 @@
         "side": "f2",
         "points": 21,
         "open": -310,
-        "close": null,
-        "clv": null
+        "close": -332,
+        "clv": -22
       }
     ],
     "Lucia Szabova": [
@@ -25910,8 +26001,8 @@
         "side": "f1",
         "points": 15,
         "open": -590,
-        "close": null,
-        "clv": null
+        "close": -735,
+        "clv": -145
       }
     ],
     "Tainara Lisboa": [
@@ -25921,8 +26012,8 @@
         "side": "f2",
         "points": 15,
         "open": 400,
-        "close": null,
-        "clv": null
+        "close": 500,
+        "clv": 100
       }
     ],
     "Ode' Osbourne": [
@@ -25932,8 +26023,8 @@
         "side": "f1",
         "points": 11,
         "open": -125,
-        "close": null,
-        "clv": null
+        "close": -104,
+        "clv": 21
       }
     ],
     "Francis Marshall": [
@@ -25943,8 +26034,8 @@
         "side": "f1",
         "points": 19,
         "open": -258,
-        "close": null,
-        "clv": null
+        "close": -207,
+        "clv": 51
       }
     ],
     "Dakota Hope": [
@@ -25954,8 +26045,8 @@
         "side": "f2",
         "points": 19,
         "open": 201,
-        "close": null,
-        "clv": null
+        "close": 170,
+        "clv": -31
       }
     ],
     "Randy Brown": [
@@ -25965,8 +26056,8 @@
         "side": "f1",
         "points": 16,
         "open": 212,
-        "close": null,
-        "clv": null
+        "close": 220,
+        "clv": 8
       }
     ],
     "Julian Erosa": [
@@ -25976,8 +26067,8 @@
         "side": "f1",
         "points": 4,
         "open": 127,
-        "close": null,
-        "clv": null
+        "close": 160,
+        "clv": 33
       }
     ],
     "Lee Jeong-yeong": [
@@ -25987,8 +26078,8 @@
         "side": "f2",
         "points": 4,
         "open": -153,
-        "close": null,
-        "clv": null
+        "close": -220,
+        "clv": -67
       }
     ],
     "Tatiana Suarez": [
