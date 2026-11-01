@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T17:00:43Z",
+  "generated_at": "2026-11-01T18:05:37Z",
   "events_tracked": 10,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -105,17 +105,17 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "status": "ok",
-      "last_changed_at": "2026-11-01T11:21:37Z",
+      "last_changed_at": "2026-11-01T18:05:37Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": 3,
+      "line_movement": 2,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-10-31T23:06:14Z",
+      "last_changed_at": "2026-11-01T18:05:37Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 10,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-01T17:00:43Z",
+      "last_changed_at": "2026-11-01T18:05:37Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -590,7 +590,7 @@
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "f1": "Waldo Cortes-Acosta",
       "f2": "Johnny Walker",
-      "f1_movement": 3,
+      "f1_movement": 2,
       "f2_movement": -10,
       "magnitude": 10,
       "main_event": true,
@@ -598,7 +598,7 @@
       "threshold": 10,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": -0.3,
+      "f1_prob_shift": -0.2,
       "f2_prob_shift": 1.4,
       "priority": 35.0
     },
