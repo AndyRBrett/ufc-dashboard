@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T01:45:24Z",
+  "generated_at": "2026-11-01T01:50:42Z",
   "events_tracked": 10,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "status": "ok",
-      "last_changed_at": "2026-11-01T01:31:21Z",
+      "last_changed_at": "2026-11-01T01:50:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -125,7 +125,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-01T01:45:24Z",
+      "last_changed_at": "2026-11-01T01:50:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 9,
@@ -145,7 +145,7 @@
     {
       "event_id": "2027-01-30:ufc-336-van-vs-kape",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-01T01:45:24Z",
+      "last_changed_at": "2026-11-01T01:50:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 2,
@@ -300,18 +300,18 @@
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
-      "f1": "Ode' Osbourne",
-      "f2": "Cody Durden",
-      "f1_movement": 21,
-      "f2_movement": -220,
+      "f1": "Cody Durden",
+      "f2": "Ode' Osbourne",
+      "f1_movement": -220,
+      "f2_movement": 21,
       "magnitude": 220,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Flyweight",
-      "f1_prob_shift": -4.6,
-      "f2_prob_shift": 4.7,
+      "f1_prob_shift": 4.7,
+      "f2_prob_shift": -4.6,
       "priority": 220.0
     },
     {
