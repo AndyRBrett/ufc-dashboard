@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-02T06:35:45Z",
+  "generated_at": "2026-11-02T07:35:34Z",
   "summary": {
     "events": 9,
     "block": 0,
-    "warn": 4
+    "warn": 3
   },
   "findings": [
     {
@@ -20,14 +20,6 @@
       "event": "UFC Fight Night: Cortes-Acosta vs. Walker",
       "date": "2026-11-07",
       "days_out": 5
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-missing-some",
-      "message": "UFC 334: Gane vs. Hokit (12d out): 5 of 10 bouts have no odds",
-      "event": "UFC 334: Gane vs. Hokit",
-      "date": "2026-11-14",
-      "days_out": 12
     },
     {
       "severity": "WARN",

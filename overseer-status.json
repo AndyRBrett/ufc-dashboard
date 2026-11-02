@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-02T06:35:45Z",
+  "generated_at": "2026-11-02T07:35:34Z",
   "events_tracked": 9,
   "stale_events": 1,
   "parse_failure_events": 0,
-  "awaiting_card_events": 1,
+  "awaiting_card_events": 0,
   "odds_unavailable_events": 0,
   "odds_budget_exhausted": false,
   "odds_budget": {
@@ -95,17 +95,17 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "status": "ok",
-      "last_changed_at": "2026-11-02T00:40:45Z",
+      "last_changed_at": "2026-11-02T07:35:34Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": -6,
+      "line_movement": -7,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-01T18:05:37Z",
+      "last_changed_at": "2026-11-02T07:35:34Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 10,
@@ -114,13 +114,13 @@
     },
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
-      "status": "awaiting-card",
-      "last_changed_at": "2026-11-02T06:35:45Z",
+      "status": "ok",
+      "last_changed_at": "2026-11-02T07:35:34Z",
       "is_stale": false,
-      "has_data": false,
+      "has_data": true,
       "bout_count": 9,
       "line_movement": 0,
-      "odds_market_priced": false
+      "odds_market_priced": true
     },
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
@@ -228,17 +228,17 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Caio Borralho",
       "f2": "Yousri Belgaroui",
-      "f1_movement": -34,
-      "f2_movement": 225,
-      "magnitude": 225,
+      "f1_movement": -33,
+      "f2_movement": 224,
+      "magnitude": 224,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 6.4,
-      "f2_prob_shift": -5.6,
-      "priority": 247.5
+      "f1_prob_shift": 6.2,
+      "f2_prob_shift": -5.4,
+      "priority": 246.4
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
