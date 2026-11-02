@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T12:48:03Z",
+  "generated_at": "2026-11-02T13:50:45Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -19671,7 +19671,7 @@
           "f1": "Jose Mauro Delano",
           "f2": "Murtazali Magomedov",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19697,6 +19697,11 @@
               "at": "2026-11-02T07:35:34Z",
               "f1_odds": -109,
               "f2_odds": -111
+            },
+            {
+              "at": "2026-11-02T13:50:45Z",
+              "f1_odds": -106,
+              "f2_odds": -115
             }
           ],
           "open": {
@@ -19881,7 +19886,7 @@
           "f1": "Mantas Kondratavicius",
           "f2": "Andre Petroski",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-10-31T13:56:26Z",
@@ -19907,6 +19912,11 @@
               "at": "2026-11-01T18:05:37Z",
               "f1_odds": -287,
               "f2_odds": 230
+            },
+            {
+              "at": "2026-11-02T13:50:45Z",
+              "f1_odds": -291,
+              "f2_odds": 233
             }
           ],
           "open": {
@@ -19921,7 +19931,7 @@
           "f1": "Davey Grant",
           "f2": "Elijah Smith",
           "lbl": "Main Card",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-10-31T17:00:40Z",
@@ -19942,6 +19952,11 @@
               "at": "2026-11-02T07:35:34Z",
               "f1_odds": 197,
               "f2_odds": -248
+            },
+            {
+              "at": "2026-11-02T13:50:45Z",
+              "f1_odds": 203,
+              "f2_odds": -257
             }
           ],
           "open": {
@@ -20297,12 +20312,17 @@
           "f1": "Drew Dober",
           "f2": "Chris Duncan",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
               "f1_odds": 136,
               "f2_odds": -160
+            },
+            {
+              "at": "2026-11-02T13:50:45Z",
+              "f1_odds": 114,
+              "f2_odds": -133
             }
           ],
           "open": {
@@ -20337,12 +20357,17 @@
           "f1": "Donte Johnson",
           "f2": "Cesar Almeida",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
               "f1_odds": -165,
               "f2_odds": 140
+            },
+            {
+              "at": "2026-11-02T13:50:45Z",
+              "f1_odds": -135,
+              "f2_odds": 116
             }
           ],
           "open": {
@@ -21705,7 +21730,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Jose Mauro Delano",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": -104,
         "close": null,
         "clv": null
@@ -22695,7 +22720,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Donte Johnson",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 140,
         "close": null,
         "clv": null
@@ -23664,7 +23689,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Cesar Almeida",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -165,
         "close": null,
         "clv": null
@@ -26368,7 +26393,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Mantas Kondratavicius",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 265,
         "close": null,
         "clv": null
@@ -26714,7 +26739,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Murtazali Magomedov",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -115,
         "close": null,
         "clv": null
@@ -26874,7 +26899,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Andre Petroski",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -325,
         "close": null,
         "clv": null
@@ -26885,7 +26910,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Elijah Smith",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 175,
         "close": null,
         "clv": null
@@ -26896,7 +26921,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Davey Grant",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -240,
         "close": null,
         "clv": null
@@ -26984,7 +27009,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Chris Duncan",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 136,
         "close": null,
         "clv": null
@@ -26995,7 +27020,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Drew Dober",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -160,
         "close": null,
         "clv": null
