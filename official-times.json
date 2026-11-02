@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-02T10:45:24Z",
+ "generated_at": "2026-11-02T12:47:46Z",
  "source": "https://www.ufc.com",
  "cards": {
   "UFC Fight Night: Cortes-Acosta vs. Walker|2026-11-07": {
@@ -96,9 +96,8 @@
   "UFC Fight Night: Prochazka vs. Stirling|2026-11-21": {
    "name": "UFC Fight Night: Prochazka vs. Stirling",
    "date": "2026-11-21",
-   "checked_at": "2026-11-02T00:40:24Z",
+   "checked_at": "2026-11-02T12:47:46Z",
    "url": "https://www.ufc.com/event/ufc-fight-night-november-21-2026",
-   "status": 200,
    "segments": {
     "prelim": {
      "et": "10:00",
@@ -112,7 +111,12 @@
     }
    },
    "bouts": {},
-   "confirmed_at": "2026-11-02T00:40:24Z"
+   "confirmed_at": "2026-11-02T00:40:24Z",
+   "status": 200,
+   "error": "no UFC.com page matched this card",
+   "tried": [
+    "/event/ufc-fight-night-november-21-2026"
+   ]
   }
  }
 }
