@@ -2,30 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Ion Surdu",
-   "b": "Jessin Ayari",
-   "a_odds": -400,
-   "b_odds": 300,
-   "commence_time": "2026-10-31T10:00:00Z",
-   "seen_at": "2026-10-31T01:50:20Z"
-  },
-  {
-   "a": "Niko Samsonidse",
-   "b": "Gokhan Aksu",
-   "a_odds": -265,
-   "b_odds": 219,
-   "commence_time": "2026-10-31T10:00:00Z",
-   "seen_at": "2026-10-31T01:50:20Z"
-  },
-  {
-   "a": "Marc-Philippe Ngatchou",
-   "b": "Maher Belkhadir",
-   "a_odds": -260,
-   "b_odds": 215,
-   "commence_time": "2026-10-31T15:00:00Z",
-   "seen_at": "2026-10-31T10:55:22Z"
-  },
-  {
    "a": "Brian Manning",
    "b": "Marek Bartl",
    "a_odds": -230,
@@ -204,10 +180,10 @@
   {
    "a": "Yasmin Guimaraes",
    "b": "Josefine Knutsson",
-   "a_odds": 125,
-   "b_odds": -165,
+   "a_odds": 120,
+   "b_odds": -160,
    "commence_time": "2026-11-07T16:00:00Z",
-   "seen_at": "2026-11-03T09:15:27Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Zafar Mohsen",
@@ -220,18 +196,18 @@
   {
    "a": "Andre Petroski",
    "b": "Mantas Kondratavicius",
-   "a_odds": 230,
-   "b_odds": -298,
+   "a_odds": 235,
+   "b_odds": -305,
    "commence_time": "2026-11-07T22:00:00Z",
-   "seen_at": "2026-11-03T02:45:21Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Jose Delano",
    "b": "Murtazali Magomedov",
-   "a_odds": -110,
-   "b_odds": -113,
+   "a_odds": -113,
+   "b_odds": -110,
    "commence_time": "2026-11-07T22:00:00Z",
-   "seen_at": "2026-11-03T09:15:27Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Karine Silva",
@@ -244,18 +220,18 @@
   {
    "a": "Keiichiro Nakamura",
    "b": "Ollie Schmid",
-   "a_odds": -370,
-   "b_odds": 278,
+   "a_odds": -368,
+   "b_odds": 277,
    "commence_time": "2026-11-07T22:00:00Z",
-   "seen_at": "2026-11-03T02:45:21Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Mitch Raposo",
    "b": "Marcos Degli",
-   "a_odds": 190,
-   "b_odds": -242,
+   "a_odds": 185,
+   "b_odds": -235,
    "commence_time": "2026-11-07T22:00:00Z",
-   "seen_at": "2026-11-03T09:15:27Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Priscila Cachoeira",
@@ -268,34 +244,34 @@
   {
    "a": "Thomas Petersen",
    "b": "Gabriel Lourenco",
-   "a_odds": -168,
-   "b_odds": 135,
+   "a_odds": -162,
+   "b_odds": 130,
    "commence_time": "2026-11-07T22:00:00Z",
-   "seen_at": "2026-11-03T02:45:21Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Jonny Parsons",
    "b": "Jose Henrique",
-   "a_odds": 178,
-   "b_odds": -225,
+   "a_odds": 189,
+   "b_odds": -233,
    "commence_time": "2026-11-07T22:15:00Z",
-   "seen_at": "2026-11-03T02:45:21Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Billy Elekana",
    "b": "Lucas Fernando",
-   "a_odds": 238,
-   "b_odds": -312,
+   "a_odds": 245,
+   "b_odds": -323,
    "commence_time": "2026-11-08T01:00:00Z",
-   "seen_at": "2026-11-03T02:45:21Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Davey Grant",
    "b": "Elijah Smith",
    "a_odds": 237,
-   "b_odds": -318,
+   "b_odds": -309,
    "commence_time": "2026-11-08T01:00:00Z",
-   "seen_at": "2026-11-03T09:15:27Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Gabriel Bonfim",
@@ -308,26 +284,26 @@
   {
    "a": "Seok Hyun Ko",
    "b": "Wellington Turman",
-   "a_odds": -713,
-   "b_odds": 470,
+   "a_odds": -755,
+   "b_odds": 492,
    "commence_time": "2026-11-08T01:00:00Z",
-   "seen_at": "2026-11-03T02:45:21Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Tatiana Suarez",
    "b": "Virna Jandiroba",
-   "a_odds": -204,
-   "b_odds": 163,
+   "a_odds": -208,
+   "b_odds": 166,
    "commence_time": "2026-11-08T01:00:00Z",
-   "seen_at": "2026-11-03T02:45:21Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Waldo Cortes-Acosta",
    "b": "Johnny Walker",
-   "a_odds": -232,
-   "b_odds": 179,
+   "a_odds": -222,
+   "b_odds": 175,
    "commence_time": "2026-11-08T03:45:00Z",
-   "seen_at": "2026-11-03T02:45:21Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Donte Johnson",
@@ -340,10 +316,10 @@
   {
    "a": "Drew Dober",
    "b": "Chris Duncan",
-   "a_odds": 116,
-   "b_odds": -135,
+   "a_odds": 143,
+   "b_odds": -168,
    "commence_time": "2026-11-15T01:00:00Z",
-   "seen_at": "2026-11-03T02:45:21Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Evan Elder",
@@ -372,34 +348,34 @@
   {
    "a": "Melquizael Costa",
    "b": "Jared Gordon",
-   "a_odds": -425,
-   "b_odds": 337,
+   "a_odds": -405,
+   "b_odds": 323,
    "commence_time": "2026-11-15T01:00:00Z",
-   "seen_at": "2026-11-03T09:15:27Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Stephen Thompson",
    "b": "Charlie Radtke",
-   "a_odds": -118,
-   "b_odds": 101,
+   "a_odds": -130,
+   "b_odds": 111,
    "commence_time": "2026-11-15T01:00:00Z",
-   "seen_at": "2026-11-03T09:15:27Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Caio Borralho",
    "b": "Yousri Belgaroui",
-   "a_odds": -155,
-   "b_odds": 129,
+   "a_odds": -156,
+   "b_odds": 126,
    "commence_time": "2026-11-15T02:00:00Z",
-   "seen_at": "2026-11-02T20:25:21Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Luis Gurule",
    "b": "Bilal Hasan",
-   "a_odds": 608,
-   "b_odds": -928,
+   "a_odds": 573,
+   "b_odds": -920,
    "commence_time": "2026-11-15T02:00:00Z",
-   "seen_at": "2026-11-02T20:25:21Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Magomed Magomedov",
@@ -412,10 +388,10 @@
   {
    "a": "Uros Medic",
    "b": "Kevin Holland",
-   "a_odds": -161,
+   "a_odds": -165,
    "b_odds": 136,
    "commence_time": "2026-11-15T02:00:00Z",
-   "seen_at": "2026-10-31T23:05:57Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Kayla Harrison",
@@ -476,10 +452,10 @@
   {
    "a": "Jiri Prochazka",
    "b": "Navajo Stirling",
-   "a_odds": 116,
-   "b_odds": -135,
+   "a_odds": 140,
+   "b_odds": -165,
    "commence_time": "2026-11-21T17:00:00Z",
-   "seen_at": "2026-11-03T02:45:21Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Joseph Pyfer",
@@ -588,10 +564,10 @@
   {
    "a": "Quillan Salkilld",
    "b": "Benoit Saint-Denis",
-   "a_odds": -240,
-   "b_odds": 201,
+   "a_odds": -260,
+   "b_odds": 216,
    "commence_time": "2027-02-06T22:00:00Z",
-   "seen_at": "2026-11-02T07:35:18Z"
+   "seen_at": "2026-11-03T15:45:32Z"
   },
   {
    "a": "Islam Makhachev",
