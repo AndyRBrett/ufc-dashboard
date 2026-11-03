@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T21:16:05Z",
+  "generated_at": "2026-11-03T22:20:55Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -19786,7 +19786,7 @@
           "f1": "Keiichiro Nakamura",
           "f2": "Ollie Schmid",
           "lbl": "Prelim",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19822,6 +19822,11 @@
               "at": "2026-11-03T15:45:46Z",
               "f1_odds": -368,
               "f2_odds": 277
+            },
+            {
+              "at": "2026-11-03T22:20:55Z",
+              "f1_odds": -370,
+              "f2_odds": 278
             }
           ],
           "open": {
@@ -19931,7 +19936,7 @@
           "f1": "Waldo Cortes-Acosta",
           "f2": "Johnny Walker",
           "lbl": "Main Event",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-31T13:56:26Z",
@@ -19982,6 +19987,11 @@
               "at": "2026-11-03T15:45:46Z",
               "f1_odds": -222,
               "f2_odds": 175
+            },
+            {
+              "at": "2026-11-03T22:20:55Z",
+              "f1_odds": -233,
+              "f2_odds": 183
             }
           ],
           "open": {
@@ -20507,7 +20517,7 @@
           "f1": "Drew Dober",
           "f2": "Chris Duncan",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -20533,6 +20543,11 @@
               "at": "2026-11-03T15:45:46Z",
               "f1_odds": 143,
               "f2_odds": -168
+            },
+            {
+              "at": "2026-11-03T22:20:55Z",
+              "f1_odds": 140,
+              "f2_odds": -165
             }
           ],
           "open": {
@@ -20567,7 +20582,7 @@
           "f1": "Donte Johnson",
           "f2": "Cesar Almeida",
           "lbl": "Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -20588,6 +20603,11 @@
               "at": "2026-11-03T02:45:37Z",
               "f1_odds": -145,
               "f2_odds": 124
+            },
+            {
+              "at": "2026-11-03T22:20:55Z",
+              "f1_odds": -180,
+              "f2_odds": 153
             }
           ],
           "open": {
@@ -22955,7 +22975,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Donte Johnson",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 140,
         "close": null,
         "clv": null
@@ -23924,7 +23944,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Cesar Almeida",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -165,
         "close": null,
         "clv": null
@@ -24916,7 +24936,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Johnny Walker",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -201,
         "close": null,
         "clv": null
@@ -25763,7 +25783,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Waldo Cortes-Acosta",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 170,
         "close": null,
         "clv": null
@@ -27003,7 +27023,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Ollie Schmid",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -347,
         "close": null,
         "clv": null
@@ -27032,7 +27052,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Keiichiro Nakamura",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 271,
         "close": null,
         "clv": null
@@ -27244,7 +27264,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Chris Duncan",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": 136,
         "close": null,
         "clv": null
@@ -27255,7 +27275,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Drew Dober",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": -160,
         "close": null,
         "clv": null
