@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-03T01:45:43Z",
+  "generated_at": "2026-11-03T02:45:37Z",
   "events_tracked": 9,
-  "stale_events": 1,
+  "stale_events": 0,
   "parse_failure_events": 0,
   "awaiting_card_events": 0,
   "odds_unavailable_events": 0,
@@ -95,38 +95,38 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "status": "ok",
-      "last_changed_at": "2026-11-02T20:25:37Z",
+      "last_changed_at": "2026-11-03T02:45:37Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": -9,
+      "line_movement": -31,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-02T20:25:37Z",
+      "last_changed_at": "2026-11-03T02:45:37Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 10,
-      "line_movement": 4,
+      "line_movement": 6,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-02T07:35:34Z",
+      "last_changed_at": "2026-11-03T02:45:37Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 9,
-      "line_movement": 0,
+      "line_movement": -16,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
       "status": "ok",
-      "last_changed_at": "2026-10-29T22:00:44Z",
-      "is_stale": true,
+      "last_changed_at": "2026-11-03T02:45:37Z",
+      "is_stale": false,
       "has_data": true,
       "bout_count": 5,
       "line_movement": 11,
@@ -175,22 +175,6 @@
       "f1_prob_shift": -7.3,
       "f2_prob_shift": 7.5,
       "priority": 582.5
-    },
-    {
-      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
-      "f1": "Jose Mauro Delano",
-      "f2": "Murtazali Magomedov",
-      "f1_movement": 218,
-      "f2_movement": -21,
-      "magnitude": 218,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 120,
-      "low_confidence": false,
-      "wc": "Featherweight",
-      "f1_prob_shift": -4.2,
-      "f2_prob_shift": 4.6,
-      "priority": 305.2
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
@@ -271,22 +255,6 @@
       "f1_prob_shift": 4.1,
       "f2_prob_shift": -3.4,
       "priority": 238.0
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Stephen Thompson",
-      "f2": "Charles Radtke",
-      "f1_movement": -10,
-      "f2_movement": 209,
-      "magnitude": 209,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 120,
-      "low_confidence": false,
-      "wc": "Welterweight",
-      "f1_prob_shift": 2.2,
-      "f2_prob_shift": -2.2,
-      "priority": 229.9
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
@@ -417,6 +385,22 @@
       "priority": 128.0
     },
     {
+      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+      "f1": "Waldo Cortes-Acosta",
+      "f2": "Johnny Walker",
+      "f1_movement": -31,
+      "f2_movement": 9,
+      "magnitude": 31,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": 3.1,
+      "f2_prob_shift": -1.2,
+      "priority": 108.5
+    },
+    {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Jasmine Jasudavicius",
       "f2": "Erin Blanchfield",
@@ -431,6 +415,22 @@
       "f1_prob_shift": -6.6,
       "f2_prob_shift": 7.3,
       "priority": 105.0
+    },
+    {
+      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+      "f1": "Davey Grant",
+      "f2": "Elijah Smith",
+      "f1_movement": 55,
+      "f2_movement": -66,
+      "magnitude": 66,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Bantamweight",
+      "f1_prob_shift": -6.1,
+      "f2_prob_shift": 4.8,
+      "priority": 92.4
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
@@ -465,20 +465,20 @@
       "priority": 60.0
     },
     {
-      "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
-      "f1": "Sergei Pavlovich",
-      "f2": "Alex Pereira",
-      "f1_movement": -59,
-      "f2_movement": 49,
-      "magnitude": 59,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
+      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+      "f1": "Jiri Prochazka",
+      "f2": "Navajo Stirling",
+      "f1_movement": -16,
+      "f2_movement": 20,
+      "magnitude": 20,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
       "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": 6.8,
-      "f2_prob_shift": -7.1,
-      "priority": 59.0
+      "wc": "Light Heavyweight",
+      "f1_prob_shift": 3.2,
+      "f2_prob_shift": -3.3,
+      "priority": 50.0
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
@@ -497,6 +497,22 @@
       "priority": 45.0
     },
     {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Ciryl Gane",
+      "f2": "Josh Hokit",
+      "f1_movement": 6,
+      "f2_movement": -12,
+      "magnitude": 12,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": -0.4,
+      "f2_prob_shift": 1.2,
+      "priority": 33.0
+    },
+    {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
       "f1": "Charles Oliveira",
       "f2": "Diego Lopes",
@@ -511,22 +527,6 @@
       "f1_prob_shift": -1.6,
       "f2_prob_shift": 2.4,
       "priority": 32.5
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Ciryl Gane",
-      "f2": "Josh Hokit",
-      "f1_movement": 4,
-      "f2_movement": -11,
-      "magnitude": 11,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": -0.3,
-      "f2_prob_shift": 1.1,
-      "priority": 30.3
     }
   ],
   "errors": []
