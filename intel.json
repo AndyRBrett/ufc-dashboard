@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-04T12:20:44Z",
+ "generated_at": "2026-11-04T15:35:38Z",
  "window_days": 10,
  "sources": [
   {
@@ -23,8 +23,8 @@
   {
    "id": "bloodyelbow",
    "name": "Bloody Elbow",
-   "status": 403,
-   "items": 0
+   "status": 200,
+   "items": 20
   },
   {
    "id": "yt-ufc",
@@ -113,6 +113,19 @@
    "date": "2026-11-14",
    "items": [
     {
+     "title": "Josh Hokit could chase three-weight champ status with middleweight move despite wanting BMF division",
+     "url": "https://bloodyelbow.com/2026/11/03/josh-hokit-could-chase-three-weight-champ-status-with-middleweight-move-despite-wanting-bmf-division/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-11-04T03:00:00Z",
+     "thumb": null,
+     "blurb": "Josh Hokit believes that him dropping down two weight classes isn’t out of the question. Hokit is currently preparing for his clash with Ciryl Gane ...",
+     "fighters": [
+      "Ciryl Gane",
+      "Josh Hokit"
+     ]
+    },
+    {
      "title": "Josh Hokit vs Derrick Lewis | FULL FIGHT | Polymarket UFC 334",
      "url": "https://www.youtube.com/watch?v=R813Pn--26o",
      "source": "UFC",
@@ -120,19 +133,6 @@
      "published": "2026-11-02T15:00:25Z",
      "thumb": "https://i3.ytimg.com/vi/R813Pn--26o/hqdefault.jpg",
      "blurb": "Watch the matchup between Josh Hokit and Derrick Lewis ahead of Hokit's match up against Ciryl Gane at @polymerketchannel UFC 334! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest…",
-     "fighters": [
-      "Ciryl Gane",
-      "Josh Hokit"
-     ]
-    },
-    {
-     "title": "Ciryl Gane vs Alex Pereira | FULL FIGHT | Polymarket UFC 334",
-     "url": "https://www.youtube.com/watch?v=ILPWCCLb16E",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-11-01T15:00:29Z",
-     "thumb": "https://i2.ytimg.com/vi/ILPWCCLb16E/hqdefault.jpg",
-     "blurb": "Watch the matchup between Ciryl Gane and Alex Pereira ahead of Gane's title defense match up against Josh Hokit at @polymerketchannel UFC 334! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all…",
      "fighters": [
       "Ciryl Gane",
       "Josh Hokit"
@@ -152,13 +152,26 @@
      ]
     },
     {
-     "title": "Kayla Harrison vs Julianna Peña | FULL FIGHT | Polymarket UFC 334",
-     "url": "https://www.youtube.com/watch?v=uI-16Z5c3Ds",
+     "title": "Ciryl Gane vs Alex Pereira | FULL FIGHT | Polymarket UFC 334",
+     "url": "https://www.youtube.com/watch?v=ILPWCCLb16E",
      "source": "UFC",
      "kind": "video",
-     "published": "2026-11-03T15:00:15Z",
-     "thumb": "https://i2.ytimg.com/vi/uI-16Z5c3Ds/hqdefault.jpg",
-     "blurb": "Watch the matchup between Kayla Harrison and Julianna Peña ahead of Harrison's title defense match up against Amanda Nunes at @polymerketchannel UFC 334! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe…",
+     "published": "2026-11-01T15:00:29Z",
+     "thumb": "https://i2.ytimg.com/vi/ILPWCCLb16E/hqdefault.jpg",
+     "blurb": "Watch the matchup between Ciryl Gane and Alex Pereira ahead of Gane's title defense match up against Josh Hokit at @polymerketchannel UFC 334! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all…",
+     "fighters": [
+      "Ciryl Gane",
+      "Josh Hokit"
+     ]
+    },
+    {
+     "title": "Amanda Nunes vs Ronda Rousey | FULL FIGHT | Polymarket UFC 334",
+     "url": "https://www.youtube.com/watch?v=T7M33HIQIQg",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-11-04T15:00:23Z",
+     "thumb": "https://i1.ytimg.com/vi/T7M33HIQIQg/hqdefault.jpg",
+     "blurb": "Watch the matchup between Amanda Nunes vs Ronda Rousey ahead of Nunes's match up against Kayla Harrison at @polymerketchannel UFC 334! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the…",
      "fighters": [
       "Amanda Nunes",
       "Kayla Harrison"
