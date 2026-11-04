@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-04T06:55:34Z",
+ "generated_at": "2026-11-04T12:20:44Z",
  "window_days": 10,
  "sources": [
   {
@@ -23,14 +23,14 @@
   {
    "id": "bloodyelbow",
    "name": "Bloody Elbow",
-   "status": 200,
-   "items": 20
+   "status": 403,
+   "items": 0
   },
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 404,
-   "items": 0
+   "status": 200,
+   "items": 15
   },
   {
    "id": "yt-mmaf",
@@ -44,6 +44,44 @@
    "name": "UFC Fight Night: Cortes-Acosta vs. Walker",
    "date": "2026-11-07",
    "items": [
+    {
+     "title": "Johnny Walker vs Mick Parkin | FULL FIGHT | UFC Vegas 124",
+     "url": "https://www.youtube.com/watch?v=08n1cUfer0Q",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-11-03T17:30:38Z",
+     "thumb": "https://i1.ytimg.com/vi/08n1cUfer0Q/hqdefault.jpg",
+     "blurb": "Watch the matchup between Johnny Walker and Mick Parkin ahead of Walker's main event match up against Waldo Cortes Acosta at UFC Vegas 124! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the…",
+     "fighters": [
+      "Johnny Walker",
+      "Waldo Cortes-Acosta"
+     ]
+    },
+    {
+     "title": "Waldo Cortes Acosta vs Derrick Lewis | FULL FIGHT | UFC Vegas 124",
+     "url": "https://www.youtube.com/watch?v=A6daeupB33A",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-11-02T17:30:29Z",
+     "thumb": "https://i2.ytimg.com/vi/A6daeupB33A/hqdefault.jpg",
+     "blurb": "Watch the matchup between Waldo Cortes Acosta and Derrick Lewis ahead of Acosta's main event match up against Johnny Walker at UFC Vegas 124! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all…",
+     "fighters": [
+      "Johnny Walker",
+      "Waldo Cortes-Acosta"
+     ]
+    },
+    {
+     "title": "Waldo Cortes Acosta's Career So Far #ufcvegas124",
+     "url": "https://www.youtube.com/shorts/4S1fobyNsfE",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-11-02T23:41:32Z",
+     "thumb": "https://i1.ytimg.com/vi/4S1fobyNsfE/hqdefault.jpg",
+     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS, the digital subscription service of the UFC. Visit…",
+     "fighters": [
+      "Waldo Cortes-Acosta"
+     ]
+    },
     {
      "title": "Johnny Walker refuses to fight brother Valter: 'My own blood'",
      "url": "https://www.sherdog.com/news/news/Johnny-Walker-refuses-to-fight-brother-Valter-My-own-blood-203462",
@@ -75,13 +113,26 @@
    "date": "2026-11-14",
    "items": [
     {
-     "title": "Josh Hokit could chase three-weight champ status with middleweight move despite wanting BMF division",
-     "url": "https://bloodyelbow.com/2026/11/03/josh-hokit-could-chase-three-weight-champ-status-with-middleweight-move-despite-wanting-bmf-division/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-11-04T03:00:00Z",
-     "thumb": null,
-     "blurb": "Josh Hokit believes that him dropping down two weight classes isn’t out of the question. Hokit is currently preparing for his clash with Ciryl Gane ...",
+     "title": "Josh Hokit vs Derrick Lewis | FULL FIGHT | Polymarket UFC 334",
+     "url": "https://www.youtube.com/watch?v=R813Pn--26o",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-11-02T15:00:25Z",
+     "thumb": "https://i3.ytimg.com/vi/R813Pn--26o/hqdefault.jpg",
+     "blurb": "Watch the matchup between Josh Hokit and Derrick Lewis ahead of Hokit's match up against Ciryl Gane at @polymerketchannel UFC 334! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest…",
+     "fighters": [
+      "Ciryl Gane",
+      "Josh Hokit"
+     ]
+    },
+    {
+     "title": "Ciryl Gane vs Alex Pereira | FULL FIGHT | Polymarket UFC 334",
+     "url": "https://www.youtube.com/watch?v=ILPWCCLb16E",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-11-01T15:00:29Z",
+     "thumb": "https://i2.ytimg.com/vi/ILPWCCLb16E/hqdefault.jpg",
+     "blurb": "Watch the matchup between Ciryl Gane and Alex Pereira ahead of Gane's title defense match up against Josh Hokit at @polymerketchannel UFC 334! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all…",
      "fighters": [
       "Ciryl Gane",
       "Josh Hokit"
@@ -98,6 +149,19 @@
      "fighters": [
       "Ciryl Gane",
       "Josh Hokit"
+     ]
+    },
+    {
+     "title": "Kayla Harrison vs Julianna Peña | FULL FIGHT | Polymarket UFC 334",
+     "url": "https://www.youtube.com/watch?v=uI-16Z5c3Ds",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-11-03T15:00:15Z",
+     "thumb": "https://i2.ytimg.com/vi/uI-16Z5c3Ds/hqdefault.jpg",
+     "blurb": "Watch the matchup between Kayla Harrison and Julianna Peña ahead of Harrison's title defense match up against Amanda Nunes at @polymerketchannel UFC 334! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe…",
+     "fighters": [
+      "Amanda Nunes",
+      "Kayla Harrison"
      ]
     },
     {

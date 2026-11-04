@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-10-27T19:36:03Z",
+ "generated_at": "2026-11-04T12:20:45Z",
  "promotions": [
   {
    "id": "pfl",
@@ -83,17 +83,6 @@
      "round": null
     },
     {
-     "a": "Hiroaki Suzuki",
-     "b": "Kim Sei-min",
-     "label": "",
-     "division": "Featherweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
      "a": "Juntaro Ushiku",
      "b": "Li Kaiwen",
      "label": "",
@@ -116,10 +105,21 @@
      "round": null
     },
     {
-     "a": "Tatsuya Saika",
-     "b": "Daigo Kuramoto",
+     "a": "Mac Papalii",
+     "b": "Yukinori Akazawa",
      "label": "",
-     "division": "Lightweight",
+     "division": "Heavyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Hiroaki Suzuki",
+     "b": "Kim Sei-min",
+     "label": "",
+     "division": "Featherweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -138,10 +138,10 @@
      "round": null
     },
     {
-     "a": "Rikiya Matsuzawa",
-     "b": "Rio Kimura",
+     "a": "Tatsuya Saika",
+     "b": "Daigo Kuramoto",
      "label": "",
-     "division": "Flyweight",
+     "division": "Lightweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -153,6 +153,28 @@
      "b": "Sho Sekihara",
      "label": "",
      "division": "Flyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Rikiya Matsuzawa",
+     "b": "Rio Kimura",
+     "label": "",
+     "division": "Flyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Jake Wilkins",
+     "b": "Yajuro Yamasaki",
+     "label": "",
+     "division": "Lightweight",
      "title": false,
      "odds": null,
      "winner": "",
