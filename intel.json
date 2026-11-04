@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-03T20:11:26Z",
+ "generated_at": "2026-11-04T00:25:36Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -44,44 +44,6 @@
    "name": "UFC Fight Night: Cortes-Acosta vs. Walker",
    "date": "2026-11-07",
    "items": [
-    {
-     "title": "Johnny Walker vs Mick Parkin | FULL FIGHT | UFC Vegas 124",
-     "url": "https://www.youtube.com/watch?v=08n1cUfer0Q",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-11-03T17:30:38Z",
-     "thumb": "https://i1.ytimg.com/vi/08n1cUfer0Q/hqdefault.jpg",
-     "blurb": "Watch the matchup between Johnny Walker and Mick Parkin ahead of Walker's main event match up against Waldo Cortes Acosta at UFC Vegas 124! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the…",
-     "fighters": [
-      "Johnny Walker",
-      "Waldo Cortes-Acosta"
-     ]
-    },
-    {
-     "title": "Waldo Cortes Acosta vs Derrick Lewis | FULL FIGHT | UFC Vegas 124",
-     "url": "https://www.youtube.com/watch?v=A6daeupB33A",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-11-02T17:30:29Z",
-     "thumb": "https://i2.ytimg.com/vi/A6daeupB33A/hqdefault.jpg",
-     "blurb": "Watch the matchup between Waldo Cortes Acosta and Derrick Lewis ahead of Acosta's main event match up against Johnny Walker at UFC Vegas 124! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all…",
-     "fighters": [
-      "Johnny Walker",
-      "Waldo Cortes-Acosta"
-     ]
-    },
-    {
-     "title": "Waldo Cortes Acosta's Career So Far #ufcvegas124",
-     "url": "https://www.youtube.com/shorts/4S1fobyNsfE",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-11-02T23:41:32Z",
-     "thumb": "https://i1.ytimg.com/vi/4S1fobyNsfE/hqdefault.jpg",
-     "blurb": "Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content: https://ufc.ac/3u8FIJp Experience UFC live with UFC FIGHT PASS, the digital subscription service of the UFC. Visit…",
-     "fighters": [
-      "Waldo Cortes-Acosta"
-     ]
-    },
     {
      "title": "Johnny Walker refuses to fight brother Valter: 'My own blood'",
      "url": "https://www.sherdog.com/news/news/Johnny-Walker-refuses-to-fight-brother-Valter-My-own-blood-203462",
@@ -104,6 +66,49 @@
      "blurb": "The Ultimate Fighting Championship has reportedly found a new headliner for its Nov. 7 event.",
      "fighters": [
       "Johnny Walker"
+     ]
+    }
+   ]
+  },
+  "UFC_334": {
+   "name": "UFC 334: Gane vs. Hokit",
+   "date": "2026-11-14",
+   "items": [
+    {
+     "title": "Josh Hokit drops UFC diss track targeting Jon Jones, Ciryl Gane & More",
+     "url": "https://www.sherdog.com/news/news/Josh-Hokit-drops-UFC-diss-track-targeting-Jon-Jones-Ciryl-Gane-More-203457",
+     "source": "Sherdog",
+     "kind": "article",
+     "published": "2026-11-02T19:52:12Z",
+     "thumb": null,
+     "blurb": "Josh Hokit is adding rap to his efforts to get under his opponents’ skin.",
+     "fighters": [
+      "Ciryl Gane",
+      "Josh Hokit"
+     ]
+    },
+    {
+     "title": "Uros Medic is ‘tired’ of watching Islam Makhachev win",
+     "url": "https://www.sherdog.com/news/news/Uros-Medic-is-tired-of-watching-Islam-Makhachev-win-203467",
+     "source": "Sherdog",
+     "kind": "article",
+     "published": "2026-11-03T02:43:46Z",
+     "thumb": null,
+     "blurb": "Uros Medic has seen enough of Islam Makhachev ’s dominance.",
+     "fighters": [
+      "Uros Medic"
+     ]
+    },
+    {
+     "title": "Henry Cejudo, Gilbert Burns blast referee's UFC Vegas 123 stand-up",
+     "url": "https://www.sherdog.com/news/news/Henry-Cejudo-Gilbert-Burns-blast-referees-UFC-Vegas-123-standup-203458",
+     "source": "Sherdog",
+     "kind": "article",
+     "published": "2026-11-02T20:05:54Z",
+     "thumb": null,
+     "blurb": "Referee Dan Miragliotta’s decision to stand Renato “Money” Moicano and Tom Nolan up while Moicano held back control at UFC Vegas 123 drew criticism from Henry Cejudo , Gilbert Burns and Caio Borralho .",
+     "fighters": [
+      "Caio Borralho"
      ]
     }
    ]
