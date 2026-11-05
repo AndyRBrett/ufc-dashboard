@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T19:20:38Z",
+  "generated_at": "2026-11-05T20:25:37Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20101,7 +20101,7 @@
           "f1": "Mantas Kondratavicius",
           "f2": "Andre Petroski",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-31T13:56:26Z",
@@ -20157,6 +20157,11 @@
               "at": "2026-11-05T13:25:36Z",
               "f1_odds": -300,
               "f2_odds": 232
+            },
+            {
+              "at": "2026-11-05T20:25:37Z",
+              "f1_odds": -303,
+              "f2_odds": 233
             }
           ],
           "open": {
@@ -20251,7 +20256,7 @@
           "f1": "Austin Bashi",
           "f2": "Carlos Calderon",
           "lbl": "Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-11-05T00:35:43Z",
@@ -20272,6 +20277,11 @@
               "at": "2026-11-05T15:35:35Z",
               "f1_odds": -477,
               "f2_odds": 342
+            },
+            {
+              "at": "2026-11-05T20:25:37Z",
+              "f1_odds": -502,
+              "f2_odds": 357
             }
           ],
           "open": {
@@ -20767,7 +20777,7 @@
           "f1": "Donte Johnson",
           "f2": "Cesar Almeida",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -20793,6 +20803,11 @@
               "at": "2026-11-03T22:20:55Z",
               "f1_odds": -180,
               "f2_odds": 153
+            },
+            {
+              "at": "2026-11-05T20:25:37Z",
+              "f1_odds": -165,
+              "f2_odds": 140
             }
           ],
           "open": {
@@ -23170,7 +23185,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Donte Johnson",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 140,
         "close": null,
         "clv": null
@@ -23542,7 +23557,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Carlos Calderon",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -465,
         "close": null,
         "clv": null
@@ -24148,7 +24163,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Cesar Almeida",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -165,
         "close": null,
         "clv": null
@@ -26852,7 +26867,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Mantas Kondratavicius",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 265,
         "close": null,
         "clv": null
@@ -27358,7 +27373,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Andre Petroski",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -325,
         "close": null,
         "clv": null
@@ -27391,7 +27406,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Austin Bashi",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 342,
         "close": null,
         "clv": null
