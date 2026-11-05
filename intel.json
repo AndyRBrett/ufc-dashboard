@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-05T00:35:43Z",
+ "generated_at": "2026-11-05T03:50:40Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 404,
-   "items": 0
+   "status": 200,
+   "items": 15
   },
   {
    "id": "yt-mmaf",
@@ -44,6 +44,45 @@
    "name": "UFC Fight Night: Cortes-Acosta vs. Walker",
    "date": "2026-11-07",
    "items": [
+    {
+     "title": "\"I WILL Knock him out!\" | UFC Vegas 124 Media Day",
+     "url": "https://www.youtube.com/watch?v=3kFQSL4UpUE",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-11-04T22:40:05Z",
+     "thumb": "https://i4.ytimg.com/vi/3kFQSL4UpUE/hqdefault.jpg",
+     "blurb": "Listen to Waldo Cortes Acosta and Johnny Walker answer questions from the press ahead of their matchup at UFC Vegas 124 Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest UFC content:…",
+     "fighters": [
+      "Johnny Walker",
+      "Waldo Cortes-Acosta"
+     ]
+    },
+    {
+     "title": "Johnny Walker vs Mick Parkin | FULL FIGHT | UFC Vegas 124",
+     "url": "https://www.youtube.com/watch?v=08n1cUfer0Q",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-11-03T17:30:38Z",
+     "thumb": "https://i1.ytimg.com/vi/08n1cUfer0Q/hqdefault.jpg",
+     "blurb": "Watch the matchup between Johnny Walker and Mick Parkin ahead of Walker's main event match up against Waldo Cortes Acosta at UFC Vegas 124! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the…",
+     "fighters": [
+      "Johnny Walker",
+      "Waldo Cortes-Acosta"
+     ]
+    },
+    {
+     "title": "Waldo Cortes Acosta vs Derrick Lewis | FULL FIGHT | UFC Vegas 124",
+     "url": "https://www.youtube.com/watch?v=A6daeupB33A",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-11-02T17:30:29Z",
+     "thumb": "https://i2.ytimg.com/vi/A6daeupB33A/hqdefault.jpg",
+     "blurb": "Watch the matchup between Waldo Cortes Acosta and Derrick Lewis ahead of Acosta's main event match up against Johnny Walker at UFC Vegas 124! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all…",
+     "fighters": [
+      "Johnny Walker",
+      "Waldo Cortes-Acosta"
+     ]
+    },
     {
      "title": "Johnny Walker refuses to fight brother Valter: 'My own blood'",
      "url": "https://www.sherdog.com/news/news/Johnny-Walker-refuses-to-fight-brother-Valter-My-own-blood-203462",
@@ -70,18 +109,6 @@
      ]
     },
     {
-     "title": "Sean Strickland knocked him out, then drove him home",
-     "url": "https://www.sherdog.com/news/news/Sean-Strickland-knocked-him-out-then-drove-him-home-203482",
-     "source": "Sherdog",
-     "kind": "article",
-     "published": "2026-11-04T02:33:26Z",
-     "thumb": null,
-     "blurb": "Jonny Parsons claims he could barely train for his Dana White’s Contender Series fight after Sean Strickland knocked him out in sparring.",
-     "fighters": [
-      "Jonny Parsons"
-     ]
-    },
-    {
      "title": "Fury FC champion steps up on 4 days’ notice for UFC Vegas 124 debut",
      "url": "https://bloodyelbow.com/2026/11/04/fury-fc-champion-steps-up-on-4-days-notice-for-ufc-vegas-124-debut/",
      "source": "Bloody Elbow",
@@ -92,6 +119,18 @@
      "fighters": [
       "Carlos Calderon"
      ]
+    },
+    {
+     "title": "Sean Strickland knocked him out, then drove him home",
+     "url": "https://www.sherdog.com/news/news/Sean-Strickland-knocked-him-out-then-drove-him-home-203482",
+     "source": "Sherdog",
+     "kind": "article",
+     "published": "2026-11-04T02:33:26Z",
+     "thumb": null,
+     "blurb": "Jonny Parsons claims he could barely train for his Dana White’s Contender Series fight after Sean Strickland knocked him out in sparring.",
+     "fighters": [
+      "Jonny Parsons"
+     ]
     }
    ]
   },
@@ -99,6 +138,19 @@
    "name": "UFC 334: Gane vs. Hokit",
    "date": "2026-11-14",
    "items": [
+    {
+     "title": "Josh Hokit vs Derrick Lewis | FULL FIGHT | Polymarket UFC 334",
+     "url": "https://www.youtube.com/watch?v=R813Pn--26o",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-11-02T15:00:25Z",
+     "thumb": "https://i3.ytimg.com/vi/R813Pn--26o/hqdefault.jpg",
+     "blurb": "Watch the matchup between Josh Hokit and Derrick Lewis ahead of Hokit's match up against Ciryl Gane at @polymerketchannel UFC 334! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the latest…",
+     "fighters": [
+      "Ciryl Gane",
+      "Josh Hokit"
+     ]
+    },
     {
      "title": "Josh Hokit could chase three-weight champ status with middleweight move despite wanting BMF division",
      "url": "https://bloodyelbow.com/2026/11/03/josh-hokit-could-chase-three-weight-champ-status-with-middleweight-move-despite-wanting-bmf-division/",
@@ -123,6 +175,32 @@
      "fighters": [
       "Ciryl Gane",
       "Josh Hokit"
+     ]
+    },
+    {
+     "title": "Amanda Nunes vs Ronda Rousey | FULL FIGHT | Polymarket UFC 334",
+     "url": "https://www.youtube.com/watch?v=T7M33HIQIQg",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-11-04T15:00:23Z",
+     "thumb": "https://i1.ytimg.com/vi/T7M33HIQIQg/hqdefault.jpg",
+     "blurb": "Watch the matchup between Amanda Nunes vs Ronda Rousey ahead of Nunes's match up against Kayla Harrison at @polymerketchannel UFC 334! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe to get all the…",
+     "fighters": [
+      "Amanda Nunes",
+      "Kayla Harrison"
+     ]
+    },
+    {
+     "title": "Kayla Harrison vs Julianna Peña | FULL FIGHT | Polymarket UFC 334",
+     "url": "https://www.youtube.com/watch?v=uI-16Z5c3Ds",
+     "source": "UFC",
+     "kind": "video",
+     "published": "2026-11-03T15:00:15Z",
+     "thumb": "https://i2.ytimg.com/vi/uI-16Z5c3Ds/hqdefault.jpg",
+     "blurb": "Watch the matchup between Kayla Harrison and Julianna Peña ahead of Harrison's title defense match up against Amanda Nunes at @polymerketchannel UFC 334! Watch UFC on Paramount Plus ➡️ https://ufc.ac/4rZnRQc Subscribe…",
+     "fighters": [
+      "Amanda Nunes",
+      "Kayla Harrison"
      ]
     },
     {
