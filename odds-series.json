@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T05:55:51Z",
+  "generated_at": "2026-11-05T07:00:44Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -19816,7 +19816,7 @@
           "f1": "Keiichiro Nakamura",
           "f2": "Ollie Schmid",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19877,6 +19877,11 @@
               "at": "2026-11-05T02:45:41Z",
               "f1_odds": -367,
               "f2_odds": 275
+            },
+            {
+              "at": "2026-11-05T07:00:43Z",
+              "f1_odds": -362,
+              "f2_odds": 272
             }
           ],
           "open": {
@@ -20231,7 +20236,7 @@
           "f1": "Austin Bashi",
           "f2": "Carlos Calderon",
           "lbl": "Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-11-05T00:35:43Z",
@@ -20242,6 +20247,11 @@
               "at": "2026-11-05T02:45:41Z",
               "f1_odds": -460,
               "f2_odds": 345
+            },
+            {
+              "at": "2026-11-05T07:00:43Z",
+              "f1_odds": -465,
+              "f2_odds": 333
             }
           ],
           "open": {
@@ -23512,7 +23522,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Carlos Calderon",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -465,
         "close": null,
         "clv": null
@@ -27197,7 +27207,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Ollie Schmid",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -347,
         "close": null,
         "clv": null
@@ -27226,7 +27236,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Keiichiro Nakamura",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 271,
         "close": null,
         "clv": null
@@ -27361,7 +27371,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Austin Bashi",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 342,
         "close": null,
         "clv": null
