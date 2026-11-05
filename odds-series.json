@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T17:17:04Z",
+  "generated_at": "2026-11-05T18:20:38Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -19681,7 +19681,7 @@
           "f1": "Mitch Raposo",
           "f2": "Marcos Degli",
           "lbl": "Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19727,6 +19727,11 @@
               "at": "2026-11-04T04:45:39Z",
               "f1_odds": 189,
               "f2_odds": -240
+            },
+            {
+              "at": "2026-11-05T18:20:37Z",
+              "f1_odds": 192,
+              "f2_odds": -245
             }
           ],
           "open": {
@@ -19741,7 +19746,7 @@
           "f1": "Jose Mauro Delano",
           "f2": "Murtazali Magomedov",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19802,6 +19807,11 @@
               "at": "2026-11-05T00:35:43Z",
               "f1_odds": -117,
               "f2_odds": -107
+            },
+            {
+              "at": "2026-11-05T18:20:37Z",
+              "f1_odds": -118,
+              "f2_odds": -105
             }
           ],
           "open": {
@@ -22170,7 +22180,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Jose Mauro Delano",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -104,
         "close": null,
         "clv": null
@@ -22321,7 +22331,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Marcos Degli",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": 200,
         "close": null,
         "clv": null
@@ -27159,7 +27169,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Mitch Raposo",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": -247,
         "close": null,
         "clv": null
@@ -27188,7 +27198,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Murtazali Magomedov",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -115,
         "close": null,
         "clv": null
