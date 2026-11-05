@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T01:40:32Z",
+  "generated_at": "2026-11-05T02:45:42Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -19816,7 +19816,7 @@
           "f1": "Keiichiro Nakamura",
           "f2": "Ollie Schmid",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19872,6 +19872,11 @@
               "at": "2026-11-05T00:35:43Z",
               "f1_odds": -362,
               "f2_odds": 272
+            },
+            {
+              "at": "2026-11-05T02:45:41Z",
+              "f1_odds": -367,
+              "f2_odds": 275
             }
           ],
           "open": {
@@ -20221,12 +20226,17 @@
           "f1": "Austin Bashi",
           "f2": "Carlos Calderon",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-05T00:35:43Z",
               "f1_odds": -465,
               "f2_odds": 342
+            },
+            {
+              "at": "2026-11-05T02:45:41Z",
+              "f1_odds": -460,
+              "f2_odds": 345
             }
           ],
           "open": {
@@ -20788,7 +20798,7 @@
           "f1": "Jiri Prochazka",
           "f2": "Navajo Stirling",
           "lbl": "Main Event",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -20809,6 +20819,11 @@
               "at": "2026-11-04T19:10:40Z",
               "f1_odds": 139,
               "f2_odds": -165
+            },
+            {
+              "at": "2026-11-05T02:45:41Z",
+              "f1_odds": 119,
+              "f2_odds": -140
             }
           ],
           "open": {
@@ -22059,7 +22074,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Jiri Prochazka",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -155,
         "close": null,
         "clv": null
@@ -23492,7 +23507,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Carlos Calderon",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -465,
         "close": null,
         "clv": null
@@ -27177,7 +27192,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Ollie Schmid",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -347,
         "close": null,
         "clv": null
@@ -27206,7 +27221,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Keiichiro Nakamura",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 271,
         "close": null,
         "clv": null
@@ -27341,7 +27356,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Austin Bashi",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 342,
         "close": null,
         "clv": null
@@ -27473,7 +27488,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Navajo Stirling",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 132,
         "close": null,
         "clv": null

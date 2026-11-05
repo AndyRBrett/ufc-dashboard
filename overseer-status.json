@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-05T01:40:31Z",
+  "generated_at": "2026-11-05T02:45:41Z",
   "events_tracked": 9,
-  "stale_events": 1,
+  "stale_events": 2,
   "parse_failure_events": 0,
   "awaiting_card_events": 0,
   "odds_unavailable_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "status": "ok",
-      "last_changed_at": "2026-11-05T00:35:43Z",
+      "last_changed_at": "2026-11-05T02:45:41Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -115,18 +115,18 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-04T19:10:40Z",
+      "last_changed_at": "2026-11-05T02:45:41Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 9,
-      "line_movement": 7,
+      "line_movement": -13,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
       "status": "ok",
       "last_changed_at": "2026-11-03T02:45:37Z",
-      "is_stale": false,
+      "is_stale": true,
       "has_data": true,
       "bout_count": 5,
       "line_movement": 11,
@@ -529,6 +529,22 @@
       "priority": 45.0
     },
     {
+      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+      "f1": "Jiri Prochazka",
+      "f2": "Navajo Stirling",
+      "f1_movement": -13,
+      "f2_movement": 15,
+      "magnitude": 15,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Light Heavyweight",
+      "f1_prob_shift": 2.6,
+      "f2_prob_shift": -2.5,
+      "priority": 37.5
+    },
+    {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Ciryl Gane",
       "f2": "Josh Hokit",
@@ -559,22 +575,6 @@
       "f1_prob_shift": -1.6,
       "f2_prob_shift": 2.4,
       "priority": 32.5
-    },
-    {
-      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
-      "f1": "Jiri Prochazka",
-      "f2": "Navajo Stirling",
-      "f1_movement": 7,
-      "f2_movement": -10,
-      "magnitude": 10,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Light Heavyweight",
-      "f1_prob_shift": -1.3,
-      "f2_prob_shift": 1.5,
-      "priority": 25.0
     }
   ],
   "errors": []
