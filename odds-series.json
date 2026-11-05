@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T21:30:37Z",
+  "generated_at": "2026-11-05T22:35:47Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -19951,7 +19951,7 @@
           "f1": "Jonny Parsons",
           "f2": "Jose Henrique Souza",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -20007,6 +20007,11 @@
               "at": "2026-11-05T00:35:43Z",
               "f1_odds": 190,
               "f2_odds": -235
+            },
+            {
+              "at": "2026-11-05T22:35:47Z",
+              "f1_odds": 189,
+              "f2_odds": -230
             }
           ],
           "open": {
@@ -27320,7 +27325,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Jose Henrique Souza",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": 150,
         "close": null,
         "clv": null
@@ -27340,7 +27345,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Jonny Parsons",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -180,
         "close": null,
         "clv": null
