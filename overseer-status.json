@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T23:30:39Z",
+  "generated_at": "2026-11-05T00:35:43Z",
   "events_tracked": 9,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -9,7 +9,7 @@
   "odds_budget": {
     "exhausted": false,
     "reset_day": 1,
-    "resets_in_days": 27,
+    "resets_in_days": 26,
     "most_affected": []
   },
   "stale_threshold_hours": 48,
@@ -95,17 +95,17 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "status": "ok",
-      "last_changed_at": "2026-11-04T19:10:40Z",
+      "last_changed_at": "2026-11-05T00:35:43Z",
       "is_stale": false,
       "has_data": true,
-      "bout_count": 13,
+      "bout_count": 14,
       "line_movement": -42,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-04T19:10:40Z",
+      "last_changed_at": "2026-11-05T00:35:43Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 10,
@@ -321,6 +321,22 @@
       "priority": 214.0
     },
     {
+      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+      "f1": "Waldo Cortes-Acosta",
+      "f2": "Johnny Walker",
+      "f1_movement": -42,
+      "f2_movement": 20,
+      "magnitude": 42,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": 4.1,
+      "f2_prob_shift": -2.6,
+      "priority": 210.0
+    },
+    {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "f1": "Abusupiyan Magomedov",
       "f2": "Cameron Rowston",
@@ -335,6 +351,22 @@
       "f1_prob_shift": 1.4,
       "f2_prob_shift": -1.5,
       "priority": 206.0
+    },
+    {
+      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+      "f1": "Davey Grant",
+      "f2": "Elijah Smith",
+      "f1_movement": 73,
+      "f2_movement": -83,
+      "magnitude": 83,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Bantamweight",
+      "f1_prob_shift": -7.6,
+      "f2_prob_shift": 5.8,
+      "priority": 166.0
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
@@ -369,22 +401,6 @@
       "priority": 150.0
     },
     {
-      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
-      "f1": "Waldo Cortes-Acosta",
-      "f2": "Johnny Walker",
-      "f1_movement": -42,
-      "f2_movement": 20,
-      "magnitude": 42,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": 4.1,
-      "f2_prob_shift": -2.6,
-      "priority": 147.0
-    },
-    {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Lucia Szabova",
       "f2": "Tainara Lisboa",
@@ -399,6 +415,22 @@
       "f1_prob_shift": 2.5,
       "f2_prob_shift": -3.3,
       "priority": 145.0
+    },
+    {
+      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+      "f1": "Billy Elekana",
+      "f2": "Lucas Fernando",
+      "f1_movement": 41,
+      "f2_movement": -71,
+      "magnitude": 71,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Light Heavyweight",
+      "f1_prob_shift": -3.8,
+      "f2_prob_shift": 4.6,
+      "priority": 142.0
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
@@ -417,22 +449,6 @@
       "priority": 128.0
     },
     {
-      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
-      "f1": "Davey Grant",
-      "f2": "Elijah Smith",
-      "f1_movement": 73,
-      "f2_movement": -83,
-      "magnitude": 83,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Bantamweight",
-      "f1_prob_shift": -7.6,
-      "f2_prob_shift": 5.8,
-      "priority": 116.2
-    },
-    {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Jasmine Jasudavicius",
       "f2": "Erin Blanchfield",
@@ -447,22 +463,6 @@
       "f1_prob_shift": -6.6,
       "f2_prob_shift": 7.3,
       "priority": 105.0
-    },
-    {
-      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
-      "f1": "Billy Elekana",
-      "f2": "Lucas Fernando",
-      "f1_movement": 41,
-      "f2_movement": -71,
-      "magnitude": 71,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Light Heavyweight",
-      "f1_prob_shift": -3.8,
-      "f2_prob_shift": 4.6,
-      "priority": 99.4
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",

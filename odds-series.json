@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T23:30:39Z",
+  "generated_at": "2026-11-05T00:35:43Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -19741,7 +19741,7 @@
           "f1": "Jose Mauro Delano",
           "f2": "Murtazali Magomedov",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19797,6 +19797,11 @@
               "at": "2026-11-04T04:45:39Z",
               "f1_odds": -113,
               "f2_odds": -111
+            },
+            {
+              "at": "2026-11-05T00:35:43Z",
+              "f1_odds": -117,
+              "f2_odds": -107
             }
           ],
           "open": {
@@ -19811,7 +19816,7 @@
           "f1": "Keiichiro Nakamura",
           "f2": "Ollie Schmid",
           "lbl": "Prelim",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19862,6 +19867,11 @@
               "at": "2026-11-04T19:10:40Z",
               "f1_odds": -360,
               "f2_odds": 270
+            },
+            {
+              "at": "2026-11-05T00:35:43Z",
+              "f1_odds": -362,
+              "f2_odds": 272
             }
           ],
           "open": {
@@ -19875,7 +19885,7 @@
         {
           "f1": "Priscila Cachoeira",
           "f2": "Nina Nikolija Milosevic",
-          "lbl": "Prelim",
+          "lbl": "Main Card",
           "points": 6,
           "series": [
             {
@@ -19921,7 +19931,7 @@
           "f1": "Jonny Parsons",
           "f2": "Jose Henrique Souza",
           "lbl": "Prelim",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19972,6 +19982,11 @@
               "at": "2026-11-04T19:10:40Z",
               "f1_odds": 190,
               "f2_odds": -236
+            },
+            {
+              "at": "2026-11-05T00:35:43Z",
+              "f1_odds": 190,
+              "f2_odds": -235
             }
           ],
           "open": {
@@ -20066,7 +20081,7 @@
           "f1": "Mantas Kondratavicius",
           "f2": "Andre Petroski",
           "lbl": "Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-10-31T13:56:26Z",
@@ -20112,6 +20127,11 @@
               "at": "2026-11-04T04:45:39Z",
               "f1_odds": -303,
               "f2_odds": 233
+            },
+            {
+              "at": "2026-11-05T00:35:43Z",
+              "f1_odds": -298,
+              "f2_odds": 230
             }
           ],
           "open": {
@@ -20193,6 +20213,26 @@
             "at": "2026-10-31T17:00:40Z",
             "f1_odds": 175,
             "f2_odds": -240
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Austin Bashi",
+          "f2": "Carlos Calderon",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-05T00:35:43Z",
+              "f1_odds": -465,
+              "f2_odds": 342
+            }
+          ],
+          "open": {
+            "at": "2026-11-05T00:35:43Z",
+            "f1_odds": -465,
+            "f2_odds": 342
           },
           "close": null,
           "clv": null
@@ -20457,7 +20497,7 @@
           "f1": "Uros Medic",
           "f2": "Kevin Holland",
           "lbl": "Main Card",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -20503,6 +20543,11 @@
               "at": "2026-11-04T19:10:40Z",
               "f1_odds": -170,
               "f2_odds": 140
+            },
+            {
+              "at": "2026-11-05T00:35:43Z",
+              "f1_odds": -176,
+              "f2_odds": 145
             }
           ],
           "open": {
@@ -22085,7 +22130,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Jose Mauro Delano",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -104,
         "close": null,
         "clv": null
@@ -23252,7 +23297,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Uros Medic",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 132,
         "close": null,
         "clv": null
@@ -23442,6 +23487,15 @@
         "open": -110,
         "close": -109,
         "clv": 1
+      },
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Carlos Calderon",
+        "side": "f1",
+        "points": 1,
+        "open": -465,
+        "close": null,
+        "clv": null
       }
     ],
     "Jose Miguel Delgado": [
@@ -23500,7 +23554,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kevin Holland",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -155,
         "close": null,
         "clv": null
@@ -26748,7 +26802,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Mantas Kondratavicius",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 265,
         "close": null,
         "clv": null
@@ -27094,7 +27148,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Murtazali Magomedov",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -115,
         "close": null,
         "clv": null
@@ -27123,7 +27177,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Ollie Schmid",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -347,
         "close": null,
         "clv": null
@@ -27152,7 +27206,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Keiichiro Nakamura",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 271,
         "close": null,
         "clv": null
@@ -27201,7 +27255,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Jose Henrique Souza",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": 150,
         "close": null,
         "clv": null
@@ -27221,7 +27275,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Jonny Parsons",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": -180,
         "close": null,
         "clv": null
@@ -27254,7 +27308,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Andre Petroski",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -325,
         "close": null,
         "clv": null
@@ -27278,6 +27332,17 @@
         "side": "f2",
         "points": 12,
         "open": -240,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Carlos Calderon": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Austin Bashi",
+        "side": "f2",
+        "points": 1,
+        "open": 342,
         "close": null,
         "clv": null
       }
