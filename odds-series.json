@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T03:50:40Z",
+  "generated_at": "2026-11-05T04:55:42Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20151,7 +20151,7 @@
           "f1": "Davey Grant",
           "f2": "Elijah Smith",
           "lbl": "Main Card",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-31T17:00:40Z",
@@ -20212,6 +20212,11 @@
               "at": "2026-11-04T19:10:40Z",
               "f1_odds": 248,
               "f2_odds": -323
+            },
+            {
+              "at": "2026-11-05T04:55:42Z",
+              "f1_odds": 245,
+              "f2_odds": -318
             }
           ],
           "open": {
@@ -27334,7 +27339,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Elijah Smith",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": 175,
         "close": null,
         "clv": null
@@ -27345,7 +27350,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Davey Grant",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -240,
         "close": null,
         "clv": null

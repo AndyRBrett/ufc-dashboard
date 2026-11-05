@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-05T03:50:24Z",
+ "generated_at": "2026-11-05T04:55:25Z",
  "source": "https://www.ufc.com",
  "cards": {
   "UFC Fight Night: Cortes-Acosta vs. Walker|2026-11-07": {
    "name": "UFC Fight Night: Cortes-Acosta vs. Walker",
    "date": "2026-11-07",
-   "checked_at": "2026-11-05T03:50:24Z",
+   "checked_at": "2026-11-05T04:55:25Z",
    "status": 200,
    "error": "no UFC.com page matched this card",
    "tried": [
@@ -96,7 +96,7 @@
   "UFC Fight Night: Prochazka vs. Stirling|2026-11-21": {
    "name": "UFC Fight Night: Prochazka vs. Stirling",
    "date": "2026-11-21",
-   "checked_at": "2026-11-04T16:40:43Z",
+   "checked_at": "2026-11-05T04:55:25Z",
    "url": "https://www.ufc.com/event/ufc-fight-night-november-21-2026",
    "status": 200,
    "segments": {
@@ -112,7 +112,7 @@
     }
    },
    "bouts": {},
-   "confirmed_at": "2026-11-04T16:40:43Z"
+   "confirmed_at": "2026-11-05T04:55:25Z"
   }
  }
 }
