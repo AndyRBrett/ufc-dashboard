@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T12:20:36Z",
+  "generated_at": "2026-11-05T13:25:37Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20091,7 +20091,7 @@
           "f1": "Mantas Kondratavicius",
           "f2": "Andre Petroski",
           "lbl": "Prelim",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-31T13:56:26Z",
@@ -20142,6 +20142,11 @@
               "at": "2026-11-05T00:35:43Z",
               "f1_odds": -298,
               "f2_odds": 230
+            },
+            {
+              "at": "2026-11-05T13:25:36Z",
+              "f1_odds": -300,
+              "f2_odds": 232
             }
           ],
           "open": {
@@ -26832,7 +26837,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Mantas Kondratavicius",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 265,
         "close": null,
         "clv": null
@@ -27338,7 +27343,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Andre Petroski",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -325,
         "close": null,
         "clv": null
