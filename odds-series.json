@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T22:25:57Z",
+  "generated_at": "2026-11-06T23:31:00Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -19586,7 +19586,7 @@
           "f1": "Billy Elekana",
           "f2": "Lucas Fernando",
           "lbl": "Main Card",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19627,6 +19627,11 @@
               "at": "2026-11-06T03:00:55Z",
               "f1_odds": 248,
               "f2_odds": -322
+            },
+            {
+              "at": "2026-11-06T23:30:59Z",
+              "f1_odds": 258,
+              "f2_odds": -333
             }
           ],
           "open": {
@@ -20001,7 +20006,7 @@
           "f1": "Jonny Parsons",
           "f2": "Jose Henrique Souza",
           "lbl": "Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -20072,6 +20077,11 @@
               "at": "2026-11-06T21:20:56Z",
               "f1_odds": 184,
               "f2_odds": -223
+            },
+            {
+              "at": "2026-11-06T23:30:59Z",
+              "f1_odds": 185,
+              "f2_odds": -222
             }
           ],
           "open": {
@@ -20186,7 +20196,7 @@
           "f1": "Mantas Kondratavicius",
           "f2": "Andre Petroski",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-31T13:56:26Z",
@@ -20262,6 +20272,11 @@
               "at": "2026-11-06T18:50:39Z",
               "f1_odds": -313,
               "f2_odds": 245
+            },
+            {
+              "at": "2026-11-06T23:30:59Z",
+              "f1_odds": -312,
+              "f2_odds": 247
             }
           ],
           "open": {
@@ -20371,7 +20386,7 @@
           "f1": "Austin Bashi",
           "f2": "Carlos Calderon",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-11-05T00:35:43Z",
@@ -20437,6 +20452,11 @@
               "at": "2026-11-06T18:50:39Z",
               "f1_odds": -625,
               "f2_odds": 440
+            },
+            {
+              "at": "2026-11-06T23:30:59Z",
+              "f1_odds": -655,
+              "f2_odds": 450
             }
           ],
           "open": {
@@ -20451,12 +20471,17 @@
           "f1": "Gabriel Lorenco",
           "f2": "Thomas Petersen",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-06T21:20:56Z",
               "f1_odds": 141,
               "f2_odds": -174
+            },
+            {
+              "at": "2026-11-06T23:30:59Z",
+              "f1_odds": 140,
+              "f2_odds": -173
             }
           ],
           "open": {
@@ -20471,12 +20496,17 @@
           "f1": "Ko Seok-hyeon",
           "f2": "Wellington Turman",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-06T21:20:56Z",
               "f1_odds": -713,
               "f2_odds": 485
+            },
+            {
+              "at": "2026-11-06T23:30:59Z",
+              "f1_odds": -703,
+              "f2_odds": 495
             }
           ],
           "open": {
@@ -21064,6 +21094,46 @@
             "at": "2026-11-02T07:35:34Z",
             "f1_odds": 177,
             "f2_odds": -210
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Jared Gordon",
+          "f2": "Melquizael Costa",
+          "lbl": "Early Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-06T23:30:59Z",
+              "f1_odds": 291,
+              "f2_odds": -360
+            }
+          ],
+          "open": {
+            "at": "2026-11-06T23:30:59Z",
+            "f1_odds": 291,
+            "f2_odds": -360
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Evan Elder",
+          "f2": "Samuel Sanches",
+          "lbl": "Early Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-06T23:30:59Z",
+              "f1_odds": -115,
+              "f2_odds": -101
+            }
+          ],
+          "open": {
+            "at": "2026-11-06T23:30:59Z",
+            "f1_odds": -115,
+            "f2_odds": -101
           },
           "close": null,
           "clv": null
@@ -23792,7 +23862,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Carlos Calderon",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -465,
         "close": null,
         "clv": null
@@ -24480,7 +24550,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Billy Elekana",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": -259,
         "close": null,
         "clv": null
@@ -27102,7 +27172,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Mantas Kondratavicius",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 265,
         "close": null,
         "clv": null
@@ -27332,7 +27402,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Lucas Fernando",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": 209,
         "close": null,
         "clv": null
@@ -27555,7 +27625,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Jose Henrique Souza",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": 150,
         "close": null,
         "clv": null
@@ -27575,7 +27645,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Jonny Parsons",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -180,
         "close": null,
         "clv": null
@@ -27608,7 +27678,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Andre Petroski",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -325,
         "close": null,
         "clv": null
@@ -27641,7 +27711,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Austin Bashi",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 342,
         "close": null,
         "clv": null
@@ -27652,7 +27722,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Thomas Petersen",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 141,
         "close": null,
         "clv": null
@@ -27663,7 +27733,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Gabriel Lorenco",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -174,
         "close": null,
         "clv": null
@@ -27674,7 +27744,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Wellington Turman",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -713,
         "close": null,
         "clv": null
@@ -27685,7 +27755,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Ko Seok-hyeon",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 485,
         "close": null,
         "clv": null
@@ -27808,6 +27878,50 @@
         "side": "f1",
         "points": 1,
         "open": 177,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Jared Gordon": [
+      {
+        "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+        "opponent": "Melquizael Costa",
+        "side": "f1",
+        "points": 1,
+        "open": 291,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Melquizael Costa": [
+      {
+        "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+        "opponent": "Jared Gordon",
+        "side": "f2",
+        "points": 1,
+        "open": -360,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Evan Elder": [
+      {
+        "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+        "opponent": "Samuel Sanches",
+        "side": "f1",
+        "points": 1,
+        "open": -115,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Samuel Sanches": [
+      {
+        "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+        "opponent": "Evan Elder",
+        "side": "f2",
+        "points": 1,
+        "open": -101,
         "close": null,
         "clv": null
       }
