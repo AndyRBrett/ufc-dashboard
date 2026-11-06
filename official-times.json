@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-06T05:10:21Z",
+ "generated_at": "2026-11-06T06:10:20Z",
  "source": "https://www.ufc.com",
  "cards": {
   "UFC Fight Night: Cortes-Acosta vs. Walker|2026-11-07": {
@@ -100,23 +100,64 @@
   "UFC Fight Night: Prochazka vs. Stirling|2026-11-21": {
    "name": "UFC Fight Night: Prochazka vs. Stirling",
    "date": "2026-11-21",
-   "checked_at": "2026-11-05T17:16:45Z",
+   "checked_at": "2026-11-06T06:10:20Z",
    "url": "https://www.ufc.com/event/ufc-fight-night-november-21-2026",
    "status": 200,
    "segments": {
-    "prelim": {
-     "et": "10:00",
-     "date": "2026-11-21",
-     "utc": "2026-11-21T15:00:00Z"
-    },
     "main": {
      "et": "13:00",
      "date": "2026-11-21",
      "utc": "2026-11-21T18:00:00Z"
+    },
+    "prelim": {
+     "et": "10:00",
+     "date": "2026-11-21",
+     "utc": "2026-11-21T15:00:00Z"
     }
    },
-   "bouts": {},
-   "confirmed_at": "2026-11-05T17:16:45Z"
+   "bouts": {
+    "main": [
+     [
+      "Jiří Procházka",
+      "Navajo Stirling"
+     ],
+     [
+      "Aljamain Sterling",
+      "Kevin Vallejos"
+     ],
+     [
+      "Dan Hooker",
+      "Brian Ortega"
+     ],
+     [
+      "Kyoji Horiguchi",
+      "Asu Almabayev"
+     ],
+     [
+      "Jared Cannonier",
+      "Ikram Aliskerov"
+     ]
+    ],
+    "prelim": [
+     [
+      "Aleksandre Topuria",
+      "Santiago Luna"
+     ],
+     [
+      "Shamil Gaziev",
+      "Tallison Teixeira"
+     ],
+     [
+      "Amir Albazi",
+      "Alessandro Costa"
+     ],
+     [
+      "Jake Matthews",
+      "Tahir Abdullayev"
+     ]
+    ]
+   },
+   "confirmed_at": "2026-11-06T06:10:20Z"
   }
  }
 }
