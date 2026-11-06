@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T04:05:44Z",
+  "generated_at": "2026-11-06T05:10:34Z",
   "events_tracked": 9,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,17 +95,17 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "status": "ok",
-      "last_changed_at": "2026-11-06T03:00:55Z",
+      "last_changed_at": "2026-11-06T05:10:34Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
-      "line_movement": -42,
+      "line_movement": -37,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-06T00:45:33Z",
+      "last_changed_at": "2026-11-06T05:10:34Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 10,
@@ -321,22 +321,6 @@
       "priority": 214.0
     },
     {
-      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
-      "f1": "Waldo Cortes-Acosta",
-      "f2": "Johnny Walker",
-      "f1_movement": -42,
-      "f2_movement": 20,
-      "magnitude": 42,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": 4.1,
-      "f2_prob_shift": -2.6,
-      "priority": 210.0
-    },
-    {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "f1": "Abusupiyan Magomedov",
       "f2": "Cameron Rowston",
@@ -351,6 +335,22 @@
       "f1_prob_shift": 1.4,
       "f2_prob_shift": -1.5,
       "priority": 206.0
+    },
+    {
+      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+      "f1": "Waldo Cortes-Acosta",
+      "f2": "Johnny Walker",
+      "f1_movement": -37,
+      "f2_movement": 19,
+      "magnitude": 37,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": 3.6,
+      "f2_prob_shift": -2.4,
+      "priority": 185.0
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",

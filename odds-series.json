@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T04:05:44Z",
+  "generated_at": "2026-11-06T05:10:34Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -19506,7 +19506,7 @@
           "f1": "Tatiana Suarez",
           "f2": "Virna Jandiroba",
           "lbl": "Co-Main",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19567,6 +19567,11 @@
               "at": "2026-11-04T19:10:40Z",
               "f1_odds": -210,
               "f2_odds": 166
+            },
+            {
+              "at": "2026-11-06T05:10:34Z",
+              "f1_odds": -208,
+              "f2_odds": 168
             }
           ],
           "open": {
@@ -19636,7 +19641,7 @@
           "f1": "Karine Silva",
           "f2": "Gabriella Fernandes",
           "lbl": "Prelim",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19677,6 +19682,11 @@
               "at": "2026-11-06T00:45:33Z",
               "f1_odds": -222,
               "f2_odds": 177
+            },
+            {
+              "at": "2026-11-06T05:10:34Z",
+              "f1_odds": -223,
+              "f2_odds": 178
             }
           ],
           "open": {
@@ -20066,7 +20076,7 @@
           "f1": "Waldo Cortes-Acosta",
           "f2": "Johnny Walker",
           "lbl": "Main Event",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-31T13:56:26Z",
@@ -20132,6 +20142,11 @@
               "at": "2026-11-04T19:10:40Z",
               "f1_odds": -243,
               "f2_odds": 190
+            },
+            {
+              "at": "2026-11-06T05:10:34Z",
+              "f1_odds": -238,
+              "f2_odds": 189
             }
           ],
           "open": {
@@ -20316,7 +20331,7 @@
           "f1": "Austin Bashi",
           "f2": "Carlos Calderon",
           "lbl": "Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-11-05T00:35:43Z",
@@ -20347,6 +20362,11 @@
               "at": "2026-11-06T00:45:33Z",
               "f1_odds": -503,
               "f2_odds": 365
+            },
+            {
+              "at": "2026-11-06T05:10:34Z",
+              "f1_odds": -493,
+              "f2_odds": 358
             }
           ],
           "open": {
@@ -20847,7 +20867,7 @@
           "f1": "Donte Johnson",
           "f2": "Cesar Almeida",
           "lbl": "Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -20878,6 +20898,11 @@
               "at": "2026-11-05T20:25:37Z",
               "f1_odds": -165,
               "f2_odds": 140
+            },
+            {
+              "at": "2026-11-06T05:10:34Z",
+              "f1_odds": -175,
+              "f2_odds": 149
             }
           ],
           "open": {
@@ -23260,7 +23285,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Donte Johnson",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 140,
         "close": null,
         "clv": null
@@ -23632,7 +23657,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Carlos Calderon",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -465,
         "close": null,
         "clv": null
@@ -24238,7 +24263,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Cesar Almeida",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -165,
         "close": null,
         "clv": null
@@ -25230,7 +25255,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Johnny Walker",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -201,
         "close": null,
         "clv": null
@@ -26077,7 +26102,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Waldo Cortes-Acosta",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 170,
         "close": null,
         "clv": null
@@ -27114,7 +27139,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Virna Jandiroba",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -190,
         "close": null,
         "clv": null
@@ -27143,7 +27168,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Tatiana Suarez",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 157,
         "close": null,
         "clv": null
@@ -27201,7 +27226,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Gabriella Fernandes",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -166,
         "close": null,
         "clv": null
@@ -27230,7 +27255,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Karine Silva",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 137,
         "close": null,
         "clv": null
@@ -27481,7 +27506,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Austin Bashi",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 342,
         "close": null,
         "clv": null
