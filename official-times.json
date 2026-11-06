@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-06T00:45:19Z",
+ "generated_at": "2026-11-06T01:55:22Z",
  "source": "https://www.ufc.com",
  "cards": {
   "UFC Fight Night: Cortes-Acosta vs. Walker|2026-11-07": {
    "name": "UFC Fight Night: Cortes-Acosta vs. Walker",
    "date": "2026-11-07",
-   "checked_at": "2026-11-06T00:45:19Z",
+   "checked_at": "2026-11-06T01:55:22Z",
    "status": 200,
    "error": "no UFC.com page matched this card",
    "tried": [
@@ -15,7 +15,7 @@
   "UFC 334: Gane vs. Hokit|2026-11-14": {
    "name": "UFC 334: Gane vs. Hokit",
    "date": "2026-11-14",
-   "checked_at": "2026-11-05T13:25:21Z",
+   "checked_at": "2026-11-06T01:55:22Z",
    "url": "https://www.ufc.com/event/ufc-334",
    "status": 200,
    "segments": {
@@ -78,6 +78,10 @@
     ],
     "early": [
      [
+      "Jared Gordon",
+      "Melquizael Costa"
+     ],
+     [
       "Macy Chiasson",
       "Bia Mesquita"
      ],
@@ -86,12 +90,12 @@
       "Juan Diaz"
      ],
      [
-      "Nazim Sadykhov",
-      "Jefferson Nascimento"
+      "Evan Elder",
+      "Samuel Sanches"
      ]
     ]
    },
-   "confirmed_at": "2026-11-05T13:25:21Z"
+   "confirmed_at": "2026-11-06T01:55:22Z"
   },
   "UFC Fight Night: Prochazka vs. Stirling|2026-11-21": {
    "name": "UFC Fight Night: Prochazka vs. Stirling",

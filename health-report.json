@@ -1,11 +1,18 @@
 {
-  "generated_at": "2026-11-06T00:54:23Z",
+  "generated_at": "2026-11-06T01:55:34Z",
   "summary": {
     "events": 9,
     "block": 0,
-    "warn": 3
+    "warn": 4
   },
   "findings": [
+    {
+      "severity": "WARN",
+      "check": "card-shrink",
+      "message": "UFC 335: Oliveira vs. Lopes dropped from 5 bouts to 4 \u2014 publishing it as a withdrawal; confirm the bout really came off the card",
+      "event": "UFC 335: Oliveira vs. Lopes",
+      "date": "2026-12-12"
+    },
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
