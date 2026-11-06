@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T01:55:34Z",
+  "generated_at": "2026-11-06T03:00:55Z",
   "events_tracked": 9,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "status": "ok",
-      "last_changed_at": "2026-11-06T00:45:33Z",
+      "last_changed_at": "2026-11-06T03:00:55Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -353,22 +353,6 @@
       "priority": 206.0
     },
     {
-      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
-      "f1": "Davey Grant",
-      "f2": "Elijah Smith",
-      "f1_movement": 70,
-      "f2_movement": -78,
-      "magnitude": 78,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Bantamweight",
-      "f1_prob_shift": -7.4,
-      "f2_prob_shift": 5.5,
-      "priority": 156.0
-    },
-    {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "f1": "Allen Frye Jr.",
       "f2": "RJ Harris",
@@ -418,19 +402,19 @@
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
-      "f1": "Billy Elekana",
-      "f2": "Lucas Fernando",
-      "f1_movement": 41,
-      "f2_movement": -71,
-      "magnitude": 71,
+      "f1": "Davey Grant",
+      "f2": "Elijah Smith",
+      "f1_movement": 68,
+      "f2_movement": -72,
+      "magnitude": 72,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
-      "wc": "Light Heavyweight",
-      "f1_prob_shift": -3.8,
-      "f2_prob_shift": 4.6,
-      "priority": 142.0
+      "wc": "Bantamweight",
+      "f1_prob_shift": -7.2,
+      "f2_prob_shift": 5.1,
+      "priority": 144.0
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
@@ -447,6 +431,22 @@
       "f1_prob_shift": 9.4,
       "f2_prob_shift": -8.3,
       "priority": 128.0
+    },
+    {
+      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+      "f1": "Billy Elekana",
+      "f2": "Lucas Fernando",
+      "f1_movement": 39,
+      "f2_movement": -63,
+      "magnitude": 63,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Light Heavyweight",
+      "f1_prob_shift": -3.6,
+      "f2_prob_shift": 4.2,
+      "priority": 126.0
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
