@@ -316,6 +316,20 @@ def test_index_odds_api_maps_a_reordered_romanisation_to_the_card():
     assert scrape.get_odds(idx, "Julian Erosa", "Lee Jeong-yeong") == {"f1": 127, "f2": -153}
 
 
+def test_index_odds_api_maps_cortes_acosta_walker_spellings_to_the_card():
+    # Both bouts sat at odds:null on 2026-11-07 with their lines in the feed.
+    def bout(a, pa, b, pb):
+        return {"home_team": a, "away_team": b,
+                "bookmakers": [{"key": "fanduel", "markets": [{"key": "h2h", "outcomes": [
+                    {"name": a, "price": pa}, {"name": b, "price": pb}]}]}]}
+    idx = scrape._index_odds_api([
+        bout("Seok Hyun Ko", -713, "Wellington Turman", 485),
+        bout("Thomas Petersen", -174, "Gabriel Lourenco", 141),
+    ], "s")
+    assert scrape.get_odds(idx, "Ko Seok-hyeon", "Wellington Turman") == {"f1": -713, "f2": 485}
+    assert scrape.get_odds(idx, "Gabriel Lorenco", "Thomas Petersen") == {"f1": 141, "f2": -174}
+
+
 def test_index_odds_api_pairs_a_misspelt_outcome_by_elimination(capsys):
     # The event says "Cristian Perez", the market's outcome "Christian Perez":
     # neither is a substring of the other, and the bout was dropped silently.

@@ -1683,6 +1683,14 @@ _ODDS_NAME_ALIASES = {
     # so Erosa vs. Lee sat at odds:null on Moicano vs. Nolan (2026-10-31) with
     # Lee -153 / Erosa +127 in the feed, and an Erosa win scored no dog bonus.
     "jeongyoung lee": "Lee Jeong-yeong",
+    # Same shape on Cortes-Acosta vs. Walker (2026-11-07): the books file him
+    # "Seok Hyun Ko", Wikipedia "Ko Seok-hyeon"; Ko -713 / Turman +485 sat in
+    # the feed with the bout at odds:null.
+    "seok hyun ko": "Ko Seok-hyeon",
+    # Same card: the books spell him "Gabriel Lourenco", the card "Gabriel
+    # Lorenco" (one letter the token rule doesn't forgive), so Petersen -174 /
+    # Lorenco +141 never reached the bout and a Lorenco win scored no dog bonus.
+    "gabriel lourenco": "Gabriel Lorenco",
 }
 
 
