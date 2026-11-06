@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T23:40:34Z",
+  "generated_at": "2026-11-06T00:45:33Z",
   "summary": {
     "events": 9,
     "block": 0,
@@ -9,25 +9,25 @@
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
-      "message": "UFC Fight Night: Prochazka vs. Stirling (16d out): venue 'Al Rayyan' matches no known region, so its 13:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "message": "UFC Fight Night: Prochazka vs. Stirling (15d out): venue 'Al Rayyan' matches no known region, so its 13:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Prochazka vs. Stirling",
       "date": "2026-11-21"
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Cortes-Acosta vs. Walker (2d out): 2 of 14 bouts have no odds",
+      "message": "UFC Fight Night: Cortes-Acosta vs. Walker (1d out): 2 of 14 bouts have no odds",
       "event": "UFC Fight Night: Cortes-Acosta vs. Walker",
       "date": "2026-11-07",
-      "days_out": 2
+      "days_out": 1
     },
     {
       "severity": "WARN",
       "check": "time-unconfirmed",
-      "message": "UFC Fight Night: Cortes-Acosta vs. Walker (2d out): start times not confirmed against UFC.com (no UFC.com page matched this card)",
+      "message": "UFC Fight Night: Cortes-Acosta vs. Walker (1d out): start times not confirmed against UFC.com (no UFC.com page matched this card)",
       "event": "UFC Fight Night: Cortes-Acosta vs. Walker",
       "date": "2026-11-07",
-      "days_out": 2
+      "days_out": 1
     }
   ]
 }

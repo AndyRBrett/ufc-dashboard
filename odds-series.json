@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T23:40:34Z",
+  "generated_at": "2026-11-06T00:45:33Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -19631,7 +19631,7 @@
           "f1": "Karine Silva",
           "f2": "Gabriella Fernandes",
           "lbl": "Prelim",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19666,6 +19666,11 @@
             {
               "at": "2026-11-04T04:45:39Z",
               "f1_odds": -225,
+              "f2_odds": 177
+            },
+            {
+              "at": "2026-11-06T00:45:33Z",
+              "f1_odds": -222,
               "f2_odds": 177
             }
           ],
@@ -19746,7 +19751,7 @@
           "f1": "Jose Mauro Delano",
           "f2": "Murtazali Magomedov",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19812,6 +19817,11 @@
               "at": "2026-11-05T18:20:37Z",
               "f1_odds": -118,
               "f2_odds": -105
+            },
+            {
+              "at": "2026-11-06T00:45:33Z",
+              "f1_odds": -117,
+              "f2_odds": -105
             }
           ],
           "open": {
@@ -19826,7 +19836,7 @@
           "f1": "Keiichiro Nakamura",
           "f2": "Ollie Schmid",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19892,6 +19902,11 @@
               "at": "2026-11-05T07:00:43Z",
               "f1_odds": -362,
               "f2_odds": 272
+            },
+            {
+              "at": "2026-11-06T00:45:33Z",
+              "f1_odds": -367,
+              "f2_odds": 275
             }
           ],
           "open": {
@@ -20106,7 +20121,7 @@
           "f1": "Mantas Kondratavicius",
           "f2": "Andre Petroski",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-31T13:56:26Z",
@@ -20167,6 +20182,11 @@
               "at": "2026-11-05T20:25:37Z",
               "f1_odds": -303,
               "f2_odds": 233
+            },
+            {
+              "at": "2026-11-06T00:45:33Z",
+              "f1_odds": -301,
+              "f2_odds": 235
             }
           ],
           "open": {
@@ -20261,7 +20281,7 @@
           "f1": "Austin Bashi",
           "f2": "Carlos Calderon",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-11-05T00:35:43Z",
@@ -20287,6 +20307,11 @@
               "at": "2026-11-05T20:25:37Z",
               "f1_odds": -502,
               "f2_odds": 357
+            },
+            {
+              "at": "2026-11-06T00:45:33Z",
+              "f1_odds": -503,
+              "f2_odds": 365
             }
           ],
           "open": {
@@ -20327,7 +20352,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -20418,6 +20443,11 @@
               "at": "2026-11-03T02:45:37Z",
               "f1_odds": -266,
               "f2_odds": 207
+            },
+            {
+              "at": "2026-11-06T00:45:33Z",
+              "f1_odds": -263,
+              "f2_odds": 205
             }
           ],
           "open": {
@@ -21135,12 +21165,17 @@
           "f1": "Carlos Prates",
           "f2": "Michael Morales",
           "lbl": "Co-Main",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-01T05:20:38Z",
               "f1_odds": -173,
               "f2_odds": 138
+            },
+            {
+              "at": "2026-11-06T00:45:33Z",
+              "f1_odds": -177,
+              "f2_odds": 142
             }
           ],
           "open": {
@@ -21923,7 +21958,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": -272,
         "close": null,
         "clv": null
@@ -21985,7 +22020,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": 219,
         "close": null,
         "clv": null
@@ -22200,7 +22235,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Jose Mauro Delano",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -104,
         "close": null,
         "clv": null
@@ -23562,7 +23597,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Carlos Calderon",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -465,
         "close": null,
         "clv": null
@@ -26872,7 +26907,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Mantas Kondratavicius",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 265,
         "close": null,
         "clv": null
@@ -27131,7 +27166,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Gabriella Fernandes",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -166,
         "close": null,
         "clv": null
@@ -27160,7 +27195,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Karine Silva",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": 137,
         "close": null,
         "clv": null
@@ -27218,7 +27253,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Murtazali Magomedov",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -115,
         "close": null,
         "clv": null
@@ -27247,7 +27282,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Ollie Schmid",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -347,
         "close": null,
         "clv": null
@@ -27276,7 +27311,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Keiichiro Nakamura",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 271,
         "close": null,
         "clv": null
@@ -27378,7 +27413,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Andre Petroski",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -325,
         "close": null,
         "clv": null
@@ -27411,7 +27446,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Austin Bashi",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 342,
         "close": null,
         "clv": null
@@ -27598,7 +27633,7 @@
         "event_id": "2027-01-30:ufc-336-van-vs-kape",
         "opponent": "Michael Morales",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -173,
         "close": null,
         "clv": null
@@ -27609,7 +27644,7 @@
         "event_id": "2027-01-30:ufc-336-van-vs-kape",
         "opponent": "Carlos Prates",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 138,
         "close": null,
         "clv": null
