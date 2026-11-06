@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T15:10:42Z",
+  "generated_at": "2026-11-06T16:15:37Z",
   "events_tracked": 9,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,11 +95,11 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "status": "ok",
-      "last_changed_at": "2026-11-06T14:05:37Z",
+      "last_changed_at": "2026-11-06T16:15:37Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
-      "line_movement": -36,
+      "line_movement": -37,
       "odds_market_priced": true
     },
     {
@@ -340,17 +340,17 @@
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "f1": "Waldo Cortes-Acosta",
       "f2": "Johnny Walker",
-      "f1_movement": -36,
-      "f2_movement": 18,
-      "magnitude": 36,
+      "f1_movement": -37,
+      "f2_movement": 19,
+      "magnitude": 37,
       "main_event": true,
       "tier": "main-event",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": 3.5,
-      "f2_prob_shift": -2.3,
-      "priority": 180.0
+      "f1_prob_shift": 3.6,
+      "f2_prob_shift": -2.4,
+      "priority": 185.0
     },
     {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
@@ -404,17 +404,17 @@
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "f1": "Davey Grant",
       "f2": "Elijah Smith",
-      "f1_movement": 68,
-      "f2_movement": -72,
-      "magnitude": 72,
+      "f1_movement": 67,
+      "f2_movement": -68,
+      "magnitude": 68,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Bantamweight",
-      "f1_prob_shift": -7.2,
-      "f2_prob_shift": 5.1,
-      "priority": 144.0
+      "f1_prob_shift": -7.1,
+      "f2_prob_shift": 4.9,
+      "priority": 136.0
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",

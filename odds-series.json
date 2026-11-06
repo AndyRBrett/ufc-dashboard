@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T15:10:42Z",
+  "generated_at": "2026-11-06T16:15:37Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20076,7 +20076,7 @@
           "f1": "Waldo Cortes-Acosta",
           "f2": "Johnny Walker",
           "lbl": "Main Event",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-31T13:56:26Z",
@@ -20152,6 +20152,11 @@
               "at": "2026-11-06T14:05:37Z",
               "f1_odds": -237,
               "f2_odds": 188
+            },
+            {
+              "at": "2026-11-06T16:15:37Z",
+              "f1_odds": -238,
+              "f2_odds": 189
             }
           ],
           "open": {
@@ -20251,7 +20256,7 @@
           "f1": "Davey Grant",
           "f2": "Elijah Smith",
           "lbl": "Main Card",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-10-31T17:00:40Z",
@@ -20322,6 +20327,11 @@
               "at": "2026-11-06T03:00:55Z",
               "f1_odds": 243,
               "f2_odds": -312
+            },
+            {
+              "at": "2026-11-06T16:15:37Z",
+              "f1_odds": 242,
+              "f2_odds": -308
             }
           ],
           "open": {
@@ -20336,7 +20346,7 @@
           "f1": "Austin Bashi",
           "f2": "Carlos Calderon",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-11-05T00:35:43Z",
@@ -20392,6 +20402,11 @@
               "at": "2026-11-06T14:05:37Z",
               "f1_odds": -563,
               "f2_odds": 400
+            },
+            {
+              "at": "2026-11-06T16:15:37Z",
+              "f1_odds": -558,
+              "f2_odds": 397
             }
           ],
           "open": {
@@ -23697,7 +23712,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Carlos Calderon",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -465,
         "close": null,
         "clv": null
@@ -25295,7 +25310,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Johnny Walker",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -201,
         "close": null,
         "clv": null
@@ -26142,7 +26157,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Waldo Cortes-Acosta",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 170,
         "close": null,
         "clv": null
@@ -27524,7 +27539,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Elijah Smith",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": 175,
         "close": null,
         "clv": null
@@ -27535,7 +27550,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Davey Grant",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -240,
         "close": null,
         "clv": null
@@ -27546,7 +27561,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Austin Bashi",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 342,
         "close": null,
         "clv": null
