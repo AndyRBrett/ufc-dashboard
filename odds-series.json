@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T20:15:50Z",
+  "generated_at": "2026-11-06T21:20:56Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20001,7 +20001,7 @@
           "f1": "Jonny Parsons",
           "f2": "Jose Henrique Souza",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -20067,6 +20067,11 @@
               "at": "2026-11-06T18:50:39Z",
               "f1_odds": 202,
               "f2_odds": -247
+            },
+            {
+              "at": "2026-11-06T21:20:56Z",
+              "f1_odds": 184,
+              "f2_odds": -223
             }
           ],
           "open": {
@@ -20441,6 +20446,46 @@
           },
           "close": null,
           "clv": null
+        },
+        {
+          "f1": "Gabriel Lorenco",
+          "f2": "Thomas Petersen",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-06T21:20:56Z",
+              "f1_odds": 141,
+              "f2_odds": -174
+            }
+          ],
+          "open": {
+            "at": "2026-11-06T21:20:56Z",
+            "f1_odds": 141,
+            "f2_odds": -174
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Ko Seok-hyeon",
+          "f2": "Wellington Turman",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-06T21:20:56Z",
+              "f1_odds": -713,
+              "f2_odds": 485
+            }
+          ],
+          "open": {
+            "at": "2026-11-06T21:20:56Z",
+            "f1_odds": -713,
+            "f2_odds": 485
+          },
+          "close": null,
+          "clv": null
         }
       ]
     },
@@ -20472,7 +20517,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 20,
+          "points": 21,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -20573,6 +20618,11 @@
               "at": "2026-11-06T09:25:36Z",
               "f1_odds": -262,
               "f2_odds": 203
+            },
+            {
+              "at": "2026-11-06T21:20:56Z",
+              "f1_odds": -263,
+              "f2_odds": 205
             }
           ],
           "open": {
@@ -22103,7 +22153,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 20,
+        "points": 21,
         "open": -272,
         "close": null,
         "clv": null
@@ -22165,7 +22215,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 20,
+        "points": 21,
         "open": 219,
         "close": null,
         "clv": null
@@ -27505,7 +27555,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Jose Henrique Souza",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 150,
         "close": null,
         "clv": null
@@ -27525,7 +27575,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Jonny Parsons",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -180,
         "close": null,
         "clv": null
@@ -27593,6 +27643,50 @@
         "side": "f2",
         "points": 13,
         "open": 342,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Gabriel Lorenco": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Thomas Petersen",
+        "side": "f1",
+        "points": 1,
+        "open": 141,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Thomas Petersen": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Gabriel Lorenco",
+        "side": "f2",
+        "points": 1,
+        "open": -174,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Ko Seok-hyeon": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Wellington Turman",
+        "side": "f1",
+        "points": 1,
+        "open": -713,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Wellington Turman": [
+      {
+        "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+        "opponent": "Ko Seok-hyeon",
+        "side": "f2",
+        "points": 1,
+        "open": 485,
         "close": null,
         "clv": null
       }

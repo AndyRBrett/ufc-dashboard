@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T20:15:49Z",
+  "generated_at": "2026-11-06T21:20:56Z",
   "events_tracked": 9,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "status": "ok",
-      "last_changed_at": "2026-11-06T18:50:39Z",
+      "last_changed_at": "2026-11-06T21:20:56Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -105,11 +105,11 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-06T18:50:39Z",
+      "last_changed_at": "2026-11-06T21:20:56Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 10,
-      "line_movement": 10,
+      "line_movement": 9,
       "odds_market_priced": true
     },
     {
@@ -548,17 +548,17 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Ciryl Gane",
       "f2": "Josh Hokit",
-      "f1_movement": 10,
-      "f2_movement": -16,
-      "magnitude": 16,
+      "f1_movement": 9,
+      "f2_movement": -14,
+      "magnitude": 14,
       "main_event": true,
       "tier": "main-event",
       "threshold": 10,
       "low_confidence": false,
       "wc": "Heavyweight",
       "f1_prob_shift": -0.7,
-      "f2_prob_shift": 1.7,
-      "priority": 44.0
+      "f2_prob_shift": 1.4,
+      "priority": 38.5
     },
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
