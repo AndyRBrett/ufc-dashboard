@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T10:25:36Z",
+  "generated_at": "2026-11-06T11:30:40Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20331,7 +20331,7 @@
           "f1": "Austin Bashi",
           "f2": "Carlos Calderon",
           "lbl": "Prelim",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-11-05T00:35:43Z",
@@ -20377,6 +20377,11 @@
               "at": "2026-11-06T09:25:36Z",
               "f1_odds": -510,
               "f2_odds": 370
+            },
+            {
+              "at": "2026-11-06T11:30:40Z",
+              "f1_odds": -505,
+              "f2_odds": 367
             }
           ],
           "open": {
@@ -23672,7 +23677,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Carlos Calderon",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -465,
         "close": null,
         "clv": null
@@ -27521,7 +27526,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Austin Bashi",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 342,
         "close": null,
         "clv": null
