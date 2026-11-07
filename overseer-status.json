@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T17:40:40Z",
+  "generated_at": "2026-11-07T17:45:44Z",
   "events_tracked": 9,
   "stale_events": 2,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "status": "ok",
-      "last_changed_at": "2026-11-07T14:45:39Z",
+      "last_changed_at": "2026-11-07T17:45:44Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -180,17 +180,17 @@
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "f1": "Austin Bashi",
       "f2": "Carlos Calderon",
-      "f1_movement": -173,
-      "f2_movement": 105,
-      "magnitude": 173,
+      "f1_movement": -187,
+      "f2_movement": 115,
+      "magnitude": 187,
       "main_event": false,
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
       "wc": "Featherweight",
-      "f1_prob_shift": 4.1,
-      "f2_prob_shift": -4.3,
-      "priority": 346.0
+      "f1_prob_shift": 4.4,
+      "f2_prob_shift": -4.7,
+      "priority": 374.0
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
@@ -353,6 +353,38 @@
       "priority": 206.0
     },
     {
+      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+      "f1": "Davey Grant",
+      "f2": "Elijah Smith",
+      "f1_movement": 82,
+      "f2_movement": -85,
+      "magnitude": 85,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Bantamweight",
+      "f1_prob_shift": -8.4,
+      "f2_prob_shift": 5.9,
+      "priority": 170.0
+    },
+    {
+      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
+      "f1": "Billy Elekana",
+      "f2": "Lucas Fernando",
+      "f1_movement": 58,
+      "f2_movement": -79,
+      "magnitude": 79,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Light Heavyweight",
+      "f1_prob_shift": -5.1,
+      "f2_prob_shift": 5.0,
+      "priority": 158.0
+    },
+    {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "f1": "Allen Frye Jr.",
       "f2": "RJ Harris",
@@ -369,22 +401,6 @@
       "priority": 153.0
     },
     {
-      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
-      "f1": "Billy Elekana",
-      "f2": "Lucas Fernando",
-      "f1_movement": 54,
-      "f2_movement": -76,
-      "magnitude": 76,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Light Heavyweight",
-      "f1_prob_shift": -4.8,
-      "f2_prob_shift": 4.9,
-      "priority": 152.0
-    },
-    {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Zachary Reese",
       "f2": "Mickey Gall",
@@ -399,22 +415,6 @@
       "f1_prob_shift": 8.0,
       "f2_prob_shift": -7.4,
       "priority": 150.0
-    },
-    {
-      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
-      "f1": "Davey Grant",
-      "f2": "Elijah Smith",
-      "f1_movement": 73,
-      "f2_movement": -73,
-      "magnitude": 73,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Bantamweight",
-      "f1_prob_shift": -7.6,
-      "f2_prob_shift": 5.2,
-      "priority": 146.0
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
@@ -452,7 +452,7 @@
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "f1": "Priscila Cachoeira",
       "f2": "Nina Nikolija Milosevic",
-      "f1_movement": 43,
+      "f1_movement": 40,
       "f2_movement": -70,
       "magnitude": 70,
       "main_event": false,
@@ -460,7 +460,7 @@
       "threshold": 55,
       "low_confidence": false,
       "wc": "Women's Bantamweight",
-      "f1_prob_shift": -2.0,
+      "f1_prob_shift": -1.9,
       "f2_prob_shift": 2.0,
       "priority": 140.0
     },
