@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T11:35:45Z",
+  "generated_at": "2026-11-07T11:40:46Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20887,7 +20887,7 @@
           "f1": "Uros Medic",
           "f2": "Kevin Holland",
           "lbl": "Main Card",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -20943,6 +20943,11 @@
               "at": "2026-11-07T08:40:39Z",
               "f1_odds": -170,
               "f2_odds": 139
+            },
+            {
+              "at": "2026-11-07T11:40:46Z",
+              "f1_odds": -174,
+              "f2_odds": 142
             }
           ],
           "open": {
@@ -23772,7 +23777,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Uros Medic",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 132,
         "close": null,
         "clv": null
@@ -24029,7 +24034,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kevin Holland",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -155,
         "close": null,
         "clv": null
