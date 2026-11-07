@@ -239,7 +239,10 @@ jobs:
       # stayed unlocked and everyone's picks stayed hidden. Called right after
       # the commit (after the result pushes, whose 409 retries mean main's copy
       # is readable), the lock lands seconds after the result. Never fails the
-      # run: the cron is still the backstop.
+      # run: the cron is still the backstop. X-Data-Sha pins the read to the
+      # commit just pushed: raw.githubusercontent serves `main` up to ~5 min
+      # stale, so without it this call saw the previous data.js and wrote no
+      # sighting (2026-11-07, every result but one on the prelims).
       - name: Write pick lock times now that data.js is committed
         if: steps.push.outputs.pushed == 'true'
         continue-on-error: true
@@ -249,7 +252,8 @@ jobs:
           if [ -z "$CRON_SECRET" ]; then echo "::warning::CRON_SECRET not set; lock times wait for scheduled-push"; exit 0; fi
           code=$(curl -s -m 60 -o /tmp/sr.json -w '%{http_code}' -X POST \
             "https://gkccophrdqtqcowmblre.supabase.co/functions/v1/send-reminders" \
-            -H "Authorization: Bearer $CRON_SECRET" -H "Content-Type: application/json" || echo 000)
+            -H "Authorization: Bearer $CRON_SECRET" -H "Content-Type: application/json" \
+            -H "X-Data-Sha: $(git rev-parse HEAD)" || echo 000)
           echo "send-reminders -> HTTP $code"; head -c 2000 /tmp/sr.json 2>/dev/null || true; echo
 
       # Event-level failures must reach the RUN's failure signal (#66).
