@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-04T12:20:45Z",
+ "generated_at": "2026-11-07T18:40:40Z",
  "promotions": [
   {
    "id": "pfl",
@@ -459,6 +459,28 @@
      "b": "Shelda Chipito",
      "label": "",
      "division": "Women's Strawweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Dean Garnett",
+     "b": "Bryce Meredith",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Oualy Tandia",
+     "b": "Alex Lohore",
+     "label": "",
+     "division": "Welterweight",
      "title": false,
      "odds": null,
      "winner": "",
