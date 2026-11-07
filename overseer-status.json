@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T23:30:59Z",
+  "generated_at": "2026-11-07T00:00:29Z",
   "events_tracked": 9,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -9,7 +9,7 @@
   "odds_budget": {
     "exhausted": false,
     "reset_day": 1,
-    "resets_in_days": 25,
+    "resets_in_days": 24,
     "most_affected": []
   },
   "stale_threshold_hours": 48,
@@ -193,6 +193,38 @@
       "priority": 380.0
     },
     {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Caio Borralho",
+      "f2": "Yousri Belgaroui",
+      "f1_movement": -41,
+      "f2_movement": 227,
+      "magnitude": 227,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 7.4,
+      "f2_prob_shift": -6.0,
+      "priority": 317.8
+    },
+    {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Stephen Thompson",
+      "f2": "Charles Radtke",
+      "f1_movement": -25,
+      "f2_movement": 217,
+      "magnitude": 217,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 120,
+      "low_confidence": false,
+      "wc": "Welterweight",
+      "f1_prob_shift": 5.1,
+      "f2_prob_shift": -4.1,
+      "priority": 303.8
+    },
+    {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Steven Koslow",
       "f2": "Chad Anheliger",
@@ -225,22 +257,6 @@
       "priority": 252.0
     },
     {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Caio Borralho",
-      "f2": "Yousri Belgaroui",
-      "f1_movement": -41,
-      "f2_movement": 227,
-      "magnitude": 227,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 7.4,
-      "f2_prob_shift": -6.0,
-      "priority": 249.7
-    },
-    {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "f1": "Colby Thicknesse",
       "f2": "Asaf Chopurov",
@@ -255,22 +271,6 @@
       "f1_prob_shift": 13.3,
       "f2_prob_shift": -10.2,
       "priority": 248.0
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Stephen Thompson",
-      "f2": "Charles Radtke",
-      "f1_movement": -25,
-      "f2_movement": 217,
-      "magnitude": 217,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 120,
-      "low_confidence": false,
-      "wc": "Welterweight",
-      "f1_prob_shift": 5.1,
-      "f2_prob_shift": -4.1,
-      "priority": 238.7
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
@@ -465,6 +465,22 @@
       "priority": 128.0
     },
     {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Bilal Hasan",
+      "f2": "Luis Gurule",
+      "f1_movement": 47,
+      "f2_movement": -83,
+      "magnitude": 83,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Flyweight",
+      "f1_prob_shift": -0.4,
+      "f2_prob_shift": 1.7,
+      "priority": 116.2
+    },
+    {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Jasmine Jasudavicius",
       "f2": "Erin Blanchfield",
@@ -479,22 +495,6 @@
       "f1_prob_shift": -6.6,
       "f2_prob_shift": 7.3,
       "priority": 105.0
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Bilal Hasan",
-      "f2": "Luis Gurule",
-      "f1_movement": 47,
-      "f2_movement": -83,
-      "magnitude": 83,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Flyweight",
-      "f1_prob_shift": -0.4,
-      "f2_prob_shift": 1.7,
-      "priority": 91.3
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
@@ -529,6 +529,22 @@
       "priority": 60.0
     },
     {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Ciryl Gane",
+      "f2": "Josh Hokit",
+      "f1_movement": 9,
+      "f2_movement": -14,
+      "magnitude": 14,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": -0.7,
+      "f2_prob_shift": 1.4,
+      "priority": 49.0
+    },
+    {
       "event_id": "2026-10-10:ufc-fight-night-allen-vs-duncan",
       "f1": "Brendan Allen",
       "f2": "Christian Leroy Duncan",
@@ -545,22 +561,6 @@
       "priority": 45.0
     },
     {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Ciryl Gane",
-      "f2": "Josh Hokit",
-      "f1_movement": 9,
-      "f2_movement": -14,
-      "magnitude": 14,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": -0.7,
-      "f2_prob_shift": 1.4,
-      "priority": 38.5
-    },
-    {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "f1": "Jiri Prochazka",
       "f2": "Navajo Stirling",
@@ -574,7 +574,7 @@
       "wc": "Light Heavyweight",
       "f1_prob_shift": 2.6,
       "f2_prob_shift": -2.5,
-      "priority": 37.5
+      "priority": 41.2
     },
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
