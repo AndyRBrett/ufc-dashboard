@@ -421,6 +421,22 @@ check("lockRows: a card weeks away or long gone is not written",
 check("send-reminders reads data.js from main, never the Pages copy",
   /const DATA_URL = Deno\.env\.get\("DATA_URL"\) \?\?\s*"https:\/\/raw\.githubusercontent\.com\/AndyRBrett\/ufc-dashboard\/main\/data\.js"/.test(src) &&
   !/github\.io\/ufc-dashboard\/data\.js/.test(src));
+// raw.githubusercontent serves `main` up to ~5 min stale (2026-11-07: the
+// post-commit call read the previous data.js and every reveal waited for the
+// next cron). The caller pins the commit it pushed; only a full SHA is taken.
+{
+  const MAIN = "https://raw.githubusercontent.com/AndyRBrett/ufc-dashboard/main/data.js";
+  const SHA = "d5171a5f7847c1cf9e9492e8b84187976644bc0c";
+  check("send-reminders reads the pushed commit's data.js when told its SHA",
+    mod.pinnedDataUrl(MAIN, SHA) === MAIN.replace("/main/", `/${SHA}/`));
+  check("send-reminders ignores a missing, short, or path-bearing SHA",
+    mod.pinnedDataUrl(MAIN, null) === MAIN && mod.pinnedDataUrl(MAIN, "d5171a5") === MAIN &&
+    mod.pinnedDataUrl(MAIN, "../../evil/main") === MAIN && mod.pinnedDataUrl(MAIN, SHA.toUpperCase()) === MAIN);
+  check("a non-main DATA_URL is never re-pointed", mod.pinnedDataUrl("https://example.test/data.js", SHA) === "https://example.test/data.js");
+  check("send-reminders takes the SHA from X-Data-Sha and falls back to main if the pinned read fails",
+    /pinnedDataUrl\(DATA_URL, req\.headers\.get\("X-Data-Sha"\)\)/.test(src) &&
+    /if \(!r\.ok && pinned !== DATA_URL\) r = await fetch\(`\$\{DATA_URL\}\?t=/.test(src));
+}
 check("send-reminders writes locks only with the service key, building on what it last wrote",
   /if \(SB_SERVICE_ROLE_KEY\) \{\s*try \{\s*const h = \{[^}]*apikey: SB_SERVICE_ROLE_KEY[^]*?const \{ bouts, cards \} = lockRows\(evs, bundledKernel\(\{\}\), now, prior\)/.test(src) &&
   /rest\/v1\/pick_locks\?select=event_date,a,b,lock_at&event_date=in\./.test(src));

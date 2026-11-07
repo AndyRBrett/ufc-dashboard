@@ -80,3 +80,6 @@ def test_update_writes_lock_times_right_after_its_commit():
     assert "continue-on-error: true" in step, "a lock-writer hiccup must never fail a data update"
     assert "functions/v1/send-reminders" in step and "Bearer $CRON_SECRET" in step
     assert "secrets.CRON_SECRET" in step
+    # raw.githubusercontent serves main up to ~5 min stale; without the pin the
+    # call reads the data.js from before the result it was meant to lock on.
+    assert '-H "X-Data-Sha: $(git rev-parse HEAD)"' in step
