@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T20:40:40Z",
+  "generated_at": "2026-11-07T20:45:42Z",
   "events_tracked": 9,
   "stale_events": 2,
   "parse_failure_events": 0,
@@ -95,7 +95,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "status": "ok",
-      "last_changed_at": "2026-11-07T17:45:44Z",
+      "last_changed_at": "2026-11-07T20:45:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -105,7 +105,7 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-07T14:45:39Z",
+      "last_changed_at": "2026-11-07T20:45:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -196,17 +196,17 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Caio Borralho",
       "f2": "Yousri Belgaroui",
-      "f1_movement": -39,
-      "f2_movement": 225,
-      "magnitude": 225,
+      "f1_movement": -37,
+      "f2_movement": 224,
+      "magnitude": 224,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 7.1,
-      "f2_prob_shift": -5.6,
-      "priority": 315.0
+      "f1_prob_shift": 6.8,
+      "f2_prob_shift": -5.4,
+      "priority": 313.6
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
@@ -356,17 +356,17 @@
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "f1": "Davey Grant",
       "f2": "Elijah Smith",
-      "f1_movement": 82,
-      "f2_movement": -85,
-      "magnitude": 85,
+      "f1_movement": 85,
+      "f2_movement": -90,
+      "magnitude": 90,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Bantamweight",
-      "f1_prob_shift": -8.4,
-      "f2_prob_shift": 5.9,
-      "priority": 170.0
+      "f1_prob_shift": -8.6,
+      "f2_prob_shift": 6.2,
+      "priority": 180.0
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -447,22 +447,6 @@
       "f1_prob_shift": 2.9,
       "f2_prob_shift": -1.9,
       "priority": 145.0
-    },
-    {
-      "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
-      "f1": "Priscila Cachoeira",
-      "f2": "Nina Nikolija Milosevic",
-      "f1_movement": 40,
-      "f2_movement": -70,
-      "magnitude": 70,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Women's Bantamweight",
-      "f1_prob_shift": -1.9,
-      "f2_prob_shift": 2.0,
-      "priority": 140.0
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",

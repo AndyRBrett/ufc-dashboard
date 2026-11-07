@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T20:40:40Z",
+  "generated_at": "2026-11-07T20:45:43Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -19506,7 +19506,7 @@
           "f1": "Tatiana Suarez",
           "f2": "Virna Jandiroba",
           "lbl": "Co-Main",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19582,6 +19582,11 @@
               "at": "2026-11-07T14:45:39Z",
               "f1_odds": -201,
               "f2_odds": 164
+            },
+            {
+              "at": "2026-11-07T20:45:42Z",
+              "f1_odds": -203,
+              "f2_odds": 166
             }
           ],
           "open": {
@@ -19906,7 +19911,7 @@
           "f1": "Keiichiro Nakamura",
           "f2": "Ollie Schmid",
           "lbl": "Prelim",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -19992,6 +19997,11 @@
               "at": "2026-11-07T14:45:39Z",
               "f1_odds": -350,
               "f2_odds": 273
+            },
+            {
+              "at": "2026-11-07T20:45:42Z",
+              "f1_odds": -368,
+              "f2_odds": 288
             }
           ],
           "open": {
@@ -20006,7 +20016,7 @@
           "f1": "Priscila Cachoeira",
           "f2": "Nina Nikolija Milosevic",
           "lbl": "Main Card",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-30T23:50:47Z",
@@ -20057,6 +20067,11 @@
               "at": "2026-11-07T17:45:44Z",
               "f1_odds": 385,
               "f2_odds": -530
+            },
+            {
+              "at": "2026-11-07T20:45:42Z",
+              "f1_odds": 368,
+              "f2_odds": -500
             }
           ],
           "open": {
@@ -20386,7 +20401,7 @@
           "f1": "Davey Grant",
           "f2": "Elijah Smith",
           "lbl": "Main Card",
-          "points": 20,
+          "points": 21,
           "series": [
             {
               "at": "2026-10-31T17:00:40Z",
@@ -20487,6 +20502,11 @@
               "at": "2026-11-07T17:45:44Z",
               "f1_odds": 257,
               "f2_odds": -325
+            },
+            {
+              "at": "2026-11-07T20:45:42Z",
+              "f1_odds": 260,
+              "f2_odds": -330
             }
           ],
           "open": {
@@ -20897,7 +20917,7 @@
           "f1": "Caio Borralho",
           "f2": "Yousri Belgaroui",
           "lbl": "Main Card",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -20953,6 +20973,11 @@
               "at": "2026-11-07T14:45:39Z",
               "f1_odds": -154,
               "f2_odds": 124
+            },
+            {
+              "at": "2026-11-07T20:45:42Z",
+              "f1_odds": -152,
+              "f2_odds": 123
             }
           ],
           "open": {
@@ -22283,7 +22308,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Nina Nikolija Milosevic",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": 345,
         "close": null,
         "clv": null
@@ -25741,7 +25766,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Caio Borralho",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -101,
         "close": null,
         "clv": null
@@ -27539,7 +27564,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Virna Jandiroba",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -190,
         "close": null,
         "clv": null
@@ -27568,7 +27593,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Tatiana Suarez",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 157,
         "close": null,
         "clv": null
@@ -27742,7 +27767,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Ollie Schmid",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": -347,
         "close": null,
         "clv": null
@@ -27771,7 +27796,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Keiichiro Nakamura",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": 271,
         "close": null,
         "clv": null
@@ -27800,7 +27825,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Priscila Cachoeira",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": -460,
         "close": null,
         "clv": null
@@ -27884,7 +27909,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Elijah Smith",
         "side": "f1",
-        "points": 20,
+        "points": 21,
         "open": 175,
         "close": null,
         "clv": null
@@ -27895,7 +27920,7 @@
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
         "opponent": "Davey Grant",
         "side": "f2",
-        "points": 20,
+        "points": 21,
         "open": -240,
         "close": null,
         "clv": null
@@ -28005,7 +28030,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Yousri Belgaroui",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -115,
         "close": null,
         "clv": null
