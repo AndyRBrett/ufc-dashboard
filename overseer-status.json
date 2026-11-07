@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T08:35:36Z",
+  "generated_at": "2026-11-07T08:40:39Z",
   "events_tracked": 9,
   "stale_events": 2,
   "parse_failure_events": 0,
@@ -105,11 +105,11 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-07T02:35:41Z",
+      "last_changed_at": "2026-11-07T08:40:39Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
-      "line_movement": 17,
+      "line_movement": 20,
       "odds_market_priced": true
     },
     {
@@ -196,17 +196,17 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Caio Borralho",
       "f2": "Yousri Belgaroui",
-      "f1_movement": -41,
-      "f2_movement": 227,
-      "magnitude": 227,
+      "f1_movement": -44,
+      "f2_movement": 229,
+      "magnitude": 229,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 7.4,
-      "f2_prob_shift": -6.0,
-      "priority": 317.8
+      "f1_prob_shift": 7.9,
+      "f2_prob_shift": -6.4,
+      "priority": 320.6
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
@@ -513,6 +513,22 @@
       "priority": 105.0
     },
     {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Ciryl Gane",
+      "f2": "Josh Hokit",
+      "f1_movement": 20,
+      "f2_movement": -22,
+      "magnitude": 22,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 10,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": -1.5,
+      "f2_prob_shift": 2.3,
+      "priority": 77.0
+    },
+    {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Jean-Paul Lebosnoyani",
       "f2": "Farman Hasanov",
@@ -527,22 +543,6 @@
       "f1_prob_shift": 5.5,
       "f2_prob_shift": -4.7,
       "priority": 73.0
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Ciryl Gane",
-      "f2": "Josh Hokit",
-      "f1_movement": 17,
-      "f2_movement": -19,
-      "magnitude": 19,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 10,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": -1.3,
-      "f2_prob_shift": 2.0,
-      "priority": 66.5
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",

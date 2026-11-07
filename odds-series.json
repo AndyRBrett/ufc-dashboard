@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T08:35:36Z",
+  "generated_at": "2026-11-07T08:40:39Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20622,7 +20622,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 22,
+          "points": 23,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -20733,6 +20733,11 @@
               "at": "2026-11-07T02:35:41Z",
               "f1_odds": -255,
               "f2_odds": 200
+            },
+            {
+              "at": "2026-11-07T08:40:39Z",
+              "f1_odds": -252,
+              "f2_odds": 197
             }
           ],
           "open": {
@@ -20747,7 +20752,7 @@
           "f1": "Kayla Harrison",
           "f2": "Amanda Nunes",
           "lbl": "Co-Main",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -20798,6 +20803,11 @@
               "at": "2026-11-03T09:15:44Z",
               "f1_odds": -193,
               "f2_odds": 154
+            },
+            {
+              "at": "2026-11-07T08:40:39Z",
+              "f1_odds": -195,
+              "f2_odds": 156
             }
           ],
           "open": {
@@ -20812,7 +20822,7 @@
           "f1": "Caio Borralho",
           "f2": "Yousri Belgaroui",
           "lbl": "Main Card",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -20858,6 +20868,11 @@
               "at": "2026-11-03T15:45:46Z",
               "f1_odds": -156,
               "f2_odds": 126
+            },
+            {
+              "at": "2026-11-07T08:40:39Z",
+              "f1_odds": -159,
+              "f2_odds": 128
             }
           ],
           "open": {
@@ -20872,7 +20887,7 @@
           "f1": "Uros Medic",
           "f2": "Kevin Holland",
           "lbl": "Main Card",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -20923,6 +20938,11 @@
               "at": "2026-11-05T00:35:43Z",
               "f1_odds": -176,
               "f2_odds": 145
+            },
+            {
+              "at": "2026-11-07T08:40:39Z",
+              "f1_odds": -170,
+              "f2_odds": 139
             }
           ],
           "open": {
@@ -22308,7 +22328,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 22,
+        "points": 23,
         "open": -272,
         "close": null,
         "clv": null
@@ -22370,7 +22390,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 22,
+        "points": 23,
         "open": 219,
         "close": null,
         "clv": null
@@ -23752,7 +23772,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Uros Medic",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 132,
         "close": null,
         "clv": null
@@ -24009,7 +24029,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kevin Holland",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -155,
         "close": null,
         "clv": null
@@ -25631,7 +25651,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Caio Borralho",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": -101,
         "close": null,
         "clv": null
@@ -27873,7 +27893,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Amanda Nunes",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -201,
         "close": null,
         "clv": null
@@ -27884,7 +27904,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kayla Harrison",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 165,
         "close": null,
         "clv": null
@@ -27895,7 +27915,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Yousri Belgaroui",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -115,
         "close": null,
         "clv": null
