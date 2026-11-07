@@ -694,6 +694,10 @@ _MAIN_CARD_DEFAULT = 5
 _MAIN_CARD_SIZE = {
     # Noche UFC 4: six-bout main card, opening with David Martinez vs. Dan Ige.
     "UFC Fight Night: Silva vs. Delgado": 6,
+    # UFC Vegas 124: six-bout main card opening with Raposo vs. Degli (weigh-in
+    # and live-results coverage, 2026-11-07); UFC.com's page didn't match, so
+    # official_times couldn't correct the split.
+    "UFC Fight Night: Cortes-Acosta vs. Walker": 6,
 }
 
 
