@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-08T04:10:22Z",
+  "generated_at": "2026-11-08T04:15:47Z",
   "events_tracked": 9,
   "stale_events": 3,
   "parse_failure_events": 0,
@@ -99,11 +99,11 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "status": "ok",
-      "last_changed_at": "2026-11-08T03:05:55Z",
+      "last_changed_at": "2026-11-08T04:15:47Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
-      "line_movement": -29,
+      "line_movement": 15,
       "odds_market_priced": true
     },
     {
@@ -518,18 +518,18 @@
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
-      "f1": "Waldo Cortes-Acosta",
-      "f2": "Johnny Walker",
-      "f1_movement": -29,
-      "f2_movement": 15,
+      "f1": "Johnny Walker",
+      "f2": "Waldo Cortes-Acosta",
+      "f1_movement": 15,
+      "f2_movement": -29,
       "magnitude": 29,
       "main_event": true,
       "tier": "main-event",
       "threshold": 25,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": 2.9,
-      "f2_prob_shift": -1.9,
+      "f1_prob_shift": -1.9,
+      "f2_prob_shift": 2.9,
       "priority": 72.5
     }
   ],
