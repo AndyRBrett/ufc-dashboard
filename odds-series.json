@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-08T05:45:42Z",
+  "generated_at": "2026-11-08T05:50:41Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20957,7 +20957,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 23,
+          "points": 24,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -21073,6 +21073,11 @@
               "at": "2026-11-07T08:40:39Z",
               "f1_odds": -252,
               "f2_odds": 197
+            },
+            {
+              "at": "2026-11-08T05:50:41Z",
+              "f1_odds": -244,
+              "f2_odds": 192
             }
           ],
           "open": {
@@ -21237,7 +21242,7 @@
           "f1": "Uros Medic",
           "f2": "Kevin Holland",
           "lbl": "Main Card",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -21298,6 +21303,11 @@
               "at": "2026-11-07T11:40:46Z",
               "f1_odds": -174,
               "f2_odds": 142
+            },
+            {
+              "at": "2026-11-08T05:50:41Z",
+              "f1_odds": -175,
+              "f2_odds": 144
             }
           ],
           "open": {
@@ -21362,7 +21372,7 @@
           "f1": "Stephen Thompson",
           "f2": "Charles Radtke",
           "lbl": "Prelim",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21403,6 +21413,11 @@
               "at": "2026-11-07T02:35:41Z",
               "f1_odds": -130,
               "f2_odds": 106
+            },
+            {
+              "at": "2026-11-08T05:50:41Z",
+              "f1_odds": -131,
+              "f2_odds": 108
             }
           ],
           "open": {
@@ -21417,7 +21432,7 @@
           "f1": "Drew Dober",
           "f2": "Chris Duncan",
           "lbl": "Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21448,6 +21463,11 @@
               "at": "2026-11-03T22:20:55Z",
               "f1_odds": 140,
               "f2_odds": -165
+            },
+            {
+              "at": "2026-11-08T05:50:41Z",
+              "f1_odds": 137,
+              "f2_odds": -163
             }
           ],
           "open": {
@@ -21462,12 +21482,17 @@
           "f1": "Jim Miller",
           "f2": "Terrance McKinney",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
               "f1_odds": 181,
               "f2_odds": -215
+            },
+            {
+              "at": "2026-11-08T05:50:41Z",
+              "f1_odds": 180,
+              "f2_odds": -217
             }
           ],
           "open": {
@@ -21482,7 +21507,7 @@
           "f1": "Donte Johnson",
           "f2": "Cesar Almeida",
           "lbl": "Prelim",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21533,6 +21558,11 @@
               "at": "2026-11-07T14:45:39Z",
               "f1_odds": -169,
               "f2_odds": 144
+            },
+            {
+              "at": "2026-11-08T05:50:41Z",
+              "f1_odds": -170,
+              "f2_odds": 144
             }
           ],
           "open": {
@@ -21547,12 +21577,17 @@
           "f1": "Macy Chiasson",
           "f2": "Beatriz Mesquita",
           "lbl": "Early Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
               "f1_odds": 177,
               "f2_odds": -210
+            },
+            {
+              "at": "2026-11-08T05:50:41Z",
+              "f1_odds": 178,
+              "f2_odds": -212
             }
           ],
           "open": {
@@ -21567,12 +21602,17 @@
           "f1": "Jared Gordon",
           "f2": "Melquizael Costa",
           "lbl": "Early Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-06T23:30:59Z",
               "f1_odds": 291,
               "f2_odds": -360
+            },
+            {
+              "at": "2026-11-08T05:50:41Z",
+              "f1_odds": 294,
+              "f2_odds": -365
             }
           ],
           "open": {
@@ -21587,12 +21627,17 @@
           "f1": "Evan Elder",
           "f2": "Samuel Sanches",
           "lbl": "Early Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-06T23:30:59Z",
               "f1_odds": -115,
               "f2_odds": -101
+            },
+            {
+              "at": "2026-11-08T05:50:41Z",
+              "f1_odds": -115,
+              "f2_odds": -104
             }
           ],
           "open": {
@@ -21645,6 +21690,26 @@
             "at": "2026-11-02T07:35:34Z",
             "f1_odds": 132,
             "f2_odds": -155
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Aljamain Sterling",
+          "f2": "Kevin Vallejos",
+          "lbl": "Co-Main",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-08T05:50:41Z",
+              "f1_odds": -107,
+              "f2_odds": -109
+            }
+          ],
+          "open": {
+            "at": "2026-11-08T05:50:41Z",
+            "f1_odds": -107,
+            "f2_odds": -109
           },
           "close": null,
           "clv": null
@@ -22688,7 +22753,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 23,
+        "points": 24,
         "open": -272,
         "close": null,
         "clv": null
@@ -22750,7 +22815,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 23,
+        "points": 24,
         "open": 219,
         "close": null,
         "clv": null
@@ -23056,7 +23121,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Macy Chiasson",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -210,
         "close": null,
         "clv": null
@@ -23791,7 +23856,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Jim Miller",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -215,
         "close": null,
         "clv": null
@@ -23955,7 +24020,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Donte Johnson",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 140,
         "close": null,
         "clv": null
@@ -24132,7 +24197,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Uros Medic",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": 132,
         "close": null,
         "clv": null
@@ -24389,7 +24454,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kevin Holland",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": -155,
         "close": null,
         "clv": null
@@ -24933,7 +24998,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Cesar Almeida",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -165,
         "close": null,
         "clv": null
@@ -28286,7 +28351,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Charles Radtke",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -110,
         "close": null,
         "clv": null
@@ -28297,7 +28362,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Stephen Thompson",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": -106,
         "close": null,
         "clv": null
@@ -28308,7 +28373,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Chris Duncan",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": 136,
         "close": null,
         "clv": null
@@ -28319,7 +28384,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Drew Dober",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": -160,
         "close": null,
         "clv": null
@@ -28330,7 +28395,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Terrance McKinney",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 181,
         "close": null,
         "clv": null
@@ -28341,7 +28406,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Beatriz Mesquita",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 177,
         "close": null,
         "clv": null
@@ -28352,7 +28417,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Melquizael Costa",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 291,
         "close": null,
         "clv": null
@@ -28363,7 +28428,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Jared Gordon",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -360,
         "close": null,
         "clv": null
@@ -28374,7 +28439,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Samuel Sanches",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -115,
         "close": null,
         "clv": null
@@ -28385,7 +28450,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Evan Elder",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -101,
         "close": null,
         "clv": null
@@ -28398,6 +28463,28 @@
         "side": "f1",
         "points": 5,
         "open": 132,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Aljamain Sterling": [
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Kevin Vallejos",
+        "side": "f1",
+        "points": 1,
+        "open": -107,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Kevin Vallejos": [
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Aljamain Sterling",
+        "side": "f2",
+        "points": 1,
+        "open": -109,
         "close": null,
         "clv": null
       }
