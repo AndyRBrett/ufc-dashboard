@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-08T01:55:44Z",
+ "generated_at": "2026-11-08T05:00:54Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,7 +29,7 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 404,
+   "status": 500,
    "items": 0
   },
   {
@@ -44,6 +44,32 @@
    "name": "UFC Fight Night: Cortes-Acosta vs. Walker",
    "date": "2026-11-07",
    "items": [
+    {
+     "title": "Johnny Walker scores wild knockout of Waldo Cortes-Acosta in UFC Vegas 124 main event",
+     "url": "https://www.sherdog.com/news/news/Johnny-Walker-scores-wild-knockout-of-Waldo-CortesAcosta-in-UFC-Vegas-124-main-event-203533",
+     "source": "Sherdog",
+     "kind": "article",
+     "published": "2026-11-08T04:28:39Z",
+     "thumb": null,
+     "blurb": "Johnny Walker has long been a fan favorite, and in the main event of UFC Vegas 124, he delivered another highlight-reel performance.",
+     "fighters": [
+      "Johnny Walker",
+      "Waldo Cortes-Acosta"
+     ]
+    },
+    {
+     "title": "Johnny Walker’s knockout of Waldo Cortes-Acosta at UFC Vegas 124 branded ‘goofy’ by viewers",
+     "url": "https://bloodyelbow.com/2026/11/07/johnny-walkers-knockout-of-waldo-cortes-acosta-at-ufc-vegas-124-branded-goofy-by-viewers/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-11-08T04:53:22Z",
+     "thumb": null,
+     "blurb": "Johnny Walker is walking a tightrope between praise and mockery with fans after his latest knockout win. Former light-heavyweight contender Walker decided earlier this year ...",
+     "fighters": [
+      "Johnny Walker",
+      "Waldo Cortes-Acosta"
+     ]
+    },
     {
      "title": "Waldo Cortes-Acosta vows to take off Josh Hokit’s ‘whole dirty mouth’ in a future fight",
      "url": "https://bloodyelbow.com/2026/11/07/waldo-cortes-acosta-vows-to-take-off-josh-hokits-whole-dirty-mouth-in-a-future-fight/",
@@ -79,18 +105,6 @@
      "fighters": [
       "Marcos Degli",
       "Mitch Raposo"
-     ]
-    },
-    {
-     "title": "Billy Elekana wants to be UFC's next Charles Oliveira, targets twister",
-     "url": "https://www.sherdog.com/news/news/Billy-Elekana-wants-to-be-UFCs-next-Charles-Oliveira-targets-twister-203510",
-     "source": "Sherdog",
-     "kind": "article",
-     "published": "2026-11-05T18:37:00Z",
-     "thumb": null,
-     "blurb": "Billy Elekana wants to become the Charles Oliveira of the Ultimate Fighting Championship ’s light heavyweight division by building a reputation for submission finishes.",
-     "fighters": [
-      "Billy Elekana"
      ]
     }
    ]
