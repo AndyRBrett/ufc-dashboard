@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T23:56:29Z",
+  "generated_at": "2026-11-08T00:01:37Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -19023,7 +19023,7 @@
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-293",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Tatiana Suarez",
@@ -19072,8 +19072,15 @@
             "f1_odds": -200,
             "f2_odds": 169
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-30T20:05:37Z",
+            "f1_odds": -190,
+            "f2_odds": 157
+          },
+          "clv": {
+            "f1_odds": 10,
+            "f2_odds": -12
+          }
         },
         {
           "f1": "Billy Elekana",
@@ -19107,8 +19114,15 @@
             "f1_odds": 212,
             "f2_odds": -255
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-30T17:55:38Z",
+            "f1_odds": 209,
+            "f2_odds": -259
+          },
+          "clv": {
+            "f1_odds": -3,
+            "f2_odds": -4
+          }
         },
         {
           "f1": "Karine Silva",
@@ -19137,8 +19151,15 @@
             "f1_odds": -170,
             "f2_odds": 145
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-30T17:55:38Z",
+            "f1_odds": -166,
+            "f2_odds": 137
+          },
+          "clv": {
+            "f1_odds": 4,
+            "f2_odds": -8
+          }
         },
         {
           "f1": "Mitch Raposo",
@@ -19172,8 +19193,15 @@
             "f1_odds": 205,
             "f2_odds": -245
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-30T17:55:38Z",
+            "f1_odds": 200,
+            "f2_odds": -247
+          },
+          "clv": {
+            "f1_odds": -5,
+            "f2_odds": -2
+          }
         },
         {
           "f1": "Jose Mauro Delano",
@@ -19202,8 +19230,15 @@
             "f1_odds": -129,
             "f2_odds": 110
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-30T13:40:38Z",
+            "f1_odds": -115,
+            "f2_odds": -104
+          },
+          "clv": {
+            "f1_odds": 14,
+            "f2_odds": -214
+          }
         },
         {
           "f1": "Keiichiro Nakamura",
@@ -19237,8 +19272,15 @@
             "f1_odds": -350,
             "f2_odds": 284
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-30T17:55:38Z",
+            "f1_odds": -347,
+            "f2_odds": 271
+          },
+          "clv": {
+            "f1_odds": 3,
+            "f2_odds": -13
+          }
         },
         {
           "f1": "Priscila Cachoeira",
@@ -19272,8 +19314,15 @@
             "f1_odds": 350,
             "f2_odds": -445
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-30T17:55:38Z",
+            "f1_odds": 345,
+            "f2_odds": -460
+          },
+          "clv": {
+            "f1_odds": -5,
+            "f2_odds": -15
+          }
         },
         {
           "f1": "Jonny Parsons",
@@ -19292,14 +19341,21 @@
             "f1_odds": 150,
             "f2_odds": -180
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-30T17:55:38Z",
+            "f1_odds": 150,
+            "f2_odds": -180
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         }
       ]
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Gabriel Bonfim",
@@ -19328,8 +19384,15 @@
             "f1_odds": -126,
             "f2_odds": 108
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-29T14:50:39Z",
+            "f1_odds": -140,
+            "f2_odds": 120
+          },
+          "clv": {
+            "f1_odds": -14,
+            "f2_odds": 12
+          }
         },
         {
           "f1": "Tatiana Suarez",
@@ -19348,8 +19411,15 @@
             "f1_odds": -200,
             "f2_odds": 169
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-29T01:30:42Z",
+            "f1_odds": -200,
+            "f2_odds": 169
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Billy Elekana",
@@ -19368,8 +19438,15 @@
             "f1_odds": 212,
             "f2_odds": -255
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-29T01:30:42Z",
+            "f1_odds": 212,
+            "f2_odds": -255
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Karine Silva",
@@ -19388,8 +19465,15 @@
             "f1_odds": -170,
             "f2_odds": 145
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-29T01:30:42Z",
+            "f1_odds": -170,
+            "f2_odds": 145
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Mitch Raposo",
@@ -19418,8 +19502,15 @@
             "f1_odds": 177,
             "f2_odds": -210
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-29T14:50:39Z",
+            "f1_odds": 205,
+            "f2_odds": -245
+          },
+          "clv": {
+            "f1_odds": 28,
+            "f2_odds": -35
+          }
         },
         {
           "f1": "Jose Mauro Delano",
@@ -19448,8 +19539,15 @@
             "f1_odds": -113,
             "f2_odds": -103
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-29T12:40:37Z",
+            "f1_odds": -131,
+            "f2_odds": 112
+          },
+          "clv": {
+            "f1_odds": -18,
+            "f2_odds": 215
+          }
         },
         {
           "f1": "Keiichiro Nakamura",
@@ -19473,8 +19571,15 @@
             "f1_odds": -325,
             "f2_odds": 265
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-29T03:40:39Z",
+            "f1_odds": -350,
+            "f2_odds": 284
+          },
+          "clv": {
+            "f1_odds": -25,
+            "f2_odds": 19
+          }
         },
         {
           "f1": "Priscila Cachoeira",
@@ -19493,14 +19598,21 @@
             "f1_odds": 350,
             "f2_odds": -445
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-10-29T01:30:42Z",
+            "f1_odds": 350,
+            "f2_odds": -445
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         }
       ]
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Tatiana Suarez",
@@ -19594,8 +19706,15 @@
             "f1_odds": -190,
             "f2_odds": 157
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-07T20:45:42Z",
+            "f1_odds": -203,
+            "f2_odds": 166
+          },
+          "clv": {
+            "f1_odds": -13,
+            "f2_odds": 9
+          }
         },
         {
           "f1": "Billy Elekana",
@@ -19669,8 +19788,15 @@
             "f1_odds": 209,
             "f2_odds": -259
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-07T23:46:22Z",
+            "f1_odds": 270,
+            "f2_odds": -343
+          },
+          "clv": {
+            "f1_odds": 61,
+            "f2_odds": -84
+          }
         },
         {
           "f1": "Karine Silva",
@@ -19739,8 +19865,15 @@
             "f1_odds": -166,
             "f2_odds": 137
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-07T23:46:22Z",
+            "f1_odds": -223,
+            "f2_odds": 181
+          },
+          "clv": {
+            "f1_odds": -57,
+            "f2_odds": 44
+          }
         },
         {
           "f1": "Mitch Raposo",
@@ -19824,8 +19957,15 @@
             "f1_odds": 200,
             "f2_odds": -247
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-07T23:46:22Z",
+            "f1_odds": 193,
+            "f2_odds": -238
+          },
+          "clv": {
+            "f1_odds": -7,
+            "f2_odds": 9
+          }
         },
         {
           "f1": "Jose Mauro Delano",
@@ -19924,8 +20064,15 @@
             "f1_odds": -115,
             "f2_odds": -104
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-07T23:46:22Z",
+            "f1_odds": -307,
+            "f2_odds": 203
+          },
+          "clv": {
+            "f1_odds": -192,
+            "f2_odds": 307
+          }
         },
         {
           "f1": "Keiichiro Nakamura",
@@ -20029,8 +20176,15 @@
             "f1_odds": -347,
             "f2_odds": 271
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-07T20:45:42Z",
+            "f1_odds": -368,
+            "f2_odds": 288
+          },
+          "clv": {
+            "f1_odds": -21,
+            "f2_odds": 17
+          }
         },
         {
           "f1": "Priscila Cachoeira",
@@ -20099,8 +20253,15 @@
             "f1_odds": 345,
             "f2_odds": -460
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-07T20:45:42Z",
+            "f1_odds": 368,
+            "f2_odds": -500
+          },
+          "clv": {
+            "f1_odds": 23,
+            "f2_odds": -40
+          }
         },
         {
           "f1": "Jonny Parsons",
@@ -20199,8 +20360,15 @@
             "f1_odds": 150,
             "f2_odds": -180
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-07T17:45:44Z",
+            "f1_odds": 182,
+            "f2_odds": -218
+          },
+          "clv": {
+            "f1_odds": 32,
+            "f2_odds": -38
+          }
         },
         {
           "f1": "Waldo Cortes-Acosta",
@@ -20314,8 +20482,15 @@
             "f1_odds": -201,
             "f2_odds": 170
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-07T14:45:39Z",
+            "f1_odds": -230,
+            "f2_odds": 185
+          },
+          "clv": {
+            "f1_odds": -29,
+            "f2_odds": 15
+          }
         },
         {
           "f1": "Mantas Kondratavicius",
@@ -20414,8 +20589,15 @@
             "f1_odds": -325,
             "f2_odds": 265
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-07T14:45:39Z",
+            "f1_odds": -307,
+            "f2_odds": 243
+          },
+          "clv": {
+            "f1_odds": 18,
+            "f2_odds": -22
+          }
         },
         {
           "f1": "Davey Grant",
@@ -20539,8 +20721,15 @@
             "f1_odds": 175,
             "f2_odds": -240
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-07T23:46:22Z",
+            "f1_odds": 267,
+            "f2_odds": -337
+          },
+          "clv": {
+            "f1_odds": 92,
+            "f2_odds": -97
+          }
         },
         {
           "f1": "Austin Bashi",
@@ -20639,8 +20828,15 @@
             "f1_odds": -465,
             "f2_odds": 342
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-07T17:45:44Z",
+            "f1_odds": -652,
+            "f2_odds": 457
+          },
+          "clv": {
+            "f1_odds": -187,
+            "f2_odds": 115
+          }
         },
         {
           "f1": "Gabriel Lorenco",
@@ -20684,8 +20880,15 @@
             "f1_odds": 141,
             "f2_odds": -174
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-07T23:46:22Z",
+            "f1_odds": 135,
+            "f2_odds": -161
+          },
+          "clv": {
+            "f1_odds": -6,
+            "f2_odds": 13
+          }
         },
         {
           "f1": "Ko Seok-hyeon",
@@ -20714,8 +20917,15 @@
             "f1_odds": -713,
             "f2_odds": 485
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-07T17:45:44Z",
+            "f1_odds": -712,
+            "f2_odds": 498
+          },
+          "clv": {
+            "f1_odds": 1,
+            "f2_odds": 13
+          }
         }
       ]
     },
@@ -22327,8 +22537,8 @@
         "side": "f1",
         "points": 4,
         "open": 350,
-        "close": null,
-        "clv": null
+        "close": 345,
+        "clv": -5
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
@@ -22336,8 +22546,8 @@
         "side": "f1",
         "points": 1,
         "open": 350,
-        "close": null,
-        "clv": null
+        "close": 350,
+        "clv": 0
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -22345,8 +22555,8 @@
         "side": "f1",
         "points": 11,
         "open": 345,
-        "close": null,
-        "clv": null
+        "close": 368,
+        "clv": 23
       }
     ],
     "Joanderson Brito": [
@@ -22739,8 +22949,8 @@
         "side": "f2",
         "points": 3,
         "open": 110,
-        "close": null,
-        "clv": null
+        "close": -104,
+        "clv": -214
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
@@ -22748,8 +22958,8 @@
         "side": "f2",
         "points": 3,
         "open": -103,
-        "close": null,
-        "clv": null
+        "close": 112,
+        "clv": 215
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -22757,8 +22967,8 @@
         "side": "f2",
         "points": 17,
         "open": -104,
-        "close": null,
-        "clv": null
+        "close": 203,
+        "clv": 307
       }
     ],
     "Andre Fili": [
@@ -22890,8 +23100,8 @@
         "side": "f1",
         "points": 4,
         "open": 205,
-        "close": null,
-        "clv": null
+        "close": 200,
+        "clv": -5
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
@@ -22899,8 +23109,8 @@
         "side": "f1",
         "points": 3,
         "open": 177,
-        "close": null,
-        "clv": null
+        "close": 205,
+        "clv": 28
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -22908,8 +23118,8 @@
         "side": "f1",
         "points": 14,
         "open": 200,
-        "close": null,
-        "clv": null
+        "close": 193,
+        "clv": -7
       }
     ],
     "Gaston Bolanos": [
@@ -24119,8 +24329,8 @@
         "side": "f1",
         "points": 17,
         "open": -465,
-        "close": null,
-        "clv": null
+        "close": -652,
+        "clv": -187
       }
     ],
     "Jose Miguel Delgado": [
@@ -24789,8 +24999,8 @@
         "side": "f2",
         "points": 4,
         "open": -255,
-        "close": null,
-        "clv": null
+        "close": -259,
+        "clv": -4
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
@@ -24798,8 +25008,8 @@
         "side": "f2",
         "points": 1,
         "open": -255,
-        "close": null,
-        "clv": null
+        "close": -255,
+        "clv": 0
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -24807,8 +25017,8 @@
         "side": "f2",
         "points": 12,
         "open": -259,
-        "close": null,
-        "clv": null
+        "close": -343,
+        "clv": -84
       }
     ],
     "Neil Magny": [
@@ -25717,8 +25927,8 @@
         "side": "f1",
         "points": 20,
         "open": -201,
-        "close": null,
-        "clv": null
+        "close": -230,
+        "clv": -29
       }
     ],
     "Curtis Blaydes": [
@@ -26564,8 +26774,8 @@
         "side": "f2",
         "points": 20,
         "open": 170,
-        "close": null,
-        "clv": null
+        "close": 185,
+        "clv": 15
       }
     ],
     "Mick Parkin": [
@@ -27429,8 +27639,8 @@
         "side": "f2",
         "points": 17,
         "open": 265,
-        "close": null,
-        "clv": null
+        "close": 243,
+        "clv": -22
       }
     ],
     "Talita Alencar": [
@@ -27583,8 +27793,8 @@
         "side": "f1",
         "points": 7,
         "open": -200,
-        "close": null,
-        "clv": null
+        "close": -190,
+        "clv": 10
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
@@ -27592,8 +27802,8 @@
         "side": "f1",
         "points": 1,
         "open": -200,
-        "close": null,
-        "clv": null
+        "close": -200,
+        "clv": 0
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -27601,8 +27811,8 @@
         "side": "f1",
         "points": 16,
         "open": -190,
-        "close": null,
-        "clv": null
+        "close": -203,
+        "clv": -13
       }
     ],
     "Virna Jandiroba": [
@@ -27612,8 +27822,8 @@
         "side": "f2",
         "points": 7,
         "open": 169,
-        "close": null,
-        "clv": null
+        "close": 157,
+        "clv": -12
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
@@ -27621,8 +27831,8 @@
         "side": "f2",
         "points": 1,
         "open": 169,
-        "close": null,
-        "clv": null
+        "close": 169,
+        "clv": 0
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -27630,8 +27840,8 @@
         "side": "f2",
         "points": 16,
         "open": 157,
-        "close": null,
-        "clv": null
+        "close": 166,
+        "clv": 9
       }
     ],
     "Billy Elekana": [
@@ -27641,8 +27851,8 @@
         "side": "f1",
         "points": 4,
         "open": 212,
-        "close": null,
-        "clv": null
+        "close": 209,
+        "clv": -3
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
@@ -27650,8 +27860,8 @@
         "side": "f1",
         "points": 1,
         "open": 212,
-        "close": null,
-        "clv": null
+        "close": 212,
+        "clv": 0
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -27659,8 +27869,8 @@
         "side": "f1",
         "points": 12,
         "open": 209,
-        "close": null,
-        "clv": null
+        "close": 270,
+        "clv": 61
       }
     ],
     "Karine Silva": [
@@ -27670,8 +27880,8 @@
         "side": "f1",
         "points": 3,
         "open": -170,
-        "close": null,
-        "clv": null
+        "close": -166,
+        "clv": 4
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
@@ -27679,8 +27889,8 @@
         "side": "f1",
         "points": 1,
         "open": -170,
-        "close": null,
-        "clv": null
+        "close": -170,
+        "clv": 0
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -27688,8 +27898,8 @@
         "side": "f1",
         "points": 11,
         "open": -166,
-        "close": null,
-        "clv": null
+        "close": -223,
+        "clv": -57
       }
     ],
     "Gabriella Fernandes": [
@@ -27699,8 +27909,8 @@
         "side": "f2",
         "points": 3,
         "open": 145,
-        "close": null,
-        "clv": null
+        "close": 137,
+        "clv": -8
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
@@ -27708,8 +27918,8 @@
         "side": "f2",
         "points": 1,
         "open": 145,
-        "close": null,
-        "clv": null
+        "close": 145,
+        "clv": 0
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -27717,8 +27927,8 @@
         "side": "f2",
         "points": 11,
         "open": 137,
-        "close": null,
-        "clv": null
+        "close": 181,
+        "clv": 44
       }
     ],
     "Marcos Degli": [
@@ -27728,8 +27938,8 @@
         "side": "f2",
         "points": 4,
         "open": -245,
-        "close": null,
-        "clv": null
+        "close": -247,
+        "clv": -2
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
@@ -27737,8 +27947,8 @@
         "side": "f2",
         "points": 3,
         "open": -210,
-        "close": null,
-        "clv": null
+        "close": -245,
+        "clv": -35
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -27746,8 +27956,8 @@
         "side": "f2",
         "points": 14,
         "open": -247,
-        "close": null,
-        "clv": null
+        "close": -238,
+        "clv": 9
       }
     ],
     "Jose Mauro Delano": [
@@ -27757,8 +27967,8 @@
         "side": "f1",
         "points": 3,
         "open": -129,
-        "close": null,
-        "clv": null
+        "close": -115,
+        "clv": 14
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
@@ -27766,8 +27976,8 @@
         "side": "f1",
         "points": 3,
         "open": -113,
-        "close": null,
-        "clv": null
+        "close": -131,
+        "clv": -18
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -27775,8 +27985,8 @@
         "side": "f1",
         "points": 17,
         "open": -115,
-        "close": null,
-        "clv": null
+        "close": -307,
+        "clv": -192
       }
     ],
     "Keiichiro Nakamura": [
@@ -27786,8 +27996,8 @@
         "side": "f1",
         "points": 4,
         "open": -350,
-        "close": null,
-        "clv": null
+        "close": -347,
+        "clv": 3
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
@@ -27795,8 +28005,8 @@
         "side": "f1",
         "points": 2,
         "open": -325,
-        "close": null,
-        "clv": null
+        "close": -350,
+        "clv": -25
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -27804,8 +28014,8 @@
         "side": "f1",
         "points": 18,
         "open": -347,
-        "close": null,
-        "clv": null
+        "close": -368,
+        "clv": -21
       }
     ],
     "Ollie Schmid": [
@@ -27815,8 +28025,8 @@
         "side": "f2",
         "points": 4,
         "open": 284,
-        "close": null,
-        "clv": null
+        "close": 271,
+        "clv": -13
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
@@ -27824,8 +28034,8 @@
         "side": "f2",
         "points": 2,
         "open": 265,
-        "close": null,
-        "clv": null
+        "close": 284,
+        "clv": 19
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -27833,8 +28043,8 @@
         "side": "f2",
         "points": 18,
         "open": 271,
-        "close": null,
-        "clv": null
+        "close": 288,
+        "clv": 17
       }
     ],
     "Nina Nikolija Milosevic": [
@@ -27844,8 +28054,8 @@
         "side": "f2",
         "points": 4,
         "open": -445,
-        "close": null,
-        "clv": null
+        "close": -460,
+        "clv": -15
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-bonfim-vs-brady",
@@ -27853,8 +28063,8 @@
         "side": "f2",
         "points": 1,
         "open": -445,
-        "close": null,
-        "clv": null
+        "close": -445,
+        "clv": 0
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -27862,8 +28072,8 @@
         "side": "f2",
         "points": 11,
         "open": -460,
-        "close": null,
-        "clv": null
+        "close": -500,
+        "clv": -40
       }
     ],
     "Jonny Parsons": [
@@ -27873,8 +28083,8 @@
         "side": "f1",
         "points": 1,
         "open": 150,
-        "close": null,
-        "clv": null
+        "close": 150,
+        "clv": 0
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -27882,8 +28092,8 @@
         "side": "f1",
         "points": 17,
         "open": 150,
-        "close": null,
-        "clv": null
+        "close": 182,
+        "clv": 32
       }
     ],
     "Jose Henrique Souza": [
@@ -27893,8 +28103,8 @@
         "side": "f2",
         "points": 1,
         "open": -180,
-        "close": null,
-        "clv": null
+        "close": -180,
+        "clv": 0
       },
       {
         "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -27902,8 +28112,8 @@
         "side": "f2",
         "points": 17,
         "open": -180,
-        "close": null,
-        "clv": null
+        "close": -218,
+        "clv": -38
       }
     ],
     "Gabriel Bonfim": [
@@ -27913,8 +28123,8 @@
         "side": "f1",
         "points": 3,
         "open": -126,
-        "close": null,
-        "clv": null
+        "close": -140,
+        "clv": -14
       }
     ],
     "Sean Brady": [
@@ -27924,8 +28134,8 @@
         "side": "f2",
         "points": 3,
         "open": 108,
-        "close": null,
-        "clv": null
+        "close": 120,
+        "clv": 12
       }
     ],
     "Mantas Kondratavicius": [
@@ -27935,8 +28145,8 @@
         "side": "f1",
         "points": 17,
         "open": -325,
-        "close": null,
-        "clv": null
+        "close": -307,
+        "clv": 18
       }
     ],
     "Davey Grant": [
@@ -27946,8 +28156,8 @@
         "side": "f1",
         "points": 22,
         "open": 175,
-        "close": null,
-        "clv": null
+        "close": 267,
+        "clv": 92
       }
     ],
     "Elijah Smith": [
@@ -27957,8 +28167,8 @@
         "side": "f2",
         "points": 22,
         "open": -240,
-        "close": null,
-        "clv": null
+        "close": -337,
+        "clv": -97
       }
     ],
     "Carlos Calderon": [
@@ -27968,8 +28178,8 @@
         "side": "f2",
         "points": 17,
         "open": 342,
-        "close": null,
-        "clv": null
+        "close": 457,
+        "clv": 115
       }
     ],
     "Gabriel Lorenco": [
@@ -27979,8 +28189,8 @@
         "side": "f1",
         "points": 6,
         "open": 141,
-        "close": null,
-        "clv": null
+        "close": 135,
+        "clv": -6
       }
     ],
     "Thomas Petersen": [
@@ -27990,8 +28200,8 @@
         "side": "f2",
         "points": 6,
         "open": -174,
-        "close": null,
-        "clv": null
+        "close": -161,
+        "clv": 13
       }
     ],
     "Ko Seok-hyeon": [
@@ -28001,8 +28211,8 @@
         "side": "f1",
         "points": 3,
         "open": -713,
-        "close": null,
-        "clv": null
+        "close": -712,
+        "clv": 1
       }
     ],
     "Wellington Turman": [
@@ -28012,8 +28222,8 @@
         "side": "f2",
         "points": 3,
         "open": 485,
-        "close": null,
-        "clv": null
+        "close": 498,
+        "clv": 13
       }
     ],
     "Gane": [
