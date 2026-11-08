@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-08T02:40:28Z",
+  "generated_at": "2026-11-08T02:45:59Z",
   "events_tracked": 9,
   "stale_events": 3,
   "parse_failure_events": 0,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "status": "ok",
-      "last_changed_at": "2026-11-08T02:15:50Z",
+      "last_changed_at": "2026-11-08T02:45:59Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
@@ -486,18 +486,18 @@
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
-      "f1": "Billy Elekana",
-      "f2": "Lucas Fernando",
-      "f1_movement": 61,
-      "f2_movement": -84,
+      "f1": "Lucas Fernando",
+      "f2": "Billy Elekana",
+      "f1_movement": -84,
+      "f2_movement": 61,
       "magnitude": 84,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Light Heavyweight",
-      "f1_prob_shift": -5.3,
-      "f2_prob_shift": 5.3,
+      "f1_prob_shift": 5.3,
+      "f2_prob_shift": -5.3,
       "priority": 84.0
     },
     {
