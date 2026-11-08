@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-07T18:40:40Z",
+ "generated_at": "2026-11-08T11:00:42Z",
  "promotions": [
   {
    "id": "pfl",
@@ -39,15 +39,15 @@
      "round": null
     },
     {
-     "a": "Naoki Inoue",
-     "b": "Yrysbek Tilenov",
+     "a": "Yrysbek Tilenov",
+     "b": "Naoki Inoue",
      "label": "",
      "division": "Bantamweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Yrysbek Tilenov",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
      "a": "Ryuya Fukuda",
@@ -56,9 +56,9 @@
      "division": "Bantamweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Ryuya Fukuda",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
      "a": "Jinnosuke Kashimura",
@@ -67,9 +67,9 @@
      "division": "Bantamweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Jinnosuke Kashimura",
+     "method": "Submission",
+     "round": 3
     },
     {
      "a": "Abijah Kaleo Meheula",
@@ -89,20 +89,20 @@
      "division": "Featherweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Juntaro Ushiku",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
-     "a": "Kim Kyung-pyo",
-     "b": "Nurkhan Zhumagazy",
+     "a": "Nurkhan Zhumagazy",
+     "b": "Kim Kyung-pyo",
      "label": "",
      "division": "Lightweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Nurkhan Zhumagazy",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
      "a": "Mac Papalii",
@@ -111,31 +111,31 @@
      "division": "Heavyweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Mac Papalii",
+     "method": "KO/TKO",
+     "round": 2
     },
     {
-     "a": "Hiroaki Suzuki",
-     "b": "Kim Sei-min",
+     "a": "Kim Sei-min",
+     "b": "Hiroaki Suzuki",
      "label": "",
      "division": "Featherweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Kim Sei-min",
+     "method": "KO/TKO",
+     "round": 2
     },
     {
-     "a": "Taichi Nakajima",
-     "b": "Tsukasa Mizoguchi",
+     "a": "Tsukasa Mizoguchi",
+     "b": "Taichi Nakajima",
      "label": "",
      "division": "Bantamweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Tsukasa Mizoguchi",
+     "method": "Submission",
+     "round": 1
     },
     {
      "a": "Tatsuya Saika",
@@ -144,9 +144,9 @@
      "division": "Lightweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Tatsuya Saika",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
      "a": "Takumi Hamada",
@@ -155,9 +155,9 @@
      "division": "Flyweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Takumi Hamada",
+     "method": "KO/TKO",
+     "round": 3
     },
     {
      "a": "Rikiya Matsuzawa",
@@ -166,42 +166,42 @@
      "division": "Flyweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Rikiya Matsuzawa",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
-     "a": "Jake Wilkins",
-     "b": "Yajuro Yamasaki",
+     "a": "Yajuro Yamasaki",
+     "b": "Jake Wilkins",
      "label": "",
      "division": "Lightweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Yajuro Yamasaki",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
-     "a": "Naohiro Matsumoto",
-     "b": "Masachika Takahashi",
+     "a": "Saw Thwee Waw Thaunt",
+     "b": "Shunya Inoue",
      "label": "",
      "division": "Featherweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Saw Thwee Waw Thaunt",
+     "method": "Decision (Unanimous)",
+     "round": 2
     },
     {
-     "a": "Shunya Inoue",
-     "b": "Saw Thwee Waw Thaunt",
+     "a": "Masachika Takahashi",
+     "b": "Naohiro Matsumoto",
      "label": "",
      "division": "Featherweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Masachika Takahashi",
+     "method": "KO/TKO",
+     "round": 1
     }
    ]
   },
