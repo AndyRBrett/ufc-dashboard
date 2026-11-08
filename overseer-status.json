@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-08T00:40:42Z",
+  "generated_at": "2026-11-08T00:45:53Z",
   "events_tracked": 9,
-  "stale_events": 2,
+  "stale_events": 3,
   "parse_failure_events": 0,
   "awaiting_card_events": 0,
   "odds_unavailable_events": 0,
@@ -140,7 +140,7 @@
       "event_id": "2027-01-30:ufc-336-van-vs-kape",
       "status": "ok",
       "last_changed_at": "2026-11-06T00:45:33Z",
-      "is_stale": false,
+      "is_stale": true,
       "has_data": true,
       "bout_count": 2,
       "line_movement": 0,
