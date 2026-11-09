@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-09T17:55:40Z",
+  "generated_at": "2026-11-09T18:00:51Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -21102,7 +21102,7 @@
           "f1": "Kayla Harrison",
           "f2": "Amanda Nunes",
           "lbl": "Co-Main",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -21158,6 +21158,11 @@
               "at": "2026-11-07T08:40:39Z",
               "f1_odds": -195,
               "f2_odds": 156
+            },
+            {
+              "at": "2026-11-09T18:00:51Z",
+              "f1_odds": -198,
+              "f2_odds": 158
             }
           ],
           "open": {
@@ -21262,7 +21267,7 @@
           "f1": "Uros Medic",
           "f2": "Kevin Holland",
           "lbl": "Main Card",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -21353,6 +21358,11 @@
               "at": "2026-11-09T12:00:47Z",
               "f1_odds": -154,
               "f2_odds": 127
+            },
+            {
+              "at": "2026-11-09T18:00:51Z",
+              "f1_odds": -151,
+              "f2_odds": 125
             }
           ],
           "open": {
@@ -21367,7 +21377,7 @@
           "f1": "Bilal Hasan",
           "f2": "Luis Gurule",
           "lbl": "Main Card",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -21408,6 +21418,11 @@
               "at": "2026-11-09T12:00:47Z",
               "f1_odds": -953,
               "f2_odds": 590
+            },
+            {
+              "at": "2026-11-09T18:00:51Z",
+              "f1_odds": -1037,
+              "f2_odds": 625
             }
           ],
           "open": {
@@ -21567,7 +21582,7 @@
           "f1": "Jim Miller",
           "f2": "Terrance McKinney",
           "lbl": "Prelim",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21593,6 +21608,11 @@
               "at": "2026-11-09T12:00:47Z",
               "f1_odds": 169,
               "f2_odds": -213
+            },
+            {
+              "at": "2026-11-09T18:00:51Z",
+              "f1_odds": 171,
+              "f2_odds": -215
             }
           ],
           "open": {
@@ -21902,6 +21922,32 @@
       ]
     },
     {
+      "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+      "concluded": false,
+      "bouts": [
+        {
+          "f1": "Adesanya",
+          "f2": "Magomedov",
+          "lbl": "Main Event",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-09T18:00:51Z",
+              "f1_odds": -150,
+              "f2_odds": 126
+            }
+          ],
+          "open": {
+            "at": "2026-11-09T18:00:51Z",
+            "f1_odds": -150,
+            "f2_odds": 126
+          },
+          "close": null,
+          "clv": null
+        }
+      ]
+    },
+    {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
       "concluded": false,
       "bouts": [
@@ -22181,12 +22227,17 @@
           "f1": "Quillan Salkilld",
           "f2": "Benoit Saint Denis",
           "lbl": "Main Event",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-09T06:00:44Z",
               "f1_odds": -260,
               "f2_odds": 216
+            },
+            {
+              "at": "2026-11-09T18:00:51Z",
+              "f1_odds": -260,
+              "f2_odds": 215
             }
           ],
           "open": {
@@ -22201,11 +22252,16 @@
           "f1": "Bogdan Guskov",
           "f2": "Robert Whittaker",
           "lbl": "Co-Main",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-09T06:00:44Z",
               "f1_odds": 120,
+              "f2_odds": -140
+            },
+            {
+              "at": "2026-11-09T18:00:51Z",
+              "f1_odds": 119,
               "f2_odds": -140
             }
           ],
@@ -22477,7 +22533,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Bilal Hasan",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 648,
         "close": null,
         "clv": null
@@ -23966,7 +24022,7 @@
         "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
         "opponent": "Quillan Salkilld",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 216,
         "close": null,
         "clv": null
@@ -24101,7 +24157,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Jim Miller",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": -215,
         "close": null,
         "clv": null
@@ -24121,7 +24177,7 @@
         "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
         "opponent": "Bogdan Guskov",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -140,
         "close": null,
         "clv": null
@@ -24451,7 +24507,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Uros Medic",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": 132,
         "close": null,
         "clv": null
@@ -24708,7 +24764,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kevin Holland",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": -155,
         "close": null,
         "clv": null
@@ -24946,7 +25002,7 @@
         "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
         "opponent": "Benoit Saint Denis",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -260,
         "close": null,
         "clv": null
@@ -25753,7 +25809,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Luis Gurule",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -950,
         "close": null,
         "clv": null
@@ -28581,7 +28637,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Amanda Nunes",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -201,
         "close": null,
         "clv": null
@@ -28592,7 +28648,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kayla Harrison",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 165,
         "close": null,
         "clv": null
@@ -28658,7 +28714,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Terrance McKinney",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": 181,
         "close": null,
         "clv": null
@@ -28752,6 +28808,28 @@
         "clv": null
       }
     ],
+    "Adesanya": [
+      {
+        "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+        "opponent": "Magomedov",
+        "side": "f1",
+        "points": 1,
+        "open": -150,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Magomedov": [
+      {
+        "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+        "opponent": "Adesanya",
+        "side": "f2",
+        "points": 1,
+        "open": 126,
+        "close": null,
+        "clv": null
+      }
+    ],
     "Oliveira": [
       {
         "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
@@ -28823,7 +28901,7 @@
         "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
         "opponent": "Robert Whittaker",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 120,
         "close": null,
         "clv": null

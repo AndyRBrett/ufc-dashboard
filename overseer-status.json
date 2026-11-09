@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-09T17:55:39Z",
+  "generated_at": "2026-11-09T18:00:51Z",
   "events_tracked": 10,
   "stale_events": 1,
   "parse_failure_events": 0,
-  "awaiting_card_events": 1,
+  "awaiting_card_events": 0,
   "odds_unavailable_events": 0,
   "odds_budget_exhausted": false,
   "odds_budget": {
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-09T12:00:47Z",
+      "last_changed_at": "2026-11-09T18:00:51Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -118,10 +118,10 @@
     },
     {
       "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
-      "status": "awaiting-card",
-      "last_changed_at": "2026-11-09T17:55:39Z",
+      "status": "ok",
+      "last_changed_at": "2026-11-09T18:00:51Z",
       "is_stale": false,
-      "has_data": false,
+      "has_data": true,
       "bout_count": 1,
       "line_movement": 0,
       "odds_market_priced": true
@@ -149,7 +149,7 @@
     {
       "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
       "status": "ok",
-      "last_changed_at": "2026-11-09T06:00:44Z",
+      "last_changed_at": "2026-11-09T18:00:51Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 4,
@@ -431,6 +431,22 @@
       "priority": 122.5
     },
     {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Bilal Hasan",
+      "f2": "Luis Gurule",
+      "f1_movement": -87,
+      "f2_movement": -23,
+      "magnitude": 87,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 50,
+      "low_confidence": false,
+      "wc": "Flyweight",
+      "f1_prob_shift": 0.7,
+      "f2_prob_shift": 0.4,
+      "priority": 121.8
+    },
+    {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Jasmine Jasudavicius",
       "f2": "Erin Blanchfield",
@@ -477,22 +493,6 @@
       "f1_prob_shift": 5.3,
       "f2_prob_shift": -5.3,
       "priority": 84.0
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Bilal Hasan",
-      "f2": "Luis Gurule",
-      "f1_movement": -3,
-      "f2_movement": -58,
-      "magnitude": 58,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 50,
-      "low_confidence": false,
-      "wc": "Flyweight",
-      "f1_prob_shift": 0.0,
-      "f2_prob_shift": 1.1,
-      "priority": 81.2
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
