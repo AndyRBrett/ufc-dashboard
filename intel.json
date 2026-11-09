@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-08T23:20:44Z",
+ "generated_at": "2026-11-09T00:01:09Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -40,137 +40,10 @@
   }
  ],
  "events": {
-  "UFC_Fight_Night:_Cortes-Acosta_vs._Walker": {
-   "name": "UFC Fight Night: Cortes-Acosta vs. Walker",
-   "date": "2026-11-07",
-   "items": [
-    {
-     "title": "Johnny Walker scores wild knockout of Waldo Cortes-Acosta in UFC Vegas 124 main event",
-     "url": "https://www.sherdog.com/news/news/Johnny-Walker-scores-wild-knockout-of-Waldo-CortesAcosta-in-UFC-Vegas-124-main-event-203533",
-     "source": "Sherdog",
-     "kind": "article",
-     "published": "2026-11-08T04:28:39Z",
-     "thumb": null,
-     "blurb": "Johnny Walker has long been a fan favorite, and in the main event of UFC Vegas 124, he delivered another highlight-reel performance.",
-     "fighters": [
-      "Johnny Walker",
-      "Waldo Cortes-Acosta"
-     ]
-    },
-    {
-     "title": "Johnny Walker’s knockout of Waldo Cortes-Acosta at UFC Vegas 124 branded ‘goofy’ by viewers",
-     "url": "https://bloodyelbow.com/2026/11/07/johnny-walkers-knockout-of-waldo-cortes-acosta-at-ufc-vegas-124-branded-goofy-by-viewers/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-11-08T04:53:22Z",
-     "thumb": null,
-     "blurb": "Johnny Walker is walking a tightrope between praise and mockery with fans after his latest knockout win. Former light-heavyweight contender Walker decided earlier this year ...",
-     "fighters": [
-      "Johnny Walker",
-      "Waldo Cortes-Acosta"
-     ]
-    },
-    {
-     "title": "Tatiana Suarez calls for Mackenzie Dern title fight after UFC Vegas win",
-     "url": "https://www.sherdog.com/news/news/Tatiana-Suarez-calls-for-Mackenzie-Dern-title-fight-after-UFC-Vegas-win-203542",
-     "source": "Sherdog",
-     "kind": "article",
-     "published": "2026-11-08T23:13:38Z",
-     "thumb": null,
-     "blurb": "Tatiana Suarez wants another shot at the Ultimate Fighting Championship strawweight title after defeating Virna Jandiroba .",
-     "fighters": [
-      "Tatiana Suarez",
-      "Virna Jandiroba"
-     ]
-    },
-    {
-     "title": "Johnny Walker explains why he left chemical engineering for UFC glory",
-     "url": "https://www.sherdog.com/news/news/Johnny-Walker-explains-why-he-left-chemical-engineering-for-UFC-glory-203541",
-     "source": "Sherdog",
-     "kind": "article",
-     "published": "2026-11-08T23:05:33Z",
-     "thumb": null,
-     "blurb": "Johnny Walker says nothing compares to the feeling of winning a fight, even though he once considered a career in chemical engineering.",
-     "fighters": [
-      "Johnny Walker"
-     ]
-    },
-    {
-     "title": "40-year-old fan favorite shares retirement update after suffering his first KO loss at UFC Vegas 124",
-     "url": "https://bloodyelbow.com/2026/11/08/40-year-old-fan-favorite-shares-retirement-update-after-suffering-his-first-ko-loss-at-ufc-vegas-124/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-11-08T22:00:00Z",
-     "thumb": null,
-     "blurb": "Davey Grant has vowed to fight on after suffering the first knockout loss of his career. The beloved bantamweight veteran squared off against Elijah Smith ...",
-     "fighters": [
-      "Davey Grant",
-      "Elijah Smith"
-     ]
-    },
-    {
-     "title": "4-0 UFC star provides update after announcing he’s a free agent in the cage following 60-second KO",
-     "url": "https://bloodyelbow.com/2026/11/08/4-0-ufc-star-provides-update-after-announcing-hes-a-free-agent-in-the-cage-following-60-second-ko/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-11-08T16:00:00Z",
-     "thumb": null,
-     "blurb": "The UFC didn’t wait long to have talks with Elijah Smith about his future with the promotion. On Saturday night, Smith became the first man ...",
-     "fighters": [
-      "Elijah Smith"
-     ]
-    }
-   ]
-  },
   "UFC_334": {
    "name": "UFC 334: Gane vs. Hokit",
    "date": "2026-11-14",
    "items": [
-    {
-     "title": "Polymarket UFC 334 Countdown - Harrison vs Nunes",
-     "url": "https://www.youtube.com/watch?v=46uAKr3WqY4",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-11-08T18:00:25Z",
-     "thumb": "https://i1.ytimg.com/vi/46uAKr3WqY4/hqdefault.jpg",
-     "blurb": "Polymarket UFC 334 Countdown previews the promotion’s return to Madison Square Garden, where heavyweight king Ciryl Gane puts his title on the line against undefeated Josh Hokit. Plus, bantamweight queen Kayla Harrison…",
-     "fighters": [
-      "Amanda Nunes",
-      "Ciryl Gane",
-      "Josh Hokit",
-      "Kayla Harrison"
-     ]
-    },
-    {
-     "title": "Polymarket UFC 334: Gane vs Hokit | Fight Promo",
-     "url": "https://www.youtube.com/watch?v=zTvrOoVa8kY",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-11-08T18:00:07Z",
-     "thumb": "https://i3.ytimg.com/vi/zTvrOoVa8kY/hqdefault.jpg",
-     "blurb": "UFC heads to New York, as Ciryl Gane looks to defend his belt against Josh Hokit in the main event. In the co-main event Kayla Harrison and Amanda Nunes face off. Watch UFC on Paramount Plus ➡️ https://ufc.ac/4d4oEtR…",
-     "fighters": [
-      "Amanda Nunes",
-      "Ciryl Gane",
-      "Josh Hokit",
-      "Kayla Harrison"
-     ]
-    },
-    {
-     "title": "Polymarket UFC 334 Countdown - Gane vs Hokit",
-     "url": "https://www.youtube.com/watch?v=0iRpGi_n9uw",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-11-08T16:15:08Z",
-     "thumb": "https://i1.ytimg.com/vi/0iRpGi_n9uw/hqdefault.jpg",
-     "blurb": "Polymarket UFC 334 Countdown previews the promotion’s return to Madison Square Garden, where heavyweight king Ciryl Gane puts his title on the line against undefeated Josh Hokit. Plus, bantamweight queen Kayla Harrison…",
-     "fighters": [
-      "Amanda Nunes",
-      "Ciryl Gane",
-      "Josh Hokit",
-      "Kayla Harrison"
-     ]
-    },
     {
      "title": "Dana White admits he may have made Josh Hokit's UFC rise harder",
      "url": "https://www.sherdog.com/news/news/Dana-White-admits-he-may-have-made-Josh-Hokits-UFC-rise-harder-203504",
@@ -193,6 +66,18 @@
      "blurb": "Josh Hokit questions Gable Steveson ’s training environment.",
      "fighters": [
       "Josh Hokit"
+     ]
+    },
+    {
+     "title": "Caio Borralho says he hid broken rib from UFC, beat Reinier de Ridder",
+     "url": "https://www.sherdog.com/news/news/Caio-Borralho-says-he-hid-broken-rib-from-UFC-beat-Reinier-de-Ridder-203545",
+     "source": "Sherdog",
+     "kind": "article",
+     "published": "2026-11-08T23:57:27Z",
+     "thumb": null,
+     "blurb": "Caio Borralho says he fought Reinier de Ridder with a broken rib and did not tell the Ultimate Fighting Championship how serious the injury was before their March bout.",
+     "fighters": [
+      "Caio Borralho"
      ]
     }
    ]
