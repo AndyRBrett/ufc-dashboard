@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-09T11:55:37Z",
+  "generated_at": "2026-11-09T12:00:47Z",
   "events_tracked": 9,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-09T06:00:44Z",
+      "last_changed_at": "2026-11-09T12:00:47Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -184,17 +184,17 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Stephen Thompson",
       "f2": "Charles Radtke",
-      "f1_movement": -36,
-      "f2_movement": 225,
-      "magnitude": 225,
+      "f1_movement": -38,
+      "f2_movement": 226,
+      "magnitude": 226,
       "main_event": false,
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
       "wc": "Welterweight",
-      "f1_prob_shift": 7.0,
-      "f2_prob_shift": -5.8,
-      "priority": 315.0
+      "f1_prob_shift": 7.3,
+      "f2_prob_shift": -6.0,
+      "priority": 316.4
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -421,22 +421,6 @@
       "priority": 122.5
     },
     {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Bilal Hasan",
-      "f2": "Luis Gurule",
-      "f1_movement": 47,
-      "f2_movement": -83,
-      "magnitude": 83,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 50,
-      "low_confidence": false,
-      "wc": "Flyweight",
-      "f1_prob_shift": -0.4,
-      "f2_prob_shift": 1.7,
-      "priority": 116.2
-    },
-    {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Jasmine Jasudavicius",
       "f2": "Erin Blanchfield",
@@ -483,6 +467,22 @@
       "f1_prob_shift": 5.3,
       "f2_prob_shift": -5.3,
       "priority": 84.0
+    },
+    {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Bilal Hasan",
+      "f2": "Luis Gurule",
+      "f1_movement": -3,
+      "f2_movement": -58,
+      "magnitude": 58,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 50,
+      "low_confidence": false,
+      "wc": "Flyweight",
+      "f1_prob_shift": 0.0,
+      "f2_prob_shift": 1.1,
+      "priority": 81.2
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
