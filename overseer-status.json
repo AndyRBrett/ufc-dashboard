@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-09T05:55:37Z",
+  "generated_at": "2026-11-09T06:00:44Z",
   "events_tracked": 9,
   "stale_events": 1,
   "parse_failure_events": 0,
-  "awaiting_card_events": 1,
+  "awaiting_card_events": 0,
   "odds_unavailable_events": 0,
   "odds_budget_exhausted": false,
   "odds_budget": {
@@ -99,11 +99,11 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-08T23:55:40Z",
+      "last_changed_at": "2026-11-09T06:00:44Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
-      "line_movement": 33,
+      "line_movement": 35,
       "odds_market_priced": true
     },
     {
@@ -138,10 +138,10 @@
     },
     {
       "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
-      "status": "awaiting-card",
-      "last_changed_at": "2026-11-09T05:55:37Z",
+      "status": "ok",
+      "last_changed_at": "2026-11-09T06:00:44Z",
       "is_stale": false,
-      "has_data": false,
+      "has_data": true,
       "bout_count": 4,
       "line_movement": 0,
       "odds_market_priced": false
@@ -168,17 +168,17 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Caio Borralho",
       "f2": "Yousri Belgaroui",
-      "f1_movement": -49,
-      "f2_movement": 233,
-      "magnitude": 233,
+      "f1_movement": -46,
+      "f2_movement": 231,
+      "magnitude": 231,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 8.6,
-      "f2_prob_shift": -7.1,
-      "priority": 326.2
+      "f1_prob_shift": 8.2,
+      "f2_prob_shift": -6.8,
+      "priority": 323.4
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
@@ -406,6 +406,22 @@
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Ciryl Gane",
+      "f2": "Josh Hokit",
+      "f1_movement": 35,
+      "f2_movement": -34,
+      "magnitude": 35,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 25,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": -2.8,
+      "f2_prob_shift": 3.7,
+      "priority": 122.5
+    },
+    {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Bilal Hasan",
       "f2": "Luis Gurule",
       "f1_movement": 47,
@@ -419,22 +435,6 @@
       "f1_prob_shift": -0.4,
       "f2_prob_shift": 1.7,
       "priority": 116.2
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Ciryl Gane",
-      "f2": "Josh Hokit",
-      "f1_movement": 33,
-      "f2_movement": -32,
-      "magnitude": 33,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 25,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": -2.6,
-      "f2_prob_shift": 3.5,
-      "priority": 115.5
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
