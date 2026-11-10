@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-08T11:45:36Z",
+ "generated_at": "2026-11-10T04:05:51Z",
  "promotions": [
   {
    "id": "pfl",
@@ -19,192 +19,6 @@
   }
  ],
  "events": [
-  {
-   "promotion": "rizin",
-   "name": "Rizin 55",
-   "date": "2026-11-08",
-   "venue": "LaLa Arena Tokyo-Bay",
-   "location": "Funabashi",
-   "broadcast": "",
-   "bouts": [
-    {
-     "a": "Tony Laramie",
-     "b": "Makoto Takahashi",
-     "label": "Main Event",
-     "division": "Flyweight",
-     "title": true,
-     "odds": null,
-     "winner": "Tony Laramie",
-     "method": "Decision (Split)",
-     "round": 3
-    },
-    {
-     "a": "Yrysbek Tilenov",
-     "b": "Naoki Inoue",
-     "label": "",
-     "division": "Bantamweight",
-     "title": false,
-     "odds": null,
-     "winner": "Yrysbek Tilenov",
-     "method": "Decision (Unanimous)",
-     "round": 3
-    },
-    {
-     "a": "Ryuya Fukuda",
-     "b": "Kim Soo-chul",
-     "label": "",
-     "division": "Bantamweight",
-     "title": false,
-     "odds": null,
-     "winner": "Ryuya Fukuda",
-     "method": "Decision (Unanimous)",
-     "round": 3
-    },
-    {
-     "a": "Jinnosuke Kashimura",
-     "b": "Shinobu Ota",
-     "label": "",
-     "division": "Bantamweight",
-     "title": false,
-     "odds": null,
-     "winner": "Jinnosuke Kashimura",
-     "method": "Submission",
-     "round": 3
-    },
-    {
-     "a": "Abijah Kaleo Meheula",
-     "b": "Kazuki Aimoto",
-     "label": "",
-     "division": "Featherweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Juntaro Ushiku",
-     "b": "Li Kaiwen",
-     "label": "",
-     "division": "Featherweight",
-     "title": false,
-     "odds": null,
-     "winner": "Juntaro Ushiku",
-     "method": "Decision (Unanimous)",
-     "round": 3
-    },
-    {
-     "a": "Nurkhan Zhumagazy",
-     "b": "Kim Kyung-pyo",
-     "label": "",
-     "division": "Lightweight",
-     "title": false,
-     "odds": null,
-     "winner": "Nurkhan Zhumagazy",
-     "method": "KO/TKO",
-     "round": 1
-    },
-    {
-     "a": "Mac Papalii",
-     "b": "Yukinori Akazawa",
-     "label": "",
-     "division": "Heavyweight",
-     "title": false,
-     "odds": null,
-     "winner": "Mac Papalii",
-     "method": "KO/TKO",
-     "round": 2
-    },
-    {
-     "a": "Kim Sei-min",
-     "b": "Hiroaki Suzuki",
-     "label": "",
-     "division": "Featherweight",
-     "title": false,
-     "odds": null,
-     "winner": "Kim Sei-min",
-     "method": "KO/TKO",
-     "round": 2
-    },
-    {
-     "a": "Tsukasa Mizoguchi",
-     "b": "Taichi Nakajima",
-     "label": "",
-     "division": "Bantamweight",
-     "title": false,
-     "odds": null,
-     "winner": "Tsukasa Mizoguchi",
-     "method": "Submission",
-     "round": 1
-    },
-    {
-     "a": "Tatsuya Saika",
-     "b": "Daigo Kuramoto",
-     "label": "",
-     "division": "Lightweight",
-     "title": false,
-     "odds": null,
-     "winner": "Tatsuya Saika",
-     "method": "KO/TKO",
-     "round": 1
-    },
-    {
-     "a": "Takumi Hamada",
-     "b": "Sho Sekihara",
-     "label": "",
-     "division": "Flyweight",
-     "title": false,
-     "odds": null,
-     "winner": "Takumi Hamada",
-     "method": "KO/TKO",
-     "round": 3
-    },
-    {
-     "a": "Rikiya Matsuzawa",
-     "b": "Rio Kimura",
-     "label": "",
-     "division": "Flyweight",
-     "title": false,
-     "odds": null,
-     "winner": "Rikiya Matsuzawa",
-     "method": "Decision (Unanimous)",
-     "round": 3
-    },
-    {
-     "a": "Yajuro Yamasaki",
-     "b": "Jake Wilkins",
-     "label": "",
-     "division": "Lightweight",
-     "title": false,
-     "odds": null,
-     "winner": "Yajuro Yamasaki",
-     "method": "KO/TKO",
-     "round": 1
-    },
-    {
-     "a": "Saw Thwee Waw Thaunt",
-     "b": "Shunya Inoue",
-     "label": "",
-     "division": "Featherweight",
-     "title": false,
-     "odds": null,
-     "winner": "Saw Thwee Waw Thaunt",
-     "method": "Decision (Unanimous)",
-     "round": 2
-    },
-    {
-     "a": "Masachika Takahashi",
-     "b": "Naohiro Matsumoto",
-     "label": "",
-     "division": "Featherweight",
-     "title": false,
-     "odds": null,
-     "winner": "Masachika Takahashi",
-     "method": "KO/TKO",
-     "round": 1
-    }
-   ]
-  },
   {
    "promotion": "pfl",
    "name": "PFL Dubai: Nemkov vs. Bilostenniy",
@@ -247,10 +61,10 @@
      "round": null
     },
     {
-     "a": "Abubakar Nurmagomedov",
-     "b": "David Martinez",
+     "a": "Sergio Pettis",
+     "b": "Joji Goto",
      "label": "",
-     "division": "Welterweight",
+     "division": "Bantamweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -258,8 +72,8 @@
      "round": null
     },
     {
-     "a": "Sergio Pettis",
-     "b": "Joji Goto",
+     "a": "Lewis McGrillen",
+     "b": "Nawras Abzakh",
      "label": "",
      "division": "Bantamweight",
      "title": false,
@@ -280,21 +94,10 @@
      "round": null
     },
     {
-     "a": "Lewis McGrillen",
-     "b": "Nawras Abzakh",
+     "a": "Saygid Izagakhmaev",
+     "b": "David Martinez",
      "label": "",
-     "division": "Bantamweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Asael Adjoudj",
-     "b": "Movlid Khaybulaev",
-     "label": "",
-     "division": "Featherweight",
+     "division": "Welterweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -350,17 +153,6 @@
      "b": "Styve Ngono Essono",
      "label": "",
      "division": "Light Heavyweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Khamzat Abaev",
-     "b": "Leon Hill",
-     "label": "",
-     "division": "Welterweight",
      "title": false,
      "odds": null,
      "winner": "",
