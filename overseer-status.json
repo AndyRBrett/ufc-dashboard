@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T12:40:41Z",
+  "generated_at": "2026-11-10T13:45:40Z",
   "events_tracked": 10,
   "stale_events": 2,
   "parse_failure_events": 0,
@@ -99,11 +99,11 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-10T07:15:45Z",
+      "last_changed_at": "2026-11-10T13:45:40Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
-      "line_movement": 42,
+      "line_movement": 53,
       "odds_market_priced": true
     },
     {
@@ -119,7 +119,7 @@
     {
       "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
       "status": "ok",
-      "last_changed_at": "2026-11-10T07:15:45Z",
+      "last_changed_at": "2026-11-10T13:45:40Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -178,17 +178,17 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Caio Borralho",
       "f2": "Yousri Belgaroui",
-      "f1_movement": -50,
-      "f2_movement": 234,
-      "magnitude": 234,
+      "f1_movement": -49,
+      "f2_movement": 233,
+      "magnitude": 233,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 8.8,
-      "f2_prob_shift": -7.3,
-      "priority": 327.6
+      "f1_prob_shift": 8.6,
+      "f2_prob_shift": -7.1,
+      "priority": 326.2
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
@@ -383,6 +383,22 @@
       "priority": 187.0
     },
     {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Ciryl Gane",
+      "f2": "Josh Hokit",
+      "f1_movement": 53,
+      "f2_movement": -45,
+      "magnitude": 53,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 25,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": -4.5,
+      "f2_prob_shift": 5.1,
+      "priority": 185.5
+    },
+    {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Zachary Reese",
       "f2": "Mickey Gall",
@@ -397,22 +413,6 @@
       "f1_prob_shift": 8.0,
       "f2_prob_shift": -7.4,
       "priority": 150.0
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Ciryl Gane",
-      "f2": "Josh Hokit",
-      "f1_movement": 42,
-      "f2_movement": -39,
-      "magnitude": 42,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 25,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": -3.4,
-      "f2_prob_shift": 4.4,
-      "priority": 147.0
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",

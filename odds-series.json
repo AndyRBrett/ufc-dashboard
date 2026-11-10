@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T12:40:41Z",
+  "generated_at": "2026-11-10T13:45:40Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20957,7 +20957,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 27,
+          "points": 28,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -21093,6 +21093,11 @@
               "at": "2026-11-10T00:55:46Z",
               "f1_odds": -230,
               "f2_odds": 180
+            },
+            {
+              "at": "2026-11-10T13:45:40Z",
+              "f1_odds": -219,
+              "f2_odds": 174
             }
           ],
           "open": {
@@ -21182,7 +21187,7 @@
           "f1": "Caio Borralho",
           "f2": "Yousri Belgaroui",
           "lbl": "Main Card",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -21263,6 +21268,11 @@
               "at": "2026-11-10T00:55:46Z",
               "f1_odds": -165,
               "f2_odds": 133
+            },
+            {
+              "at": "2026-11-10T13:45:40Z",
+              "f1_odds": -164,
+              "f2_odds": 132
             }
           ],
           "open": {
@@ -22024,12 +22034,17 @@
           "f1": "Ian Machado Garry",
           "f2": "Yaroslav Amosov",
           "lbl": "Co-Main",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-10T07:15:45Z",
               "f1_odds": -169,
               "f2_odds": 142
+            },
+            {
+              "at": "2026-11-10T13:45:40Z",
+              "f1_odds": -170,
+              "f2_odds": 144
             }
           ],
           "open": {
@@ -23140,7 +23155,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 27,
+        "points": 28,
         "open": -272,
         "close": null,
         "clv": null
@@ -23202,7 +23217,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 27,
+        "points": 28,
         "open": 219,
         "close": null,
         "clv": null
@@ -25291,7 +25306,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Yaroslav Amosov",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -169,
         "close": null,
         "clv": null
@@ -26508,7 +26523,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Caio Borralho",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": -101,
         "close": null,
         "clv": null
@@ -28772,7 +28787,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Yousri Belgaroui",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -115,
         "close": null,
         "clv": null
@@ -28959,7 +28974,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Ian Machado Garry",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 142,
         "close": null,
         "clv": null
