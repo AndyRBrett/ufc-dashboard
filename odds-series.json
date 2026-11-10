@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T06:10:44Z",
+  "generated_at": "2026-11-10T07:15:45Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -21447,7 +21447,7 @@
           "f1": "Stephen Thompson",
           "f2": "Charles Radtke",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21513,6 +21513,11 @@
               "at": "2026-11-10T00:55:46Z",
               "f1_odds": -150,
               "f2_odds": 122
+            },
+            {
+              "at": "2026-11-10T07:15:45Z",
+              "f1_odds": -148,
+              "f2_odds": 120
             }
           ],
           "open": {
@@ -21527,7 +21532,7 @@
           "f1": "Drew Dober",
           "f2": "Chris Duncan",
           "lbl": "Prelim",
-          "points": 12,
+          "points": 13,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21588,6 +21593,11 @@
               "at": "2026-11-10T00:55:46Z",
               "f1_odds": 132,
               "f2_odds": -164
+            },
+            {
+              "at": "2026-11-10T07:15:45Z",
+              "f1_odds": 130,
+              "f2_odds": -161
             }
           ],
           "open": {
@@ -21747,7 +21757,7 @@
           "f1": "Macy Chiasson",
           "f2": "Beatriz Mesquita",
           "lbl": "Early Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21778,6 +21788,11 @@
               "at": "2026-11-09T12:00:47Z",
               "f1_odds": 203,
               "f2_odds": -253
+            },
+            {
+              "at": "2026-11-10T07:15:45Z",
+              "f1_odds": 205,
+              "f2_odds": -256
             }
           ],
           "open": {
@@ -21923,7 +21938,7 @@
           "f1": "Aljamain Sterling",
           "f2": "Kevin Vallejos",
           "lbl": "Co-Main",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-11-08T05:50:41Z",
@@ -21939,6 +21954,11 @@
               "at": "2026-11-10T00:55:46Z",
               "f1_odds": 107,
               "f2_odds": -125
+            },
+            {
+              "at": "2026-11-10T07:15:45Z",
+              "f1_odds": 103,
+              "f2_odds": -120
             }
           ],
           "open": {
@@ -21979,18 +21999,43 @@
           "f1": "Israel Adesanya",
           "f2": "Sharabutdin Magomedov",
           "lbl": "Main Event",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-10T02:01:44Z",
               "f1_odds": -150,
               "f2_odds": 126
+            },
+            {
+              "at": "2026-11-10T07:15:45Z",
+              "f1_odds": -155,
+              "f2_odds": 131
             }
           ],
           "open": {
             "at": "2026-11-10T02:01:44Z",
             "f1_odds": -150,
             "f2_odds": 126
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Ian Machado Garry",
+          "f2": "Yaroslav Amosov",
+          "lbl": "Co-Main",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-10T07:15:45Z",
+              "f1_odds": -169,
+              "f2_odds": 142
+            }
+          ],
+          "open": {
+            "at": "2026-11-10T07:15:45Z",
+            "f1_odds": -169,
+            "f2_odds": 142
           },
           "close": null,
           "clv": null
@@ -23463,7 +23508,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Macy Chiasson",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": -210,
         "close": null,
         "clv": null
@@ -23689,7 +23734,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Israel Adesanya",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 126,
         "close": null,
         "clv": null
@@ -25241,6 +25286,15 @@
         "open": 276,
         "close": 285,
         "clv": 9
+      },
+      {
+        "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+        "opponent": "Yaroslav Amosov",
+        "side": "f1",
+        "points": 1,
+        "open": -169,
+        "close": null,
+        "clv": null
       }
     ],
     "Mackenzie Dern": [
@@ -28729,7 +28783,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Charles Radtke",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -110,
         "close": null,
         "clv": null
@@ -28740,7 +28794,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Stephen Thompson",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -106,
         "close": null,
         "clv": null
@@ -28751,7 +28805,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Chris Duncan",
         "side": "f1",
-        "points": 12,
+        "points": 13,
         "open": 136,
         "close": null,
         "clv": null
@@ -28762,7 +28816,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Drew Dober",
         "side": "f2",
-        "points": 12,
+        "points": 13,
         "open": -160,
         "close": null,
         "clv": null
@@ -28784,7 +28838,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Beatriz Mesquita",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": 177,
         "close": null,
         "clv": null
@@ -28850,7 +28904,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Kevin Vallejos",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -107,
         "close": null,
         "clv": null
@@ -28861,7 +28915,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Aljamain Sterling",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -109,
         "close": null,
         "clv": null
@@ -28894,8 +28948,19 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Sharabutdin Magomedov",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -150,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Yaroslav Amosov": [
+      {
+        "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+        "opponent": "Ian Machado Garry",
+        "side": "f2",
+        "points": 1,
+        "open": 142,
         "close": null,
         "clv": null
       }
