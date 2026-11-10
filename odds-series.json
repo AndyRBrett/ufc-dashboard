@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T00:55:47Z",
+  "generated_at": "2026-11-10T02:01:44Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -21974,6 +21974,26 @@
           },
           "close": null,
           "clv": null
+        },
+        {
+          "f1": "Israel Adesanya",
+          "f2": "Sharabutdin Magomedov",
+          "lbl": "Main Event",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-10T02:01:44Z",
+              "f1_odds": -150,
+              "f2_odds": 126
+            }
+          ],
+          "open": {
+            "at": "2026-11-10T02:01:44Z",
+            "f1_odds": -150,
+            "f2_odds": 126
+          },
+          "close": null,
+          "clv": null
         }
       ]
     },
@@ -23664,6 +23684,15 @@
         "open": -342,
         "close": -390,
         "clv": -48
+      },
+      {
+        "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+        "opponent": "Israel Adesanya",
+        "side": "f2",
+        "points": 1,
+        "open": 126,
+        "close": null,
+        "clv": null
       }
     ],
     "Michel Pereira": [
@@ -28856,6 +28885,17 @@
         "side": "f2",
         "points": 1,
         "open": 126,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Israel Adesanya": [
+      {
+        "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+        "opponent": "Sharabutdin Magomedov",
+        "side": "f1",
+        "points": 1,
+        "open": -150,
         "close": null,
         "clv": null
       }
