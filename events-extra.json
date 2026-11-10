@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-10T04:05:51Z",
+ "generated_at": "2026-11-10T08:20:42Z",
  "promotions": [
   {
    "id": "pfl",
@@ -33,7 +33,10 @@
      "label": "Main Event",
      "division": "Heavyweight",
      "title": true,
-     "odds": null,
+     "odds": {
+      "a": -350,
+      "b": 280
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -44,7 +47,10 @@
      "label": "",
      "division": "Welterweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": -500,
+      "b": 383
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -55,7 +61,10 @@
      "label": "",
      "division": "Heavyweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": 165,
+      "b": -190
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -77,7 +86,10 @@
      "label": "",
      "division": "Bantamweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": -300,
+      "b": 245
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -88,7 +100,10 @@
      "label": "",
      "division": "Lightweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": 130,
+      "b": -150
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -110,7 +125,10 @@
      "label": "",
      "division": "Lightweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": -180,
+      "b": 157
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -121,7 +139,10 @@
      "label": "",
      "division": "Featherweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": -260,
+      "b": 215
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -132,7 +153,10 @@
      "label": "",
      "division": "Heavyweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": -220,
+      "b": 186
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -143,7 +167,10 @@
      "label": "",
      "division": "Welterweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": -140,
+      "b": 120
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -154,7 +181,10 @@
      "label": "",
      "division": "Light Heavyweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": -450,
+      "b": 350
+     },
      "winner": "",
      "method": "",
      "round": null
@@ -165,7 +195,10 @@
      "label": "",
      "division": "Women's Strawweight",
      "title": false,
-     "odds": null,
+     "odds": {
+      "a": 153,
+      "b": -175
+     },
      "winner": "",
      "method": "",
      "round": null
