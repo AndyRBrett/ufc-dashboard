@@ -2,30 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Davey Grant",
-   "b": "Elijah Smith",
-   "a_odds": 267,
-   "b_odds": -337,
-   "commence_time": "2026-11-08T02:45:00Z",
-   "seen_at": "2026-11-07T23:45:46Z"
-  },
-  {
-   "a": "Tatiana Suarez",
-   "b": "Virna Jandiroba",
-   "a_odds": -203,
-   "b_odds": 166,
-   "commence_time": "2026-11-08T03:15:00Z",
-   "seen_at": "2026-11-07T20:45:23Z"
-  },
-  {
-   "a": "Waldo Cortes-Acosta",
-   "b": "Johnny Walker",
-   "a_odds": -230,
-   "b_odds": 185,
-   "commence_time": "2026-11-08T03:45:00Z",
-   "seen_at": "2026-11-07T14:45:21Z"
-  },
-  {
    "a": "Justice Torres",
    "b": "Jesse Butler",
    "a_odds": -350,
@@ -68,10 +44,10 @@
   {
    "a": "Denis Goltsov",
    "b": "Maxwell Djantou Nana",
-   "a_odds": -350,
-   "b_odds": 280,
+   "a_odds": -370,
+   "b_odds": 296,
    "commence_time": "2026-11-14T17:00:00Z",
-   "seen_at": "2026-11-10T13:45:20Z"
+   "seen_at": "2026-11-11T09:05:19Z"
   },
   {
    "a": "Ernesto Rodriguez",
@@ -148,10 +124,10 @@
   {
    "a": "Steven Hill",
    "b": "Sado Ucar",
-   "a_odds": 110,
-   "b_odds": -150,
+   "a_odds": 100,
+   "b_odds": -140,
    "commence_time": "2026-11-14T20:35:00Z",
-   "seen_at": "2026-11-11T02:35:21Z"
+   "seen_at": "2026-11-11T09:05:19Z"
   },
   {
    "a": "Tariq Pell",
@@ -162,12 +138,20 @@
    "seen_at": "2026-11-11T02:35:21Z"
   },
   {
-   "a": "Juan Diaz",
-   "b": "Heili Alateng",
-   "a_odds": -338,
-   "b_odds": 272,
+   "a": "Heili Alateng",
+   "b": "Juan Diaz",
+   "a_odds": 275,
+   "b_odds": -343,
    "commence_time": "2026-11-14T22:00:00Z",
-   "seen_at": "2026-11-11T02:35:21Z"
+   "seen_at": "2026-11-11T09:05:19Z"
+  },
+  {
+   "a": "Evan Elder",
+   "b": "Samuel Sanches",
+   "a_odds": -104,
+   "b_odds": -123,
+   "commence_time": "2026-11-14T22:15:00Z",
+   "seen_at": "2026-11-11T09:05:19Z"
   },
   {
    "a": "Nik Bagley",
@@ -176,6 +160,22 @@
    "b_odds": 170,
    "commence_time": "2026-11-14T22:15:00Z",
    "seen_at": "2026-11-11T02:35:21Z"
+  },
+  {
+   "a": "Macy Chiasson",
+   "b": "Beatriz Mesquita",
+   "a_odds": 210,
+   "b_odds": -263,
+   "commence_time": "2026-11-14T23:15:00Z",
+   "seen_at": "2026-11-11T09:05:19Z"
+  },
+  {
+   "a": "Jared Gordon",
+   "b": "Melquizael Costa",
+   "a_odds": 287,
+   "b_odds": -387,
+   "commence_time": "2026-11-14T23:45:00Z",
+   "seen_at": "2026-11-11T09:05:19Z"
   },
   {
    "a": "Drew Dober",
@@ -188,58 +188,34 @@
   {
    "a": "Donte Johnson",
    "b": "Cesar Almeida",
-   "a_odds": -175,
-   "b_odds": 140,
-   "commence_time": "2026-11-15T01:00:00Z",
-   "seen_at": "2026-11-11T02:35:21Z"
-  },
-  {
-   "a": "Drew Dober",
-   "b": "Chris Duncan",
-   "a_odds": 131,
-   "b_odds": -162,
-   "commence_time": "2026-11-15T01:00:00Z",
-   "seen_at": "2026-11-10T20:10:21Z"
-  },
-  {
-   "a": "Evan Elder",
-   "b": "Samuel Sanches",
-   "a_odds": -104,
-   "b_odds": -123,
-   "commence_time": "2026-11-15T01:00:00Z",
-   "seen_at": "2026-11-11T02:35:21Z"
+   "a_odds": -173,
+   "b_odds": 139,
+   "commence_time": "2026-11-15T00:15:00Z",
+   "seen_at": "2026-11-11T09:05:19Z"
   },
   {
    "a": "Jim Miller",
    "b": "Terrance Mckinney",
    "a_odds": 162,
    "b_odds": -203,
-   "commence_time": "2026-11-15T01:00:00Z",
-   "seen_at": "2026-11-10T20:10:21Z"
+   "commence_time": "2026-11-15T00:45:00Z",
+   "seen_at": "2026-11-11T09:05:19Z"
   },
   {
-   "a": "Macy Chiasson",
-   "b": "Beatriz Mesquita",
-   "a_odds": 210,
-   "b_odds": -263,
-   "commence_time": "2026-11-15T01:00:00Z",
-   "seen_at": "2026-11-10T20:10:21Z"
-  },
-  {
-   "a": "Melquizael Costa",
-   "b": "Jared Gordon",
-   "a_odds": -387,
-   "b_odds": 287,
-   "commence_time": "2026-11-15T01:00:00Z",
-   "seen_at": "2026-11-09T12:00:28Z"
+   "a": "Drew Dober",
+   "b": "Chris Duncan",
+   "a_odds": 131,
+   "b_odds": -162,
+   "commence_time": "2026-11-15T01:15:00Z",
+   "seen_at": "2026-11-11T09:05:19Z"
   },
   {
    "a": "Stephen Thompson",
    "b": "Charlie Radtke",
-   "a_odds": -154,
-   "b_odds": 124,
-   "commence_time": "2026-11-15T01:00:00Z",
-   "seen_at": "2026-11-11T02:35:21Z"
+   "a_odds": -160,
+   "b_odds": 129,
+   "commence_time": "2026-11-15T01:45:00Z",
+   "seen_at": "2026-11-11T09:05:19Z"
   },
   {
    "a": "Caio Borralho",
@@ -276,10 +252,10 @@
   {
    "a": "Ciryl Gane",
    "b": "Josh Hokit",
-   "a_odds": -215,
-   "b_odds": 171,
+   "a_odds": -209,
+   "b_odds": 167,
    "commence_time": "2026-11-15T04:30:00Z",
-   "seen_at": "2026-11-11T02:35:21Z"
+   "seen_at": "2026-11-11T09:05:19Z"
   },
   {
    "a": "Igor Michaliszyn",
