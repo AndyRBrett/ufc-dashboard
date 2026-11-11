@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T23:25:48Z",
+  "generated_at": "2026-11-11T00:30:59Z",
   "summary": {
     "events": 10,
     "block": 0,
@@ -9,43 +9,43 @@
     {
       "severity": "WARN",
       "check": "start-time-unanchored",
-      "message": "UFC Fight Night: Prochazka vs. Stirling (11d out): venue 'Al Rayyan' matches no known region, so its 13:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
+      "message": "UFC Fight Night: Prochazka vs. Stirling (10d out): venue 'Al Rayyan' matches no known region, so its 13:00 ET start is unverified \u2014 add it to _US_REGIONS or _INTL_REGION_SLOTS",
       "event": "UFC Fight Night: Prochazka vs. Stirling",
       "date": "2026-11-21"
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC 334: Gane vs. Hokit (4d out): 1 of 13 bouts have no odds",
+      "message": "UFC 334: Gane vs. Hokit (3d out): 1 of 13 bouts have no odds",
       "event": "UFC 334: Gane vs. Hokit",
       "date": "2026-11-14",
-      "days_out": 4
+      "days_out": 3
     },
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Prochazka vs. Stirling (11d out): 7 of 9 bouts have no odds",
+      "message": "UFC Fight Night: Prochazka vs. Stirling (10d out): 7 of 9 bouts have no odds",
       "event": "UFC Fight Night: Prochazka vs. Stirling",
       "date": "2026-11-21",
-      "days_out": 11
+      "days_out": 10
     },
     {
       "severity": "WARN",
       "check": "record-blank",
-      "message": "UFC 334: Gane vs. Hokit (4d out): Beatriz Mesquita has no record",
+      "message": "UFC 334: Gane vs. Hokit (3d out): Beatriz Mesquita has no record",
       "fighter": "Beatriz Mesquita",
       "event": "UFC 334: Gane vs. Hokit",
       "date": "2026-11-14",
-      "days_out": 4
+      "days_out": 3
     },
     {
       "severity": "WARN",
       "check": "stats-fetch-failed",
-      "message": "UFC 334: Gane vs. Hokit (4d out): Beatriz Mesquita stats lookup failed (2026-11-10)",
+      "message": "UFC 334: Gane vs. Hokit (3d out): Beatriz Mesquita stats lookup failed (2026-11-11)",
       "fighter": "Beatriz Mesquita",
       "event": "UFC 334: Gane vs. Hokit",
       "date": "2026-11-14",
-      "days_out": 4
+      "days_out": 3
     }
   ]
 }

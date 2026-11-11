@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T23:25:48Z",
+  "generated_at": "2026-11-11T00:30:59Z",
   "events_tracked": 10,
   "stale_events": 2,
   "parse_failure_events": 0,
@@ -9,7 +9,7 @@
   "odds_budget": {
     "exhausted": false,
     "reset_day": 1,
-    "resets_in_days": 21,
+    "resets_in_days": 20,
     "most_affected": []
   },
   "stale_threshold_hours": 48,
