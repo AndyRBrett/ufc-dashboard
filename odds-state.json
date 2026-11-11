@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-11-11T15:35:21.136249+00:00",
+  "last_fetch_at": "2026-11-11T22:25:19.274116+00:00",
   "last_status": 200,
-  "lines_digest": "f5e754a8696b86814d354c77aa99ba61ac47e04f",
+  "lines_digest": "0411a504b9ecabb9e1562f935c47af39d39e6b24",
   "markets": {
     "2026-11-12": {
       "fighters": [
@@ -24,28 +24,30 @@
     },
     "2026-11-14": {
       "fighters": [
+        "nabiev",
+        "ngono",
+        "rodriguez",
+        "mckee",
+        "goltsov",
+        "nana",
         "magomedsharipov",
         "borics",
         "pergande",
         "magomedov",
+        "izagakhmaev",
+        "martinez",
         "rock",
         "hughes",
-        "goltsov",
-        "nana",
-        "rodriguez",
-        "mckee",
-        "nabiev",
-        "ngono",
         "mcgrillen",
         "abzakh",
         "rahmani",
         "popov",
         "habirora",
         "dafrawy",
-        "nemkov",
-        "bilostenniy",
         "sarwa",
         "mackenzie",
+        "nemkov",
+        "bilostenniy",
         "hill",
         "ucar",
         "pell",
@@ -79,8 +81,8 @@
         "gane",
         "hokit"
       ],
-      "listed": 27,
-      "priced": 27
+      "listed": 28,
+      "priced": 28
     },
     "2026-11-21": {
       "fighters": [
@@ -244,25 +246,25 @@
       "priced": 1
     }
   },
-  "markets_at": "2026-11-11T15:35:21.136249+00:00",
+  "markets_at": "2026-11-11T22:25:19.274116+00:00",
   "next_event_days_out": 3,
   "providers": {
     "the-odds-api": {
       "bouts": 62,
-      "last_fetch_at": "2026-11-11T15:35:21.136249+00:00",
-      "last_ok_at": "2026-11-11T15:35:21.136249+00:00",
+      "last_fetch_at": "2026-11-11T22:25:19.274116+00:00",
+      "last_ok_at": "2026-11-11T22:25:19.274116+00:00",
       "last_status": 200,
       "provider": "the-odds-api:us2,uk,eu,au",
-      "requests_remaining": 210
+      "requests_remaining": 205
     },
     "the-odds-api-backup": {
       "bouts": 62,
-      "last_fetch_at": "2026-11-11T15:35:21.136249+00:00",
-      "last_ok_at": "2026-11-11T15:35:21.136249+00:00",
+      "last_fetch_at": "2026-11-11T22:25:19.274116+00:00",
+      "last_ok_at": "2026-11-11T22:25:19.274116+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 442
+      "requests_remaining": 441
     }
   },
-  "requests_remaining": 210
+  "requests_remaining": 205
 }
