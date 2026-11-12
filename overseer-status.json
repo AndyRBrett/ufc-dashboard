@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-11T23:30:45Z",
+  "generated_at": "2026-11-12T00:36:18Z",
   "events_tracked": 10,
   "stale_events": 3,
   "parse_failure_events": 0,
@@ -9,7 +9,7 @@
   "odds_budget": {
     "exhausted": false,
     "reset_day": 1,
-    "resets_in_days": 20,
+    "resets_in_days": 19,
     "most_affected": []
   },
   "stale_threshold_hours": 48,
@@ -188,7 +188,7 @@
       "wc": "Welterweight",
       "f1_prob_shift": 9.3,
       "f2_prob_shift": -8.0,
-      "priority": 330.4
+      "priority": 472.0
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
@@ -204,7 +204,55 @@
       "wc": "Middleweight",
       "f1_prob_shift": 8.2,
       "f2_prob_shift": -6.6,
-      "priority": 322.0
+      "priority": 460.0
+    },
+    {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Evan Elder",
+      "f2": "Samuel Sanches",
+      "f1_movement": 216,
+      "f2_movement": -24,
+      "magnitude": 216,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 120,
+      "low_confidence": false,
+      "wc": "Lightweight",
+      "f1_prob_shift": -3.7,
+      "f2_prob_shift": 5.3,
+      "priority": 432.0
+    },
+    {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Ciryl Gane",
+      "f2": "Josh Hokit",
+      "f1_movement": 74,
+      "f2_movement": -61,
+      "magnitude": 74,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 25,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": -6.7,
+      "f2_prob_shift": 7.4,
+      "priority": 370.0
+    },
+    {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Bilal Hasan",
+      "f2": "Luis Gurule",
+      "f1_movement": -183,
+      "f2_movement": 12,
+      "magnitude": 183,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 50,
+      "low_confidence": false,
+      "wc": "Flyweight",
+      "f1_prob_shift": 1.4,
+      "f2_prob_shift": -0.2,
+      "priority": 366.0
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -223,22 +271,6 @@
       "priority": 307.0
     },
     {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Evan Elder",
-      "f2": "Samuel Sanches",
-      "f1_movement": 216,
-      "f2_movement": -24,
-      "magnitude": 216,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 120,
-      "low_confidence": false,
-      "wc": "Lightweight",
-      "f1_prob_shift": -3.7,
-      "f2_prob_shift": 5.3,
-      "priority": 302.4
-    },
-    {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",
       "f1": "Steven Koslow",
       "f2": "Chad Anheliger",
@@ -253,38 +285,6 @@
       "f1_prob_shift": 14.8,
       "f2_prob_shift": -14.5,
       "priority": 276.0
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Ciryl Gane",
-      "f2": "Josh Hokit",
-      "f1_movement": 74,
-      "f2_movement": -61,
-      "magnitude": 74,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 25,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": -6.7,
-      "f2_prob_shift": 7.4,
-      "priority": 259.0
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Bilal Hasan",
-      "f2": "Luis Gurule",
-      "f1_movement": -183,
-      "f2_movement": 12,
-      "magnitude": 183,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 50,
-      "low_confidence": false,
-      "wc": "Flyweight",
-      "f1_prob_shift": 1.4,
-      "f2_prob_shift": -0.2,
-      "priority": 256.2
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
