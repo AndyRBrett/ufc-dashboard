@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-11T23:30:48Z",
+ "generated_at": "2026-11-12T03:45:38Z",
  "promotions": [
   {
    "id": "pfl",
@@ -199,8 +199,8 @@
      "division": "Women's Strawweight",
      "title": false,
      "odds": {
-      "a": 177,
-      "b": -220
+      "a": 195,
+      "b": -245
      },
      "winner": "",
      "method": "",
@@ -250,6 +250,17 @@
      "round": null
     },
     {
+     "a": "Oualy Tandia",
+     "b": "Alex Lohore",
+     "label": "",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
      "a": "Fabian Edwards",
      "b": "Ilian Bouafia",
      "label": "",
@@ -262,7 +273,40 @@
     },
     {
      "a": "Baris Adiguzel",
-     "b": "Liam Gittins",
+     "b": "Jack Cartwright",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Bafode Gassama",
+     "b": "Coby Bradford",
+     "label": "",
+     "division": "Light Heavyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Dean Garnett",
+     "b": "Bryce Meredith",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Jan Ciepowski",
+     "b": "Mauricio Partida",
      "label": "",
      "division": "Bantamweight",
      "title": false,
@@ -283,43 +327,21 @@
      "round": null
     },
     {
+     "a": "Zakaria Hamou",
+     "b": "Amin Bouazza",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
      "a": "Mathilde Aschenbrenner",
      "b": "Shelda Chipito",
      "label": "",
      "division": "Women's Strawweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Dean Garnett",
-     "b": "Bryce Meredith",
-     "label": "",
-     "division": "Bantamweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Oualy Tandia",
-     "b": "Alex Lohore",
-     "label": "",
-     "division": "Welterweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
-     "a": "Jan Ciepowski",
-     "b": "Mauricio Partida",
-     "label": "",
-     "division": "Bantamweight",
      "title": false,
      "odds": null,
      "winner": "",
