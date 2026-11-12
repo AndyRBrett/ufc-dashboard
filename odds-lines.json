@@ -2,14 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Aleksandra Savicheva",
-   "b": "Jacinta Austin",
-   "a_odds": 200,
-   "b_odds": -252,
-   "commence_time": "2026-11-12T14:10:00Z",
-   "seen_at": "2026-11-12T11:55:20Z"
-  },
-  {
    "a": "Joao Paulo Silva",
    "b": "Gabriel Vinicius",
    "a_odds": 350,
@@ -26,6 +18,14 @@
    "seen_at": "2026-11-11T22:25:19Z"
   },
   {
+   "a": "Aleksandra Savicheva",
+   "b": "Jacinta Austin",
+   "a_odds": 190,
+   "b_odds": -273,
+   "commence_time": "2026-11-14T14:00:00Z",
+   "seen_at": "2026-11-12T18:30:25Z"
+  },
+  {
    "a": "Khabib Nabiev",
    "b": "Styve Ngono",
    "a_odds": -575,
@@ -36,10 +36,10 @@
   {
    "a": "Ernesto Rodriguez",
    "b": "Rhys McKee",
-   "a_odds": -112,
-   "b_odds": -108,
+   "a_odds": -126,
+   "b_odds": 104,
    "commence_time": "2026-11-14T15:10:00Z",
-   "seen_at": "2026-11-12T16:10:22Z"
+   "seen_at": "2026-11-12T18:30:25Z"
   },
   {
    "a": "Denis Goltsov",
@@ -77,25 +77,25 @@
    "a": "Shem Rock",
    "b": "Connor Hughes",
    "a_odds": 154,
-   "b_odds": -188,
+   "b_odds": -184,
    "commence_time": "2026-11-14T17:40:00Z",
-   "seen_at": "2026-11-11T22:25:19Z"
+   "seen_at": "2026-11-12T18:30:25Z"
   },
   {
    "a": "Lewis McGrillen",
    "b": "Nawras Abzakh",
-   "a_odds": -425,
-   "b_odds": 318,
+   "a_odds": -418,
+   "b_odds": 320,
    "commence_time": "2026-11-14T18:10:00Z",
-   "seen_at": "2026-11-11T22:25:19Z"
+   "seen_at": "2026-11-12T18:30:25Z"
   },
   {
    "a": "Pouya Rahmani",
    "b": "Oleg Popov",
-   "a_odds": -228,
-   "b_odds": 183,
+   "a_odds": -238,
+   "b_odds": 190,
    "commence_time": "2026-11-14T19:10:00Z",
-   "seen_at": "2026-11-11T22:25:19Z"
+   "seen_at": "2026-11-12T18:30:25Z"
   },
   {
    "a": "Patrick Habirora",
@@ -172,10 +172,10 @@
   {
    "a": "Jared Gordon",
    "b": "Melquizael Costa",
-   "a_odds": 292,
-   "b_odds": -393,
+   "a_odds": 288,
+   "b_odds": -388,
    "commence_time": "2026-11-14T23:45:00Z",
-   "seen_at": "2026-11-11T22:25:19Z"
+   "seen_at": "2026-11-12T18:30:25Z"
   },
   {
    "a": "Drew Dober",
@@ -188,10 +188,10 @@
   {
    "a": "Donte Johnson",
    "b": "Cesar Almeida",
-   "a_odds": -175,
-   "b_odds": 140,
+   "a_odds": -173,
+   "b_odds": 139,
    "commence_time": "2026-11-15T00:15:00Z",
-   "seen_at": "2026-11-12T04:50:21Z"
+   "seen_at": "2026-11-12T18:30:25Z"
   },
   {
    "a": "Jim Miller",
@@ -204,10 +204,10 @@
   {
    "a": "Drew Dober",
    "b": "Chris Duncan",
-   "a_odds": 150,
-   "b_odds": -188,
+   "a_odds": 149,
+   "b_odds": -186,
    "commence_time": "2026-11-15T01:15:00Z",
-   "seen_at": "2026-11-12T16:10:22Z"
+   "seen_at": "2026-11-12T18:30:25Z"
   },
   {
    "a": "Stephen Thompson",
@@ -252,10 +252,10 @@
   {
    "a": "Ciryl Gane",
    "b": "Josh Hokit",
-   "a_odds": -196,
-   "b_odds": 155,
+   "a_odds": -194,
+   "b_odds": 153,
    "commence_time": "2026-11-15T04:30:00Z",
-   "seen_at": "2026-11-12T16:10:22Z"
+   "seen_at": "2026-11-12T18:30:25Z"
   },
   {
    "a": "Igor Michaliszyn",

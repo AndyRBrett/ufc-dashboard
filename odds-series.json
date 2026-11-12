@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T17:30:27Z",
+  "generated_at": "2026-11-12T18:30:44Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20957,7 +20957,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 34,
+          "points": 35,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -21128,6 +21128,11 @@
               "at": "2026-11-12T16:10:41Z",
               "f1_odds": -196,
               "f2_odds": 155
+            },
+            {
+              "at": "2026-11-12T18:30:43Z",
+              "f1_odds": -194,
+              "f2_odds": 153
             }
           ],
           "open": {
@@ -21667,7 +21672,7 @@
           "f1": "Drew Dober",
           "f2": "Chris Duncan",
           "lbl": "Prelim",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21763,6 +21768,11 @@
               "at": "2026-11-12T16:10:41Z",
               "f1_odds": 150,
               "f2_odds": -188
+            },
+            {
+              "at": "2026-11-12T18:30:43Z",
+              "f1_odds": 149,
+              "f2_odds": -186
             }
           ],
           "open": {
@@ -21837,7 +21847,7 @@
           "f1": "Donte Johnson",
           "f2": "Cesar Almeida",
           "lbl": "Prelim",
-          "points": 21,
+          "points": 22,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21943,6 +21953,11 @@
               "at": "2026-11-12T04:50:43Z",
               "f1_odds": -175,
               "f2_odds": 140
+            },
+            {
+              "at": "2026-11-12T18:30:43Z",
+              "f1_odds": -173,
+              "f2_odds": 139
             }
           ],
           "open": {
@@ -22017,7 +22032,7 @@
           "f1": "Jared Gordon",
           "f2": "Melquizael Costa",
           "lbl": "Early Prelim",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-11-06T23:30:59Z",
@@ -22053,6 +22068,11 @@
               "at": "2026-11-11T22:25:36Z",
               "f1_odds": 292,
               "f2_odds": -393
+            },
+            {
+              "at": "2026-11-12T18:30:43Z",
+              "f1_odds": 288,
+              "f2_odds": -388
             }
           ],
           "open": {
@@ -23445,7 +23465,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 34,
+        "points": 35,
         "open": -272,
         "close": null,
         "clv": null
@@ -23507,7 +23527,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 34,
+        "points": 35,
         "open": 219,
         "close": null,
         "clv": null
@@ -24739,7 +24759,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Donte Johnson",
         "side": "f2",
-        "points": 21,
+        "points": 22,
         "open": 140,
         "close": null,
         "clv": null
@@ -25735,7 +25755,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Cesar Almeida",
         "side": "f1",
-        "points": 21,
+        "points": 22,
         "open": -165,
         "close": null,
         "clv": null
@@ -29119,7 +29139,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Chris Duncan",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": 136,
         "close": null,
         "clv": null
@@ -29130,7 +29150,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Drew Dober",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": -160,
         "close": null,
         "clv": null
@@ -29163,7 +29183,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Melquizael Costa",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": 291,
         "close": null,
         "clv": null
@@ -29174,7 +29194,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Jared Gordon",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": -360,
         "close": null,
         "clv": null
