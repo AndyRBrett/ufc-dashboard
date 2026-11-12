@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T15:05:35Z",
+  "generated_at": "2026-11-12T16:10:41Z",
   "events_tracked": 10,
   "stale_events": 3,
   "parse_failure_events": 0,
@@ -99,11 +99,11 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-12T14:00:46Z",
+      "last_changed_at": "2026-11-12T16:10:41Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": 74,
+      "line_movement": 76,
       "odds_market_priced": true
     },
     {
@@ -178,17 +178,17 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Stephen Thompson",
       "f2": "Charles Radtke",
-      "f1_movement": -49,
-      "f2_movement": 234,
-      "magnitude": 234,
+      "f1_movement": -44,
+      "f2_movement": 231,
+      "magnitude": 231,
       "main_event": false,
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
       "wc": "Welterweight",
-      "f1_prob_shift": 9.0,
-      "f2_prob_shift": -7.6,
-      "priority": 468.0
+      "f1_prob_shift": 8.2,
+      "f2_prob_shift": -7.0,
+      "priority": 462.0
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
@@ -226,17 +226,17 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Ciryl Gane",
       "f2": "Josh Hokit",
-      "f1_movement": 74,
-      "f2_movement": -61,
-      "magnitude": 74,
+      "f1_movement": 76,
+      "f2_movement": -64,
+      "magnitude": 76,
       "main_event": true,
       "tier": "main-event",
       "threshold": 25,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": -6.7,
-      "f2_prob_shift": 7.4,
-      "priority": 370.0
+      "f1_prob_shift": -6.9,
+      "f2_prob_shift": 7.9,
+      "priority": 380.0
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",

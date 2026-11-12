@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T15:05:35Z",
+  "generated_at": "2026-11-12T16:10:41Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20957,7 +20957,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 33,
+          "points": 34,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -21123,6 +21123,11 @@
               "at": "2026-11-11T22:25:36Z",
               "f1_odds": -198,
               "f2_odds": 158
+            },
+            {
+              "at": "2026-11-12T16:10:41Z",
+              "f1_odds": -196,
+              "f2_odds": 155
             }
           ],
           "open": {
@@ -21137,7 +21142,7 @@
           "f1": "Kayla Harrison",
           "f2": "Amanda Nunes",
           "lbl": "Co-Main",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -21213,6 +21218,11 @@
               "at": "2026-11-12T11:55:36Z",
               "f1_odds": -189,
               "f2_odds": 151
+            },
+            {
+              "at": "2026-11-12T16:10:41Z",
+              "f1_odds": -183,
+              "f2_odds": 147
             }
           ],
           "open": {
@@ -21337,7 +21347,7 @@
           "f1": "Uros Medic",
           "f2": "Kevin Holland",
           "lbl": "Main Card",
-          "points": 22,
+          "points": 23,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -21448,6 +21458,11 @@
               "at": "2026-11-12T11:55:36Z",
               "f1_odds": -159,
               "f2_odds": 131
+            },
+            {
+              "at": "2026-11-12T16:10:41Z",
+              "f1_odds": -157,
+              "f2_odds": 129
             }
           ],
           "open": {
@@ -21532,7 +21547,7 @@
           "f1": "Stephen Thompson",
           "f2": "Charles Radtke",
           "lbl": "Prelim",
-          "points": 20,
+          "points": 21,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21633,6 +21648,11 @@
               "at": "2026-11-12T04:50:43Z",
               "f1_odds": -159,
               "f2_odds": 128
+            },
+            {
+              "at": "2026-11-12T16:10:41Z",
+              "f1_odds": -154,
+              "f2_odds": 125
             }
           ],
           "open": {
@@ -21647,7 +21667,7 @@
           "f1": "Drew Dober",
           "f2": "Chris Duncan",
           "lbl": "Prelim",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21738,6 +21758,11 @@
               "at": "2026-11-12T14:00:46Z",
               "f1_odds": 144,
               "f2_odds": -180
+            },
+            {
+              "at": "2026-11-12T16:10:41Z",
+              "f1_odds": 150,
+              "f2_odds": -188
             }
           ],
           "open": {
@@ -22092,7 +22117,7 @@
           "f1": "Alateng Heili",
           "f2": "Juan Diaz",
           "lbl": "Early Prelim",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-11-11T02:35:41Z",
@@ -22123,6 +22148,11 @@
               "at": "2026-11-12T14:00:46Z",
               "f1_odds": 287,
               "f2_odds": -387
+            },
+            {
+              "at": "2026-11-12T16:10:41Z",
+              "f1_odds": 313,
+              "f2_odds": -425
             }
           ],
           "open": {
@@ -23415,7 +23445,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 33,
+        "points": 34,
         "open": -272,
         "close": null,
         "clv": null
@@ -23477,7 +23507,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 33,
+        "points": 34,
         "open": 219,
         "close": null,
         "clv": null
@@ -24886,7 +24916,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Uros Medic",
         "side": "f2",
-        "points": 22,
+        "points": 23,
         "open": 132,
         "close": null,
         "clv": null
@@ -25143,7 +25173,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kevin Holland",
         "side": "f1",
-        "points": 22,
+        "points": 23,
         "open": -155,
         "close": null,
         "clv": null
@@ -27281,7 +27311,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Juan Diaz",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": 272,
         "close": null,
         "clv": null
@@ -29034,7 +29064,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Amanda Nunes",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -201,
         "close": null,
         "clv": null
@@ -29045,7 +29075,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kayla Harrison",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 165,
         "close": null,
         "clv": null
@@ -29067,7 +29097,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Charles Radtke",
         "side": "f1",
-        "points": 20,
+        "points": 21,
         "open": -110,
         "close": null,
         "clv": null
@@ -29078,7 +29108,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Stephen Thompson",
         "side": "f2",
-        "points": 20,
+        "points": 21,
         "open": -106,
         "close": null,
         "clv": null
@@ -29089,7 +29119,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Chris Duncan",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": 136,
         "close": null,
         "clv": null
@@ -29100,7 +29130,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Drew Dober",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": -160,
         "close": null,
         "clv": null
@@ -29177,7 +29207,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Alateng Heili",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": -338,
         "close": null,
         "clv": null
