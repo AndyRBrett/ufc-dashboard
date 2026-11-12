@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T19:35:37Z",
+  "generated_at": "2026-11-12T20:40:42Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -21482,7 +21482,7 @@
           "f1": "Bilal Hasan",
           "f2": "Luis Gurule",
           "lbl": "Main Card",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -21538,6 +21538,11 @@
               "at": "2026-11-11T22:25:36Z",
               "f1_odds": -1133,
               "f2_odds": 660
+            },
+            {
+              "at": "2026-11-12T20:40:42Z",
+              "f1_odds": -1050,
+              "f2_odds": 618
             }
           ],
           "open": {
@@ -22278,6 +22283,126 @@
           },
           "close": null,
           "clv": null
+        },
+        {
+          "f1": "Dan Hooker",
+          "f2": "Brian Ortega",
+          "lbl": "Main Card",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-12T20:40:42Z",
+              "f1_odds": -155,
+              "f2_odds": 132
+            }
+          ],
+          "open": {
+            "at": "2026-11-12T20:40:42Z",
+            "f1_odds": -155,
+            "f2_odds": 132
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Jared Cannonier",
+          "f2": "Ikram Aliskerov",
+          "lbl": "Main Card",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-12T20:40:42Z",
+              "f1_odds": 300,
+              "f2_odds": -400
+            }
+          ],
+          "open": {
+            "at": "2026-11-12T20:40:42Z",
+            "f1_odds": 300,
+            "f2_odds": -400
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Aleksandre Topuria",
+          "f2": "Santiago Luna",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-12T20:40:42Z",
+              "f1_odds": -220,
+              "f2_odds": 185
+            }
+          ],
+          "open": {
+            "at": "2026-11-12T20:40:42Z",
+            "f1_odds": -220,
+            "f2_odds": 185
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Shamil Gaziev",
+          "f2": "Tallison Teixeira",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-12T20:40:42Z",
+              "f1_odds": -225,
+              "f2_odds": 189
+            }
+          ],
+          "open": {
+            "at": "2026-11-12T20:40:42Z",
+            "f1_odds": -225,
+            "f2_odds": 189
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Amir Albazi",
+          "f2": "Alessandro Costa",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-12T20:40:42Z",
+              "f1_odds": 132,
+              "f2_odds": -155
+            }
+          ],
+          "open": {
+            "at": "2026-11-12T20:40:42Z",
+            "f1_odds": 132,
+            "f2_odds": -155
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Jake Matthews",
+          "f2": "Tahir Abdullayev",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-12T20:40:42Z",
+              "f1_odds": -170,
+              "f2_odds": 145
+            }
+          ],
+          "open": {
+            "at": "2026-11-12T20:40:42Z",
+            "f1_odds": -170,
+            "f2_odds": 145
+          },
+          "close": null,
+          "clv": null
         }
       ]
     },
@@ -22793,6 +22918,15 @@
         "open": 435,
         "close": 435,
         "clv": 0
+      },
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Shamil Gaziev",
+        "side": "f2",
+        "points": 1,
+        "open": 189,
+        "close": null,
+        "clv": null
       }
     ],
     "Kai Asakura": [
@@ -22835,6 +22969,15 @@
         "open": 328,
         "close": 328,
         "clv": 0
+      },
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Tahir Abdullayev",
+        "side": "f1",
+        "points": 1,
+        "open": -170,
+        "close": null,
+        "clv": null
       }
     ],
     "Carlston Harris": [
@@ -22953,7 +23096,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Bilal Hasan",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 648,
         "close": null,
         "clv": null
@@ -23143,6 +23286,15 @@
         "open": 100,
         "close": 100,
         "clv": 0
+      },
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Aleksandre Topuria",
+        "side": "f2",
+        "points": 1,
+        "open": 185,
+        "close": null,
+        "clv": null
       }
     ],
     "Iwo Baraniewski": [
@@ -23194,6 +23346,15 @@
         "open": -258,
         "close": -230,
         "clv": 28
+      },
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Amir Albazi",
+        "side": "f2",
+        "points": 1,
+        "open": -155,
+        "close": null,
+        "clv": null
       }
     ],
     "Matt Schnell": [
@@ -24116,6 +24277,15 @@
         "open": -222,
         "close": -300,
         "clv": -78
+      },
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Jared Cannonier",
+        "side": "f2",
+        "points": 1,
+        "open": -400,
+        "close": null,
+        "clv": null
       }
     ],
     "Brunno Ferreira": [
@@ -24391,6 +24561,15 @@
         "open": -120,
         "close": 120,
         "clv": 240
+      },
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Jake Matthews",
+        "side": "f2",
+        "points": 1,
+        "open": 145,
+        "close": null,
+        "clv": null
       }
     ],
     "Jefferson Nascimento": [
@@ -24900,6 +25079,15 @@
         "open": 250,
         "close": 238,
         "clv": -12
+      },
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Ikram Aliskerov",
+        "side": "f1",
+        "points": 1,
+        "open": 300,
+        "close": null,
+        "clv": null
       }
     ],
     "Christian Leroy Duncan": [
@@ -26006,6 +26194,15 @@
         "open": -125,
         "close": -135,
         "clv": -10
+      },
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Tallison Teixeira",
+        "side": "f1",
+        "points": 1,
+        "open": -225,
+        "close": null,
+        "clv": null
       }
     ],
     "MarQuel Mederos": [
@@ -26247,7 +26444,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Luis Gurule",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -950,
         "close": null,
         "clv": null
@@ -26394,6 +26591,15 @@
         "open": 435,
         "close": 372,
         "clv": -63
+      },
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Brian Ortega",
+        "side": "f1",
+        "points": 1,
+        "open": -155,
+        "close": null,
+        "clv": null
       }
     ],
     "Salahdine Parnasse": [
@@ -27084,6 +27290,15 @@
         "open": 169,
         "close": 180,
         "clv": 11
+      },
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Dan Hooker",
+        "side": "f2",
+        "points": 1,
+        "open": 132,
+        "close": null,
+        "clv": null
       }
     ],
     "Alonzo Menifield": [
@@ -29262,6 +29477,28 @@
         "side": "f2",
         "points": 6,
         "open": -109,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Aleksandre Topuria": [
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Santiago Luna",
+        "side": "f1",
+        "points": 1,
+        "open": -220,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Amir Albazi": [
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Alessandro Costa",
+        "side": "f1",
+        "points": 1,
+        "open": 132,
         "close": null,
         "clv": null
       }

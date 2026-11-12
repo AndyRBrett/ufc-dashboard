@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T19:35:37Z",
+  "generated_at": "2026-11-12T20:40:42Z",
   "events_tracked": 10,
   "stale_events": 3,
   "parse_failure_events": 0,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-12T18:30:43Z",
+      "last_changed_at": "2026-11-12T20:40:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -109,7 +109,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-11T15:35:39Z",
+      "last_changed_at": "2026-11-12T20:40:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 9,
@@ -237,22 +237,6 @@
       "f1_prob_shift": -7.1,
       "f2_prob_shift": 8.2,
       "priority": 390.0
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Bilal Hasan",
-      "f2": "Luis Gurule",
-      "f1_movement": -183,
-      "f2_movement": 12,
-      "magnitude": 183,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 50,
-      "low_confidence": false,
-      "wc": "Flyweight",
-      "f1_prob_shift": 1.4,
-      "f2_prob_shift": -0.2,
-      "priority": 366.0
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -397,6 +381,22 @@
       "f1_prob_shift": 1.4,
       "f2_prob_shift": -1.5,
       "priority": 206.0
+    },
+    {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Bilal Hasan",
+      "f2": "Luis Gurule",
+      "f1_movement": -100,
+      "f2_movement": -30,
+      "magnitude": 100,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 50,
+      "low_confidence": false,
+      "wc": "Flyweight",
+      "f1_prob_shift": 0.8,
+      "f2_prob_shift": 0.6,
+      "priority": 200.0
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
