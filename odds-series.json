@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T03:45:37Z",
+  "generated_at": "2026-11-12T04:50:43Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -21522,7 +21522,7 @@
           "f1": "Stephen Thompson",
           "f2": "Charles Radtke",
           "lbl": "Prelim",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21618,6 +21618,11 @@
               "at": "2026-11-12T02:40:41Z",
               "f1_odds": -157,
               "f2_odds": 126
+            },
+            {
+              "at": "2026-11-12T04:50:43Z",
+              "f1_odds": -159,
+              "f2_odds": 128
             }
           ],
           "open": {
@@ -21792,7 +21797,7 @@
           "f1": "Donte Johnson",
           "f2": "Cesar Almeida",
           "lbl": "Prelim",
-          "points": 20,
+          "points": 21,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21893,6 +21898,11 @@
               "at": "2026-11-11T22:25:36Z",
               "f1_odds": -170,
               "f2_odds": 137
+            },
+            {
+              "at": "2026-11-12T04:50:43Z",
+              "f1_odds": -175,
+              "f2_odds": 140
             }
           ],
           "open": {
@@ -24674,7 +24684,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Donte Johnson",
         "side": "f2",
-        "points": 20,
+        "points": 21,
         "open": 140,
         "close": null,
         "clv": null
@@ -25670,7 +25680,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Cesar Almeida",
         "side": "f1",
-        "points": 20,
+        "points": 21,
         "open": -165,
         "close": null,
         "clv": null
@@ -29032,7 +29042,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Charles Radtke",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": -110,
         "close": null,
         "clv": null
@@ -29043,7 +29053,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Stephen Thompson",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": -106,
         "close": null,
         "clv": null
