@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T10:50:38Z",
+  "generated_at": "2026-11-12T11:55:37Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -21137,7 +21137,7 @@
           "f1": "Kayla Harrison",
           "f2": "Amanda Nunes",
           "lbl": "Co-Main",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -21208,6 +21208,11 @@
               "at": "2026-11-11T22:25:36Z",
               "f1_odds": -190,
               "f2_odds": 152
+            },
+            {
+              "at": "2026-11-12T11:55:36Z",
+              "f1_odds": -189,
+              "f2_odds": 151
             }
           ],
           "open": {
@@ -21332,7 +21337,7 @@
           "f1": "Uros Medic",
           "f2": "Kevin Holland",
           "lbl": "Main Card",
-          "points": 21,
+          "points": 22,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -21438,6 +21443,11 @@
               "at": "2026-11-11T22:25:36Z",
               "f1_odds": -154,
               "f2_odds": 127
+            },
+            {
+              "at": "2026-11-12T11:55:36Z",
+              "f1_odds": -159,
+              "f2_odds": 131
             }
           ],
           "open": {
@@ -22077,7 +22087,7 @@
           "f1": "Alateng Heili",
           "f2": "Juan Diaz",
           "lbl": "Early Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-11-11T02:35:41Z",
@@ -22098,6 +22108,11 @@
               "at": "2026-11-11T22:25:36Z",
               "f1_odds": 278,
               "f2_odds": -372
+            },
+            {
+              "at": "2026-11-12T11:55:36Z",
+              "f1_odds": 275,
+              "f2_odds": -367
             }
           ],
           "open": {
@@ -24861,7 +24876,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Uros Medic",
         "side": "f2",
-        "points": 21,
+        "points": 22,
         "open": 132,
         "close": null,
         "clv": null
@@ -25118,7 +25133,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kevin Holland",
         "side": "f1",
-        "points": 21,
+        "points": 22,
         "open": -155,
         "close": null,
         "clv": null
@@ -27256,7 +27271,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Juan Diaz",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 272,
         "close": null,
         "clv": null
@@ -29009,7 +29024,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Amanda Nunes",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -201,
         "close": null,
         "clv": null
@@ -29020,7 +29035,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kayla Harrison",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 165,
         "close": null,
         "clv": null
@@ -29152,7 +29167,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Alateng Heili",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -338,
         "close": null,
         "clv": null
