@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T01:40:42Z",
+  "generated_at": "2026-11-12T02:40:42Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -21522,7 +21522,7 @@
           "f1": "Stephen Thompson",
           "f2": "Charles Radtke",
           "lbl": "Prelim",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21613,6 +21613,11 @@
               "at": "2026-11-11T22:25:36Z",
               "f1_odds": -161,
               "f2_odds": 130
+            },
+            {
+              "at": "2026-11-12T02:40:41Z",
+              "f1_odds": -157,
+              "f2_odds": 126
             }
           ],
           "open": {
@@ -21627,7 +21632,7 @@
           "f1": "Drew Dober",
           "f2": "Chris Duncan",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21708,6 +21713,11 @@
               "at": "2026-11-11T22:25:36Z",
               "f1_odds": 136,
               "f2_odds": -170
+            },
+            {
+              "at": "2026-11-12T02:40:41Z",
+              "f1_odds": 140,
+              "f2_odds": -175
             }
           ],
           "open": {
@@ -21722,7 +21732,7 @@
           "f1": "Jim Miller",
           "f2": "Terrance McKinney",
           "lbl": "Prelim",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21763,6 +21773,11 @@
               "at": "2026-11-11T22:25:36Z",
               "f1_odds": 161,
               "f2_odds": -201
+            },
+            {
+              "at": "2026-11-12T02:40:41Z",
+              "f1_odds": 166,
+              "f2_odds": -208
             }
           ],
           "open": {
@@ -24486,7 +24501,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Jim Miller",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": -215,
         "close": null,
         "clv": null
@@ -29017,7 +29032,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Charles Radtke",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": -110,
         "close": null,
         "clv": null
@@ -29028,7 +29043,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Stephen Thompson",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": -106,
         "close": null,
         "clv": null
@@ -29039,7 +29054,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Chris Duncan",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": 136,
         "close": null,
         "clv": null
@@ -29050,7 +29065,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Drew Dober",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": -160,
         "close": null,
         "clv": null
@@ -29061,7 +29076,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Terrance McKinney",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": 181,
         "close": null,
         "clv": null
