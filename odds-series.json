@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T21:45:42Z",
+  "generated_at": "2026-11-12T22:50:38Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -21852,7 +21852,7 @@
           "f1": "Donte Johnson",
           "f2": "Cesar Almeida",
           "lbl": "Prelim",
-          "points": 22,
+          "points": 23,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21963,6 +21963,11 @@
               "at": "2026-11-12T18:30:43Z",
               "f1_odds": -173,
               "f2_odds": 139
+            },
+            {
+              "at": "2026-11-12T22:50:38Z",
+              "f1_odds": -176,
+              "f2_odds": 141
             }
           ],
           "open": {
@@ -22092,7 +22097,7 @@
           "f1": "Evan Elder",
           "f2": "Samuel Sanches",
           "lbl": "Early Prelim",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-11-06T23:30:59Z",
@@ -22128,6 +22133,11 @@
               "at": "2026-11-11T22:25:36Z",
               "f1_odds": 101,
               "f2_odds": -125
+            },
+            {
+              "at": "2026-11-12T22:50:38Z",
+              "f1_odds": 102,
+              "f2_odds": -124
             }
           ],
           "open": {
@@ -22142,7 +22152,7 @@
           "f1": "Alateng Heili",
           "f2": "Juan Diaz",
           "lbl": "Early Prelim",
-          "points": 7,
+          "points": 8,
           "series": [
             {
               "at": "2026-11-11T02:35:41Z",
@@ -22178,6 +22188,11 @@
               "at": "2026-11-12T16:10:41Z",
               "f1_odds": 313,
               "f2_odds": -425
+            },
+            {
+              "at": "2026-11-12T22:50:38Z",
+              "f1_odds": 317,
+              "f2_odds": -422
             }
           ],
           "open": {
@@ -22328,12 +22343,17 @@
           "f1": "Aleksandre Topuria",
           "f2": "Santiago Luna",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
               "f1_odds": -220,
               "f2_odds": 185
+            },
+            {
+              "at": "2026-11-12T22:50:38Z",
+              "f1_odds": -240,
+              "f2_odds": 201
             }
           ],
           "open": {
@@ -22348,12 +22368,17 @@
           "f1": "Shamil Gaziev",
           "f2": "Tallison Teixeira",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
               "f1_odds": -225,
               "f2_odds": 189
+            },
+            {
+              "at": "2026-11-12T22:50:38Z",
+              "f1_odds": -220,
+              "f2_odds": 185
             }
           ],
           "open": {
@@ -22923,7 +22948,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Shamil Gaziev",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 189,
         "close": null,
         "clv": null
@@ -23291,7 +23316,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Aleksandre Topuria",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 185,
         "close": null,
         "clv": null
@@ -24938,7 +24963,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Donte Johnson",
         "side": "f2",
-        "points": 22,
+        "points": 23,
         "open": 140,
         "close": null,
         "clv": null
@@ -25943,7 +25968,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Cesar Almeida",
         "side": "f1",
-        "points": 22,
+        "points": 23,
         "open": -165,
         "close": null,
         "clv": null
@@ -26199,7 +26224,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Tallison Teixeira",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -225,
         "close": null,
         "clv": null
@@ -27546,7 +27571,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Juan Diaz",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": 272,
         "close": null,
         "clv": null
@@ -29420,7 +29445,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Samuel Sanches",
         "side": "f1",
-        "points": 7,
+        "points": 8,
         "open": -115,
         "close": null,
         "clv": null
@@ -29431,7 +29456,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Evan Elder",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": -101,
         "close": null,
         "clv": null
@@ -29442,7 +29467,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Alateng Heili",
         "side": "f2",
-        "points": 7,
+        "points": 8,
         "open": -338,
         "close": null,
         "clv": null
@@ -29486,7 +29511,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Santiago Luna",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -220,
         "close": null,
         "clv": null
