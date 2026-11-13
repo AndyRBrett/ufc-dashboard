@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T04:10:40Z",
+  "generated_at": "2026-11-13T05:15:44Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20957,7 +20957,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 37,
+          "points": 38,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -21143,6 +21143,11 @@
               "at": "2026-11-13T03:05:46Z",
               "f1_odds": -200,
               "f2_odds": 158
+            },
+            {
+              "at": "2026-11-13T05:15:44Z",
+              "f1_odds": -208,
+              "f2_odds": 166
             }
           ],
           "open": {
@@ -21157,7 +21162,7 @@
           "f1": "Kayla Harrison",
           "f2": "Amanda Nunes",
           "lbl": "Co-Main",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -21243,6 +21248,11 @@
               "at": "2026-11-13T00:58:26Z",
               "f1_odds": -181,
               "f2_odds": 145
+            },
+            {
+              "at": "2026-11-13T05:15:44Z",
+              "f1_odds": -179,
+              "f2_odds": 146
             }
           ],
           "open": {
@@ -21257,7 +21267,7 @@
           "f1": "Caio Borralho",
           "f2": "Yousri Belgaroui",
           "lbl": "Main Card",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -21353,6 +21363,11 @@
               "at": "2026-11-11T15:35:39Z",
               "f1_odds": -161,
               "f2_odds": 129
+            },
+            {
+              "at": "2026-11-13T05:15:44Z",
+              "f1_odds": -159,
+              "f2_odds": 130
             }
           ],
           "open": {
@@ -21827,7 +21842,7 @@
           "f1": "Jim Miller",
           "f2": "Terrance McKinney",
           "lbl": "Prelim",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21878,6 +21893,11 @@
               "at": "2026-11-13T00:58:26Z",
               "f1_odds": 176,
               "f2_odds": -219
+            },
+            {
+              "at": "2026-11-13T05:15:44Z",
+              "f1_odds": 178,
+              "f2_odds": -223
             }
           ],
           "open": {
@@ -23731,7 +23751,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 37,
+        "points": 38,
         "open": -272,
         "close": null,
         "clv": null
@@ -23793,7 +23813,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 37,
+        "points": 38,
         "open": 219,
         "close": null,
         "clv": null
@@ -24870,7 +24890,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Jim Miller",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": -215,
         "close": null,
         "clv": null
@@ -27144,7 +27164,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Caio Borralho",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": -101,
         "close": null,
         "clv": null
@@ -29404,7 +29424,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Amanda Nunes",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": -201,
         "close": null,
         "clv": null
@@ -29415,7 +29435,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kayla Harrison",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": 165,
         "close": null,
         "clv": null
@@ -29426,7 +29446,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Yousri Belgaroui",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": -115,
         "close": null,
         "clv": null
@@ -29481,7 +29501,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Terrance McKinney",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": 181,
         "close": null,
         "clv": null

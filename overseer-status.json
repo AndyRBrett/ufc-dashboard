@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T04:10:40Z",
+  "generated_at": "2026-11-13T05:15:44Z",
   "events_tracked": 10,
   "stale_events": 3,
   "parse_failure_events": 0,
@@ -99,11 +99,11 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-13T03:05:46Z",
+      "last_changed_at": "2026-11-13T05:15:44Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": 72,
+      "line_movement": 64,
       "odds_market_priced": true
     },
     {
@@ -194,33 +194,33 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Caio Borralho",
       "f2": "Yousri Belgaroui",
-      "f1_movement": -46,
-      "f2_movement": 230,
-      "magnitude": 230,
+      "f1_movement": -44,
+      "f2_movement": 231,
+      "magnitude": 231,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 8.2,
-      "f2_prob_shift": -6.6,
-      "priority": 460.0
+      "f1_prob_shift": 7.9,
+      "f2_prob_shift": -6.8,
+      "priority": 462.0
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Ciryl Gane",
       "f2": "Josh Hokit",
-      "f1_movement": 72,
-      "f2_movement": -61,
-      "magnitude": 72,
+      "f1_movement": 64,
+      "f2_movement": -53,
+      "magnitude": 64,
       "main_event": true,
       "tier": "main-event",
       "threshold": 25,
       "low_confidence": false,
       "wc": "Heavyweight",
-      "f1_prob_shift": -6.5,
-      "f2_prob_shift": 7.4,
-      "priority": 360.0
+      "f1_prob_shift": -5.6,
+      "f2_prob_shift": 6.2,
+      "priority": 320.0
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
