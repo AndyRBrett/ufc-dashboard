@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-13T13:00:41Z",
+  "generated_at": "2026-11-13T14:05:42Z",
   "events_tracked": 10,
-  "stale_events": 2,
+  "stale_events": 1,
   "parse_failure_events": 0,
   "awaiting_card_events": 0,
   "odds_unavailable_events": 0,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-13T11:45:37Z",
+      "last_changed_at": "2026-11-13T14:05:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -109,11 +109,11 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-13T11:45:37Z",
+      "last_changed_at": "2026-11-13T14:05:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 9,
-      "line_movement": -9,
+      "line_movement": -10,
       "odds_market_priced": true
     },
     {
@@ -149,11 +149,11 @@
     {
       "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
       "status": "ok",
-      "last_changed_at": "2026-11-09T18:00:51Z",
-      "is_stale": true,
+      "last_changed_at": "2026-11-13T14:05:42Z",
+      "is_stale": false,
       "has_data": true,
       "bout_count": 4,
-      "line_movement": 0,
+      "line_movement": -2,
       "odds_market_priced": false
     }
   ],
@@ -176,22 +176,6 @@
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Stephen Thompson",
-      "f2": "Charles Radtke",
-      "f1_movement": -47,
-      "f2_movement": 235,
-      "magnitude": 235,
-      "main_event": false,
-      "tier": "prelim",
-      "threshold": 120,
-      "low_confidence": false,
-      "wc": "Welterweight",
-      "f1_prob_shift": 8.7,
-      "f2_prob_shift": -7.8,
-      "priority": 470.0
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Caio Borralho",
       "f2": "Yousri Belgaroui",
       "f1_movement": -47,
@@ -204,6 +188,22 @@
       "wc": "Middleweight",
       "f1_prob_shift": 8.3,
       "f2_prob_shift": -7.1,
+      "priority": 466.0
+    },
+    {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Stephen Thompson",
+      "f2": "Charles Radtke",
+      "f1_movement": -45,
+      "f2_movement": 233,
+      "magnitude": 233,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 120,
+      "low_confidence": false,
+      "wc": "Welterweight",
+      "f1_prob_shift": 8.4,
+      "f2_prob_shift": -7.4,
       "priority": 466.0
     },
     {
@@ -525,22 +525,6 @@
       "f1_prob_shift": -1.9,
       "f2_prob_shift": 2.9,
       "priority": 72.5
-    },
-    {
-      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
-      "f1": "Jared Cannonier",
-      "f2": "Ikram Aliskerov",
-      "f1_movement": -16,
-      "f2_movement": 50,
-      "magnitude": 50,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 50,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 1.0,
-      "f2_prob_shift": -2.2,
-      "priority": 55.0
     }
   ],
   "errors": []
