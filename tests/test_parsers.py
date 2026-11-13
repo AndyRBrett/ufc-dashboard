@@ -877,6 +877,18 @@ def test_search_ufcstats_resolves_a_given_name_nickname(monkeypatch):
     assert not scrape._name_tokens_match("Ozzy", "Diaz", "Osman Diaz")
 
 
+def test_search_ufcstats_resolves_bia_mesquita(monkeypatch):
+    # The card has "Beatriz Mesquita"; UFC.com, ESPN and UFCStats have "Bia".
+    # "be"/"bi" fails the given-name test, so she showed no record on UFC 334.
+    # Non-empty pages for every other initial, as above, to skip the retry sleep.
+    other = [("Someone", "Else", "http://x/else", 1, 1, 0)]
+    rows = {"m": [("Bia", "Mesquita", "http://x/bia", 8, 0, 0)]}
+    monkeypatch.setattr(
+        scrape, "_load_ufcstats_letter", lambda letter: rows.get(letter, other))
+    assert scrape._search_ufcstats("Beatriz Mesquita") == ("http://x/bia", "8-0-0")
+    assert not scrape._name_tokens_match("Bia", "Mesquita", "Beatriz Mesquita")
+
+
 def test_search_ufcstats_matches_particle_surname(monkeypatch):
     # "De Ridder" is filed under D on UFCStats; the search must look under the
     # particle's initial, not just the card's last token ("Ridder" → R).

@@ -3223,6 +3223,10 @@ _UFCSTATS_NAME_ALIASES = {
     # UFCStats) has "Daria Zhelezniakova". The surnames differ, so no token rule
     # can bridge them, and she had no record on the 2026-10-10 card.
     "darya zheleznyakova": "Daria Zhelezniakova",
+    # The card (Wikipedia) uses her given name "Beatriz"; UFC.com, ESPN and so
+    # UFCStats file her as "Bia Mesquita". "be" vs "bi" fails the two-character
+    # given-name test, so she had no record or stats on UFC 334 (2026-11-14).
+    "beatriz mesquita": "Bia Mesquita",
 }
 
 
