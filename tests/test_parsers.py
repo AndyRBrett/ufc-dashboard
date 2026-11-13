@@ -7,10 +7,12 @@ fast in CI and act as a safety net before the scraper can overwrite data.js.
 
 Run with:  python -m pytest -q
 """
+import copy
 import hashlib
 import json
 import re
 
+import datafile
 import scrape
 
 
@@ -53,62 +55,71 @@ def test_clean_wiki_strips_markup():
 def test_clean_wiki_strips_an_unclosed_template():
     # A template split across lines arrives without its closing braces, because
     # the caller only ever hands us one line. Those braces used to survive into a
-    # fighter name in data.js and unbalance inject_results' brace scan (#97).
+    # fighter name in data.js (#97).
     assert scrape.clean_wiki("{{nowrap|Levi Rodrigues Jr.") == "Levi Rodrigues Jr."
     assert scrape.clean_wiki("{{nowrap|Levi Rodrigues Jr.}}") == ""
     assert "{" not in scrape.clean_wiki("{{sortname|Jon|Jones")
     assert "}" not in scrape.clean_wiki("Jon Jones}}")
 
 
-def _fight_js(f1, f2):
-    return (
-        'var EVENTS=[{fights:[{lbl:"Main Card",wc:"Lightweight",title:false,'
+def _fight_doc(f1, f2):
+    return datafile.loads(
+        'var EVENTS=[{name:"UFC 999: Test",date:"2030-01-05",fights:['
+        '{lbl:"Main Card",wc:"Lightweight",title:false,'
         'rematch:false,odds:{f1:-192,f2:160},winner:"",method:"",round:null,'
-        f'state:"pre",f1:{{n:"{f1}",r:"",rk:"",s:null}},f2:{{n:"{f2}",r:"",rk:"",s:null}}}}]}}];'
+        f'state:"pre",f1:{{n:{json.dumps(f1)},r:"",rk:"",s:null}},'
+        f'f2:{{n:{json.dumps(f2)},r:"",rk:"",s:null}}}}]}}];'
     )
 
 
 def test_inject_results_marks_the_fight_finished():
-    js = _fight_js("Liu Ce", "Levi Rodrigues Jr.")
-    out, n = scrape.inject_results(
-        js, [{"winner": "Liu Ce", "loser": "Levi Rodrigues Jr.",
-              "method": "KO/TKO", "round": 1}])
+    doc = _fight_doc("Liu Ce", "Levi Rodrigues Jr.")
+    n = scrape.inject_results(
+        doc, [{"winner": "Liu Ce", "loser": "Levi Rodrigues Jr.",
+               "method": "KO/TKO", "round": 1}])
+    out = datafile.dumps(doc)
     assert n == 1
     assert 'winner:"Liu Ce"' in out and 'state:"post"' in out and "round:1" in out
 
 
 def test_inject_results_never_counts_an_edit_it_did_not_make():
-    # An unbalanced name leaves the brace scan unable to delimit the fight. The
-    # old code sliced an EMPTY string, changed nothing, and still returned 1 —
-    # and main() exits on any non-zero count, so this one phantom result skipped
-    # the odds/stats/rankings rebuild on every run for as long as the event
-    # stayed in the results window.
-    js = _fight_js("Liu Ce", "{{nowrap|Levi Rodrigues Jr.")
-    out, n = scrape.inject_results(
-        js, [{"winner": "Liu Ce", "loser": "Levi Rodrigues Jr.",
-              "method": "KO/TKO", "round": 1}])
-    assert n == 0
-    assert out == js
+    # main() exits on any non-zero count, skipping the odds/stats/rankings
+    # rebuild, so the count must be the bouts that really changed. When results
+    # were spliced into data.js as text, a name with stray braces (or a quote)
+    # left the fight impossible to delimit: nothing was edited and 1 came back,
+    # on every run for as long as the event stayed in the results window. A
+    # name is just a value now; whatever it holds, the count stays honest and
+    # the file stays readable.
+    for odd in ("{{nowrap|Levi Rodrigues Jr.", 'Levi "The Lion" Rodrigues Jr.',
+                "Levi Rodrigues Jr.;", "Levi Rodrigues Jr.}]"):
+        doc = _fight_doc("Liu Ce", odd)
+        before = copy.deepcopy(doc)
+        n = scrape.inject_results(
+            doc, [{"winner": "Liu Ce", "loser": "Levi Rodrigues Jr.",
+                   "method": "KO/TKO", "round": 1}])
+        assert n == (1 if doc != before else 0)
+        back = datafile.loads(datafile.checked_dumps(doc))
+        assert datafile.to_json(back) == datafile.to_json(doc)
 
 
 def test_inject_results_keeps_data_js_parseable_with_hostile_method_and_round():
-    # inject_results splices scraped text into data.js as source. A quote,
-    # backslash or newline in the method (or a non-numeric round) used to go in
-    # raw, leaving data.js unparseable, and the health gate would then freeze
-    # every data update until a human fixed it.
-    js = _fight_js("Liu Ce", "Levi Rodrigues Jr.")
-    out, n = scrape.inject_results(
-        js, [{"winner": "Liu Ce", "loser": "Levi Rodrigues Jr.",
-              "method": 'Submission ("RNC")\\\n', "round": "3);alert(1"}])
+    # A quote, backslash or newline in the scraped method (or a non-numeric
+    # round) used to go into data.js raw, leaving it unparseable, and the health
+    # gate would then freeze every data update until a human fixed it.
+    doc = _fight_doc("Liu Ce", "Levi Rodrigues Jr.")
+    n = scrape.inject_results(
+        doc, [{"winner": "Liu Ce", "loser": "Levi Rodrigues Jr.",
+               "method": 'Submission ("RNC")\\\n', "round": "3);alert(1"}])
+    out = datafile.checked_dumps(doc)
     assert n == 1
     assert 'method:"Submission (RNC)"' in out
     assert "round:null" in out
-    # Re-running the result over its own output changes nothing (the next run's
-    # `method:"[^"]*"` match must still see one whole field).
-    again, n2 = scrape.inject_results(
-        out, [{"winner": "Liu Ce", "loser": "Levi Rodrigues Jr.",
+    # Re-running the result over its own output changes nothing: a finished
+    # bout is never injected twice.
+    n2 = scrape.inject_results(
+        doc, [{"winner": "Liu Ce", "loser": "Levi Rodrigues Jr.",
                "method": "KO/TKO", "round": 2}])
-    assert n2 == 0 and again == out
+    assert n2 == 0 and datafile.dumps(doc) == out
 
 
 # --- method normalisation --------------------------------------------------
@@ -656,10 +667,18 @@ def test_rankings_regex_extracts_rank_and_name():
     assert got["Charles Oliveira"] == 2
 
 
-def test_existing_odds_regex_extracts_embedded_odds():
-    html = '...odds:{f1:-150,f2:130},f1:{n:"Jon Jones",a:1},f2:{n:"Stipe Miocic",a:2}...'
-    m = scrape.EXISTING_ODDS_RE.search(html)
-    assert m.groups() == ("-150", "130", "Jon Jones", "Stipe Miocic")
+def test_existing_odds_are_read_from_the_published_cards():
+    doc = _fight_doc("Jon Jones", "Stipe Miocic")
+    got = scrape.extract_existing_odds(doc)
+    assert got == {frozenset(["jones", "miocic"]): {
+        "f1_name": "Jon Jones", "f2_name": "Stipe Miocic", "f1_odds": -192, "f2_odds": 160}}
+    # A finished bout keeps its line too, whatever its winner or method spell:
+    # the old pattern skipped any bout with an "f" between odds and names.
+    scrape.inject_results(doc, [{"winner": "Jon Jones", "loser": "Stipe Miocic",
+                                 "method": "Decision (Unanimous) - referee", "round": 5}])
+    assert scrape.extract_existing_odds(doc) == got
+    doc["EVENTS"][0]["fights"][0]["odds"] = None
+    assert scrape.extract_existing_odds(doc) == {}
 
 
 # --- UFCStats fighter disambiguation ---------------------------------------
@@ -1339,19 +1358,21 @@ def test_solve_ufcstats_pow_is_minimal():
 # --- last-known record preservation (extract_card_records) -----------------
 
 def test_extract_card_records_maps_names_to_records():
-    html = ('...f1:{n:"Dricus du Plessis",r:"23-3-0",rk:"",s:null},'
-            'f2:{n:"Kamaru Usman",r:"20-4-0",rk:"",s:null}...')
-    got = scrape.extract_card_records(html)
+    doc = _fight_doc("Dricus du Plessis", "Kamaru Usman")
+    doc["EVENTS"][0]["fights"][0]["f1"]["record"] = "23-3-0"
+    doc["EVENTS"][0]["fights"][0]["f2"]["record"] = "20-4-0"
+    got = scrape.extract_card_records(doc)
     assert got == {"Dricus du Plessis": "23-3-0", "Kamaru Usman": "20-4-0"}
 
 
 def test_extract_card_records_skips_blank_and_keeps_first():
     # Blank records are ignored, and a fighter appearing twice keeps the first
     # non-empty value (so a later blank can't override a known record).
-    html = ('f1:{n:"Benoit Saint Denis",r:"17-3-0",rk:"",s:null},'
-            'f2:{n:"Blank Guy",r:"",rk:"",s:null},'
-            'f1:{n:"Benoit Saint Denis",r:"",rk:"",s:null}')
-    got = scrape.extract_card_records(html)
+    doc = _fight_doc("Benoit Saint Denis", "Blank Guy")
+    doc["EVENTS"][0]["fights"][0]["f1"]["record"] = "17-3-0"
+    doc["EVENTS"][0]["fights"].append(copy.deepcopy(doc["EVENTS"][0]["fights"][0]))
+    doc["EVENTS"][0]["fights"][1]["f1"]["record"] = ""
+    got = scrape.extract_card_records(doc)
     assert got == {"Benoit Saint Denis": "17-3-0"}
     assert "Blank Guy" not in got
 
@@ -1501,7 +1522,7 @@ def test_extract_existing_cards_roundtrips_fights():
               "f1": {"name": "Cara C", "record": "5-0-0", "ranking": ""},
               "f2": {"name": "Dora D", "record": "4-3-0", "ranking": ""}}
     js = scrape.fight_js(f_pre, ",") + "\n" + scrape.fight_js(f_post, "")
-    cards = scrape._extract_existing_cards(_mini_data_js(js))
+    cards = scrape._extract_existing_cards(datafile.loads(_mini_data_js(js)))
     got = cards[("UFC 999: A vs. B", "2026-07-11")]
     assert len(got) == 2
     assert got[0]["f1"]["name"] == "Alice A" and got[0]["f1"]["record"] == "10-1-0"
@@ -1522,7 +1543,7 @@ def test_card_regression_guard_keeps_richer_existing_card(monkeypatch):
     js = "\n".join(scrape.fight_js(f, "," if k < len(full) - 1 else "")
                    for k, f in enumerate(full))
     data = _mini_data_js(js)
-    existing_cards = scrape._extract_existing_cards(data)
+    existing_cards = scrape._extract_existing_cards(datafile.loads(data))
     prev = existing_cards.get(("UFC 999: A vs. B", "2026-07-11"))
     assert prev is not None and len(prev) == 6
     # Simulate the stub the title-regex fallback would build post-event.
@@ -1627,21 +1648,21 @@ def test_events_js_slug_roundtrips_through_slug_map():
     # Written form must be pure ASCII (json.dumps escapes the ć)...
     assert js == js.encode("ascii", "ignore").decode()
     # ...and the reader must decode it back to the real title.
-    got = scrape._event_slug_map(js)
+    got = scrape._event_slug_map(datafile.loads(js))
     assert got[("UFC Fight Night: Medic vs. Rodriguez", "2026-08-01")] \
         == "UFC_Fight_Night:_Medić_vs._Rodriguez"
 
 
 def test_events_js_without_slug_yields_empty_map():
     js = "var EVENTS=" + scrape.events_js([_one_event()]) + ";\n"
-    assert scrape._event_slug_map(js) == {}
+    assert scrape._event_slug_map(datafile.loads(js)) == {}
 
 
 def test_extract_recent_past_events_prefers_stored_slug():
     now = datetime(2026, 8, 1, 20, 0, tzinfo=timezone.utc)
     js = "var EVENTS=" + scrape.events_js(
         [_one_event(slug="UFC_Fight_Night:_Medić_vs._Rodriguez")]) + ";\n"
-    got = scrape.extract_recent_past_events(js, now, set())
+    got = scrape.extract_recent_past_events(datafile.loads(js), now, set())
     assert len(got) == 1
     ev_date, slug, ev_name, venue, loc = got[0]
     assert slug == "UFC_Fight_Night:_Medić_vs._Rodriguez"
@@ -1653,7 +1674,7 @@ def test_extract_recent_past_events_prefers_stored_slug():
 def test_extract_recent_past_events_falls_back_to_name_slug():
     now = datetime(2026, 8, 1, 20, 0, tzinfo=timezone.utc)
     js = "var EVENTS=" + scrape.events_js([_one_event()]) + ";\n"
-    got = scrape.extract_recent_past_events(js, now, set())
+    got = scrape.extract_recent_past_events(datafile.loads(js), now, set())
     assert got[0][1] == "UFC_Fight_Night:_Medic_vs._Rodriguez"
 
 
@@ -1665,7 +1686,7 @@ def test_slug_line_does_not_break_existing_card_extraction():
                      "f1": {"name": "Uros Medic", "record": "", "ranking": ""},
                      "f2": {"name": "Daniel Rodriguez", "record": "", "ranking": ""}}]
     js = "var EVENTS=" + scrape.events_js([ev]) + ";\n"
-    cards = scrape._extract_existing_cards(js)
+    cards = scrape._extract_existing_cards(datafile.loads(js))
     key = ("UFC Fight Night: Medic vs. Rodriguez", "2026-08-01")
     assert key in cards and len(cards[key]) == 1
 
@@ -1853,10 +1874,12 @@ def test_idle_pulls_increments_on_repeat_and_resets_on_movement():
 
 def test_next_event_days_out_picks_the_soonest_future_card():
     now = datetime(2026, 8, 7, 12, 0, tzinfo=timezone.utc)
-    data = 'date:"2026-07-11" date:"2026-08-08" date:"2026-09-19"'
-    assert scrape._next_event_days_out(data, now) == 1
-    assert scrape._next_event_days_out('date:"2026-07-11"', now) is None
-    assert scrape._next_event_days_out("no dates here", now) is None
+    def doc(*dates):
+        return {"EVENTS": [{"name": "X", "date": d, "fights": []} for d in dates]}
+    assert scrape._next_event_days_out(doc("2026-07-11", "2026-08-08", "2026-09-19"), now) == 1
+    assert scrape._next_event_days_out(doc("2026-07-11"), now) is None
+    assert scrape._next_event_days_out(doc(), now) is None
+    assert scrape._next_event_days_out({}, now) is None
 
 
 # --- urgent stats refetch --------------------------------------------------
@@ -1892,9 +1915,12 @@ def test_urgent_does_not_refetch_a_complete_fresh_entry():
 # record of it. Without the label the frontend cannot tell a main-card pick from
 # a prelim, which is what the leaderboard's main-card scope scores on.
 
-def _archive_of(js):
-    m = re.search(r"var RESULTS_ARCHIVE=(\{.*?\});", js, re.DOTALL)
-    return json.loads(m.group(1))
+def _archive_of(js, now):
+    """The archive update_results_archive leaves for the data.js text `js`,
+    read back from the file it would write."""
+    doc = datafile.loads(js)
+    scrape.update_results_archive(doc, now)
+    return datafile.loads(datafile.checked_dumps(doc))["RESULTS_ARCHIVE"]
 
 
 def test_results_archive_records_the_bout_label():
@@ -1911,10 +1937,9 @@ def test_results_archive_records_the_bout_label():
         'f1:{n:"C",r:"1-0-0",rk:"",s:null},f2:{n:"D",r:"0-1-0",rk:"",s:null}}\n'
         '    ]\n  }\n];\n'
     )
-    out = scrape.update_results_archive(data, datetime(2026, 6, 1, tzinfo=timezone.utc))
-    fights = _archive_of(out)["2026-01-03"]["fights"]
+    fights = _archive_of(data, datetime(2026, 6, 1, tzinfo=timezone.utc))["2026-01-03"]["fights"]
     assert [f["lbl"] for f in fights] == ["Main Event", "Prelim"]
-    # The existing fields must survive the regex change that added lbl.
+    # The fields the frontend already read sit beside the label.
     assert fights[0] == {"f1": "A", "f2": "B", "winner": "A",
                          "method": "KO/TKO", "lbl": "Main Event"}
 
@@ -1934,8 +1959,7 @@ def test_results_archive_keeps_bouts_in_card_order():
             '  {\n    name:"UFC 300: X vs. Y",\n    date:"2026-01-03",\n'
             '    venue:"Apex",\n    loc:"Las Vegas",\n    fights:[\n'
             + ",\n".join(bouts) + "\n    ]\n  }\n];\n")
-    out = scrape.update_results_archive(data, datetime(2026, 6, 1, tzinfo=timezone.utc))
-    fights = _archive_of(out)["2026-01-03"]["fights"]
+    fights = _archive_of(data, datetime(2026, 6, 1, tzinfo=timezone.utc))["2026-01-03"]["fights"]
     assert [f["f1"] for f in fights] == ["W0", "W1", "W2", "W3"]
     assert [f["lbl"] for f in fights] == ["Main Event", "Co-Main", "Main Card", "Prelim"]
 

@@ -170,6 +170,22 @@ would lose the push for good (the next run sees the result as already in
 inside the scrape made two UFC 332 main-card results 12-15 minutes late.
 `tests/test_result_push_defer.py` holds it.
 
+**`scrape.py` edits a document, never `data.js` text.** It used to treat the
+published file as its database and edit it as text: results spliced in by
+brace counting, cards read back by a regex that depended on field order, whole
+vars swapped with `var NAME=.*?;` (which stops at the first semicolon inside a
+value). Now `datafile.loads` reads the file once into plain values, every step
+edits those (`doc`), and `datafile.checked_dumps` writes it once, refusing a
+document that would not read back as itself. A `data.js` the parser can't read
+fails the run with the file left alone: no fallback. The renderer reproduces
+the file byte for byte, so the readers that still match its text (`health.py`,
+`write_status.py`, the edge functions) see what they always did; **a new card
+field goes into `datafile.py`'s reader, renderer and key lists together**, or
+the next run refuses the file. `tests/test_datafile.py` holds it, including
+that no pattern in `scrape.py` matches `data.js` text again. Before merging it
+was run against `main`'s scraper on 2,232 scenarios built from a month of real
+`data.js` history, same stubs and clock: every written file was identical.
+
 **A finished bout's method and round follow Wikipedia's corrections; its
 winner doesn't.** `inject_results` never re-reads a bout once it is
 `state:"post"`, so UFC 333's main event went in as Submission R1 from an early

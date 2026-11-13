@@ -18,7 +18,7 @@ jobs:
           python-version: "3.12"
       - run: pip install --require-hashes -r requirements.txt -r requirements-dev.txt
       - name: Syntax check
-        run: python -m py_compile scrape.py make_icons.py health.py write_status.py odds_series.py intel.py
+        run: python -m py_compile scrape.py datafile.py make_icons.py health.py write_status.py odds_series.py intel.py
       - name: Unit tests
         run: python -m pytest -q
       - name: Ruff (Python correctness lint)

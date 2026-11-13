@@ -11,6 +11,7 @@ Data sources:
   Supabase   — pick data for push notifications
 """
 
+import copy
 import hashlib
 import json
 import os
@@ -30,6 +31,8 @@ from bs4 import BeautifulSoup
 # the gate rejects is a change that can never land, which is the failure mode
 # believable_shrink exists to end. health.py is stdlib-only, so importing it here
 # costs nothing and keeps one definition instead of two that can drift.
+import datafile
+from datafile import events_js, fight_js  # noqa: F401  (re-exported: tests and tools build cards with them)
 from health import believable_shrink, bout_segments, segment_of
 
 # ---------------------------------------------------------------------------
@@ -107,11 +110,6 @@ RANKINGS_RE = re.compile(
     r"^!\s*(\d{1,2})(?:\s*\([^)]*\))?\s*\n\|[^\n]*flagicon[^\n]*\n\|\s*\[\[(?:[^\]|]+\|)?([^\]]+)\]\]",
     re.MULTILINE,
 )
-# Odds already embedded in a previously generated data.js.
-EXISTING_ODDS_RE = re.compile(
-    r'odds:\{f1:(-?\d+),f2:(-?\d+)\}[^f]*?f1:\{n:"([^"]+)"[^}]*\},f2:\{n:"([^"]+)"'
-)
-
 
 # ---------------------------------------------------------------------------
 # Text utilities
@@ -285,21 +283,25 @@ def parse_date_wiki(s):
     return ""
 
 # ---------------------------------------------------------------------------
-# data.js patching
+# data.js, as a document
+#
+# A run reads data.js once (datafile.loads), every step below edits the values
+# that gives, and main() writes the file once from them (datafile.checked_dumps).
+# Nothing in this module matches or edits data.js text: see datafile.py for why.
+# `doc` everywhere below is that {var name: value} dict; doc["EVENTS"] holds
+# cards in the shape step_build_events builds them (label / name / record /
+# ranking), in file order.
 # ---------------------------------------------------------------------------
 
-def patch_js_var(data, name, value):
-    """Replace var NAME=<old>; with var NAME=<value>; in the data.js text."""
-    replacement = f"var {name}={value};"
-    updated, n = re.subn(
-        rf"var {re.escape(name)}\s*=\s*.*?;",
-        lambda _: replacement,
-        data,
-        flags=re.DOTALL,
-    )
-    if n == 0:
-        print(f"Warning: could not patch JS var '{name}'", file=sys.stderr)
-    return updated
+def _doc_events(doc):
+    evs = doc.get("EVENTS")
+    return evs if isinstance(evs, list) else []
+
+
+def _doc_fights(doc):
+    """Every bout in the document, in file order."""
+    for ev in _doc_events(doc):
+        yield from ev.get("fights", [])
 
 # ---------------------------------------------------------------------------
 # Supabase
@@ -483,30 +485,13 @@ def search_event_slug(ev_name):
     return slug
 
 
-def _event_slug_map(data):
-    """Map (event name, date) -> stored Wikipedia slug from the data.js text.
+def _event_slug_map(doc):
+    """Map (event name, date) -> the Wikipedia slug stored with the event.
 
-    Slugs are written by events_js as JSON string literals (non-ASCII escaped,
-    e.g. Medi\\u0107), so decode each one before use. Events written before
-    slug persistence existed simply won't appear in the map.
+    Events written before slug persistence existed simply won't appear.
     """
-    pat = re.compile(
-        r'name:"([^"]+)",\s*\n\s*'
-        r'date:"(\d{4}-\d{2}-\d{2})",\s*\n\s*'
-        r'venue:"[^"]*",\s*\n\s*'
-        r'loc:"[^"]*",\s*\n\s*'
-        r'slug:"([^"]*)"'
-    )
-    out = {}
-    for m in pat.finditer(data):
-        name, date, raw = m.groups()
-        try:
-            slug = json.loads(f'"{raw}"')
-        except ValueError:
-            continue
-        if slug:
-            out[(name, date)] = slug
-    return out
+    return {(ev["name"], ev["date"]): ev["slug"]
+            for ev in _doc_events(doc) if ev.get("slug")}
 
 
 def fetch_event_wikitext(ev_name, slug):
@@ -957,14 +942,10 @@ def parse_espn_athletes(payload):
     return out
 
 
-def extract_espn_ids(data):
-    """The FIGHTER_ESPN map already in data.js ({} when absent or unreadable)."""
-    m = re.search(r"var FIGHTER_ESPN=(\{.*?\});", data, re.DOTALL)
-    if not m:
-        return {}
-    try:
-        got = json.loads(m.group(1))
-    except ValueError:
+def extract_espn_ids(doc):
+    """The FIGHTER_ESPN map already in data.js ({} when absent or unusable)."""
+    got = doc.get("FIGHTER_ESPN")
+    if not isinstance(got, dict):
         return {}
     return {k: v for k, v in got.items()
             if isinstance(k, str) and isinstance(v, str) and v.isdigit()}
@@ -1010,14 +991,10 @@ def looks_like_rename(a, b):
     return len(ta) >= 2 and len(tb) >= 2 and ta[-1] == tb[-1] and ta[0][0] == tb[0][0]
 
 
-def extract_fighter_aliases(data):
-    """The FIGHTER_ALIASES map already in data.js ({} when absent or unreadable)."""
-    m = re.search(r"var FIGHTER_ALIASES=(\{.*?\});", data, re.DOTALL)
-    if not m:
-        return {}
-    try:
-        got = json.loads(m.group(1))
-    except ValueError:
+def extract_fighter_aliases(doc):
+    """The FIGHTER_ALIASES map already in data.js ({} when absent or unusable)."""
+    got = doc.get("FIGHTER_ALIASES")
+    if not isinstance(got, dict):
         return {}
     return {k: v for k, v in got.items() if isinstance(k, str) and isinstance(v, str)}
 
@@ -1144,13 +1121,6 @@ def _espn_same_person(card_name, espn_key):
     ct, et = ck.split(), espn_key.split()
     return (len(ct) >= 2 and len(et) >= 2 and ct != et
             and sorted(ck.replace(" ", "")) == sorted(espn_key.replace(" ", "")))
-
-
-def set_js_var(data, name, value):
-    """patch_js_var, or insert the var ahead of EVENTS when data.js lacks it."""
-    if re.search(rf"var {re.escape(name)}\s*=", data):
-        return patch_js_var(data, name, value)
-    return data.replace("var EVENTS=", f"var {name}={value};\nvar EVENTS=", 1)
 
 
 def _warn_if_implausible_time(ev_name, loc, main_et):
@@ -2330,14 +2300,14 @@ def should_fetch_odds(now, last_at, days_out, idle_pulls=0):
     return (now - prev) >= timedelta(hours=interval)
 
 
-def _next_event_days_out(data, now):
+def _next_event_days_out(doc, now):
     """Whole days from today until the soonest event in data.js that isn't past.
 
     None when data.js lists no future event.
     """
     today = now.date()
     best  = None
-    for ds in re.findall(r'date:"(\d{4}-\d{2}-\d{2})"', data):
+    for ds in (ev.get("date", "") for ev in _doc_events(doc)):
         try:
             d = datetime.strptime(ds, "%Y-%m-%d").date()
         except ValueError:
@@ -2735,40 +2705,36 @@ def odds_source(odds_index, f1_name, f2_name):
     return o.get("source") if o else None
 
 
-def extract_existing_odds(html):
-    """Read odds already embedded in the HTML to preserve them when the API has no data."""
+def extract_existing_odds(doc):
+    """The lines already on the published cards, kept for when the API has none."""
     existing = {}
-    for m in EXISTING_ODDS_RE.finditer(html):
-        f1o, f2o, f1n, f2n = int(m.group(1)), int(m.group(2)), m.group(3), m.group(4)
+    for f in _doc_fights(doc):
+        odds = f.get("odds")
+        if not odds or not all(type(odds.get(k)) is int for k in ("f1", "f2")):
+            continue
+        f1n, f2n = f["f1"]["name"], f["f2"]["name"]
         key = frozenset([last_name(f1n), last_name(f2n)])
-        existing[key] = {"f1_name": f1n, "f2_name": f2n, "f1_odds": f1o, "f2_odds": f2o}
+        existing[key] = {"f1_name": f1n, "f2_name": f2n,
+                         "f1_odds": odds["f1"], "f2_odds": odds["f2"]}
     print(f"Existing odds preserved: {len(existing)} fights", file=sys.stderr)
     return existing
 
 
-def extract_recent_past_events(html, now, seen):
+def extract_recent_past_events(doc, now, seen):
     """
-    Read events already embedded in the HTML that fall within the last 30 days
-    but are NOT yet in `seen` (already discovered from Wikipedia).
+    Events already in data.js that fall within the last 30 days but are NOT yet
+    in `seen` (already discovered from Wikipedia).
 
     Returns a list of 5-tuples (date, slug, name, venue, location) so that
     step_build_events can re-scrape them and preserve their results.
     """
     results = []
     cutoff  = now - timedelta(days=30)
-    # Match event-level fields as written by events_js (name before date)
-    stored_slugs = _event_slug_map(html)
-    pat = re.compile(
-        r'name:"([^"]+)",\s*\n\s*'
-        r'date:"(\d{4}-\d{2}-\d{2})",\s*\n\s*'
-        r'venue:"([^"]*)",\s*\n\s*'
-        r'loc:"([^"]*)"'
-    )
-    for m in pat.finditer(html):
-        ev_name, ev_date, venue, loc = m.groups()
+    for ev in _doc_events(doc):
+        ev_name, ev_date = ev["name"], ev["date"]
         # Prefer the slug persisted at discovery time (keeps diacritics the
         # ASCII-folded name has lost); fall back to deriving it from the name.
-        slug = stored_slugs.get((ev_name, ev_date)) or ev_name.replace(" ", "_")
+        slug = ev.get("slug") or ev_name.replace(" ", "_")
         if slug in seen:
             continue
         try:
@@ -2782,72 +2748,56 @@ def extract_recent_past_events(html, now, seen):
         if ed < cutoff or ed > now:
             continue
         seen.add(slug)
-        results.append((ev_date, slug, ev_name, venue, loc))
+        results.append((ev_date, slug, ev_name, ev.get("venue", ""), ev.get("loc", "")))
         print(f"  Preserving past event: {ev_name} ({ev_date})", file=sys.stderr)
     return results
 
 
-def update_results_archive(data, now):
+def update_results_archive(doc, now):
     """
-    Maintain a permanent RESULTS_ARCHIVE var in data.js. EVENTS only keeps the
-    last 30 days, so finished events (and their results) eventually vanish —
-    which silently breaks all-time scoring and any belt/title lineage in the
+    Maintain the permanent RESULTS_ARCHIVE var. EVENTS only keeps the last 30
+    days, so finished events (and their results) eventually vanish — which
+    silently breaks all-time scoring and any belt/title lineage in the
     frontend. While a past event is still in EVENTS its archive entry is
     re-snapshotted (so late result injections land), and entries are never
-    deleted once the event ages out.
+    deleted once the event ages out. Edits `doc` in place.
     """
-    archive = {}
-    m = re.search(r"var RESULTS_ARCHIVE=(\{.*?\});", data, flags=re.DOTALL)
-    if m:
-        try:
-            archive = json.loads(m.group(1))
-        except ValueError:
-            print("Warning: RESULTS_ARCHIVE unparseable — keeping current snapshot only", file=sys.stderr)
+    archive = doc.get("RESULTS_ARCHIVE")
+    if archive is None:
+        archive = {}
+    elif not isinstance(archive, dict):
+        print("Warning: RESULTS_ARCHIVE unusable — keeping current snapshot only", file=sys.stderr)
+        archive = {}
 
-    hdr_pat = re.compile(
-        r'name:"([^"]+)",\s*\n\s*'
-        r'date:"(\d{4}-\d{2}-\d{2})",\s*\n\s*'
-        r'venue:"[^"]*"'
-    )
-    # `lbl` is captured so the archive can say which segment a bout belonged to.
-    # EVENTS only holds 30 days, so once a card ages out the archive is the only
-    # record of it — and without the label the frontend cannot tell a main-card
-    # pick from a prelim, which is what the leaderboard's main-card scope needs.
-    # Older entries predate this and fall back to bout order (see _pickInScope).
-    fight_pat = re.compile(
-        r'\{lbl:"([^"]*)",wc:"[^"]*".*?'
-        r'winner:"([^"]+)",method:"([^"]*)",round:(?:\d+|null),state:"post"'
-        r'[^{]*f1:\{n:"([^"]+)"[^}]+\},f2:\{n:"([^"]+)"'
-    )
-    headers = list(hdr_pat.finditer(data))
     today   = now.strftime("%Y-%m-%d")
     changed = 0
-    for i, hm in enumerate(headers):
-        ev_name, ev_date = hm.group(1), hm.group(2)
-        if ev_date >= today:
+    for ev in _doc_events(doc):
+        if ev["date"] >= today:
             continue
-        end   = headers[i + 1].start() if i + 1 < len(headers) else len(data)
-        chunk = data[hm.end():end]
+        # `lbl` says which segment a bout belonged to. EVENTS only holds 30
+        # days, so once a card ages out the archive is the only record of it —
+        # and without the label the frontend cannot tell a main-card pick from
+        # a prelim, which is what the leaderboard's main-card scope needs.
+        # Older entries predate this and fall back to bout order (see
+        # _pickInScope). A draw / no contest has no winner and is not archived.
         fights = [
-            {"f1": f1, "f2": f2, "winner": w, "method": meth, "lbl": lbl}
-            for lbl, w, meth, f1, f2 in fight_pat.findall(chunk)
+            {"f1": f["f1"]["name"], "f2": f["f2"]["name"], "winner": f["winner"],
+             "method": f.get("method", ""), "lbl": f.get("label", "")}
+            for f in ev.get("fights", [])
+            if f.get("state") == "post" and f.get("winner")
         ]
         if not fights:
             continue
-        entry = {"name": ev_name, "fights": fights}
-        if archive.get(ev_date) != entry:
+        entry = {"name": ev["name"], "fights": fights}
+        if archive.get(ev["date"]) != entry:
             changed += 1
-        archive[ev_date] = entry
+        archive[ev["date"]] = entry
 
     if not archive:
-        return data
+        return
     if changed:
         print(f"Results archive: {changed} event(s) added/updated ({len(archive)} total)", file=sys.stderr)
-    js_json = json.dumps(archive, separators=(",", ":"), ensure_ascii=False, sort_keys=True)
-    if "var RESULTS_ARCHIVE" in data:
-        return patch_js_var(data, "RESULTS_ARCHIVE", js_json)
-    # First run: declare the var just above EVENTS
-    return data.replace("var EVENTS=", f"var RESULTS_ARCHIVE={js_json};\nvar EVENTS=", 1)
+    doc["RESULTS_ARCHIVE"] = archive
 
 
 def report_unmatched_odds(odds_index, events):
@@ -3972,18 +3922,13 @@ def fetch_fighter_stats(name, cached_url=None):
     }
 
 
-def extract_stats_cache(html):
-    """Read the FIGHTER_STATS JSON object from the current HTML."""
-    m = re.search(r"var FIGHTER_STATS=(\{.*?\});", html, re.DOTALL)
-    if not m:
-        return {}
-    try:
-        return json.loads(m.group(1))
-    except json.JSONDecodeError:
-        return {}
+def extract_stats_cache(doc):
+    """A copy of the FIGHTER_STATS cache in data.js ({} when absent)."""
+    got = doc.get("FIGHTER_STATS")
+    return copy.deepcopy(got) if isinstance(got, dict) else {}
 
 
-def extract_card_records(html):
+def extract_card_records(doc):
     """Map each fighter name to their last-known record from the existing card data.
 
     A full rebuild reconstructs every fight with an empty record and refills only
@@ -3993,9 +3938,11 @@ def extract_card_records(html):
     rebuild fall back to the record already on the page — better stale than empty.
     """
     records = {}
-    for name, rec in re.findall(r'\{n:"([^"]+)",r:"([^"]*)"', html):
-        if rec and name not in records:
-            records[name] = rec
+    for f in _doc_fights(doc):
+        for side in (f["f1"], f["f2"]):
+            name, rec = side.get("name"), side.get("record")
+            if name and rec and name not in records:
+                records[name] = rec
     return records
 
 # ---------------------------------------------------------------------------
@@ -4174,20 +4121,19 @@ def send_push_notifications(new_results, defer=True, retry_waits=()):
 # ---------------------------------------------------------------------------
 
 def _js_safe_method(method):
-    """A scraped method, safe to splice into data.js's `method:"..."` literal.
+    """A scraped method with the characters data.js's text readers can't take removed.
 
-    inject_results edits data.js as text and later runs re-match the field with
-    `method:"[^"]*"`, so a quote (escaped or not), a backslash or a control
-    character from the source would corrupt the file: escaping alone isn't
-    enough, the next run's regex would split an escaped quote. Methods are short
-    prose ("Submission (rear-naked choke)"), so dropping those characters loses
-    nothing.
+    The scraper itself no longer cares (datafile escapes whatever it is given),
+    but health.py, write_status.py and the edge functions still match the
+    published file with patterns that end the field at the next quote, which
+    an escaped quote or a backslash would split. Methods are short prose ("Submission
+    (rear-naked choke)"), so dropping those characters loses nothing.
     """
     return re.sub(r'["\\\x00-\x1f\u2028\u2029]', "", str(method or "")).strip()
 
 
 def _js_safe_round(rnd):
-    """The round as an int, or None: it is spliced in unquoted (`round:3`)."""
+    """The round as an int from 1 to 5, or None."""
     try:
         n = int(rnd)
     except (TypeError, ValueError):
@@ -4195,72 +4141,50 @@ def _js_safe_round(rnd):
     return n if 1 <= n <= 5 else None
 
 
-def inject_results(js, results):
-    """Inject fight results (winner, method, round, state) into the JS events block."""
-    count   = 0
-    pattern = r'f1:\{n:"([^"]+)"[^}]+\},f2:\{n:"([^"]+)"'
+def _result_sides(fight, res):
+    """Which corner of `fight` a parsed result names as the winner.
+
+    Returns (f1_won, f2_won); both False when the result is not this bout's. A
+    draw / no contest has no winner, so both names must match (either way
+    round) and it comes back as (True, False) just to say "this bout".
+    """
+    f1n, f2n = fight["f1"]["name"], fight["f2"]["name"]
+    if res.get("undecided"):
+        a, b = res["f1"], res["f2"]
+        return (((names_match(f1n, a) and names_match(f2n, b))
+                 or (names_match(f1n, b) and names_match(f2n, a))), False)
+    winner, loser = res["winner"], res.get("loser", "")
+    return (names_match(f1n, winner) and (not loser or names_match(f2n, loser)),
+            names_match(f2n, winner) and (not loser or names_match(f1n, loser)))
+
+
+def inject_results(doc, results):
+    """Mark each newly finished bout in `doc` (winner, method, round, state).
+
+    A result goes to the first bout it names, and only if that bout is not
+    already final. Edits `doc` in place; returns how many bouts it finished.
+    """
+    count = 0
     for res in results:
-        winner, loser, method, rnd = res["winner"], res["loser"], res["method"], res["round"]
-        method, rnd = _js_safe_method(method), _js_safe_round(rnd)
+        method, rnd = _js_safe_method(res["method"]), _js_safe_round(res["round"])
         und = bool(res.get("undecided"))
-        for m in re.finditer(pattern, js):
-            f1n, f2n = m.group(1), m.group(2)
-            if und:
-                # No winner: both names must match, either way round.
-                a, b = res["f1"], res["f2"]
-                f1w = ((names_match(f1n, a) and names_match(f2n, b))
-                       or (names_match(f1n, b) and names_match(f2n, a)))
-                f2w = False
-            else:
-                f1w = names_match(f1n, winner) and (not loser or names_match(f2n, loser))
-                f2w = names_match(f2n, winner) and (not loser or names_match(f1n, loser))
+        for fight in _doc_fights(doc):
+            f1w, f2w = _result_sides(fight, res)
             if not f1w and not f2w:
                 continue
+            f1n, f2n = fight["f1"]["name"], fight["f2"]["name"]
             wn = "" if und else (f1n if f1w else f2n)
-            fs = js.rfind("{lbl:", 0, m.start())
-            if fs < 0:
-                continue
-            if 'state:"post"' in js[fs:fs + 300]:
+            if fight.get("state") == "post":
                 print(f"  Already set: {wn or f1n + ' vs ' + f2n}", file=sys.stderr)
                 break
-            # Locate the fight object's extent by brace depth. A name carrying
-            # stray braces (see clean_wiki) never balances, leaving fe == fs and
-            # an EMPTY slice — whose substitutions changed nothing while still
-            # counting as an injection. main() exits on any injection, so that
-            # phantom result blocked every rebuild (odds, stats, rankings) for as
-            # long as the event stayed in the results window. Skip a fight we
-            # cannot delimit instead of silently editing nothing.
-            depth = 0
-            fe    = fs
-            for i in range(fs, min(fs + 2000, len(js))):
-                if js[i] == "{":
-                    depth += 1
-                elif js[i] == "}":
-                    depth -= 1
-                if depth == 0:
-                    fe = i + 1
-                    break
-            if fe <= fs:
-                print(f"  WARNING: unbalanced fight object near {f1n} vs {f2n} "
-                      "— cannot inject result", file=sys.stderr)
-                break
-            fstr = js[fs:fe]
-            fstr = re.sub(r'winner:"[^"]*"',     lambda _, wn=wn: f'winner:"{wn}"',     fstr)
-            fstr = re.sub(r'method:"[^"]*"',     lambda _, method=method: f'method:"{method}"', fstr)
-            fstr = re.sub(r"round:(?:null|\d+)", f"round:{rnd if rnd else 'null'}", fstr)
-            fstr = re.sub(r'state:"[^"]*"',      lambda _: 'state:"post"',       fstr)
-            if fstr == js[fs:fe]:
-                # Nothing actually changed. Counting this would report an
-                # injection that never happened and, via main(), skip the rebuild.
-                break
-            js   = js[:fs] + fstr + js[fe:]
+            fight.update({"winner": wn, "method": method, "round": rnd, "state": "post"})
             if und:
                 print(f"  Injected: {f1n} vs {f2n} {method} R{rnd}", file=sys.stderr)
             else:
                 print(f"  Injected: {wn} def {f2n if f1w else f1n} R{rnd}", file=sys.stderr)
             count += 1
             break
-    return js, count
+    return count
 
 
 # Bouts whose result was corrected by hand and must never be re-read from
@@ -4280,83 +4204,50 @@ def _result_pinned(f1n, f2n):
     )
 
 
-def correct_results(js, results):
+def correct_results(doc, results):
     """Bring an already-finished bout's method and round up to date.
 
-    inject_results never touches a bout once it is `state:"post"`, so a wrong
-    early reading stood for good: UFC 333's main event went in as Submission R1
+    inject_results never touches a bout once it is final, so a wrong early
+    reading stood for good: UFC 333's main event went in as Submission R1
     and stayed there after the page was fixed, scoring every KO/TKO pick on it
     as a method miss. This re-reads method and round only, and only when the
     reading still names the same winner: a changed winner is a different claim
     (an overturn, or a bad edit) and stays for a human. A blank method or round
     never replaces a known one, a pinned bout (_RESULT_PINS) is never touched,
     and a correction is no new result, so the caller pushes nothing for it.
-    Returns (js, count of bouts corrected).
+    Edits `doc` in place; returns the count of bouts corrected.
     """
-    count   = 0
-    pattern = r'f1:\{n:"([^"]+)"[^}]+\},f2:\{n:"([^"]+)"'
+    count = 0
     for res in results:
         if res.get("undecided") or not res.get("winner"):
             continue
-        winner, loser = res["winner"], res.get("loser", "")
         method = _js_safe_method(res.get("method"))
         rnd    = _js_safe_round(res.get("round"))
         if not method and not rnd:
             continue
-        for m in re.finditer(pattern, js):
-            f1n, f2n = m.group(1), m.group(2)
-            f1w = names_match(f1n, winner) and (not loser or names_match(f2n, loser))
-            f2w = names_match(f2n, winner) and (not loser or names_match(f1n, loser))
+        for fight in _doc_fights(doc):
+            f1w, f2w = _result_sides(fight, res)
             if not f1w and not f2w:
                 continue
-            fs = js.rfind("{lbl:", 0, m.start())
-            if fs < 0 or 'state:"post"' not in js[fs:fs + 300]:
+            f1n, f2n = fight["f1"]["name"], fight["f2"]["name"]
+            if fight.get("state") != "post" or _result_pinned(f1n, f2n):
                 break
-            if _result_pinned(f1n, f2n):
+            if fight.get("winner") != (f1n if f1w else f2n):
                 break
-            wm = re.search(r'winner:"([^"]*)"', js[fs:m.start()])
-            if not wm or wm.group(1) != (f1n if f1w else f2n):
+            new = {"method": method or fight.get("method", ""),
+                   "round": rnd or fight.get("round")}
+            if new == {"method": fight.get("method", ""), "round": fight.get("round")}:
                 break
-            # The result fields all sit before f1, so the edit is confined to
-            # the fight's own head and needs no brace scan.
-            head = js[fs:m.start()]
-            new  = head
-            if method:
-                new = re.sub(r'method:"[^"]*"', lambda _, m_=method: f'method:"{m_}"', new, count=1)
-            if rnd:
-                new = re.sub(r"round:(?:null|\d+)", f"round:{rnd}", new, count=1)
-            if new == head:
-                break
-            js = js[:fs] + new + js[m.start():]
-            print(f"  Corrected: {wm.group(1)} now {method or '?'} R{rnd or '?'}",
+            fight.update(new)
+            print(f"  Corrected: {fight['winner']} now {method or '?'} R{rnd or '?'}",
                   file=sys.stderr)
             count += 1
             break
-    return js, count
+    return count
 
 # ---------------------------------------------------------------------------
-# JS serialisation
+# Cards already published
 # ---------------------------------------------------------------------------
-
-def fight_js(f, comma=""):
-    """Serialise a single fight dict to a JS object literal string."""
-    f1   = f["f1"]
-    f2   = f["f2"]
-    odds = f.get("odds")
-    odds_s = f"{{f1:{odds['f1']},f2:{odds['f2']}}}" if odds else "null"
-    rnd    = str(f.get("round") or "null")
-    return (
-        f"      {{lbl:{json.dumps(f.get('label', ''))},wc:{json.dumps(f.get('wc', 'TBD'))},"
-        f"title:{'true' if f.get('title') else 'false'},"
-        f"rematch:{'true' if f.get('rematch') else 'false'},odds:{odds_s},"
-        f"winner:{json.dumps(f.get('winner', ''))},method:{json.dumps(f.get('method', ''))},"
-        f"round:{rnd},state:{json.dumps(f.get('state', 'pre'))},"
-        f"f1:{{n:{json.dumps(f1.get('name', 'TBD'))},r:{json.dumps(f1.get('record', ''))},"
-        f"rk:{json.dumps(f1.get('ranking', ''))},s:null}},"
-        f"f2:{{n:{json.dumps(f2.get('name', 'TBD'))},r:{json.dumps(f2.get('record', ''))},"
-        f"rk:{json.dumps(f2.get('ranking', ''))},s:null}}}}{comma}"
-    )
-
 
 def _dedupe_events(events):
     """Collapse events that share a (name, date) to a single richest entry.
@@ -4384,19 +4275,8 @@ def _dedupe_events(events):
     return out
 
 
-_EXIST_FIGHT_PAT = re.compile(
-    r'\{lbl:(?P<lbl>"[^"]*"|null),wc:(?P<wc>"[^"]*"|null),'
-    r'title:(?P<title>true|false),rematch:(?P<rematch>true|false),'
-    r'odds:(?P<odds>\{f1:[^,}]+,f2:[^}]+\}|null),'
-    r'winner:(?P<winner>"[^"]*"),method:(?P<method>"[^"]*"),'
-    r'round:(?P<round>\d+|null),state:(?P<state>"[^"]*"),'
-    r'f1:\{n:"(?P<f1n>[^"]+)",r:"(?P<f1r>[^"]*)",rk:"(?P<f1rk>[^"]*)",s:[^}]*\},'
-    r'f2:\{n:"(?P<f2n>[^"]+)",r:"(?P<f2r>[^"]*)",rk:"(?P<f2rk>[^"]*)",s:[^}]*\}\}'
-)
-
-
-def _extract_existing_cards(data):
-    """Parse the fight card already serialised in data.js, keyed by (name, date).
+def _extract_existing_cards(doc):
+    """The fight cards already in data.js, keyed by (name, date).
 
     A full rebuild re-scrapes each event from Wikipedia. Once an event is over,
     Wikipedia rewrites its page from an announced-bouts table into a results
@@ -4405,84 +4285,12 @@ def _extract_existing_cards(data):
     which then overwrites the real card AND drops every result already injected.
     Reading the existing card back lets step_build_events refuse to shrink a card
     (see the regression guard), so a bad parse can never destroy good data.
+
+    Copies, so a card the rebuild keeps and edits never changes `doc` itself.
     """
-    cards = {}
-    hdr = re.compile(r'name:"([^"]+)",\s*\n\s*date:"(\d{4}-\d{2}-\d{2})",')
-    heads = list(hdr.finditer(data))
-    for i, h in enumerate(heads):
-        name, date = h.group(1), h.group(2)
-        end = heads[i + 1].start() if i + 1 < len(heads) else len(data)
-        chunk = data[h.end():end]
-        fights = []
-        for fm in _EXIST_FIGHT_PAT.finditer(chunk):
-            odds = None
-            om = re.match(r'\{f1:([^,}]+),f2:([^}]+)\}', fm.group("odds"))
-            if om:
-                def _num(x):
-                    x = x.strip()
-                    try:
-                        return int(x)
-                    except ValueError:
-                        try:
-                            return float(x)
-                        except ValueError:
-                            return x
-                odds = {"f1": _num(om.group(1)), "f2": _num(om.group(2))}
-            lbl = json.loads(fm.group("lbl")) if fm.group("lbl") != "null" else ""
-            wc  = json.loads(fm.group("wc")) if fm.group("wc") != "null" else "TBD"
-            fights.append({
-                "label":   lbl,
-                "wc":      wc,
-                "title":   fm.group("title") == "true",
-                "rematch": fm.group("rematch") == "true",
-                "odds":    odds,
-                "winner":  json.loads(fm.group("winner")),
-                "method":  json.loads(fm.group("method")),
-                "round":   None if fm.group("round") == "null" else int(fm.group("round")),
-                "state":   json.loads(fm.group("state")),
-                "f1": {"name": fm.group("f1n"), "record": fm.group("f1r"), "ranking": fm.group("f1rk")},
-                "f2": {"name": fm.group("f2n"), "record": fm.group("f2r"), "ranking": fm.group("f2rk")},
-            })
-        if fights:
-            cards[(name, date)] = fights
-    return cards
+    return {(ev["name"], ev["date"]): copy.deepcopy(ev["fights"])
+            for ev in _doc_events(doc) if ev.get("fights")}
 
-
-def events_js(evs):
-    """Serialise the events list to a JS array literal (value only, no var declaration)."""
-    lines = ["["]
-    for ei, ev in enumerate(evs):
-        c = "," if ei < len(evs) - 1 else ""
-        lines += [
-            "  {",
-            f"    name:{json.dumps(ev['name'])},",
-            f"    date:{json.dumps(ev['date'])},",
-            f"    venue:{json.dumps(ev.get('venue', ''))},",
-            f"    loc:{json.dumps(ev.get('loc', ''))},",
-        ]
-        # Persist the article slug so later runs never have to rebuild it from
-        # the ASCII-folded name (which loses diacritics — Medić → Medic — and
-        # then points at a title that doesn't exist). Written after loc: so the
-        # name/date/venue/loc adjacency other regexes rely on stays intact.
-        if ev.get("slug"):
-            lines.append(f"    slug:{json.dumps(ev['slug'])},")
-        lines += [
-            f"    tv:{json.dumps(ev.get('tv', 'Paramount+'))},",
-            f"    time:{json.dumps(ev.get('time', 'TBD'))},",
-        ]
-        if ev.get("prelimTime"):
-            lines.append(f"    prelimTime:{json.dumps(ev['prelimTime'])},")
-        # Written after prelimTime: so the name/date/venue/loc/time adjacency the
-        # health.py field regexes rely on stays intact.
-        if ev.get("earlyPrelimTime"):
-            lines.append(f"    earlyPrelimTime:{json.dumps(ev['earlyPrelimTime'])},")
-        lines.append("    fights:[")
-        fights = ev.get("fights", [])
-        for fi, fight in enumerate(fights):
-            lines.append(fight_js(fight, "," if fi < len(fights) - 1 else ""))
-        lines += ["    ]", f"  }}{c}"]
-    lines.append("]")
-    return "\n".join(lines)
 
 # ---------------------------------------------------------------------------
 # Pipeline steps
@@ -4501,21 +4309,17 @@ def _wiki_event_slug(ev_name):
     return re.sub(r"[^a-zA-Z0-9 :._-]", "", base).replace(" ", "_")
 
 
-def step_inject_results(data, now):
+def step_inject_results(doc, now):
     """
-    Check Wikipedia for results from events in the past 2 days and inject them
-    into the data.js text. Returns (updated_data, new_results) on success,
-    (None, []) if nothing changed.
+    Check Wikipedia for results from events in the past few days and write them
+    into `doc`. Returns (bouts changed, new_results); (0, []) and an untouched
+    `doc` when there was nothing new.
     """
-    ex_names = re.findall(r'name:"([^"]+)"', data)
-    ex_dates = re.findall(r'date:"(\d{4}-\d{2}-\d{2})"', data)
-    ex_slugs = _event_slug_map(data)
-
-    js             = data
     total_injected = 0
     new_results    = []
 
-    for ev_name, ev_date in zip(ex_names, ex_dates, strict=False):
+    for ev in list(_doc_events(doc)):
+        ev_name, ev_date = ev["name"], ev["date"]
         try:
             ed = datetime.strptime(ev_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
         except ValueError:
@@ -4523,7 +4327,7 @@ def step_inject_results(data, now):
         if ed < now - timedelta(days=4) or ed > now + timedelta(hours=6):
             continue
         print(f"Checking results: {ev_name}", file=sys.stderr)
-        slug = ex_slugs.get((ev_name, ev_date)) or _wiki_event_slug(ev_name)
+        slug = ev.get("slug") or _wiki_event_slug(ev_name)
         wt   = fetch_event_wikitext(ev_name, slug)
         if not wt:
             print(f"WARNING: no results page reachable for {ev_name} "
@@ -4532,9 +4336,8 @@ def step_inject_results(data, now):
             continue
         results = parse_results(wt)
         if results:
-            js, fixed = correct_results(js, results)
-            total_injected += fixed
-            js, n = inject_results(js, results)
+            total_injected += correct_results(doc, results)
+            n = inject_results(doc, results)
             total_injected += n
             if n:
                 # A draw / no contest has no winner to announce: no result push.
@@ -4545,26 +4348,48 @@ def step_inject_results(data, now):
         time.sleep(1)
 
     if not total_injected:
-        return None, []
+        return 0, []
 
-    updated = patch_js_var(js, "GENERATED_AT", f'"{fmt_update(now)}"')
-    return updated, new_results
+    doc["GENERATED_AT"] = fmt_update(now)
+    return total_injected, new_results
 
 
-def step_build_events(data, now):
+def _existing_results(doc):
+    """Finished bouts already in data.js, by the pair's lower-cased names.
+
+    A draw / no contest is over without a winner; it is kept too.
     """
-    Rebuild the EVENTS block from Wikipedia and The Odds API, refresh fighter
-    stats, and update rankings. Returns the updated data.js string.
+    out = {}
+    for f in _doc_fights(doc):
+        if f.get("state") != "post":
+            continue
+        if f.get("winner") or f.get("method") in ("Draw", "NC"):
+            key = frozenset([f["f1"]["name"].lower(), f["f2"]["name"].lower()])
+            out[key] = {"winner": f.get("winner", ""), "method": f.get("method", ""),
+                        "round": f.get("round"), "state": "post"}
+    return out
+
+
+def step_build_events(doc, now):
     """
-    existing_odds  = extract_existing_odds(data)
-    existing_cards = _extract_existing_cards(data)
+    Rebuild EVENTS from Wikipedia and The Odds API, refresh fighter stats, and
+    update rankings. Edits `doc` in place and returns True; returns False, with
+    `doc` untouched, when no event could be built.
+    """
+    # Everything the rebuild needs from the published file is read here, before
+    # anything is fetched, and as copies: `doc` only changes at the very end.
+    existing_odds    = extract_existing_odds(doc)
+    existing_cards   = _extract_existing_cards(doc)
+    existing_results = _existing_results(doc)
+    prev_records     = extract_card_records(doc)
+    stats_cache      = extract_stats_cache(doc)
     rematch_cache  = load_rematch_cache()
 
     # Odds are quota-metered; pull only when the cadence allows (see
     # should_fetch_odds). Skipping is safe — the empty index falls through to the
     # lines already in data.js.
     odds_state = load_odds_state()
-    days_out   = _next_event_days_out(data, now)
+    days_out   = _next_event_days_out(doc, now)
     idle_pulls = odds_state.get("idle_pulls", 0)
     if should_fetch_odds(now, odds_state.get("last_fetch_at"), days_out, idle_pulls):
         print(f"Fetching odds (next card {days_out}d out)...", file=sys.stderr)
@@ -4615,7 +4440,7 @@ def step_build_events(data, now):
     # Include recent past events from the current data.js that Wikipedia's
     # "Scheduled" section no longer lists — ensures results for events in the
     # last 30 days are preserved when the EVENTS array is rebuilt.
-    past = extract_recent_past_events(data, now, seen_slugs)
+    past = extract_recent_past_events(doc, now, seen_slugs)
 
     merged = [
         (ev_date, slug, ev_name, venue, loc) + _event_times(ev_name, loc)
@@ -4811,24 +4636,10 @@ def step_build_events(data, now):
 
     if not new_events:
         print("No events built — keeping existing data.js", file=sys.stderr)
-        return data
+        return False
 
     # Preserve results already injected into the existing data so a full rebuild
     # never wipes winners for fights that finished more than 2 days ago.
-    _post_pat = re.compile(
-        r'winner:"([^"]*)",method:"([^"]*)",round:(\d+|null),state:"post"[^{]*'
-        r'f1:\{n:"([^"]+)"[^}]+\},f2:\{n:"([^"]+)"'
-    )
-    existing_results = {}
-    for m in _post_pat.finditer(data):
-        winner, method, rnd, f1n, f2n = m.groups()
-        # A draw / no contest is over without a winner; keep it too.
-        if winner or method in ("Draw", "NC"):
-            key = frozenset([f1n.lower(), f2n.lower()])
-            existing_results[key] = {
-                "winner": winner, "method": method,
-                "round": int(rnd) if rnd != "null" else None, "state": "post",
-            }
     if existing_results:
         print(f"  Preserving {len(existing_results)} post-fight results", file=sys.stderr)
         for ev in new_events:
@@ -4844,7 +4655,6 @@ def step_build_events(data, now):
     # Fighter stats — fetch new, backfill missing form, refresh changed records.
     # Fighters booked inside STATS_URGENT_DAYS are marked urgent so a previously
     # failed lookup is retried immediately rather than waiting out its cooldown.
-    stats_cache  = extract_stats_cache(data)
     all_fighters = {}
     for ev in new_events:
         days_out = stats_days_out(ev.get("date"), now)
@@ -4910,7 +4720,6 @@ def step_build_events(data, now):
     # Back-fill fighter records: prefer the freshly-fetched UFCStats record, but
     # fall back to the last-known record already on the card so a rebuild never
     # blanks a fighter UFCStats/Wikipedia couldn't resolve this run.
-    prev_records = extract_card_records(data)
     for ev in new_events:
         for fight in ev["fights"]:
             for side in (fight["f1"], fight["f2"]):
@@ -4948,41 +4757,41 @@ def step_build_events(data, now):
 
     new_events = _dedupe_events(new_events)
 
-    data = patch_js_var(data, "EVENTS", events_js(new_events))
-    data = patch_js_var(
-        data, "FIGHTER_STATS",
-        json.dumps(stats_cache, separators=(",", ":"), ensure_ascii=False),
-    )
+    doc["EVENTS"] = new_events
+    doc["FIGHTER_STATS"] = stats_cache
     rankings = fetch_rankings()
     if rankings:
-        data = patch_js_var(
-            data, "RANKINGS",
-            json.dumps(rankings, separators=(",", ":"), ensure_ascii=False),
-        )
+        doc["RANKINGS"] = rankings
     try:
-        aliases = update_fighter_aliases(extract_fighter_aliases(data), existing_cards, new_events)
-        data = set_js_var(
-            data, "FIGHTER_ALIASES",
-            json.dumps(aliases, separators=(",", ":"), ensure_ascii=False, sort_keys=True),
-        )
+        doc["FIGHTER_ALIASES"] = update_fighter_aliases(
+            extract_fighter_aliases(doc), existing_cards, new_events)
     except Exception as e:      # a side map must never cost a data update
         print(f"fighter aliases not recorded: {e}", file=sys.stderr)
-    espn_ids = update_espn_ids(extract_espn_ids(data), new_events, now)
-    data = set_js_var(
-        data, "FIGHTER_ESPN",
-        json.dumps(espn_ids, separators=(",", ":"), ensure_ascii=False, sort_keys=True),
-    )
-    data = patch_js_var(data, "GENERATED_AT", f'"{fmt_update(now)}"')
-
-    if len(data) < 20000:
-        print("Output suspiciously small — aborting write", file=sys.stderr)
-        return data   # caller will detect no-write
-
-    return data
+    doc["FIGHTER_ESPN"] = update_espn_ids(extract_espn_ids(doc), new_events, now)
+    doc["GENERATED_AT"] = fmt_update(now)
+    return True
 
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
+
+# A data.js this small has lost its cards or its stats: never publish it.
+_MIN_DATA_JS_CHARS = 20000
+
+
+def _write_data(path, doc):
+    """Write `doc` as data.js, or exit non-zero with the file left as it was."""
+    try:
+        text = datafile.checked_dumps(doc)
+    except datafile.DataError as e:
+        print(f"ERROR: refusing to write data.js: {e}", file=sys.stderr)
+        sys.exit(1)
+    if len(text) < _MIN_DATA_JS_CHARS:
+        print("Output suspiciously small — aborting write", file=sys.stderr)
+        return False
+    path.write_text(text, encoding="utf-8")
+    return True
+
 
 def main():
     data_path = Path("data.js")
@@ -4990,47 +4799,48 @@ def main():
         print("No data.js", file=sys.stderr)
         sys.exit(1)
 
-    data = data_path.read_text(encoding="utf-8")
-    now  = datetime.now(timezone.utc)
+    try:
+        doc = datafile.loads(data_path.read_text(encoding="utf-8"))
+    except datafile.DataError as e:
+        # Not a guess, and not a silent fallback: the published file stays as
+        # it is and the run fails, which is what gets a human to look.
+        print(f"ERROR: data.js cannot be read ({e}); nothing can update until "
+              "it is fixed", file=sys.stderr)
+        sys.exit(1)
+    now = datetime.now(timezone.utc)
 
     print(
         "Existing events:",
-        list(zip(
-            re.findall(r'date:"(\d{4}-\d{2}-\d{2})"', data)[:6],
-            re.findall(r'name:"([^"]+)"', data)[:6],
-            strict=False,
-        )),
+        [(ev["date"], ev["name"]) for ev in _doc_events(doc)[:6]],
         file=sys.stderr,
     )
 
     # Step 1: inject results for recent/live events
-    updated, new_results = step_inject_results(data, now)
-    if updated:
-        updated = update_results_archive(updated, now)
-        data_path.write_text(updated, encoding="utf-8")
+    injected, new_results = step_inject_results(doc, now)
+    if injected:
+        update_results_archive(doc, now)
+        if not _write_data(data_path, doc):
+            sys.exit(1)     # nothing was published, so nothing is announced
         print("Results injected", file=sys.stderr)
         send_push_notifications(new_results)
         sys.exit(0)
 
     # Step 2: full rebuild — events, odds, stats, rankings
-    updated = step_build_events(data, now)
-    if len(updated) >= 20000:
-        # A rebuild re-adds recently-finished events as "pending". Inject their
-        # results in the same run so a freshly restored card (e.g. one that had
-        # dropped out of the data) is scored immediately instead of waiting for a
-        # second pass. Push fires here too so the scraper backs up the client-
-        # side trigger when a result lands only via this path — the notif_log
-        # dedup and the recency guard in send_push_notifications keep it from
-        # re-announcing or spoiling already-final / aged-out fights.
-        reinjected, reinjected_results = step_inject_results(updated, now)
+    step_build_events(doc, now)
+    # A rebuild re-adds recently-finished events as "pending". Inject their
+    # results in the same run so a freshly restored card (e.g. one that had
+    # dropped out of the data) is scored immediately instead of waiting for a
+    # second pass. Push fires here too so the scraper backs up the client-
+    # side trigger when a result lands only via this path — the notif_log
+    # dedup and the recency guard in send_push_notifications keep it from
+    # re-announcing or spoiling already-final / aged-out fights.
+    reinjected, reinjected_results = step_inject_results(doc, now)
+    update_results_archive(doc, now)
+    if _write_data(data_path, doc):
         if reinjected:
-            updated = reinjected
             print("Results injected after rebuild", file=sys.stderr)
             send_push_notifications(reinjected_results)
-        updated = update_results_archive(updated, now)
-        data_path.write_text(updated, encoding="utf-8")
-        new_events = re.findall(r'name:"([^"]+)"', updated)
-        print(f"Done: {len(new_events)} events", file=sys.stderr)
+        print(f"Done: {len(_doc_events(doc))} events", file=sys.stderr)
 
 
 if __name__ == "__main__":

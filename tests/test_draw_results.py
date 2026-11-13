@@ -5,6 +5,7 @@ Both result parsers used to need a "def." cell, so a draw ("A vs. B", method
 app's live view then sat on it as the bout in progress while the card fought on
 (Kareckaite vs. Gatto opened Allen vs. Duncan on 2026-10-10 as a draw).
 """
+import datafile
 import scrape
 
 TEMPLATE = """{{MMAevent bout
@@ -72,24 +73,27 @@ def test_norm_method_draw_is_not_a_decision():
 
 
 def test_inject_marks_bout_over_without_winner_and_only_once():
-    js = "[" + FIGHT.format(a="Melissa Gatto", b="Ernesta Kareckaite") + "," + \
-        FIGHT.format(a="Allen Frye Jr.", b="RJ Harris") + "]"
+    doc = datafile.loads(
+        'var EVENTS=[{name:"X",date:"2026-10-10",fights:['
+        + FIGHT.format(a="Melissa Gatto", b="Ernesta Kareckaite") + ","
+        + FIGHT.format(a="Allen Frye Jr.", b="RJ Harris") + "]}];")
     res = scrape.parse_results(TEMPLATE)
-    out, n = scrape.inject_results(js, res)
+    n = scrape.inject_results(doc, res)
+    out = datafile.dumps(doc)
     assert n == 1
     assert 'winner:"",method:"Draw",round:3,state:"post",f1:{n:"Melissa Gatto"' in out
     assert out.count('state:"post"') == 1          # Frye/Harris untouched
-    again, n2 = scrape.inject_results(out, res)
-    assert n2 == 0 and again == out
+    n2 = scrape.inject_results(doc, res)
+    assert n2 == 0 and datafile.dumps(doc) == out
 
 
 def test_draw_sends_no_result_push(monkeypatch):
-    js = "var EVENTS=[{name:\"X\",date:\"2026-10-10\"," + \
-        FIGHT.format(a="Melissa Gatto", b="Ernesta Kareckaite") + "}];"
+    doc = datafile.loads(
+        'var EVENTS=[{name:"X",date:"2026-10-10",fights:['
+        + FIGHT.format(a="Melissa Gatto", b="Ernesta Kareckaite") + "]}];")
     monkeypatch.setattr(scrape, "fetch_event_wikitext", lambda *a, **k: TEMPLATE)
-    monkeypatch.setattr(scrape, "_event_slug_map", lambda d: {})
     monkeypatch.setattr(scrape.time, "sleep", lambda s: None)
     from datetime import datetime, timezone
-    out, new = scrape.step_inject_results(js, datetime(2026, 10, 11, 2, tzinfo=timezone.utc))
-    assert out is not None and 'method:"Draw"' in out
+    changed, new = scrape.step_inject_results(doc, datetime(2026, 10, 11, 2, tzinfo=timezone.utc))
+    assert changed and 'method:"Draw"' in datafile.dumps(doc)
     assert new and not any(r.get("undecided") or not r["winner"] for r in new)
