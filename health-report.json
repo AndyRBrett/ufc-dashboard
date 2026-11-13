@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-13T15:10:40Z",
+  "generated_at": "2026-11-13T16:15:42Z",
   "summary": {
     "events": 10,
     "block": 0,
-    "warn": 4
+    "warn": 2
   },
   "findings": [
     {
@@ -20,24 +20,6 @@
       "event": "UFC Fight Night: Prochazka vs. Stirling",
       "date": "2026-11-21",
       "days_out": 8
-    },
-    {
-      "severity": "WARN",
-      "check": "record-blank",
-      "message": "UFC 334: Gane vs. Hokit (1d out): Beatriz Mesquita has no record",
-      "fighter": "Beatriz Mesquita",
-      "event": "UFC 334: Gane vs. Hokit",
-      "date": "2026-11-14",
-      "days_out": 1
-    },
-    {
-      "severity": "WARN",
-      "check": "stats-fetch-failed",
-      "message": "UFC 334: Gane vs. Hokit (1d out): Beatriz Mesquita stats lookup failed (2026-11-13)",
-      "fighter": "Beatriz Mesquita",
-      "event": "UFC 334: Gane vs. Hokit",
-      "date": "2026-11-14",
-      "days_out": 1
     }
   ]
 }
