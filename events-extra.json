@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-13T15:10:43Z",
+ "generated_at": "2026-11-13T19:15:39Z",
  "promotions": [
   {
    "id": "pfl",
@@ -34,8 +34,8 @@
      "division": "Heavyweight",
      "title": true,
      "odds": {
-      "a": -375,
-      "b": 290
+      "a": -400,
+      "b": 300
      },
      "winner": "",
      "method": "",
@@ -48,8 +48,8 @@
      "division": "Welterweight",
      "title": false,
      "odds": {
-      "a": -650,
-      "b": 457
+      "a": -550,
+      "b": 402
      },
      "winner": "",
      "method": "",
@@ -62,8 +62,8 @@
      "division": "Heavyweight",
      "title": false,
      "odds": {
-      "a": 204,
-      "b": -252
+      "a": 213,
+      "b": -258
      },
      "winner": "",
      "method": "",
@@ -87,8 +87,8 @@
      "division": "Bantamweight",
      "title": false,
      "odds": {
-      "a": -395,
-      "b": 303
+      "a": -388,
+      "b": 308
      },
      "winner": "",
      "method": "",
@@ -101,8 +101,8 @@
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": 158,
-      "b": -192
+      "a": 164,
+      "b": -193
      },
      "winner": "",
      "method": "",
@@ -129,8 +129,8 @@
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": -179,
-      "b": 151
+      "a": -193,
+      "b": 164
      },
      "winner": "",
      "method": "",
@@ -143,8 +143,8 @@
      "division": "Featherweight",
      "title": false,
      "odds": {
-      "a": -255,
-      "b": 206
+      "a": -268,
+      "b": 220
      },
      "winner": "",
      "method": "",
@@ -157,8 +157,8 @@
      "division": "Heavyweight",
      "title": false,
      "odds": {
-      "a": -378,
-      "b": 288
+      "a": -310,
+      "b": 252
      },
      "winner": "",
      "method": "",
@@ -171,8 +171,8 @@
      "division": "Welterweight",
      "title": false,
      "odds": {
-      "a": 105,
-      "b": -127
+      "a": 101,
+      "b": -120
      },
      "winner": "",
      "method": "",
@@ -185,8 +185,8 @@
      "division": "Light Heavyweight",
      "title": false,
      "odds": {
-      "a": -600,
-      "b": 422
+      "a": -610,
+      "b": 442
      },
      "winner": "",
      "method": "",
@@ -199,8 +199,8 @@
      "division": "Women's Strawweight",
      "title": false,
      "odds": {
-      "a": 212,
-      "b": -260
+      "a": 192,
+      "b": -230
      },
      "winner": "",
      "method": "",

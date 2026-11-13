@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T18:10:39Z",
+  "generated_at": "2026-11-13T19:15:37Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20957,7 +20957,7 @@
           "f1": "Ciryl Gane",
           "f2": "Josh Hokit",
           "lbl": "Main Event",
-          "points": 38,
+          "points": 39,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -21148,6 +21148,11 @@
               "at": "2026-11-13T05:15:44Z",
               "f1_odds": -208,
               "f2_odds": 166
+            },
+            {
+              "at": "2026-11-13T19:15:37Z",
+              "f1_odds": -210,
+              "f2_odds": 168
             }
           ],
           "open": {
@@ -21752,7 +21757,7 @@
           "f1": "Drew Dober",
           "f2": "Chris Duncan",
           "lbl": "Prelim",
-          "points": 23,
+          "points": 24,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -21868,6 +21873,11 @@
               "at": "2026-11-13T16:15:42Z",
               "f1_odds": 147,
               "f2_odds": -181
+            },
+            {
+              "at": "2026-11-13T19:15:37Z",
+              "f1_odds": 147,
+              "f2_odds": -182
             }
           ],
           "open": {
@@ -22102,7 +22112,7 @@
           "f1": "Macy Chiasson",
           "f2": "Beatriz Mesquita",
           "lbl": "Early Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -22158,6 +22168,11 @@
               "at": "2026-11-13T16:15:42Z",
               "f1_odds": 201,
               "f2_odds": -247
+            },
+            {
+              "at": "2026-11-13T19:15:37Z",
+              "f1_odds": 203,
+              "f2_odds": -249
             }
           ],
           "open": {
@@ -22443,7 +22458,7 @@
           "f1": "Aljamain Sterling",
           "f2": "Kevin Vallejos",
           "lbl": "Co-Main",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-11-08T05:50:41Z",
@@ -22474,6 +22489,11 @@
               "at": "2026-11-11T15:35:39Z",
               "f1_odds": -105,
               "f2_odds": -115
+            },
+            {
+              "at": "2026-11-13T19:15:37Z",
+              "f1_odds": 107,
+              "f2_odds": -140
             }
           ],
           "open": {
@@ -23916,7 +23936,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Josh Hokit",
         "side": "f1",
-        "points": 38,
+        "points": 39,
         "open": -272,
         "close": null,
         "clv": null
@@ -23978,7 +23998,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Ciryl Gane",
         "side": "f2",
-        "points": 38,
+        "points": 39,
         "open": 219,
         "close": null,
         "clv": null
@@ -24284,7 +24304,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Macy Chiasson",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -210,
         "close": null,
         "clv": null
@@ -29644,7 +29664,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Chris Duncan",
         "side": "f1",
-        "points": 23,
+        "points": 24,
         "open": 136,
         "close": null,
         "clv": null
@@ -29655,7 +29675,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Drew Dober",
         "side": "f2",
-        "points": 23,
+        "points": 24,
         "open": -160,
         "close": null,
         "clv": null
@@ -29677,7 +29697,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Beatriz Mesquita",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": 177,
         "close": null,
         "clv": null
@@ -29754,7 +29774,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Kevin Vallejos",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -107,
         "close": null,
         "clv": null
@@ -29765,7 +29785,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Aljamain Sterling",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": -109,
         "close": null,
         "clv": null
