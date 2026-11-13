@@ -3583,6 +3583,7 @@ function _rtConnect(){
       try{
         var m=JSON.parse(e.data);
         if(m.event==="phx_reply"&&m.payload&&m.payload.status==="ok")_rtOpen=true;
+        if(_rtOpen&&m.event==="broadcast"&&m.payload&&m.payload.event==="pick-change"&&m.payload.payload&&m.payload.payload.past)_picksPastStale();
         if(_rtOpen&&((m.event==="broadcast"&&m.payload&&m.payload.event==="pick-change")||m.event==="postgres_changes"))
           _rtCbs.forEach(function(cb){try{cb();}catch(err){}});
         if(_rtOpen&&m.event==="broadcast"&&m.payload&&m.payload.event==="reaction")
@@ -3595,10 +3596,12 @@ function _rtConnect(){
     _rtWs.onerror=function(){};
   }catch(e){}
 }
-function _rtBroadcast(){
+// `past`: this change reached rows on old cards (a rename), so other devices
+// must re-read those too, not just the open cards.
+function _rtBroadcast(past){
   if(!_rtOpen||!_rtWs||_rtWs.readyState!==1)return;
   _rtWs.send(JSON.stringify({topic:"realtime:picks-live",event:"broadcast",
-    payload:{type:"broadcast",event:"pick-change",payload:{}},
+    payload:{type:"broadcast",event:"pick-change",payload:past===true?{past:true}:{}},
     ref:String(++_rtRef),join_ref:_rtJoinRef}));
 }
 function _rtBroadcastReaction(emoji){
@@ -3762,6 +3765,87 @@ function _sbFetchAll(query){
   }
   return _ensureFreshToken().then(function(){return page(0,[],false);});
 }
+// picks-store:start
+// ===== One copy of everyone's UFC picks, and only the open cards re-read =====
+// The home page's 30-second poll and the leaderboard each used to read EVERY
+// pick ever made: two full copies, the first again on every pick anyone made.
+// That grows with every card and every player, and the database runs the
+// hidden-until-lock check (0017) on each row of each read.
+//
+// A pick on a card more than three days old can't change: its bout locked
+// (the database refuses a write after that, 0010) and everyone can read it.
+// So the rows are kept in two parts, split at PICKS_CUT_DAYS:
+//   past: cards before the cut. Read once, then again only every
+//         PICKS_PAST_TTL_MS, when the cut moves on, or when someone renames
+//         (a rename rewrites the nickname on old rows too: _picksPastStale).
+//   open: cards from the cut on. Small, and the only part the poll re-reads.
+// loadPickRows() gives the two merged, newest first, in the order the single
+// query used to return (updated_at desc, user_id, event_date): a card's rows
+// are all on one side of the cut, so merging two server-ordered lists on those
+// keys reproduces it. Three days, not the policy's two, so the cut (UTC) is
+// never later than the policy's own (Eastern).
+var PICKS_COLS="user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick";
+var PICKS_CUT_DAYS=3,PICKS_PAST_TTL_MS=10*60*1000;
+var _pickStore={cut:null,past:null,pastAt:0,pastReq:null,pastReqCut:null,stale:false};
+function _picksCut(now){return new Date(now-PICKS_CUT_DAYS*DAY_MS).toISOString().slice(0,10);}
+function _picksPastStale(){_pickStore.stale=true;}
+// updated_at as a number, to the microsecond: PostgREST trims trailing zeros
+// off the fraction, so the strings don't compare, and Date.parse stops at ms.
+function _pickTs(s){
+  var m=/^(.*?)(?:\.(\d+))?(Z|[+-]\d\d:?\d\d)?$/.exec(String(s||""));
+  if(!m)return 0;
+  var t=Date.parse(m[1]+(m[3]||"Z"));
+  if(isNaN(t))return 0;
+  return t*1000+(m[2]?+(m[2]+"000000").slice(0,6):0);
+}
+function _picksMerge(a,b){
+  var out=[],i=0,j=0,ka=a.map(function(p){return _pickTs(p.updated_at);}),kb=b.map(function(p){return _pickTs(p.updated_at);});
+  var before=function(x,kx,y,ky){
+    if(kx!==ky)return kx>ky;
+    var ux=String(x.user_id||""),uy=String(y.user_id||"");
+    if(ux!==uy)return ux<uy;
+    return String(x.event_date||"")<=String(y.event_date||"");
+  };
+  while(i<a.length&&j<b.length){
+    if(before(a[i],ka[i],b[j],kb[j]))out.push(a[i++]);else out.push(b[j++]);
+  }
+  while(i<a.length)out.push(a[i++]);
+  while(j<b.length)out.push(b[j++]);
+  return out;
+}
+function _picksQuery(op,cut){
+  return "/rest/v1/picks?select="+PICKS_COLS+"&event_date="+op+"."+cut+"&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+PICKS_UFC;
+}
+// Everyone's UFC picks, newest first. A fresh array each call; the rows inside
+// are shared, so treat them as read-only.
+function loadPickRows(){
+  var st=_pickStore,now=Date.now(),cut=_picksCut(now);
+  var isPast=function(p){return !!p&&typeof p.event_date==="string"&&p.event_date<cut;};
+  if(!st.past||st.cut!==cut||st.stale||now-st.pastAt>PICKS_PAST_TTL_MS){
+    if(!st.pastReq||st.pastReqCut!==cut||st.stale){
+      st.stale=false;st.pastReqCut=cut;
+      var req=st.pastReq=_sbFetchAll(_picksQuery("lt",cut)).then(function(rows){
+        // Kept only if nothing newer was asked for meanwhile (a rename mid-read).
+        rows=(Array.isArray(rows)?rows:[]).filter(isPast);
+        if(st.pastReq===req){st.past=rows;st.cut=cut;st.pastAt=Date.now();st.pastReq=null;}
+        return rows;
+      },function(err){
+        if(st.pastReq===req){st.pastReq=null;st.stale=true;}   // the next call tries again
+        // An old copy of the past is still the past; with none at all, fail.
+        if(st.past&&st.cut===cut)return st.past;
+        throw err;
+      });
+    }
+  }
+  var pastP=st.pastReq||Promise.resolve(st.past);
+  // The open cards are read fresh by every caller: a pick just saved must be
+  // in the board that opens after it.
+  var openP=_sbFetchAll(_picksQuery("gte",cut)).then(function(rows){
+    return (Array.isArray(rows)?rows:[]).filter(function(p){return !isPast(p);});
+  });
+  return Promise.all([pastP,openP]).then(function(r){return _picksMerge(r[0],r[1]);});
+}
+// picks-store:end
 // The server's per-bout lock times for cards around now (see _serverLockMs).
 // At most once a minute; a change re-renders so a bout the server has locked
 // stops offering its pick buttons.
@@ -3802,8 +3886,11 @@ function _checkRevealFlip(){
 function fetchCommunityPicks(){
   _loadServerLocks();
   _checkRevealFlip();
-  _sbFetchAll("/rest/v1/picks?select=event_date,f1,f2,pick,method,confidence,nickname,user_id,updated_at,bonus_pick&order=updated_at.asc,event_date.asc,f1.asc,f2.asc"+PICKS_UFC).then(function(rows){
+  loadPickRows().then(function(rows){
     if(!Array.isArray(rows))return;
+    // The store is newest first; everything below reads oldest first (the
+    // last row for a voter is the one that counts).
+    rows=rows.slice().reverse();
     // activity feed derives lock-ins/streaks/belt from the same rows, and the
     // card recap + Year Wrapped score them — so this select must carry every
     // column pickPts reads (method, confidence = 🔒 lock, bonus_pick = FOTN).
@@ -5236,8 +5323,13 @@ function _commitName(emoji,v){
     if(!USER_ID)return;
     fetch(SUPABASE_URL+"/rest/v1/picks?user_id=eq."+encodeURIComponent(USER_ID),{
       method:"PATCH",headers:_sbHeaders(),body:JSON.stringify({nickname:userName})
+    }).then(function(){
+      // Old cards' rows carry the new name now: this device re-reads them, and
+      // so does everyone with the app open (see _rtBroadcast).
+      _picksPastStale();_rtBroadcast(true);
     }).catch(function(){});
   });
+  _picksPastStale();
   if(wasEdit){
     toast("Profile updated!");
     var lbPanel=document.getElementById("lbPanel");
@@ -9164,7 +9256,7 @@ function openTrashTalk(){
   var pool,mode=lbMode,evName=_lbCtxEvName;
   if(sport){
     if(!_lbRows&&!_trashGroupRows){
-      _sbFetchAll("/rest/v1/picks?select=user_id,nickname,event_date,updated_at&order=updated_at.desc,user_id.asc"+PICKS_UFC)
+      loadPickRows()
         .then(function(r){_trashGroupRows=Array.isArray(r)?r:[];},function(){_trashGroupRows=[];})
         .then(openTrashTalk);
       return;
@@ -11839,7 +11931,7 @@ function loadLeaderboard(isLive){
   if(!isLive)body.innerHTML='<div class="lb-loading">Loading picks...</div>';
   var _nextEv0=_lbNextEvent(Date.now());
   Promise.all([
-    _sbFetchAll("/rest/v1/picks?select=user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick&order=updated_at.desc,user_id.asc,event_date.asc,f1.asc"+PICKS_UFC),
+    loadPickRows(),
     _cardPickedBouts(_nextEv0?_nextEv0.date:null),
     typeof _roomEarlyPicks==="function"?_roomEarlyPicks(_curRoom(),_nextEv0?_nextEv0.date:null):[]
   ]).then(function(res){

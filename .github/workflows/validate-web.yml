@@ -188,3 +188,5 @@ jobs:
         run: npm run check:migrations
       - name: iOS shell push and taps
         run: npm run check:native
+      - name: Picks store (only open cards re-read)
+        run: npm run check:pickstore

@@ -63,6 +63,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:delete` | Delete my account leaving the login, a challenge or any other row of the caller's behind, or touching anyone else's |
 | `npm run check:invites` | a founder badge on an anonymous or post-cutoff account, an invite claimed twice, by an old account, as someone else or by writing the tables, a throwaway sign-up counted as playing, or an invite surviving Delete my account |
 | `npm run check:native` | the iOS app's push not registering its APNs token, a tapped notification not routing, or a browser taking the native path |
+| `npm run check:pickstore` | the poll or the board reading every pick ever made again, the merged rows differing from the single query's, a row doubled or lost at the date cut, or a rename never reaching old cards |
 | `npm run check:migrations` | a migration that can't apply to what the ones before it built, the rebuilt core tables drifting from production's catalog, or `config.toml`'s JWT settings drifting from the deploy |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
@@ -1163,6 +1164,32 @@ stale copy is refused.
 A scoring change is an app change: `verify`, bump `SW_VERSION` and
 `SCORING_VERSION`, and expect `check:parity` to fail until the golden is
 regenerated **on purpose**.
+
+## Everyone's picks are read once; only the open cards are re-read
+
+The 30-second poll and the leaderboard each used to download every UFC pick
+ever made (two copies, the first again on every pick anyone saved), and the
+database ran 0017's hidden-until-lock check on every row of every read: 57 ms
+and ~1,150 rows per poll per open app on 2026-11-13, growing with every card
+and player. `// picks-store:start … :end` in `index.html` splits the rows at a
+date cut (`PICKS_CUT_DAYS`, 3). A pick on a card before the cut can't change
+(its bout locked, 0010) and everyone can read it, so that side is read once and
+again only every `PICKS_PAST_TTL_MS` (10 min), when the cut moves, or on a
+rename; the cards after the cut are all the poll asks for (16 ms, and only
+those rows reach `pick_lock_for`). **Every reader of everyone's picks goes
+through `loadPickRows()`**; it returns the single query's rows in its order
+(newest first: `_commRows` is that reversed), and `check:pickstore` fails on
+any new read of the whole table.
+
+**A rename is the one write that reaches old cards**, so `_commitName`'s PATCH
+calls `_picksPastStale()` and `_rtBroadcast(true)`, and other devices re-read
+on that broadcast. A device that misses it shows the old name on old cards for
+up to ten minutes; an account deleted elsewhere likewise. Anything new that
+edits rows on past cards needs the same call. The cut is three days in UTC so
+it is never later than the policy's two days in Eastern. Not done yet: the
+past is still one full read per app open (it could persist on the device), the
+sport boards and `challenges` still read their whole tables, and `picks` has no
+index on `event_date`.
 
 ## The picks table holds every sport; UFC readers say so
 
