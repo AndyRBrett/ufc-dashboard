@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T06:20:40Z",
+  "generated_at": "2026-11-13T07:25:52Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -21162,7 +21162,7 @@
           "f1": "Kayla Harrison",
           "f2": "Amanda Nunes",
           "lbl": "Co-Main",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-09-22T17:08:06Z",
@@ -21253,6 +21253,11 @@
               "at": "2026-11-13T05:15:44Z",
               "f1_odds": -179,
               "f2_odds": 146
+            },
+            {
+              "at": "2026-11-13T07:25:51Z",
+              "f1_odds": -177,
+              "f2_odds": 145
             }
           ],
           "open": {
@@ -21267,7 +21272,7 @@
           "f1": "Caio Borralho",
           "f2": "Yousri Belgaroui",
           "lbl": "Main Card",
-          "points": 20,
+          "points": 21,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -21368,6 +21373,11 @@
               "at": "2026-11-13T05:15:44Z",
               "f1_odds": -159,
               "f2_odds": 130
+            },
+            {
+              "at": "2026-11-13T07:25:51Z",
+              "f1_odds": -162,
+              "f2_odds": 132
             }
           ],
           "open": {
@@ -22418,12 +22428,17 @@
           "f1": "Jared Cannonier",
           "f2": "Ikram Aliskerov",
           "lbl": "Main Card",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
               "f1_odds": 300,
               "f2_odds": -400
+            },
+            {
+              "at": "2026-11-13T07:25:51Z",
+              "f1_odds": 284,
+              "f2_odds": -350
             }
           ],
           "open": {
@@ -24407,7 +24422,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Jared Cannonier",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -400,
         "close": null,
         "clv": null
@@ -25209,7 +25224,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Ikram Aliskerov",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 300,
         "close": null,
         "clv": null
@@ -27164,7 +27179,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Caio Borralho",
         "side": "f2",
-        "points": 20,
+        "points": 21,
         "open": -101,
         "close": null,
         "clv": null
@@ -29424,7 +29439,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Amanda Nunes",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": -201,
         "close": null,
         "clv": null
@@ -29435,7 +29450,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Kayla Harrison",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": 165,
         "close": null,
         "clv": null
@@ -29446,7 +29461,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Yousri Belgaroui",
         "side": "f1",
-        "points": 20,
+        "points": 21,
         "open": -115,
         "close": null,
         "clv": null

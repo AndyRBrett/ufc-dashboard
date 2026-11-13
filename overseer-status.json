@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T06:20:40Z",
+  "generated_at": "2026-11-13T07:25:51Z",
   "events_tracked": 10,
   "stale_events": 3,
   "parse_failure_events": 0,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-13T05:15:44Z",
+      "last_changed_at": "2026-11-13T07:25:51Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -109,7 +109,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-13T03:05:46Z",
+      "last_changed_at": "2026-11-13T07:25:51Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 9,
@@ -194,17 +194,17 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Caio Borralho",
       "f2": "Yousri Belgaroui",
-      "f1_movement": -44,
-      "f2_movement": 231,
-      "magnitude": 231,
+      "f1_movement": -47,
+      "f2_movement": 233,
+      "magnitude": 233,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 7.9,
-      "f2_prob_shift": -6.8,
-      "priority": 462.0
+      "f1_prob_shift": 8.3,
+      "f2_prob_shift": -7.1,
+      "priority": 466.0
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
@@ -525,6 +525,22 @@
       "f1_prob_shift": -1.9,
       "f2_prob_shift": 2.9,
       "priority": 72.5
+    },
+    {
+      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+      "f1": "Jared Cannonier",
+      "f2": "Ikram Aliskerov",
+      "f1_movement": -16,
+      "f2_movement": 50,
+      "magnitude": 50,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 50,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 1.0,
+      "f2_prob_shift": -2.2,
+      "priority": 55.0
     }
   ],
   "errors": []
