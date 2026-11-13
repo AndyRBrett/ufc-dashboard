@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import datafile  # noqa: E402
 import scrape  # noqa: E402
 
 NOW = datetime(2026, 10, 1, 2, 0, tzinfo=timezone.utc)
@@ -59,13 +60,18 @@ def test_unrelated_name_is_never_matched():
 
 
 def test_data_js_round_trip_and_insert():
-    data = 'var GENERATED_AT="x";\nvar EVENTS=[];\n'
-    data = scrape.set_js_var(data, "FIGHTER_ESPN", '{"A B":"12"}')
-    assert 'var FIGHTER_ESPN={"A B":"12"};\nvar EVENTS=[]' in data
-    assert scrape.extract_espn_ids(data) == {"A B": "12"}
-    data = scrape.set_js_var(data, "FIGHTER_ESPN", '{"A B":"12","C D":"3"}')
-    assert data.count("var FIGHTER_ESPN=") == 1 and scrape.extract_espn_ids(data)["C D"] == "3"
-    assert scrape.extract_espn_ids('var FIGHTER_ESPN={"x":"<script>"};') == {}
+    doc = datafile.loads('var GENERATED_AT="x";\nvar EVENTS=[];\n')
+    doc["FIGHTER_ESPN"] = {"A B": "12"}
+    data = datafile.dumps(doc)
+    assert 'var FIGHTER_ESPN={"A B":"12"};\nvar EVENTS=[' in data
+    doc = datafile.loads(data)
+    assert scrape.extract_espn_ids(doc) == {"A B": "12"}
+    doc["FIGHTER_ESPN"] = {"C D": "3", "A B": "12"}
+    data = datafile.dumps(doc)
+    assert 'var FIGHTER_ESPN={"A B":"12","C D":"3"};' in data      # keys sorted
+    assert data.count("var FIGHTER_ESPN=") == 1
+    assert scrape.extract_espn_ids(datafile.loads(data))["C D"] == "3"
+    assert scrape.extract_espn_ids(datafile.loads('var FIGHTER_ESPN={"x":"<script>"};')) == {}
 
 
 def test_respelled_corner_takes_its_bouts_other_espn_competitor():

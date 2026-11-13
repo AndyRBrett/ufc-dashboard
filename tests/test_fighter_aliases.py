@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import datafile  # noqa: E402
 import scrape  # noqa: E402
 
 DATE = "2026-10-24"
@@ -67,10 +68,12 @@ def test_fold_matches_the_apps_nmkey():
 
 
 def test_round_trip_through_data_js():
-    data = "var EVENTS=[];"
-    data = scrape.set_js_var(data, "FIGHTER_ALIASES", '{"Nicole Caliari":"Nicolle Caliari"}')
-    assert scrape.extract_fighter_aliases(data) == {"Nicole Caliari": "Nicolle Caliari"}
-    assert scrape.extract_fighter_aliases("var EVENTS=[];") == {}
+    doc = datafile.loads("var EVENTS=[];")
+    doc["FIGHTER_ALIASES"] = {"Nicole Caliari": "Nicolle Caliari"}
+    data = datafile.dumps(doc)
+    assert 'var FIGHTER_ALIASES={"Nicole Caliari":"Nicolle Caliari"};\nvar EVENTS=[' in data
+    assert scrape.extract_fighter_aliases(datafile.loads(data)) == {"Nicole Caliari": "Nicolle Caliari"}
+    assert scrape.extract_fighter_aliases(datafile.loads("var EVENTS=[];")) == {}
 
 
 def test_a_spelling_changed_back_leaves_no_loop():
