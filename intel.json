@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-12T22:50:39Z",
+ "generated_at": "2026-11-13T02:00:43Z",
  "window_days": 10,
  "sources": [
   {
@@ -29,8 +29,8 @@
   {
    "id": "yt-ufc",
    "name": "UFC",
-   "status": 200,
-   "items": 15
+   "status": 404,
+   "items": 0
   },
   {
    "id": "yt-mmaf",
@@ -45,51 +45,16 @@
    "date": "2026-11-14",
    "items": [
     {
-     "title": "Polymarket UFC 334 Embedded: Vlog Series - Episode 3",
-     "url": "https://www.youtube.com/watch?v=ATNtkQam1WA",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-11-11T16:43:29Z",
-     "thumb": "https://i2.ytimg.com/vi/ATNtkQam1WA/hqdefault.jpg",
-     "blurb": "Actress Laysla De Oliveira joins Amanda Nunes for a workout; Nunes heads to New York with her family; Stephen Thompson speaks from the heart; Yousri Belgaroui enjoys a day at home with his kids and animals; Bilal Hasan…",
+     "title": "Watch Josh Hokit target Ciryl Gane and Alex Pereira’s mothers in UFC 334 presser tirade",
+     "url": "https://bloodyelbow.com/2026/11/12/watch-josh-hokit-target-ciryl-gane-and-alex-pereiras-mothers-in-ufc-334-presser-tirade/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-11-13T00:29:52Z",
+     "thumb": null,
+     "blurb": "Josh Hokit was in fine form at the UFC 334 pre-fight press conference on Thursday. ‘The Incredible Hok’ turned up wearing goggles to protect himself ...",
      "fighters": [
-      "Amanda Nunes",
-      "Bilal Hasan",
       "Ciryl Gane",
-      "Josh Hokit",
-      "Kayla Harrison",
-      "Stephen Thompson",
-      "Yousri Belgaroui"
-     ]
-    },
-    {
-     "title": "Polymarket UFC 334: Gane vs Hokit | Fight Promo 2",
-     "url": "https://www.youtube.com/watch?v=4dTdSbvdyN8",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-11-12T19:30:13Z",
-     "thumb": "https://i1.ytimg.com/vi/4dTdSbvdyN8/hqdefault.jpg",
-     "blurb": "UFC heads to New York, as Ciryl Gane looks to defend his belt against Josh Hokit in the main event. In the co-main event Kayla Harrison and Amanda Nunes face off. Watch UFC on Paramount Plus ➡️ https://ufc.ac/4d4oEtR…",
-     "fighters": [
-      "Amanda Nunes",
-      "Ciryl Gane",
-      "Josh Hokit",
-      "Kayla Harrison"
-     ]
-    },
-    {
-     "title": "Polymarket UFC 334 Embedded: Vlog Series - Episode 4",
-     "url": "https://www.youtube.com/watch?v=oxEcz19n2H8",
-     "source": "UFC",
-     "kind": "video",
-     "published": "2026-11-12T16:11:08Z",
-     "thumb": "https://i4.ytimg.com/vi/oxEcz19n2H8/hqdefault.jpg",
-     "blurb": "Amanda Nunes stops by Good Day New York; Fighters check in for UFC 334; Uros Medic explores NYC; Drew Dober has a blast at Dave & Buster’s; Josh Hokit heads to Madison Square Garden for a Knicks game; Fighters face off…",
-     "fighters": [
-      "Amanda Nunes",
-      "Drew Dober",
-      "Josh Hokit",
-      "Uros Medic"
+      "Josh Hokit"
      ]
     },
     {
@@ -132,19 +97,6 @@
      ]
     },
     {
-     "title": "Josh Hokit roasts Daniel Cormier, Kayla Harrison and others during strange UFC 334 media day",
-     "url": "https://bloodyelbow.com/2026/11/11/josh-hokit-roasts-daniel-cormier-kayla-harrison-and-others-during-strange-ufc-334-media-day/",
-     "source": "Bloody Elbow",
-     "kind": "article",
-     "published": "2026-11-12T00:00:00Z",
-     "thumb": null,
-     "blurb": "Hokit roasted most of the UFC roster.",
-     "fighters": [
-      "Josh Hokit",
-      "Kayla Harrison"
-     ]
-    },
-    {
      "title": "Kayla Harrison vs. Amanda Nunes: Bloody Elbow staff predict the UFC 334 co-main event",
      "url": "https://bloodyelbow.com/2026/11/12/kayla-harrison-vs-amanda-nunes-bloody-elbow-staff-predict-the-ufc-334-co-main-event/",
      "source": "Bloody Elbow",
@@ -155,6 +107,18 @@
      "fighters": [
       "Amanda Nunes",
       "Kayla Harrison"
+     ]
+    },
+    {
+     "title": "Joe Rogan calls for eye poke disqualifications ahead of Ciryl Gane’s UFC 334 return",
+     "url": "https://bloodyelbow.com/2026/11/12/joe-rogan-calls-for-eye-poke-disqualifications-ahead-of-ciryl-ganes-ufc-334-return/",
+     "source": "Bloody Elbow",
+     "kind": "article",
+     "published": "2026-11-12T17:00:00Z",
+     "thumb": null,
+     "blurb": "Joe Rogan wants stiffer punishments for the fouls that put Tom Aspinall out of action. The former UFC heavyweight champion will be watching from home ...",
+     "fighters": [
+      "Ciryl Gane"
      ]
     }
    ]
