@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T20:35:37Z",
+  "generated_at": "2026-11-13T21:40:42Z",
   "events_tracked": 10,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -99,17 +99,17 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-13T19:15:37Z",
+      "last_changed_at": "2026-11-13T21:40:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": 62,
+      "line_movement": 59,
       "odds_market_priced": true
     },
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-13T19:15:37Z",
+      "last_changed_at": "2026-11-13T21:40:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 9,
@@ -207,22 +207,6 @@
       "priority": 462.0
     },
     {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Ciryl Gane",
-      "f2": "Josh Hokit",
-      "f1_movement": 62,
-      "f2_movement": -51,
-      "magnitude": 62,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 25,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": -5.4,
-      "f2_prob_shift": 6.0,
-      "priority": 310.0
-    },
-    {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "f1": "Murtazali Magomedov",
       "f2": "Jose Mauro Delano",
@@ -237,6 +221,22 @@
       "f1_prob_shift": -18.0,
       "f2_prob_shift": 21.9,
       "priority": 307.0
+    },
+    {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Ciryl Gane",
+      "f2": "Josh Hokit",
+      "f1_movement": 59,
+      "f2_movement": -48,
+      "magnitude": 59,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 25,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": -5.1,
+      "f2_prob_shift": 5.6,
+      "priority": 295.0
     },
     {
       "event_id": "2026-10-17:ufc-fight-night-buckley-vs-malott",

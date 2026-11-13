@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-11-13T19:15:19.604825+00:00",
+  "last_fetch_at": "2026-11-13T21:40:25.194658+00:00",
   "last_status": 200,
-  "lines_digest": "48ab0182d2dfe10baaea1f1254b3e7daa980ccf4",
+  "lines_digest": "f47affce0918b608d10b7e5c2c1d8b8d41b4cfe4",
   "markets": {
     "2026-11-13": {
       "fighters": [
@@ -26,8 +26,6 @@
         "magomedsharipov",
         "moraes",
         "dvalishvili",
-        "faber",
-        "nurmagomedov",
         "borics",
         "pergande",
         "magomedov",
@@ -86,8 +84,8 @@
         "gane",
         "hokit"
       ],
-      "listed": 35,
-      "priced": 35
+      "listed": 34,
+      "priced": 34
     },
     "2026-11-21": {
       "fighters": [
@@ -269,25 +267,25 @@
       "priced": 1
     }
   },
-  "markets_at": "2026-11-13T19:15:19.604825+00:00",
+  "markets_at": "2026-11-13T21:40:25.194658+00:00",
   "next_event_days_out": 1,
   "providers": {
     "the-odds-api": {
-      "bouts": 77,
-      "last_fetch_at": "2026-11-13T19:15:19.604825+00:00",
-      "last_ok_at": "2026-11-13T19:15:19.604825+00:00",
+      "bouts": 76,
+      "last_fetch_at": "2026-11-13T21:40:25.194658+00:00",
+      "last_ok_at": "2026-11-13T21:40:25.194658+00:00",
       "last_status": 200,
       "provider": "the-odds-api:us2,uk,eu,au",
-      "requests_remaining": 105
+      "requests_remaining": 100
     },
     "the-odds-api-backup": {
-      "bouts": 78,
-      "last_fetch_at": "2026-11-13T19:15:19.604825+00:00",
-      "last_ok_at": "2026-11-13T19:15:19.604825+00:00",
+      "bouts": 77,
+      "last_fetch_at": "2026-11-13T21:40:25.194658+00:00",
+      "last_ok_at": "2026-11-13T21:40:25.194658+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 421
+      "requests_remaining": 420
     }
   },
-  "requests_remaining": 105
+  "requests_remaining": 100
 }
