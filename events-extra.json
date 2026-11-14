@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-14T17:00:39Z",
+ "generated_at": "2026-11-14T18:05:41Z",
  "promotions": [
   {
    "id": "pfl",
@@ -95,18 +95,18 @@
      "round": null
     },
     {
-     "a": "Shaqueme Rock",
-     "b": "Connor Hughes",
+     "a": "Connor Hughes",
+     "b": "Shaqueme Rock",
      "label": "",
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": 164,
-      "b": -193
+      "a": -193,
+      "b": 164
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Connor Hughes",
+     "method": "KO/TKO",
+     "round": 2
     },
     {
      "a": "Saygid Izagakhmaev",
@@ -118,9 +118,9 @@
       "a": -240,
       "b": 200
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Saygid Izagakhmaev",
+     "method": "Submission",
+     "round": 3
     },
     {
      "a": "Akhmed Magomedov",
