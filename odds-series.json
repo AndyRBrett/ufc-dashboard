@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-14T12:00:55Z",
+  "generated_at": "2026-11-14T12:05:39Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -21307,7 +21307,7 @@
           "f1": "Caio Borralho",
           "f2": "Yousri Belgaroui",
           "lbl": "Main Card",
-          "points": 22,
+          "points": 23,
           "series": [
             {
               "at": "2026-10-27T21:45:43Z",
@@ -21418,6 +21418,11 @@
               "at": "2026-11-14T06:00:51Z",
               "f1_odds": -160,
               "f2_odds": 133
+            },
+            {
+              "at": "2026-11-14T12:05:38Z",
+              "f1_odds": -163,
+              "f2_odds": 135
             }
           ],
           "open": {
@@ -21962,7 +21967,7 @@
           "f1": "Jim Miller",
           "f2": "Terrance McKinney",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -22028,6 +22033,11 @@
               "at": "2026-11-14T02:55:51Z",
               "f1_odds": 176,
               "f2_odds": -217
+            },
+            {
+              "at": "2026-11-14T12:05:38Z",
+              "f1_odds": 178,
+              "f2_odds": -217
             }
           ],
           "open": {
@@ -22042,7 +22052,7 @@
           "f1": "Donte Johnson",
           "f2": "Cesar Almeida",
           "lbl": "Prelim",
-          "points": 27,
+          "points": 28,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -22178,6 +22188,11 @@
               "at": "2026-11-14T02:55:51Z",
               "f1_odds": -185,
               "f2_odds": 153
+            },
+            {
+              "at": "2026-11-14T12:05:38Z",
+              "f1_odds": -189,
+              "f2_odds": 156
             }
           ],
           "open": {
@@ -22357,7 +22372,7 @@
           "f1": "Evan Elder",
           "f2": "Samuel Sanches",
           "lbl": "Early Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-11-06T23:30:59Z",
@@ -22438,6 +22453,11 @@
               "at": "2026-11-14T09:03:56Z",
               "f1_odds": -106,
               "f2_odds": -122
+            },
+            {
+              "at": "2026-11-14T12:05:38Z",
+              "f1_odds": -106,
+              "f2_odds": -121
             }
           ],
           "open": {
@@ -22874,7 +22894,7 @@
           "f1": "Israel Adesanya",
           "f2": "Sharabutdin Magomedov",
           "lbl": "Main Event",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-11-10T02:01:44Z",
@@ -22905,6 +22925,11 @@
               "at": "2026-11-14T06:00:51Z",
               "f1_odds": -156,
               "f2_odds": 128
+            },
+            {
+              "at": "2026-11-14T12:05:38Z",
+              "f1_odds": -156,
+              "f2_odds": 129
             }
           ],
           "open": {
@@ -22919,7 +22944,7 @@
           "f1": "Ian Machado Garry",
           "f2": "Yaroslav Amosov",
           "lbl": "Co-Main",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-11-10T07:15:45Z",
@@ -22950,6 +22975,11 @@
               "at": "2026-11-14T06:00:51Z",
               "f1_odds": -174,
               "f2_odds": 141
+            },
+            {
+              "at": "2026-11-14T12:05:38Z",
+              "f1_odds": -173,
+              "f2_odds": 142
             }
           ],
           "open": {
@@ -23060,7 +23090,7 @@
           "f1": "Sergei Pavlovich",
           "f2": "Alex Pereira",
           "lbl": "Co-Main",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-10-06T08:45:40Z",
@@ -23146,6 +23176,11 @@
               "at": "2026-11-14T06:00:51Z",
               "f1_odds": -205,
               "f2_odds": 158
+            },
+            {
+              "at": "2026-11-14T12:05:38Z",
+              "f1_odds": -195,
+              "f2_odds": 165
             }
           ],
           "open": {
@@ -23398,7 +23433,7 @@
         "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
         "opponent": "Alex Pereira",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": -166,
         "close": null,
         "clv": null
@@ -24141,7 +24176,7 @@
         "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
         "opponent": "Sergei Pavlovich",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": 140,
         "close": null,
         "clv": null
@@ -24715,7 +24750,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Israel Adesanya",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 126,
         "close": null,
         "clv": null
@@ -25260,7 +25295,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Jim Miller",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -215,
         "close": null,
         "clv": null
@@ -25433,7 +25468,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Donte Johnson",
         "side": "f2",
-        "points": 27,
+        "points": 28,
         "open": 140,
         "close": null,
         "clv": null
@@ -26299,7 +26334,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Yaroslav Amosov",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -169,
         "close": null,
         "clv": null
@@ -26438,7 +26473,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Cesar Almeida",
         "side": "f1",
-        "points": 27,
+        "points": 28,
         "open": -165,
         "close": null,
         "clv": null
@@ -27534,7 +27569,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Caio Borralho",
         "side": "f2",
-        "points": 22,
+        "points": 23,
         "open": -101,
         "close": null,
         "clv": null
@@ -29816,7 +29851,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Yousri Belgaroui",
         "side": "f1",
-        "points": 22,
+        "points": 23,
         "open": -115,
         "close": null,
         "clv": null
@@ -29871,7 +29906,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Terrance McKinney",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 181,
         "close": null,
         "clv": null
@@ -29915,7 +29950,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Samuel Sanches",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -115,
         "close": null,
         "clv": null
@@ -29926,7 +29961,7 @@
         "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
         "opponent": "Evan Elder",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": -101,
         "close": null,
         "clv": null
@@ -30025,7 +30060,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Sharabutdin Magomedov",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -150,
         "close": null,
         "clv": null
@@ -30036,7 +30071,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Ian Machado Garry",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 142,
         "close": null,
         "clv": null

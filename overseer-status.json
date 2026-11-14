@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-14T12:00:54Z",
+  "generated_at": "2026-11-14T12:05:38Z",
   "events_tracked": 10,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-14T09:03:56Z",
+      "last_changed_at": "2026-11-14T12:05:38Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -119,7 +119,7 @@
     {
       "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
       "status": "ok",
-      "last_changed_at": "2026-11-14T06:00:51Z",
+      "last_changed_at": "2026-11-14T12:05:38Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -129,7 +129,7 @@
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
       "status": "ok",
-      "last_changed_at": "2026-11-14T06:00:51Z",
+      "last_changed_at": "2026-11-14T12:05:38Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 4,
@@ -178,17 +178,17 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Caio Borralho",
       "f2": "Yousri Belgaroui",
-      "f1_movement": -45,
-      "f2_movement": 234,
-      "magnitude": 234,
+      "f1_movement": -48,
+      "f2_movement": 236,
+      "magnitude": 236,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 8.1,
-      "f2_prob_shift": -7.3,
-      "priority": 468.0
+      "f1_prob_shift": 8.5,
+      "f2_prob_shift": -7.7,
+      "priority": 472.0
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
