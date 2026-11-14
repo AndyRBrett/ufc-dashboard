@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-14T09:00:47Z",
+  "generated_at": "2026-11-14T09:03:56Z",
   "events_tracked": 10,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-14T06:00:51Z",
+      "last_changed_at": "2026-11-14T09:03:56Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
@@ -109,11 +109,11 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-14T06:00:51Z",
+      "last_changed_at": "2026-11-14T09:03:56Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 9,
-      "line_movement": -18,
+      "line_movement": -10,
       "odds_market_priced": true
     },
     {
@@ -221,6 +221,22 @@
       "f1_prob_shift": -18.0,
       "f2_prob_shift": 21.9,
       "priority": 307.0
+    },
+    {
+      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+      "f1": "Aljamain Sterling",
+      "f2": "Kevin Vallejos",
+      "f1_movement": 212,
+      "f2_movement": -31,
+      "magnitude": 212,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 50,
+      "low_confidence": false,
+      "wc": "Featherweight",
+      "f1_prob_shift": -2.9,
+      "f2_prob_shift": 6.2,
+      "priority": 296.8
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",

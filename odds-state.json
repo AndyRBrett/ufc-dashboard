@@ -1,12 +1,23 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-11-14T06:00:34.521612+00:00",
+  "last_fetch_at": "2026-11-14T09:03:40.156704+00:00",
   "last_status": 200,
-  "lines_digest": "7c192804eaf149a9e5d9d69df2e78c1178189db2",
+  "lines_digest": "91e8ea5429af4542a5c351f56abb69e90095bbdc",
   "markets": {
     "2026-11-14": {
       "fighters": [
+        "gracie",
+        "tsarukyan",
+        "weidman",
+        "chimaev",
+        "pena",
+        "avsaragova",
+        "chikadze",
         "magomedsharipov",
+        "moraes",
+        "dvalishvili",
+        "faber",
+        "nurmagomedov",
         "borics",
         "pergande",
         "magomedov",
@@ -14,6 +25,8 @@
         "austin",
         "rock",
         "hughes",
+        "izagakhmaev",
+        "martinez",
         "goltsov",
         "nana",
         "rodriguez",
@@ -26,6 +39,16 @@
         "popov",
         "habirora",
         "dafrawy",
+        "nemkov",
+        "bilostenniy",
+        "bagley",
+        "souza",
+        "sarwa",
+        "mackenzie",
+        "hill",
+        "ucar",
+        "pell",
+        "lopes",
         "alateng",
         "diaz",
         "elder",
@@ -51,32 +74,38 @@
         "harrison",
         "nunes",
         "gane",
-        "hokit",
-        "izagakhmaev",
-        "martinez",
-        "nemkov",
-        "bilostenniy",
-        "bagley",
-        "souza",
-        "sarwa",
-        "mackenzie",
-        "hill",
-        "ucar",
-        "pell",
-        "lopes"
+        "hokit"
       ],
-      "listed": 29,
-      "priced": 29
+      "listed": 35,
+      "priced": 35
     },
     "2026-11-21": {
       "fighters": [
+        "matthews",
+        "abdullayev",
+        "albazi",
+        "costa",
+        "gaziev",
+        "teixeira",
+        "topuria",
+        "luna",
+        "nurgozhay",
+        "lorenz",
         "sterling",
         "vallejos",
+        "motta",
+        "fan",
         "prochazka",
-        "stirling"
+        "stirling",
+        "cannonier",
+        "aliskerov",
+        "horiguchi",
+        "almabaev",
+        "hooker",
+        "ortega"
       ],
-      "listed": 2,
-      "priced": 2
+      "listed": 11,
+      "priced": 11
     },
     "2026-12-05": {
       "fighters": [
@@ -212,25 +241,25 @@
       "priced": 1
     }
   },
-  "markets_at": "2026-11-14T06:00:34.521612+00:00",
+  "markets_at": "2026-11-14T09:03:40.156704+00:00",
   "next_event_days_out": 0,
   "providers": {
     "the-odds-api": {
-      "bouts": 55,
-      "last_fetch_at": "2026-11-14T06:00:34.521612+00:00",
-      "last_ok_at": "2026-11-14T06:00:34.521612+00:00",
+      "bouts": 71,
+      "last_fetch_at": "2026-11-14T09:03:40.156704+00:00",
+      "last_ok_at": "2026-11-14T09:03:40.156704+00:00",
       "last_status": 200,
       "provider": "the-odds-api:us2,uk,eu,au",
-      "requests_remaining": 85
+      "requests_remaining": 80
     },
     "the-odds-api-backup": {
-      "bouts": 50,
-      "last_fetch_at": "2026-11-14T06:00:34.521612+00:00",
-      "last_ok_at": "2026-11-14T06:00:34.521612+00:00",
+      "bouts": 70,
+      "last_fetch_at": "2026-11-14T09:03:40.156704+00:00",
+      "last_ok_at": "2026-11-14T09:03:40.156704+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 417
+      "requests_remaining": 416
     }
   },
-  "requests_remaining": 85
+  "requests_remaining": 80
 }
