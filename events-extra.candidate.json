@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-14T16:05:39Z",
+ "generated_at": "2026-11-14T16:15:49Z",
  "promotions": [
   {
    "id": "pfl",
@@ -137,18 +137,18 @@
      "round": null
     },
     {
-     "a": "Khasan Magomedsharipov",
-     "b": "Adam Borics",
+     "a": "Adam Borics",
+     "b": "Khasan Magomedsharipov",
      "label": "",
      "division": "Featherweight",
      "title": false,
      "odds": {
-      "a": -258,
-      "b": 213
+      "a": 213,
+      "b": -258
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Adam Borics",
+     "method": "Submission",
+     "round": 1
     },
     {
      "a": "Denis Goltsov",
