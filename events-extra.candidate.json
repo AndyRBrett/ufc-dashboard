@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-14T19:45:39Z",
+ "generated_at": "2026-11-14T20:05:37Z",
  "promotions": [
   {
    "id": "pfl",
@@ -51,9 +51,9 @@
       "a": -550,
       "b": 412
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Patrick Habirora",
+     "method": "Submission",
+     "round": 1
     },
     {
      "a": "Oleg Popov",
