@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-14T15:15:42Z",
+ "generated_at": "2026-11-14T16:05:39Z",
  "promotions": [
   {
    "id": "pfl",
@@ -160,23 +160,23 @@
       "a": -398,
       "b": 316
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Denis Goltsov",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
-     "a": "Rhys McKee",
-     "b": "Ernesto Rodriguez",
+     "a": "Ernesto Rodriguez",
+     "b": "Rhys McKee",
      "label": "",
      "division": "Welterweight",
      "title": false,
      "odds": {
-      "a": 101,
-      "b": -120
+      "a": -120,
+      "b": 101
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Ernesto Rodriguez",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
      "a": "Khabib Nabiev",
