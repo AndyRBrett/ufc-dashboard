@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-14T06:00:52Z",
+ "generated_at": "2026-11-14T09:05:55Z",
  "promotions": [
   {
    "id": "pfl",
@@ -34,8 +34,8 @@
      "division": "Heavyweight",
      "title": true,
      "odds": {
-      "a": -488,
-      "b": 245
+      "a": -400,
+      "b": 316
      },
      "winner": "",
      "method": "",
@@ -48,8 +48,8 @@
      "division": "Welterweight",
      "title": false,
      "odds": {
-      "a": -550,
-      "b": 410
+      "a": -538,
+      "b": 405
      },
      "winner": "",
      "method": "",
@@ -62,8 +62,8 @@
      "division": "Heavyweight",
      "title": false,
      "odds": {
-      "a": 215,
-      "b": -260
+      "a": 213,
+      "b": -258
      },
      "winner": "",
      "method": "",
@@ -87,7 +87,7 @@
      "division": "Bantamweight",
      "title": false,
      "odds": {
-      "a": -375,
+      "a": -388,
       "b": 300
      },
      "winner": "",
@@ -101,7 +101,7 @@
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": 168,
+      "a": 171,
       "b": -200
      },
      "winner": "",
@@ -115,8 +115,8 @@
      "division": "Welterweight",
      "title": false,
      "odds": {
-      "a": -234,
-      "b": 165
+      "a": -225,
+      "b": 189
      },
      "winner": "",
      "method": "",
@@ -129,8 +129,8 @@
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": -190,
-      "b": 160
+      "a": -198,
+      "b": 169
      },
      "winner": "",
      "method": "",
@@ -143,8 +143,8 @@
      "division": "Featherweight",
      "title": false,
      "odds": {
-      "a": -250,
-      "b": 205
+      "a": -268,
+      "b": 220
      },
      "winner": "",
      "method": "",
@@ -157,8 +157,8 @@
      "division": "Heavyweight",
      "title": false,
      "odds": {
-      "a": -360,
-      "b": 290
+      "a": -355,
+      "b": 285
      },
      "winner": "",
      "method": "",
@@ -171,8 +171,8 @@
      "division": "Welterweight",
      "title": false,
      "odds": {
-      "a": 106,
-      "b": -124
+      "a": 109,
+      "b": -128
      },
      "winner": "",
      "method": "",
@@ -185,8 +185,8 @@
      "division": "Light Heavyweight",
      "title": false,
      "odds": {
-      "a": -650,
-      "b": 480
+      "a": -610,
+      "b": 442
      },
      "winner": "",
      "method": "",
