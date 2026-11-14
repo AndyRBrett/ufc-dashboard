@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-14T16:15:49Z",
+ "generated_at": "2026-11-14T17:00:39Z",
  "promotions": [
   {
    "id": "pfl",
@@ -123,18 +123,18 @@
      "round": null
     },
     {
-     "a": "Alexei Pergande",
-     "b": "Akhmed Magomedov",
+     "a": "Akhmed Magomedov",
+     "b": "Alexei Pergande",
      "label": "",
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": -198,
-      "b": 169
+      "a": 169,
+      "b": -198
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Akhmed Magomedov",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
      "a": "Adam Borics",
