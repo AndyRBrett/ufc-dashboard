@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-13T23:50:31Z",
+ "generated_at": "2026-11-14T00:00:26Z",
  "source": "https://www.ufc.com",
  "cards": {
   "UFC 334: Gane vs. Hokit|2026-11-14": {
@@ -148,6 +148,16 @@
     ]
    },
    "confirmed_at": "2026-11-13T22:45:24Z"
+  },
+  "UFC Fight Night: Adesanya vs. Magomedov|2026-12-05": {
+   "name": "UFC Fight Night: Adesanya vs. Magomedov",
+   "date": "2026-12-05",
+   "checked_at": "2026-11-14T00:00:26Z",
+   "status": 200,
+   "error": "no UFC.com page matched this card",
+   "tried": [
+    "/event/ufc-fight-night-december-5-2026"
+   ]
   }
  }
 }
