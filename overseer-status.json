@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-14T21:05:34Z",
+  "generated_at": "2026-11-14T21:10:43Z",
   "events_tracked": 10,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -99,11 +99,11 @@
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "status": "ok",
-      "last_changed_at": "2026-11-14T18:10:40Z",
+      "last_changed_at": "2026-11-14T21:10:43Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 13,
-      "line_movement": 50,
+      "line_movement": 55,
       "odds_market_priced": true
     },
     {
@@ -178,33 +178,33 @@
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Caio Borralho",
       "f2": "Yousri Belgaroui",
-      "f1_movement": -46,
-      "f2_movement": 234,
-      "magnitude": 234,
+      "f1_movement": -44,
+      "f2_movement": 232,
+      "magnitude": 232,
       "main_event": false,
       "tier": "main-card",
       "threshold": 50,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 8.2,
-      "f2_prob_shift": -7.3,
-      "priority": 468.0
+      "f1_prob_shift": 7.9,
+      "f2_prob_shift": -7.0,
+      "priority": 464.0
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Stephen Thompson",
       "f2": "Charles Radtke",
-      "f1_movement": -24,
-      "f2_movement": 218,
-      "magnitude": 218,
+      "f1_movement": -20,
+      "f2_movement": 214,
+      "magnitude": 214,
       "main_event": false,
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
       "wc": "Welterweight",
-      "f1_prob_shift": 4.9,
-      "f2_prob_shift": -4.3,
-      "priority": 436.0
+      "f1_prob_shift": 4.1,
+      "f2_prob_shift": -3.4,
+      "priority": 428.0
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -255,6 +255,22 @@
       "priority": 276.0
     },
     {
+      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
+      "f1": "Ciryl Gane",
+      "f2": "Josh Hokit",
+      "f1_movement": 55,
+      "f2_movement": -42,
+      "magnitude": 55,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 25,
+      "low_confidence": false,
+      "wc": "Heavyweight",
+      "f1_prob_shift": -4.7,
+      "f2_prob_shift": 4.8,
+      "priority": 275.0
+    },
+    {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
       "f1": "Aaron Pico",
       "f2": "Losene Keita",
@@ -269,22 +285,6 @@
       "f1_prob_shift": 10.7,
       "f2_prob_shift": -10.5,
       "priority": 252.0
-    },
-    {
-      "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "f1": "Ciryl Gane",
-      "f2": "Josh Hokit",
-      "f1_movement": 50,
-      "f2_movement": -38,
-      "magnitude": 50,
-      "main_event": true,
-      "tier": "main-event",
-      "threshold": 25,
-      "low_confidence": false,
-      "wc": "Heavyweight",
-      "f1_prob_shift": -4.2,
-      "f2_prob_shift": 4.2,
-      "priority": 250.0
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
