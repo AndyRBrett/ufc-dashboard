@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-11-15T09:10:30.250532+00:00",
+  "last_fetch_at": "2026-11-15T15:30:50.972031+00:00",
   "last_status": 200,
-  "lines_digest": "dcfd34dd6949ccbbe64738b652eb30da22486657",
+  "lines_digest": "dbbb74f60ee455c08cfda238a40c21b40d65764c",
   "markets": {
     "2026-11-21": {
       "fighters": [
@@ -164,10 +164,12 @@
       "fighters": [
         "ankalaev",
         "ulberg",
-        "prochazka"
+        "prochazka",
+        "harrison",
+        "shevchenko"
       ],
-      "listed": 2,
-      "priced": 2
+      "listed": 3,
+      "priced": 3
     },
     "2027-10-24": {
       "fighters": [
@@ -176,6 +178,17 @@
       ],
       "listed": 1,
       "priced": 1
+    },
+    "2027-12-01": {
+      "fighters": [
+        "gane",
+        "volkov",
+        "aspinall",
+        "harrison",
+        "edwards"
+      ],
+      "listed": 3,
+      "priced": 3
     },
     "2028-07-30": {
       "fighters": [
@@ -186,25 +199,25 @@
       "priced": 1
     }
   },
-  "markets_at": "2026-11-15T09:10:30.250532+00:00",
+  "markets_at": "2026-11-15T15:30:50.972031+00:00",
   "next_event_days_out": 6,
   "providers": {
     "the-odds-api": {
-      "bouts": 43,
-      "last_fetch_at": "2026-11-15T09:10:30.250532+00:00",
-      "last_ok_at": "2026-11-15T09:10:30.250532+00:00",
+      "bouts": 47,
+      "last_fetch_at": "2026-11-15T15:30:50.972031+00:00",
+      "last_ok_at": "2026-11-15T15:30:50.972031+00:00",
       "last_status": 200,
       "provider": "the-odds-api:us2,uk,eu,au",
-      "requests_remaining": 50
+      "requests_remaining": 45
     },
     "the-odds-api-backup": {
-      "bouts": 43,
-      "last_fetch_at": "2026-11-15T09:10:30.250532+00:00",
-      "last_ok_at": "2026-11-15T09:10:30.250532+00:00",
+      "bouts": 47,
+      "last_fetch_at": "2026-11-15T15:30:50.972031+00:00",
+      "last_ok_at": "2026-11-15T15:30:50.972031+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 410
+      "requests_remaining": 409
     }
   },
-  "requests_remaining": 50
+  "requests_remaining": 45
 }
