@@ -482,6 +482,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 .lb-pick-chip.lbc-me{border-color:var(--gold-border);color:var(--gold);background:var(--gold-dim)}
 .lb-pick-chip.lbc-win{border-color:var(--green-border);color:var(--green);background:var(--green-dim)}
 .lb-pick-chip.lbc-loss{border-color:var(--loss-border);color:var(--muted);background:var(--loss-dim);opacity:.75}
+.lb-pick-chip.lbc-void{color:var(--muted);background:none;border-style:dotted;opacity:.8}
 @keyframes lb-blink{0%,100%{opacity:1}50%{opacity:.3}}
 .lb-title.lb-live::after{content:" ●";color:var(--green);font-size:10px;animation:lb-blink .6s 2}
 .lb-trash-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--card2);border-top:2px solid var(--gold);border-radius:16px 16px 0 0;padding:20px 16px 28px;transform:translateY(100%);transition:transform .3s ease;z-index:10}
@@ -2337,7 +2338,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <script src="data.js"></script>
 <!-- The app's scoring (scoring.js, engine migration stage 3). Required, like
      data.js: the self-heal below covers it failing to load too. -->
-<script src="scoring.js?v=2026-10-25-1"></script>
+<script src="scoring.js?v=2026-11-15-1"></script>
 <!-- The Pick Engine (engine migration, docs/MIGRATION.md). Optional by design:
      if it fails to load, _boutLookup falls back to the app's own loops and
      every score comes out the same (check:parity runs both paths). -->
@@ -2354,7 +2355,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 // …and it must be the rulebook THIS page shipped with: a previous release's
 // scoring.js (an old cached copy, a network drop mid-upgrade) is treated as
 // missing rather than silently scoring with old rules.
-var SCORING_EXPECT="2026-10-25-1";
+var SCORING_EXPECT="2026-11-15-1";
 function _scoringOk(){return typeof pickPts==="function"&&typeof _lbScoreUsers==="function"&&typeof SCORING_VERSION!=="undefined"&&SCORING_VERSION===SCORING_EXPECT;}
 if(typeof EVENTS==="undefined"||!_scoringOk()){
   (function(){
@@ -11986,7 +11987,7 @@ function loadLeaderboard(isLive){
       var _tapeE=roomTapeEl(rows,_room,belt,nextEv);if(_tapeE)body.insertBefore(_tapeE,body.firstChild);
       return;
     }
-    var anyResolved=sorted.some(function(u){return u.correct>0||u.picks.some(function(p){return p.result===false;});});
+    var anyResolved=sorted.some(function(u){return u.correct>0||u.picks.some(function(p){return p.result===false||!!p.outcome;});});
     var medals=["🥇","🥈","🥉"];
     body.innerHTML="";
     if(!anyResolved){
@@ -12053,7 +12054,8 @@ function loadLeaderboard(isLive){
     });
     sorted.forEach(function(u,i){
       var pts=userPts(u);
-      var pending=u.picks.filter(function(p){return p.result===null;}).length;
+      // A draw / no contest is over, not pending (it has no result to score).
+      var pending=u.picks.filter(function(p){return p.result===null&&!p.outcome;}).length;
       var hasNextPicks=nextMainFights.length>0;
       var wrap=document.createElement("div");wrap.style.cssText="margin-bottom:8px";
       // Header row
@@ -12091,7 +12093,7 @@ function loadLeaderboard(isLive){
       metaLine.appendChild(streakDiv);
       var det=document.createElement("div");det.className="lb-detail";
       if(u.hiddenCount)det.textContent="🙈 "+u.hiddenCount+" picked, hidden until each fight locks";
-      else det.textContent=anyResolved?(u.correct+"/"+u.total+" correct"+(u.methods?" · +"+u.methods+" method":"")+(u.dogPts?" · +"+u.dogPts+" dog":"")+(u.lockPts?" · "+(u.lockPts>0?"+":"")+u.lockPts+" lock":"")+(u.fotn?" · +"+u.fotn+" bonus":"")):pending+" pending";
+      else det.textContent=anyResolved?(u.correct+"/"+(u.decided||0)+" correct"+(u.methods?" · +"+u.methods+" method":"")+(u.dogPts?" · +"+u.dogPts+" dog":"")+(u.lockPts?" · "+(u.lockPts>0?"+":"")+u.lockPts+" lock":"")+(u.fotn?" · +"+u.fotn+" bonus":"")):pending+" pending";
       metaLine.appendChild(det);
       main.appendChild(metaLine);
       row.appendChild(main);
@@ -12151,6 +12153,14 @@ function loadLeaderboard(isLive){
           if(picked&&chipMethod){var ms=document.createElement("span");ms.className="lb-pick-method";var mAbbr=chipMethod==="KO/TKO"?"KO":chipMethod;ms.textContent=mAbbr;chip.appendChild(ms);}
           if(!picked){chip.classList.add("lbc-none");}
           else if(f.winner){chip.classList.add(nmEq(picked,f.winner)?"lbc-win":"lbc-loss");}
+          else if(voidOutcome(f)){
+            // Over with no winner: say so where the method sits, instead of
+            // looking like a fight still to come.
+            chip.classList.add("lbc-void");chip.title=voidOutcome(f)+" · 0 pts";
+            var vs=chip.querySelector(".lb-pick-method");
+            if(!vs){vs=document.createElement("span");vs.className="lb-pick-method";chip.appendChild(vs);}
+            vs.textContent=voidOutcome(f);
+          }
           else if(u.isMe){chip.classList.add("lbc-me");}
           nextPicksDiv.appendChild(chip);
         });
@@ -12199,11 +12209,12 @@ function loadLeaderboard(isLive){
           var oppDiv=document.createElement("div");oppDiv.style.cssText="font-size:11px;color:var(--muted);width:70px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
           oppDiv.textContent="vs "+opp.split(" ").pop();pr.appendChild(oppDiv);
           var pickDiv=document.createElement("div");pickDiv.style.cssText="font-size:13px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
-          pickDiv.style.color=p.result===true?"var(--green)":p.result===false?"var(--loss)":"var(--text)";
+          pickDiv.style.color=p.result===true?"var(--green)":p.result===false?"var(--loss)":p.outcome?"var(--muted)":"var(--text)";
           pickDiv.textContent=p.pick.split(" ").pop();pr.appendChild(pickDiv);
           if(p.method){var mspan=document.createElement("span");mspan.style.cssText="font-size:10px;flex-shrink:0";mspan.style.color=p.result===true?(p.methodCorrect?"var(--green)":"var(--loss)"):p.result===false?"var(--loss)":"var(--muted)";mspan.textContent="via "+p.method;pr.appendChild(mspan);}
           var bdg=document.createElement("div");bdg.style.cssText="font-size:11px;font-weight:600;flex-shrink:0;min-width:36px;text-align:right";
-          if(p.result===null){bdg.textContent="⏳";bdg.style.color="var(--muted)";}
+          if(p.result===null&&p.outcome){bdg.textContent=p.outcome+" · 0";bdg.style.color="var(--muted)";bdg.title=p.outcome+": no winner, so the pick (and any lock) scores 0";}
+          else if(p.result===null){bdg.textContent="⏳";bdg.style.color="var(--muted)";}
           else if(p.result===true){var pPts=1+(p.methodCorrect?0.5:0)+(p.dogPts||0)+(p.lockPts||0);bdg.textContent="+"+pPts+" pt"+(pPts!==1?"s":"");bdg.style.color="var(--green)";bdg.title=[p.dogPts?"+"+p.dogPts+" underdog bonus":"",p.lockPts?"+"+p.lockPts+" lock bonus":""].filter(Boolean).join(", ");}
           else if(p.lockPts){bdg.textContent=p.lockPts+" pt";bdg.style.color="var(--loss)";bdg.title="Missed lock";}
           else{bdg.textContent="0 pts";bdg.style.color="var(--muted);opacity:.5";}

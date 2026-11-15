@@ -1265,7 +1265,7 @@ export function kernelFactory(EVENTS, RESULTS_ARCHIVE, FIGHTER_STATS, RANKINGS, 
 // even offline with an old copy cached. Bump it on ANY change to this file, in
 // all three places (index.html's script src + SCORING_EXPECT, sw.js's precache);
 // check:lab fails if they disagree.
-var SCORING_VERSION="2026-10-25-1";
+var SCORING_VERSION="2026-11-15-1";
 
 // fighter-names:start
 var _NM_SUFFIX_RE=/\b(?:jr|sr|ii|iii|iv)\b/g;
@@ -1388,8 +1388,20 @@ function segmentRunOrder(ev,f){
 }
 // Over: a winner, or marked finished without one (a draw or a no contest).
 function boutDecided(f){return !!(f&&(f.winner||f.state==="post"));}
-
 // pick-match:start
+// A finished bout with no winner: "Draw", "NC" or "No result" (an over bout
+// whose method the source left blank). Null for a bout with a winner or one
+// not fought yet. Display only: such a pick scores 0 and stays out of
+// accuracy, exactly as before; this just stops it reading as "still to come".
+// Archived bouts carry no state, so their method alone decides.
+function voidOutcome(f){
+  if(!f||f.winner)return null;
+  var m=String(f.method||"");
+  if(/no contest|\bnc\b/i.test(m))return "NC";
+  if(/draw/i.test(m))return "Draw";
+  return f.state==="post"?"No result":null;
+}
+
 var DOG_TIERS=[{min:250,pts:1},{min:150,pts:0.5}];
 // Underdog points for one moneyline. Favourites (negative odds) and short dogs
 // under the first tier earn nothing extra.
@@ -1582,7 +1594,7 @@ function _lbScoreUsers(rows,keep){
     if(!_isUfcRow(p))return;
     if(keep&&!keep(p))return;
     var uid=p.user_id||p.nickname||"unknown";
-    if(!users[uid])users[uid]={nickname:p.nickname||"",user_id:p.user_id||null,correct:0,total:0,methods:0,fotn:0,dogPts:0,lockPts:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
+    if(!users[uid])users[uid]={nickname:p.nickname||"",user_id:p.user_id||null,correct:0,total:0,decided:0,methods:0,fotn:0,dogPts:0,lockPts:0,bonusPicks:{},isMe:uid===USER_ID,picks:[]};
     // Rows are newest-first, but the freshest row can carry a blank nickname (a
     // pick synced before the name was set), which would render an empty row.
     // Backfill from any row of the same user that does have a name.
@@ -1614,9 +1626,10 @@ function _lbScoreUsers(rows,keep){
         console.log("[lb score]",p.f1,"vs",p.f2,"→ winner match. p.method="+JSON.stringify(p.method)+" fallback="+JSON.stringify(pickedMethod)+" fight.method="+JSON.stringify(fight.method));
         if(scoreMethod(pickedMethod,fight.method||"")){users[uid].methods++;methodCorrect=true;}
       }else{result=false;}
+      users[uid].decided++;
       lockPts=lockPtsFor(locked,fight.winner,p.pick);users[uid].lockPts+=lockPts;
     }
-    users[uid].picks.push({f1:p.f1,f2:p.f2,pick:p.pick,method:pickedMethod,result:result,methodCorrect:methodCorrect,dogPts:dogPts,locked:locked,lockPts:lockPts,evName:p.event_name,evDate:p.event_date});
+    users[uid].picks.push({f1:p.f1,f2:p.f2,pick:p.pick,method:pickedMethod,result:result,outcome:voidOutcome(fight),methodCorrect:methodCorrect,dogPts:dogPts,locked:locked,lockPts:lockPts,evName:p.event_name,evDate:p.event_date});
     if(p.bonus_pick)users[uid].bonusPicks[p.event_date]=p.bonus_pick;
   });
   // De-duplicate by name (keep higher pick count)

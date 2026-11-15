@@ -217,5 +217,50 @@ const res = (date, a, b) => ctx._findFightResult(date, a, b);
     /return="\+\(wantLock\?"representation":"minimal"\)/.test(html) && /_lockClampCheck\(key,rows\)/.test(html));
 }
 
+// --- a draw / no contest: over, scores 0, never "still to come" -----------
+// The board used to treat a finished bout with no winner exactly like one not
+// fought yet (result null), so Ranks showed ⌛ beside a draw all night and
+// counted it in "N/total correct". Points never moved and must not now: the
+// pick (and its lock) scores 0 and stays out of accuracy. What changes is
+// that the pick says how the fight ended, and the board counts only picks on
+// fights that had a winner.
+{
+  check("voidOutcome: Draw, NC, a blank finished bout, and nothing for a winner or a fight to come",
+    ctx.voidOutcome({ winner: "", method: "Draw", state: "post" }) === "Draw" &&
+    ctx.voidOutcome({ winner: "", method: "Draw (Majority)" }) === "Draw" &&          // archived: no state
+    ctx.voidOutcome({ winner: "", method: "No Contest", state: "post" }) === "NC" &&
+    ctx.voidOutcome({ winner: "", method: "NC (Overturned)" }) === "NC" &&
+    ctx.voidOutcome({ winner: "", method: "", state: "post" }) === "No result" &&
+    ctx.voidOutcome({ winner: "A1", method: "KO/TKO", state: "post" }) === null &&
+    ctx.voidOutcome({ winner: "", method: "", state: "pre" }) === null &&
+    ctx.voidOutcome(null) === null);
+  const drawCard = { name: "UFC 999: Draw", date: NEW, fights: [
+    bout("A1", "B1", "A1"),
+    Object.assign(bout("A5", "B5", "", null, "post"), { method: "Draw" }),
+    bout("A6", "B6"),                                   // still to come
+  ] };
+  const saved = ctx.EVENTS; ctx.EVENTS = [drawCard];
+  try {
+    const rows = [
+      pick("Dee", NEW, "A1", "B1", "B1"),
+      pick("Dee", NEW, "A5", "B5", "A5", { confidence: 1 }),   // a lock on the draw
+      pick("Dee", NEW, "A6", "B6", "A6"),
+    ];
+    const u = ctx._lbScoreUsers(rows, (p) => p.event_date === NEW)[0];
+    const byBout = (a) => u.picks.find((p) => p.f1 === a);
+    check("a draw pick carries its outcome and stays unscored (result null, 0 lock points)",
+      byBout("A5").outcome === "Draw" && byBout("A5").result === null && byBout("A5").lockPts === 0);
+    check("a fight still to come carries no outcome; a decided one carries none either",
+      byBout("A6").outcome === null && byBout("A1").outcome === null && byBout("A1").result === false);
+    check("the board counts only decided picks (1 decided, 3 made); points and accuracy unchanged",
+      u.decided === 1 && u.total === 3 && u.correct === 0 && ctx.userPts(u) === 0 && u.accuracy === 0);
+  } finally { ctx.EVENTS = saved; }
+  check("Ranks shows correct out of decided picks, and a draw as over (not ⏳, not pending)",
+    /det\.textContent=anyResolved\?\(u\.correct\+"\/"\+\(u\.decided\|\|0\)\+" correct"/.test(html) &&
+    /if\(p\.result===null&&p\.outcome\)\{bdg\.textContent=p\.outcome\+" · 0"/.test(html) &&
+    /var pending=u\.picks\.filter\(function\(p\)\{return p\.result===null&&!p\.outcome;\}\)/.test(html) &&
+    /else if\(voidOutcome\(f\)\)\{[^]*?chip\.classList\.add\("lbc-void"\)/.test(html));
+}
+
 if (failures) { console.error(`\n${failures} lock check(s) failed`); process.exit(1); }
 console.log("Lock checks passed");
