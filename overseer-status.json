@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-15T04:15:23Z",
-  "events_tracked": 10,
+  "generated_at": "2026-11-15T04:21:21Z",
+  "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
-  "awaiting_card_events": 0,
+  "awaiting_card_events": 2,
   "odds_unavailable_events": 0,
   "odds_budget_exhausted": false,
   "odds_budget": {
@@ -135,6 +135,26 @@
       "bout_count": 4,
       "line_movement": 11,
       "odds_market_priced": true
+    },
+    {
+      "event_id": "2027-01-16:ufc-fight-night-rodriguez-vs-garcia",
+      "status": "awaiting-card",
+      "last_changed_at": "2026-11-15T04:21:21Z",
+      "is_stale": false,
+      "has_data": false,
+      "bout_count": 3,
+      "line_movement": 0,
+      "odds_market_priced": false
+    },
+    {
+      "event_id": "2027-01-23:ufc-fight-night-bonfim-vs-brady",
+      "status": "awaiting-card",
+      "last_changed_at": "2026-11-15T04:21:21Z",
+      "is_stale": false,
+      "has_data": false,
+      "bout_count": 1,
+      "line_movement": 0,
+      "odds_market_priced": false
     },
     {
       "event_id": "2027-01-30:ufc-336-van-vs-kape",
