@@ -183,7 +183,8 @@ r = await ask({ question: "What's AB's best night?", league: LEAGUE });
 check("league: a score it wasn't given is still caught", r.status === 502);
 check("league: a league question is app-only (no web search offered)",
   !M.fightResearchEnabled({ action: "guide", question: "What's everyone's best night ie. total score from a card" }) &&
-  !M.fightResearchEnabled({ action: "guide", question: "who's top of the standings?" }));
+  !M.fightResearchEnabled({ action: "guide", question: "who's top of the standings?" }) &&
+  M.fightResearchEnabled({ action: "guide", question: "Who won the lightweight belt last weekend?" }));
 for (const [name, body] of [
   ["league data over the server's cap", { question: "q", league: "x".repeat(M.MAX_LEAGUE + 1) }],
   ["league data that isn't text", { question: "q", league: { AB: 1 } }],
@@ -434,6 +435,16 @@ try {
   check("league: card scores newest first, the live card marked, an unscored card left out",
     /CARD SCORES[^]*Card 2026-01-03[^]*Card 2026-01-02 \([^]*Card 2026-01-01 \(/.test(lg.out) && /2026, in progress\): 🦍 T 12, 🥋 AB 4/.test(lg.out) && !/2025-12-31/.test(lg.out));
   check("league: nothing loaded means no league block", lg.none === null);
+  const order = await page.evaluate(() => {
+    const real = window.boardStandings;
+    let seen = null;
+    window.boardStandings = (rows) => { if (!seen) seen = rows.map((r) => r.updated_at); return []; };
+    try { _botLeague([{ event_date: "2026-01-01", updated_at: "2026-01-01T00:00:00Z" }, { event_date: "2026-01-01", updated_at: "2026-01-02T00:00:00Z" }]); }
+    finally { window.boardStandings = real; }
+    return seen;
+  });
+  check("league: rows are scored newest first, as Ranks reads them (oldest-first _commRows reordered)",
+    Array.isArray(order) && order[0] === "2026-01-02T00:00:00Z");
   check("league: capped under the server's limit", lg.bigLen <= lg.max && lg.max <= M.MAX_LEAGUE);
   await page.evaluate(() => { window._botLeague = () => "LEAGUE-TEXT"; window._botFightData = () => null; });
   await page.fill("#botInput", "best night?");

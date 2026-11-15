@@ -2861,6 +2861,9 @@ function _botPts(n){return String(Math.round(n*10)/10);}
 function _botLeague(rows){
   rows=rows||(typeof _commRows!=="undefined"&&_commRows)||(typeof _lbRows!=="undefined"&&_lbRows)||null;
   if(!Array.isArray(rows)||!rows.length)return null;
+  // Newest first, as Ranks reads them: _commRows arrive oldest first, and the
+  // scorer keeps the first identity it meets when a nickname's pick counts tie.
+  rows=_recapBoardOrder(rows);
   var all=boardStandings(rows);
   if(!all.length)return null;
   var label=Object.create(null);   // base name -> name as the board shows it
