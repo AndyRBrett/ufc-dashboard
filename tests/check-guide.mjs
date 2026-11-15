@@ -162,6 +162,36 @@ r = await ask({ question: "What if I pick a +300 dog?" });
 check("a figure the user said themselves is fair to repeat", r.status === 200 && r.calls.length === 1);
 replies = ["Main events go 5 rounds of 5 minutes."];
 check("MMA basics are in the guide, so '5 rounds' isn't an invented number", (await ask({ question: "How long is a main event?" })).status === 200);
+
+// League questions ("everyone's best night") answer from LEAGUE DATA: the app's
+// own board, scored by scoring.js in the browser. Its numbers are facts, it goes
+// before the question as data, and it is bounded like every other input.
+const LEAGUE = "LEAGUE (the app's UFC leaderboard, scored by the app)\nALL-TIME: 1. 🥋 AB 221.5 pts (176 correct of 278 picks); 2. 🦍 T 214.5 pts (170 correct of 277 picks)\n" +
+  "BEST NIGHT (most points on one finished card): 🥋 AB 18.5 pts, UFC 330: Gane vs. Hokit (Sat, Oct 3, 2026); 🦍 T 16 pts, UFC Fight Night: X vs. Y (Sat, Sep 26, 2026)";
+replies = ["AB's best night was 18.5 points at UFC 330: Gane vs. Hokit; T's was 16 points."];
+r = await ask({ question: "What's everyone's best night ie. total score from a card", league: LEAGUE, card: CARD });
+const lu = r.calls[0]?.body.messages[0].content || "";
+check("league: the standings reach the model as data, before the question, never in the system prompt",
+  r.status === 200 && lu.includes("LEAGUE DATA (the app's leaderboard") && lu.includes(LEAGUE) && lu.indexOf("LEAGUE DATA") < lu.indexOf("QUESTION:") &&
+  !(r.calls[0].body.system || "").includes(LEAGUE));
+check("league: the rules say league questions answer from LEAGUE DATA, never a web search",
+  /League questions[^\n]*answer from LEAGUE DATA[^\n]*never web-search/.test(r.calls[0].body.system || ""));
+check("league: its numbers are facts (no retry), even in a sentence naming a fighter on the card",
+  r.calls.length === 1 && /18\.5/.test(r.json.breakdown) && M.numbersMisattributed("AB scored 18.5 at UFC 330: Gane vs. Hokit, ahead of Volkanovski.", { card: CARD, league: LEAGUE, question: "q" }).length === 0);
+replies = ["AB's best night was 31 points.", "AB's best night was 31 points."];
+r = await ask({ question: "What's AB's best night?", league: LEAGUE });
+check("league: a score it wasn't given is still caught", r.status === 502);
+check("league: a league question is app-only (no web search offered)",
+  !M.fightResearchEnabled({ action: "guide", question: "What's everyone's best night ie. total score from a card" }) &&
+  !M.fightResearchEnabled({ action: "guide", question: "who's top of the standings?" }) &&
+  M.fightResearchEnabled({ action: "guide", question: "Who won the lightweight belt last weekend?" }));
+for (const [name, body] of [
+  ["league data over the server's cap", { question: "q", league: "x".repeat(M.MAX_LEAGUE + 1) }],
+  ["league data that isn't text", { question: "q", league: { AB: 1 } }],
+]) {
+  r = await ask(body);
+  check(`${name} is a 400 with no model call`, r.status === 400 && r.calls.length === 0);
+}
 for (const [name, body] of [
   ["fight data over the server's cap", { question: "q", card: "x".repeat(4001) }],
   ["fight data that isn't text", { question: "q", card: { main: "x" } }],
@@ -374,6 +404,60 @@ try {
   await page.waitForFunction(() => document.querySelectorAll("#botHistory .loading").length === 0);
   lastReq = sent[sent.length - 1];
   check("if building the fight data fails, the question still goes (without it)", lastReq.question === "scoring?" && lastReq.card === undefined);
+  // The league block: built by boardStandings itself (stubbed here so no live
+  // card is read), best night over finished cards only, ties listed, capped.
+  const lg = await page.evaluate(() => {
+    const real = { boardStandings, userPts, _eventFinished, _recapEvName };
+    const U = (n, p, scored = true) => ({ nickname: n, p, correct: 1, total: 2, picks: [{ result: scored ? true : null }] });
+    const BY = {
+      all: [U("🥋 AB", 30.5), U("🦍 T", 25)],
+      "2026-01-03": [U("🦍 T", 12), U("🥋 AB", 4)],          // in progress: never a best night
+      "2026-01-02": [U("🥋 AB", 9.5), U("🦍 T", 7)],
+      "2026-01-01": [U("🥋 AB", 9.5), U("🦍 T", 8)],
+      "2025-12-31": [U("🥋 AB", 0, false)],                    // nothing scored yet: skipped
+    };
+    window.boardStandings = (rows, scope) => BY[scope ? scope.date : "all"] || [];
+    window.userPts = (u) => u.p;
+    window._eventFinished = (d) => d !== "2026-01-03";
+    window._recapEvName = (d) => "Card " + d;
+    const rows = Object.keys(BY).filter((k) => k !== "all").map((d) => ({ event_date: d }));
+    try {
+      const out = _botLeague(rows), none = _botLeague([]);
+      const big = []; for (let i = 0; i < 400; i++) { const d = "2024-" + String(1 + (i % 12)).padStart(2, "0") + "-" + String(1 + (i % 28)).padStart(2, "0") + "-" + i; BY[d] = [U("🥋 AB", i)]; big.push({ event_date: d }); }
+      window._eventFinished = () => true;
+      return { out, none, bigLen: _botLeague(big).length, max: BOT_LEAGUE_MAX };
+    } finally { Object.assign(window, real); }
+  });
+  check("league: all-time standings come from boardStandings with points, correct and picks",
+    /ALL-TIME: 1\. 🥋 AB 30\.5 pts \(1 correct of 2 picks\); 2\. 🦍 T 25 pts/.test(lg.out));
+  check("league: best night is the top finished card per player, ties named, an in-progress card never counts",
+    /🥋 AB 9\.5 pts, Card 2026-01-02 \([^)]*\) and Card 2026-01-01/.test(lg.out) && /🦍 T 8 pts, Card 2026-01-01/.test(lg.out) && !/T 12 pts/.test(lg.out));
+  check("league: card scores newest first, the live card marked, an unscored card left out",
+    /CARD SCORES[^]*Card 2026-01-03[^]*Card 2026-01-02 \([^]*Card 2026-01-01 \(/.test(lg.out) && /2026, in progress\): 🦍 T 12, 🥋 AB 4/.test(lg.out) && !/2025-12-31/.test(lg.out));
+  check("league: nothing loaded means no league block", lg.none === null);
+  const order = await page.evaluate(() => {
+    const real = window.boardStandings;
+    let seen = null;
+    window.boardStandings = (rows) => { if (!seen) seen = rows.map((r) => r.updated_at); return []; };
+    try { _botLeague([{ event_date: "2026-01-01", updated_at: "2026-01-01T00:00:00Z" }, { event_date: "2026-01-01", updated_at: "2026-01-02T00:00:00Z" }]); }
+    finally { window.boardStandings = real; }
+    return seen;
+  });
+  check("league: rows are scored newest first, as Ranks reads them (oldest-first _commRows reordered)",
+    Array.isArray(order) && order[0] === "2026-01-02T00:00:00Z");
+  check("league: capped under the server's limit", lg.bigLen <= lg.max && lg.max <= M.MAX_LEAGUE);
+  await page.evaluate(() => { window._botLeague = () => "LEAGUE-TEXT"; window._botFightData = () => null; });
+  await page.fill("#botInput", "best night?");
+  await page.press("#botInput", "Enter");
+  await page.waitForFunction(() => document.querySelectorAll("#botHistory .loading").length === 0);
+  lastReq = sent[sent.length - 1];
+  check("a question carries the league block", lastReq.question === "best night?" && lastReq.league === "LEAGUE-TEXT");
+  await page.evaluate(() => { window._botLeague = () => { throw new Error("boom"); }; });
+  await page.fill("#botInput", "locks?");
+  await page.press("#botInput", "Enter");
+  await page.waitForFunction(() => document.querySelectorAll("#botHistory .loading").length === 0);
+  lastReq = sent[sent.length - 1];
+  check("if building the league fails, the question still goes (without it)", lastReq.question === "locks?" && lastReq.league === undefined);
   // iPhone-sized viewport: sub-16px fields trigger Safari's input zoom.
   // Chromium checks the CSS precondition and lifecycle; device zoom itself
   // still needs an iPhone check. No live card/date dependency.
