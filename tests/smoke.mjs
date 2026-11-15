@@ -508,7 +508,7 @@ async function main() {
       await seasonPage.clock.setFixedTime(Date.UTC(2027, m, 15, 17));
       await seasonPage.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 });
       const ok = await seasonPage.evaluate(() => {
-        const em = SEASONS[new Date().getMonth()].em, slots = [...document.querySelectorAll(".logo-season,.lb-season")];
+        const em = window.SEASONS[new Date().getMonth()].em, slots = [...document.querySelectorAll(".logo-season,.lb-season")];
         return slots.length >= 2 && slots.every((s) => s.textContent === em) && !!document.querySelector(".lb-title .lb-season");
       });
       if (!ok) emptyMonths.push(m + 1);
