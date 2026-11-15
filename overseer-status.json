@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-15T03:10:47Z",
+  "generated_at": "2026-11-15T03:12:03Z",
   "events_tracked": 10,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -26,10 +26,10 @@
       "target_alert_rate": 0.5,
       "source": "calibrated",
       "observed_p": 24,
-      "persistence_at_default": 0.876,
+      "persistence_at_default": 0.877,
       "persistence_at_threshold": 0.972,
-      "persistence_samples": 179,
-      "persistence_samples_at_default": 323
+      "persistence_samples": 181,
+      "persistence_samples_at_default": 325
     },
     {
       "tier": "main-card",
@@ -37,10 +37,10 @@
       "target_alert_rate": 0.35,
       "source": "calibrated",
       "observed_p": 55,
-      "persistence_at_default": 0.805,
+      "persistence_at_default": 0.806,
       "persistence_at_threshold": 0.873,
-      "persistence_samples": 315,
-      "persistence_samples_at_default": 1167
+      "persistence_samples": 316,
+      "persistence_samples_at_default": 1171
     },
     {
       "tier": "prelim",
