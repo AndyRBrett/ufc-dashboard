@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-14T21:10:43Z",
+ "generated_at": "2026-11-15T10:15:46Z",
  "promotions": [
   {
    "id": "pfl",
@@ -205,6 +205,93 @@
      "winner": "Aleksandra Savicheva",
      "method": "Decision (Unanimous)",
      "round": 3
+    }
+   ]
+  },
+  {
+   "promotion": "pfl",
+   "name": "PFL Africa 4",
+   "date": "2026-12-12",
+   "venue": "BK Arena",
+   "location": "Kigali",
+   "broadcast": "",
+   "bouts": [
+    {
+     "a": "Shido Boris Esperanca",
+     "b": "David Samuel",
+     "label": "Main Event",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Patrick Ocheme",
+     "b": "Demba Seck",
+     "label": "",
+     "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Dwight Joseph",
+     "b": "Raphael Uchegbu",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Juliet Ukah",
+     "b": "Benita van Rooij",
+     "label": "",
+     "division": "Women's Strawweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Boule Godogo",
+     "b": "Ridouan Errami",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Emmanuel Lamptey",
+     "b": "Jordan Cabrel Fongno",
+     "label": "",
+     "division": "Middleweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Felista Mugo",
+     "b": "Sephora Kiala",
+     "label": "",
+     "division": "Women's Strawweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
     }
    ]
   },

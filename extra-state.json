@@ -1,7 +1,7 @@
 {
- "last_fetch": "2026-11-15T05:15:47Z",
+ "last_fetch": "2026-11-15T10:15:46Z",
  "publish": true,
- "events": 2,
+ "events": 3,
  "report": [
   {
    "promotion": "pfl",
@@ -10,6 +10,21 @@
    "bouts": 13,
    "source": "article",
    "main_event": "Sergey Bilostenniy vs Vadim Nemkov"
+  },
+  {
+   "promotion": "pfl",
+   "event": "PFL MENA 12",
+   "date": "2026-12-11",
+   "problem": "only 0 bout(s) parsed",
+   "kept_previous": false
+  },
+  {
+   "promotion": "pfl",
+   "event": "PFL Africa 4",
+   "date": "2026-12-12",
+   "bouts": 7,
+   "source": "article",
+   "main_event": "Shido Boris Esperanca vs David Samuel"
   },
   {
    "promotion": "pfl",
