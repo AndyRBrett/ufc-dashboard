@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-14T23:57:38Z",
+  "generated_at": "2026-11-15T00:00:45Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -20931,7 +20931,7 @@
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Gane",
@@ -20950,8 +20950,15 @@
             "f1_odds": -248,
             "f2_odds": 202
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-09-21T01:08:34Z",
+            "f1_odds": -248,
+            "f2_odds": 202
+          },
+          "clv": {
+            "f1_odds": 0,
+            "f2_odds": 0
+          }
         },
         {
           "f1": "Ciryl Gane",
@@ -21190,8 +21197,15 @@
             "f1_odds": -272,
             "f2_odds": 219
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-14T21:10:43Z",
+            "f1_odds": -217,
+            "f2_odds": 177
+          },
+          "clv": {
+            "f1_odds": 55,
+            "f2_odds": -42
+          }
         },
         {
           "f1": "Kayla Harrison",
@@ -21325,8 +21339,15 @@
             "f1_odds": -201,
             "f2_odds": 165
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-14T21:10:43Z",
+            "f1_odds": -170,
+            "f2_odds": 139
+          },
+          "clv": {
+            "f1_odds": 31,
+            "f2_odds": -26
+          }
         },
         {
           "f1": "Caio Borralho",
@@ -21465,8 +21486,15 @@
             "f1_odds": -115,
             "f2_odds": -101
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-14T21:10:43Z",
+            "f1_odds": -159,
+            "f2_odds": 131
+          },
+          "clv": {
+            "f1_odds": -44,
+            "f2_odds": 232
+          }
         },
         {
           "f1": "Uros Medic",
@@ -21620,8 +21648,15 @@
             "f1_odds": -155,
             "f2_odds": 132
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-14T21:10:43Z",
+            "f1_odds": -160,
+            "f2_odds": 134
+          },
+          "clv": {
+            "f1_odds": -5,
+            "f2_odds": 2
+          }
         },
         {
           "f1": "Bilal Hasan",
@@ -21715,8 +21750,15 @@
             "f1_odds": -950,
             "f2_odds": 648
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-14T15:10:38Z",
+            "f1_odds": -1050,
+            "f2_odds": 660
+          },
+          "clv": {
+            "f1_odds": -100,
+            "f2_odds": 12
+          }
         },
         {
           "f1": "Stephen Thompson",
@@ -21875,8 +21917,15 @@
             "f1_odds": -110,
             "f2_odds": -106
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-14T21:10:43Z",
+            "f1_odds": -130,
+            "f2_odds": 108
+          },
+          "clv": {
+            "f1_odds": -20,
+            "f2_odds": 214
+          }
         },
         {
           "f1": "Drew Dober",
@@ -22025,8 +22074,15 @@
             "f1_odds": 136,
             "f2_odds": -160
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-14T02:55:51Z",
+            "f1_odds": 152,
+            "f2_odds": -185
+          },
+          "clv": {
+            "f1_odds": 16,
+            "f2_odds": -25
+          }
         },
         {
           "f1": "Jim Miller",
@@ -22120,8 +22176,15 @@
             "f1_odds": 181,
             "f2_odds": -215
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-14T21:10:43Z",
+            "f1_odds": 180,
+            "f2_odds": -221
+          },
+          "clv": {
+            "f1_odds": -1,
+            "f2_odds": -6
+          }
         },
         {
           "f1": "Donte Johnson",
@@ -22290,8 +22353,15 @@
             "f1_odds": -165,
             "f2_odds": 140
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-14T21:10:43Z",
+            "f1_odds": -207,
+            "f2_odds": 169
+          },
+          "clv": {
+            "f1_odds": -42,
+            "f2_odds": 29
+          }
         },
         {
           "f1": "Macy Chiasson",
@@ -22395,8 +22465,15 @@
             "f1_odds": 177,
             "f2_odds": -210
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-14T21:10:43Z",
+            "f1_odds": 210,
+            "f2_odds": -254
+          },
+          "clv": {
+            "f1_odds": 33,
+            "f2_odds": -44
+          }
         },
         {
           "f1": "Jared Gordon",
@@ -22480,8 +22557,15 @@
             "f1_odds": 291,
             "f2_odds": -360
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-14T21:10:43Z",
+            "f1_odds": 303,
+            "f2_odds": -392
+          },
+          "clv": {
+            "f1_odds": 12,
+            "f2_odds": -32
+          }
         },
         {
           "f1": "Evan Elder",
@@ -22580,8 +22664,15 @@
             "f1_odds": -115,
             "f2_odds": -101
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-14T12:05:38Z",
+            "f1_odds": -106,
+            "f2_odds": -121
+          },
+          "clv": {
+            "f1_odds": 9,
+            "f2_odds": -20
+          }
         },
         {
           "f1": "Alateng Heili",
@@ -22660,8 +22751,15 @@
             "f1_odds": 272,
             "f2_odds": -338
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-14T21:10:43Z",
+            "f1_odds": 333,
+            "f2_odds": -437
+          },
+          "clv": {
+            "f1_odds": 61,
+            "f2_odds": -99
+          }
         }
       ]
     },
@@ -23803,8 +23901,8 @@
         "side": "f2",
         "points": 16,
         "open": 648,
-        "close": null,
-        "clv": null
+        "close": 660,
+        "clv": 12
       }
     ],
     "Angela Hill": [
@@ -24333,8 +24431,8 @@
         "side": "f1",
         "points": 45,
         "open": -272,
-        "close": null,
-        "clv": null
+        "close": -217,
+        "clv": 55
       }
     ],
     "Alex Pereira": [
@@ -24395,8 +24493,8 @@
         "side": "f2",
         "points": 45,
         "open": 219,
-        "close": null,
-        "clv": null
+        "close": 177,
+        "clv": -42
       }
     ],
     "Derrick Lewis": [
@@ -24701,8 +24799,8 @@
         "side": "f2",
         "points": 18,
         "open": -210,
-        "close": null,
-        "clv": null
+        "close": -254,
+        "clv": -44
       }
     ],
     "Melissa Mullins": [
@@ -25472,8 +25570,8 @@
         "side": "f2",
         "points": 16,
         "open": -215,
-        "close": null,
-        "clv": null
+        "close": -221,
+        "clv": -6
       }
     ],
     "Robert Whittaker": [
@@ -25645,8 +25743,8 @@
         "side": "f2",
         "points": 31,
         "open": 140,
-        "close": null,
-        "clv": null
+        "close": 169,
+        "clv": 29
       }
     ],
     "Ryan Gandra": [
@@ -25831,8 +25929,8 @@
         "side": "f2",
         "points": 28,
         "open": 132,
-        "close": null,
-        "clv": null
+        "close": 134,
+        "clv": 2
       }
     ],
     "Jacobe Smith": [
@@ -26088,8 +26186,8 @@
         "side": "f1",
         "points": 28,
         "open": -155,
-        "close": null,
-        "clv": null
+        "close": -160,
+        "clv": -5
       }
     ],
     "Daniel Rodriguez": [
@@ -26650,8 +26748,8 @@
         "side": "f1",
         "points": 31,
         "open": -165,
-        "close": null,
-        "clv": null
+        "close": -207,
+        "clv": -42
       }
     ],
     "Eric McConico": [
@@ -27151,8 +27249,8 @@
         "side": "f1",
         "points": 16,
         "open": -950,
-        "close": null,
-        "clv": null
+        "close": -1050,
+        "clv": -100
       }
     ],
     "Nilson Rojas": [
@@ -27746,8 +27844,8 @@
         "side": "f2",
         "points": 25,
         "open": -101,
-        "close": null,
-        "clv": null
+        "close": 131,
+        "clv": 232
       }
     ],
     "Djorden Santos": [
@@ -28253,8 +28351,8 @@
         "side": "f1",
         "points": 13,
         "open": 272,
-        "close": null,
-        "clv": null
+        "close": 333,
+        "clv": 61
       }
     ],
     "Norma Dumont": [
@@ -29984,8 +30082,8 @@
         "side": "f1",
         "points": 1,
         "open": -248,
-        "close": null,
-        "clv": null
+        "close": -248,
+        "clv": 0
       }
     ],
     "Hokit": [
@@ -29995,8 +30093,8 @@
         "side": "f2",
         "points": 1,
         "open": 202,
-        "close": null,
-        "clv": null
+        "close": 202,
+        "clv": 0
       }
     ],
     "Kayla Harrison": [
@@ -30006,8 +30104,8 @@
         "side": "f1",
         "points": 24,
         "open": -201,
-        "close": null,
-        "clv": null
+        "close": -170,
+        "clv": 31
       }
     ],
     "Amanda Nunes": [
@@ -30017,8 +30115,8 @@
         "side": "f2",
         "points": 24,
         "open": 165,
-        "close": null,
-        "clv": null
+        "close": 139,
+        "clv": -26
       }
     ],
     "Caio Borralho": [
@@ -30028,8 +30126,8 @@
         "side": "f1",
         "points": 25,
         "open": -115,
-        "close": null,
-        "clv": null
+        "close": -159,
+        "clv": -44
       }
     ],
     "Stephen Thompson": [
@@ -30039,8 +30137,8 @@
         "side": "f1",
         "points": 29,
         "open": -110,
-        "close": null,
-        "clv": null
+        "close": -130,
+        "clv": -20
       }
     ],
     "Charles Radtke": [
@@ -30050,8 +30148,8 @@
         "side": "f2",
         "points": 29,
         "open": -106,
-        "close": null,
-        "clv": null
+        "close": 108,
+        "clv": 214
       }
     ],
     "Drew Dober": [
@@ -30061,8 +30159,8 @@
         "side": "f1",
         "points": 27,
         "open": 136,
-        "close": null,
-        "clv": null
+        "close": 152,
+        "clv": 16
       }
     ],
     "Chris Duncan": [
@@ -30072,8 +30170,8 @@
         "side": "f2",
         "points": 27,
         "open": -160,
-        "close": null,
-        "clv": null
+        "close": -185,
+        "clv": -25
       }
     ],
     "Jim Miller": [
@@ -30083,8 +30181,8 @@
         "side": "f1",
         "points": 16,
         "open": 181,
-        "close": null,
-        "clv": null
+        "close": 180,
+        "clv": -1
       }
     ],
     "Macy Chiasson": [
@@ -30094,8 +30192,8 @@
         "side": "f1",
         "points": 18,
         "open": 177,
-        "close": null,
-        "clv": null
+        "close": 210,
+        "clv": 33
       }
     ],
     "Jared Gordon": [
@@ -30105,8 +30203,8 @@
         "side": "f1",
         "points": 14,
         "open": 291,
-        "close": null,
-        "clv": null
+        "close": 303,
+        "clv": 12
       }
     ],
     "Melquizael Costa": [
@@ -30116,8 +30214,8 @@
         "side": "f2",
         "points": 14,
         "open": -360,
-        "close": null,
-        "clv": null
+        "close": -392,
+        "clv": -32
       }
     ],
     "Evan Elder": [
@@ -30127,8 +30225,8 @@
         "side": "f1",
         "points": 17,
         "open": -115,
-        "close": null,
-        "clv": null
+        "close": -106,
+        "clv": 9
       }
     ],
     "Samuel Sanches": [
@@ -30138,8 +30236,8 @@
         "side": "f2",
         "points": 17,
         "open": -101,
-        "close": null,
-        "clv": null
+        "close": -121,
+        "clv": -20
       }
     ],
     "Juan Diaz": [
@@ -30149,8 +30247,8 @@
         "side": "f2",
         "points": 13,
         "open": -338,
-        "close": null,
-        "clv": null
+        "close": -437,
+        "clv": -99
       }
     ],
     "Jiri Prochazka": [
