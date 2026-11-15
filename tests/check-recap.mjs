@@ -281,13 +281,16 @@ check("closeWhatsNew releases a recap queued behind it",
   /_recapAfterWn\(\)/.test(fn("closeWhatsNew")));
 {
   const f = fn("fetchCommunityPicks");
-  check("community fetch selects bonus_pick (FOTN) and feeds checkCardRecap",
-    /select=[^"]*bonus_pick/.test(f) && /checkCardRecap\(rows\)/.test(f));
+  // The poll reads through the picks store (loadPickRows), whose one column
+  // list, PICKS_COLS, is what every reader of everyone's picks gets.
+  const sel = (html.match(/var PICKS_COLS="([^"]*)"/) || [])[1] || "";
+  check("community fetch reads the picks store, with bonus_pick (FOTN), and feeds checkCardRecap",
+    /loadPickRows\(\)/.test(f) && /(^|,)bonus_pick(,|$)/.test(sel) && /checkCardRecap\(rows\)/.test(f)
+    && /"\/rest\/v1\/picks\?select="\+PICKS_COLS\+/.test(html));
   // The recap (and Year Wrapped) score these boot rows with the board's own
   // pickPts, so every column it reads must be fetched. The first card with
   // 🔒 locks showed AB 9.5 on the board and less in the recap: the select
   // had no `confidence`, so every lock silently scored as no lock.
-  const sel = (f.match(/select=([^&"]*)/) || [])[1] || "";
   const cols = sel.split(",");
   const missing = ["pick", "method", "confidence", "bonus_pick", "event_date", "f1", "f2", "nickname", "updated_at"]
     .filter((c) => !cols.includes(c));
