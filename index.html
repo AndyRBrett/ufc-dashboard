@@ -4429,6 +4429,14 @@ document.addEventListener("visibilitychange",function(){
   if(document.hidden){try{seasonStop();}catch(e){}return;}
   if(document.body.getAttribute("data-theme")==="seasonal")applySeason();
 });
+// The boot-time applyTheme runs while the page is still parsing, before the
+// leaderboard's title (and its .lb-season mascot) exists, so on a fresh launch
+// only the header got the month's mascot and the Ranks title sat empty until
+// the app was backgrounded. Fill every mascot again once the DOM is complete.
+(function(){
+  var fill=function(){if(document.body.getAttribute("data-theme")==="seasonal")applySeason();};
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",fill);else fill();
+})();
 
 /* Sound is synthesised, so there are no files to ship or precache. The context
    must be born inside the tap (iOS refuses otherwise), which the mascot is. */
