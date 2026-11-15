@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-15T08:05:44Z",
+  "generated_at": "2026-11-15T09:10:51Z",
   "summary": {
     "events": 13,
     "block": 0,
-    "warn": 2
+    "warn": 3
   },
   "findings": [
     {
@@ -20,6 +20,11 @@
       "event": "UFC Fight Night: Prochazka vs. Stirling",
       "date": "2026-11-21",
       "days_out": 6
+    },
+    {
+      "severity": "WARN",
+      "check": "odds-quota",
+      "message": "Odds API quota down to 50 requests \u2014 lines will freeze silently when it hits zero"
     }
   ]
 }

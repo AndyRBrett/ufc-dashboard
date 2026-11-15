@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-15T08:05:44Z",
+  "generated_at": "2026-11-15T09:10:51Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -22876,7 +22876,7 @@
           "f1": "Aljamain Sterling",
           "f2": "Kevin Vallejos",
           "lbl": "Co-Main",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-11-08T05:50:41Z",
@@ -22932,6 +22932,11 @@
               "at": "2026-11-14T18:10:40Z",
               "f1_odds": 111,
               "f2_odds": -137
+            },
+            {
+              "at": "2026-11-15T09:10:51Z",
+              "f1_odds": 110,
+              "f2_odds": -135
             }
           ],
           "open": {
@@ -22946,7 +22951,7 @@
           "f1": "Dan Hooker",
           "f2": "Brian Ortega",
           "lbl": "Main Card",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -22967,6 +22972,11 @@
               "at": "2026-11-14T18:10:40Z",
               "f1_odds": -164,
               "f2_odds": 135
+            },
+            {
+              "at": "2026-11-15T09:10:51Z",
+              "f1_odds": -162,
+              "f2_odds": 134
             }
           ],
           "open": {
@@ -23101,7 +23111,7 @@
           "f1": "Amir Albazi",
           "f2": "Alessandro Costa",
           "lbl": "Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23122,6 +23132,11 @@
               "at": "2026-11-14T18:10:40Z",
               "f1_odds": 113,
               "f2_odds": -139
+            },
+            {
+              "at": "2026-11-15T09:10:51Z",
+              "f1_odds": 112,
+              "f2_odds": -138
             }
           ],
           "open": {
@@ -23247,7 +23262,7 @@
           "f1": "Ian Machado Garry",
           "f2": "Yaroslav Amosov",
           "lbl": "Co-Main",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-11-10T07:15:45Z",
@@ -23288,6 +23303,11 @@
               "at": "2026-11-15T03:10:47Z",
               "f1_odds": -181,
               "f2_odds": 149
+            },
+            {
+              "at": "2026-11-15T09:10:51Z",
+              "f1_odds": -184,
+              "f2_odds": 152
             }
           ],
           "open": {
@@ -24189,7 +24209,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Amir Albazi",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -155,
         "close": null,
         "clv": null
@@ -26642,7 +26662,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Yaroslav Amosov",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -169,
         "close": null,
         "clv": null
@@ -27434,7 +27454,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Brian Ortega",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -155,
         "close": null,
         "clv": null
@@ -28133,7 +28153,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Dan Hooker",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 132,
         "close": null,
         "clv": null
@@ -30302,7 +30322,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Kevin Vallejos",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -107,
         "close": null,
         "clv": null
@@ -30313,7 +30333,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Aljamain Sterling",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -109,
         "close": null,
         "clv": null
@@ -30335,7 +30355,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Alessandro Costa",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 132,
         "close": null,
         "clv": null
@@ -30379,7 +30399,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Ian Machado Garry",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 142,
         "close": null,
         "clv": null
