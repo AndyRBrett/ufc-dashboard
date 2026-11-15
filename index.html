@@ -2849,6 +2849,53 @@ function _botFightData(nowMs,events){
   if(txt.length>BOT_CARD_MAX)txt=txt.slice(0,BOT_CARD_MAX);
   return {event:(next||last).name.slice(0,120),card:txt,userPicks:next?_buildUserPicks(next).slice(0,1900):""};
 }
+// The group's standings, so FightBot can answer "who's winning", "what's
+// everyone's best night", "how did T do on UFC 330". Scored by scoring.js's own
+// boardStandings (the board's numbers, never a second scorer), from the rows the
+// app already holds (_commRows, polled; else the board's _lbRows), which the
+// database has already stripped of picks that aren't locked yet. Filled in
+// order under BOT_LEAGUE_MAX (the server's MAX_LEAGUE): all-time, each player's
+// best night, then per-card scores newest first. Null when no rows are loaded.
+var BOT_LEAGUE_MAX=2900;
+function _botPts(n){return String(Math.round(n*10)/10);}
+function _botLeague(rows){
+  rows=rows||(typeof _commRows!=="undefined"&&_commRows)||(typeof _lbRows!=="undefined"&&_lbRows)||null;
+  if(!Array.isArray(rows)||!rows.length)return null;
+  var all=boardStandings(rows);
+  if(!all.length)return null;
+  var label=Object.create(null);   // base name -> name as the board shows it
+  all.forEach(function(u){var b=_lbBaseName(u.nickname);if(b&&!label[b])label[b]=u.nickname;});
+  var dates=Object.create(null);
+  rows.forEach(function(p){if(p.event_date)dates[p.event_date]=1;});
+  var cards=[],best=Object.create(null);
+  Object.keys(dates).sort().reverse().forEach(function(d){
+    var b=boardStandings(rows,{date:d});
+    // A card counts once a result has scored a pick on it.
+    if(!b.some(function(u){return u.picks.some(function(p){return p.result!==null;});}))return;
+    var nm=_recapEvName(d)||d,live=!_eventFinished(d);
+    var who=b.map(function(u){return {base:_lbBaseName(u.nickname),pts:userPts(u)};}).filter(function(x){return x.base;});
+    cards.push(nm+" ("+fmtDate(d)+(live?", in progress":"")+"): "+who.map(function(x){return (label[x.base]||x.base)+" "+_botPts(x.pts);}).join(", "));
+    if(live)return;   // a best night is a finished card
+    who.forEach(function(x){
+      var cur=best[x.base];
+      if(!cur||x.pts>cur.pts)best[x.base]={pts:x.pts,cards:[nm+" ("+fmtDate(d)+")"]};
+      else if(x.pts===cur.pts)cur.cards.push(nm+" ("+fmtDate(d)+")");
+    });
+  });
+  var out=["LEAGUE (the app's UFC leaderboard, scored by the app)",
+    "ALL-TIME: "+all.map(function(u,i){return (i+1)+". "+u.nickname+" "+_botPts(userPts(u))+" pts ("+u.correct+" correct of "+u.total+" picks)";}).join("; ")];
+  var bestLines=all.map(function(u){var b=best[_lbBaseName(u.nickname)];
+    return b?u.nickname+" "+_botPts(b.pts)+" pts, "+b.cards.slice(0,2).join(" and ")+(b.cards.length>2?" (and "+(b.cards.length-2)+" more)":""):null;}).filter(Boolean);
+  if(bestLines.length)out.push("BEST NIGHT (most points on one finished card): "+bestLines.join("; "));
+  var txt=out.join("\n");
+  if(txt.length>BOT_LEAGUE_MAX)return txt.slice(0,BOT_LEAGUE_MAX);
+  txt+="\nCARD SCORES (newest first):";
+  for(var i=0;i<cards.length;i++){
+    if(txt.length+1+cards[i].length>BOT_LEAGUE_MAX)break;
+    txt+="\n"+cards[i];
+  }
+  return txt;
+}
 // The turns sent as context: the most recent BOT_TURNS, each capped, matching
 // the server's limits (GUIDE_MAX_TURNS / GUIDE_MAX_TURN) so a long session
 // never turns into a 400.
@@ -2872,6 +2919,8 @@ function sendBot(){
   var req={action:"guide",question:q.slice(0,300),history:history,screen:_botScreen,fightContext:_aiFightContext([q].concat(history.filter(function(h){return h.role==="user";}).map(function(h){return h.text;})).join(" "))};
   try{var fd=_botCard?{event:_botCard.name.slice(0,120),card:_buildCardSummary(_botCard),userPicks:_buildUserPicks(_botCard).slice(0,1900)}:_botFightData();if(fd){req.event=fd.event;req.card=fd.card;if(fd.userPicks)req.userPicks=fd.userPicks;}}
   catch(e){console.warn("[fightbot] fight data",e);}   // app questions still work without it
+  try{var lg=_botLeague();if(lg)req.league=lg;}
+  catch(e){console.warn("[fightbot] league",e);}
   _aiFetch(JSON.stringify(req),ctrl?ctrl.signal:undefined)
   .then(function(r){return r.json().catch(function(){return {};}).then(function(d){return {ok:r.ok,status:r.status,data:d};});})
   .then(function(res){
@@ -7925,6 +7974,8 @@ var WHATS_NEW=[
    desc:"Quick Pick now shows each fighter's last three results under their record, the same W / L badges as the fight cards, so you can see who's on a run before you pick."}
   ,{id:"2026-11-06-room-show-picks",emoji:"👀",title:"Rooms can show picks early",
    desc:"A room’s owner can now tap 👀 Show picks before lock in 👥 Rooms. Inside that room, members see each other’s picks before each fight locks. Everywhere else, picks stay hidden until the fight locks, as before."}
+  ,{id:"2026-11-15-fightbot-league",emoji:"🤖",title:"Ask FightBot about the league",
+   desc:"FightBot can now answer questions about your group's scores: who's leading all-time, everyone's best night, and how each player did on recent cards. It uses the same numbers as Ranks."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
