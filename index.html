@@ -482,6 +482,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 .lb-pick-chip.lbc-me{border-color:var(--gold-border);color:var(--gold);background:var(--gold-dim)}
 .lb-pick-chip.lbc-win{border-color:var(--green-border);color:var(--green);background:var(--green-dim)}
 .lb-pick-chip.lbc-loss{border-color:var(--loss-border);color:var(--muted);background:var(--loss-dim);opacity:.75}
+.lb-pick-chip.lbc-void{color:var(--muted);background:none;border-style:dotted;opacity:.8}
 @keyframes lb-blink{0%,100%{opacity:1}50%{opacity:.3}}
 .lb-title.lb-live::after{content:" ●";color:var(--green);font-size:10px;animation:lb-blink .6s 2}
 .lb-trash-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--card2);border-top:2px solid var(--gold);border-radius:16px 16px 0 0;padding:20px 16px 28px;transform:translateY(100%);transition:transform .3s ease;z-index:10}
@@ -2337,7 +2338,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <script src="data.js"></script>
 <!-- The app's scoring (scoring.js, engine migration stage 3). Required, like
      data.js: the self-heal below covers it failing to load too. -->
-<script src="scoring.js?v=2026-10-25-1"></script>
+<script src="scoring.js?v=2026-11-15-1"></script>
 <!-- The Pick Engine (engine migration, docs/MIGRATION.md). Optional by design:
      if it fails to load, _boutLookup falls back to the app's own loops and
      every score comes out the same (check:parity runs both paths). -->
@@ -2354,7 +2355,7 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 // …and it must be the rulebook THIS page shipped with: a previous release's
 // scoring.js (an old cached copy, a network drop mid-upgrade) is treated as
 // missing rather than silently scoring with old rules.
-var SCORING_EXPECT="2026-10-25-1";
+var SCORING_EXPECT="2026-11-15-1";
 function _scoringOk(){return typeof pickPts==="function"&&typeof _lbScoreUsers==="function"&&typeof SCORING_VERSION!=="undefined"&&SCORING_VERSION===SCORING_EXPECT;}
 if(typeof EVENTS==="undefined"||!_scoringOk()){
   (function(){
@@ -2849,6 +2850,56 @@ function _botFightData(nowMs,events){
   if(txt.length>BOT_CARD_MAX)txt=txt.slice(0,BOT_CARD_MAX);
   return {event:(next||last).name.slice(0,120),card:txt,userPicks:next?_buildUserPicks(next).slice(0,1900):""};
 }
+// The group's standings, so FightBot can answer "who's winning", "what's
+// everyone's best night", "how did T do on UFC 330". Scored by scoring.js's own
+// boardStandings (the board's numbers, never a second scorer), from the rows the
+// app already holds (_commRows, polled; else the board's _lbRows), which the
+// database has already stripped of picks that aren't locked yet. Filled in
+// order under BOT_LEAGUE_MAX (the server's MAX_LEAGUE): all-time, each player's
+// best night, then per-card scores newest first. Null when no rows are loaded.
+var BOT_LEAGUE_MAX=2900;
+function _botPts(n){return String(Math.round(n*10)/10);}
+function _botLeague(rows){
+  rows=rows||(typeof _commRows!=="undefined"&&_commRows)||(typeof _lbRows!=="undefined"&&_lbRows)||null;
+  if(!Array.isArray(rows)||!rows.length)return null;
+  // Newest first, as Ranks reads them: _commRows arrive oldest first, and the
+  // scorer keeps the first identity it meets when a nickname's pick counts tie.
+  rows=_recapBoardOrder(rows);
+  var all=boardStandings(rows);
+  if(!all.length)return null;
+  var label=Object.create(null);   // base name -> name as the board shows it
+  all.forEach(function(u){var b=_lbBaseName(u.nickname);if(b&&!label[b])label[b]=u.nickname;});
+  var dates=Object.create(null);
+  rows.forEach(function(p){if(p.event_date)dates[p.event_date]=1;});
+  var cards=[],best=Object.create(null);
+  Object.keys(dates).sort().reverse().forEach(function(d){
+    var b=boardStandings(rows,{date:d});
+    // A card counts once a result has scored a pick on it.
+    if(!b.some(function(u){return u.picks.some(function(p){return p.result!==null;});}))return;
+    var nm=_recapEvName(d)||d,live=!_eventFinished(d);
+    var who=b.map(function(u){return {base:_lbBaseName(u.nickname),pts:userPts(u)};}).filter(function(x){return x.base;});
+    cards.push(nm+" ("+fmtDate(d)+(live?", in progress":"")+"): "+who.map(function(x){return (label[x.base]||x.base)+" "+_botPts(x.pts);}).join(", "));
+    if(live)return;   // a best night is a finished card
+    who.forEach(function(x){
+      var cur=best[x.base];
+      if(!cur||x.pts>cur.pts)best[x.base]={pts:x.pts,cards:[nm+" ("+fmtDate(d)+")"]};
+      else if(x.pts===cur.pts)cur.cards.push(nm+" ("+fmtDate(d)+")");
+    });
+  });
+  var out=["LEAGUE (the app's UFC leaderboard, scored by the app)",
+    "ALL-TIME: "+all.map(function(u,i){return (i+1)+". "+u.nickname+" "+_botPts(userPts(u))+" pts ("+u.correct+" correct of "+u.total+" picks)";}).join("; ")];
+  var bestLines=all.map(function(u){var b=best[_lbBaseName(u.nickname)];
+    return b?u.nickname+" "+_botPts(b.pts)+" pts, "+b.cards.slice(0,2).join(" and ")+(b.cards.length>2?" (and "+(b.cards.length-2)+" more)":""):null;}).filter(Boolean);
+  if(bestLines.length)out.push("BEST NIGHT (most points on one finished card): "+bestLines.join("; "));
+  var txt=out.join("\n");
+  if(txt.length>BOT_LEAGUE_MAX)return txt.slice(0,BOT_LEAGUE_MAX);
+  txt+="\nCARD SCORES (newest first):";
+  for(var i=0;i<cards.length;i++){
+    if(txt.length+1+cards[i].length>BOT_LEAGUE_MAX)break;
+    txt+="\n"+cards[i];
+  }
+  return txt;
+}
 // The turns sent as context: the most recent BOT_TURNS, each capped, matching
 // the server's limits (GUIDE_MAX_TURNS / GUIDE_MAX_TURN) so a long session
 // never turns into a 400.
@@ -2872,6 +2923,8 @@ function sendBot(){
   var req={action:"guide",question:q.slice(0,300),history:history,screen:_botScreen,fightContext:_aiFightContext([q].concat(history.filter(function(h){return h.role==="user";}).map(function(h){return h.text;})).join(" "))};
   try{var fd=_botCard?{event:_botCard.name.slice(0,120),card:_buildCardSummary(_botCard),userPicks:_buildUserPicks(_botCard).slice(0,1900)}:_botFightData();if(fd){req.event=fd.event;req.card=fd.card;if(fd.userPicks)req.userPicks=fd.userPicks;}}
   catch(e){console.warn("[fightbot] fight data",e);}   // app questions still work without it
+  try{var lg=_botLeague();if(lg)req.league=lg;}
+  catch(e){console.warn("[fightbot] league",e);}
   _aiFetch(JSON.stringify(req),ctrl?ctrl.signal:undefined)
   .then(function(r){return r.json().catch(function(){return {};}).then(function(d){return {ok:r.ok,status:r.status,data:d};});})
   .then(function(res){
@@ -4464,6 +4517,14 @@ document.addEventListener("visibilitychange",function(){
   if(document.hidden){try{seasonStop();}catch(e){}return;}
   if(document.body.getAttribute("data-theme")==="seasonal")applySeason();
 });
+// The boot-time applyTheme runs while the page is still parsing, before the
+// leaderboard's title (and its .lb-season mascot) exists, so on a fresh launch
+// only the header got the month's mascot and the Ranks title sat empty until
+// the app was backgrounded. Fill every mascot again once the DOM is complete.
+(function(){
+  var fill=function(){if(document.body.getAttribute("data-theme")==="seasonal")applySeason();};
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",fill);else fill();
+})();
 
 /* Sound is synthesised, so there are no files to ship or precache. The context
    must be born inside the tap (iOS refuses otherwise), which the mascot is. */
@@ -8017,6 +8078,8 @@ var WHATS_NEW=[
    desc:"Quick Pick now shows each fighter's last three results under their record, the same W / L badges as the fight cards, so you can see who's on a run before you pick."}
   ,{id:"2026-11-06-room-show-picks",emoji:"👀",title:"Rooms can show picks early",
    desc:"A room’s owner can now tap 👀 Show picks before lock in 👥 Rooms. Inside that room, members see each other’s picks before each fight locks. Everywhere else, picks stay hidden until the fight locks, as before."}
+  ,{id:"2026-11-15-fightbot-league",emoji:"🤖",title:"Ask FightBot about the league",
+   desc:"FightBot can now answer questions about your group's scores: who's leading all-time, everyone's best night, and how each player did on recent cards. It uses the same numbers as Ranks."}
 ];
 var WHATS_NEW_SEEN_KEY="ufc_whatsnew_seen";
 var WHATS_NEW_MAX=5;
@@ -12016,7 +12079,7 @@ function loadLeaderboard(isLive){
       var _tapeE=roomTapeEl(rows,_room,belt,nextEv);if(_tapeE)body.insertBefore(_tapeE,body.firstChild);
       return;
     }
-    var anyResolved=sorted.some(function(u){return u.correct>0||u.picks.some(function(p){return p.result===false;});});
+    var anyResolved=sorted.some(function(u){return u.correct>0||u.picks.some(function(p){return p.result===false||!!p.outcome;});});
     var medals=["🥇","🥈","🥉"];
     body.innerHTML="";
     if(!anyResolved){
@@ -12083,7 +12146,8 @@ function loadLeaderboard(isLive){
     });
     sorted.forEach(function(u,i){
       var pts=userPts(u);
-      var pending=u.picks.filter(function(p){return p.result===null;}).length;
+      // A draw / no contest is over, not pending (it has no result to score).
+      var pending=u.picks.filter(function(p){return p.result===null&&!p.outcome;}).length;
       var hasNextPicks=nextMainFights.length>0;
       var wrap=document.createElement("div");wrap.style.cssText="margin-bottom:8px";
       // Header row
@@ -12121,7 +12185,7 @@ function loadLeaderboard(isLive){
       metaLine.appendChild(streakDiv);
       var det=document.createElement("div");det.className="lb-detail";
       if(u.hiddenCount)det.textContent="🙈 "+u.hiddenCount+" picked, hidden until each fight locks";
-      else det.textContent=anyResolved?(u.correct+"/"+u.total+" correct"+(u.methods?" · +"+u.methods+" method":"")+(u.dogPts?" · +"+u.dogPts+" dog":"")+(u.lockPts?" · "+(u.lockPts>0?"+":"")+u.lockPts+" lock":"")+(u.fotn?" · +"+u.fotn+" bonus":"")):pending+" pending";
+      else det.textContent=anyResolved?(u.correct+"/"+(u.decided||0)+" correct"+(u.methods?" · +"+u.methods+" method":"")+(u.dogPts?" · +"+u.dogPts+" dog":"")+(u.lockPts?" · "+(u.lockPts>0?"+":"")+u.lockPts+" lock":"")+(u.fotn?" · +"+u.fotn+" bonus":"")):pending+" pending";
       metaLine.appendChild(det);
       main.appendChild(metaLine);
       row.appendChild(main);
@@ -12181,6 +12245,14 @@ function loadLeaderboard(isLive){
           if(picked&&chipMethod){var ms=document.createElement("span");ms.className="lb-pick-method";var mAbbr=chipMethod==="KO/TKO"?"KO":chipMethod;ms.textContent=mAbbr;chip.appendChild(ms);}
           if(!picked){chip.classList.add("lbc-none");}
           else if(f.winner){chip.classList.add(nmEq(picked,f.winner)?"lbc-win":"lbc-loss");}
+          else if(voidOutcome(f)){
+            // Over with no winner: say so where the method sits, instead of
+            // looking like a fight still to come.
+            chip.classList.add("lbc-void");chip.title=voidOutcome(f)+" · 0 pts";
+            var vs=chip.querySelector(".lb-pick-method");
+            if(!vs){vs=document.createElement("span");vs.className="lb-pick-method";chip.appendChild(vs);}
+            vs.textContent=voidOutcome(f);
+          }
           else if(u.isMe){chip.classList.add("lbc-me");}
           nextPicksDiv.appendChild(chip);
         });
@@ -12229,11 +12301,12 @@ function loadLeaderboard(isLive){
           var oppDiv=document.createElement("div");oppDiv.style.cssText="font-size:11px;color:var(--muted);width:70px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
           oppDiv.textContent="vs "+opp.split(" ").pop();pr.appendChild(oppDiv);
           var pickDiv=document.createElement("div");pickDiv.style.cssText="font-size:13px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
-          pickDiv.style.color=p.result===true?"var(--green)":p.result===false?"var(--loss)":"var(--text)";
+          pickDiv.style.color=p.result===true?"var(--green)":p.result===false?"var(--loss)":p.outcome?"var(--muted)":"var(--text)";
           pickDiv.textContent=p.pick.split(" ").pop();pr.appendChild(pickDiv);
           if(p.method){var mspan=document.createElement("span");mspan.style.cssText="font-size:10px;flex-shrink:0";mspan.style.color=p.result===true?(p.methodCorrect?"var(--green)":"var(--loss)"):p.result===false?"var(--loss)":"var(--muted)";mspan.textContent="via "+p.method;pr.appendChild(mspan);}
           var bdg=document.createElement("div");bdg.style.cssText="font-size:11px;font-weight:600;flex-shrink:0;min-width:36px;text-align:right";
-          if(p.result===null){bdg.textContent="⏳";bdg.style.color="var(--muted)";}
+          if(p.result===null&&p.outcome){bdg.textContent=p.outcome+" · 0";bdg.style.color="var(--muted)";bdg.title=p.outcome+": no winner, so the pick (and any lock) scores 0";}
+          else if(p.result===null){bdg.textContent="⏳";bdg.style.color="var(--muted)";}
           else if(p.result===true){var pPts=1+(p.methodCorrect?0.5:0)+(p.dogPts||0)+(p.lockPts||0);bdg.textContent="+"+pPts+" pt"+(pPts!==1?"s":"");bdg.style.color="var(--green)";bdg.title=[p.dogPts?"+"+p.dogPts+" underdog bonus":"",p.lockPts?"+"+p.lockPts+" lock bonus":""].filter(Boolean).join(", ");}
           else if(p.lockPts){bdg.textContent=p.lockPts+" pt";bdg.style.color="var(--loss)";bdg.title="Missed lock";}
           else{bdg.textContent="0 pts";bdg.style.color="var(--muted);opacity:.5";}

@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-13T19:15:39Z",
+ "generated_at": "2026-11-15T10:15:46Z",
  "promotions": [
   {
    "id": "pfl",
@@ -28,18 +28,18 @@
    "broadcast": "",
    "bouts": [
     {
-     "a": "Vadim Nemkov",
-     "b": "Sergey Bilostenniy",
+     "a": "Sergey Bilostenniy",
+     "b": "Vadim Nemkov",
      "label": "Main Event",
      "division": "Heavyweight",
      "title": true,
      "odds": {
-      "a": -400,
-      "b": 300
+      "a": 383,
+      "b": -500
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Sergey Bilostenniy",
+     "method": "Decision (Unanimous)",
+     "round": 5
     },
     {
      "a": "Patrick Habirora",
@@ -49,11 +49,11 @@
      "title": false,
      "odds": {
       "a": -550,
-      "b": 402
+      "b": 412
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Patrick Habirora",
+     "method": "Submission",
+     "round": 1
     },
     {
      "a": "Oleg Popov",
@@ -62,23 +62,23 @@
      "division": "Heavyweight",
      "title": false,
      "odds": {
-      "a": 213,
-      "b": -258
+      "a": 211,
+      "b": -255
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Oleg Popov",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
-     "a": "Sergio Pettis",
-     "b": "Joji Goto",
+     "a": "Joji Goto",
+     "b": "Sergio Pettis",
      "label": "",
      "division": "Bantamweight",
      "title": false,
      "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Joji Goto",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
      "a": "Lewis McGrillen",
@@ -87,26 +87,26 @@
      "division": "Bantamweight",
      "title": false,
      "odds": {
-      "a": -388,
-      "b": 308
+      "a": -395,
+      "b": 305
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Lewis McGrillen",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
-     "a": "Shaqueme Rock",
-     "b": "Connor Hughes",
+     "a": "Connor Hughes",
+     "b": "Shaqueme Rock",
      "label": "",
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": 164,
-      "b": -193
+      "a": -193,
+      "b": 164
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Connor Hughes",
+     "method": "KO/TKO",
+     "round": 2
     },
     {
      "a": "Saygid Izagakhmaev",
@@ -115,40 +115,40 @@
      "division": "Welterweight",
      "title": false,
      "odds": {
-      "a": -235,
-      "b": 195
+      "a": -240,
+      "b": 200
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Saygid Izagakhmaev",
+     "method": "Submission",
+     "round": 3
     },
     {
-     "a": "Alexei Pergande",
-     "b": "Akhmed Magomedov",
+     "a": "Akhmed Magomedov",
+     "b": "Alexei Pergande",
      "label": "",
      "division": "Lightweight",
      "title": false,
      "odds": {
-      "a": -193,
-      "b": 164
+      "a": 169,
+      "b": -198
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Akhmed Magomedov",
+     "method": "Decision (Unanimous)",
+     "round": 3
     },
     {
-     "a": "Khasan Magomedsharipov",
-     "b": "Adam Borics",
+     "a": "Adam Borics",
+     "b": "Khasan Magomedsharipov",
      "label": "",
      "division": "Featherweight",
      "title": false,
      "odds": {
-      "a": -268,
-      "b": 220
+      "a": 213,
+      "b": -258
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Adam Borics",
+     "method": "Submission",
+     "round": 1
     },
     {
      "a": "Denis Goltsov",
@@ -157,26 +157,26 @@
      "division": "Heavyweight",
      "title": false,
      "odds": {
-      "a": -310,
-      "b": 252
+      "a": -398,
+      "b": 316
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Denis Goltsov",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
-     "a": "Rhys McKee",
-     "b": "Ernesto Rodriguez",
+     "a": "Ernesto Rodriguez",
+     "b": "Rhys McKee",
      "label": "",
      "division": "Welterweight",
      "title": false,
      "odds": {
-      "a": 101,
-      "b": -120
+      "a": -120,
+      "b": 101
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Ernesto Rodriguez",
+     "method": "KO/TKO",
+     "round": 1
     },
     {
      "a": "Khabib Nabiev",
@@ -188,9 +188,9 @@
       "a": -610,
       "b": 442
      },
-     "winner": "",
-     "method": "",
-     "round": null
+     "winner": "Khabib Nabiev",
+     "method": "KO/TKO",
+     "round": 3
     },
     {
      "a": "Aleksandra Savicheva",
@@ -199,9 +199,96 @@
      "division": "Women's Strawweight",
      "title": false,
      "odds": {
-      "a": 192,
-      "b": -230
+      "a": 194,
+      "b": -235
      },
+     "winner": "Aleksandra Savicheva",
+     "method": "Decision (Unanimous)",
+     "round": 3
+    }
+   ]
+  },
+  {
+   "promotion": "pfl",
+   "name": "PFL Africa 4",
+   "date": "2026-12-12",
+   "venue": "BK Arena",
+   "location": "Kigali",
+   "broadcast": "",
+   "bouts": [
+    {
+     "a": "Shido Boris Esperanca",
+     "b": "David Samuel",
+     "label": "Main Event",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Patrick Ocheme",
+     "b": "Demba Seck",
+     "label": "",
+     "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Dwight Joseph",
+     "b": "Raphael Uchegbu",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Juliet Ukah",
+     "b": "Benita van Rooij",
+     "label": "",
+     "division": "Women's Strawweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Boule Godogo",
+     "b": "Ridouan Errami",
+     "label": "",
+     "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Emmanuel Lamptey",
+     "b": "Jordan Cabrel Fongno",
+     "label": "",
+     "division": "Middleweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Felista Mugo",
+     "b": "Sephora Kiala",
+     "label": "",
+     "division": "Women's Strawweight",
+     "title": false,
+     "odds": null,
      "winner": "",
      "method": "",
      "round": null

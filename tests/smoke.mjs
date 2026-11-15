@@ -497,6 +497,24 @@ async function main() {
         .map((el) => el.tagName.toLowerCase() + (el.className ? "." + String(el.className).split(" ")[0] : ""))), 400));
     });
     assert(`no click target in the booted app (home + Ranks) is unreachable by keyboard${unreachable.length ? ": " + unreachable.slice(0, 5).join(", ") : ""}`, unreachable.length === 0);
+    // A fresh launch on the seasonal theme fills EVERY mascot slot, the Ranks
+    // title's too: the boot-time fill ran before .lb-season existed, so the
+    // leaderboard showed no mascot (and no sound button) until the app had
+    // been backgrounded once. Every month: the clock is pinned to each.
+    const seasonPage = await browser.newPage();
+    await seasonPage.addInitScript(() => { try { localStorage.setItem("ufc_theme", "seasonal"); localStorage.setItem("ufc_whatsnew_seen", "9999"); } catch {} });
+    const emptyMonths = [];
+    for (let m = 0; m < 12; m++) {
+      await seasonPage.clock.setFixedTime(Date.UTC(2027, m, 15, 17));
+      await seasonPage.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 });
+      const ok = await seasonPage.evaluate(() => {
+        const em = window.SEASONS[new Date().getMonth()].em, slots = [...document.querySelectorAll(".logo-season,.lb-season")];
+        return slots.length >= 2 && slots.every((s) => s.textContent === em) && !!document.querySelector(".lb-title .lb-season");
+      });
+      if (!ok) emptyMonths.push(m + 1);
+    }
+    await seasonPage.close();
+    assert(`seasonal theme: a fresh launch shows the month's mascot in the header AND the leaderboard title${emptyMonths.length ? " (missing in months " + emptyMonths.join(",") + ")" : ""}`, emptyMonths.length === 0);
   } catch (e) {
     fatal.push("Navigation/boot failed: " + e.message);
   } finally {
