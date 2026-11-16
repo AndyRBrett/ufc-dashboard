@@ -185,3 +185,10 @@ def test_update_yml_commits_both_new_files():
     update = (ROOT / ".github" / "workflows" / "update.yml").read_text(encoding="utf-8")
     loop = update[update.index("for f in data.js"):update.index("; do", update.index("for f in data.js"))]
     assert datafile.STATS_FILE in loop and datafile.STATS_STATE_FILE in loop
+
+
+def test_the_optional_dist_build_ships_the_stats_file():
+    # Codex on #344: the page requires FIGHTER_STATS from one of data.js /
+    # fighter-stats.js, so a dist/ build without the file can't boot after the split.
+    build = (ROOT / "build.mjs").read_text(encoding="utf-8")
+    assert '"fighter-stats.js"' in build
