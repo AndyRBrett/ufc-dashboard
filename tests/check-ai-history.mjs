@@ -60,7 +60,11 @@ globalThis.Deno = { env: { get: k => env[k] }, serve: h => handler = h };
 globalThis.fetch = async (url, init) => {
   if (String(url).endsWith('/auth/v1/user')) return Response.json({ id: 'history-test' });
   if (String(url).includes('ai_quota_take')) return Response.json(true);
-  calls.push(JSON.parse(init.body));
+  // The guide's system prompt goes out as one cached block (prompt caching);
+  // the assertions below read its text either way. The raw value is kept.
+  const body = JSON.parse(init.body);
+  calls.push({ ...body, rawSystem: body.system,
+    system: Array.isArray(body.system) ? body.system.map((x) => x.text || "").join("") : body.system });
   const next = responses.shift() || { content: [{ type: 'text', text: 'No completed meeting is shown in these records.' }] };
   return Response.json(next.body || next, {status: next.status || 200});
 };

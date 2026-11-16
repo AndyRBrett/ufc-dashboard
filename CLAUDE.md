@@ -17,7 +17,15 @@ and stayed live while people were using it. Don't let that happen again.
 npm run verify
 ```
 
-runs the full gate set (all fast, all local):
+runs the full gate set (all fast, all local), in parallel: `scripts/verify.mjs`
+runs every gate listed in `verify:serial` in a pool (CPU count, at most 6;
+`VERIFY_JOBS` overrides), buffers each one's output and prints a gate in full
+only when it fails. ~95 s instead of ~320 s one at a time (measured
+2026-11-16). `npm run verify:serial` is the old chain, still the one list:
+`check:web` holds `validate-web.yml` to it. A new gate goes into
+`verify:serial`; gates must not share state (each serves its own port-0 server
+and writes only to its own temp dir), since any of them may run beside any
+other.
 
 | script                | catches                                                        |
 | --------------------- | ------------------------------------------------------------- |
@@ -1115,7 +1123,12 @@ It runs on `MODEL`, like the other analysis actions. `check:iq` holds all of it.
 ⋯ More → FightBot Help (and Ranks → ℹ) is a chat that explains how the app
 works: `ai-breakdown`'s `guide` action, on Claude, spending the same daily AI
 budget as every other action. The description of the app it answers from,
-`APP_GUIDE`, is written **server-side** in that function; the client sends only
+`APP_GUIDE`, is written **server-side** in that function (and sent as one
+prompt-cached system block, `cacheSystem` for the `guide` action only: ~5k
+identical tokens on every turn, so a conversation's follow-ups read it at a
+tenth of the price; nothing that varies per turn may move into the system
+prompt, or every turn becomes a cache write, and `check:guide` holds that);
+the client sends only
 the question, the screen and up to `GUIDE_MAX_TURNS` short earlier turns, each
 bounded. The prompt forbids inventing a button, number or rule.
 

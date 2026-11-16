@@ -101,7 +101,11 @@ try {
 // pages.yml's deploy needs. Four of them (check:names, check:prefs, check:lock,
 // check:pushauth) once ran only locally, so a break in any could deploy.
 try {
-  const verify = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")).scripts.verify;
+  // The gate list is verify:serial; `verify` runs that same list in parallel
+  // (scripts/verify.mjs), so there is still exactly one list to hold CI to.
+  const scripts = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")).scripts;
+  const verify = scripts["verify:serial"];
+  if (scripts.verify !== "node scripts/verify.mjs") fail("`verify` must run scripts/verify.mjs (the parallel runner over verify:serial)");
   const gates = [...verify.matchAll(/npm run ([\w:]+)/g)].map((m) => m[1]);
   const wf = readFileSync(join(ROOT, ".github/workflows/validate-web.yml"), "utf8");
   const inCi = new Set([...wf.matchAll(/npm run ([\w:]+)/g)].map((m) => m[1]));

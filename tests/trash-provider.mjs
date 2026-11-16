@@ -145,7 +145,9 @@ assert("the empty-roast case is distinguished in the log",
 // leave reasoning room. Reusing Claude's 120 here is the bug this guards.
 assert("Grok gets its own token ceiling, not the roast's prompt-level cap",
   /callGrok\(grokKey, \{ system, user: userText, maxTokens: GROK_MAX_TOKENS \}\)/.test(handler));
-assert("the Claude fallback keeps the tight cap", /callAnthropic\(apiKey, \{ system, user: userText, maxTokens, webSearch \}\)/.test(handler));
+// (cacheSystem is the guide's prompt caching, scoped to action === "guide": a
+// roast's fallback still sends the tight cap and nothing cached.)
+assert("the Claude fallback keeps the tight cap", /callAnthropic\(apiKey, \{ system, user: userText, maxTokens, webSearch(?:, cacheSystem: action === "guide")? \}\)/.test(handler));
 assert("Grok's ceiling leaves real reasoning room", M.GROK_MAX_TOKENS >= 500);
 
 // ── Wire format, against a stubbed fetch ───────────────────────────────────
