@@ -24,7 +24,7 @@ def test_data_files_are_exactly_what_the_scraper_commits():
     m = re.search(r"for f in (.*?); do", update, re.S)
     staged = set(m.group(1).replace("\\", " ").split())
     assert staged == set(ds.DATA_FILES), "update.yml's commit list and DATA_FILES drifted"
-    for f in ("index.html", "scoring.js", "sw.js", "lab/engine.js", "results.js", "package.json"):
+    for f in ("index.html", "scoring.js", "kernel.js", "sw.js", "lab/engine.js", "results.js", "package.json"):
         assert f not in ds.DATA_FILES
 
 

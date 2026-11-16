@@ -14,8 +14,9 @@
   data.js, odds-series.json, intel.json, events-extra.json and the public picks
   read the app already makes. If this page breaks, the app is untouched.
 
-  Scoring and the fight model are NOT reimplemented here: lab/engine.js lifts
-  them out of index.html at load (loadKernel), so every number matches the board.
+  Scoring and the fight model are NOT reimplemented here: lab/engine.js runs the
+  app's own scoring.js and kernel.js (loadKernel), so every number matches the
+  board. index.html is fetched only for its theme colours, and never waited on.
 -->
 <style>
 @font-face{font-family:'Bebas Neue';font-display:swap;src:url('fonts/bebas-neue-latin.woff2') format('woff2')}
@@ -310,7 +311,7 @@ function fetchPicks(){
 }
 function buildEngine(){
   var env={EVENTS:EVENTS,RESULTS_ARCHIVE:RESULTS_ARCHIVE,FIGHTER_STATS:FIGHTER_STATS,RANKINGS:RANKINGS,USER_ID:L.me};
-  L.kernel=PE.loadKernel(L.html,env,compileInline,L.scoring);
+  L.kernel=PE.loadKernel(L.kernelSrc,env,compileInline,L.scoring);
   var adapters=[PE.ufcAdapter(env)];
   L.feedProblems=[];
   if(L.feed){var fa=PE.feedAdapter(L.feed);L.feedProblems=fa.problems;adapters.push(fa);}
@@ -321,8 +322,12 @@ function buildEngine(){
 }
 function load(){
   var id=myIdentity();L.me=id.id;L.myName=id.name;
+  // The theme source, fire-and-forget: the kernel no longer comes out of
+  // index.html (kernel.js), so the Lab never waits on that ~900 KB page to boot.
+  // A failed fetch just leaves the cached (or default) theme up.
+  fetch("./index.html",{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("index.html HTTP "+r.status);return r.text();}).then(function(t){L.html=t;applyAppTheme(t);}).catch(function(){});
   var jobs=[
-    fetch("./index.html",{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("index.html HTTP "+r.status);return r.text();}).then(function(t){L.html=t;applyAppTheme(t);}),
+    fetch("./kernel.js",{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("kernel.js HTTP "+r.status);return r.text();}).then(function(t){L.kernelSrc=t;}),
     fetch("./scoring.js",{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("scoring.js HTTP "+r.status);return r.text();}).then(function(t){L.scoring=t;}),
     getJSON("./odds-series.json").then(function(j){L.oddsRaw=j;L.odds=FL.oddsIndex(j);}).catch(function(e){L.errors.push("Odds history unavailable ("+e.message+").");L.odds=FL.oddsIndex(null);}),
     getJSON("./intel.json").then(function(j){L.intel=j;}).catch(function(){L.intel=null;}),

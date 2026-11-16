@@ -53,8 +53,16 @@ const env = { EVENTS, RESULTS_ARCHIVE: ARCHIVE, FIGHTER_STATS: {}, RANKINGS: {} 
 
 let K;
 const SCORING = readFileSync(join(ROOT, "scoring.js"), "utf8");
-try { K = PE.loadKernel(html, env, undefined, SCORING); check("kernel runs scoring.js and lifts the model + intel out of index.html", true); }
-catch (e) { fail("kernel failed to load from index.html: " + e.message); process.exit(1); }
+const KERNEL = readFileSync(join(ROOT, "kernel.js"), "utf8");
+try { K = PE.loadKernel(KERNEL, env, undefined, SCORING); check("kernel runs scoring.js and kernel.js whole", true); }
+catch (e) { fail("kernel failed to load from scoring.js + kernel.js: " + e.message); process.exit(1); }
+// Nothing reads index.html for the kernel any more: handing it the page (the
+// pre-kernel.js call) must fail loudly, not half-work.
+{
+  let refused = false;
+  try { PE.loadKernel(html, env, undefined, SCORING); } catch (e) { refused = /kernel\.js source is required/.test(e.message); }
+  check("loadKernel refuses index.html in place of kernel.js", refused);
+}
 check("kernel's LOCKS_START is the fixture's assumption (2026-09-26)", K.LOCKS_START === C2);
 
 const eng = PE.createEngine({ adapters: [PE.ufcAdapter(env)], rules: { ufc: PE.ufcRules(K) } });
@@ -331,8 +339,23 @@ check("de-vig of -110/-110 is exactly 50/50", Math.abs(dv.a - 0.5) < 1e-12 && Ma
   const vSw = (/'\.\/scoring\.js\?v=([^']+)'/.exec(readFileSync(join(ROOT, "sw.js"), "utf8")) || [])[1];
   check(`scoring.js version agrees in all four places (${vFile})`, !!vFile && vFile === vSrc && vFile === vExpect && vFile === vSw ||
     (console.error(`    file=${vFile} src=${vSrc} expect=${vExpect} sw=${vSw}`), false));
-  check("the kernel runs scoring.js rather than slicing scoring from index.html",
-    !PE.KERNEL_BLOCKS.includes("pick-match") && !PE.KERNEL_BLOCKS.includes("fighter-names") && !PE.KERNEL_FNS.includes("_lbScoreUsers"));
+  check("the kernel slices nothing out of index.html (no sliceBlock / sliceFn, no marker lists)",
+    !("sliceBlock" in PE) && !("sliceFn" in PE) && !("KERNEL_BLOCKS" in PE) && !/indexOf\("\/\/ " \+ name/.test(readFileSync(join(ROOT, "lab/engine.js"), "utf8")));
+  // kernel.js: the fight model and the intel filters, defined once, there.
+  const kFns = [...KERNEL.matchAll(/^function ([\w$]+)\(/gm)].map((m) => m[1]);
+  const kDupes = kFns.filter((f) => idx.includes(`function ${f}(`));
+  check(`each kernel.js function (${kFns.length}) is defined there and not again in index.html`,
+    kFns.includes("modelEdge") && kFns.includes("intelItemsFor") && kDupes.length === 0 || (console.error("    " + kDupes.join(", ")), false));
+  const kShadowed = kFns.filter((g) => params.has(g) || new RegExp(`(?:\\bvar|\\blet|\\bconst)\\s+${g.replace(/\$/g, "\\$")}\\b`).test(code));
+  check("no index.html local shadows a kernel.js function", kShadowed.length === 0 || (console.error("    " + kShadowed.join(", ")), false));
+  check("index.html loads kernel.js right after scoring.js, before its own script",
+    /<script src="scoring\.js\?v=[^"]+"><\/script>\s*(?:<!--[\s\S]*?-->\s*)?<script src="kernel\.js\?v=[^"]+"><\/script>/.test(idx) && idx.indexOf('src="kernel.js') < idx.indexOf("var SUPABASE_URL="));
+  const kvFile = (/var KERNEL_VERSION="([^"]+)"/.exec(KERNEL) || [])[1];
+  const kvSrc = (/<script src="kernel\.js\?v=([^"]+)">/.exec(idx) || [])[1];
+  const kvExpect = (/KERNEL_EXPECT="([^"]+)"/.exec(idx) || [])[1];
+  const kvSw = (/'\.\/kernel\.js\?v=([^']+)'/.exec(readFileSync(join(ROOT, "sw.js"), "utf8")) || [])[1];
+  check(`kernel.js version agrees in all four places (${kvFile})`, !!kvFile && kvFile === kvSrc && kvFile === kvExpect && kvFile === kvSw ||
+    (console.error(`    file=${kvFile} src=${kvSrc} expect=${kvExpect} sw=${kvSw}`), false));
 }
 
 // 8. Wiring: the app links to the lab, and the SW never serves one page as the other.
@@ -394,6 +417,21 @@ else {
       localStorage.setItem("ufc_sb_session", JSON.stringify({ access_token: "tok-andy", refresh_token: "rt", expires_at: Math.floor(Date.now() / 1000) + 3600, user_id: "u-Andy" })); } catch (e) {} });
     await page.goto(base + "/lab.html#iq", { waitUntil: "load", timeout: 20000 });
     await page.waitForFunction(() => !/Loading the lab/.test(document.getElementById("main").textContent), null, { timeout: 15000 });
+    // The kernel is kernel.js now, so the Lab never waits on index.html (fetched
+    // only for theme colours): held forever, the Lab still boots and scores.
+    {
+      const nb = await browser.newPage();
+      await nb.route(/supabase\.co/, (r) => r.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(stub) }));
+      await nb.route(/\/index\.html/, () => {});   // never answered
+      const asked = [];
+      nb.on("request", (r) => asked.push(new URL(r.url()).pathname));
+      await nb.goto(base + "/lab.html#iq", { waitUntil: "domcontentloaded", timeout: 20000 });
+      const booted = await nb.waitForFunction(() => !/Loading the lab/.test(document.getElementById("main").textContent), null, { timeout: 15000 }).then(() => true, () => false);
+      const txt = booted ? await nb.evaluate(() => document.getElementById("main").innerText) : "";
+      check("the Lab boots with index.html unanswered (the kernel is kernel.js, never sliced from the page)",
+        booted && txt.length > 40 && !/hit an error|couldn't start|could not load/.test(txt) && asked.includes("/kernel.js"));
+      await nb.close();
+    }
     const tabs = ["iq", "market", "week", "matchup", "party", "hub"];
     for (const t of tabs) {
       await page.click(`#tabs button[data-tab="${t}"]`);
@@ -622,40 +660,32 @@ else {
       }
     }
 
-    // scoring.js is required: if it can't load, the app runs the same one-shot
-    // purge-and-reload self-heal a missing data.js does, rather than a dead page.
-    {
-      const sc = await browser.newPage();
-      // Count main-frame navigations from the very first one: the self-heal can
-      // reload before the first load event even fires (a fast cache purge), so
-      // waiting for "another" load after goto() races it. Poll until a second
-      // navigation has happened, with a generous ceiling for slow CI runners.
-      let navs = 0;
-      sc.on("framenavigated", (fr) => { if (fr === sc.mainFrame()) navs++; });
-      await sc.route(/scoring\.js/, (r) => r.fulfill({ status: 404, body: "" }));
-      await sc.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 }).catch(() => {});
-      for (let t = 0; t < 150 && navs < 2; t++) await sc.waitForTimeout(100);
-      await sc.waitForLoadState("load").catch(() => {});
-      const reloaded = navs >= 2;
-      const healed = await sc.evaluate(() => { try { return sessionStorage.getItem("_selfHealed"); } catch (e) { return null; } }).catch(() => null);
-      check("with scoring.js unreachable the app self-heals (purge + one reload), like a missing data.js", healed === "1" && reloaded);
-      await sc.close();
-    }
-
-    // A stale rulebook — scoring.js from a previous release — is refused, not run:
-    // the page self-heals exactly as if the file were missing.
-    {
-      const st = await browser.newPage();
-      let navs = 0;
-      st.on("framenavigated", (fr) => { if (fr === st.mainFrame()) navs++; });
-      const stale = readFileSync(join(ROOT, "scoring.js"), "utf8").replace(/var SCORING_VERSION="[^"]+"/, 'var SCORING_VERSION="1999-01-01-0"');
-      await st.route(/scoring\.js/, (r) => r.fulfill({ status: 200, contentType: "text/javascript", body: stale }));
-      await st.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 }).catch(() => {});
-      for (let t = 0; t < 150 && navs < 2; t++) await st.waitForTimeout(100);
-      await st.waitForLoadState("load").catch(() => {});
-      const healed = await st.evaluate(() => { try { return sessionStorage.getItem("_selfHealed"); } catch (e) { return null; } }).catch(() => null);
-      check("a stale scoring.js (previous release) is refused and self-heals instead of scoring", navs >= 2 && healed === "1");
-      await st.close();
+    // scoring.js and kernel.js are required: if either can't load, the app runs
+    // the same one-shot purge-and-reload self-heal a missing data.js does,
+    // rather than a dead page. And a stale copy (a previous release's) is
+    // refused, not run: the page self-heals exactly as if it were missing.
+    for (const [file, verVar] of [["scoring.js", "SCORING_VERSION"], ["kernel.js", "KERNEL_VERSION"]]) {
+      const re = new RegExp(file.replace(".", "\\.") + "(?:\\?|$)");
+      for (const mode of ["missing", "stale"]) {
+        const pg = await browser.newPage();
+        // Count main-frame navigations from the very first one: the self-heal can
+        // reload before the first load event even fires (a fast cache purge), so
+        // waiting for "another" load after goto() races it. Poll until a second
+        // navigation has happened, with a generous ceiling for slow CI runners.
+        let navs = 0;
+        pg.on("framenavigated", (fr) => { if (fr === pg.mainFrame()) navs++; });
+        const stale = readFileSync(join(ROOT, file), "utf8").replace(new RegExp(`var ${verVar}="[^"]+"`), `var ${verVar}="1999-01-01-0"`);
+        await pg.route(re, (r) => mode === "missing" ? r.fulfill({ status: 404, body: "" })
+          : r.fulfill({ status: 200, contentType: "text/javascript", body: stale }));
+        await pg.goto(base + "/index.html", { waitUntil: "load", timeout: 20000 }).catch(() => {});
+        for (let t = 0; t < 150 && navs < 2; t++) await pg.waitForTimeout(100);
+        await pg.waitForLoadState("load").catch(() => {});
+        const healed = await pg.evaluate(() => { try { return sessionStorage.getItem("_selfHealed"); } catch (e) { return null; } }).catch(() => null);
+        check(mode === "missing"
+          ? `with ${file} unreachable the app self-heals (purge + one reload), like a missing data.js`
+          : `a stale ${file} (previous release) is refused and self-heals instead of running`, navs >= 2 && healed === "1");
+        await pg.close();
+      }
     }
 
     // If lab/engine.js can't load (404, a first launch offline), the app must

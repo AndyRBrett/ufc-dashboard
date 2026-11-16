@@ -41,8 +41,9 @@ async function run() {
   // Standalone JS — compress only, no mangling (data.js is data; sw.js needs its names).
   // scoring.js (required since engine-migration stage 3) defines globals the
   // page calls by name, so it's compressed but never mangled either; so does
-  // results.js (ResultsParse, the live poll's Wikipedia reader).
-  for (const f of ["data.js", "sw.js", "scoring.js", "results.js"]) {
+  // results.js (ResultsParse, the live poll's Wikipedia reader) and kernel.js
+  // (the fight model and intel filters).
+  for (const f of ["data.js", "sw.js", "scoring.js", "kernel.js", "results.js"]) {
     const code = await readFile(f, "utf8");
     const res = await minifyJs(code, { compress: true, mangle: false });
     await writeFile(`${OUT}/${f}`, res.code ?? code);

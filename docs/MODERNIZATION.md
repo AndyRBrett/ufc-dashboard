@@ -4,14 +4,12 @@ What's left from the 2026-10-04 full-repo review after the fixes that shipped
 in #274–#278. Each item is a staged migration, not a single change, for one
 reason that runs through all of them:
 
-**`index.html` is read as text.** `lab.html` fetches it (`lab.html:319`) and
-lifts the fight model, the intel filters and every theme's colour variables out
-of it by `// name:start … :end` markers and CSS rule shapes;
-`scripts/build-fn-bundle.mjs` does the same to build send-reminders' bundle;
-`check:lab`, `check:fightbot` and `check:bundle` hold all three to the app. Any
-change to how `index.html` is shaped (minified, split, scripts moved out) has to
-move those readers in the same step, or the Lab, FightBot and the Friday brief
-silently stop matching the board.
+**`index.html` is read as text.** `lab.html` fetches it and lifts every
+theme's colour variables out of it by CSS rule shape; `check:lab` holds that to
+the app. Any change to how the theme rules are shaped has to move that reader in
+the same step. (Code no longer comes out of it: the fight model and the intel
+filters moved to `kernel.js` in stage 1 below, so `loadKernel`,
+`build-fn-bundle.mjs` and FightBot read files, never HTML.)
 
 The engine migration (`docs/MIGRATION.md`) is the template: one stage per PR,
 a gate that proves nothing moved, never on a card day, a rollback per stage.
@@ -25,11 +23,14 @@ state. The gates make it safe to change, but every change is a change to one
 file, and the CSP must allow inline script, which removes most of its XSS value.
 
 **Stages.**
-1. **Lifted blocks first.** Move each `// name:start … :end` block the Lab and
-   the bundle lift (fight model, intel filters) into its own file under
-   `app/`, loaded with a plain `<script src>`. Point `loadKernel` and
-   `build-fn-bundle.mjs` at the files instead of slicing HTML. Gate:
-   `check:parity`, `check:lab`, `check:bundle` unchanged.
+1. ✅ **Lifted blocks first** (2026-11-16). The fight model and the intel
+   filters are `kernel.js`, at the root beside `scoring.js` and wired the same
+   way (required, version-pinned with its own `KERNEL_VERSION`, network-first
+   in `sw.js`, self-healing), rather than under `app/` with `SW_VERSION`:
+   `check:lab` already enforced that pattern for `scoring.js`. `loadKernel`,
+   `build-fn-bundle.mjs` and FightBot read the file; the Lab no longer waits on
+   `index.html` to boot. `check:parity`, `check:bundle` and the model / intel
+   checks passed unchanged.
 2. **Themes to `themes.css`.** Move the `:root` / `body[data-theme…]` rules
    out; `appThemeCss` reads the stylesheet instead of the page. Gate:
    `check:lab`'s per-theme colour comparison unchanged.

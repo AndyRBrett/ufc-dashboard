@@ -7,9 +7,9 @@
 import js from "@eslint/js";
 import globals from "globals";
 
-// Browser-side scripts share one global scope: data.js and scoring.js define
+// Browser-side scripts share one global scope: data.js, scoring.js and kernel.js define
 // names the app and the Lab read, so they're declared here once.
-const shared = { PickEngine: "writable", SCORING_VERSION: "readonly", FIGHTER_ALIASES: "readonly" };
+const shared = { PickEngine: "writable", SCORING_VERSION: "readonly", KERNEL_VERSION: "readonly", FIGHTER_ALIASES: "readonly" };
 
 // scoring.js runs against a host environment: the app defines these as
 // globals, and lab/engine.js's loadKernel (and the send-reminders bundle)
@@ -34,7 +34,7 @@ const rules = {
 export default [
   { ignores: ["node_modules/**", "dist/**", "data.js", "supabase/functions/_shared/lab-bundle.js", "docs/archived-themes/**", "native/node_modules/**", "native/ios/**"] },
   {
-    files: ["scoring.js", "lab/**/*.js"],
+    files: ["scoring.js", "kernel.js", "lab/**/*.js"],
     languageOptions: { ecmaVersion: 2024, sourceType: "script", globals: { ...globals.browser, ...globals.commonjs, ...shared } },
     rules,
   },
@@ -43,6 +43,12 @@ export default [
     languageOptions: { globals: scoringHost },
     // SCORING_VERSION is declared here and read by the app; `shared` lists it
     // for the files that only read it.
+    rules: { "no-redeclare": ["error", { builtinGlobals: false }] },
+  },
+  {
+    // kernel.js runs in the same host as scoring.js, after it: nmEq is scoring.js's.
+    files: ["kernel.js"],
+    languageOptions: { globals: { ...scoringHost, nmEq: "readonly" } },
     rules: { "no-redeclare": ["error", { builtinGlobals: false }] },
   },
   {

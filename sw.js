@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = "2026-11-16-1";
+const SW_VERSION = "2026-11-16-2";
 const CACHE = 'ufc-' + SW_VERSION;
 // Handoff caches that must survive SW upgrades: 'ufc-push-id' carries the push
 // identity used by pushsubscriptionchange while the app is closed, 'ufc-tap'
@@ -14,7 +14,7 @@ self.addEventListener('install', function(e) {
   // Precache the app shell so the PWA opens offline. Each URL is cached
   // independently — one miss must not block install.
   e.waitUntil(caches.open(CACHE).then(function(c) {
-    var core = ['./', './data.js', './scoring.js?v=2026-11-15-1', './lab/engine.js', './results.js?v=2026-11-16-1', './manifest.json', './icon-192-v3.png', './sounds/eagle-1.mp3', './sounds/eagle-2.mp3'];
+    var core = ['./', './data.js', './scoring.js?v=2026-11-15-1', './kernel.js?v=2026-11-16-1', './lab/engine.js', './results.js?v=2026-11-16-1', './manifest.json', './icon-192-v3.png', './sounds/eagle-1.mp3', './sounds/eagle-2.mp3'];
     // Seasonal cues: precache only THIS month's file. All twelve together are
     // ~5.7MB, which is not worth forcing down every install for eleven sounds
     // nobody can reach yet — the fetch handler below already runtime-caches
@@ -59,11 +59,12 @@ self.addEventListener('fetch', function(e) {
   var isIntel = !isNavigate && path.slice(-11) === '/intel.json';
   // scoring.js is part of the page, not an asset: it must always match the
   // index.html it was shipped with, so it's fetched fresh like the page is.
-  var isScoring = !isNavigate && path.slice(-11) === '/scoring.js';
+  // kernel.js (the fight model, the intel filters) is the same: part of the page.
+  var isScoring = !isNavigate && (path.slice(-11) === '/scoring.js' || path.slice(-10) === '/kernel.js');
   // The Fight Lab (lab.html) reads the same way: odds-series.json and
   // events-extra.json are regenerated/curated, lab/*.js change with the app,
-  // and index.html is fetched as TEXT so the lab can lift the app's own scoring
-  // out of it — a cache-first copy would score against last month's rules.
+  // and index.html is fetched as TEXT for the app's theme colours (the scoring
+  // and the model come from scoring.js / kernel.js above).
   var isLabNav = isNavigate && path.slice(-9) === '/lab.html';
   // The static pages (privacy, terms, support) are navigations too; each keeps
   // its own key, or opening one from the menu would overwrite the app shell
@@ -78,7 +79,7 @@ self.addEventListener('fetch', function(e) {
     // Every navigation used to be cached under './'. With a second page that
     // would let opening the lab overwrite the app shell's offline copy, so the
     // lab keeps its own key and an offline app launch still gets the app.
-    // scoring.js is keyed by its FULL versioned URL (scoring.js?v=…), so the
+    // scoring.js / kernel.js are keyed by their FULL versioned URL (?v=…), so the
     // offline fallback can only ever return the version the page asked for.
     var cacheKey = isLabNav ? './lab.html' : staticNav ? '.' + staticNav[0] : isNavigate ? './' : isScoring ? req.url : labKey || (isIntel ? './intel.json' : './data.js');
     e.respondWith(
