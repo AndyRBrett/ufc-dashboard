@@ -27,19 +27,54 @@ permissions:
   id-token: write
 
 jobs:
+  # Which checks this deploy needs, and the exact commit they cover. A data-only
+  # commit on top of code that already passed in full runs only the gates that
+  # read the data (~1.5 min instead of ~5.5): see scripts/deploy_scope.py. Any
+  # doubt (a code change, its run not finished or failed, a lookup error) is
+  # the full suite.
+  scope:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      sha: ${{ steps.scope.outputs.sha }}
+      scope: ${{ steps.scope.outputs.scope }}
+    steps:
+      # Trees only (no blobs): enough history to find the last code commit
+      # without downloading every version of odds-snapshots.jsonl.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+          fetch-depth: 300
+          filter: blob:none
+      - id: scope
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          out=$(python3 scripts/deploy_scope.py) || out="sha=$(git rev-parse HEAD)
+          scope=full
+          reason=deploy_scope.py crashed"
+          echo "$out"
+          echo "$out" >> "$GITHUB_OUTPUT"
+          echo "### Deploy scope: $(echo "$out" | sed -n 's/^scope=//p')" >> "$GITHUB_STEP_SUMMARY"
+          echo "$out" | sed -n 's/^reason=//p' >> "$GITHUB_STEP_SUMMARY"
+
   # Gate: the app must boot and all web assets must be valid before we publish.
   # deploy `needs:` this, so a syntax typo or a non-booting build is blocked from
   # production instead of white-paging everyone (including on the automated
   # data-update path, which reaches this workflow via workflow_dispatch).
   validate:
+    needs: scope
     uses: ./.github/workflows/validate-web.yml
-    # Validate the exact tip we deploy — deploy checks out main, and on the
-    # data-update path the run's own SHA predates that auto-pushed commit.
+    # The exact commit scope resolved (main's tip when this run started); deploy
+    # ships that commit, or a newer one only across data-only commits.
     with:
-      ref: main
+      ref: ${{ needs.scope.outputs.sha }}
+      scope: ${{ needs.scope.outputs.scope }}
 
   deploy:
-    needs: validate
+    needs: [scope, validate]
     runs-on: ubuntu-latest
     # Queue deploys instead of overlapping; never cancel an in-flight production deploy.
     concurrency:
@@ -49,13 +84,37 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url || steps.deploy3.outputs.page_url }}
     steps:
-      # Always deploy the tip of main: when called from update.yml, the run's own
-      # SHA predates the auto-update commit that job just pushed.
+      # Ship what validate checked. If main moved on while it ran, ship the
+      # newer tip only when everything in between is data: a slow full run must
+      # not publish over a newer fast one (a result appearing, then vanishing),
+      # and a code commit that landed mid-validate must never ship untested
+      # (it did, before: deploy checked out main whatever validate had seen).
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: main
+          fetch-depth: 50
+      # Past a code commit this run is stale and skips (skip=true): the newer
+      # commit's own run publishes it, and shipping this older one could roll
+      # back that run's deploy if it already finished. Every step below is
+      # guarded on it.
+      - name: Pick the commit to publish
+        id: pick
+        run: |
+          validated="${{ needs.scope.outputs.sha }}"
+          git cat-file -e "$validated^{commit}" 2>/dev/null || git fetch --depth=50 origin "$validated"
+          out=$(python3 scripts/deploy_scope.py advance "$validated" "$(git rev-parse HEAD)") || out="sha=$validated"
+          if echo "$out" | grep -qx 'skip=true'; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "main moved past $validated across code; its own run deploys it. Skipping." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          target=$(echo "$out" | sed -n 's/^sha=//p')
+          [ -n "$target" ] || target="$validated"
+          echo "validated $validated, publishing $target"
+          git checkout --detach "$target"
 
       - name: Ensure Pages publishing source is "GitHub Actions"
+        if: steps.pick.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -70,11 +129,13 @@ jobs:
           fi
 
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+        if: steps.pick.outputs.skip != 'true'
 
       # The site is served raw from the repo root (build.mjs is optional and unused
       # by the deploy), so upload the checkout as-is. upload-pages-artifact already
       # excludes .git and .github.
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        if: steps.pick.outputs.skip != 'true'
         with:
           path: .
 
@@ -82,27 +143,28 @@ jobs:
       # invocation (its internal error_count only retries status-poll errors), so
       # retry the whole action with backoff.
       - name: Deploy to GitHub Pages
+        if: steps.pick.outputs.skip != 'true'
         id: deploy1
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
         continue-on-error: true
 
       - name: Wait 30s before retry
-        if: steps.deploy1.outcome == 'failure'
+        if: steps.pick.outputs.skip != 'true' && (steps.deploy1.outcome == 'failure')
         run: sleep 30
       - name: Deploy to GitHub Pages (retry 1)
         id: deploy2
-        if: steps.deploy1.outcome == 'failure'
+        if: steps.pick.outputs.skip != 'true' && (steps.deploy1.outcome == 'failure')
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
         continue-on-error: true
 
       - name: Wait 60s before final retry
-        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        if: steps.pick.outputs.skip != 'true' && (steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure')
         run: sleep 60
       - name: Deploy to GitHub Pages (retry 2)
         id: deploy3
-        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        if: steps.pick.outputs.skip != 'true' && (steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure')
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
 
       - name: Flag that the deploy only succeeded on a retry
-        if: steps.deploy1.outcome == 'failure' && (steps.deploy2.outcome == 'success' || steps.deploy3.outcome == 'success')
+        if: steps.pick.outputs.skip != 'true' && (steps.deploy1.outcome == 'failure' && (steps.deploy2.outcome == 'success' || steps.deploy3.outcome == 'success'))
         run: echo "::warning::Pages deploy succeeded only after retrying a transient 'Deployment failed, try again later.' error."

@@ -35,7 +35,7 @@ def test_pages_still_accepts_a_dispatch_and_gates_on_validate():
     on = pages[pages.index("\non:"):pages.index("\npermissions:")]
     assert "workflow_dispatch:" in on
     deploy = job_block(pages, "deploy")
-    assert "needs: validate" in deploy
+    assert re.search(r"needs:\s*\[scope,\s*validate\]", deploy)
     assert re.search(r"group:\s*github-pages", deploy)
     assert "cancel-in-progress: false" in deploy, "never cancel an in-flight production deploy"
 
