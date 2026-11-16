@@ -118,8 +118,15 @@ from `raw.githubusercontent.com/…/main` on purpose (see CLAUDE.md: "the gate
 reads the COMMITTED data.js"), and Pages deploys from `main`.
 
 **Stages.**
-1. Rotate `odds-snapshots.jsonl` to monthly files once `odds_series.py` has
-   frozen each card's open/close/CLV (it only needs the live window).
+1. ~~Rotate `odds-snapshots.jsonl` to monthly files.~~ **Not worth it**
+   (measured 2026-11-16): the whole 5.5 MB log parses in 0.07 s, so no run is
+   slowed by it; monthly files inside the repo don't shrink the repo or a clone;
+   and `odds_series.py` rebuilds `odds-series.json` from the full log every run,
+   so rotating would first need every concluded card frozen into it, or the
+   Lab's CLV history for old cards would vanish. The one real cost, shipping the
+   log in every Pages deploy, is gone: Pages publishes only `scripts/site_files.py`'s
+   `SITE` list. Revisit only if the log's parse time or a clone's size starts
+   to matter.
 2. Commit data to a `data` branch; `pages.yml` assembles the site from `main`'s
    code plus the `data` branch's files; `DATA_URL` in `kick-scraper` and
    `send-push` points at the `data` branch. Each consumer moves with its own

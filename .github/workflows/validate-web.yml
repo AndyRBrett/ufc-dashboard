@@ -246,3 +246,6 @@ jobs:
       - name: Service worker revalidates, sounds wait for their theme
         if: inputs.scope != 'data'
         run: npm run check:sw
+      - name: The published site (scripts/site_files.py) is complete
+        if: inputs.scope != 'data'
+        run: npm run check:site
