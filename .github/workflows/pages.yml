@@ -131,13 +131,20 @@ jobs:
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
         if: steps.pick.outputs.skip != 'true'
 
-      # The site is served raw from the repo root (build.mjs is optional and unused
-      # by the deploy), so upload the checkout as-is. upload-pages-artifact already
-      # excludes .git and .github.
+      # The site, not the repository: scripts/site_files.py copies what the app,
+      # the Lab and the service worker load (unminified, exactly as committed;
+      # build.mjs stays optional and unused) into _site. Uploading the checkout
+      # shipped ~43 MB a deploy (source art, tests, the iOS shell, the odds
+      # log, scraper state) for a ~16 MB site. tests/test_site_files.py holds the
+      # list; check:site boots the built site and fails on any 404.
+      - name: Assemble the published site
+        if: steps.pick.outputs.skip != 'true'
+        run: python3 scripts/site_files.py _site
+
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         if: steps.pick.outputs.skip != 'true'
         with:
-          path: .
+          path: _site
 
       # "Deployment failed, try again later." is terminal for a single deploy-pages
       # invocation (its internal error_count only retries status-poll errors), so

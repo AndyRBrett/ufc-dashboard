@@ -66,6 +66,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:pickstore` | the poll or the board reading every pick ever made again, the merged rows differing from the single query's, a row doubled or lost at the date cut, or a rename never reaching old cards |
 | `npm run check:results` | the app's live poll or check-results reading a Wikipedia results page differently from scrape.py, a private copy of the parser coming back, check-results reading a PPV's redirect stub, or the app pushing results |
 | `npm run check:sw` | an installed app re-downloading an unchanged page or `data.js` on every open (the service worker's network-first fetch must revalidate, `cache: 'no-cache'`, never `'reload'`), a changed file served stale, or a mascot's recording fetched for a theme that doesn't show it |
+| `npm run check:site` | the site Pages publishes (`scripts/site_files.py`, not the whole repo) missing a file the app, the Lab or the service worker requests: builds it as the deploy does, boots both pages from it and fails on any 404 |
 | `npm run check:migrations` | a migration that can't apply to what the ones before it built, the rebuilt core tables drifting from production's catalog, or `config.toml`'s JWT settings drifting from the deploy |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
@@ -105,6 +106,14 @@ Pushing to `main` deploys automatically, so the gates also run in CI and
   inputs.scope != 'data'`** unless it reads a data file, and **a new file the
   scraper commits goes into `DATA_FILES` too**; `tests/test_deploy_scope.py`
   fails until both are true.
+- **Pages publishes the site, not the repository.** `pages.yml` uploads
+  `_site`, built by `scripts/site_files.py` from its `SITE` list (~16 MB),
+  instead of the checkout (~43 MB: source art, tests, the iOS shell, the odds
+  log, scraper state, on every deploy). **Every tracked top-level path is in
+  `SITE` or `NOT_SITE`**, so a new page, icon or data file fails
+  `tests/test_site_files.py` until it is placed on purpose; `check:site` boots
+  the built site and fails on any 404. Server functions never read Pages (they
+  read `raw.githubusercontent`), so nothing outside the browser loses a file.
 - `.github/workflows/deploy-functions.yml` → Supabase. `deploy` **needs** a
   `check:functions` + `check:provider` gate. Every deploy line carries
   `--use-api` (server-side bundling): without it the runner pulls Supabase's

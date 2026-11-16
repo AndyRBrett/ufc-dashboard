@@ -15,3 +15,6 @@ dist/
 # Transient render of health-report.json, regenerated every run purely as the
 # body for the data-health tracking issue. The JSON is the artifact worth keeping.
 health-report.md
+
+# scripts/site_files.py output (pages.yml builds it in CI)
+_site/
