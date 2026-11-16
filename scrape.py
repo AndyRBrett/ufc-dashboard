@@ -4781,16 +4781,20 @@ _MIN_DATA_JS_CHARS = 20000
 
 
 def _write_data(path, doc):
-    """Write `doc` as data.js, or exit non-zero with the file left as it was."""
+    """Write `doc` as data.js plus fighter-stats.js and stats-state.json beside
+    it (datafile.checked_dump_files), or exit non-zero with every file left as
+    it was. The stats files go first: data.js is what every reader starts from,
+    so it is never written ahead of the stats it now leaves out."""
     try:
-        text = datafile.checked_dumps(doc)
+        files = datafile.checked_dump_files(doc)
     except datafile.DataError as e:
         print(f"ERROR: refusing to write data.js: {e}", file=sys.stderr)
         sys.exit(1)
-    if len(text) < _MIN_DATA_JS_CHARS:
+    if len(files["data.js"]) < _MIN_DATA_JS_CHARS:
         print("Output suspiciously small — aborting write", file=sys.stderr)
         return False
-    path.write_text(text, encoding="utf-8")
+    for name in sorted(files, key=lambda n: n == "data.js"):
+        (path.parent / name).write_text(files[name], encoding="utf-8")
     return True
 
 
@@ -4801,7 +4805,8 @@ def main():
         sys.exit(1)
 
     try:
-        doc = datafile.loads(data_path.read_text(encoding="utf-8"))
+        # data.js plus fighter-stats.js / stats-state.json, as one document.
+        doc = datafile.read_files(data_path.parent)
     except datafile.DataError as e:
         # Not a guess, and not a silent fallback: the published file stays as
         # it is and the run fails, which is what gets a human to look.

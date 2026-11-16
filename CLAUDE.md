@@ -204,6 +204,27 @@ that no pattern in `scrape.py` matches `data.js` text again. Before merging it
 was run against `main`'s scraper on 2,232 scenarios built from a month of real
 `data.js` history, same stubs and clock: every written file was identical.
 
+**`FIGHTER_STATS` lives in `fighter-stats.js`, not `data.js`** (since
+2026-11-16). It was ~73 KB of `data.js`'s ~88 KB gzipped, and `data.js` changes
+on every scraper commit while the stats change in about one commit in twenty
+(1,960 commits measured), so every open re-downloaded every fighter's stats.
+`datafile.read_files` / `checked_dump_files` merge and split it, so `scrape.py`
+still sees one document: `data.js` is the old file minus that one line,
+`fighter-stats.js` is the stats sorted (its bytes, and ETag, move only when a
+fighter's do), and the scraper's own bookkeeping (`STATS_BOOKKEEPING`:
+`fetch_failed`, which churned on every run through the 2026-11-07..13 UFCStats
+outage) goes to `stats-state.json`, which the app never downloads. **Every
+reader takes either layout**: the page and the Lab load `fighter-stats.js`
+after `data.js` (so it wins) and self-heal if neither defines `FIGHTER_STATS`;
+FightBot runs it after `data.js`; `send-reminders` reads it with `parseDataJs`
+(never runs it); `health.py`'s `with_split_stats` merges it and the state back
+in. A `data.js` still carrying its own copy is read first by the scraper, which
+is how the first run after the change performed the split. **A new stats field
+the app doesn't read goes in `STATS_BOOKKEEPING`**, or its churn reaches the
+file every phone downloads. `tests/test_stats_split.py` and `check:brief` hold
+it; before merging, 282 versions of real `data.js` history split and read back
+identically.
+
 **A Wikipedia results page has one reading, and two result senders.**
 `results.js` (`ResultsParse`) is the parser the open app's live poll loads and
 `check-results` imports (bundled into `_shared/results-bundle.js` by `npm run

@@ -42,8 +42,11 @@ async function run() {
   // scoring.js (required since engine-migration stage 3) defines globals the
   // page calls by name, so it's compressed but never mangled either; so does
   // results.js (ResultsParse, the live poll's Wikipedia reader) and kernel.js
-  // (the fight model and intel filters).
-  for (const f of ["data.js", "sw.js", "scoring.js", "kernel.js", "results.js"]) {
+  // (the fight model and intel filters). fighter-stats.js is data.js's other
+  // half (FIGHTER_STATS, split out by datafile.py): the page requires one of
+  // them to define it, so it ships whenever it exists.
+  for (const f of ["data.js", "fighter-stats.js", "sw.js", "scoring.js", "kernel.js", "results.js"]) {
+    if (f === "fighter-stats.js" && !existsSync(f)) continue;
     const code = await readFile(f, "utf8");
     const res = await minifyJs(code, { compress: true, mangle: false });
     await writeFile(`${OUT}/${f}`, res.code ?? code);

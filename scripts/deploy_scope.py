@@ -44,7 +44,7 @@ import urllib.request
 # Exactly what update.yml's commit step stages (tests/test_deploy_dispatch.py
 # holds the two lists equal). Nothing a person edits belongs here.
 DATA_FILES = frozenset({
-    "data.js", "overseer-status.json", "odds-snapshots.jsonl",
+    "data.js", "fighter-stats.js", "stats-state.json", "overseer-status.json", "odds-snapshots.jsonl",
     "odds-series.json", "odds-state.json", "odds-alert-state.json", "odds-lines.json",
     "health-report.json", "intel.json", "intel-state.json",
     "events-extra.json", "events-extra.candidate.json", "extra-state.json",

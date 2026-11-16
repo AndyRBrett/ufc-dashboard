@@ -105,8 +105,8 @@ function parseEvents(js: string): Ev[] {
 // The copy is built by the Lab's own code (lab/engine.js + lab/analytics.js,
 // running the app's own scoring.js and kernel.js), bundled into
 // _shared/lab-bundle.js — so the push can't say something the Lab doesn't.
-// Only data (odds-series.json, intel.json) is fetched from the repo, parsed as
-// JSON. If any of that fails, a plain teaser still goes out: a brief that
+// Only data (odds-series.json, intel.json, fighter-stats.js) is fetched from
+// the repo, parsed as JSON or by parseDataJs, never run. If any of that fails, a plain teaser still goes out: a brief that
 // arrives without its headline beats no brief.
 const PAGES_BASE = DATA_URL.replace(/data\.js(\?.*)?$/, "");
 export const BRIEF_HOUR_ET = 19;
@@ -161,15 +161,21 @@ export async function composeBrief(ev: Ev, js: string, sb: { url: string; key: s
       if (!r.ok) throw new Error(`${f} HTTP ${r.status}`);
       return r.text();
     };
-    const [oddsTxt, intelTxt] = await Promise.all([
-      get("odds-series.json"), get("intel.json").catch(() => "null"),
+    // fighter-stats.js: FIGHTER_STATS, split out of data.js (datafile.py). Read
+    // with parseDataJs like data.js, never run, and it wins over data.js's own
+    // copy exactly as the page and the Lab load it; absent (before the split,
+    // or unreadable), data.js's copy stands.
+    const [oddsTxt, intelTxt, statsTxt] = await Promise.all([
+      get("odds-series.json"), get("intel.json").catch(() => "null"), get("fighter-stats.js").catch(() => null),
     ]);
     const root: Record<string, any> = {};
     engineInto(root);
     analyticsInto(root);
     const PE = root.PickEngine, FL = root.FightLab;
     const d: Record<string, any> = parseDataJs(js);
-    const env = { EVENTS: d.EVENTS || [], RESULTS_ARCHIVE: d.RESULTS_ARCHIVE || {}, FIGHTER_STATS: d.FIGHTER_STATS || {}, RANKINGS: d.RANKINGS || {}, FIGHTER_ALIASES: d.FIGHTER_ALIASES || {} };
+    let split: Record<string, any> | null = null;
+    try { split = statsTxt ? parseDataJs(statsTxt).FIGHTER_STATS || null : null; } catch (_e) { split = null; }
+    const env = { EVENTS: d.EVENTS || [], RESULTS_ARCHIVE: d.RESULTS_ARCHIVE || {}, FIGHTER_STATS: split || d.FIGHTER_STATS || {}, RANKINGS: d.RANKINGS || {}, FIGHTER_ALIASES: d.FIGHTER_ALIASES || {} };
     const kernel = bundledKernel(env);
     const engine = PE.createEngine({ adapters: [PE.ufcAdapter(env)], rules: { ufc: PE.ufcRules(kernel) } });
     const nev = engine.events("ufc").find((e: any) => e.date === ev.date && e.name === ev.name);
