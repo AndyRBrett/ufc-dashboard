@@ -38,6 +38,7 @@
 #   check:migrations — the database rebuilds from supabase/migrations (0000 up) and matches production's core schema
 #   check:native    — the iOS shell registers its APNs token and routes taps; a browser never takes the native path
 #   check:picklock  — the database refuses a pick, change or delete once its bout's segment has started
+#   check:sw        — an unchanged page / data.js is a 304 on reopen, a changed one is fresh; sounds wait for their theme
 #
 # scope: data (pages.yml, data-only commits) runs only the gates that read the
 # scraper's files: check:web, smoke (+ --card-day), check:names, check:lab,
@@ -242,3 +243,6 @@ jobs:
       - name: One results reader (app, check-results, scrape.py golden)
         if: inputs.scope != 'data'
         run: npm run check:results
+      - name: Service worker revalidates, sounds wait for their theme
+        if: inputs.scope != 'data'
+        run: npm run check:sw

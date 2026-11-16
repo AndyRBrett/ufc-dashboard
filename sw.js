@@ -2,7 +2,7 @@
 // Bump SW_VERSION on every deploy: changing this file's bytes makes browsers
 // detect a SW update, which (via the controllerchange listener in index.html)
 // auto-reloads open clients onto the latest code.
-const SW_VERSION = "2026-11-16-2";
+const SW_VERSION = "2026-11-16-3";
 const CACHE = 'ufc-' + SW_VERSION;
 // Handoff caches that must survive SW upgrades: 'ufc-push-id' carries the push
 // identity used by pushsubscriptionchange while the app is closed, 'ufc-tap'
@@ -14,17 +14,13 @@ self.addEventListener('install', function(e) {
   // Precache the app shell so the PWA opens offline. Each URL is cached
   // independently — one miss must not block install.
   e.waitUntil(caches.open(CACHE).then(function(c) {
-    var core = ['./', './data.js', './scoring.js?v=2026-11-15-1', './kernel.js?v=2026-11-16-1', './lab/engine.js', './results.js?v=2026-11-16-1', './manifest.json', './icon-192-v3.png', './sounds/eagle-1.mp3', './sounds/eagle-2.mp3'];
-    // Seasonal cues: precache only THIS month's file. All twelve together are
-    // ~5.7MB, which is not worth forcing down every install for eleven sounds
-    // nobody can reach yet — the fetch handler below already runtime-caches
-    // same-origin responses, so the other months are cached the first time
-    // they are played and are offline from then on. A missing file is
-    // harmless: c.add() misses are swallowed and the theme falls back to its
-    // synthesised cue.
-    core.push('./sounds/season-' +
-      ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'][new Date().getMonth()] +
-      '.mp3');
+    var core = ['./', './data.js', './scoring.js?v=2026-11-15-1', './kernel.js?v=2026-11-16-1', './lab/engine.js', './results.js?v=2026-11-16-1', './manifest.json', './icon-192-v3.png'];
+    // No sounds. Each mascot's recording (the USA eagle, the Noche grito, the
+    // seasonal month's cue) is fetched by the page only once its theme is on,
+    // and the fetch handler below runtime-caches same-origin responses, so a
+    // theme's sound is offline from its first online load. Precaching them
+    // put up to ~2.3 MB (August's cue plus both eagles) on every install,
+    // whatever theme it ran.
     return Promise.all(core.map(function(u) {
       return c.add(u).catch(function() {});
     }));
@@ -83,7 +79,12 @@ self.addEventListener('fetch', function(e) {
     // offline fallback can only ever return the version the page asked for.
     var cacheKey = isLabNav ? './lab.html' : staticNav ? '.' + staticNav[0] : isNavigate ? './' : isScoring ? req.url : labKey || (isIntel ? './intel.json' : './data.js');
     e.respondWith(
-      fetch(req, { cache: 'reload' })
+      // 'no-cache', not 'reload': both always ask the server, but 'reload'
+      // never sends the validator, so an unchanged ~900 KB index.html (and
+      // data.js between scraper commits) came down in full on every open.
+      // 'no-cache' revalidates: a 304 when nothing changed, the new file when
+      // something did. check:sw holds both halves.
+      fetch(req, { cache: 'no-cache' })
         .catch(function() { return fetch(req); })
         .then(function(res) {
           if (res && res.ok) {
