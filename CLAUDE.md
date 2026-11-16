@@ -89,6 +89,19 @@ Pushing to `main` deploys automatically, so the gates also run in CI and
   the `update-main` group holds until validate and deploy finish, so every new
   dispatch waited ~3 min behind it (fight night 2026-10-03: a scrape
   every ~8-10 min instead of 5). `tests/test_deploy_dispatch.py` holds it.
+  **A data-only commit runs only the data gates** (`check:web`, both `smoke`
+  runs, `check:names`, `check:lab`, `check:fightbot`: the ones that read the
+  scraper's files), ~1.5 min instead of ~5.5, so a result reaches the site
+  ~2.5 min after its commit instead of ~6. `pages.yml`'s `scope` job decides
+  (`scripts/deploy_scope.py`): data only if every commit since the last one
+  touching anything outside `DATA_FILES` (update.yml's commit list) is data,
+  and that commit already passed the full suite (a green `ci.yml` or Pages
+  run); anything else, or any doubt, is `full`. Deploy ships the commit
+  validate checked, moving to a newer tip only across data-only commits, so
+  untested code never ships. **A new gate in `validate-web.yml` gets `if:
+  inputs.scope != 'data'`** unless it reads a data file, and **a new file the
+  scraper commits goes into `DATA_FILES` too**; `tests/test_deploy_scope.py`
+  fails until both are true.
 - `.github/workflows/deploy-functions.yml` → Supabase. `deploy` **needs** a
   `check:functions` + `check:provider` gate. Every deploy line carries
   `--use-api` (server-side bundling): without it the runner pulls Supabase's

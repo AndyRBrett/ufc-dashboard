@@ -38,6 +38,11 @@
 #   check:migrations — the database rebuilds from supabase/migrations (0000 up) and matches production's core schema
 #   check:native    — the iOS shell registers its APNs token and routes taps; a browser never takes the native path
 #   check:picklock  — the database refuses a pick, change or delete once its bout's segment has started
+#
+# scope: data (pages.yml, data-only commits) runs only the gates that read the
+# scraper's files: check:web, smoke (+ --card-day), check:names, check:lab,
+# check:fightbot. Every other step is `if: inputs.scope != 'data'`; a new gate
+# gets that line unless it reads data.js / intel.json / events-extra.json.
 name: Validate Web
 
 on:
@@ -48,6 +53,11 @@ on:
         required: false
         type: string
         default: ""
+      scope:
+        description: "'full' (default) runs every gate. 'data' runs only the gates that read the scraper's data files (check:web, smoke incl. --card-day, check:names, check:lab, check:fightbot): pages.yml asks for it when every commit since the last fully passed one is data-only (scripts/deploy_scope.py)."
+        required: false
+        type: string
+        default: "full"
 
 permissions:
   contents: read
@@ -68,10 +78,12 @@ jobs:
           node-version: "22"
           cache: "npm"
       - run: npm ci
-      - name: Static checks (lint + syntax + data + functions)
+      - name: Data file checks (data.js parses, EVENTS usable, gate parity)
+        run: npm run check:web
+      - name: Static checks (lint + edge-function syntax)
+        if: inputs.scope != 'data'
         run: |
           npm run lint
-          npm run check:web
           npm run check:functions
       # The Chromium install stalled three times on 2026-10-07 and each stall
       # ran the job into its timeout: a cancelled validate skips the Pages
@@ -109,86 +121,124 @@ jobs:
       - name: Boot smoke test
         run: npm run smoke
       - name: Notification tap test
+        if: inputs.scope != 'data'
         run: npm run check:tap
       - name: Trash-talk routing test
+        if: inputs.scope != 'data'
         run: npm run check:audience
       - name: Trash-talk prompt test
+        if: inputs.scope != 'data'
         run: npm run check:prompt
       - name: Trash-talk model routing test
+        if: inputs.scope != 'data'
         run: npm run check:provider
       - name: Result-push dedup key test
+        if: inputs.scope != 'data'
         run: npm run check:dedup
       - name: Fight model test
+        if: inputs.scope != 'data'
         run: npm run check:model
       - name: Parlay calculator test
+        if: inputs.scope != 'data'
         run: npm run check:parlay
       - name: Fight Week Intel attribution test
+        if: inputs.scope != 'data'
         run: npm run check:intel
       - name: What's New popup test
+        if: inputs.scope != 'data'
         run: npm run check:whatsnew
       # These four were in `verify` but missing here, so nothing in CI ran them
       # and a break in any of them could deploy.
       - name: Fighter rename test
         run: npm run check:names
       - name: Notification prefs restore test
+        if: inputs.scope != 'data'
         run: npm run check:prefs
       - name: Pick lock times test
+        if: inputs.scope != 'data'
         run: npm run check:lock
       - name: Push sender authorization test
+        if: inputs.scope != 'data'
         run: npm run check:pushauth
       - name: Pick restore test
+        if: inputs.scope != 'data'
         run: npm run check:picks
       - name: kick-scraper cadence gate test
+        if: inputs.scope != 'data'
         run: npm run check:kick
       - name: Card recap test
+        if: inputs.scope != 'data'
         run: npm run check:recap
       - name: Year Wrapped test
+        if: inputs.scope != 'data'
         run: npm run check:wrapped
       - name: Lock scoring test
+        if: inputs.scope != 'data'
         run: npm run check:locks
       - name: Fight Lab test
         run: npm run check:lab
       - name: AI historical fight questions
+        if: inputs.scope != 'data'
         run: npm run check:history
       - name: FightBot MCP server test
         run: npm run check:fightbot
       - name: Friday brief push test
+        if: inputs.scope != 'data'
         run: npm run check:brief
       - name: Replaced-bout alert test
+        if: inputs.scope != 'data'
         run: npm run check:swap
       - name: Fight IQ write-up test
+        if: inputs.scope != 'data'
         run: npm run check:iq
       - name: FightBot app guide test
+        if: inputs.scope != 'data'
         run: npm run check:guide
       - name: FightBot's call and tape poster test
+        if: inputs.scope != 'data'
         run: npm run check:verdict
       - name: Scoring parity (engine migration)
+        if: inputs.scope != 'data'
         run: npm run check:parity
       - name: Watch Party rooms
+        if: inputs.scope != 'data'
         run: npm run check:rooms
       - name: Picks scoped by promotion
+        if: inputs.scope != 'data'
         run: npm run check:promotion
       - name: Sport switcher
+        if: inputs.scope != 'data'
         run: npm run check:sports
       - name: Edge-function Lab bundle is fresh
+        if: inputs.scope != 'data'
         run: npm run check:bundle
       - name: Server-side pick lock
+        if: inputs.scope != 'data'
         run: npm run check:picklock
       - name: No outside text reaches the page as HTML
+        if: inputs.scope != 'data'
         run: npm run check:html
       - name: Fighter photos
+        if: inputs.scope != 'data'
         run: npm run check:photos
       - name: Report, block and privacy policy
+        if: inputs.scope != 'data'
         run: npm run check:safety
       - name: Delete my account deletes the account
+        if: inputs.scope != 'data'
         run: npm run check:delete
       - name: Founding members and invite links
+        if: inputs.scope != 'data'
         run: npm run check:invites
       - name: Database rebuild test
+        if: inputs.scope != 'data'
         run: npm run check:migrations
       - name: iOS shell push and taps
+        if: inputs.scope != 'data'
         run: npm run check:native
       - name: Picks store (only open cards re-read)
+        if: inputs.scope != 'data'
         run: npm run check:pickstore
       - name: One results reader (app, check-results, scrape.py golden)
+        if: inputs.scope != 'data'
         run: npm run check:results
