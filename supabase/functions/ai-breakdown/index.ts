@@ -932,9 +932,22 @@ export function researchModelUnavailable(status: number, body: string): boolean 
   const parsed = parseJson(body) as { error?: { message?: string } } | null;
   return /\bmodel\b/i.test(parsed?.error?.message ?? body) && !/web[_ -]?search/i.test(parsed?.error?.message ?? body);
 }
+// Prompt caching for the guide (cacheSystem): its system prompt is APP_GUIDE
+// plus the rules, ~5k tokens and identical on every FightBot turn, and a
+// conversation's follow-ups arrive within the cache's 5-minute life. Marked
+// as one ephemeral block, the repeat turns read it at a tenth of the input
+// price (or less) instead of paying for it in full. Everything that varies
+// (the question, league and fight data, the conversation) is in the user turn,
+// after the breakpoint, so it never breaks the prefix. One-off actions (the
+// roast, IQ, verdicts) are not marked: a write costs 1.25x and they'd rarely
+// read it back. A prefix below the model's minimum simply doesn't cache.
+export function anthropicSystem(system: string | undefined, cacheSystem: boolean): unknown {
+  if (!system) return undefined;
+  return cacheSystem ? [{ type: "text", text: system, cache_control: { type: "ephemeral" } }] : system;
+}
 async function callAnthropic(
   apiKey: string,
-  { system, user, maxTokens, webSearch = false, useBaseModel = false }: { system?: string; user: string; maxTokens: number; webSearch?: boolean; useBaseModel?: boolean },
+  { system, user, maxTokens, webSearch = false, useBaseModel = false, cacheSystem = false }: { system?: string; user: string; maxTokens: number; webSearch?: boolean; useBaseModel?: boolean; cacheSystem?: boolean },
 ): Promise<ModelReply> {
   const messages: { role: string; content: unknown }[] = [{ role: "user", content: user }];
   const model = webSearch && !useBaseModel ? RESEARCH_MODEL : MODEL;
@@ -944,7 +957,7 @@ async function callAnthropic(
     const payload = JSON.stringify({
       model, max_tokens: model === RESEARCH_MODEL && model !== MODEL ? Math.max(maxTokens, RESEARCH_MAX_TOKENS) : webSearch ? Math.max(maxTokens, 1600) : maxTokens,
       ...(model === RESEARCH_MODEL && model !== MODEL && RESEARCH_EFFORT ? { output_config: { effort: RESEARCH_EFFORT } } : {}),
-      ...(system ? { system } : {}), messages,
+      ...(system ? { system: anthropicSystem(system, cacheSystem) } : {}), messages,
       ...(webSearch ? { tools: [{ type: "web_search_20250305", name: "web_search", max_uses: RESEARCH_MAX_SEARCHES }] } : {}),
     });
     const r = await fetchWithRetry(CLAUDE_API_URL, {
@@ -955,11 +968,11 @@ async function callAnthropic(
       // answer on MODEL instead, loudly, like the roast's Grok fallback.
       if (model !== MODEL && turn === 0 && researchModelUnavailable(r.status, r.body)) {
         console.error(`research model ${model} unavailable (${r.status}); using ${MODEL}`);
-        return await callAnthropic(apiKey, { system, user, maxTokens, webSearch, useBaseModel: true });
+        return await callAnthropic(apiKey, { system, user, maxTokens, webSearch, useBaseModel: true, cacheSystem });
       }
       if (webSearch && webSearchUnavailable(r.status, r.body)) {
         console.warn("Web search unavailable; answering from cached fight data");
-        const noSearch = await callAnthropic(apiKey, { system: (system ?? "") + "\n\n" + SEARCH_UNAVAILABLE_RULE, user, maxTokens, webSearch: false, useBaseModel });
+        const noSearch = await callAnthropic(apiKey, { system: (system ?? "") + "\n\n" + SEARCH_UNAVAILABLE_RULE, user, maxTokens, webSearch: false, useBaseModel, cacheSystem });
         return { ...noSearch, searchUnavailable: true };
       }
       return { ok: false, status: r.status, text: "", detail: r.detail || r.body };
@@ -1602,7 +1615,7 @@ Deno.serve(async (req) => {
       const why = r.ok ? "returned an empty roast (token budget exhausted?)" : `failed (${r.status})`;
       console.error(`grok ${why}, falling back to claude: ${r.detail.slice(0, 200)}`);
     }
-    return await callAnthropic(apiKey, { system, user: userText, maxTokens, webSearch });
+    return await callAnthropic(apiKey, { system, user: userText, maxTokens, webSearch, cacheSystem: action === "guide" });
   };
 
   const startedAt = Date.now();
@@ -1625,7 +1638,7 @@ Deno.serve(async (req) => {
   // produced something; a failed retry leaves the first answer, never nothing.
   if (webSearch && !first.searched && !first.searchUnavailable && puntsInsteadOfAnswering(first.text)) {
     console.warn("research answer punted without searching; retrying with search required");
-    const forced = await callAnthropic(apiKey, { system, user: prompt + "\n\n" + FORCE_RESEARCH_NOTE, maxTokens, webSearch });
+    const forced = await callAnthropic(apiKey, { system, user: prompt + "\n\n" + FORCE_RESEARCH_NOTE, maxTokens, webSearch, cacheSystem: action === "guide" });
     if (forced.ok && forced.text.trim()) {
       text = forced.text; sources = forced.sources ?? []; sourceFacts = forced.sourceFacts ?? "";
     }
