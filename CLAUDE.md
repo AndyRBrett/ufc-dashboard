@@ -98,7 +98,9 @@ Pushing to `main` deploys automatically, so the gates also run in CI and
   and that commit already passed the full suite (a green `ci.yml` or Pages
   run); anything else, or any doubt, is `full`. Deploy ships the commit
   validate checked, moving to a newer tip only across data-only commits, so
-  untested code never ships. **A new gate in `validate-web.yml` gets `if:
+  untested code never ships; past a code commit it **skips**, since that
+  commit's own run publishes it and shipping the older one could roll back a
+  deploy that already finished (validation doesn't end in commit order). **A new gate in `validate-web.yml` gets `if:
   inputs.scope != 'data'`** unless it reads a data file, and **a new file the
   scraper commits goes into `DATA_FILES` too**; `tests/test_deploy_scope.py`
   fails until both are true.

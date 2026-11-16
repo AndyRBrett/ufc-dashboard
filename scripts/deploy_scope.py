@@ -21,7 +21,9 @@ the full suite:
   * Every file in BASE..tip is re-checked against DATA_FILES, belt and braces.
 
 `advance` is used by the deploy job: it ships the SHA that was validated, and
-moves forward to main's newer tip only across data-only commits. Before this,
+moves forward to main's newer tip only across data-only commits. Past a code
+commit it skips the deploy: that commit's own run publishes it, and shipping
+the older validated SHA could roll back a deploy that already finished. Before this,
 deploy checked out main whatever validate had seen, so a code commit landing
 mid-validate could ship untested; and always shipping exactly the validated
 SHA would let a slow full run publish over a newer fast one (a result showing,
@@ -68,11 +70,20 @@ def decide(tip: str, base: str | None, changed, base_passed: bool | None) -> tup
     return "data", "only data files changed since %s, which passed in full" % base[:7]
 
 
-def advance_target(validated: str, tip: str, is_ancestor: bool, changed) -> str:
-    """The commit to deploy: main's tip if only data lies between, else the validated one."""
-    if tip and tip != validated and is_ancestor and data_only(changed):
+def advance_target(validated: str, tip: str, is_ancestor: bool, changed) -> str | None:
+    """The commit to deploy, or None to skip this deploy.
+
+    The validated commit when it is still main's tip; main's newer tip when
+    only data lies between. Past a code commit (or when the validated commit
+    isn't provably behind the tip) this run is stale: the newer commit has its
+    own Pages run, which carries everything this one validated. Publishing the
+    validated commit here could roll production back from that run's deploy
+    if it already finished (validation doesn't finish in commit order)."""
+    if not tip or tip == validated:
+        return validated
+    if is_ancestor and data_only(changed):
         return tip
-    return validated
+    return None
 
 
 def _git(*args: str) -> str:
@@ -133,7 +144,14 @@ def main(argv: list[str]) -> int:
             except subprocess.CalledProcessError:
                 anc = False
             changed = _changed(validated, tip) if anc and tip != validated else []
-            print("sha=" + advance_target(validated, tip, anc, changed))
+            target = advance_target(validated, tip, anc, changed)
+            if target is None:
+                print("skip=true")
+                print(f"::notice::main moved past {validated[:7]} across code; "
+                      f"the newer commit's own run deploys it", file=sys.stderr)
+            else:
+                print("sha=" + target)
+                print("skip=false")
             return 0
         else:
             print("usage: deploy_scope.py [scope | advance VALIDATED TIP]", file=sys.stderr)
@@ -141,6 +159,7 @@ def main(argv: list[str]) -> int:
     except Exception as e:  # never block a deploy over the lookup itself
         if mode == "advance":
             print("sha=" + argv[2])
+            print("skip=false")
             print(f"::warning::deploy_scope advance failed ({e}); deploying the validated commit", file=sys.stderr)
             return 0
         scope, reason = "full", f"scope lookup failed: {e}"

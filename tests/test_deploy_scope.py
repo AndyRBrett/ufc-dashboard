@@ -48,8 +48,10 @@ def test_base_passed_prefers_ci_and_treats_unknown_as_unproven():
 def test_advance_only_across_data():
     v, t = "v" * 40, "t" * 40
     assert ds.advance_target(v, t, True, ["data.js"]) == t
-    assert ds.advance_target(v, t, True, ["data.js", "scoring.js"]) == v, "never ship untested code"
-    assert ds.advance_target(v, t, False, ["data.js"]) == v
+    # Past code (or unprovable ancestry) the run is stale and skips: shipping v
+    # could roll back a newer commit's deploy that already finished (Codex, #341).
+    assert ds.advance_target(v, t, True, ["data.js", "scoring.js"]) is None, "never ship untested code, nor roll back"
+    assert ds.advance_target(v, t, False, ["data.js"]) is None
     assert ds.advance_target(v, v, True, []) == v
 
 
@@ -84,11 +86,16 @@ def test_against_real_git_history(tmp_path, monkeypatch):
     out = subprocess.run(["python3", str(ROOT / "scripts" / "deploy_scope.py"), "advance", mid, newer],
                          capture_output=True, text=True, check=True).stdout
     assert f"sha={newer}" in out
-    # ... but not past a code commit.
+    assert "skip=false" in out
+    # ... but past a code commit it skips rather than republishing `mid`.
     code2 = commit("sw.js", "v2")
     out = subprocess.run(["python3", str(ROOT / "scripts" / "deploy_scope.py"), "advance", mid, code2],
                          capture_output=True, text=True, check=True).stdout
-    assert f"sha={mid}" in out
+    assert "skip=true" in out and "sha=" not in out
+    # Still the tip: deploy it.
+    out = subprocess.run(["python3", str(ROOT / "scripts" / "deploy_scope.py"), "advance", code2, code2],
+                         capture_output=True, text=True, check=True).stdout
+    assert f"sha={code2}" in out and "skip=false" in out
     assert ds._last_code_commit(code2) == code2
 
 
@@ -130,3 +137,13 @@ def test_pages_validates_and_deploys_the_scoped_commit():
     assert "scope: ${{ needs.scope.outputs.scope }}" in pages
     assert re.search(r"deploy_scope\.py advance \"\$validated\"", pages)
     assert "scope=full" in pages, "a crashed scope script must fall back to the full suite"
+
+
+def test_a_stale_deploy_publishes_nothing():
+    pages = (WF / "pages.yml").read_text(encoding="utf-8")
+    deploy = pages[pages.index("\n  deploy:\n"):]
+    after = deploy[deploy.index("id: pick"):]
+    steps = re.split(r"\n      - ", after)[1:]
+    assert steps, "no steps after the pick"
+    for st in steps:
+        assert "if: steps.pick.outputs.skip != 'true'" in st, "unguarded step after pick: " + st.splitlines()[0]
