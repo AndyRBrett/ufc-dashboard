@@ -270,10 +270,12 @@ function card() {
 // The open page's own result poll reads draws the same way (Codex on #306):
 // without it a draw landing mid-card left the live view pinned until a reload.
 {
-  // One contiguous slice (_fold … _parseWikitable): _cleanWiki's regexes carry braces a brace-matcher misreads.
-  const pa = html.indexOf("  function _fold("), pb = html.indexOf("  function _deriveSlug(");
-  if (pa < 0 || pb <= pa) { fail("index.html: could not locate the live poll's parsers (_fold … _deriveSlug)"); process.exit(1); }
-  const p = new Function(html.slice(pa, pb) + "\nreturn {_parseMMATemplate,_parseWikitable};")();
+  // The poll reads with results.js (ResultsParse), loaded by index.html.
+  const rctx = {};
+  vm.runInNewContext(readFileSync(join(ROOT, "results.js"), "utf8"), rctx);
+  const RP = rctx.ResultsParse;
+  if (!RP) { fail("results.js: no ResultsParse"); process.exit(1); }
+  const p = { _parseMMATemplate: RP.parseMMATemplate, _parseWikitable: RP.parseWikitable };
   const tpl = "{{MMAevent bout\n|Women's Flyweight\n|[[Ernesta Kareckait\u0117]]\n|vs.\n|Melissa Gatto\n|Draw (majority) (29\u201327, 28\u201328, 28\u201328)\n|3\n|5:00\n|\n}}\n" +
     "{{MMAevent bout\n|Lightweight\n|Allen Frye Jr.\n|vs.\n|RJ Harris\n|\n|\n|\n|\n}}\n" +
     "{{MMAevent bout\n|Women's Flyweight\n|Alice Pereira\n|def.\n|Daria Zhelezniakova\n|TKO (punches)\n|1\n|2:00\n|\n}}";

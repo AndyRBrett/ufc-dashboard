@@ -1,0 +1,211 @@
+// One reading of a Wikipedia results page, for every JavaScript reader.
+//
+// Fight results were parsed three times: scrape.py (Python, writes data.js),
+// the open app's live poll (index.html) and the server backup check-results.
+// The two JavaScript copies had drifted from the scraper and from each other:
+// check-results asked for "UFC 334: Gane vs. Hokit" (a redirect stub with no
+// results) instead of "UFC 334", so it never read a numbered PPV at all, and
+// knew nothing of draws or no contests; the app's copy lacked the scraper's
+// fix for an unclosed {{nowrap|… template and took a different round in a
+// results table. Now the app loads this file and check-results imports it
+// (bundled by scripts/build-fn-bundle.mjs into _shared/results-bundle.js), so
+// the two can't disagree, and both are tied to scrape.py by one golden:
+// tests/fixtures/results/expected.json, which pytest holds the Python parser
+// to and check:results holds this file to. Change a rule here and in
+// scrape.py together, then regenerate that golden on purpose.
+//
+// Every function is a line-for-line port of its scrape.py namesake:
+//   fold            _fold            names_match  namesMatch
+//   cleanWiki       clean_wiki       norm_method  normMethod
+//   parseResults    parse_results    _wiki_event_slug  eventSlug
+// and fightKey is the result push's dedup key (send_push_notifications).
+//
+// Plain ES5, no globals but ResultsParse: it runs in the page, in Node (vm, for
+// the checks) and wrapped as a module in Deno.
+(function (root) {
+  "use strict";
+
+  // NFKD, then drop everything non-ASCII: an accent splits off its letter and
+  // goes, and so does a letter that carries its diacritic in the codepoint
+  // ("ł", "ø"). "Syguła" is "Sygua" here, exactly as data.js and every stored
+  // pick spell it.
+  function fold(s) {
+    s = String(s == null ? "" : s);
+    try { s = s.normalize("NFKD"); } catch (e) { /* very old engine: leave as is */ }
+    return s.replace(/[^\x00-\x7F]/g, "");   // eslint-disable-line no-control-regex
+  }
+  function asc(t) { return t ? fold(String(t)).trim() : ""; }
+  // A name without a trailing "(...)" (a nickname, a "(c)").
+  function clean(name) {
+    return fold(String(name == null ? "" : name).replace(/\s*\([^)]+\)\s*$/, "").trim()).trim();
+  }
+  function stripCommas(s) { return s.replace(/^,+|,+$/g, ""); }
+
+  function cleanWiki(text) {
+    if (!text) return "";
+    text = String(text);
+    text = text.replace(/\[\[([^\]|]+\|)?([^\]]+)\]\]/g, "$2");
+    text = text.replace(/\{\{[^}]+\}\}/g, "");
+    // A template split across lines arrives UNCLOSED ("{{nowrap|Name"): drop
+    // the opener, keep the argument after the last pipe, clear stray braces.
+    text = text.replace(/\{\{\s*(?:[^|{}]*\|)*/g, "");
+    text = text.split("}}").join("").replace(/[{}]/g, "");
+    text = text.replace(/<[^>]+>/g, "");
+    text = text.replace(/\[\d+\]/g, "");
+    return stripCommas(asc(text).trim()).trim();
+  }
+
+  function lastName(name) {
+    var p = clean(name).trim().split(/\s+/).filter(Boolean);
+    return p.length ? p[p.length - 1].toLowerCase() : "";
+  }
+  // Fuzzy: the same last name, or one name (letters only) inside the other.
+  function namesMatch(a, b) {
+    a = String(a == null ? "" : a); b = String(b == null ? "" : b);
+    var a2 = a.toLowerCase().replace(/[^a-z]/g, ""), b2 = b.toLowerCase().replace(/[^a-z]/g, "");
+    return lastName(a) === lastName(b) || (a2.length > 3 && b2.indexOf(a2) >= 0) || (b2.length > 3 && a2.indexOf(b2) >= 0);
+  }
+
+  function normMethod(m) {
+    var ml = String(m || "").toLowerCase();
+    // Before the decision checks: "Draw (majority)" would read as a majority decision.
+    if (ml.indexOf("draw") >= 0) return "Draw";
+    var t = ml.trim();
+    if (ml.indexOf("no contest") >= 0 || t === "nc" || t === "overturned") return "NC";
+    if (ml.indexOf("ko") >= 0 || ml.indexOf("tko") >= 0) return "KO/TKO";
+    if (ml.indexOf("submission") >= 0 || ml.indexOf("sub") >= 0) return "Submission";
+    if (ml.indexOf("unanimous") >= 0) return "Decision (Unanimous)";
+    if (ml.indexOf("split") >= 0) return "Decision (Split)";
+    if (ml.indexOf("majority") >= 0) return "Decision (Majority)";
+    if (ml.indexOf("decision") >= 0) return "Decision";
+    if (ml.indexOf("dq") >= 0) return "DQ";
+    return asc(m).trim();
+  }
+
+  // Python's int(): optional sign, digits (underscores between them), nothing
+  // else. parseInt would read "3rd" as 3; int() refuses it, and so does this.
+  function pyInt(s) {
+    s = String(s == null ? "" : s).trim();
+    if (!/^[+-]?\d+(?:_\d+)*$/.test(s)) return null;
+    return parseInt(s.replace(/_/g, ""), 10);
+  }
+  function noChamp(s) { return s.replace(/\s*\(c\)\s*/g, "").trim(); }
+  function isDef(c) { var l = String(c).toLowerCase().trim(); return l === "def." || l === "def" || l === "d."; }
+  function isVs(c) { var l = String(c).toLowerCase().trim(); return l === "vs." || l === "vs"; }
+
+  var UNDECIDED = /\b(draw|no contest)\b|^nc\b|overturned/i;
+  // A draw or no contest: "A vs. B", no winner. Both names, so a reader can
+  // still find the bout and mark it over.
+  function undecided(a, b, rest) {
+    a = noChamp(cleanWiki(a)); b = noChamp(cleanWiki(b));
+    if (a.length < 2 || b.length < 2) return null;
+    var method = "", rnd = null, i;
+    for (i = 0; i < rest.length; i++) if (UNDECIDED.test(rest[i] || "")) { method = rest[i]; break; }
+    if (!method) return null;
+    for (i = 0; i < rest.length; i++) if (/^\s*\d\s*$/.test(rest[i] || "")) { rnd = parseInt(rest[i], 10); break; }
+    return { winner: "", loser: "", f1: a, f2: b, method: normMethod(method), round: rnd, undecided: true };
+  }
+
+  function stripLine(l) { return l.trim().replace(/^\|+/, "").trim(); }
+
+  function parseMMATemplate(wt) {
+    var results = [], re = /\{\{MMAevent bout\s*\n([\s\S]*?)\}\}/gi, m;
+    while ((m = re.exec(wt)) !== null) {
+      var lines = m[1].split("\n").map(stripLine).filter(Boolean);
+      if (lines.length < 5) continue;
+      var di = -1, vi = -1, i;
+      for (i = 0; i < lines.length; i++) if (isDef(lines[i])) { di = i; break; }
+      if (di < 1) {
+        for (i = 0; i < lines.length; i++) if (isVs(lines[i])) { vi = i; break; }
+        if (vi >= 1 && vi < lines.length - 1) {
+          var und = undecided(lines[vi - 1], lines[vi + 1], lines.slice(vi + 2));
+          if (und) results.push(und);
+        }
+        continue;
+      }
+      var winner = noChamp(cleanWiki(lines[di - 1]));
+      var loser = di + 1 < lines.length ? noChamp(cleanWiki(lines[di + 1])) : "";
+      var method = di + 2 < lines.length ? lines[di + 2] : "";
+      var rndS = di + 3 < lines.length ? lines[di + 3] : "";
+      if (!winner || !method) continue;
+      results.push({ winner: winner, loser: loser, method: normMethod(method), round: pyInt(rndS) });
+    }
+    return results;
+  }
+
+  var SKIP_HEADERS = ["weight class", "winner", "method", "round", "main card", "preliminary", "early prelim"];
+  var METHOD_WORDS = ["ko", "tko", "decision", "submission", "sub", "dq"];
+  function flushRow(row) {
+    row = row.map(cleanWiki).filter(Boolean);
+    if (row.length < 3) return null;
+    var joined = row.join(" ").toLowerCase(), i;
+    for (i = 0; i < SKIP_HEADERS.length; i++) if (joined.indexOf(SKIP_HEADERS[i]) >= 0) return null;
+    var winner = "", loser = "", method = "", rnd = null, rest, di = -1, vi = -1;
+    for (i = 0; i < row.length; i++) if (isDef(row[i])) { di = i; break; }
+    if (di > 0) {
+      winner = noChamp(row[di - 1]);
+      loser = di + 1 < row.length ? noChamp(row[di + 1]) : "";
+      rest = row.slice(di + 2);
+    } else {
+      for (i = 0; i < row.length; i++) if (isVs(row[i])) { vi = i; break; }
+      if (vi >= 1 && vi < row.length - 1) return undecided(row[vi - 1], row[vi + 1], row.slice(vi + 2));
+      if (row.length < 4) return null;
+      winner = row[1]; loser = row[2]; rest = row.slice(3);
+    }
+    if (!winner || winner.length < 2) return null;
+    rest.forEach(function (cell) {
+      var cl = cell.toLowerCase();
+      if (METHOD_WORDS.some(function (k) { return cl.indexOf(k) >= 0; })) { if (!method) method = cell; }
+      else if (rnd === null && /^\d$/.test(cell.trim())) rnd = parseInt(cell.trim(), 10);   // the FIRST lone digit (method, round, time, notes)
+    });
+    if (!method && winner && loser && rnd) method = "Decision";
+    if (!method) return null;
+    return { winner: winner, loser: loser, method: normMethod(method), round: rnd };
+  }
+
+  function parseWikitable(wt) {
+    var results = [], inTable = false, row = [];
+    function flush() { if (row.length) { var r = flushRow(row); if (r) results.push(r); } row = []; }
+    String(wt).split("\n").forEach(function (line) {
+      var s = line.trim();
+      if (s.indexOf("{|") >= 0 && s.toLowerCase().indexOf("wikitable") >= 0) { inTable = true; row = []; return; }
+      if (s.indexOf("|}") === 0) { flush(); inTable = false; return; }
+      if (!inTable) return;
+      if (s.indexOf("|-") === 0) { flush(); return; }
+      if (s.indexOf("!") === 0) { row = []; return; }
+      if (s.indexOf("|") === 0) {
+        var content = s.replace(/^\|+/, "");
+        if (content.indexOf("||") >= 0) content.split("||").forEach(function (p) { row.push(cleanWiki(p.trim())); });
+        else row.push(cleanWiki(content));
+      }
+    });
+    return results;
+  }
+
+  // {{MMAevent bout}} blocks first; a results wikitable only when there are none.
+  function parseResults(wt) {
+    var r = parseMMATemplate(String(wt || ""));
+    return r.length ? r : parseWikitable(String(wt || ""));
+  }
+
+  // The article to read for an event. A numbered PPV's article is just
+  // "UFC 334"; "UFC 334: Gane vs. Hokit" is a redirect whose stub has no
+  // results. A Fight Night's article IS its full title.
+  function eventSlug(evName) {
+    var m = /^UFC\s+\d+/.exec(String(evName || ""));
+    var base = m ? m[0] : String(evName || "");
+    return base.replace(/[^a-zA-Z0-9 :._-]/g, "").replace(/ /g, "_");
+  }
+
+  // The result push's dedup key, `result:<key>:<win|loss>` in notif_log.
+  // Folded here, not upstream, so any spelling of the names gives one key.
+  function fightKey(winner, loser) {
+    return fold(String(winner) + "-" + String(loser)).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
+
+  root.ResultsParse = {
+    fold: fold, cleanWiki: cleanWiki, clean: clean, lastName: lastName, namesMatch: namesMatch,
+    normMethod: normMethod, parseResults: parseResults, parseMMATemplate: parseMMATemplate,
+    parseWikitable: parseWikitable, eventSlug: eventSlug, fightKey: fightKey,
+  };
+})(typeof globalThis !== "undefined" ? globalThis : this);

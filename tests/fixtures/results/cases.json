@@ -1,0 +1,492 @@
+{
+ "_note": "Inputs for the results-parser golden: tests/test_results_golden.py writes expected.json from scrape.py, check:results holds results.js to it. Regenerate expected.json on purpose only (see the test).",
+ "events": [
+  "UFC 334: Gane vs. Hokit",
+  "UFC 329",
+  "UFC 300",
+  "UFC Fight Night: Medić vs. Rodríguez",
+  "UFC on ESPN: Sandhagen vs. Bautista",
+  "Noche UFC 2: Moreno vs. Royval",
+  "UFC Freedom 250: White House",
+  "UFC 1000: A vs. B",
+  "",
+  "UFC: Road to the Title"
+ ],
+ "methods": [
+  "TKO (punches)",
+  "KO (head kick)",
+  "Submission (rear-naked choke)",
+  "Decision (unanimous)",
+  "Decision (split)",
+  "Decision (majority)",
+  "Draw (majority)",
+  "Draw",
+  "No contest (accidental eye poke)",
+  "NC",
+  "Overturned",
+  "DQ (illegal knee)",
+  "Technical decision (unanimous)",
+  "Technical Submission",
+  "[[Knockout|KO]] (punch)",
+  "Decision",
+  "{{nowrap|TKO (doctor stoppage)}}",
+  "",
+  "Weird finish",
+  "  ",
+  "Technical Knockout",
+  "Majority Draw",
+  "no contest",
+  "NC ",
+  "Overturned (failed drug test)",
+  "Décision (unanime)"
+ ],
+ "names": [
+  [
+   "Jon Jones",
+   "Jon Jones"
+  ],
+  [
+   "Chris Duncan (fighter)",
+   "Chris Duncan"
+  ],
+  [
+   "Levi Rodrigues Jr.",
+   "Levi Rodrigues"
+  ],
+  [
+   "Dricus du Plessis",
+   "Du Plessis"
+  ],
+  [
+   "Klaudia Syguła",
+   "Klaudia Sygua"
+  ],
+  [
+   "Bia Mesquita",
+   "Beatriz Mesquita"
+  ],
+  [
+   "Ilia Topuria",
+   "Alexander Volkanovski"
+  ],
+  [
+   "Wang Cong",
+   "Cong Wang"
+  ],
+  [
+   "A",
+   "B"
+  ],
+  [
+   "",
+   ""
+  ],
+  [
+   "Wang Cong",
+   "{{nowrap|Levi Rodrigues Jr."
+  ],
+  [
+   "[[Josh Hokit (fighter)|Josh Hokit]]",
+   "{{sortname|Bia|Mesquita}}"
+  ],
+  [
+   "Khalil Rountree Jr.",
+   "Chris Duncan,"
+  ],
+  [
+   "[[Ørjan Ås]]",
+   "Bia Mesquita"
+  ],
+  [
+   "Dricus du Plessis",
+   "[[Chris Duncan]]"
+  ],
+  [
+   "[[Jiří Procházka]]",
+   "Jiří Procházka"
+  ],
+  [
+   "Klaudia Syguła",
+   "{{nowrap|Stipe Miocic}}"
+  ],
+  [
+   "[[Josh Hokit (fighter)|Josh Hokit]]",
+   "Stipe Miocic"
+  ],
+  [
+   "José Aldo",
+   "{{flagicon|USA}} Levi Rodrigues Jr."
+  ],
+  [
+   "[[Dricus du Plessis (fighter)|Dricus du Plessis]]",
+   "Levi Rodrigues Jr."
+  ],
+  [
+   "[[Dricus du Plessis (fighter)|Dricus du Plessis]]",
+   "Ørjan Ås (c)"
+  ],
+  [
+   "{{nowrap|Ciryl Gane",
+   "Ørjan Ås,"
+  ],
+  [
+   "Ørjan Ås (c)",
+   "Alex Pereira"
+  ],
+  [
+   "Ilia Topuria",
+   "Bia Mesquita<ref>x</ref>"
+  ],
+  [
+   "Chris Duncan<ref>x</ref>",
+   "[[Jon Jones (fighter)|Jon Jones]]"
+  ],
+  [
+   "Ørjan Ås[1]",
+   "[[Klaudia Syguła (fighter)|Klaudia Syguła]]"
+  ],
+  [
+   "Jiří Procházka<ref>x</ref>",
+   "{{flagicon|USA}} José Aldo"
+  ],
+  [
+   "Chris Duncan",
+   "Klaudia Syguła (c)"
+  ],
+  [
+   "{{nowrap|José Aldo",
+   "Klaudia Syguła"
+  ],
+  [
+   "{{nowrap|Drew Dober}}",
+   "Levi Rodrigues Jr. (c)"
+  ],
+  [
+   "{{nowrap|Khalil Rountree Jr.}}",
+   "[[Wang Cong]]"
+  ],
+  [
+   "Chris Duncan[1]",
+   "[[Khalil Rountree Jr.]]"
+  ],
+  [
+   "[[Chris Duncan (fighter)|Chris Duncan]]",
+   "Josh Hokit"
+  ],
+  [
+   "[[Klaudia Syguła (fighter)|Klaudia Syguła]]",
+   "[[José Aldo]]"
+  ],
+  [
+   "[[Jon Jones]]",
+   "Jiří Procházka"
+  ],
+  [
+   "[[Ciryl Gane]]",
+   "Stipe Miocic,"
+  ],
+  [
+   "{{flagicon|USA}} Jiří Procházka",
+   "[[Drew Dober (fighter)|Drew Dober]]"
+  ],
+  [
+   "{{nowrap|Alex Pereira",
+   "Khalil Rountree Jr.[1]"
+  ],
+  [
+   "Bia Mesquita",
+   "{{flagicon|USA}} Ciryl Gane"
+  ],
+  [
+   "Stipe Miocic",
+   "Bia Mesquita"
+  ],
+  [
+   "Bia Mesquita",
+   "Wang Cong"
+  ],
+  [
+   "{{sortname|Jon|Jones}}",
+   "[[Bia Mesquita (fighter)|Bia Mesquita]]"
+  ],
+  [
+   "Drew Dober",
+   "Jon Jones (c)"
+  ],
+  [
+   "{{nowrap|Klaudia Syguła",
+   "Levi Rodrigues Jr."
+  ],
+  [
+   "[[Chris Duncan]]",
+   "Dricus du Plessis"
+  ],
+  [
+   "Jiří Procházka",
+   "[[Jon Jones (fighter)|Jon Jones]]"
+  ],
+  [
+   "{{nowrap|Ilia Topuria}}",
+   "{{flagicon|USA}} Jiří Procházka"
+  ],
+  [
+   "{{nowrap|Alex Pereira",
+   "[[José Aldo]]"
+  ],
+  [
+   "{{nowrap|Klaudia Syguła}}",
+   "Mairbek Taisumov<ref>x</ref>"
+  ],
+  [
+   "Drew Dober",
+   "Jiří Procházka"
+  ],
+  [
+   "Alex Pereira",
+   "Stipe Miocic,"
+  ],
+  [
+   "[[Ørjan Ås]]",
+   "Ilia Topuria"
+  ],
+  [
+   "{{sortname|Dricus|Plessis}}",
+   "[[Wang Cong]]"
+  ],
+  [
+   "Mairbek Taisumov",
+   "Wang Cong"
+  ],
+  [
+   "Jon Jones (c)",
+   "Klaudia Syguła"
+  ],
+  [
+   "{{flagicon|USA}} Wang Cong",
+   "{{flagicon|USA}} Levi Rodrigues Jr."
+  ],
+  [
+   "Wang Cong",
+   "{{nowrap|Klaudia Syguła"
+  ],
+  [
+   "José Aldo",
+   "{{flagicon|USA}} Dricus du Plessis"
+  ],
+  [
+   "Chris Duncan<ref>x</ref>",
+   "[[Stipe Miocic]]"
+  ],
+  [
+   "Levi Rodrigues Jr.",
+   "Alex Pereira"
+  ],
+  [
+   "Jiří Procházka",
+   "Klaudia Syguła"
+  ],
+  [
+   "Khalil Rountree Jr.",
+   "{{nowrap|Chris Duncan"
+  ],
+  [
+   "[[Ørjan Ås]]",
+   "{{nowrap|Bia Mesquita}}"
+  ],
+  [
+   "Jiří Procházka",
+   "[[Dricus du Plessis]]"
+  ],
+  [
+   "Alex Pereira",
+   "[[Khalil Rountree Jr. (fighter)|Khalil Rountree Jr.]]"
+  ],
+  [
+   "Ørjan Ås[1]",
+   "Drew Dober[1]"
+  ],
+  [
+   "{{sortname|Stipe|Miocic}}",
+   "Ilia Topuria"
+  ],
+  [
+   "Jiří Procházka",
+   "Mairbek Taisumov"
+  ],
+  [
+   "{{nowrap|Chris Duncan}}",
+   "[[Bia Mesquita]]"
+  ],
+  [
+   "[[Ilia Topuria]]",
+   "{{flagicon|USA}} Levi Rodrigues Jr."
+  ]
+ ],
+ "pages": {
+  "accented_names": "{{MMAevent bout\n|Women's Strawweight\n|[[Nora Cornolle]]\n|def.\n|[[Klaudia Syguła]]\n|Decision (unanimous)\n|3\n|5:00\n|\n}}\n{{MMAevent bout\n|Light Heavyweight\n|[[Jiří Procházka]]\n|def.\n|[[Søren Bak]]\n|KO (punches)\n|2\n|1:11\n|\n}}\n{{MMAevent bout\n|Middleweight\n|[[Đorđe Petrović]]\n|def.\n|[[José Aldo]]\n|Submission (arm-triangle choke)\n|1\n|4:59\n|\n}}",
+  "announced_card": "{{MMAevent bout\n|Heavyweight\n|[[Ciryl Gane]]\n|vs.\n|[[Josh Hokit]]\n|\n|\n|\n|\n}}\n{| class=\"wikitable\"\n|-\n| Lightweight || [[Chris Duncan (fighter)|Chris Duncan]] || vs. || [[Drew Dober]] || || ||\n|}",
+  "draws_and_no_contests": "{{MMAevent bout\n|Women's Flyweight\n|[[Ernesta Kareckaitė]]\n|vs.\n|[[Melissa Gatto]]\n|Draw (majority) (29–27, 28–28, 28–28)\n|3\n|5:00\n|\n}}\n{{MMAevent bout\n|Middleweight\n|[[Bo Nickal]]\n|vs.\n|[[Joe Pyfer]]\n|No Contest (accidental eye poke)\n|1\n|0:45\n|\n}}\n{{MMAevent bout\n|Lightweight\n|[[Allen Frye Jr.]]\n|vs.\n|[[RJ Harris]]\n|Overturned\n|2\n|3:30\n|{{efn|Originally a TKO win for Frye; overturned after a failed drug test.}}\n}}\n{{MMAevent bout\n|Featherweight\n|[[Alice Pereira]]\n|def.\n|[[Daria Zhelezniakova]]\n|TKO (punches)\n|1\n|2:00\n|\n}}",
+  "empty": "",
+  "ppv_template": "==Results==\n{{MMAevent card|Main card (Paramount+)}}\n{{MMAevent bout\n|Heavyweight\n|[[Ciryl Gane]]\n|def.\n|[[Josh Hokit]]\n|TKO (punches)\n|2\n|3:12\n|\n}}\n{{MMAevent bout\n|Women's Featherweight\n|[[Kayla Harrison]] (c)\n|def.\n|[[Amanda Nunes]]\n|Decision (unanimous) (49–46, 49–46, 48–47)\n|5\n|5:00\n|{{efn|For the UFC Women's Bantamweight Championship.}}\n}}\n{{MMAevent card|Preliminary card (Paramount+)}}\n{{MMAevent bout\n|Lightweight\n|[[Chris Duncan (fighter)|Chris Duncan]]\n|def.\n|[[Drew Dober]]\n|Submission (rear-naked choke)\n|3\n|4:01\n|\n}}\n{{MMAevent bout\n|Welterweight\n|[[Stephen Thompson (fighter)|Stephen Thompson]]\n|def.\n|[[Charles Radtke]]\n|KO (spinning back kick)\n|1\n|0:48\n|<ref>{{cite web |url=https://example.org |title=Recap}}</ref>\n}}\n{{MMAevent endcard}}",
+  "random_000": "{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|}",
+  "random_001": "",
+  "random_002": "{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Lightweight\n||[[Chris Duncan]]\n|||DEF.\n|||[[Ilia Topuria]]\n|||Draw (majority)\n|||\n||0\n|||4:54\n||}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nKhalil Rountree Jr.\nDEF.\n[[Klaudia Syguła]]\n\n2\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n{{nowrap|José Aldo}}\nvs\n[[Chris Duncan]]\n{{nowrap|TKO (doctor stoppage)}}\n4\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Josh Hokit]]\ndef.\n[[Stipe Miocic]]\nDQ (illegal knee)\nR2\n4:54\n\n}}",
+  "random_003": "{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Bantamweight\n|Klaudia Syguła\n|def\n|Mairbek Taisumov\n|No contest (accidental eye poke)\n| 3 \n|3:12\n|-\n|Lightweight\n|Ilia Topuria\n|vs.\n|{{nowrap|Jiří Procházka}}\n|KO (head kick)\n|4\n|5:00\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nJosh Hokit\nd.\nØrjan Ås[1]\nDecision (unanimous)\n\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n|Jiří Procházka\n|def\nJon Jones\n|[[Knockout|KO]] (punch)\n|2\n|4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Heavyweight\n|[[Khalil Rountree Jr.]]\n|def.\n|[[Alex Pereira]]\nDecision (split)\n|1\n5:00\n}}",
+  "random_004": "{{MMAevent bout\nLightweight\nStipe Miocic (c)\ndef.\nJosh Hokit[1]\nDecision\n4\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Heavyweight\n{{flagicon|USA}} Khalil Rountree Jr.\n|vs.\nDricus du Plessis\n|Decision (split)\n|5\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Women's Flyweight\n||[[Jon Jones]]\n|||def.\n||Jiří Procházka[1]\n|||TKO (punches)\n||2\n|||5:00\n||}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|{{nowrap|Mairbek Taisumov\n|def.\n|Alex Pereira,\n|{{nowrap|TKO (doctor stoppage)}}\n|12\n|3:12\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|Ciryl Gane\n|x\n|[[Dricus du Plessis]]\n|Decision\n|\n|3:12\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Dricus du Plessis (fighter)|Dricus du Plessis]]\nvs\nØrjan Ås\n|\nR2\n|5:00\n}}",
+  "random_005": "{{MMAevent bout\nLightweight\nDricus du Plessis\ndef.\n{{nowrap|Jon Jones\nTechnical Submission\n4\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Women's Flyweight\n||[[Levi Rodrigues Jr.]]\n||d.\n||Levi Rodrigues Jr.\n||Decision (unanimous)\n||1_0\n||4:54\n||}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Women's Flyweight\n[[Levi Rodrigues Jr.]]\ndef.\n|[[Stipe Miocic]]\nDecision\n|5\n|\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nDricus du Plessis\nDEF.\nJosé Aldo\nWeird finish\n\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Bantamweight\n|Levi Rodrigues Jr.\n|x\n|Levi Rodrigues Jr.\n|KO (head kick)\n|R2\n|5:00\n|-\n! colspan=8 | Main card\n|}",
+  "random_006": "{{MMAevent bout\nWomen's Flyweight\n[[Bia Mesquita]]\nvs\n[[Ørjan Ås (fighter)|Ørjan Ås]]\nSubmission (rear-naked choke)\n1\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Lightweight\n\n{{sortname|Ciryl|Gane}}\n|def.\n|Chris Duncan,\nNC\n\n|\n|}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Bantamweight\n|[[Bia Mesquita (fighter)|Bia Mesquita]]\n|vs.\n|[[Dricus du Plessis]]\n|Decision\n|1\n|3:12\n|-\n|Lightweight\n|{{nowrap|Dricus du Plessis\n|x\n|{{nowrap|Chris Duncan}}\n|Technical decision (unanimous)\n|R2\n||5:00\n|-\n|Lightweight\n|{{nowrap|Mairbek Taisumov}}\n|vs.\n|Wang Cong (c)\n|Decision (majority)\n| 3 \n|5:00\n|-\n|Lightweight\n|Khalil Rountree Jr.,\n|vs.\n|Jiří Procházka\n|Technical decision (unanimous)\n|2\n|5:00\n|-\n! colspan=8 | Main card\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n{{flagicon|USA}} Jon Jones\ndef\n{{nowrap|Ilia Topuria}}\nTKO (punches)\n\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n{{nowrap|Ørjan Ås\ndef.\nCiryl Gane\nDraw\n5\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nJosh Hokit\ndef\n[[Khalil Rountree Jr. (fighter)|Khalil Rountree Jr.]]\nTechnical Submission\n2\n5:00\n}}",
+  "random_007": "{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|}",
+  "random_008": "{{MMAevent bout\n|Heavyweight\n|Stipe Miocic\n|def.\n[[Jiří Procházka (fighter)|Jiří Procházka]]\n|Decision\n|0\n|\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||\n|Heavyweight\n|{{nowrap|Ilia Topuria\n|def.\n{{flagicon|USA}} Alex Pereira\n|[[Knockout|KO]] (punch)\n\n\n|}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n|-\n|Ciryl Gane<ref>x</ref>\n|vs.\n|[[Mairbek Taisumov]]\n||Overturned\n|12\n|5:00",
+  "random_009": "{{MMAevent bout\nHeavyweight\n[[Alex Pereira]]\ndef.\nIlia Topuria<ref>x</ref>\nKO (head kick)\n\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n[[Alex Pereira]]\nDEF.\n[[Wang Cong (fighter)|Wang Cong]]\n\n5\n4:54\n \n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n|Dricus du Plessis\nDEF.\n|{{sortname|Chris|Duncan}}\nTKO (punches)\n|3\n|\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nJiří Procházka<ref>x</ref>\ndef.\nWang Cong\nWeird finish\n 3 \n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Heavyweight\n|Drew Dober (c)\nd.\nLevi Rodrigues Jr.<ref>x</ref>\nDecision (split)\n|+2\n4:54\n}}",
+  "random_010": "{{MMAevent bout\nLightweight\nJosé Aldo\ndef\nJon Jones[1]\nDecision\n3rd\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Heavyweight\n||[[Ciryl Gane]]\n||vs\n||Ciryl Gane\n||Decision (split)\n||+2\n||4:54\n||}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Lightweight\n|Ørjan Ås\n|vs\n|[[Stipe Miocic (fighter)|Stipe Miocic]]\n|Decision (unanimous)\n|R2\n|\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Alex Pereira]]\nd.\n[[Ørjan Ås]]\nNC\n0\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n|[[Josh Hokit]]\n|def\n{{nowrap|Wang Cong}}\nDecision (split)\n|5\n|5:00\n}}",
+  "random_011": "{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|}",
+  "random_012": "{{MMAevent bout\nHeavyweight\n|[[Jiří Procházka]]\ndef.\n|Levi Rodrigues Jr.\nNC\n 3 \n4:54\n|}}\n\nSome text [[link]] {{cite}}\n{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|}",
+  "random_013": "",
+  "random_014": "{| class=\"toccolours wikitable\"\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|}",
+  "random_015": "{{MMAevent bout\n|Heavyweight\n{{sortname|Chris|Duncan}}\ndef\n[[Jon Jones]]\nTKO (punches)\n3\n|4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Heavyweight\n||Josh Hokit<ref>x</ref>\n||def.\n||Stipe Miocic\n||Decision (split)\n||R2\n||5:00\n||}}",
+  "random_016": "{| class=\"toccolours wikitable\"\n|-\n| Bantamweight || José Aldo || vs. || [[Drew Dober]] || Weird finish || 12 || 3:12\n|-\n|Lightweight\n|Wang Cong\n|vs.\n|Levi Rodrigues Jr.\n|Decision (unanimous)\n|+2\n|3:12\n|-\n|Drew Dober\n|def.\n|Ciryl Gane[1]\n|NC\n|\n|3:12\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Women's Flyweight\n||Jiří Procházka<ref>x</ref>\n||def.\n||{{nowrap|Ørjan Ås}}\n||Weird finish\n||5\n|| \n||5:00\n||}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nIlia Topuria\nDEF.\nMairbek Taisumov\nTechnical decision (unanimous)\n5\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n{{nowrap|Jon Jones}}\nvs\n{{flagicon|USA}} Ciryl Gane\nDecision (unanimous)\n3\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n|Ilia Topuria<ref>x</ref>\ndef\n|[[Jon Jones]]\n|No contest (accidental eye poke)\n 3 \n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n\n{{flagicon|USA}} José Aldo\nd.\nCiryl Gane\nDQ (illegal knee)\n3\n5:00\n}}",
+  "random_017": "{| class=\"Wikitable\"\n|}",
+  "random_018": "{{MMAevent bout\nHeavyweight\n{{nowrap|Ciryl Gane\ndef.\nJosh Hokit,\nDecision (unanimous)\n3rd\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nStipe Miocic\nd.\nDricus du Plessis\nTechnical Submission\n3\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nCiryl Gane\n||\ndef.\nIlia Topuria<ref>x</ref>\nTKO (punches)\n+2\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|{{nowrap|Stipe Miocic\n|def\n|Stipe Miocic (c)\n|Decision (majority)\n|12\n|5:00\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nLevi Rodrigues Jr.\ndef.\nDrew Dober\nSubmission (rear-naked choke)\n5\n4:54\n}}",
+  "random_019": "{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|}",
+  "random_020": "{{MMAevent bout\n|Heavyweight\n|||\n|José Aldo\n|vs\n|[[Stipe Miocic]]\n|NC\n|1\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nJiří Procházka<ref>x</ref>\ndef.\nØrjan Ås[1]\nDraw (majority)\n1\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nKhalil Rountree Jr.\ndef.\nMairbek Taisumov\nTKO (punches)\n12\n\n}}",
+  "random_021": "{| class=\"toccolours wikitable\"\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|}",
+  "random_022": "{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Lightweight\n|Chris Duncan\n|def\n|Khalil Rountree Jr.\n|Decision (unanimous)\n|1_0\n|5:00\n|-\n! colspan=8 | Main card\n|}",
+  "random_023": "{{MMAevent bout\nLightweight\nIlia Topuria\nDEF.\nChris Duncan,\nDQ (illegal knee)\n5\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nAlex Pereira\n||\nvs.\nLevi Rodrigues Jr.\n{{nowrap|TKO (doctor stoppage)}}\n1\n5:00\n}}",
+  "random_024": "",
+  "random_025": "{{MMAevent bout\nHeavyweight\nChris Duncan\nvs.\nIlia Topuria\n{{nowrap|TKO (doctor stoppage)}}\n\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n[[Khalil Rountree Jr.]]\ndef.\n{{flagicon|USA}} Jiří Procházka\nDQ (illegal knee)\n1\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Alex Pereira]]\nvs.\n[[Ørjan Ås]]\n\n 3 \n5:00\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n|-\n! colspan=8 | Main card\n|-\n| Bantamweight || Jon Jones || x || [[Wang Cong (fighter)|Wang Cong]] || Technical Submission || 12 || 5:00\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nMairbek Taisumov\nd.\n{{flagicon|USA}} Dricus du Plessis\nDraw (majority)\n5\n\n}}",
+  "random_026": "{| class=\"wikitable\"\n|-\n| Bantamweight || Ilia Topuria[1] || x || [[Khalil Rountree Jr. (fighter)|Khalil Rountree Jr.]] || Decision (majority) || +2 || 3:12\n|-\n|Lightweight\n|[[José Aldo]]\n|vs.\n|Drew Dober,\n|Decision (split)\n|1_0\n|3:12\n|}",
+  "random_027": "{| class=\"toccolours wikitable\"\n|-\n|Bantamweight\n|{{nowrap|Jiří Procházka\n|def\n|{{nowrap|Mairbek Taisumov\n|No contest (accidental eye poke)\n|4\n|5:00\n|-\n! colspan=8 | Main card\n|-\n| Bantamweight || Ilia Topuria || x || [[Ørjan Ås (fighter)|Ørjan Ås]] || Weird finish || 5 || 3:12\n|}",
+  "random_028": "{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Lightweight\n|{{nowrap|Mairbek Taisumov}}\n|vs.\n|Jiří Procházka\n|KO (head kick)\n|1_0\n|3:12\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nCiryl Gane\ndef.\nMairbek Taisumov\nSubmission (rear-naked choke)\n\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nJosé Aldo (c)\nvs\n{{nowrap|Josh Hokit}}\nKO (head kick)\nR2\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n[[Wang Cong (fighter)|Wang Cong]]\nvs\nJosh Hokit\n|\nTKO (punches)\n+2\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n\nHeavyweight\nJosé Aldo\ndef.\nIlia Topuria (c)\nKO (head kick)\n3\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nJon Jones\nd.\n[[Levi Rodrigues Jr. (fighter)|Levi Rodrigues Jr.]]\nDecision (split)\n\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Women's Flyweight\nJosh Hokit (c)\n|vs\n|Khalil Rountree Jr.,\n|TKO (punches)\n3\n5:00\n}}",
+  "random_029": "{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time",
+  "random_030": "{| class=\"toccolours wikitable\"\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|}",
+  "random_031": "{| class=\"Wikitable\"\n|-\n! colspan=8 | Main card\n|-\n||Bantamweight\n|Alex Pereira\n|def.\n|Josh Hokit\n|Submission (rear-naked choke)\n|12\n|3:12\n|-\n! colspan=8 | Main card\n|}",
+  "random_032": "{{MMAevent bout\nLightweight\n[[Bia Mesquita]]\n|def.\n|Dricus du Plessis (c)\n|Draw (majority)\nR2\n|\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nChris Duncan\ndef.\n[[Josh Hokit]]\nTKO (punches)\n+2\n\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n{{nowrap|Chris Duncan\nvs\nStipe Miocic\n\n3rd\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nJosé Aldo\ndef\nJiří Procházka (c)\nTechnical decision (unanimous)\n3\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nAlex Pereira\ndef\nJiří Procházka\n|Technical Submission\n|1\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|}",
+  "random_033": "{{MMAevent bout\nHeavyweight\n{{nowrap|José Aldo\ndef.\n{{nowrap|Ilia Topuria}}\nDQ (illegal knee)\n3\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Levi Rodrigues Jr. (fighter)|Levi Rodrigues Jr.]]\ndef\n[[Dricus du Plessis]]\n{{nowrap|TKO (doctor stoppage)}}\n1_0\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nKlaudia Syguła\nvs\n[[Wang Cong]]\n|No contest (accidental eye poke)\n\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nDricus du Plessis\ndef.\n[[Dricus du Plessis]]\nDecision (majority)\n1\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n[[Khalil Rountree Jr.]]\nDEF.\n[[Alex Pereira (fighter)|Alex Pereira]]\nOverturned\n3\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n{{flagicon|USA}} Josh Hokit\nDEF.\nKhalil Rountree Jr.[1]\nSubmission (rear-naked choke)\n1_0\n5:00\n}}",
+  "random_034": "",
+  "random_035": "{{MMAevent bout\nWomen's Flyweight\n{{flagicon|USA}} Ørjan Ås\ndef.\nIlia Topuria\nDecision (split)\n12\n\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n| Lightweight || {{flagicon|USA}} Mairbek Taisumov || def || Bia Mesquita<ref>x</ref> || No contest (accidental eye poke) || 1 || 5:00\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nLevi Rodrigues Jr.[1]\ndef\nJiří Procházka<ref>x</ref>\nNo contest (accidental eye poke)\n5\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n{{nowrap|José Aldo}}\ndef.\nLevi Rodrigues Jr.,\nNo contest (accidental eye poke)\n5\n4:54\n||\n}}",
+  "random_036": "",
+  "random_037": "{{MMAevent bout\nLightweight\nJon Jones\nd.\n{{flagicon|USA}} Alex Pereira\nTKO (punches)\nR2\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Lightweight\n|[[Bia Mesquita (fighter)|Bia Mesquita]]\n|DEF.\n|Drew Dober\n|NC\nR2\n|4:54\n||\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n[[Mairbek Taisumov]]\ndef.\n{{flagicon|USA}} Levi Rodrigues Jr.\nDecision\n3rd\n\n}}",
+  "random_038": "{{MMAevent bout\n|Women's Flyweight\n|Ciryl Gane\n|vs.\n|Mairbek Taisumov\nDecision (split)\n|1_0\n|4:54\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n{{flagicon|USA}} Drew Dober\ndef.\n{{nowrap|Chris Duncan}}\nDraw\n2\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Heavyweight\n||[[Wang Cong (fighter)|Wang Cong]]\n||def.\n||[[Ørjan Ås (fighter)|Ørjan Ås]]\n||Decision (unanimous)\n||4\n||4:54\n||}}\n\nSome text [[link]] {{cite}}\n{| class=\"toccolours wikitable\"\n|-\n||Bantamweight\n|{{nowrap|Chris Duncan\n|vs.\n|Ørjan Ås\n|\n|\n|5:00\n|-\n! colspan=8 | Main card\n|}",
+  "random_039": "{{MMAevent bout\nHeavyweight\nJosh Hokit\nd.\nAlex Pereira\nWeird finish\nR2\n\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"toccolours wikitable\"\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n| Lightweight || Levi Rodrigues Jr. || def. || Khalil Rountree Jr.[1] || DQ (illegal knee) || 3rd || 3:12\n|-\n! colspan=8 | Main card\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|\nHeavyweight\nKlaudia Syguła\ndef.\nBia Mesquita\n[[Knockout|KO]] (punch)\n4\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n[[Alex Pereira (fighter)|Alex Pereira]]\nd.\n[[Mairbek Taisumov]]\nNo contest (accidental eye poke)\n3rd\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n \n|Women's Flyweight\n{{nowrap|Josh Hokit}}\n|def.\n|[[Jon Jones]]\nWeird finish\n3\n|4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n{{flagicon|USA}} Wang Cong\nvs\nIlia Topuria<ref>x</ref>\nDecision (split)\n4\n\n}}",
+  "random_040": "{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|[[Klaudia Syguła (fighter)|Klaudia Syguła]]\n|vs.\n|Wang Cong\n|Decision (unanimous)\n|4\n|5:00\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|Khalil Rountree Jr.,\n|x\n|[[Jon Jones]]\n|Overturned\n||5\n|5:00\n|-\n! colspan=8 | Main card\n|}",
+  "random_041": "{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|-\n|Stipe Miocic\n|def\n|Dricus du Plessis (c)\n|Decision (unanimous)\n|\n|3:12\n|-\n! colspan=8 | Main card\n|}",
+  "random_042": "{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Heavyweight\n||Chris Duncan\n|||def\n||[[Khalil Rountree Jr.]]\n|||Decision (split)\n|||1_0\n||\n||}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Women's Flyweight\n||Alex Pereira\n||vs\n||Josh Hokit<ref>x</ref>\n||[[Knockout|KO]] (punch)\n|||\n||4:54\n|||}}",
+  "random_043": "{| class=\"wikitable\"\n|}",
+  "random_044": "{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Bantamweight\n|[[Dricus du Plessis]]\n|def\n|[[José Aldo]]\n|NC\n|3\n|5:00\n|}",
+  "random_045": "{{MMAevent bout\nWomen's Flyweight\n{{nowrap|Levi Rodrigues Jr.}}\nvs.\n[[Chris Duncan]]\nDecision\n1_0\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"toccolours wikitable\"\n|-\n| Bantamweight || Stipe Miocic[1] || x || Mairbek Taisumov[1] || NC ||  3  || 5:00\n|-\n|Lightweight\n|{{sortname|Drew|Dober}}\n|def.\n|[[Stipe Miocic]]\n|No contest (accidental eye poke)\n|12\n|5:00\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n|[[José Aldo]]\n|def\n|{{flagicon|USA}} Bia Mesquita\n|[[Knockout|KO]] (punch)\n|1\n|3:12\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Heavyweight\n||{{nowrap|Wang Cong\n||DEF.\n||[[Khalil Rountree Jr.]]\n||No contest (accidental eye poke)\n||1\n||5:00\n||}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nIlia Topuria\nDEF.\n[[Ciryl Gane]]\nSubmission (rear-naked choke)\n3rd\n\n}}",
+  "random_046": "{{MMAevent bout\nHeavyweight\n[[Ørjan Ås]]\nd.\n|Klaudia Syguła<ref>x</ref>\n|Decision (split)\n|1_0\n4:54\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Ciryl Gane]]\ndef.\n[[Alex Pereira]]\n\n 3 \n4:54\n}}",
+  "random_047": "{{MMAevent bout\nLightweight\n{{nowrap|Jon Jones}}\nd.\nJon Jones (c)\nTechnical decision (unanimous)\n0\n5:00\n}}",
+  "random_048": "",
+  "random_049": "{{MMAevent bout\nLightweight\nØrjan Ås\ndef.\nAlex Pereira,\nTechnical decision (unanimous)\n0\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Women's Flyweight\n||[[Jon Jones (fighter)|Jon Jones]]\n||vs.\n||Josh Hokit,\n||Draw (majority)\n||5\n||\n||\n||}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n{{flagicon|USA}} Ciryl Gane\ndef.\nDricus du Plessis\nTechnical Submission\nR2\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Dricus du Plessis,\n|x\n|Klaudia Syguła (c)\n|Decision (unanimous)\n|4\n|5:00\n|-\n|Lightweight\n|Bia Mesquita\n|def\n|[[Ørjan Ås (fighter)|Ørjan Ås]]\n|Decision (split)\n|5\n|5:00\n|-\n|Lightweight\n|Klaudia Syguła<ref>x</ref>\n|vs.\n|Khalil Rountree Jr.[1]\n|Decision (unanimous)\n|R2\n|5:00\n|-\n| Josh Hokit<ref>x</ref> || vs. || Jon Jones || Draw || 3rd || 3:12\n|-\n|Bantamweight\n|Jon Jones\n|def.\n|{{nowrap|Ilia Topuria}}\n|Decision (majority)\n|5\n|5:00\n|-\n|Lightweight\n||José Aldo (c)\n|def.\n|Chris Duncan\n|\n|2\n|3:12\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Lightweight\n|Wang Cong\nvs\n|Alex Pereira,\nSubmission (rear-naked choke)\n 3 \n|5:00\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n{{nowrap|Josh Hokit}}\ndef.\nØrjan Ås\n|TKO (punches)\n|0\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nDrew Dober\ndef.\n[[Ilia Topuria (fighter)|Ilia Topuria]]\nDQ (illegal knee)\n 3 \n4:54\n}}",
+  "random_050": "{| class=\"Wikitable\"\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Chris Duncan (fighter)|Chris Duncan]]\ndef.\nChris Duncan\nDecision (unanimous)\n3rd\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|\nHeavyweight\n{{flagicon|USA}} Josh Hokit\ndef.\nLevi Rodrigues Jr.\nDecision (split)\n 3 \n5:00\n}}",
+  "random_051": "",
+  "random_052": "{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n||Lightweight\n|{{nowrap|Ørjan Ås}}\n|x\n||Ørjan Ås<ref>x</ref>\n|Technical decision (unanimous)\n|R2\n|3:12\n|-\n|Lightweight\n||Jon Jones<ref>x</ref>\n|vs.\n|Klaudia Syguła\n||TKO (punches)\n|R2\n|5:00\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|Levi Rodrigues Jr.<ref>x</ref>\n|vs.\n|{{nowrap|Levi Rodrigues Jr.}}\n|Decision (unanimous)\n|R2\n|5:00",
+  "random_053": "",
+  "random_054": "{{MMAevent bout\n|Women's Flyweight\n|Khalil Rountree Jr.\n|def\n[[Ørjan Ås]]\nDraw\n 3 \n|\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nBia Mesquita\n|d.\nDrew Dober\n|NC\n|12\n|4:54\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nJosh Hokit\ndef.\n[[Jon Jones (fighter)|Jon Jones]]\nNC\n \n1\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nAlex Pereira\ndef.\nDricus du Plessis\n{{nowrap|TKO (doctor stoppage)}}\n2\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n[[Stipe Miocic]]\nDEF.\n[[Klaudia Syguła]]\nDecision (split)\n0\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n|Ilia Topuria\n|def.\n|Klaudia Syguła\n|NC\n|3\n|5:00\n|-\n|Lightweight\n|Ciryl Gane (c)\n|def.\n|Wang Cong\n|Submission (rear-naked choke)\n|\n|5:00\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Lightweight\n||{{nowrap|Ilia Topuria\n||DEF.\n||[[Chris Duncan (fighter)|Chris Duncan]]\n||Overturned\n||+2\n||5:00\n||}}",
+  "random_055": "{{MMAevent bout\nLightweight\nChris Duncan\n|def.\n[[Mairbek Taisumov]]\nDecision (unanimous)\n|0\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Heavyweight\n|Bia Mesquita\n|def.\nWang Cong\nNC\n1_0\n|\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n{{nowrap|Ciryl Gane\nvs.\nDrew Dober<ref>x</ref>\nTechnical decision (unanimous)\n\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n{{nowrap|Ciryl Gane\nvs.\n||\n[[Ciryl Gane]]\nDecision\n4\n4:54\n}}",
+  "random_056": "{{MMAevent bout\nWomen's Flyweight\n{{nowrap|Drew Dober}}\ndef.\nDricus du Plessis (c)\nTechnical decision (unanimous)\n3\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nChris Duncan[1]\nvs\n{{nowrap|Jiří Procházka\nTechnical Submission\n 3 \n4:54\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n||Lightweight\n|Khalil Rountree Jr. (c)\n|def\n|{{nowrap|Wang Cong\n|TKO (punches)\n|4\n|3:12\n|-\n! colspan=8 | Main card\n|}",
+  "random_057": "{| class=\"Wikitable\"\n|}",
+  "random_058": "{| class=\"Wikitable\"\n|-\n| Bantamweight || Alex Pereira (c) || vs. || [[Bia Mesquita]] || Decision (majority) || R2 || 3:12\n|-\n! colspan=8 | Main card\n|-\n| Bantamweight || Stipe Miocic || vs. || [[Jon Jones (fighter)|Jon Jones]] || TKO (punches) || 3rd || 3:12\n|-\n| Bantamweight || Ciryl Gane || vs. || [[Levi Rodrigues Jr.]] || DQ (illegal knee) || R2 || 3:12\n|-\n! colspan=8 | Main card\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n{{sortname|Khalil|Jr.}}\ndef\n[[José Aldo]]\nWeird finish\n\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nKhalil Rountree Jr.\nvs\nCiryl Gane\nSubmission (rear-naked choke)\n5\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nWang Cong[1]\n|def.\nCiryl Gane[1]\n|TKO (punches)\n|12\n4:54\n}}",
+  "random_059": "{{MMAevent bout\nHeavyweight\n{{nowrap|Ilia Topuria}}\ndef.\nDricus du Plessis\nTechnical Submission\n0\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n[[Jiří Procházka]]\nDEF.\nØrjan Ås\nDecision (split)\n\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n{{flagicon|USA}} Ørjan Ås\nDEF.\n{{flagicon|USA}} Ciryl Gane\nTechnical decision (unanimous)\n12\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n| Lightweight || Bia Mesquita || vs. || [[Ørjan Ås]] || Decision (split) || 3 || 5:00\n|-\n| Jiří Procházka (c) || def. || {{sortname|Bia|Mesquita}} || Decision (unanimous) || R2 || 5:00\n|-\n|Bantamweight\n|Bia Mesquita[1]\n|def.\n|[[Jiří Procházka]]\n|Decision (split)\n|2\n|3:12\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n|{{nowrap|Dricus du Plessis}}\n|x\n|José Aldo\n|Decision (majority)\n|+2\n|5:00\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nDricus du Plessis\n||\nDEF.\n[[José Aldo]]\nDecision (majority)\n0\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n[[Dricus du Plessis]]\nd.\nDricus du Plessis,\nDraw (majority)\n0\n4:54\n}}",
+  "random_060": "",
+  "random_061": "{{MMAevent bout\nLightweight\n{{sortname|Drew|Dober}}\ndef\n[[Bia Mesquita]]\nWeird finish\n+2\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Heavyweight\n||[[Stipe Miocic (fighter)|Stipe Miocic]]\n||def\n||{{nowrap|Alex Pereira\n||Decision (unanimous)\n||3\n||\n||}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Women's Flyweight\n|[[Jon Jones]]\n|DEF.\nKhalil Rountree Jr.\n|NC\n|0\n|\n|}}",
+  "random_062": "",
+  "random_063": "{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n| Bantamweight || [[Wang Cong]] || def. || {{flagicon|USA}} Bia Mesquita || Draw || 3rd || 3:12\n|-\n|Bantamweight\n|Josh Hokit\n|def\n|[[Alex Pereira]]\n|Draw (majority)\n||1\n|5:00\n|-\n|Lightweight\n|Wang Cong\n|vs.\n|José Aldo<ref>x</ref>\n|Submission (rear-naked choke)\n| 3 \n|5:00\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n||Bia Mesquita\n|x\n|Chris Duncan\n|Draw (majority)\n|\n|5:00\n|-\n! colspan=8 | Main card\n|}",
+  "random_064": "{| class=\"Wikitable\"\n|}",
+  "random_065": "{{MMAevent bout\n|Lightweight\nJosh Hokit<ref>x</ref>\n|DEF.\n|{{flagicon|USA}} Drew Dober\n|Technical Submission\n| 3 \n5:00\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nJosh Hokit\nDEF.\n[[Stipe Miocic (fighter)|Stipe Miocic]]\nKO (head kick)\n1_0\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|\nHeavyweight\n[[Wang Cong]]\nvs.\nJon Jones\nNC\n5\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nCiryl Gane\ndef.\nØrjan Ås (c)\n|KO (head kick)\n|R2\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nMairbek Taisumov (c)\nDEF.\n[[Josh Hokit (fighter)|Josh Hokit]]\nDecision (majority)\n+2\n4:54\n}}",
+  "random_066": "{| class=\"wikitable\"\n|-\n| Lightweight || {{nowrap|Levi Rodrigues Jr. || vs. || [[Ilia Topuria (fighter)|Ilia Topuria]] || {{nowrap|TKO (doctor stoppage)}} || +2 || 5:00\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|[[Jiří Procházka]]\n|x\n|Bia Mesquita\n|Decision\n|+2\n|3:12\n|-\n|Lightweight\n|Bia Mesquita\n|def.\n|{{nowrap|Stipe Miocic\n|KO (head kick)\n| 3 \n|3:12",
+  "random_067": "{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|Alex Pereira[1]\n|vs.\n|Ørjan Ås\n|Technical Submission\n|3\n|5:00\n|-\n|Lightweight\n|[[Jiří Procházka (fighter)|Jiří Procházka]]\n|def\n|{{flagicon|USA}} Chris Duncan\n|Draw (majority)\n|1\n|3:12\n|-\n! colspan=8 | Main card\n|}",
+  "random_068": "",
+  "random_069": "{{MMAevent bout\nLightweight\nKhalil Rountree Jr.<ref>x</ref>\ndef.\nLevi Rodrigues Jr.\n\n5\n\n|\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Lightweight\n|[[Ilia Topuria]]\ndef.\n|{{nowrap|Ørjan Ås}}\n|{{nowrap|TKO (doctor stoppage)}}\n5\n4:54\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Lightweight\n|{{flagicon|USA}} Ilia Topuria\ndef.\n|{{nowrap|Mairbek Taisumov}}\n|[[Knockout|KO]] (punch)\n|1\n5:00\n|}}",
+  "random_070": "{{MMAevent bout\nHeavyweight\nBia Mesquita\nDEF.\nWang Cong\nWeird finish\n5\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n[[Ilia Topuria (fighter)|Ilia Topuria]]\ndef.\nKlaudia Syguła (c)\nTKO (punches)\n4\n4:54\n||\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n|José Aldo\nvs\n|José Aldo\n|No contest (accidental eye poke)\n|0\n|5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nAlex Pereira\nvs.\nØrjan Ås,\n[[Knockout|KO]] (punch)\n 3 \n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nCiryl Gane\ndef.\n{{nowrap|Stipe Miocic}}\nDecision (unanimous)\n 3 \n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Heavyweight\n[[Wang Cong]]\n|def.\nKlaudia Syguła[1]\n||\n|Decision (majority)\n|1\n5:00\n}}",
+  "random_071": "{{MMAevent bout\nLightweight\nAlex Pereira\nd.\nDricus du Plessis\nDraw\n0\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Lightweight\n|||{{flagicon|USA}} Alex Pereira\n||def\n||Wang Cong\n|||Decision\n|| 3 \n|||4:54\n||}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n|{{sortname|Dricus|Plessis}}\n||\n|vs.\nJosh Hokit[1]\n|Decision\n|12\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n{{nowrap|Levi Rodrigues Jr.\ndef.\nKhalil Rountree Jr.\nOverturned\n5\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n[[Drew Dober]]\nvs.\nDrew Dober\nDQ (illegal knee)\n5\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nØrjan Ås\nDEF.\n[[Mairbek Taisumov]]\nDecision (split)\n1\n4:54\n}}",
+  "random_072": "{{MMAevent bout\nLightweight\n[[Wang Cong]]\ndef.\nStipe Miocic\nTKO (punches)\n2\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Heavyweight\n||{{nowrap|Ciryl Gane\n||vs.\n||[[Ciryl Gane (fighter)|Ciryl Gane]]\n||No contest (accidental eye poke)\n||3\n||\n||}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Women's Flyweight\n|Mairbek Taisumov\n|DEF.\n|[[Ilia Topuria]]\nDecision (unanimous)\n5\n|\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n{{nowrap|Stipe Miocic\n|def\n|Stipe Miocic<ref>x</ref>\n|\n5\n|4:54\n\n|}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Lightweight\n|José Aldo\n|def.\n|Bia Mesquita (c)\n|DQ (illegal knee)\n|0\n|5:00\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|[[Mairbek Taisumov]]\n|def\n|{{nowrap|Chris Duncan\n|Decision\n|12\n||3:12\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|Stipe Miocic\n|x\n|[[Stipe Miocic]]\n|Draw (majority)\n| 3 \n||3:12\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Lightweight\n||Wang Cong\n||vs.\n||Dricus du Plessis\n||Draw\n||R2\n||\n||}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Ilia Topuria]]\nvs.\nWang Cong[1]\nDecision (unanimous)\n0\n\n}}",
+  "random_073": "{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n|Khalil Rountree Jr.\n||def\n|Khalil Rountree Jr.\n|KO (head kick)\n| 3 \n|5:00\n|-\n|Lightweight\n|[[Drew Dober]]\n|x\n|{{nowrap|Klaudia Syguła}}\n|Submission (rear-naked choke)\n| 3 \n|5:00\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n[[Stipe Miocic]]\ndef\nDrew Dober (c)\nNC\n1_0\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nStipe Miocic\nvs\nDricus du Plessis\n\n12\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Wang Cong]]\ndef.\nJosé Aldo\nDraw\n2\n5:00\n}}",
+  "random_074": "{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Lightweight\n|{{nowrap|Klaudia Syguła\n|def\n|Jon Jones (c)\n|{{nowrap|TKO (doctor stoppage)}}\n| 3 \n|5:00\n|-\n|Ørjan Ås\n|def.\n|Drew Dober\n|TKO (punches)\n|1\n|5:00\n|-\n|[[Ciryl Gane]]\n||x\n|Khalil Rountree Jr.[1]\n|Weird finish\n|5\n|5:00\n|-\n! colspan=8 | Main card\n|-\n|[[Jiří Procházka]]\n|vs.\n|[[Josh Hokit]]\n|KO (head kick)\n|\n|3:12\n|}",
+  "random_075": "{{MMAevent bout\nHeavyweight\n[[Chris Duncan (fighter)|Chris Duncan]]\nvs\nStipe Miocic<ref>x</ref>\nDraw\n5\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nØrjan Ås[1]\nd.\n[[José Aldo (fighter)|José Aldo]]\n\nDecision (split)\n\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"toccolours wikitable\"\n|-\n|Lightweight\n|Mairbek Taisumov\n|def\n|[[Klaudia Syguła]]\n|Decision (majority)\n|3rd\n||5:00\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nCiryl Gane<ref>x</ref>\nd.\n[[Wang Cong]]\nDecision (unanimous)\n3rd\n5:00\n}}",
+  "random_076": "{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|}",
+  "random_077": "",
+  "random_078": "{| class=\"wikitable\"\n|-\n| Lightweight || Chris Duncan || def || [[Jiří Procházka]] || DQ (illegal knee) || 0 || 5:00\n|-\n| Lightweight || {{nowrap|Bia Mesquita || x || Dricus du Plessis || DQ (illegal knee) || 0 || 3:12\n|-\n! colspan=8 | Main card\n|-\n| Lightweight || [[Levi Rodrigues Jr.]] || vs. || [[Dricus du Plessis]] || Submission (rear-naked choke) || 0 || 3:12\n|-\n! colspan=8 | Main card\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Heavyweight\n|Jiří Procházka\n|def\nDricus du Plessis\nTechnical Submission\n|\n|\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n|{{sortname|Drew|Dober}}\n|d.\n|{{flagicon|USA}} Jiří Procházka\n|DQ (illegal knee)\n0\n|\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nStipe Miocic,\ndef.\n[[Drew Dober (fighter)|Drew Dober]]\nSubmission (rear-naked choke)\n4\n4:54\n}}",
+  "random_079": "{| class=\"wikitable\"\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n|[[Ciryl Gane]]\n|x\n|{{nowrap|Wang Cong\n|KO (head kick)\n|+2\n|3:12\n|}",
+  "random_080": "",
+  "random_081": "{{MMAevent bout\nWomen's Flyweight\nJon Jones\ndef.\nKlaudia Syguła\nOverturned\n1_0\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nIlia Topuria\ndef.\nØrjan Ås\nTechnical Submission\n12\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nJosh Hokit\nd.\nLevi Rodrigues Jr.\nTechnical Submission\n 3 \n5:00\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Bantamweight\n|Josh Hokit\n|def.\n|Mairbek Taisumov<ref>x</ref>\n|NC\n| 3 \n|5:00\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n||Bantamweight\n|Wang Cong (c)\n|def\n|Bia Mesquita\n|Decision (split)\n|2\n|3:12\n|-\n! colspan=8 | Main card\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n{{nowrap|Chris Duncan\ndef.\nØrjan Ås\nNo contest (accidental eye poke)\n3rd\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n[[Levi Rodrigues Jr. (fighter)|Levi Rodrigues Jr.]]\ndef.\n[[Levi Rodrigues Jr.]]\nKO (head kick)\n1_0\n\n}}",
+  "random_082": "{| class=\"Wikitable\"\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nJosé Aldo (c)\n|def.\n|{{sortname|Chris|Duncan}}\nDraw (majority)\n|3\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nKhalil Rountree Jr.\nd.\n[[Ørjan Ås (fighter)|Ørjan Ås]]\nSubmission (rear-naked choke)\n12\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nJon Jones\nvs.\nJiří Procházka\nDecision (split)\n1_0\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[José Aldo]]\nDEF.\nJiří Procházka\nOverturned\n+2\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Women's Flyweight\n{{sortname|Jiří|Procházka}}\nvs.\n|{{flagicon|USA}} Bia Mesquita\nKO (head kick)\n3rd\n|\n}}",
+  "random_083": "{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|[[Stipe Miocic]]\n|def\n|[[Mairbek Taisumov]]\n|DQ (illegal knee)\n|3\n|3:12\n|}",
+  "random_084": "{| class=\"wikitable\"\n|-\n|Bantamweight\n|Wang Cong\n|x\n|[[Josh Hokit (fighter)|Josh Hokit]]\n|NC\n|1\n|5:00\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n| Lightweight || {{nowrap|Levi Rodrigues Jr. || def || [[Drew Dober]] || Technical decision (unanimous) || 3rd || 5:00\n|}",
+  "random_085": "{{MMAevent bout\n \nLightweight\n{{nowrap|Josh Hokit\nvs.\nCiryl Gane\n[[Knockout|KO]] (punch)\n5\n4:54\n}}",
+  "random_086": "{{MMAevent bout\nWomen's Flyweight\n[[Drew Dober (fighter)|Drew Dober]]\n|def.\n|Jon Jones\nDraw\n3\n|4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nStipe Miocic\ndef.\nKhalil Rountree Jr.\nTechnical decision (unanimous)\n3\n\n}}",
+  "random_087": "{| class=\"Wikitable\"\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n|[[Dricus du Plessis]]\n|vs.\n|Drew Dober\n|Draw (majority)\n|3\n|5:00\n|-\n|Lightweight\n|Ørjan Ås\n|x\n|[[Ilia Topuria (fighter)|Ilia Topuria]]\n|Decision\n|\n|5:00\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|}",
+  "random_088": "{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Lightweight\n|{{flagicon|USA}} Khalil Rountree Jr.\n||vs.\n|Bia Mesquita\n|KO (head kick)\n|1_0\n|3:12\n|-\n|Josh Hokit\n|def\n|Josh Hokit\n|\n|3rd\n|3:12",
+  "random_089": "{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Bia Mesquita<ref>x</ref>\n|def.\n|Drew Dober\n|Weird finish\n|3\n|5:00\n|-\n|Lightweight\n|[[Jiří Procházka]]\n|def.\n|{{nowrap|Klaudia Syguła\n|Draw\n||R2\n|3:12\n|-\n|Lightweight\n|Stipe Miocic\n||def\n|Klaudia Syguła\n|Technical decision (unanimous)\n|+2\n|3:12\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|}",
+  "random_090": "{{MMAevent bout\n|Lightweight\nStipe Miocic\ndef.\nØrjan Ås<ref>x</ref>\n|Technical decision (unanimous)\n0\n\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nCiryl Gane\nvs\nWang Cong\nTKO (punches)\nR2\n\n}}",
+  "random_091": "{| class=\"wikitable\"\n|-\n|Bantamweight\n|Klaudia Syguła<ref>x</ref>\n|vs.\n|Ørjan Ås[1]\n|No contest (accidental eye poke)\n|+2\n||3:12\n|}",
+  "random_092": "{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|{{nowrap|Bia Mesquita}}\n|x\n|[[Wang Cong]]\n|KO (head kick)\n|R2\n|3:12\n|-\n|Lightweight\n||Khalil Rountree Jr.\n|def\n|Jiří Procházka\n|{{nowrap|TKO (doctor stoppage)}}\n|12\n|5:00\n|-\n! colspan=8 | Main card\n|}",
+  "random_093": "{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|[[Jiří Procházka (fighter)|Jiří Procházka]]\n|x\n|Klaudia Syguła\n|TKO (punches)\n|1\n|3:12\n|-\n|Bantamweight\n|Josh Hokit\n|def.\n|{{nowrap|Dricus du Plessis}}\n|DQ (illegal knee)\n|4\n|3:12\n|}",
+  "random_094": "{| class=\"wikitable\"\n|-\n||Ørjan Ås (c)\n|vs.\n|Mairbek Taisumov\n|Decision (unanimous)\n| 3 \n|3:12\n|-\n|Bantamweight\n|Khalil Rountree Jr.\n|def.\n|[[Jiří Procházka (fighter)|Jiří Procházka]]\n|Technical Submission\n||12\n|3:12\n|-\n|Bantamweight\n|Dricus du Plessis\n|def\n|[[Drew Dober]]\n|Overturned\n|R2\n|3:12\n|-\n|Bantamweight\n|Ilia Topuria,\n|vs.\n|Ilia Topuria\n|Weird finish\n|1\n|5:00\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Women's Flyweight\n||[[Dricus du Plessis (fighter)|Dricus du Plessis]]\n||def\n||{{flagicon|USA}} Levi Rodrigues Jr.\n||Decision\n||1\n||5:00\n||}}",
+  "random_095": "{{MMAevent bout\nLightweight\n{{nowrap|Stipe Miocic}}\ndef\nJon Jones\nSubmission (rear-naked choke)\n2\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n|Wang Cong\nd.\n|[[Mairbek Taisumov (fighter)|Mairbek Taisumov]]\n|\n|12\n4:54\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nJon Jones,\nvs\nKlaudia Syguła\n\nSubmission (rear-naked choke)\nR2\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||\nHeavyweight\n[[José Aldo (fighter)|José Aldo]]\ndef.\nDrew Dober\nSubmission (rear-naked choke)\n1_0\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n|Wang Cong<ref>x</ref>\n|vs.\n|[[Josh Hokit (fighter)|Josh Hokit]]\nSubmission (rear-naked choke)\n|1\n\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nMairbek Taisumov\ndef.\n[[Ciryl Gane]]\nWeird finish\n12\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"wikitable\"\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n|José Aldo,\n|def\n|Ciryl Gane\n|TKO (punches)\n|0\n|3:12\n|}",
+  "random_096": "{| class=\"toccolours wikitable\"\n|-\n|Bantamweight\n|[[Alex Pereira (fighter)|Alex Pereira]]\n|x\n|{{flagicon|USA}} Levi Rodrigues Jr.\n|Decision (unanimous)\n|1_0\n|3:12\n|-\n! colspan=8 | Main card\n|}",
+  "random_097": "{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n| Bantamweight || Wang Cong || vs. || {{nowrap|Drew Dober || Weird finish || 4 || 3:12\n|}",
+  "random_098": "{| class=\"wikitable\"\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n|Khalil Rountree Jr.\n|x\n|Levi Rodrigues Jr.\n|[[Knockout|KO]] (punch)\n|1_0\n|5:00\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nJon Jones[1]\ndef.\nKhalil Rountree Jr.,\nOverturned\n1_0\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Mairbek Taisumov (fighter)|Mairbek Taisumov]]\ndef\n[[Drew Dober (fighter)|Drew Dober]]\n[[Knockout|KO]] (punch)\n4\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nWang Cong,\n|def.\n|[[Ilia Topuria (fighter)|Ilia Topuria]]\n|Decision (unanimous)\n|3rd\n|5:00\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n|Drew Dober<ref>x</ref>\n|vs.\n|[[Khalil Rountree Jr.]]\n{{nowrap|TKO (doctor stoppage)}}\n|\n|4:54\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nKhalil Rountree Jr.\ndef.\nDrew Dober\nTechnical Submission\n1_0\n4:54\n}}",
+  "random_099": "{| class=\"Wikitable\"\n|}",
+  "random_100": "{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Bantamweight\n|Mairbek Taisumov (c)\n|x\n|[[Dricus du Plessis]]\n|No contest (accidental eye poke)\n|R2\n|3:12\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|}",
+  "random_101": "{{MMAevent bout\nWomen's Flyweight\n{{flagicon|USA}} Bia Mesquita\nd.\nKhalil Rountree Jr.\nDecision (split)\n||\n2\n\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"wikitable\"\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|Ørjan Ås[1]\n|def\n|{{nowrap|Dricus du Plessis\n|Decision\n|3rd\n|5:00\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n||Stipe Miocic\n|x\n|{{nowrap|Wang Cong}}\n|Decision\n|3\n|3:12\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n|[[Ørjan Ås]]\nvs.\n|||\nDricus du Plessis\nDQ (illegal knee)\n|+2\n|\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Heavyweight\n|[[Drew Dober]]\nDEF.\n|Ørjan Ås (c)\n|DQ (illegal knee)\n|3rd\n|4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Heavyweight\n||[[Bia Mesquita (fighter)|Bia Mesquita]]\n||d.\n||Khalil Rountree Jr.\n||KO (head kick)\n||1_0\n||4:54\n||}}",
+  "random_102": "",
+  "random_103": "{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|}",
+  "random_104": "{{MMAevent bout\nWomen's Flyweight\n[[Drew Dober (fighter)|Drew Dober]]\nd.\nMairbek Taisumov<ref>x</ref>\nDecision\n3\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nLevi Rodrigues Jr. (c)\ndef.\nMairbek Taisumov\nWeird finish\n0\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Women's Flyweight\n||Levi Rodrigues Jr.\n||\n||vs.\n||{{nowrap|Ciryl Gane}}\n||Draw\n|| 3 \n||4:54\n||}}",
+  "random_105": "{{MMAevent bout\nLightweight\nMairbek Taisumov,\nd.\n[[Dricus du Plessis (fighter)|Dricus du Plessis]]\nDecision (majority)\n1\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Alex Pereira (fighter)|Alex Pereira]]\ndef\nJosé Aldo\nDecision (majority)\n\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Heavyweight\n||Levi Rodrigues Jr.\n||vs.\n|||Ciryl Gane\n|||Decision (unanimous)\n|||3rd\n|||4:54\n|||}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\n{{nowrap|Stipe Miocic\nd.\n[[Klaudia Syguła]]\nDecision (split)\n12\n5:00\n}}",
+  "random_106": "{| class=\"Wikitable\"\n|}",
+  "random_107": "{{MMAevent bout\nHeavyweight\n{{sortname|Bia|Mesquita}}\n \ndef\nMairbek Taisumov\nNC\n12\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nLevi Rodrigues Jr.\nvs.\nJosh Hokit,\nTechnical Submission\n3rd\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Women's Flyweight\n|[[Khalil Rountree Jr. (fighter)|Khalil Rountree Jr.]]\ndef.\n|{{nowrap|José Aldo}}\nTechnical Submission\n|3rd\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nBia Mesquita\nDEF.\nBia Mesquita (c)\n|\nNo contest (accidental eye poke)\n3rd\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nAlex Pereira<ref>x</ref>\ndef.\nIlia Topuria\n[[Knockout|KO]] (punch)\n+2\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Drew Dober]]\n|def.\n|[[Drew Dober]]\nTKO (punches)\n|\n||\n|\n|}}",
+  "random_108": "{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|}",
+  "random_109": "",
+  "random_110": "{| class=\"Wikitable\"\n|-\n| Lightweight || {{nowrap|Klaudia Syguła || def || Mairbek Taisumov || Weird finish || 2 || 5:00\n|-\n|Lightweight\n|Klaudia Syguła,\n|def\n|{{flagicon|USA}} Ciryl Gane\n|Decision\n|2\n|3:12\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|Dricus du Plessis\n|def.\n|Josh Hokit,\n|NC\n||5\n|5:00\n|-\n| Bantamweight || Jiří Procházka<ref>x</ref> || def. || Chris Duncan ||  || 1_0 || 3:12\n|}",
+  "random_111": "{| class=\"Wikitable\"\n|-\n|Stipe Miocic<ref>x</ref>\n|def\n|Chris Duncan\n|Draw\n|R2\n|3:12\n|-\n|Lightweight\n|Wang Cong (c)\n|def\n|[[Ciryl Gane]]\n|TKO (punches)\n|5\n|3:12\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nJosé Aldo\nd.\n[[Dricus du Plessis]]\n{{nowrap|TKO (doctor stoppage)}}\n 3 \n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nØrjan Ås\nvs\nChris Duncan\n{{nowrap|TKO (doctor stoppage)}}\n|3\n5:00\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nJiří Procházka\n \nd.\nDricus du Plessis\nTechnical decision (unanimous)\n+2\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Women's Flyweight\n||[[Khalil Rountree Jr. (fighter)|Khalil Rountree Jr.]]\n||def.\n||[[Josh Hokit (fighter)|Josh Hokit]]\n||TKO (punches)\n||\n||\n||}}",
+  "random_112": "",
+  "random_113": "{{MMAevent bout\n|Heavyweight\n|[[Levi Rodrigues Jr. (fighter)|Levi Rodrigues Jr.]]\n|d.\nWang Cong\n|TKO (punches)\n|3rd\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nJosé Aldo\ndef\n||\nLevi Rodrigues Jr.[1]\nDecision (split)\n5\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Bia Mesquita]]\ndef.\n{{nowrap|Ilia Topuria}}\nTechnical decision (unanimous)\n2\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n{{nowrap|Ørjan Ås\nvs\n[[Levi Rodrigues Jr. (fighter)|Levi Rodrigues Jr.]]\nDecision (majority)\n2\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n{{nowrap|Levi Rodrigues Jr.\ndef\nCiryl Gane,\n\n4\n \n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n{{nowrap|José Aldo}}\nDEF.\nLevi Rodrigues Jr.<ref>x</ref>\n\n1_0\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n| Bantamweight || {{nowrap|José Aldo}} || vs. || [[Josh Hokit]] || DQ (illegal knee) || 2 || 5:00\n|-\n|Bantamweight\n|Jiří Procházka (c)\n|def\n|José Aldo[1]\n|Draw (majority)\n| 3 \n|5:00\n|-\n|Lightweight\n|[[Josh Hokit (fighter)|Josh Hokit]]\n|vs.\n|Khalil Rountree Jr.\n|Decision (majority)\n||3rd\n|5:00\n|-\n|Lightweight\n|{{flagicon|USA}} Mairbek Taisumov\n|def\n|[[Josh Hokit (fighter)|Josh Hokit]]\n|Technical Submission\n|3rd\n|3:12\n|-\n||Bantamweight\n|Alex Pereira\n|vs.\n|Jon Jones\n|No contest (accidental eye poke)\n|1_0\n|5:00\n|-\n! colspan=8 | Main card\n|}",
+  "random_114": "",
+  "random_115": "{| class=\"Wikitable\"\n|-\n|Lightweight\n|[[Ørjan Ås (fighter)|Ørjan Ås]]\n|x\n|{{nowrap|Ilia Topuria}}\n|KO (head kick)\n|4\n|5:00",
+  "random_116": "{{MMAevent bout\nWomen's Flyweight\nDrew Dober\nvs\n{{sortname|Mairbek|Taisumov}}\nWeird finish\n2\n\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"wikitable\"\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n|Khalil Rountree Jr.<ref>x</ref>\n|vs.\n|{{nowrap|Ciryl Gane}}\n||Decision (majority)\n|3rd\n|5:00\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|{{flagicon|USA}} Wang Cong\n|def.\n|[[Wang Cong (fighter)|Wang Cong]]\n|No contest (accidental eye poke)\n|\n|3:12\n|}",
+  "random_117": "{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Lightweight\n|{{flagicon|USA}} Khalil Rountree Jr.\n|def\n|Chris Duncan\n||NC\n|\n|5:00",
+  "random_118": "{| class=\"wikitable\"\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n| Lightweight || Levi Rodrigues Jr.<ref>x</ref> || def. || [[Jon Jones]] ||  || 0 || 3:12\n|-\n|Bantamweight\n|Jon Jones\n|x\n|Klaudia Syguła\n|Weird finish\n|2\n|5:00\n|-\n| Lightweight || Chris Duncan || def. || [[Ilia Topuria (fighter)|Ilia Topuria]] || [[Knockout|KO]] (punch) || 1 || 3:12\n|-\n|Lightweight\n|[[Bia Mesquita (fighter)|Bia Mesquita]]\n|def.\n|[[Ørjan Ås (fighter)|Ørjan Ås]]\n|Weird finish\n|3rd\n|3:12\n|}",
+  "random_119": "{{MMAevent bout\nLightweight\n[[Mairbek Taisumov]]\nvs.\nJosh Hokit,\nTechnical decision (unanimous)\n\n3\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Stipe Miocic (fighter)|Stipe Miocic]]\ndef.\nBia Mesquita\nDecision (split)\n1\n5:00\n}}",
+  "random_120": "{{MMAevent bout\nHeavyweight\n[[Dricus du Plessis (fighter)|Dricus du Plessis]]\ndef.\n[[Klaudia Syguła (fighter)|Klaudia Syguła]]\nTechnical Submission\n1\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nJosh Hokit,\nvs.\nJosé Aldo\nDecision (majority)\n+2\n\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n|[[Jiří Procházka (fighter)|Jiří Procházka]]\n|def.\n|Drew Dober\n|DQ (illegal knee)\n| 3 \n|3:12\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nChris Duncan\nd.\n[[José Aldo]]\nDecision (unanimous)\n3rd\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Lightweight\n{{sortname|Chris|Duncan}}\ndef\n|Ørjan Ås\n|Submission (rear-naked choke)\n1\n|4:54\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n[[Ilia Topuria]]\nDEF.\n{{nowrap|Jon Jones}}\n\n4\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Women's Flyweight\n{{flagicon|USA}} Mairbek Taisumov\ndef\n[[Dricus du Plessis]]\n|Technical decision (unanimous)\n5\n5:00\n}}",
+  "random_121": "",
+  "random_122": "{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|-\n|Klaudia Syguła\n|def.\n|{{nowrap|Ciryl Gane}}\n|TKO (punches)\n|4\n|5:00\n|-\n| Lightweight || José Aldo || x || Jiří Procházka, || TKO (punches) || 3rd || 3:12\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n|{{nowrap|Alex Pereira\n|def\n|{{nowrap|Josh Hokit}}\n|{{nowrap|TKO (doctor stoppage)}}\n|3\n|5:00\n|-\n| Lightweight || Ilia Topuria[1] || def || Alex Pereira[1] || KO (head kick) || 3 || 3:12\n|}",
+  "random_123": "{{MMAevent bout\n|Lightweight\nBia Mesquita\n|def\n|Jon Jones\nTechnical decision (unanimous)\n|R2\n|\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n{{sortname|Levi|Jr.}}\nvs.\nCiryl Gane\n{{nowrap|TKO (doctor stoppage)}}\nR2\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n[[Wang Cong (fighter)|Wang Cong]]\nvs\nJosh Hokit\nNC\n2\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Lightweight\n|[[Chris Duncan (fighter)|Chris Duncan]]\ndef.\n|Levi Rodrigues Jr.\n\n3\n|4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n{{nowrap|Wang Cong\n \nd.\n[[Ilia Topuria (fighter)|Ilia Topuria]]\nDecision\n1_0\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nØrjan Ås\n|DEF.\n[[Jiří Procházka]]\nDecision\n2\n|\n}}",
+  "random_124": "{{MMAevent bout\n|Lightweight\n|[[Levi Rodrigues Jr.]]\nd.\n{{nowrap|Josh Hokit\nDQ (illegal knee)\n|R2\n\n|}}\n\nSome text [[link]] {{cite}}\n{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Bantamweight\n|Jiří Procházka\n|def.\n|Mairbek Taisumov\n|DQ (illegal knee)\n|+2\n|5:00\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|Jiří Procházka,\n|def\n|Alex Pereira\n|Decision (unanimous)\n|2\n|5:00\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|[[Stipe Miocic (fighter)|Stipe Miocic]]\n|def.\n|[[Mairbek Taisumov (fighter)|Mairbek Taisumov]]\n|Decision\n|\n|3:12\n|}",
+  "random_125": "",
+  "random_126": "{{MMAevent bout\nWomen's Flyweight\n[[Jon Jones (fighter)|Jon Jones]]\ndef.\nJosé Aldo\nOverturned\n+2\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"wikitable\"\n|-\n|Lightweight\n|Khalil Rountree Jr.<ref>x</ref>\n|vs.\n|Jon Jones<ref>x</ref>\n|{{nowrap|TKO (doctor stoppage)}}\n|R2\n|5:00\n|-\n|Bantamweight\n|{{flagicon|USA}} Mairbek Taisumov\n|vs.\n|{{nowrap|Ilia Topuria}}\n|Weird finish\n|+2\n|5:00\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n|Chris Duncan<ref>x</ref>\n|x\n|{{nowrap|Bia Mesquita}}\n|Decision\n|\n|5:00\n|-\n| Bantamweight || José Aldo || def || Ilia Topuria (c) || KO (head kick) || 3rd || 5:00\n|}",
+  "random_127": "{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n|Bantamweight\n|[[Bia Mesquita (fighter)|Bia Mesquita]]\n|x\n|[[Josh Hokit]]\n|Submission (rear-naked choke)\n|1_0\n|5:00\n|-\n|Bantamweight\n|Khalil Rountree Jr.\n|def\n|Mairbek Taisumov\n|Technical Submission\n|2\n|3:12\n|-\n|Lightweight\n|[[Khalil Rountree Jr.]]\n|def\n|[[José Aldo]]\n|Technical decision (unanimous)\n|+2\n|5:00\n|-\n|Lightweight\n|Ørjan Ås (c)\n|vs.\n|{{nowrap|Jon Jones\n|DQ (illegal knee)\n|5\n|3:12\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||Lightweight\n||Ciryl Gane,\n||DEF.\n||[[Khalil Rountree Jr.]]\n||Submission (rear-naked choke)\n||5\n||\n||}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n||\nHeavyweight\n{{flagicon|USA}} Jiří Procházka\nvs\n[[Khalil Rountree Jr.]]\nTKO (punches)\n3rd\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n{{nowrap|Chris Duncan\ndef\n{{nowrap|Chris Duncan\nDecision\nR2\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Lightweight\n|[[Ciryl Gane]]\n|def.\nKlaudia Syguła\n|Submission (rear-naked choke)\n+2\n|\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nKlaudia Syguła\nDEF.\n[[Stipe Miocic (fighter)|Stipe Miocic]]\nDecision (majority)\n2\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nChris Duncan\n|DEF.\n|{{flagicon|USA}} Josh Hokit\n||\nNo contest (accidental eye poke)\n|5\n\n|}}",
+  "random_128": "{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n|Jiří Procházka\n|def\n|Chris Duncan\n|Weird finish\n|4\n|3:12\n|-\n| Lightweight || Bia Mesquita<ref>x</ref> || vs. || {{flagicon|USA}} Stipe Miocic || Technical decision (unanimous) ||  3  || 5:00\n|}",
+  "random_129": "{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|-\n| Bantamweight || Stipe Miocic || def. || {{nowrap|Wang Cong}} ||  || +2 || 3:12\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n|Jiří Procházka (c)\n|def.\n|Ilia Topuria (c)\n|[[Knockout|KO]] (punch)\n|4\n|3:12\n|-\n| Jiří Procházka || x || Mairbek Taisumov || KO (head kick) || 1_0 || 3:12",
+  "random_130": "{| class=\"toccolours wikitable\"\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n|Mairbek Taisumov\n|x\n|[[Drew Dober (fighter)|Drew Dober]]\n|Technical decision (unanimous)\n|R2\n|3:12\n|}",
+  "random_131": "{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|}",
+  "random_132": "{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n| Lightweight || {{nowrap|Jiří Procházka || def || Wang Cong || Draw || 1_0 || 3:12\n|-\n|Lightweight\n|Wang Cong\n|x\n|José Aldo (c)\n|KO (head kick)\n|1_0\n|5:00\n|}",
+  "random_133": "{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|-\n! colspan=8 | Main card\n|-\n|Lightweight\n|José Aldo\n|vs.\n|[[Josh Hokit]]\n|TKO (punches)\n| 3 \n|5:00\n|-\n|Bantamweight\n|Bia Mesquita\n|def.\n|[[Ørjan Ås]]\n|DQ (illegal knee)\n|+2\n|3:12\n|}",
+  "random_134": "{{MMAevent bout\nHeavyweight\n \n{{nowrap|Stipe Miocic\ndef.\nStipe Miocic\nNC\n\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nBia Mesquita<ref>x</ref>\nvs\nJiří Procházka\nDecision (unanimous)\n3\n\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"toccolours wikitable\"\n|}",
+  "random_135": "{{MMAevent bout\nLightweight\n{{nowrap|Stipe Miocic\nvs\nKlaudia Syguła\nKO (head kick)\n\n\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"toccolours wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nKhalil Rountree Jr.[1]\nDEF.\nChris Duncan\nDecision (unanimous)\n1_0\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Wang Cong]]\ndef\nStipe Miocic\nDecision\n1_0\n5:00\n}}",
+  "random_136": "{{MMAevent bout\nHeavyweight\n[[Wang Cong (fighter)|Wang Cong]]\n \ndef.\nChris Duncan[1]\nDecision (unanimous)\n1_0\n\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n|-\n|Lightweight\n|[[Chris Duncan]]\n|def\n|Ciryl Gane[1]\n|\n|5\n|3:12\n|-\n|Bantamweight\n|Ciryl Gane\n|x\n|{{flagicon|USA}} Jon Jones\n|Overturned\n|1\n|5:00\n|-\n|Lightweight\n|[[Wang Cong]]\n|def.\n|{{flagicon|USA}} José Aldo\n|\n|R2\n|3:12\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nBia Mesquita,\ndef.\n[[Jiří Procházka (fighter)|Jiří Procházka]]\nDraw (majority)\n\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nLevi Rodrigues Jr.\nvs.\n{{nowrap|Stipe Miocic}}\nDQ (illegal knee)\n5\n4:54\n}}",
+  "random_137": "{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|||Lightweight\n|||[[Bia Mesquita (fighter)|Bia Mesquita]]\n||DEF.\n||Wang Cong,\n|||{{nowrap|TKO (doctor stoppage)}}\n||5\n||\n||}}",
+  "random_138": "{| class=\"wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nKlaudia Syguła\n|\ndef.\nJiří Procházka\nDecision (unanimous)\n3rd\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Women's Flyweight\n|José Aldo\n|def.\n[[Wang Cong (fighter)|Wang Cong]]\n[[Knockout|KO]] (punch)\n|1\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Jon Jones]]\nvs\n[[Ørjan Ås (fighter)|Ørjan Ås]]\nTechnical Submission\n12\n5:00\n}}",
+  "random_139": "",
+  "random_140": "{| class=\"toccolours wikitable\"\n|}",
+  "random_141": "{| class=\"Wikitable\"\n|-\n|Lightweight\n|Dricus du Plessis\n|x\n|[[Alex Pereira (fighter)|Alex Pereira]]\n|\n|R2\n|5:00\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n|Bantamweight\n|Alex Pereira\n|def.\n|[[Jiří Procházka (fighter)|Jiří Procházka]]\n||Submission (rear-naked choke)\n|+2\n|5:00\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|}",
+  "random_142": "{| class=\"wikitable\"\n|-\n|Bantamweight\n|[[Ciryl Gane]]\n|def.\n|Jon Jones\n|Draw (majority)\n|3rd\n|3:12\n|-\n! colspan=8 | Main card\n|-\n||{{flagicon|USA}} Chris Duncan\n|def\n|Dricus du Plessis<ref>x</ref>\n|Overturned\n|1_0\n|5:00\n|-\n! colspan=8 | Main card\n|-\n|José Aldo\n|def\n|Jiří Procházka\n|No contest (accidental eye poke)\n|\n|3:12\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nKhalil Rountree Jr.\nvs.\n[[Drew Dober (fighter)|Drew Dober]]\nTechnical decision (unanimous)\n1_0\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Heavyweight\n[[Jon Jones]]\n|vs.\n[[Alex Pereira]]\nNo contest (accidental eye poke)\n1\n| \n|\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\nStipe Miocic\ndef\n[[Ciryl Gane]]\nKO (head kick)\n1\n4:54\n}}",
+  "random_143": "",
+  "random_144": "{{MMAevent bout\nLightweight\nKlaudia Syguła\nvs\nIlia Topuria\nDecision (majority)\n3rd\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nJosh Hokit (c)\n||\n|def.\nJosh Hokit (c)\nDQ (illegal knee)\n4\n|5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nJosh Hokit\ndef.\nMairbek Taisumov\nDecision (majority)\n+2\n\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nJon Jones\ndef\nJosh Hokit[1]\nNo contest (accidental eye poke)\n3rd\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n! Weight class !! !! !! Method !! Round !! Time\n|}",
+  "random_145": "",
+  "random_146": "{{MMAevent bout\nHeavyweight\n{{flagicon|USA}} Chris Duncan\ndef.\nMairbek Taisumov\nSubmission (rear-naked choke)\n3rd\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nWomen's Flyweight\nLevi Rodrigues Jr.,\nd.\nCiryl Gane\nDraw (majority)\n0\n5:00\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\nCiryl Gane\nDEF.\nChris Duncan\nDecision\n\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{| class=\"Wikitable\"\n|-\n! colspan=8 | Main card\n|-\n! colspan=8 | Main card\n|-\n| Lightweight || [[Wang Cong (fighter)|Wang Cong]] || def. || {{flagicon|USA}} Chris Duncan || Technical Submission || 1 || 3:12\n|-\n|Bantamweight\n|José Aldo\n|def\n|{{nowrap|Jiří Procházka}}\n|{{nowrap|TKO (doctor stoppage)}}\n| 3 \n|3:12\n|-\n|Bantamweight\n|{{flagicon|USA}} Bia Mesquita\n|x\n|Jon Jones\n|NC\n|3rd\n|5:00\n|}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nHeavyweight\n[[Mairbek Taisumov (fighter)|Mairbek Taisumov]]\ndef.\n[[Stipe Miocic (fighter)|Stipe Miocic]]\nTKO (punches)\n1_0\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n{{flagicon|USA}} Josh Hokit\nvs\nAlex Pereira\nDecision (majority)\n12\n|5:00\n|}}",
+  "random_147": "{{MMAevent bout\n|Heavyweight\n{{nowrap|José Aldo}}\n|vs\n|Ørjan Ås\nDraw\n|2\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Women's Flyweight\n|Chris Duncan\n|vs.\n|[[Ørjan Ås]]\n|Decision\n1\n|4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Women's Flyweight\n|Stipe Miocic\n|DEF.\nKlaudia Syguła\nNC\n4\n|5:00\n}}",
+  "random_148": "{| class=\"toccolours wikitable\"\n|-\n| Bantamweight || Ciryl Gane<ref>x</ref> || vs. || {{flagicon|USA}} Wang Cong ||  || 0 || 5:00\n|-\n|Bantamweight\n|Alex Pereira,\n|vs.\n|Khalil Rountree Jr.<ref>x</ref>\n|Decision\n|1\n|5:00\n|}",
+  "random_149": "{{MMAevent bout\nLightweight\n|Klaudia Syguła\n|d.\n|Stipe Miocic\n{{nowrap|TKO (doctor stoppage)}}\n|\n|\n|}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\nLightweight\n{{nowrap|Jon Jones}}\nDEF.\n[[Drew Dober]]\nTechnical Submission\n+2\n4:54\n}}\n\nSome text [[link]] {{cite}}\n{{MMAevent bout\n|Women's Flyweight\n|Ilia Topuria\n|def.\n{{nowrap|Klaudia Syguła\n|Decision (majority)\n\n|4\n5:00\n|}}",
+  "redirect_stub": "#REDIRECT [[UFC 334]]\n{{R from long name}}",
+  "refs_and_flags": "{{MMAevent bout\n|Lightweight\n|{{flagicon|BRA}} [[Charles Oliveira]]<ref name=\"r1\">{{cite news |title=x}}</ref>\n|def.\n|{{flagicon|USA}} [[Michael Chandler]][3]\n|Submission (rear-naked choke)\n|1\n|3:19\n|\n}}\n{{MMAevent bout\n|Women's Bantamweight\n|[[Julianna Peña]], (c)\n|def.\n|[[Raquel Pennington]],\n|Decision (split)\n|5\n|5:00\n|\n}}",
+  "results_wikitable_inline": "{| class=\"wikitable\" style=\"font-size:85%;\"\n! colspan=\"8\" style=\"background-color: #ccf; color: #000080; text-align: center;\" | Main card\n|-\n! Weight class !! !! !! !! Method !! Round !! Time !! Notes\n|-\n| Lightweight || [[Islam Makhachev]] (c) || def. || [[Dustin Poirier]] || Submission (D'Arce choke) || 5 || 2:42 || {{efn|For the UFC Lightweight Championship.}}\n|-\n| Middleweight || [[Sean Strickland]] || def. || [[Paulo Costa]] || Decision (split) (48–47, 47–48, 48–47) || 5 || 5:00 ||\n|-\n! colspan=\"8\" style=\"background-color: #ccf;\" | Preliminary card\n|-\n| Featherweight || [[Diego Lopes]] || def. || [[Sodiq Yusuff]] || TKO (punches) || 1 || 1:29 ||\n|}",
+  "results_wikitable_lines": "{| class=\"toccolours wikitable\"\n|-\n! Weight class !! !! !! !! Method !! Round !! Time\n|-\n| Welterweight\n| [[Belal Muhammad]]\n| def.\n| [[Leon Edwards]] (c)\n| Decision (unanimous) (49–44, 49–44, 48–45)\n| 5\n| 5:00\n|-\n| Flyweight\n| [[Manel Kape]]\n| def.\n| [[Bruno Silva (fighter, born 1989)|Bruno Silva]]\n| KO (punch)\n| 3\n| 4:30\n|}",
+  "round_oddities": "{{MMAevent bout\n|Lightweight\n|Ann One\n|def.\n|Bea Two\n|Decision (unanimous)\n|3rd\n|5:00\n|\n}}\n{{MMAevent bout\n|Lightweight\n|Cat Three\n|def.\n|Dee Four\n|TKO (doctor stoppage)\n| 2\n|5:00\n|\n}}\n{{MMAevent bout\n|Lightweight\n|Eve Five\n|def.\n|Fay Six\n|DQ (illegal knee)\n|\n|\n|\n}}",
+  "table_two_digit_cells": "{| class=\"wikitable\"\n|-\n| Lightweight || [[Mateusz Gamrot]] || def. || [[Rafael Fiziev]] || TKO (knee injury) || 1 || 5:00 || 2\n|-\n| Flyweight || [[Tatsuro Taira]] || def. || [[Alex Perez]] || TKO (knee injury) || 2 || 2:59 || 0\n|}",
+  "template_beats_table": "==Results==\n{{MMAevent card|Main card (Paramount+)}}\n{{MMAevent bout\n|Heavyweight\n|[[Ciryl Gane]]\n|def.\n|[[Josh Hokit]]\n|TKO (punches)\n|2\n|3:12\n|\n}}\n{{MMAevent bout\n|Women's Featherweight\n|[[Kayla Harrison]] (c)\n|def.\n|[[Amanda Nunes]]\n|Decision (unanimous) (49–46, 49–46, 48–47)\n|5\n|5:00\n|{{efn|For the UFC Women's Bantamweight Championship.}}\n}}\n{{MMAevent card|Preliminary card (Paramount+)}}\n{{MMAevent bout\n|Lightweight\n|[[Chris Duncan (fighter)|Chris Duncan]]\n|def.\n|[[Drew Dober]]\n|Submission (rear-naked choke)\n|3\n|4:01\n|\n}}\n{{MMAevent bout\n|Welterweight\n|[[Stephen Thompson (fighter)|Stephen Thompson]]\n|def.\n|[[Charles Radtke]]\n|KO (spinning back kick)\n|1\n|0:48\n|<ref>{{cite web |url=https://example.org |title=Recap}}</ref>\n}}\n{{MMAevent endcard}}\n\n{| class=\"wikitable\" style=\"font-size:85%;\"\n! colspan=\"8\" style=\"background-color: #ccf; color: #000080; text-align: center;\" | Main card\n|-\n! Weight class !! !! !! !! Method !! Round !! Time !! Notes\n|-\n| Lightweight || [[Islam Makhachev]] (c) || def. || [[Dustin Poirier]] || Submission (D'Arce choke) || 5 || 2:42 || {{efn|For the UFC Lightweight Championship.}}\n|-\n| Middleweight || [[Sean Strickland]] || def. || [[Paulo Costa]] || Decision (split) (48–47, 47–48, 48–47) || 5 || 5:00 ||\n|-\n! colspan=\"8\" style=\"background-color: #ccf;\" | Preliminary card\n|-\n| Featherweight || [[Diego Lopes]] || def. || [[Sodiq Yusuff]] || TKO (punches) || 1 || 1:29 ||\n|}",
+  "template_inside_bout": "{{MMAevent bout\n|Bantamweight\n|{{sortname|Mario|Bautista}}\n|def.\n|[[Cory Sandhagen]]\n|Decision (split)\n|3\n|5:00\n|\n}}",
+  "unclosed_template_name": "{| class=\"wikitable\"\n|-\n| Lightweight\n| [[Liu Ce]]\n| def.\n| {{nowrap|Levi Rodrigues Jr.\n}}\n| TKO (punches)\n| 2\n| 4:12\n|-\n| Bantamweight\n| [[Mario Bautista]]\n| def.\n| {{nowrap|[[Cory Sandhagen]]\n}}\n| Decision (split) (29–28, 28–29, 29–28)\n| 3\n| 5:00\n|}",
+  "wikitable_draw_and_nc": "{| class=\"wikitable\"\n|-\n| Lightweight || Bo Nickal || vs. || Joe Pyfer || No Contest (accidental eye poke) || 1 || 0:45\n|-\n| Lightweight || Jan Draw || vs. || Joe Pyfer || Draw (majority decision) || 3 || 5:00\n|-\n| Heavyweight || [[Tom Aspinall]] || def. || [[Curtis Blaydes]] || TKO (punches) || 1 || 1:00\n|}"
+ }
+}
