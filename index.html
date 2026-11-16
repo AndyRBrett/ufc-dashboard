@@ -2336,6 +2336,11 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 <div id="app"></div>
 <div id="sportApp" hidden></div>
 <script src="data.js"></script>
+<!-- FIGHTER_STATS, split from data.js (datafile.py) so an unchanged set is a 304
+     rather than ~73 KB on every data commit. Loaded after data.js, so it wins;
+     while data.js still carries its own copy (before the scraper's first run
+     after the split) a missing file here changes nothing. -->
+<script src="fighter-stats.js"></script>
 <!-- The app's scoring (scoring.js, engine migration stage 3). Required, like
      data.js: the self-heal below covers it failing to load too. -->
 <script src="scoring.js?v=2026-11-15-1"></script>
@@ -2366,7 +2371,10 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
 var SCORING_EXPECT="2026-11-15-1",KERNEL_EXPECT="2026-11-16-1";
 function _scoringOk(){return typeof pickPts==="function"&&typeof _lbScoreUsers==="function"&&typeof SCORING_VERSION!=="undefined"&&SCORING_VERSION===SCORING_EXPECT&&
   typeof modelEdge==="function"&&typeof intelItemsFor==="function"&&typeof KERNEL_VERSION!=="undefined"&&KERNEL_VERSION===KERNEL_EXPECT;}
-if(typeof EVENTS==="undefined"||!_scoringOk()){
+// FIGHTER_STATS (fighter-stats.js, or data.js before the split) is data.js's
+// other half: missing, it is the same failure with the same fix.
+function _dataOk(){return typeof EVENTS!=="undefined"&&typeof FIGHTER_STATS!=="undefined";}
+if(!_dataOk()||!_scoringOk()){
   (function(){
     try{if(sessionStorage.getItem("_selfHealed"))return;sessionStorage.setItem("_selfHealed","1");}catch(_){}
     var done=function(){location.reload();};
@@ -12998,7 +13006,7 @@ document.addEventListener("DOMContentLoaded",function(){
     // bad copy, so self-heal instead: purge caches + unregister the SW, then reload
     // once. The sessionStorage guard makes this fire at most once per session, so it
     // cannot loop — if a fresh load still fails, fall through to the static message.
-    if((typeof EVENTS==="undefined"||!_scoringOk())&&!sessionStorage.getItem("_selfHealed")){
+    if((!_dataOk()||!_scoringOk())&&!sessionStorage.getItem("_selfHealed")){
       try{sessionStorage.setItem("_selfHealed","1");}catch(_){}
       var _bust=function(){location.reload();};
       try{

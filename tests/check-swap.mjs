@@ -27,7 +27,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // So they are served from a frozen fight-week snapshot: the 2026-09-26 card as
 // it stood before its first bell. Code files are still read live from the repo.
 const FIX = join(ROOT, "tests/fixtures/fight-week");
-const DATA_FILES = new Set(["data.js", "odds-series.json", "intel.json"]);
+const DATA_FILES = new Set(["data.js", "fighter-stats.js", "odds-series.json", "intel.json"]);
 const served = (f) => join(DATA_FILES.has(f) ? FIX : ROOT, f);
 let failures = 0;
 const check = (name, cond) => cond ? console.log("  ✓ " + name) : (failures++, console.error("  ✗ " + name));
@@ -217,7 +217,7 @@ missing = new Set(["scoring.js", "index.html", "lab/engine.js", "lab/analytics.j
 pagesFetched = [];
 picksRows = [...onCard, row("uT", "Mickey Gall", stays)];
 r = await runAt("2026-09-25T20:00:00Z");
-check("swap alerts need no code from Pages", r.status === 200 && r.swaps.length === 1 && pagesFetched.every((f) => f === "data.js" || /\.json$/.test(f)));
+check("swap alerts need no code from Pages", r.status === 200 && r.swaps.length === 1 && pagesFetched.every((f) => f === "data.js" || f === "fighter-stats.js" || /\.json$/.test(f)));
 missing = new Set();
 
 if (failures) { console.error(`\ncheck-swap: ${failures} failure(s).`); process.exit(1); }

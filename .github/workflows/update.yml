@@ -203,7 +203,10 @@ jobs:
           # It MUST be committed: the runner is ephemeral, so an uncommitted
           # state file resets every run and every standing mover re-alerts —
           # which is exactly the behaviour the dedup exists to stop.
-          for f in data.js overseer-status.json odds-snapshots.jsonl \
+          # fighter-stats.js / stats-state.json: FIGHTER_STATS and its
+          # bookkeeping, split out of data.js (datafile.py) so an unchanged set
+          # is a 304 for the app instead of ~73 KB on every data commit.
+          for f in data.js fighter-stats.js stats-state.json overseer-status.json odds-snapshots.jsonl \
                    odds-series.json odds-state.json odds-alert-state.json odds-lines.json \
                    health-report.json intel.json intel-state.json \
                    events-extra.json events-extra.candidate.json extra-state.json \

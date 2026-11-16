@@ -173,6 +173,8 @@ if(!_css&&_t!=="octagon"){document.documentElement.style.visibility="hidden";
 <div class="tip" id="tip" role="tooltip"></div>
 
 <script src="data.js"></script>
+<!-- FIGHTER_STATS, split from data.js; wins over data.js's own copy while one exists. -->
+<script src="fighter-stats.js"></script>
 <script src="lab/engine.js"></script>
 <script src="lab/analytics.js"></script>
 <script>
@@ -1021,7 +1023,7 @@ document.getElementById("tabs").addEventListener("click",function(e){var b=e.tar
   var t=(location.hash||"").slice(1);
   if(!VIEWS[t]){try{t=localStorage.getItem("ufc_lab_tab")||"iq";}catch(e){t="iq";}}
   L.tab=VIEWS[t]?t:"iq";
-  if(typeof EVENTS==="undefined"||!PE||!FL){document.getElementById("main").innerHTML='<div class="err">The lab could not load its data. Head back to the cards and try again.</div>';return;}
+  if(typeof EVENTS==="undefined"||typeof FIGHTER_STATS==="undefined"||!PE||!FL){document.getElementById("main").innerHTML='<div class="err">The lab could not load its data. Head back to the cards and try again.</div>';return;}
   load().then(render).catch(function(e){
     console.error(e);
     var m=document.getElementById("main");m.textContent="";

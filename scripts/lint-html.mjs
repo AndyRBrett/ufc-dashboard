@@ -11,7 +11,7 @@
 // column numbers still point into the .html. The external scripts each page
 // loads (data.js, scoring.js, kernel.js, lab/*.js) contribute their top-level names as
 // globals.
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { ESLint } from "eslint";
@@ -38,8 +38,8 @@ function exportedNames(src) {
 }
 
 const PAGES = [
-  { page: "index.html", externals: ["data.js", "scoring.js", "kernel.js", "lab/engine.js", "results.js"] },
-  { page: "lab.html", externals: ["data.js", "lab/engine.js", "lab/analytics.js"] },
+  { page: "index.html", externals: ["data.js", "fighter-stats.js", "scoring.js", "kernel.js", "lab/engine.js", "results.js"] },
+  { page: "lab.html", externals: ["data.js", "fighter-stats.js", "lab/engine.js", "lab/analytics.js"] },
 ];
 
 const eslint = new ESLint({ cwd: ROOT });
@@ -57,6 +57,9 @@ for (const { page, externals } of PAGES) {
   const code = chars.join("");
   const ext = new Set();
   for (const f of externals) {
+    // fighter-stats.js is written by the scraper's first run after the split
+    // (datafile.py); until then FIGHTER_STATS still comes from data.js.
+    if (f === "fighter-stats.js" && !existsSync(join(ROOT, f))) continue;
     const src = readFileSync(join(ROOT, f), "utf8");
     for (const n of declaredNames(src)) ext.add(n);
     for (const n of exportedNames(src)) ext.add(n);

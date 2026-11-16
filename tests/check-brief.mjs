@@ -22,7 +22,9 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // So they are served from a frozen fight-week snapshot: the 2026-09-26 card as
 // it stood before its first bell. Code files are still read live from the repo.
 const FIX = join(ROOT, "tests/fixtures/fight-week");
-const DATA_FILES = new Set(["data.js", "odds-series.json", "intel.json"]);
+// fighter-stats.js: FIGHTER_STATS split out of data.js. The fixture predates the
+// split (its data.js carries the stats), so it 404s here unless a test overrides it.
+const DATA_FILES = new Set(["data.js", "fighter-stats.js", "odds-series.json", "intel.json"]);
 const served = (f) => join(DATA_FILES.has(f) ? FIX : ROOT, f);
 let failures = 0;
 const check = (name, cond) => cond ? console.log("  ✓ " + name) : (failures++, console.error("  ✗ " + name));
@@ -38,12 +40,13 @@ class FakeDate extends RealDate {
   constructor(...a) { super(...(a.length ? a : [NOW])); }
   static now() { return NOW; }
 }
-let pagesFetched = [], pushes = [], missing = new Set(), picksRows = [];
+let pagesFetched = [], pushes = [], missing = new Set(), picksRows = [], overrides = new Map();
 globalThis.fetch = async (url, init) => {
   url = String(url);
   if (url.startsWith(PAGES)) {
     const f = url.slice(PAGES.length).split("?")[0];
     pagesFetched.push(f);
+    if (overrides.has(f)) return new Response(overrides.get(f), { status: 200 });
     if (missing.has(f) || !existsSync(served(f))) return new Response("nope", { status: 404 });
     return new Response(readFileSync(served(f), "utf8"), { status: 200 });
   }
@@ -142,7 +145,7 @@ missing = new Set();
 pagesFetched = [];
 r = await runAt("2026-09-25T23:05:00Z");
 check("the rich brief fetches only data from Pages, never code",
-  r.json.brief && r.json.brief.rich === true && pagesFetched.length > 0 && pagesFetched.every((f) => f === "data.js" || /\.json$/.test(f)));
+  r.json.brief && r.json.brief.rich === true && pagesFetched.length > 0 && pagesFetched.every((f) => f === "data.js" || f === "fighter-stats.js" || /\.json$/.test(f)));
 check("send-reminders has no new Function / eval", !/new Function|\beval\(/.test(src));
 {
   globalThis.__pwned = false;
@@ -151,6 +154,38 @@ check("send-reminders has no new Function / eval", !/new Function|\beval\(/.test
   const t = await mod.composeBrief({ name: card, date: CARD, time: ev.time, prelimTime: ev.prelimTime }, evil, null, NOW);
   globalThis.Date = RealDate;
   check("a data.js carrying code is refused, not run (plain teaser)", globalThis.__pwned === false && t.rich === false);
+}
+
+// 2c. FIGHTER_STATS split out of data.js (datafile.py): the brief reads it from
+//     fighter-stats.js, with parseDataJs like data.js, and composes exactly what
+//     the single file did; data.js's own copy stands in when the file is absent.
+{
+  const legacy = readFileSync(served("data.js"), "utf8");
+  const statsLine = legacy.split("\n").find((l) => l.startsWith("var FIGHTER_STATS="));
+  const stripped = legacy.split("\n").filter((l) => !l.startsWith("var FIGHTER_STATS=")).join("\n");
+  const at = RealDate.parse("2026-09-25T23:05:00Z");
+  const compose = async (js) => {
+    NOW = at; globalThis.Date = FakeDate;
+    try { return await mod.composeBrief({ name: card, date: CARD, time: ev.time, prelimTime: ev.prelimTime }, js, null, NOW); }
+    finally { globalThis.Date = RealDate; }
+  };
+  const before = await compose(legacy);
+  overrides = new Map([["fighter-stats.js", "// split\n" + statsLine + "\n"]]);
+  const after = await compose(stripped);
+  check("fixture: data.js carries one FIGHTER_STATS line to split", !!statsLine && !/FIGHTER_STATS/.test(stripped));
+  check("the split layout (data.js + fighter-stats.js) composes the same brief as the single file",
+    before.rich && after.rich && after.body === before.body && after.title === before.title);
+  // The file wins over data.js's own copy, as the page loads it: a stats file
+  // that empties every record must change the brief built off a full data.js.
+  overrides = new Map([["fighter-stats.js", "var FIGHTER_STATS={};\n"]]);
+  const emptied = await compose(legacy);
+  check("fighter-stats.js wins over data.js's own copy (as on the page)", emptied.body !== before.body || emptied.rich !== before.rich);
+  globalThis.__pwned = false;
+  overrides = new Map([["fighter-stats.js", statsLine + "\nvar X=(globalThis.__pwned=true);\n"]]);
+  const evil = await compose(legacy);
+  check("a fighter-stats.js carrying code is refused, never run, and data.js's copy stands",
+    globalThis.__pwned === false && evil.rich && evil.body === before.body);
+  overrides = new Map();
 }
 
 // 3. The gate itself.

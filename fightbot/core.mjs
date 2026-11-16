@@ -40,7 +40,7 @@ function supabaseConfig(html) {
 
 // State is rebuilt when any source file changes on disk, so a long-running
 // server picks up the scraper's next data.js after a `git pull`.
-const SOURCES = ["data.js", "index.html", "scoring.js", "kernel.js", "odds-series.json", "intel.json", "events-extra.json"];
+const SOURCES = ["data.js", "fighter-stats.js", "index.html", "scoring.js", "kernel.js", "odds-series.json", "intel.json", "events-extra.json"];
 let state = null, stamp = "";
 function fingerprint() {
   return SOURCES.map((f) => { try { return statSync(join(ROOT, f)).mtimeMs; } catch { return 0; } }).join("|");
@@ -50,6 +50,10 @@ export function load(force) {
   if (state && !force && fp === stamp) return state;
   const dctx = vm.createContext({});
   vm.runInContext(readFileSync(join(ROOT, "data.js"), "utf8"), dctx, { filename: "data.js" });
+  // FIGHTER_STATS, split from data.js (datafile.py): run after it, as the page
+  // loads it, so it wins over data.js's own copy while one exists.
+  if (existsSync(join(ROOT, "fighter-stats.js")))
+    vm.runInContext(readFileSync(join(ROOT, "fighter-stats.js"), "utf8"), dctx, { filename: "fighter-stats.js" });
   const html = readFileSync(join(ROOT, "index.html"), "utf8");
   const env = { EVENTS: dctx.EVENTS, RESULTS_ARCHIVE: dctx.RESULTS_ARCHIVE || {}, FIGHTER_STATS: dctx.FIGHTER_STATS || {}, RANKINGS: dctx.RANKINGS || {}, FIGHTER_ALIASES: dctx.FIGHTER_ALIASES || {} };
   const kernel = PE.loadKernel(readFileSync(join(ROOT, "kernel.js"), "utf8"), env, undefined, readFileSync(join(ROOT, "scoring.js"), "utf8"));

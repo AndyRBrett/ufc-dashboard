@@ -11,7 +11,7 @@
 //   2. sw.js compiles (a broken service worker breaks the installed PWA).
 //   3. data.js compiles AND actually produces a non-empty EVENTS array
 //      (a malformed data push is the other way the app dies on load).
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -62,7 +62,25 @@ try {
   if (!Array.isArray(EV)) fail("data.js ran but EVENTS is not an array");
   else if (EV.length === 0) fail("data.js produced an EMPTY EVENTS array");
   else ok(`data.js compiles and defines EVENTS (${EV.length} event(s))`);
-} catch (e) { fail(`data.js: ${e.message}`); }
+  // 3b. FIGHTER_STATS: fighter-stats.js (split out of data.js by datafile.py),
+  // loaded after data.js and so winning over any copy data.js still carries.
+  // Whichever supplies it, the app must end up with a non-empty object, and
+  // the file must hold that one var and nothing else (send-reminders reads it
+  // with parseDataJs, which refuses anything more).
+  const statsPath = join(ROOT, "fighter-stats.js");
+  if (existsSync(statsPath)) {
+    const sctx = { window: {}, globalThis: {} };
+    vm.createContext(sctx);
+    new vm.Script(readFileSync(statsPath, "utf8"), { filename: "fighter-stats.js" }).runInContext(sctx);
+    const names = Object.keys(sctx).filter((k) => k !== "window" && k !== "globalThis");
+    if (names.join() !== "FIGHTER_STATS") fail(`fighter-stats.js must define only FIGHTER_STATS (defines: ${names.join(", ") || "nothing"})`);
+    else ctx.FIGHTER_STATS = sctx.FIGHTER_STATS;
+  }
+  const FS = ctx.FIGHTER_STATS;
+  if (!FS || typeof FS !== "object" || Array.isArray(FS)) fail("no FIGHTER_STATS object from fighter-stats.js or data.js");
+  else if (!Object.keys(FS).length) fail("FIGHTER_STATS is EMPTY");
+  else ok(`FIGHTER_STATS loads (${Object.keys(FS).length} fighters, from ${existsSync(statsPath) ? "fighter-stats.js" : "data.js"})`);
+} catch (e) { fail(`data.js / fighter-stats.js: ${e.message}`); }
 
 // 4a. A clickable <div>/<span> must be reachable by keyboard: role="button"
 // and tabindex="0" (the app's Enter/Space handler then activates it). A

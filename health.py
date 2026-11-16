@@ -169,6 +169,26 @@ def parse_stats_cache(text):
         return {}
 
 
+def with_split_stats(text, data_path):
+    """data.js text, plus the FIGHTER_STATS that now live beside it
+    (datafile.STATS_FILE, with stats-state.json's bookkeeping merged back:
+    the stats-fetch-failed check reads fetch_failed), appended as one
+    `var FIGHTER_STATS=…;` line, so parse_stats_cache reads exactly what the old
+    single file gave it. A data.js that still carries its stats is returned
+    unchanged; an unreadable stats file adds nothing (the stats checks then
+    report the gap, as they would for a data.js that lost its stats)."""
+    if not text or "var FIGHTER_STATS=" in text:
+        return text
+    import datafile  # local: health.py is also imported by scrape.py
+    try:
+        doc = datafile.read_files(Path(data_path).parent)
+    except (OSError, datafile.DataError):
+        return text
+    if "FIGHTER_STATS" not in doc:
+        return text
+    return text + "var FIGHTER_STATS=" + json.dumps(doc["FIGHTER_STATS"], ensure_ascii=False) + ";\n"
+
+
 def parse_rankings(text):
     m = re.search(r"var RANKINGS=(\{.*?\});", text, re.DOTALL)
     if not m:
@@ -745,6 +765,7 @@ def main():
     args = ap.parse_args()
 
     text = Path(args.data).read_text(encoding="utf-8") if Path(args.data).exists() else ""
+    text = with_split_stats(text, Path(args.data))
     baseline = None
     if args.baseline and Path(args.baseline).exists():
         baseline = Path(args.baseline).read_text(encoding="utf-8")

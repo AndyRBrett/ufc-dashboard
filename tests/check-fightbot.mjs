@@ -6,7 +6,7 @@
 // drift: a leaderboard or card that disagrees with the app. This spawns the
 // real server with picks from a fixture file (no network) and drives it.
 import { spawn } from "node:child_process";
-import { readFileSync, writeFileSync, mkdtempSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdtempSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
@@ -19,6 +19,9 @@ const check = (name, cond) => cond ? console.log("  ✓ " + name) : fail(name);
 
 // Picks on real bouts from the committed data.js.
 const d = vm.createContext({}); vm.runInContext(readFileSync(join(ROOT, "data.js"), "utf8"), d);
+// FIGHTER_STATS lives in fighter-stats.js once split out of data.js; run after
+// it, as the page loads it (it wins over data.js's own copy while one exists).
+if (existsSync(join(ROOT, "fighter-stats.js"))) vm.runInContext(readFileSync(join(ROOT, "fighter-stats.js"), "utf8"), d);
 const rows = [];
 d.EVENTS.filter((e) => e.fights.some((f) => f.winner)).forEach((e) => e.fights.forEach((f, i) => {
   ["Andy", "Tristin"].forEach((who, j) => rows.push({ user_id: "u-" + who, nickname: "🥊 " + who, event_date: e.date, f1: f.f1.n, f2: f.f2.n,
