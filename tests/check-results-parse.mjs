@@ -63,6 +63,10 @@ const html = read("index.html"), sw = read("sw.js");
 const ver = (/<script src="results\.js\?v=([^"]+)"><\/script>/.exec(html) || [])[1];
 check("index.html loads results.js by a versioned URL", !!ver);
 check("...and the service worker precaches that same URL", !!ver && sw.includes("'./results.js?v=" + ver + "'"));
+// npm run build writes dist/ from a list of files; one missing from it is a page
+// that references a script the built site doesn't have (Codex on #340).
+check("...and npm run build ships it in dist/ (build.mjs's standalone scripts)",
+  /for \(const f of \[[^\]]*"results\.js"[^\]]*\]\)/.test(read("build.mjs")));
 for (const [file, src] of [["index.html", html], ["supabase/functions/check-results/index.ts", read("supabase/functions/check-results/index.ts")]]) {
   const own = ["_parseMMATemplate", "_parseWikitable", "_flushRow", "_cleanWiki", "_normMethod", "_undecidedRes", "_deriveSlug"].filter((n) => new RegExp("function " + n + "\\(").test(src));
   check(`${file} keeps no private copy of the results parser` + (own.length ? " (" + own.join(", ") + ")" : ""), !own.length);
