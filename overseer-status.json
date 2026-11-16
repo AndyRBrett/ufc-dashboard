@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T10:10:39Z",
+  "generated_at": "2026-11-16T11:15:42Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -99,11 +99,11 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-16T04:40:44Z",
+      "last_changed_at": "2026-11-16T11:15:42Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 9,
-      "line_movement": -4,
+      "line_movement": -6,
       "odds_market_priced": true
     },
     {
@@ -129,7 +129,7 @@
     {
       "event_id": "2027-01-16:ufc-fight-night-rodriguez-vs-garcia",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-16T10:10:39Z",
+      "last_changed_at": "2026-11-16T11:15:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -139,7 +139,7 @@
     {
       "event_id": "2027-01-23:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-16T10:10:39Z",
+      "last_changed_at": "2026-11-16T11:15:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -169,7 +169,7 @@
     {
       "event_id": "2027-02-13:ufc-fight-night-pyfer-vs-nickal",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-16T10:10:39Z",
+      "last_changed_at": "2026-11-16T11:15:42Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -417,6 +417,22 @@
       "f1_prob_shift": 9.4,
       "f2_prob_shift": -8.3,
       "priority": 128.0
+    },
+    {
+      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+      "f1": "Jared Cannonier",
+      "f2": "Ikram Aliskerov",
+      "f1_movement": -50,
+      "f2_movement": 72,
+      "magnitude": 72,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 3.6,
+      "f2_prob_shift": -3.4,
+      "priority": 100.8
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
