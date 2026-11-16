@@ -7,7 +7,7 @@
 // correlation warnings — a combined probability is only valid if the bouts are
 // independent, and same-card outcomes aren't.
 //
-// Both the model block and the parlay block are lifted out of index.html; the
+// The model comes from kernel.js and the parlay block is lifted out of index.html; the
 // parlay code calls into the model for de-vigging and for its per-leg
 // disagreement warning, so a break in either shows up here.
 import { readFileSync } from "node:fs";
@@ -26,7 +26,7 @@ function block(name) {
   return html.slice(a, b);
 }
 const ctx = vm.createContext({ Math, Date, isFinite, parseFloat, Object, String, console });
-vm.runInContext(block("model"), ctx);
+vm.runInContext(readFileSync(join(ROOT, "kernel.js"), "utf8"), ctx, { filename: "kernel.js" });
 vm.runInContext(block("parlay"), ctx);
 const call = (expr) => vm.runInContext(expr, ctx);
 

@@ -9,7 +9,7 @@
 // A page's inline blocks share one global scope, so they're linted together as
 // a single file, with everything outside them blanked to spaces so line and
 // column numbers still point into the .html. The external scripts each page
-// loads (data.js, scoring.js, lab/*.js) contribute their top-level names as
+// loads (data.js, scoring.js, kernel.js, lab/*.js) contribute their top-level names as
 // globals.
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -38,7 +38,7 @@ function exportedNames(src) {
 }
 
 const PAGES = [
-  { page: "index.html", externals: ["data.js", "scoring.js", "lab/engine.js", "results.js"] },
+  { page: "index.html", externals: ["data.js", "scoring.js", "kernel.js", "lab/engine.js", "results.js"] },
   { page: "lab.html", externals: ["data.js", "lab/engine.js", "lab/analytics.js"] },
 ];
 

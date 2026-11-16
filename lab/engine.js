@@ -10,10 +10,9 @@
 // curated JSON feed for PFL / ONE / boxing), and picks are scored by RULES.
 //
 // One rule this file exists to keep: the UFC rules are NOT a copy of the app's
-// scoring. loadKernel() lifts the real blocks out of index.html — the same
-// `// name:start … // name:end` markers the test suite already drives — so a
-// score here can never drift from the board. check:lab fails the build if a
-// marker this depends on is renamed or removed.
+// scoring. loadKernel() runs the app's own files, scoring.js and kernel.js,
+// whole, so a score here can never drift from the board. check:lab fails the
+// build if a function this depends on is renamed or removed.
 //
 // Plain script, no imports: runs as a <script> in the browser (sets
 // window.PickEngine) and under node via vm / new Function.
@@ -23,14 +22,12 @@
   // ---------------------------------------------------------------- kernel --
   // The app's own code, run here rather than re-implemented, so a score, a
   // model number or an intel filter can never drift from the board:
-  //   * scoring.js, WHOLE — every scoring function lives there (stage 3). No
-  //     slicing: it's a plain script whose functions become the kernel's.
-  //   * from index.html, by the same `// name:start … :end` markers the tests
-  //     drive: the fight model block and the two Fight Week Intel filters,
-  //     which aren't scoring and still live in the page.
+  //   * scoring.js — every scoring function (engine migration stage 3);
+  //   * kernel.js  — the fight model and the two Fight Week Intel filters.
+  // Both are plain scripts the app itself loads, run WHOLE: nothing is sliced
+  // out of index.html any more (it was, by `// name:start … :end` markers,
+  // until kernel.js: every reader downloaded the whole page for ~280 lines).
   // check:lab / check:fightbot fail the build if any of it goes missing.
-  var KERNEL_BLOCKS = ["model"];
-  var KERNEL_FNS = ["intelKey", "intelItemsFor"];
   var KERNEL_EXPORTS = [
     "nmKey", "nmEq", "nmBout", "setNameAliases", "splitNick",
     "dogPtsFor", "dogPtsForPick", "userPts", "locksOn", "isLockPick", "lockPtsFor",
@@ -40,39 +37,21 @@
     "DOG_TIERS", "LOCKS_PER_CARD", "LOCK_HIT", "LOCK_MISS", "LOCKS_START"
   ];
 
-  function sliceBlock(html, name) {
-    var a = html.indexOf("// " + name + ":start"), b = html.indexOf("// " + name + ":end");
-    if (a < 0 || b < 0 || b < a) throw new Error("kernel: index.html has no // " + name + ":start … :end block");
-    return html.slice(a, b);
-  }
-  // A top-level function by brace matching — the same approach the test suite
-  // uses on these same functions, so if it ever mis-slices, CI sees it first.
-  function sliceFn(html, name) {
-    var a = html.indexOf("function " + name + "(");
-    if (a < 0) throw new Error("kernel: index.html has no function " + name);
-    var i = html.indexOf("{", a), depth = 0;
-    for (; i < html.length; i++) {
-      var c = html[i];
-      if (c === "{") depth++;
-      else if (c === "}" && --depth === 0) return html.slice(a, i + 1);
-    }
-    throw new Error("kernel: unbalanced function " + name);
-  }
-
-  // loadKernel(indexHtml, env, compile?, scoringSrc)
+  // loadKernel(kernelSrc, env, compile?, scoringSrc)
+  //   kernelSrc: the text of kernel.js (required). Passing index.html, as
+  //   callers did before kernel.js existed, is refused with a pointer here.
   //   env: { EVENTS, RESULTS_ARCHIVE, FIGHTER_STATS, RANKINGS, USER_ID?, FIGHTER_ALIASES? }
   //   compile(params, body) → function. Defaults to new Function (node, tests,
   //   FightBot); lab.html passes one that injects an inline <script> instead, so
   //   the page keeps a CSP without 'unsafe-eval'.
   //   scoringSrc: the text of scoring.js (required).
-  function loadKernel(html, env, compile, scoringSrc) {
+  function loadKernel(kernelSrc, env, compile, scoringSrc) {
     env = env || {};
     if (typeof scoringSrc !== "string" || scoringSrc.indexOf("function pickPts(") < 0)
       throw new Error("kernel: scoring.js source is required (loadKernel's 4th argument)");
-    var src = [scoringSrc]
-      .concat(KERNEL_BLOCKS.map(function (n) { return sliceBlock(html, n); }))
-      .concat(KERNEL_FNS.map(function (n) { return sliceFn(html, n); }))
-      .join("\n;\n");
+    if (typeof kernelSrc !== "string" || kernelSrc.indexOf("function modelEdge(") < 0 || /<html|<script/i.test(kernelSrc))
+      throw new Error("kernel: kernel.js source is required (loadKernel's 1st argument; index.html is no longer read)");
+    var src = [scoringSrc, kernelSrc].join("\n;\n");
     var params = ["EVENTS", "RESULTS_ARCHIVE", "FIGHTER_STATS", "RANKINGS", "USER_ID",
                   "MAIN_CARD_BOUTS", "DAY_MS", "lbScope", "userName", "_lbRows", "_commRows", "console"];
     var ret = "return {" + KERNEL_EXPORTS.map(function (n) {
@@ -84,7 +63,7 @@
     var k = factory(env.EVENTS || [], env.RESULTS_ARCHIVE || {}, env.FIGHTER_STATS || {},
                     env.RANKINGS || {}, env.USER_ID || null, 5, 86400000, "all", "", null, null, quiet);
     KERNEL_EXPORTS.forEach(function (n) {
-      if (k[n] === undefined) throw new Error("kernel: " + n + " missing after load — renamed in scoring.js / index.html?");
+      if (k[n] === undefined) throw new Error("kernel: " + n + " missing after load — renamed in scoring.js / kernel.js?");
     });
     // data.js's respellings ({old: new}): a browser kernel already sees the
     // global, a server one (send-reminders, FightBot) only gets them here.
@@ -422,8 +401,8 @@
   }
 
   var api = {
-    loadKernel: loadKernel, sliceBlock: sliceBlock, sliceFn: sliceFn,
-    KERNEL_BLOCKS: KERNEL_BLOCKS, KERNEL_FNS: KERNEL_FNS,
+    loadKernel: loadKernel,
+    KERNEL_EXPORTS: KERNEL_EXPORTS,
     ufcAdapter: ufcAdapter, feedAdapter: feedAdapter, validateFeed: validateFeed,
     ufcRules: ufcRules, simpleRules: simpleRules, createEngine: createEngine, boardRows: boardRows,
     americanToProb: americanToProb, deVig: deVig, simpleKey: simpleKey, simpleEq: simpleEq,

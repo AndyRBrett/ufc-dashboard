@@ -29,7 +29,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-// The app's source: index.html plus scoring.js, where the scoring blocks this
+// The app's source: index.html plus scoring.js and kernel.js (the intel filters), where the blocks this
 // test lifts have lived since engine-migration stage 3.
 const html = readFileSync(join(ROOT, "index.html"), "utf8") + "\n" + readFileSync(join(ROOT, "scoring.js"), "utf8");
 function block(name) {
@@ -48,6 +48,7 @@ const check = (name, cond) => cond ? console.log("  ✓ " + name) : fail(name);
 const ctx = vm.createContext({ console, String, Object, Array, JSON, fetch: () => {}, Promise });
 vm.runInContext(block("fighter-names"), ctx);
 vm.runInContext(block("fight-week-intel"), ctx);
+vm.runInContext(readFileSync(join(ROOT, "kernel.js"), "utf8"), ctx, { filename: "kernel.js" });   // intelKey / intelItemsFor
 const call = (expr) => vm.runInContext(expr, ctx);
 
 // A card with two fighters. Anything else tagged on an item is not on it.

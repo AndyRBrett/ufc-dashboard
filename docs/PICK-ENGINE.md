@@ -11,7 +11,7 @@ and never writes to it:
  events-extra.json ─┤   (normalize +   │
    picks (public) ─┘    score)         └─ fightbot/        (MCP server)
                             ▲
-          index.html ───────┘  scoring + fight model lifted out at load
+  scoring.js + kernel.js ┘  the app's own scoring and fight model, run whole
 ```
 
 | file | what it is |
@@ -25,17 +25,19 @@ and never writes to it:
 
 ## The one rule: scoring is shared, never copied
 
-`PickEngine.loadKernel(indexHtml, env, compile, scoringSrc)` runs the app's own
-**`scoring.js`** whole: every scoring function (name matching, `pickPts`,
-`userPts`, locks, the dog bonus, `_boutLookup`, `_eventFinished`,
-`_lbScoreUsers`) lives there and nowhere else, and the app loads the same file.
-From `index.html` it lifts only what isn't scoring: the fight model
-(`// model:start … :end`) and the two Fight Week Intel filters (`intelKey`,
-`intelItemsFor`). Everything is compiled against the data.js globals, so every
+`PickEngine.loadKernel(kernelSrc, env, compile, scoringSrc)` runs two of the
+app's own files whole. **`scoring.js`**: every scoring function (name matching,
+`pickPts`, `userPts`, locks, the dog bonus, `_boutLookup`, `_eventFinished`,
+`_lbScoreUsers`) lives there and nowhere else. **`kernel.js`**: what isn't
+scoring, the fight model and the two Fight Week Intel filters (`intelKey`,
+`intelItemsFor`). The app loads the same two files. Until 2026-11-16 the
+second half was sliced out of `index.html` by its `// model:start … :end`
+markers, so every reader downloaded the whole page; `loadKernel` now refuses
+`index.html` outright. Everything is compiled against the data.js globals, so every
 score the Lab, FightBot or the Friday brief shows is the board's score, and the
 fight model is the model under the moneyline on the cards.
 
-If a scoring function, the model markers or an intel filter is renamed,
+If a scoring function, a model function or an intel filter is renamed,
 `loadKernel` throws and `check:lab` / `check:fightbot` fail the build.
 
 In the browser the kernel is compiled through an injected inline `<script>`

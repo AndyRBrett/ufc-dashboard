@@ -103,7 +103,7 @@ function parseEvents(js: string): Ev[] {
 // tab, where the full brief lives.
 //
 // The copy is built by the Lab's own code (lab/engine.js + lab/analytics.js,
-// with the board's scoring lifted out of index.html), bundled into
+// running the app's own scoring.js and kernel.js), bundled into
 // _shared/lab-bundle.js — so the push can't say something the Lab doesn't.
 // Only data (odds-series.json, intel.json) is fetched from the repo, parsed as
 // JSON. If any of that fails, a plain teaser still goes out: a brief that

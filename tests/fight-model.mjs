@@ -1,7 +1,7 @@
 // Guard: the fight model shows a number next to the market price, and a wrong
 // number there is worse than none at all.
 //
-// The model block in index.html is pure and self-contained by design (it reads
+// The model block in kernel.js is pure and self-contained by design (it reads
 // only data.js globals), so it can be lifted out and driven directly. What this
 // test protects, in order of how badly it burned:
 //
@@ -21,14 +21,15 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const html = readFileSync(join(ROOT, "index.html"), "utf8");
-const start = html.indexOf("// model:start"), end = html.indexOf("// model:end");
-if (start < 0 || end < 0) {
-  console.error("  ✗ index.html: no // model:start … // model:end block — was the fight model renamed or removed?");
+// kernel.js holds the model (it used to be sliced out of index.html by its
+// `// model:start … :end` markers) and is run whole, as the app and the Lab do.
+const src = readFileSync(join(ROOT, "kernel.js"), "utf8");
+if (src.indexOf("// model:start") < 0 || src.indexOf("function modelEdge(") < 0) {
+  console.error("  ✗ kernel.js: no fight model (// model:start, modelEdge) — was it renamed or removed?");
   process.exit(1);
 }
 const ctx = vm.createContext({ Math, Date, isFinite, parseFloat, Object, String, console });
-vm.runInContext(html.slice(start, end), ctx);
+vm.runInContext(src, ctx, { filename: "kernel.js" });
 const call = (expr) => vm.runInContext(expr, ctx);
 
 let failures = 0;
