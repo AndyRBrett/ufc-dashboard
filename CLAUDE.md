@@ -65,6 +65,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:native` | the iOS app's push not registering its APNs token, a tapped notification not routing, or a browser taking the native path |
 | `npm run check:pickstore` | the poll or the board reading every pick ever made again, the merged rows differing from the single query's, a row doubled or lost at the date cut, or a rename never reaching old cards |
 | `npm run check:results` | the app's live poll or check-results reading a Wikipedia results page differently from scrape.py, a private copy of the parser coming back, check-results reading a PPV's redirect stub, or the app pushing results |
+| `npm run check:sw` | an installed app re-downloading an unchanged page or `data.js` on every open (the service worker's network-first fetch must revalidate, `cache: 'no-cache'`, never `'reload'`), a changed file served stale, or a mascot's recording fetched for a theme that doesn't show it |
 | `npm run check:migrations` | a migration that can't apply to what the ones before it built, the rebuilt core tables drifting from production's catalog, or `config.toml`'s JWT settings drifting from the deploy |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
@@ -1554,6 +1555,15 @@ it. The migration is applied by hand.
 
 - **Bump `SW_VERSION` in `sw.js`** whenever you change `index.html` / `data.js`
   so installed PWAs fetch the new version instead of a cached broken one.
+- **An app open downloads only what changed.** `sw.js`'s network-first files
+  (the page, `data.js`, `scoring.js`, `kernel.js`, the Lab's) are fetched with
+  `cache: 'no-cache'`: always asked of the server, but with the validator, so
+  an unchanged ~900 KB page is a 304. It was `'reload'`, which re-sent every
+  byte on every open. The mascot recordings (USA eagles, the Noche grito, the
+  seasonal month's cue) are fetched only when their theme is on and never
+  precached at install; the runtime cache keeps them for offline after the
+  first load. `check:sw` holds both, in a real browser without request routing
+  (Playwright disables the HTTP cache once a route is set).
 - `build.mjs` (`npm run build`) writes an optional minified `dist/`; the live
   deploy serves raw source, so a change isn't "shipped" via the build.
 - Edge-function edits only go live after a Supabase deploy (the workflow above),

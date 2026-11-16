@@ -4322,6 +4322,11 @@ function applyTheme(t){
   else{document.body.removeAttribute("data-season");try{seasonStop();}catch(e){}
     if(t==="silver")applySilver();else restoreLogo();}
   if(t==="usa"){usBuildFlags();requestAnimationFrame(usBuildFlags);}
+  // Each mascot's recording is fetched only once its theme is on. A boot-time
+  // applyTheme can run before those blocks set their URLs; the prefetch then
+  // does nothing and the block's own theme check fetches it.
+  if(t==="usa")eaglePrefetch();
+  if(t==="noche")nochePrefetch();
   // Replace the node rather than setting its attribute: several engines only
   // pick up theme-color when the element is inserted, so mutating it in place
   // left the previous theme's colour on the status bar.
@@ -4792,17 +4797,27 @@ setInterval(function(){
   wrap.appendChild(el);
 },80);
 applyTheme(document.body.getAttribute("data-theme")||"octagon");
-// Eagle screech: two real recordings (sounds/eagle-*.mp3, precached by the SW
-// for offline) picked at random per tap. Raw bytes are prefetched at load and
+// Eagle screech: two real recordings (sounds/eagle-*.mp3, cached by the SW on
+// their first fetch, for offline) picked at random per tap. Raw bytes are
+// prefetched once the USA theme is on (eaglePrefetch) and
 // decoded lazily on the first tap (AudioContext must be born inside a user
 // gesture on iOS). Every tap spawns its own buffer source, so rapid presses
 // overlap freely. The synthesized cry remains only as a fallback if the
 // files can't be fetched/decoded.
 var _eagleCtx=null,_eagleRaw=[],_eagleBufs=[],_eagleTried=[],_eaglePending=false;
 var EAGLE_SOUNDS=["sounds/eagle-1.mp3","sounds/eagle-2.mp3"];
-EAGLE_SOUNDS.forEach(function(u,i){
-  try{fetch(u).then(function(r){return r.ok?r.arrayBuffer():null;}).then(function(ab){if(ab)_eagleRaw[i]=ab;}).catch(function(){});}catch(e){}
-});
+// Fetched only once the USA theme (the only one that shows the eagle) is on:
+// applyTheme calls this, and so does the line below for a page that boots on
+// it. Fetching for every visitor cost ~120 KB nobody else could hear.
+var _eagleFetched=false;
+function eaglePrefetch(){
+  if(_eagleFetched||!EAGLE_SOUNDS)return;   // !EAGLE_SOUNDS: called before this block ran
+  _eagleFetched=true;
+  EAGLE_SOUNDS.forEach(function(u,i){
+    try{fetch(u).then(function(r){return r.ok?r.arrayBuffer():null;}).then(function(ab){if(ab)_eagleRaw[i]=ab;}).catch(function(){});}catch(e){}
+  });
+}
+if(document.body.getAttribute("data-theme")==="usa")eaglePrefetch();
 function _eaglePlay(){
   var src=_eagleCtx.createBufferSource();
   src.buffer=_eagleBufs[Math.floor(Math.random()*_eagleBufs.length)];
@@ -4827,6 +4842,7 @@ function eagleCry(el){
     if(!_eagleCtx)_eagleCtx=new (window.AudioContext||window.webkitAudioContext)();
     if(_eagleCtx.state==="suspended")_eagleCtx.resume();
     if(_eagleBufs.length){_eaglePlay();return;}
+    eaglePrefetch();   // a tap before the theme's prefetch: the synth covers this one
     _eaglePending=true;
     _eagleRaw.forEach(function(ab,i){
       if(!ab||_eagleTried[i])return;
@@ -4875,14 +4891,21 @@ function _eagleSynth(){
 /* The Noche grito plays a real recording (the same cue the seasonal May theme
    uses — one file, referenced twice, rather than two identical copies in the
    repo) and keeps the synthesised laugh as the fallback, exactly the shape the
-   eagle uses. Raw bytes are prefetched at load and decoded lazily on the first
-   tap, because iOS will not let an AudioContext start outside a user gesture.
+   eagle uses. Raw bytes are prefetched once the Noche theme is on (applyTheme,
+   or the line below for a page that boots on it: every visitor used to pay
+   ~250 KB for it) and decoded lazily on the first tap, because iOS will not
+   let an AudioContext start outside a user gesture.
    A miss is harmless: the synth covers it, which is also what happens offline
    in any month the service worker has not cached this file. */
 var NOCHE_SOUND="sounds/season-may.mp3";
-var _nocheRaw=null,_nocheBuf=null,_nocheTried=false,_nochePending=false;
-try{fetch(NOCHE_SOUND).then(function(r){return r.ok?r.arrayBuffer():null;})
-  .then(function(ab){if(ab)_nocheRaw=ab;}).catch(function(){});}catch(e){}
+var _nocheRaw=null,_nocheBuf=null,_nocheTried=false,_nochePending=false,_nocheFetched=false;
+function nochePrefetch(){
+  if(_nocheFetched||!NOCHE_SOUND)return;   // !NOCHE_SOUND: called before this block ran
+  _nocheFetched=true;
+  try{fetch(NOCHE_SOUND).then(function(r){return r.ok?r.arrayBuffer():null;})
+    .then(function(ab){if(ab)_nocheRaw=ab;}).catch(function(){});}catch(e){}
+}
+if(document.body.getAttribute("data-theme")==="noche")nochePrefetch();
 function _nochePlay(){
   var c=seCtx(),s=c.createBufferSource();
   s.buffer=_nocheBuf;s.connect(c.destination);s.start();
@@ -4897,6 +4920,7 @@ function nocheGrito(el){
   try{
     var nc=seCtx();
     if(nc.state==="suspended")nc.resume();
+    nochePrefetch();   // a tap before the theme's prefetch: the synth covers this one
     if(_nocheBuf){_nochePlay();}
     else if(_nocheRaw&&!_nocheTried){
       _nocheTried=true;_nochePending=true;
