@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-16T08:00:42Z",
+ "generated_at": "2026-11-16T20:30:52Z",
  "promotions": [
   {
    "id": "pfl",
@@ -40,7 +40,7 @@
     },
     {
      "a": "Patrick Ocheme",
-     "b": "Demba Seck",
+     "b": "Hussain Al Kurdi",
      "label": "",
      "division": "Lightweight",
      "title": false,
@@ -83,6 +83,17 @@
      "round": null
     },
     {
+     "a": "Justin Clarke",
+     "b": "Kevin Odongo",
+     "label": "",
+     "division": "Heavyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
      "a": "Emmanuel Lamptey",
      "b": "Jordan Cabrel Fongno",
      "label": "",
@@ -98,6 +109,39 @@
      "b": "Sephora Kiala",
      "label": "",
      "division": "Women's Strawweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Yahaya Yahuza",
+     "b": "Eslam Abdul Baset",
+     "label": "",
+     "division": "Middleweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Dona Salim Zigui",
+     "b": "Berci Noel Moufouha",
+     "label": "",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Bilal Lamkhanat",
+     "b": "Isaac Omeda",
+     "label": "",
+     "division": "Bantamweight",
      "title": false,
      "odds": null,
      "winner": "",
