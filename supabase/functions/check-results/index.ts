@@ -8,160 +8,33 @@
 // closes that gap: driven by pg_cron, it parses Wikipedia for newly-final
 // fights and calls the existing `send-push` for each one.
 //
-// It is a faithful port of the client live-poll (index.html `_pollOne` /
-// `_pushResult`) and scrape.py `send_push_notifications`. The name-matching and
-// fight-key derivation below are copied byte-for-byte from index.html so that
-// the `result:<fightKey>:<group>` type — and therefore the `send-push`
-// `notif_log` (event_date, type) dedup — is identical across all three senders.
-// Only one push per fight ever goes out, whichever trigger sees it first.
+// It reads Wikipedia with results.js (ResultsParse), the same code the open
+// app's live poll runs, bundled here by scripts/build-fn-bundle.mjs as
+// _shared/results-bundle.js and tied to scrape.py's parser by
+// tests/fixtures/results/expected.json. Its own copy had drifted: it asked for
+// the full event name, so every numbered PPV read a redirect stub with no
+// results ("UFC 334: Gane vs. Hokit" is a redirect to "UFC 334") and this
+// backup never fired for one; and it knew nothing of draws or no contests.
+//
+// It and scrape.py are the two result senders (the app stopped sending them:
+// see index.html's live-poll block). Both build `result:<fightKey>:<group>` the
+// same way, so send-push's notif_log (event_date, type) dedup lets one push per
+// fight through, whichever gets there first. check:dedup holds the key.
 //
 // Deployed with --no-verify-jwt: the Supabase gateway would otherwise reject the
 // cron's `Authorization: Bearer <CRON_SECRET>` as an invalid JWT before this code
 // runs. Inbound auth is enforced here via CRON_SECRET instead.
 import { secretEquals } from "../_shared/secret.js";
-
-// ---------------------------------------------------------------------------
-// Wikipedia result parsing — ported verbatim from index.html (~4975-5074).
-// ---------------------------------------------------------------------------
-
-// Canonical ASCII form — must stay byte-identical to _fold() in scrape.py and
-// in index.html. NFD + stripping combining marks folded "é" to "e" but left the
-// Latin letters whose diacritic lives in the codepoint itself ("ł", "ø", "đ"),
-// which scrape.py drops outright. The same bout then keyed as
-// "…klaudia-sygu-a" here and "…klaudia-sygua" there — two `result:<fightKey>`
-// types, so the notif_log dedup never fired and the fight was pushed twice.
-function _fold(t: string): string {
-  try { t = t.normalize("NFKD"); } catch (_e) { /* noop */ }
-  return t.replace(/[^\x00-\x7F]/g, "");
-}
-
-function _cleanWiki(t: string): string {
-  if (!t) return "";
-  t = t.replace(/\[\[(?:[^\]|]+\|)?([^\]]+)\]\]/g, "$1");
-  t = t.replace(/\{\{[^}]+\}\}/g, "");
-  t = t.replace(/<[^>]+>/g, "");
-  t = t.replace(/\[\d+\]/g, "");
-  t = _fold(t);
-  return t.trim().replace(/^,|,$/g, "").trim();
-}
-
-function _normMethod(m: string): string {
-  if (!m) return "";
-  const ml = m.toLowerCase();
-  if (ml.indexOf("ko") >= 0 || ml.indexOf("tko") >= 0) return "KO/TKO";
-  if (ml.indexOf("submission") >= 0 || ml.indexOf("sub") >= 0) return "Submission";
-  if (ml.indexOf("unanimous") >= 0) return "Decision (Unanimous)";
-  if (ml.indexOf("split") >= 0) return "Decision (Split)";
-  if (ml.indexOf("majority") >= 0) return "Decision (Majority)";
-  if (ml.indexOf("decision") >= 0) return "Decision";
-  if (ml.indexOf("dq") >= 0) return "DQ";
-  return m.trim();
-}
-
-function _lastName(name: string): string {
-  const p = _cleanWiki(name).trim().split(/\s+/);
-  return p.length ? p[p.length - 1].toLowerCase() : "";
-}
-
-function _namesMatch(a: string, b: string): boolean {
-  const a2 = a.toLowerCase().replace(/[^a-z]/g, "");
-  const b2 = b.toLowerCase().replace(/[^a-z]/g, "");
-  return _lastName(a) === _lastName(b) ||
-    (a2.length > 3 && b2.indexOf(a2) >= 0) ||
-    (b2.length > 3 && a2.indexOf(b2) >= 0);
-}
-
-interface FightResult { winner: string; loser: string; method: string; round: number | null; }
-
-function _parseMMATemplate(wt: string): FightResult[] {
-  const results: FightResult[] = [];
-  const re = /\{\{MMAevent bout\s*\n([\s\S]*?)\}\}/gi;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(wt)) !== null) {
-    const lines = m[1].split("\n").map((l) => l.trim().replace(/^\|/, "").trim()).filter(Boolean);
-    if (lines.length < 5) continue;
-    let di = -1;
-    for (let i = 0; i < lines.length; i++) {
-      const ll = lines[i].toLowerCase().trim();
-      if (ll === "def." || ll === "def" || ll === "d.") { di = i; break; }
-    }
-    if (di < 1) continue;
-    const winner = _cleanWiki(lines[di - 1]).replace(/\s*\(c\)\s*/g, "").trim();
-    const loser = di + 1 < lines.length ? _cleanWiki(lines[di + 1]).replace(/\s*\(c\)\s*/g, "").trim() : "";
-    const method = di + 2 < lines.length ? lines[di + 2] : "";
-    const rndS = di + 3 < lines.length ? lines[di + 3] : "";
-    if (!winner || !method) continue;
-    const rnd = parseInt(rndS, 10);
-    results.push({ winner, loser, method: _normMethod(method), round: isNaN(rnd) ? null : rnd });
-  }
-  return results;
-}
-
-function _flushRow(rowIn: string[]): FightResult | null {
-  const row = rowIn.map(_cleanWiki).filter(Boolean);
-  if (row.length < 3) return null;
-  const skipHdrs = ["weight class", "winner", "method", "round", "main card", "preliminary", "early prelim"];
-  const joined = row.join(" ").toLowerCase();
-  if (skipHdrs.some((h) => joined.indexOf(h) >= 0)) return null;
-  let winner = "", loser = "", method = "", rnd: number | null = null, di = -1;
-  for (let i = 0; i < row.length; i++) {
-    const cl = row[i].trim().toLowerCase();
-    if (cl === "def." || cl === "def" || cl === "d.") { di = i; break; }
-  }
-  let rest: string[];
-  if (di > 0) {
-    winner = row[di - 1].replace(/\s*\(c\)\s*/g, "").trim();
-    loser = di + 1 < row.length ? row[di + 1].replace(/\s*\(c\)\s*/g, "").trim() : "";
-    rest = row.slice(di + 2);
-  } else {
-    if (row.length < 4) return null;
-    winner = row[1]; loser = row[2]; rest = row.slice(3);
-  }
-  if (!winner || winner.length < 2) return null;
-  rest.forEach((cell) => {
-    const cl = cell.toLowerCase();
-    if (!method && (cl.indexOf("ko") >= 0 || cl.indexOf("tko") >= 0 || cl.indexOf("decision") >= 0 || cl.indexOf("submission") >= 0 || cl.indexOf("sub") >= 0 || cl.indexOf("dq") >= 0)) method = cell;
-    else if (!rnd && /^\d$/.test(cell.trim())) rnd = parseInt(cell.trim(), 10);
-  });
-  if (!method && winner && loser && rnd) method = "Decision";
-  if (!method) return null;
-  return { winner, loser, method: _normMethod(method), round: rnd || null };
-}
-
-function _parseWikitable(wt: string): FightResult[] {
-  const results: FightResult[] = [];
-  let inTable = false, row: string[] = [];
-  wt.split("\n").forEach((line) => {
-    const s = line.trim();
-    if (s.indexOf("{|") >= 0 && s.toLowerCase().indexOf("wikitable") >= 0) { inTable = true; row = []; return; }
-    if (s.indexOf("|}") === 0) { if (row.length) { const r = _flushRow(row); if (r) results.push(r); } inTable = false; row = []; return; }
-    if (!inTable) return;
-    if (s.indexOf("|-") === 0) { if (row.length) { const r2 = _flushRow(row); if (r2) results.push(r2); } row = []; return; }
-    if (s.indexOf("!") === 0) { row = []; return; }
-    if (s.indexOf("|") === 0) {
-      const content = s.replace(/^\|/, "");
-      if (content.indexOf("||") >= 0) content.split("||").forEach((p) => row.push(p.trim()));
-      else row.push(content);
-    }
-  });
-  return results;
-}
-
-function _deriveSlug(evName: string): string {
-  return evName.replace(/[^a-zA-Z0-9 :._-]/g, "").replace(/ /g, "_");
-}
-
-function _fightKey(winner: string, loser: string): string {
-  // Fold at the key too — the one place that guarantees every sender derives
-  // the identical dedup string regardless of which spelling reached it.
-  return _fold(winner + "-" + loser).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-}
+import { ResultsParse } from "../_shared/results-bundle.js";
 
 // ---------------------------------------------------------------------------
 // Main handler
 // ---------------------------------------------------------------------------
 
 interface Pick { user_id: string; f1: string; f2: string; pick: string; }
+// What ResultsParse.parseResults returns: a win, or a draw / no contest
+// (undecided, both names in f1/f2, no winner).
+interface FightResult { winner: string; loser: string; method: string; round: number | null; undecided?: boolean; f1?: string; f2?: string; }
 
 const SAFE_TITLE = "🥊 Fight result is in";
 const SAFE_BODY = "A fight you picked is final — open the app to see how you did. (No spoilers here!)";
@@ -175,7 +48,8 @@ const MAX_EVENTS = 5; // hard cap on Wikipedia fetches per run
 function ymd(d: Date): string { return d.toISOString().slice(0, 10); }
 
 async function fetchWikitext(slug: string): Promise<string | null> {
-  const url = `https://en.wikipedia.org/w/api.php?action=parse&page=${encodeURIComponent(slug)}&prop=wikitext&format=json&origin=*`;
+  // redirects=1 as well as the right slug: a renamed article still reads.
+  const url = `https://en.wikipedia.org/w/api.php?action=parse&page=${encodeURIComponent(slug)}&prop=wikitext&format=json&redirects=1&origin=*`;
   const r = await fetch(url, { headers: { "User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)" } });
   if (!r.ok) return null;
   const d = await r.json();
@@ -311,13 +185,12 @@ Deno.serve(async (req) => {
     if (processed >= MAX_EVENTS) break;
     processed++;
 
-    const slug = _deriveSlug(eventName);
+    const slug = ResultsParse.eventSlug(eventName);
     let wt: string | null = null;
     try { wt = await fetchWikitext(slug); } catch (_e) { wt = null; }
     if (!wt) continue;
 
-    let parsed = _parseMMATemplate(wt);
-    if (!parsed.length) parsed = _parseWikitable(wt);
+    const parsed: FightResult[] = ResultsParse.parseResults(wt);
     parsedCount += parsed.length;
     if (!parsed.length) continue;
 
@@ -332,23 +205,24 @@ Deno.serve(async (req) => {
     } catch (_e) { picks = []; }
 
     for (const res of parsed) {
-      if (!res.winner || !res.loser) continue;
+      // A draw / no contest has no winner to announce (the scraper sends none
+      // either), and a result without a loser can't be matched to a bout.
+      if (res.undecided || !res.winner || !res.loser) continue;
+      const m = ResultsParse.namesMatch;
       const winners: string[] = [], losers: string[] = [];
       let boutNames: [string, string] | null = null;   // the pick rows' own names (data.js's), as the lock is keyed
       for (const p of picks) {
         if (!p.user_id) continue;
-        const isFight =
-          (_namesMatch(p.f1, res.winner) && _namesMatch(p.f2, res.loser)) ||
-          (_namesMatch(p.f2, res.winner) && _namesMatch(p.f1, res.loser));
+        const isFight = (m(p.f1, res.winner) && m(p.f2, res.loser)) || (m(p.f2, res.winner) && m(p.f1, res.loser));
         if (!isFight) continue;
         if (!boutNames) boutNames = [p.f1, p.f2];
-        (_namesMatch(p.pick, res.winner) ? winners : losers).push(p.user_id);
+        (m(p.pick, res.winner) ? winners : losers).push(p.user_id);
       }
       if (!winners.length && !losers.length) continue; // nobody picked this bout
       const lockAt = boutNames ? await boutLockAt(SUPABASE_URL, picksHeaders, eventDate, boutNames[0], boutNames[1]) : undefined;
       if (!graceOver(lockAt, now)) { deferredCount++; continue; }   // next run, once the grace is over (or the lock can be read)
 
-      const fightKey = _fightKey(res.winner, res.loser);
+      const fightKey = ResultsParse.fightKey(res.winner, res.loser);
       const groups: [string, string[], string, string][] = [
         ["win", winners, "Your pick WON! 🔥", `${res.winner} def. ${res.loser} — you called it!`],
         ["loss", losers, "Tough luck ❌", `${res.winner} def. ${res.loser}`],

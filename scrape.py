@@ -1599,11 +1599,12 @@ def _flush_wikitable_row(row):
         if any(k in cl for k in ["ko", "tko", "decision", "submission", "sub", "dq"]):
             if not method:
                 method = cell
-        elif re.match(r"^\d$", cell.strip()):
-            try:
-                rnd = int(cell.strip())
-            except ValueError:
-                pass
+        elif rnd is None and re.match(r"^\d$", cell.strip()):
+            # The FIRST lone digit is the round: the column order is method,
+            # round, time, notes, and a bare digit in the notes cell used to
+            # overwrite it ("TKO | 1 | 5:00 | 2" read as round 2). results.js
+            # takes the same one; tests/fixtures/results holds both.
+            rnd = int(cell.strip())
     if not method and winner and loser and rnd:
         method = "Decision"
     if not method:

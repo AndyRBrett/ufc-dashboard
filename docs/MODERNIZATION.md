@@ -138,10 +138,25 @@ payload.
 
 ## 6. Live polling at scale
 
-Every open client polls Wikipedia every 2 minutes during a card. Fine for one
-group of friends; at App Store scale move it server-side: the app already
-receives results through `data.js` and pushes, so client polling can become a
-fallback used only when `data.js` is stale.
+Every open client polls Wikipedia every 2 minutes during a card.
+
+**Measured on UFC 334 (2026-11-14), the client poll is the fast path, so it
+stays.** A result reaches the live site through `data.js` only after the next
+scrape (up to 5 minutes) and the Pages deploy (5.3 minutes from commit), while
+the poll shows it ~1 minute after Wikipedia does, and drives the
+one-fight-at-a-time lock and pick reveals until `data.js` catches up. Demoting it
+to a fallback would make every result ~8 minutes later on screen.
+
+**Done (2026-11):** the poll reads with `results.js`, the same code check-results
+runs, tied to scrape.py's parser by `tests/fixtures/results/expected.json`
+(`check:results`, `tests/test_results_golden.py`); and the app no longer sends
+result pushes (the scraper sent every UFC 334 result push 4-10 s after its
+commit; send-push refuses a browser's until then).
+
+**Left:** at App Store scale, the poll is one Wikipedia request per open app per
+2 minutes. If that ever matters, serve the latest results from somewhere cheap
+the app already trusts (a small JSON beside `data.js`, deployed by the data-only
+fast path) and keep Wikipedia as the fallback. Not before the deploy is fast.
 
 ---
 

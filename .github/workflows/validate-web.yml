@@ -190,3 +190,5 @@ jobs:
         run: npm run check:native
       - name: Picks store (only open cards re-read)
         run: npm run check:pickstore
+      - name: One results reader (app, check-results, scrape.py golden)
+        run: npm run check:results

@@ -2343,6 +2343,10 @@ if(_t==="seasonal")document.body.setAttribute("data-season",
      if it fails to load, _boutLookup falls back to the app's own loops and
      every score comes out the same (check:parity runs both paths). -->
 <script src="lab/engine.js"></script>
+<!-- The live poll's Wikipedia reader, shared with check-results (results.js).
+     Optional: without it there is no live poll, and data.js still carries
+     every result the scraper has committed. -->
+<script src="results.js?v=2026-11-16-1"></script>
 <script>
 // data.js loads synchronously above; by here it has fully run (or failed). If it
 // failed to load — a stale/corrupt service-worker cache is the usual cause —
@@ -13306,175 +13310,31 @@ document.addEventListener("DOMContentLoaded",function(){
 });
 
 // ---------------------------------------------------------------------------
-// Client-side live result polling from Wikipedia (no server required)
-// Runs in the browser on fight nights; bypasses GitHub Actions schedule limits.
+// live-poll:start
+// Live results from Wikipedia, read in the browser on fight nights.
+//
+// This is the fastest way a result reaches an open app: a poll every 2 minutes
+// sees it ~1 minute after Wikipedia does, while data.js on Pages trails by the
+// scrape (up to 5 minutes) plus the deploy (~5.3 minutes on UFC 334). So the
+// app keeps reading Wikipedia itself, and a result read here also drives the
+// one-fight-at-a-time lock and the pick reveals until data.js catches up.
+//
+// The reading is results.js (ResultsParse): the same code check-results runs,
+// tied to scrape.py's parser by tests/fixtures/results/expected.json. Without
+// it (it failed to load) there is no live poll; data.js still carries every
+// result the scraper has committed.
+//
+// It sends no pushes. It used to fire every result push as a third sender
+// beside the scraper and check-results, but send-push refuses a result that
+// isn't in the committed data.js yet, and the scraper sends each one seconds
+// after committing it (every UFC 334 result push went out 4-10 s after its
+// commit), so a browser polling every 2 minutes never got there first.
 // ---------------------------------------------------------------------------
 (function(){
   var _interval=null;
-  // Which fights we've already seen final, persisted in localStorage so it
-  // SURVIVES reloads / PWA restarts. An in-memory baseline reset on every
-  // reload, so a fight that went final while the app was reloading got silently
-  // re-absorbed into the new baseline and never pushed. With this:
-  //   - First time we ever record an event (no persisted baseline): seed
-  //     whatever is already final silently, so opening to a stale data.js can't
-  //     blast hours-old spoilers.
-  //   - Once a baseline exists (even from a prior session): any newly-final
-  //     fight is genuinely new → push it. The server notif_log still dedups
-  //     across clients, so a reload can never double-notify.
-  var _NOTIFIED_KEY="ufc_notified_results";
-  function _loadNotified(){try{return JSON.parse(localStorage.getItem(_NOTIFIED_KEY)||"{}")||{};}catch(e){return {};}}
-  function _saveNotified(m){
-    try{
-      // Prune events older than ~10 days so this can't grow without bound.
-      var cut=new Date(Date.now()-10*864e5).toISOString().slice(0,10);
-      Object.keys(m).forEach(function(d){if(d<cut)delete m[d];});
-      localStorage.setItem(_NOTIFIED_KEY,JSON.stringify(m));
-    }catch(e){}
-  }
-
-  // Canonical ASCII form — must stay byte-identical to _fold() in scrape.py and
-  // in supabase/functions/check-results/index.ts. NFD + stripping combining
-  // marks folded "é" to "e" but left the Latin letters that carry their
-  // diacritic in the codepoint itself ("ł", "ø", "đ") untouched, while scrape.py
-  // dropped them outright. So the same bout gave this client the fight key
-  // "…klaudia-sygu-a" (the "ł" falling out as a separator) and the scraper
-  // "…klaudia-sygua": two different `result:<fight_key>` types, two rows in
-  // notif_log, and a duplicate push for everyone who picked the fight. NFKD
-  // then drop-everything-non-ASCII matches scrape.py's asc() exactly.
-  function _fold(t){
-    try{t=t.normalize("NFKD");}catch(e){}
-    return t.replace(/[^\x00-\x7F]/g,"");   // eslint-disable-line no-control-regex -- strips everything non-ASCII, on purpose
-  }
-
-  function _cleanWiki(t){
-    if(!t)return"";
-    t=t.replace(/\[\[(?:[^\]|]+\|)?([^\]]+)\]\]/g,"$1");
-    t=t.replace(/\{\{[^}]+\}\}/g,"");
-    t=t.replace(/<[^>]+>/g,"");
-    t=t.replace(/\[\d+\]/g,"");
-    t=_fold(t);
-    return t.trim().replace(/^,|,$/g,"").trim();
-  }
-
-  function _normMethod(m){
-    if(!m)return"";
-    var ml=m.toLowerCase();
-    // Before the decision checks: "Draw (majority)" would read as a majority decision.
-    if(ml.indexOf("draw")>=0)return"Draw";
-    if(ml.indexOf("no contest")>=0||ml.trim()==="nc"||ml.trim()==="overturned")return"NC";
-    if(ml.indexOf("ko")>=0||ml.indexOf("tko")>=0)return"KO/TKO";
-    if(ml.indexOf("submission")>=0||ml.indexOf("sub")>=0)return"Submission";
-    if(ml.indexOf("unanimous")>=0)return"Decision (Unanimous)";
-    if(ml.indexOf("split")>=0)return"Decision (Split)";
-    if(ml.indexOf("majority")>=0)return"Decision (Majority)";
-    if(ml.indexOf("decision")>=0)return"Decision";
-    if(ml.indexOf("dq")>=0)return"DQ";
-    return m.trim();
-  }
-
-  function _lastName(name){
-    var p=_cleanWiki(name).trim().split(/\s+/);
-    return p.length?p[p.length-1].toLowerCase():"";
-  }
-
-  function _namesMatch(a,b){
-    var a2=a.toLowerCase().replace(/[^a-z]/g,"");
-    var b2=b.toLowerCase().replace(/[^a-z]/g,"");
-    return _lastName(a)===_lastName(b)||(a2.length>3&&b2.indexOf(a2)>=0)||(b2.length>3&&a2.indexOf(b2)>=0);
-  }
-
-  // A draw or no contest: "A vs. B" with no winner. Mirrors scrape.py's
-  // _undecided_result, so an open page marks the bout over too (Kareckaite /
-  // Gatto, a draw, pinned the live view on 2026-10-10).
-  function _undecidedRes(a,b,rest){
-    a=_cleanWiki(a).replace(/\s*\(c\)\s*/g,"").trim();b=_cleanWiki(b).replace(/\s*\(c\)\s*/g,"").trim();
-    if(a.length<2||b.length<2)return null;
-    var method="",rnd=null;
-    rest.forEach(function(c){c=c||"";if(!method&&/\b(draw|no contest)\b|^nc\b|overturned/i.test(c))method=c;else if(rnd==null&&/^\s*\d\s*$/.test(c))rnd=parseInt(c,10);});
-    if(!method)return null;
-    return{winner:"",loser:"",f1:a,f2:b,method:_normMethod(method),round:rnd,undecided:true};
-  }
-  function _isVs(c){var l=(c||"").trim().toLowerCase();return l==="vs."||l==="vs";}
-
-  function _parseMMATemplate(wt){
-    var results=[];
-    var re=/\{\{MMAevent bout\s*\n([\s\S]*?)\}\}/gi;
-    var m;
-    while((m=re.exec(wt))!==null){
-      var lines=m[1].split("\n").map(function(l){return l.trim().replace(/^\|/,"").trim();}).filter(Boolean);
-      if(lines.length<5)continue;
-      var di=-1;
-      for(var i=0;i<lines.length;i++){var ll=lines[i].toLowerCase().trim();if(ll==="def."||ll==="def"||ll==="d."){di=i;break;}}
-      if(di<1){
-        var vi=-1;for(var v=0;v<lines.length;v++){if(_isVs(lines[v])){vi=v;break;}}
-        if(vi>=1&&vi<lines.length-1){var und=_undecidedRes(lines[vi-1],lines[vi+1],lines.slice(vi+2));if(und)results.push(und);}
-        continue;
-      }
-      var winner=_cleanWiki(lines[di-1]).replace(/\s*\(c\)\s*/g,"").trim();
-      var loser=di+1<lines.length?_cleanWiki(lines[di+1]).replace(/\s*\(c\)\s*/g,"").trim():"";
-      var method=di+2<lines.length?lines[di+2]:"";
-      var rndS=di+3<lines.length?lines[di+3]:"";
-      if(!winner||!method)continue;
-      var rnd=parseInt(rndS,10);
-      results.push({winner:winner,loser:loser,method:_normMethod(method),round:isNaN(rnd)?null:rnd});
-    }
-    return results;
-  }
-
-  function _flushRow(row){
-    row=row.map(_cleanWiki).filter(Boolean);
-    if(row.length<3)return null;
-    var skipHdrs=["weight class","winner","method","round","main card","preliminary","early prelim"];
-    var joined=row.join(" ").toLowerCase();
-    if(skipHdrs.some(function(h){return joined.indexOf(h)>=0;}))return null;
-    var winner="",loser="",method="",rnd=null,di=-1;
-    for(var i=0;i<row.length;i++){var cl=row[i].trim().toLowerCase();if(cl==="def."||cl==="def"||cl==="d."){di=i;break;}}
-    var rest;
-    if(di>0){
-      winner=row[di-1].replace(/\s*\(c\)\s*/g,"").trim();
-      loser=di+1<row.length?row[di+1].replace(/\s*\(c\)\s*/g,"").trim():"";
-      rest=row.slice(di+2);
-    } else {
-      var vi=-1;for(var v=0;v<row.length;v++){if(_isVs(row[v])){vi=v;break;}}
-      if(vi>=1&&vi<row.length-1)return _undecidedRes(row[vi-1],row[vi+1],row.slice(vi+2));
-      if(row.length<4)return null;
-      winner=row[1];loser=row[2];rest=row.slice(3);
-    }
-    if(!winner||winner.length<2)return null;
-    rest.forEach(function(cell){
-      var cl=cell.toLowerCase();
-      if(!method&&(cl.indexOf("ko")>=0||cl.indexOf("tko")>=0||cl.indexOf("decision")>=0||cl.indexOf("submission")>=0||cl.indexOf("sub")>=0||cl.indexOf("dq")>=0))method=cell;
-      else if(!rnd&&/^\d$/.test(cell.trim()))rnd=parseInt(cell.trim(),10);
-    });
-    if(!method&&winner&&loser&&rnd)method="Decision";
-    if(!method)return null;
-    return{winner:winner,loser:loser,method:_normMethod(method),round:rnd||null};
-  }
-
-  function _parseWikitable(wt){
-    var results=[],inTable=false,row=[];
-    wt.split("\n").forEach(function(line){
-      var s=line.trim();
-      if(s.indexOf("{|")>=0&&s.toLowerCase().indexOf("wikitable")>=0){inTable=true;row=[];return;}
-      if(s.indexOf("|}")===0){if(row.length){var r=_flushRow(row);if(r)results.push(r);}inTable=false;row=[];return;}
-      if(!inTable)return;
-      if(s.indexOf("|-")===0){if(row.length){var r2=_flushRow(row);if(r2)results.push(r2);}row=[];return;}
-      if(s.indexOf("!")===0){row=[];return;}
-      if(s.indexOf("|")===0){var content=s.replace(/^\|/,"");if(content.indexOf("||")>=0)content.split("||").forEach(function(p){row.push(p.trim());});else row.push(content);}
-    });
-    return results;
-  }
-
-  function _deriveSlug(evName){
-    // A numbered PPV's Wikipedia article is just "UFC 329"; the full subtitled
-    // title is only a redirect whose stub carries no results table, so the live
-    // poll saw zero results and never updated the open UI. Fight Night articles
-    // ARE the full "UFC Fight Night: A vs. B" title. Mirrors _wiki_event_slug
-    // in scrape.py.
-    var m=evName.match(/^UFC\s+\d+/);
-    var base=m?m[0]:evName;
-    return base.replace(/[^a-zA-Z0-9 :._-]/g,"").replace(/ /g,"_");
-  }
+  // The bookkeeping that gated those pushes; nothing reads it now.
+  try{localStorage.removeItem("ufc_notified_results");}catch(e){}
+  var RP=typeof ResultsParse!=="undefined"?ResultsParse:null;
 
   function _activeEvents(){
     var now=Date.now();
@@ -13484,97 +13344,40 @@ document.addEventListener("DOMContentLoaded",function(){
     });
   }
 
-  // Fire win/loss result pushes for a fight the live poll just saw resolve.
-  // Mirrors scrape.py's send_push_notifications exactly (same event_date, the
-  // same "result:<fight_key>:<group>" type, and identical title/body/safe_*),
-  // so the send-push notif_log dedup collapses duplicates whether the trigger
-  // is this client, another open client, or the GitHub scraper — only one push
-  // per fight goes out. This makes any open browser a backup result-notifier,
-  // immune to GitHub Actions schedule throttling.
-  function _pushResult(ev,fight,res){
-    if(!SUPABASE_ANON)return;
-    var winner=res.winner||fight.winner;
-    var loser=res.loser||(fight.winner===fight.f1.n?fight.f2.n:fight.f1.n);
-    // Fold at the key, not only upstream: `loser` can come straight off data.js
-    // and `winner` off a fresh Wikipedia parse, so this is the one place that
-    // guarantees the dedup key is the same string every sender derives.
-    var fightKey=_fold(winner+"-"+loser).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
-    // Jitter so dozens of clients detecting the same result don't stampede
-    // send-push simultaneously — the first to claim the notif_log row wins and
-    // the rest get {skipped:true}.
-    setTimeout(function(){
-      _sbFetchAll("/rest/v1/picks?select=user_id,f1,f2,pick&event_date=eq."+encodeURIComponent(ev.date)+PICKS_UFC).then(function(picks){
-        var winners=[],losers=[];
-        (picks||[]).forEach(function(p){
-          if(!p.user_id)return;
-          var isFight=(_namesMatch(p.f1,fight.f1.n)&&_namesMatch(p.f2,fight.f2.n))||(_namesMatch(p.f1,fight.f2.n)&&_namesMatch(p.f2,fight.f1.n));
-          if(!isFight)return;
-          (_namesMatch(p.pick,fight.winner)?winners:losers).push(p.user_id);
-        });
-        [["win",winners,"Your pick WON! 🔥",winner+" def. "+loser+" — you called it!"],
-         ["loss",losers,"Tough luck ❌",winner+" def. "+loser]].forEach(function(g){
-          if(!g[1].length)return;
-          _pushPost({event_date:ev.date,type:"result:"+fightKey+":"+g[0],
-              title:g[2],body:g[3],
-              safe_title:"🥊 Fight result is in",
-              safe_body:"A fight you picked is final — open the app to see how you did. (No spoilers here!)",
-              include_user_ids:g[1]}).then(function(r){return r.json();}).then(function(j){
-            console.log("[UFC live poll] result push",g[0],fightKey,j);
-          }).catch(function(){});
-        });
-      }).catch(function(){});
-    },Math.floor(Math.random()*8000));
+  // A parsed result is this bout's when it names both corners (a draw / no
+  // contest) or names the winner and, if it has one, the loser.
+  function _resultSide(res,fight){
+    var m=RP.namesMatch,a=fight.f1.n,b=fight.f2.n;
+    if(res.undecided)return((m(res.f1,a)&&m(res.f2,b))||(m(res.f1,b)&&m(res.f2,a)))?"none":null;
+    var w1=m(res.winner,a),w2=m(res.winner,b);
+    if(!w1&&!w2)return null;
+    if(res.loser&&!m(res.loser,a)&&!m(res.loser,b))return null;
+    return w1?"f1":"f2";
   }
 
   function _pollOne(ev){
-    var slug=_deriveSlug(ev.name);
-    var url="https://en.wikipedia.org/w/api.php?action=parse&page="+encodeURIComponent(slug)+"&prop=wikitext&format=json&origin=*";
-    console.log("[UFC live poll] fetching",url);
-    var notified=_loadNotified();
-    var evSeen=notified[ev.date];
-    // hasBaseline: we've completed at least one poll of this event before (even
-    // in a prior session) — so anything newly final now is genuinely live.
-    var hasBaseline=!!(evSeen&&evSeen._polled);
-    if(!evSeen)evSeen=notified[ev.date]={};
+    var slug=RP.eventSlug(ev.name);
+    var url="https://en.wikipedia.org/w/api.php?action=parse&page="+encodeURIComponent(slug)+"&prop=wikitext&format=json&redirects=1&origin=*";
     return fetch(url,{cache:"no-store"})
       .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
       .then(function(d){
         var wt=d&&d.parse&&d.parse.wikitext&&d.parse.wikitext["*"];
         if(!wt){console.warn("[UFC live poll] no wikitext for",slug);return false;}
-        var parsed=_parseMMATemplate(wt);
-        if(!parsed.length)parsed=_parseWikitable(wt);
-        console.log("[UFC live poll]",slug,"→",parsed.length,"results parsed"+(hasBaseline?"":" (first sight — seeding baseline, no push)"));
-        var changed=false,dirty=false;
+        var parsed=RP.parseResults(wt),changed=false;
+        console.log("[UFC live poll]",slug,"→",parsed.length,"results parsed");
         parsed.forEach(function(res){
-          ev.fights.forEach(function(fight){
-            if(boutDecided(fight))return;
-            if(res.undecided){
-              // Over without a winner: both names must match. No win/loss push.
-              if(!((_namesMatch(res.f1,fight.f1.n)&&_namesMatch(res.f2,fight.f2.n))||(_namesMatch(res.f1,fight.f2.n)&&_namesMatch(res.f2,fight.f1.n))))return;
-              fight.winner="";fight.method=res.method;fight.round=res.round;fight.state="post";
-              evSeen[[fight.f1.n,fight.f2.n].sort().join("|")]=1;dirty=true;changed=true;
-              return;
-            }
-            var winF1=_namesMatch(res.winner,fight.f1.n),winF2=_namesMatch(res.winner,fight.f2.n);
-            if(!winF1&&!winF2)return;
-            var loseF1=_namesMatch(res.loser,fight.f1.n),loseF2=_namesMatch(res.loser,fight.f2.n);
-            if(res.loser&&!loseF1&&!loseF2)return;
-            fight.winner=winF1?fight.f1.n:fight.f2.n;fight.method=res.method;fight.round=res.round;fight.state="post";
-            console.log("[UFC live poll] NEW RESULT:",fight.f1.n,"vs",fight.f2.n,"→",res.winner,res.method);
-            var fk=[fight.f1.n,fight.f2.n].sort().join("|");
-            if(!evSeen[fk]){
-              // New to this client. Push only if a baseline already existed —
-              // otherwise this is a first-sight catch-up, so seed it silently.
-              if(hasBaseline)_pushResult(ev,fight,res);
-              evSeen[fk]=1;dirty=true;
-            }
+          for(var i=0;i<ev.fights.length;i++){
+            var fight=ev.fights[i];
+            if(boutDecided(fight))continue;
+            var side=_resultSide(res,fight);
+            if(!side)continue;
+            fight.winner=side==="none"?"":side==="f1"?fight.f1.n:fight.f2.n;
+            fight.method=res.method;fight.round=res.round;fight.state="post";
+            console.log("[UFC live poll] NEW RESULT:",fight.f1.n,"vs",fight.f2.n,"→",fight.winner||"(no winner)",res.method);
             changed=true;
-          });
+            break;   // one result, one bout: the first it names, as scrape.py applies it
+          }
         });
-        // Record that this event now has a baseline so future polls (and future
-        // sessions after a reload) treat later results as live, not catch-up.
-        if(!evSeen._polled){evSeen._polled=1;dirty=true;}
-        if(dirty)_saveNotified(notified);
         return changed;
       })
       .catch(function(e){console.warn("[UFC live poll] fetch error:",e);return false;});
@@ -13588,6 +13391,7 @@ document.addEventListener("DOMContentLoaded",function(){
   }
 
   function _poll(){
+    if(!RP)return;
     var active=_activeEvents();
     if(!active.length){clearInterval(_interval);_interval=null;return;}
     Promise.all(active.map(_pollOne)).then(function(results){
@@ -13604,7 +13408,7 @@ document.addEventListener("DOMContentLoaded",function(){
   }
 
   window.startLivePolling=function(){
-    if(_interval)return;
+    if(_interval||!RP)return;
     if(!_activeEvents().length){console.log("[UFC live poll] no active events found, polling skipped");return;}
     console.log("[UFC] Fight night — live polling Wikipedia every 2 min");
     _poll();
@@ -13612,6 +13416,7 @@ document.addEventListener("DOMContentLoaded",function(){
   };
   window.liveRefresh=_poll;
 })();
+// live-poll:end
 </script>
 <div class="lb-panel" id="lbPanel">
   <div class="usa-stars-lb" aria-hidden="true"></div>

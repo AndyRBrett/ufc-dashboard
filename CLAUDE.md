@@ -29,7 +29,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:audience` | trash talk reaching the wrong people (roast targets vs. push recipients) |
 | `npm run check:prompt` | a typed roast angle losing its place as the roast's subject, or the length cap drifting |
 | `npm run check:provider` | the roast losing its unfiltered model, or analysis drifting onto it |
-| `npm run check:dedup` | the three result senders drifting apart and double-pushing a fight |
+| `npm run check:dedup` | the two result senders (scrape.py, check-results) drifting apart and double-pushing a fight, or the app sending results again |
 | `npm run check:model` | the fight model posting a confident number off missing data |
 | `npm run check:parlay` | a parlay priced with the vig left in, or a correlated ticket read as independent |
 | `npm run check:names` | a fighter renamed mid-card silently unscoring picks made under the old name (incl. a respelling carried by `FIGHTER_ALIASES`) |
@@ -64,6 +64,7 @@ runs the full gate set (all fast, all local):
 | `npm run check:invites` | a founder badge on an anonymous or post-cutoff account, an invite claimed twice, by an old account, as someone else or by writing the tables, a throwaway sign-up counted as playing, or an invite surviving Delete my account |
 | `npm run check:native` | the iOS app's push not registering its APNs token, a tapped notification not routing, or a browser taking the native path |
 | `npm run check:pickstore` | the poll or the board reading every pick ever made again, the merged rows differing from the single query's, a row doubled or lost at the date cut, or a rename never reaching old cards |
+| `npm run check:results` | the app's live poll or check-results reading a Wikipedia results page differently from scrape.py, a private copy of the parser coming back, check-results reading a PPV's redirect stub, or the app pushing results |
 | `npm run check:migrations` | a migration that can't apply to what the ones before it built, the rebuilt core tables drifting from production's catalog, or `config.toml`'s JWT settings drifting from the deploy |
 
 **Never push a change that fails `verify`.** If you touched `index.html`,
@@ -186,6 +187,25 @@ the next run refuses the file. `tests/test_datafile.py` holds it, including
 that no pattern in `scrape.py` matches `data.js` text again. Before merging it
 was run against `main`'s scraper on 2,232 scenarios built from a month of real
 `data.js` history, same stubs and clock: every written file was identical.
+
+**A Wikipedia results page has one reading, and two result senders.**
+`results.js` (`ResultsParse`) is the parser the open app's live poll loads and
+`check-results` imports (bundled into `_shared/results-bundle.js` by `npm run
+build:fn`; `check:bundle` fails if stale). scrape.py's Python parser can't share
+code, so the two share an answer key, `tests/fixtures/results/expected.json`:
+`tests/test_results_golden.py` holds scrape.py to it and `check:results` holds
+results.js to it. **A parsing rule changes in scrape.py and results.js
+together**, then `python tests/test_results_golden.py --update`, with the diff
+called out; never regenerate it to make one side pass. Before this, the app's
+copy disagreed with scrape.py on 36% of random pages and check-results' on 50%,
+and check-results asked for "UFC 334: Gane vs. Hokit" (a redirect stub with no
+results), so the server backup never fired for a numbered PPV. **The live poll
+stays**: it shows a result ~1 minute after Wikipedia, `data.js` ~8 minutes
+later (scrape plus Pages deploy, measured on UFC 334). **It sends no pushes**:
+the scraper sent every UFC 334 result push 4-10 s after its commit and
+send-push refuses a browser's before that commit, so `check:dedup` now fails on
+a third sender. The table round is the first lone digit after the method (a
+bare digit in a notes cell used to overwrite it).
 
 **A finished bout's method and round follow Wikipedia's corrections; its
 winner doesn't.** `inject_results` never re-reads a bout once it is

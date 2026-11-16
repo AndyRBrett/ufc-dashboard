@@ -38,7 +38,7 @@ function exportedNames(src) {
 }
 
 const PAGES = [
-  { page: "index.html", externals: ["data.js", "scoring.js", "lab/engine.js"] },
+  { page: "index.html", externals: ["data.js", "scoring.js", "lab/engine.js", "results.js"] },
   { page: "lab.html", externals: ["data.js", "lab/engine.js", "lab/analytics.js"] },
 ];
 
