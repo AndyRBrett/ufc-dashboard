@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-17T05:05:46Z",
+  "generated_at": "2026-11-17T06:10:52Z",
   "events_tracked": 12,
-  "stale_events": 2,
+  "stale_events": 1,
   "parse_failure_events": 0,
   "awaiting_card_events": 3,
   "odds_unavailable_events": 0,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-16T23:46:04Z",
+      "last_changed_at": "2026-11-17T06:10:52Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 9,
@@ -119,8 +119,8 @@
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
       "status": "ok",
-      "last_changed_at": "2026-11-14T12:05:38Z",
-      "is_stale": true,
+      "last_changed_at": "2026-11-17T06:10:52Z",
+      "is_stale": false,
       "has_data": true,
       "bout_count": 6,
       "line_movement": 11,
@@ -129,7 +129,7 @@
     {
       "event_id": "2027-01-16:ufc-fight-night-rodriguez-vs-garcia",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-17T05:05:46Z",
+      "last_changed_at": "2026-11-17T06:10:52Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -139,7 +139,7 @@
     {
       "event_id": "2027-01-23:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-17T05:05:46Z",
+      "last_changed_at": "2026-11-17T06:10:52Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -159,17 +159,17 @@
     {
       "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
       "status": "ok",
-      "last_changed_at": "2026-11-15T15:31:09Z",
+      "last_changed_at": "2026-11-17T06:10:52Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 4,
-      "line_movement": -8,
+      "line_movement": -68,
       "odds_market_priced": false
     },
     {
       "event_id": "2027-02-13:ufc-fight-night-pyfer-vs-nickal",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-17T05:05:46Z",
+      "last_changed_at": "2026-11-17T06:10:52Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -371,6 +371,22 @@
       "priority": 187.0
     },
     {
+      "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
+      "f1": "Quillan Salkilld",
+      "f2": "Benoit Saint Denis",
+      "f1_movement": -68,
+      "f2_movement": 40,
+      "magnitude": 68,
+      "main_event": true,
+      "tier": "main-event",
+      "threshold": 25,
+      "low_confidence": false,
+      "wc": "Lightweight",
+      "f1_prob_shift": 4.4,
+      "f2_prob_shift": -3.6,
+      "priority": 170.0
+    },
+    {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Zachary Reese",
       "f2": "Mickey Gall",
@@ -435,22 +451,6 @@
       "priority": 128.0
     },
     {
-      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
-      "f1": "Jared Cannonier",
-      "f2": "Ikram Aliskerov",
-      "f1_movement": -57,
-      "f2_movement": 82,
-      "magnitude": 82,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 4.2,
-      "f2_prob_shift": -3.9,
-      "priority": 114.8
-    },
-    {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Luis Gurule",
       "f2": "Bilal Hasan",
@@ -481,6 +481,22 @@
       "f1_prob_shift": 6.5,
       "f2_prob_shift": -9.1,
       "priority": 97.0
+    },
+    {
+      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+      "f1": "Jared Cannonier",
+      "f2": "Ikram Aliskerov",
+      "f1_movement": -45,
+      "f2_movement": 62,
+      "magnitude": 62,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 3.2,
+      "f2_prob_shift": -2.8,
+      "priority": 86.8
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
