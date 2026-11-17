@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17T11:30:52Z",
+  "generated_at": "2026-11-17T12:35:51Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -99,11 +99,11 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-17T06:10:52Z",
+      "last_changed_at": "2026-11-17T12:35:51Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 9,
-      "line_movement": 0,
+      "line_movement": -2,
       "odds_market_priced": true
     },
     {
@@ -119,7 +119,7 @@
     {
       "event_id": "2026-12-12:ufc-335-oliveira-vs-lopes",
       "status": "ok",
-      "last_changed_at": "2026-11-17T06:10:52Z",
+      "last_changed_at": "2026-11-17T12:35:51Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 6,
@@ -129,7 +129,7 @@
     {
       "event_id": "2027-01-16:ufc-fight-night-rodriguez-vs-garcia",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-17T11:30:52Z",
+      "last_changed_at": "2026-11-17T12:35:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -139,7 +139,7 @@
     {
       "event_id": "2027-01-23:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-17T11:30:52Z",
+      "last_changed_at": "2026-11-17T12:35:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -159,7 +159,7 @@
     {
       "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
       "status": "ok",
-      "last_changed_at": "2026-11-17T06:10:52Z",
+      "last_changed_at": "2026-11-17T12:35:51Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 4,
@@ -169,7 +169,7 @@
     {
       "event_id": "2027-02-13:ufc-fight-night-pyfer-vs-nickal",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-17T11:30:52Z",
+      "last_changed_at": "2026-11-17T12:35:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -198,17 +198,17 @@
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "f1": "Amir Albazi",
       "f2": "Alessandro Costa",
-      "f1_movement": -244,
-      "f2_movement": 43,
-      "magnitude": 244,
+      "f1_movement": -246,
+      "f2_movement": 46,
+      "magnitude": 246,
       "main_event": false,
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
       "wc": "Flyweight",
-      "f1_prob_shift": 9.7,
-      "f2_prob_shift": -8.0,
-      "priority": 341.6
+      "f1_prob_shift": 10.2,
+      "f2_prob_shift": -8.6,
+      "priority": 344.4
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -375,7 +375,7 @@
       "f1": "Quillan Salkilld",
       "f2": "Benoit Saint Denis",
       "f1_movement": -68,
-      "f2_movement": 40,
+      "f2_movement": 42,
       "magnitude": 68,
       "main_event": true,
       "tier": "main-event",
@@ -383,7 +383,7 @@
       "low_confidence": false,
       "wc": "Lightweight",
       "f1_prob_shift": 4.4,
-      "f2_prob_shift": -3.6,
+      "f2_prob_shift": -3.7,
       "priority": 170.0
     },
     {
