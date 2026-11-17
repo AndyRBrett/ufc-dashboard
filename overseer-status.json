@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17T18:24:10Z",
+  "generated_at": "2026-11-17T19:25:46Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -99,11 +99,11 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-17T12:35:51Z",
+      "last_changed_at": "2026-11-17T19:25:46Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 9,
-      "line_movement": -2,
+      "line_movement": -4,
       "odds_market_priced": true
     },
     {
@@ -129,7 +129,7 @@
     {
       "event_id": "2027-01-16:ufc-fight-night-rodriguez-vs-garcia",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-17T18:24:10Z",
+      "last_changed_at": "2026-11-17T19:25:46Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -139,7 +139,7 @@
     {
       "event_id": "2027-01-23:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-17T18:24:10Z",
+      "last_changed_at": "2026-11-17T19:25:46Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -169,7 +169,7 @@
     {
       "event_id": "2027-02-13:ufc-fight-night-pyfer-vs-nickal",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-17T18:24:10Z",
+      "last_changed_at": "2026-11-17T19:25:46Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -198,17 +198,17 @@
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "f1": "Amir Albazi",
       "f2": "Alessandro Costa",
-      "f1_movement": -246,
-      "f2_movement": 46,
-      "magnitude": 246,
+      "f1_movement": -249,
+      "f2_movement": 49,
+      "magnitude": 249,
       "main_event": false,
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
       "wc": "Flyweight",
-      "f1_prob_shift": 10.2,
-      "f2_prob_shift": -8.6,
-      "priority": 344.4
+      "f1_prob_shift": 10.8,
+      "f2_prob_shift": -9.3,
+      "priority": 348.6
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -230,17 +230,17 @@
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "f1": "Aljamain Sterling",
       "f2": "Kevin Vallejos",
-      "f1_movement": 217,
-      "f2_movement": -26,
-      "magnitude": 217,
+      "f1_movement": 215,
+      "f2_movement": -24,
+      "magnitude": 215,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Featherweight",
-      "f1_prob_shift": -4.1,
-      "f2_prob_shift": 5.3,
-      "priority": 303.8
+      "f1_prob_shift": -3.6,
+      "f2_prob_shift": 4.9,
+      "priority": 301.0
     },
     {
       "event_id": "2026-10-24:ufc-333-volkanovski-vs-evloev",
@@ -451,6 +451,22 @@
       "priority": 128.0
     },
     {
+      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+      "f1": "Jared Cannonier",
+      "f2": "Ikram Aliskerov",
+      "f1_movement": -55,
+      "f2_movement": 80,
+      "magnitude": 80,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 4.0,
+      "f2_prob_shift": -3.8,
+      "priority": 112.0
+    },
+    {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Luis Gurule",
       "f2": "Bilal Hasan",
@@ -481,22 +497,6 @@
       "f1_prob_shift": 6.5,
       "f2_prob_shift": -9.1,
       "priority": 97.0
-    },
-    {
-      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
-      "f1": "Jared Cannonier",
-      "f2": "Ikram Aliskerov",
-      "f1_movement": -45,
-      "f2_movement": 62,
-      "magnitude": 62,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 3.2,
-      "f2_prob_shift": -2.8,
-      "priority": 86.8
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
