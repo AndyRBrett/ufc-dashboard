@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-18T13:45:43Z",
+  "generated_at": "2026-11-18T14:50:45Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 3
+    "warn": 4
   },
   "findings": [
     {
@@ -20,6 +20,11 @@
       "event": "UFC Fight Night: Prochazka vs. Stirling",
       "date": "2026-11-21",
       "days_out": 3
+    },
+    {
+      "severity": "WARN",
+      "check": "odds-api-error",
+      "message": "last Odds API call returned HTTP 401 \u2014 lines are frozen at their previous values"
     },
     {
       "severity": "WARN",

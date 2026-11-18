@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-18T13:45:44Z",
+  "generated_at": "2026-11-18T14:50:45Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -22791,7 +22791,7 @@
           "f1": "Jiri Prochazka",
           "f2": "Navajo Stirling",
           "lbl": "Main Event",
-          "points": 21,
+          "points": 22,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -22897,6 +22897,11 @@
               "at": "2026-11-18T01:55:41Z",
               "f1_odds": 130,
               "f2_odds": -161
+            },
+            {
+              "at": "2026-11-18T14:50:45Z",
+              "f1_odds": 133,
+              "f2_odds": -165
             }
           ],
           "open": {
@@ -23001,7 +23006,7 @@
           "f1": "Dan Hooker",
           "f2": "Brian Ortega",
           "lbl": "Main Card",
-          "points": 10,
+          "points": 11,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23052,6 +23057,11 @@
               "at": "2026-11-17T19:25:46Z",
               "f1_odds": -184,
               "f2_odds": 152
+            },
+            {
+              "at": "2026-11-18T14:50:45Z",
+              "f1_odds": -186,
+              "f2_odds": 153
             }
           ],
           "open": {
@@ -23131,7 +23141,7 @@
           "f1": "Aleksandre Topuria",
           "f2": "Santiago Luna",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23197,6 +23207,11 @@
               "at": "2026-11-17T19:25:46Z",
               "f1_odds": -298,
               "f2_odds": 230
+            },
+            {
+              "at": "2026-11-18T14:50:45Z",
+              "f1_odds": -289,
+              "f2_odds": 223
             }
           ],
           "open": {
@@ -23441,12 +23456,17 @@
           "f1": "Diyar Nurgozhay",
           "f2": "Alik Lorenz",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-18T01:55:41Z",
               "f1_odds": -260,
               "f2_odds": 203
+            },
+            {
+              "at": "2026-11-18T14:50:45Z",
+              "f1_odds": -258,
+              "f2_odds": 202
             }
           ],
           "open": {
@@ -24479,7 +24499,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Aleksandre Topuria",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 185,
         "close": null,
         "clv": null
@@ -25020,7 +25040,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Jiri Prochazka",
         "side": "f2",
-        "points": 21,
+        "points": 22,
         "open": -155,
         "close": null,
         "clv": null
@@ -26849,7 +26869,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Alik Lorenz",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -260,
         "close": null,
         "clv": null
@@ -27793,7 +27813,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Brian Ortega",
         "side": "f1",
-        "points": 10,
+        "points": 11,
         "open": -155,
         "close": null,
         "clv": null
@@ -28492,7 +28512,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Dan Hooker",
         "side": "f2",
-        "points": 10,
+        "points": 11,
         "open": 132,
         "close": null,
         "clv": null
@@ -30650,7 +30670,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Navajo Stirling",
         "side": "f1",
-        "points": 21,
+        "points": 22,
         "open": 132,
         "close": null,
         "clv": null
@@ -30683,7 +30703,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Santiago Luna",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -220,
         "close": null,
         "clv": null
@@ -30727,7 +30747,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Diyar Nurgozhay",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 203,
         "close": null,
         "clv": null
