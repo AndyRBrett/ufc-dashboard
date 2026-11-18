@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-18T07:15:51Z",
+  "generated_at": "2026-11-18T08:20:45Z",
   "events_tracked": 12,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-18T01:55:41Z",
+      "last_changed_at": "2026-11-18T08:20:45Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 11,
@@ -109,7 +109,7 @@
     {
       "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
       "status": "ok",
-      "last_changed_at": "2026-11-18T01:55:41Z",
+      "last_changed_at": "2026-11-18T08:20:45Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -129,7 +129,7 @@
     {
       "event_id": "2027-01-16:ufc-fight-night-rodriguez-vs-garcia",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-18T07:15:51Z",
+      "last_changed_at": "2026-11-18T08:20:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 3,
@@ -139,7 +139,7 @@
     {
       "event_id": "2027-01-23:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-18T07:15:51Z",
+      "last_changed_at": "2026-11-18T08:20:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -169,7 +169,7 @@
     {
       "event_id": "2027-02-13:ufc-fight-night-pyfer-vs-nickal",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-18T07:15:51Z",
+      "last_changed_at": "2026-11-18T08:20:45Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -419,6 +419,22 @@
       "priority": 145.0
     },
     {
+      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+      "f1": "Jared Cannonier",
+      "f2": "Ikram Aliskerov",
+      "f1_movement": -68,
+      "f2_movement": 100,
+      "magnitude": 100,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 5.1,
+      "f2_prob_shift": -5.0,
+      "priority": 140.0
+    },
+    {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
       "f1": "Ciryl Gane",
       "f2": "Josh Hokit",
@@ -449,22 +465,6 @@
       "f1_prob_shift": 9.4,
       "f2_prob_shift": -8.3,
       "priority": 128.0
-    },
-    {
-      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
-      "f1": "Jared Cannonier",
-      "f2": "Ikram Aliskerov",
-      "f1_movement": -55,
-      "f2_movement": 80,
-      "magnitude": 80,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 4.0,
-      "f2_prob_shift": -3.8,
-      "priority": 112.0
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",

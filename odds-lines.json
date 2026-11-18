@@ -2,46 +2,6 @@
  "about": "Priced bouts from the Odds API pull scrape.py already makes (all promotions it lists). Read by extra.py to give PFL/RIZIN/DWCS bouts a line for the underdog bonus.",
  "lines": [
   {
-   "a": "Luis Gurule",
-   "b": "Bilal Hasan",
-   "a_odds": 660,
-   "b_odds": -1050,
-   "commence_time": "2026-11-15T02:15:00Z",
-   "seen_at": "2026-11-14T15:10:22Z"
-  },
-  {
-   "a": "Uros Medic",
-   "b": "Kevin Holland",
-   "a_odds": -160,
-   "b_odds": 133,
-   "commence_time": "2026-11-15T03:08:00Z",
-   "seen_at": "2026-11-15T03:10:28Z"
-  },
-  {
-   "a": "Caio Borralho",
-   "b": "Yousri Belgaroui",
-   "a_odds": -156,
-   "b_odds": 129,
-   "commence_time": "2026-11-15T03:45:00Z",
-   "seen_at": "2026-11-15T03:10:28Z"
-  },
-  {
-   "a": "Kayla Harrison",
-   "b": "Amanda Nunes",
-   "a_odds": -166,
-   "b_odds": 137,
-   "commence_time": "2026-11-15T04:00:00Z",
-   "seen_at": "2026-11-15T03:10:28Z"
-  },
-  {
-   "a": "Ciryl Gane",
-   "b": "Josh Hokit",
-   "a_odds": -218,
-   "b_odds": 178,
-   "commence_time": "2026-11-15T04:30:00Z",
-   "seen_at": "2026-11-15T03:10:28Z"
-  },
-  {
    "a": "Benny Orozco",
    "b": "Canon Swanson",
    "a_odds": 130,
@@ -132,10 +92,10 @@
   {
    "a": "Dom Mar Fan",
    "b": "Nikolas Motta",
-   "a_odds": -162,
+   "a_odds": -161,
    "b_odds": 130,
    "commence_time": "2026-11-21T15:00:00Z",
-   "seen_at": "2026-11-18T01:55:24Z"
+   "seen_at": "2026-11-18T08:20:25Z"
   },
   {
    "a": "Santiago Luna",
@@ -180,10 +140,10 @@
   {
    "a": "Jared Cannonier",
    "b": "Ikram Aliskerov",
-   "a_odds": 245,
-   "b_odds": -320,
+   "a_odds": 232,
+   "b_odds": -300,
    "commence_time": "2026-11-21T18:15:00Z",
-   "seen_at": "2026-11-17T19:25:27Z"
+   "seen_at": "2026-11-18T08:20:25Z"
   },
   {
    "a": "Kyoji Horiguchi",
@@ -212,10 +172,10 @@
   {
    "a": "Ian Garry",
    "b": "Yaroslav Amosov",
-   "a_odds": -180,
-   "b_odds": 143,
+   "a_odds": -187,
+   "b_odds": 149,
    "commence_time": "2026-12-05T17:00:00Z",
-   "seen_at": "2026-11-18T01:55:24Z"
+   "seen_at": "2026-11-18T08:20:25Z"
   },
   {
    "a": "Israel Adesanya",
