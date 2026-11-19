@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T16:15:44Z",
+  "generated_at": "2026-11-19T17:12:03Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -23341,7 +23341,7 @@
           "f1": "Amir Albazi",
           "f2": "Alessandro Costa",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23407,6 +23407,11 @@
               "at": "2026-11-19T02:35:45Z",
               "f1_odds": -114,
               "f2_odds": -109
+            },
+            {
+              "at": "2026-11-19T17:12:03Z",
+              "f1_odds": -110,
+              "f2_odds": -111
             }
           ],
           "open": {
@@ -23421,7 +23426,7 @@
           "f1": "Jake Matthews",
           "f2": "Tahir Abdullayev",
           "lbl": "Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23492,6 +23497,11 @@
               "at": "2026-11-19T08:50:57Z",
               "f1_odds": -253,
               "f2_odds": 198
+            },
+            {
+              "at": "2026-11-19T17:12:03Z",
+              "f1_odds": -252,
+              "f2_odds": 200
             }
           ],
           "open": {
@@ -23506,7 +23516,7 @@
           "f1": "Nikolas Motta",
           "f2": "Dom Mar Fan",
           "lbl": "Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-11-18T01:55:41Z",
@@ -23522,6 +23532,11 @@
               "at": "2026-11-19T10:55:44Z",
               "f1_odds": 135,
               "f2_odds": -168
+            },
+            {
+              "at": "2026-11-19T17:12:03Z",
+              "f1_odds": 135,
+              "f2_odds": -166
             }
           ],
           "open": {
@@ -23536,7 +23551,7 @@
           "f1": "Diyar Nurgozhay",
           "f2": "Alik Lorenz",
           "lbl": "Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-11-18T01:55:41Z",
@@ -23547,6 +23562,11 @@
               "at": "2026-11-18T14:50:45Z",
               "f1_odds": -258,
               "f2_odds": 202
+            },
+            {
+              "at": "2026-11-19T17:12:03Z",
+              "f1_odds": -253,
+              "f2_odds": 201
             }
           ],
           "open": {
@@ -24277,7 +24297,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Tahir Abdullayev",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -170,
         "close": null,
         "clv": null
@@ -24654,7 +24674,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Amir Albazi",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": -155,
         "close": null,
         "clv": null
@@ -25869,7 +25889,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Jake Matthews",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 145,
         "close": null,
         "clv": null
@@ -26964,7 +26984,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Alik Lorenz",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -260,
         "close": null,
         "clv": null
@@ -30809,7 +30829,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Alessandro Costa",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": 132,
         "close": null,
         "clv": null
@@ -30820,7 +30840,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Dom Mar Fan",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": 130,
         "close": null,
         "clv": null
@@ -30831,7 +30851,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Nikolas Motta",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -162,
         "close": null,
         "clv": null
@@ -30842,7 +30862,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Diyar Nurgozhay",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 203,
         "close": null,
         "clv": null
