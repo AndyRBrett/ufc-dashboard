@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T12:00:50Z",
+  "generated_at": "2026-11-19T13:00:53Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -22791,7 +22791,7 @@
           "f1": "Jiri Prochazka",
           "f2": "Navajo Stirling",
           "lbl": "Main Event",
-          "points": 23,
+          "points": 24,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -22907,6 +22907,11 @@
               "at": "2026-11-19T00:25:43Z",
               "f1_odds": 136,
               "f2_odds": -169
+            },
+            {
+              "at": "2026-11-19T13:00:53Z",
+              "f1_odds": 138,
+              "f2_odds": -172
             }
           ],
           "open": {
@@ -23011,7 +23016,7 @@
           "f1": "Dan Hooker",
           "f2": "Brian Ortega",
           "lbl": "Main Card",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23077,6 +23082,11 @@
               "at": "2026-11-19T02:35:45Z",
               "f1_odds": -190,
               "f2_odds": 156
+            },
+            {
+              "at": "2026-11-19T13:00:53Z",
+              "f1_odds": -192,
+              "f2_odds": 157
             }
           ],
           "open": {
@@ -23091,7 +23101,7 @@
           "f1": "Jared Cannonier",
           "f2": "Ikram Aliskerov",
           "lbl": "Main Card",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23147,6 +23157,11 @@
               "at": "2026-11-19T02:35:45Z",
               "f1_odds": 235,
               "f2_odds": -304
+            },
+            {
+              "at": "2026-11-19T13:00:53Z",
+              "f1_odds": 237,
+              "f2_odds": -308
             }
           ],
           "open": {
@@ -23572,7 +23587,7 @@
           "f1": "Israel Adesanya",
           "f2": "Sharabutdin Magomedov",
           "lbl": "Main Event",
-          "points": 8,
+          "points": 9,
           "series": [
             {
               "at": "2026-11-10T02:01:44Z",
@@ -23613,6 +23628,11 @@
               "at": "2026-11-15T15:31:09Z",
               "f1_odds": -159,
               "f2_odds": 128
+            },
+            {
+              "at": "2026-11-19T13:00:53Z",
+              "f1_odds": -162,
+              "f2_odds": 131
             }
           ],
           "open": {
@@ -25115,7 +25135,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Jiri Prochazka",
         "side": "f2",
-        "points": 23,
+        "points": 24,
         "open": -155,
         "close": null,
         "clv": null
@@ -25503,7 +25523,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Israel Adesanya",
         "side": "f2",
-        "points": 8,
+        "points": 9,
         "open": 126,
         "close": null,
         "clv": null
@@ -25565,7 +25585,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Jared Cannonier",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": -400,
         "close": null,
         "clv": null
@@ -26367,7 +26387,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Ikram Aliskerov",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": 300,
         "close": null,
         "clv": null
@@ -27888,7 +27908,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Brian Ortega",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -155,
         "close": null,
         "clv": null
@@ -28587,7 +28607,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Dan Hooker",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 132,
         "close": null,
         "clv": null
@@ -30745,7 +30765,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Navajo Stirling",
         "side": "f1",
-        "points": 23,
+        "points": 24,
         "open": 132,
         "close": null,
         "clv": null
@@ -30855,7 +30875,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Sharabutdin Magomedov",
         "side": "f1",
-        "points": 8,
+        "points": 9,
         "open": -150,
         "close": null,
         "clv": null
