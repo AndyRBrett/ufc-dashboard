@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T09:50:42Z",
+  "generated_at": "2026-11-19T10:55:44Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -23491,7 +23491,7 @@
           "f1": "Nikolas Motta",
           "f2": "Dom Mar Fan",
           "lbl": "Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-11-18T01:55:41Z",
@@ -23502,6 +23502,11 @@
               "at": "2026-11-18T08:20:45Z",
               "f1_odds": 130,
               "f2_odds": -161
+            },
+            {
+              "at": "2026-11-19T10:55:44Z",
+              "f1_odds": 135,
+              "f2_odds": -168
             }
           ],
           "open": {
@@ -30795,7 +30800,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Dom Mar Fan",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": 130,
         "close": null,
         "clv": null
@@ -30806,7 +30811,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Nikolas Motta",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": -162,
         "close": null,
         "clv": null
