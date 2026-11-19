@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-18T23:20:55Z",
+  "generated_at": "2026-11-19T00:25:43Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -22791,7 +22791,7 @@
           "f1": "Jiri Prochazka",
           "f2": "Navajo Stirling",
           "lbl": "Main Event",
-          "points": 22,
+          "points": 23,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -22902,6 +22902,11 @@
               "at": "2026-11-18T14:50:45Z",
               "f1_odds": 133,
               "f2_odds": -165
+            },
+            {
+              "at": "2026-11-19T00:25:43Z",
+              "f1_odds": 136,
+              "f2_odds": -169
             }
           ],
           "open": {
@@ -23146,7 +23151,7 @@
           "f1": "Aleksandre Topuria",
           "f2": "Santiago Luna",
           "lbl": "Prelim",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23217,6 +23222,11 @@
               "at": "2026-11-18T14:50:45Z",
               "f1_odds": -289,
               "f2_odds": 223
+            },
+            {
+              "at": "2026-11-19T00:25:43Z",
+              "f1_odds": -292,
+              "f2_odds": 225
             }
           ],
           "open": {
@@ -23231,7 +23241,7 @@
           "f1": "Shamil Gaziev",
           "f2": "Tallison Teixeira",
           "lbl": "Prelim",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23287,6 +23297,11 @@
               "at": "2026-11-18T21:10:54Z",
               "f1_odds": -208,
               "f2_odds": 166
+            },
+            {
+              "at": "2026-11-19T00:25:43Z",
+              "f1_odds": -206,
+              "f2_odds": 164
             }
           ],
           "open": {
@@ -23970,7 +23985,7 @@
           "f1": "Quillan Salkilld",
           "f2": "Benoit Saint Denis",
           "lbl": "Main Event",
-          "points": 6,
+          "points": 7,
           "series": [
             {
               "at": "2026-11-09T06:00:44Z",
@@ -24001,6 +24016,11 @@
               "at": "2026-11-17T12:35:51Z",
               "f1_odds": -328,
               "f2_odds": 258
+            },
+            {
+              "at": "2026-11-19T00:25:43Z",
+              "f1_odds": -323,
+              "f2_odds": 247
             }
           ],
           "open": {
@@ -24015,7 +24035,7 @@
           "f1": "Bogdan Guskov",
           "f2": "Robert Whittaker",
           "lbl": "Co-Main",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-11-09T06:00:44Z",
@@ -24036,6 +24056,11 @@
               "at": "2026-11-15T15:31:09Z",
               "f1_odds": 119,
               "f2_odds": -144
+            },
+            {
+              "at": "2026-11-19T00:25:43Z",
+              "f1_odds": 119,
+              "f2_odds": -147
             }
           ],
           "open": {
@@ -24151,7 +24176,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Shamil Gaziev",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 189,
         "close": null,
         "clv": null
@@ -24519,7 +24544,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Aleksandre Topuria",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": 185,
         "close": null,
         "clv": null
@@ -25060,7 +25085,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Jiri Prochazka",
         "side": "f2",
-        "points": 22,
+        "points": 23,
         "open": -155,
         "close": null,
         "clv": null
@@ -25858,7 +25883,7 @@
         "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
         "opponent": "Quillan Salkilld",
         "side": "f2",
-        "points": 6,
+        "points": 7,
         "open": 216,
         "close": null,
         "clv": null
@@ -26013,7 +26038,7 @@
         "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
         "opponent": "Bogdan Guskov",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -140,
         "close": null,
         "clv": null
@@ -26847,7 +26872,7 @@
         "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
         "opponent": "Benoit Saint Denis",
         "side": "f1",
-        "points": 6,
+        "points": 7,
         "open": -260,
         "close": null,
         "clv": null
@@ -27436,7 +27461,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Tallison Teixeira",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -225,
         "close": null,
         "clv": null
@@ -30690,7 +30715,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Navajo Stirling",
         "side": "f1",
-        "points": 22,
+        "points": 23,
         "open": 132,
         "close": null,
         "clv": null
@@ -30723,7 +30748,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Santiago Luna",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": -220,
         "close": null,
         "clv": null
@@ -30888,7 +30913,7 @@
         "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
         "opponent": "Robert Whittaker",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 120,
         "close": null,
         "clv": null
