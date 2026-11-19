@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T07:45:50Z",
+  "generated_at": "2026-11-19T08:50:57Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -23406,7 +23406,7 @@
           "f1": "Jake Matthews",
           "f2": "Tahir Abdullayev",
           "lbl": "Prelim",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23472,6 +23472,11 @@
               "at": "2026-11-19T02:35:45Z",
               "f1_odds": -251,
               "f2_odds": 197
+            },
+            {
+              "at": "2026-11-19T08:50:57Z",
+              "f1_odds": -253,
+              "f2_odds": 198
             }
           ],
           "open": {
@@ -24247,7 +24252,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Tahir Abdullayev",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -170,
         "close": null,
         "clv": null
@@ -25839,7 +25844,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Jake Matthews",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 145,
         "close": null,
         "clv": null
