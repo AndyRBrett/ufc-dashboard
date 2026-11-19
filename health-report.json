@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T19:10:39Z",
+  "generated_at": "2026-11-19T20:15:50Z",
   "summary": {
     "events": 12,
     "block": 0,
@@ -16,7 +16,7 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Prochazka vs. Stirling (2d out): 1 of 11 bouts have no odds",
+      "message": "UFC Fight Night: Prochazka vs. Stirling (2d out): 1 of 12 bouts have no odds",
       "event": "UFC Fight Night: Prochazka vs. Stirling",
       "date": "2026-11-21",
       "days_out": 2
