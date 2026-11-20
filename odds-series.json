@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T03:45:58Z",
+  "generated_at": "2026-11-20T04:50:51Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -23031,7 +23031,7 @@
           "f1": "Dan Hooker",
           "f2": "Brian Ortega",
           "lbl": "Main Card",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23107,6 +23107,11 @@
               "at": "2026-11-19T20:15:50Z",
               "f1_odds": -189,
               "f2_odds": 157
+            },
+            {
+              "at": "2026-11-20T04:50:51Z",
+              "f1_odds": -191,
+              "f2_odds": 159
             }
           ],
           "open": {
@@ -23636,7 +23641,7 @@
           "f1": "Shoaib Yousaf",
           "f2": "John Mitchell",
           "lbl": "Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-11-19T20:15:50Z",
@@ -23647,6 +23652,11 @@
               "at": "2026-11-19T22:20:49Z",
               "f1_odds": 115,
               "f2_odds": -140
+            },
+            {
+              "at": "2026-11-20T04:50:51Z",
+              "f1_odds": 114,
+              "f2_odds": -138
             }
           ],
           "open": {
@@ -28008,7 +28018,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Brian Ortega",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -155,
         "close": null,
         "clv": null
@@ -28707,7 +28717,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Dan Hooker",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 132,
         "close": null,
         "clv": null
@@ -30953,7 +30963,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "John Mitchell",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": 117,
         "close": null,
         "clv": null
@@ -30964,7 +30974,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Shoaib Yousaf",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": -142,
         "close": null,
         "clv": null
