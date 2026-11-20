@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T01:42:54Z",
+  "generated_at": "2026-11-20T02:45:45Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -23206,7 +23206,7 @@
           "f1": "Aleksandre Topuria",
           "f2": "Santiago Luna",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23287,6 +23287,11 @@
               "at": "2026-11-19T20:15:50Z",
               "f1_odds": -290,
               "f2_odds": 227
+            },
+            {
+              "at": "2026-11-20T02:45:45Z",
+              "f1_odds": -307,
+              "f2_odds": 237
             }
           ],
           "open": {
@@ -24689,7 +24694,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Aleksandre Topuria",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 185,
         "close": null,
         "clv": null
@@ -30893,7 +30898,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Santiago Luna",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -220,
         "close": null,
         "clv": null

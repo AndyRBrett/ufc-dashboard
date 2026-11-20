@@ -1,8 +1,8 @@
 {
   "idle_pulls": 0,
-  "last_fetch_at": "2026-11-20T00:30:34.289306+00:00",
+  "last_fetch_at": "2026-11-20T02:45:30.001534+00:00",
   "last_status": 401,
-  "lines_digest": "d09b8ba172a07f3a8fdff2e376b7eb464e751d78",
+  "lines_digest": "ed35a6c77ed593fb5b2e2fc6964097a2ed3a843f",
   "markets": {
     "2026-11-20": {
       "fighters": [
@@ -432,13 +432,13 @@
       "priced": 1
     }
   },
-  "markets_partial_at": "2026-11-20T00:30:34.289306+00:00",
+  "markets_partial_at": "2026-11-20T02:45:30.001534+00:00",
   "next_event_days_out": 1,
   "providers": {
     "the-odds-api": {
       "bouts": 51,
       "exhausted_at": "2026-11-18T01:55:24.665196+00:00",
-      "last_fetch_at": "2026-11-20T00:30:34.289306+00:00",
+      "last_fetch_at": "2026-11-20T02:45:30.001534+00:00",
       "last_ok_at": "2026-11-18T01:55:24.665196+00:00",
       "last_status": 401,
       "provider": "the-odds-api:us2,uk,eu,au",
@@ -446,11 +446,11 @@
     },
     "the-odds-api-backup": {
       "bouts": 55,
-      "last_fetch_at": "2026-11-20T00:30:34.289306+00:00",
-      "last_ok_at": "2026-11-20T00:30:34.289306+00:00",
+      "last_fetch_at": "2026-11-20T02:45:30.001534+00:00",
+      "last_ok_at": "2026-11-20T02:45:30.001534+00:00",
       "last_status": 200,
       "provider": "the-odds-api-backup:us",
-      "requests_remaining": 386
+      "requests_remaining": 385
     }
   },
   "requests_remaining": 0
