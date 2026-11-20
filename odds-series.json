@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T05:55:48Z",
+  "generated_at": "2026-11-20T07:00:54Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -23031,7 +23031,7 @@
           "f1": "Dan Hooker",
           "f2": "Brian Ortega",
           "lbl": "Main Card",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23112,6 +23112,11 @@
               "at": "2026-11-20T04:50:51Z",
               "f1_odds": -191,
               "f2_odds": 159
+            },
+            {
+              "at": "2026-11-20T07:00:53Z",
+              "f1_odds": -186,
+              "f2_odds": 154
             }
           ],
           "open": {
@@ -23476,7 +23481,7 @@
           "f1": "Jake Matthews",
           "f2": "Tahir Abdullayev",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23557,6 +23562,11 @@
               "at": "2026-11-19T22:20:49Z",
               "f1_odds": -256,
               "f2_odds": 203
+            },
+            {
+              "at": "2026-11-20T07:00:53Z",
+              "f1_odds": -249,
+              "f2_odds": 198
             }
           ],
           "open": {
@@ -24387,7 +24397,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Tahir Abdullayev",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -170,
         "close": null,
         "clv": null
@@ -25979,7 +25989,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Jake Matthews",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 145,
         "close": null,
         "clv": null
@@ -28018,7 +28028,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Brian Ortega",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -155,
         "close": null,
         "clv": null
@@ -28717,7 +28727,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Dan Hooker",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 132,
         "close": null,
         "clv": null
