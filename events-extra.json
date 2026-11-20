@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-17T09:20:49Z",
+ "generated_at": "2026-11-20T12:39:12Z",
  "promotions": [
   {
    "id": "pfl",
@@ -72,17 +72,6 @@
      "round": null
     },
     {
-     "a": "Boule Godogo",
-     "b": "Ridouan Errami",
-     "label": "",
-     "division": "Bantamweight",
-     "title": false,
-     "odds": null,
-     "winner": "",
-     "method": "",
-     "round": null
-    },
-    {
      "a": "Justin Clarke",
      "b": "Kevin Odongo",
      "label": "",
@@ -105,10 +94,10 @@
      "round": null
     },
     {
-     "a": "Felista Mugo",
-     "b": "Sephora Kiala",
+     "a": "Mouhamed Ba",
+     "b": "Rivaldo Pereira",
      "label": "",
-     "division": "Women's Strawweight",
+     "division": "Welterweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -116,10 +105,10 @@
      "round": null
     },
     {
-     "a": "Yahaya Yahuza",
-     "b": "Eslam Abdul Baset",
+     "a": "Felista Mugo",
+     "b": "Sephora Kiala",
      "label": "",
-     "division": "Middleweight",
+     "division": "Women's Strawweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -138,10 +127,21 @@
      "round": null
     },
     {
-     "a": "Bilal Lamkhanat",
-     "b": "Isaac Omeda",
+     "a": "Boule Godogo",
+     "b": "Ridouan Errami",
      "label": "",
      "division": "Bantamweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Yahaya Yahuza",
+     "b": "Eslam Abdul Baset",
+     "label": "",
+     "division": "Middleweight",
      "title": false,
      "odds": null,
      "winner": "",
@@ -153,6 +153,17 @@
      "b": "Mor Dieye",
      "label": "",
      "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Bilal Lamkhanat",
+     "b": "Isaac Omeda",
+     "label": "",
+     "division": "Bantamweight",
      "title": false,
      "odds": null,
      "winner": "",
