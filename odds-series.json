@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T12:39:12Z",
+  "generated_at": "2026-11-20T13:40:47Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -22791,7 +22791,7 @@
           "f1": "Jiri Prochazka",
           "f2": "Navajo Stirling",
           "lbl": "Main Event",
-          "points": 25,
+          "points": 26,
           "series": [
             {
               "at": "2026-11-02T07:35:34Z",
@@ -22917,6 +22917,11 @@
               "at": "2026-11-19T22:20:49Z",
               "f1_odds": 137,
               "f2_odds": -168
+            },
+            {
+              "at": "2026-11-20T13:40:47Z",
+              "f1_odds": 138,
+              "f2_odds": -170
             }
           ],
           "open": {
@@ -23216,7 +23221,7 @@
           "f1": "Aleksandre Topuria",
           "f2": "Santiago Luna",
           "lbl": "Prelim",
-          "points": 17,
+          "points": 18,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23302,6 +23307,11 @@
               "at": "2026-11-20T02:45:45Z",
               "f1_odds": -307,
               "f2_odds": 237
+            },
+            {
+              "at": "2026-11-20T13:40:47Z",
+              "f1_odds": -311,
+              "f2_odds": 240
             }
           ],
           "open": {
@@ -23651,7 +23661,7 @@
           "f1": "Shoaib Yousaf",
           "f2": "John Mitchell",
           "lbl": "Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-11-19T20:15:50Z",
@@ -23667,6 +23677,11 @@
               "at": "2026-11-20T04:50:51Z",
               "f1_odds": 114,
               "f2_odds": -138
+            },
+            {
+              "at": "2026-11-20T13:40:47Z",
+              "f1_odds": 117,
+              "f2_odds": -142
             }
           ],
           "open": {
@@ -24714,7 +24729,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Aleksandre Topuria",
         "side": "f2",
-        "points": 17,
+        "points": 18,
         "open": 185,
         "close": null,
         "clv": null
@@ -25255,7 +25270,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Jiri Prochazka",
         "side": "f2",
-        "points": 25,
+        "points": 26,
         "open": -155,
         "close": null,
         "clv": null
@@ -30885,7 +30900,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Navajo Stirling",
         "side": "f1",
-        "points": 25,
+        "points": 26,
         "open": 132,
         "close": null,
         "clv": null
@@ -30918,7 +30933,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Santiago Luna",
         "side": "f1",
-        "points": 17,
+        "points": 18,
         "open": -220,
         "close": null,
         "clv": null
@@ -30973,7 +30988,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "John Mitchell",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": 117,
         "close": null,
         "clv": null
@@ -30984,7 +30999,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Shoaib Yousaf",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -142,
         "close": null,
         "clv": null
