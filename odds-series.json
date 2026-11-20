@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T14:40:49Z",
+  "generated_at": "2026-11-20T15:45:47Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -23136,7 +23136,7 @@
           "f1": "Jared Cannonier",
           "f2": "Ikram Aliskerov",
           "lbl": "Main Card",
-          "points": 14,
+          "points": 15,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23207,6 +23207,11 @@
               "at": "2026-11-19T22:20:49Z",
               "f1_odds": 235,
               "f2_odds": -298
+            },
+            {
+              "at": "2026-11-20T15:45:47Z",
+              "f1_odds": 237,
+              "f2_odds": -301
             }
           ],
           "open": {
@@ -23631,7 +23636,7 @@
           "f1": "Diyar Nurgozhay",
           "f2": "Alik Lorenz",
           "lbl": "Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-11-18T01:55:41Z",
@@ -23647,6 +23652,11 @@
               "at": "2026-11-19T17:12:03Z",
               "f1_odds": -253,
               "f2_odds": 201
+            },
+            {
+              "at": "2026-11-20T15:45:47Z",
+              "f1_odds": -253,
+              "f2_odds": 203
             }
           ],
           "open": {
@@ -23661,7 +23671,7 @@
           "f1": "Shoaib Yousaf",
           "f2": "John Mitchell",
           "lbl": "Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-11-19T20:15:50Z",
@@ -23681,6 +23691,11 @@
             {
               "at": "2026-11-20T13:40:47Z",
               "f1_odds": 117,
+              "f2_odds": -142
+            },
+            {
+              "at": "2026-11-20T15:45:47Z",
+              "f1_odds": 118,
               "f2_odds": -142
             }
           ],
@@ -25720,7 +25735,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Jared Cannonier",
         "side": "f2",
-        "points": 14,
+        "points": 15,
         "open": -400,
         "close": null,
         "clv": null
@@ -26522,7 +26537,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Ikram Aliskerov",
         "side": "f1",
-        "points": 14,
+        "points": 15,
         "open": 300,
         "close": null,
         "clv": null
@@ -27099,7 +27114,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Alik Lorenz",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": -260,
         "close": null,
         "clv": null
@@ -30977,7 +30992,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Diyar Nurgozhay",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": 203,
         "close": null,
         "clv": null
@@ -30988,7 +31003,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "John Mitchell",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 117,
         "close": null,
         "clv": null
@@ -30999,7 +31014,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Shoaib Yousaf",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -142,
         "close": null,
         "clv": null
