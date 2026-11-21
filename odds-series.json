@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T05:35:48Z",
+  "generated_at": "2026-11-21T05:40:59Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -22946,7 +22946,7 @@
           "f1": "Aljamain Sterling",
           "f2": "Kevin Vallejos",
           "lbl": "Co-Main",
-          "points": 19,
+          "points": 20,
           "series": [
             {
               "at": "2026-11-08T05:50:41Z",
@@ -23042,6 +23042,11 @@
               "at": "2026-11-21T02:35:51Z",
               "f1_odds": 110,
               "f2_odds": -131
+            },
+            {
+              "at": "2026-11-21T05:40:59Z",
+              "f1_odds": 107,
+              "f2_odds": -128
             }
           ],
           "open": {
@@ -23166,7 +23171,7 @@
           "f1": "Jared Cannonier",
           "f2": "Ikram Aliskerov",
           "lbl": "Main Card",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23257,6 +23262,11 @@
               "at": "2026-11-21T02:35:51Z",
               "f1_odds": 242,
               "f2_odds": -303
+            },
+            {
+              "at": "2026-11-21T05:40:59Z",
+              "f1_odds": 240,
+              "f2_odds": -302
             }
           ],
           "open": {
@@ -23386,7 +23396,7 @@
           "f1": "Shamil Gaziev",
           "f2": "Tallison Teixeira",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23462,6 +23472,11 @@
               "at": "2026-11-20T23:35:59Z",
               "f1_odds": -201,
               "f2_odds": 165
+            },
+            {
+              "at": "2026-11-21T05:40:59Z",
+              "f1_odds": -199,
+              "f2_odds": 164
             }
           ],
           "open": {
@@ -23566,7 +23581,7 @@
           "f1": "Jake Matthews",
           "f2": "Tahir Abdullayev",
           "lbl": "Prelim",
-          "points": 18,
+          "points": 19,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23657,6 +23672,11 @@
               "at": "2026-11-20T18:45:53Z",
               "f1_odds": -246,
               "f2_odds": 198
+            },
+            {
+              "at": "2026-11-21T05:40:59Z",
+              "f1_odds": -248,
+              "f2_odds": 200
             }
           ],
           "open": {
@@ -23821,12 +23841,17 @@
           "f1": "Kyoji Horiguchi",
           "f2": "Asu Almabayev",
           "lbl": "Main Card",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-21T01:50:40Z",
               "f1_odds": -187,
               "f2_odds": 158
+            },
+            {
+              "at": "2026-11-21T05:40:59Z",
+              "f1_odds": -197,
+              "f2_odds": 165
             }
           ],
           "open": {
@@ -24506,7 +24531,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Shamil Gaziev",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": 189,
         "close": null,
         "clv": null
@@ -24557,7 +24582,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Tahir Abdullayev",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": -170,
         "close": null,
         "clv": null
@@ -25393,7 +25418,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Asu Almabayev",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -187,
         "close": null,
         "clv": null
@@ -25874,7 +25899,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Jared Cannonier",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": -400,
         "close": null,
         "clv": null
@@ -26158,7 +26183,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Jake Matthews",
         "side": "f2",
-        "points": 18,
+        "points": 19,
         "open": 145,
         "close": null,
         "clv": null
@@ -26676,7 +26701,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Ikram Aliskerov",
         "side": "f1",
-        "points": 18,
+        "points": 19,
         "open": 300,
         "close": null,
         "clv": null
@@ -27800,7 +27825,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Tallison Teixeira",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": -225,
         "close": null,
         "clv": null
@@ -31065,7 +31090,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Kevin Vallejos",
         "side": "f1",
-        "points": 19,
+        "points": 20,
         "open": -107,
         "close": null,
         "clv": null
@@ -31076,7 +31101,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Aljamain Sterling",
         "side": "f2",
-        "points": 19,
+        "points": 20,
         "open": -109,
         "close": null,
         "clv": null
@@ -31164,7 +31189,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Kyoji Horiguchi",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 158,
         "close": null,
         "clv": null
