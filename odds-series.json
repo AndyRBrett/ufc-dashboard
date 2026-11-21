@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T17:50:47Z",
+  "generated_at": "2026-11-21T17:55:43Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -23076,7 +23076,7 @@
           "f1": "Dan Hooker",
           "f2": "Brian Ortega",
           "lbl": "Main Card",
-          "points": 20,
+          "points": 21,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23177,6 +23177,11 @@
               "at": "2026-11-21T11:50:48Z",
               "f1_odds": -200,
               "f2_odds": 164
+            },
+            {
+              "at": "2026-11-21T17:55:43Z",
+              "f1_odds": -203,
+              "f2_odds": 166
             }
           ],
           "open": {
@@ -23191,7 +23196,7 @@
           "f1": "Jared Cannonier",
           "f2": "Ikram Aliskerov",
           "lbl": "Main Card",
-          "points": 20,
+          "points": 21,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23292,6 +23297,11 @@
               "at": "2026-11-21T11:50:48Z",
               "f1_odds": 242,
               "f2_odds": -303
+            },
+            {
+              "at": "2026-11-21T17:55:43Z",
+              "f1_odds": 253,
+              "f2_odds": -320
             }
           ],
           "open": {
@@ -23916,7 +23926,7 @@
           "f1": "Kyoji Horiguchi",
           "f2": "Asu Almabayev",
           "lbl": "Main Card",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-11-21T01:50:40Z",
@@ -23937,6 +23947,11 @@
               "at": "2026-11-21T14:50:51Z",
               "f1_odds": -198,
               "f2_odds": 162
+            },
+            {
+              "at": "2026-11-21T17:55:43Z",
+              "f1_odds": -196,
+              "f2_odds": 160
             }
           ],
           "open": {
@@ -25508,7 +25523,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Asu Almabayev",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -187,
         "close": null,
         "clv": null
@@ -25989,7 +26004,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Jared Cannonier",
         "side": "f2",
-        "points": 20,
+        "points": 21,
         "open": -400,
         "close": null,
         "clv": null
@@ -26791,7 +26806,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Ikram Aliskerov",
         "side": "f1",
-        "points": 20,
+        "points": 21,
         "open": 300,
         "close": null,
         "clv": null
@@ -28312,7 +28327,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Brian Ortega",
         "side": "f1",
-        "points": 20,
+        "points": 21,
         "open": -155,
         "close": null,
         "clv": null
@@ -29011,7 +29026,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Dan Hooker",
         "side": "f2",
-        "points": 20,
+        "points": 21,
         "open": 132,
         "close": null,
         "clv": null
@@ -31279,7 +31294,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Kyoji Horiguchi",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 158,
         "close": null,
         "clv": null
