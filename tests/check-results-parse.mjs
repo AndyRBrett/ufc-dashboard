@@ -182,7 +182,7 @@ async function runPoll({ withParser = true, card: edit = (c) => c } = {}) {
   // It now searches like scrape.py and takes only a title that folds to the
   // same event, never a different card the search also returns.
   const FN = "UFC Fight Night: Prochazka vs. Stirling", REAL = "UFC Fight Night: Procházka vs. Stirling";
-  const runFn = async (titles) => {
+  const runFn = async (titles, pickRows = [{ user_id: "u-gane", f1: "Ciryl Gane", f2: "Josh Hokit", pick: "Ciryl Gane" }]) => {
     const seenFn = [], pushesFn = [];
     globalThis.fetch = async (url, init) => {
       url = String(url); seenFn.push(url);
@@ -195,9 +195,11 @@ async function runPoll({ withParser = true, card: edit = (c) => c } = {}) {
         const page = decodeURIComponent(/[?&]page=([^&]+)/.exec(url)[1]);
         return json(page === REAL.replace(/ /g, "_") ? { parse: { wikitext: { "*": WIKI } } } : { error: { code: "missingtitle" } });
       }
-      if (url.includes("/rest/v1/picks?select=user_id,f1,f2,pick")) return json([
-        { user_id: "u-gane", f1: "Ciryl Gane", f2: "Josh Hokit", pick: "Ciryl Gane" },
-      ]);
+      if (url.includes("/rest/v1/picks?select=user_id,f1,f2,pick")) {
+        // PostgREST: at most 1,000 rows, the window the Range header asks for.
+        const [a, b] = String(init?.headers?.Range ?? "0-999").split("-").map(Number);
+        return json(pickRows.slice(a, Math.min(b + 1, a + 1000)));
+      }
       if (url.includes("/rest/v1/rpc/pick_lock_for")) return json("2026-11-15T01:00:00+00:00");
       if (url.endsWith("/functions/v1/send-push")) { pushesFn.push(JSON.parse(init.body)); return json({ sent: 1 }); }
       return new Response("unexpected " + url, { status: 500 });
@@ -214,6 +216,21 @@ async function runPoll({ withParser = true, card: edit = (c) => c } = {}) {
   check("...and its result pushes go out", acc.pushes.some((p) => p.type === "result:ciryl-gane-josh-hokit:win"));
   const wrong = await runFn(["UFC Fight Night: Procházka vs. Rountree"]);
   check("...but a search hit for a different card is never read", wrong.body.parsed === 0 && wrong.pushes.length === 0);
+  check("...and a card it can't read is reported (scheduled-push.yml fails on it)",
+    J(wrong.body.unread) === J([{ date: "2026-11-14", name: FN }]) && J(acc.body.unread) === "[]");
+  const wf = read(".github/workflows/scheduled-push.yml");
+  check("scheduled-push.yml fails the run on an unread card dated today or earlier",
+    /\.unread\[\]\?\s*\|\s*select\(\.date <= \$today\)/.test(wf) && /::error::check-results can't read[\s\S]{0,200}exit 1/.test(wf));
+
+  // A card with more picks than one PostgREST response: the losing side sits
+  // past row 1,000 and must still be told (scrape.py lost exactly that group).
+  const big = Array.from({ length: 1200 }, (_, i) => ({ user_id: "w" + i, f1: "Ciryl Gane", f2: "Josh Hokit", pick: "Ciryl Gane" }))
+    .concat([{ user_id: "u-late", f1: "Ciryl Gane", f2: "Josh Hokit", pick: "Josh Hokit" }]);
+  const paged = await runFn([REAL], big);
+  const lossTo = paged.pushes.find((p) => p.type === "result:ciryl-gane-josh-hokit:loss");
+  const winTo = paged.pushes.find((p) => p.type === "result:ciryl-gane-josh-hokit:win");
+  check("picks past the first 1,000 rows are read: the loser's pickers are told",
+    J(lossTo?.include_user_ids) === J(["u-late"]) && winTo?.include_user_ids.length === 1200);
 }
 
 if (failures) { console.error(`\ncheck:results — ${failures} failure(s)`); process.exit(1); }

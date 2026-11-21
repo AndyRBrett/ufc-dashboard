@@ -544,7 +544,8 @@ await db.exec(readFileSync(join(ROOT, "supabase/migrations/0017_picks_hidden_unt
   const fns = ["check-results", "send-push", "send-reminders"];
   for (const fn of fns) {
     const src = readFileSync(join(ROOT, "supabase/functions", fn, "index.ts"), "utf8");
-    const reads = [...src.matchAll(/\/rest\/v1\/picks\?[^`]*`\s*,\s*\{\s*headers:\s*([^,}\s]+)/g)].map((m) => m[1]);
+    // fetch(url, { headers: X }) or check-results' readAllPicks(url, X).
+    const reads = [...src.matchAll(/\/rest\/v1\/picks\?[^`]*`\s*,\s*(?:\{\s*headers:\s*)?([^,}\s)]+)/g)].map((m) => m[1]);
     const anon = reads.filter((h) => /anon/i.test(h));
     check(`0017: ${fn} reads picks with the service key, never the anon key (${reads.length} read(s))`, reads.length > 0 && anon.length === 0);
   }
