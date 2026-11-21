@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T01:45:53Z",
+  "generated_at": "2026-11-21T01:50:40Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -23796,6 +23796,26 @@
           },
           "close": null,
           "clv": null
+        },
+        {
+          "f1": "Kyoji Horiguchi",
+          "f2": "Asu Almabayev",
+          "lbl": "Main Card",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-21T01:50:40Z",
+              "f1_odds": -187,
+              "f2_odds": 158
+            }
+          ],
+          "open": {
+            "at": "2026-11-21T01:50:40Z",
+            "f1_odds": -187,
+            "f2_odds": 158
+          },
+          "close": null,
+          "clv": null
         }
       ]
     },
@@ -25348,6 +25368,15 @@
         "open": 131,
         "close": 135,
         "clv": 4
+      },
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Asu Almabayev",
+        "side": "f1",
+        "points": 1,
+        "open": -187,
+        "close": null,
+        "clv": null
       }
     ],
     "Ion Cutelaba": [
@@ -31106,6 +31135,17 @@
         "side": "f2",
         "points": 6,
         "open": -142,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Asu Almabayev": [
+      {
+        "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+        "opponent": "Kyoji Horiguchi",
+        "side": "f2",
+        "points": 1,
+        "open": 158,
         "close": null,
         "clv": null
       }

@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-21T01:45:53Z",
+  "generated_at": "2026-11-21T01:50:40Z",
   "summary": {
     "events": 12,
     "block": 0,
-    "warn": 6
+    "warn": 4
   },
   "findings": [
     {
@@ -16,14 +16,6 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Prochazka vs. Stirling (0d out): 1 of 12 bouts have no odds",
-      "event": "UFC Fight Night: Prochazka vs. Stirling",
-      "date": "2026-11-21",
-      "days_out": 0
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-missing-some",
       "message": "UFC Fight Night: Adesanya vs. Magomedov (14d out): 10 of 12 bouts have no odds",
       "event": "UFC Fight Night: Adesanya vs. Magomedov",
       "date": "2026-12-05",
@@ -31,13 +23,8 @@
     },
     {
       "severity": "WARN",
-      "check": "odds-api-error",
-      "message": "last Odds API call returned HTTP 401 \u2014 lines are frozen at their previous values"
-    },
-    {
-      "severity": "WARN",
-      "check": "odds-quota",
-      "message": "Odds API quota down to 0 requests \u2014 lines are frozen until the quota resets"
+      "check": "odds-primary-spent",
+      "message": "primary Odds API key is down (HTTP 401, remaining 0) \u2014 backup the-odds-api-backup is pricing cards, 377 requests left"
     },
     {
       "severity": "WARN",
