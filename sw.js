@@ -74,7 +74,12 @@ self.addEventListener('fetch', function(e) {
     path.slice(-18) === '/events-extra.json' ? './events-extra.json' :
     path.slice(-11) === '/index.html' ? './index.html' :
     path.indexOf('/lab/') >= 0 && path.slice(-3) === '.js' ? '.' + path.slice(path.indexOf('/lab/')) : null);
-  if (isNavigate || isData || isStats || isIntel || isScoring || labKey) {
+  // Same-origin only: the app also reads data.js straight from GitHub at a
+  // commit (index.html's fresh-results block), and that copy must never be
+  // stored as the offline ./data.js (it is served as text/plain, so an
+  // offline launch would get a script the browser refuses to run).
+  var sameOrigin = new URL(req.url).origin === self.location.origin;
+  if (sameOrigin && (isNavigate || isData || isStats || isIntel || isScoring || labKey)) {
     // Every navigation used to be cached under './'. With a second page that
     // would let opening the lab overwrite the app shell's offline copy, so the
     // lab keeps its own key and an offline app launch still gets the app.

@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https://upload.wikimedia.org https://thumb.wikimedia.org https://a.espncdn.com data:; font-src 'self'; connect-src 'self' https://gkccophrdqtqcowmblre.supabase.co wss://gkccophrdqtqcowmblre.supabase.co https://en.wikipedia.org; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https://upload.wikimedia.org https://thumb.wikimedia.org https://a.espncdn.com data:; font-src 'self'; connect-src 'self' https://gkccophrdqtqcowmblre.supabase.co wss://gkccophrdqtqcowmblre.supabase.co https://en.wikipedia.org https://api.github.com https://raw.githubusercontent.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Picked Fight</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0e0f12">
@@ -13120,7 +13120,12 @@ document.addEventListener("DOMContentLoaded",function(){
   }
 
   function _pollOne(ev){
-    var slug=RP.eventSlug(ev.name);
+    // A Fight Night's article is titled with the real spelling ("Procházka"),
+    // which the ASCII name in data.js doesn't give and which isn't even a
+    // redirect: this poll read nothing all card on 2026-11-21. scrape.py
+    // records the article it read as ev.slug, so use that. Not for a numbered
+    // PPV: its full title is a redirect stub, and "UFC 334" is the article.
+    var slug=(!/^UFC\s+\d+/.test(ev.name)&&ev.slug)||RP.eventSlug(ev.name);
     var url="https://en.wikipedia.org/w/api.php?action=parse&page="+encodeURIComponent(slug)+"&prop=wikitext&format=json&redirects=1&origin=*";
     return fetch(url,{cache:"no-store"})
       .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
@@ -13181,6 +13186,144 @@ document.addEventListener("DOMContentLoaded",function(){
   window.liveRefresh=_poll;
 })();
 // live-poll:end
+
+// ---------------------------------------------------------------------------
+// fresh-results:start
+// Results straight from the committed data.js, ahead of Pages.
+//
+// A result push goes out seconds after the scraper commits the result, but
+// Pages publishes that commit ~2.5 minutes later, so opening the app from the
+// push showed the bout still pending (Horiguchi, 2026-11-21: committed
+// 19:10:33, live 19:13:00 UTC). So while a card is on, the app reads data.js
+// from GitHub itself. Not from raw.githubusercontent's /main/: GitHub caches
+// what main points at for ~5 minutes (send-reminders' pinnedDataUrl says the
+// same), which can be staler than Pages. It asks the API for main's commit (a
+// tiny read) and fetches data.js at that commit, whose URL never changes.
+//
+// It only ever ADDS a result to a bout still undecided here, the same fields
+// the live poll sets; nothing else on the card is touched, and a decided bout
+// is never rewritten. The file is never run: the fight lines are read with
+// patterns anchored on scrape.py's fixed layout (send-push's parseCards does
+// the same). It sends no pushes. Unauthenticated GitHub API reads are 60 an
+// hour per IP, so it runs at most every FRESH_GAP_MS while visible, backs off
+// on a refusal, and any failure just leaves Pages and the Wikipedia poll.
+// sw.js never caches these responses (its network-first set is same-origin).
+// ---------------------------------------------------------------------------
+(function(){
+  var REF_URL="https://api.github.com/repos/AndyRBrett/ufc-dashboard/git/ref/heads/main";
+  var RAW_BASE="https://raw.githubusercontent.com/AndyRBrett/ufc-dashboard/";
+  var FRESH_GAP_MS=2*60*1000, RESUME_GAP_MS=20*1000, BACKOFF_MS=10*60*1000;
+  var _lastAt=0, _blockedUntil=0, _sha=null, _busy=null;
+
+  function _activeEvents(){
+    if(typeof EVENTS==="undefined"||!Array.isArray(EVENTS))return[];
+    var now=Date.now();
+    return EVENTS.filter(function(ev){
+      var evMs=new Date(ev.date+"T00:00:00").getTime();
+      return evMs>=now-36*HOUR_MS&&evMs<=now+36*HOUR_MS&&ev.fights.some(function(f){return!boutDecided(f);});
+    });
+  }
+
+  function _un(s){
+    return s.replace(/\\u([0-9a-fA-F]{4})|\\(.)/g,function(m,h,c){return h?String.fromCharCode(parseInt(h,16)):c;});
+  }
+  var STR='"((?:[^"\\\\]|\\\\.)*)"';
+  var reName=new RegExp('^\\s*name:'+STR+',?\\s*$'),reDate=/^\s*date:"(\d{4}-\d{2}-\d{2})",?\s*$/;
+  var reWin=new RegExp('\\bwinner:(null|'+STR+')'),reMethod=new RegExp('\\bmethod:'+STR);
+  var reF1=new RegExp(',f1:\\{n:'+STR),reF2=new RegExp(',f2:\\{n:'+STR);
+  // Each card's name and date lines, then its fights, one per line:
+  // {lbl:…,winner:…,method:…,round:…,state:…,f1:{n:…},f2:{n:…}}. The result
+  // fields are read only from the part before f1, the bout's own.
+  function parseResults(js){
+    var at=js.indexOf("var EVENTS=");if(at<0)return[];
+    var lines=js.slice(at).split("\n"),cards=[],cur=null,pendingName=null;
+    for(var i=0;i<lines.length;i++){
+      var ln=lines[i],m;
+      if((m=reName.exec(ln))){pendingName=_un(m[1]);continue;}
+      if(pendingName!==null&&(m=reDate.exec(ln))){cur={name:pendingName,date:m[1],fights:[]};cards.push(cur);pendingName=null;continue;}
+      if(!cur||!/^\s*\{lbl:"/.test(ln))continue;
+      var cut=ln.indexOf(",f1:{"),head=cut>=0?ln.slice(0,cut):"";
+      var f1=reF1.exec(ln),f2=reF2.exec(ln),w=reWin.exec(head),st=/\bstate:"(\w+)"/.exec(head);
+      if(!f1||!f2||!st)continue;
+      var meth=reMethod.exec(head),rd=/\bround:(\d+)/.exec(head);
+      cur.fights.push({f1:_un(f1[1]),f2:_un(f2[1]),winner:w&&w[2]!=null?_un(w[2]):"",
+        method:meth?_un(meth[1]):"",round:rd?Number(rd[1]):null,state:st[1]});
+    }
+    return cards;
+  }
+
+  // Copy a finished bout's result onto the same bout here, if it isn't decided yet.
+  function mergeResults(cards){
+    var changed=false;
+    _activeEvents().forEach(function(ev){
+      var card=cards.filter(function(c){return c.date===ev.date&&c.name===ev.name;})[0];
+      if(!card)return;
+      ev.fights.forEach(function(f){
+        if(boutDecided(f))return;
+        var a=f.f1.n,b=f.f2.n;
+        var got=card.fights.filter(function(x){
+          return(nmEq(x.f1,a)&&nmEq(x.f2,b))||(nmEq(x.f1,b)&&nmEq(x.f2,a));
+        })[0];
+        if(!got||got.state!=="post")return;
+        if(got.winner&&!nmEq(got.winner,a)&&!nmEq(got.winner,b))return;
+        f.winner=got.winner?(nmEq(got.winner,a)?a:b):"";
+        f.method=got.method;f.round=got.round;f.state="post";
+        console.log("[UFC fresh results] NEW RESULT:",a,"vs",b,"→",f.winner||"(no winner)",f.method);
+        changed=true;
+      });
+    });
+    return changed;
+  }
+
+  function _rerender(){
+    render();
+    var lbPanel=document.getElementById("lbPanel");
+    var lbOpen=lbPanel&&lbPanel.classList.contains("open");
+    if(typeof fnOnResult==="function"&&fnLive&&fnModeOpen())fnOnResult();
+    else if(lbOpen)loadLeaderboard(true);
+  }
+
+  function freshResults(gap){
+    var now=Date.now();
+    if(_busy||document.hidden||now<_blockedUntil||now-_lastAt<(gap==null?FRESH_GAP_MS:gap))return Promise.resolve(false);
+    if(!_activeEvents().length)return Promise.resolve(false);
+    _lastAt=now;
+    _busy=fetch(REF_URL,{cache:"no-store"})
+      .then(function(r){
+        if(r.status===403||r.status===429){_blockedUntil=Date.now()+BACKOFF_MS;throw new Error("rate limited");}
+        if(!r.ok)throw new Error(r.status);
+        return r.json();
+      })
+      .then(function(j){
+        var sha=j&&j.object&&j.object.sha;
+        if(typeof sha!=="string"||!/^[0-9a-f]{40}$/.test(sha))throw new Error("no sha");
+        if(sha===_sha)return false;
+        return fetch(RAW_BASE+sha+"/data.js").then(function(r){
+          if(!r.ok)throw new Error(r.status);
+          return r.text();
+        }).then(function(js){
+          _sha=sha;
+          var changed=mergeResults(parseResults(js));
+          if(changed)_rerender();
+          return changed;
+        });
+      })
+      .catch(function(e){console.warn("[UFC fresh results]",e&&e.message||e);return false;})
+      .then(function(v){_busy=null;return v;});
+    return _busy;
+  }
+
+  window.freshResults=freshResults;
+  window._freshParse=parseResults;
+  // Opening the app (from a result push or not) checks at once; while it stays
+  // open and a card is on, every FRESH_GAP_MS.
+  document.addEventListener("visibilitychange",function(){
+    if(document.visibilityState==="visible")freshResults(RESUME_GAP_MS);
+  });
+  setTimeout(function(){freshResults(0);},2500);
+  setInterval(function(){freshResults();},FRESH_GAP_MS);
+})();
+// fresh-results:end
 </script>
 <div class="lb-panel" id="lbPanel">
   <div class="usa-stars-lb" aria-hidden="true"></div>
