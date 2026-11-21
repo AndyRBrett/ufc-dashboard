@@ -242,6 +242,9 @@ Deno.serve(async (req) => {
   // Picked cards whose results page couldn't be read. Reported, not swallowed:
   // on 2026-11-21 this function answered `parsed: 0` all card and nobody knew.
   const unread: { date: string; name: string }[] = [];
+  // Groups send-push refused or never answered this run. Not logged, so the
+  // next pass and run retry them; reported, so update.yml can say so.
+  const failed: { date: string; type: string; status: number }[] = [];
   const picksByDate = new Map<string, Pick[] | null>();
   const picksFor = async (date: string): Promise<Pick[] | null> => {
     if (!picksByDate.has(date)) {
@@ -294,11 +297,21 @@ Deno.serve(async (req) => {
           }),
         });
         const j = await r.json().catch(() => ({}));
-        if (j && typeof j.sent === "number" && j.sent > 0) pushedCount += j.sent;
-        logged.add(`${date}|${notifType}`);   // claimed (or already claimed): never twice in a run
-        if (r.ok && j && typeof j.sent === "number" && !j.skipped) sent.push(notifType);
-        fights.push({ event_date: date, type: notifType, recipients: userIds.length, result: j });
-      } catch (_e) { /* best-effort; the next run retries, notif_log dedups */ }
+        fights.push({ event_date: date, type: notifType, recipients: userIds.length, status: r.status, result: j });
+        // Only a 2xx with a count is claimed (sent, or already claimed by
+        // another sender). Anything else wrote no notif_log row: leave the group
+        // open so the data.js pass (and the next run) retries it, and report it,
+        // so a send-push that keeps failing can't look healthy.
+        if (!r.ok || !j || typeof j.sent !== "number") {
+          failed.push({ date, type: notifType, status: r.status });
+          continue;
+        }
+        if (j.sent > 0) pushedCount += j.sent;
+        logged.add(`${date}|${notifType}`);   // never twice in a run
+        if (!j.skipped) sent.push(notifType);
+      } catch (_e) {
+        failed.push({ date, type: notifType, status: 0 });   // transport error: open, retried, reported
+      }
     }
     return sent;
   };
@@ -361,7 +374,7 @@ Deno.serve(async (req) => {
   }
 
   return new Response(
-    JSON.stringify({ events: events.size, parsed: parsedCount, pushed: pushedCount, skipped: skippedCount, deferred: deferredCount, unread, net, dataError, fights }),
+    JSON.stringify({ events: events.size, parsed: parsedCount, pushed: pushedCount, skipped: skippedCount, deferred: deferredCount, unread, net, failed, dataError, fights }),
     { status: 200, headers: { "Content-Type": "application/json" } },
   );
 });

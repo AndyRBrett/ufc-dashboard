@@ -1101,7 +1101,10 @@ inputs; nothing checked the outcome. Details: `docs/HISTORY.md`.
   two passes and the scraper never double-push a respelled bout.
 - **A fired safety net is seen.** A group the data.js pass had to send is
   marked `net:<type>` in `notif_log` and reported in `net`, along with
-  `unread` (a results page it can't read) and `dataError`. update.yml's
+  `unread` (a results page it can't read), `failed` and `dataError`. **Only a
+  2xx with a count claims a group**: a send-push error leaves it open, so the
+  data.js pass retries it in the same run and it is reported in `failed`
+  (Codex on #353: marking it logged regardless hid undelivered results). update.yml's
   "Check result pushes against the committed data.js" step calls it pinned to
   the commit it just pushed (`X-Data-Sha`) and keeps one issue, **"Result
   pushes needed the safety net"**, open while any of those is in the window.

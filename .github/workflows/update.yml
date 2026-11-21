@@ -264,9 +264,10 @@ jobs:
           net=$(jq -r '.net[]? | "- \(.date) `\(.type)`"' /tmp/cr.json)
           blind=$(jq -r --arg today "$today" '.unread[]? | select(.date <= $today) | "- \(.date) \(.name)"' /tmp/cr.json)
           derr=$(jq -r '.dataError // empty' /tmp/cr.json)
+          failed=$(jq -r '.failed[]? | "- \(.date) `\(.type)` (HTTP \(.status))"' /tmp/cr.json | sort -u)
           num=$(gh issue list --state open --search "$TITLE in:title" --json number,title \
                 --jq "[.[]|select(.title==env.TITLE)][0].number" 2>/dev/null || echo "")
-          if [ -n "$net$blind$derr" ]; then
+          if [ -n "$net$blind$derr$failed" ]; then
             {
               echo "check-results' report as of $(date -u +'%Y-%m-%d %H:%M UTC'). Rewritten each data commit; closes itself once the window (2 days back) is clean."
               echo
@@ -280,6 +281,11 @@ jobs:
                 echo "check-results can't read Wikipedia for these cards, so only the data.js pass is sending."
                 echo "$blind"; echo
               fi
+              if [ -n "$failed" ]; then
+                echo "### send-push refused or didn't answer"
+                echo "These groups are still unsent; every run retries them until send-push takes them."
+                echo "$failed"; echo
+              fi
               if [ -n "$derr" ]; then
                 echo "### Committed data.js unreadable"
                 echo "The safety net is off until it reads again: \`$derr\`"
@@ -288,7 +294,7 @@ jobs:
             echo "::warning::result pushes needed the safety net; see the \"$TITLE\" issue"
             if [ -n "$num" ]; then gh issue edit "$num" --body-file /tmp/cr.md; else gh issue create --title "$TITLE" --body-file /tmp/cr.md; fi
           elif [ -n "$num" ]; then
-            gh issue close "$num" --comment "No safety-net sends or unreadable pages in the window as of $(date -u +'%Y-%m-%d %H:%M UTC')."
+            gh issue close "$num" --comment "No safety-net sends, failed sends or unreadable pages in the window as of $(date -u +'%Y-%m-%d %H:%M UTC')."
           fi
 
       # Pick reveals wait on the lock times send-reminders writes from the

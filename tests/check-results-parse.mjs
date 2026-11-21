@@ -294,7 +294,7 @@ async function runPoll({ withParser = true, card: edit = (c) => c } = {}) {
                 { user_id: "u-hokit", f1: "Ciryl Gane", f2: "Josh Hokit", pick: "Josh Hokit" }];
   const card = (over = {}) => ({ name: FN, date: "2026-11-14", slug: REAL,
     fights: [{ f1: { n: "Ciryl Gane" }, f2: { n: "Josh Hokit" }, winner: "Ciryl Gane", state: "post" }], ...over });
-  const runCR = async ({ pages = { [REAL]: WIKI }, cards = [card()], dataStatus = 200, picks = GANE, logged = [], lockAt = "2026-11-15T01:00:00+00:00", headers = {} } = {}) => {
+  const runCR = async ({ pages = { [REAL]: WIKI }, cards = [card()], dataStatus = 200, picks = GANE, logged = [], lockAt = "2026-11-15T01:00:00+00:00", headers = {}, pushStatus = () => 200 } = {}) => {
     const seenR = [], pushesR = [], marks = [];
     globalThis.fetch = async (url, init) => {
       url = String(url); seenR.push(url);
@@ -318,7 +318,11 @@ async function runPoll({ withParser = true, card: edit = (c) => c } = {}) {
         return json(picks.slice(x, Math.min(y + 1, x + 1000)));
       }
       if (url.includes("/rest/v1/rpc/pick_lock_for")) return json(lockAt);
-      if (url.endsWith("/functions/v1/send-push")) { pushesR.push(JSON.parse(init.body)); return json({ sent: 1, failed: 0 }); }
+      if (url.endsWith("/functions/v1/send-push")) {
+        pushesR.push(JSON.parse(init.body));
+        const st = pushStatus(pushesR.length);
+        return st === 200 ? json({ sent: 1, failed: 0 }) : new Response(JSON.stringify({ error: "boom" }), { status: st });
+      }
       return new Response("unexpected " + url, { status: 500 });
     };
     Date.now = () => NOW;
@@ -364,6 +368,18 @@ async function runPoll({ withParser = true, card: edit = (c) => c } = {}) {
   const half = await runCR({ pages: {}, logged: ["result:ciryl-gane-josh-hokit:win"] });
   check("...and a bout with one side sent gets only the other", J(half.types) === J(["result:ciryl-gane-josh-hokit:loss"]));
 
+  // A send-push error claims nothing (Codex on #353): the group stays open, the
+  // data.js pass retries it in the same run, and the failure is reported, so a
+  // send-push that keeps failing can't look healthy.
+  const down = await runCR({ pushStatus: () => 502 });
+  check("a send-push error leaves the group open: the data.js pass retries it in the same run",
+    down.pushes.length === 4 && J(down.types) === J([BOTH[0], BOTH[0], BOTH[1], BOTH[1]]));
+  check("...nothing is marked as a net send, and every failure is reported",
+    down.marks.length === 0 && J(down.body.net) === "[]" && down.body.failed.length === 4 && down.body.failed.every((x) => x.status === 502));
+  const blip = await runCR({ pushStatus: (n) => (n <= 2 ? 502 : 200) });
+  check("...and when the retry gets through, it is the safety net's send, marked and reported",
+    J(blip.body.net.map((n) => n.type).sort()) === J(BOTH) && blip.marks.length === 2 && blip.body.failed.length === 2);
+
   // Still inside the bout's lock grace: the audience isn't final, wait.
   const early = await runCR({ pages: {}, lockAt: new Date(NOW - 60e3).toISOString() });
   check("inside the lock grace nothing is sent", early.pushes.length === 0 && early.body.deferred > 0);
@@ -398,8 +414,9 @@ async function runPoll({ withParser = true, card: edit = (c) => c } = {}) {
   check("update.yml calls check-results after the scraper's send, pinned to the commit it pushed",
     step.length > 0 && up.indexOf("python scrape.py --send-pending pending-pushes.json\n") < at &&
     /X-Data-Sha: \$\(git rev-parse HEAD\)/.test(step) && /continue-on-error: true/.test(step));
-  check("...and opens an issue for a net send, an unreadable page or an unreadable data.js",
-    /\.net\[\]\?/.test(step) && /\.unread\[\]\?/.test(step) && /\.dataError/.test(step) && /gh issue create --title "\$TITLE"/.test(step));
+  check("...and opens an issue for a net send, a failed send, an unreadable page or an unreadable data.js",
+    /\.net\[\]\?/.test(step) && /\.failed\[\]\?/.test(step) && /\.unread\[\]\?/.test(step) && /\.dataError/.test(step) &&
+    /\[ -n "\$net\$blind\$derr\$failed" \]/.test(step) && /gh issue create --title "\$TITLE"/.test(step));
 }
 
 if (failures) { console.error(`\ncheck:results — ${failures} failure(s)`); process.exit(1); }
