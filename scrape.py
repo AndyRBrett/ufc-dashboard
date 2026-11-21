@@ -4031,51 +4031,18 @@ def _post_push(payload, retry_waits=()):
         time.sleep(wait)
 
 
-PICKS_PAGE = 1000   # PostgREST's max rows per response
-
-
-def _result_picks(dates):
-    """Every UFC pick on these cards, paged; None if any page can't be read.
-
-    This used to read every UFC pick ever made in one request, and PostgREST
-    answers at most 1,000 rows. Past that (1,254 on 2026-11-21) the rows it
-    returned were arbitrary, so a group of pickers missing from them was never
-    asked for: one player got no result push all card. Only the cards being
-    announced, ordered by id so pages don't overlap, and a page that fails
-    makes the whole read fail: a partial audience would be deduped for good.
-    """
-    dates = sorted(d for d in dates if re.fullmatch(r"\d{4}-\d{2}-\d{2}", d or ""))
-    if not dates:
-        return []
-    if not SUPABASE_ANON:
-        return None
-    headers = {"apikey": SUPABASE_ANON, "Authorization": f"Bearer {SUPABASE_ANON}"}
-    rows, offset = [], 0
-    while True:
-        path = (f"/rest/v1/picks?select=user_id,f1,f2,pick&promotion=eq.ufc"
-                f"&event_date=in.({','.join(dates)})&order=id"
-                f"&limit={PICKS_PAGE}&offset={offset}")
-        try:
-            r = requests.get(SUPABASE_URL + path, headers=headers, timeout=10)
-            r.raise_for_status()
-            page = r.json()
-        except Exception as e:
-            print(f"Picks read failed at offset {offset}: {e}", file=sys.stderr)
-            return None
-        rows.extend(page)
-        if len(page) < PICKS_PAGE:
-            return rows
-        offset += PICKS_PAGE
-
-
 def send_push_notifications(new_results, defer=True, retry_waits=()):
     """Send win/loss push notifications for newly resolved fights.
 
     push_subs is readable only by the service role (RLS), so the actual web-push
-    delivery happens inside the send-push edge function. This groups pickers of
-    each fight into win/loss lists and makes one targeted call per group. The
-    function's notif_log dedup (event_date + type) makes re-sends from
-    overlapping cron runs no-ops.
+    delivery happens inside the send-push edge function. This asks for both
+    groups of every result (win, loss) with the anon key, and send-push builds
+    each audience from picks itself (200 "Nobody to tell" for an empty side).
+    It used to read picks here to decide which groups to ask for, and once the
+    table passed PostgREST's 1,000-row cap (2026-11-21) that read lost whole
+    groups, while send-push ignored the audience it sent anyway. The
+    function's notif_log claim (event_date + type) makes re-sends no-ops, and
+    check-results checks every decided bout in data.js against it.
 
     With PUSH_DEFER_FILE set (update.yml), the results are written there instead
     and sent by `scrape.py --send-pending` after the commit; see PUSH_DEFER_FILE.
@@ -4087,13 +4054,6 @@ def send_push_notifications(new_results, defer=True, retry_waits=()):
         return
     if not SUPABASE_ANON:
         print("Push skipped: SUPABASE_ANON not set", file=sys.stderr)
-        return
-    picks = _result_picks({r.get("event_date", "") for r in new_results})
-    if picks is None:
-        print("Push skipped: picks unreadable; check-results will cover them", file=sys.stderr)
-        return
-    if not picks:
-        print("Push skipped: no picks available (Supabase empty or unreachable)", file=sys.stderr)
         return
     for res in new_results:
         winner, loser = res["winner"], res["loser"]
@@ -4111,42 +4071,20 @@ def send_push_notifications(new_results, defer=True, retry_waits=()):
                     continue
             except ValueError:
                 pass
-        winners, losers = [], []
-        for pick in picks:
-            f1, f2, chosen = pick["f1"], pick["f2"], pick["pick"]
-            is_this_fight = (
-                (names_match(f1, winner) and names_match(f2, loser))
-                or (names_match(f2, winner) and names_match(f1, loser))
-            )
-            if not is_this_fight or not pick.get("user_id"):
-                continue
-            (winners if names_match(chosen, winner) else losers).append(pick["user_id"])
         # asc() before the slug: an unfolded "ł" survives the lowercase and comes
         # out as a separator here ("sygu-a"), which is a different key from the
         # "sygua" every folded sender derives — and a different key means a
         # second notification for the same fight. Fold at the key, not only
         # upstream, so it is stable whichever spelling reaches this function.
         fight_key = re.sub(r"[^a-z0-9]+", "-", asc(f"{winner}-{loser}").lower()).strip("-")
-        # safe_title/safe_body is the spoiler-free variant — identical for both
-        # groups and naming no winner, so neither the text nor a difference
-        # between notifications can leak the result. The send-push function
-        # delivers it to everyone except subscribers who opted in to live
-        # results (push_subs.live_results), who get the full title/body.
-        for group, user_ids, title, body in (
-            ("win",  winners, "Your pick WON! 🔥", f"{winner} def. {loser} — you called it!"),
-            ("loss", losers,  "Tough luck ❌",      f"{winner} def. {loser}"),
-        ):
-            if not user_ids:
-                continue
+        # send-push rebuilds an anon caller's text, spoiler-free variant and
+        # audience from the committed data.js and picks, so the type and date
+        # are all it needs.
+        for group in ("win", "loss"):
             try:
                 r = _post_push({
                     "event_date": event_date,
                     "type": f"result:{fight_key}:{group}",
-                    "title": title,
-                    "body": body,
-                    "safe_title": "🥊 Fight result is in",
-                    "safe_body": "A fight you picked is final — open the app to see how you did. (No spoilers here!)",
-                    "include_user_ids": user_ids,
                 }, retry_waits)
                 if r.status_code == 425:
                     # Inside the bout's lock grace: send-push won't claim the

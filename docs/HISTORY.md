@@ -487,3 +487,17 @@ the service key. Fixed in #349 (paged scraper read, check-results search
 fallback); the follow-up paged check-results' and the brief's reads, added the
 `check:pickstore` gate on unpaged server reads, and made `scheduled-push.yml`
 fail on a card check-results can't read.
+
+The investigation after the card found the deeper problem: each sender checked
+only its own inputs, and nothing checked the outcome. Measured that night, the
+scraper's audience read was redundant (send-push rebuilds an anon caller's
+audience; the read only decided which groups to ask for, which is exactly what
+broke), check-results had become the sender that delivered (every post-fix
+result went out 23 s to 3.5 min before the scraper's commit), and the
+`scheduled-push.yml` alert ran three times that day while cron-job.org's
+every-2-minute check-results responses went unread. So check-results became
+the reconciler: a second pass sends every unsent group of every decided bout in
+the committed data.js, marks what it had to send (`net:`), and update.yml turns
+that into an issue. The scraper stopped reading picks, and the search fallback
+gave way to data.js's recorded `slug`, the same fix the app's live poll got in
+#352.

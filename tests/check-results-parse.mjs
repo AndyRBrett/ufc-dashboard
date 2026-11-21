@@ -287,61 +287,120 @@ async function runPoll({ withParser = true, card: edit = (c) => c } = {}) {
   check("...because the result loop drops a draw / no contest before matching anyone",
     /for \(const res of parsed\) \{\s*(?:\/\/[^\n]*\n\s*)*if \(res\.undecided \|\| !res\.winner \|\| !res\.loser\) continue;/.test(src));
 
-  // 2026-11-21: picks say "Prochazka", the article is "Procházka", and the
-  // folded title isn't a redirect, so check-results parsed nothing all card.
-  // It now searches like scrape.py and takes only a title that folds to the
-  // same event, never a different card the search also returns.
-  const FN = "UFC Fight Night: Prochazka vs. Stirling", REAL = "UFC Fight Night: Procházka vs. Stirling";
-  const runFn = async (titles, pickRows = [{ user_id: "u-gane", f1: "Ciryl Gane", f2: "Josh Hokit", pick: "Ciryl Gane" }]) => {
-    const seenFn = [], pushesFn = [];
+  // A configurable run: picks, the committed data.js, Wikipedia pages and the
+  // dedup log are all stubs; every fetch is recorded.
+  const FN = "UFC Fight Night: Prochazka vs. Stirling", REAL = "UFC_Fight_Night:_Procházka_vs._Stirling";
+  const GANE = [{ user_id: "u-gane", f1: "Ciryl Gane", f2: "Josh Hokit", pick: "Ciryl Gane" },
+                { user_id: "u-hokit", f1: "Ciryl Gane", f2: "Josh Hokit", pick: "Josh Hokit" }];
+  const card = (over = {}) => ({ name: FN, date: "2026-11-14", slug: REAL,
+    fights: [{ f1: { n: "Ciryl Gane" }, f2: { n: "Josh Hokit" }, winner: "Ciryl Gane", state: "post" }], ...over });
+  const runCR = async ({ pages = { [REAL]: WIKI }, cards = [card()], dataStatus = 200, picks = GANE, logged = [], lockAt = "2026-11-15T01:00:00+00:00", headers = {} } = {}) => {
+    const seenR = [], pushesR = [], marks = [];
     globalThis.fetch = async (url, init) => {
-      url = String(url); seenFn.push(url);
+      url = String(url); seenR.push(url);
       const json = (x) => new Response(JSON.stringify(x), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url.startsWith("https://raw.githubusercontent.com/")) {
+        return dataStatus === 200 ? new Response("var EVENTS=" + JSON.stringify(cards) + ";\n", { status: 200 }) : new Response("no", { status: dataStatus });
+      }
       if (url.includes("/rest/v1/picks?select=event_date,event_name")) return json([{ event_date: "2026-11-14", event_name: FN }]);
-      if (url.includes("/rest/v1/notif_log")) return json([]);
-      if (url.includes("action=opensearch")) return json([FN, titles]);
-      if (url.includes("list=search")) return json({ query: { search: titles.map((title) => ({ title })) } });
-      if (url.includes("action=parse")) {
+      if (url.includes("/rest/v1/notif_log")) {
+        if (init?.method === "POST") { marks.push(JSON.parse(init.body)); return new Response(null, { status: 201 }); }
+        return json(logged.map((type) => ({ event_date: "2026-11-14", type })));
+      }
+      if (url.startsWith("https://en.wikipedia.org/")) {
+        if (!/action=parse/.test(url)) return json({ unexpected: "search" });
         const page = decodeURIComponent(/[?&]page=([^&]+)/.exec(url)[1]);
-        return json(page === REAL.replace(/ /g, "_") ? { parse: { wikitext: { "*": WIKI } } } : { error: { code: "missingtitle" } });
+        return json(pages[page] ? { parse: { wikitext: { "*": pages[page] } } } : { error: { code: "missingtitle" } });
       }
       if (url.includes("/rest/v1/picks?select=user_id,f1,f2,pick")) {
         // PostgREST: at most 1,000 rows, the window the Range header asks for.
-        const [a, b] = String(init?.headers?.Range ?? "0-999").split("-").map(Number);
-        return json(pickRows.slice(a, Math.min(b + 1, a + 1000)));
+        const [x, y] = String(init?.headers?.Range ?? "0-999").split("-").map(Number);
+        return json(picks.slice(x, Math.min(y + 1, x + 1000)));
       }
-      if (url.includes("/rest/v1/rpc/pick_lock_for")) return json("2026-11-15T01:00:00+00:00");
-      if (url.endsWith("/functions/v1/send-push")) { pushesFn.push(JSON.parse(init.body)); return json({ sent: 1 }); }
+      if (url.includes("/rest/v1/rpc/pick_lock_for")) return json(lockAt);
+      if (url.endsWith("/functions/v1/send-push")) { pushesR.push(JSON.parse(init.body)); return json({ sent: 1, failed: 0 }); }
       return new Response("unexpected " + url, { status: 500 });
     };
     Date.now = () => NOW;
     try {
-      const r = await handler(new Request("https://fn.test/check-results", { method: "POST", headers: { Authorization: "Bearer cron-secret" } }));
-      return { body: await r.json(), seen: seenFn, pushes: pushesFn };
+      const r = await handler(new Request("https://fn.test/check-results", { method: "POST", headers: { Authorization: "Bearer cron-secret", ...headers } }));
+      return { body: await r.json(), seen: seenR, pushes: pushesR, marks, types: pushesR.map((x) => x.type).sort() };
     } finally { globalThis.fetch = realFetch; Date.now = realNow; }
   };
-  const acc = await runFn(["UFC Fight Night: Procházka vs. Rountree", REAL]);
-  check("an accented Fight Night title is found by search and its results read",
-    acc.body.parsed > 0 && acc.seen.some((u) => u.includes("page=" + encodeURIComponent(REAL.replace(/ /g, "_")))));
-  check("...and its result pushes go out", acc.pushes.some((p) => p.type === "result:ciryl-gane-josh-hokit:win"));
-  const wrong = await runFn(["UFC Fight Night: Procházka vs. Rountree"]);
-  check("...but a search hit for a different card is never read", wrong.body.parsed === 0 && wrong.pushes.length === 0);
-  check("...and a card it can't read is reported (scheduled-push.yml fails on it)",
-    J(wrong.body.unread) === J([{ date: "2026-11-14", name: FN }]) && J(acc.body.unread) === "[]");
-  const wf = read(".github/workflows/scheduled-push.yml");
-  check("scheduled-push.yml fails the run on an unread card dated today or earlier",
-    /\.unread\[\]\?\s*\|\s*select\(\.date <= \$today\)/.test(wf) && /::error::check-results can't read[\s\S]{0,200}exit 1/.test(wf));
+  const BOTH = ["result:ciryl-gane-josh-hokit:loss", "result:ciryl-gane-josh-hokit:win"];
+
+  // 2026-11-21: picks say "Prochazka", the article is "Procházka", and that
+  // isn't even a redirect, so check-results parsed nothing all card. It reads
+  // the article scrape.py recorded in data.js (ev.slug), as the app's live
+  // poll does, and never searches.
+  const acc = await runCR();
+  check("an accented Fight Night is read at data.js's recorded slug, with no search",
+    acc.body.parsed > 0 && acc.seen.some((u) => u.includes("page=" + encodeURIComponent(REAL))) &&
+    !acc.seen.some((u) => /opensearch|list=search/.test(u)));
+  check("...and its pushes go out from the Wikipedia pass, so the safety net doesn't fire",
+    J(acc.types) === J(BOTH) && J(acc.body.net) === "[]" && acc.marks.length === 0 && J(acc.body.unread) === "[]");
+  const ppv = await runCR({ cards: [card({ name: "UFC 334: Gane vs. Hokit", slug: "UFC_334:_Gane_vs._Hokit" })], pages: { UFC_334: WIKI } });
+  check("a numbered PPV still reads its own article, never data.js's full-title redirect",
+    ppv.body.parsed > 0 && ppv.seen.some((u) => /[?&]page=UFC_334&/.test(u)));
+
+  // The safety net: Wikipedia unreadable, the result is in the committed
+  // data.js, so the data.js pass sends both groups and marks them.
+  const blind = await runCR({ pages: {} });
+  check("with Wikipedia unreadable, the data.js pass sends every group of a decided bout",
+    J(blind.types) === J(BOTH) && J(blind.pushes.find((x) => x.type.endsWith(":loss"))?.include_user_ids) === J(["u-hokit"]));
+  check("...marks each one net:<type> in notif_log and reports it, with the unread card",
+    J(blind.marks.map((m) => m.type).sort()) === J(BOTH.map((t) => "net:" + t)) &&
+    J(blind.body.net.map((n) => n.type).sort()) === J(BOTH) && J(blind.body.unread) === J([{ date: "2026-11-14", name: FN }]));
+  const earlier = await runCR({ pages: {}, logged: [...BOTH, ...BOTH.map((t) => "net:" + t)] });
+  check("...and keeps reporting an earlier run's net sends (the alert is state, not a race), sending nothing again",
+    earlier.pushes.length === 0 && J(earlier.body.net.map((n) => n.type).sort()) === J(BOTH));
+
+  // Never twice: a group logged under another spelling of the same bout
+  // counts as sent (senders key by the names they read).
+  const respelled = await runCR({ pages: {}, logged: ["result:cyril-gane-josh-hokit:win", "result:cyril-gane-josh-hokit:loss"] });
+  check("a group logged under a respelled key is not sent again", respelled.pushes.length === 0 && J(respelled.body.net) === "[]");
+  const reversed = await runCR({ pages: {}, logged: ["result:josh-hokit-ciryl-gane:win"] });
+  check("...but the other winner's key never covers it (winner first)", J(reversed.types) === J(BOTH));
+  const half = await runCR({ pages: {}, logged: ["result:ciryl-gane-josh-hokit:win"] });
+  check("...and a bout with one side sent gets only the other", J(half.types) === J(["result:ciryl-gane-josh-hokit:loss"]));
+
+  // Still inside the bout's lock grace: the audience isn't final, wait.
+  const early = await runCR({ pages: {}, lockAt: new Date(NOW - 60e3).toISOString() });
+  check("inside the lock grace nothing is sent", early.pushes.length === 0 && early.body.deferred > 0);
+  const pending = await runCR({ pages: {}, cards: [card({ fights: [{ f1: { n: "Ciryl Gane" }, f2: { n: "Josh Hokit" }, state: "pre" }] })] });
+  check("an undecided bout in data.js sends nothing", pending.pushes.length === 0);
+
+  // The committed copy, pinned to the commit update.yml just pushed.
+  const SHA = "d5171a5f7847c1cf9e9492e8b84187976644bc0c";
+  const pinned = await runCR({ headers: { "X-Data-Sha": SHA } });
+  check("X-Data-Sha reads data.js at that commit, not main's stale copy",
+    pinned.seen.some((u) => u.includes(`/${SHA}/data.js`)) && !pinned.seen.some((u) => u.includes("/main/data.js")));
+  const nodata = await runCR({ dataStatus: 500, pages: { "UFC_Fight_Night:_Prochazka_vs._Stirling": WIKI } });
+  check("an unreadable data.js is reported, and the Wikipedia pass still runs on the rebuilt title",
+    /HTTP 500/.test(nodata.body.dataError || "") && J(nodata.types) === J(BOTH));
 
   // A card with more picks than one PostgREST response: the losing side sits
   // past row 1,000 and must still be told (scrape.py lost exactly that group).
   const big = Array.from({ length: 1200 }, (_, i) => ({ user_id: "w" + i, f1: "Ciryl Gane", f2: "Josh Hokit", pick: "Ciryl Gane" }))
     .concat([{ user_id: "u-late", f1: "Ciryl Gane", f2: "Josh Hokit", pick: "Josh Hokit" }]);
-  const paged = await runFn([REAL], big);
-  const lossTo = paged.pushes.find((p) => p.type === "result:ciryl-gane-josh-hokit:loss");
-  const winTo = paged.pushes.find((p) => p.type === "result:ciryl-gane-josh-hokit:win");
+  const paged = await runCR({ picks: big });
+  const lossTo = paged.pushes.find((x) => x.type.endsWith(":loss")), winTo = paged.pushes.find((x) => x.type.endsWith(":win"));
   check("picks past the first 1,000 rows are read: the loser's pickers are told",
     J(lossTo?.include_user_ids) === J(["u-late"]) && winTo?.include_user_ids.length === 1200);
+
+  // Where a fired safety net is seen.
+  const wf = read(".github/workflows/scheduled-push.yml");
+  check("scheduled-push.yml fails the run on an unread card dated today or earlier",
+    /\.unread\[\]\?\s*\|\s*select\(\.date <= \$today\)/.test(wf) && /::error::check-results can't read[\s\S]{0,200}exit 1/.test(wf));
+  const up = read(".github/workflows/update.yml");
+  const at = up.indexOf("- name: Check result pushes against the committed data.js");
+  const step = at < 0 ? "" : up.slice(at, up.indexOf("- name: Write pick lock times now that data.js is committed"));
+  check("update.yml calls check-results after the scraper's send, pinned to the commit it pushed",
+    step.length > 0 && up.indexOf("python scrape.py --send-pending pending-pushes.json\n") < at &&
+    /X-Data-Sha: \$\(git rev-parse HEAD\)/.test(step) && /continue-on-error: true/.test(step));
+  check("...and opens an issue for a net send, an unreadable page or an unreadable data.js",
+    /\.net\[\]\?/.test(step) && /\.unread\[\]\?/.test(step) && /\.dataError/.test(step) && /gh issue create --title "\$TITLE"/.test(step));
 }
 
 if (failures) { console.error(`\ncheck:results — ${failures} failure(s)`); process.exit(1); }
-console.log("\ncheck:results — one reading of a results page (scrape.py's), two senders, and the PPV backup reads its own article.");
+console.log("\ncheck:results — one reading of a results page (scrape.py's), every decided bout in data.js checked against the log, and a fired safety net seen.");

@@ -1,40 +1,46 @@
 // Uses the runtime's built-in Deno.serve — no deno.land/std import, so deploys
 // don't depend on deno.land being up.
-// Always-on server-side result-push backup.
 //
-// GitHub Actions throttles the scraper hard and the client live-poll only fires
-// while someone has the app open, so a fight that ends while nobody is watching
-// (and no scheduled scrape fired) produces no push. This scheduled function
-// closes that gap: driven by pg_cron, it parses Wikipedia for newly-final
-// fights and calls the existing `send-push` for each one.
+// The result-push reconciler. Every run (cron-job.org every 2 min, and
+// update.yml right after each data commit) it makes two passes:
 //
-// It reads Wikipedia with results.js (ResultsParse), the same code the open
-// app's live poll runs, bundled here by scripts/build-fn-bundle.mjs as
-// _shared/results-bundle.js and tied to scrape.py's parser by
-// tests/fixtures/results/expected.json. Its own copy had drifted: it asked for
-// the full event name, so every numbered PPV read a redirect stub with no
-// results ("UFC 334: Gane vs. Hokit" is a redirect to "UFC 334") and this
-// backup never fired for one; and it knew nothing of draws or no contests.
+// 1. Wikipedia (fast): parse the card's results page with results.js
+//    (ResultsParse), the reader the app's live poll runs, bundled as
+//    _shared/results-bundle.js and tied to scrape.py's parser by
+//    tests/fixtures/results/expected.json. A result is on Wikipedia minutes
+//    before the scraper commits it, so this pass usually sends first.
+// 2. data.js (complete): for every decided bout in the COMMITTED data.js (what
+//    the app shows, after health.py's gate and scrape.py's _RESULT_PINS), send
+//    any win/loss group that has pickers and no notif_log row yet. It needs no
+//    Wikipedia title and trusts no other sender, so a result the other paths
+//    missed is sent within a run. A group this pass sends is also recorded as
+//    `net:<type>` in notif_log, and reported in `net`, so a fired safety net is
+//    visible: update.yml opens an issue for it (see CLAUDE.md, "Result pushes:
+//    one reconciler, checked against data.js").
 //
-// It and scrape.py are the two result senders (the app stopped sending them:
-// see index.html's live-poll block). Both build `result:<fightKey>:<group>` the
-// same way, so send-push's notif_log (event_date, type) dedup lets one push per
-// fight through, whichever gets there first. check:dedup holds the key.
+// The article title comes from data.js's `slug`, which scrape.py records as
+// the article it read (diacritics kept). On 2026-11-21 this function rebuilt
+// "UFC Fight Night: Prochazka vs. Stirling" from the picks' ASCII name; the
+// article is "Procházka", not even a redirect, and it parsed nothing all card.
+// A numbered PPV reads "UFC 334", never its full-title redirect stub.
+//
+// scrape.py still asks send-push for each result it commits (anon, rebuilt
+// server-side). All senders build `result:<fightKey>:<group>` the same way, so
+// send-push's notif_log (event_date, type) claim lets one push per group
+// through. check:dedup holds the key.
 //
 // Deployed with --no-verify-jwt: the Supabase gateway would otherwise reject the
 // cron's `Authorization: Bearer <CRON_SECRET>` as an invalid JWT before this code
 // runs. Inbound auth is enforced here via CRON_SECRET instead.
 import { secretEquals } from "../_shared/secret.js";
 import { ResultsParse } from "../_shared/results-bundle.js";
-
-// ---------------------------------------------------------------------------
-// Main handler
-// ---------------------------------------------------------------------------
+import { parseDataJs, pinnedDataUrl } from "../_shared/datajs.js";
 
 interface Pick { user_id: string; f1: string; f2: string; pick: string; }
 // What ResultsParse.parseResults returns: a win, or a draw / no contest
 // (undecided, both names in f1/f2, no winner).
 interface FightResult { winner: string; loser: string; method: string; round: number | null; undecided?: boolean; f1?: string; f2?: string; }
+interface Card { name: string; date: string; slug?: string; fights: { f1: { n: string }; f2: { n: string }; winner?: string; state?: string }[]; }
 
 const SAFE_TITLE = "🥊 Fight result is in";
 const SAFE_BODY = "A fight you picked is final — open the app to see how you did. (No spoilers here!)";
@@ -45,15 +51,49 @@ const LOOKBACK_DAYS = 2;
 const LOOKAHEAD_DAYS = 1;
 const MAX_EVENTS = 5; // hard cap on Wikipedia fetches per run
 
+// The committed data.js, never Pages (see send-reminders' DATA_URL).
+const DATA_URL = Deno.env.get("DATA_URL") ??
+  "https://raw.githubusercontent.com/AndyRBrett/ufc-dashboard/main/data.js";
+
+const UA = { "User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)" };
+
 function ymd(d: Date): string { return d.toISOString().slice(0, 10); }
 
 async function fetchWikitext(slug: string): Promise<string | null> {
   // redirects=1 as well as the right slug: a renamed article still reads.
   const url = `https://en.wikipedia.org/w/api.php?action=parse&page=${encodeURIComponent(slug)}&prop=wikitext&format=json&redirects=1&origin=*`;
-  const r = await fetch(url, { headers: { "User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)" } });
+  const r = await fetch(url, { headers: UA });
   if (!r.ok) return null;
   const d = await r.json();
   return d?.parse?.wikitext?.["*"] ?? null;
+}
+
+// The article to read for a card: data.js's recorded slug for a Fight Night,
+// "UFC 334" for a numbered PPV (its full title is a redirect stub). The same
+// rule as the app's live poll (index.html, _pollOne). data.js's own name
+// decides which, when it has the card (the picks carry a copy of it).
+export function articleSlug(name: string, card: Card | undefined): string {
+  const nm = card?.name || name;
+  return (!/^UFC\s+\d+/.test(nm) && card?.slug) || ResultsParse.eventSlug(nm);
+}
+
+// Is a result group already in notif_log under another spelling? Senders key
+// by the names they read (Wikipedia's or data.js's), which fightKey folds for
+// case and accents but not for a respelling. So a bout counts as sent when a
+// logged key for that date and group names both surnames, winner first.
+const slugOf = (s: string) => ResultsParse.fold(String(s)).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+export function groupLogged(logged: Set<string>, date: string, winner: string, loser: string, group: string): boolean {
+  if (logged.has(`${date}|result:${ResultsParse.fightKey(winner, loser)}:${group}`)) return true;
+  const w = slugOf(ResultsParse.lastName(winner)), l = slugOf(ResultsParse.lastName(loser));
+  if (!w || !l) return false;
+  const pre = `${date}|result:`, suf = `:${group}`;
+  for (const k of logged) {
+    if (!k.startsWith(pre) || !k.endsWith(suf)) continue;
+    const mid = "-" + k.slice(pre.length, k.length - suf.length) + "-";
+    const wi = mid.indexOf(`-${w}-`), li = mid.lastIndexOf(`-${l}-`);
+    if (wi >= 0 && li > wi) return true;
+  }
+  return false;
 }
 
 // Every row a picks query matches. PostgREST answers at most 1,000 rows, and
@@ -74,33 +114,6 @@ async function readAllPicks<T>(url: string, headers: Record<string, string>): Pr
     }
   } catch (_e) { return null; }
 }
-
-// A Fight Night's article is titled with the fighters' real spelling
-// ("UFC Fight Night: Procházka vs. Stirling"), but picks store data.js's
-// ASCII-folded name, and that title isn't even a redirect: this read nothing
-// all card on 2026-11-21. Search the way scrape.py's search_event_slug does,
-// and take only a title that folds to the same event (_pick_search_title).
-const foldTitle = (s: string) => ResultsParse.fold(String(s)).toLowerCase().replace(/[^a-z0-9]/g, "");
-async function searchEventSlug(evName: string): Promise<string | null> {
-  const want = foldTitle(evName);
-  const tries: [string, (j: any) => string[]][] = [
-    [`action=opensearch&search=${encodeURIComponent(evName)}&limit=5&namespace=0&format=json`, (j) => Array.isArray(j?.[1]) ? j[1] : []],
-    [`action=query&list=search&srsearch=${encodeURIComponent(evName)}&srlimit=5&format=json`, (j) => (j?.query?.search ?? []).map((h: { title: string }) => h.title)],
-  ];
-  for (const [q, titles] of tries) {
-    try {
-      const r = await fetch(`https://en.wikipedia.org/w/api.php?${q}&origin=*`, { headers: { "User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)" } });
-      if (!r.ok) continue;
-      const hit = titles(await r.json()).find((t) => typeof t === "string" && foldTitle(t) === want);
-      if (hit) return hit.replace(/ /g, "_");
-    } catch (_e) { /* try the next search */ }
-  }
-  return null;
-}
-
-// Constant-time comparison. `!==` on a secret returns at the first differing
-// byte, so response timing across enough requests leaks the secret prefix by
-// prefix. Length is still observable; that is standard and not worth hiding.
 
 // The pick lock's grace (0010's LOCK_GRACE): the database still accepts a pick
 // for 5 minutes after its bout locks.
@@ -140,14 +153,9 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: { "Content-Type": "application/json" } });
   }
 
-  // Inbound auth: only a caller that knows CRON_SECRET may trigger a scrape.
-  // Header only: `Authorization: Bearer <secret>`. The ?key= form was removed
-  // query param (so external cron UIs work without custom headers).
-  // Header-only. A secret in the query string is written to every log that
-  // records a URL — Supabase's own edge logs, any proxy in front of them, and
-  // the Referer of anything the response links to — which a header is not.
-  // scheduled-push.yml has always sent this as a header, so dropping the
-  // ?key= path costs nothing here.
+  // Inbound auth: only a caller that knows CRON_SECRET. Header only
+  // (`Authorization: Bearer <secret>`): a secret in a query string is written
+  // to every log that records a URL, which a header is not.
   const CRON_SECRET = Deno.env.get("CRON_SECRET") ?? "";
   const bearer = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
   if (!CRON_SECRET || !secretEquals(bearer, CRON_SECRET)) {
@@ -159,31 +167,45 @@ Deno.serve(async (req) => {
   if (!SUPABASE_URL || !SB_ANON_KEY) {
     return new Response(JSON.stringify({ error: "Server misconfigured" }), { status: 500, headers: { "Content-Type": "application/json" } });
   }
-  // Service-role key is used ONLY to read the dedup log (notif_log is RLS-locked
-  // to service-role; see migration 0001). It is a project-wide secret already set
-  // for send-push. If absent we fall back to no pre-filtering — send-push still
-  // dedups, we just lose the invocation saving — so this stays best-effort.
+  // The service key reads notif_log (service-role only) and picks, and marks
+  // a fired safety net. Without it the function still sends, unfiltered.
   const SB_SERVICE_ROLE_KEY = Deno.env.get("SB_SERVICE_ROLE_KEY") ?? "";
+  const serviceHeaders = SB_SERVICE_ROLE_KEY
+    ? { "apikey": SB_SERVICE_ROLE_KEY, "Authorization": `Bearer ${SB_SERVICE_ROLE_KEY}` }
+    : null;
 
   const anonHeaders = { "apikey": SB_ANON_KEY, "Authorization": `Bearer ${SB_ANON_KEY}` };
   // picks is read with the service key. Since 0017 the anon key can't see a
-  // pick until its bout's lock + LOCK_GRACE has passed, and when two results
-  // land in one run the later bout's picks can still be inside that grace: an
-  // anon read would hand send-push an empty audience, and notif_log would then
-  // dedup that result push away for good. Anon remains the fallback for a
-  // deployment without the service key (it sees every locked bout's picks).
-  const picksHeaders = SB_SERVICE_ROLE_KEY
-    ? { "apikey": SB_SERVICE_ROLE_KEY, "Authorization": `Bearer ${SB_SERVICE_ROLE_KEY}` }
-    : anonHeaders;
+  // pick until its bout's lock + LOCK_GRACE has passed, and an anon read inside
+  // that grace would hand send-push an empty audience that notif_log then
+  // dedups for good. Anon remains the fallback for a deployment without it.
+  const picksHeaders = serviceHeaders ?? anonHeaders;
   // X-Service-Key tells send-push this is one of our own functions, so it sends
-  // the text and audience given (from anyone else it rebuilds them). Without
-  // the key a result still goes out, rebuilt from data.js, once that has it.
+  // the text and audience given (from anyone else it rebuilds them).
   const pushHeaders: Record<string, string> = { "Content-Type": "application/json", "Authorization": `Bearer ${SB_ANON_KEY}` };
   if (SB_SERVICE_ROLE_KEY) pushHeaders["X-Service-Key"] = SB_SERVICE_ROLE_KEY;
 
   const now = Date.now();
   const lo = ymd(new Date(now - LOOKBACK_DAYS * 864e5));
   const hi = ymd(new Date(now + LOOKAHEAD_DAYS * 864e5));
+
+  // 0. The committed data.js: the article titles and the decided bouts. A
+  // caller that just pushed a commit names it (X-Data-Sha) so this reads that
+  // commit, not main's ~5-minute-stale copy. Unreadable: the Wikipedia pass
+  // still runs (on rebuilt titles) and the data.js pass is skipped, reported.
+  let cards: Card[] | null = null;
+  let dataError: string | null = null;
+  try {
+    const pinned = pinnedDataUrl(DATA_URL, req.headers.get("X-Data-Sha"));
+    let r = await fetch(pinned === DATA_URL ? `${DATA_URL}?t=${now}` : pinned, { headers: UA });
+    if (!r.ok && pinned !== DATA_URL) r = await fetch(`${DATA_URL}?t=${now}`, { headers: UA });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const evs = parseDataJs(await r.text()).EVENTS;
+    if (!Array.isArray(evs)) throw new Error("no EVENTS");
+    cards = evs as Card[];
+  } catch (e) { dataError = String(e).slice(0, 200); }
+  const cardFor = (date: string, name: string): Card | undefined =>
+    cards ? (cards.find((c) => c.date === date && c.name === name) ?? cards.find((c) => c.date === date)) : undefined;
 
   // 1. Recent events that people actually picked (the only possible audience).
   // picks-read: paged by readAllPicks.
@@ -199,23 +221,18 @@ Deno.serve(async (req) => {
     if (r.event_date && r.event_name && !events.has(r.event_date)) events.set(r.event_date, r.event_name);
   }
 
-  // Pre-read the dedup log once so we can skip send-push entirely for fights any
-  // trigger already notified. Without this the function re-POSTs send-push every
-  // run for the whole lookback window just to get {skipped:true} back — one wasted
-  // invocation per already-final picked fight per run. `${event_date}|${type}`
-  // keys mirror send-push's (event_date, type) notif_log dedup exactly.
-  const alreadySent = new Set<string>();
-  if (SB_SERVICE_ROLE_KEY) {
+  // The dedup log for the window, read once. `${event_date}|${type}` keys
+  // mirror send-push's (event_date, type) claim. It also holds `net:` markers.
+  const logged = new Set<string>();
+  if (serviceHeaders) {
     try {
       const logRes = await fetch(
         `${SUPABASE_URL}/rest/v1/notif_log?event_date=gte.${lo}&event_date=lte.${hi}&select=event_date,type`,
-        { headers: { "apikey": SB_SERVICE_ROLE_KEY, "Authorization": `Bearer ${SB_SERVICE_ROLE_KEY}` } },
+        { headers: serviceHeaders },
       );
       if (logRes.ok) {
         const logRows: { event_date: string; type: string }[] = await logRes.json();
-        for (const lr of logRows) {
-          if (lr.event_date && lr.type) alreadySent.add(`${lr.event_date}|${lr.type}`);
-        }
+        for (const lr of logRows) if (lr.event_date && lr.type) logged.add(`${lr.event_date}|${lr.type}`);
       }
     } catch (_e) { /* best-effort; send-push still dedups if this read fails */ }
   }
@@ -224,86 +241,127 @@ Deno.serve(async (req) => {
   const fights: unknown[] = [];
   // Picked cards whose results page couldn't be read. Reported, not swallowed:
   // on 2026-11-21 this function answered `parsed: 0` all card and nobody knew.
-  // scheduled-push.yml fails the run for one dated today or earlier.
   const unread: { date: string; name: string }[] = [];
+  const picksByDate = new Map<string, Pick[] | null>();
+  const picksFor = async (date: string): Promise<Pick[] | null> => {
+    if (!picksByDate.has(date)) {
+      // All of them or none: a partial audience would be deduped for good,
+      // while a failed read just waits for the next run. picks-read: paged by readAllPicks.
+      picksByDate.set(date, await readAllPicks<Pick>(
+        `${SUPABASE_URL}/rest/v1/picks?select=user_id,f1,f2,pick&event_date=eq.${encodeURIComponent(date)}&promotion=eq.ufc&order=id`,
+        picksHeaders,
+      ));
+    }
+    return picksByDate.get(date) ?? null;
+  };
 
+  // Group one decided bout's pickers and send each group not yet logged.
+  // Returns the types it sent (claimed by send-push).
+  const sendBout = async (date: string, winner: string, loser: string, boutNames: [string, string] | null, picks: Pick[]): Promise<string[]> => {
+    const m = ResultsParse.namesMatch;
+    const winners: string[] = [], losers: string[] = [];
+    for (const p of picks) {
+      if (!p.user_id) continue;
+      const isFight = (m(p.f1, winner) && m(p.f2, loser)) || (m(p.f2, winner) && m(p.f1, loser));
+      if (!isFight) continue;
+      if (!boutNames) boutNames = [p.f1, p.f2];   // the pick rows' own names, as the lock is keyed
+      (m(p.pick, winner) ? winners : losers).push(p.user_id);
+    }
+    if (!winners.length && !losers.length) return [];   // nobody picked this bout
+    const todo = ([["win", winners], ["loss", losers]] as [string, string[]][])
+      .filter(([g, ids]) => ids.length && !groupLogged(logged, date, winner, loser, g));
+    if (!todo.length) { skippedCount++; return []; }
+    const lockAt = boutNames ? await boutLockAt(SUPABASE_URL, picksHeaders, date, boutNames[0], boutNames[1]) : undefined;
+    if (!graceOver(lockAt, now)) { deferredCount++; return []; }   // next run, once the grace is over (or the lock can be read)
+
+    const fightKey = ResultsParse.fightKey(winner, loser);
+    const sent: string[] = [];
+    for (const [group, userIds] of todo) {
+      const notifType = `result:${fightKey}:${group}`;
+      const win = group === "win";
+      try {
+        const r = await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
+          method: "POST",
+          headers: pushHeaders,
+          body: JSON.stringify({
+            event_date: date,
+            type: notifType,
+            title: win ? "Your pick WON! 🔥" : "Tough luck ❌",
+            body: win ? `${winner} def. ${loser} — you called it!` : `${winner} def. ${loser}`,
+            safe_title: SAFE_TITLE,
+            safe_body: SAFE_BODY,
+            include_user_ids: userIds,
+          }),
+        });
+        const j = await r.json().catch(() => ({}));
+        if (j && typeof j.sent === "number" && j.sent > 0) pushedCount += j.sent;
+        logged.add(`${date}|${notifType}`);   // claimed (or already claimed): never twice in a run
+        if (r.ok && j && typeof j.sent === "number" && !j.skipped) sent.push(notifType);
+        fights.push({ event_date: date, type: notifType, recipients: userIds.length, result: j });
+      } catch (_e) { /* best-effort; the next run retries, notif_log dedups */ }
+    }
+    return sent;
+  };
+
+  // Pass 1: Wikipedia.
   for (const [eventDate, eventName] of events) {
     if (processed >= MAX_EVENTS) break;
     processed++;
-
-    const slug = ResultsParse.eventSlug(eventName);
+    const slug = articleSlug(eventName, cardFor(eventDate, eventName));
     let wt: string | null = null;
     try { wt = await fetchWikitext(slug); } catch (_e) { wt = null; }
-    if (!wt) {
-      const alt = await searchEventSlug(eventName);
-      if (alt && alt !== slug) { try { wt = await fetchWikitext(alt); } catch (_e) { wt = null; } }
-    }
     if (!wt) { unread.push({ date: eventDate, name: eventName }); continue; }
 
     const parsed: FightResult[] = ResultsParse.parseResults(wt);
     parsedCount += parsed.length;
     if (!parsed.length) continue;
-
-    // Picks for this event, used to group winners vs losers per resolved fight.
-    // All of them or none: a partial audience would be deduped for good, while
-    // a failed read just waits for the next run. picks-read: paged by readAllPicks.
-    const picks = await readAllPicks<Pick>(
-      `${SUPABASE_URL}/rest/v1/picks?select=user_id,f1,f2,pick&event_date=eq.${encodeURIComponent(eventDate)}&promotion=eq.ufc&order=id`,
-      picksHeaders,
-    );
+    const picks = await picksFor(eventDate);
     if (!picks) continue;
 
     for (const res of parsed) {
-      // A draw / no contest has no winner to announce (the scraper sends none
-      // either), and a result without a loser can't be matched to a bout.
+      // A draw / no contest has no winner to announce, and a result without a
+      // loser can't be matched to a bout.
       if (res.undecided || !res.winner || !res.loser) continue;
-      const m = ResultsParse.namesMatch;
-      const winners: string[] = [], losers: string[] = [];
-      let boutNames: [string, string] | null = null;   // the pick rows' own names (data.js's), as the lock is keyed
-      for (const p of picks) {
-        if (!p.user_id) continue;
-        const isFight = (m(p.f1, res.winner) && m(p.f2, res.loser)) || (m(p.f2, res.winner) && m(p.f1, res.loser));
-        if (!isFight) continue;
-        if (!boutNames) boutNames = [p.f1, p.f2];
-        (m(p.pick, res.winner) ? winners : losers).push(p.user_id);
-      }
-      if (!winners.length && !losers.length) continue; // nobody picked this bout
-      const lockAt = boutNames ? await boutLockAt(SUPABASE_URL, picksHeaders, eventDate, boutNames[0], boutNames[1]) : undefined;
-      if (!graceOver(lockAt, now)) { deferredCount++; continue; }   // next run, once the grace is over (or the lock can be read)
-
-      const fightKey = ResultsParse.fightKey(res.winner, res.loser);
-      const groups: [string, string[], string, string][] = [
-        ["win", winners, "Your pick WON! 🔥", `${res.winner} def. ${res.loser} — you called it!`],
-        ["loss", losers, "Tough luck ❌", `${res.winner} def. ${res.loser}`],
-      ];
-      for (const [group, userIds, title, body] of groups) {
-        if (!userIds.length) continue;
-        const notifType = `result:${fightKey}:${group}`;
-        // Already notified by some trigger — skip the (otherwise dedup'd) send-push call.
-        if (alreadySent.has(`${eventDate}|${notifType}`)) { skippedCount++; continue; }
-        try {
-          const r = await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
-            method: "POST",
-            headers: pushHeaders,
-            body: JSON.stringify({
-              event_date: eventDate,
-              type: notifType,
-              title, body,
-              safe_title: SAFE_TITLE,
-              safe_body: SAFE_BODY,
-              include_user_ids: userIds,
-            }),
-          });
-          const j = await r.json().catch(() => ({}));
-          if (j && typeof j.sent === "number" && j.sent > 0) pushedCount += j.sent;
-          fights.push({ event_date: eventDate, type: notifType, recipients: userIds.length, result: j });
-        } catch (_e) { /* best-effort; cron retries next run, notif_log dedups */ }
-      }
+      await sendBout(eventDate, res.winner, res.loser, null, picks);
     }
   }
 
+  // Pass 2: the committed data.js. Anything sent here, the Wikipedia pass and
+  // the scraper both missed: mark it (`net:<type>`) so it is seen.
+  const net: { date: string; type: string }[] = [];
+  if (cards) {
+    for (const card of cards) {
+      if (card.date < lo || card.date > hi || !events.has(card.date)) continue;
+      const decided = (card.fights || []).filter((f) => f.winner && f.state === "post");
+      if (!decided.length) continue;
+      const picks = await picksFor(card.date);
+      if (!picks) continue;
+      for (const f of decided) {
+        const winner = String(f.winner), a = f.f1?.n, b = f.f2?.n;
+        if (!a || !b) continue;
+        const loser = ResultsParse.namesMatch(winner, a) ? b : a;
+        const sent = await sendBout(card.date, winner, loser, [a, b], picks);
+        for (const type of sent) {
+          if (serviceHeaders) {
+            await fetch(`${SUPABASE_URL}/rest/v1/notif_log`, {
+              method: "POST",
+              headers: { ...serviceHeaders, "Content-Type": "application/json", "Prefer": "resolution=ignore-duplicates,return=minimal" },
+              body: JSON.stringify({ event_date: card.date, type: `net:${type}` }),
+            }).catch(() => {});
+          }
+          logged.add(`${card.date}|net:${type}`);
+        }
+      }
+    }
+  }
+  // Every fired safety net in the window, this run's and earlier ones'.
+  for (const k of logged) {
+    const at = k.indexOf("|net:");
+    if (at > 0) net.push({ date: k.slice(0, at), type: k.slice(at + 5) });
+  }
+
   return new Response(
-    JSON.stringify({ events: events.size, parsed: parsedCount, pushed: pushedCount, skipped: skippedCount, deferred: deferredCount, unread, fights }),
+    JSON.stringify({ events: events.size, parsed: parsedCount, pushed: pushedCount, skipped: skippedCount, deferred: deferredCount, unread, net, dataError, fights }),
     { status: 200, headers: { "Content-Type": "application/json" } },
   );
 });

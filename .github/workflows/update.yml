@@ -235,6 +235,62 @@ jobs:
           SUPABASE_ANON: ${{ secrets.SUPABASE_ANON }}
         run: python scrape.py --send-pending pending-pushes.json
 
+      # check-results is the result-push reconciler: it sends any win/loss
+      # group of a decided bout in the committed data.js that has pickers and
+      # no notif_log row, and marks what it had to send (`net`). Called here,
+      # right after the scraper's own send and pinned to the commit just pushed
+      # (X-Data-Sha), a group it sends is one both other paths missed. Its
+      # every-2-minute cron-job.org runs return the same report to nobody, and
+      # scheduled-push.yml runs a few times a day, so this run, every 5 minutes
+      # on a card day, is where a fired safety net becomes an issue (2026-11-21:
+      # check-results answered "parsed": 0 all card and nobody knew). Never
+      # fails the run.
+      - name: Check result pushes against the committed data.js
+        if: steps.push.outputs.pushed == 'true'
+        continue-on-error: true
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: "Result pushes needed the safety net"
+        run: |
+          if [ -z "$CRON_SECRET" ]; then echo "::warning::CRON_SECRET not set; result pushes not checked here"; exit 0; fi
+          code=$(curl -s -m 60 -o /tmp/cr.json -w '%{http_code}' -X POST \
+            "https://gkccophrdqtqcowmblre.supabase.co/functions/v1/check-results" \
+            -H "Authorization: Bearer $CRON_SECRET" -H "Content-Type: application/json" \
+            -H "X-Data-Sha: $(git rev-parse HEAD)" || echo 000)
+          echo "check-results -> HTTP $code"; head -c 3000 /tmp/cr.json 2>/dev/null || true; echo
+          case "$code" in 2*) ;; *) echo "::warning::check-results answered HTTP $code"; exit 0;; esac
+          today=$(date -u +%F)
+          net=$(jq -r '.net[]? | "- \(.date) `\(.type)`"' /tmp/cr.json)
+          blind=$(jq -r --arg today "$today" '.unread[]? | select(.date <= $today) | "- \(.date) \(.name)"' /tmp/cr.json)
+          derr=$(jq -r '.dataError // empty' /tmp/cr.json)
+          num=$(gh issue list --state open --search "$TITLE in:title" --json number,title \
+                --jq "[.[]|select(.title==env.TITLE)][0].number" 2>/dev/null || echo "")
+          if [ -n "$net$blind$derr" ]; then
+            {
+              echo "check-results' report as of $(date -u +'%Y-%m-%d %H:%M UTC'). Rewritten each data commit; closes itself once the window (2 days back) is clean."
+              echo
+              if [ -n "$net" ]; then
+                echo "### Sent by the data.js safety net"
+                echo "Both the Wikipedia pass and the scraper missed these groups; they went out late."
+                echo "$net"; echo
+              fi
+              if [ -n "$blind" ]; then
+                echo "### Results page unreadable"
+                echo "check-results can't read Wikipedia for these cards, so only the data.js pass is sending."
+                echo "$blind"; echo
+              fi
+              if [ -n "$derr" ]; then
+                echo "### Committed data.js unreadable"
+                echo "The safety net is off until it reads again: \`$derr\`"
+              fi
+            } > /tmp/cr.md
+            echo "::warning::result pushes needed the safety net; see the \"$TITLE\" issue"
+            if [ -n "$num" ]; then gh issue edit "$num" --body-file /tmp/cr.md; else gh issue create --title "$TITLE" --body-file /tmp/cr.md; fi
+          elif [ -n "$num" ]; then
+            gh issue close "$num" --comment "No safety-net sends or unreadable pages in the window as of $(date -u +'%Y-%m-%d %H:%M UTC')."
+          fi
+
       # Pick reveals wait on the lock times send-reminders writes from the
       # committed data.js (picks are hidden until a bout's lock + LOCK_GRACE).
       # Left to scheduled-push.yml's throttled */5 cron it ran ~10 minutes apart

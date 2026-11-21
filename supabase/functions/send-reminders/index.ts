@@ -22,7 +22,7 @@
 // fetched and evaluated: this isolate holds the service-role key, so running
 // whatever Pages served would hand that key to whoever could change Pages.
 // scripts/build-fn-bundle.mjs generates lab-bundle.js; check:bundle keeps it fresh.
-import { parseDataJs } from "../_shared/datajs.js";
+import { parseDataJs, pinnedDataUrl } from "../_shared/datajs.js";
 import { engineInto, analyticsInto, bundledKernel } from "../_shared/lab-bundle.js";
 import { secretEquals } from "../_shared/secret.js";
 
@@ -34,20 +34,12 @@ import { secretEquals } from "../_shared/secret.js";
 const DATA_URL = Deno.env.get("DATA_URL") ??
   "https://raw.githubusercontent.com/AndyRBrett/ufc-dashboard/main/data.js";
 
-// raw.githubusercontent caches what `main` points at for up to ~5 minutes, and
-// a ?t= cache-buster doesn't reach that: the ref lookup is cached, not the URL.
-// So update.yml's call right after it pushes a result read the PREVIOUS data.js
-// (UFC 2026-11-07: Parsons/Souza committed 22:15:25, the call 4s later wrote no
-// sighting; the next bout locked at 22:20:05 and its picks stayed hidden until
-// 22:25). That caller now names the commit it just pushed in X-Data-Sha, and a
-// commit's own URL is immutable, so it reads exactly what it pushed. Only a full
-// 40-hex SHA, only in place of /main/, and only behind CRON_SECRET; anything
-// else (the cron, a bad header) reads main as before.
-export function pinnedDataUrl(base: string, sha: unknown): string {
-  if (typeof sha !== "string" || !/^[0-9a-f]{40}$/.test(sha.trim())) return base;
-  if (!/\/main\/data\.js$/.test(base)) return base;
-  return base.replace(/\/main\/data\.js$/, `/${sha.trim()}/data.js`);
-}
+// raw.githubusercontent serves `main` up to ~5 minutes stale, so update.yml's
+// call right after it pushes a result read the PREVIOUS data.js (UFC
+// 2026-11-07: Parsons/Souza committed 22:15:25, the call 4s later wrote no
+// sighting). That caller names the commit it pushed in X-Data-Sha; see
+// _shared/datajs.js's pinnedDataUrl, which check-results shares.
+export { pinnedDataUrl };
 
 // Fire when an event phase is within this lead window and hasn't started yet
 // (mirrors the client's "diff>0 && diff<=HOUR_MS" check). A small grace lets a
