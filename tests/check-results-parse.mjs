@@ -176,6 +176,44 @@ async function runPoll({ withParser = true, card: edit = (c) => c } = {}) {
   // even unguarded; the guard is what keeps that true if matching ever loosens.
   check("...because the result loop drops a draw / no contest before matching anyone",
     /for \(const res of parsed\) \{\s*(?:\/\/[^\n]*\n\s*)*if \(res\.undecided \|\| !res\.winner \|\| !res\.loser\) continue;/.test(src));
+
+  // 2026-11-21: picks say "Prochazka", the article is "Procházka", and the
+  // folded title isn't a redirect, so check-results parsed nothing all card.
+  // It now searches like scrape.py and takes only a title that folds to the
+  // same event, never a different card the search also returns.
+  const FN = "UFC Fight Night: Prochazka vs. Stirling", REAL = "UFC Fight Night: Procházka vs. Stirling";
+  const runFn = async (titles) => {
+    const seenFn = [], pushesFn = [];
+    globalThis.fetch = async (url, init) => {
+      url = String(url); seenFn.push(url);
+      const json = (x) => new Response(JSON.stringify(x), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url.includes("/rest/v1/picks?select=event_date,event_name")) return json([{ event_date: "2026-11-14", event_name: FN }]);
+      if (url.includes("/rest/v1/notif_log")) return json([]);
+      if (url.includes("action=opensearch")) return json([FN, titles]);
+      if (url.includes("list=search")) return json({ query: { search: titles.map((title) => ({ title })) } });
+      if (url.includes("action=parse")) {
+        const page = decodeURIComponent(/[?&]page=([^&]+)/.exec(url)[1]);
+        return json(page === REAL.replace(/ /g, "_") ? { parse: { wikitext: { "*": WIKI } } } : { error: { code: "missingtitle" } });
+      }
+      if (url.includes("/rest/v1/picks?select=user_id,f1,f2,pick")) return json([
+        { user_id: "u-gane", f1: "Ciryl Gane", f2: "Josh Hokit", pick: "Ciryl Gane" },
+      ]);
+      if (url.includes("/rest/v1/rpc/pick_lock_for")) return json("2026-11-15T01:00:00+00:00");
+      if (url.endsWith("/functions/v1/send-push")) { pushesFn.push(JSON.parse(init.body)); return json({ sent: 1 }); }
+      return new Response("unexpected " + url, { status: 500 });
+    };
+    Date.now = () => NOW;
+    try {
+      const r = await handler(new Request("https://fn.test/check-results", { method: "POST", headers: { Authorization: "Bearer cron-secret" } }));
+      return { body: await r.json(), seen: seenFn, pushes: pushesFn };
+    } finally { globalThis.fetch = realFetch; Date.now = realNow; }
+  };
+  const acc = await runFn(["UFC Fight Night: Procházka vs. Rountree", REAL]);
+  check("an accented Fight Night title is found by search and its results read",
+    acc.body.parsed > 0 && acc.seen.some((u) => u.includes("page=" + encodeURIComponent(REAL.replace(/ /g, "_")))));
+  check("...and its result pushes go out", acc.pushes.some((p) => p.type === "result:ciryl-gane-josh-hokit:win"));
+  const wrong = await runFn(["UFC Fight Night: Procházka vs. Rountree"]);
+  check("...but a search hit for a different card is never read", wrong.body.parsed === 0 && wrong.pushes.length === 0);
 }
 
 if (failures) { console.error(`\ncheck:results — ${failures} failure(s)`); process.exit(1); }

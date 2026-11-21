@@ -56,6 +56,29 @@ async function fetchWikitext(slug: string): Promise<string | null> {
   return d?.parse?.wikitext?.["*"] ?? null;
 }
 
+// A Fight Night's article is titled with the fighters' real spelling
+// ("UFC Fight Night: Procházka vs. Stirling"), but picks store data.js's
+// ASCII-folded name, and that title isn't even a redirect: this read nothing
+// all card on 2026-11-21. Search the way scrape.py's search_event_slug does,
+// and take only a title that folds to the same event (_pick_search_title).
+const foldTitle = (s: string) => ResultsParse.fold(String(s)).toLowerCase().replace(/[^a-z0-9]/g, "");
+async function searchEventSlug(evName: string): Promise<string | null> {
+  const want = foldTitle(evName);
+  const tries: [string, (j: any) => string[]][] = [
+    [`action=opensearch&search=${encodeURIComponent(evName)}&limit=5&namespace=0&format=json`, (j) => Array.isArray(j?.[1]) ? j[1] : []],
+    [`action=query&list=search&srsearch=${encodeURIComponent(evName)}&srlimit=5&format=json`, (j) => (j?.query?.search ?? []).map((h: { title: string }) => h.title)],
+  ];
+  for (const [q, titles] of tries) {
+    try {
+      const r = await fetch(`https://en.wikipedia.org/w/api.php?${q}&origin=*`, { headers: { "User-Agent": "UFC-Dashboard/1.0 (github.com/AndyRBrett/ufc-dashboard)" } });
+      if (!r.ok) continue;
+      const hit = titles(await r.json()).find((t) => typeof t === "string" && foldTitle(t) === want);
+      if (hit) return hit.replace(/ /g, "_");
+    } catch (_e) { /* try the next search */ }
+  }
+  return null;
+}
+
 // Constant-time comparison. `!==` on a secret returns at the first differing
 // byte, so response timing across enough requests leaks the secret prefix by
 // prefix. Length is still observable; that is standard and not worth hiding.
@@ -188,6 +211,10 @@ Deno.serve(async (req) => {
     const slug = ResultsParse.eventSlug(eventName);
     let wt: string | null = null;
     try { wt = await fetchWikitext(slug); } catch (_e) { wt = null; }
+    if (!wt) {
+      const alt = await searchEventSlug(eventName);
+      if (alt && alt !== slug) { try { wt = await fetchWikitext(alt); } catch (_e) { wt = null; } }
+    }
     if (!wt) continue;
 
     const parsed: FightResult[] = ResultsParse.parseResults(wt);

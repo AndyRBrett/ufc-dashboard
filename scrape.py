@@ -4031,6 +4031,43 @@ def _post_push(payload, retry_waits=()):
         time.sleep(wait)
 
 
+PICKS_PAGE = 1000   # PostgREST's max rows per response
+
+
+def _result_picks(dates):
+    """Every UFC pick on these cards, paged; None if any page can't be read.
+
+    This used to read every UFC pick ever made in one request, and PostgREST
+    answers at most 1,000 rows. Past that (1,254 on 2026-11-21) the rows it
+    returned were arbitrary, so a group of pickers missing from them was never
+    asked for: one player got no result push all card. Only the cards being
+    announced, ordered by id so pages don't overlap, and a page that fails
+    makes the whole read fail: a partial audience would be deduped for good.
+    """
+    dates = sorted(d for d in dates if re.fullmatch(r"\d{4}-\d{2}-\d{2}", d or ""))
+    if not dates:
+        return []
+    if not SUPABASE_ANON:
+        return None
+    headers = {"apikey": SUPABASE_ANON, "Authorization": f"Bearer {SUPABASE_ANON}"}
+    rows, offset = [], 0
+    while True:
+        path = (f"/rest/v1/picks?select=user_id,f1,f2,pick&promotion=eq.ufc"
+                f"&event_date=in.({','.join(dates)})&order=id"
+                f"&limit={PICKS_PAGE}&offset={offset}")
+        try:
+            r = requests.get(SUPABASE_URL + path, headers=headers, timeout=10)
+            r.raise_for_status()
+            page = r.json()
+        except Exception as e:
+            print(f"Picks read failed at offset {offset}: {e}", file=sys.stderr)
+            return None
+        rows.extend(page)
+        if len(page) < PICKS_PAGE:
+            return rows
+        offset += PICKS_PAGE
+
+
 def send_push_notifications(new_results, defer=True, retry_waits=()):
     """Send win/loss push notifications for newly resolved fights.
 
@@ -4051,7 +4088,10 @@ def send_push_notifications(new_results, defer=True, retry_waits=()):
     if not SUPABASE_ANON:
         print("Push skipped: SUPABASE_ANON not set", file=sys.stderr)
         return
-    picks = sb_get("/rest/v1/picks?select=user_id,f1,f2,pick&promotion=eq.ufc")
+    picks = _result_picks({r.get("event_date", "") for r in new_results})
+    if picks is None:
+        print("Push skipped: picks unreadable; check-results will cover them", file=sys.stderr)
+        return
     if not picks:
         print("Push skipped: no picks available (Supabase empty or unreachable)", file=sys.stderr)
         return
