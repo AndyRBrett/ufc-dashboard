@@ -130,6 +130,116 @@ async function runPoll({ withParser = true, card: edit = (c) => c } = {}) {
   const dup = await runPoll({ card: (c) => { c[0].fights.push(bout("Prelim", "Ciryl Gane", "Josh Hokit")); return c; } });
   check("...and one result marks one bout (the first it names), never a second listing",
     dup.EVENTS[0].fights[0].winner === "Ciryl Gane" && dup.EVENTS[0].fights[4].state === "pre" && !dup.EVENTS[0].fights[4].winner);
+  // A Fight Night's article carries the real spelling, which the ASCII name
+  // doesn't give: the poll read nothing all card on 2026-11-21. It reads the
+  // slug scrape.py recorded, but never a PPV's (that is a redirect stub).
+  const fn = await runPoll({ card: (c) => { c[0].name = "UFC Fight Night: Prochazka vs. Stirling"; c[0].slug = "UFC_Fight_Night:_Procházka_vs._Stirling"; return c; } });
+  check("...reads a Fight Night's recorded article (the accented title), not the ASCII name",
+    fn.fetched.length === 1 && fn.fetched[0].includes("page=" + encodeURIComponent("UFC_Fight_Night:_Procházka_vs._Stirling") + "&"));
+  const ppv = await runPoll({ card: (c) => { c[0].slug = "UFC_334:_Gane_vs._Hokit"; return c; } });
+  check("...but a numbered PPV still reads its own article, never its recorded redirect stub",
+    ppv.fetched.length === 1 && /[?&]page=UFC_334&/.test(ppv.fetched[0]));
+}
+
+// --- fresh results: the committed data.js, read at main's commit -------------
+// A result push lands ~2.5 minutes before Pages publishes the commit it came
+// from, so the app reads data.js from GitHub at main's current commit (never
+// /main/, which GitHub caches ~5 minutes) and adds results it doesn't have.
+{
+  const SHA = "0123456789abcdef0123456789abcdef01234567";
+  // scrape.py's layout: name and date on their own lines, one bout per line.
+  const fightLine = (o) => `      {lbl:"${o.lbl || "Main Card"}",wc:"",title:false,rematch:false,odds:{f1:-150,f2:130},winner:${o.winner == null ? '""' : J(o.winner)},method:${J(o.method || "")},${o.round ? "round:" + o.round + "," : ""}state:"${o.state || "pre"}",f1:{n:${J(o.f1)},r:"1-0-0",rk:"",s:{method:"Submission",winner:"Nobody"}},f2:{n:${J(o.f2)},r:"1-0-0",rk:"",s:null}}`;
+  const DATA = [
+    'var GENERATED_AT="21 Nov 2026 7:10 PM UTC";',
+    "var EVENTS=[",
+    "  {",
+    '    name:"UFC Fight Night: Prochazka vs. Stirling",',
+    '    date:"2026-11-14",',
+    '    slug:"UFC_Fight_Night:_Proch\\u00e1zka_vs._Stirling",',
+    "    fights:[",
+    fightLine({ lbl: "Main Event", f1: "Jiri Prochazka", f2: "Navajo Stirling" }),
+    fightLine({ f1: "Kyoji Horiguchi", f2: "Asu Almabayev", winner: "Kyoji Horiguchi", method: "Decision (Unanimous)", round: 3, state: "post" }) + ",",
+    fightLine({ f1: "Ernesta Kareckait\\u0117", f2: "Melissa Gatto", winner: "", method: "Draw", round: 3, state: "post" }) + ",",
+    fightLine({ f1: "Kayla Harrison", f2: "Amanda Nunes", winner: "Amanda Nunes", method: "KO/TKO", round: 1, state: "post" }) + ",",
+    fightLine({ f1: "Chris Duncan", f2: "Drew Dober", winner: "Somebody Else", method: "KO/TKO", round: 1, state: "post" }),
+    "    ]",
+    "  },",
+    "  {",
+    '    name:"UFC Fight Night: Prochazka vs. Stirling",',
+    '    date:"2026-11-07",',
+    "    fights:[",
+    fightLine({ f1: "Jiri Prochazka", f2: "Navajo Stirling", winner: "Navajo Stirling", method: "KO/TKO", round: 1, state: "post" }),
+    "    ]",
+    "  }",
+    "];",
+  ].join("\n").replace(/\\\\u/g, "\\u");   // J() doubled the \u escapes; data.js writes them single
+  async function runFresh({ ref = () => ({ ok: true, status: 200, json: () => Promise.resolve({ object: { sha: SHA } }) }), hidden = false } = {}) {
+    const a = html.indexOf("// fresh-results:start"), b = html.indexOf("// fresh-results:end");
+    if (a < 0 || b < 0) { fail("index.html: no // fresh-results:start … :end block"); process.exit(1); }
+    const fetched = [], renders = { n: 0 };
+    const EVENTS = [{ name: "UFC Fight Night: Prochazka vs. Stirling", date: "2026-11-14", fights: [
+      bout("Main Event", "Jiri Prochazka", "Navajo Stirling"),
+      bout("Main Card", "Kyoji Horiguchi", "Asu Almabayev"),
+      bout("Prelim", "Ernesta Kareckaite", "Melissa Gatto"),
+      bout("Prelim", "Kayla Harrison", "Amanda Nunes", { winner: "Kayla Harrison", method: "Decision (Unanimous)", round: 5, state: "post" }),
+      bout("Prelim", "Chris Duncan", "Drew Dober"),
+    ] }];
+    class FakeDate extends Date { constructor(...x) { if (x.length) super(...x); else super(NOW); } static now() { return NOW; } }
+    const timers = [];
+    const ctx = vm.createContext({
+      console: { log() {}, warn() {} }, JSON, Object, String, Number, Array, RegExp, Promise, isNaN, parseInt, Date: FakeDate,
+      EVENTS, HOUR_MS: 3600e3, DAY_MS: 864e5, render: () => { renders.n++; }, loadLeaderboard() {}, fnLive: false, fnModeOpen: () => false,
+      document: { hidden, visibilityState: hidden ? "hidden" : "visible", getElementById: () => null, addEventListener() {} },
+      setTimeout: (f) => { timers.push(f); return 1; }, setInterval: () => 1,
+      fetch: (url, opts) => {
+        fetched.push({ url: String(url), opts });
+        if (/^https:\/\/api\.github\.com\//.test(url)) return Promise.resolve(ref());
+        return Promise.resolve({ ok: true, status: 200, text: () => Promise.resolve(DATA) });
+      },
+      window: {},
+    });
+    vm.runInContext(read("scoring.js"), ctx);           // boutDecided, nmEq, exactly as the app has them
+    vm.runInContext(html.slice(a, b), ctx);
+    timers.forEach((f) => f());
+    for (let i = 0; i < 20; i++) await new Promise((r) => setImmediate(r));
+    return { fetched, renders, EVENTS, ctx };
+  }
+  const { fetched, renders, EVENTS, ctx } = await runFresh();
+  const f = EVENTS[0].fights;
+  check("fresh results: asks GitHub's API for main's commit, uncached",
+    fetched.length === 2 && /^https:\/\/api\.github\.com\/repos\/[^/]+\/ufc-dashboard\/git\/ref\/heads\/main$/.test(fetched[0].url) && fetched[0].opts && fetched[0].opts.cache === "no-store");
+  check("...then reads data.js AT that commit, never /main/ (GitHub caches main ~5 minutes)",
+    fetched[1].url.startsWith("https://raw.githubusercontent.com/") && fetched[1].url.endsWith("/ufc-dashboard/" + SHA + "/data.js"));
+  check("...adds a committed result to a bout still pending here (winner, method, round, over)",
+    f[1].winner === "Kyoji Horiguchi" && f[1].method === "Decision (Unanimous)" && f[1].round === 3 && f[1].state === "post");
+  check("...marks a draw over with no winner, matching an escaped accented name",
+    f[2].state === "post" && f[2].winner === "" && f[2].method === "Draw");
+  check("...never rewrites a bout already decided here",
+    f[3].winner === "Kayla Harrison" && f[3].method === "Decision (Unanimous)" && f[3].round === 5);
+  check("...leaves a bout pending when the file has no result for it", f[0].state === "pre" && !f[0].winner);
+  check("...ignores a result naming neither corner", f[4].state === "pre" && !f[4].winner);
+  check("...reads only the bout's own fields, not a fighter's stats object", f[0].state === "pre" && f[1].winner === "Kyoji Horiguchi");
+  check("...and only the same card (name AND date): last week's card can't decide this one", f[0].state === "pre");
+  check("...and re-renders once", renders.n === 1);
+  check("...and sends no push (no request but GitHub's)", fetched.every((x) => /^https:\/\/(api\.github\.com|raw\.githubusercontent\.com)\//.test(x.url)));
+  const parsed = ctx.window._freshParse(DATA);
+  check("...parses both cards and every bout line", parsed.length === 2 && parsed[0].fights.length === 5 && parsed[1].fights.length === 1);
+  const limited = await runFresh({ ref: () => ({ ok: false, status: 403, json: () => Promise.resolve({}) }) });
+  check("...a refused API read (rate limit) changes nothing and fetches no data.js",
+    limited.fetched.length === 1 && limited.renders.n === 0 && limited.EVENTS[0].fights[1].state === "pre");
+  const badSha = await runFresh({ ref: () => ({ ok: true, status: 200, json: () => Promise.resolve({ object: { sha: "main" } }) }) });
+  check("...a reply without a real commit id fetches nothing", badSha.fetched.length === 1 && badSha.renders.n === 0);
+  const hid = await runFresh({ hidden: true });
+  check("...and nothing is fetched while the app is in the background", hid.fetched.length === 0);
+}
+{
+  const sw = read("sw.js");
+  check("sw.js caches only same-origin files in its network-first set (GitHub's data.js must never become the offline ./data.js)",
+    /var sameOrigin = new URL\(req\.url\)\.origin === self\.location\.origin;/.test(sw) && /if \(sameOrigin && \(isNavigate \|\| isData/.test(sw));
+  const csp = (/<meta http-equiv="Content-Security-Policy" content="([^"]*)"/.exec(html) || [])[1] || "";
+  const connect = (/connect-src ([^;]*)/.exec(csp) || [])[1] || "";
+  check("the page's CSP lets it reach GitHub's API and raw files",
+    connect.split(/\s+/).includes("https://api.github.com") && connect.split(/\s+/).includes("https://raw.githubusercontent.com"));
 }
 
 // --- check-results, run for real ---------------------------------------------
