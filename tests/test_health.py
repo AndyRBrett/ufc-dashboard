@@ -269,6 +269,41 @@ def test_non_200_odds_response_warns():
     assert "odds-api-error" in kinds(findings, "WARN")
 
 
+def _two_keys(backup_status=200, backup_left=377, backup_at="2026-08-07T00:00:00+00:00"):
+    at = "2026-08-07T00:00:00+00:00"
+    return {
+        "last_fetch_at": at, "last_status": 401, "requests_remaining": 0,
+        "providers": {
+            "the-odds-api": {"last_fetch_at": at, "last_status": 401,
+                             "requests_remaining": 0, "bouts": 0},
+            "the-odds-api-backup": {"last_fetch_at": backup_at,
+                                    "last_status": backup_status,
+                                    "requests_remaining": backup_left, "bouts": 54},
+        },
+    }
+
+
+def test_spent_primary_with_a_working_backup_does_not_claim_frozen_lines():
+    # 2026-11-21: the primary 401'd at quota 0 while the backup priced the card
+    # with 377 left, and the report said "lines are frozen" — they weren't.
+    text = data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])])
+    findings, summary = health.check(text, now=NOW, odds_state=_two_keys())
+    warns = kinds(findings, "WARN")
+    assert "odds-primary-spent" in warns
+    assert "odds-quota" not in warns and "odds-api-error" not in warns
+    assert summary["block"] == 0
+
+
+def test_backup_that_failed_or_is_low_or_stale_does_not_excuse_the_primary():
+    text = data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])])
+    for state in (_two_keys(backup_status=401),
+                  _two_keys(backup_left=10),
+                  _two_keys(backup_at="2026-08-01T00:00:00+00:00")):
+        warns = kinds(health.check(text, now=NOW, odds_state=state)[0], "WARN")
+        assert "odds-quota" in warns and "odds-api-error" in warns, state
+        assert "odds-primary-spent" not in warns, state
+
+
 def test_stale_odds_pull_warns_when_a_card_is_close():
     text = data_js([("UFC Fight Night: A vs. B", "2026-08-08", [fight("A", "B")])])
     findings, _ = health.check(

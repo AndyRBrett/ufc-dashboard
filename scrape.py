@@ -1666,6 +1666,11 @@ _ODDS_NAME_ALIASES = {
     # Lorenco" (one letter the token rule doesn't forgive), so Petersen -174 /
     # Lorenco +141 never reached the bout and a Lorenco win scored no dog bonus.
     "gabriel lourenco": "Gabriel Lorenco",
+    # Prochazka vs. Stirling (2026-11-21): the books transliterate him "Asu
+    # Almabaev", the card "Asu Almabayev" (an inserted letter the token rule
+    # doesn't forgive), so Horiguchi -187 / Almabayev +158 sat in the feed
+    # with the flyweight main-card bout at odds:null.
+    "asu almabaev": "Asu Almabayev",
 }
 
 
