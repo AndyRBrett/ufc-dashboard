@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T02:30:54Z",
+  "generated_at": "2026-11-21T02:35:51Z",
   "events_tracked": 12,
   "stale_events": 3,
   "parse_failure_events": 0,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-21T01:50:40Z",
+      "last_changed_at": "2026-11-21T02:35:51Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -129,7 +129,7 @@
     {
       "event_id": "2027-01-16:ufc-fight-night-rodriguez-vs-garcia",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T02:30:54Z",
+      "last_changed_at": "2026-11-21T02:35:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -139,7 +139,7 @@
     {
       "event_id": "2027-01-23:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T02:30:54Z",
+      "last_changed_at": "2026-11-21T02:35:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -169,7 +169,7 @@
     {
       "event_id": "2027-02-13:ufc-fight-night-pyfer-vs-nickal",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T02:30:54Z",
+      "last_changed_at": "2026-11-21T02:35:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -214,17 +214,17 @@
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "f1": "Aljamain Sterling",
       "f2": "Kevin Vallejos",
-      "f1_movement": 218,
-      "f2_movement": -24,
-      "magnitude": 218,
+      "f1_movement": 217,
+      "f2_movement": -22,
+      "magnitude": 217,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Featherweight",
-      "f1_prob_shift": -4.3,
-      "f2_prob_shift": 4.9,
-      "priority": 436.0
+      "f1_prob_shift": -4.1,
+      "f2_prob_shift": 4.6,
+      "priority": 434.0
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -355,6 +355,22 @@
       "priority": 206.0
     },
     {
+      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
+      "f1": "Jared Cannonier",
+      "f2": "Ikram Aliskerov",
+      "f1_movement": -58,
+      "f2_movement": 97,
+      "magnitude": 97,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Middleweight",
+      "f1_prob_shift": 4.2,
+      "f2_prob_shift": -4.8,
+      "priority": 194.0
+    },
+    {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "f1": "Austin Bashi",
       "f2": "Carlos Calderon",
@@ -369,22 +385,6 @@
       "f1_prob_shift": 4.4,
       "f2_prob_shift": -4.7,
       "priority": 187.0
-    },
-    {
-      "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
-      "f1": "Jared Cannonier",
-      "f2": "Ikram Aliskerov",
-      "f1_movement": -55,
-      "f2_movement": 92,
-      "magnitude": 92,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Middleweight",
-      "f1_prob_shift": 4.0,
-      "f2_prob_shift": -4.5,
-      "priority": 184.0
     },
     {
       "event_id": "2027-02-07:ufc-fight-night-salkilld-vs-saint-denis",
