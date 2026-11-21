@@ -369,6 +369,8 @@ async function buildMsg(
     let played: { event_date: string }[], real: Set<string>;
     try {
       real = new Set((await loadCards()).map((c) => c.date).filter((d) => d <= cutoff));
+      // picks-read: one player's own rows, and it needs only SOCIAL_MIN_CARDS
+      // distinct dates among them, so a 1,000-row cut can't change the answer.
       played = real.size < SOCIAL_MIN_CARDS ? [] :
         await get(`picks?user_id=eq.${encodeURIComponent(me)}&promotion=eq.ufc&event_date=in.(${[...real].join(",")})&select=event_date&limit=1000`);
     } catch { return { ok: false, status: 503, error: "Could not check sender history" }; }

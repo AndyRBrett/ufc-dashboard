@@ -458,3 +458,32 @@ top-level field, and the answer at `choices[0].message.content` instead of
 `content[0].text`. Reading one with the other's accessor yields an *empty
 roast*, not an error, which is why `check:provider` exercises both callers
 against a stubbed `fetch` rather than trusting the shape.
+
+## A picks read is paged, and a blind result sender fails loudly
+
+UFC Fight Night: Prochazka vs. Stirling, 2026-11-21. Four players picked the
+card. Of the first seven results, two sent no result push at all and four
+reached only one side: the minority pick on four of them got none all card.
+Every send-push call answered HTTP 200; nothing was red anywhere.
+
+Two bugs, either one survivable alone:
+
+- **scrape.py's result push read `picks` unpaged and unfiltered** (every UFC
+  pick in one request). The table held 1,254 UFC picks; PostgREST returned an
+  arbitrary 1,000. send-push rebuilds an anon caller's audience itself, so the
+  scraper's read only decided which win/loss groups to ask for, and a group
+  absent from its 1,000 rows was never asked for.
+- **check-results was blind on any accented card.** It built the article
+  title from the picks' `event_name`, which data.js stores ASCII-folded;
+  "UFC Fight Night: Prochazka vs. Stirling" isn't a redirect to the real
+  "Procházka" article, so it answered `{"events":1,"parsed":0,…}` at 16:14
+  with four results already in data.js. scrape.py wasn't affected: it reads
+  data.js's `slug`, which keeps the diacritics, and falls back to a search.
+
+Found by comparing `notif_log` with the card's picks. The seven missed groups
+(12 notifications) were sent at 18:34 through send-push's anon path, which
+rebuilds each message from the committed data.js and reads its audience with
+the service key. Fixed in #349 (paged scraper read, check-results search
+fallback); the follow-up paged check-results' and the brief's reads, added the
+`check:pickstore` gate on unpaged server reads, and made `scheduled-push.yml`
+fail on a card check-results can't read.

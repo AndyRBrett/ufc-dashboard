@@ -55,6 +55,14 @@ jobs:
             -H "Authorization: Bearer $CRON_SECRET" -H "Content-Type: application/json")
           echo "check-results -> HTTP $code"; cat /tmp/c.json || true; echo
           test "$code" -ge 200 && test "$code" -lt 300
+          # A picked card from today or earlier whose results page can't be read
+          # means the backup result sender is blind: fail loudly. On 2026-11-21
+          # it answered "parsed": 0 all card and nobody noticed.
+          blind=$(jq -r --arg today "$(date -u +%F)" '.unread[]? | select(.date <= $today) | "\(.date) \(.name)"' /tmp/c.json)
+          if [ -n "$blind" ]; then
+            echo "::error::check-results can't read the results page for: $blind. Result pushes have no backup sender for this card."
+            exit 1
+          fi
       # Header auth, not ?key= — SECURITY.md wants the query-string secret gone,
       # and nothing here needs the header-free form cron-job.org requires.
       - name: Trigger kick-scraper

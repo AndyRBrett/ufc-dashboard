@@ -183,9 +183,18 @@ export async function composeBrief(ev: Ev, js: string, sb: { url: string; key: s
     let group: any[] = [];
     if (sb) {
       try {
-        const r = await fetch(`${sb.url}/rest/v1/picks?select=user_id,nickname,event_date,f1,f2,pick,method,confidence,updated_at,bonus_pick&event_date=eq.${ev.date}&promotion=eq.ufc`,
-          { headers: { apikey: sb.key, Authorization: `Bearer ${sb.key}` } });
-        if (r.ok) group = engine.resolvePicks(PE.boardRows(kernel, await r.json()));
+        // Paged: PostgREST answers at most 1,000 rows, so a big card's group
+        // line would quietly count only some of its picks.
+        const all: any[] = [];
+        for (let from = 0, PAGE = 1000; ; from += PAGE) {
+          const r = await fetch(`${sb.url}/rest/v1/picks?select=user_id,nickname,event_date,f1,f2,pick,method,confidence,updated_at,bonus_pick&event_date=eq.${ev.date}&promotion=eq.ufc&order=id`,
+            { headers: { apikey: sb.key, Authorization: `Bearer ${sb.key}`, Range: `${from}-${from + PAGE - 1}` } });
+          if (!r.ok) throw new Error(`picks HTTP ${r.status}`);
+          const page: any[] = await r.json();
+          all.push(...page);
+          if (page.length < PAGE || from >= 50 * PAGE) break;
+        }
+        group = engine.resolvePicks(PE.boardRows(kernel, all));
       } catch (_e) { /* no group line; the rest of the brief stands */ }
     }
     const raw = env.EVENTS.find((e: any) => e.date === ev.date && e.name === ev.name);

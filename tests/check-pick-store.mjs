@@ -271,5 +271,40 @@ const same = (x, y) => JSON.stringify(x) === JSON.stringify(y);
     && /m\.payload\.payload\.past\)_picksPastStale\(\);/.test(html));
 }
 
+// --- 9. every server-side picks read is paged ---------------------------------
+// PostgREST answers at most 1,000 rows, silently. On 2026-11-21 scrape.py read
+// every UFC pick in one request; at 1,254 rows the ones it got were arbitrary,
+// and one player got no result push all card. A read of `picks` in scrape.py
+// or an edge function must page (a Range header, or limit+offset), ask for one
+// row (limit=1), or carry a `picks-read:` comment within three lines above it
+// saying why it can't pass 1,000 rows.
+{
+  const { readdirSync } = await import("node:fs");
+  const fnDir = join(ROOT, "supabase/functions");
+  const files = ["scrape.py", ...readdirSync(fnDir, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && !d.name.startsWith("_"))
+    .map((d) => `supabase/functions/${d.name}/index.ts`)];
+  const unpaged = [];
+  let seen = 0;
+  for (const f of files) {
+    let src;
+    try { src = readFileSync(join(ROOT, f), "utf8"); } catch { continue; }
+    const lines = src.split("\n");
+    const re = /[`"'/]picks\?[a-z_]+=/g;
+    let m;
+    while ((m = re.exec(src))) {
+      const at = m.index, line = src.slice(0, at).split("\n").length;
+      const call = src.slice(at, at + 700);
+      if (/method:\s*["'](POST|PATCH|DELETE)["']/.test(call.slice(0, 400))) continue;
+      seen++;
+      const paged = /Range:/.test(call) || (/limit=/.test(call) && /offset=/.test(call)) || /limit=1[`&"'\s]/.test(call.slice(0, 300));
+      const why = lines.slice(Math.max(0, line - 4), line).some((l) => /picks-read:/.test(l));
+      if (!paged && !why) unpaged.push(`${f}:${line}`);
+    }
+  }
+  check(`the scan found the server's picks reads (${seen})`, seen >= 6);
+  check("every server-side picks read is paged" + (unpaged.length ? " (" + unpaged.join(", ") + ")" : ""), unpaged.length === 0);
+}
+
 if (failures) { console.error(`\ncheck:pickstore — ${failures} failure(s)`); process.exit(1); }
 console.log("\ncheck:pickstore — everyone's picks are read once, and only the open cards are re-read.");

@@ -75,8 +75,8 @@ other.
 | `npm run check:delete` | Delete my account leaving the login, a challenge or any other row of the caller's behind, or touching anyone else's |
 | `npm run check:invites` | a founder badge on an anonymous or post-cutoff account, an invite claimed twice, by an old account, as someone else or by writing the tables, a throwaway sign-up counted as playing, or an invite surviving Delete my account |
 | `npm run check:native` | the iOS app's push not registering its APNs token, a tapped notification not routing, or a browser taking the native path |
-| `npm run check:pickstore` | the poll or the board reading every pick ever made again, the merged rows differing from the single query's, a row doubled or lost at the date cut, or a rename never reaching old cards |
-| `npm run check:results` | the app's live poll or check-results reading a Wikipedia results page differently from scrape.py, a private copy of the parser coming back, check-results reading a PPV's redirect stub, or the app pushing results |
+| `npm run check:pickstore` | the poll or the board reading every pick ever made again, the merged rows differing from the single query's, a row doubled or lost at the date cut, a rename never reaching old cards, or a picks read in scrape.py or an edge function that isn't paged |
+| `npm run check:results` | the app's live poll or check-results reading a Wikipedia results page differently from scrape.py, a private copy of the parser coming back, check-results reading a PPV's redirect stub, missing an accented Fight Night title, losing pickers past row 1,000, or hiding a page it can't read, or the app pushing results |
 | `npm run check:sw` | an installed app re-downloading an unchanged page or `data.js` on every open (the service worker's network-first fetch must revalidate, `cache: 'no-cache'`, never `'reload'`), a changed file served stale, or a mascot's recording fetched for a theme that doesn't show it |
 | `npm run check:site` | the site Pages publishes (`scripts/site_files.py`, not the whole repo) missing a file the app, the Lab or the service worker requests: builds it as the deploy does, boots both pages from it and fails on any 404 |
 | `npm run check:migrations` | a migration that can't apply to what the ones before it built, the rebuilt core tables drifting from production's catalog, or `config.toml`'s JWT settings drifting from the deploy |
@@ -1074,6 +1074,33 @@ it is never later than the policy's two days in Eastern. Not done yet: the
 past is still one full read per app open (it could persist on the device), the
 sport boards and `challenges` still read their whole tables, and `picks` has no
 index on `event_date`.
+
+## A picks read is paged, and a blind result sender fails loudly
+
+PostgREST answers at most 1,000 rows **without an error**. On 2026-11-21 the
+table passed that (1,254 UFC picks) and scrape.py's result push read every
+pick in one request: the 1,000 it got were arbitrary, so one player got no
+result push all card. The backup sender, check-results, couldn't cover it: it
+built the Wikipedia title from the picks' ASCII-folded name ("Prochazka"; the
+article is "Procházka", not even a redirect) and answered `parsed: 0` every
+run, with HTTP 200, and nobody looked. Details: `docs/HISTORY.md`.
+
+- **Every picks read in scrape.py or an edge function pages** (a `Range`
+  header, or `limit` + `offset`, with a stable `order`), asks for one row, or
+  carries a `picks-read:` comment within three lines above it saying why it
+  can't pass 1,000 rows. `check:pickstore` fails otherwise.
+- **An audience read is all or nothing**: a page that fails sends nothing
+  (`_result_picks` returns `None`, `readAllPicks` returns `null`), because a
+  partial audience is deduped by `notif_log` for good, while a skipped one is
+  sent by the next run.
+- **check-results finds an accented title by search** (scrape.py's
+  `search_event_slug` rule: a title that folds to the same event, never
+  another card), and **reports a card it can't read** in `unread`.
+  `scheduled-push.yml` fails the run for one dated today or earlier, so a
+  blind backup sender is a red run, not a quiet 200.
+
+`check:results` holds the search, the paging and the report;
+`tests/test_result_push_defer.py` holds the scraper's paging.
 
 ## The picks table holds every sport; UFC readers say so
 

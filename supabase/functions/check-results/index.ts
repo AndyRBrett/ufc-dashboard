@@ -56,6 +56,25 @@ async function fetchWikitext(slug: string): Promise<string | null> {
   return d?.parse?.wikitext?.["*"] ?? null;
 }
 
+// Every row a picks query matches. PostgREST answers at most 1,000 rows, and
+// scrape.py's unpaged read lost one player's result pushes all card on
+// 2026-11-21 once the table passed that. null if any page fails.
+// check:pickstore fails on a server-side picks read that isn't paged.
+const PICKS_PAGE = 1000;
+async function readAllPicks<T>(url: string, headers: Record<string, string>): Promise<T[] | null> {
+  const rows: T[] = [];
+  try {
+    for (let from = 0; ; from += PICKS_PAGE) {
+      const r = await fetch(url, { headers: { ...headers, Range: `${from}-${from + PICKS_PAGE - 1}` } });
+      if (!r.ok) return null;
+      const page: T[] = await r.json();
+      rows.push(...page);
+      if (page.length < PICKS_PAGE) return rows;
+      if (from >= 50 * PICKS_PAGE) return null;   // never this big; a Range ignored would loop forever
+    }
+  } catch (_e) { return null; }
+}
+
 // A Fight Night's article is titled with the fighters' real spelling
 // ("UFC Fight Night: Procházka vs. Stirling"), but picks store data.js's
 // ASCII-folded name, and that title isn't even a redirect: this read nothing
@@ -167,14 +186,14 @@ Deno.serve(async (req) => {
   const hi = ymd(new Date(now + LOOKAHEAD_DAYS * 864e5));
 
   // 1. Recent events that people actually picked (the only possible audience).
-  const evRes = await fetch(
-    `${SUPABASE_URL}/rest/v1/picks?select=event_date,event_name&event_date=gte.${lo}&event_date=lte.${hi}&promotion=eq.ufc`,
-    { headers: picksHeaders },
+  // picks-read: paged by readAllPicks.
+  const evRows = await readAllPicks<{ event_date: string; event_name: string }>(
+    `${SUPABASE_URL}/rest/v1/picks?select=event_date,event_name&event_date=gte.${lo}&event_date=lte.${hi}&promotion=eq.ufc&order=id`,
+    picksHeaders,
   );
-  if (!evRes.ok) {
+  if (!evRows) {
     return new Response(JSON.stringify({ error: "Failed to fetch events" }), { status: 502, headers: { "Content-Type": "application/json" } });
   }
-  const evRows: { event_date: string; event_name: string }[] = await evRes.json();
   const events = new Map<string, string>(); // event_date -> event_name
   for (const r of evRows) {
     if (r.event_date && r.event_name && !events.has(r.event_date)) events.set(r.event_date, r.event_name);
@@ -203,6 +222,10 @@ Deno.serve(async (req) => {
 
   let parsedCount = 0, pushedCount = 0, skippedCount = 0, deferredCount = 0, processed = 0;
   const fights: unknown[] = [];
+  // Picked cards whose results page couldn't be read. Reported, not swallowed:
+  // on 2026-11-21 this function answered `parsed: 0` all card and nobody knew.
+  // scheduled-push.yml fails the run for one dated today or earlier.
+  const unread: { date: string; name: string }[] = [];
 
   for (const [eventDate, eventName] of events) {
     if (processed >= MAX_EVENTS) break;
@@ -215,21 +238,20 @@ Deno.serve(async (req) => {
       const alt = await searchEventSlug(eventName);
       if (alt && alt !== slug) { try { wt = await fetchWikitext(alt); } catch (_e) { wt = null; } }
     }
-    if (!wt) continue;
+    if (!wt) { unread.push({ date: eventDate, name: eventName }); continue; }
 
     const parsed: FightResult[] = ResultsParse.parseResults(wt);
     parsedCount += parsed.length;
     if (!parsed.length) continue;
 
     // Picks for this event, used to group winners vs losers per resolved fight.
-    let picks: Pick[] = [];
-    try {
-      const pRes = await fetch(
-        `${SUPABASE_URL}/rest/v1/picks?select=user_id,f1,f2,pick&event_date=eq.${encodeURIComponent(eventDate)}&promotion=eq.ufc`,
-        { headers: picksHeaders },
-      );
-      if (pRes.ok) picks = await pRes.json();
-    } catch (_e) { picks = []; }
+    // All of them or none: a partial audience would be deduped for good, while
+    // a failed read just waits for the next run. picks-read: paged by readAllPicks.
+    const picks = await readAllPicks<Pick>(
+      `${SUPABASE_URL}/rest/v1/picks?select=user_id,f1,f2,pick&event_date=eq.${encodeURIComponent(eventDate)}&promotion=eq.ufc&order=id`,
+      picksHeaders,
+    );
+    if (!picks) continue;
 
     for (const res of parsed) {
       // A draw / no contest has no winner to announce (the scraper sends none
@@ -281,7 +303,7 @@ Deno.serve(async (req) => {
   }
 
   return new Response(
-    JSON.stringify({ events: events.size, parsed: parsedCount, pushed: pushedCount, skipped: skippedCount, deferred: deferredCount, fights }),
+    JSON.stringify({ events: events.size, parsed: parsedCount, pushed: pushedCount, skipped: skippedCount, deferred: deferredCount, unread, fights }),
     { status: 200, headers: { "Content-Type": "application/json" } },
   );
 });
