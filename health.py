@@ -688,11 +688,26 @@ def check(text, baseline_text=None, now=None, odds_state=None, official=None):
             except ValueError:
                 pass
         status = odds_state.get("last_status")
+        rem = odds_state.get("requests_remaining")
+        covering = _odds_backup_covering(odds_state)
+        primary_down = ((status is not None and status != 200)
+                        or (rem is not None and rem <= ODDS_QUOTA_WARN))
+        if primary_down and covering:
+            # The top-level fields are the primary key's. While another key in
+            # the same pull answered with bouts and budget to spare, the lines are
+            # NOT frozen, and saying so sent someone looking for a backup that
+            # was already running (Prochazka vs. Stirling, 2026-11-21: primary
+            # 401 at quota 0, backup 200 with 377 left and the card priced).
+            name, left = covering
+            left_txt = f", {left} requests left" if left is not None else ""
+            add("WARN", "odds-primary-spent",
+                f"primary Odds API key is down (HTTP {status}, remaining {rem}) — "
+                f"backup {name} is pricing cards{left_txt}")
+            status = rem = None
         if status is not None and status != 200:
             add("WARN", "odds-api-error",
                 f"last Odds API call returned HTTP {status} — lines are frozen "
                 f"at their previous values")
-        rem = odds_state.get("requests_remaining")
         if rem is not None and rem <= ODDS_QUOTA_WARN:
             # WARN, never BLOCK. An exhausted quota is an ops problem, not a
             # reason to withhold the build: the data being published is not made
@@ -711,6 +726,24 @@ def check(text, baseline_text=None, now=None, odds_state=None, official=None):
             add("WARN", f.pop("check"), f.pop("message"), **f)
 
     return findings, _summarise(findings, len(events))
+
+
+def _odds_backup_covering(odds_state):
+    """(quota name, requests left) of another key that priced bouts in the latest
+    pull with budget above ODDS_QUOTA_WARN, or None.
+
+    "Latest pull" means its last_fetch_at equals the top-level one: a backup that
+    answered last week says nothing about whether tonight's lines are moving.
+    """
+    last = odds_state.get("last_fetch_at")
+    for name, p in (odds_state.get("providers") or {}).items():
+        if not isinstance(p, dict) or not last:
+            continue
+        left = p.get("requests_remaining")
+        if (p.get("last_fetch_at") == last and p.get("last_status") == 200
+                and p.get("bouts") and (left is None or left > ODDS_QUOTA_WARN)):
+            return name, left
+    return None
 
 
 def _summarise(findings, n_events):
