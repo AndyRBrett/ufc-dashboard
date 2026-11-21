@@ -829,6 +829,10 @@ body.sport-other .ps-all{display:none}
    Stretch the name back to the column so its existing ellipsis can do the work;
    everything else keeps flex-end positioning. */
 .ft.ftr .fn{align-self:stretch}
+/* Same for the form strip and pills: sized to content, iOS Safari leaves the
+   3px gaps out of that width, so the last W/L pill wrapped onto its own line
+   on the right side only. Stretch them and right-align the pills instead. */
+.ft.ftr .form-strip,.ft.ftr .fpills{align-self:stretch;justify-content:flex-end}
 .ft>*{max-width:100%}
 .fn{font-family:var(--font-display);text-transform:uppercase;font-size:25px;letter-spacing:.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fn.fsm{font-size:20px}.fn.fxs{font-size:16px;font-family:var(--font-body);font-weight:600}
