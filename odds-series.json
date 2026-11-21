@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T08:40:51Z",
+  "generated_at": "2026-11-21T08:45:52Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -23396,7 +23396,7 @@
           "f1": "Shamil Gaziev",
           "f2": "Tallison Teixeira",
           "lbl": "Prelim",
-          "points": 16,
+          "points": 17,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23477,6 +23477,11 @@
               "at": "2026-11-21T05:40:59Z",
               "f1_odds": -199,
               "f2_odds": 164
+            },
+            {
+              "at": "2026-11-21T08:45:52Z",
+              "f1_odds": -201,
+              "f2_odds": 165
             }
           ],
           "open": {
@@ -23491,7 +23496,7 @@
           "f1": "Amir Albazi",
           "f2": "Alessandro Costa",
           "lbl": "Prelim",
-          "points": 15,
+          "points": 16,
           "series": [
             {
               "at": "2026-11-12T20:40:42Z",
@@ -23567,6 +23572,11 @@
               "at": "2026-11-20T18:45:53Z",
               "f1_odds": -109,
               "f2_odds": -110
+            },
+            {
+              "at": "2026-11-21T08:45:52Z",
+              "f1_odds": -110,
+              "f2_odds": -109
             }
           ],
           "open": {
@@ -23892,7 +23902,7 @@
           "f1": "Israel Adesanya",
           "f2": "Sharabutdin Magomedov",
           "lbl": "Main Event",
-          "points": 9,
+          "points": 10,
           "series": [
             {
               "at": "2026-11-10T02:01:44Z",
@@ -23938,6 +23948,11 @@
               "at": "2026-11-19T13:00:53Z",
               "f1_odds": -162,
               "f2_odds": 131
+            },
+            {
+              "at": "2026-11-21T08:45:52Z",
+              "f1_odds": -164,
+              "f2_odds": 132
             }
           ],
           "open": {
@@ -24531,7 +24546,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Shamil Gaziev",
         "side": "f2",
-        "points": 16,
+        "points": 17,
         "open": 189,
         "close": null,
         "clv": null
@@ -24959,7 +24974,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Amir Albazi",
         "side": "f2",
-        "points": 15,
+        "points": 16,
         "open": -155,
         "close": null,
         "clv": null
@@ -25837,7 +25852,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Israel Adesanya",
         "side": "f2",
-        "points": 9,
+        "points": 10,
         "open": 126,
         "close": null,
         "clv": null
@@ -27825,7 +27840,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Tallison Teixeira",
         "side": "f1",
-        "points": 16,
+        "points": 17,
         "open": -225,
         "close": null,
         "clv": null
@@ -31123,7 +31138,7 @@
         "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
         "opponent": "Alessandro Costa",
         "side": "f1",
-        "points": 15,
+        "points": 16,
         "open": 132,
         "close": null,
         "clv": null
@@ -31222,7 +31237,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Sharabutdin Magomedov",
         "side": "f1",
-        "points": 9,
+        "points": 10,
         "open": -150,
         "close": null,
         "clv": null

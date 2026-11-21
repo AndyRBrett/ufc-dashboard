@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T08:40:50Z",
+  "generated_at": "2026-11-21T08:45:52Z",
   "events_tracked": 12,
   "stale_events": 3,
   "parse_failure_events": 0,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-21T05:40:59Z",
+      "last_changed_at": "2026-11-21T08:45:52Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -109,11 +109,11 @@
     {
       "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
       "status": "ok",
-      "last_changed_at": "2026-11-19T13:00:53Z",
+      "last_changed_at": "2026-11-21T08:45:52Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
-      "line_movement": -12,
+      "line_movement": -14,
       "odds_market_priced": true
     },
     {
@@ -129,7 +129,7 @@
     {
       "event_id": "2027-01-16:ufc-fight-night-rodriguez-vs-garcia",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T08:40:50Z",
+      "last_changed_at": "2026-11-21T08:45:52Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -139,7 +139,7 @@
     {
       "event_id": "2027-01-23:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T08:40:50Z",
+      "last_changed_at": "2026-11-21T08:45:52Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -169,7 +169,7 @@
     {
       "event_id": "2027-02-13:ufc-fight-night-pyfer-vs-nickal",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T08:40:50Z",
+      "last_changed_at": "2026-11-21T08:45:52Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -198,17 +198,17 @@
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "f1": "Amir Albazi",
       "f2": "Alessandro Costa",
-      "f1_movement": -241,
-      "f2_movement": 45,
-      "magnitude": 241,
+      "f1_movement": -242,
+      "f2_movement": 46,
+      "magnitude": 242,
       "main_event": false,
       "tier": "prelim",
       "threshold": 120,
       "low_confidence": false,
       "wc": "Flyweight",
-      "f1_prob_shift": 9.0,
-      "f2_prob_shift": -8.4,
-      "priority": 482.0
+      "f1_prob_shift": 9.3,
+      "f2_prob_shift": -8.6,
+      "priority": 484.0
     },
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
