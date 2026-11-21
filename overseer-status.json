@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T01:50:40Z",
+  "generated_at": "2026-11-21T01:55:48Z",
   "events_tracked": 12,
   "stale_events": 3,
   "parse_failure_events": 0,
@@ -64,7 +64,7 @@
       "has_data": true,
       "bout_count": 14,
       "line_movement": 5,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
@@ -74,7 +74,7 @@
       "has_data": true,
       "bout_count": 12,
       "line_movement": 233,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
@@ -84,7 +84,7 @@
       "has_data": true,
       "bout_count": 14,
       "line_movement": 15,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-11-14:ufc-334-gane-vs-hokit",
@@ -94,7 +94,7 @@
       "has_data": true,
       "bout_count": 13,
       "line_movement": 54,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
@@ -129,22 +129,22 @@
     {
       "event_id": "2027-01-16:ufc-fight-night-rodriguez-vs-garcia",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T01:50:40Z",
+      "last_changed_at": "2026-11-21T01:55:48Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
       "line_movement": 0,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2027-01-23:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T01:50:40Z",
+      "last_changed_at": "2026-11-21T01:55:48Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
       "line_movement": 0,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2027-01-30:ufc-336-van-vs-kape",
@@ -164,17 +164,17 @@
       "has_data": true,
       "bout_count": 5,
       "line_movement": -63,
-      "odds_market_priced": false
+      "odds_market_priced": null
     },
     {
       "event_id": "2027-02-13:ufc-fight-night-pyfer-vs-nickal",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T01:50:40Z",
+      "last_changed_at": "2026-11-21T01:55:48Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
       "line_movement": 0,
-      "odds_market_priced": false
+      "odds_market_priced": null
     }
   ],
   "alerts": [
