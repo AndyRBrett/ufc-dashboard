@@ -567,7 +567,7 @@ await db.exec(readFileSync(join(ROOT, "supabase/migrations/0017_picks_hidden_unt
   check("check-results: a lock time that couldn't be read waits (fail closed)", cr.graceOver(undefined, T) === false && cr.graceOver(NaN, T) === false);
   check("check-results: LOCK_GRACE matches the database's 5 minutes", cr.LOCK_GRACE_MS === 5 * 60 * 1000);
   check("check-results: the result loop asks pick_lock_for and defers on graceOver before any send",
-    /await boutLockAt\(SUPABASE_URL, picksHeaders, eventDate/.test(src) && /if \(!graceOver\(lockAt, now\)\) \{ deferredCount\+\+; continue; \}/.test(src)
+    /await boutLockAt\(SUPABASE_URL, picksHeaders, date/.test(src) && /if \(!graceOver\(lockAt, now\)\) \{ deferredCount\+\+; return \[\]; \}/.test(src)
     && src.indexOf("graceOver(lockAt, now)") < src.indexOf("functions/v1/send-push"));
   // "No lock row" is not "long past": a card with no schedule falls back to
   // midnight ET after its date, which is why the functions ask pick_lock_for

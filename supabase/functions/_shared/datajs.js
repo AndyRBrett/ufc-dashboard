@@ -111,3 +111,15 @@ export function parseDataJs(src) {
     if (src[i] === ";") i++;
   }
 }
+
+// raw.githubusercontent caches what `main` points at for up to ~5 minutes, and
+// a ?t= cache-buster doesn't reach that: the ref lookup is cached, not the URL.
+// A caller that just pushed a commit names it in X-Data-Sha, and a commit's own
+// URL is immutable, so it reads exactly what it pushed. Only a full 40-hex SHA,
+// only in place of /main/; anything else reads main as before. Used by
+// send-reminders (lock times, 2026-11-07) and check-results (result pushes).
+export function pinnedDataUrl(base, sha) {
+  if (typeof sha !== "string" || !/^[0-9a-f]{40}$/.test(sha.trim())) return base;
+  if (!/\/main\/data\.js$/.test(base)) return base;
+  return base.replace(/\/main\/data\.js$/, `/${sha.trim()}/data.js`);
+}

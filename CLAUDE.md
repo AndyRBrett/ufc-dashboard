@@ -76,7 +76,7 @@ other.
 | `npm run check:invites` | a founder badge on an anonymous or post-cutoff account, an invite claimed twice, by an old account, as someone else or by writing the tables, a throwaway sign-up counted as playing, or an invite surviving Delete my account |
 | `npm run check:native` | the iOS app's push not registering its APNs token, a tapped notification not routing, or a browser taking the native path |
 | `npm run check:pickstore` | the poll or the board reading every pick ever made again, the merged rows differing from the single query's, a row doubled or lost at the date cut, a rename never reaching old cards, or a picks read in scrape.py or an edge function that isn't paged |
-| `npm run check:results` | the app's live poll or check-results reading a Wikipedia results page differently from scrape.py, a private copy of the parser coming back, check-results reading a PPV's redirect stub, missing an accented Fight Night title, losing pickers past row 1,000, or hiding a page it can't read, or the app pushing results |
+| `npm run check:results` | the app's live poll or check-results reading a Wikipedia results page differently from scrape.py, a private copy of the parser coming back, check-results reading a PPV's redirect stub or missing an accented Fight Night's recorded slug, its data.js pass leaving a decided bout's group unsent (or sending one logged under another spelling), a fired safety net not reported, losing pickers past row 1,000, or the app pushing results |
 | `npm run check:sw` | an installed app re-downloading an unchanged page or `data.js` on every open (the service worker's network-first fetch must revalidate, `cache: 'no-cache'`, never `'reload'`), a changed file served stale, or a mascot's recording fetched for a theme that doesn't show it |
 | `npm run check:site` | the site Pages publishes (`scripts/site_files.py`, not the whole repo) missing a file the app, the Lab or the service worker requests: builds it as the deploy does, boots both pages from it and fails on any 404 |
 | `npm run check:migrations` | a migration that can't apply to what the ones before it built, the rebuilt core tables drifting from production's catalog, or `config.toml`'s JWT settings drifting from the deploy |
@@ -1075,7 +1075,7 @@ past is still one full read per app open (it could persist on the device), the
 sport boards and `challenges` still read their whole tables, and `picks` has no
 index on `event_date`.
 
-## A picks read is paged, and a blind result sender fails loudly
+## Result pushes: one reconciler, checked against data.js
 
 PostgREST answers at most 1,000 rows **without an error**. On 2026-11-21 the
 table passed that (1,254 UFC picks) and scrape.py's result push read every
@@ -1083,24 +1083,47 @@ pick in one request: the 1,000 it got were arbitrary, so one player got no
 result push all card. The backup sender, check-results, couldn't cover it: it
 built the Wikipedia title from the picks' ASCII-folded name ("Prochazka"; the
 article is "Procházka", not even a redirect) and answered `parsed: 0` every
-run, with HTTP 200, and nobody looked. Details: `docs/HISTORY.md`.
+run, with HTTP 200, and nobody looked. Both senders checked only their own
+inputs; nothing checked the outcome. Details: `docs/HISTORY.md`.
 
+- **check-results is the reconciler.** Every run (cron-job.org every 2 min,
+  and update.yml right after each data commit) it makes two passes. The
+  Wikipedia pass is the fast one: a result is there minutes before the scraper
+  commits it. The **data.js pass** is the complete one: every decided bout in
+  the committed data.js (what the app shows, after the health gate and
+  `_RESULT_PINS`) whose win or loss side has pickers and no `notif_log` row
+  gets sent. It needs no Wikipedia title and trusts no other sender.
+- **It reads the article at data.js's `slug`** (the title scrape.py read,
+  diacritics kept) for a Fight Night, and "UFC 334" for a numbered PPV, the
+  same rule as the app's live poll. No search.
+- **A group already logged under another spelling counts as sent**
+  (`groupLogged`: same date and group, both surnames, winner first), so the
+  two passes and the scraper never double-push a respelled bout.
+- **A fired safety net is seen.** A group the data.js pass had to send is
+  marked `net:<type>` in `notif_log` and reported in `net`, along with
+  `unread` (a results page it can't read), `failed` and `dataError`. **Only a
+  2xx with a count claims a group**: a send-push error leaves it open, so the
+  data.js pass retries it in the same run and it is reported in `failed`
+  (Codex on #353: marking it logged regardless hid undelivered results). update.yml's
+  "Check result pushes against the committed data.js" step calls it pinned to
+  the commit it just pushed (`X-Data-Sha`) and keeps one issue, **"Result
+  pushes needed the safety net"**, open while any of those is in the window.
+  It never fails the run.
+- **The scraper reads no picks.** It asks send-push for both groups of every
+  result it commits, and send-push builds each audience itself (it always
+  did, for the anon key). An empty side is **200 "Nobody to tell"**, never the
+  409 the after-commit send retries for 90s, and claims nothing.
 - **Every picks read in scrape.py or an edge function pages** (a `Range`
   header, or `limit` + `offset`, with a stable `order`), asks for one row, or
   carries a `picks-read:` comment within three lines above it saying why it
-  can't pass 1,000 rows. `check:pickstore` fails otherwise.
-- **An audience read is all or nothing**: a page that fails sends nothing
-  (`_result_picks` returns `None`, `readAllPicks` returns `null`), because a
-  partial audience is deduped by `notif_log` for good, while a skipped one is
-  sent by the next run.
-- **check-results finds an accented title by search** (scrape.py's
-  `search_event_slug` rule: a title that folds to the same event, never
-  another card), and **reports a card it can't read** in `unread`.
-  `scheduled-push.yml` fails the run for one dated today or earlier, so a
-  blind backup sender is a red run, not a quiet 200.
+  can't pass 1,000 rows. `check:pickstore` fails otherwise. **An audience read
+  is all or nothing** (`readAllPicks` returns `null`): a partial audience is
+  deduped by `notif_log` for good, while a skipped one is sent next run.
 
-`check:results` holds the search, the paging and the report;
-`tests/test_result_push_defer.py` holds the scraper's paging.
+`check:results` holds both passes, the slug rule, the respelling match, the
+`net` report and update.yml's step (mutation-tested);
+`tests/test_result_push_defer.py` holds the scraper asking for both groups
+without reading picks.
 
 ## The picks table holds every sport; UFC readers say so
 

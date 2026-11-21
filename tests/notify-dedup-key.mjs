@@ -87,9 +87,11 @@ for (let i = 0; i < NAMES.length; i++) {
 }
 
 // The fold has to be applied where the key is built: check-results takes both
-// names from its own parse, scrape.py from data.js.
+// names from its own parse (Wikipedia pass) or from data.js (data.js pass),
+// both through one sendBout; scrape.py from data.js.
 const cr = read("supabase/functions/check-results/index.ts");
-if (/import \{ ResultsParse \} from "\.\.\/_shared\/results-bundle\.js"/.test(cr) && /const fightKey = ResultsParse\.fightKey\(res\.winner, res\.loser\)/.test(cr))
+if (/import \{ ResultsParse \} from "\.\.\/_shared\/results-bundle\.js"/.test(cr) && /const fightKey = ResultsParse\.fightKey\(winner, loser\)/.test(cr)
+    && (cr.match(/functions\/v1\/send-push/g) || []).length === 1)
   ok("check-results builds the key with ResultsParse.fightKey (results.js, bundled)");
 else fail("check-results: the fight key is no longer ResultsParse.fightKey from _shared/results-bundle.js — an unfolded name would key differently from scrape.py and duplicate the push.");
 if (/function _fold\(|function _fightKey\(/.test(cr)) fail("check-results defines its own _fold / _fightKey again: a second copy is how the keys drifted the first time. Use ResultsParse.");

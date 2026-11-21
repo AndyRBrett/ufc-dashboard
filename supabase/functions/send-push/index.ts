@@ -342,7 +342,13 @@ async function buildMsg(
       }
       if (rows.length < 1000) break;
     }
-    if (!ids.size) return { ok: false, status: 409, error: "Nobody to tell" };
+    // Nobody picked this side: nothing to send, and not an error. 200, so the
+    // scraper can ask for both groups of every result without knowing who
+    // picked what (it used to read picks itself to decide, and lost groups
+    // when that read was cut at 1,000 rows), and never mistakes it for its
+    // retried 409. Nothing is claimed in notif_log, so a late audience still
+    // gets it.
+    if (!ids.size) return { ok: false, status: 200, error: "Nobody to tell" };
     return { ok: true, msg: {
       title: rm[2] === "win" ? "Your pick WON! 🔥" : "Tough luck ❌",
       body: rm[2] === "win" ? `${winner} def. ${loser} — you called it!` : `${winner} def. ${loser}`,
@@ -794,7 +800,10 @@ Deno.serve(async (req) => {
     let built: Built;
     try { built = await buildMsg(body, caller, SUPABASE_URL, sbHeaders, Date.now()); }
     catch (e) { return new Response(JSON.stringify({ error: "Could not build notification", detail: String(e).slice(0, 200) }), { status: 502, headers: CORS }); }
-    if (!built.ok) return new Response(JSON.stringify({ error: built.error }), { status: built.status, headers: CORS });
+    if (!built.ok) {
+      const out = built.status === 200 ? { sent: 0, skipped: true, reason: built.error } : { error: built.error };
+      return new Response(JSON.stringify(out), { status: built.status, headers: CORS });
+    }
     // Everything that reaches a phone now comes from the server; only the
     // device's own endpoint (a self-exclusion filter) is still taken as given.
     body = { type: body.type, event_date: body.event_date, exclude_endpoint: body.exclude_endpoint ?? null, ...built.msg };

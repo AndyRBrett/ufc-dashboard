@@ -21,10 +21,6 @@ ROOT = Path(__file__).resolve().parent.parent
 # Relative to the clock, so the recency guard never ages this fixture out.
 TODAY = datetime.now(timezone.utc).date().isoformat()
 RESULT = {"winner": "Roberto Soldic", "loser": "Khaos Williams", "event_date": TODAY}
-PICKS = [
-    {"user_id": "u1", "f1": "Roberto Soldic", "f2": "Khaos Williams", "pick": "Roberto Soldic"},
-    {"user_id": "u2", "f1": "Roberto Soldic", "f2": "Khaos Williams", "pick": "Khaos Williams"},
-]
 
 
 class Resp:
@@ -39,42 +35,20 @@ class Resp:
         return {"status": self.status_code}
 
 
-class Rows:
-    def __init__(self, rows, status=200):
-        self.rows, self.status_code = rows, status
-
-    def raise_for_status(self):
-        if self.status_code >= 400:
-            raise RuntimeError(f"HTTP {self.status_code}")
-
-    def json(self):
-        return self.rows
-
-
-def serve_picks(monkeypatch, table, gets=None, fail_at=None):
-    """Stub the picks read like PostgREST: filters, order, and a 1,000-row cap."""
-    def get(url, headers=None, timeout=None):
-        if gets is not None:
-            gets.append(url)
-        q = dict(kv.split("=", 1) for kv in url.split("?", 1)[1].split("&"))
-        offset, limit = int(q.get("offset", 0)), min(int(q.get("limit", 1000)), 1000)
-        if fail_at is not None and offset >= fail_at:
-            return Rows([], 503)
-        dates = q["event_date"][len("in.("):-1].split(",") if "event_date" in q else None
-        rows = [r for r in table if dates is None or r["event_date"] in dates]
-        return Rows([{k: r[k] for k in ("user_id", "f1", "f2", "pick")} for r in rows[offset:offset + limit]])
-    monkeypatch.setattr(scrape.requests, "get", get)
-
-
 @pytest.fixture
 def wire(monkeypatch):
     """Stub the network and the clock; returns (posts, statuses, sleeps)."""
     posts, statuses, sleeps = [], [], []
     monkeypatch.setattr(scrape, "SUPABASE_ANON", "anon")
-    serve_picks(monkeypatch, [dict(p, event_date=TODAY) for p in PICKS])
     monkeypatch.setattr(scrape.time, "sleep", lambda s: sleeps.append(s))
 
+    def get(url, *a, **k):
+        raise AssertionError(f"result pushes read nothing themselves: {url}")
+    monkeypatch.setattr(scrape.requests, "get", get)
+    monkeypatch.setattr(scrape, "sb_get", get)
+
     def post(url, headers=None, json=None, timeout=None):
+        assert set(json) == {"event_date", "type"}, "send-push rebuilds an anon result push; send only its key"
         posts.append(json["type"])
         return Resp(statuses.pop(0) if statuses else 200)
 
@@ -148,41 +122,31 @@ def test_the_after_commit_send_keeps_the_queue_for_the_replay(wire, tmp_path):
     assert json.loads(f.read_text()) == [RESULT], "cleared only by the next run's replay"
 
 
-def test_a_picker_past_the_first_thousand_rows_still_gets_their_push(wire, tmp_path, monkeypatch):
-    """2026-11-21: 1,254 UFC picks, one unpaged read, and one player's group was never asked for."""
+def test_every_result_asks_for_both_groups_without_reading_picks(wire, tmp_path):
+    """2026-11-21: the scraper read picks to decide which groups to ask for,
+    the read was cut at 1,000 rows, and one player got no result push all card.
+    send-push builds the audience itself, so the scraper asks for both groups
+    of every result and reads nothing (the wire fixture fails on any GET)."""
     posts, _, _ = wire
-    old = [{"user_id": f"o{i}", "f1": "A B", "f2": "C D", "pick": "A B", "event_date": "2026-01-01"}
-           for i in range(1200)]
-    today = [dict(p, event_date=TODAY) for p in PICKS]
-    gets = []
-    serve_picks(monkeypatch, old + today, gets)
+    f = tmp_path / "pending.json"
+    upset = dict(RESULT, winner="Kyoji Horiguchi", loser="Asu Almabayev")
+    f.write_text(json.dumps([RESULT, upset]))
+    scrape.send_pending_pushes(str(f))
+    assert posts == ["result:roberto-soldic-khaos-williams:win", "result:roberto-soldic-khaos-williams:loss",
+                     "result:kyoji-horiguchi-asu-almabayev:win", "result:kyoji-horiguchi-asu-almabayev:loss"]
+
+
+def test_nobody_on_a_side_is_not_retried(wire, tmp_path):
+    """send-push answers an empty side with 200 "Nobody to tell", never the 409
+    the after-commit send retries for up to 90s."""
+    posts, statuses, sleeps = wire
     f = tmp_path / "pending.json"
     f.write_text(json.dumps([RESULT]))
+    statuses.extend([200, 200])
     scrape.send_pending_pushes(str(f))
-    key = "result:roberto-soldic-khaos-williams"
-    assert posts == [f"{key}:win", f"{key}:loss"]
-    assert all(f"event_date=in.({TODAY})" in u and "order=id" in u for u in gets), "only the announced card, in a stable order"
-
-    # Paging: a card with more than one page of picks reads every page.
-    many = [{"user_id": f"w{i}", "f1": "Roberto Soldic", "f2": "Khaos Williams", "pick": "Roberto Soldic",
-             "event_date": TODAY} for i in range(1500)] + today
-    gets.clear()
-    serve_picks(monkeypatch, many, gets)
-    assert len(scrape._result_picks({TODAY})) == 1502
-    assert [re.search(r"offset=(\d+)", u).group(1) for u in gets] == ["0", "1000"]
-
-
-def test_an_unreadable_page_sends_nothing(wire, tmp_path, monkeypatch):
-    """A partial audience would be deduped for good: no push, check-results covers it."""
-    posts, _, _ = wire
-    many = [{"user_id": f"w{i}", "f1": "Roberto Soldic", "f2": "Khaos Williams", "pick": "Roberto Soldic",
-             "event_date": TODAY} for i in range(1000)] + [dict(p, event_date=TODAY) for p in PICKS]
-    serve_picks(monkeypatch, many, fail_at=1000)
-    assert scrape._result_picks({TODAY}) is None
-    f = tmp_path / "pending.json"
-    f.write_text(json.dumps([RESULT]))
-    scrape.send_pending_pushes(str(f))
-    assert posts == []
+    assert len(posts) == 2 and sleeps == []
+    fn = (ROOT / "supabase/functions/send-push/index.ts").read_text(encoding="utf-8")
+    assert 'status: 200, error: "Nobody to tell"' in fn, "send-push must not answer an empty side with a retried 409"
 
 
 def test_update_yml_queue_survives_a_cancelled_run():
