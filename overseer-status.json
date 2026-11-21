@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T14:45:50Z",
+  "generated_at": "2026-11-21T14:50:51Z",
   "events_tracked": 12,
   "stale_events": 3,
   "parse_failure_events": 0,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-21T11:50:48Z",
+      "last_changed_at": "2026-11-21T14:50:51Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -129,7 +129,7 @@
     {
       "event_id": "2027-01-16:ufc-fight-night-rodriguez-vs-garcia",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T14:45:50Z",
+      "last_changed_at": "2026-11-21T14:50:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -139,7 +139,7 @@
     {
       "event_id": "2027-01-23:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T14:45:50Z",
+      "last_changed_at": "2026-11-21T14:50:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -169,7 +169,7 @@
     {
       "event_id": "2027-02-13:ufc-fight-night-pyfer-vs-nickal",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T14:45:50Z",
+      "last_changed_at": "2026-11-21T14:50:51Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -214,17 +214,17 @@
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "f1": "Aljamain Sterling",
       "f2": "Kevin Vallejos",
-      "f1_movement": 213,
-      "f2_movement": -18,
-      "magnitude": 213,
+      "f1_movement": 212,
+      "f2_movement": -17,
+      "magnitude": 212,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Featherweight",
-      "f1_prob_shift": -3.1,
-      "f2_prob_shift": 3.8,
-      "priority": 426.0
+      "f1_prob_shift": -2.9,
+      "f2_prob_shift": 3.6,
+      "priority": 424.0
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
