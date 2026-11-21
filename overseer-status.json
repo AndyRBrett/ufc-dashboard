@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T18:40:37Z",
+  "generated_at": "2026-11-21T18:45:50Z",
   "events_tracked": 12,
   "stale_events": 3,
   "parse_failure_events": 0,
@@ -99,7 +99,7 @@
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "status": "ok",
-      "last_changed_at": "2026-11-21T18:10:49Z",
+      "last_changed_at": "2026-11-21T18:45:50Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 12,
@@ -129,7 +129,7 @@
     {
       "event_id": "2027-01-16:ufc-fight-night-rodriguez-vs-garcia",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T18:40:37Z",
+      "last_changed_at": "2026-11-21T18:45:50Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -139,7 +139,7 @@
     {
       "event_id": "2027-01-23:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T18:40:37Z",
+      "last_changed_at": "2026-11-21T18:45:50Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -169,7 +169,7 @@
     {
       "event_id": "2027-02-13:ufc-fight-night-pyfer-vs-nickal",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-21T18:40:37Z",
+      "last_changed_at": "2026-11-21T18:45:50Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -372,18 +372,18 @@
     },
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
-      "f1": "Jared Cannonier",
-      "f2": "Ikram Aliskerov",
-      "f1_movement": -47,
-      "f2_movement": 80,
+      "f1": "Ikram Aliskerov",
+      "f2": "Jared Cannonier",
+      "f1_movement": 80,
+      "f2_movement": -47,
       "magnitude": 80,
       "main_event": false,
       "tier": "main-card",
       "threshold": 55,
       "low_confidence": false,
       "wc": "Middleweight",
-      "f1_prob_shift": 3.3,
-      "f2_prob_shift": -3.8,
+      "f1_prob_shift": -3.8,
+      "f2_prob_shift": 3.3,
       "priority": 160.0
     },
     {
