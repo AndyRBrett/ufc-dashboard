@@ -1058,7 +1058,7 @@ and ~1,150 rows per poll per open app on 2026-11-13, growing with every card
 and player. `// picks-store:start … :end` in `index.html` splits the rows at a
 date cut (`PICKS_CUT_DAYS`, 3). A pick on a card before the cut can't change
 (its bout locked, 0010) and everyone can read it, so that side is read once and
-again only every `PICKS_PAST_TTL_MS` (10 min), when the cut moves, or on a
+again only every `PICKS_PAST_TTL_MS` (30 min), when the cut moves, or on a
 rename; the cards after the cut are all the poll asks for (16 ms, and only
 those rows reach `pick_lock_for`). **Every reader of everyone's picks goes
 through `loadPickRows()`**; it returns the single query's rows in its order
@@ -1068,7 +1068,7 @@ any new read of the whole table.
 **A rename is the one write that reaches old cards**, so `_commitName`'s PATCH
 calls `_picksPastStale()` and `_rtBroadcast(true)`, and other devices re-read
 on that broadcast. A device that misses it shows the old name on old cards for
-up to ten minutes; an account deleted elsewhere likewise. Anything new that
+up to thirty minutes; an account deleted elsewhere likewise. Anything new that
 edits rows on past cards needs the same call. The cut is three days in UTC so
 it is never later than the policy's two days in Eastern. Not done yet: the
 past is still one full read per app open (it could persist on the device), the

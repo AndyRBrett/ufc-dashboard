@@ -3859,7 +3859,9 @@ function _sbFetchAll(query){
 // keys reproduces it. Three days, not the policy's two, so the cut (UTC) is
 // never later than the policy's own (Eastern).
 var PICKS_COLS="user_id,event_name,event_date,f1,f2,pick,method,confidence,nickname,updated_at,bonus_pick";
-var PICKS_CUT_DAYS=3,PICKS_PAST_TTL_MS=10*60*1000;
+// 30 minutes: a rename or a deleted account normally reaches open apps at once
+// (_rtBroadcast); this timer only backstops a missed broadcast.
+var PICKS_CUT_DAYS=3,PICKS_PAST_TTL_MS=30*60*1000;
 var _pickStore={cut:null,past:null,pastAt:0,pastReq:null,pastReqCut:null,stale:false};
 function _picksCut(now){return new Date(now-PICKS_CUT_DAYS*DAY_MS).toISOString().slice(0,10);}
 function _picksPastStale(){_pickStore.stale=true;}
