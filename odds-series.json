@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T21:36:15Z",
+  "generated_at": "2026-11-22T01:27:10Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -22785,7 +22785,7 @@
     },
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
-      "concluded": false,
+      "concluded": true,
       "bouts": [
         {
           "f1": "Jiri Prochazka",
@@ -22944,8 +22944,15 @@
             "f1_odds": 132,
             "f2_odds": -155
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-21T11:50:48Z",
+            "f1_odds": 149,
+            "f2_odds": -182
+          },
+          "clv": {
+            "f1_odds": 17,
+            "f2_odds": -27
+          }
         },
         {
           "f1": "Aljamain Sterling",
@@ -23069,8 +23076,15 @@
             "f1_odds": -107,
             "f2_odds": -109
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-21T14:50:51Z",
+            "f1_odds": 105,
+            "f2_odds": -126
+          },
+          "clv": {
+            "f1_odds": 212,
+            "f2_odds": -17
+          }
         },
         {
           "f1": "Dan Hooker",
@@ -23189,8 +23203,15 @@
             "f1_odds": -155,
             "f2_odds": 132
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-21T17:55:43Z",
+            "f1_odds": -203,
+            "f2_odds": 166
+          },
+          "clv": {
+            "f1_odds": -48,
+            "f2_odds": 34
+          }
         },
         {
           "f1": "Jared Cannonier",
@@ -23309,8 +23330,15 @@
             "f1_odds": 300,
             "f2_odds": -400
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-21T17:55:43Z",
+            "f1_odds": 253,
+            "f2_odds": -320
+          },
+          "clv": {
+            "f1_odds": -47,
+            "f2_odds": 80
+          }
         },
         {
           "f1": "Aleksandre Topuria",
@@ -23429,8 +23457,15 @@
             "f1_odds": -220,
             "f2_odds": 185
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-21T14:50:51Z",
+            "f1_odds": -283,
+            "f2_odds": 227
+          },
+          "clv": {
+            "f1_odds": -63,
+            "f2_odds": 42
+          }
         },
         {
           "f1": "Shamil Gaziev",
@@ -23534,8 +23569,15 @@
             "f1_odds": -225,
             "f2_odds": 189
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-21T11:50:48Z",
+            "f1_odds": -198,
+            "f2_odds": 162
+          },
+          "clv": {
+            "f1_odds": 27,
+            "f2_odds": -27
+          }
         },
         {
           "f1": "Amir Albazi",
@@ -23634,8 +23676,15 @@
             "f1_odds": 132,
             "f2_odds": -155
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-21T11:50:48Z",
+            "f1_odds": -109,
+            "f2_odds": -110
+          },
+          "clv": {
+            "f1_odds": -241,
+            "f2_odds": 45
+          }
         },
         {
           "f1": "Jake Matthews",
@@ -23749,8 +23798,15 @@
             "f1_odds": -170,
             "f2_odds": 145
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-21T14:50:51Z",
+            "f1_odds": -250,
+            "f2_odds": 202
+          },
+          "clv": {
+            "f1_odds": -80,
+            "f2_odds": 57
+          }
         },
         {
           "f1": "Nikolas Motta",
@@ -23819,8 +23875,15 @@
             "f1_odds": 130,
             "f2_odds": -162
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-21T14:50:51Z",
+            "f1_odds": 146,
+            "f2_odds": -177
+          },
+          "clv": {
+            "f1_odds": 16,
+            "f2_odds": -15
+          }
         },
         {
           "f1": "Diyar Nurgozhay",
@@ -23869,8 +23932,15 @@
             "f1_odds": -260,
             "f2_odds": 203
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-21T11:50:48Z",
+            "f1_odds": -263,
+            "f2_odds": 212
+          },
+          "clv": {
+            "f1_odds": -3,
+            "f2_odds": 9
+          }
         },
         {
           "f1": "Shoaib Yousaf",
@@ -23919,8 +23989,15 @@
             "f1_odds": 117,
             "f2_odds": -142
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-21T14:50:51Z",
+            "f1_odds": 119,
+            "f2_odds": -144
+          },
+          "clv": {
+            "f1_odds": 2,
+            "f2_odds": -2
+          }
         },
         {
           "f1": "Kyoji Horiguchi",
@@ -23959,8 +24036,15 @@
             "f1_odds": -187,
             "f2_odds": 158
           },
-          "close": null,
-          "clv": null
+          "close": {
+            "at": "2026-11-21T17:55:43Z",
+            "f1_odds": -196,
+            "f2_odds": 160
+          },
+          "clv": {
+            "f1_odds": -9,
+            "f2_odds": 2
+          }
         }
       ]
     },
@@ -24638,8 +24722,8 @@
         "side": "f2",
         "points": 18,
         "open": 189,
-        "close": null,
-        "clv": null
+        "close": 162,
+        "clv": -27
       }
     ],
     "Kai Asakura": [
@@ -24689,8 +24773,8 @@
         "side": "f1",
         "points": 20,
         "open": -170,
-        "close": null,
-        "clv": null
+        "close": -250,
+        "clv": -80
       }
     ],
     "Carlston Harris": [
@@ -25006,8 +25090,8 @@
         "side": "f2",
         "points": 21,
         "open": 185,
-        "close": null,
-        "clv": null
+        "close": 227,
+        "clv": 42
       }
     ],
     "Iwo Baraniewski": [
@@ -25066,8 +25150,8 @@
         "side": "f2",
         "points": 17,
         "open": -155,
-        "close": null,
-        "clv": null
+        "close": -110,
+        "clv": 45
       }
     ],
     "Matt Schnell": [
@@ -25525,8 +25609,8 @@
         "side": "f1",
         "points": 5,
         "open": -187,
-        "close": null,
-        "clv": null
+        "close": -196,
+        "clv": -9
       }
     ],
     "Ion Cutelaba": [
@@ -25556,8 +25640,8 @@
         "side": "f2",
         "points": 29,
         "open": -155,
-        "close": null,
-        "clv": null
+        "close": -182,
+        "clv": -27
       }
     ],
     "Hyder Amil": [
@@ -26006,8 +26090,8 @@
         "side": "f2",
         "points": 21,
         "open": -400,
-        "close": null,
-        "clv": null
+        "close": -320,
+        "clv": 80
       }
     ],
     "Brunno Ferreira": [
@@ -26290,8 +26374,8 @@
         "side": "f2",
         "points": 20,
         "open": 145,
-        "close": null,
-        "clv": null
+        "close": 202,
+        "clv": 57
       }
     ],
     "Jefferson Nascimento": [
@@ -26808,8 +26892,8 @@
         "side": "f1",
         "points": 21,
         "open": 300,
-        "close": null,
-        "clv": null
+        "close": 253,
+        "clv": -47
       }
     ],
     "Christian Leroy Duncan": [
@@ -27385,8 +27469,8 @@
         "side": "f1",
         "points": 7,
         "open": -260,
-        "close": null,
-        "clv": null
+        "close": -263,
+        "clv": -3
       }
     ],
     "Bruno Lopes": [
@@ -27932,8 +28016,8 @@
         "side": "f1",
         "points": 18,
         "open": -225,
-        "close": null,
-        "clv": null
+        "close": -198,
+        "clv": 27
       }
     ],
     "MarQuel Mederos": [
@@ -28329,8 +28413,8 @@
         "side": "f1",
         "points": 21,
         "open": -155,
-        "close": null,
-        "clv": null
+        "close": -203,
+        "clv": -48
       }
     ],
     "Salahdine Parnasse": [
@@ -29028,8 +29112,8 @@
         "side": "f2",
         "points": 21,
         "open": 132,
-        "close": null,
-        "clv": null
+        "close": 166,
+        "clv": 34
       }
     ],
     "Alonzo Menifield": [
@@ -31186,8 +31270,8 @@
         "side": "f1",
         "points": 29,
         "open": 132,
-        "close": null,
-        "clv": null
+        "close": 149,
+        "clv": 17
       }
     ],
     "Aljamain Sterling": [
@@ -31197,8 +31281,8 @@
         "side": "f1",
         "points": 22,
         "open": -107,
-        "close": null,
-        "clv": null
+        "close": 105,
+        "clv": 212
       }
     ],
     "Kevin Vallejos": [
@@ -31208,8 +31292,8 @@
         "side": "f2",
         "points": 22,
         "open": -109,
-        "close": null,
-        "clv": null
+        "close": -126,
+        "clv": -17
       }
     ],
     "Aleksandre Topuria": [
@@ -31219,8 +31303,8 @@
         "side": "f1",
         "points": 21,
         "open": -220,
-        "close": null,
-        "clv": null
+        "close": -283,
+        "clv": -63
       }
     ],
     "Amir Albazi": [
@@ -31230,8 +31314,8 @@
         "side": "f1",
         "points": 17,
         "open": 132,
-        "close": null,
-        "clv": null
+        "close": -109,
+        "clv": -241
       }
     ],
     "Nikolas Motta": [
@@ -31241,8 +31325,8 @@
         "side": "f1",
         "points": 11,
         "open": 130,
-        "close": null,
-        "clv": null
+        "close": 146,
+        "clv": 16
       }
     ],
     "Dom Mar Fan": [
@@ -31252,8 +31336,8 @@
         "side": "f2",
         "points": 11,
         "open": -162,
-        "close": null,
-        "clv": null
+        "close": -177,
+        "clv": -15
       }
     ],
     "Alik Lorenz": [
@@ -31263,8 +31347,8 @@
         "side": "f2",
         "points": 7,
         "open": 203,
-        "close": null,
-        "clv": null
+        "close": 212,
+        "clv": 9
       }
     ],
     "Shoaib Yousaf": [
@@ -31274,8 +31358,8 @@
         "side": "f1",
         "points": 7,
         "open": 117,
-        "close": null,
-        "clv": null
+        "close": 119,
+        "clv": 2
       }
     ],
     "John Mitchell": [
@@ -31285,8 +31369,8 @@
         "side": "f2",
         "points": 7,
         "open": -142,
-        "close": null,
-        "clv": null
+        "close": -144,
+        "clv": -2
       }
     ],
     "Asu Almabayev": [
@@ -31296,8 +31380,8 @@
         "side": "f2",
         "points": 5,
         "open": 158,
-        "close": null,
-        "clv": null
+        "close": 160,
+        "clv": 2
       }
     ],
     "Adesanya": [
