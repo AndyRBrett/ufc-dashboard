@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-22T17:02:30Z",
+  "generated_at": "2026-11-22T21:33:25Z",
   "summary": {
     "events": 12,
     "block": 0,
@@ -9,7 +9,7 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Adesanya vs. Magomedov (13d out): 10 of 12 bouts have no odds",
+      "message": "UFC Fight Night: Adesanya vs. Magomedov (13d out): 4 of 12 bouts have no odds",
       "event": "UFC Fight Night: Adesanya vs. Magomedov",
       "date": "2026-12-05",
       "days_out": 13
@@ -17,7 +17,7 @@
     {
       "severity": "WARN",
       "check": "odds-primary-spent",
-      "message": "primary Odds API key is down (HTTP 401, remaining 0) \u2014 backup the-odds-api-backup is pricing cards, 370 requests left"
+      "message": "primary Odds API key is down (HTTP 401, remaining 0) \u2014 backup the-odds-api-backup is pricing cards, 369 requests left"
     },
     {
       "severity": "WARN",
