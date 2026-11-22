@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-22T01:27:10Z",
+  "generated_at": "2026-11-22T04:59:54Z",
   "events_tracked": 12,
   "stale_events": 3,
   "parse_failure_events": 0,
@@ -22,36 +22,36 @@
   "movement_alert_calibration": [
     {
       "tier": "main-event",
-      "bouts": 22,
+      "bouts": 23,
       "target_alert_rate": 0.5,
       "source": "calibrated",
-      "observed_p": 24,
-      "persistence_at_default": 0.877,
+      "observed_p": 27,
+      "persistence_at_default": 0.853,
       "persistence_at_threshold": 0.972,
       "persistence_samples": 181,
-      "persistence_samples_at_default": 325
+      "persistence_samples_at_default": 347
     },
     {
       "tier": "main-card",
-      "bouts": 81,
+      "bouts": 85,
       "target_alert_rate": 0.35,
       "source": "calibrated",
       "observed_p": 55,
-      "persistence_at_default": 0.806,
-      "persistence_at_threshold": 0.873,
-      "persistence_samples": 316,
-      "persistence_samples_at_default": 1171
+      "persistence_at_default": 0.822,
+      "persistence_at_threshold": 0.889,
+      "persistence_samples": 360,
+      "persistence_samples_at_default": 1273
     },
     {
       "tier": "prelim",
-      "bouts": 144,
+      "bouts": 151,
       "target_alert_rate": 0.2,
       "source": "calibrated",
       "observed_p": 153,
-      "persistence_at_default": 0.82,
-      "persistence_at_threshold": 0.831,
-      "persistence_samples": 261,
-      "persistence_samples_at_default": 1940
+      "persistence_at_default": 0.829,
+      "persistence_at_threshold": 0.837,
+      "persistence_samples": 270,
+      "persistence_samples_at_default": 2056
     }
   ],
   "movement_alert_low_confidence_tiers": [],
@@ -129,7 +129,7 @@
     {
       "event_id": "2027-01-16:ufc-fight-night-rodriguez-vs-garcia",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-22T01:27:10Z",
+      "last_changed_at": "2026-11-22T04:59:54Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -139,7 +139,7 @@
     {
       "event_id": "2027-01-23:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-22T01:27:10Z",
+      "last_changed_at": "2026-11-22T04:59:54Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -169,7 +169,7 @@
     {
       "event_id": "2027-02-13:ufc-fight-night-pyfer-vs-nickal",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-22T01:27:10Z",
+      "last_changed_at": "2026-11-22T04:59:54Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
