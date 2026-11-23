@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-22T21:33:25Z",
+  "generated_at": "2026-11-23T01:57:23Z",
   "summary": {
-    "events": 12,
+    "events": 11,
     "block": 0,
     "warn": 3
   },
@@ -9,10 +9,10 @@
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Adesanya vs. Magomedov (13d out): 4 of 12 bouts have no odds",
+      "message": "UFC Fight Night: Adesanya vs. Magomedov (12d out): 4 of 12 bouts have no odds",
       "event": "UFC Fight Night: Adesanya vs. Magomedov",
       "date": "2026-12-05",
-      "days_out": 13
+      "days_out": 12
     },
     {
       "severity": "WARN",
@@ -22,10 +22,10 @@
     {
       "severity": "WARN",
       "check": "time-unconfirmed",
-      "message": "UFC 335: Oliveira vs. Lopes (20d out): UFC.com reading has no prelims time, so it is unchecked",
+      "message": "UFC 335: Oliveira vs. Lopes (19d out): UFC.com reading has no prelims time, so it is unchecked",
       "event": "UFC 335: Oliveira vs. Lopes",
       "date": "2026-12-12",
-      "days_out": 20,
+      "days_out": 19,
       "segment": "prelim"
     }
   ]
