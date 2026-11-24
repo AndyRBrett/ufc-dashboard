@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-23T21:10:03Z",
+  "generated_at": "2026-11-24T20:07:02Z",
   "events_tracked": 11,
   "stale_events": 1,
   "parse_failure_events": 0,
@@ -9,7 +9,7 @@
   "odds_budget": {
     "exhausted": false,
     "reset_day": 1,
-    "resets_in_days": 8,
+    "resets_in_days": 7,
     "most_affected": []
   },
   "stale_threshold_hours": 48,
@@ -99,11 +99,11 @@
     {
       "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
       "status": "ok",
-      "last_changed_at": "2026-11-22T21:33:25Z",
+      "last_changed_at": "2026-11-24T20:07:02Z",
       "is_stale": false,
       "has_data": true,
-      "bout_count": 12,
-      "line_movement": -12,
+      "bout_count": 14,
+      "line_movement": -24,
       "odds_market_priced": true
     },
     {
@@ -112,14 +112,14 @@
       "last_changed_at": "2026-11-22T21:33:25Z",
       "is_stale": false,
       "has_data": true,
-      "bout_count": 6,
+      "bout_count": 8,
       "line_movement": 11,
       "odds_market_priced": true
     },
     {
       "event_id": "2027-01-16:ufc-fight-night-rodriguez-vs-garcia",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-23T21:10:03Z",
+      "last_changed_at": "2026-11-24T20:07:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -129,7 +129,7 @@
     {
       "event_id": "2027-01-23:ufc-fight-night-bonfim-vs-brady",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-23T21:10:03Z",
+      "last_changed_at": "2026-11-24T20:07:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -139,10 +139,10 @@
     {
       "event_id": "2027-01-30:ufc-336-van-vs-kape",
       "status": "ok",
-      "last_changed_at": "2026-11-22T21:33:25Z",
+      "last_changed_at": "2026-11-24T20:07:02Z",
       "is_stale": false,
       "has_data": true,
-      "bout_count": 5,
+      "bout_count": 9,
       "line_movement": 0,
       "odds_market_priced": true
     },
@@ -159,7 +159,7 @@
     {
       "event_id": "2027-02-13:ufc-fight-night-pyfer-vs-nickal",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-23T21:10:03Z",
+      "last_changed_at": "2026-11-24T20:07:02Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -441,6 +441,22 @@
       "priority": 80.0
     },
     {
+      "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+      "f1": "Mairon Santos",
+      "f2": "Akbar Abdullaev",
+      "f1_movement": 49,
+      "f2_movement": -67,
+      "magnitude": 67,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Lightweight",
+      "f1_prob_shift": -4.8,
+      "f2_prob_shift": 4.7,
+      "priority": 73.7
+    },
+    {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
       "f1": "Jean-Paul Lebosnoyani",
       "f2": "Farman Hasanov",
@@ -455,6 +471,22 @@
       "f1_prob_shift": 5.5,
       "f2_prob_shift": -4.7,
       "priority": 73.0
+    },
+    {
+      "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+      "f1": "Levan Chokheli",
+      "f2": "Islam Dulatov",
+      "f1_movement": -44,
+      "f2_movement": 66,
+      "magnitude": 66,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Welterweight",
+      "f1_prob_shift": 5.3,
+      "f2_prob_shift": -5.9,
+      "priority": 72.6
     },
     {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",

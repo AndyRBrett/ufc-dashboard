@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-23T21:10:03Z",
+  "generated_at": "2026-11-24T20:07:02Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -24076,7 +24076,7 @@
           "f1": "Israel Adesanya",
           "f2": "Sharabutdin Magomedov",
           "lbl": "Main Event",
-          "points": 11,
+          "points": 12,
           "series": [
             {
               "at": "2026-11-10T02:01:44Z",
@@ -24132,6 +24132,11 @@
               "at": "2026-11-22T21:33:25Z",
               "f1_odds": -162,
               "f2_odds": 131
+            },
+            {
+              "at": "2026-11-24T20:07:02Z",
+              "f1_odds": -174,
+              "f2_odds": 138
             }
           ],
           "open": {
@@ -24146,7 +24151,7 @@
           "f1": "Ian Machado Garry",
           "f2": "Yaroslav Amosov",
           "lbl": "Co-Main",
-          "points": 13,
+          "points": 14,
           "series": [
             {
               "at": "2026-11-10T07:15:45Z",
@@ -24212,6 +24217,11 @@
               "at": "2026-11-18T08:20:45Z",
               "f1_odds": -187,
               "f2_odds": 149
+            },
+            {
+              "at": "2026-11-24T20:07:02Z",
+              "f1_odds": -189,
+              "f2_odds": 151
             }
           ],
           "open": {
@@ -24226,12 +24236,17 @@
           "f1": "Levan Chokheli",
           "f2": "Islam Dulatov",
           "lbl": "Main Card",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-22T21:33:25Z",
               "f1_odds": 210,
               "f2_odds": -270
+            },
+            {
+              "at": "2026-11-24T20:07:02Z",
+              "f1_odds": 166,
+              "f2_odds": -204
             }
           ],
           "open": {
@@ -24246,12 +24261,17 @@
           "f1": "Mairon Santos",
           "f2": "Akbar Abdullaev",
           "lbl": "Main Card",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-22T21:33:25Z",
               "f1_odds": 196,
               "f2_odds": -245
+            },
+            {
+              "at": "2026-11-24T20:07:02Z",
+              "f1_odds": 245,
+              "f2_odds": -312
             }
           ],
           "open": {
@@ -24266,12 +24286,17 @@
           "f1": "Magomed Tuchalov",
           "f2": "Ion Cutelaba",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-22T21:33:25Z",
               "f1_odds": -210,
               "f2_odds": 171
+            },
+            {
+              "at": "2026-11-24T20:07:02Z",
+              "f1_odds": -188,
+              "f2_odds": 155
             }
           ],
           "open": {
@@ -24286,12 +24311,17 @@
           "f1": "Bruno Gustavo da Silva",
           "f2": "Jafel Filho",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-22T21:33:25Z",
               "f1_odds": 119,
               "f2_odds": -145
+            },
+            {
+              "at": "2026-11-24T20:07:02Z",
+              "f1_odds": 126,
+              "f2_odds": -152
             }
           ],
           "open": {
@@ -24306,11 +24336,16 @@
           "f1": "Marco Tulio",
           "f2": "Park Jun-yong",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-22T21:33:25Z",
               "f1_odds": -175,
+              "f2_odds": 149
+            },
+            {
+              "at": "2026-11-24T20:07:02Z",
+              "f1_odds": -181,
               "f2_odds": 149
             }
           ],
@@ -24326,18 +24361,103 @@
           "f1": "Abdul Hussein",
           "f2": "Hecher Sosa",
           "lbl": "Prelim",
-          "points": 1,
+          "points": 2,
           "series": [
             {
               "at": "2026-11-22T21:33:25Z",
               "f1_odds": -170,
               "f2_odds": 145
+            },
+            {
+              "at": "2026-11-24T20:07:02Z",
+              "f1_odds": -150,
+              "f2_odds": 124
             }
           ],
           "open": {
             "at": "2026-11-22T21:33:25Z",
             "f1_odds": -170,
             "f2_odds": 145
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Luke Riley",
+          "f2": "Gabriel Santos",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-24T20:07:02Z",
+              "f1_odds": -152,
+              "f2_odds": 125
+            }
+          ],
+          "open": {
+            "at": "2026-11-24T20:07:02Z",
+            "f1_odds": -152,
+            "f2_odds": 125
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Uran Satybaldiev",
+          "f2": "Ivan Gnizditskiy",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-24T20:07:02Z",
+              "f1_odds": -116,
+              "f2_odds": -106
+            }
+          ],
+          "open": {
+            "at": "2026-11-24T20:07:02Z",
+            "f1_odds": -116,
+            "f2_odds": -106
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Pavel Andrusca",
+          "f2": "Mehemmedeli Osmanli",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-24T20:07:02Z",
+              "f1_odds": -138,
+              "f2_odds": 113
+            }
+          ],
+          "open": {
+            "at": "2026-11-24T20:07:02Z",
+            "f1_odds": -138,
+            "f2_odds": 113
+          },
+          "close": null,
+          "clv": null
+        },
+        {
+          "f1": "Modestino Rodrigues",
+          "f2": "Matthieu Letho Duclos",
+          "lbl": "Prelim",
+          "points": 1,
+          "series": [
+            {
+              "at": "2026-11-24T20:07:02Z",
+              "f1_odds": 119,
+              "f2_odds": -144
+            }
+          ],
+          "open": {
+            "at": "2026-11-24T20:07:02Z",
+            "f1_odds": 119,
+            "f2_odds": -144
           },
           "close": null,
           "clv": null
@@ -24623,7 +24743,7 @@
           "f1": "Carlos Prates",
           "f2": "Michael Morales",
           "lbl": "Co-Main",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-11-01T05:20:38Z",
@@ -24644,6 +24764,11 @@
               "at": "2026-11-22T21:33:25Z",
               "f1_odds": -183,
               "f2_odds": 147
+            },
+            {
+              "at": "2026-11-24T20:07:02Z",
+              "f1_odds": -179,
+              "f2_odds": 144
             }
           ],
           "open": {
@@ -25374,7 +25499,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Jafel Filho",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 119,
         "close": null,
         "clv": null
@@ -25771,7 +25896,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Magomed Tuchalov",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 171,
         "close": null,
         "clv": null
@@ -26084,7 +26209,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Islam Dulatov",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 210,
         "close": null,
         "clv": null
@@ -26188,7 +26313,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Israel Adesanya",
         "side": "f2",
-        "points": 11,
+        "points": 12,
         "open": 126,
         "close": null,
         "clv": null
@@ -26810,6 +26935,15 @@
         "open": -330,
         "close": -228,
         "clv": 102
+      },
+      {
+        "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+        "opponent": "Gabriel Santos",
+        "side": "f1",
+        "points": 1,
+        "open": -152,
+        "close": null,
+        "clv": null
       }
     ],
     "Kai Kamaka III": [
@@ -27781,7 +27915,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Yaroslav Amosov",
         "side": "f1",
-        "points": 13,
+        "points": 14,
         "open": -169,
         "close": null,
         "clv": null
@@ -28773,6 +28907,15 @@
         "open": -118,
         "close": -120,
         "clv": -2
+      },
+      {
+        "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+        "opponent": "Modestino Rodrigues",
+        "side": "f2",
+        "points": 1,
+        "open": -144,
+        "close": null,
+        "clv": null
       }
     ],
     "Luis Felipe Dias": [
@@ -28828,6 +28971,15 @@
         "open": 243,
         "close": 242,
         "clv": -1
+      },
+      {
+        "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+        "opponent": "Mehemmedeli Osmanli",
+        "side": "f1",
+        "points": 1,
+        "open": -138,
+        "close": null,
+        "clv": null
       }
     ],
     "Jean Silva": [
@@ -29591,6 +29743,15 @@
         "open": -312,
         "close": -312,
         "clv": 0
+      },
+      {
+        "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+        "opponent": "Pavel Andrusca",
+        "side": "f2",
+        "points": 1,
+        "open": 113,
+        "close": null,
+        "clv": null
       }
     ],
     "Ilimbek Akylbek uulu": [
@@ -31573,7 +31734,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Sharabutdin Magomedov",
         "side": "f1",
-        "points": 11,
+        "points": 12,
         "open": -150,
         "close": null,
         "clv": null
@@ -31584,7 +31745,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Ian Machado Garry",
         "side": "f2",
-        "points": 13,
+        "points": 14,
         "open": 142,
         "close": null,
         "clv": null
@@ -31595,7 +31756,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Levan Chokheli",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -270,
         "close": null,
         "clv": null
@@ -31606,7 +31767,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Akbar Abdullaev",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": 196,
         "close": null,
         "clv": null
@@ -31617,7 +31778,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Mairon Santos",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -245,
         "close": null,
         "clv": null
@@ -31628,7 +31789,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Ion Cutelaba",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -210,
         "close": null,
         "clv": null
@@ -31639,7 +31800,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Bruno Gustavo da Silva",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": -145,
         "close": null,
         "clv": null
@@ -31650,7 +31811,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Park Jun-yong",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -175,
         "close": null,
         "clv": null
@@ -31661,7 +31822,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Marco Tulio",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 149,
         "close": null,
         "clv": null
@@ -31672,7 +31833,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Hecher Sosa",
         "side": "f1",
-        "points": 1,
+        "points": 2,
         "open": -170,
         "close": null,
         "clv": null
@@ -31683,8 +31844,52 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Abdul Hussein",
         "side": "f2",
-        "points": 1,
+        "points": 2,
         "open": 145,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Gabriel Santos": [
+      {
+        "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+        "opponent": "Luke Riley",
+        "side": "f2",
+        "points": 1,
+        "open": 125,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Uran Satybaldiev": [
+      {
+        "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+        "opponent": "Ivan Gnizditskiy",
+        "side": "f1",
+        "points": 1,
+        "open": -116,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Ivan Gnizditskiy": [
+      {
+        "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+        "opponent": "Uran Satybaldiev",
+        "side": "f2",
+        "points": 1,
+        "open": -106,
+        "close": null,
+        "clv": null
+      }
+    ],
+    "Modestino Rodrigues": [
+      {
+        "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+        "opponent": "Matthieu Letho Duclos",
+        "side": "f1",
+        "points": 1,
+        "open": 119,
         "close": null,
         "clv": null
       }
@@ -31738,7 +31943,7 @@
         "event_id": "2027-01-30:ufc-336-van-vs-kape",
         "opponent": "Michael Morales",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -173,
         "close": null,
         "clv": null
@@ -31749,7 +31954,7 @@
         "event_id": "2027-01-30:ufc-336-van-vs-kape",
         "opponent": "Carlos Prates",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 138,
         "close": null,
         "clv": null

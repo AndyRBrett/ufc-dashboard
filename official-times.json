@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-23T21:09:46Z",
+ "generated_at": "2026-11-24T20:05:35Z",
  "source": "https://www.ufc.com",
  "cards": {
   "UFC Fight Night: Adesanya vs. Magomedov|2026-12-05": {
    "name": "UFC Fight Night: Adesanya vs. Magomedov",
    "date": "2026-12-05",
-   "checked_at": "2026-11-23T21:09:46Z",
+   "checked_at": "2026-11-24T20:05:35Z",
    "status": 200,
    "error": "no UFC.com page matched this card",
    "tried": [
@@ -15,7 +15,7 @@
   "UFC 335: Oliveira vs. Lopes|2026-12-12": {
    "name": "UFC 335: Oliveira vs. Lopes",
    "date": "2026-12-12",
-   "checked_at": "2026-11-23T21:09:46Z",
+   "checked_at": "2026-11-24T20:05:35Z",
    "url": "https://www.ufc.com/event/ufc-335",
    "status": 200,
    "segments": {
@@ -45,22 +45,30 @@
       "Charles Johnson"
      ],
      [
-      "Kyler Phillips",
-      "Ethyn Ewing"
-     ],
-     [
       "Damian Pinas",
       "Baisangur Susurkaev"
+     ],
+     [
+      "Kyler Phillips",
+      "Ethyn Ewing"
      ]
     ],
     "early": [
      [
+      "Jacqueline Cavalcanti",
+      "Michelle Montague"
+     ],
+     [
       "Quentin Pasley",
       "Junior Tafa"
+     ],
+     [
+      "Roque Conceicao",
+      "Nilson Rojas"
      ]
     ]
    },
-   "confirmed_at": "2026-11-23T21:09:46Z"
+   "confirmed_at": "2026-11-24T20:05:35Z"
   }
  }
 }
