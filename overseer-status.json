@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T02:43:12Z",
+  "generated_at": "2026-11-27T13:38:13Z",
   "events_tracked": 11,
   "stale_events": 3,
   "parse_failure_events": 0,
@@ -99,11 +99,11 @@
     {
       "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
       "status": "ok",
-      "last_changed_at": "2026-11-26T07:41:05Z",
+      "last_changed_at": "2026-11-27T13:38:13Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 14,
-      "line_movement": -22,
+      "line_movement": -17,
       "odds_market_priced": true
     },
     {
@@ -119,7 +119,7 @@
     {
       "event_id": "2027-01-16:ufc-fight-night-rodriguez-vs-garcia",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-27T02:43:12Z",
+      "last_changed_at": "2026-11-27T13:38:13Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 13,
@@ -129,11 +129,11 @@
     {
       "event_id": "2027-01-23:ufc-fight-night-bonfim-vs-brady",
       "status": "ok",
-      "last_changed_at": "2026-11-26T07:41:05Z",
+      "last_changed_at": "2026-11-27T13:38:13Z",
       "is_stale": false,
       "has_data": true,
       "bout_count": 11,
-      "line_movement": 0,
+      "line_movement": -3,
       "odds_market_priced": true
     },
     {
@@ -159,7 +159,7 @@
     {
       "event_id": "2027-02-13:ufc-fight-night-pyfer-vs-nickal",
       "status": "awaiting-card",
-      "last_changed_at": "2026-11-27T02:43:12Z",
+      "last_changed_at": "2026-11-27T13:38:13Z",
       "is_stale": false,
       "has_data": false,
       "bout_count": 1,
@@ -231,6 +231,22 @@
       "f1_prob_shift": 7.4,
       "f2_prob_shift": -6.6,
       "priority": 230.0
+    },
+    {
+      "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+      "f1": "Uran Satybaldiev",
+      "f2": "Ivan Gnizditskiy",
+      "f1_movement": -11,
+      "f2_movement": 209,
+      "magnitude": 209,
+      "main_event": false,
+      "tier": "prelim",
+      "threshold": 120,
+      "low_confidence": false,
+      "wc": "Light Heavyweight",
+      "f1_prob_shift": 2.2,
+      "f2_prob_shift": -2.2,
+      "priority": 229.9
     },
     {
       "event_id": "2026-10-31:ufc-fight-night-moicano-vs-nolan",
@@ -409,6 +425,22 @@
       "priority": 97.0
     },
     {
+      "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+      "f1": "Levan Chokheli",
+      "f2": "Islam Dulatov",
+      "f1_movement": -63,
+      "f2_movement": 85,
+      "magnitude": 85,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Welterweight",
+      "f1_prob_shift": 8.2,
+      "f2_prob_shift": -8.1,
+      "priority": 93.5
+    },
+    {
       "event_id": "2026-11-07:ufc-fight-night-cortes-acosta-vs-walker",
       "f1": "Lucas Fernando",
       "f2": "Billy Elekana",
@@ -423,22 +455,6 @@
       "f1_prob_shift": 5.3,
       "f2_prob_shift": -5.3,
       "priority": 84.0
-    },
-    {
-      "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
-      "f1": "Levan Chokheli",
-      "f2": "Islam Dulatov",
-      "f1_movement": -56,
-      "f2_movement": 76,
-      "magnitude": 76,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Welterweight",
-      "f1_prob_shift": 7.1,
-      "f2_prob_shift": -7.0,
-      "priority": 83.6
     },
     {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
@@ -489,22 +505,6 @@
       "priority": 72.5
     },
     {
-      "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
-      "f1": "Mairon Santos",
-      "f2": "Akbar Abdullaev",
-      "f1_movement": 39,
-      "f2_movement": -63,
-      "magnitude": 63,
-      "main_event": false,
-      "tier": "main-card",
-      "threshold": 55,
-      "low_confidence": false,
-      "wc": "Lightweight",
-      "f1_prob_shift": -3.9,
-      "f2_prob_shift": 4.5,
-      "priority": 69.3
-    },
-    {
       "event_id": "2026-11-21:ufc-fight-night-prochazka-vs-stirling",
       "f1": "Navajo Stirling",
       "f2": "Jiri Prochazka",
@@ -519,6 +519,22 @@
       "f1_prob_shift": 3.8,
       "f2_prob_shift": -2.9,
       "priority": 67.5
+    },
+    {
+      "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
+      "f1": "Mairon Santos",
+      "f2": "Akbar Abdullaev",
+      "f1_movement": 36,
+      "f2_movement": -57,
+      "magnitude": 57,
+      "main_event": false,
+      "tier": "main-card",
+      "threshold": 55,
+      "low_confidence": false,
+      "wc": "Lightweight",
+      "f1_prob_shift": -3.7,
+      "f2_prob_shift": 4.1,
+      "priority": 62.7
     }
   ],
   "errors": []
