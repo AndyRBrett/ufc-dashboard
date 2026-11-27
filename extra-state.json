@@ -1,14 +1,15 @@
 {
- "last_fetch": "2026-11-27T02:43:14Z",
+ "last_fetch": "2026-11-27T18:49:36Z",
  "publish": true,
- "events": 2,
+ "events": 3,
  "report": [
   {
    "promotion": "pfl",
    "event": "PFL MENA 12",
    "date": "2026-12-11",
-   "problem": "only 0 bout(s) parsed",
-   "kept_previous": false
+   "bouts": 9,
+   "source": "year page",
+   "main_event": "Badreddine Diani vs Abdelkrim Zouad"
   },
   {
    "promotion": "pfl",

@@ -1,6 +1,6 @@
 {
  "about": "Curated non-UFC cards for the Fight Lab hub (PFL, ONE, boxing). Built by extra.py from Wikipedia; read by lab/engine.js feedAdapter, which drops any invalid event with a reason. The UFC card never comes from here - 'ufc' is reserved for data.js. Format: docs/PICK-ENGINE.md.",
- "generated_at": "2026-11-23T21:10:04Z",
+ "generated_at": "2026-11-27T18:49:36Z",
  "promotions": [
   {
    "id": "pfl",
@@ -19,6 +19,115 @@
   }
  ],
  "events": [
+  {
+   "promotion": "pfl",
+   "name": "PFL MENA 12",
+   "date": "2026-12-11",
+   "venue": "Dhahran Expo",
+   "location": "Al Khobar",
+   "broadcast": "",
+   "bouts": [
+    {
+     "a": "Badreddine Diani",
+     "b": "Abdelkrim Zouad",
+     "label": "Main Event",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Ylies Djiroun",
+     "b": "Mohammad Fahmi",
+     "label": "",
+     "division": "Lightweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Ahmed Albrahim",
+     "b": "Hassan Ahmed Mohamed",
+     "label": "",
+     "division": "Welterweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Elias Boudegzdame",
+     "b": "Mehdi Saadi",
+     "label": "",
+     "division": "Featherweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Malik Basahel",
+     "b": "Ahmed Taha",
+     "label": "",
+     "division": "Flyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Talal Alqallaf",
+     "b": "Moaz Altadmori",
+     "label": "",
+     "division": "Catchweight (150 Lb)",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Fatima Al Ammari",
+     "b": "Anna Wakim",
+     "label": "",
+     "division": "Catchweight (139 Lb) (Amateur)",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Hamad Marhoon",
+     "b": "Ayoub Grimes",
+     "label": "",
+     "division": "Flyweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    },
+    {
+     "a": "Zamzam Al Hammadi",
+     "b": "Lilia Osmani",
+     "label": "",
+     "division": "Women's Strawweight",
+     "title": false,
+     "odds": null,
+     "winner": "",
+     "method": "",
+     "round": null
+    }
+   ]
+  },
   {
    "promotion": "pfl",
    "name": "PFL Africa 4",
