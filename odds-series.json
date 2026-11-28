@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T23:58:30Z",
+  "generated_at": "2026-11-28T01:01:20Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -24291,7 +24291,7 @@
           "f1": "Mairon Santos",
           "f2": "Akbar Abdullaev",
           "lbl": "Main Card",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-11-22T21:33:25Z",
@@ -24312,6 +24312,11 @@
               "at": "2026-11-27T13:38:13Z",
               "f1_odds": 232,
               "f2_odds": -302
+            },
+            {
+              "at": "2026-11-28T01:01:20Z",
+              "f1_odds": 240,
+              "f2_odds": -313
             }
           ],
           "open": {
@@ -24546,7 +24551,7 @@
           "f1": "Modestino Rodrigues",
           "f2": "Matthieu Letho Duclos",
           "lbl": "Prelim",
-          "points": 3,
+          "points": 4,
           "series": [
             {
               "at": "2026-11-24T20:07:02Z",
@@ -24562,6 +24567,11 @@
               "at": "2026-11-27T13:38:13Z",
               "f1_odds": 119,
               "f2_odds": -143
+            },
+            {
+              "at": "2026-11-28T01:01:20Z",
+              "f1_odds": 116,
+              "f2_odds": -140
             }
           ],
           "open": {
@@ -29053,7 +29063,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Modestino Rodrigues",
         "side": "f2",
-        "points": 3,
+        "points": 4,
         "open": -144,
         "close": null,
         "clv": null
@@ -31926,7 +31936,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Akbar Abdullaev",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 196,
         "close": null,
         "clv": null
@@ -31937,7 +31947,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Mairon Santos",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -245,
         "close": null,
         "clv": null
@@ -32047,7 +32057,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Matthieu Letho Duclos",
         "side": "f1",
-        "points": 3,
+        "points": 4,
         "open": 119,
         "close": null,
         "clv": null

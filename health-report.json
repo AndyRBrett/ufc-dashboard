@@ -1,31 +1,47 @@
 {
-  "generated_at": "2026-11-27T23:58:30Z",
+  "generated_at": "2026-11-28T01:01:20Z",
   "summary": {
     "events": 11,
     "block": 0,
-    "warn": 3
+    "warn": 5
   },
   "findings": [
     {
       "severity": "WARN",
       "check": "odds-missing-some",
-      "message": "UFC Fight Night: Adesanya vs. Magomedov (8d out): 2 of 14 bouts have no odds",
+      "message": "UFC Fight Night: Adesanya vs. Magomedov (7d out): 2 of 14 bouts have no odds",
       "event": "UFC Fight Night: Adesanya vs. Magomedov",
       "date": "2026-12-05",
-      "days_out": 8
+      "days_out": 7
+    },
+    {
+      "severity": "WARN",
+      "check": "odds-missing-some",
+      "message": "UFC 335: Oliveira vs. Lopes (14d out): 6 of 8 bouts have no odds",
+      "event": "UFC 335: Oliveira vs. Lopes",
+      "date": "2026-12-12",
+      "days_out": 14
     },
     {
       "severity": "WARN",
       "check": "odds-primary-spent",
-      "message": "primary Odds API key is down (HTTP 401, remaining 0) \u2014 backup the-odds-api-backup is pricing cards, 366 requests left"
+      "message": "primary Odds API key is down (HTTP 401, remaining 0) \u2014 backup the-odds-api-backup is pricing cards, 365 requests left"
     },
     {
       "severity": "WARN",
       "check": "time-unconfirmed",
-      "message": "UFC 335: Oliveira vs. Lopes (15d out): UFC.com reading has no prelims time, so it is unchecked",
+      "message": "UFC Fight Night: Adesanya vs. Magomedov (7d out): start times not confirmed against UFC.com (no UFC.com page matched this card)",
+      "event": "UFC Fight Night: Adesanya vs. Magomedov",
+      "date": "2026-12-05",
+      "days_out": 7
+    },
+    {
+      "severity": "WARN",
+      "check": "time-unconfirmed",
+      "message": "UFC 335: Oliveira vs. Lopes (14d out): UFC.com reading has no prelims time, so it is unchecked",
       "event": "UFC 335: Oliveira vs. Lopes",
       "date": "2026-12-12",
-      "days_out": 15,
+      "days_out": 14,
       "segment": "prelim"
     }
   ]
