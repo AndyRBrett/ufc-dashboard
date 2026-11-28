@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-28T12:52:06Z",
+  "generated_at": "2026-11-28T13:57:06Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -24436,7 +24436,7 @@
           "f1": "Abdul Hussein",
           "f2": "Hecher Sosa",
           "lbl": "Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-11-22T21:33:25Z",
@@ -24457,6 +24457,11 @@
               "at": "2026-11-27T13:38:13Z",
               "f1_odds": -181,
               "f2_odds": 145
+            },
+            {
+              "at": "2026-11-28T13:57:06Z",
+              "f1_odds": -180,
+              "f2_odds": 143
             }
           ],
           "open": {
@@ -24526,7 +24531,7 @@
           "f1": "Pavel Andrusca",
           "f2": "Mehemmedeli Osmanli",
           "lbl": "Prelim",
-          "points": 2,
+          "points": 3,
           "series": [
             {
               "at": "2026-11-24T20:07:02Z",
@@ -24537,6 +24542,11 @@
               "at": "2026-11-27T13:38:13Z",
               "f1_odds": -135,
               "f2_odds": 110
+            },
+            {
+              "at": "2026-11-28T13:57:06Z",
+              "f1_odds": -139,
+              "f2_odds": 113
             }
           ],
           "open": {
@@ -29137,7 +29147,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Mehemmedeli Osmanli",
         "side": "f1",
-        "points": 2,
+        "points": 3,
         "open": -138,
         "close": null,
         "clv": null
@@ -29909,7 +29919,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Pavel Andrusca",
         "side": "f2",
-        "points": 2,
+        "points": 3,
         "open": 113,
         "close": null,
         "clv": null
@@ -32012,7 +32022,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Hecher Sosa",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": -170,
         "close": null,
         "clv": null
@@ -32023,7 +32033,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Abdul Hussein",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": 145,
         "close": null,
         "clv": null

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-28T12:52:06Z",
+  "generated_at": "2026-11-28T13:57:06Z",
   "summary": {
     "events": 11,
     "block": 0,
@@ -25,7 +25,7 @@
     {
       "severity": "WARN",
       "check": "odds-primary-spent",
-      "message": "primary Odds API key is down (HTTP 401, remaining 0) \u2014 backup the-odds-api-backup is pricing cards, 364 requests left"
+      "message": "primary Odds API key is down (HTTP 401, remaining 0) \u2014 backup the-odds-api-backup is pricing cards, 363 requests left"
     },
     {
       "severity": "WARN",
