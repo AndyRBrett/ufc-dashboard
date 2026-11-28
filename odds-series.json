@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-28T06:21:08Z",
+  "generated_at": "2026-11-28T07:26:09Z",
   "events": [
     {
       "event_id": "2026-05-30:ufc-fight-night-song-vs-figueiredo",
@@ -24551,7 +24551,7 @@
           "f1": "Modestino Rodrigues",
           "f2": "Matthieu Letho Duclos",
           "lbl": "Prelim",
-          "points": 4,
+          "points": 5,
           "series": [
             {
               "at": "2026-11-24T20:07:02Z",
@@ -24572,6 +24572,11 @@
               "at": "2026-11-28T01:01:20Z",
               "f1_odds": 116,
               "f2_odds": -140
+            },
+            {
+              "at": "2026-11-28T07:26:09Z",
+              "f1_odds": 113,
+              "f2_odds": -137
             }
           ],
           "open": {
@@ -24894,7 +24899,7 @@
           "f1": "Carlos Prates",
           "f2": "Michael Morales",
           "lbl": "Co-Main",
-          "points": 5,
+          "points": 6,
           "series": [
             {
               "at": "2026-11-01T05:20:38Z",
@@ -24920,6 +24925,11 @@
               "at": "2026-11-24T20:07:02Z",
               "f1_odds": -179,
               "f2_odds": 144
+            },
+            {
+              "at": "2026-11-28T07:26:09Z",
+              "f1_odds": -183,
+              "f2_odds": 147
             }
           ],
           "open": {
@@ -29063,7 +29073,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Modestino Rodrigues",
         "side": "f2",
-        "points": 4,
+        "points": 5,
         "open": -144,
         "close": null,
         "clv": null
@@ -32057,7 +32067,7 @@
         "event_id": "2026-12-05:ufc-fight-night-adesanya-vs-magomedov",
         "opponent": "Matthieu Letho Duclos",
         "side": "f1",
-        "points": 4,
+        "points": 5,
         "open": 119,
         "close": null,
         "clv": null
@@ -32112,7 +32122,7 @@
         "event_id": "2027-01-30:ufc-336-van-vs-kape",
         "opponent": "Michael Morales",
         "side": "f1",
-        "points": 5,
+        "points": 6,
         "open": -173,
         "close": null,
         "clv": null
@@ -32123,7 +32133,7 @@
         "event_id": "2027-01-30:ufc-336-van-vs-kape",
         "opponent": "Carlos Prates",
         "side": "f2",
-        "points": 5,
+        "points": 6,
         "open": 138,
         "close": null,
         "clv": null

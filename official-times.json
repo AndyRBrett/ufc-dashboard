@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-28T04:15:44Z",
+ "generated_at": "2026-11-28T07:25:26Z",
  "source": "https://www.ufc.com",
  "cards": {
   "UFC Fight Night: Adesanya vs. Magomedov|2026-12-05": {
    "name": "UFC Fight Night: Adesanya vs. Magomedov",
    "date": "2026-12-05",
-   "checked_at": "2026-11-28T04:15:44Z",
+   "checked_at": "2026-11-28T07:25:26Z",
    "status": 200,
    "error": "no UFC.com page matched this card",
    "tried": [
@@ -15,7 +15,7 @@
   "UFC 335: Oliveira vs. Lopes|2026-12-12": {
    "name": "UFC 335: Oliveira vs. Lopes",
    "date": "2026-12-12",
-   "checked_at": "2026-11-27T18:49:15Z",
+   "checked_at": "2026-11-28T07:25:26Z",
    "url": "https://www.ufc.com/event/ufc-335",
    "status": 200,
    "segments": {
@@ -68,7 +68,7 @@
      ]
     ]
    },
-   "confirmed_at": "2026-11-27T18:49:15Z"
+   "confirmed_at": "2026-11-28T07:25:26Z"
   }
  }
 }
